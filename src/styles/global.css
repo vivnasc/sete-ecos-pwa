@@ -1,35 +1,133 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* ============================================================
+   SETE ECOS — CSS Global Oficial
+   ============================================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 :root {
-  --lumina-fundo: #FCFCFF;
+  /* LUMINA (6º Eco — Visão — Ajna — Luz) */
+  --lumina-fundo-1: #FCFCFF;
+  --lumina-fundo-2: #F8F8FC;
+  --lumina-fundo-3: #F2F2F8;
   --lumina-texto: #1A1A4E;
+  --lumina-texto-suave: #3A3A6F;
+  --lumina-texto-hint: #6B6B9D;
   --lumina-indigo: #1A1A4E;
+  --lumina-indigo-profundo: #2A2A5E;
   --lumina-violeta: #4B0082;
+  --lumina-violeta-claro: #6B238E;
   --lumina-cinza: #E8E8F0;
+  --lumina-cinza-claro: #F0F0F6;
+  
+  /* VITALIS (1º Eco — Raiz — Muladhara — Terra) */
   --vitalis-terracota: #C1634A;
-  --serena-azul: #5B9AA0;
-  --ignis-amarelo: #FFB300;
-  --ventis-verde: #8FBC8F;
-  --ecoa-ceu: #87CEEB;
-  --imago-dourado: #FFD700;
+  --vitalis-terracota-escuro: #A54E38;
+  --vitalis-castanho: #4A4035;
+  --vitalis-verde-musgo: #6B8E23;
+  --vitalis-bege: #D2B48C;
+  --vitalis-linho: #F0EBE3;
+  
+  /* 7 ECOS — Cores por Chakra */
+  --eco-1-vitalis: #C1634A;
+  --eco-2-serena: #5B9AA0;
+  --eco-3-ignis: #FFB300;
+  --eco-4-ventis: #8FBC8F;
+  --eco-5-ecoa: #87CEEB;
+  --eco-6-lumina: #4B0082;
+  --eco-7-imago: #E6D5A8;
+  --aurora: #FFD700;
+  
+  /* Tipografia */
+  --font-titulos: 'Cormorant Garamond', Georgia, serif;
+  --font-corpo: 'Quicksand', 'DM Sans', system-ui, sans-serif;
+  
+  /* Sombras */
+  --sombra-suave: 0 2px 8px rgba(26, 26, 78, 0.08);
+  --sombra-media: 0 4px 16px rgba(26, 26, 78, 0.12);
+  --sombra-elevada: 0 8px 32px rgba(26, 26, 78, 0.16);
+  
+  /* Transições */
+  --transicao-rapida: 0.15s ease;
+  --transicao-media: 0.25s ease;
+  --transicao-suave: 0.4s ease;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
-  font-family: 'Quicksand', sans-serif;
-  background: var(--lumina-fundo);
+  font-family: var(--font-corpo);
+  font-weight: 400;
+  line-height: 1.6;
   color: var(--lumina-texto);
+  background: linear-gradient(180deg, var(--lumina-fundo-1) 0%, var(--lumina-fundo-2) 100%);
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
-h1, h2, h3 { font-family: 'Cormorant Garamond', serif; }
-
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  font-size: 1.2rem;
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-titulos);
+  font-weight: 500;
+  line-height: 1.3;
   color: var(--lumina-indigo);
 }
 
-.app { padding-bottom: 70px; }
+a {
+  color: var(--lumina-violeta);
+  text-decoration: none;
+}
+
+button {
+  font-family: var(--font-corpo);
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all var(--transicao-media);
+}
+
+input, textarea, select {
+  font-family: var(--font-corpo);
+  font-size: 1rem;
+  color: var(--lumina-texto);
+  background: white;
+  border: 1px solid var(--lumina-cinza);
+  border-radius: 12px;
+  padding: 14px 18px;
+  width: 100%;
+  transition: all var(--transicao-rapida);
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--lumina-violeta);
+  box-shadow: 0 0 0 3px rgba(75, 0, 130, 0.1);
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: var(--font-titulos);
+  font-size: 1.25rem;
+  font-style: italic;
+  color: var(--lumina-violeta);
+}
+
+.app {
+  padding-bottom: 80px;
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(75, 0, 130, 0.2);
+  color: var(--lumina-indigo);
+}
