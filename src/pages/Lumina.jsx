@@ -1,146 +1,136 @@
 import { useState, useEffect } from 'react'
-import { supabase, saveCheckin, saveLeitura, getCheckinHoje } from '../lib/supabase'
-import { gerarLeitura } from '../lib/lumina-leituras'
+import { supabase } from '../lib/supabase'
+import { detectPattern, getReading, getEcoSuggestion } from '../lib/lumina-leituras'
 import './Lumina.css'
 
-const INPUTS = [
-  { id: 'corpo', pergunta: 'Como está o teu corpo hoje?',
-    opcoes: [{ valor: 'pesado', label: 'Pesado' }, { valor: 'tenso', label: 'Tenso' }, { valor: 'normal', label: 'Normal' }, { valor: 'solto', label: 'Solto' }, { valor: 'leve', label: 'Leve' }] },
-  { id: 'energia', pergunta: 'Como está a tua energia?',
-    opcoes: [{ valor: 'vazia', label: 'Vazia' }, { valor: 'baixa', label: 'Baixa' }, { valor: 'normal', label: 'Normal' }, { valor: 'boa', label: 'Boa' }, { valor: 'cheia', label: 'Cheia' }] },
-  { id: 'mente', pergunta: 'Como está a tua mente?',
-    opcoes: [{ valor: 'caotica', label: 'Caótica' }, { valor: 'barulhenta', label: 'Barulhenta' }, { valor: 'normal', label: 'Normal' }, { valor: 'calma', label: 'Calma' }, { valor: 'silenciosa', label: 'Silenciosa' }] },
-  { id: 'passado', pergunta: 'Como te sentes em relação ao passado?',
-    opcoes: [{ valor: 'preso', label: 'Presa nele' }, { valor: 'apesar', label: 'Pesa, apesar de tudo' }, { valor: 'normal', label: 'Normal' }, { valor: 'arrumado', label: 'Arrumado' }, { valor: 'leve', label: 'Leve' }] },
-  { id: 'futuro', pergunta: 'Como vês o futuro?',
-    opcoes: [{ valor: 'escuro', label: 'Escuro' }, { valor: 'pesado', label: 'Pesado' }, { valor: 'normal', label: 'Normal' }, { valor: 'claro', label: 'Claro' }, { valor: 'luminoso', label: 'Luminoso' }] },
-  { id: 'impulso', pergunta: 'Qual é o teu impulso hoje?',
-    opcoes: [{ valor: 'esconder', label: 'Calar-me' }, { valor: 'parar', label: 'Engolir' }, { valor: 'nada', label: 'Nenhum' }, { valor: 'decidir', label: 'Dizer' }, { valor: 'agir', label: 'Expressar' }] },
-  { id: 'espelho', pergunta: 'Como te vês ao espelho?',
-    opcoes: [{ valor: 'invisivel', label: 'Invisível' }, { valor: 'apagada', label: 'Apagada' }, { valor: 'normal', label: 'Normal' }, { valor: 'visivel', label: 'Visível' }, { valor: 'luminosa', label: 'Luminosa' }] }
+const SCREENS = [
+  { id: 'energia', eco: 2, letra: 'E', resto: 'nergia', explicacao: 'De onde vem a tua força hoje?',
+    opcoes: [['vazia', 'baixa'], ['normal'], ['boa', 'cheia']] },
+  { id: 'corpo', eco: 1, letra: 'C', resto: 'orpo', explicacao: 'O que sentes quando paras e escutas?',
+    opcoes: [['pesado', 'tenso'], ['normal'], ['solto', 'leve']] },
+  { id: 'mente', eco: 3, letra: 'M', resto: 'ente', explicacao: 'Como está o ruído interno?',
+    opcoes: [['caotica', 'barulhenta'], ['normal'], ['calma', 'silenciosa']] },
+  { id: 'passado', eco: 4, letra: 'P', resto: 'assado', explicacao: 'Como te relacionas com o que já foi?',
+    opcoes: [['preso', 'apesar'], ['normal'], ['arrumado', 'leve']] },
+  { id: 'impulso', eco: 5, letra: 'I', resto: 'mpulso', explicacao: 'O que queres fazer agora?',
+    opcoes: [['esconder', 'parar'], ['nada'], ['decidir', 'agir']] },
+  { id: 'futuro', eco: 6, letra: 'F', resto: 'uturo', explicacao: 'Como sentes o que vem?',
+    opcoes: [['escuro', 'pesado'], ['normal'], ['claro', 'luminoso']] },
+  { id: 'espelho', eco: 7, letra: 'E', resto: 'spelho', explicacao: 'Quando te olhas, o que encontras?',
+    opcoes: [['invisivel', 'apagada'], ['normal'], ['visivel', 'luminosa']] }
 ]
 
 export default function Lumina() {
-  const [step, setStep] = useState(0)
-  const [respostas, setRespostas] = useState({})
-  const [leitura, setLeitura] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [jaFez, setJaFez] = useState(false)
-  const [error, setError] = useState(null)
+  const [screen, setScreen] = useState('splash')
+  const [answers, setAnswers] = useState({})
+  const [reading, setReading] = useState(null)
+  const [ecoRec, setEcoRec] = useState(null)
+  const [exiting, setExiting] = useState(null)
+  const [dbUserId, setDbUserId] = useState(null)
 
-  useEffect(() => {
-    checkExistingCheckin()
-  }, [])
+  useEffect(() => { initUser() }, [])
 
-  const checkExistingCheckin = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const checkin = await getCheckinHoje(user.id)
-        if (checkin) {
-          setJaFez(true)
-          if (checkin.lumina_leituras && checkin.lumina_leituras.length > 0) {
-            setLeitura(checkin.lumina_leituras[0])
-          }
-        }
-      }
-    } catch (err) {
-      console.error('Erro ao verificar check-in:', err)
+  const initUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    let { data: profile } = await supabase.from('users').select('id').eq('auth_id', user.id).single()
+    if (!profile) {
+      const { data: newUser } = await supabase.from('users').insert({ auth_id: user.id, nome: user.email.split('@')[0], email: user.email }).select('id').single()
+      profile = newUser
     }
-    setLoading(false)
+    if (profile) setDbUserId(profile.id)
   }
 
-  const handleSelect = (valor) => {
-    const input = INPUTS[step]
-    const novasRespostas = { ...respostas, [input.id]: valor }
-    setRespostas(novasRespostas)
+  const transition = (from, to) => {
+    setExiting(from)
+    setTimeout(() => { setScreen(to); setExiting(null) }, 400)
+  }
 
-    if (step < INPUTS.length - 1) {
-      setTimeout(() => setStep(step + 1), 200)
+  const select = (id, value) => {
+    const newAns = { ...answers, [id]: value }
+    setAnswers(newAns)
+    const idx = SCREENS.findIndex(s => s.id === id)
+    if (idx < SCREENS.length - 1) {
+      transition(idx, idx + 1)
     } else {
-      finalizarCheckin(novasRespostas)
+      transition(idx, 'pause')
+      setTimeout(async () => {
+        const pattern = detectPattern(newAns)
+        const leitura = getReading(pattern)
+        const rec = getEcoSuggestion(newAns)
+        setReading(leitura)
+        setEcoRec(rec)
+        await saveCheckin(newAns, pattern, leitura, rec)
+        transition('pause', 'reading')
+      }, 2500)
     }
   }
 
-  const finalizarCheckin = async (dados) => {
-    setSaving(true)
-    setError(null)
-
+  const saveCheckin = async (ans, pat, leit, rec) => {
+    if (!dbUserId) return
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      const checkin = await saveCheckin(user.id, dados)
-      const leituraGerada = gerarLeitura(dados)
-      const leituraSalva = await saveLeitura(user.id, checkin.id, leituraGerada)
-      setLeitura(leituraSalva)
-      setJaFez(true)
-    } catch (err) {
-      console.error('Erro ao salvar:', err)
-      setError('Houve um problema ao guardar. Tenta novamente.')
-    }
-
-    setSaving(false)
+      const { data: checkin } = await supabase.from('lumina_checkins').insert({
+        user_id: dbUserId, data: new Date().toISOString().split('T')[0],
+        corpo: ans.corpo, energia: ans.energia, mente: ans.mente, passado: ans.passado,
+        impulso: ans.impulso, futuro: ans.futuro, espelho: ans.espelho
+      }).select().single()
+      if (checkin) {
+        await supabase.from('lumina_leituras').insert({
+          user_id: dbUserId, checkin_id: checkin.id, padrao: pat, texto_leitura: leit,
+          eco_sugerido: rec?.eco || 'nenhum', bloqueio_principal: rec?.bloqueio || null, razao_sugestao: rec?.msg || null
+        })
+      }
+    } catch (err) { console.error('Erro:', err) }
   }
 
-  if (loading) {
-    return <div className="lumina-loading"><span className="lumina-loading-icon">✦</span><p>A preparar...</p></div>
-  }
+  const restart = () => { setAnswers({}); setReading(null); setEcoRec(null); transition('reading', 'splash') }
 
-  if (saving) {
-    return <div className="lumina-loading"><span className="lumina-loading-icon spinning">✦</span><p>A gerar a tua leitura...</p></div>
+  const cls = (id) => {
+    let c = 'lumina-screen'
+    if (screen === id) c += ' active'
+    if (exiting === id) c += ' exit'
+    return c
   }
-
-  if (jaFez && leitura) {
-    return (
-      <div className="lumina-leitura">
-        <header className="lumina-leitura-header">
-          <span className="lumina-icon">✦</span>
-          <h1>A tua leitura de hoje</h1>
-        </header>
-        <div className="lumina-leitura-card">
-          <p className="lumina-leitura-texto">{leitura.texto_leitura}</p>
-        </div>
-        {leitura.eco_sugerido && leitura.eco_sugerido !== 'nenhum' && (
-          <div className="lumina-sugestao">
-            <span className="lumina-sugestao-label">Eco sugerido</span>
-            <span className="lumina-sugestao-eco">{leitura.eco_sugerido.toUpperCase()}</span>
-            {leitura.bloqueio_principal && (
-              <span className="lumina-sugestao-bloqueio">Área de atenção: {leitura.bloqueio_principal}</span>
-            )}
-          </div>
-        )}
-        <p className="lumina-leitura-footer">Regressa amanhã para um novo check-in.</p>
-      </div>
-    )
-  }
-
-  const input = INPUTS[step]
-  const progresso = ((step + 1) / INPUTS.length) * 100
 
   return (
-    <div className="lumina-checkin">
-      <header className="lumina-checkin-header">
-        <span className="lumina-icon">✦</span>
-        <h1>LUMINA</h1>
-        <p className="lumina-progresso-texto">{step + 1} de {INPUTS.length}</p>
-        <div className="lumina-progresso-bar">
-          <div className="lumina-progresso-fill" style={{ width: `${progresso}%` }} />
+    <div className="lumina-container">
+      <div className={cls('splash')} onClick={() => transition('splash', 'intro')}>
+        <div className="splash-eye">✦</div>
+        <h1 className="splash-title">LUMINA</h1>
+        <p className="splash-subtitle">o espelho interior</p>
+        <p className="splash-tap">toca para começar</p>
+      </div>
+
+      <div className={cls('intro')}>
+        <p className="intro-text">Este é um momento<br/>de <em>escuta</em>.<br/><br/>Sete perguntas.<br/>Sem respostas certas.<br/>Só <em>verdade</em>.</p>
+        <button className="start-button" onClick={() => transition('intro', 0)}>COMEÇAR</button>
+      </div>
+
+      {SCREENS.map((s, i) => (
+        <div key={s.id} className={`${cls(i)} eco-${s.eco}`}>
+          <div className="logo-small">LUMINA</div>
+          <div className="progress">{SCREENS.map((_, j) => <div key={j} className={`progress-dot eco-${SCREENS[j].eco} ${j <= i ? 'filled' : ''}`}/>)}</div>
+          <div className="question-container">
+            <p className={`question eco-${s.eco}`}><span className="letra">{s.letra}</span>{s.resto}</p>
+            <p className="question-explanation">{s.explicacao}</p>
+          </div>
+          <div className="options">
+            {s.opcoes.map((row, ri) => <div key={ri} className="options-row">{row.map(opt => <button key={opt} className="option" onClick={() => select(s.id, opt)}>{opt}</button>)}</div>)}
+          </div>
         </div>
-      </header>
+      ))}
 
-      <div className="lumina-pergunta">
-        <h2>{input.pergunta}</h2>
+      <div className={`${cls('pause')} pause-screen`}><p className="pause-text">a ler-te...</p></div>
+
+      <div className={cls('reading')}>
+        <div className="logo-small">LUMINA</div>
+        <div className="reading-container">
+          <p className="reading-text">{reading}</p>
+          {ecoRec && <div className="eco-recommend"><div className="eco-recommend-title">sugestão</div><div className="eco-recommend-text">{ecoRec.msg}</div></div>}
+        </div>
+        <div className="reading-signature">LUMINA · Sete Ecos<br/>© Vivianne dos Santos</div>
+        <button className="close-button" onClick={restart}>GUARDAR</button>
       </div>
-
-      <div className="lumina-opcoes">
-        {input.opcoes.map((opcao, index) => (
-          <button key={opcao.valor} className="lumina-opcao" onClick={() => handleSelect(opcao.valor)} style={{ animationDelay: `${index * 0.05}s` }}>
-            {opcao.label}
-          </button>
-        ))}
-      </div>
-
-      {error && <p className="lumina-error">{error}</p>}
     </div>
   )
 }
