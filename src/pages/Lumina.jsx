@@ -1,136 +1,936 @@
-import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
-import { detectPattern, getReading, getEcoSuggestion } from '../lib/lumina-leituras'
-import './Lumina.css'
+// ============================================================
+// LUMINA - Componente React Completo (Conversão fiel do HTML v15)
+// Sete Ecos © Vivianne dos Santos
+// ============================================================
 
-const SCREENS = [
-  { id: 'energia', eco: 2, letra: 'E', resto: 'nergia', explicacao: 'De onde vem a tua força hoje?',
-    opcoes: [['vazia', 'baixa'], ['normal'], ['boa', 'cheia']] },
-  { id: 'corpo', eco: 1, letra: 'C', resto: 'orpo', explicacao: 'O que sentes quando paras e escutas?',
-    opcoes: [['pesado', 'tenso'], ['normal'], ['solto', 'leve']] },
-  { id: 'mente', eco: 3, letra: 'M', resto: 'ente', explicacao: 'Como está o ruído interno?',
-    opcoes: [['caotica', 'barulhenta'], ['normal'], ['calma', 'silenciosa']] },
-  { id: 'passado', eco: 4, letra: 'P', resto: 'assado', explicacao: 'Como te relacionas com o que já foi?',
-    opcoes: [['preso', 'apesar'], ['normal'], ['arrumado', 'leve']] },
-  { id: 'impulso', eco: 5, letra: 'I', resto: 'mpulso', explicacao: 'O que queres fazer agora?',
-    opcoes: [['esconder', 'parar'], ['nada'], ['decidir', 'agir']] },
-  { id: 'futuro', eco: 6, letra: 'F', resto: 'uturo', explicacao: 'Como sentes o que vem?',
-    opcoes: [['escuro', 'pesado'], ['normal'], ['claro', 'luminoso']] },
-  { id: 'espelho', eco: 7, letra: 'E', resto: 'spelho', explicacao: 'Quando te olhas, o que encontras?',
-    opcoes: [['invisivel', 'apagada'], ['normal'], ['visivel', 'luminosa']] }
-]
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import { 
+  detectarPadrao, 
+  obterLeitura, 
+  obterRecomendacaoEco,
+  analisarPadroesSemanais,
+  obterInsightsSemanais,
+  analisarPadroesPeriodo
+} from '../lib/lumina-leituras';
+import './Lumina.css';
 
+// ============================================================
+// CONSTANTES - 7 PERGUNTAS NA ORDEM CORRECTA
+// ============================================================
+const PERGUNTAS = [
+  {
+    id: 'corpo',
+    eco: 1,
+    titulo: 'Corpo',
+    inicial: 'C',
+    explicacao: 'Como sentes o teu corpo físico agora?',
+    opcoes: [
+      { valor: 'pesado', posicao: 'negativo' },
+      { valor: 'tenso', posicao: 'negativo' },
+      { valor: 'normal', posicao: 'neutro' },
+      { valor: 'solto', posicao: 'positivo' },
+      { valor: 'leve', posicao: 'positivo' }
+    ]
+  },
+  {
+    id: 'passado',
+    eco: 2,
+    titulo: 'Passado',
+    inicial: 'P',
+    explicacao: 'O ontem está a pesar ou está no seu lugar?',
+    opcoes: [
+      { valor: 'preso', posicao: 'negativo' },
+      { valor: 'apesar', posicao: 'negativo' },
+      { valor: 'normal', posicao: 'neutro' },
+      { valor: 'arrumado', posicao: 'positivo' },
+      { valor: 'leve', posicao: 'positivo' }
+    ]
+  },
+  {
+    id: 'impulso',
+    eco: 3,
+    titulo: 'Impulso',
+    inicial: 'I',
+    explicacao: 'O que te puxa agora?',
+    opcoes: [
+      { valor: 'esconder', posicao: 'negativo' },
+      { valor: 'parar', posicao: 'negativo' },
+      { valor: 'nada', posicao: 'neutro' },
+      { valor: 'decidir', posicao: 'positivo' },
+      { valor: 'agir', posicao: 'positivo' }
+    ]
+  },
+  {
+    id: 'futuro',
+    eco: 4,
+    titulo: 'Futuro',
+    inicial: 'F',
+    explicacao: 'Como sentes o que vem aí?',
+    opcoes: [
+      { valor: 'escuro', posicao: 'negativo' },
+      { valor: 'pesado', posicao: 'negativo' },
+      { valor: 'normal', posicao: 'neutro' },
+      { valor: 'claro', posicao: 'positivo' },
+      { valor: 'luminoso', posicao: 'positivo' }
+    ]
+  },
+  {
+    id: 'mente',
+    eco: 5,
+    titulo: 'Mente',
+    inicial: 'M',
+    explicacao: 'O que se passa na tua cabeça?',
+    opcoes: [
+      { valor: 'caotica', posicao: 'negativo' },
+      { valor: 'barulhenta', posicao: 'negativo' },
+      { valor: 'normal', posicao: 'neutro' },
+      { valor: 'calma', posicao: 'positivo' },
+      { valor: 'silenciosa', posicao: 'positivo' }
+    ]
+  },
+  {
+    id: 'energia',
+    eco: 6,
+    titulo: 'Energia',
+    inicial: 'E',
+    explicacao: 'Quanta força tens disponível agora?',
+    opcoes: [
+      { valor: 'vazia', posicao: 'negativo' },
+      { valor: 'baixa', posicao: 'negativo' },
+      { valor: 'normal', posicao: 'neutro' },
+      { valor: 'boa', posicao: 'positivo' },
+      { valor: 'cheia', posicao: 'positivo' }
+    ]
+  },
+  {
+    id: 'espelho',
+    eco: 7,
+    titulo: 'Espelho',
+    inicial: 'E',
+    explicacao: 'Quando te olhas, o que encontras?',
+    opcoes: [
+      { valor: 'invisivel', posicao: 'negativo' },
+      { valor: 'apagada', posicao: 'negativo' },
+      { valor: 'normal', posicao: 'neutro' },
+      { valor: 'visivel', posicao: 'positivo' },
+      { valor: 'luminosa', posicao: 'positivo' }
+    ]
+  }
+];
+
+// ============================================================
+// COMPONENTE PRINCIPAL
+// ============================================================
 export default function Lumina() {
-  const [screen, setScreen] = useState('splash')
-  const [answers, setAnswers] = useState({})
-  const [reading, setReading] = useState(null)
-  const [ecoRec, setEcoRec] = useState(null)
-  const [exiting, setExiting] = useState(null)
-  const [dbUserId, setDbUserId] = useState(null)
+  // Estados do fluxo
+  const [screen, setScreen] = useState('splash');
+  const [questionIndex, setQuestionIndex] = useState(0);
+  
+  // Estados do utilizador
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  // Estados das respostas
+  const [respostas, setRespostas] = useState({
+    corpo: null,
+    passado: null,
+    impulso: null,
+    futuro: null,
+    mente: null,
+    energia: null,
+    espelho: null
+  });
+  
+  // Estados da leitura
+  const [padrao, setPadrao] = useState(null);
+  const [leitura, setLeitura] = useState('');
+  const [ecoRecomendado, setEcoRecomendado] = useState(null);
+  const [padraoSemanal, setPadraoSemanal] = useState(null);
+  
+  // Estados do ciclo menstrual
+  const [faseCiclo, setFaseCiclo] = useState(null);
+  const [diaCiclo, setDiaCiclo] = useState(null);
+  
+  // Estados do histórico
+  const [historico, setHistorico] = useState([]);
+  const [diasCount, setDiasCount] = useState(0);
+  
+  // Estados do onboarding
+  const [nome, setNome] = useState('');
+  const [tracksCycle, setTracksCycle] = useState(null);
+  const [lastPeriod, setLastPeriod] = useState('');
+  const [cycleLength, setCycleLength] = useState(28);
 
-  useEffect(() => { initUser() }, [])
+  // ============================================================
+  // EFEITOS
+  // ============================================================
+  
+  // Carregar utilizador e perfil ao iniciar
+  useEffect(() => {
+    loadUser();
+  }, []);
 
-  const initUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    let { data: profile } = await supabase.from('users').select('id').eq('auth_id', user.id).single()
-    if (!profile) {
-      const { data: newUser } = await supabase.from('users').insert({ auth_id: user.id, nome: user.email.split('@')[0], email: user.email }).select('id').single()
-      profile = newUser
+  // Carregar histórico quando tiver user
+  useEffect(() => {
+    if (user) {
+      loadHistorico();
     }
-    if (profile) setDbUserId(profile.id)
-  }
+  }, [user]);
 
-  const transition = (from, to) => {
-    setExiting(from)
-    setTimeout(() => { setScreen(to); setExiting(null) }, 400)
-  }
-
-  const select = (id, value) => {
-    const newAns = { ...answers, [id]: value }
-    setAnswers(newAns)
-    const idx = SCREENS.findIndex(s => s.id === id)
-    if (idx < SCREENS.length - 1) {
-      transition(idx, idx + 1)
-    } else {
-      transition(idx, 'pause')
-      setTimeout(async () => {
-        const pattern = detectPattern(newAns)
-        const leitura = getReading(pattern)
-        const rec = getEcoSuggestion(newAns)
-        setReading(leitura)
-        setEcoRec(rec)
-        await saveCheckin(newAns, pattern, leitura, rec)
-        transition('pause', 'reading')
-      }, 2500)
-    }
-  }
-
-  const saveCheckin = async (ans, pat, leit, rec) => {
-    if (!dbUserId) return
+  // ============================================================
+  // FUNÇÕES DE CARREGAMENTO
+  // ============================================================
+  
+  async function loadUser() {
     try {
-      const { data: checkin } = await supabase.from('lumina_checkins').insert({
-        user_id: dbUserId, data: new Date().toISOString().split('T')[0],
-        corpo: ans.corpo, energia: ans.energia, mente: ans.mente, passado: ans.passado,
-        impulso: ans.impulso, futuro: ans.futuro, espelho: ans.espelho
-      }).select().single()
-      if (checkin) {
-        await supabase.from('lumina_leituras').insert({
-          user_id: dbUserId, checkin_id: checkin.id, padrao: pat, texto_leitura: leit,
-          eco_sugerido: rec?.eco || 'nenhum', bloqueio_principal: rec?.bloqueio || null, razao_sugestao: rec?.msg || null
-        })
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      
+      if (authUser) {
+        setUser(authUser);
+        
+        // Carregar perfil do users
+        const { data: profileData } = await supabase
+          .from('users')
+          .select('*')
+          .eq('auth_id', authUser.id)
+          .single();
+        
+        if (profileData) {
+          setProfile(profileData);
+          // Calcular fase do ciclo se aplicável
+          if (profileData.ciclo_activo && profileData.ultimo_periodo) {
+            calcularFaseCiclo(profileData);
+          }
+        }
       }
-    } catch (err) { console.error('Erro:', err) }
+    } catch (error) {
+      console.error('Erro ao carregar utilizador:', error);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  const restart = () => { setAnswers({}); setReading(null); setEcoRec(null); transition('reading', 'splash') }
+  async function loadHistorico() {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('lumina_checkins')
+        .select('*')
+        .eq('user_id', profile?.id)
+        .order('created_at', { ascending: false })
+        .limit(100);
+      
+      if (error) throw error;
+      
+      if (data) {
+        setHistorico(data);
+        // Contar dias únicos
+        const uniqueDates = [...new Set(data.map(e => e.data))];
+        setDiasCount(uniqueDates.length);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar histórico:', error);
+    }
+  }
 
-  const cls = (id) => {
-    let c = 'lumina-screen'
-    if (screen === id) c += ' active'
-    if (exiting === id) c += ' exit'
-    return c
+  // ============================================================
+  // CICLO MENSTRUAL
+  // ============================================================
+  
+  function calcularFaseCiclo(profileData) {
+    if (!profileData.ciclo_activo || !profileData.ultimo_periodo) {
+      setFaseCiclo(null);
+      setDiaCiclo(null);
+      return;
+    }
+
+    const lastPeriodDate = new Date(profileData.ultimo_periodo);
+    const today = new Date();
+    const diffDays = Math.floor((today - lastPeriodDate) / (1000 * 60 * 60 * 24));
+    const cycleLen = profileData.duracao_ciclo || 28;
+    const day = (diffDays % cycleLen) + 1;
+
+    setDiaCiclo(day);
+
+    let phase, message;
+    if (day <= 5) {
+      phase = 'menstrual';
+      message = 'Estás na menstruação – o recolhimento que sentes é natural, não resistência.';
+    } else if (day <= 13) {
+      phase = 'folicular';
+      message = 'Estás na fase folicular – a energia está a subir naturalmente.';
+    } else if (day <= 16) {
+      phase = 'ovulacao';
+      message = 'Estás na ovulação – este é o teu pico natural de energia e clareza.';
+    } else {
+      phase = 'lutea';
+      message = 'Estás na fase lútea – o cansaço ou irritabilidade que sentes é fisiológico, não falha tua.';
+    }
+
+    setFaseCiclo({ phase, day, message });
+  }
+
+  function getCycleNote() {
+    if (!faseCiclo) return null;
+    return `Dia ${faseCiclo.day} do ciclo · Fase ${faseCiclo.phase}`;
+  }
+
+  // ============================================================
+  // NAVEGAÇÃO
+  // ============================================================
+  
+  function handleSplashTap() {
+    if (profile) {
+      setScreen('intro');
+    } else {
+      setScreen('onboarding');
+    }
+  }
+
+  function startJourney() {
+    setQuestionIndex(0);
+    setScreen('question');
+  }
+
+  function handleAnswer(perguntaId, valor) {
+    setRespostas(prev => ({ ...prev, [perguntaId]: valor }));
+    
+    if (questionIndex < PERGUNTAS.length - 1) {
+      // Próxima pergunta
+      setQuestionIndex(prev => prev + 1);
+    } else {
+      // Última pergunta - mostrar pausa e depois leitura
+      setScreen('pause');
+      setTimeout(() => {
+        gerarLeitura();
+      }, 2500);
+    }
+  }
+
+  // ============================================================
+  // GERAR LEITURA
+  // ============================================================
+  
+  function gerarLeitura() {
+    const padraoDetectado = detectarPadrao(respostas);
+    const textoLeitura = obterLeitura(padraoDetectado);
+    const recomendacao = obterRecomendacaoEco(respostas);
+    const padraoSem = analisarPadroesSemanais(historico);
+
+    setPadrao(padraoDetectado);
+    setLeitura(textoLeitura);
+    setEcoRecomendado(recomendacao);
+    setPadraoSemanal(padraoSem);
+    
+    setScreen('reading');
+  }
+
+  // ============================================================
+  // GUARDAR CHECK-IN
+  // ============================================================
+  
+  async function saveAndRestart() {
+    if (!profile) {
+      restart();
+      return;
+    }
+
+    try {
+      // Guardar check-in
+      const { data: checkinData, error: checkinError } = await supabase
+        .from('lumina_checkins')
+        .insert({
+          user_id: profile.id,
+          data: new Date().toISOString().split('T')[0],
+          ...respostas,
+          fase_ciclo: faseCiclo?.phase || null,
+          dia_ciclo: diaCiclo || null
+        })
+        .select()
+        .single();
+
+      if (checkinError) throw checkinError;
+
+      // Guardar leitura
+      if (checkinData) {
+        await supabase
+          .from('lumina_leituras')
+          .insert({
+            checkin_id: checkinData.id,
+            user_id: profile.id,
+            padrao: padrao,
+            texto_leitura: leitura
+          });
+      }
+
+      // Recarregar histórico
+      await loadHistorico();
+      
+    } catch (error) {
+      console.error('Erro ao guardar:', error);
+    }
+
+    restart();
+  }
+
+  function restart() {
+    setRespostas({
+      corpo: null,
+      passado: null,
+      impulso: null,
+      futuro: null,
+      mente: null,
+      energia: null,
+      espelho: null
+    });
+    setPadrao(null);
+    setLeitura('');
+    setEcoRecomendado(null);
+    setPadraoSemanal(null);
+    setQuestionIndex(0);
+    setScreen('splash');
+  }
+
+  // ============================================================
+  // ONBOARDING
+  // ============================================================
+  
+  async function saveOnboarding() {
+    if (!nome.trim()) {
+      alert('Por favor, insere o teu nome.');
+      return;
+    }
+
+    try {
+      // Criar ou actualizar perfil
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      
+      if (authUser) {
+        const profileData = {
+          auth_id: authUser.id,
+          nome: nome.trim(),
+          email: authUser.email,
+          ciclo_activo: tracksCycle === 'sim',
+          duracao_ciclo: cycleLength,
+          ultimo_periodo: tracksCycle === 'sim' && lastPeriod ? lastPeriod : null
+        };
+
+        const { data, error } = await supabase
+          .from('users')
+          .upsert(profileData, { onConflict: 'auth_id' })
+          .select()
+          .single();
+
+        if (error) throw error;
+        
+        setProfile(data);
+        if (data.ciclo_activo && data.ultimo_periodo) {
+          calcularFaseCiclo(data);
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao guardar onboarding:', error);
+    }
+
+    setScreen('intro');
+  }
+
+  // ============================================================
+  // HISTÓRICO
+  // ============================================================
+  
+  function showHistory() {
+    setScreen('history');
+  }
+
+  function renderHistorico() {
+    const weeklyInsights = obterInsightsSemanais(historico);
+    const patterns14 = analisarPadroesPeriodo(historico, 14);
+    const patterns30 = analisarPadroesPeriodo(historico, 30);
+
+    return (
+      <div className="history-container">
+        <h2 className="history-title">Histórico</h2>
+        
+        {/* Insights semanais */}
+        {weeklyInsights && weeklyInsights.length > 0 && (
+          <div className="weekly-summary">
+            <div className="weekly-title">Esta semana</div>
+            {weeklyInsights.map((insight, i) => (
+              <div key={i} className="weekly-insight">{insight}</div>
+            ))}
+          </div>
+        )}
+
+        {/* Lista de check-ins recentes */}
+        {historico.length === 0 ? (
+          <div className="history-empty">
+            Ainda não tens registos.<br /><br />
+            Usa a LUMINA diariamente para descobrires os teus padrões.
+          </div>
+        ) : (
+          historico.slice(0, 10).map((entry, i) => (
+            <div key={i} className="history-item">
+              <div className="history-date">
+                {new Date(entry.created_at).toLocaleDateString('pt-PT')}
+                {entry.dia_ciclo && ` · Dia ${entry.dia_ciclo} do ciclo`}
+              </div>
+              <div className="history-tags">
+                <span className="history-tag">{entry.energia}</span>
+                <span className="history-tag">{entry.corpo}</span>
+                <span className="history-tag">{entry.mente}</span>
+              </div>
+            </div>
+          ))
+        )}
+
+        {/* Padrões 14 dias */}
+        {patterns14 && (
+          <div className="patterns-section">
+            <div className="patterns-title">últimos 14 dias</div>
+            {renderPatternItems(patterns14, 3)}
+          </div>
+        )}
+
+        {/* Padrões 30 dias */}
+        {patterns30 && (
+          <div className="patterns-section">
+            <div className="patterns-title">últimos 30 dias</div>
+            {renderPatternItems(patterns30, 7)}
+          </div>
+        )}
+
+        <button className="back-btn" onClick={() => setScreen('splash')}>
+          voltar
+        </button>
+      </div>
+    );
+  }
+
+  function renderPatternItems(patterns, threshold) {
+    const { counts, total } = patterns;
+    const items = [];
+
+    if (counts.energiaBaixa >= threshold) {
+      items.push(
+        <div key="energia" className="pattern-item">
+          <div className="pattern-stat">Energia baixa: {counts.energiaBaixa}x</div>
+          <div className="pattern-insight">
+            {threshold >= 7 
+              ? 'Padrão consolidado. O teu corpo está a precisar de atenção séria.'
+              : 'Atenção ao cansaço acumulado'}
+          </div>
+        </div>
+      );
+    }
+
+    if (counts.corpoFechado >= threshold) {
+      items.push(
+        <div key="corpo" className="pattern-item">
+          <div className="pattern-stat">Corpo fechado: {counts.corpoFechado}x</div>
+          <div className="pattern-insight">
+            {threshold >= 7 
+              ? 'Tensão crónica. Considera movimento, massagem, ou descanso real.'
+              : 'O corpo está a pedir abertura'}
+          </div>
+        </div>
+      );
+    }
+
+    if (counts.menteRuidosa >= threshold) {
+      items.push(
+        <div key="mente" className="pattern-item">
+          <div className="pattern-stat">Mente agitada: {counts.menteRuidosa}x</div>
+          <div className="pattern-insight">
+            {threshold >= 7 
+              ? 'Ruído mental persistente. O que está a ocupar espaço?'
+              : 'Precisa de mais silêncio'}
+          </div>
+        </div>
+      );
+    }
+
+    if (counts.passadoPesa >= threshold) {
+      items.push(
+        <div key="passado" className="pattern-item">
+          <div className="pattern-stat">Passado a pesar: {counts.passadoPesa}x</div>
+          <div className="pattern-insight">
+            {threshold >= 7 
+              ? 'Há algo por processar que não vai embora sozinho.'
+              : 'Algo por resolver'}
+          </div>
+        </div>
+      );
+    }
+
+    if (counts.futuroAmeaca >= threshold) {
+      items.push(
+        <div key="futuro" className="pattern-item">
+          <div className="pattern-stat">Futuro como ameaça: {counts.futuroAmeaca}x</div>
+          <div className="pattern-insight">
+            {threshold >= 7 
+              ? 'Ansiedade instalada. Precisas de ajuda para sair deste ciclo?'
+              : 'Ansiedade recorrente'}
+          </div>
+        </div>
+      );
+    }
+
+    if (counts.espelhoMau >= threshold) {
+      items.push(
+        <div key="espelho" className="pattern-item">
+          <div className="pattern-stat">Espelho distorcido: {counts.espelhoMau}x</div>
+          <div className="pattern-insight">
+            {threshold >= 7 
+              ? 'A tua auto-imagem está comprometida há tempo. Isso não és tu.'
+              : 'Auto-imagem comprometida'}
+          </div>
+        </div>
+      );
+    }
+
+    if (items.length === 0) {
+      items.push(
+        <div key="none" className="pattern-item">
+          <div className="pattern-insight">
+            {threshold >= 7 
+              ? 'Sem padrões negativos consolidados. Bom sinal.'
+              : 'Sem padrões negativos detectados.'}
+          </div>
+        </div>
+      );
+    }
+
+    return items;
+  }
+
+  // ============================================================
+  // RENDER - SPLASH SCREEN
+  // ============================================================
+  
+  function renderSplash() {
+    return (
+      <div className={`screen ${screen === 'splash' ? 'active' : ''}`}>
+        {/* Olho/Símbolo */}
+        <div className="splash-eye-symbol">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="50" cy="50" rx="45" ry="25" stroke="#1A1A4E" strokeWidth="1.5" fill="none"/>
+            <circle cx="50" cy="50" r="15" stroke="#1A1A4E" strokeWidth="1.5" fill="none"/>
+            <circle cx="50" cy="50" r="6" fill="#1A1A4E"/>
+          </svg>
+        </div>
+        
+        <div className="splash-title">LUMINA</div>
+        <div className="splash-subtitle">— Antes de agir, vê-te —</div>
+        
+        <button className="splash-tap" onClick={handleSplashTap}>
+          toca para entrar
+        </button>
+        
+        <button className="splash-history" onClick={showHistory}>
+          ver histórico
+        </button>
+      </div>
+    );
+  }
+
+  // ============================================================
+  // RENDER - ONBOARDING
+  // ============================================================
+  
+  function renderOnboarding() {
+    return (
+      <div className={`screen ${screen === 'onboarding' ? 'active' : ''}`}>
+        <div className="onboarding-title">Bem-vinda</div>
+        <div className="onboarding-subtitle">Vamos conhecer-nos</div>
+        
+        <div className="form-group">
+          <label className="form-label">Como te chamas?</label>
+          <input
+            type="text"
+            className="form-input"
+            placeholder="O teu nome"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+          />
+        </div>
+        
+        <div className="form-group">
+          <label className="form-label">Acompanhas o teu ciclo?</label>
+          <div className="radio-group">
+            <div 
+              className={`radio-option ${tracksCycle === 'sim' ? 'selected' : ''}`}
+              onClick={() => setTracksCycle('sim')}
+            >
+              Sim
+            </div>
+            <div 
+              className={`radio-option ${tracksCycle === 'nao' ? 'selected' : ''}`}
+              onClick={() => setTracksCycle('nao')}
+            >
+              Não
+            </div>
+            <div 
+              className={`radio-option ${tracksCycle === 'menopausa' ? 'selected' : ''}`}
+              onClick={() => setTracksCycle('menopausa')}
+            >
+              Já não tenho
+            </div>
+          </div>
+        </div>
+        
+        <div className={`cycle-section ${tracksCycle === 'sim' ? 'visible' : ''}`}>
+          <div className="form-group">
+            <label className="form-label">Último período (1º dia)</label>
+            <input
+              type="date"
+              value={lastPeriod}
+              onChange={(e) => setLastPeriod(e.target.value)}
+            />
+          </div>
+          
+          <div className="form-group">
+            <label className="form-label">Duração média do ciclo</label>
+            <div className="slider-value">
+              <span style={{ fontSize: '24px' }}>{cycleLength}</span> <span>dias</span>
+            </div>
+            <input
+              type="range"
+              min="21"
+              max="35"
+              value={cycleLength}
+              onChange={(e) => setCycleLength(parseInt(e.target.value))}
+            />
+          </div>
+        </div>
+        
+        <button className="start-button" onClick={saveOnboarding} style={{ marginTop: '20px' }}>
+          COMEÇAR
+        </button>
+      </div>
+    );
+  }
+
+  // ============================================================
+  // RENDER - INTRO
+  // ============================================================
+  
+  function renderIntro() {
+    const cycleNote = getCycleNote();
+    
+    return (
+      <div className={`screen ${screen === 'intro' ? 'active' : ''}`}>
+        <div className="intro-greeting">
+          {profile ? `Olá, ${profile.nome}.` : 'Olá.'}
+        </div>
+        
+        <div className="intro-text">
+          Antes de agir,<br />
+          <em>vê-te</em>.<br /><br />
+          7 perguntas.<br />
+          1 leitura.
+        </div>
+        
+        {cycleNote && (
+          <div className="cycle-note visible">{cycleNote}</div>
+        )}
+        
+        <button className="start-button" onClick={startJourney}>
+          ENTRAR
+        </button>
+      </div>
+    );
+  }
+
+  // ============================================================
+  // RENDER - PERGUNTA
+  // ============================================================
+  
+  function renderQuestion() {
+    const pergunta = PERGUNTAS[questionIndex];
+    const ecoClass = `eco-${pergunta.eco}`;
+    
+    // Organizar opções em filas (negativos | neutro | positivos)
+    const negativos = pergunta.opcoes.filter(o => o.posicao === 'negativo');
+    const neutro = pergunta.opcoes.find(o => o.posicao === 'neutro');
+    const positivos = pergunta.opcoes.filter(o => o.posicao === 'positivo');
+
+    return (
+      <div className={`screen ${ecoClass} ${screen === 'question' ? 'active' : ''}`}>
+        <div className="logo-small">LUMINA</div>
+        
+        {/* Progress dots */}
+        <div className="progress">
+          {PERGUNTAS.map((_, i) => (
+            <div 
+              key={i} 
+              className={`progress-dot ${i <= questionIndex ? `eco-${i + 1} filled` : ''}`}
+            />
+          ))}
+        </div>
+        
+        <div className="question-container">
+          <p className={`question ${ecoClass}`}>
+            <span className="i">{pergunta.inicial}</span>
+            {pergunta.titulo.slice(1)}
+          </p>
+          <p className="question-explanation">{pergunta.explicacao}</p>
+        </div>
+        
+        <div className="options">
+          <div className="options-row">
+            {negativos.map(opcao => (
+              <button 
+                key={opcao.valor}
+                className="option"
+                onClick={() => handleAnswer(pergunta.id, opcao.valor)}
+              >
+                {opcao.valor}
+              </button>
+            ))}
+          </div>
+          
+          <div className="options-row">
+            {neutro && (
+              <button 
+                className="option"
+                onClick={() => handleAnswer(pergunta.id, neutro.valor)}
+              >
+                {neutro.valor}
+              </button>
+            )}
+          </div>
+          
+          <div className="options-row">
+            {positivos.map(opcao => (
+              <button 
+                key={opcao.valor}
+                className="option"
+                onClick={() => handleAnswer(pergunta.id, opcao.valor)}
+              >
+                {opcao.valor}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ============================================================
+  // RENDER - PAUSA
+  // ============================================================
+  
+  function renderPause() {
+    return (
+      <div className={`screen pause-screen ${screen === 'pause' ? 'active' : ''}`}>
+        <p className="pause-text">a ler-te...</p>
+      </div>
+    );
+  }
+
+  // ============================================================
+  // RENDER - LEITURA
+  // ============================================================
+  
+  function renderReading() {
+    // Contexto do ciclo para mostrar na leitura
+    const showCycleContext = faseCiclo && ['vazia', 'baixa'].includes(respostas.energia);
+
+    return (
+      <div className={`screen ${screen === 'reading' ? 'active' : ''}`}>
+        <div className="logo-small">LUMINA</div>
+        
+        {diasCount > 0 && (
+          <div className="days-badge">{diasCount} dias</div>
+        )}
+        
+        <div className="reading-container">
+          <p className="reading-text">{leitura}</p>
+          
+          {/* Contexto do ciclo */}
+          {showCycleContext && (
+            <div className="cycle-context visible">
+              {faseCiclo.message}
+            </div>
+          )}
+          
+          {/* Padrão semanal detectado */}
+          {padraoSemanal && (
+            <div className="pattern-alert">
+              <div className="pattern-alert-title">padrão detectado</div>
+              <div className="pattern-alert-text">{padraoSemanal.message}</div>
+            </div>
+          )}
+          
+          {/* Recomendação de Eco */}
+          {ecoRecomendado && (
+            <div className="pattern-alert" style={{ borderLeftColor: '#4B0082' }}>
+              <div className="pattern-alert-title">sugestão</div>
+              <div className="pattern-alert-text">
+                {ecoRecomendado.msg}{' '}
+                <a href={ecoRecomendado.link} className="eco-link">
+                  Ir para {ecoRecomendado.eco} →
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
+        
+        <div className="reading-signature">
+          LUMINA · Sete Ecos<br />
+          © Vivianne dos Santos
+        </div>
+        
+        <button className="close-button" onClick={saveAndRestart}>
+          guardar
+        </button>
+      </div>
+    );
+  }
+
+  // ============================================================
+  // RENDER - HISTÓRICO
+  // ============================================================
+  
+  function renderHistoryScreen() {
+    return (
+      <div className={`screen ${screen === 'history' ? 'active' : ''}`}>
+        {renderHistorico()}
+      </div>
+    );
+  }
+
+  // ============================================================
+  // RENDER PRINCIPAL
+  // ============================================================
+  
+  if (loading) {
+    return (
+      <div className="lumina-container">
+        <div className="phone-frame">
+          <div className="screen active">
+            <div className="loading-spinner"></div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="lumina-container">
-      <div className={cls('splash')} onClick={() => transition('splash', 'intro')}>
-        <div className="splash-eye">✦</div>
-        <h1 className="splash-title">LUMINA</h1>
-        <p className="splash-subtitle">o espelho interior</p>
-        <p className="splash-tap">toca para começar</p>
-      </div>
-
-      <div className={cls('intro')}>
-        <p className="intro-text">Este é um momento<br/>de <em>escuta</em>.<br/><br/>Sete perguntas.<br/>Sem respostas certas.<br/>Só <em>verdade</em>.</p>
-        <button className="start-button" onClick={() => transition('intro', 0)}>COMEÇAR</button>
-      </div>
-
-      {SCREENS.map((s, i) => (
-        <div key={s.id} className={`${cls(i)} eco-${s.eco}`}>
-          <div className="logo-small">LUMINA</div>
-          <div className="progress">{SCREENS.map((_, j) => <div key={j} className={`progress-dot eco-${SCREENS[j].eco} ${j <= i ? 'filled' : ''}`}/>)}</div>
-          <div className="question-container">
-            <p className={`question eco-${s.eco}`}><span className="letra">{s.letra}</span>{s.resto}</p>
-            <p className="question-explanation">{s.explicacao}</p>
-          </div>
-          <div className="options">
-            {s.opcoes.map((row, ri) => <div key={ri} className="options-row">{row.map(opt => <button key={opt} className="option" onClick={() => select(s.id, opt)}>{opt}</button>)}</div>)}
-          </div>
-        </div>
-      ))}
-
-      <div className={`${cls('pause')} pause-screen`}><p className="pause-text">a ler-te...</p></div>
-
-      <div className={cls('reading')}>
-        <div className="logo-small">LUMINA</div>
-        <div className="reading-container">
-          <p className="reading-text">{reading}</p>
-          {ecoRec && <div className="eco-recommend"><div className="eco-recommend-title">sugestão</div><div className="eco-recommend-text">{ecoRec.msg}</div></div>}
-        </div>
-        <div className="reading-signature">LUMINA · Sete Ecos<br/>© Vivianne dos Santos</div>
-        <button className="close-button" onClick={restart}>GUARDAR</button>
+      <div className="phone-frame">
+        {renderSplash()}
+        {renderOnboarding()}
+        {renderIntro()}
+        {renderQuestion()}
+        {renderPause()}
+        {renderReading()}
+        {renderHistoryScreen()}
       </div>
     </div>
-  )
+  );
 }
