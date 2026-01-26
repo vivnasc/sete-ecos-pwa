@@ -1,0 +1,133 @@
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+}
+
+.auth-background {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, var(--lumina-fundo-1) 0%, var(--lumina-fundo-2) 50%, var(--lumina-fundo-3) 100%);
+}
+
+.auth-content {
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.auth-logo {
+  font-size: 3rem;
+  color: var(--lumina-violeta);
+  margin-bottom: 16px;
+}
+
+.auth-title {
+  font-family: var(--font-titulos);
+  font-size: 2.5rem;
+  letter-spacing: 0.15em;
+  color: var(--lumina-indigo);
+  margin-bottom: 8px;
+}
+
+.auth-subtitle {
+  font-family: var(--font-titulos);
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--lumina-texto-hint);
+}
+
+.auth-form {
+  background: white;
+  padding: 32px;
+  border-radius: 20px;
+  box-shadow: var(--sombra-media);
+}
+
+.auth-field {
+  margin-bottom: 16px;
+}
+
+.auth-field input {
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 1rem;
+  background: var(--lumina-fundo-1);
+  border: 2px solid transparent;
+  border-radius: 12px;
+}
+
+.auth-field input:focus {
+  background: white;
+  border-color: var(--lumina-violeta);
+}
+
+.auth-button {
+  width: 100%;
+  padding: 16px 24px;
+  margin-top: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, var(--lumina-indigo) 0%, var(--lumina-violeta) 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(75, 0, 130, 0.25);
+}
+
+.auth-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(75, 0, 130, 0.35);
+}
+
+.auth-message {
+  text-align: center;
+  margin-top: 20px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.auth-message.error {
+  background: rgba(193, 99, 74, 0.1);
+  color: var(--vitalis-terracota);
+}
+
+.auth-message.success {
+  background: rgba(107, 142, 35, 0.1);
+  color: var(--vitalis-verde-musgo);
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.auth-switch button {
+  background: none;
+  color: var(--lumina-violeta);
+  font-size: 0.95rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.auth-switch button:hover {
+  background: rgba(75, 0, 130, 0.05);
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 32px;
+  font-family: var(--font-titulos);
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--lumina-texto-hint);
+}
