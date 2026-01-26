@@ -110,25 +110,9 @@
 /* ============================================================
    SPLASH SCREEN
    ============================================================ */
-.splash-eye {
+.splash-eye-container {
   width: 180px;
-  height: 180px;
-  margin-bottom: 30px;
-  opacity: 0;
-  animation: fadeIn 1.5s ease forwards 0.2s;
-}
-
-.splash-eye img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  mix-blend-mode: multiply;
-}
-
-/* Símbolo do olho em SVG inline */
-.splash-eye-symbol {
-  width: 180px;
-  height: 180px;
+  height: 100px;
   margin-bottom: 30px;
   opacity: 0;
   animation: fadeIn 1.5s ease forwards 0.2s;
@@ -137,9 +121,37 @@
   justify-content: center;
 }
 
-.splash-eye-symbol svg {
+/* Olho SVG */
+.lumina-eye {
   width: 120px;
-  height: 120px;
+  height: 60px;
+}
+
+.lumina-eye .eyelid {
+  transform-origin: center;
+  transform: scaleY(0);
+  transition: transform 0.15s ease;
+}
+
+/* Animação de piscar */
+.lumina-eye.blinking .eyelid {
+  animation: blink 2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 45%, 55%, 100% {
+    transform: scaleY(0);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+/* Pause screen - olho a piscar */
+.pause-eye-container {
+  width: 120px;
+  height: 60px;
+  margin-bottom: 30px;
 }
 
 .splash-title {
