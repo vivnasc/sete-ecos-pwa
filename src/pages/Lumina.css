@@ -110,48 +110,20 @@
 /* ============================================================
    SPLASH SCREEN
    ============================================================ */
-.splash-eye-container {
-  width: 180px;
-  height: 100px;
+.splash-eye {
+  width: 150px;
+  height: 150px;
   margin-bottom: 30px;
   opacity: 0;
   animation: fadeIn 1.5s ease forwards 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-/* Olho SVG */
-.lumina-eye {
-  width: 120px;
-  height: 60px;
-}
-
-.lumina-eye .eyelid {
-  transform-origin: center;
-  transform: scaleY(0);
-  transition: transform 0.15s ease;
-}
-
-/* Animação de piscar */
-.lumina-eye.blinking .eyelid {
-  animation: blink 2s ease-in-out infinite;
-}
-
-@keyframes blink {
-  0%, 45%, 55%, 100% {
-    transform: scaleY(0);
-  }
-  50% {
-    transform: scaleY(1);
-  }
-}
-
-/* Pause screen - olho a piscar */
-.pause-eye-container {
-  width: 120px;
-  height: 60px;
-  margin-bottom: 30px;
+/* Pause screen - olho a pulsar */
+.pause-eye {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 20px;
+  animation: pulse 2s ease-in-out infinite;
 }
 
 .splash-title {
