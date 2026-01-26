@@ -1,5 +1,5 @@
 // ============================================================
-// LUMINA - Componente React Completo (Conversão fiel do HTML v15)
+// LUMINA v15 - Componente React CORRIGIDO
 // Sete Ecos © Vivianne dos Santos
 // ============================================================
 
@@ -120,6 +120,38 @@ const PERGUNTAS = [
 ];
 
 // ============================================================
+// COMPONENTE DO OLHO ANIMADO
+// ============================================================
+function LuminaEye({ blinking = false }) {
+  return (
+    <svg 
+      className={`lumina-eye ${blinking ? 'blinking' : ''}`}
+      viewBox="0 0 120 60" 
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Forma exterior do olho */}
+      <path 
+        d="M60 5C30 5 10 30 10 30C10 30 30 55 60 55C90 55 110 30 110 30C110 30 90 5 60 5Z" 
+        stroke="#1A1A4E" 
+        strokeWidth="1.5" 
+        fill="none"
+      />
+      {/* Íris */}
+      <circle cx="60" cy="30" r="12" stroke="#1A1A4E" strokeWidth="1.5" fill="none"/>
+      {/* Pupila */}
+      <circle cx="60" cy="30" r="5" fill="#1A1A4E"/>
+      {/* Pálpebra (para animação de piscar) */}
+      <path 
+        className="eyelid"
+        d="M60 5C30 5 10 30 10 30C10 30 30 55 60 55C90 55 110 30 110 30C110 30 90 5 60 5Z" 
+        fill="#FCFCFF"
+      />
+    </svg>
+  );
+}
+
+// ============================================================
 // COMPONENTE PRINCIPAL
 // ============================================================
 export default function Lumina() {
@@ -167,17 +199,15 @@ export default function Lumina() {
   // EFEITOS
   // ============================================================
   
-  // Carregar utilizador e perfil ao iniciar
   useEffect(() => {
     loadUser();
   }, []);
 
-  // Carregar histórico quando tiver user
   useEffect(() => {
-    if (user) {
+    if (profile?.id) {
       loadHistorico();
     }
-  }, [user]);
+  }, [profile]);
 
   // ============================================================
   // FUNÇÕES DE CARREGAMENTO
@@ -190,7 +220,6 @@ export default function Lumina() {
       if (authUser) {
         setUser(authUser);
         
-        // Carregar perfil do users
         const { data: profileData } = await supabase
           .from('users')
           .select('*')
@@ -199,7 +228,6 @@ export default function Lumina() {
         
         if (profileData) {
           setProfile(profileData);
-          // Calcular fase do ciclo se aplicável
           if (profileData.ciclo_activo && profileData.ultimo_periodo) {
             calcularFaseCiclo(profileData);
           }
@@ -213,13 +241,13 @@ export default function Lumina() {
   }
 
   async function loadHistorico() {
-    if (!user) return;
+    if (!profile?.id) return;
     
     try {
       const { data, error } = await supabase
         .from('lumina_checkins')
         .select('*')
-        .eq('user_id', profile?.id)
+        .eq('user_id', profile.id)
         .order('created_at', { ascending: false })
         .limit(100);
       
@@ -227,7 +255,6 @@ export default function Lumina() {
       
       if (data) {
         setHistorico(data);
-        // Contar dias únicos
         const uniqueDates = [...new Set(data.map(e => e.data))];
         setDiasCount(uniqueDates.length);
       }
@@ -241,7 +268,7 @@ export default function Lumina() {
   // ============================================================
   
   function calcularFaseCiclo(profileData) {
-    if (!profileData.ciclo_activo || !profileData.ultimo_periodo) {
+    if (!profileData?.ciclo_activo || !profileData?.ultimo_periodo) {
       setFaseCiclo(null);
       setDiaCiclo(null);
       return;
@@ -279,6 +306,17 @@ export default function Lumina() {
   }
 
   // ============================================================
+  // EXTRAIR PRIMEIRO NOME
+  // ============================================================
+  function getPrimeiroNome() {
+    if (profile?.nome) {
+      // Retorna apenas o primeiro nome
+      return profile.nome.split(' ')[0].split('.')[0];
+    }
+    return null;
+  }
+
+  // ============================================================
   // NAVEGAÇÃO
   // ============================================================
   
@@ -299,10 +337,9 @@ export default function Lumina() {
     setRespostas(prev => ({ ...prev, [perguntaId]: valor }));
     
     if (questionIndex < PERGUNTAS.length - 1) {
-      // Próxima pergunta
       setQuestionIndex(prev => prev + 1);
     } else {
-      // Última pergunta - mostrar pausa e depois leitura
+      // Mostrar pausa com olho a piscar
       setScreen('pause');
       setTimeout(() => {
         gerarLeitura();
@@ -333,37 +370,59 @@ export default function Lumina() {
   // ============================================================
   
   async function saveAndRestart() {
-    if (!profile) {
+    if (!profile?.id) {
+      console.error('Sem profile.id para guardar');
       restart();
       return;
     }
 
     try {
-      // Guardar check-in
-      const { data: checkinData, error: checkinError } = await supabase
+      // Preparar dados do check-in
+      const checkinData = {
+        user_id: profile.id,
+        data: new Date().toISOString().split('T')[0],
+        corpo: respostas.corpo,
+        passado: respostas.passado,
+        impulso: respostas.impulso,
+        futuro: respostas.futuro,
+        mente: respostas.mente,
+        energia: respostas.energia,
+        espelho: respostas.espelho,
+        fase_ciclo: faseCiclo?.phase || null,
+        dia_ciclo: diaCiclo || null
+      };
+
+      console.log('A guardar check-in:', checkinData);
+
+      const { data: savedCheckin, error: checkinError } = await supabase
         .from('lumina_checkins')
-        .insert({
-          user_id: profile.id,
-          data: new Date().toISOString().split('T')[0],
-          ...respostas,
-          fase_ciclo: faseCiclo?.phase || null,
-          dia_ciclo: diaCiclo || null
-        })
+        .insert(checkinData)
         .select()
         .single();
 
-      if (checkinError) throw checkinError;
+      if (checkinError) {
+        console.error('Erro ao guardar check-in:', checkinError);
+        throw checkinError;
+      }
+
+      console.log('Check-in guardado:', savedCheckin);
 
       // Guardar leitura
-      if (checkinData) {
-        await supabase
+      if (savedCheckin?.id) {
+        const leituraData = {
+          checkin_id: savedCheckin.id,
+          user_id: profile.id,
+          padrao: padrao,
+          texto_leitura: leitura
+        };
+
+        const { error: leituraError } = await supabase
           .from('lumina_leituras')
-          .insert({
-            checkin_id: checkinData.id,
-            user_id: profile.id,
-            padrao: padrao,
-            texto_leitura: leitura
-          });
+          .insert(leituraData);
+
+        if (leituraError) {
+          console.error('Erro ao guardar leitura:', leituraError);
+        }
       }
 
       // Recarregar histórico
@@ -405,7 +464,6 @@ export default function Lumina() {
     }
 
     try {
-      // Criar ou actualizar perfil
       const { data: { user: authUser } } = await supabase.auth.getUser();
       
       if (authUser) {
@@ -455,7 +513,6 @@ export default function Lumina() {
       <div className="history-container">
         <h2 className="history-title">Histórico</h2>
         
-        {/* Insights semanais */}
         {weeklyInsights && weeklyInsights.length > 0 && (
           <div className="weekly-summary">
             <div className="weekly-title">Esta semana</div>
@@ -465,7 +522,6 @@ export default function Lumina() {
           </div>
         )}
 
-        {/* Lista de check-ins recentes */}
         {historico.length === 0 ? (
           <div className="history-empty">
             Ainda não tens registos.<br /><br />
@@ -487,7 +543,6 @@ export default function Lumina() {
           ))
         )}
 
-        {/* Padrões 14 dias */}
         {patterns14 && (
           <div className="patterns-section">
             <div className="patterns-title">últimos 14 dias</div>
@@ -495,7 +550,6 @@ export default function Lumina() {
           </div>
         )}
 
-        {/* Padrões 30 dias */}
         {patterns30 && (
           <div className="patterns-section">
             <div className="patterns-title">últimos 30 dias</div>
@@ -511,7 +565,7 @@ export default function Lumina() {
   }
 
   function renderPatternItems(patterns, threshold) {
-    const { counts, total } = patterns;
+    const { counts } = patterns;
     const items = [];
 
     if (counts.energiaBaixa >= threshold) {
@@ -553,45 +607,6 @@ export default function Lumina() {
       );
     }
 
-    if (counts.passadoPesa >= threshold) {
-      items.push(
-        <div key="passado" className="pattern-item">
-          <div className="pattern-stat">Passado a pesar: {counts.passadoPesa}x</div>
-          <div className="pattern-insight">
-            {threshold >= 7 
-              ? 'Há algo por processar que não vai embora sozinho.'
-              : 'Algo por resolver'}
-          </div>
-        </div>
-      );
-    }
-
-    if (counts.futuroAmeaca >= threshold) {
-      items.push(
-        <div key="futuro" className="pattern-item">
-          <div className="pattern-stat">Futuro como ameaça: {counts.futuroAmeaca}x</div>
-          <div className="pattern-insight">
-            {threshold >= 7 
-              ? 'Ansiedade instalada. Precisas de ajuda para sair deste ciclo?'
-              : 'Ansiedade recorrente'}
-          </div>
-        </div>
-      );
-    }
-
-    if (counts.espelhoMau >= threshold) {
-      items.push(
-        <div key="espelho" className="pattern-item">
-          <div className="pattern-stat">Espelho distorcido: {counts.espelhoMau}x</div>
-          <div className="pattern-insight">
-            {threshold >= 7 
-              ? 'A tua auto-imagem está comprometida há tempo. Isso não és tu.'
-              : 'Auto-imagem comprometida'}
-          </div>
-        </div>
-      );
-    }
-
     if (items.length === 0) {
       items.push(
         <div key="none" className="pattern-item">
@@ -614,13 +629,8 @@ export default function Lumina() {
   function renderSplash() {
     return (
       <div className={`screen ${screen === 'splash' ? 'active' : ''}`}>
-        {/* Olho/Símbolo */}
-        <div className="splash-eye-symbol">
-          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <ellipse cx="50" cy="50" rx="45" ry="25" stroke="#1A1A4E" strokeWidth="1.5" fill="none"/>
-            <circle cx="50" cy="50" r="15" stroke="#1A1A4E" strokeWidth="1.5" fill="none"/>
-            <circle cx="50" cy="50" r="6" fill="#1A1A4E"/>
-          </svg>
+        <div className="splash-eye-container">
+          <LuminaEye />
         </div>
         
         <div className="splash-title">LUMINA</div>
@@ -720,11 +730,12 @@ export default function Lumina() {
   
   function renderIntro() {
     const cycleNote = getCycleNote();
+    const primeiroNome = getPrimeiroNome();
     
     return (
       <div className={`screen ${screen === 'intro' ? 'active' : ''}`}>
         <div className="intro-greeting">
-          {profile ? `Olá, ${profile.nome}.` : 'Olá.'}
+          {primeiroNome ? `Olá, ${primeiroNome}.` : 'Olá.'}
         </div>
         
         <div className="intro-text">
@@ -753,7 +764,6 @@ export default function Lumina() {
     const pergunta = PERGUNTAS[questionIndex];
     const ecoClass = `eco-${pergunta.eco}`;
     
-    // Organizar opções em filas (negativos | neutro | positivos)
     const negativos = pergunta.opcoes.filter(o => o.posicao === 'negativo');
     const neutro = pergunta.opcoes.find(o => o.posicao === 'neutro');
     const positivos = pergunta.opcoes.filter(o => o.posicao === 'positivo');
@@ -762,7 +772,6 @@ export default function Lumina() {
       <div className={`screen ${ecoClass} ${screen === 'question' ? 'active' : ''}`}>
         <div className="logo-small">LUMINA</div>
         
-        {/* Progress dots */}
         <div className="progress">
           {PERGUNTAS.map((_, i) => (
             <div 
@@ -821,12 +830,15 @@ export default function Lumina() {
   }
 
   // ============================================================
-  // RENDER - PAUSA
+  // RENDER - PAUSA COM OLHO A PISCAR
   // ============================================================
   
   function renderPause() {
     return (
       <div className={`screen pause-screen ${screen === 'pause' ? 'active' : ''}`}>
+        <div className="pause-eye-container">
+          <LuminaEye blinking={true} />
+        </div>
         <p className="pause-text">a ler-te...</p>
       </div>
     );
@@ -837,7 +849,6 @@ export default function Lumina() {
   // ============================================================
   
   function renderReading() {
-    // Contexto do ciclo para mostrar na leitura
     const showCycleContext = faseCiclo && ['vazia', 'baixa'].includes(respostas.energia);
 
     return (
@@ -851,14 +862,12 @@ export default function Lumina() {
         <div className="reading-container">
           <p className="reading-text">{leitura}</p>
           
-          {/* Contexto do ciclo */}
           {showCycleContext && (
             <div className="cycle-context visible">
               {faseCiclo.message}
             </div>
           )}
           
-          {/* Padrão semanal detectado */}
           {padraoSemanal && (
             <div className="pattern-alert">
               <div className="pattern-alert-title">padrão detectado</div>
@@ -866,7 +875,6 @@ export default function Lumina() {
             </div>
           )}
           
-          {/* Recomendação de Eco */}
           {ecoRecomendado && (
             <div className="pattern-alert" style={{ borderLeftColor: '#4B0082' }}>
               <div className="pattern-alert-title">sugestão</div>
