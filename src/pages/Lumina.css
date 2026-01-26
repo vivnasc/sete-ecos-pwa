@@ -1,0 +1,207 @@
+.lumina-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  text-align: center;
+}
+
+.lumina-loading-icon {
+  font-size: 3rem;
+  color: var(--lumina-violeta);
+  margin-bottom: 20px;
+}
+
+.lumina-loading-icon.spinning {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
+}
+
+.lumina-loading p {
+  font-family: var(--font-titulos);
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--lumina-texto-suave);
+}
+
+.lumina-checkin {
+  min-height: 100vh;
+  padding: 40px 20px 100px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.lumina-checkin-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.lumina-icon {
+  display: block;
+  font-size: 2rem;
+  color: var(--lumina-violeta);
+  margin-bottom: 12px;
+}
+
+.lumina-checkin-header h1 {
+  font-family: var(--font-titulos);
+  font-size: 2rem;
+  letter-spacing: 0.1em;
+  color: var(--lumina-indigo);
+  margin-bottom: 16px;
+}
+
+.lumina-progresso-texto {
+  font-size: 0.9rem;
+  color: var(--lumina-texto-hint);
+  margin-bottom: 12px;
+}
+
+.lumina-progresso-bar {
+  height: 4px;
+  background: var(--lumina-cinza);
+  border-radius: 2px;
+}
+
+.lumina-progresso-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--lumina-violeta) 0%, var(--lumina-indigo) 100%);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.lumina-pergunta {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.lumina-pergunta h2 {
+  font-family: var(--font-titulos);
+  font-size: 1.5rem;
+  font-style: italic;
+  color: var(--lumina-texto);
+}
+
+.lumina-opcoes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lumina-opcao {
+  width: 100%;
+  padding: 18px 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--lumina-texto);
+  background: white;
+  border: 2px solid var(--lumina-cinza);
+  border-radius: 14px;
+  animation: fadeInUp 0.3s ease backwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.lumina-opcao:hover {
+  border-color: var(--lumina-violeta);
+  background: rgba(75, 0, 130, 0.03);
+  transform: translateY(-2px);
+}
+
+.lumina-error {
+  text-align: center;
+  margin-top: 24px;
+  padding: 12px;
+  background: rgba(193, 99, 74, 0.1);
+  color: var(--vitalis-terracota);
+  border-radius: 10px;
+}
+
+.lumina-leitura {
+  min-height: 100vh;
+  padding: 40px 20px 100px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.lumina-leitura-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.lumina-leitura-header .lumina-icon {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+}
+
+.lumina-leitura-header h1 {
+  font-family: var(--font-titulos);
+  font-size: 1.5rem;
+  color: var(--lumina-indigo);
+}
+
+.lumina-leitura-card {
+  background: white;
+  padding: 32px 28px;
+  border-radius: 20px;
+  box-shadow: var(--sombra-media);
+  margin-bottom: 24px;
+}
+
+.lumina-leitura-texto {
+  font-family: var(--font-titulos);
+  font-size: 1.15rem;
+  line-height: 1.8;
+  text-align: center;
+  margin: 0;
+}
+
+.lumina-sugestao {
+  background: linear-gradient(135deg, rgba(75, 0, 130, 0.05) 0%, rgba(26, 26, 78, 0.08) 100%);
+  padding: 20px 24px;
+  border-radius: 16px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.lumina-sugestao-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--lumina-texto-hint);
+  margin-bottom: 8px;
+}
+
+.lumina-sugestao-eco {
+  display: block;
+  font-family: var(--font-titulos);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--lumina-violeta);
+  margin-bottom: 8px;
+}
+
+.lumina-sugestao-bloqueio {
+  display: block;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--lumina-texto-suave);
+}
+
+.lumina-leitura-footer {
+  text-align: center;
+  font-family: var(--font-titulos);
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--lumina-texto-hint);
+}
