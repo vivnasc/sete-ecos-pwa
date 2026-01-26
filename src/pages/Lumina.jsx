@@ -119,37 +119,7 @@ const PERGUNTAS = [
   }
 ];
 
-// ============================================================
-// COMPONENTE DO OLHO ANIMADO
-// ============================================================
-function LuminaEye({ blinking = false }) {
-  return (
-    <svg 
-      className={`lumina-eye ${blinking ? 'blinking' : ''}`}
-      viewBox="0 0 120 60" 
-      fill="none" 
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {/* Forma exterior do olho */}
-      <path 
-        d="M60 5C30 5 10 30 10 30C10 30 30 55 60 55C90 55 110 30 110 30C110 30 90 5 60 5Z" 
-        stroke="#1A1A4E" 
-        strokeWidth="1.5" 
-        fill="none"
-      />
-      {/* Íris */}
-      <circle cx="60" cy="30" r="12" stroke="#1A1A4E" strokeWidth="1.5" fill="none"/>
-      {/* Pupila */}
-      <circle cx="60" cy="30" r="5" fill="#1A1A4E"/>
-      {/* Pálpebra (para animação de piscar) */}
-      <path 
-        className="eyelid"
-        d="M60 5C30 5 10 30 10 30C10 30 30 55 60 55C90 55 110 30 110 30C110 30 90 5 60 5Z" 
-        fill="#FCFCFF"
-      />
-    </svg>
-  );
-}
+
 
 // ============================================================
 // COMPONENTE PRINCIPAL
@@ -629,9 +599,7 @@ export default function Lumina() {
   function renderSplash() {
     return (
       <div className={`screen ${screen === 'splash' ? 'active' : ''}`}>
-        <div className="splash-eye-container">
-          <LuminaEye />
-        </div>
+        <img src="/lumina-eye.png" alt="LUMINA" className="splash-eye" />
         
         <div className="splash-title">LUMINA</div>
         <div className="splash-subtitle">— Antes de agir, vê-te —</div>
@@ -836,9 +804,7 @@ export default function Lumina() {
   function renderPause() {
     return (
       <div className={`screen pause-screen ${screen === 'pause' ? 'active' : ''}`}>
-        <div className="pause-eye-container">
-          <LuminaEye blinking={true} />
-        </div>
+        <img src="/lumina-eye.png" alt="LUMINA" className="pause-eye" />
         <p className="pause-text">a ler-te...</p>
       </div>
     );
