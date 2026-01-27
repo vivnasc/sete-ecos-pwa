@@ -404,11 +404,12 @@ export default function VitalisIntakeComplete() {
       };
 
       // Inserir intake primeiro
-      const { data: intakeInserted, error: intakeError } = await supabase
+      const { error: intakeError } = await supabase
         .from('vitalis_intake')
-        .upsert(intakeData, { onConflict: 'user_id' })
-        .select()
-        .single();
+        .upsert(intakeData, { 
+          onConflict: 'user_id',
+          returning: 'minimal'
+        });
 
       if (intakeError) {
         console.error('Erro no intake:', intakeError);
