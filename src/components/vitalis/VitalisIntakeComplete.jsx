@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,84 +8,108 @@ export default function VitalisIntakeComplete() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Estado consolidado para evitar re-renders
   const [formData, setFormData] = useState({
-    // Secção 1: Informação Básica (6 campos)
-    nome_completo: '',
-    data_nascimento: '',
-    telefone: '',
+    // Dados pessoais
+    nome: '',
     email: '',
-    profissao: '',
-    horario_trabalho: '',
-
-    // Secção 2: Antropometria (8 campos)
+    whatsapp: '',
+    idade: '',
+    sexo: '',
+    
+    // Medidas físicas
+    altura_cm: '',
     peso_actual: '',
-    altura: '',
-    circunferencia_cintura: '',
-    circunferencia_anca: '',
-    peso_desejado: '',
-    peso_minimo_adulto: '',
-    peso_maximo_adulto: '',
-    variacao_peso_recente: '',
-
-    // Secção 3: Saúde (14 campos)
-    condicoes_saude: '',
-    medicamentos_suplementos: '',
-    cirurgias_passadas: '',
-    alergias_intolerancia: '',
-    sintomas_digestivos: '',
-    qualidade_sono: '',
-    nivel_stress: '',
-    ciclo_menstrual: '',
-    contracepcao: '',
-    gravidez_amamentacao: '',
-    apoio_psicologico: '',
-    consome_alcool: '',
-    fuma: '',
-    atividade_fisica: '',
-
-    // Secção 4: Hábitos Alimentares (13 campos)
-    cafe_manha_habitual: '',
-    almoco_habitual: '',
-    jantar_habitual: '',
-    snacks_habituais: '',
-    hidratacao_diaria: '',
-    alimentos_evita: '',
-    alimentos_prefere: '',
-    cozinha_em_casa: '',
-    come_fora_frequencia: '',
-    restricoes_alimentares: '',
-    tentativas_emagrecimento: '',
-    relacao_com_comida: '',
-    alimentacao_emocional: '',
-
-    // Secção 5: Contexto de Vida (12 campos)
-    mora_com: '',
+    peso_meta: '',
+    cintura_cm: '',
+    anca_cm: '',
+    
+    // Objectivo
+    objectivo_principal: '',
+    prazo: '',
+    porque_importante: '',
+    
+    // Abordagem alimentar
+    abordagem_preferida: '',
+    aceita_jejum: false,
+    restricoes_alimentares: [],
+    
+    // Saúde
+    condicoes_saude: [],
+    medicacao: '',
+    
+    // Hábitos alimentares
+    refeicoes_dia: '',
+    pequeno_almoco: '',
+    onde_come: [],
+    tipos_comida: [],
+    agua_litros_dia: '',
+    bebidas: [],
+    freq_doces: '3',
+    freq_fritos: '3',
+    petisca: false,
+    o_que_petisca: [],
+    
+    // FOME EMOCIONAL - 7 emoções
+    gatilhos_fome_emocional: [],
+    freq_cansaco: '',
+    freq_ansiedade: '',
+    freq_tristeza: '',
+    freq_raiva: '',
+    freq_vazio: '',
+    freq_solidao: '',
+    freq_negacao: '',
+    emocao_dominante: '',
+    
+    // Padrão fome emocional
+    o_que_procura_comer: [],
+    como_sente_depois: '',
+    quando_comecou_padrao: '',
+    tentou_alternativas: false,
+    que_alternativas: '',
+    
+    // Actividade física
+    nivel_actividade: '',
+    faz_exercicio: false,
+    tipo_exercicio: [],
+    
+    // Sono
+    horas_sono: '',
+    qualidade_sono: '3',
+    
+    // Contexto de vida
+    situacao_profissional: '',
+    situacao_familiar: '',
+    filhos_pequenos: false,
     quem_cozinha: '',
-    orcamento_alimentacao: '',
-    acesso_supermercado: '',
-    tempo_preparacao_refeicoes: '',
-    rotina_refeicoes: '',
-    come_sozinha_acompanhada: '',
-    ambiente_refeicoes: '',
-    suporte_familiar: '',
-    eventos_sociais_frequencia: '',
-    viagens_frequencia: '',
-    desafios_alimentacao: '',
-
-    // Secção 6: Objetivos e Expectativas (12 campos)
-    objetivo_principal: '',
-    motivo_objetivo: '',
-    prazo_desejado: '',
-    expectativas_programa: '',
-    maior_desafio: '',
-    tentou_dietas_antes: '',
-    o_que_funcionou: '',
-    o_que_nao_funcionou: '',
-    disponibilidade_consultas: '',
-    forma_acompanhamento: '',
-    compromisso_mudanca: '',
-    o_que_mais_espera: ''
+    nivel_stress: '3',
+    
+    // Histórico
+    maior_obstaculo: '',
+    historico_dietas: '',
+    gatilhos_sair_plano: [],
+    quantas_dietas: '',
+    dieta_funcionou: '',
+    
+    // Preferências do programa
+    abordagem_realista: '',
+    disposta_jejum: false,
+    preferencias_alimentares: [],
+    medir_pesar_comida: '',
+    acesso_ingredientes: '',
+    
+    // Pacote
+    pacote_escolhido: '',
+    duracao: '',
+    forma_pagamento: '',
+    codigo_promo: '',
+    
+    // Final
+    como_conheceu: '',
+    observacoes_adicionais: '',
+    o_que_espera_ganhar: '',
+    autoriza_dados_pesquisa: false,
+    prontidao_1a10: '5',
+    confirmacoes: []
   });
 
   const sections = [
@@ -96,114 +120,171 @@ export default function VitalisIntakeComplete() {
       time: '10-15 minutos'
     },
     {
-      title: 'Informação Básica',
-      subtitle: 'Vamos começar por te conhecer',
+      title: 'Sobre Ti',
       questions: [
-        { id: 'nome_completo', label: 'Nome completo', type: 'text', required: true },
-        { id: 'data_nascimento', label: 'Data de nascimento', type: 'date', required: true },
-        { id: 'telefone', label: 'Telefone/WhatsApp', type: 'tel', required: true },
+        { id: 'nome', label: 'Nome completo', type: 'text', required: true },
         { id: 'email', label: 'Email', type: 'email', required: true },
-        { id: 'profissao', label: 'Profissão', type: 'text' },
-        { id: 'horario_trabalho', label: 'Horário de trabalho', type: 'text', placeholder: 'Ex: 9h-18h, turnos rotativos...' }
+        { id: 'whatsapp', label: 'WhatsApp', type: 'tel', placeholder: '+258...' },
+        { id: 'idade', label: 'Idade', type: 'number', required: true },
+        { id: 'sexo', label: 'Sexo', type: 'radio', options: ['feminino', 'masculino'], labels: ['Feminino', 'Masculino'], required: true }
       ]
     },
     {
-      title: 'Antropometria',
-      subtitle: 'Dados sobre o teu corpo',
+      title: 'Medidas e Objectivo',
       questions: [
+        { id: 'altura_cm', label: 'Altura (cm)', type: 'number', required: true },
         { id: 'peso_actual', label: 'Peso actual (kg)', type: 'number', step: '0.1', required: true },
-        { id: 'altura', label: 'Altura (cm)', type: 'number', required: true },
-        { id: 'circunferencia_cintura', label: 'Circunferência da cintura (cm)', type: 'number', step: '0.1' },
-        { id: 'circunferencia_anca', label: 'Circunferência da anca (cm)', type: 'number', step: '0.1' },
-        { id: 'peso_desejado', label: 'Peso desejado (kg)', type: 'number', step: '0.1' },
-        { id: 'peso_minimo_adulto', label: 'Peso mínimo na idade adulta (kg)', type: 'number', step: '0.1' },
-        { id: 'peso_maximo_adulto', label: 'Peso máximo na idade adulta (kg)', type: 'number', step: '0.1' },
-        { id: 'variacao_peso_recente', label: 'Variação de peso recente?', type: 'textarea', placeholder: 'Ganhaste ou perdeste peso recentemente? Quanto e porquê?' }
+        { id: 'peso_meta', label: 'Peso desejado (kg)', type: 'number', step: '0.1', required: true },
+        { id: 'cintura_cm', label: 'Cintura (cm)', type: 'number', step: '0.1' },
+        { id: 'anca_cm', label: 'Anca (cm)', type: 'number', step: '0.1' },
+        { id: 'objectivo_principal', label: 'Objectivo principal', type: 'textarea', required: true, placeholder: 'Ex: Emagrecer 10kg, ganhar energia, melhorar saúde...' },
+        { id: 'prazo', label: 'Em quanto tempo?', type: 'radio', options: ['3m', '6m', '9m', '12m', 'sem_pressa'], labels: ['3 meses', '6 meses', '9 meses', '12 meses', 'Sem pressa'], required: true },
+        { id: 'porque_importante', label: 'Porquê é importante para ti?', type: 'textarea', placeholder: 'O que vai mudar na tua vida?' }
+      ]
+    },
+    {
+      title: 'Abordagem Alimentar',
+      questions: [
+        { id: 'abordagem_preferida', label: 'Que abordagem preferes?', type: 'radio', options: ['keto_if', 'low_carb', 'equilibrado', 'nao_sei'], labels: ['Keto + Jejum Intermitente', 'Low Carb', 'Equilibrado', 'Não sei'], required: true },
+        { id: 'aceita_jejum', label: 'Aceitas fazer jejum intermitente?', type: 'checkbox_single' },
+        { id: 'restricoes_alimentares', label: 'Restrições alimentares', type: 'checkbox_multiple', options: ['Vegetariana', 'Vegana', 'Sem glúten', 'Sem lactose', 'Halal', 'Nenhuma'] }
       ]
     },
     {
       title: 'Saúde',
-      subtitle: 'Como está a tua saúde?',
       questions: [
-        { id: 'condicoes_saude', label: 'Condições de saúde diagnosticadas', type: 'textarea', placeholder: 'Diabetes, hipertensão, problemas de tiroide, SOP, etc.' },
-        { id: 'medicamentos_suplementos', label: 'Medicamentos e suplementos', type: 'textarea' },
-        { id: 'cirurgias_passadas', label: 'Cirurgias relevantes', type: 'textarea' },
-        { id: 'alergias_intolerancia', label: 'Alergias ou intolerâncias alimentares', type: 'textarea' },
-        { id: 'sintomas_digestivos', label: 'Sintomas digestivos', type: 'textarea', placeholder: 'Inchaço, gases, obstipação, diarreia...' },
-        { id: 'qualidade_sono', label: 'Qualidade do sono (1-10)', type: 'range', min: '1', max: '10', required: true },
-        { id: 'nivel_stress', label: 'Nível de stress (1-10)', type: 'range', min: '1', max: '10', required: true },
-        { id: 'ciclo_menstrual', label: 'Ciclo menstrual', type: 'text', placeholder: 'Regular, irregular, menopausa...' },
-        { id: 'contracepcao', label: 'Usa contracepção? Qual?', type: 'text' },
-        { id: 'gravidez_amamentacao', label: 'Grávida ou a amamentar?', type: 'select', options: ['Não', 'Grávida', 'A amamentar'] },
-        { id: 'apoio_psicologico', label: 'Acompanhamento psicológico', type: 'select', options: ['Não', 'Sim, atual', 'Sim, passado'] },
-        { id: 'consome_alcool', label: 'Consumo de álcool', type: 'select', options: ['Não consumo', 'Ocasional', 'Regular', 'Frequente'] },
-        { id: 'fuma', label: 'Fuma?', type: 'select', options: ['Não', 'Sim', 'Ex-fumadora'] },
-        { id: 'atividade_fisica', label: 'Atividade física semanal', type: 'textarea', placeholder: 'Tipo, frequência e duração...' }
+        { id: 'condicoes_saude', label: 'Condições de saúde', type: 'checkbox_multiple', options: ['Diabetes', 'Hipertensão', 'Colesterol alto', 'Problemas de tiroide', 'SOP', 'Nenhuma'] },
+        { id: 'medicacao', label: 'Medicação actual', type: 'textarea', placeholder: 'Lista os medicamentos e suplementos que tomas' }
       ]
     },
     {
       title: 'Hábitos Alimentares',
-      subtitle: 'Como te alimentas no dia a dia',
       questions: [
-        { id: 'cafe_manha_habitual', label: 'Café da manhã habitual', type: 'textarea', placeholder: 'O que costumas comer?' },
-        { id: 'almoco_habitual', label: 'Almoço habitual', type: 'textarea' },
-        { id: 'jantar_habitual', label: 'Jantar habitual', type: 'textarea' },
-        { id: 'snacks_habituais', label: 'Snacks habituais', type: 'textarea' },
-        { id: 'hidratacao_diaria', label: 'Água por dia (litros)', type: 'number', step: '0.1' },
-        { id: 'alimentos_evita', label: 'Alimentos que evitas', type: 'textarea' },
-        { id: 'alimentos_prefere', label: 'Alimentos preferidos', type: 'textarea' },
-        { id: 'cozinha_em_casa', label: 'Frequência de cozinhar em casa', type: 'select', options: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'] },
-        { id: 'come_fora_frequencia', label: 'Comes fora quantas vezes por semana?', type: 'number' },
-        { id: 'restricoes_alimentares', label: 'Restrições alimentares', type: 'textarea', placeholder: 'Vegetariana, vegana, sem glúten, religiosas...' },
-        { id: 'tentativas_emagrecimento', label: 'Já tentaste emagrecer antes?', type: 'textarea', placeholder: 'Que dietas ou programas?' },
-        { id: 'relacao_com_comida', label: 'Como descreves a tua relação com a comida?', type: 'textarea' },
-        { id: 'alimentacao_emocional', label: 'Comes por emoções?', type: 'textarea', placeholder: 'Stress, ansiedade, tristeza...' }
+        { id: 'refeicoes_dia', label: 'Quantas refeições por dia?', type: 'number', min: '1', max: '10' },
+        { id: 'pequeno_almoco', label: 'O que comes no pequeno-almoço?', type: 'textarea' },
+        { id: 'onde_come', label: 'Onde comes habitualmente?', type: 'checkbox_multiple', options: ['Casa', 'Trabalho', 'Restaurante', 'Fast food', 'Na rua'] },
+        { id: 'tipos_comida', label: 'Tipos de comida que preferes', type: 'checkbox_multiple', options: ['Tradicional moçambicana', 'Portuguesa', 'Italiana', 'Chinesa', 'Fast food', 'Vegetariana'] },
+        { id: 'agua_litros_dia', label: 'Água por dia (litros)', type: 'number', step: '0.5', min: '0', max: '5' },
+        { id: 'bebidas', label: 'Que bebidas consomes?', type: 'checkbox_multiple', options: ['Café', 'Chá', 'Refrigerantes', 'Sumos naturais', 'Sumos de pacote', 'Álcool', 'Só água'] },
+        { id: 'freq_doces', label: 'Comes doces?', type: 'range', min: '1', max: '5', labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'] },
+        { id: 'freq_fritos', label: 'Comes fritos?', type: 'range', min: '1', max: '5', labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'] },
+        { id: 'petisca', label: 'Petiscas entre refeições?', type: 'checkbox_single' },
+        { id: 'o_que_petisca', label: 'O que petiscas?', type: 'checkbox_multiple', options: ['Doces', 'Salgados', 'Frutas', 'Nuts', 'Bolachas', 'Pão'], conditional: 'petisca' }
+      ]
+    },
+    {
+      title: 'Fome Emocional - As 7 Emoções',
+      subtitle: 'Com que frequência comes quando sentes...',
+      questions: [
+        { id: 'gatilhos_fome_emocional', label: 'Quando é que comes por emoções?', type: 'checkbox_multiple', options: ['Stress', 'Tédio', 'Ansiedade', 'Tristeza', 'Solidão', 'Cansaço', 'Raiva', 'Frustração', 'Nunca'] },
+        { id: 'freq_cansaco', label: 'Cansaço', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
+        { id: 'freq_ansiedade', label: 'Ansiedade', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
+        { id: 'freq_tristeza', label: 'Tristeza', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
+        { id: 'freq_raiva', label: 'Raiva', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
+        { id: 'freq_vazio', label: 'Vazio', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
+        { id: 'freq_solidao', label: 'Solidão', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
+        { id: 'freq_negacao', label: 'Negação', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
+        { id: 'emocao_dominante', label: 'Qual é a emoção DOMINANTE?', type: 'radio', options: ['cansaco', 'ansiedade', 'tristeza', 'raiva', 'vazio', 'solidao', 'negacao'], labels: ['Cansaço', 'Ansiedade', 'Tristeza', 'Raiva', 'Vazio', 'Solidão', 'Negação'], required: true }
+      ]
+    },
+    {
+      title: 'Padrão de Fome Emocional',
+      questions: [
+        { id: 'o_que_procura_comer', label: 'O que procuras comer?', type: 'checkbox_multiple', options: ['Doce', 'Salgado', 'Crocante', 'Cremoso', 'Macio', 'Picante'] },
+        { id: 'como_sente_depois', label: 'Como te sentes depois?', type: 'textarea', placeholder: 'Culpa, alívio temporário, vazio...' },
+        { id: 'quando_comecou_padrao', label: 'Quando começou este padrão?', type: 'text', placeholder: 'Infância, adolescência, após evento específico...' },
+        { id: 'tentou_alternativas', label: 'Já tentaste alternativas à comida?', type: 'checkbox_single' },
+        { id: 'que_alternativas', label: 'Que alternativas tentaste?', type: 'textarea', conditional: 'tentou_alternativas' }
+      ]
+    },
+    {
+      title: 'Actividade Física',
+      questions: [
+        { id: 'nivel_actividade', label: 'Nível de actividade', type: 'radio', options: ['sedentaria', 'leve', 'moderada', 'intensa'], labels: ['Sedentária', 'Leve', 'Moderada', 'Intensa'], required: true },
+        { id: 'faz_exercicio', label: 'Fazes exercício regularmente?', type: 'checkbox_single' },
+        { id: 'tipo_exercicio', label: 'Que tipo de exercício?', type: 'checkbox_multiple', options: ['Caminhada', 'Corrida', 'Ginásio', 'Natação', 'Yoga', 'Dança', 'Outro'], conditional: 'faz_exercicio' }
+      ]
+    },
+    {
+      title: 'Sono e Stress',
+      questions: [
+        { id: 'horas_sono', label: 'Quantas horas dormes?', type: 'radio', options: ['menos_5h', '5-6h', '7-8h', 'mais_8h'], labels: ['Menos de 5h', '5-6h', '7-8h', 'Mais de 8h'] },
+        { id: 'qualidade_sono', label: 'Qualidade do sono', type: 'range', min: '1', max: '5', labels: ['Péssima', 'Má', 'Razoável', 'Boa', 'Excelente'] },
+        { id: 'nivel_stress', label: 'Nível de stress', type: 'range', min: '1', max: '5', labels: ['Muito baixo', 'Baixo', 'Médio', 'Alto', 'Muito alto'] }
       ]
     },
     {
       title: 'Contexto de Vida',
-      subtitle: 'O teu dia a dia',
       questions: [
-        { id: 'mora_com', label: 'Com quem moras?', type: 'text' },
-        { id: 'quem_cozinha', label: 'Quem cozinha em casa?', type: 'text' },
-        { id: 'orcamento_alimentacao', label: 'Orçamento mensal para alimentação', type: 'text', placeholder: 'Aproximadamente...' },
-        { id: 'acesso_supermercado', label: 'Acesso a supermercado/mercado', type: 'select', options: ['Fácil', 'Moderado', 'Difícil'] },
-        { id: 'tempo_preparacao_refeicoes', label: 'Tempo disponível para preparar refeições', type: 'text' },
-        { id: 'rotina_refeicoes', label: 'Rotina de refeições', type: 'textarea', placeholder: 'Horários, onde comes, com quem...' },
-        { id: 'come_sozinha_acompanhada', label: 'Comes sozinha ou acompanhada?', type: 'text' },
-        { id: 'ambiente_refeicoes', label: 'Ambiente das refeições', type: 'textarea', placeholder: 'Calmo, stressante, à pressa...' },
-        { id: 'suporte_familiar', label: 'Suporte familiar/social', type: 'textarea', placeholder: 'A tua família apoia as tuas mudanças?' },
-        { id: 'eventos_sociais_frequencia', label: 'Frequência de eventos sociais', type: 'select', options: ['Raro', 'Mensal', 'Semanal', 'Diário'] },
-        { id: 'viagens_frequencia', label: 'Viajas com frequência?', type: 'text' },
-        { id: 'desafios_alimentacao', label: 'Maiores desafios na alimentação', type: 'textarea' }
+        { id: 'situacao_profissional', label: 'Situação profissional', type: 'text', placeholder: 'Empregada, desempregada, estudante...' },
+        { id: 'situacao_familiar', label: 'Situação familiar', type: 'text', placeholder: 'Solteira, casada, divorciada...' },
+        { id: 'filhos_pequenos', label: 'Tens filhos pequenos?', type: 'checkbox_single' },
+        { id: 'quem_cozinha', label: 'Quem cozinha em casa?', type: 'text', placeholder: 'Eu, parceiro, empregada...' }
       ]
     },
     {
-      title: 'Objetivos e Expectativas',
-      subtitle: 'O que MAIS esperas ganhar?',
+      title: 'Histórico de Dietas',
       questions: [
-        { id: 'objetivo_principal', label: 'Objetivo principal', type: 'textarea', required: true },
-        { id: 'motivo_objetivo', label: 'Porquê este objetivo?', type: 'textarea', placeholder: 'O que vai mudar na tua vida?' },
-        { id: 'prazo_desejado', label: 'Em quanto tempo?', type: 'text' },
-        { id: 'expectativas_programa', label: 'Expectativas do programa', type: 'textarea' },
-        { id: 'maior_desafio', label: 'Maior desafio antecipado', type: 'textarea' },
-        { id: 'tentou_dietas_antes', label: 'Já tentaste dietas/programas antes?', type: 'textarea' },
-        { id: 'o_que_funcionou', label: 'O que funcionou?', type: 'textarea' },
-        { id: 'o_que_nao_funcionou', label: 'O que NÃO funcionou?', type: 'textarea' },
-        { id: 'disponibilidade_consultas', label: 'Disponibilidade para consultas', type: 'text' },
-        { id: 'forma_acompanhamento', label: 'Preferência de acompanhamento', type: 'select', options: ['WhatsApp', 'Email', 'Videochamada', 'Presencial'] },
-        { id: 'compromisso_mudanca', label: 'Quão PRONTA estás para fazer mudanças? (1-10)', type: 'range', min: '1', max: '10', required: true },
-        { id: 'o_que_mais_espera', label: 'O que MAIS esperas ganhar?', type: 'textarea', placeholder: 'Sê específica...', required: true }
+        { id: 'quantas_dietas', label: 'Quantas dietas já fizeste?', type: 'radio', options: ['nunca', '1-2', '3-5', 'mais_5'], labels: ['Nunca', '1-2 dietas', '3-5 dietas', 'Mais de 5'], required: true },
+        { id: 'historico_dietas', label: 'Descreve o teu histórico', type: 'textarea', placeholder: 'Que dietas fizeste? Como foi?' },
+        { id: 'dieta_funcionou', label: 'Alguma funcionou? Porquê?', type: 'textarea' },
+        { id: 'maior_obstaculo', label: 'Maior obstáculo', type: 'textarea', placeholder: 'O que te impede de ter sucesso?' },
+        { id: 'gatilhos_sair_plano', label: 'Gatilhos para sair do plano', type: 'checkbox_multiple', options: ['Stress', 'Eventos sociais', 'TPM', 'Fins de semana', 'Viagens', 'Falta de tempo', 'Desânimo'] }
+      ]
+    },
+    {
+      title: 'Preferências do Programa',
+      questions: [
+        { id: 'abordagem_realista', label: 'Preferes abordagem...', type: 'radio', options: ['gradual', 'intensiva'], labels: ['Gradual (mudanças aos poucos)', 'Intensiva (mudança rápida)'], required: true },
+        { id: 'disposta_jejum', label: 'Estás disposta a fazer jejum?', type: 'checkbox_single' },
+        { id: 'preferencias_alimentares', label: 'Preferências alimentares', type: 'checkbox_multiple', options: ['Vegetariana', 'Vegana', 'Sem glúten', 'Sem lactose', 'Sem restrições'] },
+        { id: 'medir_pesar_comida', label: 'Estás disposta a medir/pesar comida?', type: 'radio', options: ['sim', 'nao', 'as_vezes'], labels: ['Sim', 'Não', 'Às vezes'] },
+        { id: 'acesso_ingredientes', label: 'Acesso a ingredientes saudáveis', type: 'radio', options: ['facil', 'moderado', 'dificil'], labels: ['Fácil', 'Moderado', 'Difícil'] }
+      ]
+    },
+    {
+      title: 'Pacote e Pagamento',
+      questions: [
+        { id: 'pacote_escolhido', label: 'Pacote escolhido', type: 'radio', options: ['essencial', 'premium', 'vip'], labels: ['Essencial', 'Premium', 'VIP'], required: true },
+        { id: 'duracao', label: 'Duração', type: 'radio', options: ['3m', '6m', '9m', '12m'], labels: ['3 meses', '6 meses', '9 meses', '12 meses'], required: true },
+        { id: 'forma_pagamento', label: 'Forma de pagamento preferida', type: 'text', placeholder: 'M-Pesa, transferência bancária...' },
+        { id: 'codigo_promo', label: 'Código promocional', type: 'text', placeholder: 'Se tiveres...' }
+      ]
+    },
+    {
+      title: 'Últimas Perguntas',
+      questions: [
+        { id: 'como_conheceu', label: 'Como conheceste o Vitalis?', type: 'text' },
+        { id: 'o_que_espera_ganhar', label: 'O que MAIS esperas ganhar?', type: 'textarea', placeholder: 'Sê específica...', required: true },
+        { id: 'observacoes_adicionais', label: 'Observações adicionais', type: 'textarea', placeholder: 'Algo mais que queiras partilhar?' },
+        { id: 'prontidao_1a10', label: 'Quão PRONTA estás para fazer mudanças?', type: 'range', min: '1', max: '10', labels: ['1 - Ainda não sei', '7', '10 - Totalmente comprometida'], required: true },
+        { id: 'autoriza_dados_pesquisa', label: 'Autorizo uso dos dados para pesquisa', type: 'checkbox_single' },
+        { id: 'confirmacoes', label: 'Confirmações', type: 'checkbox_multiple', options: [
+          'Entendo que este é um programa de coaching nutricional e não substitui acompanhamento médico',
+          'Comprometo-me a seguir o programa com honestidade e consistência',
+          'Autorizo o contacto via WhatsApp para acompanhamento',
+          'Li e aceito os Termos de Serviço e Política de Privacidade'
+        ], required: true }
       ]
     }
   ];
 
-  // Handler otimizado - evita re-renders desnecessários
   const handleInputChange = (questionId, value) => {
     setFormData(prev => ({
       ...prev,
       [questionId]: value
     }));
+  };
+
+  const handleCheckboxMultiple = (questionId, option, checked) => {
+    setFormData(prev => {
+      const current = prev[questionId] || [];
+      if (checked) {
+        return { ...prev, [questionId]: [...current, option] };
+      } else {
+        return { ...prev, [questionId]: current.filter(item => item !== option) };
+      }
+    });
   };
 
   const handleNext = () => {
@@ -226,7 +307,6 @@ export default function VitalisIntakeComplete() {
     setError('');
 
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
@@ -238,16 +318,15 @@ export default function VitalisIntakeComplete() {
         .from('vitalis_clients')
         .upsert({
           user_id: user.id,
-          nome_completo: formData.nome_completo,
-          email: formData.email,
-          telefone: formData.telefone,
-          data_nascimento: formData.data_nascimento,
-          profissao: formData.profissao,
+          objectivo_principal: formData.objectivo_principal,
           peso_inicial: parseFloat(formData.peso_actual) || null,
           peso_actual: parseFloat(formData.peso_actual) || null,
-          peso_meta: parseFloat(formData.peso_desejado) || null,
-          altura_cm: parseFloat(formData.altura) || null,
-          data_inicio: new Date().toISOString()
+          peso_meta: parseFloat(formData.peso_meta) || null,
+          emocao_dominante: formData.emocao_dominante,
+          prontidao_1a10: parseInt(formData.prontidao_1a10) || null,
+          pacote: formData.pacote_escolhido,
+          duracao_programa: formData.duracao,
+          data_inicio: new Date().toISOString().split('T')[0]
         }, { onConflict: 'user_id' })
         .select()
         .single();
@@ -260,12 +339,25 @@ export default function VitalisIntakeComplete() {
         .upsert({
           user_id: user.id,
           client_id: clientData.id,
-          ...formData
+          ...formData,
+          // Converter valores
+          idade: parseInt(formData.idade) || null,
+          altura_cm: parseInt(formData.altura_cm) || null,
+          peso_actual: parseFloat(formData.peso_actual) || null,
+          peso_meta: parseFloat(formData.peso_meta) || null,
+          cintura_cm: parseFloat(formData.cintura_cm) || null,
+          anca_cm: parseFloat(formData.anca_cm) || null,
+          agua_litros_dia: parseFloat(formData.agua_litros_dia) || null,
+          refeicoes_dia: parseInt(formData.refeicoes_dia) || null,
+          freq_doces: parseInt(formData.freq_doces) || null,
+          freq_fritos: parseInt(formData.freq_fritos) || null,
+          qualidade_sono: parseInt(formData.qualidade_sono) || null,
+          nivel_stress: parseInt(formData.nivel_stress) || null,
+          prontidao_1a10: parseInt(formData.prontidao_1a10) || null
         }, { onConflict: 'user_id' });
 
       if (intakeError) throw intakeError;
 
-      // 3. Redirecionar para dashboard
       navigate('/vitalis/dashboard');
 
     } catch (err) {
@@ -273,6 +365,149 @@ export default function VitalisIntakeComplete() {
       setError(err.message || 'Erro ao submeter. Tente novamente.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const renderQuestion = (q) => {
+    // Conditional rendering
+    if (q.conditional && !formData[q.conditional]) {
+      return null;
+    }
+
+    switch (q.type) {
+      case 'checkbox_single':
+        return (
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={formData[q.id] || false}
+              onChange={(e) => handleInputChange(q.id, e.target.checked)}
+              style={{ width: '20px', height: '20px', accentColor: '#D97706' }}
+            />
+            <span>{q.label}</span>
+          </label>
+        );
+
+      case 'checkbox_multiple':
+        return (
+          <div>
+            <p style={{ marginBottom: '12px', fontWeight: '500' }}>{q.label} {q.required && <span style={{ color: '#DC2626' }}>*</span>}</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {q.options.map(option => (
+                <label key={option} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={(formData[q.id] || []).includes(option)}
+                    onChange={(e) => handleCheckboxMultiple(q.id, option, e.target.checked)}
+                    style={{ width: '20px', height: '20px', accentColor: '#D97706' }}
+                  />
+                  <span>{option}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 'radio':
+        return (
+          <div>
+            <p style={{ marginBottom: '12px', fontWeight: '500' }}>{q.label} {q.required && <span style={{ color: '#DC2626' }}>*</span>}</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {q.options.map((option, index) => (
+                <label key={option} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                  <input
+                    type="radio"
+                    name={q.id}
+                    value={option}
+                    checked={formData[q.id] === option}
+                    onChange={(e) => handleInputChange(q.id, e.target.value)}
+                    required={q.required}
+                    style={{ width: '20px', height: '20px', accentColor: '#D97706' }}
+                  />
+                  <span>{q.labels ? q.labels[index] : option}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 'range':
+        return (
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+              {q.label} {q.required && <span style={{ color: '#DC2626' }}>*</span>}
+            </label>
+            <input
+              type="range"
+              min={q.min}
+              max={q.max}
+              value={formData[q.id] || Math.floor((parseInt(q.min) + parseInt(q.max)) / 2)}
+              onChange={(e) => handleInputChange(q.id, e.target.value)}
+              required={q.required}
+              style={{ width: '100%', accentColor: '#D97706' }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#6B7280', marginTop: '8px' }}>
+              {q.labels && q.labels.map((label, i) => (
+                <span key={i} style={{ fontWeight: formData[q.id] == (i + parseInt(q.min)) ? '600' : '400', color: formData[q.id] == (i + parseInt(q.min)) ? '#D97706' : '#6B7280' }}>
+                  {label}
+                </span>
+              ))}
+            </div>
+            <div style={{ textAlign: 'center', marginTop: '8px', fontSize: '1.2rem', fontWeight: '600', color: '#D97706' }}>
+              {formData[q.id] || Math.floor((parseInt(q.min) + parseInt(q.max)) / 2)}
+            </div>
+          </div>
+        );
+
+      case 'textarea':
+        return (
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+              {q.label} {q.required && <span style={{ color: '#DC2626' }}>*</span>}
+            </label>
+            <textarea
+              defaultValue={formData[q.id] || ''}
+              onBlur={(e) => handleInputChange(q.id, e.target.value)}
+              placeholder={q.placeholder}
+              required={q.required}
+              rows={4}
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '2px solid #E5E7EB',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                resize: 'vertical'
+              }}
+            />
+          </div>
+        );
+
+      default:
+        return (
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+              {q.label} {q.required && <span style={{ color: '#DC2626' }}>*</span>}
+            </label>
+            <input
+              type={q.type}
+              defaultValue={formData[q.id] || ''}
+              onBlur={(e) => handleInputChange(q.id, e.target.value)}
+              placeholder={q.placeholder}
+              required={q.required}
+              step={q.step}
+              min={q.min}
+              max={q.max}
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '2px solid #E5E7EB',
+                borderRadius: '8px',
+                fontSize: '1rem'
+              }}
+            />
+          </div>
+        );
     }
   };
 
@@ -285,7 +520,6 @@ export default function VitalisIntakeComplete() {
       background: 'linear-gradient(to bottom, #FFF8F0, #FFE4D6)',
       padding: '20px'
     }}>
-      {/* Progress Bar */}
       <div style={{ 
         position: 'fixed', 
         top: 0, 
@@ -304,7 +538,6 @@ export default function VitalisIntakeComplete() {
       </div>
 
       <div style={{ maxWidth: '640px', margin: '40px auto 80px' }}>
-        {/* Welcome Screen */}
         {currentSection === 0 && (
           <div style={{ textAlign: 'center', padding: '40px 20px' }}>
             <div style={{ fontSize: '80px', marginBottom: '20px' }}>
@@ -354,7 +587,6 @@ export default function VitalisIntakeComplete() {
           </div>
         )}
 
-        {/* Question Sections */}
         {currentSection > 0 && (
           <form onSubmit={handleSubmit}>
             <div style={{
@@ -370,105 +602,20 @@ export default function VitalisIntakeComplete() {
               }}>
                 {currentSectionData.title}
               </h2>
-              <p style={{
-                fontSize: '0.95rem',
-                color: '#6B7280',
-                fontStyle: 'italic',
-                marginBottom: '30px'
-              }}>
-                {currentSectionData.subtitle}
-              </p>
+              {currentSectionData.subtitle && (
+                <p style={{
+                  fontSize: '0.95rem',
+                  color: '#6B7280',
+                  fontStyle: 'italic',
+                  marginBottom: '30px'
+                }}>
+                  {currentSectionData.subtitle}
+                </p>
+              )}
 
-              {currentSectionData.questions.map((q, index) => (
-                <div key={q.id} style={{ marginBottom: '24px' }}>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '0.95rem',
-                    fontWeight: '500',
-                    color: '#374151',
-                    marginBottom: '8px'
-                  }}>
-                    {q.label} {q.required && <span style={{ color: '#DC2626' }}>*</span>}
-                  </label>
-
-                  {q.type === 'textarea' ? (
-                    <textarea
-                      value={formData[q.id] || ''}
-                      onChange={(e) => handleInputChange(q.id, e.target.value)}
-                      placeholder={q.placeholder}
-                      required={q.required}
-                      rows={4}
-                      style={{
-                        width: '100%',
-                        padding: '12px',
-                        border: '2px solid #E5E7EB',
-                        borderRadius: '8px',
-                        fontSize: '1rem',
-                        resize: 'vertical'
-                      }}
-                    />
-                  ) : q.type === 'select' ? (
-                    <select
-                      value={formData[q.id] || ''}
-                      onChange={(e) => handleInputChange(q.id, e.target.value)}
-                      required={q.required}
-                      style={{
-                        width: '100%',
-                        padding: '12px',
-                        border: '2px solid #E5E7EB',
-                        borderRadius: '8px',
-                        fontSize: '1rem'
-                      }}
-                    >
-                      <option value="">Seleciona...</option>
-                      {q.options.map(opt => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
-                  ) : q.type === 'range' ? (
-                    <div>
-                      <input
-                        type="range"
-                        min={q.min}
-                        max={q.max}
-                        value={formData[q.id] || q.min}
-                        onChange={(e) => handleInputChange(q.id, e.target.value)}
-                        required={q.required}
-                        style={{ width: '100%' }}
-                      />
-                      <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        fontSize: '0.85rem',
-                        color: '#6B7280',
-                        marginTop: '4px'
-                      }}>
-                        <span>1 - Ainda não sei</span>
-                        <span style={{ fontWeight: '600', color: '#D97706' }}>
-                          {formData[q.id] || q.min}
-                        </span>
-                        <span>10 - Totalmente comprometida</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <input
-                      type={q.type}
-                      value={formData[q.id] || ''}
-                      onChange={(e) => handleInputChange(q.id, e.target.value)}
-                      placeholder={q.placeholder}
-                      required={q.required}
-                      step={q.step}
-                      min={q.min}
-                      max={q.max}
-                      style={{
-                        width: '100%',
-                        padding: '12px',
-                        border: '2px solid #E5E7EB',
-                        borderRadius: '8px',
-                        fontSize: '1rem'
-                      }}
-                    />
-                  )}
+              {currentSectionData.questions.map((q) => (
+                <div key={q.id} style={{ marginBottom: '28px' }}>
+                  {renderQuestion(q)}
                 </div>
               ))}
 
@@ -485,7 +632,6 @@ export default function VitalisIntakeComplete() {
                 </div>
               )}
 
-              {/* Navigation Buttons */}
               <div style={{
                 display: 'flex',
                 gap: '12px',
