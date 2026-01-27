@@ -12,9 +12,7 @@ export default function Home() {
   const ecos = [
     { 
       nome: 'VITALIS', 
-      area: 'Corpo', 
       slogan: 'A Raiz da Transformação',
-      elemento: 'Terra', 
       cor: 'vitalis', 
       logo: '/logos/vitalis_logo.png',
       disponivel: true,
@@ -22,45 +20,35 @@ export default function Home() {
     },
     { 
       nome: 'SERENA', 
-      area: 'Emoção', 
       slogan: 'Regular para fluir',
-      elemento: 'Água', 
       cor: 'serena',
       logo: '/logos/serena_logo.png',
       disponivel: false 
     },
     { 
       nome: 'IGNIS', 
-      area: 'Vontade', 
       slogan: 'Agir com direcção',
-      elemento: 'Fogo', 
       cor: 'ignis',
       logo: '/logos/ignis_logo.png',
       disponivel: false 
     },
     { 
       nome: 'VENTIS', 
-      area: 'Ritmo', 
       slogan: 'Ritmo sustentável',
-      elemento: 'Ar', 
       cor: 'ventis',
       logo: '/logos/ventis_logo.png',
       disponivel: false 
     },
     { 
       nome: 'ECOA', 
-      area: 'Voz', 
       slogan: 'A expressão que ressoa',
-      elemento: 'Éter', 
       cor: 'ecoa',
       logo: '/logos/ecoa_logo.png',
       disponivel: false 
     },
     { 
       nome: 'IMAGO', 
-      area: 'Identidade', 
       slogan: 'O reflexo da essência',
-      elemento: 'Consciência', 
       cor: 'imago',
       logo: '/logos/imago_logo.png',
       disponivel: false 
@@ -73,11 +61,11 @@ export default function Home() {
         <img 
           src="/logos/seteecos_logo.png" 
           alt="Sete Ecos" 
-          style={{ width: '80px', height: '80px', marginBottom: '1rem' }}
+          style={{ width: '100px', height: '100px', marginBottom: '1rem' }}
         />
         <h1 className="home-title">SETE ECOS</h1>
-        <p className="home-subtitle">Uma PWA. Sete caminhos. Uma travessia.</p>
-      </header>
+      <p className="home-subtitle">Sete caminhos. Uma travessia.</p>
+     </header>
 
       <section className="home-section">
         <div className="lumina-card" onClick={() => navigate('/lumina')}>
@@ -85,7 +73,7 @@ export default function Home() {
             <img 
               src="/logos/lumina-eye.png" 
               alt="Lumina" 
-              style={{ width: '48px', height: '48px' }}
+              style={{ width: '60px', height: '60px' }}
             />
             <div>
               <h2 className="lumina-card-title">LUMINA</h2>
@@ -111,22 +99,14 @@ export default function Home() {
                 src={eco.logo} 
                 alt={eco.nome}
                 style={{ 
-                  width: '60px', 
-                  height: '60px', 
-                  marginBottom: '0.5rem',
+                  width: '100px', 
+                  height: '100px', 
+                  marginBottom: '1rem',
                   objectFit: 'contain'
                 }}
               />
               <h4 className="eco-nome">{eco.nome}</h4>
-              <p className="eco-area">{eco.area}</p>
-              <p style={{ 
-                fontSize: '0.8rem', 
-                fontStyle: 'italic', 
-                opacity: 0.7,
-                marginTop: '0.25rem',
-                color: 'var(--lumina-texto-hint)'
-              }}>{eco.slogan}</p>
-              <span className="eco-elemento">{eco.elemento}</span>
+              <p className="eco-slogan">{eco.slogan}</p>
               {!eco.disponivel && (
                 <span className="eco-badge" style={{ background: '#94a3b8' }}>Em breve</span>
               )}
@@ -146,8 +126,8 @@ export default function Home() {
               src="/logos/aurora_logo.png" 
               alt="Aurōra"
               style={{ 
-                width: '80px', 
-                height: '80px', 
+                width: '100px', 
+                height: '100px', 
                 marginBottom: '1rem',
                 objectFit: 'contain'
               }}
