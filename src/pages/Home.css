@@ -110,6 +110,7 @@
   position: absolute;
   left: 0; top: 0; bottom: 0;
   width: 4px;
+  border-radius: 16px 0 0 16px;
 }
 
 .eco-card.disabled { opacity: 0.65; }
@@ -119,6 +120,7 @@
 .eco-card-ignis::before { background: var(--eco-3-ignis); }
 .eco-card-ventis::before { background: var(--eco-4-ventis); }
 .eco-card-ecoa::before { background: var(--eco-5-ecoa); }
+.eco-card-lumina::before { background: var(--eco-6-lumina); }
 .eco-card-imago::before { background: var(--eco-7-imago); }
 
 .eco-num {
@@ -155,8 +157,7 @@
   font-size: 0.65rem;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--lumina-texto-hint);
-  background: var(--lumina-fundo-2);
+  color: white;
   padding: 4px 8px;
   border-radius: 6px;
 }
