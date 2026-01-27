@@ -340,7 +340,11 @@ export default function VitalisIntakeComplete() {
         restricoes_alimentares: formData.restricoes_alimentares,
         condicoes_saude: formData.condicoes_saude,
         medicacao: formData.medicacao,
-        refeicoes_dia: formData.refeicoes_dia,
+        refeicoes_dia: formData.refeicoes_dia === '1-2' ? 2 
+                     : formData.refeicoes_dia === '3' ? 3
+                     : formData.refeicoes_dia === '4' ? 4
+                     : formData.refeicoes_dia === '5-6' ? 5
+                     : null,
         pequeno_almoco: formData.faz_pequeno_almoco === 'sim' || formData.faz_pequeno_almoco === 'as_vezes' 
           ? formData.pequeno_almoco_opcoes.join(', ') 
           : 'Não faz',
