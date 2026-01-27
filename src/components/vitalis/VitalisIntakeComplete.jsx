@@ -17,19 +17,19 @@ export default function VitalisIntakeComplete() {
     objectivo_principal: '', prazo: '', porque_importante: '',
     abordagem_preferida: '', restricoes_alimentares: [],
     condicoes_saude: [], medicacao: '',
-    refeicoes_dia: '', pequeno_almoco: '',
+    refeicoes_dia: '', faz_pequeno_almoco: '', pequeno_almoco_opcoes: [],
     onde_come: [], tipos_comida: [], agua_litros_dia: '2', bebidas: [],
     freq_doces: '3', freq_fritos: '3', petisca: false, o_que_petisca: [],
     freq_cansaco: '', freq_ansiedade: '', freq_tristeza: '', freq_raiva: '',
     freq_vazio: '', freq_solidao: '', freq_negacao: '', emocao_dominante: '',
-    o_que_procura_comer: [], como_sente_depois: '', quando_comecou_padrao: '',
-    tentou_alternativas: false, que_alternativas: '',
+    o_que_procura_comer: [], como_sente_depois: [],
+    quando_comecou_padrao: '', tentou_alternativas: false, que_alternativas: '',
     nivel_actividade: '', faz_exercicio: false, tipo_exercicio: [],
     horas_sono: '', qualidade_sono: '3',
     situacao_profissional: '', situacao_familiar: '', filhos_pequenos: false,
     quem_cozinha: '', nivel_stress: '3',
-    maior_obstaculo: '', historico_dietas: '', gatilhos_sair_plano: [],
-    quantas_dietas: '', dieta_funcionou: '',
+    maior_obstaculo: '', historico_dietas: [], gatilhos_sair_plano: [],
+    quantas_dietas: '', dieta_funcionou: [],
     abordagem_realista: '', preferencias_alimentares: [],
     medir_pesar_comida: '', acesso_ingredientes: '',
     como_conheceu: [], observacoes_adicionais: '', o_que_espera_ganhar: '',
@@ -47,9 +47,9 @@ export default function VitalisIntakeComplete() {
     { title: 'Objectivo e Prazo', fields: ['objectivo_principal', 'prazo', 'porque_importante'] },
     { title: 'Abordagem Alimentar', fields: ['abordagem_preferida', 'restricoes_alimentares'] },
     { title: 'Saúde', fields: ['condicoes_saude', 'medicacao'] },
-    { title: 'Hábitos Alimentares', fields: ['refeicoes_dia', 'pequeno_almoco', 'onde_come', 'tipos_comida', 'agua_litros_dia', 'bebidas', 'freq_doces', 'freq_fritos', 'petisca', 'o_que_petisca'] },
+    { title: 'Hábitos Alimentares', fields: ['refeicoes_dia', 'faz_pequeno_almoco', 'pequeno_almoco_opcoes', 'onde_come', 'tipos_comida', 'agua_litros_dia', 'bebidas', 'freq_doces', 'freq_fritos', 'petisca', 'o_que_petisca'] },
     { title: 'Fome Emocional - As 7 Emoções', subtitle: 'Com que frequência comes quando sentes…', fields: ['freq_cansaco', 'freq_ansiedade', 'freq_tristeza', 'freq_raiva', 'freq_vazio', 'freq_solidao', 'freq_negacao', 'emocao_dominante'] },
-    { title: 'Padrão de Fome Emocional', fields: ['o_que_procura_comer', 'como_sente_depois', 'quando_comecou_padrao', 'tentou_alternativas', 'que_alternativas'] },
+    { title: 'Padrão de Fome Emocional', subtitle: 'Quando comes por emoção (não por fome física)…', fields: ['o_que_procura_comer', 'como_sente_depois', 'quando_comecou_padrao', 'tentou_alternativas', 'que_alternativas'] },
     { title: 'Actividade Física', fields: ['nivel_actividade', 'faz_exercicio', 'tipo_exercicio'] },
     { title: 'Sono e Stress', fields: ['horas_sono', 'qualidade_sono', 'nivel_stress'] },
     { title: 'Contexto de Vida', fields: ['situacao_profissional', 'situacao_familiar', 'filhos_pequenos', 'quem_cozinha'] },
@@ -70,23 +70,52 @@ export default function VitalisIntakeComplete() {
     peso_meta: { label: 'Peso desejado (kg)', type: 'number', step: '0.1', required: true, inputMode: 'decimal' },
     cintura_cm: { label: 'Cintura (cm)', type: 'number', step: '0.1', inputMode: 'decimal' },
     anca_cm: { label: 'Anca (cm)', type: 'number', step: '0.1', inputMode: 'decimal' },
-    objectivo_principal: { label: 'Objectivo principal', type: 'textarea', required: true, placeholder: 'Ex: Emagrecer 10kg, ganhar energia…' },
+    objectivo_principal: { 
+      label: 'Objectivo principal', 
+      type: 'radio',
+      options: ['emagrecer', 'ganhar_energia', 'melhorar_saude', 'controlar_emocoes', 'outro'],
+      labels: ['Emagrecer', 'Ganhar energia', 'Melhorar saúde', 'Controlar fome emocional', 'Outro'],
+      required: true 
+    },
     prazo: { label: 'Em quanto tempo?', type: 'radio', options: ['3m', '6m', '9m', '12m', 'sem_pressa'], labels: ['3 meses', '6 meses', '9 meses', '12 meses', 'Sem pressa'], required: true },
-    porque_importante: { label: 'Porquê é importante?', type: 'textarea', placeholder: 'O que vai mudar na tua vida?' },
+    porque_importante: { label: 'Porquê é importante para ti?', type: 'textarea', placeholder: 'O que vai mudar na tua vida?', rows: 3 },
     abordagem_preferida: { label: 'Que abordagem preferes?', type: 'radio', options: ['keto_if', 'low_carb', 'equilibrado', 'nao_sei'], labels: ['Keto + Jejum Intermitente', 'Low Carb', 'Equilibrado', 'Não sei'], required: true },
     restricoes_alimentares: { label: 'Restrições alimentares', type: 'checkbox', options: ['Vegetariana', 'Vegana', 'Sem glúten', 'Sem lactose', 'Halal', 'Nenhuma'] },
     condicoes_saude: { label: 'Condições de saúde', type: 'checkbox', options: ['Diabetes', 'Hipertensão', 'Colesterol alto', 'Problemas de tiroide', 'SOP', 'Nenhuma'] },
-    medicacao: { label: 'Medicação actual', type: 'textarea', placeholder: 'Lista medicamentos e suplementos' },
-    refeicoes_dia: { label: 'Refeições por dia?', type: 'number', min: '1', max: '10', inputMode: 'numeric' },
-    pequeno_almoco: { label: 'O que comes no pequeno-almoço?', type: 'textarea', placeholder: 'Descreve…' },
+    medicacao: { label: 'Medicação e suplementos actuais', type: 'textarea', placeholder: 'Lista medicamentos e suplementos (ou "Nenhum")', rows: 2 },
+    
+    // REFEIÇÕES - CORRIGIDO
+    refeicoes_dia: { 
+      label: 'Quantas refeições comes por dia?', 
+      type: 'radio',
+      options: ['1-2', '3', '4', '5-6'],
+      labels: ['1-2 refeições', '3 refeições', '4 refeições', '5-6 refeições'],
+      required: true
+    },
+    faz_pequeno_almoco: {
+      label: 'Fazes pequeno-almoço?',
+      type: 'radio',
+      options: ['sim', 'nao', 'as_vezes'],
+      labels: ['Sim, sempre', 'Não', 'Às vezes'],
+      required: true
+    },
+    pequeno_almoco_opcoes: { 
+      label: 'O que costumas comer no pequeno-almoço?', 
+      type: 'checkbox', 
+      options: ['Pão/torradas', 'Cereais', 'Ovos', 'Fruta', 'Iogurte', 'Café/chá só', 'Outro'],
+      conditional: 'faz_pequeno_almoco',
+      conditionalValues: ['sim', 'as_vezes']
+    },
+    
     onde_come: { label: 'Onde comes habitualmente?', type: 'checkbox', options: ['Casa', 'Trabalho', 'Restaurante', 'Fast food', 'Na rua'] },
-    tipos_comida: { label: 'Tipos de comida', type: 'checkbox', options: ['Tradicional moçambicana', 'Portuguesa', 'Italiana', 'Chinesa', 'Fast food', 'Vegetariana'] },
+    tipos_comida: { label: 'Tipos de comida que preferes', type: 'checkbox', options: ['Tradicional moçambicana', 'Portuguesa', 'Italiana', 'Chinesa', 'Fast food', 'Vegetariana'] },
     agua_litros_dia: { label: 'Água por dia (litros)', type: 'slider', min: '0', max: '5', step: '0.5' },
-    bebidas: { label: 'Bebidas', type: 'checkbox', options: ['Café', 'Chá', 'Refrigerantes', 'Sumos naturais', 'Sumos de pacote', 'Álcool', 'Só água'] },
+    bebidas: { label: 'Bebidas que consomes', type: 'checkbox', options: ['Café', 'Chá', 'Refrigerantes', 'Sumos naturais', 'Sumos de pacote', 'Álcool', 'Só água'] },
     freq_doces: { label: 'Frequência de doces', type: 'slider', min: '1', max: '5', labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequente', 'Sempre'] },
     freq_fritos: { label: 'Frequência de fritos', type: 'slider', min: '1', max: '5', labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequente', 'Sempre'] },
     petisca: { label: 'Petiscas entre refeições?', type: 'checkbox_single' },
     o_que_petisca: { label: 'O que petiscas?', type: 'checkbox', options: ['Doces', 'Salgados', 'Frutas', 'Nuts', 'Bolachas', 'Pão'], conditional: 'petisca' },
+    
     freq_cansaco: { label: '🔋 Cansaço', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
     freq_ansiedade: { label: '🌀 Ansiedade', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
     freq_tristeza: { label: '💧 Tristeza', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
@@ -94,35 +123,90 @@ export default function VitalisIntakeComplete() {
     freq_vazio: { label: '◯ Vazio', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
     freq_solidao: { label: '🌑 Solidão', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
     freq_negacao: { label: '🚫 Negação', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
-    emocao_dominante: { label: 'Emoção DOMINANTE?', type: 'radio', options: ['cansaco', 'ansiedade', 'tristeza', 'raiva', 'vazio', 'solidao', 'negacao'], labels: ['Cansaço', 'Ansiedade', 'Tristeza', 'Raiva', 'Vazio', 'Solidão', 'Negação'], required: true },
-    o_que_procura_comer: { label: 'O que procuras comer?', type: 'checkbox', options: ['Doce', 'Salgado', 'Crocante', 'Cremoso', 'Macio', 'Picante'] },
-    como_sente_depois: { label: 'Como te sentes depois?', type: 'textarea' },
-    quando_comecou_padrao: { label: 'Quando começou?', type: 'text' },
-    tentou_alternativas: { label: 'Tentaste alternativas?', type: 'checkbox_single' },
-    que_alternativas: { label: 'Quais?', type: 'textarea', conditional: 'tentou_alternativas' },
-    nivel_actividade: { label: 'Nível de actividade', type: 'radio', options: ['sedentaria', 'leve', 'moderada', 'intensa'], labels: ['Sedentária', 'Leve', 'Moderada', 'Intensa'], required: true },
-    faz_exercicio: { label: 'Fazes exercício?', type: 'checkbox_single' },
-    tipo_exercicio: { label: 'Que tipo?', type: 'checkbox', options: ['Caminhada', 'Corrida', 'Ginásio', 'Natação', 'Yoga', 'Dança', 'Outro'], conditional: 'faz_exercicio' },
-    horas_sono: { label: 'Horas de sono?', type: 'radio', options: ['menos_5h', '5-6h', '7-8h', 'mais_8h'], labels: ['<5h', '5-6h', '7-8h', '>8h'] },
+    emocao_dominante: { label: 'Qual é a emoção DOMINANTE quando comes por emoção?', type: 'radio', options: ['cansaco', 'ansiedade', 'tristeza', 'raiva', 'vazio', 'solidao', 'negacao'], labels: ['Cansaço', 'Ansiedade', 'Tristeza', 'Raiva', 'Vazio', 'Solidão', 'Negação'], required: true },
+    
+    // PADRÃO EMOCIONAL - CORRIGIDO
+    o_que_procura_comer: { 
+      label: 'Quando comes por emoção, o que mais procuras?', 
+      type: 'checkbox', 
+      options: ['Doce', 'Salgado', 'Crocante', 'Cremoso', 'Macio', 'Picante'],
+      required: true
+    },
+    como_sente_depois: { 
+      label: 'Como te sentes depois de comer por emoção?', 
+      type: 'checkbox',
+      options: ['Culpada', 'Aliviada temporariamente', 'Pior que antes', 'Entorpecida', 'Arrependida', 'Indiferente'],
+      required: true
+    },
+    quando_comecou_padrao: { 
+      label: 'Quando começou este padrão?', 
+      type: 'radio',
+      options: ['infancia', 'adolescencia', 'fase_adulta', 'recente', 'nao_sei'],
+      labels: ['Infância', 'Adolescência', 'Fase adulta', 'Recentemente', 'Não sei']
+    },
+    tentou_alternativas: { label: 'Já tentaste lidar com isto de outra forma?', type: 'checkbox_single' },
+    que_alternativas: { label: 'O que tentaste?', type: 'textarea', placeholder: 'Ex: meditação, exercício, terapia...', rows: 2, conditional: 'tentou_alternativas' },
+    
+    nivel_actividade: { label: 'Nível de actividade física no dia-a-dia', type: 'radio', options: ['sedentaria', 'leve', 'moderada', 'intensa'], labels: ['Sedentária (sentada maior parte do dia)', 'Leve (caminho um pouco)', 'Moderada (bastante activa)', 'Intensa (muito activa)'], required: true },
+    faz_exercicio: { label: 'Fazes exercício regular?', type: 'checkbox_single' },
+    tipo_exercicio: { label: 'Que tipo de exercício?', type: 'checkbox', options: ['Caminhada', 'Corrida', 'Ginásio', 'Natação', 'Yoga', 'Dança', 'Outro'], conditional: 'faz_exercicio' },
+    horas_sono: { label: 'Quantas horas dormes por noite?', type: 'radio', options: ['menos_5h', '5-6h', '7-8h', 'mais_8h'], labels: ['Menos de 5h', '5-6h', '7-8h', 'Mais de 8h'] },
     qualidade_sono: { label: 'Qualidade do sono', type: 'slider', min: '1', max: '5', labels: ['Péssima', 'Má', 'Razoável', 'Boa', 'Excelente'] },
-    nivel_stress: { label: 'Nível de stress', type: 'slider', min: '1', max: '5', labels: ['Baixo', 'Médio', 'Alto', 'Muito Alto', 'Extremo'] },
-    situacao_profissional: { label: 'Situação profissional', type: 'text' },
-    situacao_familiar: { label: 'Situação familiar', type: 'text' },
-    filhos_pequenos: { label: 'Filhos pequenos?', type: 'checkbox_single' },
-    quem_cozinha: { label: 'Quem cozinha?', type: 'text' },
-    quantas_dietas: { label: 'Quantas dietas já fizeste?', type: 'radio', options: ['nunca', '1-2', '3-5', 'mais_5'], labels: ['Nunca', '1-2', '3-5', '>5'], required: true },
-    historico_dietas: { label: 'Histórico', type: 'textarea' },
-    dieta_funcionou: { label: 'O que funcionou?', type: 'textarea' },
-    maior_obstaculo: { label: 'Maior obstáculo', type: 'textarea' },
-    gatilhos_sair_plano: { label: 'Gatilhos', type: 'checkbox', options: ['Stress', 'Eventos sociais', 'TPM', 'Fins de semana', 'Viagens', 'Falta de tempo', 'Desânimo'] },
-    abordagem_realista: { label: 'Abordagem', type: 'radio', options: ['gradual', 'intensiva'], labels: ['Gradual', 'Intensiva'], required: true },
-    preferencias_alimentares: { label: 'Preferências', type: 'checkbox', options: ['Vegetariana', 'Vegana', 'Sem glúten', 'Sem lactose', 'Sem restrições'] },
-    medir_pesar_comida: { label: 'Medir/pesar comida?', type: 'radio', options: ['sim', 'nao', 'as_vezes'], labels: ['Sim', 'Não', 'Às vezes'] },
-    acesso_ingredientes: { label: 'Acesso a ingredientes', type: 'radio', options: ['facil', 'moderado', 'dificil'], labels: ['Fácil', 'Moderado', 'Difícil'] },
-    como_conheceu: { label: 'Como conheceste?', type: 'checkbox', options: ['Instagram', 'Facebook', 'Indicação', 'Google', 'Outro'], required: true },
-    o_que_espera_ganhar: { label: 'O que MAIS esperas ganhar?', type: 'textarea', required: true, placeholder: 'Sê específica…' },
-    observacoes_adicionais: { label: 'Observações', type: 'textarea' },
-    prontidao_1a10: { label: 'Prontidão (1-10)', type: 'slider', min: '1', max: '10', labels: ['1', '5', '10'], required: true },
+    nivel_stress: { label: 'Nível de stress no dia-a-dia', type: 'slider', min: '1', max: '5', labels: ['Baixo', 'Médio', 'Alto', 'Muito Alto', 'Extremo'] },
+    
+    // CONTEXTO DE VIDA - CORRIGIDO
+    situacao_profissional: { 
+      label: 'Situação profissional', 
+      type: 'radio',
+      options: ['empregada_tempo_inteiro', 'empregada_meio_tempo', 'autonoma', 'desempregada', 'estudante', 'reforma'],
+      labels: ['Empregada (tempo inteiro)', 'Empregada (meio tempo)', 'Autónoma/Empresária', 'Desempregada', 'Estudante', 'Reformada'],
+      required: true
+    },
+    situacao_familiar: { 
+      label: 'Situação familiar', 
+      type: 'radio',
+      options: ['sozinha', 'com_parceiro', 'com_parceiro_filhos', 'com_familia', 'outro'],
+      labels: ['Vivo sozinha', 'Com parceiro/a', 'Com parceiro/a e filhos', 'Com família', 'Outro'],
+      required: true
+    },
+    filhos_pequenos: { label: 'Tens filhos pequenos (< 10 anos)?', type: 'checkbox_single' },
+    quem_cozinha: { 
+      label: 'Quem cozinha em casa?', 
+      type: 'radio',
+      options: ['eu', 'parceiro', 'partilhado', 'empregada', 'nao_cozinho'],
+      labels: ['Eu', 'Meu/minha parceiro/a', 'Partilhamos', 'Empregada doméstica', 'Não costumo cozinhar'],
+      required: true
+    },
+    
+    // HISTÓRICO - CORRIGIDO
+    quantas_dietas: { label: 'Quantas dietas já fizeste?', type: 'radio', options: ['nunca', '1-2', '3-5', 'mais_5'], labels: ['Nunca fiz dieta', '1-2 dietas', '3-5 dietas', 'Mais de 5 dietas'], required: true },
+    historico_dietas: { 
+      label: 'Que dietas já experimentaste?', 
+      type: 'checkbox',
+      options: ['Keto', 'Low carb', 'Jejum intermitente', 'Detox', 'Shakes/substitutos', 'Contagem calorias', 'Weight Watchers', 'Outra']
+    },
+    dieta_funcionou: { 
+      label: 'O que funcionou bem para ti no passado?', 
+      type: 'checkbox',
+      options: ['Plano estruturado', 'Apoio profissional', 'Grupo de apoio', 'Exercício regular', 'Jejum intermitente', 'Cortar açúcar', 'Reduzir hidratos', 'Nada funcionou']
+    },
+    maior_obstaculo: { 
+      label: 'Qual é o teu maior obstáculo?', 
+      type: 'radio',
+      options: ['fome_emocional', 'falta_tempo', 'familia', 'custo', 'motivacao', 'conhecimento', 'outro'],
+      labels: ['Fome emocional', 'Falta de tempo', 'Família não apoia', 'Custo', 'Falta de motivação', 'Não sei o que comer', 'Outro']
+    },
+    gatilhos_sair_plano: { label: 'O que te faz sair do plano?', type: 'checkbox', options: ['Stress', 'Eventos sociais', 'TPM', 'Fins de semana', 'Viagens', 'Falta de tempo', 'Desânimo', 'Fome emocional'] },
+    
+    abordagem_realista: { label: 'Preferes abordagem...', type: 'radio', options: ['gradual', 'intensiva'], labels: ['Gradual (mudanças lentas e sustentáveis)', 'Intensiva (mudanças rápidas e profundas)'], required: true },
+    preferencias_alimentares: { label: 'Preferências alimentares', type: 'checkbox', options: ['Vegetariana', 'Vegana', 'Sem glúten', 'Sem lactose', 'Sem restrições'] },
+    medir_pesar_comida: { label: 'Estás disposta a medir/pesar comida?', type: 'radio', options: ['sim', 'nao', 'as_vezes'], labels: ['Sim', 'Não', 'Às vezes'] },
+    acesso_ingredientes: { label: 'Acesso a ingredientes saudáveis', type: 'radio', options: ['facil', 'moderado', 'dificil'], labels: ['Fácil', 'Moderado', 'Difícil'] },
+    
+    como_conheceu: { label: 'Como conheceste o Vitalis?', type: 'checkbox', options: ['Instagram', 'Facebook', 'Indicação', 'Google', 'Outro'], required: true },
+    o_que_espera_ganhar: { label: 'O que MAIS esperas ganhar com o Vitalis?', type: 'textarea', required: true, placeholder: 'Sê específica…', rows: 3 },
+    observacoes_adicionais: { label: 'Algo mais que queiras partilhar?', type: 'textarea', rows: 3 },
+    prontidao_1a10: { label: 'Numa escala de 1-10, quão pronta estás para mudar?', type: 'slider', min: '1', max: '10', labels: ['1 - Não muito', '5 - Moderadamente', '10 - Totalmente pronta'], required: true },
     autoriza_dados_pesquisa: { label: 'Autorizo uso de dados anonimizados para pesquisa', type: 'checkbox_single' },
     
     // Campos legais
@@ -134,7 +218,6 @@ export default function VitalisIntakeComplete() {
 
   const handleChange = (id, value) => {
     setFormData(prev => ({ ...prev, [id]: value }));
-    // Limpa erro do campo quando user começa a preencher
     if (validationErrors[id]) {
       setValidationErrors(prev => ({ ...prev, [id]: null }));
     }
@@ -159,11 +242,21 @@ export default function VitalisIntakeComplete() {
       const config = fieldConfig[fieldId];
       if (!config || !config.required) return;
 
+      // Check conditional fields
+      if (config.conditional) {
+        const condValue = formData[config.conditional];
+        if (config.conditionalValues) {
+          if (!config.conditionalValues.includes(condValue)) return;
+        } else if (!condValue) {
+          return;
+        }
+      }
+
       const value = formData[fieldId];
       
       if (config.type === 'checkbox') {
         if (!value || value.length === 0) {
-          errors[fieldId] = 'Campo obrigatório - selecciona pelo menos uma opção';
+          errors[fieldId] = 'Selecciona pelo menos uma opção';
         }
       } else if (config.type === 'checkbox_legal') {
         if (!value) {
@@ -176,7 +269,6 @@ export default function VitalisIntakeComplete() {
 
     setValidationErrors(errors);
     
-    // Scroll para primeiro erro
     if (Object.keys(errors).length > 0) {
       const firstErrorField = Object.keys(errors)[0];
       const element = document.getElementById(`field-${firstErrorField}`);
@@ -219,52 +311,131 @@ export default function VitalisIntakeComplete() {
     }
     
     setLoading(true);
+    setError('');
+    
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Não autenticado');
 
       const aceita_jejum = formData.abordagem_preferida === 'keto_if';
+      
+      // Converter arrays para strings onde necessário
+      const intakeData = {
+        user_id: user.id,
+        nome: formData.nome,
+        email: formData.email,
+        whatsapp: formData.whatsapp,
+        idade: parseInt(formData.idade),
+        sexo: formData.sexo,
+        altura_cm: parseInt(formData.altura_cm),
+        peso_actual: parseFloat(formData.peso_actual),
+        peso_meta: parseFloat(formData.peso_meta),
+        cintura_cm: formData.cintura_cm ? parseFloat(formData.cintura_cm) : null,
+        anca_cm: formData.anca_cm ? parseFloat(formData.anca_cm) : null,
+        objectivo_principal: formData.objectivo_principal,
+        prazo: formData.prazo,
+        porque_importante: formData.porque_importante,
+        abordagem_preferida: formData.abordagem_preferida,
+        aceita_jejum: aceita_jejum,
+        restricoes_alimentares: formData.restricoes_alimentares,
+        condicoes_saude: formData.condicoes_saude,
+        medicacao: formData.medicacao,
+        refeicoes_dia: formData.refeicoes_dia,
+        pequeno_almoco: formData.faz_pequeno_almoco === 'sim' || formData.faz_pequeno_almoco === 'as_vezes' 
+          ? formData.pequeno_almoco_opcoes.join(', ') 
+          : 'Não faz',
+        onde_come: formData.onde_come,
+        tipos_comida: formData.tipos_comida,
+        agua_litros_dia: parseFloat(formData.agua_litros_dia),
+        bebidas: formData.bebidas,
+        freq_doces: parseInt(formData.freq_doces),
+        freq_fritos: parseInt(formData.freq_fritos),
+        petisca: formData.petisca,
+        o_que_petisca: formData.o_que_petisca,
+        freq_cansaco: formData.freq_cansaco,
+        freq_ansiedade: formData.freq_ansiedade,
+        freq_tristeza: formData.freq_tristeza,
+        freq_raiva: formData.freq_raiva,
+        freq_vazio: formData.freq_vazio,
+        freq_solidao: formData.freq_solidao,
+        freq_negacao: formData.freq_negacao,
+        emocao_dominante: formData.emocao_dominante,
+        o_que_procura_comer: formData.o_que_procura_comer,
+        como_sente_depois: Array.isArray(formData.como_sente_depois) 
+          ? formData.como_sente_depois.join(', ') 
+          : formData.como_sente_depois,
+        quando_comecou_padrao: formData.quando_comecou_padrao,
+        tentou_alternativas: formData.tentou_alternativas,
+        que_alternativas: formData.que_alternativas,
+        nivel_actividade: formData.nivel_actividade,
+        faz_exercicio: formData.faz_exercicio,
+        tipo_exercicio: formData.tipo_exercicio,
+        horas_sono: formData.horas_sono,
+        qualidade_sono: parseInt(formData.qualidade_sono),
+        nivel_stress: parseInt(formData.nivel_stress),
+        situacao_profissional: formData.situacao_profissional,
+        situacao_familiar: formData.situacao_familiar,
+        filhos_pequenos: formData.filhos_pequenos,
+        quem_cozinha: formData.quem_cozinha,
+        quantas_dietas: formData.quantas_dietas,
+        historico_dietas: Array.isArray(formData.historico_dietas) 
+          ? formData.historico_dietas.join(', ') 
+          : formData.historico_dietas,
+        dieta_funcionou: Array.isArray(formData.dieta_funcionou) 
+          ? formData.dieta_funcionou.join(', ') 
+          : formData.dieta_funcionou,
+        maior_obstaculo: formData.maior_obstaculo,
+        gatilhos_sair_plano: formData.gatilhos_sair_plano,
+        abordagem_realista: formData.abordagem_realista,
+        preferencias_alimentares: formData.preferencias_alimentares,
+        medir_pesar_comida: formData.medir_pesar_comida,
+        acesso_ingredientes: formData.acesso_ingredientes,
+        como_conheceu: Array.isArray(formData.como_conheceu) 
+          ? formData.como_conheceu.join(', ') 
+          : formData.como_conheceu,
+        o_que_espera_ganhar: formData.o_que_espera_ganhar,
+        observacoes_adicionais: formData.observacoes_adicionais,
+        prontidao_1a10: parseInt(formData.prontidao_1a10),
+        autoriza_dados_pesquisa: formData.autoriza_dados_pesquisa
+      };
 
-      const { data: clientData, error: clientError } = await supabase
-        .from('vitalis_clients')
-        .upsert({
-          user_id: user.id,
-          objectivo_principal: formData.objectivo_principal,
-          peso_inicial: parseFloat(formData.peso_actual),
-          peso_actual: parseFloat(formData.peso_actual),
-          peso_meta: parseFloat(formData.peso_meta),
-          emocao_dominante: formData.emocao_dominante,
-          prontidao_1a10: parseInt(formData.prontidao_1a10)
-        }, { onConflict: 'user_id' })
-        .select().single();
-
-      if (clientError) throw clientError;
-
-      const { error: intakeError } = await supabase
+      // Inserir intake primeiro
+      const { data: intakeInserted, error: intakeError } = await supabase
         .from('vitalis_intake')
-        .upsert({
-          user_id: user.id,
-          client_id: clientData.id,
-          ...formData,
-          aceita_jejum,
-          idade: parseInt(formData.idade),
-          altura_cm: parseInt(formData.altura_cm),
-          peso_actual: parseFloat(formData.peso_actual),
-          peso_meta: parseFloat(formData.peso_meta),
-          refeicoes_dia: parseInt(formData.refeicoes_dia) || null,
-          agua_litros_dia: parseFloat(formData.agua_litros_dia),
-          freq_doces: parseInt(formData.freq_doces),
-          freq_fritos: parseInt(formData.freq_fritos),
-          qualidade_sono: parseInt(formData.qualidade_sono),
-          nivel_stress: parseInt(formData.nivel_stress),
-          prontidao_1a10: parseInt(formData.prontidao_1a10),
-          como_conheceu: Array.isArray(formData.como_conheceu) ? formData.como_conheceu.join(', ') : formData.como_conheceu
-        }, { onConflict: 'user_id' });
+        .upsert(intakeData, { onConflict: 'user_id' })
+        .select()
+        .single();
 
-      if (intakeError) throw intakeError;
+      if (intakeError) {
+        console.error('Erro no intake:', intakeError);
+        throw intakeError;
+      }
+
+      // Depois inserir client
+      const clientData = {
+        user_id: user.id,
+        objectivo_principal: formData.objectivo_principal,
+        peso_inicial: parseFloat(formData.peso_actual),
+        peso_actual: parseFloat(formData.peso_actual),
+        peso_meta: parseFloat(formData.peso_meta),
+        emocao_dominante: formData.emocao_dominante,
+        prontidao_1a10: parseInt(formData.prontidao_1a10),
+        status: 'novo'
+      };
+
+      const { error: clientError } = await supabase
+        .from('vitalis_clients')
+        .upsert(clientData, { onConflict: 'user_id' });
+
+      if (clientError) {
+        console.error('Erro no client:', clientError);
+        throw clientError;
+      }
+
       navigate('/vitalis/dashboard');
     } catch (err) {
-      setError(err.message);
+      console.error('Erro completo:', err);
+      setError(`Erro ao submeter: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -274,7 +445,15 @@ export default function VitalisIntakeComplete() {
     const config = fieldConfig[fieldId];
     if (!config) return null;
 
-    if (config.conditional && !formData[config.conditional]) return null;
+    // Check conditional rendering
+    if (config.conditional) {
+      const condValue = formData[config.conditional];
+      if (config.conditionalValues) {
+        if (!config.conditionalValues.includes(condValue)) return null;
+      } else if (!condValue) {
+        return null;
+      }
+    }
 
     const value = formData[fieldId];
     const hasError = validationErrors[fieldId];
@@ -316,7 +495,7 @@ export default function VitalisIntakeComplete() {
               value={value}
               onChange={(e) => handleChange(fieldId, e.target.value)}
               placeholder={config.placeholder}
-              rows={4}
+              rows={config.rows || 4}
               required={config.required}
               className={inputClass}
             />
@@ -341,7 +520,7 @@ export default function VitalisIntakeComplete() {
                     onChange={(e) => handleChange(fieldId, e.target.value)}
                     className="w-5 h-5 text-orange-500"
                   />
-                  <span>{config.labels ? config.labels[i] : opt}</span>
+                  <span className="text-sm">{config.labels ? config.labels[i] : opt}</span>
                 </label>
               ))}
             </div>
@@ -364,7 +543,7 @@ export default function VitalisIntakeComplete() {
                     onChange={(e) => handleCheckbox(fieldId, opt, e.target.checked)}
                     className="w-5 h-5 text-orange-500 rounded"
                   />
-                  <span>{opt}</span>
+                  <span className="text-sm">{opt}</span>
                 </label>
               ))}
             </div>
@@ -416,7 +595,7 @@ export default function VitalisIntakeComplete() {
               onChange={(e) => handleChange(fieldId, e.target.value)}
               className="w-full h-2 bg-orange-200 rounded-lg appearance-none cursor-pointer"
             />
-            <div className="flex justify-between text-sm text-gray-600 mt-2">
+            <div className="flex justify-between text-xs text-gray-600 mt-2">
               {config.labels?.map((l, i) => <span key={i}>{l}</span>)}
             </div>
             <div className="text-center mt-2 text-xl font-bold text-orange-600">{value}</div>
@@ -431,7 +610,6 @@ export default function VitalisIntakeComplete() {
   const renderLegalSection = () => {
     return (
       <div className="space-y-6">
-        {/* Documentos Legais */}
         <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-6 border-2 border-orange-200">
           <h3 className="font-bold text-lg mb-4 text-orange-900">📜 Documentos Legais</h3>
           <p className="text-sm text-gray-700 mb-4">
@@ -455,7 +633,6 @@ export default function VitalisIntakeComplete() {
           </div>
         </div>
 
-        {/* Confirmações Obrigatórias */}
         <div className="space-y-3">
           {renderField('li_termos')}
           {renderField('li_privacidade')}
@@ -463,7 +640,6 @@ export default function VitalisIntakeComplete() {
           {renderField('comprometo_programa')}
         </div>
 
-        {/* Aviso Importante */}
         <div className="bg-amber-50 border-2 border-amber-300 rounded-lg p-4">
           <p className="text-sm text-amber-900">
             ⚠️ <strong>Importante:</strong> O Vitalis é um programa de coaching nutricional. Se tens condições de saúde, recomendamos que consultes o teu médico antes de iniciar.
@@ -478,7 +654,6 @@ export default function VitalisIntakeComplete() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-      {/* Progress bar */}
       <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
         <div 
           className="h-full bg-gradient-to-r from-orange-500 to-amber-600 transition-all duration-300" 
@@ -491,7 +666,7 @@ export default function VitalisIntakeComplete() {
           <h1 className="text-4xl font-bold text-orange-900 mb-3" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
             {section.title}
           </h1>
-          {section.subtitle && <p className="text-gray-600 italic">{section.subtitle}</p>}
+          {section.subtitle && <p className="text-gray-600 italic text-sm">{section.subtitle}</p>}
           {!section.isWelcome && <p className="text-sm text-gray-600 mt-4">Secção {currentSection} de {sections.length - 1}</p>}
         </div>
 
@@ -515,7 +690,7 @@ export default function VitalisIntakeComplete() {
               {section.isLegal ? renderLegalSection() : section.fields?.map(field => renderField(field))}
               
               {error && (
-                <div className="bg-red-50 border-2 border-red-500 text-red-700 p-4 rounded-lg mb-4">
+                <div className="bg-red-50 border-2 border-red-500 text-red-700 p-4 rounded-lg mb-4 text-sm">
                   {error}
                 </div>
               )}
@@ -553,7 +728,7 @@ export default function VitalisIntakeComplete() {
         )}
       </div>
 
-      {/* Modal Termos */}
+      {/* Modais Termos e Privacidade */}
       {showTermos && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
@@ -588,7 +763,6 @@ export default function VitalisIntakeComplete() {
         </div>
       )}
 
-      {/* Modal Privacidade */}
       {showPrivacidade && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
