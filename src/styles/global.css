@@ -31,15 +31,15 @@
   --vitalis-bege: #D2B48C;
   --vitalis-linho: #F0EBE3;
   
-  /* 7 ECOS — Cores por Chakra */
-  --eco-1-vitalis: #C1634A;
-  --eco-2-serena: #5B9AA0;
-  --eco-3-ignis: #FFB300;
-  --eco-4-ventis: #8FBC8F;
-  --eco-5-ecoa: #87CEEB;
-  --eco-6-lumina: #4B0082;
-  --eco-7-imago: #E6D5A8;
-  --aurora: #FFD700;
+  /* 7 ECOS — Cores por Chakra (baseadas nos logos oficiais) */
+  --eco-1-vitalis: #D97706;     /* Terracota/Laranja */
+  --eco-2-serena: #0EA5E9;      /* Azul água */
+  --eco-3-ignis: #F97316;       /* Laranja fogo */
+  --eco-4-ventis: #10B981;      /* Verde menta */
+  --eco-5-ecoa: #3B82F6;        /* Azul céu */
+  --eco-6-lumina: #9333EA;      /* Roxo/Púrpura */
+  --eco-7-imago: #64748B;       /* Cinza prata */
+  --aurora: #F59E0B;            /* Dourado */
   
   /* Tipografia */
   --font-titulos: 'Cormorant Garamond', Georgia, serif;
