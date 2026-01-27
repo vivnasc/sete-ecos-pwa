@@ -33,22 +33,24 @@ function App() {
 
   if (loading) return <div className="loading">A carregar...</div>
 
-  if (!session) return <Auth />
-
   return (
     <BrowserRouter>
       <div className="app">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/lumina" element={<Lumina />} />
           
-          {/* Rotas Vitalis */}
+          {/* Rotas Lumina */}
+          <Route path="/lumina" element={session ? <Lumina /> : <Auth />} />
+          
+          {/* Rotas Vitalis PÚBLICAS */}
           <Route path="/vitalis/login" element={<VitalisAuth />} />
-          <Route path="/vitalis/intake" element={<VitalisIntakeComplete />} />
-          <Route path="/vitalis/dashboard" element={<DashboardVitalis />} />
-          <Route path="/vitalis/checkin" element={<CheckinDiario />} />
-          <Route path="/vitalis/receitas" element={<ReceitasBrowse />} />
-          <Route path="/vitalis/espaco-retorno" element={<EspacoRetorno />} />
+          
+          {/* Rotas Vitalis PROTEGIDAS */}
+          <Route path="/vitalis/intake" element={session ? <VitalisIntakeComplete /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/dashboard" element={session ? <DashboardVitalis /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/checkin" element={session ? <CheckinDiario /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/receitas" element={session ? <ReceitasBrowse /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/espaco-retorno" element={session ? <EspacoRetorno /> : <Navigate to="/vitalis/login" />} />
           
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
