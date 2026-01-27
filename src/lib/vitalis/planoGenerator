@@ -1,0 +1,265 @@
+// lib/vitalis/planoGenerator.js
+// Geração automática de plano nutricional baseado no intake
+
+import { supabase } from '../supabase';
+
+/**
+ * Gera plano nutricional personalizado após preenchimento do intake
+ * Baseado no método Precision Nutrition
+ */
+export async function gerarPlanoAutomatico(userId) {
+  try {
+    // 1. Buscar dados do intake
+    const { data: intake, error: intakeError } = await supabase
+      .from('vitalis_intake')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (intakeError) throw intakeError;
+
+    // 2. Buscar dados básicos do user
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('altura_cm')
+      .eq('id', userId)
+      .single();
+
+    if (userError) throw userError;
+
+    // 3. Calcular TMB (Taxa Metabólica Basal) - Fórmula Mifflin-St Jeor
+    const altura = intake.altura_cm || user.altura_cm;
+    const peso = intake.peso_actual;
+    const idade = intake.idade;
+    const sexo = intake.sexo;
+
+    let tmb;
+    if (sexo === 'masculino') {
+      tmb = (10 * peso) + (6.25 * altura) - (5 * idade) + 5;
+    } else {
+      tmb = (10 * peso) + (6.25 * altura) - (5 * idade) - 161;
+    }
+
+    // 4. Ajustar por nível de actividade
+    const factoresActividade = {
+      'sedentaria': 1.2,
+      'leve': 1.375,
+      'moderada': 1.55,
+      'intensa': 1.725
+    };
+    const factor = factoresActividade[intake.nivel_actividade] || 1.2;
+    const tdee = tmb * factor; // Total Daily Energy Expenditure
+
+    // 5. Aplicar deficit/superavit baseado no objectivo
+    let caloriasAlvo;
+    const objectivo = intake.objectivo_principal;
+
+    if (objectivo === 'perder_peso') {
+      // Deficit de 20-25% (perda sustentável)
+      caloriasAlvo = Math.round(tdee * 0.75);
+    } else if (objectivo === 'ganhar_massa') {
+      // Superavit de 10-15%
+      caloriasAlvo = Math.round(tdee * 1.1);
+    } else {
+      // Manutenção
+      caloriasAlvo = Math.round(tdee);
+    }
+
+    // 6. Calcular macros baseado na abordagem escolhida
+    let proteinaG, carboidratosG, gorduraG;
+    const abordagem = intake.abordagem_preferida || 'equilibrado';
+
+    if (abordagem === 'keto_if') {
+      // Keto: 70% gordura, 25% proteína, 5% carbs
+      proteinaG = Math.round((caloriasAlvo * 0.25) / 4);
+      carboidratosG = Math.round((caloriasAlvo * 0.05) / 4);
+      gorduraG = Math.round((caloriasAlvo * 0.70) / 9);
+    } else if (abordagem === 'low_carb') {
+      // Low-carb: 40% proteína, 30% carbs, 30% gordura
+      proteinaG = Math.round((caloriasAlvo * 0.40) / 4);
+      carboidratosG = Math.round((caloriasAlvo * 0.30) / 4);
+      gorduraG = Math.round((caloriasAlvo * 0.30) / 9);
+    } else {
+      // Equilibrado: 30% proteína, 40% carbs, 30% gordura
+      proteinaG = Math.round((caloriasAlvo * 0.30) / 4);
+      carboidratosG = Math.round((caloriasAlvo * 0.40) / 4);
+      gorduraG = Math.round((caloriasAlvo * 0.30) / 9);
+    }
+
+    // 7. Converter para porções Precision Nutrition (método da mão)
+    // 1 palma de proteína ≈ 25g proteína
+    // 1 punho de legumes ≈ 50g legumes
+    // 1 mão em concha de hidratos ≈ 30g hidratos
+    // 1 polegar de gordura ≈ 10g gordura
+
+    const porcoesProteina = Math.round(proteinaG / 25);
+    const porcoesLegumes = 4; // Sempre 4 punhos por dia (fixo)
+    const porcoesHidratos = Math.round(carboidratosG / 30);
+    const porcoesGordura = Math.round(gorduraG / 10);
+
+    // 8. Determinar número de refeições baseado no intake
+    let numRefeicoes;
+    if (intake.aceita_jejum && abordagem === 'keto_if') {
+      numRefeicoes = 2; // Jejum intermitente: 2 refeições
+    } else if (intake.num_refeicoes_dia) {
+      numRefeicoes = parseInt(intake.num_refeicoes_dia.split('-')[0]);
+    } else {
+      numRefeicoes = 3; // Padrão
+    }
+
+    // 9. Distribuir porções por refeição
+    const porcoesPorRefeicao = {
+      proteina: Math.ceil(porcoesProteina / numRefeicoes),
+      legumes: Math.ceil(porcoesLegumes / numRefeicoes),
+      hidratos: Math.ceil(porcoesHidratos / numRefeicoes),
+      gordura: Math.ceil(porcoesGordura / numRefeicoes)
+    };
+
+    // 10. Definir horários sugeridos baseado na rotina
+    let horariosRefeicoes;
+    if (intake.aceita_jejum) {
+      // Jejum 16:8 - ex: 12h, 16h, 20h
+      horariosRefeicoes = ['12:00', '16:00', '20:00'].slice(0, numRefeicoes);
+    } else if (intake.pequeno_almoco === 'nunca') {
+      // Não come pequeno-almoço
+      horariosRefeicoes = ['13:00', '17:00', '20:00'].slice(0, numRefeicoes);
+    } else {
+      // Padrão
+      horariosRefeicoes = ['08:00', '13:00', '19:00'].slice(0, numRefeicoes);
+    }
+
+    // 11. Determinar fase inicial
+    const faseInicial = 'inducao';
+
+    // 12. Criar registo em vitalis_clients
+    const { error: clientError } = await supabase
+      .from('vitalis_clients')
+      .insert([{
+        user_id: userId,
+        status: 'activo',
+        pacote: intake.pacote_escolhido || 'essencial',
+        data_inicio: new Date().toISOString().split('T')[0],
+        duracao_programa: intake.duracao || '6_meses',
+        fase_actual: faseInicial,
+        objectivo_principal: intake.objectivo_principal,
+        peso_inicial: intake.peso_actual,
+        peso_actual: intake.peso_actual,
+        peso_meta: intake.peso_meta,
+        imc_inicial: calcularIMC(intake.peso_actual, altura),
+        imc_actual: calcularIMC(intake.peso_actual, altura),
+        emocao_dominante: intake.emocao_dominante,
+        prontidao_1a10: intake.prontidao_1a10
+      }]);
+
+    if (clientError) throw clientError;
+
+    // 13. Criar plano nutricional em vitalis_meal_plans
+    const { data: plano, error: planoError } = await supabase
+      .from('vitalis_meal_plans')
+      .insert([{
+        user_id: userId,
+        versao: 1,
+        fase: faseInicial,
+        abordagem: abordagem,
+        calorias_alvo: caloriasAlvo,
+        proteina_g: proteinaG,
+        carboidratos_g: carboidratosG,
+        gordura_g: gorduraG,
+        status: 'activo',
+        receitas_incluidas: JSON.stringify({
+          porções_por_refeicao: porcoesPorRefeicao,
+          num_refeicoes: numRefeicoes,
+          horarios: horariosRefeicoes
+        })
+      }])
+      .select()
+      .single();
+
+    if (planoError) throw planoError;
+
+    // 14. Criar hábitos iniciais da fase de indução
+    const habitosInducao = [
+      {
+        habito: 'Beber 2L de água por dia',
+        categoria: 'hidratacao',
+        fase: 'inducao',
+        dias_total: 14
+      },
+      {
+        habito: 'Fazer 3 refeições dentro da janela alimentar',
+        categoria: 'nutricao',
+        fase: 'inducao',
+        dias_total: 14
+      },
+      {
+        habito: 'Dormir 7-8 horas por noite',
+        categoria: 'sono',
+        fase: 'inducao',
+        dias_total: 14
+      },
+      {
+        habito: 'Check-in diário na app',
+        categoria: 'mindset',
+        fase: 'inducao',
+        dias_total: 14
+      }
+    ];
+
+    const habitosComUserId = habitosInducao.map(h => ({
+      ...h,
+      user_id: userId,
+      data_inicio: new Date().toISOString().split('T')[0]
+    }));
+
+    await supabase.from('vitalis_habitos').insert(habitosComUserId);
+
+    // 15. Retornar resumo do plano gerado
+    return {
+      success: true,
+      plano: {
+        calorias: caloriasAlvo,
+        macros: {
+          proteina: proteinaG,
+          carboidratos: carboidratosG,
+          gordura: gorduraG
+        },
+        porcoes: {
+          proteina: porcoesProteina,
+          legumes: porcoesLegumes,
+          hidratos: porcoesHidratos,
+          gordura: porcoesGordura
+        },
+        porcoes_por_refeicao: porcoesPorRefeicao,
+        num_refeicoes: numRefeicoes,
+        horarios: horariosRefeicoes,
+        fase: faseInicial,
+        abordagem: abordagem
+      }
+    };
+
+  } catch (error) {
+    console.error('Erro ao gerar plano:', error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+// Função auxiliar para calcular IMC
+function calcularIMC(peso, altura) {
+  const alturaM = altura / 100;
+  return parseFloat((peso / (alturaM * alturaM)).toFixed(1));
+}
+
+// Função para recalcular plano (quando muda de fase ou peso estagna)
+export async function recalcularPlano(userId, novaFase = null) {
+  // Similar à gerarPlanoAutomatico mas usa peso_actual do cliente
+  // e pode ajustar macros baseado na nova fase
+  // TODO: Implementar lógica de ajuste por fase
+}
+
+export default {
+  gerarPlanoAutomatico,
+  recalcularPlano
+};
