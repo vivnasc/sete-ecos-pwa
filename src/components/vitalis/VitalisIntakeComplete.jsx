@@ -1,707 +1,407 @@
-import React, { useState } from 'react';
-import { supabase } from '../../lib/supabase.js';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from ‘react’;
+import { supabase } from ‘../../lib/supabase.js’;
+import { useNavigate } from ‘react-router-dom’;
 
 export default function VitalisIntakeComplete() {
-  const navigate = useNavigate();
-  const [currentSection, setCurrentSection] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+const navigate = useNavigate();
+const [currentSection, setCurrentSection] = useState(0);
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState(’’);
 
-  const [formData, setFormData] = useState({
-    // Dados pessoais
-    nome: '',
-    email: '',
-    whatsapp: '',
-    idade: '',
-    sexo: '',
-    
-    // Medidas físicas
-    altura_cm: '',
-    peso_actual: '',
-    peso_meta: '',
-    cintura_cm: '',
-    anca_cm: '',
-    
-    // Objectivo
-    objectivo_principal: '',
-    prazo: '',
-    porque_importante: '',
-    
-    // Abordagem alimentar
-    abordagem_preferida: '',
-    aceita_jejum: false,
-    restricoes_alimentares: [],
-    
-    // Saúde
-    condicoes_saude: [],
-    medicacao: '',
-    
-    // Hábitos alimentares
-    refeicoes_dia: '',
-    pequeno_almoco: '',
-    onde_come: [],
-    tipos_comida: [],
-    agua_litros_dia: '',
-    bebidas: [],
-    freq_doces: '3',
-    freq_fritos: '3',
-    petisca: false,
-    o_que_petisca: [],
-    
-    // FOME EMOCIONAL - 7 emoções
-    gatilhos_fome_emocional: [],
-    freq_cansaco: '',
-    freq_ansiedade: '',
-    freq_tristeza: '',
-    freq_raiva: '',
-    freq_vazio: '',
-    freq_solidao: '',
-    freq_negacao: '',
-    emocao_dominante: '',
-    
-    // Padrão fome emocional
-    o_que_procura_comer: [],
-    como_sente_depois: '',
-    quando_comecou_padrao: '',
-    tentou_alternativas: false,
-    que_alternativas: '',
-    
-    // Actividade física
-    nivel_actividade: '',
-    faz_exercicio: false,
-    tipo_exercicio: [],
-    
-    // Sono
-    horas_sono: '',
-    qualidade_sono: '3',
-    
-    // Contexto de vida
-    situacao_profissional: '',
-    situacao_familiar: '',
-    filhos_pequenos: false,
-    quem_cozinha: '',
-    nivel_stress: '3',
-    
-    // Histórico
-    maior_obstaculo: '',
-    historico_dietas: '',
-    gatilhos_sair_plano: [],
-    quantas_dietas: '',
-    dieta_funcionou: '',
-    
-    // Preferências do programa
-    abordagem_realista: '',
-    disposta_jejum: false,
-    preferencias_alimentares: [],
-    medir_pesar_comida: '',
-    acesso_ingredientes: '',
-    
-    // Pacote
-    pacote_escolhido: '',
-    duracao: '',
-    forma_pagamento: '',
-    codigo_promo: '',
-    
-    // Final
-    como_conheceu: '',
-    observacoes_adicionais: '',
-    o_que_espera_ganhar: '',
-    autoriza_dados_pesquisa: false,
-    prontidao_1a10: '5',
-    confirmacoes: []
-  });
+const [formData, setFormData] = useState({
+nome: ‘’, email: ‘’, whatsapp: ‘’, idade: ‘’, sexo: ‘’,
+altura_cm: ‘’, peso_actual: ‘’, peso_meta: ‘’, cintura_cm: ‘’, anca_cm: ‘’,
+objectivo_principal: ‘’, prazo: ‘’, porque_importante: ‘’,
+abordagem_preferida: ‘’, restricoes_alimentares: [],
+condicoes_saude: [], medicacao: ‘’,
+refeicoes_dia: ‘’, pequeno_almoco: ‘’,
+onde_come: [], tipos_comida: [], agua_litros_dia: ‘2’, bebidas: [],
+freq_doces: ‘3’, freq_fritos: ‘3’, petisca: false, o_que_petisca: [],
+freq_cansaco: ‘’, freq_ansiedade: ‘’, freq_tristeza: ‘’, freq_raiva: ‘’,
+freq_vazio: ‘’, freq_solidao: ‘’, freq_negacao: ‘’, emocao_dominante: ‘’,
+o_que_procura_comer: [], como_sente_depois: ‘’, quando_comecou_padrao: ‘’,
+tentou_alternativas: false, que_alternativas: ‘’,
+nivel_actividade: ‘’, faz_exercicio: false, tipo_exercicio: [],
+horas_sono: ‘’, qualidade_sono: ‘3’,
+situacao_profissional: ‘’, situacao_familiar: ‘’, filhos_pequenos: false,
+quem_cozinha: ‘’, nivel_stress: ‘3’,
+maior_obstaculo: ‘’, historico_dietas: ‘’, gatilhos_sair_plano: [],
+quantas_dietas: ‘’, dieta_funcionou: ‘’,
+abordagem_realista: ‘’, preferencias_alimentares: [],
+medir_pesar_comida: ‘’, acesso_ingredientes: ‘’,
+como_conheceu: [], observacoes_adicionais: ‘’, o_que_espera_ganhar: ‘’,
+autoriza_dados_pesquisa: false, prontidao_1a10: ‘5’, confirmacoes: []
+});
 
-  const sections = [
-    {
-      title: 'Bem-vinda ao Vitalis 💪',
-      subtitle: 'Responde com honestidade. Não há respostas certas ou erradas.',
-      icon: '🌱',
-      time: '10-15 minutos'
-    },
-    {
-      title: 'Sobre Ti',
-      questions: [
-        { id: 'nome', label: 'Nome completo', type: 'text', required: true },
-        { id: 'email', label: 'Email', type: 'email', required: true },
-        { id: 'whatsapp', label: 'WhatsApp', type: 'tel', placeholder: '+258...' },
-        { id: 'idade', label: 'Idade', type: 'number', required: true },
-        { id: 'sexo', label: 'Sexo', type: 'radio', options: ['feminino', 'masculino'], labels: ['Feminino', 'Masculino'], required: true }
-      ]
-    },
-    {
-      title: 'Medidas e Objectivo',
-      questions: [
-        { id: 'altura_cm', label: 'Altura (cm)', type: 'number', required: true },
-        { id: 'peso_actual', label: 'Peso actual (kg)', type: 'number', step: '0.1', required: true },
-        { id: 'peso_meta', label: 'Peso desejado (kg)', type: 'number', step: '0.1', required: true },
-        { id: 'cintura_cm', label: 'Cintura (cm)', type: 'number', step: '0.1' },
-        { id: 'anca_cm', label: 'Anca (cm)', type: 'number', step: '0.1' },
-        { id: 'objectivo_principal', label: 'Objectivo principal', type: 'textarea', required: true, placeholder: 'Ex: Emagrecer 10kg, ganhar energia, melhorar saúde...' },
-        { id: 'prazo', label: 'Em quanto tempo?', type: 'radio', options: ['3m', '6m', '9m', '12m', 'sem_pressa'], labels: ['3 meses', '6 meses', '9 meses', '12 meses', 'Sem pressa'], required: true },
-        { id: 'porque_importante', label: 'Porquê é importante para ti?', type: 'textarea', placeholder: 'O que vai mudar na tua vida?' }
-      ]
-    },
-    {
-      title: 'Abordagem Alimentar',
-      questions: [
-        { id: 'abordagem_preferida', label: 'Que abordagem preferes?', type: 'radio', options: ['keto_if', 'low_carb', 'equilibrado', 'nao_sei'], labels: ['Keto + Jejum Intermitente', 'Low Carb', 'Equilibrado', 'Não sei'], required: true },
-        { id: 'aceita_jejum', label: 'Aceitas fazer jejum intermitente?', type: 'checkbox_single' },
-        { id: 'restricoes_alimentares', label: 'Restrições alimentares', type: 'checkbox_multiple', options: ['Vegetariana', 'Vegana', 'Sem glúten', 'Sem lactose', 'Halal', 'Nenhuma'] }
-      ]
-    },
-    {
-      title: 'Saúde',
-      questions: [
-        { id: 'condicoes_saude', label: 'Condições de saúde', type: 'checkbox_multiple', options: ['Diabetes', 'Hipertensão', 'Colesterol alto', 'Problemas de tiroide', 'SOP', 'Nenhuma'] },
-        { id: 'medicacao', label: 'Medicação actual', type: 'textarea', placeholder: 'Lista os medicamentos e suplementos que tomas' }
-      ]
-    },
-    {
-      title: 'Hábitos Alimentares',
-      questions: [
-        { id: 'refeicoes_dia', label: 'Quantas refeições por dia?', type: 'number', min: '1', max: '10' },
-        { id: 'pequeno_almoco', label: 'O que comes no pequeno-almoço?', type: 'textarea' },
-        { id: 'onde_come', label: 'Onde comes habitualmente?', type: 'checkbox_multiple', options: ['Casa', 'Trabalho', 'Restaurante', 'Fast food', 'Na rua'] },
-        { id: 'tipos_comida', label: 'Tipos de comida que preferes', type: 'checkbox_multiple', options: ['Tradicional moçambicana', 'Portuguesa', 'Italiana', 'Chinesa', 'Fast food', 'Vegetariana'] },
-        { id: 'agua_litros_dia', label: 'Água por dia (litros)', type: 'number', step: '0.5', min: '0', max: '5' },
-        { id: 'bebidas', label: 'Que bebidas consomes?', type: 'checkbox_multiple', options: ['Café', 'Chá', 'Refrigerantes', 'Sumos naturais', 'Sumos de pacote', 'Álcool', 'Só água'] },
-        { id: 'freq_doces', label: 'Comes doces?', type: 'range', min: '1', max: '5', labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'] },
-        { id: 'freq_fritos', label: 'Comes fritos?', type: 'range', min: '1', max: '5', labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'] },
-        { id: 'petisca', label: 'Petiscas entre refeições?', type: 'checkbox_single' },
-        { id: 'o_que_petisca', label: 'O que petiscas?', type: 'checkbox_multiple', options: ['Doces', 'Salgados', 'Frutas', 'Nuts', 'Bolachas', 'Pão'], conditional: 'petisca' }
-      ]
-    },
-    {
-      title: 'Fome Emocional - As 7 Emoções',
-      subtitle: 'Com que frequência comes quando sentes...',
-      questions: [
-        { id: 'gatilhos_fome_emocional', label: 'Quando é que comes por emoções?', type: 'checkbox_multiple', options: ['Stress', 'Tédio', 'Ansiedade', 'Tristeza', 'Solidão', 'Cansaço', 'Raiva', 'Frustração', 'Nunca'] },
-        { id: 'freq_cansaco', label: 'Cansaço', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
-        { id: 'freq_ansiedade', label: 'Ansiedade', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
-        { id: 'freq_tristeza', label: 'Tristeza', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
-        { id: 'freq_raiva', label: 'Raiva', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
-        { id: 'freq_vazio', label: 'Vazio', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
-        { id: 'freq_solidao', label: 'Solidão', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
-        { id: 'freq_negacao', label: 'Negação', type: 'radio', options: ['nunca', 'raramente', 'as_vezes', 'frequentemente', 'sempre'], labels: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'], required: true },
-        { id: 'emocao_dominante', label: 'Qual é a emoção DOMINANTE?', type: 'radio', options: ['cansaco', 'ansiedade', 'tristeza', 'raiva', 'vazio', 'solidao', 'negacao'], labels: ['Cansaço', 'Ansiedade', 'Tristeza', 'Raiva', 'Vazio', 'Solidão', 'Negação'], required: true }
-      ]
-    },
-    {
-      title: 'Padrão de Fome Emocional',
-      questions: [
-        { id: 'o_que_procura_comer', label: 'O que procuras comer?', type: 'checkbox_multiple', options: ['Doce', 'Salgado', 'Crocante', 'Cremoso', 'Macio', 'Picante'] },
-        { id: 'como_sente_depois', label: 'Como te sentes depois?', type: 'textarea', placeholder: 'Culpa, alívio temporário, vazio...' },
-        { id: 'quando_comecou_padrao', label: 'Quando começou este padrão?', type: 'text', placeholder: 'Infância, adolescência, após evento específico...' },
-        { id: 'tentou_alternativas', label: 'Já tentaste alternativas à comida?', type: 'checkbox_single' },
-        { id: 'que_alternativas', label: 'Que alternativas tentaste?', type: 'textarea', conditional: 'tentou_alternativas' }
-      ]
-    },
-    {
-      title: 'Actividade Física',
-      questions: [
-        { id: 'nivel_actividade', label: 'Nível de actividade', type: 'radio', options: ['sedentaria', 'leve', 'moderada', 'intensa'], labels: ['Sedentária', 'Leve', 'Moderada', 'Intensa'], required: true },
-        { id: 'faz_exercicio', label: 'Fazes exercício regularmente?', type: 'checkbox_single' },
-        { id: 'tipo_exercicio', label: 'Que tipo de exercício?', type: 'checkbox_multiple', options: ['Caminhada', 'Corrida', 'Ginásio', 'Natação', 'Yoga', 'Dança', 'Outro'], conditional: 'faz_exercicio' }
-      ]
-    },
-    {
-      title: 'Sono e Stress',
-      questions: [
-        { id: 'horas_sono', label: 'Quantas horas dormes?', type: 'radio', options: ['menos_5h', '5-6h', '7-8h', 'mais_8h'], labels: ['Menos de 5h', '5-6h', '7-8h', 'Mais de 8h'] },
-        { id: 'qualidade_sono', label: 'Qualidade do sono', type: 'range', min: '1', max: '5', labels: ['Péssima', 'Má', 'Razoável', 'Boa', 'Excelente'] },
-        { id: 'nivel_stress', label: 'Nível de stress', type: 'range', min: '1', max: '5', labels: ['Muito baixo', 'Baixo', 'Médio', 'Alto', 'Muito alto'] }
-      ]
-    },
-    {
-      title: 'Contexto de Vida',
-      questions: [
-        { id: 'situacao_profissional', label: 'Situação profissional', type: 'text', placeholder: 'Empregada, desempregada, estudante...' },
-        { id: 'situacao_familiar', label: 'Situação familiar', type: 'text', placeholder: 'Solteira, casada, divorciada...' },
-        { id: 'filhos_pequenos', label: 'Tens filhos pequenos?', type: 'checkbox_single' },
-        { id: 'quem_cozinha', label: 'Quem cozinha em casa?', type: 'text', placeholder: 'Eu, parceiro, empregada...' }
-      ]
-    },
-    {
-      title: 'Histórico de Dietas',
-      questions: [
-        { id: 'quantas_dietas', label: 'Quantas dietas já fizeste?', type: 'radio', options: ['nunca', '1-2', '3-5', 'mais_5'], labels: ['Nunca', '1-2 dietas', '3-5 dietas', 'Mais de 5'], required: true },
-        { id: 'historico_dietas', label: 'Descreve o teu histórico', type: 'textarea', placeholder: 'Que dietas fizeste? Como foi?' },
-        { id: 'dieta_funcionou', label: 'Alguma funcionou? Porquê?', type: 'textarea' },
-        { id: 'maior_obstaculo', label: 'Maior obstáculo', type: 'textarea', placeholder: 'O que te impede de ter sucesso?' },
-        { id: 'gatilhos_sair_plano', label: 'Gatilhos para sair do plano', type: 'checkbox_multiple', options: ['Stress', 'Eventos sociais', 'TPM', 'Fins de semana', 'Viagens', 'Falta de tempo', 'Desânimo'] }
-      ]
-    },
-    {
-      title: 'Preferências do Programa',
-      questions: [
-        { id: 'abordagem_realista', label: 'Preferes abordagem...', type: 'radio', options: ['gradual', 'intensiva'], labels: ['Gradual (mudanças aos poucos)', 'Intensiva (mudança rápida)'], required: true },
-        { id: 'disposta_jejum', label: 'Estás disposta a fazer jejum?', type: 'checkbox_single' },
-        { id: 'preferencias_alimentares', label: 'Preferências alimentares', type: 'checkbox_multiple', options: ['Vegetariana', 'Vegana', 'Sem glúten', 'Sem lactose', 'Sem restrições'] },
-        { id: 'medir_pesar_comida', label: 'Estás disposta a medir/pesar comida?', type: 'radio', options: ['sim', 'nao', 'as_vezes'], labels: ['Sim', 'Não', 'Às vezes'] },
-        { id: 'acesso_ingredientes', label: 'Acesso a ingredientes saudáveis', type: 'radio', options: ['facil', 'moderado', 'dificil'], labels: ['Fácil', 'Moderado', 'Difícil'] }
-      ]
-    },
-    {
-      title: 'Pacote e Pagamento',
-      questions: [
-        { id: 'pacote_escolhido', label: 'Pacote escolhido', type: 'radio', options: ['essencial', 'premium', 'vip'], labels: ['Essencial', 'Premium', 'VIP'], required: true },
-        { id: 'duracao', label: 'Duração', type: 'radio', options: ['3m', '6m', '9m', '12m'], labels: ['3 meses', '6 meses', '9 meses', '12 meses'], required: true },
-        { id: 'forma_pagamento', label: 'Forma de pagamento preferida', type: 'text', placeholder: 'M-Pesa, transferência bancária...' },
-        { id: 'codigo_promo', label: 'Código promocional', type: 'text', placeholder: 'Se tiveres...' }
-      ]
-    },
-    {
-      title: 'Últimas Perguntas',
-      questions: [
-        { id: 'como_conheceu', label: 'Como conheceste o Vitalis?', type: 'text' },
-        { id: 'o_que_espera_ganhar', label: 'O que MAIS esperas ganhar?', type: 'textarea', placeholder: 'Sê específica...', required: true },
-        { id: 'observacoes_adicionais', label: 'Observações adicionais', type: 'textarea', placeholder: 'Algo mais que queiras partilhar?' },
-        { id: 'prontidao_1a10', label: 'Quão PRONTA estás para fazer mudanças?', type: 'range', min: '1', max: '10', labels: ['1 - Ainda não sei', '7', '10 - Totalmente comprometida'], required: true },
-        { id: 'autoriza_dados_pesquisa', label: 'Autorizo uso dos dados para pesquisa', type: 'checkbox_single' },
-        { id: 'confirmacoes', label: 'Confirmações', type: 'checkbox_multiple', options: [
-          'Entendo que este é um programa de coaching nutricional e não substitui acompanhamento médico',
-          'Comprometo-me a seguir o programa com honestidade e consistência',
-          'Autorizo o contacto via WhatsApp para acompanhamento',
-          'Li e aceito os Termos de Serviço e Política de Privacidade'
-        ], required: true }
-      ]
-    }
-  ];
+const sections = [
+{ title: ‘Bem-vinda ao Vitalis 💪’, isWelcome: true },
+{ title: ‘Dados Pessoais’, fields: [‘nome’, ‘email’, ‘whatsapp’, ‘idade’, ‘sexo’] },
+{ title: ‘Medidas Corporais’, fields: [‘altura_cm’, ‘peso_actual’, ‘peso_meta’, ‘cintura_cm’, ‘anca_cm’] },
+{ title: ‘Objectivo e Prazo’, fields: [‘objectivo_principal’, ‘prazo’, ‘porque_importante’] },
+{ title: ‘Abordagem Alimentar’, fields: [‘abordagem_preferida’, ‘restricoes_alimentares’] },
+{ title: ‘Saúde’, fields: [‘condicoes_saude’, ‘medicacao’] },
+{ title: ‘Hábitos Alimentares’, fields: [‘refeicoes_dia’, ‘pequeno_almoco’, ‘onde_come’, ‘tipos_comida’, ‘agua_litros_dia’, ‘bebidas’, ‘freq_doces’, ‘freq_fritos’, ‘petisca’, ‘o_que_petisca’] },
+{ title: ‘Fome Emocional - As 7 Emoções’, subtitle: ‘Com que frequência comes quando sentes…’, fields: [‘freq_cansaco’, ‘freq_ansiedade’, ‘freq_tristeza’, ‘freq_raiva’, ‘freq_vazio’, ‘freq_solidao’, ‘freq_negacao’, ‘emocao_dominante’] },
+{ title: ‘Padrão de Fome Emocional’, fields: [‘o_que_procura_comer’, ‘como_sente_depois’, ‘quando_comecou_padrao’, ‘tentou_alternativas’, ‘que_alternativas’] },
+{ title: ‘Actividade Física’, fields: [‘nivel_actividade’, ‘faz_exercicio’, ‘tipo_exercicio’] },
+{ title: ‘Sono e Stress’, fields: [‘horas_sono’, ‘qualidade_sono’, ‘nivel_stress’] },
+{ title: ‘Contexto de Vida’, fields: [‘situacao_profissional’, ‘situacao_familiar’, ‘filhos_pequenos’, ‘quem_cozinha’] },
+{ title: ‘Histórico de Dietas’, fields: [‘quantas_dietas’, ‘historico_dietas’, ‘dieta_funcionou’, ‘maior_obstaculo’, ‘gatilhos_sair_plano’] },
+{ title: ‘Preferências do Programa’, fields: [‘abordagem_realista’, ‘preferencias_alimentares’, ‘medir_pesar_comida’, ‘acesso_ingredientes’] },
+{ title: ‘Últimas Perguntas’, fields: [‘como_conheceu’, ‘o_que_espera_ganhar’, ‘observacoes_adicionais’, ‘prontidao_1a10’, ‘autoriza_dados_pesquisa’, ‘confirmacoes’] }
+];
 
-  const handleInputChange = (questionId, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [questionId]: value
-    }));
-  };
+const fieldConfig = {
+nome: { label: ‘Nome completo’, type: ‘text’, required: true },
+email: { label: ‘Email’, type: ‘email’, required: true },
+whatsapp: { label: ‘WhatsApp’, type: ‘tel’, placeholder: ‘+258…’ },
+idade: { label: ‘Idade’, type: ‘number’, required: true },
+sexo: { label: ‘Sexo’, type: ‘radio’, options: [‘feminino’, ‘masculino’], labels: [‘Feminino’, ‘Masculino’], required: true },
+altura_cm: { label: ‘Altura (cm)’, type: ‘number’, required: true },
+peso_actual: { label: ‘Peso actual (kg)’, type: ‘number’, step: ‘0.1’, required: true },
+peso_meta: { label: ‘Peso desejado (kg)’, type: ‘number’, step: ‘0.1’, required: true },
+cintura_cm: { label: ‘Cintura (cm)’, type: ‘number’, step: ‘0.1’ },
+anca_cm: { label: ‘Anca (cm)’, type: ‘number’, step: ‘0.1’ },
+objectivo_principal: { label: ‘Objectivo principal’, type: ‘textarea’, required: true, placeholder: ‘Ex: Emagrecer 10kg, ganhar energia…’ },
+prazo: { label: ‘Em quanto tempo?’, type: ‘radio’, options: [‘3m’, ‘6m’, ‘9m’, ‘12m’, ‘sem_pressa’], labels: [‘3 meses’, ‘6 meses’, ‘9 meses’, ‘12 meses’, ‘Sem pressa’], required: true },
+porque_importante: { label: ‘Porquê é importante?’, type: ‘textarea’, placeholder: ‘O que vai mudar na tua vida?’ },
+abordagem_preferida: { label: ‘Que abordagem preferes?’, type: ‘radio’, options: [‘keto_if’, ‘low_carb’, ‘equilibrado’, ‘nao_sei’], labels: [‘Keto + Jejum Intermitente’, ‘Low Carb’, ‘Equilibrado’, ‘Não sei’], required: true },
+restricoes_alimentares: { label: ‘Restrições alimentares’, type: ‘checkbox’, options: [‘Vegetariana’, ‘Vegana’, ‘Sem glúten’, ‘Sem lactose’, ‘Halal’, ‘Nenhuma’] },
+condicoes_saude: { label: ‘Condições de saúde’, type: ‘checkbox’, options: [‘Diabetes’, ‘Hipertensão’, ‘Colesterol alto’, ‘Problemas de tiroide’, ‘SOP’, ‘Nenhuma’] },
+medicacao: { label: ‘Medicação actual’, type: ‘textarea’, placeholder: ‘Lista medicamentos e suplementos’ },
+refeicoes_dia: { label: ‘Refeições por dia?’, type: ‘number’, min: ‘1’, max: ‘10’ },
+pequeno_almoco: { label: ‘O que comes no pequeno-almoço?’, type: ‘textarea’, placeholder: ‘Descreve…’ },
+onde_come: { label: ‘Onde comes habitualmente?’, type: ‘checkbox’, options: [‘Casa’, ‘Trabalho’, ‘Restaurante’, ‘Fast food’, ‘Na rua’] },
+tipos_comida: { label: ‘Tipos de comida’, type: ‘checkbox’, options: [‘Tradicional moçambicana’, ‘Portuguesa’, ‘Italiana’, ‘Chinesa’, ‘Fast food’, ‘Vegetariana’] },
+agua_litros_dia: { label: ‘Água por dia (litros)’, type: ‘slider’, min: ‘0’, max: ‘5’, step: ‘0.5’ },
+bebidas: { label: ‘Bebidas’, type: ‘checkbox’, options: [‘Café’, ‘Chá’, ‘Refrigerantes’, ‘Sumos naturais’, ‘Sumos de pacote’, ‘Álcool’, ‘Só água’] },
+freq_doces: { label: ‘Frequência de doces’, type: ‘slider’, min: ‘1’, max: ‘5’, labels: [‘Nunca’, ‘Raramente’, ‘Às vezes’, ‘Frequente’, ‘Sempre’] },
+freq_fritos: { label: ‘Frequência de fritos’, type: ‘slider’, min: ‘1’, max: ‘5’, labels: [‘Nunca’, ‘Raramente’, ‘Às vezes’, ‘Frequente’, ‘Sempre’] },
+petisca: { label: ‘Petiscas entre refeições?’, type: ‘checkbox_single’ },
+o_que_petisca: { label: ‘O que petiscas?’, type: ‘checkbox’, options: [‘Doces’, ‘Salgados’, ‘Frutas’, ‘Nuts’, ‘Bolachas’, ‘Pão’], conditional: ‘petisca’ },
+freq_cansaco: { label: ‘🔋 Cansaço’, type: ‘radio’, options: [‘nunca’, ‘raramente’, ‘as_vezes’, ‘frequentemente’, ‘sempre’], labels: [‘Nunca’, ‘Raramente’, ‘Às vezes’, ‘Frequentemente’, ‘Sempre’], required: true },
+freq_ansiedade: { label: ‘🌀 Ansiedade’, type: ‘radio’, options: [‘nunca’, ‘raramente’, ‘as_vezes’, ‘frequentemente’, ‘sempre’], labels: [‘Nunca’, ‘Raramente’, ‘Às vezes’, ‘Frequentemente’, ‘Sempre’], required: true },
+freq_tristeza: { label: ‘💧 Tristeza’, type: ‘radio’, options: [‘nunca’, ‘raramente’, ‘as_vezes’, ‘frequentemente’, ‘sempre’], labels: [‘Nunca’, ‘Raramente’, ‘Às vezes’, ‘Frequentemente’, ‘Sempre’], required: true },
+freq_raiva: { label: ‘🔥 Raiva’, type: ‘radio’, options: [‘nunca’, ‘raramente’, ‘as_vezes’, ‘frequentemente’, ‘sempre’], labels: [‘Nunca’, ‘Raramente’, ‘Às vezes’, ‘Frequentemente’, ‘Sempre’], required: true },
+freq_vazio: { label: ‘◯ Vazio’, type: ‘radio’, options: [‘nunca’, ‘raramente’, ‘as_vezes’, ‘frequentemente’, ‘sempre’], labels: [‘Nunca’, ‘Raramente’, ‘Às vezes’, ‘Frequentemente’, ‘Sempre’], required: true },
+freq_solidao: { label: ‘🌑 Solidão’, type: ‘radio’, options: [‘nunca’, ‘raramente’, ‘as_vezes’, ‘frequentemente’, ‘sempre’], labels: [‘Nunca’, ‘Raramente’, ‘Às vezes’, ‘Frequentemente’, ‘Sempre’], required: true },
+freq_negacao: { label: ‘🚫 Negação’, type: ‘radio’, options: [‘nunca’, ‘raramente’, ‘as_vezes’, ‘frequentemente’, ‘sempre’], labels: [‘Nunca’, ‘Raramente’, ‘Às vezes’, ‘Frequentemente’, ‘Sempre’], required: true },
+emocao_dominante: { label: ‘Emoção DOMINANTE?’, type: ‘radio’, options: [‘cansaco’, ‘ansiedade’, ‘tristeza’, ‘raiva’, ‘vazio’, ‘solidao’, ‘negacao’], labels: [‘Cansaço’, ‘Ansiedade’, ‘Tristeza’, ‘Raiva’, ‘Vazio’, ‘Solidão’, ‘Negação’], required: true },
+o_que_procura_comer: { label: ‘O que procuras comer?’, type: ‘checkbox’, options: [‘Doce’, ‘Salgado’, ‘Crocante’, ‘Cremoso’, ‘Macio’, ‘Picante’] },
+como_sente_depois: { label: ‘Como te sentes depois?’, type: ‘textarea’ },
+quando_comecou_padrao: { label: ‘Quando começou?’, type: ‘text’ },
+tentou_alternativas: { label: ‘Tentaste alternativas?’, type: ‘checkbox_single’ },
+que_alternativas: { label: ‘Quais?’, type: ‘textarea’, conditional: ‘tentou_alternativas’ },
+nivel_actividade: { label: ‘Nível de actividade’, type: ‘radio’, options: [‘sedentaria’, ‘leve’, ‘moderada’, ‘intensa’], labels: [‘Sedentária’, ‘Leve’, ‘Moderada’, ‘Intensa’], required: true },
+faz_exercicio: { label: ‘Fazes exercício?’, type: ‘checkbox_single’ },
+tipo_exercicio: { label: ‘Que tipo?’, type: ‘checkbox’, options: [‘Caminhada’, ‘Corrida’, ‘Ginásio’, ‘Natação’, ‘Yoga’, ‘Dança’, ‘Outro’], conditional: ‘faz_exercicio’ },
+horas_sono: { label: ‘Horas de sono?’, type: ‘radio’, options: [‘menos_5h’, ‘5-6h’, ‘7-8h’, ‘mais_8h’], labels: [’<5h’, ‘5-6h’, ‘7-8h’, ‘>8h’] },
+qualidade_sono: { label: ‘Qualidade do sono’, type: ‘slider’, min: ‘1’, max: ‘5’, labels: [‘Péssima’, ‘Má’, ‘Razoável’, ‘Boa’, ‘Excelente’] },
+nivel_stress: { label: ‘Nível de stress’, type: ‘slider’, min: ‘1’, max: ‘5’, labels: [‘Baixo’, ‘Médio’, ‘Alto’, ‘Muito Alto’, ‘Extremo’] },
+situacao_profissional: { label: ‘Situação profissional’, type: ‘text’ },
+situacao_familiar: { label: ‘Situação familiar’, type: ‘text’ },
+filhos_pequenos: { label: ‘Filhos pequenos?’, type: ‘checkbox_single’ },
+quem_cozinha: { label: ‘Quem cozinha?’, type: ‘text’ },
+quantas_dietas: { label: ‘Quantas dietas já fizeste?’, type: ‘radio’, options: [‘nunca’, ‘1-2’, ‘3-5’, ‘mais_5’], labels: [‘Nunca’, ‘1-2’, ‘3-5’, ‘>5’], required: true },
+historico_dietas: { label: ‘Histórico’, type: ‘textarea’ },
+dieta_funcionou: { label: ‘O que funcionou?’, type: ‘textarea’ },
+maior_obstaculo: { label: ‘Maior obstáculo’, type: ‘textarea’ },
+gatilhos_sair_plano: { label: ‘Gatilhos’, type: ‘checkbox’, options: [‘Stress’, ‘Eventos sociais’, ‘TPM’, ‘Fins de semana’, ‘Viagens’, ‘Falta de tempo’, ‘Desânimo’] },
+abordagem_realista: { label: ‘Abordagem’, type: ‘radio’, options: [‘gradual’, ‘intensiva’], labels: [‘Gradual’, ‘Intensiva’], required: true },
+preferencias_alimentares: { label: ‘Preferências’, type: ‘checkbox’, options: [‘Vegetariana’, ‘Vegana’, ‘Sem glúten’, ‘Sem lactose’, ‘Sem restrições’] },
+medir_pesar_comida: { label: ‘Medir/pesar comida?’, type: ‘radio’, options: [‘sim’, ‘nao’, ‘as_vezes’], labels: [‘Sim’, ‘Não’, ‘Às vezes’] },
+acesso_ingredientes: { label: ‘Acesso a ingredientes’, type: ‘radio’, options: [‘facil’, ‘moderado’, ‘dificil’], labels: [‘Fácil’, ‘Moderado’, ‘Difícil’] },
+como_conheceu: { label: ‘Como conheceste?’, type: ‘checkbox’, options: [‘Instagram’, ‘Facebook’, ‘Indicação’, ‘Google’, ‘Outro’], required: true },
+o_que_espera_ganhar: { label: ‘O que MAIS esperas ganhar?’, type: ‘textarea’, required: true, placeholder: ‘Sê específica…’ },
+observacoes_adicionais: { label: ‘Observações’, type: ‘textarea’ },
+prontidao_1a10: { label: ‘Prontidão (1-10)’, type: ‘slider’, min: ‘1’, max: ‘10’, labels: [‘1’, ‘5’, ‘10’], required: true },
+autoriza_dados_pesquisa: { label: ‘Autorizo dados para pesquisa’, type: ‘checkbox_single’ },
+confirmacoes: { label: ‘Confirmações’, type: ‘checkbox’, options: [
+‘Entendo que é coaching nutricional’,
+‘Comprometo-me com o programa’,
+‘Autorizo contacto WhatsApp’,
+‘Aceito Termos e Privacidade’
+], required: true }
+};
 
-  const handleCheckboxMultiple = (questionId, option, checked) => {
-    setFormData(prev => {
-      const current = prev[questionId] || [];
-      if (checked) {
-        return { ...prev, [questionId]: [...current, option] };
-      } else {
-        return { ...prev, [questionId]: current.filter(item => item !== option) };
-      }
-    });
-  };
+const handleChange = (id, value) => setFormData(prev => ({ …prev, [id]: value }));
 
-  const handleNext = () => {
-    if (currentSection < sections.length - 1) {
-      setCurrentSection(currentSection + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
+const handleCheckbox = (id, option, checked) => {
+setFormData(prev => ({
+…prev,
+[id]: checked ? […(prev[id] || []), option] : (prev[id] || []).filter(i => i !== option)
+}));
+};
 
-  const handlePrevious = () => {
-    if (currentSection > 0) {
-      setCurrentSection(currentSection - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
+const handleNext = () => {
+if (currentSection < sections.length - 1) {
+setCurrentSection(currentSection + 1);
+window.scrollTo(0, 0);
+}
+};
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+const handlePrevious = () => {
+if (currentSection > 0) {
+setCurrentSection(currentSection - 1);
+window.scrollTo(0, 0);
+}
+};
 
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('Utilizador não autenticado');
-      }
+const handleSubmit = async (e) => {
+e.preventDefault();
+setLoading(true);
+try {
+const { data: { user } } = await supabase.auth.getUser();
+if (!user) throw new Error(‘Não autenticado’);
 
-      // 1. Criar ou atualizar cliente
-      const { data: clientData, error: clientError } = await supabase
-        .from('vitalis_clients')
-        .upsert({
-          user_id: user.id,
-          objectivo_principal: formData.objectivo_principal,
-          peso_inicial: parseFloat(formData.peso_actual) || null,
-          peso_actual: parseFloat(formData.peso_actual) || null,
-          peso_meta: parseFloat(formData.peso_meta) || null,
-          emocao_dominante: formData.emocao_dominante,
-          prontidao_1a10: parseInt(formData.prontidao_1a10) || null,
-          pacote: formData.pacote_escolhido,
-          duracao_programa: formData.duracao,
-          data_inicio: new Date().toISOString().split('T')[0]
-        }, { onConflict: 'user_id' })
-        .select()
-        .single();
+```
+  const aceita_jejum = formData.abordagem_preferida === 'keto_if';
 
-      if (clientError) throw clientError;
+  const { data: clientData, error: clientError } = await supabase
+    .from('vitalis_clients')
+    .upsert({
+      user_id: user.id,
+      objectivo_principal: formData.objectivo_principal,
+      peso_inicial: parseFloat(formData.peso_actual),
+      peso_actual: parseFloat(formData.peso_actual),
+      peso_meta: parseFloat(formData.peso_meta),
+      emocao_dominante: formData.emocao_dominante,
+      prontidao_1a10: parseInt(formData.prontidao_1a10)
+    }, { onConflict: 'user_id' })
+    .select().single();
 
-      // 2. Guardar intake completo
-      const { error: intakeError } = await supabase
-        .from('vitalis_intake')
-        .upsert({
-          user_id: user.id,
-          client_id: clientData.id,
-          ...formData,
-          // Converter valores
-          idade: parseInt(formData.idade) || null,
-          altura_cm: parseInt(formData.altura_cm) || null,
-          peso_actual: parseFloat(formData.peso_actual) || null,
-          peso_meta: parseFloat(formData.peso_meta) || null,
-          cintura_cm: parseFloat(formData.cintura_cm) || null,
-          anca_cm: parseFloat(formData.anca_cm) || null,
-          agua_litros_dia: parseFloat(formData.agua_litros_dia) || null,
-          refeicoes_dia: parseInt(formData.refeicoes_dia) || null,
-          freq_doces: parseInt(formData.freq_doces) || null,
-          freq_fritos: parseInt(formData.freq_fritos) || null,
-          qualidade_sono: parseInt(formData.qualidade_sono) || null,
-          nivel_stress: parseInt(formData.nivel_stress) || null,
-          prontidao_1a10: parseInt(formData.prontidao_1a10) || null
-        }, { onConflict: 'user_id' });
+  if (clientError) throw clientError;
 
-      if (intakeError) throw intakeError;
+  const { error: intakeError } = await supabase
+    .from('vitalis_intake')
+    .upsert({
+      user_id: user.id,
+      client_id: clientData.id,
+      ...formData,
+      aceita_jejum,
+      idade: parseInt(formData.idade),
+      altura_cm: parseInt(formData.altura_cm),
+      peso_actual: parseFloat(formData.peso_actual),
+      peso_meta: parseFloat(formData.peso_meta),
+      refeicoes_dia: parseInt(formData.refeicoes_dia),
+      agua_litros_dia: parseFloat(formData.agua_litros_dia),
+      freq_doces: parseInt(formData.freq_doces),
+      freq_fritos: parseInt(formData.freq_fritos),
+      qualidade_sono: parseInt(formData.qualidade_sono),
+      nivel_stress: parseInt(formData.nivel_stress),
+      prontidao_1a10: parseInt(formData.prontidao_1a10),
+      como_conheceu: formData.como_conheceu.join(', ')
+    }, { onConflict: 'user_id' });
 
-      navigate('/vitalis/dashboard');
+  if (intakeError) throw intakeError;
+  navigate('/vitalis/dashboard');
+} catch (err) {
+  setError(err.message);
+} finally {
+  setLoading(false);
+}
+```
 
-    } catch (err) {
-      console.error('Erro ao submeter:', err);
-      setError(err.message || 'Erro ao submeter. Tente novamente.');
-    } finally {
-      setLoading(false);
-    }
-  };
+};
 
-  const renderQuestion = (q) => {
-    // Conditional rendering
-    if (q.conditional && !formData[q.conditional]) {
-      return null;
-    }
+const renderField = (fieldId) => {
+const config = fieldConfig[fieldId];
+if (!config) return null;
 
-    switch (q.type) {
-      case 'checkbox_single':
-        return (
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-            <input
-              type="checkbox"
-              checked={formData[q.id] || false}
-              onChange={(e) => handleInputChange(q.id, e.target.checked)}
-              style={{ width: '20px', height: '20px', accentColor: '#D97706' }}
-            />
-            <span>{q.label}</span>
-          </label>
-        );
+```
+if (config.conditional && !formData[config.conditional]) return null;
 
-      case 'checkbox_multiple':
-        return (
-          <div>
-            <p style={{ marginBottom: '12px', fontWeight: '500' }}>{q.label} {q.required && <span style={{ color: '#DC2626' }}>*</span>}</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {q.options.map(option => (
-                <label key={option} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                  <input
-                    type="checkbox"
-                    checked={(formData[q.id] || []).includes(option)}
-                    onChange={(e) => handleCheckboxMultiple(q.id, option, e.target.checked)}
-                    style={{ width: '20px', height: '20px', accentColor: '#D97706' }}
-                  />
-                  <span>{option}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-        );
+const value = formData[fieldId];
+const inputClass = "w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-orange-400 focus:outline-none";
 
-      case 'radio':
-        return (
-          <div>
-            <p style={{ marginBottom: '12px', fontWeight: '500' }}>{q.label} {q.required && <span style={{ color: '#DC2626' }}>*</span>}</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {q.options.map((option, index) => (
-                <label key={option} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                  <input
-                    type="radio"
-                    name={q.id}
-                    value={option}
-                    checked={formData[q.id] === option}
-                    onChange={(e) => handleInputChange(q.id, e.target.value)}
-                    required={q.required}
-                    style={{ width: '20px', height: '20px', accentColor: '#D97706' }}
-                  />
-                  <span>{q.labels ? q.labels[index] : option}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-        );
-
-      case 'range':
-        return (
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
-              {q.label} {q.required && <span style={{ color: '#DC2626' }}>*</span>}
-            </label>
-            <input
-              type="range"
-              min={q.min}
-              max={q.max}
-              value={formData[q.id] || Math.floor((parseInt(q.min) + parseInt(q.max)) / 2)}
-              onChange={(e) => handleInputChange(q.id, e.target.value)}
-              required={q.required}
-              style={{ width: '100%', accentColor: '#D97706' }}
-            />
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#6B7280', marginTop: '8px' }}>
-              {q.labels && q.labels.map((label, i) => (
-                <span key={i} style={{ fontWeight: formData[q.id] == (i + parseInt(q.min)) ? '600' : '400', color: formData[q.id] == (i + parseInt(q.min)) ? '#D97706' : '#6B7280' }}>
-                  {label}
-                </span>
-              ))}
-            </div>
-            <div style={{ textAlign: 'center', marginTop: '8px', fontSize: '1.2rem', fontWeight: '600', color: '#D97706' }}>
-              {formData[q.id] || Math.floor((parseInt(q.min) + parseInt(q.max)) / 2)}
-            </div>
-          </div>
-        );
-
-      case 'textarea':
-        return (
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
-              {q.label} {q.required && <span style={{ color: '#DC2626' }}>*</span>}
-            </label>
-            <textarea
-              defaultValue={formData[q.id] || ''}
-              onBlur={(e) => handleInputChange(q.id, e.target.value)}
-              placeholder={q.placeholder}
-              required={q.required}
-              rows={4}
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '2px solid #E5E7EB',
-                borderRadius: '8px',
-                fontSize: '1rem',
-                resize: 'vertical'
-              }}
-            />
-          </div>
-        );
-
-      default:
-        return (
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
-              {q.label} {q.required && <span style={{ color: '#DC2626' }}>*</span>}
-            </label>
-            <input
-              type={q.type}
-              defaultValue={formData[q.id] || ''}
-              onBlur={(e) => handleInputChange(q.id, e.target.value)}
-              placeholder={q.placeholder}
-              required={q.required}
-              step={q.step}
-              min={q.min}
-              max={q.max}
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '2px solid #E5E7EB',
-                borderRadius: '8px',
-                fontSize: '1rem'
-              }}
-            />
-          </div>
-        );
-    }
-  };
-
-  const currentSectionData = sections[currentSection];
-  const progress = ((currentSection) / (sections.length - 1)) * 100;
-
-  return (
-    <div style={{ 
-      minHeight: '100vh', 
-      background: 'linear-gradient(to bottom, #FFF8F0, #FFE4D6)',
-      padding: '20px'
-    }}>
-      <div style={{ 
-        position: 'fixed', 
-        top: 0, 
-        left: 0, 
-        right: 0, 
-        height: '4px', 
-        background: '#E5E7EB',
-        zIndex: 1000
-      }}>
-        <div style={{ 
-          height: '100%', 
-          background: 'linear-gradient(to right, #D97706, #EA580C)',
-          width: `${progress}%`,
-          transition: 'width 0.3s ease'
-        }} />
+switch (config.type) {
+  case 'text':
+  case 'email':
+  case 'tel':
+  case 'number':
+    return (
+      <div className="mb-6">
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          {config.label} {config.required && <span className="text-red-500">*</span>}
+        </label>
+        <input
+          type={config.type}
+          value={value}
+          onChange={(e) => handleChange(fieldId, e.target.value)}
+          placeholder={config.placeholder}
+          step={config.step}
+          min={config.min}
+          max={config.max}
+          required={config.required}
+          className={inputClass}
+        />
       </div>
+    );
 
-      <div style={{ maxWidth: '640px', margin: '40px auto 80px' }}>
-        {currentSection === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-            <div style={{ fontSize: '80px', marginBottom: '20px' }}>
-              {currentSectionData.icon}
-            </div>
-            <h1 style={{ 
-              fontSize: '2rem', 
-              color: '#1A1A4E',
-              marginBottom: '10px'
-            }}>
-              {currentSectionData.title}
-            </h1>
-            <p style={{ 
-              fontSize: '1rem', 
-              color: '#6B7280',
-              fontStyle: 'italic',
-              marginBottom: '30px'
-            }}>
-              {currentSectionData.subtitle}
-            </p>
-            <div style={{
-              background: 'rgba(217, 119, 6, 0.1)',
-              padding: '20px',
-              borderRadius: '12px',
-              marginBottom: '30px'
-            }}>
-              <p style={{ fontSize: '0.9rem', color: '#D97706' }}>
-                ⏱️ {currentSectionData.time}
-              </p>
-            </div>
-            <button
-              onClick={handleNext}
-              style={{
-                background: 'linear-gradient(to right, #D97706, #EA580C)',
-                color: 'white',
-                padding: '16px 40px',
-                borderRadius: '12px',
-                fontSize: '1.1rem',
-                fontWeight: '600',
-                border: 'none',
-                cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(217, 119, 6, 0.3)'
-              }}
-            >
-              Começar →
-            </button>
-          </div>
-        )}
-
-        {currentSection > 0 && (
-          <form onSubmit={handleSubmit}>
-            <div style={{
-              background: 'white',
-              borderRadius: '20px',
-              padding: '30px',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
-            }}>
-              <h2 style={{
-                fontSize: '1.75rem',
-                color: '#1A1A4E',
-                marginBottom: '8px'
-              }}>
-                {currentSectionData.title}
-              </h2>
-              {currentSectionData.subtitle && (
-                <p style={{
-                  fontSize: '0.95rem',
-                  color: '#6B7280',
-                  fontStyle: 'italic',
-                  marginBottom: '30px'
-                }}>
-                  {currentSectionData.subtitle}
-                </p>
-              )}
-
-              {currentSectionData.questions.map((q) => (
-                <div key={q.id} style={{ marginBottom: '28px' }}>
-                  {renderQuestion(q)}
-                </div>
-              ))}
-
-              {error && (
-                <div style={{
-                  background: '#FEE2E2',
-                  border: '2px solid #DC2626',
-                  color: '#DC2626',
-                  padding: '12px',
-                  borderRadius: '8px',
-                  marginTop: '20px'
-                }}>
-                  {error}
-                </div>
-              )}
-
-              <div style={{
-                display: 'flex',
-                gap: '12px',
-                marginTop: '30px',
-                paddingTop: '20px',
-                borderTop: '1px solid #E5E7EB'
-              }}>
-                {currentSection > 1 && (
-                  <button
-                    type="button"
-                    onClick={handlePrevious}
-                    style={{
-                      padding: '14px 24px',
-                      background: '#F3F4F6',
-                      color: '#374151',
-                      borderRadius: '10px',
-                      fontSize: '1rem',
-                      fontWeight: '500',
-                      border: 'none',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    ← Anterior
-                  </button>
-                )}
-
-                {currentSection < sections.length - 1 ? (
-                  <button
-                    type="button"
-                    onClick={handleNext}
-                    style={{
-                      flex: 1,
-                      padding: '14px',
-                      background: 'linear-gradient(to right, #D97706, #EA580C)',
-                      color: 'white',
-                      borderRadius: '10px',
-                      fontSize: '1rem',
-                      fontWeight: '600',
-                      border: 'none',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Próximo →
-                  </button>
-                ) : (
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    style={{
-                      flex: 1,
-                      padding: '14px',
-                      background: loading 
-                        ? '#94A3B8' 
-                        : 'linear-gradient(to right, #10B981, #059669)',
-                      color: 'white',
-                      borderRadius: '10px',
-                      fontSize: '1rem',
-                      fontWeight: '600',
-                      border: 'none',
-                      cursor: loading ? 'not-allowed' : 'pointer'
-                    }}
-                  >
-                    {loading ? 'A enviar...' : 'Finalizar ✓'}
-                  </button>
-                )}
-              </div>
-            </div>
-          </form>
-        )}
+  case 'textarea':
+    return (
+      <div className="mb-6">
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          {config.label} {config.required && <span className="text-red-500">*</span>}
+        </label>
+        <textarea
+          value={value}
+          onChange={(e) => handleChange(fieldId, e.target.value)}
+          placeholder={config.placeholder}
+          rows={4}
+          required={config.required}
+          className={inputClass}
+        />
       </div>
+    );
+
+  case 'radio':
+    return (
+      <div className="mb-6">
+        <p className="block text-sm font-semibold text-gray-700 mb-3">
+          {config.label} {config.required && <span className="text-red-500">*</span>}
+        </p>
+        <div className="space-y-2">
+          {config.options.map((opt, i) => (
+            <label key={opt} className="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 cursor-pointer">
+              <input
+                type="radio"
+                name={fieldId}
+                value={opt}
+                checked={value === opt}
+                onChange={(e) => handleChange(fieldId, e.target.value)}
+                className="w-5 h-5 text-orange-500"
+              />
+              <span>{config.labels ? config.labels[i] : opt}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+    );
+
+  case 'checkbox':
+    return (
+      <div className="mb-6">
+        <p className="block text-sm font-semibold text-gray-700 mb-3">
+          {config.label} {config.required && <span className="text-red-500">*</span>}
+        </p>
+        <div className="space-y-2">
+          {config.options.map(opt => (
+            <label key={opt} className="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={(value || []).includes(opt)}
+                onChange={(e) => handleCheckbox(fieldId, opt, e.target.checked)}
+                className="w-5 h-5 text-orange-500 rounded"
+              />
+              <span>{opt}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+    );
+
+  case 'checkbox_single':
+    return (
+      <label className="flex items-center gap-3 mb-6 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={value || false}
+          onChange={(e) => handleChange(fieldId, e.target.checked)}
+          className="w-5 h-5 text-orange-500 rounded"
+        />
+        <span className="text-sm font-semibold text-gray-700">{config.label}</span>
+      </label>
+    );
+
+  case 'slider':
+    return (
+      <div className="mb-6">
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          {config.label} {config.required && <span className="text-red-500">*</span>}
+        </label>
+        <input
+          type="range"
+          min={config.min}
+          max={config.max}
+          step={config.step || '1'}
+          value={value}
+          onChange={(e) => handleChange(fieldId, e.target.value)}
+          className="w-full h-2 bg-orange-200 rounded-lg appearance-none cursor-pointer"
+        />
+        <div className="flex justify-between text-sm text-gray-600 mt-2">
+          {config.labels?.map((l, i) => <span key={i}>{l}</span>)}
+        </div>
+        <div className="text-center mt-2 text-xl font-bold text-orange-600">{value}</div>
+      </div>
+    );
+
+  default:
+    return null;
+}
+```
+
+};
+
+const section = sections[currentSection];
+const progress = (currentSection / (sections.length - 1)) * 100;
+
+return (
+<div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+<div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
+<div className=“h-full bg-gradient-to-r from-orange-500 to-amber-600 transition-all” style={{ width: `${progress}%` }} />
+</div>
+
+```
+  <div className="container mx-auto px-4 py-12 max-w-3xl pt-20">
+    <div className="text-center mb-10">
+      <h1 className="text-4xl font-bold text-orange-900 mb-3" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+        {section.title}
+      </h1>
+      {section.subtitle && <p className="text-gray-600 italic">{section.subtitle}</p>}
+      {!section.isWelcome && <p className="text-sm text-gray-600 mt-4">Secção {currentSection} de {sections.length - 1}</p>}
     </div>
-  );
+
+    {section.isWelcome ? (
+      <div className="bg-white rounded-2xl shadow-xl p-10 text-center">
+        <div className="text-6xl mb-6">🌱</div>
+        <p className="text-lg text-gray-700 mb-8">
+          Responde com honestidade. Não há respostas certas ou erradas.<br />
+          <span className="font-semibold text-orange-600">⏱️ 10-15 minutos</span>
+        </p>
+        <button onClick={handleNext} className="bg-gradient-to-r from-orange-500 to-amber-600 text-white px-12 py-4 rounded-full text-lg font-semibold hover:shadow-lg">
+          Começar →
+        </button>
+      </div>
+    ) : (
+      <form onSubmit={handleSubmit}>
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          {section.fields?.map(field => renderField(field))}
+          
+          {error && <div className="bg-red-50 border-2 border-red-500 text-red-700 p-4 rounded-lg mb-4">{error}</div>}
+
+          <div className="flex justify-between mt-10 pt-6 border-t">
+            {currentSection > 1 && (
+              <button type="button" onClick={handlePrevious} className="px-6 py-3 border-2 border-orange-300 text-orange-700 rounded-full font-semibold">
+                ← Anterior
+              </button>
+            )}
+            {currentSection < sections.length - 1 ? (
+              <button type="button" onClick={handleNext} className="ml-auto px-8 py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-full font-semibold">
+                Continuar →
+              </button>
+            ) : (
+              <button type="submit" disabled={loading} className="ml-auto px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full font-semibold disabled:opacity-50">
+                {loading ? 'A enviar...' : 'Finalizar ✓'}
+              </button>
+            )}
+          </div>
+        </div>
+      </form>
+    )}
+  </div>
+</div>
+```
+
+);
 }
