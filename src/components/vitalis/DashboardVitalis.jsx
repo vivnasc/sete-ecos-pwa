@@ -20,11 +20,18 @@ export default function DashboardVitalis() {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
 
+      // 🔧 Buscar users.id primeiro
+      const { data: userData } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', user.id)
+        .single();
+
       // Get client data
       const { data: clientData } = await supabase
         .from('vitalis_clients')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userData.id)  // ✅ Usa users.id!
         .single();
       setClient(clientData);
 
@@ -32,7 +39,7 @@ export default function DashboardVitalis() {
       const { data: registosData } = await supabase
         .from('vitalis_registos')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userData.id)  // ✅ Usa users.id!
         .order('data', { ascending: false })
         .limit(30);
       setRegistos(registosData || []);
@@ -115,7 +122,7 @@ export default function DashboardVitalis() {
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <div className="text-gray-500 text-sm mb-1">Semana</div>
             <div className="text-3xl font-bold text-blue-600">
-              {Math.floor((new Date() - new Date(client?.data_inicio)) / (7 * 24 * 60 * 60 * 1000)) + 1}
+              {client?.data_inicio ? Math.floor((new Date() - new Date(client.data_inicio)) / (7 * 24 * 60 * 60 * 1000)) + 1 : 1}
             </div>
           </div>
 
@@ -212,19 +219,19 @@ export default function DashboardVitalis() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div>
                 <div className="text-gray-500 text-sm">Energia</div>
-                <div className="text-2xl font-bold text-yellow-600">{ultimoCheckin.nivel_energia}/10</div>
+                <div className="text-2xl font-bold text-yellow-600">{ultimoCheckin.energia_1a10}/10</div>
               </div>
               <div>
                 <div className="text-gray-500 text-sm">Fome</div>
-                <div className="text-2xl font-bold text-orange-600">{ultimoCheckin.nivel_fome}/10</div>
+                <div className="text-2xl font-bold text-orange-600">{ultimoCheckin.fome_1a10}/10</div>
               </div>
               <div>
                 <div className="text-gray-500 text-sm">Humor</div>
-                <div className="text-2xl font-bold text-green-600">{ultimoCheckin.nivel_humor}/10</div>
+                <div className="text-2xl font-bold text-green-600">{ultimoCheckin.humor_1a10}/10</div>
               </div>
               <div>
                 <div className="text-gray-500 text-sm">Aderência</div>
-                <div className="text-2xl font-bold text-blue-600">{ultimoCheckin.aderencia_plano}/10</div>
+                <div className="text-2xl font-bold text-blue-600">{ultimoCheckin.aderencia_1a10}/10</div>
               </div>
             </div>
           </div>
