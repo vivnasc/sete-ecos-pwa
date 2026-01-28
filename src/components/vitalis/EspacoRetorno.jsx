@@ -34,10 +34,17 @@ export const EspacoRetorno = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
+      // 🔧 Buscar users.id primeiro
+      const { data: userData } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', user.id)
+        .single();
+
       const { error } = await supabase
         .from('vitalis_espaco_retorno')
         .insert([{
-          user_id: user.id,
+          user_id: userData.id,  // ✅ Usa users.id correcto!
           emocao: formData.emocao,
           intensidade: formData.intensidade,
           gatilho: formData.gatilho,
@@ -96,7 +103,7 @@ export const EspacoRetorno = () => {
       <div className="bg-white shadow-sm border-b border-purple-100">
         <div className="max-w-4xl mx-auto px-4 py-6">
           <button 
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/vitalis/dashboard')}
             className="text-purple-600 hover:text-purple-700 mb-4 flex items-center gap-2"
           >
             ← Voltar
@@ -272,7 +279,7 @@ export const EspacoRetorno = () => {
           <div className="flex gap-4 pt-4">
             <button
               type="button"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate('/vitalis/dashboard')}
               className="flex-1 py-4 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
             >
               Cancelar
