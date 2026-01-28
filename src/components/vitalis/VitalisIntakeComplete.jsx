@@ -427,10 +427,10 @@ try {
         throw intakeError;
       }
 
-      // Depois inserir client
-      const clientData = {
-        user_id: user.id,
-        objectivo_principal: formData.objectivo_principal,
+    // Depois inserir client
+const clientData = {
+  user_id: userData.id,  // ✅ CORRIGIDO!
+  objectivo_principal: formData.objectivo_principal,
         peso_inicial: parseFloat(formData.peso_actual),
         peso_actual: parseFloat(formData.peso_actual),
         peso_meta: parseFloat(formData.peso_meta),
