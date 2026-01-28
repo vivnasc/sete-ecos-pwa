@@ -24,25 +24,36 @@ export const CheckinDiario = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
-      // Buscar client para pegar semana_programa
+      // 🔧 Buscar users.id primeiro
+      const { data: userData } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', user.id)
+        .single();
+
+      // Buscar client para pegar data_inicio
       const { data: client } = await supabase
         .from('vitalis_clients')
         .select('data_inicio')
-        .eq('user_id', user.id)
+        .eq('user_id', userData.id)
         .single();
 
       // Calcular semana do programa
-      const dataInicio = new Date(client.data_inicio);
-      const hoje = new Date();
-      const diffTime = Math.abs(hoje - dataInicio);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      const semanaPrograma = Math.ceil(diffDays / 7);
+      let semanaPrograma = 1;
+      
+      if (client && client.data_inicio) {
+        const dataInicio = new Date(client.data_inicio);
+        const hoje = new Date();
+        const diffTime = Math.abs(hoje - dataInicio);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        semanaPrograma = Math.ceil(diffDays / 7);
+      }
 
       // Criar registo
       const { error } = await supabase
         .from('vitalis_registos')
         .insert([{
-          user_id: user.id,
+          user_id: userData.id,
           data: new Date().toISOString().split('T')[0],
           tipo: 'checkin_semanal',
           semana_programa: semanaPrograma,
@@ -64,7 +75,7 @@ export const CheckinDiario = () => {
           peso_actual: parseFloat(formData.peso_kg),
           ultimo_registo: new Date().toISOString()
         })
-        .eq('user_id', user.id);
+        .eq('user_id', userData.id);
 
       setSuccess(true);
       
@@ -124,7 +135,7 @@ export const CheckinDiario = () => {
       <div className="bg-white shadow-sm border-b border-orange-100">
         <div className="max-w-4xl mx-auto px-4 py-6">
           <button 
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/vitalis/dashboard')}
             className="text-orange-600 hover:text-orange-700 mb-4 flex items-center gap-2"
           >
             ← Voltar
@@ -231,7 +242,7 @@ export const CheckinDiario = () => {
           <div className="flex gap-4">
             <button
               type="button"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate('/vitalis/dashboard')}
               className="flex-1 py-4 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
             >
               Cancelar
