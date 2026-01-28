@@ -17,34 +17,49 @@ export default function VitalisAuth() {
 
     try {
       if (isLogin) {
+        // LOGIN
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (error) throw error;
         
-        // Check if user has completed intake
+        // 🔧 CORRIGIDO - Buscar users.id primeiro
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', data.user.id)
+          .single();
+        
+        if (userError || !userData) {
+          throw new Error('Utilizador não encontrado na base de dados');
+        }
+        
+        // Agora verificar se tem client (com users.id correcto!)
         const { data: client } = await supabase
           .from('vitalis_clients')
           .select('id')
-          .eq('user_id', data.user.id)
+          .eq('user_id', userData.id)  // ✅ AGORA USA users.id!
           .single();
         
         if (client) {
+          // JÁ TEM INTAKE → Dashboard
           navigate('/vitalis/dashboard');
         } else {
+          // NÃO TEM INTAKE → Questionário
           navigate('/vitalis/intake');
         }
+        
       } else {
+        // SIGNUP
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
         });
         if (error) throw error;
         
-        // Create user entry
-        await supabase.from('users').insert([{ id: data.user.id, email }]);
-        
+        // Nota: O trigger automático já cria o user na tabela users
+        // Redirecionar sempre para intake
         navigate('/vitalis/intake');
       }
     } catch (error) {
@@ -59,17 +74,17 @@ export default function VitalisAuth() {
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
-        
+          <div className="mb-4">
+            <img 
+              src="/logos/vitalis_logo.png" 
+              alt="Vitalis" 
+              className="w-24 h-24 mx-auto"
+            />
+          </div>
           <h1 className="text-4xl font-bold text-gray-800 mb-2">VITALIS</h1>
           <p className="text-gray-600 italic">A Raiz da Transformação</p>
         </div>
-<div className="mb-4">
-  <img 
-    src="/logos/vitalis_logo.png" 
-    alt="Vitalis" 
-    className="w-24 h-24 mx-auto"
-  />
-</div>
+
         {/* Auth Card */}
         <div className="bg-white rounded-3xl shadow-2xl p-8">
           {/* Tabs */}
