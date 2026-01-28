@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase.js';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export const ReceitasBrowse = () => {
+  const navigate = useNavigate();
   const [receitas, setReceitas] = useState([]);
   const [receitasFavoritas, setReceitasFavoritas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +21,15 @@ export const ReceitasBrowse = () => {
   const loadReceitas = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      setUserId(user.id);
+      
+      // 🔧 Buscar users.id
+      const { data: userData } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', user.id)
+        .single();
+      
+      setUserId(userData.id);
 
       // Carregar receitas ativas
       const { data: receitasData } = await supabase
@@ -35,7 +44,7 @@ export const ReceitasBrowse = () => {
       const { data: favoritasData } = await supabase
         .from('vitalis_receitas_favoritas')
         .select('receita_id')
-        .eq('user_id', user.id);
+        .eq('user_id', userData.id);
 
       setReceitasFavoritas(favoritasData?.map(f => f.receita_id) || []);
 
@@ -75,17 +84,18 @@ export const ReceitasBrowse = () => {
     }
   };
 
-  // Filtrar receitas
+  // 🔧 Filtrar receitas - CORRIGIDO
   const receitasFiltradas = receitas.filter(receita => {
     // Filtro de tipo
     if (filtroTipo !== 'todos' && receita.tipo_refeicao !== filtroTipo) {
       return false;
     }
 
-    // Filtro de tags
-    if (filtroTags.length > 0) {
-      const hasAllTags = filtroTags.every(tag => receita.tags?.includes(tag));
-      if (!hasAllTags) return false;
+    // Filtro de tags - CORRIGIDO
+    if (filtroTags.length > 0 && receita.tags) {
+      // Verificar se a receita tem PELO MENOS uma das tags selecionadas
+      const hasAnyTag = filtroTags.some(tag => receita.tags.includes(tag));
+      if (!hasAnyTag) return false;
     }
 
     // Busca por texto
@@ -134,6 +144,12 @@ export const ReceitasBrowse = () => {
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-orange-100">
         <div className="max-w-7xl mx-auto px-4 py-6">
+          <button 
+            onClick={() => navigate('/vitalis/dashboard')}
+            className="text-orange-600 hover:text-orange-700 mb-4 flex items-center gap-2"
+          >
+            ← Voltar
+          </button>
           <h1 className="text-4xl font-bold text-orange-900 mb-2" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
             Biblioteca de Receitas 🍽️
           </h1>
@@ -328,13 +344,13 @@ const ReceitaCard = ({ receita, isFavorita, onToggleFavorito }) => {
           )}
         </div>
 
-        {/* Botão Ver Receita */}
-        <Link
-          to={`/vitalis/receitas/${receita.id}`}
+        {/* Botão Ver Receita - EM CONSTRUÇÃO */}
+        <button
+          onClick={() => alert('Página de detalhes da receita em construção! 🚧')}
           className="block w-full py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white text-center rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all"
         >
           Ver Receita →
-        </Link>
+        </button>
       </div>
     </div>
   );
