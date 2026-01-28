@@ -313,15 +313,26 @@ export default function VitalisIntakeComplete() {
     setLoading(true);
     setError('');
     
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Não autenticado');
+try {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Não autenticado');
 
-      const aceita_jejum = formData.abordagem_preferida === 'keto_if';
-      
-      // Converter arrays para strings onde necessário
-      const intakeData = {
-        user_id: user.id,
+  // 🔧 BUSCAR O ID CORRECTO DA TABELA USERS
+  const { data: userData, error: userError } = await supabase
+    .from('users')
+    .select('id')
+    .eq('auth_id', user.id)
+    .single();
+
+  if (userError || !userData) {
+    throw new Error('Utilizador não encontrado na base de dados');
+  }
+
+  const aceita_jejum = formData.abordagem_preferida === 'keto_if';
+  
+  // Converter arrays para strings onde necessário
+  const intakeData = {
+    user_id: userData.id,  // 🎯 MUDANÇA AQUI!
         nome: formData.nome,
         email: formData.email,
         whatsapp: formData.whatsapp,
