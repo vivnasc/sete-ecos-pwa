@@ -31,7 +31,7 @@ export default function DashboardVitalis() {
       const { data: clientData } = await supabase
         .from('vitalis_clients')
         .select('*')
-        .eq('user_id', userData.id)  // ✅ Usa users.id!
+        .eq('user_id', userData.id)
         .single();
       setClient(clientData);
 
@@ -39,7 +39,7 @@ export default function DashboardVitalis() {
       const { data: registosData } = await supabase
         .from('vitalis_registos')
         .select('*')
-        .eq('user_id', userData.id)  // ✅ Usa users.id!
+        .eq('user_id', userData.id)
         .order('data', { ascending: false })
         .limit(30);
       setRegistos(registosData || []);
@@ -108,27 +108,27 @@ export default function DashboardVitalis() {
 
       <div className="max-w-6xl mx-auto p-6 space-y-6">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <div className="text-gray-500 text-sm mb-1">Peso Actual</div>
-            <div className="text-3xl font-bold text-amber-600">{pesoActual} kg</div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6">
+            <div className="text-gray-500 text-xs md:text-sm mb-1">Peso Actual</div>
+            <div className="text-2xl md:text-3xl font-bold text-amber-600">{pesoActual} kg</div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <div className="text-gray-500 text-sm mb-1">Progresso</div>
-            <div className="text-3xl font-bold text-green-600">{percentagemProgresso.toFixed(1)}%</div>
+          <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6">
+            <div className="text-gray-500 text-xs md:text-sm mb-1">Progresso</div>
+            <div className="text-2xl md:text-3xl font-bold text-green-600">{percentagemProgresso.toFixed(1)}%</div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <div className="text-gray-500 text-sm mb-1">Semana</div>
-            <div className="text-3xl font-bold text-blue-600">
+          <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6">
+            <div className="text-gray-500 text-xs md:text-sm mb-1">Semana</div>
+            <div className="text-2xl md:text-3xl font-bold text-blue-600">
               {client?.data_inicio ? Math.floor((new Date() - new Date(client.data_inicio)) / (7 * 24 * 60 * 60 * 1000)) + 1 : 1}
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <div className="text-gray-500 text-sm mb-1">Aderência</div>
-            <div className="text-3xl font-bold text-purple-600">
+          <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6">
+            <div className="text-gray-500 text-xs md:text-sm mb-1">Aderência</div>
+            <div className="text-2xl md:text-3xl font-bold text-purple-600">
               {registos.length > 0 ? Math.round((registos.length / 30) * 100) : 0}%
             </div>
           </div>
@@ -149,7 +149,7 @@ export default function DashboardVitalis() {
 
         {/* Gráfico de Peso */}
         <div className="bg-white rounded-2xl shadow-lg p-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Evolução de Peso (30 dias)</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-6">Evolução de Peso (30 dias)</h2>
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={chartData}>
@@ -182,33 +182,43 @@ export default function DashboardVitalis() {
           )}
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Quick Actions - AGORA COM 4 CARDS */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {/* 🆕 NOVO CARD: Meu Plano */}
+          <Link
+            to="/vitalis/plano"
+            className="bg-gradient-to-br from-amber-500 to-orange-600 text-white rounded-2xl p-5 md:p-6 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+          >
+            <div className="text-3xl md:text-4xl mb-3">🍽️</div>
+            <div className="font-bold text-lg md:text-xl mb-1">Meu Plano</div>
+            <div className="text-amber-100 text-xs md:text-sm">Porções e check-in do dia</div>
+          </Link>
+
           <Link
             to="/vitalis/checkin"
-            className="bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all"
+            className="bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-2xl p-5 md:p-6 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
           >
-            <div className="text-4xl mb-3">✅</div>
-            <div className="font-bold text-xl mb-1">Check-in Diário</div>
-            <div className="text-green-100 text-sm">Regista o teu progresso hoje</div>
+            <div className="text-3xl md:text-4xl mb-3">✅</div>
+            <div className="font-bold text-lg md:text-xl mb-1">Check-in</div>
+            <div className="text-green-100 text-xs md:text-sm">Regista o teu progresso</div>
           </Link>
 
           <Link
             to="/vitalis/receitas"
-            className="bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all"
+            className="bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-2xl p-5 md:p-6 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
           >
-            <div className="text-4xl mb-3">🍳</div>
-            <div className="font-bold text-xl mb-1">Receitas</div>
-            <div className="text-orange-100 text-sm">Explora o teu plano alimentar</div>
+            <div className="text-3xl md:text-4xl mb-3">🍳</div>
+            <div className="font-bold text-lg md:text-xl mb-1">Receitas</div>
+            <div className="text-orange-100 text-xs md:text-sm">Explora receitas saudáveis</div>
           </Link>
 
           <Link
             to="/vitalis/espaco-retorno"
-            className="bg-gradient-to-br from-purple-500 to-pink-600 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all"
+            className="bg-gradient-to-br from-purple-500 to-pink-600 text-white rounded-2xl p-5 md:p-6 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
           >
-            <div className="text-4xl mb-3">💭</div>
-            <div className="font-bold text-xl mb-1">Espaço Retorno</div>
-            <div className="text-purple-100 text-sm">Trabalha o teu lado emocional</div>
+            <div className="text-3xl md:text-4xl mb-3">💜</div>
+            <div className="font-bold text-lg md:text-xl mb-1">Espaço Retorno</div>
+            <div className="text-purple-100 text-xs md:text-sm">Lado emocional</div>
           </Link>
         </div>
 
