@@ -9,19 +9,6 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase.js';
 
 // ============================================================
-// CONSTANTES
-// ============================================================
-const DIAS_SEMANA = [
-  { valor: 1, nome: 'Dom', nomeLongo: 'Domingo' },
-  { valor: 2, nome: 'Seg', nomeLongo: 'Segunda' },
-  { valor: 3, nome: 'Ter', nomeLongo: 'Terça' },
-  { valor: 4, nome: 'Qua', nomeLongo: 'Quarta' },
-  { valor: 5, nome: 'Qui', nomeLongo: 'Quinta' },
-  { valor: 6, nome: 'Sex', nomeLongo: 'Sexta' },
-  { valor: 7, nome: 'Sáb', nomeLongo: 'Sábado' }
-];
-
-// ============================================================
 // ÍCONES (inline para não depender de bibliotecas)
 // ============================================================
 const Icons = {
