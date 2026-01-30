@@ -1,1136 +1,504 @@
 // ============================================================
 // VITALIS - GERADOR DE PDF DO PLANO ALIMENTAR
 // ============================================================
-// Gera PDF personalizado baseado nos dados do intake e plano
-// Usa: jsPDF + html2canvas (instalar: npm install jspdf html2canvas)
+// Usa html2pdf.js para gerar PDFs de alta qualidade
 // ============================================================
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase.js';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
-// ============================================================
-// CONFIGURAÇÕES DAS FASES
-// ============================================================
+// Configuração das fases
 const FASES_CONFIG = {
   inducao: {
     nome: 'Fase 1: Indução',
-    emoji: '🔥',
     duracao: '3-4 semanas',
-    descricao: 'A fase de arranque onde o corpo entra em modo de queima de gordura. Foco em proteína, gorduras saudáveis e vegetais.',
-    cor: '#C1634A',
-    priorizar: [
-      'Proteína em todas as refeições',
-      'Vegetais em abundância',
-      'Gorduras saudáveis (azeite, abacate, nozes)',
-      'Água (mínimo 2L por dia)',
-      'Dormir 7-8 horas por noite'
-    ],
-    evitar: [
-      'Açúcar e adoçantes',
-      'Grãos e cereais (pão, massa, arroz)',
-      'Frutas doces (banana, manga, uvas)',
-      'Leguminosas',
-      'Álcool'
-    ],
-    dicas: [
-      'Prepara as refeições ao domingo para a semana',
-      'Tem sempre snacks saudáveis à mão',
-      'Nos primeiros dias podes sentir "keto flu" — é normal',
-      'Pesa-te apenas às sextas-feiras, de manhã, em jejum'
-    ]
+    descricao: 'A fase de arranque onde o corpo entra em modo de queima de gordura.',
+    priorizar: ['Proteína em todas as refeições', 'Vegetais em abundância', 'Gorduras saudáveis', 'Água (mínimo 2L/dia)', 'Dormir 7-8 horas'],
+    evitar: ['Açúcar e adoçantes', 'Pão, massa, arroz', 'Frutas doces', 'Leguminosas', 'Álcool'],
+    dicas: ['Prepara refeições ao domingo', 'Tem snacks saudáveis à mão', 'Pesa-te às sextas de manhã']
   },
   estabilizacao: {
     nome: 'Fase 2: Estabilização',
-    emoji: '⚖️',
     duracao: '6-8 semanas',
-    descricao: 'O corpo começa a estabilizar. Reintroduzimos alguns hidratos de forma controlada.',
-    cor: '#8B4513',
-    priorizar: [
-      'Manter proteína elevada',
-      'Introduzir leguminosas aos poucos',
-      'Frutas de baixo índice glicémico',
-      'Continuar com vegetais abundantes'
-    ],
-    evitar: [
-      'Açúcar refinado',
-      'Farinhas brancas',
-      'Alimentos processados',
-      'Refrigerantes e sumos'
-    ],
-    dicas: [
-      'Podes ter 1 refeição livre por semana',
-      'Observa como o corpo reage aos novos alimentos',
-      'Mantém o registo no check-in diário'
-    ]
+    descricao: 'Reintrodução gradual de hidratos complexos.',
+    priorizar: ['Manter proteína elevada', 'Hidratos complexos', 'Fruta baixo IG'],
+    evitar: ['Açúcar refinado', 'Farinhas brancas', 'Processados'],
+    dicas: ['Introduz um alimento de cada vez', 'Observa como o corpo reage']
   },
   reeducacao: {
     nome: 'Fase 3: Reeducação',
-    emoji: '🌱',
     duracao: '6-8 semanas',
-    descricao: 'Aprende a fazer escolhas intuitivas. Flexibilidade com responsabilidade.',
-    cor: '#6B8E23',
-    priorizar: [
-      'Escutar os sinais do corpo',
-      'Variedade de alimentos naturais',
-      'Refeições equilibradas',
-      'Movimento regular'
-    ],
-    evitar: [
-      'Comer por emoção',
-      'Pular refeições',
-      'Alimentos ultra-processados'
-    ],
-    dicas: [
-      'Pratica comer com atenção plena',
-      '1-2 refeições livres por semana',
-      'Foca em como te sentes, não só no peso'
-    ]
+    descricao: 'Aprender a comer de forma equilibrada para a vida.',
+    priorizar: ['Equilíbrio nas refeições', 'Variedade', 'Atenção plena'],
+    evitar: ['Restrições extremas', 'Mentalidade de dieta'],
+    dicas: ['Pratica a escuta do corpo', 'Permite-te flexibilidade']
   },
   manutencao: {
     nome: 'Fase 4: Manutenção',
-    emoji: '🏆',
     duracao: 'Contínua',
-    descricao: 'Mantém os resultados com autonomia. O plano agora é teu estilo de vida.',
-    cor: '#5D4E6D',
-    priorizar: [
-      'Manter hábitos construídos',
-      'Alimentação intuitiva',
-      'Actividade física regular',
-      'Equilíbrio mental e emocional'
-    ],
-    evitar: [
-      'Voltar aos velhos hábitos',
-      'Mentalidade de "dieta"',
-      'Restrição excessiva'
-    ],
-    dicas: [
-      'Usa o Espaço de Retorno quando precisares',
-      'Revê os teus objectivos periodicamente',
-      'Celebra as tuas conquistas'
-    ]
+    descricao: 'Manter resultados com estilo de vida equilibrado.',
+    priorizar: ['Consistência', 'Movimento regular', 'Sono de qualidade'],
+    evitar: ['Velhos hábitos', 'Ignorar sinais do corpo'],
+    dicas: ['Pesagem semanal', 'Ajusta conforme necessário']
   }
 };
 
-// ============================================================
-// LISTAS DE ALIMENTOS
-// ============================================================
-const ALIMENTOS = {
-  proteinas: {
-    titulo: '🥩 Proteínas Saudáveis',
-    categorias: [
-      {
-        nome: 'Carnes Vermelhas (magras)',
-        items: ['Bife de vaca', 'Carne moída magra', 'Lombo de porco', 'Cabrito', 'Borrego', 'Fígado']
-      },
-      {
-        nome: 'Aves',
-        items: ['Peito de frango', 'Coxa de frango (sem pele)', 'Peru', 'Pato (sem pele)', 'Codorniz']
-      },
-      {
-        nome: 'Peixes & Mariscos',
-        items: ['Salmão', 'Atum', 'Sardinha', 'Carapau', 'Pescada', 'Tilápia', 'Camarão', 'Lulas']
-      },
-      {
-        nome: 'Ovos & Lacticínios',
-        items: ['Ovos inteiros', 'Queijo fresco', 'Iogurte grego natural', 'Requeijão']
-      }
-    ]
-  },
-  hidratos: {
-    titulo: '🍚 Hidratos Saudáveis',
-    categorias: [
-      {
-        nome: 'Tubérculos & Grãos',
-        items: ['Batata-doce', 'Mandioca', 'Inhame', 'Arroz integral', 'Quinoa', 'Aveia']
-      },
-      {
-        nome: 'Frutas (baixo IG)',
-        items: ['Frutos vermelhos', 'Maçã verde', 'Pera', 'Laranja', 'Toranja', 'Kiwi']
-      }
-    ]
-  },
-  gorduras: {
-    titulo: '🥑 Gorduras Saudáveis',
-    categorias: [
-      {
-        nome: 'Óleos & Manteigas',
-        items: ['Azeite extra-virgem', 'Óleo de coco', 'Manteiga', 'Ghee']
-      },
-      {
-        nome: 'Frutos Secos & Sementes',
-        items: ['Amêndoas', 'Nozes', 'Cajus', 'Sementes de chia', 'Sementes de linhaça']
-      },
-      {
-        nome: 'Outras Fontes',
-        items: ['Abacate', 'Azeitonas', 'Coco', 'Chocolate negro (+70%)']
-      }
-    ]
-  },
-  vegetais: {
-    titulo: '🥬 Vegetais (À Vontade!)',
-    cores: [
-      { cor: 'Verdes', emoji: '🟢', items: 'Espinafre, Couve, Brócolos, Alface, Rúcula, Pepino, Abobrinha' },
-      { cor: 'Vermelhos', emoji: '🔴', items: 'Tomate, Pimento vermelho, Beterraba, Rabanete' },
-      { cor: 'Laranjas', emoji: '🟠', items: 'Cenoura, Abóbora, Pimento laranja' },
-      { cor: 'Brancos', emoji: '⚪', items: 'Couve-flor, Cogumelos, Alho, Cebola, Nabo' },
-      { cor: 'Roxos', emoji: '🟣', items: 'Beringela, Couve roxa, Cebola roxa' }
-    ]
-  }
-};
-
-// ============================================================
-// COMPONENTE PRINCIPAL
-// ============================================================
 export default function GeradorPDFPlano({ userId, onClose }) {
-  const [loading, setLoading] = useState(false);
-  const [dadosPlano, setDadosPlano] = useState(null);
-  const [error, setError] = useState(null);
-  const [progresso, setProgresso] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [gerando, setGerando] = useState(false);
+  const [dados, setDados] = useState(null);
+  const [erro, setErro] = useState(null);
   const pdfRef = useRef(null);
 
-  // Carregar dados do plano
+  useEffect(() => {
+    carregarDados();
+  }, [userId]);
+
   const carregarDados = async () => {
     try {
-      setLoading(true);
-      setProgresso(10);
-
-      // Buscar dados do cliente
-      const { data: cliente, error: clienteError } = await supabase
+      const { data: cliente } = await supabase
         .from('vitalis_clients')
         .select('*')
         .eq('user_id', userId)
         .single();
 
-      if (clienteError) throw clienteError;
-      setProgresso(30);
-
-      // Buscar intake
-      const { data: intake, error: intakeError } = await supabase
-        .from('vitalis_intake')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-
-      if (intakeError) throw intakeError;
-      setProgresso(50);
-
-      // Buscar plano
-      const { data: plano, error: planoError } = await supabase
+      const { data: plano } = await supabase
         .from('vitalis_plano')
         .select('*')
-        .eq('client_id', cliente.id)
+        .eq('client_id', cliente?.id)
         .single();
 
-      if (planoError) throw planoError;
-      setProgresso(70);
-
-      // Buscar user para nome
-      const { data: user, error: userError } = await supabase
-        .from('users')
-        .select('nome')
-        .eq('id', userId)
+      const { data: intake } = await supabase
+        .from('vitalis_intake')
+        .select('nome, email')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(1)
         .single();
 
-      setProgresso(90);
-
-      // Compilar dados (nomes correspondem à estrutura real da tabela vitalis_plano)
-      setDadosPlano({
-        nome: user?.nome || intake?.nome || 'Cliente',
+      setDados({
+        nome: intake?.nome || 'Cliente',
         peso_actual: plano?.peso_actual || plano?.peso_inicial,
         peso_meta: plano?.peso_meta,
-        altura: plano?.altura_cm,
-        idade: plano?.idade,
         fase: plano?.fase || 'inducao',
-        abordagem: plano?.abordagem || 'equilibrado',
-        aceita_jejum: plano?.aceita_jejum,
-        protocolo_jejum: plano?.protocolo_jejum,
-        janela_inicio: plano?.janela_alimentar_inicio,
-        janela_fim: plano?.janela_alimentar_fim,
         calorias: plano?.calorias_diarias,
         proteina_g: plano?.proteina_g,
         carboidratos_g: plano?.carboidratos_g,
         gordura_g: plano?.gordura_g,
-        porcoes: {
-          proteina: plano?.porcoes_proteina,
-          legumes: plano?.porcoes_legumes,
-          hidratos: plano?.porcoes_hidratos,
-          gordura: plano?.porcoes_gordura
-        },
-        tamanhos: {
-          palma: plano?.tamanho_palma_g || 20,
-          mao: plano?.tamanho_mao_g || 25,
-          polegar: plano?.tamanho_polegar_g || 7
-        },
-        dias_treino: plano?.dias_treino || [],
-        data_inicio: plano?.data_inicio_fase || cliente?.data_inicio || new Date().toISOString()
+        porcoes_proteina: plano?.porcoes_proteina,
+        porcoes_hidratos: plano?.porcoes_hidratos,
+        porcoes_gordura: plano?.porcoes_gordura,
+        porcoes_legumes: plano?.porcoes_legumes,
+        tamanho_palma: plano?.tamanho_palma_g || 20,
+        tamanho_mao: plano?.tamanho_mao_g || 25,
+        tamanho_polegar: plano?.tamanho_polegar_g || 7,
+        data_inicio: plano?.data_inicio_fase || new Date().toISOString(),
+        abordagem: plano?.abordagem || 'equilibrado'
       });
-
-      setProgresso(100);
     } catch (err) {
-      console.error('Erro ao carregar dados:', err);
-      setError('Erro ao carregar dados do plano');
+      console.error('Erro:', err);
+      setErro('Erro ao carregar dados');
     } finally {
       setLoading(false);
     }
   };
 
-  // Gerar PDF
   const gerarPDF = async () => {
-    if (!dadosPlano) {
-      await carregarDados();
-    }
-
-    setLoading(true);
-    setProgresso(0);
-
+    setGerando(true);
     try {
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 20;
-      const contentWidth = pageWidth - (margin * 2);
+      const html2pdf = (await import('html2pdf.js')).default;
       
-      const faseConfig = FASES_CONFIG[dadosPlano.fase] || FASES_CONFIG.inducao;
-      
-      // Cores
-      const cores = {
-        terracota: [193, 99, 74],
-        castanho: [139, 69, 19],
-        verde: [107, 142, 35],
-        roxo: [93, 78, 109],
-        bege: [210, 180, 140],
-        creme: [253, 248, 243]
-      };
+      await html2pdf()
+        .set({
+          margin: 0,
+          filename: `Vitalis_Plano_${dados.nome.replace(/\s+/g, '_')}_${dados.fase}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+          pagebreak: { mode: ['css', 'legacy'] }
+        })
+        .from(pdfRef.current)
+        .save();
 
-      // ============================================
-      // PÁGINA 1 - CAPA
-      // ============================================
-      setProgresso(10);
-      
-      // Background
-      pdf.setFillColor(...cores.creme);
-      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
-      
-      // Header decorativo
-      pdf.setFillColor(...cores.terracota);
-      pdf.rect(0, 0, pageWidth, 8, 'F');
-      
-      // Logo placeholder (círculo com V)
-      pdf.setFillColor(...cores.terracota);
-      pdf.circle(pageWidth / 2, 60, 25, 'F');
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(32);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('V', pageWidth / 2, 68, { align: 'center' });
-      
-      // Título VITALIS
-      pdf.setTextColor(...cores.terracota);
-      pdf.setFontSize(36);
-      pdf.text('VITALIS', pageWidth / 2, 105, { align: 'center' });
-      
-      // Tagline
-      pdf.setFontSize(10);
-      pdf.setTextColor(...cores.castanho);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text('A Raiz da Transformação', pageWidth / 2, 115, { align: 'center' });
-      
-      // Linha divisória
-      pdf.setDrawColor(...cores.terracota);
-      pdf.setLineWidth(0.5);
-      pdf.line(margin + 40, 130, pageWidth - margin - 40, 130);
-      
-      // Título do documento
-      pdf.setFontSize(22);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(...cores.castanho);
-      pdf.text('Guia Personalizado', pageWidth / 2, 150, { align: 'center' });
-      
-      pdf.setFontSize(14);
-      pdf.setTextColor(...cores.terracota);
-      pdf.text('PLANO ALIMENTAR', pageWidth / 2, 162, { align: 'center' });
-      
-      // Box do cliente
-      pdf.setFillColor(255, 255, 255);
-      pdf.roundedRect(margin + 20, 180, contentWidth - 40, 70, 5, 5, 'F');
-      pdf.setDrawColor(...cores.bege);
-      pdf.setLineWidth(1);
-      pdf.roundedRect(margin + 20, 180, contentWidth - 40, 70, 5, 5, 'S');
-      
-      // Dados do cliente
-      pdf.setFontSize(9);
-      pdf.setTextColor(...cores.castanho);
-      pdf.text('PREPARADO EXCLUSIVAMENTE PARA', pageWidth / 2, 195, { align: 'center' });
-      
-      pdf.setFontSize(20);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text(dadosPlano.nome, pageWidth / 2, 212, { align: 'center' });
-      
-      // Peso actual -> Meta
-      pdf.setFontSize(11);
-      pdf.setFont('helvetica', 'normal');
-      const pesoText = `${dadosPlano.peso_actual} kg → ${dadosPlano.peso_meta} kg`;
-      pdf.text(pesoText, pageWidth / 2, 230, { align: 'center' });
-      
-      // Data de início
-      const dataFormatada = new Date(dadosPlano.data_inicio).toLocaleDateString('pt-PT', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      });
-      pdf.setFontSize(10);
-      pdf.setTextColor(...cores.castanho);
-      pdf.text(`Início: ${dataFormatada}`, pageWidth / 2, 242, { align: 'center' });
-      
-      // Footer
-      pdf.setFillColor(...cores.castanho);
-      pdf.rect(0, pageHeight - 25, pageWidth, 25, 'F');
-      
-      pdf.setFontSize(9);
-      pdf.setTextColor(255, 255, 255);
-      pdf.text('Vivianne Saraiva', margin, pageHeight - 15);
-      pdf.text('Precision Nutrition Level 1 Coach', margin, pageHeight - 9);
-      
-      pdf.text('vivianne.saraiva@outlook.com', pageWidth - margin, pageHeight - 15, { align: 'right' });
-      pdf.text('WhatsApp: +258 84 524 3875', pageWidth - margin, pageHeight - 9, { align: 'right' });
-
-      // ============================================
-      // PÁGINA 2 - A TUA JORNADA
-      // ============================================
-      setProgresso(25);
-      pdf.addPage();
-      
-      // Header
-      pdf.setFillColor(...cores.creme);
-      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
-      
-      // Título da página
-      pdf.setFontSize(9);
-      pdf.setTextColor(...cores.terracota);
-      pdf.text('VITALIS', margin, 15);
-      pdf.text(faseConfig.nome, pageWidth - margin, 15, { align: 'right' });
-      pdf.setDrawColor(...cores.bege);
-      pdf.line(margin, 20, pageWidth - margin, 20);
-      
-      // Título secção
-      pdf.setFontSize(20);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(...cores.castanho);
-      pdf.text('🌱 Bem-vinda à Tua Jornada', margin, 40);
-      
-      // Introdução
-      pdf.setFontSize(11);
-      pdf.setFont('helvetica', 'normal');
-      const introText = `${dadosPlano.nome}, este guia foi criado especialmente para ti, com base nas tuas respostas, objectivos e estilo de vida. Cada porção, cada recomendação, foi calculada para o teu corpo e para onde queres chegar.`;
-      const introLines = pdf.splitTextToSize(introText, contentWidth);
-      pdf.text(introLines, margin, 55);
-      
-      // Box da Fase
-      const faseY = 85;
-      const hexToRgb = (hex) => {
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : cores.terracota;
-      };
-      
-      pdf.setFillColor(...hexToRgb(faseConfig.cor));
-      pdf.roundedRect(margin, faseY, contentWidth, 45, 4, 4, 'F');
-      
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(14);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text(`${faseConfig.emoji} ${faseConfig.nome}`, margin + 10, faseY + 15);
-      
-      pdf.setFontSize(9);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(`Duração: ${faseConfig.duracao}`, margin + 10, faseY + 25);
-      
-      const descLines = pdf.splitTextToSize(faseConfig.descricao, contentWidth - 20);
-      pdf.text(descLines, margin + 10, faseY + 35);
-      
-      // Abordagem e Meta
-      const infoY = faseY + 55;
-      
-      // Abordagem
-      pdf.setFillColor(245, 240, 232);
-      pdf.roundedRect(margin, infoY, contentWidth / 2 - 5, 40, 3, 3, 'F');
-      
-      pdf.setFontSize(9);
-      pdf.setTextColor(...cores.terracota);
-      pdf.text('ABORDAGEM NUTRICIONAL', margin + 10, infoY + 12);
-      
-      const abordagemNomes = {
-        'keto_if': 'Keto + Jejum Intermitente',
-        'low_carb': 'Low Carb',
-        'equilibrado': 'Equilibrado'
-      };
-      pdf.setFontSize(12);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(...cores.castanho);
-      pdf.text(abordagemNomes[dadosPlano.abordagem] || 'Personalizado', margin + 10, infoY + 25);
-      
-      // Meta
-      pdf.setFillColor(245, 240, 232);
-      pdf.roundedRect(margin + contentWidth / 2 + 5, infoY, contentWidth / 2 - 5, 40, 3, 3, 'F');
-      
-      pdf.setFontSize(9);
-      pdf.setTextColor(...cores.terracota);
-      pdf.text('META SEMANAL', margin + contentWidth / 2 + 15, infoY + 12);
-      
-      pdf.setFontSize(12);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(...cores.castanho);
-      pdf.text('-0.5 a -1.0 kg/semana', margin + contentWidth / 2 + 15, infoY + 25);
-      
-      // Jejum (se aplicável)
-      if (dadosPlano.aceita_jejum) {
-        const jejumY = infoY + 50;
-        
-        pdf.setFillColor(93, 78, 109);
-        pdf.roundedRect(margin, jejumY, contentWidth, 50, 4, 4, 'F');
-        
-        pdf.setTextColor(255, 255, 255);
-        pdf.setFontSize(12);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text(`⏰ Protocolo de Jejum ${dadosPlano.protocolo_jejum?.replace('_', ':')}`, margin + 10, jejumY + 15);
-        
-        pdf.setFontSize(10);
-        pdf.setFont('helvetica', 'normal');
-        pdf.text(`Janela alimentar: ${dadosPlano.janela_inicio} - ${dadosPlano.janela_fim}`, margin + 10, jejumY + 28);
-        pdf.text('Durante o jejum: água, chá sem açúcar, café sem açúcar', margin + 10, jejumY + 40);
-      }
-      
-      // Footer da página
-      pdf.setFontSize(8);
-      pdf.setTextColor(...cores.castanho);
-      pdf.text(`Documento exclusivo de ${dadosPlano.nome}`, margin, pageHeight - 10);
-      pdf.text('Página 2 de 10', pageWidth - margin, pageHeight - 10, { align: 'right' });
-
-      // ============================================
-      // PÁGINA 3 - AS TUAS PORÇÕES
-      // ============================================
-      setProgresso(40);
-      pdf.addPage();
-      
-      pdf.setFillColor(...cores.creme);
-      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
-      
-      // Header
-      pdf.setFontSize(9);
-      pdf.setTextColor(...cores.terracota);
-      pdf.text('VITALIS', margin, 15);
-      pdf.text(faseConfig.nome, pageWidth - margin, 15, { align: 'right' });
-      pdf.setDrawColor(...cores.bege);
-      pdf.line(margin, 20, pageWidth - margin, 20);
-      
-      // Título
-      pdf.setFontSize(20);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(...cores.castanho);
-      pdf.text('🍽️ As Tuas Porções Diárias', margin, 40);
-      
-      // Intro
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text('Usa o Método da Mão para medir — simples, prático e sempre contigo.', margin, 52);
-      
-      // Cards das porções
-      const cardWidth = (contentWidth - 10) / 3;
-      const cardHeight = 55;
-      const cardsY = 65;
-      
-      const porcoesData = [
-        { nome: 'Proteína', valor: dadosPlano.porcoes?.proteina || 3, unidade: 'palmas', cor: [255, 235, 238], borderCor: [229, 115, 115] },
-        { nome: 'Hidratos', valor: dadosPlano.porcoes?.hidratos || 2, unidade: 'mãos', cor: [227, 242, 253], borderCor: [100, 181, 246] },
-        { nome: 'Gordura', valor: dadosPlano.porcoes?.gordura || 8, unidade: 'polegares', cor: [255, 248, 225], borderCor: [255, 213, 79] }
-      ];
-      
-      porcoesData.forEach((p, i) => {
-        const x = margin + (cardWidth + 5) * i;
-        
-        pdf.setFillColor(...p.cor);
-        pdf.roundedRect(x, cardsY, cardWidth, cardHeight, 4, 4, 'F');
-        pdf.setDrawColor(...p.borderCor);
-        pdf.setLineWidth(1.5);
-        pdf.roundedRect(x, cardsY, cardWidth, cardHeight, 4, 4, 'S');
-        
-        pdf.setFontSize(12);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(...cores.castanho);
-        pdf.text(p.nome, x + cardWidth / 2, cardsY + 15, { align: 'center' });
-        
-        pdf.setFontSize(28);
-        pdf.setTextColor(...p.borderCor);
-        pdf.text(String(p.valor), x + cardWidth / 2, cardsY + 38, { align: 'center' });
-        
-        pdf.setFontSize(9);
-        pdf.setTextColor(...cores.castanho);
-        pdf.text(`${p.unidade}/dia`, x + cardWidth / 2, cardsY + 48, { align: 'center' });
-      });
-      
-      // Legumes - À VONTADE
-      const legumesY = cardsY + cardHeight + 10;
-      pdf.setFillColor(232, 245, 233);
-      pdf.roundedRect(margin, legumesY, contentWidth, 30, 4, 4, 'F');
-      pdf.setDrawColor(129, 199, 132);
-      pdf.roundedRect(margin, legumesY, contentWidth, 30, 4, 4, 'S');
-      
-      pdf.setFontSize(14);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(46, 125, 50);
-      pdf.text('🥬 Vegetais & Legumes', margin + 15, legumesY + 13);
-      pdf.text('À VONTADE', pageWidth - margin - 15, legumesY + 13, { align: 'right' });
-      
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text('Não precisas medir — quanto mais cores, melhor!', margin + 15, legumesY + 24);
-      
-      // Macros
-      const macrosY = legumesY + 45;
-      pdf.setFontSize(12);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(...cores.castanho);
-      pdf.text('Os Teus Macros Diários', pageWidth / 2, macrosY, { align: 'center' });
-      
-      const macroWidth = contentWidth / 4 - 5;
-      const macroY = macrosY + 10;
-      
-      const macrosData = [
-        { label: 'Calorias', valor: dadosPlano.calorias || 1300, icon: '🔥' },
-        { label: 'Proteína', valor: `${dadosPlano.proteina_g || 98}g`, icon: '🥩', pct: '30%' },
-        { label: 'Hidratos', valor: `${dadosPlano.carboidratos_g || 50}g`, icon: '🍚', pct: '15%' },
-        { label: 'Gordura', valor: `${dadosPlano.gordura_g || 85}g`, icon: '🥑', pct: '55%' }
-      ];
-      
-      macrosData.forEach((m, i) => {
-        const x = margin + (macroWidth + 6.5) * i;
-        
-        pdf.setFillColor(107, 84, 35);
-        pdf.roundedRect(x, macroY, macroWidth, 40, 3, 3, 'F');
-        
-        pdf.setTextColor(255, 255, 255);
-        pdf.setFontSize(14);
-        pdf.text(m.icon, x + macroWidth / 2, macroY + 12, { align: 'center' });
-        
-        pdf.setFontSize(16);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text(String(m.valor), x + macroWidth / 2, macroY + 26, { align: 'center' });
-        
-        pdf.setFontSize(8);
-        pdf.setFont('helvetica', 'normal');
-        pdf.text(m.label, x + macroWidth / 2, macroY + 34, { align: 'center' });
-      });
-      
-      // Footer
-      pdf.setFontSize(8);
-      pdf.setTextColor(...cores.castanho);
-      pdf.text(`Documento exclusivo de ${dadosPlano.nome}`, margin, pageHeight - 10);
-      pdf.text('Página 3 de 10', pageWidth - margin, pageHeight - 10, { align: 'right' });
-
-      // ============================================
-      // PÁGINA 4 - COMO MEDIR
-      // ============================================
-      setProgresso(50);
-      pdf.addPage();
-      
-      pdf.setFillColor(...cores.creme);
-      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
-      
-      // Header
-      pdf.setFontSize(9);
-      pdf.setTextColor(...cores.terracota);
-      pdf.text('VITALIS', margin, 15);
-      pdf.setDrawColor(...cores.bege);
-      pdf.line(margin, 20, pageWidth - margin, 20);
-      
-      // Título
-      pdf.setFontSize(20);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(...cores.castanho);
-      pdf.text('✋ O Método da Mão', margin, 40);
-      
-      // Intro
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'normal');
-      const metodoIntro = 'A tua mão é proporcional ao teu corpo — mãos maiores = corpo maior = mais comida. Simples, prático e sempre contigo.';
-      pdf.text(metodoIntro, margin, 55);
-      
-      // Cards do método
-      const metodoData = [
-        { 
-          nome: 'A Palma', 
-          tipo: 'PROTEÍNA', 
-          equiv: '~20g de proteína',
-          desc: 'Tamanho e espessura da tua palma (sem dedos)',
-          ex: 'Ex: 1 bife, 1 peito de frango',
-          cor: [255, 235, 238],
-          borderCor: [229, 115, 115]
-        },
-        { 
-          nome: 'A Mão em Concha', 
-          tipo: 'HIDRATOS', 
-          equiv: '~20-25g de hidratos',
-          desc: 'O que cabe na tua mão em concha',
-          ex: 'Ex: punhado de arroz, batata-doce',
-          cor: [227, 242, 253],
-          borderCor: [100, 181, 246]
-        },
-        { 
-          nome: 'O Polegar', 
-          tipo: 'GORDURA', 
-          equiv: '~7-10g de gordura',
-          desc: 'Tamanho do teu polegar inteiro',
-          ex: 'Ex: 1 colher azeite, nozes',
-          cor: [255, 248, 225],
-          borderCor: [255, 213, 79]
-        },
-        { 
-          nome: 'O Punho', 
-          tipo: 'VEGETAIS', 
-          equiv: '~100g de vegetais',
-          desc: 'Tamanho do teu punho fechado',
-          ex: 'Mas lembra-te: À VONTADE!',
-          cor: [232, 245, 233],
-          borderCor: [129, 199, 132]
-        }
-      ];
-      
-      const metodoCardW = (contentWidth - 10) / 2;
-      const metodoCardH = 60;
-      
-      metodoData.forEach((m, i) => {
-        const col = i % 2;
-        const row = Math.floor(i / 2);
-        const x = margin + (metodoCardW + 10) * col;
-        const y = 70 + (metodoCardH + 10) * row;
-        
-        pdf.setFillColor(255, 255, 255);
-        pdf.roundedRect(x, y, metodoCardW, metodoCardH, 4, 4, 'F');
-        pdf.setDrawColor(...m.borderCor);
-        pdf.setLineWidth(1.5);
-        pdf.roundedRect(x, y, metodoCardW, metodoCardH, 4, 4, 'S');
-        
-        pdf.setFontSize(14);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(...cores.castanho);
-        pdf.text(m.nome, x + 10, y + 15);
-        
-        pdf.setFontSize(8);
-        pdf.setTextColor(...m.borderCor);
-        pdf.text(m.tipo, x + 10, y + 24);
-        
-        pdf.setFontSize(10);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(...cores.castanho);
-        pdf.text(m.equiv, x + 10, y + 35);
-        
-        pdf.setFontSize(9);
-        pdf.setFont('helvetica', 'normal');
-        pdf.text(m.desc, x + 10, y + 45);
-        
-        pdf.setFontSize(8);
-        pdf.setFont('helvetica', 'italic');
-        pdf.text(m.ex, x + 10, y + 54);
-      });
-      
-      // Footer
-      pdf.setFontSize(8);
-      pdf.setTextColor(...cores.castanho);
-      pdf.text(`Documento exclusivo de ${dadosPlano.nome}`, margin, pageHeight - 10);
-      pdf.text('Página 4 de 10', pageWidth - margin, pageHeight - 10, { align: 'right' });
-
-      // ============================================
-      // PÁGINAS 5-7 - LISTAS DE ALIMENTOS
-      // ============================================
-      setProgresso(60);
-      
-      // Função auxiliar para adicionar página de alimentos
-      const addAlimentosPage = (titulo, categorias, pageNum) => {
-        pdf.addPage();
-        
-        pdf.setFillColor(...cores.creme);
-        pdf.rect(0, 0, pageWidth, pageHeight, 'F');
-        
-        // Header
-        pdf.setFontSize(9);
-        pdf.setTextColor(...cores.terracota);
-        pdf.text('VITALIS', margin, 15);
-        pdf.setDrawColor(...cores.bege);
-        pdf.line(margin, 20, pageWidth - margin, 20);
-        
-        // Título
-        pdf.setFontSize(18);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(...cores.castanho);
-        pdf.text(titulo, margin, 40);
-        
-        let currentY = 55;
-        
-        categorias.forEach((cat) => {
-          if (currentY > pageHeight - 40) return; // Evita overflow
-          
-          pdf.setFillColor(245, 240, 232);
-          pdf.roundedRect(margin, currentY, contentWidth, 8, 2, 2, 'F');
-          
-          pdf.setFontSize(10);
-          pdf.setFont('helvetica', 'bold');
-          pdf.setTextColor(...cores.terracota);
-          pdf.text(cat.nome, margin + 5, currentY + 6);
-          
-          currentY += 12;
-          
-          pdf.setFontSize(9);
-          pdf.setFont('helvetica', 'normal');
-          pdf.setTextColor(...cores.castanho);
-          
-          const itemsText = cat.items.join(' • ');
-          const itemsLines = pdf.splitTextToSize(itemsText, contentWidth - 10);
-          pdf.text(itemsLines, margin + 5, currentY);
-          
-          currentY += itemsLines.length * 5 + 10;
-        });
-        
-        // Footer
-        pdf.setFontSize(8);
-        pdf.setTextColor(...cores.castanho);
-        pdf.text(`Documento exclusivo de ${dadosPlano.nome}`, margin, pageHeight - 10);
-        pdf.text(`Página ${pageNum} de 10`, pageWidth - margin, pageHeight - 10, { align: 'right' });
-      };
-      
-      addAlimentosPage(ALIMENTOS.proteinas.titulo, ALIMENTOS.proteinas.categorias, 5);
-      setProgresso(65);
-      addAlimentosPage(ALIMENTOS.hidratos.titulo + ' & ' + ALIMENTOS.gorduras.titulo, 
-        [...ALIMENTOS.hidratos.categorias, ...ALIMENTOS.gorduras.categorias], 6);
-      
-      // Página de vegetais (especial - por cores)
-      setProgresso(70);
-      pdf.addPage();
-      
-      pdf.setFillColor(...cores.creme);
-      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
-      
-      pdf.setFontSize(9);
-      pdf.setTextColor(...cores.terracota);
-      pdf.text('VITALIS', margin, 15);
-      pdf.setDrawColor(...cores.bege);
-      pdf.line(margin, 20, pageWidth - margin, 20);
-      
-      pdf.setFontSize(18);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(...cores.castanho);
-      pdf.text('🥬 Vegetais — Come o Arco-Íris!', margin, 40);
-      
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text('Cada cor representa diferentes nutrientes. Inclui pelo menos 3 cores por refeição!', margin, 52);
-      
-      let vegY = 65;
-      ALIMENTOS.vegetais.cores.forEach((v) => {
-        pdf.setFontSize(11);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(...cores.castanho);
-        pdf.text(`${v.emoji} ${v.cor}`, margin, vegY);
-        
-        pdf.setFontSize(9);
-        pdf.setFont('helvetica', 'normal');
-        const vegLines = pdf.splitTextToSize(v.items, contentWidth - 20);
-        pdf.text(vegLines, margin + 5, vegY + 8);
-        
-        vegY += 8 + vegLines.length * 5 + 8;
-      });
-      
-      pdf.setFontSize(8);
-      pdf.setTextColor(...cores.castanho);
-      pdf.text(`Documento exclusivo de ${dadosPlano.nome}`, margin, pageHeight - 10);
-      pdf.text('Página 7 de 10', pageWidth - margin, pageHeight - 10, { align: 'right' });
-
-      // ============================================
-      // PÁGINA 8 - LISTA DE COMPRAS
-      // ============================================
-      setProgresso(75);
-      pdf.addPage();
-      
-      pdf.setFillColor(...cores.creme);
-      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
-      
-      pdf.setFontSize(9);
-      pdf.setTextColor(...cores.terracota);
-      pdf.text('VITALIS', margin, 15);
-      pdf.setDrawColor(...cores.bege);
-      pdf.line(margin, 20, pageWidth - margin, 20);
-      
-      pdf.setFontSize(18);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(...cores.castanho);
-      pdf.text('🛒 Lista de Compras Semanal', margin, 40);
-      
-      const comprasData = [
-        { cat: '🥩 Proteínas', items: ['Peito de frango (1kg)', 'Ovos (2 dúzias)', 'Peixe fresco (500g)', 'Carne moída (500g)'] },
-        { cat: '🥬 Vegetais', items: ['Espinafre/Couve', 'Brócolos', 'Tomate', 'Pepino', 'Pimentos', 'Cebola', 'Alho'] },
-        { cat: '🥑 Gorduras', items: ['Azeite extra-virgem', 'Abacate (2-3)', 'Manteiga', 'Amêndoas/Nozes'] },
-        { cat: '🧂 Outros', items: ['Sal e pimenta', 'Ervas frescas', 'Limões', 'Chá/Café'] }
-      ];
-      
-      const compraCardW = (contentWidth - 10) / 2;
-      let compraY = 55;
-      
-      comprasData.forEach((c, i) => {
-        const col = i % 2;
-        const row = Math.floor(i / 2);
-        const x = margin + (compraCardW + 10) * col;
-        const y = compraY + row * 65;
-        
-        pdf.setFillColor(255, 255, 255);
-        pdf.roundedRect(x, y, compraCardW, 58, 3, 3, 'F');
-        pdf.setDrawColor(...cores.bege);
-        pdf.roundedRect(x, y, compraCardW, 58, 3, 3, 'S');
-        
-        pdf.setFontSize(11);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(...cores.terracota);
-        pdf.text(c.cat, x + 8, y + 12);
-        
-        pdf.setFontSize(9);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setTextColor(...cores.castanho);
-        
-        c.items.forEach((item, j) => {
-          pdf.text(`☐ ${item}`, x + 8, y + 24 + j * 8);
-        });
-      });
-      
-      pdf.setFontSize(8);
-      pdf.setTextColor(...cores.castanho);
-      pdf.text(`Documento exclusivo de ${dadosPlano.nome}`, margin, pageHeight - 10);
-      pdf.text('Página 8 de 10', pageWidth - margin, pageHeight - 10, { align: 'right' });
-
-      // ============================================
-      // PÁGINA 9 - REGRAS DA FASE
-      // ============================================
-      setProgresso(85);
-      pdf.addPage();
-      
-      pdf.setFillColor(...cores.creme);
-      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
-      
-      pdf.setFontSize(9);
-      pdf.setTextColor(...cores.terracota);
-      pdf.text('VITALIS', margin, 15);
-      pdf.setDrawColor(...cores.bege);
-      pdf.line(margin, 20, pageWidth - margin, 20);
-      
-      pdf.setFontSize(18);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(...cores.castanho);
-      pdf.text(`📋 Regras da ${faseConfig.nome}`, margin, 40);
-      
-      let regrasY = 55;
-      
-      // Priorizar
-      pdf.setFillColor(232, 245, 233);
-      pdf.roundedRect(margin, regrasY, contentWidth, 5 + faseConfig.priorizar.length * 7, 3, 3, 'F');
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(46, 125, 50);
-      pdf.text('✅ PRIORIZAR', margin + 5, regrasY + 8);
-      
-      pdf.setFontSize(9);
-      pdf.setFont('helvetica', 'normal');
-      faseConfig.priorizar.forEach((item, i) => {
-        pdf.text(`✓ ${item}`, margin + 10, regrasY + 18 + i * 7);
-      });
-      
-      regrasY += 15 + faseConfig.priorizar.length * 7 + 10;
-      
-      // Evitar
-      pdf.setFillColor(255, 235, 238);
-      pdf.roundedRect(margin, regrasY, contentWidth, 5 + faseConfig.evitar.length * 7, 3, 3, 'F');
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(198, 40, 40);
-      pdf.text('❌ EVITAR', margin + 5, regrasY + 8);
-      
-      pdf.setFontSize(9);
-      pdf.setFont('helvetica', 'normal');
-      faseConfig.evitar.forEach((item, i) => {
-        pdf.text(`✗ ${item}`, margin + 10, regrasY + 18 + i * 7);
-      });
-      
-      regrasY += 15 + faseConfig.evitar.length * 7 + 10;
-      
-      // Dicas
-      pdf.setFillColor(255, 243, 224);
-      pdf.roundedRect(margin, regrasY, contentWidth, 5 + faseConfig.dicas.length * 7, 3, 3, 'F');
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(...cores.terracota);
-      pdf.text('💡 DICAS', margin + 5, regrasY + 8);
-      
-      pdf.setFontSize(9);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(...cores.castanho);
-      faseConfig.dicas.forEach((item, i) => {
-        pdf.text(`• ${item}`, margin + 10, regrasY + 18 + i * 7);
-      });
-      
-      pdf.setFontSize(8);
-      pdf.setTextColor(...cores.castanho);
-      pdf.text(`Documento exclusivo de ${dadosPlano.nome}`, margin, pageHeight - 10);
-      pdf.text('Página 9 de 10', pageWidth - margin, pageHeight - 10, { align: 'right' });
-
-      // ============================================
-      // PÁGINA 10 - ENCERRAMENTO
-      // ============================================
-      setProgresso(95);
-      pdf.addPage();
-      
-      pdf.setFillColor(...cores.creme);
-      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
-      
-      // Logo
-      pdf.setFillColor(...cores.terracota);
-      pdf.circle(pageWidth / 2, 60, 20, 'F');
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(24);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('V', pageWidth / 2, 66, { align: 'center' });
-      
-      pdf.setTextColor(...cores.terracota);
-      pdf.setFontSize(24);
-      pdf.text('VITALIS', pageWidth / 2, 95, { align: 'center' });
-      
-      // Citação
-      pdf.setFontSize(16);
-      pdf.setFont('helvetica', 'italic');
-      pdf.setTextColor(...cores.castanho);
-      pdf.text('"Quando o excesso cai, o corpo responde."', pageWidth / 2, 130, { align: 'center' });
-      
-      // Cliente
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text('CRIADO EXCLUSIVAMENTE PARA', pageWidth / 2, 160, { align: 'center' });
-      
-      pdf.setFontSize(22);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text(dadosPlano.nome, pageWidth / 2, 180, { align: 'center' });
-      
-      // Linha
-      pdf.setDrawColor(...cores.terracota);
-      pdf.line(margin + 60, 200, pageWidth - margin - 60, 200);
-      
-      // Coach
-      pdf.setFontSize(14);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(...cores.castanho);
-      pdf.text('Vivianne Saraiva', pageWidth / 2, 225, { align: 'center' });
-      
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(...cores.terracota);
-      pdf.text('Precision Nutrition Level 1 Coach', pageWidth / 2, 238, { align: 'center' });
-      
-      pdf.setFontSize(10);
-      pdf.setTextColor(...cores.castanho);
-      pdf.text('vivianne.saraiva@outlook.com', pageWidth / 2, 255, { align: 'center' });
-      pdf.text('WhatsApp: +258 84 524 3875', pageWidth / 2, 267, { align: 'center' });
-      
-      // ============================================
-      // SALVAR PDF
-      // ============================================
-      setProgresso(100);
-      
-      const nomeArquivo = `Vitalis_Plano_${dadosPlano.nome.replace(/\s+/g, '_')}_${dadosPlano.fase}.pdf`;
-      pdf.save(nomeArquivo);
-      
-      // Registar na base de dados que PDF foi gerado
-      try {
-        await supabase
-          .from('vitalis_plano')
-          .update({ 
-            pdf_gerado_em: new Date().toISOString(),
-            pdf_fase: dadosPlano.fase
-          })
-          .eq('client_id', userId);
-      } catch (e) {
-        console.log('Aviso: não foi possível registar geração do PDF');
-      }
-      
+      setTimeout(onClose, 500);
     } catch (err) {
-      console.error('Erro ao gerar PDF:', err);
-      setError('Erro ao gerar PDF. Tenta novamente.');
+      console.error('Erro PDF:', err);
+      setErro('Erro ao gerar PDF');
     } finally {
-      setLoading(false);
+      setGerando(false);
     }
   };
 
-  // Carregar dados ao montar
-  React.useEffect(() => {
-    carregarDados();
-  }, [userId]);
+  const formatarData = (d) => new Date(d).toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' });
+  const faseConfig = FASES_CONFIG[dados?.fase] || FASES_CONFIG.inducao;
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl p-8 text-center">
+          <div className="w-12 h-12 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin mx-auto" />
+          <p className="mt-4 text-gray-600">A preparar...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (erro) {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl p-8 text-center">
+          <p className="text-red-600 mb-4">{erro}</p>
+          <button onClick={onClose} className="px-4 py-2 bg-gray-200 rounded-lg">Fechar</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-800">📄 Gerar Plano em PDF</h2>
-          <button 
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl"
-          >
-            ×
-          </button>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-auto p-4">
+      <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[95vh] overflow-auto">
+        {/* Header */}
+        <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10">
+          <h2 className="text-lg font-bold">Gerar PDF do Plano</h2>
+          <div className="flex gap-2">
+            <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Cancelar</button>
+            <button 
+              onClick={gerarPDF} 
+              disabled={gerando}
+              className="px-4 py-2 bg-orange-500 text-white rounded-lg disabled:opacity-50"
+            >
+              {gerando ? 'A gerar...' : '📥 Descarregar PDF'}
+            </button>
+          </div>
         </div>
-        
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4">
-            {error}
-          </div>
-        )}
-        
-        {dadosPlano && (
-          <div className="bg-orange-50 rounded-xl p-4 mb-6">
-            <p className="text-sm text-gray-600 mb-2">O PDF incluirá:</p>
-            <ul className="text-sm text-gray-700 space-y-1">
-              <li>✓ Dados personalizados de <strong>{dadosPlano.nome}</strong></li>
-              <li>✓ {FASES_CONFIG[dadosPlano.fase]?.nome || 'Fase actual'}</li>
-              <li>✓ Porções calculadas para ti</li>
-              <li>✓ {dadosPlano.aceita_jejum ? 'Protocolo de jejum' : 'Sem jejum'}</li>
-              <li>✓ Listas de alimentos completas</li>
-              <li>✓ Lista de compras</li>
-              <li>✓ Regras e dicas da fase</li>
-            </ul>
-          </div>
-        )}
-        
-        {loading && (
-          <div className="mb-6">
-            <div className="flex justify-between text-sm text-gray-600 mb-2">
-              <span>A gerar PDF...</span>
-              <span>{progresso}%</span>
+
+        {/* Preview */}
+        <div className="p-4 bg-gray-200">
+          <div className="transform scale-50 origin-top-left" style={{width: '200%'}}>
+            <div ref={pdfRef}>
+              {/* ========== PÁGINA 1 - CAPA ========== */}
+              <div style={{width:'210mm',minHeight:'297mm',background:'linear-gradient(180deg,#FDF8F3,#F5F0E8)',fontFamily:'Segoe UI,sans-serif',display:'flex',flexDirection:'column',pageBreakAfter:'always'}}>
+                <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'40px'}}>
+                  <div style={{width:'80px',height:'80px',background:'linear-gradient(135deg,#C1634A,#8B4513)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:'15px'}}>
+                    <span style={{color:'white',fontSize:'40px',fontWeight:'bold'}}>V</span>
+                  </div>
+                  <div style={{fontSize:'36px',fontWeight:'bold',color:'#A0422A',letterSpacing:'8px'}}>VITALIS</div>
+                  <div style={{fontSize:'10px',color:'#8B4513',letterSpacing:'3px',marginTop:'5px'}}>A RAIZ DA TRANSFORMAÇÃO</div>
+                  <div style={{width:'80px',height:'2px',background:'#C1634A',margin:'30px 0'}}></div>
+                  <div style={{fontSize:'28px',fontWeight:'600',color:'#6B4423',marginBottom:'8px'}}>Guia Personalizado</div>
+                  <div style={{fontSize:'14px',color:'#C1634A',letterSpacing:'3px',marginBottom:'40px'}}>PLANO ALIMENTAR</div>
+                  <div style={{background:'white',border:'2px solid #D2B48C',borderRadius:'20px',padding:'30px 50px',textAlign:'center'}}>
+                    <div style={{fontSize:'9px',color:'#8B4513',letterSpacing:'2px',marginBottom:'6px'}}>PREPARADO EXCLUSIVAMENTE PARA</div>
+                    <div style={{fontSize:'28px',fontWeight:'600',color:'#6B4423',marginBottom:'18px'}}>{dados.nome}</div>
+                    <div style={{display:'flex',gap:'20px',justifyContent:'center',alignItems:'center',marginBottom:'15px'}}>
+                      <div><div style={{fontSize:'8px',color:'#8B4513'}}>PESO ACTUAL</div><div style={{fontSize:'22px',fontWeight:'bold',color:'#A0422A'}}>{dados.peso_actual} kg</div></div>
+                      <div style={{color:'#6B8E23',fontSize:'24px'}}>→</div>
+                      <div><div style={{fontSize:'8px',color:'#8B4513'}}>META</div><div style={{fontSize:'22px',fontWeight:'bold',color:'#A0422A'}}>{dados.peso_meta} kg</div></div>
+                    </div>
+                    <div style={{fontSize:'11px',color:'#8B4513'}}>Início: {formatarData(dados.data_inicio)}</div>
+                  </div>
+                </div>
+                <div style={{background:'#6B4423',padding:'20px 40px',display:'flex',justifyContent:'space-between',color:'rgba(255,255,255,0.9)',fontSize:'10px'}}>
+                  <div><div style={{fontWeight:'600'}}>Vivianne Saraiva</div><div>Precision Nutrition Level 1 Coach</div></div>
+                  <div style={{textAlign:'right'}}><div>vivianne.saraiva@outlook.com</div><div>WhatsApp: +258 84 524 3875</div></div>
+                </div>
+              </div>
+
+              {/* ========== PÁGINA 2 - FASE ========== */}
+              <div style={{width:'210mm',minHeight:'297mm',background:'#FDF8F3',fontFamily:'Segoe UI,sans-serif',padding:'40px 50px',pageBreakAfter:'always',position:'relative'}}>
+                <div style={{display:'flex',justifyContent:'space-between',borderBottom:'2px solid #D2B48C',paddingBottom:'15px',marginBottom:'30px'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}><span style={{fontSize:'24px',fontWeight:'bold',color:'#C1634A'}}>V</span><span style={{fontWeight:'600',color:'#C1634A'}}>VITALIS</span></div>
+                  <div style={{fontSize:'12px',color:'#8B4513'}}>{faseConfig.nome}</div>
+                </div>
+                <div style={{fontSize:'22px',fontWeight:'600',color:'#6B4423',marginBottom:'20px'}}>👋 Bem-vinda à Tua Jornada</div>
+                <div style={{background:'white',borderRadius:'12px',padding:'20px',border:'1px solid #D2B48C',marginBottom:'25px'}}>
+                  <p style={{color:'#6B4423',lineHeight:'1.8'}}><strong>{dados.nome}</strong>, este guia foi criado especialmente para ti, com base nas tuas respostas, objectivos e estilo de vida.</p>
+                </div>
+                <div style={{fontSize:'22px',fontWeight:'600',color:'#6B4423',marginBottom:'20px'}}>🔥 {faseConfig.nome}</div>
+                <div style={{background:'white',borderRadius:'12px',padding:'20px',border:'1px solid #D2B48C',marginBottom:'25px'}}>
+                  <div style={{display:'inline-block',padding:'4px 12px',background:'#F5F0E8',borderRadius:'20px',fontSize:'11px',color:'#8B4513',marginBottom:'15px'}}>Duração: {faseConfig.duracao}</div>
+                  <p style={{color:'#6B4423',lineHeight:'1.7'}}>{faseConfig.descricao}</p>
+                </div>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px'}}>
+                  <div style={{background:'white',borderRadius:'12px',padding:'20px',border:'1px solid #D2B48C'}}>
+                    <div style={{fontSize:'10px',color:'#8B4513',marginBottom:'8px'}}>ABORDAGEM</div>
+                    <div style={{fontSize:'18px',fontWeight:'600',color:'#C1634A'}}>{dados.abordagem}</div>
+                  </div>
+                  <div style={{background:'white',borderRadius:'12px',padding:'20px',border:'1px solid #D2B48C'}}>
+                    <div style={{fontSize:'10px',color:'#8B4513',marginBottom:'8px'}}>META SEMANAL</div>
+                    <div style={{fontSize:'18px',fontWeight:'600',color:'#6B8E23'}}>-0.5 a -1.0 kg</div>
+                  </div>
+                </div>
+                <div style={{position:'absolute',bottom:'20px',left:'50px',right:'50px',display:'flex',justifyContent:'space-between',fontSize:'9px',color:'#8B4513',borderTop:'1px solid #D2B48C',paddingTop:'10px'}}>
+                  <span>Documento exclusivo de {dados.nome}</span><span>Página 2 de 10</span>
+                </div>
+              </div>
+
+              {/* ========== PÁGINA 3 - PORÇÕES ========== */}
+              <div style={{width:'210mm',minHeight:'297mm',background:'#FDF8F3',fontFamily:'Segoe UI,sans-serif',padding:'40px 50px',pageBreakAfter:'always',position:'relative'}}>
+                <div style={{display:'flex',justifyContent:'space-between',borderBottom:'2px solid #D2B48C',paddingBottom:'15px',marginBottom:'30px'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}><span style={{fontSize:'24px',fontWeight:'bold',color:'#C1634A'}}>V</span><span style={{fontWeight:'600',color:'#C1634A'}}>VITALIS</span></div>
+                  <div style={{fontSize:'12px',color:'#8B4513'}}>{faseConfig.nome}</div>
+                </div>
+                <div style={{fontSize:'22px',fontWeight:'600',color:'#6B4423',marginBottom:'20px'}}>🍽️ As Tuas Porções Diárias</div>
+                <p style={{color:'#6B4423',marginBottom:'25px'}}>Usa o Método da Mão para medir — simples, prático e sempre contigo.</p>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'20px',marginBottom:'30px'}}>
+                  <div style={{background:'#FFEBEE',borderRadius:'12px',padding:'20px',textAlign:'center',border:'2px solid #E57373'}}>
+                    <div style={{fontSize:'14px',color:'#C62828',fontWeight:'600',marginBottom:'8px'}}>Proteína</div>
+                    <div style={{fontSize:'42px',fontWeight:'bold',color:'#C62828'}}>{dados.porcoes_proteina}</div>
+                    <div style={{fontSize:'12px',color:'#C62828'}}>palmas/dia</div>
+                  </div>
+                  <div style={{background:'#E3F2FD',borderRadius:'12px',padding:'20px',textAlign:'center',border:'2px solid #64B5F6'}}>
+                    <div style={{fontSize:'14px',color:'#1565C0',fontWeight:'600',marginBottom:'8px'}}>Hidratos</div>
+                    <div style={{fontSize:'42px',fontWeight:'bold',color:'#1565C0'}}>{dados.porcoes_hidratos}</div>
+                    <div style={{fontSize:'12px',color:'#1565C0'}}>mãos/dia</div>
+                  </div>
+                  <div style={{background:'#FFF8E1',borderRadius:'12px',padding:'20px',textAlign:'center',border:'2px solid #FFD54F'}}>
+                    <div style={{fontSize:'14px',color:'#F57F17',fontWeight:'600',marginBottom:'8px'}}>Gordura</div>
+                    <div style={{fontSize:'42px',fontWeight:'bold',color:'#F57F17'}}>{dados.porcoes_gordura}</div>
+                    <div style={{fontSize:'12px',color:'#F57F17'}}>polegares/dia</div>
+                  </div>
+                </div>
+                <div style={{background:'#E8F5E9',borderRadius:'12px',padding:'20px',textAlign:'center',border:'2px solid #81C784',marginBottom:'30px'}}>
+                  <div style={{fontSize:'14px',color:'#2E7D32',fontWeight:'600'}}>🥬 Vegetais & Legumes</div>
+                  <div style={{fontSize:'24px',fontWeight:'bold',color:'#2E7D32'}}>À VONTADE</div>
+                  <div style={{fontSize:'11px',color:'#2E7D32'}}>Quanto mais cores, melhor!</div>
+                </div>
+                <div style={{fontSize:'20px',fontWeight:'600',color:'#6B4423',marginBottom:'15px'}}>📊 Os Teus Macros Diários</div>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:'15px'}}>
+                  <div style={{background:'white',borderRadius:'12px',padding:'15px',textAlign:'center',border:'1px solid #D2B48C'}}>
+                    <div style={{fontSize:'24px',fontWeight:'bold',color:'#C1634A'}}>{dados.calorias}</div>
+                    <div style={{fontSize:'11px',color:'#8B4513'}}>Calorias</div>
+                  </div>
+                  <div style={{background:'white',borderRadius:'12px',padding:'15px',textAlign:'center',border:'1px solid #D2B48C'}}>
+                    <div style={{fontSize:'24px',fontWeight:'bold',color:'#C62828'}}>{dados.proteina_g}g</div>
+                    <div style={{fontSize:'11px',color:'#8B4513'}}>Proteína</div>
+                  </div>
+                  <div style={{background:'white',borderRadius:'12px',padding:'15px',textAlign:'center',border:'1px solid #D2B48C'}}>
+                    <div style={{fontSize:'24px',fontWeight:'bold',color:'#1565C0'}}>{dados.carboidratos_g}g</div>
+                    <div style={{fontSize:'11px',color:'#8B4513'}}>Hidratos</div>
+                  </div>
+                  <div style={{background:'white',borderRadius:'12px',padding:'15px',textAlign:'center',border:'1px solid #D2B48C'}}>
+                    <div style={{fontSize:'24px',fontWeight:'bold',color:'#F57F17'}}>{dados.gordura_g}g</div>
+                    <div style={{fontSize:'11px',color:'#8B4513'}}>Gordura</div>
+                  </div>
+                </div>
+                <div style={{position:'absolute',bottom:'20px',left:'50px',right:'50px',display:'flex',justifyContent:'space-between',fontSize:'9px',color:'#8B4513',borderTop:'1px solid #D2B48C',paddingTop:'10px'}}>
+                  <span>Documento exclusivo de {dados.nome}</span><span>Página 3 de 10</span>
+                </div>
+              </div>
+
+              {/* ========== PÁGINA 4 - MÉTODO DA MÃO ========== */}
+              <div style={{width:'210mm',minHeight:'297mm',background:'#FDF8F3',fontFamily:'Segoe UI,sans-serif',padding:'40px 50px',pageBreakAfter:'always',position:'relative'}}>
+                <div style={{display:'flex',justifyContent:'space-between',borderBottom:'2px solid #D2B48C',paddingBottom:'15px',marginBottom:'30px'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}><span style={{fontSize:'24px',fontWeight:'bold',color:'#C1634A'}}>V</span><span style={{fontWeight:'600',color:'#C1634A'}}>VITALIS</span></div>
+                </div>
+                <div style={{fontSize:'22px',fontWeight:'600',color:'#6B4423',marginBottom:'20px'}}>✋ O Método da Mão</div>
+                <p style={{color:'#6B4423',marginBottom:'25px',textAlign:'center',fontStyle:'italic'}}>A tua mão é proporcional ao teu corpo — mãos maiores = corpo maior = mais comida.</p>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px'}}>
+                  <div style={{background:'#FFEBEE',borderRadius:'12px',padding:'20px',border:'1px solid #E57373'}}>
+                    <div style={{fontWeight:'600',color:'#C62828',marginBottom:'10px'}}>🖐️ A Palma — PROTEÍNA</div>
+                    <div style={{color:'#C62828',fontWeight:'600',marginBottom:'10px'}}>~{dados.tamanho_palma}g de proteína</div>
+                    <p style={{fontSize:'12px',color:'#6B4423'}}>Tamanho e espessura da tua palma (sem dedos)</p>
+                    <p style={{fontSize:'11px',color:'#8B4513',marginTop:'8px',fontStyle:'italic'}}>Ex: 1 bife, 1 peito de frango</p>
+                  </div>
+                  <div style={{background:'#E3F2FD',borderRadius:'12px',padding:'20px',border:'1px solid #64B5F6'}}>
+                    <div style={{fontWeight:'600',color:'#1565C0',marginBottom:'10px'}}>🤲 A Mão em Concha — HIDRATOS</div>
+                    <div style={{color:'#1565C0',fontWeight:'600',marginBottom:'10px'}}>~{dados.tamanho_mao}g de hidratos</div>
+                    <p style={{fontSize:'12px',color:'#6B4423'}}>O que cabe na tua mão em concha</p>
+                    <p style={{fontSize:'11px',color:'#8B4513',marginTop:'8px',fontStyle:'italic'}}>Ex: punhado de arroz, batata-doce</p>
+                  </div>
+                  <div style={{background:'#FFF8E1',borderRadius:'12px',padding:'20px',border:'1px solid #FFD54F'}}>
+                    <div style={{fontWeight:'600',color:'#F57F17',marginBottom:'10px'}}>👍 O Polegar — GORDURA</div>
+                    <div style={{color:'#F57F17',fontWeight:'600',marginBottom:'10px'}}>~{dados.tamanho_polegar}g de gordura</div>
+                    <p style={{fontSize:'12px',color:'#6B4423'}}>Tamanho do teu polegar inteiro</p>
+                    <p style={{fontSize:'11px',color:'#8B4513',marginTop:'8px',fontStyle:'italic'}}>Ex: 1 colher azeite, nozes</p>
+                  </div>
+                  <div style={{background:'#E8F5E9',borderRadius:'12px',padding:'20px',border:'1px solid #81C784'}}>
+                    <div style={{fontWeight:'600',color:'#2E7D32',marginBottom:'10px'}}>✊ O Punho — VEGETAIS</div>
+                    <div style={{color:'#2E7D32',fontWeight:'600',marginBottom:'10px'}}>~100g de vegetais</div>
+                    <p style={{fontSize:'12px',color:'#6B4423'}}>Tamanho do teu punho fechado</p>
+                    <p style={{fontSize:'11px',color:'#2E7D32',marginTop:'8px',fontWeight:'600'}}>Mas lembra-te: À VONTADE!</p>
+                  </div>
+                </div>
+                <div style={{position:'absolute',bottom:'20px',left:'50px',right:'50px',display:'flex',justifyContent:'space-between',fontSize:'9px',color:'#8B4513',borderTop:'1px solid #D2B48C',paddingTop:'10px'}}>
+                  <span>Documento exclusivo de {dados.nome}</span><span>Página 4 de 10</span>
+                </div>
+              </div>
+
+              {/* ========== PÁGINA 5 - PROTEÍNAS ========== */}
+              <div style={{width:'210mm',minHeight:'297mm',background:'#FDF8F3',fontFamily:'Segoe UI,sans-serif',padding:'40px 50px',pageBreakAfter:'always',position:'relative'}}>
+                <div style={{display:'flex',justifyContent:'space-between',borderBottom:'2px solid #D2B48C',paddingBottom:'15px',marginBottom:'30px'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}><span style={{fontSize:'24px',fontWeight:'bold',color:'#C1634A'}}>V</span><span style={{fontWeight:'600',color:'#C1634A'}}>VITALIS</span></div>
+                </div>
+                <div style={{fontSize:'22px',fontWeight:'600',color:'#6B4423',marginBottom:'20px'}}>🥩 Proteínas Saudáveis</div>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px'}}>
+                  <div style={{background:'white',borderRadius:'12px',padding:'20px',border:'1px solid #D2B48C'}}>
+                    <div style={{fontWeight:'600',color:'#C62828',marginBottom:'12px'}}>Carnes Vermelhas (magras)</div>
+                    <p style={{fontSize:'13px',color:'#6B4423',lineHeight:'1.8'}}>Bife de vaca • Carne moída magra • Lombo de porco • Cabrito • Borrego • Fígado</p>
+                  </div>
+                  <div style={{background:'white',borderRadius:'12px',padding:'20px',border:'1px solid #D2B48C'}}>
+                    <div style={{fontWeight:'600',color:'#C62828',marginBottom:'12px'}}>Aves</div>
+                    <p style={{fontSize:'13px',color:'#6B4423',lineHeight:'1.8'}}>Peito de frango • Coxa sem pele • Peru • Pato sem pele • Codorniz</p>
+                  </div>
+                  <div style={{background:'white',borderRadius:'12px',padding:'20px',border:'1px solid #D2B48C'}}>
+                    <div style={{fontWeight:'600',color:'#C62828',marginBottom:'12px'}}>Peixes & Mariscos</div>
+                    <p style={{fontSize:'13px',color:'#6B4423',lineHeight:'1.8'}}>Salmão • Atum • Sardinha • Carapau • Pescada • Tilápia • Camarão • Lulas</p>
+                  </div>
+                  <div style={{background:'white',borderRadius:'12px',padding:'20px',border:'1px solid #D2B48C'}}>
+                    <div style={{fontWeight:'600',color:'#C62828',marginBottom:'12px'}}>Ovos & Lacticínios</div>
+                    <p style={{fontSize:'13px',color:'#6B4423',lineHeight:'1.8'}}>Ovos inteiros • Queijo fresco • Iogurte grego natural • Requeijão</p>
+                  </div>
+                </div>
+                <div style={{position:'absolute',bottom:'20px',left:'50px',right:'50px',display:'flex',justifyContent:'space-between',fontSize:'9px',color:'#8B4513',borderTop:'1px solid #D2B48C',paddingTop:'10px'}}>
+                  <span>Documento exclusivo de {dados.nome}</span><span>Página 5 de 10</span>
+                </div>
+              </div>
+
+              {/* ========== PÁGINA 6 - HIDRATOS E GORDURAS ========== */}
+              <div style={{width:'210mm',minHeight:'297mm',background:'#FDF8F3',fontFamily:'Segoe UI,sans-serif',padding:'40px 50px',pageBreakAfter:'always',position:'relative'}}>
+                <div style={{display:'flex',justifyContent:'space-between',borderBottom:'2px solid #D2B48C',paddingBottom:'15px',marginBottom:'30px'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}><span style={{fontSize:'24px',fontWeight:'bold',color:'#C1634A'}}>V</span><span style={{fontWeight:'600',color:'#C1634A'}}>VITALIS</span></div>
+                </div>
+                <div style={{fontSize:'22px',fontWeight:'600',color:'#6B4423',marginBottom:'20px'}}>🍚 Hidratos Saudáveis & 🥑 Gorduras</div>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px'}}>
+                  <div style={{background:'#E3F2FD',borderRadius:'12px',padding:'20px',border:'1px solid #64B5F6'}}>
+                    <div style={{fontWeight:'600',color:'#1565C0',marginBottom:'12px'}}>Tubérculos & Grãos</div>
+                    <p style={{fontSize:'13px',color:'#6B4423',lineHeight:'1.8'}}>Batata-doce • Mandioca • Inhame • Arroz integral • Quinoa • Aveia</p>
+                  </div>
+                  <div style={{background:'#E3F2FD',borderRadius:'12px',padding:'20px',border:'1px solid #64B5F6'}}>
+                    <div style={{fontWeight:'600',color:'#1565C0',marginBottom:'12px'}}>Frutas (baixo IG)</div>
+                    <p style={{fontSize:'13px',color:'#6B4423',lineHeight:'1.8'}}>Frutos vermelhos • Maçã verde • Pera • Laranja • Toranja • Kiwi</p>
+                  </div>
+                  <div style={{background:'#FFF8E1',borderRadius:'12px',padding:'20px',border:'1px solid #FFD54F'}}>
+                    <div style={{fontWeight:'600',color:'#F57F17',marginBottom:'12px'}}>Óleos & Manteigas</div>
+                    <p style={{fontSize:'13px',color:'#6B4423',lineHeight:'1.8'}}>Azeite extra-virgem • Óleo de coco • Manteiga • Ghee</p>
+                  </div>
+                  <div style={{background:'#FFF8E1',borderRadius:'12px',padding:'20px',border:'1px solid #FFD54F'}}>
+                    <div style={{fontWeight:'600',color:'#F57F17',marginBottom:'12px'}}>Frutos Secos & Sementes</div>
+                    <p style={{fontSize:'13px',color:'#6B4423',lineHeight:'1.8'}}>Amêndoas • Nozes • Cajus • Chia • Linhaça</p>
+                  </div>
+                </div>
+                <div style={{background:'#FFF8E1',borderRadius:'12px',padding:'20px',border:'1px solid #FFD54F',marginTop:'20px'}}>
+                  <div style={{fontWeight:'600',color:'#F57F17',marginBottom:'12px'}}>Outras Fontes de Gordura</div>
+                  <p style={{fontSize:'13px',color:'#6B4423',lineHeight:'1.8'}}>Abacate • Azeitonas • Coco • Chocolate negro (+70%)</p>
+                </div>
+                <div style={{position:'absolute',bottom:'20px',left:'50px',right:'50px',display:'flex',justifyContent:'space-between',fontSize:'9px',color:'#8B4513',borderTop:'1px solid #D2B48C',paddingTop:'10px'}}>
+                  <span>Documento exclusivo de {dados.nome}</span><span>Página 6 de 10</span>
+                </div>
+              </div>
+
+              {/* ========== PÁGINA 7 - VEGETAIS ========== */}
+              <div style={{width:'210mm',minHeight:'297mm',background:'#FDF8F3',fontFamily:'Segoe UI,sans-serif',padding:'40px 50px',pageBreakAfter:'always',position:'relative'}}>
+                <div style={{display:'flex',justifyContent:'space-between',borderBottom:'2px solid #D2B48C',paddingBottom:'15px',marginBottom:'30px'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}><span style={{fontSize:'24px',fontWeight:'bold',color:'#C1634A'}}>V</span><span style={{fontWeight:'600',color:'#C1634A'}}>VITALIS</span></div>
+                </div>
+                <div style={{fontSize:'22px',fontWeight:'600',color:'#6B4423',marginBottom:'20px'}}>🥬 Vegetais — Come o Arco-Íris!</div>
+                <p style={{color:'#6B4423',marginBottom:'25px',textAlign:'center'}}>Cada cor = diferentes nutrientes. Inclui pelo menos 3 cores por refeição!</p>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'15px'}}>
+                  <div style={{background:'white',borderRadius:'12px',padding:'15px',border:'1px solid #D2B48C',borderLeft:'4px solid #4CAF50'}}>
+                    <div style={{fontWeight:'600',color:'#2E7D32',marginBottom:'8px'}}>🟢 Verdes</div>
+                    <p style={{fontSize:'12px',color:'#6B4423'}}>Espinafre, Couve, Brócolos, Alface, Rúcula, Pepino, Abobrinha</p>
+                  </div>
+                  <div style={{background:'white',borderRadius:'12px',padding:'15px',border:'1px solid #D2B48C',borderLeft:'4px solid #F44336'}}>
+                    <div style={{fontWeight:'600',color:'#C62828',marginBottom:'8px'}}>🔴 Vermelhos</div>
+                    <p style={{fontSize:'12px',color:'#6B4423'}}>Tomate, Pimento vermelho, Beterraba, Rabanete</p>
+                  </div>
+                  <div style={{background:'white',borderRadius:'12px',padding:'15px',border:'1px solid #D2B48C',borderLeft:'4px solid #FF9800'}}>
+                    <div style={{fontWeight:'600',color:'#E65100',marginBottom:'8px'}}>🟠 Laranjas</div>
+                    <p style={{fontSize:'12px',color:'#6B4423'}}>Cenoura, Abóbora, Pimento laranja</p>
+                  </div>
+                  <div style={{background:'white',borderRadius:'12px',padding:'15px',border:'1px solid #D2B48C',borderLeft:'4px solid #9E9E9E'}}>
+                    <div style={{fontWeight:'600',color:'#616161',marginBottom:'8px'}}>⚪ Brancos</div>
+                    <p style={{fontSize:'12px',color:'#6B4423'}}>Couve-flor, Cogumelos, Alho, Cebola, Nabo</p>
+                  </div>
+                  <div style={{background:'white',borderRadius:'12px',padding:'15px',border:'1px solid #D2B48C',borderLeft:'4px solid #9C27B0',gridColumn:'span 2'}}>
+                    <div style={{fontWeight:'600',color:'#7B1FA2',marginBottom:'8px'}}>🟣 Roxos</div>
+                    <p style={{fontSize:'12px',color:'#6B4423'}}>Beringela, Couve roxa, Cebola roxa</p>
+                  </div>
+                </div>
+                <div style={{position:'absolute',bottom:'20px',left:'50px',right:'50px',display:'flex',justifyContent:'space-between',fontSize:'9px',color:'#8B4513',borderTop:'1px solid #D2B48C',paddingTop:'10px'}}>
+                  <span>Documento exclusivo de {dados.nome}</span><span>Página 7 de 10</span>
+                </div>
+              </div>
+
+              {/* ========== PÁGINA 8 - LISTA DE COMPRAS ========== */}
+              <div style={{width:'210mm',minHeight:'297mm',background:'#FDF8F3',fontFamily:'Segoe UI,sans-serif',padding:'40px 50px',pageBreakAfter:'always',position:'relative'}}>
+                <div style={{display:'flex',justifyContent:'space-between',borderBottom:'2px solid #D2B48C',paddingBottom:'15px',marginBottom:'30px'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}><span style={{fontSize:'24px',fontWeight:'bold',color:'#C1634A'}}>V</span><span style={{fontWeight:'600',color:'#C1634A'}}>VITALIS</span></div>
+                </div>
+                <div style={{fontSize:'22px',fontWeight:'600',color:'#6B4423',marginBottom:'20px'}}>🛒 Lista de Compras Semanal</div>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px'}}>
+                  <div style={{background:'white',borderRadius:'12px',padding:'20px',border:'1px solid #D2B48C'}}>
+                    <div style={{fontWeight:'600',color:'#C62828',marginBottom:'15px'}}>🥩 Proteínas</div>
+                    <div style={{fontSize:'13px',color:'#6B4423',lineHeight:'2'}}>☐ Peito de frango (1kg)<br/>☐ Ovos (2 dúzias)<br/>☐ Peixe fresco (500g)<br/>☐ Carne moída (500g)</div>
+                  </div>
+                  <div style={{background:'white',borderRadius:'12px',padding:'20px',border:'1px solid #D2B48C'}}>
+                    <div style={{fontWeight:'600',color:'#2E7D32',marginBottom:'15px'}}>🥬 Vegetais</div>
+                    <div style={{fontSize:'13px',color:'#6B4423',lineHeight:'2'}}>☐ Espinafre/Couve<br/>☐ Brócolos<br/>☐ Tomate<br/>☐ Pepino<br/>☐ Pimentos<br/>☐ Cebola e Alho</div>
+                  </div>
+                  <div style={{background:'white',borderRadius:'12px',padding:'20px',border:'1px solid #D2B48C'}}>
+                    <div style={{fontWeight:'600',color:'#F57F17',marginBottom:'15px'}}>🥑 Gorduras</div>
+                    <div style={{fontSize:'13px',color:'#6B4423',lineHeight:'2'}}>☐ Azeite extra-virgem<br/>☐ Abacate (2-3)<br/>☐ Manteiga<br/>☐ Amêndoas/Nozes</div>
+                  </div>
+                  <div style={{background:'white',borderRadius:'12px',padding:'20px',border:'1px solid #D2B48C'}}>
+                    <div style={{fontWeight:'600',color:'#8B4513',marginBottom:'15px'}}>🧂 Outros</div>
+                    <div style={{fontSize:'13px',color:'#6B4423',lineHeight:'2'}}>☐ Sal e pimenta<br/>☐ Ervas frescas<br/>☐ Limões<br/>☐ Chá/Café</div>
+                  </div>
+                </div>
+                <div style={{position:'absolute',bottom:'20px',left:'50px',right:'50px',display:'flex',justifyContent:'space-between',fontSize:'9px',color:'#8B4513',borderTop:'1px solid #D2B48C',paddingTop:'10px'}}>
+                  <span>Documento exclusivo de {dados.nome}</span><span>Página 8 de 10</span>
+                </div>
+              </div>
+
+              {/* ========== PÁGINA 9 - REGRAS ========== */}
+              <div style={{width:'210mm',minHeight:'297mm',background:'#FDF8F3',fontFamily:'Segoe UI,sans-serif',padding:'40px 50px',pageBreakAfter:'always',position:'relative'}}>
+                <div style={{display:'flex',justifyContent:'space-between',borderBottom:'2px solid #D2B48C',paddingBottom:'15px',marginBottom:'30px'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}><span style={{fontSize:'24px',fontWeight:'bold',color:'#C1634A'}}>V</span><span style={{fontWeight:'600',color:'#C1634A'}}>VITALIS</span></div>
+                </div>
+                <div style={{fontSize:'22px',fontWeight:'600',color:'#6B4423',marginBottom:'20px'}}>📋 Regras da {faseConfig.nome}</div>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px',marginBottom:'30px'}}>
+                  <div style={{background:'#E8F5E9',borderRadius:'12px',padding:'20px',border:'1px solid #81C784'}}>
+                    <div style={{fontWeight:'600',color:'#2E7D32',marginBottom:'15px'}}>✓ PRIORIZAR</div>
+                    <div style={{fontSize:'13px',color:'#6B4423',lineHeight:'2'}}>{faseConfig.priorizar.map(i => `✓ ${i}`).join('\n')}</div>
+                  </div>
+                  <div style={{background:'#FFEBEE',borderRadius:'12px',padding:'20px',border:'1px solid #E57373'}}>
+                    <div style={{fontWeight:'600',color:'#C62828',marginBottom:'15px'}}>✗ EVITAR</div>
+                    <div style={{fontSize:'13px',color:'#6B4423',lineHeight:'2'}}>{faseConfig.evitar.map(i => `✗ ${i}`).join('\n')}</div>
+                  </div>
+                </div>
+                <div style={{background:'#FFF8E1',borderRadius:'12px',padding:'20px',border:'1px solid #FFD54F'}}>
+                  <div style={{fontWeight:'600',color:'#F57F17',marginBottom:'15px'}}>💡 DICAS</div>
+                  <div style={{fontSize:'13px',color:'#6B4423',lineHeight:'2'}}>{faseConfig.dicas.map(i => `• ${i}`).join('\n')}</div>
+                </div>
+                <div style={{position:'absolute',bottom:'20px',left:'50px',right:'50px',display:'flex',justifyContent:'space-between',fontSize:'9px',color:'#8B4513',borderTop:'1px solid #D2B48C',paddingTop:'10px'}}>
+                  <span>Documento exclusivo de {dados.nome}</span><span>Página 9 de 10</span>
+                </div>
+              </div>
+
+              {/* ========== PÁGINA 10 - ENCERRAMENTO ========== */}
+              <div style={{width:'210mm',minHeight:'297mm',background:'linear-gradient(180deg,#FDF8F3,#F5F0E8)',fontFamily:'Segoe UI,sans-serif',display:'flex',flexDirection:'column'}}>
+                <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'50px'}}>
+                  <div style={{width:'80px',height:'80px',background:'linear-gradient(135deg,#C1634A,#8B4513)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:'30px'}}>
+                    <span style={{color:'white',fontSize:'40px',fontWeight:'bold'}}>V</span>
+                  </div>
+                  <div style={{fontSize:'36px',fontWeight:'bold',color:'#A0422A',letterSpacing:'8px',marginBottom:'40px'}}>VITALIS</div>
+                  <div style={{maxWidth:'400px',textAlign:'center',padding:'30px',background:'white',borderRadius:'15px',boxShadow:'0 10px 35px rgba(0,0,0,0.06)',marginBottom:'40px'}}>
+                    <div style={{fontSize:'40px',marginBottom:'15px'}}>"</div>
+                    <p style={{fontSize:'18px',color:'#6B4423',fontStyle:'italic',lineHeight:'1.6'}}>Quando o excesso cai, o corpo responde.</p>
+                  </div>
+                  <div style={{textAlign:'center'}}>
+                    <div style={{fontSize:'10px',color:'#8B4513',letterSpacing:'2px',marginBottom:'10px'}}>CRIADO EXCLUSIVAMENTE PARA</div>
+                    <div style={{fontSize:'24px',fontWeight:'600',color:'#6B4423'}}>{dados.nome}</div>
+                  </div>
+                </div>
+                <div style={{background:'#6B4423',padding:'20px 40px',display:'flex',justifyContent:'space-between',color:'rgba(255,255,255,0.9)',fontSize:'10px'}}>
+                  <div><div style={{fontWeight:'600'}}>Vivianne Saraiva</div><div>Precision Nutrition Level 1 Coach</div></div>
+                  <div style={{textAlign:'right'}}><div>vivianne.saraiva@outlook.com</div><div>WhatsApp: +258 84 524 3875</div></div>
+                </div>
+              </div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-3">
-              <div 
-                className="bg-gradient-to-r from-orange-500 to-amber-500 h-3 rounded-full transition-all duration-300"
-                style={{ width: `${progresso}%` }}
-              />
-            </div>
           </div>
-        )}
-        
-        <div className="flex gap-3">
-          <button
-            onClick={onClose}
-            className="flex-1 py-3 border-2 border-gray-200 text-gray-600 rounded-xl font-semibold hover:bg-gray-50 transition-all"
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={gerarPDF}
-            disabled={loading || !dadosPlano}
-            className="flex-1 py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
-          >
-            {loading ? 'A gerar...' : '📥 Descarregar PDF'}
-          </button>
         </div>
       </div>
     </div>
