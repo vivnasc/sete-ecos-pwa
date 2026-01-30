@@ -1,9 +1,10 @@
 // ============================================================
 // VITALIS - GERADOR DE PDF DO PLANO ALIMENTAR
-// Versão 3 - SEM PÁGINAS EM BRANCO
+// Versão 4 - Gera HTML para impressão como PDF
+// O utilizador abre o HTML no browser e imprime como PDF
 // ============================================================
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase.js';
 
 // Configuração das fases
@@ -42,16 +43,10 @@ const FASES_CONFIG = {
   }
 };
 
-// Dimensões A4 em pixels (96 DPI)
-const PAGE_WIDTH = '794px';  // 210mm
-const PAGE_HEIGHT = '1123px'; // 297mm
-
 export default function GeradorPDFPlano({ userId, onClose }) {
   const [loading, setLoading] = useState(true);
-  const [gerando, setGerando] = useState(false);
   const [dados, setDados] = useState(null);
   const [erro, setErro] = useState(null);
-  const pdfRef = useRef(null);
 
   useEffect(() => {
     carregarDados();
@@ -110,33 +105,1027 @@ export default function GeradorPDFPlano({ userId, onClose }) {
     return new Date(d).toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' });
   };
 
-  const gerarPDF = async () => {
-    setGerando(true);
-    try {
-      const html2pdf = (await import('html2pdf.js')).default;
-      
-      const opt = {
-        margin: 0,
-        filename: `Vitalis_Plano_${dados.nome.replace(/\s+/g, '_')}_${dados.fase}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2, 
-          useCORS: true,
-          logging: false,
-          width: 794,
-          windowWidth: 794
-        },
-        jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait', hotfixes: ['px_scaling'] }
-      };
+  const gerarHTML = () => {
+    const faseConfig = FASES_CONFIG[dados?.fase] || FASES_CONFIG.inducao;
+    
+    const html = `<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VITALIS - Plano de ${dados.nome}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --terracota: #C1634A;
+            --terracota-dark: #A0422A;
+            --castanho: #8B4513;
+            --castanho-dark: #6B4423;
+            --verde: #6B8E23;
+            --bege: #D2B48C;
+            --bege-light: #F5F0E8;
+            --creme: #FDF8F3;
+        }
+        
+        @media print {
+            @page { margin: 0; size: A4 portrait; }
+            body { margin: 0; }
+            .page { page-break-after: always; page-break-inside: avoid; }
+            .page:last-child { page-break-after: auto; }
+            .no-print { display: none !important; }
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #f0f0f0;
+            line-height: 1.6;
+        }
+        
+        .print-instructions {
+            background: linear-gradient(135deg, var(--terracota), var(--terracota-dark));
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .print-instructions h2 { font-size: 20px; margin-bottom: 8px; }
+        .print-instructions p { font-size: 14px; opacity: 0.9; }
+        .print-instructions button {
+            margin-top: 15px;
+            padding: 12px 30px;
+            background: white;
+            color: var(--terracota-dark);
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .print-instructions button:hover { background: var(--bege-light); }
+        
+        .page-container {
+            max-width: 210mm;
+            margin: 120px auto 40px;
+            padding: 0 20px;
+        }
+        
+        .page {
+            background: var(--creme);
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* CAPA */
+        .cover {
+            height: 297mm;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, var(--creme) 0%, var(--bege-light) 100%);
+        }
+        
+        .cover-top {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 50px;
+        }
+        
+        .logo-circle {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--terracota), var(--castanho));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(193, 99, 74, 0.4);
+        }
+        
+        .logo-circle span {
+            color: white;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 55px;
+            font-weight: 700;
+        }
+        
+        .brand-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--terracota-dark);
+            letter-spacing: 12px;
+        }
+        
+        .brand-tagline {
+            font-size: 11px;
+            color: var(--castanho);
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+        
+        .cover-divider {
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--terracota), transparent);
+            margin: 45px 0;
+        }
+        
+        .cover-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 34px;
+            font-weight: 600;
+            color: var(--castanho-dark);
+            letter-spacing: 3px;
+        }
+        
+        .cover-subtitle {
+            font-size: 16px;
+            color: var(--terracota);
+            font-weight: 500;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            margin-bottom: 50px;
+        }
+        
+        .client-box {
+            background: white;
+            border: 2px solid var(--bege);
+            border-radius: 25px;
+            padding: 40px 80px;
+            text-align: center;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+        }
+        
+        .client-label {
+            font-size: 10px;
+            color: var(--castanho);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        
+        .client-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            font-weight: 600;
+            color: var(--castanho-dark);
+            margin-bottom: 25px;
+        }
+        
+        .weight-stats {
+            display: flex;
+            gap: 35px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .weight-stat { text-align: center; }
+        
+        .weight-label {
+            font-size: 9px;
+            color: var(--castanho);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .weight-value {
+            font-size: 32px;
+            color: var(--terracota-dark);
+            font-weight: 700;
+        }
+        
+        .weight-arrow {
+            color: var(--verde);
+            font-size: 36px;
+        }
+        
+        .start-date {
+            font-size: 13px;
+            color: var(--castanho);
+        }
+        
+        .cover-footer {
+            background: var(--castanho-dark);
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255,255,255,0.95);
+            font-size: 11px;
+        }
+        
+        .cover-footer-right { text-align: right; }
+        .cover-footer strong { display: block; margin-bottom: 3px; }
+        
+        /* PÁGINAS INTERIORES */
+        .page-inner {
+            padding: 45px 55px 80px;
+            min-height: 297mm;
+            position: relative;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--bege);
+            padding-bottom: 15px;
+            margin-bottom: 35px;
+        }
+        
+        .page-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .page-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--terracota), var(--castanho));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .page-logo-icon span {
+            color: white;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .page-logo-text {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--terracota);
+            letter-spacing: 3px;
+        }
+        
+        .page-phase {
+            font-size: 13px;
+            color: var(--castanho);
+            font-weight: 500;
+        }
+        
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--castanho-dark);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .section-title span { font-size: 32px; }
+        
+        .page-footer {
+            position: absolute;
+            bottom: 30px;
+            left: 55px;
+            right: 55px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: var(--castanho);
+            border-top: 1px solid var(--bege);
+            padding-top: 12px;
+        }
+        
+        /* CARDS */
+        .info-box {
+            background: white;
+            border: 1px solid var(--bege);
+            border-radius: 16px;
+            padding: 25px 30px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box p {
+            color: var(--castanho-dark);
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 18px; }
+        
+        /* PORÇÕES */
+        .portion-card {
+            border-radius: 18px;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .portion-card.protein { background: linear-gradient(135deg, #FFEBEE, #FFCDD2); border: 2px solid #E57373; }
+        .portion-card.carbs { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); border: 2px solid #64B5F6; }
+        .portion-card.fats { background: linear-gradient(135deg, #FFF8E1, #FFECB3); border: 2px solid #FFD54F; }
+        .portion-card.veggies { background: linear-gradient(135deg, #E8F5E9, #C8E6C9); border: 2px solid #81C784; }
+        
+        .portion-label {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .portion-card.protein .portion-label { color: #C62828; }
+        .portion-card.carbs .portion-label { color: #1565C0; }
+        .portion-card.fats .portion-label { color: #F57F17; }
+        .portion-card.veggies .portion-label { color: #2E7D32; }
+        
+        .portion-value {
+            font-size: 60px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        
+        .portion-card.protein .portion-value { color: #C62828; }
+        .portion-card.carbs .portion-value { color: #1565C0; }
+        .portion-card.fats .portion-value { color: #F57F17; }
+        .portion-card.veggies .portion-value { color: #2E7D32; font-size: 36px; }
+        
+        .portion-unit {
+            font-size: 13px;
+            color: var(--castanho);
+            margin-top: 8px;
+        }
+        
+        /* MACROS */
+        .macro-card {
+            background: white;
+            border: 1px solid var(--bege);
+            border-radius: 14px;
+            padding: 25px 15px;
+            text-align: center;
+        }
+        
+        .macro-icon { font-size: 24px; margin-bottom: 10px; }
+        
+        .macro-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--terracota-dark);
+        }
+        
+        .macro-label {
+            font-size: 11px;
+            color: var(--castanho);
+            margin-top: 5px;
+        }
+        
+        /* MÉTODO DA MÃO */
+        .hand-card {
+            border-radius: 16px;
+            padding: 28px;
+        }
+        
+        .hand-card.protein { background: #FFEBEE; border: 2px solid #E57373; }
+        .hand-card.carbs { background: #E3F2FD; border: 2px solid #64B5F6; }
+        .hand-card.fats { background: #FFF8E1; border: 2px solid #FFD54F; }
+        .hand-card.veggies { background: #E8F5E9; border: 2px solid #81C784; }
+        
+        .hand-title {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+        
+        .hand-card.protein .hand-title { color: #C62828; }
+        .hand-card.carbs .hand-title { color: #1565C0; }
+        .hand-card.fats .hand-title { color: #F57F17; }
+        .hand-card.veggies .hand-title { color: #2E7D32; }
+        
+        .hand-amount {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .hand-card.protein .hand-amount { color: #C62828; }
+        .hand-card.carbs .hand-amount { color: #1565C0; }
+        .hand-card.fats .hand-amount { color: #F57F17; }
+        .hand-card.veggies .hand-amount { color: #2E7D32; }
+        
+        .hand-desc {
+            font-size: 13px;
+            color: var(--castanho-dark);
+            margin-bottom: 10px;
+        }
+        
+        .hand-example {
+            font-size: 12px;
+            color: var(--castanho);
+            font-style: italic;
+        }
+        
+        /* FOOD CARDS */
+        .food-card {
+            background: white;
+            border: 1px solid var(--bege);
+            border-radius: 14px;
+            padding: 25px;
+        }
+        
+        .food-title {
+            font-weight: 600;
+            color: var(--terracota-dark);
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--bege);
+        }
+        
+        .food-list {
+            font-size: 13px;
+            color: var(--castanho-dark);
+            line-height: 2;
+        }
+        
+        /* VEGETAIS CORES */
+        .veggie-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 5px solid;
+        }
+        
+        .veggie-card.green { border-color: #4CAF50; background: #F1F8E9; }
+        .veggie-card.red { border-color: #F44336; background: #FFEBEE; }
+        .veggie-card.orange { border-color: #FF9800; background: #FFF3E0; }
+        .veggie-card.white { border-color: #9E9E9E; background: #FAFAFA; }
+        .veggie-card.purple { border-color: #9C27B0; background: #F3E5F5; }
+        
+        .veggie-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .veggie-card.green .veggie-title { color: #2E7D32; }
+        .veggie-card.red .veggie-title { color: #C62828; }
+        .veggie-card.orange .veggie-title { color: #E65100; }
+        .veggie-card.white .veggie-title { color: #616161; }
+        .veggie-card.purple .veggie-title { color: #6A1B9A; }
+        
+        .veggie-list {
+            font-size: 12px;
+            color: var(--castanho);
+            line-height: 1.7;
+        }
+        
+        /* REGRAS */
+        .rules-card {
+            border-radius: 14px;
+            padding: 28px;
+        }
+        
+        .rules-card.priority { background: #E8F5E9; border: 2px solid #81C784; }
+        .rules-card.avoid { background: #FFEBEE; border: 2px solid #E57373; }
+        .rules-card.tips { background: #FFF8E1; border: 2px solid #FFD54F; }
+        
+        .rules-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 18px;
+        }
+        
+        .rules-card.priority .rules-title { color: #2E7D32; }
+        .rules-card.avoid .rules-title { color: #C62828; }
+        .rules-card.tips .rules-title { color: #F57F17; }
+        
+        .rules-list {
+            list-style: none;
+            font-size: 13px;
+            color: var(--castanho-dark);
+            line-height: 2;
+        }
+        
+        /* PÁGINA FINAL */
+        .final-page {
+            height: 297mm;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, var(--creme) 0%, var(--bege-light) 100%);
+        }
+        
+        .final-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+        }
+        
+        .final-quote {
+            max-width: 450px;
+            text-align: center;
+            padding: 45px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+            margin-bottom: 50px;
+        }
+        
+        .final-quote-mark {
+            font-size: 60px;
+            color: var(--bege);
+            line-height: 0.5;
+        }
+        
+        .final-quote p {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            color: var(--castanho-dark);
+            font-style: italic;
+            line-height: 1.6;
+            margin: 20px 0;
+        }
+        
+        .final-for {
+            font-size: 11px;
+            color: var(--castanho);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+        
+        .final-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            font-weight: 600;
+            color: var(--castanho-dark);
+        }
+    </style>
+</head>
+<body>
+    <div class="print-instructions no-print">
+        <h2>📄 Plano Alimentar de ${dados.nome}</h2>
+        <p>Para guardar como PDF: pressione <strong>Ctrl+P</strong> (ou Cmd+P no Mac) e seleccione "Guardar como PDF"</p>
+        <button onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+    </div>
 
-      await html2pdf().set(opt).from(pdfRef.current).save();
-      setTimeout(onClose, 500);
-    } catch (err) {
-      console.error('Erro PDF:', err);
-      setErro('Erro ao gerar PDF');
-    } finally {
-      setGerando(false);
-    }
+    <div class="page-container">
+        <!-- PÁGINA 1 - CAPA -->
+        <div class="page">
+            <div class="cover">
+                <div class="cover-top">
+                    <div class="logo-circle"><span>V</span></div>
+                    <div class="brand-name">VITALIS</div>
+                    <div class="brand-tagline">A Raiz da Transformação</div>
+                    <div class="cover-divider"></div>
+                    <div class="cover-title">Guia Personalizado</div>
+                    <div class="cover-subtitle">Plano Alimentar</div>
+                    
+                    <div class="client-box">
+                        <div class="client-label">Preparado Exclusivamente Para</div>
+                        <div class="client-name">${dados.nome}</div>
+                        <div class="weight-stats">
+                            <div class="weight-stat">
+                                <div class="weight-label">Peso Actual</div>
+                                <div class="weight-value">${dados.peso_actual} kg</div>
+                            </div>
+                            <div class="weight-arrow">→</div>
+                            <div class="weight-stat">
+                                <div class="weight-label">Meta</div>
+                                <div class="weight-value">${dados.peso_meta} kg</div>
+                            </div>
+                        </div>
+                        <div class="start-date">Início: ${formatarData(dados.data_inicio)}</div>
+                    </div>
+                </div>
+                <div class="cover-footer">
+                    <div><strong>Vivianne Saraiva</strong>Precision Nutrition Level 1 Coach</div>
+                    <div class="cover-footer-right"><strong>vivianne.saraiva@outlook.com</strong>WhatsApp: +258 84 524 3875</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA 2 - BEM-VINDA & FASE -->
+        <div class="page">
+            <div class="page-inner">
+                <div class="page-header">
+                    <div class="page-logo">
+                        <div class="page-logo-icon"><span>V</span></div>
+                        <div class="page-logo-text">VITALIS</div>
+                    </div>
+                    <div class="page-phase">${faseConfig.nome}</div>
+                </div>
+                
+                <div class="section-title"><span>👋</span> Bem-vinda à Tua Jornada</div>
+                <div class="info-box">
+                    <p><strong>${dados.nome}</strong>, este guia foi criado especialmente para ti, com base nas tuas respostas, objectivos e estilo de vida. Cada porção, cada recomendação, foi calculada para o teu corpo e para onde queres chegar.</p>
+                </div>
+                
+                <div class="section-title"><span>🔥</span> ${faseConfig.nome}</div>
+                <div class="info-box">
+                    <p style="display:inline-block;padding:6px 18px;background:var(--bege-light);border-radius:25px;font-size:12px;color:var(--castanho);margin-bottom:15px;">Duração: ${faseConfig.duracao}</p>
+                    <p>${faseConfig.descricao}</p>
+                </div>
+                
+                <div class="grid-2" style="margin-top:30px;">
+                    <div class="info-box">
+                        <p style="font-size:10px;color:var(--terracota);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Abordagem Nutricional</p>
+                        <p style="font-size:22px;font-weight:600;color:var(--terracota-dark);text-transform:capitalize;">${dados.abordagem?.replace('_', ' ')}</p>
+                    </div>
+                    <div class="info-box">
+                        <p style="font-size:10px;color:var(--terracota);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Meta Semanal</p>
+                        <p style="font-size:22px;font-weight:600;color:var(--verde);">-0.5 a -1.0 kg/semana</p>
+                    </div>
+                </div>
+                
+                <div class="page-footer">
+                    <span>Documento exclusivo de ${dados.nome}</span>
+                    <span>Página 2 de 10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA 3 - PORÇÕES -->
+        <div class="page">
+            <div class="page-inner">
+                <div class="page-header">
+                    <div class="page-logo">
+                        <div class="page-logo-icon"><span>V</span></div>
+                        <div class="page-logo-text">VITALIS</div>
+                    </div>
+                    <div class="page-phase">${faseConfig.nome}</div>
+                </div>
+                
+                <div class="section-title"><span>🍽️</span> As Tuas Porções Diárias</div>
+                <p style="color:var(--castanho);font-size:14px;margin-bottom:30px;">Usa o Método da Mão para medir — simples, prático e sempre contigo.</p>
+                
+                <div class="grid-3" style="margin-bottom:30px;">
+                    <div class="portion-card protein">
+                        <div class="portion-label">Proteína</div>
+                        <div class="portion-value">${dados.porcoes_proteina}</div>
+                        <div class="portion-unit">palmas/dia</div>
+                    </div>
+                    <div class="portion-card carbs">
+                        <div class="portion-label">Hidratos</div>
+                        <div class="portion-value">${dados.porcoes_hidratos}</div>
+                        <div class="portion-unit">mãos/dia</div>
+                    </div>
+                    <div class="portion-card fats">
+                        <div class="portion-label">Gordura</div>
+                        <div class="portion-value">${dados.porcoes_gordura}</div>
+                        <div class="portion-unit">polegares/dia</div>
+                    </div>
+                </div>
+                
+                <div class="portion-card veggies" style="text-align:center;padding:30px;margin-bottom:35px;">
+                    <div class="portion-label">🥬 Vegetais & Legumes</div>
+                    <div class="portion-value">À VONTADE</div>
+                    <div class="portion-unit">Não precisas medir — quanto mais cores, melhor!</div>
+                </div>
+                
+                <div class="section-title" style="font-size:22px;"><span>📊</span> Os Teus Macros Diários</div>
+                <div class="grid-4">
+                    <div class="macro-card">
+                        <div class="macro-icon">🔥</div>
+                        <div class="macro-value">${dados.calorias}</div>
+                        <div class="macro-label">Calorias</div>
+                    </div>
+                    <div class="macro-card">
+                        <div class="macro-icon">🥩</div>
+                        <div class="macro-value">${dados.proteina_g}g</div>
+                        <div class="macro-label">Proteína</div>
+                    </div>
+                    <div class="macro-card">
+                        <div class="macro-icon">🍚</div>
+                        <div class="macro-value">${dados.carboidratos_g}g</div>
+                        <div class="macro-label">Hidratos</div>
+                    </div>
+                    <div class="macro-card">
+                        <div class="macro-icon">🥑</div>
+                        <div class="macro-value">${dados.gordura_g}g</div>
+                        <div class="macro-label">Gordura</div>
+                    </div>
+                </div>
+                
+                <div class="page-footer">
+                    <span>Documento exclusivo de ${dados.nome}</span>
+                    <span>Página 3 de 10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA 4 - MÉTODO DA MÃO -->
+        <div class="page">
+            <div class="page-inner">
+                <div class="page-header">
+                    <div class="page-logo">
+                        <div class="page-logo-icon"><span>V</span></div>
+                        <div class="page-logo-text">VITALIS</div>
+                    </div>
+                </div>
+                
+                <div class="section-title"><span>✋</span> O Método da Mão</div>
+                <p style="color:var(--castanho);font-size:14px;margin-bottom:35px;text-align:center;font-style:italic;">A tua mão é proporcional ao teu corpo — mãos maiores = corpo maior = mais comida.</p>
+                
+                <div class="grid-2">
+                    <div class="hand-card protein">
+                        <div class="hand-title">🖐️ A Palma — PROTEÍNA</div>
+                        <div class="hand-amount">~${dados.tamanho_palma}g de proteína</div>
+                        <div class="hand-desc">Tamanho e espessura da tua palma (sem dedos)</div>
+                        <div class="hand-example">Ex: 1 bife, 1 peito de frango</div>
+                    </div>
+                    <div class="hand-card carbs">
+                        <div class="hand-title">🤲 A Mão em Concha — HIDRATOS</div>
+                        <div class="hand-amount">~${dados.tamanho_mao}g de hidratos</div>
+                        <div class="hand-desc">O que cabe na tua mão em concha</div>
+                        <div class="hand-example">Ex: punhado de arroz, batata-doce</div>
+                    </div>
+                    <div class="hand-card fats">
+                        <div class="hand-title">👍 O Polegar — GORDURA</div>
+                        <div class="hand-amount">~${dados.tamanho_polegar}g de gordura</div>
+                        <div class="hand-desc">Tamanho do teu polegar inteiro</div>
+                        <div class="hand-example">Ex: 1 colher azeite, nozes</div>
+                    </div>
+                    <div class="hand-card veggies">
+                        <div class="hand-title">✊ O Punho — VEGETAIS</div>
+                        <div class="hand-amount">~100g de vegetais</div>
+                        <div class="hand-desc">Tamanho do teu punho fechado</div>
+                        <div class="hand-example" style="font-weight:600;font-style:normal;">Mas lembra-te: À VONTADE!</div>
+                    </div>
+                </div>
+                
+                <div class="page-footer">
+                    <span>Documento exclusivo de ${dados.nome}</span>
+                    <span>Página 4 de 10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA 5 - PROTEÍNAS -->
+        <div class="page">
+            <div class="page-inner">
+                <div class="page-header">
+                    <div class="page-logo">
+                        <div class="page-logo-icon"><span>V</span></div>
+                        <div class="page-logo-text">VITALIS</div>
+                    </div>
+                </div>
+                
+                <div class="section-title"><span>🥩</span> Proteínas Saudáveis</div>
+                
+                <div class="grid-2">
+                    <div class="food-card">
+                        <div class="food-title">Carnes Vermelhas (magras)</div>
+                        <div class="food-list">Bife de vaca • Carne moída magra • Lombo de porco • Cabrito • Borrego • Fígado</div>
+                    </div>
+                    <div class="food-card">
+                        <div class="food-title">Aves</div>
+                        <div class="food-list">Peito de frango • Coxa de frango (sem pele) • Peru • Pato (sem pele) • Codorniz</div>
+                    </div>
+                    <div class="food-card">
+                        <div class="food-title">Peixes & Mariscos</div>
+                        <div class="food-list">Salmão • Atum • Sardinha • Carapau • Pescada • Tilápia • Camarão • Lulas</div>
+                    </div>
+                    <div class="food-card">
+                        <div class="food-title">Ovos & Lacticínios</div>
+                        <div class="food-list">Ovos inteiros • Queijo fresco • Iogurte grego natural • Requeijão</div>
+                    </div>
+                </div>
+                
+                <div class="page-footer">
+                    <span>Documento exclusivo de ${dados.nome}</span>
+                    <span>Página 5 de 10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA 6 - HIDRATOS E GORDURAS -->
+        <div class="page">
+            <div class="page-inner">
+                <div class="page-header">
+                    <div class="page-logo">
+                        <div class="page-logo-icon"><span>V</span></div>
+                        <div class="page-logo-text">VITALIS</div>
+                    </div>
+                </div>
+                
+                <div class="section-title"><span>🍚</span> Hidratos Saudáveis & <span>🥑</span> Gorduras</div>
+                
+                <div class="grid-2" style="margin-bottom:25px;">
+                    <div class="hand-card carbs" style="padding:25px;">
+                        <div class="hand-title" style="font-size:16px;">Tubérculos & Grãos</div>
+                        <div class="food-list" style="margin-top:12px;">Batata-doce • Mandioca • Inhame • Arroz integral • Quinoa • Aveia</div>
+                    </div>
+                    <div class="hand-card carbs" style="padding:25px;">
+                        <div class="hand-title" style="font-size:16px;">Frutas (baixo IG)</div>
+                        <div class="food-list" style="margin-top:12px;">Frutos vermelhos • Maçã verde • Pera • Laranja • Toranja • Kiwi</div>
+                    </div>
+                </div>
+                
+                <div class="grid-2" style="margin-bottom:25px;">
+                    <div class="hand-card fats" style="padding:25px;">
+                        <div class="hand-title" style="font-size:16px;">Óleos & Manteigas</div>
+                        <div class="food-list" style="margin-top:12px;">Azeite extra-virgem • Óleo de coco • Manteiga • Ghee</div>
+                    </div>
+                    <div class="hand-card fats" style="padding:25px;">
+                        <div class="hand-title" style="font-size:16px;">Frutos Secos & Sementes</div>
+                        <div class="food-list" style="margin-top:12px;">Amêndoas • Nozes • Cajus • Sementes de chia • Linhaça</div>
+                    </div>
+                </div>
+                
+                <div class="hand-card fats" style="padding:25px;">
+                    <div class="hand-title" style="font-size:16px;">Outras Fontes de Gordura</div>
+                    <div class="food-list" style="margin-top:12px;">Abacate • Azeitonas • Coco • Chocolate negro (+70%)</div>
+                </div>
+                
+                <div class="page-footer">
+                    <span>Documento exclusivo de ${dados.nome}</span>
+                    <span>Página 6 de 10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA 7 - VEGETAIS -->
+        <div class="page">
+            <div class="page-inner">
+                <div class="page-header">
+                    <div class="page-logo">
+                        <div class="page-logo-icon"><span>V</span></div>
+                        <div class="page-logo-text">VITALIS</div>
+                    </div>
+                </div>
+                
+                <div class="section-title"><span>🥬</span> Vegetais — Come o Arco-Íris!</div>
+                <p style="color:var(--castanho);font-size:14px;margin-bottom:30px;text-align:center;">Cada cor representa diferentes nutrientes. Inclui pelo menos 3 cores por refeição!</p>
+                
+                <div class="grid-2" style="margin-bottom:20px;">
+                    <div class="veggie-card green">
+                        <div class="veggie-title">🟢 Verdes</div>
+                        <div class="veggie-list">Espinafre, Couve, Brócolos, Alface, Rúcula, Pepino, Abobrinha</div>
+                    </div>
+                    <div class="veggie-card red">
+                        <div class="veggie-title">🔴 Vermelhos</div>
+                        <div class="veggie-list">Tomate, Pimento vermelho, Beterraba, Rabanete</div>
+                    </div>
+                </div>
+                <div class="grid-2" style="margin-bottom:20px;">
+                    <div class="veggie-card orange">
+                        <div class="veggie-title">🟠 Laranjas</div>
+                        <div class="veggie-list">Cenoura, Abóbora, Pimento laranja</div>
+                    </div>
+                    <div class="veggie-card white">
+                        <div class="veggie-title">⚪ Brancos</div>
+                        <div class="veggie-list">Couve-flor, Cogumelos, Alho, Cebola, Nabo</div>
+                    </div>
+                </div>
+                <div class="veggie-card purple">
+                    <div class="veggie-title">🟣 Roxos</div>
+                    <div class="veggie-list">Beringela, Couve roxa, Cebola roxa</div>
+                </div>
+                
+                <div class="page-footer">
+                    <span>Documento exclusivo de ${dados.nome}</span>
+                    <span>Página 7 de 10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA 8 - LISTA DE COMPRAS -->
+        <div class="page">
+            <div class="page-inner">
+                <div class="page-header">
+                    <div class="page-logo">
+                        <div class="page-logo-icon"><span>V</span></div>
+                        <div class="page-logo-text">VITALIS</div>
+                    </div>
+                </div>
+                
+                <div class="section-title"><span>🛒</span> Lista de Compras Semanal</div>
+                
+                <div class="grid-2">
+                    <div class="food-card">
+                        <div class="food-title">🥩 Proteínas</div>
+                        <div class="food-list" style="line-height:2.2;">☐ Peito de frango (1kg)<br>☐ Ovos (2 dúzias)<br>☐ Peixe fresco (500g)<br>☐ Carne moída (500g)</div>
+                    </div>
+                    <div class="food-card">
+                        <div class="food-title">🥬 Vegetais</div>
+                        <div class="food-list" style="line-height:2.2;">☐ Espinafre/Couve<br>☐ Brócolos<br>☐ Tomate<br>☐ Pepino<br>☐ Pimentos<br>☐ Cebola e Alho</div>
+                    </div>
+                    <div class="food-card">
+                        <div class="food-title">🥑 Gorduras</div>
+                        <div class="food-list" style="line-height:2.2;">☐ Azeite extra-virgem<br>☐ Abacate (2-3)<br>☐ Manteiga<br>☐ Amêndoas/Nozes</div>
+                    </div>
+                    <div class="food-card">
+                        <div class="food-title">🧂 Outros</div>
+                        <div class="food-list" style="line-height:2.2;">☐ Sal e pimenta<br>☐ Ervas frescas<br>☐ Limões<br>☐ Chá/Café</div>
+                    </div>
+                </div>
+                
+                <div class="page-footer">
+                    <span>Documento exclusivo de ${dados.nome}</span>
+                    <span>Página 8 de 10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA 9 - REGRAS -->
+        <div class="page">
+            <div class="page-inner">
+                <div class="page-header">
+                    <div class="page-logo">
+                        <div class="page-logo-icon"><span>V</span></div>
+                        <div class="page-logo-text">VITALIS</div>
+                    </div>
+                </div>
+                
+                <div class="section-title"><span>📋</span> Regras da ${faseConfig.nome}</div>
+                
+                <div class="grid-2" style="margin-bottom:25px;">
+                    <div class="rules-card priority">
+                        <div class="rules-title">✓ PRIORIZAR</div>
+                        <ul class="rules-list">
+                            ${faseConfig.priorizar.map(item => `<li>✓ ${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="rules-card avoid">
+                        <div class="rules-title">✗ EVITAR</div>
+                        <ul class="rules-list">
+                            ${faseConfig.evitar.map(item => `<li>✗ ${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="rules-card tips">
+                    <div class="rules-title">💡 DICAS</div>
+                    <ul class="rules-list">
+                        ${faseConfig.dicas.map(item => `<li>• ${item}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="page-footer">
+                    <span>Documento exclusivo de ${dados.nome}</span>
+                    <span>Página 9 de 10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA 10 - FINAL -->
+        <div class="page">
+            <div class="final-page">
+                <div class="final-content">
+                    <div class="logo-circle" style="margin-bottom:30px;"><span>V</span></div>
+                    <div class="brand-name" style="margin-bottom:50px;">VITALIS</div>
+                    
+                    <div class="final-quote">
+                        <div class="final-quote-mark">"</div>
+                        <p>Quando o excesso cai, o corpo responde.</p>
+                    </div>
+                    
+                    <div class="final-for">Criado Exclusivamente Para</div>
+                    <div class="final-name">${dados.nome}</div>
+                </div>
+                <div class="cover-footer">
+                    <div><strong>Vivianne Saraiva</strong>Precision Nutrition Level 1 Coach</div>
+                    <div class="cover-footer-right"><strong>vivianne.saraiva@outlook.com</strong>WhatsApp: +258 84 524 3875</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`;
+
+    return html;
+  };
+
+  const descarregarHTML = () => {
+    const htmlContent = gerarHTML();
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Vitalis_Plano_${dados.nome.replace(/\s+/g, '_')}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const faseConfig = FASES_CONFIG[dados?.fase] || FASES_CONFIG.inducao;
@@ -164,460 +1153,39 @@ export default function GeradorPDFPlano({ userId, onClose }) {
     );
   }
 
-  // Estilos comuns
-  const pageStyle = {
-    width: PAGE_WIDTH,
-    height: PAGE_HEIGHT,
-    background: '#FDF8F3',
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    position: 'relative',
-    overflow: 'hidden',
-    boxSizing: 'border-box'
-  };
-
-  const headerStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottom: '2px solid #D2B48C',
-    paddingBottom: '12px',
-    marginBottom: '25px'
-  };
-
-  const footerStyle = {
-    position: 'absolute',
-    bottom: '25px',
-    left: '40px',
-    right: '40px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    fontSize: '9px',
-    color: '#8B4513',
-    borderTop: '1px solid #D2B48C',
-    paddingTop: '10px'
-  };
-
-  const titleStyle = {
-    fontSize: '22px',
-    fontWeight: '600',
-    color: '#6B4423',
-    marginBottom: '20px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px'
-  };
-
-  const Logo = () => (
-    <div style={{width:'32px',height:'32px',background:'linear-gradient(135deg, #C1634A, #8B4513)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center'}}>
-      <span style={{color:'white',fontSize:'18px',fontWeight:'bold'}}>V</span>
-    </div>
-  );
-
   return (
-    <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999,overflow:'auto',padding:'20px'}}>
-      <div style={{background:'white',borderRadius:'16px',maxWidth:'900px',width:'100%',maxHeight:'95vh',overflow:'auto'}}>
-        {/* Header do Modal */}
-        <div style={{position:'sticky',top:0,background:'white',borderBottom:'1px solid #eee',padding:'16px 24px',display:'flex',justifyContent:'space-between',alignItems:'center',zIndex:10}}>
-          <div>
-            <h2 style={{fontSize:'18px',fontWeight:'bold',color:'#333',margin:0}}>Gerar PDF do Plano</h2>
-            <p style={{fontSize:'13px',color:'#666',margin:'4px 0 0'}}>10 páginas • Pré-visualização</p>
-          </div>
-          <div style={{display:'flex',gap:'12px'}}>
-            <button onClick={onClose} style={{padding:'10px 20px',background:'#f5f5f5',border:'none',borderRadius:'8px',cursor:'pointer',fontSize:'14px'}}>
-              Cancelar
-            </button>
-            <button 
-              onClick={gerarPDF} 
-              disabled={gerando}
-              style={{padding:'10px 24px',background:'linear-gradient(135deg, #C1634A, #8B4513)',color:'white',border:'none',borderRadius:'8px',cursor:'pointer',fontSize:'14px',fontWeight:'600',opacity:gerando?0.7:1}}
-            >
-              {gerando ? '⏳ A gerar...' : '📥 Descarregar PDF'}
-            </button>
-          </div>
+    <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999}}>
+      <div style={{background:'white',borderRadius:'20px',padding:'40px 50px',maxWidth:'500px',textAlign:'center'}}>
+        <div style={{width:'80px',height:'80px',background:'linear-gradient(135deg, #C1634A, #8B4513)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 25px'}}>
+          <span style={{color:'white',fontSize:'40px',fontWeight:'bold'}}>V</span>
         </div>
-
-        {/* Preview - escala reduzida */}
-        <div style={{padding:'24px',background:'#2a2a2a'}}>
-          <div style={{transform:'scale(0.5)',transformOrigin:'top center',width:'200%',marginLeft:'-50%'}}>
-            
-            {/* Container do PDF - SEM gaps entre páginas */}
-            <div ref={pdfRef} style={{width: PAGE_WIDTH, background:'white'}}>
-              
-              {/* ===== PÁGINA 1 - CAPA ===== */}
-              <div style={{...pageStyle, background:'linear-gradient(180deg, #FDF8F3 0%, #F5F0E8 100%)', display:'flex', flexDirection:'column'}}>
-                <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'50px 40px'}}>
-                  <div style={{width:'80px',height:'80px',background:'linear-gradient(135deg, #C1634A, #8B4513)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:'15px'}}>
-                    <span style={{color:'white',fontSize:'42px',fontWeight:'bold'}}>V</span>
-                  </div>
-                  <div style={{fontSize:'36px',fontWeight:'700',color:'#A0422A',letterSpacing:'8px'}}>VITALIS</div>
-                  <div style={{fontSize:'10px',color:'#8B4513',letterSpacing:'4px',textTransform:'uppercase',marginTop:'5px'}}>A RAIZ DA TRANSFORMAÇÃO</div>
-                  <div style={{width:'80px',height:'2px',background:'linear-gradient(90deg, transparent, #C1634A, transparent)',margin:'35px 0'}}></div>
-                  <div style={{fontSize:'28px',fontWeight:'600',color:'#6B4423',marginBottom:'8px'}}>Guia Personalizado</div>
-                  <div style={{fontSize:'14px',color:'#C1634A',fontWeight:'500',letterSpacing:'4px',textTransform:'uppercase',marginBottom:'40px'}}>PLANO ALIMENTAR</div>
-                  
-                  <div style={{background:'white',border:'2px solid #D2B48C',borderRadius:'20px',padding:'30px 60px',textAlign:'center',boxShadow:'0 10px 40px rgba(0,0,0,0.06)'}}>
-                    <div style={{fontSize:'9px',color:'#8B4513',letterSpacing:'3px',textTransform:'uppercase',marginBottom:'8px'}}>PREPARADO EXCLUSIVAMENTE PARA</div>
-                    <div style={{fontSize:'28px',fontWeight:'600',color:'#6B4423',marginBottom:'20px'}}>{dados.nome}</div>
-                    <div style={{display:'flex',gap:'25px',justifyContent:'center',alignItems:'center',marginBottom:'15px'}}>
-                      <div style={{textAlign:'center'}}>
-                        <div style={{fontSize:'8px',color:'#8B4513',letterSpacing:'1px',textTransform:'uppercase',marginBottom:'4px'}}>PESO ACTUAL</div>
-                        <div style={{fontSize:'24px',color:'#A0422A',fontWeight:'700'}}>{dados.peso_actual} kg</div>
-                      </div>
-                      <div style={{color:'#6B8E23',fontSize:'28px'}}>→</div>
-                      <div style={{textAlign:'center'}}>
-                        <div style={{fontSize:'8px',color:'#8B4513',letterSpacing:'1px',textTransform:'uppercase',marginBottom:'4px'}}>META</div>
-                        <div style={{fontSize:'24px',color:'#A0422A',fontWeight:'700'}}>{dados.peso_meta} kg</div>
-                      </div>
-                    </div>
-                    <div style={{fontSize:'11px',color:'#8B4513'}}>Início: {formatarData(dados.data_inicio)}</div>
-                  </div>
-                </div>
-                <div style={{background:'#6B4423',padding:'20px 40px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                  <div style={{color:'rgba(255,255,255,0.95)',fontSize:'10px',lineHeight:1.6}}>
-                    <div style={{fontWeight:'600'}}>Vivianne Saraiva</div>
-                    <div style={{opacity:0.85}}>Precision Nutrition Level 1 Coach</div>
-                  </div>
-                  <div style={{color:'rgba(255,255,255,0.95)',fontSize:'10px',textAlign:'right',lineHeight:1.6}}>
-                    <div>vivianne.saraiva@outlook.com</div>
-                    <div style={{opacity:0.85}}>WhatsApp: +258 84 524 3875</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* ===== PÁGINA 2 - BEM-VINDA & FASE ===== */}
-              <div style={{...pageStyle, padding:'40px'}}>
-                <div style={headerStyle}>
-                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}><Logo/><span style={{fontWeight:'600',fontSize:'14px',color:'#C1634A',letterSpacing:'2px'}}>VITALIS</span></div>
-                  <div style={{fontSize:'11px',color:'#8B4513',fontWeight:'500'}}>{faseConfig.nome}</div>
-                </div>
-                
-                <div style={titleStyle}><span style={{fontSize:'26px'}}>👋</span> Bem-vinda à Tua Jornada</div>
-                <div style={{background:'linear-gradient(135deg, #FDF8F3, #F5F0E8)',borderRadius:'12px',padding:'25px',marginBottom:'30px',border:'1px solid #D2B48C'}}>
-                  <p style={{color:'#6B4423',fontSize:'13px',lineHeight:1.8}}><strong>{dados.nome}</strong>, este guia foi criado especialmente para ti, com base nas tuas respostas, objectivos e estilo de vida. Cada porção, cada recomendação, foi calculada para o teu corpo e para onde queres chegar.</p>
-                </div>
-                
-                <div style={titleStyle}><span style={{fontSize:'26px'}}>🔥</span> {faseConfig.nome}</div>
-                <div style={{background:'white',borderRadius:'12px',padding:'25px',marginBottom:'25px',border:'1px solid #D2B48C'}}>
-                  <div style={{display:'inline-block',padding:'5px 14px',background:'#F5F0E8',borderRadius:'20px',fontSize:'11px',color:'#8B4513',fontWeight:'500',marginBottom:'15px'}}>Duração: {faseConfig.duracao}</div>
-                  <p style={{color:'#6B4423',fontSize:'13px',lineHeight:1.7}}>{faseConfig.descricao}</p>
-                </div>
-                
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px'}}>
-                  <div style={{background:'white',borderRadius:'12px',padding:'20px',border:'1px solid #D2B48C'}}>
-                    <div style={{fontSize:'9px',color:'#8B4513',letterSpacing:'2px',textTransform:'uppercase',marginBottom:'10px',fontWeight:'500'}}>ABORDAGEM NUTRICIONAL</div>
-                    <div style={{fontSize:'18px',fontWeight:'600',color:'#C1634A',textTransform:'capitalize'}}>{dados.abordagem?.replace('_', ' ')}</div>
-                  </div>
-                  <div style={{background:'white',borderRadius:'12px',padding:'20px',border:'1px solid #D2B48C'}}>
-                    <div style={{fontSize:'9px',color:'#8B4513',letterSpacing:'2px',textTransform:'uppercase',marginBottom:'10px',fontWeight:'500'}}>META SEMANAL</div>
-                    <div style={{fontSize:'18px',fontWeight:'600',color:'#6B8E23'}}>-0.5 a -1.0 kg/semana</div>
-                  </div>
-                </div>
-                
-                <div style={footerStyle}><span>Documento exclusivo de {dados.nome}</span><span>Página 2 de 10</span></div>
-              </div>
-
-              {/* ===== PÁGINA 3 - PORÇÕES DIÁRIAS ===== */}
-              <div style={{...pageStyle, padding:'40px'}}>
-                <div style={headerStyle}>
-                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}><Logo/><span style={{fontWeight:'600',fontSize:'14px',color:'#C1634A',letterSpacing:'2px'}}>VITALIS</span></div>
-                  <div style={{fontSize:'11px',color:'#8B4513',fontWeight:'500'}}>{faseConfig.nome}</div>
-                </div>
-                
-                <div style={titleStyle}><span style={{fontSize:'26px'}}>🍽️</span> As Tuas Porções Diárias</div>
-                <p style={{color:'#6B4423',fontSize:'13px',marginBottom:'25px'}}>Usa o Método da Mão para medir — simples, prático e sempre contigo.</p>
-                
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'20px',marginBottom:'25px'}}>
-                  <div style={{background:'#FFEBEE',border:'2px solid #E57373',borderRadius:'14px',padding:'25px',textAlign:'center'}}>
-                    <div style={{fontSize:'14px',fontWeight:'600',color:'#C62828',marginBottom:'10px'}}>Proteína</div>
-                    <div style={{fontSize:'48px',fontWeight:'700',color:'#C62828',lineHeight:1}}>{dados.porcoes_proteina}</div>
-                    <div style={{fontSize:'12px',color:'#C62828',marginTop:'6px'}}>palmas/dia</div>
-                  </div>
-                  <div style={{background:'#E3F2FD',border:'2px solid #64B5F6',borderRadius:'14px',padding:'25px',textAlign:'center'}}>
-                    <div style={{fontSize:'14px',fontWeight:'600',color:'#1565C0',marginBottom:'10px'}}>Hidratos</div>
-                    <div style={{fontSize:'48px',fontWeight:'700',color:'#1565C0',lineHeight:1}}>{dados.porcoes_hidratos}</div>
-                    <div style={{fontSize:'12px',color:'#1565C0',marginTop:'6px'}}>mãos/dia</div>
-                  </div>
-                  <div style={{background:'#FFF8E1',border:'2px solid #FFD54F',borderRadius:'14px',padding:'25px',textAlign:'center'}}>
-                    <div style={{fontSize:'14px',fontWeight:'600',color:'#F57F17',marginBottom:'10px'}}>Gordura</div>
-                    <div style={{fontSize:'48px',fontWeight:'700',color:'#F57F17',lineHeight:1}}>{dados.porcoes_gordura}</div>
-                    <div style={{fontSize:'12px',color:'#F57F17',marginTop:'6px'}}>polegares/dia</div>
-                  </div>
-                </div>
-                
-                <div style={{background:'#E8F5E9',border:'2px solid #81C784',borderRadius:'14px',padding:'25px',textAlign:'center',marginBottom:'30px'}}>
-                  <div style={{fontSize:'14px',fontWeight:'600',color:'#2E7D32',marginBottom:'6px'}}>🥬 Vegetais & Legumes</div>
-                  <div style={{fontSize:'32px',fontWeight:'700',color:'#2E7D32'}}>À VONTADE</div>
-                  <div style={{fontSize:'11px',color:'#2E7D32',marginTop:'6px'}}>Não precisas medir — quanto mais cores, melhor!</div>
-                </div>
-                
-                <div style={{...titleStyle, fontSize:'20px'}}><span>📊</span> Os Teus Macros Diários</div>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:'15px'}}>
-                  <div style={{background:'white',borderRadius:'12px',padding:'20px',textAlign:'center',border:'1px solid #D2B48C'}}>
-                    <div style={{fontSize:'10px',marginBottom:'6px'}}>🔥</div>
-                    <div style={{fontSize:'26px',fontWeight:'700',color:'#C1634A'}}>{dados.calorias}</div>
-                    <div style={{fontSize:'10px',color:'#8B4513',marginTop:'4px'}}>Calorias</div>
-                  </div>
-                  <div style={{background:'white',borderRadius:'12px',padding:'20px',textAlign:'center',border:'1px solid #D2B48C'}}>
-                    <div style={{fontSize:'10px',marginBottom:'6px'}}>🥩</div>
-                    <div style={{fontSize:'26px',fontWeight:'700',color:'#C62828'}}>{dados.proteina_g}g</div>
-                    <div style={{fontSize:'10px',color:'#8B4513',marginTop:'4px'}}>Proteína</div>
-                  </div>
-                  <div style={{background:'white',borderRadius:'12px',padding:'20px',textAlign:'center',border:'1px solid #D2B48C'}}>
-                    <div style={{fontSize:'10px',marginBottom:'6px'}}>🍚</div>
-                    <div style={{fontSize:'26px',fontWeight:'700',color:'#1565C0'}}>{dados.carboidratos_g}g</div>
-                    <div style={{fontSize:'10px',color:'#8B4513',marginTop:'4px'}}>Hidratos</div>
-                  </div>
-                  <div style={{background:'white',borderRadius:'12px',padding:'20px',textAlign:'center',border:'1px solid #D2B48C'}}>
-                    <div style={{fontSize:'10px',marginBottom:'6px'}}>🥑</div>
-                    <div style={{fontSize:'26px',fontWeight:'700',color:'#F57F17'}}>{dados.gordura_g}g</div>
-                    <div style={{fontSize:'10px',color:'#8B4513',marginTop:'4px'}}>Gordura</div>
-                  </div>
-                </div>
-                
-                <div style={footerStyle}><span>Documento exclusivo de {dados.nome}</span><span>Página 3 de 10</span></div>
-              </div>
-
-              {/* ===== PÁGINA 4 - MÉTODO DA MÃO ===== */}
-              <div style={{...pageStyle, padding:'40px'}}>
-                <div style={headerStyle}>
-                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}><Logo/><span style={{fontWeight:'600',fontSize:'14px',color:'#C1634A',letterSpacing:'2px'}}>VITALIS</span></div>
-                </div>
-                
-                <div style={titleStyle}><span style={{fontSize:'26px'}}>✋</span> O Método da Mão</div>
-                <p style={{color:'#6B4423',fontSize:'13px',marginBottom:'30px',textAlign:'center',fontStyle:'italic'}}>A tua mão é proporcional ao teu corpo — mãos maiores = corpo maior = mais comida. Simples, prático e sempre contigo.</p>
-                
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'25px'}}>
-                  <div style={{background:'#FFEBEE',border:'2px solid #E57373',borderRadius:'14px',padding:'25px'}}>
-                    <div style={{fontWeight:'600',color:'#C62828',marginBottom:'12px',fontSize:'16px'}}>🖐️ A Palma — PROTEÍNA</div>
-                    <div style={{color:'#C62828',fontWeight:'600',fontSize:'18px',marginBottom:'12px'}}>~{dados.tamanho_palma}g de proteína</div>
-                    <p style={{fontSize:'12px',color:'#6B4423',marginBottom:'8px'}}>Tamanho e espessura da tua palma (sem dedos)</p>
-                    <p style={{fontSize:'11px',color:'#8B4513',fontStyle:'italic'}}>Ex: 1 bife, 1 peito de frango</p>
-                  </div>
-                  
-                  <div style={{background:'#E3F2FD',border:'2px solid #64B5F6',borderRadius:'14px',padding:'25px'}}>
-                    <div style={{fontWeight:'600',color:'#1565C0',marginBottom:'12px',fontSize:'16px'}}>🤲 A Mão em Concha — HIDRATOS</div>
-                    <div style={{color:'#1565C0',fontWeight:'600',fontSize:'18px',marginBottom:'12px'}}>~{dados.tamanho_mao}g de hidratos</div>
-                    <p style={{fontSize:'12px',color:'#6B4423',marginBottom:'8px'}}>O que cabe na tua mão em concha</p>
-                    <p style={{fontSize:'11px',color:'#8B4513',fontStyle:'italic'}}>Ex: punhado de arroz, batata-doce</p>
-                  </div>
-                  
-                  <div style={{background:'#FFF8E1',border:'2px solid #FFD54F',borderRadius:'14px',padding:'25px'}}>
-                    <div style={{fontWeight:'600',color:'#F57F17',marginBottom:'12px',fontSize:'16px'}}>👍 O Polegar — GORDURA</div>
-                    <div style={{color:'#F57F17',fontWeight:'600',fontSize:'18px',marginBottom:'12px'}}>~{dados.tamanho_polegar}g de gordura</div>
-                    <p style={{fontSize:'12px',color:'#6B4423',marginBottom:'8px'}}>Tamanho do teu polegar inteiro</p>
-                    <p style={{fontSize:'11px',color:'#8B4513',fontStyle:'italic'}}>Ex: 1 colher azeite, nozes</p>
-                  </div>
-                  
-                  <div style={{background:'#E8F5E9',border:'2px solid #81C784',borderRadius:'14px',padding:'25px'}}>
-                    <div style={{fontWeight:'600',color:'#2E7D32',marginBottom:'12px',fontSize:'16px'}}>✊ O Punho — VEGETAIS</div>
-                    <div style={{color:'#2E7D32',fontWeight:'600',fontSize:'18px',marginBottom:'12px'}}>~100g de vegetais</div>
-                    <p style={{fontSize:'12px',color:'#6B4423',marginBottom:'8px'}}>Tamanho do teu punho fechado</p>
-                    <p style={{fontSize:'11px',color:'#2E7D32',fontWeight:'600'}}>Mas lembra-te: À VONTADE!</p>
-                  </div>
-                </div>
-                
-                <div style={footerStyle}><span>Documento exclusivo de {dados.nome}</span><span>Página 4 de 10</span></div>
-              </div>
-
-              {/* ===== PÁGINA 5 - PROTEÍNAS ===== */}
-              <div style={{...pageStyle, padding:'40px'}}>
-                <div style={headerStyle}>
-                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}><Logo/><span style={{fontWeight:'600',fontSize:'14px',color:'#C1634A',letterSpacing:'2px'}}>VITALIS</span></div>
-                </div>
-                
-                <div style={titleStyle}><span style={{fontSize:'26px'}}>🥩</span> Proteínas Saudáveis</div>
-                
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px'}}>
-                  <div style={{background:'white',borderRadius:'14px',padding:'25px',border:'1px solid #D2B48C'}}>
-                    <div style={{fontWeight:'600',color:'#C62828',marginBottom:'15px',fontSize:'15px'}}>Carnes Vermelhas (magras)</div>
-                    <p style={{fontSize:'13px',color:'#6B4423',lineHeight:1.9}}>Bife de vaca • Carne moída magra • Lombo de porco • Cabrito • Borrego • Fígado</p>
-                  </div>
-                  <div style={{background:'white',borderRadius:'14px',padding:'25px',border:'1px solid #D2B48C'}}>
-                    <div style={{fontWeight:'600',color:'#C62828',marginBottom:'15px',fontSize:'15px'}}>Aves</div>
-                    <p style={{fontSize:'13px',color:'#6B4423',lineHeight:1.9}}>Peito de frango • Coxa de frango (sem pele) • Peru • Pato (sem pele) • Codorniz</p>
-                  </div>
-                  <div style={{background:'white',borderRadius:'14px',padding:'25px',border:'1px solid #D2B48C'}}>
-                    <div style={{fontWeight:'600',color:'#C62828',marginBottom:'15px',fontSize:'15px'}}>Peixes & Mariscos</div>
-                    <p style={{fontSize:'13px',color:'#6B4423',lineHeight:1.9}}>Salmão • Atum • Sardinha • Carapau • Pescada • Tilápia • Camarão • Lulas</p>
-                  </div>
-                  <div style={{background:'white',borderRadius:'14px',padding:'25px',border:'1px solid #D2B48C'}}>
-                    <div style={{fontWeight:'600',color:'#C62828',marginBottom:'15px',fontSize:'15px'}}>Ovos & Lacticínios</div>
-                    <p style={{fontSize:'13px',color:'#6B4423',lineHeight:1.9}}>Ovos inteiros • Queijo fresco • Iogurte grego natural • Requeijão</p>
-                  </div>
-                </div>
-                
-                <div style={footerStyle}><span>Documento exclusivo de {dados.nome}</span><span>Página 5 de 10</span></div>
-              </div>
-
-              {/* ===== PÁGINA 6 - HIDRATOS E GORDURAS ===== */}
-              <div style={{...pageStyle, padding:'40px'}}>
-                <div style={headerStyle}>
-                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}><Logo/><span style={{fontWeight:'600',fontSize:'14px',color:'#C1634A',letterSpacing:'2px'}}>VITALIS</span></div>
-                </div>
-                
-                <div style={titleStyle}><span style={{fontSize:'22px'}}>🍚</span> Hidratos Saudáveis & <span style={{fontSize:'22px'}}>🥑</span> Gorduras</div>
-                
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px',marginBottom:'20px'}}>
-                  <div style={{background:'#E3F2FD',border:'2px solid #64B5F6',borderRadius:'14px',padding:'22px'}}>
-                    <div style={{fontWeight:'600',color:'#1565C0',marginBottom:'12px',fontSize:'15px'}}>Tubérculos & Grãos</div>
-                    <p style={{fontSize:'12px',color:'#6B4423',lineHeight:1.9}}>Batata-doce • Mandioca • Inhame • Arroz integral • Quinoa • Aveia</p>
-                  </div>
-                  <div style={{background:'#E3F2FD',border:'2px solid #64B5F6',borderRadius:'14px',padding:'22px'}}>
-                    <div style={{fontWeight:'600',color:'#1565C0',marginBottom:'12px',fontSize:'15px'}}>Frutas (baixo IG)</div>
-                    <p style={{fontSize:'12px',color:'#6B4423',lineHeight:1.9}}>Frutos vermelhos • Maçã verde • Pera • Laranja • Toranja • Kiwi</p>
-                  </div>
-                </div>
-                
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px',marginBottom:'20px'}}>
-                  <div style={{background:'#FFF8E1',border:'2px solid #FFD54F',borderRadius:'14px',padding:'22px'}}>
-                    <div style={{fontWeight:'600',color:'#F57F17',marginBottom:'12px',fontSize:'15px'}}>Óleos & Manteigas</div>
-                    <p style={{fontSize:'12px',color:'#6B4423',lineHeight:1.9}}>Azeite extra-virgem • Óleo de coco • Manteiga • Ghee</p>
-                  </div>
-                  <div style={{background:'#FFF8E1',border:'2px solid #FFD54F',borderRadius:'14px',padding:'22px'}}>
-                    <div style={{fontWeight:'600',color:'#F57F17',marginBottom:'12px',fontSize:'15px'}}>Frutos Secos & Sementes</div>
-                    <p style={{fontSize:'12px',color:'#6B4423',lineHeight:1.9}}>Amêndoas • Nozes • Cajus • Sementes de chia • Sementes de linhaça</p>
-                  </div>
-                </div>
-                
-                <div style={{background:'#FFF8E1',border:'2px solid #FFD54F',borderRadius:'14px',padding:'22px'}}>
-                  <div style={{fontWeight:'600',color:'#F57F17',marginBottom:'12px',fontSize:'15px'}}>Outras Fontes de Gordura</div>
-                  <p style={{fontSize:'12px',color:'#6B4423',lineHeight:1.9}}>Abacate • Azeitonas • Coco • Chocolate negro (+70%)</p>
-                </div>
-                
-                <div style={footerStyle}><span>Documento exclusivo de {dados.nome}</span><span>Página 6 de 10</span></div>
-              </div>
-
-              {/* ===== PÁGINA 7 - VEGETAIS ===== */}
-              <div style={{...pageStyle, padding:'40px'}}>
-                <div style={headerStyle}>
-                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}><Logo/><span style={{fontWeight:'600',fontSize:'14px',color:'#C1634A',letterSpacing:'2px'}}>VITALIS</span></div>
-                </div>
-                
-                <div style={titleStyle}><span style={{fontSize:'26px'}}>🥬</span> Vegetais — Come o Arco-Íris!</div>
-                <p style={{color:'#6B4423',fontSize:'13px',marginBottom:'25px',textAlign:'center'}}>Cada cor representa diferentes nutrientes. Inclui pelo menos 3 cores por refeição!</p>
-                
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'18px'}}>
-                  <div style={{background:'white',borderRadius:'12px',padding:'18px',border:'1px solid #D2B48C',borderLeft:'5px solid #4CAF50'}}>
-                    <div style={{fontWeight:'600',color:'#2E7D32',marginBottom:'10px',fontSize:'14px'}}>🟢 Verdes</div>
-                    <p style={{fontSize:'12px',color:'#6B4423',lineHeight:1.7}}>Espinafre, Couve, Brócolos, Alface, Rúcula, Pepino, Abobrinha</p>
-                  </div>
-                  <div style={{background:'white',borderRadius:'12px',padding:'18px',border:'1px solid #D2B48C',borderLeft:'5px solid #F44336'}}>
-                    <div style={{fontWeight:'600',color:'#C62828',marginBottom:'10px',fontSize:'14px'}}>🔴 Vermelhos</div>
-                    <p style={{fontSize:'12px',color:'#6B4423',lineHeight:1.7}}>Tomate, Pimento vermelho, Beterraba, Rabanete</p>
-                  </div>
-                  <div style={{background:'white',borderRadius:'12px',padding:'18px',border:'1px solid #D2B48C',borderLeft:'5px solid #FF9800'}}>
-                    <div style={{fontWeight:'600',color:'#E65100',marginBottom:'10px',fontSize:'14px'}}>🟠 Laranjas</div>
-                    <p style={{fontSize:'12px',color:'#6B4423',lineHeight:1.7}}>Cenoura, Abóbora, Pimento laranja</p>
-                  </div>
-                  <div style={{background:'white',borderRadius:'12px',padding:'18px',border:'1px solid #D2B48C',borderLeft:'5px solid #9E9E9E'}}>
-                    <div style={{fontWeight:'600',color:'#616161',marginBottom:'10px',fontSize:'14px'}}>⚪ Brancos</div>
-                    <p style={{fontSize:'12px',color:'#6B4423',lineHeight:1.7}}>Couve-flor, Cogumelos, Alho, Cebola, Nabo</p>
-                  </div>
-                  <div style={{background:'white',borderRadius:'12px',padding:'18px',border:'1px solid #D2B48C',borderLeft:'5px solid #9C27B0',gridColumn:'span 2'}}>
-                    <div style={{fontWeight:'600',color:'#7B1FA2',marginBottom:'10px',fontSize:'14px'}}>🟣 Roxos</div>
-                    <p style={{fontSize:'12px',color:'#6B4423',lineHeight:1.7}}>Beringela, Couve roxa, Cebola roxa</p>
-                  </div>
-                </div>
-                
-                <div style={footerStyle}><span>Documento exclusivo de {dados.nome}</span><span>Página 7 de 10</span></div>
-              </div>
-
-              {/* ===== PÁGINA 8 - LISTA DE COMPRAS ===== */}
-              <div style={{...pageStyle, padding:'40px'}}>
-                <div style={headerStyle}>
-                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}><Logo/><span style={{fontWeight:'600',fontSize:'14px',color:'#C1634A',letterSpacing:'2px'}}>VITALIS</span></div>
-                </div>
-                
-                <div style={titleStyle}><span style={{fontSize:'26px'}}>🛒</span> Lista de Compras Semanal</div>
-                
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px'}}>
-                  <div style={{background:'white',borderRadius:'14px',padding:'25px',border:'1px solid #D2B48C'}}>
-                    <div style={{fontWeight:'600',color:'#C62828',marginBottom:'18px',fontSize:'15px'}}>🥩 Proteínas</div>
-                    <div style={{fontSize:'13px',color:'#6B4423',lineHeight:2.1}}>☐ Peito de frango (1kg)<br/>☐ Ovos (2 dúzias)<br/>☐ Peixe fresco (500g)<br/>☐ Carne moída (500g)</div>
-                  </div>
-                  <div style={{background:'white',borderRadius:'14px',padding:'25px',border:'1px solid #D2B48C'}}>
-                    <div style={{fontWeight:'600',color:'#2E7D32',marginBottom:'18px',fontSize:'15px'}}>🥬 Vegetais</div>
-                    <div style={{fontSize:'13px',color:'#6B4423',lineHeight:2.1}}>☐ Espinafre/Couve<br/>☐ Brócolos<br/>☐ Tomate<br/>☐ Pepino<br/>☐ Pimentos<br/>☐ Cebola e Alho</div>
-                  </div>
-                  <div style={{background:'white',borderRadius:'14px',padding:'25px',border:'1px solid #D2B48C'}}>
-                    <div style={{fontWeight:'600',color:'#F57F17',marginBottom:'18px',fontSize:'15px'}}>🥑 Gorduras</div>
-                    <div style={{fontSize:'13px',color:'#6B4423',lineHeight:2.1}}>☐ Azeite extra-virgem<br/>☐ Abacate (2-3)<br/>☐ Manteiga<br/>☐ Amêndoas/Nozes</div>
-                  </div>
-                  <div style={{background:'white',borderRadius:'14px',padding:'25px',border:'1px solid #D2B48C'}}>
-                    <div style={{fontWeight:'600',color:'#8B4513',marginBottom:'18px',fontSize:'15px'}}>🧂 Outros</div>
-                    <div style={{fontSize:'13px',color:'#6B4423',lineHeight:2.1}}>☐ Sal e pimenta<br/>☐ Ervas frescas<br/>☐ Limões<br/>☐ Chá/Café</div>
-                  </div>
-                </div>
-                
-                <div style={footerStyle}><span>Documento exclusivo de {dados.nome}</span><span>Página 8 de 10</span></div>
-              </div>
-
-              {/* ===== PÁGINA 9 - REGRAS ===== */}
-              <div style={{...pageStyle, padding:'40px'}}>
-                <div style={headerStyle}>
-                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}><Logo/><span style={{fontWeight:'600',fontSize:'14px',color:'#C1634A',letterSpacing:'2px'}}>VITALIS</span></div>
-                </div>
-                
-                <div style={titleStyle}><span style={{fontSize:'26px'}}>📋</span> Regras da {faseConfig.nome}</div>
-                
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'25px',marginBottom:'25px'}}>
-                  <div style={{background:'#E8F5E9',border:'2px solid #81C784',borderRadius:'14px',padding:'25px'}}>
-                    <div style={{fontWeight:'600',color:'#2E7D32',marginBottom:'18px',fontSize:'15px'}}>✓ PRIORIZAR</div>
-                    <div style={{fontSize:'12px',color:'#6B4423',lineHeight:1.9}}>
-                      {faseConfig.priorizar.map((item, i) => <div key={i}>✓ {item}</div>)}
-                    </div>
-                  </div>
-                  <div style={{background:'#FFEBEE',border:'2px solid #E57373',borderRadius:'14px',padding:'25px'}}>
-                    <div style={{fontWeight:'600',color:'#C62828',marginBottom:'18px',fontSize:'15px'}}>✗ EVITAR</div>
-                    <div style={{fontSize:'12px',color:'#6B4423',lineHeight:1.9}}>
-                      {faseConfig.evitar.map((item, i) => <div key={i}>✗ {item}</div>)}
-                    </div>
-                  </div>
-                </div>
-                
-                <div style={{background:'#FFF8E1',border:'2px solid #FFD54F',borderRadius:'14px',padding:'25px'}}>
-                  <div style={{fontWeight:'600',color:'#F57F17',marginBottom:'18px',fontSize:'15px'}}>💡 DICAS</div>
-                  <div style={{fontSize:'12px',color:'#6B4423',lineHeight:1.9}}>
-                    {faseConfig.dicas.map((item, i) => <div key={i}>• {item}</div>)}
-                  </div>
-                </div>
-                
-                <div style={footerStyle}><span>Documento exclusivo de {dados.nome}</span><span>Página 9 de 10</span></div>
-              </div>
-
-              {/* ===== PÁGINA 10 - ENCERRAMENTO ===== */}
-              <div style={{...pageStyle, background:'linear-gradient(180deg, #FDF8F3 0%, #F5F0E8 100%)', display:'flex', flexDirection:'column'}}>
-                <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'50px'}}>
-                  <div style={{width:'80px',height:'80px',background:'linear-gradient(135deg, #C1634A, #8B4513)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:'25px'}}>
-                    <span style={{color:'white',fontSize:'42px',fontWeight:'bold'}}>V</span>
-                  </div>
-                  <div style={{fontSize:'36px',fontWeight:'700',color:'#A0422A',letterSpacing:'8px',marginBottom:'40px'}}>VITALIS</div>
-                  
-                  <div style={{maxWidth:'380px',textAlign:'center',padding:'35px',background:'white',borderRadius:'18px',boxShadow:'0 10px 40px rgba(0,0,0,0.06)',marginBottom:'40px'}}>
-                    <div style={{fontSize:'44px',color:'#D2B48C',marginBottom:'10px',lineHeight:1}}>"</div>
-                    <p style={{fontSize:'18px',color:'#6B4423',fontStyle:'italic',lineHeight:1.7}}>Quando o excesso cai, o corpo responde.</p>
-                  </div>
-                  
-                  <div style={{textAlign:'center'}}>
-                    <div style={{fontSize:'10px',color:'#8B4513',letterSpacing:'3px',textTransform:'uppercase',marginBottom:'12px'}}>CRIADO EXCLUSIVAMENTE PARA</div>
-                    <div style={{fontSize:'28px',fontWeight:'600',color:'#6B4423'}}>{dados.nome}</div>
-                  </div>
-                </div>
-                
-                <div style={{background:'#6B4423',padding:'20px 40px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                  <div style={{color:'rgba(255,255,255,0.95)',fontSize:'10px',lineHeight:1.6}}>
-                    <div style={{fontWeight:'600'}}>Vivianne Saraiva</div>
-                    <div style={{opacity:0.85}}>Precision Nutrition Level 1 Coach</div>
-                  </div>
-                  <div style={{color:'rgba(255,255,255,0.95)',fontSize:'10px',textAlign:'right',lineHeight:1.6}}>
-                    <div>vivianne.saraiva@outlook.com</div>
-                    <div style={{opacity:0.85}}>WhatsApp: +258 84 524 3875</div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
+        
+        <h2 style={{fontSize:'24px',color:'#6B4423',marginBottom:'10px'}}>Plano de {dados.nome}</h2>
+        <p style={{color:'#8B4513',marginBottom:'30px'}}>10 páginas • Design profissional</p>
+        
+        <div style={{background:'#FDF8F3',borderRadius:'12px',padding:'20px',marginBottom:'25px',textAlign:'left'}}>
+          <p style={{fontSize:'14px',color:'#6B4423',marginBottom:'10px'}}><strong>Como usar:</strong></p>
+          <ol style={{fontSize:'13px',color:'#8B4513',paddingLeft:'20px',lineHeight:'1.8'}}>
+            <li>Clica em "Descarregar HTML"</li>
+            <li>Abre o ficheiro no browser</li>
+            <li>Pressiona <strong>Ctrl+P</strong> (ou Cmd+P no Mac)</li>
+            <li>Selecciona "Guardar como PDF"</li>
+          </ol>
+        </div>
+        
+        <div style={{display:'flex',gap:'15px',justifyContent:'center'}}>
+          <button 
+            onClick={onClose}
+            style={{padding:'14px 28px',background:'#f5f5f5',color:'#666',border:'none',borderRadius:'10px',fontSize:'15px',cursor:'pointer'}}
+          >
+            Cancelar
+          </button>
+          <button 
+            onClick={descarregarHTML}
+            style={{padding:'14px 28px',background:'linear-gradient(135deg, #C1634A, #8B4513)',color:'white',border:'none',borderRadius:'10px',fontSize:'15px',fontWeight:'600',cursor:'pointer'}}
+          >
+            📥 Descarregar HTML
+          </button>
         </div>
       </div>
     </div>
