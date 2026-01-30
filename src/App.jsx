@@ -15,6 +15,7 @@ import EspacoRetorno from './components/vitalis/EspacoRetorno'
 import PlanoAlimentar from './components/vitalis/PlanoAlimentar'
 import MealsTracker from './components/vitalis/MealsTracker'
 import RefeicoesCofig from './components/vitalis/RefeicoesCofig'
+import RelatorioSemanal from './components/vitalis/RelatorioSemanal'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -50,6 +51,7 @@ function App() {
           <Route path="/vitalis/plano" element={session ? <PlanoAlimentar /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/meals" element={session ? <MealsTracker /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/refeicoes-config" element={session ? <RefeicoesCofig /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/relatorios" element={session ? <RelatorioSemanal /> : <Navigate to="/vitalis/login" />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
         <Navigation />
