@@ -184,22 +184,6 @@ export default function DashboardVitalis() {
     console.error('Erro ao registar água:', err.message);
   }
 };
-    try {
-      const { error } = await supabase
-        .from('vitalis_agua_log')
-        .insert([{
-          user_id: userId,
-          data: hoje,
-          quantidade_ml: ml
-        }]);
-      
-      if (error) throw error;
-      
-      setAguaHoje(prev => prev + (ml / 1000));
-    } catch (err) {
-      console.error('Erro ao registar água:', err);
-    }
-  };
 
   const registarTreino = async () => {
     try {
