@@ -163,6 +163,27 @@ export default function DashboardVitalis() {
   };
 
   const adicionarAgua = async (ml = 250) => {
+  if (!userId) {
+    console.error('userId não disponível');
+    return;
+  }
+  
+  try {
+    const { error } = await supabase
+      .from('vitalis_agua_log')
+      .insert({
+        user_id: userId,
+        data: hoje,
+        quantidade_ml: ml
+      });
+    
+    if (error) throw error;
+    
+    setAguaHoje(prev => prev + (ml / 1000));
+  } catch (err) {
+    console.error('Erro ao registar água:', err.message);
+  }
+};
     try {
       const { error } = await supabase
         .from('vitalis_agua_log')
