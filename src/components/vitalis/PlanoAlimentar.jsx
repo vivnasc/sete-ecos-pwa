@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase.js';
+import GeradorPDFPlano from './GeradorPDFPlano';
 
 // ============================================================
 // ÍCONES (inline para não depender de bibliotecas)
@@ -93,6 +94,13 @@ const Icons = {
       <line x1="16" y1="2" x2="16" y2="6"/>
       <line x1="8" y1="2" x2="8" y2="6"/>
       <line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>
+  ),
+  Download: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
     </svg>
   )
 };
@@ -574,6 +582,7 @@ export default function PlanoAlimentar() {
   const [plano, setPlano] = useState(null);
   const [usersId, setUsersId] = useState(null);
   const [mostrarConfigTreino, setMostrarConfigTreino] = useState(false);
+  const [showPDFModal, setShowPDFModal] = useState(false);
 
   // Carregar plano do dia
   const carregarPlano = async () => {
@@ -672,10 +681,22 @@ export default function PlanoAlimentar() {
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-500 to-amber-600 text-white px-4 pt-12 pb-6">
         <div className="max-w-md mx-auto">
-          <p className="text-orange-100 text-sm">
-            {plano.fase?.nome} · Semana {plano.fase?.semana || 1}
-          </p>
-          <h1 className="text-2xl font-bold mt-1">O teu plano de hoje</h1>
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-orange-100 text-sm">
+                {plano.fase?.nome} · Semana {plano.fase?.semana || 1}
+              </p>
+              <h1 className="text-2xl font-bold mt-1">O teu plano de hoje</h1>
+            </div>
+            {/* BOTÃO PDF */}
+            <button
+              onClick={() => setShowPDFModal(true)}
+              className="flex items-center gap-2 bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 rounded-xl text-sm font-medium transition-all"
+            >
+              <Icons.Download />
+              <span>PDF</span>
+            </button>
+          </div>
           
           {plano.e_dia_treino && (
             <div className="mt-3 inline-flex items-center gap-2 bg-white bg-opacity-20 px-3 py-1.5 rounded-full text-sm">
@@ -855,6 +876,14 @@ export default function PlanoAlimentar() {
           </div>
         )}
       </div>
+
+      {/* Modal PDF */}
+      {showPDFModal && (
+        <GeradorPDFPlano 
+          userId={usersId}
+          onClose={() => setShowPDFModal(false)}
+        />
+      )}
     </div>
   );
 }
