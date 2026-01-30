@@ -182,18 +182,29 @@ export default function DashboardVitalis() {
           )}
         </div>
 
-        {/* Quick Actions - AGORA COM 4 CARDS */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {/* 🆕 NOVO CARD: Meu Plano */}
+        {/* Quick Actions - 5 CARDS */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {/* Meu Plano */}
           <Link
             to="/vitalis/plano"
             className="bg-gradient-to-br from-amber-500 to-orange-600 text-white rounded-2xl p-5 md:p-6 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
           >
-            <div className="text-3xl md:text-4xl mb-3">🍽️</div>
+            <div className="text-3xl md:text-4xl mb-3">📋</div>
             <div className="font-bold text-lg md:text-xl mb-1">Meu Plano</div>
-            <div className="text-amber-100 text-xs md:text-sm">Porções e check-in do dia</div>
+            <div className="text-amber-100 text-xs md:text-sm">Porções do dia</div>
           </Link>
 
+          {/* 🆕 NOVO: Refeições */}
+          <Link
+            to="/vitalis/meals"
+            className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white rounded-2xl p-5 md:p-6 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+          >
+            <div className="text-3xl md:text-4xl mb-3">🍽️</div>
+            <div className="font-bold text-lg md:text-xl mb-1">Refeições</div>
+            <div className="text-teal-100 text-xs md:text-sm">Regista o que comeste</div>
+          </Link>
+
+          {/* Check-in */}
           <Link
             to="/vitalis/checkin"
             className="bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-2xl p-5 md:p-6 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
@@ -203,6 +214,7 @@ export default function DashboardVitalis() {
             <div className="text-green-100 text-xs md:text-sm">Regista o teu progresso</div>
           </Link>
 
+          {/* Receitas */}
           <Link
             to="/vitalis/receitas"
             className="bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-2xl p-5 md:p-6 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
@@ -212,6 +224,7 @@ export default function DashboardVitalis() {
             <div className="text-orange-100 text-xs md:text-sm">Explora receitas saudáveis</div>
           </Link>
 
+          {/* Espaço Retorno */}
           <Link
             to="/vitalis/espaco-retorno"
             className="bg-gradient-to-br from-purple-500 to-pink-600 text-white rounded-2xl p-5 md:p-6 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
