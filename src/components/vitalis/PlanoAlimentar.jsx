@@ -1,16 +1,16 @@
 // ============================================================
-// VITALIS - PLANO ALIMENTAR COMPONENT
+// VITALIS - PLANO ALIMENTAR COMPONENT (SIMPLIFICADO)
 // ============================================================
-// Mostra: porções do dia, check-in diário, mensagens de contexto
-// Usa as funções SQL: vitalis_plano_do_dia, vitalis_checkin_diario
+// Mostra: resumo da fase, porções, macros, dicas, dias treino, PDF
 // ============================================================
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase.js';
+import { Link } from 'react-router-dom';
 import GeradorPDFPlano from './GeradorPDFPlano';
 
 // ============================================================
-// ÍCONES (inline para não depender de bibliotecas)
+// ÍCONES
 // ============================================================
 const Icons = {
   Hand: () => (
@@ -52,40 +52,16 @@ const Icons = {
       <path d="M12 6L6 12"/>
     </svg>
   ),
-  Check: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-8 h-8">
-      <path d="M20 6L9 17l-5-5"/>
-    </svg>
-  ),
-  Meh: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-8 h-8">
-      <circle cx="12" cy="12" r="10"/>
-      <line x1="8" y1="15" x2="16" y2="15"/>
-      <line x1="9" y1="9" x2="9.01" y2="9"/>
-      <line x1="15" y1="9" x2="15.01" y2="9"/>
-    </svg>
-  ),
-  X: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-8 h-8">
-      <line x1="18" y1="6" x2="6" y2="18"/>
-      <line x1="6" y1="6" x2="18" y2="18"/>
-    </svg>
-  ),
-  Bell: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-      <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-    </svg>
-  ),
-  ChevronRight: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-      <path d="M9 18l6-6-6-6"/>
-    </svg>
-  ),
-  Scale: () => (
+  Download: () => (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6">
-      <path d="M8 21h8M12 17v4M7 4h10M12 4v8"/>
-      <circle cx="12" cy="12" r="3"/>
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+  ),
+  ArrowLeft: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+      <path d="M19 12H5M12 19l-7-7 7-7"/>
     </svg>
   ),
   Calendar: () => (
@@ -96,11 +72,11 @@ const Icons = {
       <line x1="3" y1="10" x2="21" y2="10"/>
     </svg>
   ),
-  Download: () => (
+  Target: () => (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-      <polyline points="7 10 12 15 17 10"/>
-      <line x1="12" y1="15" x2="12" y2="3"/>
+      <circle cx="12" cy="12" r="10"/>
+      <circle cx="12" cy="12" r="6"/>
+      <circle cx="12" cy="12" r="2"/>
     </svg>
   )
 };
@@ -173,274 +149,7 @@ function PorcaoCard({ tipo, quantidade, tamanho, extra = 0, cor }) {
 }
 
 // ============================================================
-// COMPONENTE: CHECK-IN DIÁRIO
-// ============================================================
-function CheckinDiario({ userId, jaFez, respostaAnterior, onComplete }) {
-  const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState(respostaAnterior || null);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-
-  const opcoes = [
-    { valor: 'sim', label: 'Sim', icon: Icons.Check, cor: 'bg-green-100 border-green-400 text-green-700', corSelected: 'bg-green-500 text-white border-green-500' },
-    { valor: 'mais_ou_menos', label: 'Mais ou menos', icon: Icons.Meh, cor: 'bg-yellow-100 border-yellow-400 text-yellow-700', corSelected: 'bg-yellow-500 text-white border-yellow-500' },
-    { valor: 'nao', label: 'Não', icon: Icons.X, cor: 'bg-red-100 border-red-400 text-red-700', corSelected: 'bg-red-500 text-white border-red-500' }
-  ];
-
-  const handleSelect = async (valor) => {
-    if (jaFez) return;
-    
-    setSelected(valor);
-    setLoading(true);
-
-    try {
-      const { data, error } = await supabase.rpc('vitalis_checkin_diario', {
-        p_user_id: userId,
-        p_seguiu: valor
-      });
-
-      if (error) throw error;
-      
-      setShowConfirmation(true);
-      setTimeout(() => {
-        setShowConfirmation(false);
-        if (onComplete) onComplete(valor);
-      }, 2000);
-    } catch (err) {
-      console.error('Erro no check-in:', err);
-      setSelected(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (showConfirmation) {
-    return (
-      <div className="bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl p-6 text-center text-white">
-        <div className="text-4xl mb-2">✓</div>
-        <p className="font-semibold">Check-in registado!</p>
-        <p className="text-sm opacity-90">Obrigada por manteres o registo 💪</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm border border-orange-100">
-      <h3 className="font-bold text-gray-800 mb-1">
-        {jaFez ? '✓ Check-in de hoje' : 'Check-in diário'}
-      </h3>
-      <p className="text-sm text-gray-500 mb-4">
-        {jaFez ? 'Já registaste hoje' : 'Seguiste o plano hoje?'}
-      </p>
-      
-      <div className="grid grid-cols-3 gap-3">
-        {opcoes.map((op) => {
-          const Icon = op.icon;
-          const isSelected = selected === op.valor;
-          
-          return (
-            <button
-              key={op.valor}
-              onClick={() => handleSelect(op.valor)}
-              disabled={loading || jaFez}
-              className={`
-                p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2
-                ${isSelected ? op.corSelected : op.cor}
-                ${jaFez && !isSelected ? 'opacity-30' : ''}
-                ${!jaFez && !loading ? 'hover:scale-105 active:scale-95' : ''}
-                disabled:cursor-not-allowed
-              `}
-            >
-              <Icon />
-              <span className="text-sm font-medium">{op.label}</span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// ============================================================
-// COMPONENTE: MENSAGEM DE CONTEXTO
-// ============================================================
-function MensagemContexto({ mensagem, onDismiss }) {
-  const getEmoji = (tipo) => {
-    const emojis = {
-      'ciclo_tpm': '🌙',
-      'ciclo_menstrual': '🩸',
-      'ciclo_ovulacao': '✨',
-      'peso_desceu': '🎉',
-      'peso_subiu': '📊',
-      'mudanca_fase': '🎉',
-      'motivacional': '💪',
-      'ajuste_aplicado': '🔄',
-      'ajuste_sugerido': '💡'
-    };
-    return emojis[tipo] || '💡';
-  };
-
-  const getBgColor = (tipo) => {
-    if (tipo.includes('ciclo')) return 'from-purple-50 to-pink-50 border-purple-200';
-    if (tipo === 'peso_desceu') return 'from-green-50 to-emerald-50 border-green-200';
-    if (tipo === 'peso_subiu') return 'from-amber-50 to-orange-50 border-amber-200';
-    if (tipo === 'mudanca_fase') return 'from-blue-50 to-indigo-50 border-blue-200';
-    return 'from-orange-50 to-amber-50 border-orange-200';
-  };
-
-  return (
-    <div className={`bg-gradient-to-r ${getBgColor(mensagem.tipo)} border rounded-2xl p-4 relative`}>
-      <button 
-        onClick={() => onDismiss(mensagem.id)}
-        className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-xl leading-none"
-      >
-        ×
-      </button>
-      <div className="flex items-start gap-3">
-        <span className="text-2xl">{getEmoji(mensagem.tipo)}</span>
-        <div className="pr-6">
-          <h4 className="font-semibold text-gray-800">{mensagem.titulo}</h4>
-          <p className="text-sm text-gray-600 mt-1">{mensagem.mensagem}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================
-// COMPONENTE: CHECK-IN SEMANAL (PESAGEM)
-// ============================================================
-function CheckinSemanal({ userId, onComplete }) {
-  const [peso, setPeso] = useState('');
-  const [comoCorreu, setComoCorreu] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showForm, setShowForm] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!peso) return;
-
-    setLoading(true);
-    try {
-      const { error } = await supabase.rpc('vitalis_checkin_semanal', {
-        p_user_id: userId,
-        p_peso: parseFloat(peso),
-        p_como_correu: comoCorreu || null
-      });
-
-      if (error) throw error;
-
-      setSuccess(true);
-      setTimeout(() => {
-        setShowForm(false);
-        setSuccess(false);
-        if (onComplete) onComplete(parseFloat(peso));
-      }, 2000);
-    } catch (err) {
-      console.error('Erro na pesagem:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Verificar se hoje é sexta-feira
-  const hoje = new Date();
-  const eSexta = hoje.getDay() === 5;
-
-  if (!showForm) {
-    return (
-      <button
-        onClick={() => setShowForm(true)}
-        className={`
-          w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all
-          ${eSexta 
-            ? 'bg-gradient-to-r from-orange-100 to-amber-100 border-orange-300 animate-pulse' 
-            : 'bg-gray-50 border-gray-200'
-          }
-        `}
-      >
-        <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-lg ${eSexta ? 'bg-orange-200' : 'bg-gray-200'}`}>
-            <Icons.Scale />
-          </div>
-          <div className="text-left">
-            <p className="font-semibold text-gray-800">Pesagem semanal</p>
-            <p className="text-xs text-gray-500">
-              {eSexta ? '🎯 Hoje é dia de pesagem!' : 'Sexta-feira de manhã'}
-            </p>
-          </div>
-        </div>
-        <Icons.ChevronRight />
-      </button>
-    );
-  }
-
-  if (success) {
-    return (
-      <div className="bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl p-6 text-center text-white">
-        <div className="text-4xl mb-2">⚖️</div>
-        <p className="font-semibold">Peso registado!</p>
-        <p className="text-sm opacity-90">{peso} kg</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm border border-orange-100">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-bold text-gray-800">Pesagem semanal</h3>
-        <button 
-          onClick={() => setShowForm(false)}
-          className="text-gray-400 hover:text-gray-600"
-        >
-          ×
-        </button>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Peso (kg) *
-          </label>
-          <input
-            type="number"
-            step="0.1"
-            value={peso}
-            onChange={(e) => setPeso(e.target.value)}
-            placeholder="Ex: 72.5"
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-300 focus:border-orange-300 outline-none"
-            inputMode="decimal"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Como correu a semana? (opcional)
-          </label>
-          <textarea
-            value={comoCorreu}
-            onChange={(e) => setComoCorreu(e.target.value)}
-            placeholder="Desafios, vitórias, como te sentiste..."
-            rows={2}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-300 focus:border-orange-300 outline-none resize-none"
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading || !peso}
-          className="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
-        >
-          {loading ? 'A guardar...' : 'Registar peso'}
-        </button>
-      </form>
-    </div>
-  );
-}
-
-// ============================================================
-// COMPONENTE: CONFIGURAR DIAS DE TREINO (inline)
+// COMPONENTE: DIAS DE TREINO
 // ============================================================
 const DIAS_SEMANA = [
   { valor: 1, nome: 'D', nomeLongo: 'Domingo' },
@@ -452,10 +161,14 @@ const DIAS_SEMANA = [
   { valor: 7, nome: 'S', nomeLongo: 'Sábado' }
 ];
 
-function ConfigurarDiasTreino({ userId, diasActuais = [], onSave, compacto = false }) {
+function ConfigurarDiasTreino({ userId, diasActuais = [], onSave }) {
   const [dias, setDias] = useState(diasActuais);
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    setDias(diasActuais);
+  }, [diasActuais]);
 
   const toggleDia = (valor) => {
     setDias(prev => {
@@ -486,55 +199,21 @@ function ConfigurarDiasTreino({ userId, diasActuais = [], onSave, compacto = fal
     }
   };
 
-  // Versão compacta (para edição rápida)
-  if (compacto) {
-    return (
-      <div className="bg-white rounded-2xl p-4 shadow-sm border border-orange-100">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Icons.Dumbbell />
-            <span className="font-semibold text-gray-800">Dias de treino</span>
-          </div>
-          {saved && <span className="text-green-600 text-sm">✓ Guardado</span>}
-        </div>
-        <div className="flex gap-1 mb-3">
-          {DIAS_SEMANA.map((dia) => (
-            <button
-              key={dia.valor}
-              onClick={() => toggleDia(dia.valor)}
-              className={`
-                w-9 h-9 rounded-full text-xs font-medium transition-all
-                ${dias.includes(dia.valor)
-                  ? 'bg-orange-500 text-white'
-                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                }
-              `}
-              title={dia.nomeLongo}
-            >
-              {dia.nome}
-            </button>
-          ))}
-        </div>
-        <button
-          onClick={handleSave}
-          disabled={loading || JSON.stringify(dias) === JSON.stringify(diasActuais)}
-          className="w-full py-2 text-sm bg-orange-100 text-orange-700 rounded-lg font-medium hover:bg-orange-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? 'A guardar...' : 'Guardar alterações'}
-        </button>
-      </div>
-    );
-  }
+  const mudou = JSON.stringify(dias) !== JSON.stringify(diasActuais);
 
-  // Versão completa (primeira configuração)
   return (
-    <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl p-5 border-2 border-orange-200">
-      <div className="text-center mb-4">
-        <span className="text-3xl">🏋️</span>
-        <h3 className="font-bold text-gray-800 mt-2">Treinas durante a semana?</h3>
-        <p className="text-sm text-gray-600 mt-1">
-          Seleciona os dias para ajustarmos os hidratos
-        </p>
+    <div className="bg-white rounded-2xl p-5 shadow-sm border border-orange-100">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <div className="p-2 bg-orange-100 rounded-lg">
+            <Icons.Dumbbell />
+          </div>
+          <div>
+            <h3 className="font-bold text-gray-800">Dias de treino</h3>
+            <p className="text-xs text-gray-500">Ajusta os hidratos automaticamente</p>
+          </div>
+        </div>
+        {saved && <span className="text-green-600 text-sm font-medium">✓ Guardado!</span>}
       </div>
       
       <div className="flex justify-center gap-2 mb-4">
@@ -545,8 +224,8 @@ function ConfigurarDiasTreino({ userId, diasActuais = [], onSave, compacto = fal
             className={`
               w-10 h-10 rounded-full text-sm font-medium transition-all
               ${dias.includes(dia.valor)
-                ? 'bg-orange-500 text-white shadow-md scale-110'
-                : 'bg-white text-gray-500 hover:bg-orange-100 border border-gray-200'
+                ? 'bg-orange-500 text-white shadow-md'
+                : 'bg-gray-100 text-gray-500 hover:bg-orange-100'
               }
             `}
             title={dia.nomeLongo}
@@ -557,18 +236,20 @@ function ConfigurarDiasTreino({ userId, diasActuais = [], onSave, compacto = fal
       </div>
 
       {dias.length > 0 && (
-        <p className="text-center text-sm text-orange-700 mb-4">
+        <p className="text-center text-sm text-orange-600 mb-4">
           +1 mão de hidratos nos dias de treino 🍚
         </p>
       )}
 
-      <button
-        onClick={handleSave}
-        disabled={loading}
-        className="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
-      >
-        {loading ? 'A guardar...' : dias.length === 0 ? 'Não treino' : `Confirmar ${dias.length} dia${dias.length > 1 ? 's' : ''}`}
-      </button>
+      {mudou && (
+        <button
+          onClick={handleSave}
+          disabled={loading}
+          className="w-full py-2 bg-orange-100 text-orange-700 rounded-lg font-medium hover:bg-orange-200 transition-all disabled:opacity-50"
+        >
+          {loading ? 'A guardar...' : 'Guardar alterações'}
+        </button>
+      )}
     </div>
   );
 }
@@ -581,20 +262,16 @@ export default function PlanoAlimentar() {
   const [error, setError] = useState(null);
   const [plano, setPlano] = useState(null);
   const [usersId, setUsersId] = useState(null);
-  const [mostrarConfigTreino, setMostrarConfigTreino] = useState(false);
   const [showPDFModal, setShowPDFModal] = useState(false);
 
-  // Carregar plano do dia
   const carregarPlano = async () => {
     try {
-      // Obter user actual
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         setError('Utilizador não autenticado');
         return;
       }
 
-      // Obter user_id da tabela users
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('id')
@@ -604,7 +281,6 @@ export default function PlanoAlimentar() {
       if (userError) throw userError;
       setUsersId(userData.id);
 
-      // Chamar função que retorna plano do dia
       const { data, error: planoError } = await supabase.rpc('vitalis_plano_do_dia', {
         p_user_id: userData.id
       });
@@ -628,24 +304,6 @@ export default function PlanoAlimentar() {
     carregarPlano();
   }, []);
 
-  // Marcar mensagem como vista
-  const dismissMensagem = async (mensagemId) => {
-    try {
-      await supabase.rpc('vitalis_marcar_mensagem_vista', {
-        p_mensagem_id: mensagemId
-      });
-      
-      // Actualizar estado local
-      setPlano(prev => ({
-        ...prev,
-        mensagens: prev.mensagens.filter(m => m.id !== mensagemId)
-      }));
-    } catch (err) {
-      console.error('Erro ao marcar mensagem:', err);
-    }
-  };
-
-  // Loading state
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 flex items-center justify-center">
@@ -657,7 +315,6 @@ export default function PlanoAlimentar() {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 p-4">
@@ -676,63 +333,81 @@ export default function PlanoAlimentar() {
     );
   }
 
+  // Calcular duração da fase
+  const semanaActual = plano.fase?.semana || 1;
+  const duracaoFase = plano.fase?.duracao_semanas || 4;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-amber-600 text-white px-4 pt-12 pb-6">
+      <div className="bg-gradient-to-r from-orange-500 to-amber-600 text-white px-4 pt-8 pb-6">
         <div className="max-w-md mx-auto">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-orange-100 text-sm">
-                {plano.fase?.nome} · Semana {plano.fase?.semana || 1}
-              </p>
-              <h1 className="text-2xl font-bold mt-1">O teu plano de hoje</h1>
-            </div>
-            {/* BOTÃO PDF */}
-            <button
-              onClick={() => setShowPDFModal(true)}
-              className="flex items-center gap-2 bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 rounded-xl text-sm font-medium transition-all"
-            >
-              <Icons.Download />
-              <span>PDF</span>
-            </button>
-          </div>
+          <Link to="/vitalis/dashboard" className="inline-flex items-center gap-1 text-orange-100 hover:text-white mb-4">
+            <Icons.ArrowLeft />
+            <span>Voltar</span>
+          </Link>
           
-          {plano.e_dia_treino && (
-            <div className="mt-3 inline-flex items-center gap-2 bg-white bg-opacity-20 px-3 py-1.5 rounded-full text-sm">
-              <Icons.Dumbbell />
-              <span>Dia de treino (+{plano.porcoes?.carbs_extra_treino} mão carbs)</span>
-            </div>
-          )}
+          <h1 className="text-2xl font-bold">O Meu Plano</h1>
+          <p className="text-orange-100 mt-1">Resumo do teu plano alimentar</p>
         </div>
       </div>
 
       <div className="max-w-md mx-auto px-4 -mt-4 space-y-4">
-        {/* Configuração dias de treino - primeira vez */}
-        {plano.dias_treino?.length === 0 && !mostrarConfigTreino && (
-          <ConfigurarDiasTreino 
-            userId={usersId}
-            diasActuais={[]}
-            onSave={(dias) => carregarPlano()}
-          />
-        )}
-
-        {/* Mensagens de contexto */}
-        {plano.mensagens && plano.mensagens.length > 0 && (
-          <div className="space-y-3">
-            {plano.mensagens.map((msg) => (
-              <MensagemContexto 
-                key={msg.id} 
-                mensagem={msg} 
-                onDismiss={dismissMensagem}
-              />
-            ))}
+        
+        {/* Card Fase Actual - DESTAQUE */}
+        <div className="bg-white rounded-2xl p-5 shadow-lg border-2 border-orange-200">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-3 bg-orange-100 rounded-xl">
+              <Icons.Target />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-800">{plano.fase?.nome || 'Fase Inicial'}</h2>
+              <p className="text-sm text-gray-500">O teu foco actual</p>
+            </div>
           </div>
-        )}
+          
+          {/* Progresso da fase */}
+          <div className="mb-4">
+            <div className="flex justify-between text-sm mb-1">
+              <span className="text-gray-600">Semana {semanaActual} de {duracaoFase}</span>
+              <span className="font-medium text-orange-600">{Math.round((semanaActual / duracaoFase) * 100)}%</span>
+            </div>
+            <div className="h-3 bg-orange-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-orange-400 to-amber-500 rounded-full transition-all"
+                style={{ width: `${(semanaActual / duracaoFase) * 100}%` }}
+              />
+            </div>
+          </div>
+
+          {plano.e_dia_treino && (
+            <div className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-2 rounded-lg text-sm">
+              <Icons.Dumbbell />
+              <span className="font-medium">Hoje é dia de treino! (+1 mão de carbs)</span>
+            </div>
+          )}
+        </div>
+
+        {/* BOTÃO PDF - DESTACADO */}
+        <button
+          onClick={() => setShowPDFModal(true)}
+          className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all flex items-center justify-between"
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-white bg-opacity-20 rounded-xl">
+              <Icons.Download />
+            </div>
+            <div className="text-left">
+              <p className="font-bold text-lg">Descarregar Plano PDF</p>
+              <p className="text-amber-100 text-sm">Plano completo para consultar offline</p>
+            </div>
+          </div>
+          <span className="text-2xl">📄</span>
+        </button>
 
         {/* Porções do dia */}
         <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <h2 className="font-bold text-gray-800 mb-4">As tuas porções hoje</h2>
+          <h2 className="font-bold text-gray-800 mb-4">Porções diárias</h2>
           
           <div className="grid grid-cols-2 gap-3">
             <PorcaoCard 
@@ -751,7 +426,7 @@ export default function PlanoAlimentar() {
               tipo="hidratos"
               quantidade={plano.porcoes?.hidratos_base || 0}
               tamanho={plano.tamanhos?.mao_g || 20}
-              extra={plano.porcoes?.carbs_extra_treino || 0}
+              extra={plano.e_dia_treino ? (plano.porcoes?.carbs_extra_treino || 0) : 0}
               cor="from-amber-50 to-yellow-100"
             />
             <PorcaoCard 
@@ -762,64 +437,55 @@ export default function PlanoAlimentar() {
             />
           </div>
 
-          {/* Info calorias */}
-          <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between text-sm text-gray-500">
-            <span>~{plano.calorias} kcal/dia</span>
-            <span>
-              P:{plano.macros?.proteina_g}g · 
-              C:{plano.macros?.carboidratos_g}g · 
-              G:{plano.macros?.gordura_g}g
-            </span>
+          {/* Macros */}
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-500">Calorias diárias</span>
+              <span className="font-bold text-gray-800">~{plano.calorias} kcal</span>
+            </div>
+            <div className="flex justify-between items-center mt-1">
+              <span className="text-sm text-gray-500">Macros</span>
+              <span className="text-sm text-gray-600">
+                P:{plano.macros?.proteina_g}g · C:{plano.macros?.carboidratos_g}g · G:{plano.macros?.gordura_g}g
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Check-in diário */}
-        <CheckinDiario 
+        {/* Dias de treino */}
+        <ConfigurarDiasTreino 
           userId={usersId}
-          jaFez={plano.checkin_hoje?.feito}
-          respostaAnterior={plano.checkin_hoje?.resposta}
-          onComplete={() => carregarPlano()}
+          diasActuais={plano.dias_treino || []}
+          onSave={() => carregarPlano()}
         />
 
-        {/* Check-in semanal */}
-        <CheckinSemanal 
-          userId={usersId}
-          onComplete={() => carregarPlano()}
-        />
-
-        {/* Dias de treino - edição (só aparece se já configurou) */}
-        {plano.dias_treino?.length > 0 && (
-          <ConfigurarDiasTreino 
-            userId={usersId}
-            diasActuais={plano.dias_treino}
-            onSave={(dias) => carregarPlano()}
-            compacto={true}
-          />
-        )}
-
-        {/* Regras da fase */}
+        {/* Dicas da fase */}
         {plano.regras && (
           <div className="bg-white rounded-2xl p-5 shadow-sm">
-            <h3 className="font-bold text-gray-800 mb-3">Dicas da fase</h3>
+            <h3 className="font-bold text-gray-800 mb-4">Dicas da fase</h3>
             
             {plano.regras.priorizar?.length > 0 && (
-              <div className="mb-3">
-                <p className="text-xs font-semibold text-green-600 uppercase mb-1">✓ Priorizar</p>
-                <p className="text-sm text-gray-600">{plano.regras.priorizar.join(', ')}</p>
+              <div className="mb-4">
+                <p className="text-xs font-semibold text-green-600 uppercase mb-2">✓ PRIORIZAR</p>
+                <p className="text-sm text-gray-600 bg-green-50 p-3 rounded-lg">
+                  {plano.regras.priorizar.join(', ')}
+                </p>
               </div>
             )}
             
             {plano.regras.evitar?.length > 0 && (
-              <div className="mb-3">
-                <p className="text-xs font-semibold text-red-600 uppercase mb-1">✗ Evitar</p>
-                <p className="text-sm text-gray-600">{plano.regras.evitar.join(', ')}</p>
+              <div className="mb-4">
+                <p className="text-xs font-semibold text-red-600 uppercase mb-2">✗ EVITAR</p>
+                <p className="text-sm text-gray-600 bg-red-50 p-3 rounded-lg">
+                  {plano.regras.evitar.join(', ')}
+                </p>
               </div>
             )}
 
             {plano.regras.dicas?.length > 0 && (
               <div>
-                <p className="text-xs font-semibold text-blue-600 uppercase mb-1">💡 Dicas</p>
-                <ul className="text-sm text-gray-600 space-y-1">
+                <p className="text-xs font-semibold text-blue-600 uppercase mb-2">💡 DICAS</p>
+                <ul className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg space-y-1">
                   {plano.regras.dicas.map((dica, i) => (
                     <li key={i}>• {dica}</li>
                   ))}
@@ -832,32 +498,41 @@ export default function PlanoAlimentar() {
         {/* Progresso peso */}
         {plano.peso && (
           <div className="bg-white rounded-2xl p-5 shadow-sm">
-            <h3 className="font-bold text-gray-800 mb-3">O teu progresso</h3>
-            <div className="flex justify-between items-center">
+            <h3 className="font-bold text-gray-800 mb-4">Progresso de peso</h3>
+            
+            <div className="flex justify-between items-center mb-2">
               <div className="text-center">
-                <p className="text-xs text-gray-500">Inicial</p>
+                <p className="text-xs text-gray-500">Início</p>
                 <p className="text-lg font-bold text-gray-400">{plano.peso.inicial} kg</p>
               </div>
-              <div className="flex-1 mx-4 h-2 bg-gray-100 rounded-full overflow-hidden">
-                {plano.peso.meta && plano.peso.inicial && plano.peso.actual && (
-                  <div 
-                    className="h-full bg-gradient-to-r from-orange-400 to-amber-500 rounded-full transition-all"
-                    style={{ 
-                      width: `${Math.min(100, Math.max(0, 
-                        ((plano.peso.inicial - plano.peso.actual) / (plano.peso.inicial - plano.peso.meta)) * 100
-                      ))}%` 
-                    }}
-                  />
-                )}
+              <div className="text-center">
+                <p className="text-xs text-gray-500">Actual</p>
+                <p className="text-2xl font-bold text-orange-600">{plano.peso.actual} kg</p>
               </div>
               <div className="text-center">
                 <p className="text-xs text-gray-500">Meta</p>
-                <p className="text-lg font-bold text-orange-600">{plano.peso.meta} kg</p>
+                <p className="text-lg font-bold text-green-600">{plano.peso.meta} kg</p>
               </div>
             </div>
-            <p className="text-center mt-2 text-sm text-gray-600">
-              Actual: <span className="font-semibold">{plano.peso.actual} kg</span>
-            </p>
+            
+            <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+              {plano.peso.meta && plano.peso.inicial && plano.peso.actual && (
+                <div 
+                  className="h-full bg-gradient-to-r from-orange-400 to-green-500 rounded-full transition-all"
+                  style={{ 
+                    width: `${Math.min(100, Math.max(0, 
+                      ((plano.peso.inicial - plano.peso.actual) / (plano.peso.inicial - plano.peso.meta)) * 100
+                    ))}%` 
+                  }}
+                />
+              )}
+            </div>
+            
+            {plano.peso.inicial > plano.peso.actual && (
+              <p className="text-center text-sm text-green-600 mt-2">
+                🎉 Já perdeste {(plano.peso.inicial - plano.peso.actual).toFixed(1)} kg!
+              </p>
+            )}
           </div>
         )}
 
@@ -865,7 +540,7 @@ export default function PlanoAlimentar() {
         {plano.refeicao_livre?.permitida && (
           <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-2xl p-4">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">🍕</span>
+              <span className="text-3xl">🍕</span>
               <div>
                 <p className="font-semibold text-gray-800">Refeição livre</p>
                 <p className="text-sm text-gray-600">
@@ -875,6 +550,7 @@ export default function PlanoAlimentar() {
             </div>
           </div>
         )}
+
       </div>
 
       {/* Modal PDF */}
