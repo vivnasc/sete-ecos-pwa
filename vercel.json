@@ -1,10 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/mockup-novo-visual.html",
-      "destination": "/mockup-novo-visual.html"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
