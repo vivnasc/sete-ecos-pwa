@@ -1,309 +1,406 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-export const CheckinDiario = () => {
+export default function CheckinDiario() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const [client, setClient] = useState(null);
+  const [plano, setPlano] = useState(null);
+  const [registoHoje, setRegistoHoje] = useState(null);
+  const [sonoHoje, setSonoHoje] = useState(null);
   
+  const hoje = new Date().toISOString().split('T')[0];
+  const diaSemana = new Date().getDay(); // 0 = Domingo
+  
+  // Form state
   const [formData, setFormData] = useState({
-    peso_kg: '',
-    energia_1a10: 5,
-    fome_1a10: 5,
-    humor_1a10: 5,
-    aderencia_1a10: 5,
-    desafios_semana: '',
-    vitorias_semana: ''
+    peso: '',
+    sono_horas: '',
+    sono_minutos: '',
+    sono_qualidade: 0,
+    notas: ''
   });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  // Verificar se é dia de pesagem (ex: sexta-feira = 5)
+  const diaPesagem = plano?.dia_pesagem || 5; // Default sexta
+  const ehDiaPesagem = diaSemana === diaPesagem;
 
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
     try {
+      // 1. Buscar user autenticado
       const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/vitalis/login');
+        return;
+      }
 
-      // 🔧 Buscar users.id primeiro
+      // 2. Converter auth_id → users.id
       const { data: userData } = await supabase
         .from('users')
         .select('id')
         .eq('auth_id', user.id)
         .single();
 
-      // Buscar client para pegar data_inicio
-      const { data: client } = await supabase
+      if (!userData) throw new Error('Utilizador não encontrado');
+      setUserId(userData.id);
+
+      // 3. Buscar client
+      const { data: clientData } = await supabase
         .from('vitalis_clients')
-        .select('data_inicio')
+        .select('*')
         .eq('user_id', userData.id)
         .single();
+      setClient(clientData);
 
-      // Calcular semana do programa
-      let semanaPrograma = 1;
-      
-      if (client && client.data_inicio) {
-        const dataInicio = new Date(client.data_inicio);
-        const hoje = new Date();
-        const diffTime = Math.abs(hoje - dataInicio);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        semanaPrograma = Math.ceil(diffDays / 7);
+      // 4. Buscar plano
+      if (clientData) {
+        const { data: planoData } = await supabase
+          .from('vitalis_plano')
+          .select('*')
+          .eq('client_id', clientData.id)
+          .single();
+        setPlano(planoData);
       }
 
-      // Criar registo
-      const { error } = await supabase
+      // 5. Verificar se já tem registo hoje
+      const { data: registoData } = await supabase
         .from('vitalis_registos')
-        .insert([{
-          user_id: userData.id,
-          data: new Date().toISOString().split('T')[0],
-          tipo: 'checkin_semanal',
-          semana_programa: semanaPrograma,
-          peso_kg: parseFloat(formData.peso_kg),
-          energia_1a10: formData.energia_1a10,
-          fome_1a10: formData.fome_1a10,
-          humor_1a10: formData.humor_1a10,
-          aderencia_1a10: formData.aderencia_1a10,
-          desafios_semana: formData.desafios_semana,
-          vitorias_semana: formData.vitorias_semana
-        }]);
-
-      if (error) throw error;
-
-      // Atualizar peso actual no cliente
-      await supabase
-        .from('vitalis_clients')
-        .update({ 
-          peso_actual: parseFloat(formData.peso_kg),
-          ultimo_registo: new Date().toISOString()
-        })
-        .eq('user_id', userData.id);
-
-      setSuccess(true);
+        .select('*')
+        .eq('user_id', userData.id)
+        .eq('data', hoje)
+        .single();
       
-      // Redirecionar após 2 segundos
-      setTimeout(() => {
-        navigate('/vitalis/dashboard');
-      }, 2000);
+      if (registoData) {
+        setRegistoHoje(registoData);
+        setFormData(prev => ({
+          ...prev,
+          peso: registoData.peso_kg || '',
+          notas: registoData.notas || ''
+        }));
+      }
+
+      // 6. Verificar sono de hoje
+      const { data: sonoData } = await supabase
+        .from('vitalis_sono_log')
+        .select('*')
+        .eq('user_id', userData.id)
+        .eq('data', hoje)
+        .single();
+      
+      if (sonoData) {
+        setSonoHoje(sonoData);
+        const horas = Math.floor((sonoData.duracao_min || 0) / 60);
+        const minutos = (sonoData.duracao_min || 0) % 60;
+        setFormData(prev => ({
+          ...prev,
+          sono_horas: horas || '',
+          sono_minutos: minutos || '',
+          sono_qualidade: sonoData.qualidade_1a5 || 0
+        }));
+      }
 
     } catch (error) {
-      console.error('Erro ao salvar check-in:', error);
-      alert('Erro ao salvar check-in: ' + error.message);
+      console.error('Erro ao carregar dados:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const Slider = ({ label, value, onChange, emoji }) => (
-    <div className="mb-6">
-      <div className="flex justify-between items-center mb-3">
-        <label className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-          <span className="text-2xl">{emoji}</span>
-          {label}
-        </label>
-        <span className="text-3xl font-bold text-orange-600">{value}</span>
-      </div>
-      <input
-        type="range"
-        min="1"
-        max="10"
-        value={value}
-        onChange={onChange}
-        className="w-full h-3 bg-orange-200 rounded-lg appearance-none cursor-pointer slider"
-      />
-      <div className="flex justify-between text-xs text-gray-500 mt-1">
-        <span>Muito Baixo</span>
-        <span>Médio</span>
-        <span>Muito Alto</span>
-      </div>
-    </div>
-  );
+  const handleSubmit = async () => {
+    if (!userId) return;
+    
+    setSaving(true);
+    try {
+      const duracaoMin = (parseInt(formData.sono_horas) || 0) * 60 + (parseInt(formData.sono_minutos) || 0);
 
-  if (success) {
+      // 1. Guardar/Actualizar sono
+      if (duracaoMin > 0 || formData.sono_qualidade > 0) {
+        if (sonoHoje) {
+          // Actualizar
+          await supabase
+            .from('vitalis_sono_log')
+            .update({
+              duracao_min: duracaoMin,
+              qualidade_1a5: formData.sono_qualidade
+            })
+            .eq('id', sonoHoje.id);
+        } else {
+          // Criar novo
+          await supabase
+            .from('vitalis_sono_log')
+            .insert({
+              user_id: userId,
+              data: hoje,
+              duracao_min: duracaoMin,
+              qualidade_1a5: formData.sono_qualidade
+            });
+        }
+      }
+
+      // 2. Guardar/Actualizar registo (peso + notas)
+      const registoPayload = {
+        user_id: userId,
+        data: hoje,
+        notas: formData.notas || null
+      };
+
+      // Só incluir peso se foi preenchido
+      if (formData.peso) {
+        registoPayload.peso_kg = parseFloat(formData.peso);
+        
+        // Actualizar peso_actual no client
+        await supabase
+          .from('vitalis_clients')
+          .update({ peso_actual: parseFloat(formData.peso) })
+          .eq('id', client.id);
+      }
+
+      if (registoHoje) {
+        // Actualizar
+        await supabase
+          .from('vitalis_registos')
+          .update(registoPayload)
+          .eq('id', registoHoje.id);
+      } else {
+        // Criar novo
+        await supabase
+          .from('vitalis_registos')
+          .insert(registoPayload);
+      }
+
+      // Voltar ao dashboard
+      navigate('/vitalis/dashboard');
+      
+    } catch (error) {
+      console.error('Erro ao guardar:', error);
+      alert('Erro ao guardar. Tenta novamente.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50">
         <div className="text-center">
-          <div className="text-6xl mb-4 animate-bounce">✅</div>
-          <h2 className="text-3xl font-bold text-green-700 mb-2">Check-in Registado!</h2>
-          <p className="text-gray-600">A redirecionar para o dashboard...</p>
+          <div className="text-6xl mb-4 animate-pulse">📝</div>
+          <p className="text-gray-600">A carregar...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 pb-8">
+      
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-orange-100">
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <button 
-            onClick={() => navigate('/vitalis/dashboard')}
-            className="text-orange-600 hover:text-orange-700 mb-4 flex items-center gap-2"
-          >
-            ← Voltar
-          </button>
-          <h1 className="text-4xl font-bold text-orange-900 mb-2" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
-            Check-in Diário
-          </h1>
-          <p className="text-gray-600">Como está o teu dia hoje? 🌱</p>
+      <header className="bg-gradient-to-r from-green-600 to-emerald-600 text-white">
+        <div className="max-w-2xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <Link to="/vitalis/dashboard" className="text-white/80 hover:text-white">
+              ← Voltar
+            </Link>
+            <h1 className="text-xl font-bold">Check-in Diário</h1>
+            <div className="w-16"></div>
+          </div>
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8">
-          {/* Peso */}
-          <div className="mb-8">
-            <label className="block text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-              <span className="text-2xl">⚖️</span>
-              Peso de Hoje (kg)
-            </label>
-            <input
-              type="number"
-              step="0.1"
-              min="30"
-              max="200"
-              value={formData.peso_kg}
-              onChange={(e) => setFormData({ ...formData, peso_kg: e.target.value })}
-              required
-              placeholder="Ex: 72.5"
-              className="w-full px-6 py-4 text-2xl border-2 border-gray-200 rounded-xl focus:border-orange-400 focus:outline-none transition-colors"
-            />
-          </div>
+      <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+        
+        {/* Saudação */}
+        <div className="bg-white rounded-2xl shadow-lg p-5 text-center">
+          <div className="text-4xl mb-2">🌅</div>
+          <h2 className="text-xl font-semibold text-gray-800">
+            Bom dia, {client?.nome_completo?.split(' ')[0] || 'Guerreira'}!
+          </h2>
+          <p className="text-gray-500 text-sm mt-1">Como foi a tua noite?</p>
+        </div>
 
-          <div className="border-t border-gray-200 my-8" />
-
-          {/* Sliders de Auto-Avaliação */}
-          <div className="space-y-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-6">Como te sentes hoje?</h3>
-
-            <Slider
-              label="Energia"
-              emoji="⚡"
-              value={formData.energia_1a10}
-              onChange={(e) => setFormData({ ...formData, energia_1a10: parseInt(e.target.value) })}
-            />
-
-            <Slider
-              label="Fome"
-              emoji="🍽️"
-              value={formData.fome_1a10}
-              onChange={(e) => setFormData({ ...formData, fome_1a10: parseInt(e.target.value) })}
-            />
-
-            <Slider
-              label="Humor"
-              emoji="😊"
-              value={formData.humor_1a10}
-              onChange={(e) => setFormData({ ...formData, humor_1a10: parseInt(e.target.value) })}
-            />
-
-            <Slider
-              label="Aderência ao Plano"
-              emoji="✅"
-              value={formData.aderencia_1a10}
-              onChange={(e) => setFormData({ ...formData, aderencia_1a10: parseInt(e.target.value) })}
-            />
-          </div>
-
-          <div className="border-t border-gray-200 my-8" />
-
-          {/* Reflexões */}
-          <div className="space-y-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-6">Reflexão da Semana</h3>
-
+        {/* Sono */}
+        <div className="bg-white rounded-2xl shadow-lg p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-3xl">😴</span>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                🌱 Vitórias desta semana (opcional)
-              </label>
-              <textarea
-                value={formData.vitorias_semana}
-                onChange={(e) => setFormData({ ...formData, vitorias_semana: e.target.value })}
-                placeholder="Ex: Consegui resistir ao chocolate 3x, bebi 2L água todos os dias..."
-                rows={3}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-400 focus:outline-none transition-colors"
+              <h3 className="font-semibold text-gray-800">Sono</h3>
+              <p className="text-sm text-gray-500">Quantas horas dormiste?</p>
+            </div>
+          </div>
+
+          {/* Duração */}
+          <div className="flex items-center gap-4 mb-4">
+            <div className="flex-1">
+              <label className="block text-xs text-gray-500 mb-1">Horas</label>
+              <input
+                type="number"
+                min="0"
+                max="12"
+                value={formData.sono_horas}
+                onChange={(e) => setFormData({ ...formData, sono_horas: e.target.value })}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-center text-2xl font-bold focus:border-indigo-500 focus:outline-none"
+                placeholder="7"
               />
             </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                ⚠️ Desafios desta semana (opcional)
-              </label>
-              <textarea
-                value={formData.desafios_semana}
-                onChange={(e) => setFormData({ ...formData, desafios_semana: e.target.value })}
-                placeholder="Ex: Evento social difícil, TPM, stress no trabalho..."
-                rows={3}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-amber-400 focus:outline-none transition-colors"
+            <span className="text-2xl text-gray-400 mt-6">:</span>
+            <div className="flex-1">
+              <label className="block text-xs text-gray-500 mb-1">Minutos</label>
+              <input
+                type="number"
+                min="0"
+                max="59"
+                step="15"
+                value={formData.sono_minutos}
+                onChange={(e) => setFormData({ ...formData, sono_minutos: e.target.value })}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-center text-2xl font-bold focus:border-indigo-500 focus:outline-none"
+                placeholder="30"
               />
             </div>
           </div>
 
-          <div className="border-t border-gray-200 my-8" />
-
-          {/* Botões */}
-          <div className="flex gap-4">
-            <button
-              type="button"
-              onClick={() => navigate('/vitalis/dashboard')}
-              className="flex-1 py-4 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={loading || !formData.peso_kg}
-              className="flex-1 py-4 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                  A guardar...
-                </span>
-              ) : (
-                '✓ Guardar Check-in'
-              )}
-            </button>
+          {/* Qualidade */}
+          <div>
+            <label className="block text-sm text-gray-600 mb-2">Qualidade do sono</label>
+            <div className="flex justify-between gap-2">
+              {[1, 2, 3, 4, 5].map((valor) => (
+                <button
+                  key={valor}
+                  onClick={() => setFormData({ ...formData, sono_qualidade: valor })}
+                  className={`flex-1 py-3 rounded-xl text-2xl transition-all ${
+                    formData.sono_qualidade >= valor
+                      ? 'bg-yellow-100 scale-110'
+                      : 'bg-gray-100 opacity-50'
+                  }`}
+                >
+                  ⭐
+                </button>
+              ))}
+            </div>
+            <div className="flex justify-between text-xs text-gray-400 mt-1 px-2">
+              <span>Péssimo</span>
+              <span>Excelente</span>
+            </div>
           </div>
-        </form>
+        </div>
 
-        {/* Dica */}
-        <div className="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
-          <div className="flex gap-3">
-            <span className="text-2xl">💡</span>
-            <div>
-              <p className="font-semibold text-blue-900 mb-1">Dica:</p>
-              <p className="text-blue-800 text-sm">
-                Faz o check-in sempre à mesma hora (preferencialmente de manhã) para dados mais consistentes!
+        {/* Peso - só aparece no dia de pesagem */}
+        {ehDiaPesagem && (
+          <div className="bg-white rounded-2xl shadow-lg p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-3xl">⚖️</span>
+              <div>
+                <h3 className="font-semibold text-gray-800">Pesagem Semanal</h3>
+                <p className="text-sm text-gray-500">Hoje é dia de te pesares!</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <input
+                type="number"
+                step="0.1"
+                min="30"
+                max="200"
+                value={formData.peso}
+                onChange={(e) => setFormData({ ...formData, peso: e.target.value })}
+                className="flex-1 px-4 py-4 border-2 border-gray-200 rounded-xl text-center text-3xl font-bold focus:border-amber-500 focus:outline-none"
+                placeholder={client?.peso_actual || '70.0'}
+              />
+              <span className="text-xl text-gray-500">kg</span>
+            </div>
+
+            {client?.peso_actual && (
+              <p className="text-sm text-gray-500 text-center mt-2">
+                Último peso: {client.peso_actual} kg
               </p>
+            )}
+          </div>
+        )}
+
+        {/* Se não é dia de pesagem, mostrar opção de pesar mesmo assim */}
+        {!ehDiaPesagem && (
+          <div className="bg-gray-50 rounded-2xl p-4 border-2 border-dashed border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl opacity-50">⚖️</span>
+                <div>
+                  <p className="text-gray-600 font-medium">Pesagem semanal</p>
+                  <p className="text-xs text-gray-400">
+                    {['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][diaPesagem]} de manhã
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  // Mostrar campo de peso
+                  const pesoSection = document.getElementById('peso-opcional');
+                  if (pesoSection) pesoSection.classList.toggle('hidden');
+                }}
+                className="text-sm text-amber-600 hover:text-amber-700"
+              >
+                Pesar agora →
+              </button>
+            </div>
+            
+            <div id="peso-opcional" className="hidden mt-4">
+              <div className="flex items-center gap-4">
+                <input
+                  type="number"
+                  step="0.1"
+                  min="30"
+                  max="200"
+                  value={formData.peso}
+                  onChange={(e) => setFormData({ ...formData, peso: e.target.value })}
+                  className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl text-center text-2xl font-bold focus:border-amber-500 focus:outline-none"
+                  placeholder={client?.peso_actual || '70.0'}
+                />
+                <span className="text-lg text-gray-500">kg</span>
+              </div>
             </div>
           </div>
+        )}
+
+        {/* Notas */}
+        <div className="bg-white rounded-2xl shadow-lg p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-3xl">📝</span>
+            <div>
+              <h3 className="font-semibold text-gray-800">Notas</h3>
+              <p className="text-sm text-gray-500">Algo que queiras registar?</p>
+            </div>
+          </div>
+
+          <textarea
+            value={formData.notas}
+            onChange={(e) => setFormData({ ...formData, notas: e.target.value })}
+            placeholder="Como te sentes hoje? Algum desafio ou vitória?"
+            rows={3}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none resize-none"
+          />
         </div>
-      </div>
 
-      <style jsx>{`
-        .slider::-webkit-slider-thumb {
-          appearance: none;
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #C1634A, #D2B48C);
-          cursor: pointer;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
+        {/* Botão Guardar */}
+        <button
+          onClick={handleSubmit}
+          disabled={saving}
+          className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
+        >
+          {saving ? 'A guardar...' : '✓ Guardar Check-in'}
+        </button>
 
-        .slider::-moz-range-thumb {
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #C1634A, #D2B48C);
-          cursor: pointer;
-          border: none;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
-      `}</style>
+        {/* Já fez check-in */}
+        {(registoHoje || sonoHoje) && (
+          <p className="text-center text-sm text-green-600">
+            ✓ Já fizeste check-in hoje. Podes actualizar os valores.
+          </p>
+        )}
+
+      </main>
     </div>
   );
-};
-
-export default CheckinDiario;
+}
