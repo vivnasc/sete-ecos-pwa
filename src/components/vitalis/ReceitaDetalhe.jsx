@@ -43,15 +43,13 @@ const ReceitaDetalhe = () => {
     energetico: '⚡'
   };
 
-  // Gradientes por origem
-  const origemGradientes = {
-    mocambicana: 'from-orange-400 to-red-500',
-    zambeziana: 'from-amber-400 to-orange-500',
-    indiana: 'from-yellow-400 to-orange-500',
-    portuguesa: 'from-green-400 to-emerald-500',
-    mediterranica: 'from-blue-400 to-cyan-500',
-    asiatica: 'from-rose-400 to-pink-500',
-    internacional: 'from-purple-400 to-indigo-500'
+  // Gradientes suaves por tipo de refeição (mais intuitivo)
+  const tipoGradientes = {
+    pequeno_almoco: 'from-amber-200 to-orange-300',
+    almoco: 'from-emerald-200 to-green-300',
+    jantar: 'from-indigo-200 to-purple-300',
+    snack: 'from-rose-200 to-pink-300',
+    sobremesa: 'from-fuchsia-200 to-purple-300'
   };
 
   // Labels bonitos para origens
@@ -168,7 +166,7 @@ const ReceitaDetalhe = () => {
     );
   }
 
-  const gradiente = origemGradientes[receita.origem] || origemGradientes.internacional;
+  const gradiente = tipoGradientes[receita.tipo_refeicao] || tipoGradientes.snack;
   const ingredientes = receita.ingredientes || [];
 
   return (
@@ -192,21 +190,21 @@ const ReceitaDetalhe = () => {
           <span className="text-2xl">{isFavorita ? '❤️' : '🤍'}</span>
         </button>
 
-        {/* Emoji central */}
-        <div className="text-center pt-8">
-          <div className="text-8xl mb-4 drop-shadow-lg">{getMainEmoji()}</div>
-          <div className="inline-block bg-white/20 backdrop-blur-sm px-4 py-1 rounded-full text-white text-sm font-medium">
+        {/* Emoji central e título */}
+        <div className="text-center pt-4">
+          <div className="text-6xl mb-3 drop-shadow-lg">{getMainEmoji()}</div>
+          <h1 className="text-xl font-bold text-gray-800 mb-2 px-4">{receita.titulo}</h1>
+          <div className="inline-block bg-white/30 backdrop-blur-sm px-3 py-1 rounded-full text-gray-700 text-xs font-medium">
             {origemLabels[receita.origem] || '🌍 Internacional'}
           </div>
         </div>
       </div>
 
       {/* Card principal */}
-      <div className="px-4 -mt-12">
+      <div className="px-4 -mt-8">
         <div className="bg-white rounded-3xl shadow-xl p-6">
           
-          {/* Título e descrição */}
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">{receita.titulo}</h1>
+          {/* Descrição */}
           <p className="text-gray-600 mb-4">{receita.descricao}</p>
 
           {/* Info rápida */}
