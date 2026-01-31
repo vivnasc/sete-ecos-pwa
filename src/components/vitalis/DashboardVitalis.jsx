@@ -489,22 +489,58 @@ export default function DashboardVitalis() {
             <div className="bg-white rounded-2xl shadow-xl p-4">
               <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Quick Track</h3>
               
-              {/* Água */}
-              <div className="flex items-center justify-between p-3 bg-sky-50 rounded-xl mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">💧</span>
-                  <div>
-                    <p className="font-semibold text-gray-800 text-sm">{aguaHoje.toFixed(1)} / {metaAgua}L</p>
-                    <p className="text-xs text-gray-500">Água</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => adicionarAgua(250)}
-                  className="w-8 h-8 bg-sky-500 text-white rounded-full text-sm font-bold hover:bg-sky-600 transition-colors shadow-md"
-                >
-                  +
-                </button>
-              </div>
+              {/* Água - VERSÃO MELHORADA */}
+<div className="p-3 bg-sky-50 rounded-xl mb-2">
+  <div className="flex items-center justify-between mb-2">
+    <div className="flex items-center gap-2">
+      <span className="text-xl">💧</span>
+      <div>
+        <p className="font-semibold text-gray-800 text-sm">{aguaHoje.toFixed(1)} / {metaAgua}L</p>
+        <p className="text-xs text-gray-500">Água</p>
+      </div>
+    </div>
+  </div>
+  
+  {/* Barra de progresso */}
+  <div className="h-2 bg-sky-100 rounded-full mb-3 overflow-hidden">
+    <div 
+      className="h-full bg-sky-500 rounded-full transition-all"
+      style={{ width: `${Math.min(progressoAgua, 100)}%` }}
+    ></div>
+  </div>
+  
+  {/* Botões visuais */}
+  <div className="grid grid-cols-4 gap-2">
+    <button 
+      onClick={() => adicionarAgua(150)}
+      className="flex flex-col items-center p-2 bg-white hover:bg-sky-100 rounded-lg transition-colors shadow-sm"
+    >
+      <span className="text-lg">☕</span>
+      <span className="text-xs text-gray-600">150ml</span>
+    </button>
+    <button 
+      onClick={() => adicionarAgua(250)}
+      className="flex flex-col items-center p-2 bg-white hover:bg-sky-100 rounded-lg transition-colors shadow-sm"
+    >
+      <span className="text-lg">🥤</span>
+      <span className="text-xs text-gray-600">250ml</span>
+    </button>
+    <button 
+      onClick={() => adicionarAgua(330)}
+      className="flex flex-col items-center p-2 bg-white hover:bg-sky-100 rounded-lg transition-colors shadow-sm"
+    >
+      <span className="text-lg">🧃</span>
+      <span className="text-xs text-gray-600">330ml</span>
+    </button>
+    <button 
+      onClick={() => adicionarAgua(500)}
+      className="flex flex-col items-center p-2 bg-white hover:bg-sky-100 rounded-lg transition-colors shadow-sm"
+    >
+      <span className="text-lg">🍶</span>
+      <span className="text-xs text-gray-600">500ml</span>
+    </button>
+  </div>
+</div>
 
               {/* Treino */}
               <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-xl mb-2">
