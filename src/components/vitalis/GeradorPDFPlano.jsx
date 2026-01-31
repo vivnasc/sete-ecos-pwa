@@ -1,12 +1,11 @@
 // src/components/vitalis/GeradorPDFPlano.jsx
-// Componente que chama a API para gerar PDF profissional
+// Versão Print-to-PDF com LOGO REAL
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase.js';
 
 export default function GeradorPDFPlano({ userId, onClose }) {
   const [loading, setLoading] = useState(true);
-  const [gerando, setGerando] = useState(false);
   const [dados, setDados] = useState(null);
   const [erro, setErro] = useState(null);
   const [planoId, setPlanoId] = useState(null);
@@ -34,47 +33,14 @@ export default function GeradorPDFPlano({ userId, onClose }) {
     }
   };
 
-  const gerarPDF = async () => {
+  const abrirParaImprimir = () => {
     if (!planoId) {
       setErro('Plano não encontrado');
       return;
     }
-    
-    setGerando(true);
-    setErro(null);
-    
-    try {
-      const baseUrl = window.location.origin;
-      
-      const response = await fetch('/api/gerar-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planoId, baseUrl }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erro ao gerar PDF');
-      }
-
-      // Descarregar o PDF
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Vitalis_Plano_${dados.nome.replace(/\s+/g, '_')}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-
-      setTimeout(onClose, 500);
-    } catch (err) {
-      console.error('Erro PDF:', err);
-      setErro(err.message || 'Erro ao gerar PDF. Tenta novamente.');
-    } finally {
-      setGerando(false);
-    }
+    const url = `/vitalis/plano-pdf?id=${planoId}`;
+    window.open(url, '_blank');
+    onClose();
   };
 
   if (loading) {
@@ -93,30 +59,43 @@ export default function GeradorPDFPlano({ userId, onClose }) {
     <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999,padding:'20px'}}>
       <div style={{background:'white',borderRadius:'24px',maxWidth:'480px',width:'100%',overflow:'hidden',boxShadow:'0 25px 80px rgba(0,0,0,0.3)'}}>
         
-        {/* Header */}
+        {/* Header com Logo REAL */}
         <div style={{background:'linear-gradient(135deg, #C1634A 0%, #8B4513 100%)',padding:'35px',textAlign:'center',color:'white'}}>
-          <div style={{width:'80px',height:'80px',background:'rgba(255,255,255,0.2)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 18px',backdropFilter:'blur(10px)'}}>
-            <span style={{fontSize:'42px',fontWeight:'bold'}}>V</span>
-          </div>
+          <img 
+            src="/logos/vitalis-logo-transparent.png" 
+            alt="Vitalis" 
+            style={{width:'100px',height:'100px',objectFit:'contain',marginBottom:'15px'}}
+          />
           <h2 style={{fontSize:'24px',fontWeight:'600',margin:'0 0 8px'}}>Plano Alimentar</h2>
           <p style={{fontSize:'15px',opacity:0.9,margin:0}}>{dados?.nome}</p>
         </div>
 
         {/* Content */}
         <div style={{padding:'35px'}}>
-          <div style={{background:'#F5F0E8',borderRadius:'16px',padding:'22px',marginBottom:'25px'}}>
+          <div style={{background:'linear-gradient(135deg, #F5F0E8, #EDE5D8)',borderRadius:'16px',padding:'22px',marginBottom:'25px'}}>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'15px'}}>
-              <span style={{color:'#8B4513',fontSize:'14px'}}>Formato</span>
-              <span style={{color:'#6B4423',fontWeight:'600'}}>PDF Profissional</span>
+              <span style={{color:'#8B4513',fontSize:'14px'}}>📄 Formato</span>
+              <span style={{color:'#6B4423',fontWeight:'600'}}>PDF Alta Qualidade</span>
             </div>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'15px'}}>
-              <span style={{color:'#8B4513',fontSize:'14px'}}>Páginas</span>
+              <span style={{color:'#8B4513',fontSize:'14px'}}>📑 Páginas</span>
               <span style={{color:'#6B4423',fontWeight:'600'}}>10</span>
             </div>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-              <span style={{color:'#8B4513',fontSize:'14px'}}>Fase</span>
+              <span style={{color:'#8B4513',fontSize:'14px'}}>🔥 Fase</span>
               <span style={{color:'#6B4423',fontWeight:'600',textTransform:'capitalize'}}>{dados?.fase?.replace('_', ' ')}</span>
             </div>
+          </div>
+
+          {/* Instruções */}
+          <div style={{background:'#E8F5E9',border:'1px solid #A5D6A7',borderRadius:'12px',padding:'18px',marginBottom:'25px'}}>
+            <div style={{fontWeight:'600',color:'#2E7D32',marginBottom:'10px',fontSize:'14px'}}>💡 Como guardar o PDF:</div>
+            <ol style={{margin:0,paddingLeft:'20px',color:'#1B5E20',fontSize:'13px',lineHeight:'1.8'}}>
+              <li>Clica em "Abrir Plano"</li>
+              <li>Prima <strong>Ctrl+P</strong> (ou ⌘+P no Mac)</li>
+              <li>Escolhe "Guardar como PDF"</li>
+              <li>Clica em Guardar</li>
+            </ol>
           </div>
 
           {erro && (
@@ -128,23 +107,15 @@ export default function GeradorPDFPlano({ userId, onClose }) {
           <div style={{display:'flex',gap:'15px'}}>
             <button 
               onClick={onClose} 
-              style={{flex:1,padding:'16px',background:'#f5f5f5',color:'#666',border:'none',borderRadius:'14px',fontSize:'15px',fontWeight:'500',cursor:'pointer'}}
+              style={{flex:1,padding:'16px',background:'#f5f5f5',color:'#666',border:'none',borderRadius:'14px',fontSize:'15px',fontWeight:'500',cursor:'pointer',transition:'all 0.2s'}}
             >
               Cancelar
             </button>
             <button 
-              onClick={gerarPDF} 
-              disabled={gerando}
-              style={{flex:2,padding:'16px',background:gerando?'#ccc':'linear-gradient(135deg, #C1634A, #8B4513)',color:'white',border:'none',borderRadius:'14px',fontSize:'15px',fontWeight:'600',cursor:gerando?'default':'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'10px'}}
+              onClick={abrirParaImprimir}
+              style={{flex:2,padding:'16px',background:'linear-gradient(135deg, #C1634A, #8B4513)',color:'white',border:'none',borderRadius:'14px',fontSize:'15px',fontWeight:'600',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'10px',transition:'all 0.2s',boxShadow:'0 4px 15px rgba(193,99,74,0.4)'}}
             >
-              {gerando ? (
-                <>
-                  <div style={{width:'20px',height:'20px',border:'2px solid rgba(255,255,255,0.3)',borderTop:'2px solid white',borderRadius:'50%',animation:'spin 1s linear infinite'}}></div>
-                  A gerar...
-                </>
-              ) : (
-                <>📥 Descarregar PDF</>
-              )}
+              📄 Abrir Plano
             </button>
           </div>
         </div>
