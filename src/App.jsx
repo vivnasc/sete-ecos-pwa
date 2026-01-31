@@ -17,6 +17,7 @@ import MealsTracker from './components/vitalis/MealsTracker'
 import RefeicoesCofig from './components/vitalis/RefeicoesCofig'
 import RelatorioSemanal from './components/vitalis/RelatorioSemanal'
 import RelatoriosHub from './components/vitalis/RelatoriosHub'
+import ReceitaDetalhe from './components/vitalis/ReceitaDetalhe'
 import PlanoHTML from './pages/PlanoHTML'
 
 function App() {
@@ -53,6 +54,7 @@ function App() {
           <Route path="/vitalis/refeicoes-config" element={session ? <RefeicoesCofig /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/relatorios" element={session ? <RelatoriosHub /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/relatorio-semanal" element={session ? <RelatorioSemanal /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/receita/:id" element={<ReceitaDetalhe />} />
           <Route path="/vitalis/plano-pdf" element={<PlanoHTML />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
