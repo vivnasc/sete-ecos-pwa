@@ -128,7 +128,7 @@ export default function DashboardVitalis() {
       
       if (jejumData) setJejumActual(jejumData);
 
-      calcularStreak(registosData || []);
+      calcularStreak(userData.id);
 
     } catch (error) {
       console.error('Erro ao carregar dashboard:', error);
@@ -137,23 +137,46 @@ export default function DashboardVitalis() {
     }
   };
 
-  const calcularStreak = (registos) => {
-    let count = 0;
-    const hoje = new Date();
-    
-    for (let i = 0; i < 30; i++) {
-      const data = new Date(hoje);
-      data.setDate(data.getDate() - i);
-      const dataStr = data.toISOString().split('T')[0];
+  const calcularStreak = async (userId) => {
+    // Streak = dias consecutivos com pelo menos 1 registo (água, refeição, treino, sono, ou check-in)
+    try {
+      const hoje = new Date();
+      let count = 0;
       
-      const temRegisto = registos.some(r => r.data === dataStr);
-      if (temRegisto) {
-        count++;
-      } else if (i > 0) {
-        break;
+      for (let i = 0; i < 30; i++) {
+        const data = new Date(hoje);
+        data.setDate(data.getDate() - i);
+        const dataStr = data.toISOString().split('T')[0];
+        
+        // Verificar se há algum registo neste dia
+        const [agua, meals, treino, sono, checkin] = await Promise.all([
+          supabase.from('vitalis_agua_log').select('id').eq('user_id', userId).eq('data', dataStr).limit(1),
+          supabase.from('vitalis_meals_log').select('id').eq('user_id', userId).eq('data', dataStr).limit(1),
+          supabase.from('vitalis_workouts_log').select('id').eq('user_id', userId).eq('data', dataStr).limit(1),
+          supabase.from('vitalis_sono_log').select('id').eq('user_id', userId).eq('data', dataStr).limit(1),
+          supabase.from('vitalis_registos').select('id').eq('user_id', userId).eq('data', dataStr).limit(1)
+        ]);
+        
+        const temRegisto = 
+          (agua.data && agua.data.length > 0) ||
+          (meals.data && meals.data.length > 0) ||
+          (treino.data && treino.data.length > 0) ||
+          (sono.data && sono.data.length > 0) ||
+          (checkin.data && checkin.data.length > 0);
+        
+        if (temRegisto) {
+          count++;
+        } else if (i > 0) {
+          // Se não é hoje e não tem registo, quebra o streak
+          break;
+        }
       }
+      
+      setStreak(count);
+    } catch (error) {
+      console.error('Erro ao calcular streak:', error);
+      setStreak(0);
     }
-    setStreak(count);
   };
 
   // FUNÇÃO ÁGUA
@@ -341,9 +364,17 @@ export default function DashboardVitalis() {
 
   // Dados do jejum
   const jejumActivo = plano?.aceita_jejum || false;
-  const protocoloJejum = plano?.protocolo_jejum || '16:8';
+  const protocoloJejum = plano?.protocolo_jejum || '16_8';
   const horasJejum = plano?.horas_jejum || 16;
-  const janelaInicio = plano?.janela_alimentar_inicio || '12:00';
+  
+  // Calcular janela alimentar dinamicamente (hora início + horas jejum)
+  const calcularJanelaAlimentar = () => {
+    if (!jejumActual?.hora_inicio) return '--:--';
+    const inicio = new Date(jejumActual.hora_inicio);
+    inicio.setHours(inicio.getHours() + horasJejum);
+    return inicio.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+  };
+  const janelaInicio = calcularJanelaAlimentar();
 
   // Macros
   const macrosAlvo = {
@@ -687,7 +718,7 @@ export default function DashboardVitalis() {
           </div>
 
           {/* Coluna Central */}
-          <div className="col-span-12 md:col-span-5 space-y-4">
+          <div className="col-span-12 md:col-span-5 space-y-4 flex flex-col">
             
             {/* Timer de Jejum */}
             {(jejumActivo || jejumActual) && (
@@ -762,7 +793,7 @@ export default function DashboardVitalis() {
             )}
 
             {/* Refeições do Dia */}
-            <div className="bg-white rounded-3xl shadow-xl p-5">
+            <div className="bg-white rounded-3xl shadow-xl p-5 flex-grow">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Refeições Hoje</h3>
                 <Link to="/vitalis/refeicoes-config" className="text-xs text-amber-600 hover:text-amber-700 font-medium">
