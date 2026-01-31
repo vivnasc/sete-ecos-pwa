@@ -28,15 +28,13 @@ export const ReceitasBrowse = () => {
     sobremesa: '🍰'
   };
 
-  // Gradientes por origem
-  const origemGradientes = {
-    mocambicana: 'from-orange-400 to-red-500',
-    zambeziana: 'from-amber-400 to-orange-500',
-    indiana: 'from-yellow-400 to-orange-500',
-    portuguesa: 'from-green-400 to-emerald-500',
-    mediterranica: 'from-blue-400 to-cyan-500',
-    asiatica: 'from-rose-400 to-pink-500',
-    internacional: 'from-purple-400 to-indigo-500'
+  // Gradientes suaves por tipo de refeição
+  const tipoGradientes = {
+    pequeno_almoco: 'from-amber-200 to-orange-300',
+    almoco: 'from-emerald-200 to-green-300',
+    jantar: 'from-indigo-200 to-purple-300',
+    snack: 'from-rose-200 to-pink-300',
+    sobremesa: 'from-fuchsia-200 to-purple-300'
   };
 
   // Emojis especiais por tags
@@ -416,7 +414,7 @@ export const ReceitasBrowse = () => {
                 className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all cursor-pointer transform hover:scale-[1.02]"
               >
                 {/* Header colorido com emoji */}
-                <div className={`relative h-32 bg-gradient-to-br ${origemGradientes[receita.origem] || origemGradientes.internacional} flex items-center justify-center`}>
+                <div className={`relative h-32 bg-gradient-to-br ${tipoGradientes[receita.tipo_refeicao] || tipoGradientes.snack} flex items-center justify-center`}>
                   <span className="text-6xl drop-shadow-lg">{getSpecialEmoji(receita)}</span>
                   
                   {/* Botão Favoritar */}
