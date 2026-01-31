@@ -18,6 +18,12 @@ export default function DashboardVitalis() {
   const [humor, setHumor] = useState(null);
   const [streak, setStreak] = useState(0);
 
+  // Estados para Sono interactivo
+  const [mostrarSonoForm, setMostrarSonoForm] = useState(false);
+  const [sonoHoras, setSonoHoras] = useState('');
+  const [sonoMinutos, setSonoMinutos] = useState('');
+  const [sonoQualidade, setSonoQualidade] = useState(0);
+
   const hoje = new Date().toISOString().split('T')[0];
   const diaSemana = new Date().toLocaleDateString('pt-PT', { weekday: 'long' });
   const dataFormatada = new Date().toLocaleDateString('pt-PT', { day: 'numeric', month: 'long' });
@@ -28,14 +34,12 @@ export default function DashboardVitalis() {
 
   const loadDashboard = async () => {
     try {
-      // 1. Buscar user autenticado
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate('/vitalis/login');
         return;
       }
 
-      // 2. Converter auth_id → users.id
       const { data: userData } = await supabase
         .from('users')
         .select('id')
@@ -45,7 +49,6 @@ export default function DashboardVitalis() {
       if (!userData) throw new Error('Utilizador não encontrado');
       setUserId(userData.id);
 
-      // 3. Buscar client data
       const { data: clientData } = await supabase
         .from('vitalis_clients')
         .select('*')
@@ -53,7 +56,6 @@ export default function DashboardVitalis() {
         .single();
       setClient(clientData);
 
-      // 4. Buscar plano
       if (clientData) {
         const { data: planoData } = await supabase
           .from('vitalis_plano')
@@ -63,7 +65,6 @@ export default function DashboardVitalis() {
         setPlano(planoData);
       }
 
-      // 5. Buscar registos (últimos 30 dias)
       const { data: registosData } = await supabase
         .from('vitalis_registos')
         .select('*')
@@ -72,7 +73,6 @@ export default function DashboardVitalis() {
         .limit(30);
       setRegistos(registosData || []);
 
-      // 6. Buscar configuração de refeições
       const { data: refeicoesCofig } = await supabase
         .from('vitalis_refeicoes_config')
         .select('*')
@@ -81,7 +81,6 @@ export default function DashboardVitalis() {
         .order('ordem', { ascending: true });
       setRefeicoes(refeicoesCofig || []);
 
-      // 7. Buscar meals de hoje
       const { data: mealsData } = await supabase
         .from('vitalis_meals_log')
         .select('*')
@@ -89,7 +88,6 @@ export default function DashboardVitalis() {
         .eq('data', hoje);
       setMealsHoje(mealsData || []);
 
-      // 8. Buscar água de hoje
       const { data: aguaData } = await supabase
         .from('vitalis_agua_log')
         .select('quantidade_ml')
@@ -99,7 +97,6 @@ export default function DashboardVitalis() {
       const totalAgua = (aguaData || []).reduce((sum, a) => sum + a.quantidade_ml, 0) / 1000;
       setAguaHoje(totalAgua);
 
-      // 9. Buscar treino de hoje
       const { data: treinoData } = await supabase
         .from('vitalis_workouts_log')
         .select('*')
@@ -110,7 +107,6 @@ export default function DashboardVitalis() {
       
       if (treinoData) setTreinoHoje(treinoData);
 
-      // 10. Buscar sono de hoje (noite anterior)
       const { data: sonoData } = await supabase
         .from('vitalis_sono_log')
         .select('*')
@@ -121,7 +117,6 @@ export default function DashboardVitalis() {
       
       if (sonoData) setSonoHoje(sonoData);
 
-      // 11. Buscar jejum activo
       const { data: jejumData } = await supabase
         .from('vitalis_fasting_log')
         .select('*')
@@ -133,7 +128,6 @@ export default function DashboardVitalis() {
       
       if (jejumData) setJejumActual(jejumData);
 
-      // 12. Calcular streak
       calcularStreak(registosData || []);
 
     } catch (error) {
@@ -162,7 +156,7 @@ export default function DashboardVitalis() {
     setStreak(count);
   };
 
-  // ✅ FUNÇÃO CORRIGIDA - ÁGUA
+  // FUNÇÃO ÁGUA
   const adicionarAgua = async (ml = 250) => {
     if (!userId) {
       console.error('userId não disponível');
@@ -189,7 +183,7 @@ export default function DashboardVitalis() {
     }
   };
 
-  // ✅ FUNÇÃO CORRIGIDA - TREINO
+  // FUNÇÃO TREINO
   const registarTreino = async () => {
     if (!userId) {
       console.error('userId não disponível');
@@ -224,7 +218,48 @@ export default function DashboardVitalis() {
     }
   };
 
-  // ✅ FUNÇÃO CORRIGIDA - INICIAR JEJUM
+  // FUNÇÃO SONO
+  const registarSono = async () => {
+    if (!userId) {
+      console.error('userId não disponível');
+      return;
+    }
+    
+    const duracaoMin = (parseInt(sonoHoras) || 0) * 60 + (parseInt(sonoMinutos) || 0);
+    
+    if (duracaoMin === 0 && sonoQualidade === 0) {
+      alert('Preenche pelo menos as horas ou a qualidade');
+      return;
+    }
+    
+    try {
+      const { data, error } = await supabase
+        .from('vitalis_sono_log')
+        .insert({
+          user_id: userId,
+          data: hoje,
+          duracao_min: duracaoMin,
+          qualidade_1a5: sonoQualidade
+        })
+        .select()
+        .single();
+      
+      if (error) {
+        console.error('Erro Supabase:', error.message);
+        return;
+      }
+      
+      setSonoHoje(data);
+      setMostrarSonoForm(false);
+      setSonoHoras('');
+      setSonoMinutos('');
+      setSonoQualidade(0);
+    } catch (err) {
+      console.error('Erro ao registar sono:', err.message);
+    }
+  };
+
+  // FUNÇÃO INICIAR JEJUM
   const iniciarJejum = async () => {
     if (!userId) {
       console.error('userId não disponível');
@@ -254,7 +289,7 @@ export default function DashboardVitalis() {
     }
   };
 
-  // ✅ FUNÇÃO CORRIGIDA - TERMINAR JEJUM
+  // FUNÇÃO TERMINAR JEJUM
   const terminarJejum = async () => {
     if (!jejumActual) return;
     
@@ -285,7 +320,6 @@ export default function DashboardVitalis() {
 
   const registarHumor = async (valor) => {
     setHumor(valor);
-    // TODO: Guardar na base de dados
   };
 
   // Cálculos
@@ -296,7 +330,7 @@ export default function DashboardVitalis() {
   const pesoRestante = pesoActual - pesoMeta;
   const progressoPeso = pesoInicial > pesoMeta ? ((pesoPerdido) / (pesoInicial - pesoMeta)) * 100 : 0;
 
-  const metaAgua = 2; // litros
+  const metaAgua = 2;
   const progressoAgua = (aguaHoje / metaAgua) * 100;
 
   const totalRefeicoes = refeicoes.length || 4;
@@ -311,30 +345,28 @@ export default function DashboardVitalis() {
   const horasJejum = plano?.horas_jejum || 16;
   const janelaInicio = plano?.janela_alimentar_inicio || '12:00';
 
-  // Macros do plano
+  // Macros
   const macrosAlvo = {
     proteina: plano?.porcoes_proteina || 6,
     hidratos: plano?.porcoes_hidratos || 3,
     gordura: plano?.porcoes_gordura || 8
   };
 
-  // Calcular macros consumidos hoje
   const macrosConsumidos = mealsHoje.reduce((acc, meal) => ({
     proteina: acc.proteina + (parseFloat(meal.porcoes_proteina) || 0),
     hidratos: acc.hidratos + (parseFloat(meal.porcoes_hidratos) || 0),
     gordura: acc.gordura + (parseFloat(meal.porcoes_gordura) || 0)
   }), { proteina: 0, hidratos: 0, gordura: 0 });
 
-  // Calorias estimadas
   const caloriasAlvo = plano?.calorias_diarias || 1250;
   const caloriasConsumidas = Math.round(
-    (macrosConsumidos.proteina * 20 * 4) + // proteína: ~20g por porção, 4 kcal/g
-    (macrosConsumidos.hidratos * 30 * 4) + // hidratos: ~30g por porção, 4 kcal/g
-    (macrosConsumidos.gordura * 7 * 9)     // gordura: ~7g por porção, 9 kcal/g
+    (macrosConsumidos.proteina * 20 * 4) +
+    (macrosConsumidos.hidratos * 30 * 4) +
+    (macrosConsumidos.gordura * 7 * 9)
   );
   const progressoCalorias = (caloriasConsumidas / caloriasAlvo) * 100;
 
-  // Última semana para calendário
+  // Calendário
   const ultimaSemana = [];
   for (let i = 6; i >= 0; i--) {
     const data = new Date();
@@ -351,7 +383,7 @@ export default function DashboardVitalis() {
 
   // Dias de treino
   const diasTreino = plano?.dias_treino || [];
-  const diaAtual = new Date().getDay(); // 0 = Domingo
+  const diaAtual = new Date().getDay();
   const ehDiaTreino = diasTreino.includes(diaAtual);
 
   if (loading) {
@@ -438,18 +470,14 @@ export default function DashboardVitalis() {
               
               <div className="relative w-44 h-44 mx-auto mb-4">
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                  {/* Background circles */}
                   <circle cx="50" cy="50" r="45" fill="none" stroke="#f3f4f6" strokeWidth="6"/>
                   <circle cx="50" cy="50" r="36" fill="none" stroke="#f3f4f6" strokeWidth="5"/>
                   <circle cx="50" cy="50" r="28" fill="none" stroke="#f3f4f6" strokeWidth="4"/>
                   
-                  {/* Refeições - Outer */}
                   <circle cx="50" cy="50" r="45" fill="none" stroke="url(#grad1)" strokeWidth="6" 
                           strokeDasharray="283" strokeDashoffset={283 - (283 * progressoRefeicoes / 100)} strokeLinecap="round"/>
-                  {/* Água - Middle */}
                   <circle cx="50" cy="50" r="36" fill="none" stroke="#0ea5e9" strokeWidth="5" 
                           strokeDasharray="226" strokeDashoffset={226 - (226 * progressoAgua / 100)} strokeLinecap="round"/>
-                  {/* Movimento - Inner */}
                   <circle cx="50" cy="50" r="28" fill="none" stroke="#10b981" strokeWidth="4" 
                           strokeDasharray="176" strokeDashoffset={176 - (176 * (treinoHoje ? 100 : 0) / 100)} strokeLinecap="round"/>
                   
@@ -489,58 +517,56 @@ export default function DashboardVitalis() {
             <div className="bg-white rounded-2xl shadow-xl p-4">
               <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Quick Track</h3>
               
-              {/* Água - VERSÃO MELHORADA */}
-<div className="p-3 bg-sky-50 rounded-xl mb-2">
-  <div className="flex items-center justify-between mb-2">
-    <div className="flex items-center gap-2">
-      <span className="text-xl">💧</span>
-      <div>
-        <p className="font-semibold text-gray-800 text-sm">{aguaHoje.toFixed(1)} / {metaAgua}L</p>
-        <p className="text-xs text-gray-500">Água</p>
-      </div>
-    </div>
-  </div>
-  
-  {/* Barra de progresso */}
-  <div className="h-2 bg-sky-100 rounded-full mb-3 overflow-hidden">
-    <div 
-      className="h-full bg-sky-500 rounded-full transition-all"
-      style={{ width: `${Math.min(progressoAgua, 100)}%` }}
-    ></div>
-  </div>
-  
-  {/* Botões visuais */}
-  <div className="grid grid-cols-4 gap-2">
-    <button 
-      onClick={() => adicionarAgua(150)}
-      className="flex flex-col items-center p-2 bg-white hover:bg-sky-100 rounded-lg transition-colors shadow-sm"
-    >
-      <span className="text-lg">☕</span>
-      <span className="text-xs text-gray-600">150ml</span>
-    </button>
-    <button 
-      onClick={() => adicionarAgua(250)}
-      className="flex flex-col items-center p-2 bg-white hover:bg-sky-100 rounded-lg transition-colors shadow-sm"
-    >
-      <span className="text-lg">🥤</span>
-      <span className="text-xs text-gray-600">250ml</span>
-    </button>
-    <button 
-      onClick={() => adicionarAgua(330)}
-      className="flex flex-col items-center p-2 bg-white hover:bg-sky-100 rounded-lg transition-colors shadow-sm"
-    >
-      <span className="text-lg">🧃</span>
-      <span className="text-xs text-gray-600">330ml</span>
-    </button>
-    <button 
-      onClick={() => adicionarAgua(500)}
-      className="flex flex-col items-center p-2 bg-white hover:bg-sky-100 rounded-lg transition-colors shadow-sm"
-    >
-      <span className="text-lg">🍶</span>
-      <span className="text-xs text-gray-600">500ml</span>
-    </button>
-  </div>
-</div>
+              {/* Água */}
+              <div className="p-3 bg-sky-50 rounded-xl mb-2">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">💧</span>
+                    <div>
+                      <p className="font-semibold text-gray-800 text-sm">{aguaHoje.toFixed(1)} / {metaAgua}L</p>
+                      <p className="text-xs text-gray-500">Água</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="h-2 bg-sky-100 rounded-full mb-3 overflow-hidden">
+                  <div 
+                    className="h-full bg-sky-500 rounded-full transition-all"
+                    style={{ width: `${Math.min(progressoAgua, 100)}%` }}
+                  ></div>
+                </div>
+                
+                <div className="grid grid-cols-4 gap-2">
+                  <button 
+                    onClick={() => adicionarAgua(150)}
+                    className="flex flex-col items-center p-2 bg-white hover:bg-sky-100 rounded-lg transition-colors shadow-sm"
+                  >
+                    <span className="text-lg">☕</span>
+                    <span className="text-xs text-gray-600">150ml</span>
+                  </button>
+                  <button 
+                    onClick={() => adicionarAgua(250)}
+                    className="flex flex-col items-center p-2 bg-white hover:bg-sky-100 rounded-lg transition-colors shadow-sm"
+                  >
+                    <span className="text-lg">🥤</span>
+                    <span className="text-xs text-gray-600">250ml</span>
+                  </button>
+                  <button 
+                    onClick={() => adicionarAgua(330)}
+                    className="flex flex-col items-center p-2 bg-white hover:bg-sky-100 rounded-lg transition-colors shadow-sm"
+                  >
+                    <span className="text-lg">🧃</span>
+                    <span className="text-xs text-gray-600">330ml</span>
+                  </button>
+                  <button 
+                    onClick={() => adicionarAgua(500)}
+                    className="flex flex-col items-center p-2 bg-white hover:bg-sky-100 rounded-lg transition-colors shadow-sm"
+                  >
+                    <span className="text-lg">🍶</span>
+                    <span className="text-xs text-gray-600">500ml</span>
+                  </button>
+                </div>
+              </div>
 
               {/* Treino */}
               <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-xl mb-2">
@@ -568,27 +594,93 @@ export default function DashboardVitalis() {
                 )}
               </div>
 
-              {/* Sono */}
-              <div className="flex items-center justify-between p-3 bg-indigo-50 rounded-xl">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">😴</span>
-                  <div>
-                    <p className="font-semibold text-gray-800 text-sm">
-                      {sonoHoje ? `${Math.floor(sonoHoje.duracao_min / 60)}h ${sonoHoje.duracao_min % 60}m` : '— h'}
-                    </p>
-                    <p className="text-xs text-gray-500">Sono esta noite</p>
+              {/* Sono - INTERACTIVO */}
+              <div className="p-3 bg-indigo-50 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">😴</span>
+                    <div>
+                      <p className="font-semibold text-gray-800 text-sm">
+                        {sonoHoje ? `${Math.floor(sonoHoje.duracao_min / 60)}h ${sonoHoje.duracao_min % 60}m` : 'Sono esta noite'}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {sonoHoje ? `Qualidade: ${sonoHoje.qualidade_1a5}/5 ★` : 'Por registar'}
+                      </p>
+                    </div>
                   </div>
+                  {sonoHoje ? (
+                    <div className="flex items-center gap-0.5">
+                      {[1,2,3,4,5].map(i => (
+                        <span key={i} className={i <= sonoHoje.qualidade_1a5 ? 'text-yellow-500' : 'text-gray-300'}>★</span>
+                      ))}
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => setMostrarSonoForm(!mostrarSonoForm)}
+                      className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
+                    >
+                      {mostrarSonoForm ? 'Fechar' : 'Registar →'}
+                    </button>
+                  )}
                 </div>
-                {sonoHoje ? (
-                  <div className="flex items-center gap-0.5">
-                    {[1,2,3,4,5].map(i => (
-                      <span key={i} className={i <= sonoHoje.qualidade_1a5 ? 'text-yellow-500' : 'text-gray-300'}>★</span>
-                    ))}
+                
+                {mostrarSonoForm && !sonoHoje && (
+                  <div className="mt-3 pt-3 border-t border-indigo-100 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-500 mb-1">Horas</label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="12"
+                          value={sonoHoras}
+                          onChange={(e) => setSonoHoras(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-center text-lg font-bold focus:border-indigo-500 focus:outline-none"
+                          placeholder="7"
+                        />
+                      </div>
+                      <span className="text-xl text-gray-400 mt-5">:</span>
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-500 mb-1">Min</label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="59"
+                          step="15"
+                          value={sonoMinutos}
+                          onChange={(e) => setSonoMinutos(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-center text-lg font-bold focus:border-indigo-500 focus:outline-none"
+                          placeholder="30"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">Qualidade</label>
+                      <div className="flex justify-between gap-1">
+                        {[1, 2, 3, 4, 5].map((valor) => (
+                          <button
+                            key={valor}
+                            onClick={() => setSonoQualidade(valor)}
+                            className={`flex-1 py-2 rounded-lg text-lg transition-all ${
+                              sonoQualidade >= valor
+                                ? 'bg-yellow-100 scale-105'
+                                : 'bg-gray-100 opacity-50'
+                            }`}
+                          >
+                            ⭐
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <button
+                      onClick={registarSono}
+                      className="w-full py-2 bg-indigo-500 text-white rounded-lg text-sm font-semibold hover:bg-indigo-600 transition-colors"
+                    >
+                      ✓ Guardar Sono
+                    </button>
                   </div>
-                ) : (
-                  <Link to="/vitalis/checkin" className="text-xs text-indigo-600 hover:text-indigo-700">
-                    Registar →
-                  </Link>
                 )}
               </div>
             </div>
@@ -644,7 +736,7 @@ export default function DashboardVitalis() {
                   ></div>
                 </div>
                 
-                <div className="flex justify-between mt-3">
+                <div className="flex gap-2 mt-3">
                   {!jejumActual ? (
                     <button 
                       onClick={iniciarJejum}
@@ -654,12 +746,12 @@ export default function DashboardVitalis() {
                     </button>
                   ) : (
                     <>
-                      <button className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm transition-colors">
+                      <button className="flex-1 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm transition-colors">
                         Pausar
                       </button>
                       <button 
                         onClick={terminarJejum}
-                        className="px-4 py-2 bg-white text-purple-700 rounded-lg text-sm font-semibold hover:bg-purple-100 transition-colors"
+                        className="flex-1 px-4 py-2 bg-white text-purple-700 rounded-lg text-sm font-semibold hover:bg-purple-100 transition-colors"
                       >
                         Terminar Jejum
                       </button>
@@ -850,7 +942,6 @@ export default function DashboardVitalis() {
           </div>
           
           <div className="grid grid-cols-3 md:grid-cols-6 gap-4 items-center">
-            {/* Proteína */}
             <div className="text-center">
               <div className="relative w-16 h-16 mx-auto mb-2">
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
@@ -866,7 +957,6 @@ export default function DashboardVitalis() {
               <p className="text-xs text-gray-500">Proteína</p>
             </div>
 
-            {/* Hidratos */}
             <div className="text-center">
               <div className="relative w-16 h-16 mx-auto mb-2">
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
@@ -882,7 +972,6 @@ export default function DashboardVitalis() {
               <p className="text-xs text-gray-500">Hidratos</p>
             </div>
 
-            {/* Gordura */}
             <div className="text-center">
               <div className="relative w-16 h-16 mx-auto mb-2">
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
@@ -898,7 +987,6 @@ export default function DashboardVitalis() {
               <p className="text-xs text-gray-500">Gordura</p>
             </div>
 
-            {/* Calorias */}
             <div className="col-span-3">
               <div className="bg-gradient-to-r from-amber-50 via-orange-50 to-red-50 rounded-2xl p-4">
                 <div className="flex items-center justify-between mb-2">
