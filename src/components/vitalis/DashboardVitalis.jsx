@@ -162,73 +162,99 @@ export default function DashboardVitalis() {
     setStreak(count);
   };
 
+  // ✅ FUNÇÃO CORRIGIDA - ÁGUA
   const adicionarAgua = async (ml = 250) => {
-  if (!userId) {
-    console.error('userId não disponível');
-    return;
-  }
-  
-  try {
-    const { error } = await supabase
-      .from('vitalis_agua_log')
-      .insert({
-        user_id: userId,
-        data: hoje,
-        quantidade_ml: ml
-      });
+    if (!userId) {
+      console.error('userId não disponível');
+      return;
+    }
     
-    if (error) throw error;
-    
-    setAguaHoje(prev => prev + (ml / 1000));
-  } catch (err) {
-    console.error('Erro ao registar água:', err.message);
-  }
-};
-
-  const registarTreino = async () => {
     try {
-      const agora = new Date();
-      const hora = agora.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
-      
-      const { data, error } = await supabase
-        .from('vitalis_workouts_log')
-        .insert([{
+      const { error } = await supabase
+        .from('vitalis_agua_log')
+        .insert({
           user_id: userId,
           data: hoje,
-          tipo: 'geral'
-        }])
-        .select()
-        .single();
+          quantidade_ml: ml
+        });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Erro Supabase:', error.message);
+        return;
+      }
       
-      setTreinoHoje({ ...data, hora });
+      setAguaHoje(prev => prev + (ml / 1000));
     } catch (err) {
-      console.error('Erro ao registar treino:', err);
+      console.error('Erro ao registar água:', err.message);
     }
   };
 
+  // ✅ FUNÇÃO CORRIGIDA - TREINO
+  const registarTreino = async () => {
+    if (!userId) {
+      console.error('userId não disponível');
+      return;
+    }
+    
+    try {
+      const agora = new Date();
+      const horaFormatada = agora.toLocaleTimeString('pt-PT', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      
+      const { data, error } = await supabase
+        .from('vitalis_workouts_log')
+        .insert({
+          user_id: userId,
+          data: hoje,
+          tipo: 'geral'
+        })
+        .select()
+        .single();
+      
+      if (error) {
+        console.error('Erro Supabase:', error.message);
+        return;
+      }
+      
+      setTreinoHoje({ ...data, hora: horaFormatada });
+    } catch (err) {
+      console.error('Erro ao registar treino:', err.message);
+    }
+  };
+
+  // ✅ FUNÇÃO CORRIGIDA - INICIAR JEJUM
   const iniciarJejum = async () => {
+    if (!userId) {
+      console.error('userId não disponível');
+      return;
+    }
+    
     try {
       const { data, error } = await supabase
         .from('vitalis_fasting_log')
-        .insert([{
+        .insert({
           user_id: userId,
           data: hoje,
           hora_inicio: new Date().toISOString(),
           protocolo: protocoloJejum
-        }])
+        })
         .select()
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Erro Supabase:', error.message);
+        return;
+      }
       
       setJejumActual(data);
     } catch (err) {
-      console.error('Erro ao iniciar jejum:', err);
+      console.error('Erro ao iniciar jejum:', err.message);
     }
   };
 
+  // ✅ FUNÇÃO CORRIGIDA - TERMINAR JEJUM
   const terminarJejum = async () => {
     if (!jejumActual) return;
     
@@ -246,11 +272,14 @@ export default function DashboardVitalis() {
         })
         .eq('id', jejumActual.id);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Erro Supabase:', error.message);
+        return;
+      }
       
       setJejumActual(null);
     } catch (err) {
-      console.error('Erro ao terminar jejum:', err);
+      console.error('Erro ao terminar jejum:', err.message);
     }
   };
 
@@ -470,7 +499,7 @@ export default function DashboardVitalis() {
                   </div>
                 </div>
                 <button 
-                  onClick={adicionarAgua}
+                  onClick={() => adicionarAgua(250)}
                   className="w-8 h-8 bg-sky-500 text-white rounded-full text-sm font-bold hover:bg-sky-600 transition-colors shadow-md"
                 >
                   +
@@ -486,7 +515,7 @@ export default function DashboardVitalis() {
                       {ehDiaTreino ? 'Dia de Treino' : 'Dia de Descanso'}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {treinoHoje ? `Feito às ${treinoHoje.hora}` : (ehDiaTreino ? 'Por fazer' : 'Recupera bem!')}
+                      {treinoHoje ? `Feito às ${treinoHoje.hora || treinoHoje.created_at?.substring(11, 16) || '—'}` : (ehDiaTreino ? 'Por fazer' : 'Recupera bem!')}
                     </p>
                   </div>
                 </div>
