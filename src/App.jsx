@@ -49,6 +49,7 @@ function App() {
           <Route path="/vitalis/refeicoes-config" element={session ? <RefeicoesCofig /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/relatorios" element={session ? <RelatorioSemanal /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/plano-pdf" element={<PlanoHTML />} />
+          <Route path="/vitalis/relatorios" element={<RelatoriosHub />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
         <Navigation />
