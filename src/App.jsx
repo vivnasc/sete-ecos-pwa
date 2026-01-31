@@ -16,12 +16,13 @@ import PlanoAlimentar from './components/vitalis/PlanoAlimentar'
 import MealsTracker from './components/vitalis/MealsTracker'
 import RefeicoesCofig from './components/vitalis/RefeicoesCofig'
 import RelatorioSemanal from './components/vitalis/RelatorioSemanal'
+import RelatoriosHub from './components/vitalis/RelatoriosHub'
 import PlanoHTML from './pages/PlanoHTML'
-import RelatoriosHub from './components/vitalis/RelatoriosHub';
 
 function App() {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
+  
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
@@ -32,7 +33,9 @@ function App() {
     })
     return () => subscription.unsubscribe()
   }, [])
+  
   if (loading) return <div className="loading">A carregar...</div>
+  
   return (
     <BrowserRouter>
       <div className="app">
@@ -48,9 +51,9 @@ function App() {
           <Route path="/vitalis/plano" element={session ? <PlanoAlimentar /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/meals" element={session ? <MealsTracker /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/refeicoes-config" element={session ? <RefeicoesCofig /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/relatorios" element={session ? <RelatorioSemanal /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/relatorios" element={session ? <RelatoriosHub /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/relatorio-semanal" element={session ? <RelatorioSemanal /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/plano-pdf" element={<PlanoHTML />} />
-          <Route path="/vitalis/relatorios" element={<RelatoriosHub />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
         <Navigation />
@@ -58,4 +61,5 @@ function App() {
     </BrowserRouter>
   )
 }
+
 export default App
