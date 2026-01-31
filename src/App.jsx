@@ -17,6 +17,7 @@ import MealsTracker from './components/vitalis/MealsTracker'
 import RefeicoesCofig from './components/vitalis/RefeicoesCofig'
 import RelatorioSemanal from './components/vitalis/RelatorioSemanal'
 import PlanoHTML from './pages/PlanoHTML'
+import RelatoriosHub from './components/vitalis/RelatoriosHub';
 
 function App() {
   const [session, setSession] = useState(null)
