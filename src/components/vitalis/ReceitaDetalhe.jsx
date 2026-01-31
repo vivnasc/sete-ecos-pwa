@@ -339,20 +339,46 @@ const ReceitaDetalhe = () => {
         <div className="bg-white rounded-3xl shadow-xl p-6 mt-4">
           <h3 className="text-lg font-bold text-gray-800 mb-4">🥗 Ingredientes</h3>
           <div className="space-y-3">
-            {ingredientes.map((ing, index) => (
-              <div key={index} className="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0">
-                <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 text-sm font-medium flex-shrink-0 mt-0.5">
-                  {index + 1}
-                </div>
-                <div className="flex-1">
-                  <div className="font-medium text-gray-800">{ing.item}</div>
-                  <div className="text-sm text-gray-500">
-                    {ing.quantidade}
-                    {ing.porcao_mao && <span className="text-orange-600"> • {ing.porcao_mao}</span>}
+            {ingredientes.map((ing, index) => {
+              // Lidar com diferentes formatos de ingredientes
+              let item = '';
+              let quantidade = '';
+              let porcaoMao = '';
+              
+              if (typeof ing === 'object') {
+                // Formato novo: {item, quantidade, porcao_mao}
+                // Formato antigo: {nome, quantidade, unidade}
+                item = ing.item || ing.nome || ing.ingrediente || '';
+                
+                // Quantidade - formato antigo tem número + unidade separados
+                if (ing.unidade) {
+                  quantidade = `${ing.quantidade} ${ing.unidade}`;
+                } else {
+                  quantidade = ing.quantidade || ing.qtd || '';
+                }
+                
+                porcaoMao = ing.porcao_mao || ing.porcaoMao || '';
+              } else if (typeof ing === 'string') {
+                item = ing;
+              }
+              
+              return (
+                <div key={index} className="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0">
+                  <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 text-sm font-medium flex-shrink-0 mt-0.5">
+                    {index + 1}
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-800 capitalize">{item || 'Ingrediente'}</div>
+                    {(quantidade || porcaoMao) && (
+                      <div className="text-sm text-gray-500">
+                        {quantidade}
+                        {porcaoMao && <span className="text-orange-600"> • {porcaoMao}</span>}
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
