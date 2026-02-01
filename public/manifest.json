@@ -1,0 +1,22 @@
+{
+  "name": "SETE ECOS",
+  "short_name": "Sete Ecos",
+  "description": "Sistema de Transmutação Feminina - Sete caminhos. Uma travessia.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FCFCFF",
+  "theme_color": "#FCFCFF",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logos/sete-ecos-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logos/sete-ecos-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
