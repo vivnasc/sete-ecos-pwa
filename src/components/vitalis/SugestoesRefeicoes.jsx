@@ -2,50 +2,59 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link } from 'react-router-dom';
 
-// Base de dados de sugestões rápidas
-const SUGESTOES_RAPIDAS = {
+// Base de dados de refeições com tags para filtragem
+const REFEICOES_BASE = {
   pequeno_almoco: [
-    { nome: 'Ovos mexidos com espinafres', proteina: 2, hidratos: 0, gordura: 1, calorias: 220, tempo: 10, icone: '🥚' },
-    { nome: 'Papas de aveia com frutos vermelhos', proteina: 1, hidratos: 2, gordura: 1, calorias: 280, tempo: 5, icone: '🥣' },
-    { nome: 'Iogurte grego com granola e banana', proteina: 1.5, hidratos: 1.5, gordura: 0.5, calorias: 250, tempo: 3, icone: '🥛' },
-    { nome: 'Tosta de abacate com ovo', proteina: 1, hidratos: 1, gordura: 2, calorias: 300, tempo: 8, icone: '🥑' },
-    { nome: 'Smoothie proteico de banana', proteina: 2, hidratos: 1, gordura: 0.5, calorias: 200, tempo: 5, icone: '🥤' },
-    { nome: 'Panquecas de aveia e banana', proteina: 1.5, hidratos: 2, gordura: 1, calorias: 320, tempo: 15, icone: '🥞' },
+    { nome: 'Ovos mexidos com espinafres', proteina: 2, hidratos: 0, gordura: 1, calorias: 220, tempo: 10, icone: '🥚', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Omelete de cogumelos e queijo', proteina: 2, hidratos: 0.5, gordura: 1.5, calorias: 280, tempo: 10, icone: '🍳', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Iogurte grego com sementes e canela', proteina: 1.5, hidratos: 0.5, gordura: 1, calorias: 200, tempo: 3, icone: '🥛', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Papas de aveia com proteína e frutos vermelhos', proteina: 1.5, hidratos: 2, gordura: 0.5, calorias: 280, tempo: 5, icone: '🥣', tags: ['normal'] },
+    { nome: 'Tosta integral com abacate e ovo', proteina: 1, hidratos: 1.5, gordura: 2, calorias: 300, tempo: 8, icone: '🥑', tags: ['normal'] },
+    { nome: 'Panquecas de aveia e banana', proteina: 1.5, hidratos: 2, gordura: 1, calorias: 320, tempo: 15, icone: '🥞', tags: ['normal'] },
+    { nome: 'Smoothie proteico de frutos vermelhos', proteina: 2, hidratos: 1, gordura: 0.5, calorias: 200, tempo: 5, icone: '🥤', tags: ['lowcarb', 'normal'] },
+    { nome: 'Ovos cozidos com abacate', proteina: 1.5, hidratos: 0, gordura: 2, calorias: 250, tempo: 12, icone: '🥚', tags: ['lowcarb', 'keto', 'normal'] },
   ],
   almoco: [
-    { nome: 'Salada de frango grelhado', proteina: 3, hidratos: 1, gordura: 2, calorias: 400, tempo: 20, icone: '🥗' },
-    { nome: 'Bowl de quinoa com salmão', proteina: 2.5, hidratos: 2, gordura: 2, calorias: 450, tempo: 25, icone: '🍱' },
-    { nome: 'Wrap de peru com vegetais', proteina: 2, hidratos: 1.5, gordura: 1, calorias: 350, tempo: 10, icone: '🌯' },
-    { nome: 'Arroz integral com frango e legumes', proteina: 3, hidratos: 2, gordura: 1, calorias: 420, tempo: 30, icone: '🍛' },
-    { nome: 'Omelete de vegetais com salada', proteina: 2.5, hidratos: 0.5, gordura: 2, calorias: 320, tempo: 15, icone: '🍳' },
-    { nome: 'Sopa de legumes com frango desfiado', proteina: 2, hidratos: 1, gordura: 1, calorias: 280, tempo: 20, icone: '🍲' },
+    { nome: 'Salada de frango grelhado com azeite', proteina: 3, hidratos: 0.5, gordura: 2, calorias: 380, tempo: 20, icone: '🥗', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Salmão ao forno com legumes', proteina: 2.5, hidratos: 0.5, gordura: 2, calorias: 400, tempo: 25, icone: '🐟', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Frango com arroz integral e brócolos', proteina: 3, hidratos: 2, gordura: 1, calorias: 420, tempo: 30, icone: '🍛', tags: ['normal'] },
+    { nome: 'Bowl de quinoa com salmão', proteina: 2.5, hidratos: 2, gordura: 2, calorias: 450, tempo: 25, icone: '🍱', tags: ['normal'] },
+    { nome: 'Omelete recheada com salada grande', proteina: 2.5, hidratos: 0.5, gordura: 2, calorias: 320, tempo: 15, icone: '🍳', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Bife grelhado com cogumelos', proteina: 3, hidratos: 0.5, gordura: 2, calorias: 400, tempo: 20, icone: '🥩', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Wrap integral de peru com vegetais', proteina: 2, hidratos: 1.5, gordura: 1, calorias: 350, tempo: 10, icone: '🌯', tags: ['normal'] },
+    { nome: 'Peixe branco com puré de couve-flor', proteina: 2.5, hidratos: 0.5, gordura: 1.5, calorias: 300, tempo: 25, icone: '🐟', tags: ['lowcarb', 'keto', 'normal'] },
   ],
   jantar: [
-    { nome: 'Peixe grelhado com vegetais', proteina: 3, hidratos: 0.5, gordura: 1.5, calorias: 350, tempo: 20, icone: '🐟' },
-    { nome: 'Peito de frango com batata doce', proteina: 3, hidratos: 1.5, gordura: 1, calorias: 380, tempo: 25, icone: '🍗' },
-    { nome: 'Salada mediterrânea com atum', proteina: 2.5, hidratos: 1, gordura: 2, calorias: 320, tempo: 10, icone: '🥗' },
-    { nome: 'Tofu salteado com legumes', proteina: 2, hidratos: 1, gordura: 1.5, calorias: 280, tempo: 20, icone: '🥡' },
-    { nome: 'Sopa de legumes com ovo cozido', proteina: 1.5, hidratos: 1, gordura: 1, calorias: 220, tempo: 15, icone: '🍜' },
-    { nome: 'Hambúrguer caseiro de peru', proteina: 2.5, hidratos: 1, gordura: 1.5, calorias: 340, tempo: 20, icone: '🍔' },
+    { nome: 'Peixe grelhado com salada', proteina: 2.5, hidratos: 0.5, gordura: 1.5, calorias: 320, tempo: 20, icone: '🐟', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Sopa de legumes com ovo', proteina: 1.5, hidratos: 0.5, gordura: 1, calorias: 200, tempo: 15, icone: '🍜', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Frango ao forno com vegetais', proteina: 2.5, hidratos: 0.5, gordura: 1, calorias: 350, tempo: 30, icone: '🍗', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Salada mediterrânea com atum', proteina: 2, hidratos: 0.5, gordura: 2, calorias: 300, tempo: 10, icone: '🥗', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Peito de peru com espinafres salteados', proteina: 2.5, hidratos: 0.5, gordura: 1, calorias: 280, tempo: 15, icone: '🥬', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Tofu salteado com legumes', proteina: 2, hidratos: 0.5, gordura: 1.5, calorias: 250, tempo: 20, icone: '🥡', tags: ['lowcarb', 'keto', 'normal', 'vegetariano'] },
+    { nome: 'Omelete de claras com vegetais', proteina: 2, hidratos: 0.5, gordura: 0.5, calorias: 180, tempo: 10, icone: '🍳', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Carne magra com courgette grelhada', proteina: 2.5, hidratos: 0.5, gordura: 1.5, calorias: 320, tempo: 20, icone: '🥩', tags: ['lowcarb', 'keto', 'normal'] },
   ],
   snack: [
-    { nome: 'Maçã com manteiga de amendoim', proteina: 0.5, hidratos: 1, gordura: 1, calorias: 180, tempo: 2, icone: '🍎' },
-    { nome: 'Iogurte natural com nozes', proteina: 1, hidratos: 0.5, gordura: 1, calorias: 150, tempo: 2, icone: '🥜' },
-    { nome: 'Palitos de cenoura com hummus', proteina: 0.5, hidratos: 0.5, gordura: 1, calorias: 120, tempo: 2, icone: '🥕' },
-    { nome: 'Queijo fresco com tomate', proteina: 1, hidratos: 0.5, gordura: 0.5, calorias: 100, tempo: 2, icone: '🧀' },
-    { nome: 'Batido de proteína', proteina: 1.5, hidratos: 0.5, gordura: 0.5, calorias: 130, tempo: 3, icone: '🥤' },
-    { nome: 'Mix de frutos secos', proteina: 0.5, hidratos: 0.5, gordura: 1.5, calorias: 180, tempo: 1, icone: '🥜' },
+    { nome: 'Iogurte grego com nozes', proteina: 1, hidratos: 0.5, gordura: 1, calorias: 150, tempo: 2, icone: '🥜', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Palitos de cenoura com hummus', proteina: 0.5, hidratos: 0.5, gordura: 1, calorias: 120, tempo: 2, icone: '🥕', tags: ['lowcarb', 'normal'] },
+    { nome: 'Queijo fresco com pepino', proteina: 1, hidratos: 0.5, gordura: 0.5, calorias: 100, tempo: 2, icone: '🧀', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Ovo cozido', proteina: 1, hidratos: 0, gordura: 0.5, calorias: 80, tempo: 10, icone: '🥚', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Punhado de amêndoas', proteina: 0.5, hidratos: 0.5, gordura: 1.5, calorias: 160, tempo: 1, icone: '🌰', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Maçã com manteiga de amendoim', proteina: 0.5, hidratos: 1, gordura: 1, calorias: 180, tempo: 2, icone: '🍎', tags: ['normal'] },
+    { nome: 'Batido de proteína', proteina: 1.5, hidratos: 0.5, gordura: 0.5, calorias: 130, tempo: 3, icone: '🥤', tags: ['lowcarb', 'keto', 'normal'] },
   ]
 };
 
 export default function SugestoesRefeicoes() {
   const [loading, setLoading] = useState(true);
   const [plano, setPlano] = useState(null);
+  const [planoCompleto, setPlanoCompleto] = useState(null);
   const [macrosRestantes, setMacrosRestantes] = useState({ proteina: 0, hidratos: 0, gordura: 0, calorias: 0 });
   const [macrosConsumidos, setMacrosConsumidos] = useState({ proteina: 0, hidratos: 0, gordura: 0 });
   const [refeicaoSelecionada, setRefeicaoSelecionada] = useState('almoco');
   const [sugestoesFiltradas, setSugestoesFiltradas] = useState([]);
   const [filtroTempo, setFiltroTempo] = useState('todos');
+  const [faseTag, setFaseTag] = useState('normal');
 
   const hoje = new Date().toISOString().split('T')[0];
 
@@ -55,7 +64,7 @@ export default function SugestoesRefeicoes() {
 
   useEffect(() => {
     filtrarSugestoes();
-  }, [refeicaoSelecionada, macrosRestantes, filtroTempo]);
+  }, [refeicaoSelecionada, macrosRestantes, filtroTempo, faseTag]);
 
   const loadDados = async () => {
     try {
@@ -83,6 +92,26 @@ export default function SugestoesRefeicoes() {
 
         if (planoData) {
           setPlano(planoData);
+
+          // Carregar regras da fase
+          const { data: planoDia } = await supabase.rpc('vitalis_plano_do_dia', {
+            p_user_id: userData.id
+          });
+
+          if (planoDia && !planoDia.erro) {
+            setPlanoCompleto(planoDia);
+
+            // Determinar tag da fase
+            const faseNome = planoDia.fase?.nome?.toLowerCase() || '';
+            const porcoesH = planoData.porcoes_hidratos || 3;
+            if (faseNome.includes('ceto') || porcoesH <= 1) {
+              setFaseTag('keto');
+            } else if (faseNome.includes('low') || porcoesH <= 2) {
+              setFaseTag('lowcarb');
+            } else {
+              setFaseTag('normal');
+            }
+          }
 
           // Buscar consumo de hoje
           const { data: mealsData } = await supabase
@@ -122,7 +151,10 @@ export default function SugestoesRefeicoes() {
   };
 
   const filtrarSugestoes = () => {
-    let sugestoes = SUGESTOES_RAPIDAS[refeicaoSelecionada] || [];
+    let sugestoes = REFEICOES_BASE[refeicaoSelecionada] || [];
+
+    // Filtrar por fase (tag)
+    sugestoes = sugestoes.filter(s => s.tags.includes(faseTag) || s.tags.includes('normal'));
 
     // Filtrar por tempo
     if (filtroTempo === 'rapido') {
@@ -131,15 +163,18 @@ export default function SugestoesRefeicoes() {
       sugestoes = sugestoes.filter(s => s.tempo > 10 && s.tempo <= 20);
     }
 
-    // Ordenar por adequação aos macros restantes
+    // Calcular adequação aos macros restantes
     sugestoes = sugestoes.map(s => {
-      const score = (
-        (s.proteina <= macrosRestantes.proteina ? 1 : 0) +
-        (s.hidratos <= macrosRestantes.hidratos ? 1 : 0) +
-        (s.gordura <= macrosRestantes.gordura ? 1 : 0) +
-        (s.calorias <= macrosRestantes.calorias ? 1 : 0)
-      );
-      return { ...s, score, adequado: score >= 3 };
+      const dentroProteina = s.proteina <= macrosRestantes.proteina + 0.5;
+      const dentroHidratos = s.hidratos <= macrosRestantes.hidratos + 0.5;
+      const dentroGordura = s.gordura <= macrosRestantes.gordura + 0.5;
+      const dentroCalorias = s.calorias <= macrosRestantes.calorias + 100;
+
+      const score = (dentroProteina ? 1 : 0) + (dentroHidratos ? 1 : 0) + (dentroGordura ? 1 : 0) + (dentroCalorias ? 1 : 0);
+      const adequado = score >= 3;
+      const ideal = score === 4;
+
+      return { ...s, score, adequado, ideal };
     }).sort((a, b) => b.score - a.score);
 
     setSugestoesFiltradas(sugestoes);
@@ -167,7 +202,9 @@ export default function SugestoesRefeicoes() {
             </Link>
             <div>
               <h1 className="text-xl font-bold">Sugestões de Refeições</h1>
-              <p className="text-white/70 text-sm">Baseado nos teus macros restantes</p>
+              <p className="text-white/70 text-sm">
+                {planoCompleto?.fase?.nome || 'Personalizado'} • Baseado nos teus macros
+              </p>
             </div>
           </div>
 
@@ -194,7 +231,16 @@ export default function SugestoesRefeicoes() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-4">
-        {/* Filtros */}
+        {/* Aviso de fase */}
+        {faseTag !== 'normal' && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
+            <p className="text-amber-800 text-sm">
+              ⚠️ Sugestões filtradas para a tua fase ({faseTag === 'keto' ? 'Cetogénica' : 'Low Carb'})
+            </p>
+          </div>
+        )}
+
+        {/* Filtros de refeição */}
         <div className="flex gap-2 overflow-x-auto pb-2">
           {[
             { id: 'pequeno_almoco', nome: 'Peq. Almoço', icone: '🌅' },
@@ -221,8 +267,8 @@ export default function SugestoesRefeicoes() {
         <div className="flex gap-2">
           {[
             { id: 'todos', nome: 'Todos' },
-            { id: 'rapido', nome: '⚡ Rápido (<10min)' },
-            { id: 'medio', nome: '⏱️ Médio (10-20min)' }
+            { id: 'rapido', nome: '⚡ Rápido' },
+            { id: 'medio', nome: '⏱️ Médio' }
           ].map(f => (
             <button
               key={f.id}
@@ -244,17 +290,22 @@ export default function SugestoesRefeicoes() {
             <div
               key={index}
               className={`bg-white rounded-2xl shadow-lg p-4 transition-all ${
-                sugestao.adequado ? 'border-2 border-green-200' : ''
+                sugestao.ideal ? 'border-2 border-green-400' : sugestao.adequado ? 'border border-green-200' : ''
               }`}
             >
               <div className="flex items-start gap-3">
                 <div className="text-3xl">{sugestao.icone}</div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-semibold text-gray-800">{sugestao.nome}</h3>
-                    {sugestao.adequado && (
-                      <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
-                        Ideal
+                    {sugestao.ideal && (
+                      <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium">
+                        ✓ Ideal
+                      </span>
+                    )}
+                    {sugestao.adequado && !sugestao.ideal && (
+                      <span className="px-2 py-0.5 bg-green-50 text-green-600 text-xs rounded-full">
+                        Bom
                       </span>
                     )}
                   </div>
@@ -265,18 +316,30 @@ export default function SugestoesRefeicoes() {
                   </div>
 
                   {/* Macros */}
-                  <div className="flex gap-3 mt-3">
-                    <div className="flex items-center gap-1 px-2 py-1 bg-red-50 rounded-lg">
+                  <div className="flex gap-2 mt-3 flex-wrap">
+                    <div className={`flex items-center gap-1 px-2 py-1 rounded-lg ${
+                      sugestao.proteina <= macrosRestantes.proteina ? 'bg-red-50' : 'bg-red-100'
+                    }`}>
                       <span className="text-xs">🥩</span>
-                      <span className="text-xs font-medium text-red-700">{sugestao.proteina}P</span>
+                      <span className={`text-xs font-medium ${
+                        sugestao.proteina <= macrosRestantes.proteina ? 'text-red-700' : 'text-red-500'
+                      }`}>{sugestao.proteina}P</span>
                     </div>
-                    <div className="flex items-center gap-1 px-2 py-1 bg-amber-50 rounded-lg">
+                    <div className={`flex items-center gap-1 px-2 py-1 rounded-lg ${
+                      sugestao.hidratos <= macrosRestantes.hidratos ? 'bg-amber-50' : 'bg-amber-100'
+                    }`}>
                       <span className="text-xs">🍚</span>
-                      <span className="text-xs font-medium text-amber-700">{sugestao.hidratos}H</span>
+                      <span className={`text-xs font-medium ${
+                        sugestao.hidratos <= macrosRestantes.hidratos ? 'text-amber-700' : 'text-amber-500'
+                      }`}>{sugestao.hidratos}H</span>
                     </div>
-                    <div className="flex items-center gap-1 px-2 py-1 bg-green-50 rounded-lg">
+                    <div className={`flex items-center gap-1 px-2 py-1 rounded-lg ${
+                      sugestao.gordura <= macrosRestantes.gordura ? 'bg-green-50' : 'bg-green-100'
+                    }`}>
                       <span className="text-xs">🥑</span>
-                      <span className="text-xs font-medium text-green-700">{sugestao.gordura}G</span>
+                      <span className={`text-xs font-medium ${
+                        sugestao.gordura <= macrosRestantes.gordura ? 'text-green-700' : 'text-green-500'
+                      }`}>{sugestao.gordura}G</span>
                     </div>
                   </div>
                 </div>
@@ -295,9 +358,23 @@ export default function SugestoesRefeicoes() {
         {sugestoesFiltradas.length === 0 && (
           <div className="text-center py-8">
             <div className="text-4xl mb-3">🤔</div>
-            <p className="text-gray-500">Nenhuma sugestão encontrada com estes filtros</p>
+            <p className="text-gray-500">Nenhuma sugestão encontrada</p>
+            <p className="text-gray-400 text-sm">Experimenta outros filtros</p>
           </div>
         )}
+
+        {/* Legenda */}
+        <div className="bg-white rounded-xl p-4 shadow">
+          <p className="text-sm text-gray-600 font-medium mb-2">Legenda:</p>
+          <div className="flex flex-wrap gap-3 text-xs text-gray-500">
+            <span className="flex items-center gap-1">
+              <span className="w-3 h-3 bg-green-400 rounded-full"></span> Ideal para os teus macros
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-3 h-3 bg-green-200 rounded-full"></span> Adequado
+            </span>
+          </div>
+        </div>
       </main>
     </div>
   );

@@ -2,187 +2,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link } from 'react-router-dom';
 
-// Base de conhecimento da Vivianne - respostas contextuais e personalizadas
-const RESPOSTAS_VIVIANNE = {
-  saudacao: [
-    'Olá! Sou a Vivianne, a tua coach de nutrição. Como posso ajudar-te hoje? 💚',
-    'Bom dia! Estou aqui para te apoiar em tudo o que precisares. O que te traz aqui? 🌱',
-    'Olá querida! Que bom falar contigo. Em que posso ajudar? 😊'
-  ],
-
-  // MACROS E DISTRIBUIÇÃO
-  macros_distribuicao: [
-    'Boa pergunta sobre a distribuição de macros! 📊\n\nA distribuição ideal varia conforme o teu objetivo, mas uma boa base é:\n\n🥩 **Proteína**: Dividir igualmente pelas refeições principais (ex: 2 porções ao pequeno-almoço, 2 ao almoço, 2 ao jantar)\n\n🍚 **Hidratos**: Concentrar mais nas refeições antes/depois do treino e no pequeno-almoço\n\n🥑 **Gorduras**: Distribuir ao longo do dia, especialmente nas refeições sem treino\n\nQueres que te explique melhor algum destes pontos?',
-    'Sobre distribuição de macros! 🎯\n\nO teu plano está pensado para:\n\n**Pequeno-almoço**: 20-25% das calorias diárias\n**Almoço**: 30-35% das calorias\n**Lanche**: 10-15% das calorias\n**Jantar**: 25-30% das calorias\n\nA proteína deve estar presente em TODAS as refeições para manter a saciedade e preservar massa muscular. Os hidratos podem ser mais flexíveis conforme a tua fome e energia.'
-  ],
-
-  macros_pequeno_almoco: [
-    'Para o pequeno-almoço, recomendo: 🌅\n\n🥩 **Proteína**: 1.5-2 porções (ex: 2 ovos + iogurte, ou proteína em pó)\n🍚 **Hidratos**: 1-1.5 porções (ex: aveia, fruta, ou pão integral)\n🥑 **Gordura**: 1-2 porções (ex: manteiga de amendoim, sementes)\n\nO pequeno-almoço deve ser saciante para evitar fome a meio da manhã. A proteína logo de manhã ajuda a controlar o apetite durante todo o dia! 💪'
-  ],
-
-  macros_almoco: [
-    'Para o almoço, a maior refeição do dia: 🍽️\n\n🥩 **Proteína**: 2-2.5 porções (ex: 150-180g de frango/peixe)\n🥬 **Vegetais**: À vontade! Metade do prato\n🍚 **Hidratos**: 1-2 porções (conforme treino)\n🥑 **Gordura**: 1-2 porções (azeite na salada, por ex.)\n\nO almoço é ideal para consumir hidratos, especialmente se treinares à tarde. Faz do vegetal a base do prato! 🥗'
-  ],
-
-  macros_jantar: [
-    'Para o jantar, mais leve mas nutritivo: 🌙\n\n🥩 **Proteína**: 2 porções (essencial!)\n🥬 **Vegetais**: Abundantes\n🍚 **Hidratos**: 0.5-1 porção (reduzir se não treinaste)\n🥑 **Gordura**: 1-2 porções\n\nÀ noite convém reduzir hidratos se não fizeste exercício intenso. A proteína continua importante para a recuperação noturna. Evita jantar muito tarde para melhor digestão e sono! 😴'
-  ],
-
-  macros_iguais: [
-    'Os macros NÃO precisam ser iguais em todas as refeições! 📊\n\nNa verdade, faz sentido ajustar:\n\n✅ **Proteína**: Sim, esta deve ser consistente (presente em todas as refeições)\n\n⚖️ **Hidratos**: Variar conforme energia necessária - mais ao pequeno-almoço e almoço, menos ao jantar\n\n🔄 **Gorduras**: Podem compensar quando reduces hidratos\n\nO importante é atingir os totais diários! A distribuição é flexível conforme o teu estilo de vida e horários de treino.'
-  ],
-
-  // PROTEÍNA
-  proteina_fontes: [
-    'Excelentes fontes de proteína para o teu plano: 🥩\n\n**Animais (20-25g por 100g):**\n• Frango, peru (magros)\n• Peixe (salmão, atum, pescada)\n• Ovos (6g por ovo)\n• Carne magra\n\n**Vegetais/Outros:**\n• Iogurte grego/Skyr (10g por 100g)\n• Queijo fresco (12g por 100g)\n• Leguminosas (lentilhas, grão)\n• Tofu, tempeh\n\nUma porção = ~20g de proteína = ~100g de carne/peixe ou 3 ovos'
-  ],
-
-  proteina_quantidade: [
-    'Sobre a quantidade de proteína: 💪\n\nO teu plano indica as porções diárias. Cada porção equivale a ~20g de proteína.\n\n**Regra prática:**\n• 100g frango/peixe = 1 porção\n• 2-3 ovos = 1 porção\n• 150g iogurte grego = 0.75 porção\n• 100g tofu = 0.5 porção\n\nDistribui ao longo do dia para melhor absorção. O corpo processa melhor 20-40g por refeição do que 60g de uma vez!'
-  ],
-
-  // HIDRATOS
-  hidratos_quando: [
-    'Quando comer hidratos? Boa pergunta! 🍚\n\n**Melhores momentos:**\n• Pequeno-almoço (energia para o dia)\n• Antes do treino (1-2h antes)\n• Depois do treino (recuperação)\n\n**Reduzir:**\n• Jantar (especialmente sem treino)\n• Dias sedentários\n\n**Dica:** Se treinares de manhã, hidratos ao pequeno-almoço. Se treinares à tarde, guarda mais para o almoço. Os hidratos são combustível - usa-os quando precisas de energia!'
-  ],
-
-  hidratos_fontes: [
-    'Melhores fontes de hidratos para o teu plano: 🌾\n\n**Complexos (preferir):**\n• Aveia\n• Arroz integral/basmati\n• Batata doce\n• Quinoa\n• Leguminosas\n\n**Simples (moderação):**\n• Fruta (2-3 peças/dia)\n• Pão integral\n\n**Evitar:**\n• Açúcar refinado\n• Pão branco\n• Massas refinadas\n\nUma porção = ~30g hidratos = 40g arroz cru ou 1 batata média'
-  ],
-
-  // GORDURAS
-  gorduras_boas: [
-    'Gorduras saudáveis são essenciais! 🥑\n\n**Incluir diariamente:**\n• Azeite extra virgem (1-2 colheres sopa)\n• Abacate (1/4 a 1/2 unidade)\n• Frutos secos (punhado ~30g)\n• Sementes (chia, linhaça, abóbora)\n• Peixes gordos (salmão, sardinha)\n\n**Limitar:**\n• Manteiga (ocasional)\n• Queijos gordos\n\n**Evitar:**\n• Óleos vegetais refinados\n• Fritos\n• Gorduras trans\n\nGordura NÃO engorda - o excesso calórico é que engorda!'
-  ],
-
-  // JEJUM
-  jejum_info: [
-    'Sobre o jejum intermitente no teu plano: ⏱️\n\nO protocolo 16:8 significa:\n• 16 horas sem comer\n• 8 horas de janela alimentar\n\n**Exemplo:** Última refeição às 20h → Primeira refeição às 12h\n\n**Durante o jejum podes:**\n• Água (essencial!)\n• Chá/café sem açúcar\n• Água com limão\n\n**Benefícios:**\n• Melhora sensibilidade à insulina\n• Facilita défice calórico\n• Mais foco mental\n\nSe sentires muita fome no início, é normal - o corpo adapta-se em 1-2 semanas!'
-  ],
-
-  // ÁGUA
-  agua_dicas: [
-    'Dicas para beber mais água! 💧\n\n**Estratégias práticas:**\n• Garrafa sempre à vista\n• Bebe 1 copo ao acordar\n• 1 copo antes de cada refeição\n• App de lembretes (usa o Vitalis!)\n• Marca níveis na garrafa com horas\n\n**Quanto beber:**\n• Mínimo 2L/dia\n• Mais se treinares (+500ml por hora de treino)\n• Mais no calor\n\n**Sinais de desidratação:**\n• Urina escura\n• Sede (já estás desidratada!)\n• Dor de cabeça\n• Fadiga\n\nÁgua é fundamental para perda de peso - ajuda na digestão e reduz retenção!'
-  ],
-
-  // TREINO
-  treino_alimentacao: [
-    'Alimentação antes e depois do treino: 🏋️‍♀️\n\n**1-2h ANTES:**\n• Hidrato + pouca proteína\n• Ex: Banana + iogurte, ou aveia\n• Evita gordura (digestão lenta)\n\n**ATÉ 1h DEPOIS:**\n• Proteína + hidrato\n• Ex: Batido proteico + fruta\n• Ou refeição completa\n\n**Se treinas em jejum:**\n• Pode ser eficaz para perda de gordura\n• Quebra jejum logo após com proteína\n\nO mais importante é a alimentação TOTAL do dia, não só à volta do treino!'
-  ],
-
-  treino_frequencia: [
-    'Sobre frequência de treino ideal: 💪\n\n**Para perda de peso:**\n• 3-4x força + 2x cardio/semana\n• Ou 4-5x treinos mistos\n\n**Descanso:**\n• Mínimo 1-2 dias/semana\n• Sono adequado (7-8h)\n• Não treines grupos musculares 2 dias seguidos\n\n**Intensidade:**\n• Começa moderado\n• Aumenta progressivamente\n• Ouve o teu corpo!\n\nMais não é sempre melhor - recuperação é onde o corpo muda!'
-  ],
-
-  // SONO
-  sono_dicas: [
-    'O sono é CRUCIAL para perda de peso! 😴\n\n**Porque importa:**\n• Regula hormonas da fome\n• Recuperação muscular\n• Menos cravings no dia seguinte\n• Melhor decisões alimentares\n\n**Dicas para melhorar:**\n• Horário consistente\n• Evita ecrãs 1h antes\n• Quarto fresco e escuro\n• Jantar leve, 2-3h antes\n• Evita cafeína após 14h\n\n**Meta:** 7-8 horas por noite\n\nDormir mal pode sabotar todo o resto do plano!'
-  ],
-
-  // FOME E CRAVINGS
-  fome_controlar: [
-    'Para controlar a fome e cravings: 🎯\n\n**Estratégias:**\n• Proteína em TODAS as refeições\n• Fibra (vegetais, aveia)\n• Bebe água antes de comer\n• Come devagar (20 min mínimo)\n• Não saltes refeições\n\n**Quando tens cravings:**\n• Bebe água ou chá primeiro\n• Espera 15-20 minutos\n• Pergunta: é fome real ou emocional?\n• Snacks permitidos: frutos secos, iogurte, vegetais\n\n**Se tiveres muita fome:**\n• Pode ser pouca proteína\n• Ou pouca comida no geral\n• Fala comigo para ajustar!'
-  ],
-
-  // MOTIVAÇÃO
-  motivacao: [
-    'Estás a fazer um excelente trabalho! 💚\n\nLembra-te:\n• Progresso não é linear\n• Cada dia é uma nova oportunidade\n• Pequenas mudanças = grandes resultados\n• Tu és capaz!\n\nO que te está a custar mais neste momento? Posso ajudar com estratégias específicas.',
-    'Sei que nem sempre é fácil, mas estás no caminho certo! 🌟\n\nDicas para dias difíceis:\n• Foca num dia de cada vez\n• Celebra pequenas vitórias\n• Não te compares com outros\n• Lembra-te do teu "porquê"\n\nComo te posso apoiar hoje?',
-    'A consistência supera a perfeição! 💪\n\nNão precisas ser perfeita - precisas ser consistente. Se tiveres um dia menos bom, o próximo é uma nova oportunidade.\n\nO que te está a motivar a continuar? Às vezes ajuda relembrar os objetivos!'
-  ],
-
-  // DÚVIDAS GERAIS
-  ajuda_geral: [
-    'Claro que te ajudo! 💚\n\nPosso esclarecer dúvidas sobre:\n• 📊 Distribuição de macros\n• 🥩 Fontes de proteína\n• 🍚 Quando comer hidratos\n• 💧 Hidratação\n• 🏋️ Treino e alimentação\n• 😴 Sono e recuperação\n• 💪 Motivação\n\nSobre o que queres saber mais?',
-    'Estou aqui para te ajudar! 🌱\n\nDiz-me especificamente o que precisas:\n• Dúvidas sobre o plano?\n• Como distribuir as refeições?\n• Ideias de receitas?\n• Estratégias para situações sociais?\n\nQuanto mais específica fores, melhor te posso ajudar!'
-  ],
-
-  // PLANO
-  sobre_plano: [
-    'Sobre o teu plano alimentar: 📋\n\nO plano foi criado com base nos teus objetivos e está pensado para:\n• Criar défice calórico sustentável\n• Manter massa muscular (proteína adequada)\n• Dar energia para o dia-a-dia\n• Ser flexível e adaptável\n\nPodes consultar todos os detalhes em "Meu Plano" no dashboard.\n\nTens alguma dúvida específica sobre as quantidades ou alimentos?'
-  ],
-
-  // RECEITAS
-  receitas_ideias: [
-    'Ideias de receitas rápidas! 🍳\n\n**Pequeno-almoço:**\n• Ovos mexidos + abacate + tomate\n• Papas de aveia + frutos vermelhos + proteína\n• Iogurte grego + granola + banana\n\n**Almoço/Jantar:**\n• Salada com frango grelhado\n• Peixe ao forno com legumes\n• Omelete recheada + salada\n\n**Snacks:**\n• Maçã + manteiga amendoim\n• Iogurte + nozes\n• Palitos cenoura + hummus\n\nVê mais receitas na secção "Receitas" da app! 👩‍🍳'
-  ]
-};
-
-// Detectar intenção da mensagem com mais precisão
-const detectarIntencao = (mensagem) => {
-  const texto = mensagem.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-  // Saudações
-  if (texto.match(/^(ola|oi|bom dia|boa tarde|boa noite|hey|hello|hi)\b/)) return 'saudacao';
-
-  // MACROS - Distribuição
-  if (texto.match(/distribui|distribuicao|dividir|repartir/) && texto.match(/macro|refeic|dia/)) return 'macros_distribuicao';
-  if (texto.match(/macro.*(pequeno.?almoco|manha|pa)/i) || texto.match(/(pequeno.?almoco|manha).*(macro|quanto|como)/i)) return 'macros_pequeno_almoco';
-  if (texto.match(/macro.*(almoco|meio.?dia)/i) || texto.match(/almoco.*(macro|quanto|como)/i)) return 'macros_almoco';
-  if (texto.match(/macro.*(jantar|noite)/i) || texto.match(/jantar.*(macro|quanto|como)/i)) return 'macros_jantar';
-  if (texto.match(/macro.*(igual|igual|mesmo|identic)/i) || texto.match(/(igual|mesmo).*(macro|refeic|almoco|jantar)/i)) return 'macros_iguais';
-  if (texto.match(/macro|distribuicao/)) return 'macros_distribuicao';
-
-  // Proteína
-  if (texto.match(/proteina.*(fonte|onde|qual|o que|comer|alimento)/i) || texto.match(/(fonte|onde).*(proteina)/i)) return 'proteina_fontes';
-  if (texto.match(/proteina.*(quant|gramas|porcao|porco)/i) || texto.match(/(quant|gramas).*(proteina)/i)) return 'proteina_quantidade';
-  if (texto.match(/proteina/) && !texto.match(/quando|hora|momento/)) return 'proteina_fontes';
-
-  // Hidratos
-  if (texto.match(/hidrato.*(quando|hora|momento|melhor)/i) || texto.match(/(quando|hora).*(hidrato|carbo)/i)) return 'hidratos_quando';
-  if (texto.match(/hidrato.*(fonte|onde|qual|o que|comer)/i) || texto.match(/(fonte|onde).*(hidrato|carbo)/i)) return 'hidratos_fontes';
-  if (texto.match(/hidrato|carbo|carboidrato/)) return 'hidratos_quando';
-
-  // Gorduras
-  if (texto.match(/gordura|lipido|oleo|azeite|abacate|nozes/)) return 'gorduras_boas';
-
-  // Jejum
-  if (texto.match(/jejum|fasting|janela alimentar|16.?8|intermitente/)) return 'jejum_info';
-
-  // Água
-  if (texto.match(/agua|beber|hidratar|hidratacao|litro|sede/)) return 'agua_dicas';
-
-  // Treino
-  if (texto.match(/treino.*(comer|alimenta|antes|depois|refeic)/i) || texto.match(/(antes|depois|pre|pos).*(treino)/i)) return 'treino_alimentacao';
-  if (texto.match(/treino.*(frequencia|quantas|vezes|semana)/i) || texto.match(/(quantas|vezes|frequencia).*(treino)/i)) return 'treino_frequencia';
-  if (texto.match(/treino|exercicio|musculacao|academia|ginasio|gym/)) return 'treino_alimentacao';
-
-  // Sono
-  if (texto.match(/sono|dormir|descanso|noite|insonia|cansaco/)) return 'sono_dicas';
-
-  // Fome e cravings
-  if (texto.match(/fome|craving|vontade|desejo|compulsao|saciar|saciedade|apetite/)) return 'fome_controlar';
-
-  // Motivação
-  if (texto.match(/motiv|desanima|dificil|dific|cansar|desistir|ajuda|conseguir|forcar|fraca/)) return 'motivacao';
-
-  // Plano
-  if (texto.match(/plano|meu plano|ver plano|quantidade|caloria/)) return 'sobre_plano';
-
-  // Receitas
-  if (texto.match(/receita|ideia|sugest|o que comer|o que fazer|preparar|cozinhar/)) return 'receitas_ideias';
-
-  // Refeições genérico
-  if (texto.match(/refeic|comer|comida|alimento|alimentacao/)) return 'macros_distribuicao';
-
-  return 'ajuda_geral';
-};
-
-const getRespostaVivianne = (intencao, cliente = null) => {
-  const respostas = RESPOSTAS_VIVIANNE[intencao] || RESPOSTAS_VIVIANNE.ajuda_geral;
-  let resposta = respostas[Math.floor(Math.random() * respostas.length)];
-
-  // Personalizar com nome se disponível
-  if (cliente?.nome_completo) {
-    const primeiroNome = cliente.nome_completo.split(' ')[0];
-    // Ocasionalmente adicionar o nome
-    if (Math.random() > 0.7) {
-      resposta = resposta.replace(/^(Olá|Boa|Claro|Sobre|Para|Os|O )/, `$1${primeiroNome}, `);
-    }
-  }
-
-  return resposta;
-};
+// ============================================================
+// VIVIANNE - COACH INTELIGENTE COM CONHECIMENTO DO PLANO
+// ============================================================
 
 export default function ChatCoach() {
   const [loading, setLoading] = useState(true);
@@ -191,6 +13,8 @@ export default function ChatCoach() {
   const [enviando, setEnviando] = useState(false);
   const [userId, setUserId] = useState(null);
   const [client, setClient] = useState(null);
+  const [plano, setPlano] = useState(null);
+  const [planoCompleto, setPlanoCompleto] = useState(null);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -225,17 +49,40 @@ export default function ChatCoach() {
         .eq('user_id', userData.id)
         .single();
 
-      if (clientData) setClient(clientData);
+      if (clientData) {
+        setClient(clientData);
+
+        // Carregar plano completo da utilizadora
+        const { data: planoData } = await supabase
+          .from('vitalis_plano')
+          .select('*')
+          .eq('client_id', clientData.id)
+          .single();
+
+        if (planoData) {
+          setPlano(planoData);
+
+          // Carregar dados do plano do dia (com regras da fase)
+          const { data: planoDia } = await supabase.rpc('vitalis_plano_do_dia', {
+            p_user_id: userData.id
+          });
+
+          if (planoDia && !planoDia.erro) {
+            setPlanoCompleto(planoDia);
+          }
+        }
+      }
 
       // Carregar mensagens do localStorage
       const msgsSalvas = JSON.parse(localStorage.getItem(`vitalis-chat-${userData.id}`) || '[]');
 
       if (msgsSalvas.length === 0) {
-        // Mensagem de boas-vindas personalizada
         const nome = clientData?.nome_completo?.split(' ')[0] || 'querida';
+        const fase = planoCompleto?.fase?.nome || 'actual';
+
         const boasVindas = {
           id: Date.now(),
-          texto: `Olá ${nome}! 👋\n\nSou a Vivianne, a tua coach de nutrição pessoal. Estou aqui para te ajudar com:\n\n📊 Dúvidas sobre macros e distribuição\n🍽️ Ideias de refeições\n💪 Motivação e apoio\n💧 Dicas de hidratação\n🏋️ Alimentação e treino\n\nPergunta-me o que quiseres! Como posso ajudar-te hoje? 💚`,
+          texto: `Olá ${nome}! 👋\n\nSou a Vivianne, a tua nutricionista. Estou aqui para te ajudar a entender melhor o teu plano e esclarecer qualquer dúvida.\n\nPergunta-me o que quiseres sobre:\n• O teu plano e porções\n• Distribuição das refeições\n• Alimentos permitidos e a evitar\n• Dúvidas sobre nutrição\n\nComo posso ajudar-te hoje?`,
           remetente: 'coach',
           timestamp: new Date().toISOString()
         };
@@ -249,6 +96,386 @@ export default function ChatCoach() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // ============================================================
+  // SISTEMA DE RESPOSTA INTELIGENTE DA VIVIANNE
+  // ============================================================
+  const gerarRespostaVivianne = (pergunta) => {
+    const texto = pergunta.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const nome = client?.nome_completo?.split(' ')[0] || '';
+
+    // Dados do plano
+    const porcoesProteina = plano?.porcoes_proteina || 6;
+    const porcoesHidratos = plano?.porcoes_hidratos || 3;
+    const porcoesGordura = plano?.porcoes_gordura || 8;
+    const calorias = plano?.calorias_diarias || 1500;
+    const fase = planoCompleto?.fase?.nome || 'Inicial';
+    const diasTreino = plano?.dias_treino || [];
+    const aceitaJejum = plano?.aceita_jejum || false;
+    const protocoloJejum = plano?.protocolo_jejum || '16_8';
+
+    // Regras da fase
+    const priorizar = planoCompleto?.regras?.priorizar || [];
+    const evitar = planoCompleto?.regras?.evitar || [];
+    const dicas = planoCompleto?.regras?.dicas || [];
+
+    // Verificar se está em fase restritiva (low carb, cetogénica, etc.)
+    const faseRestritiva = fase.toLowerCase().includes('ceto') ||
+                          fase.toLowerCase().includes('low') ||
+                          porcoesHidratos <= 2;
+
+    // ========== MACROS E DISTRIBUIÇÃO ==========
+    if (texto.match(/distribui|distribuicao|dividir|repartir|pelas refeic/)) {
+      return `${nome ? nome + ', a' : 'A'} distribuição ideal para o teu plano:\n\n` +
+        `📊 **As tuas porções diárias:**\n` +
+        `• Proteína: ${porcoesProteina} porções\n` +
+        `• Hidratos: ${porcoesHidratos} porções${diasTreino.length > 0 ? ' (+1 nos dias de treino)' : ''}\n` +
+        `• Gordura: ${porcoesGordura} porções\n\n` +
+        `**Sugestão de distribuição:**\n\n` +
+        `🌅 **Pequeno-almoço** (25%):\n` +
+        `• ${Math.round(porcoesProteina * 0.25)}-${Math.round(porcoesProteina * 0.3)} proteína\n` +
+        `• ${Math.round(porcoesHidratos * 0.3)}-${Math.round(porcoesHidratos * 0.35)} hidratos\n` +
+        `• ${Math.round(porcoesGordura * 0.25)} gordura\n\n` +
+        `☀️ **Almoço** (35%):\n` +
+        `• ${Math.round(porcoesProteina * 0.35)} proteína\n` +
+        `• ${Math.round(porcoesHidratos * 0.35)}-${Math.round(porcoesHidratos * 0.4)} hidratos\n` +
+        `• ${Math.round(porcoesGordura * 0.3)} gordura\n\n` +
+        `🌙 **Jantar** (30%):\n` +
+        `• ${Math.round(porcoesProteina * 0.35)} proteína\n` +
+        `• ${Math.round(porcoesHidratos * 0.25)}-${Math.round(porcoesHidratos * 0.3)} hidratos\n` +
+        `• ${Math.round(porcoesGordura * 0.3)} gordura\n\n` +
+        `${faseRestritiva ? '⚠️ Nota: Estás numa fase com hidratos reduzidos. Prioriza proteína e gordura boas.' : ''}`;
+    }
+
+    // Macros iguais?
+    if (texto.match(/(igual|mesmo|identic).*(macro|refeic|almoco|jantar|pequeno)/i) ||
+        texto.match(/macro.*(igual|mesmo)/i)) {
+      return `Não, os macros NÃO precisam ser iguais em todas as refeições! 📊\n\n` +
+        `O importante é atingires os totais diários:\n` +
+        `• Proteína: ${porcoesProteina} porções\n` +
+        `• Hidratos: ${porcoesHidratos} porções\n` +
+        `• Gordura: ${porcoesGordura} porções\n\n` +
+        `**O que deve ser consistente:**\n` +
+        `✅ Proteína em TODAS as refeições (para saciedade)\n\n` +
+        `**O que pode variar:**\n` +
+        `⚖️ Hidratos - mais de manhã/almoço, menos ao jantar\n` +
+        `⚖️ Gordura - pode compensar quando reduces hidratos\n\n` +
+        `${diasTreino.length > 0 ? `Nos teus dias de treino (${diasTreino.map(d => ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d-1]).join(', ')}), adiciona +1 porção de hidratos.` : ''}`;
+    }
+
+    // ========== PEQUENO-ALMOÇO ==========
+    if (texto.match(/pequeno.?almoco|manha|pa\b|breakfast/)) {
+      const protPA = Math.round(porcoesProteina * 0.25);
+      const hidPA = Math.round(porcoesHidratos * 0.3);
+      const gorPA = Math.round(porcoesGordura * 0.25);
+
+      let sugestoes = '';
+      if (faseRestritiva) {
+        sugestoes = `**Sugestões para a tua fase:**\n` +
+          `• Ovos mexidos com espinafres e queijo\n` +
+          `• Iogurte grego com sementes e canela\n` +
+          `• Omelete de vegetais\n\n` +
+          `⚠️ Evita: cereais açucarados, pão branco, sumos`;
+      } else {
+        sugestoes = `**Sugestões:**\n` +
+          `• Papas de aveia com proteína e frutos vermelhos\n` +
+          `• Ovos + tosta integral + abacate\n` +
+          `• Iogurte grego + granola + banana`;
+      }
+
+      return `Para o TEU pequeno-almoço, recomendo:\n\n` +
+        `🥩 Proteína: ${protPA}-${protPA + 0.5} porções\n` +
+        `🍚 Hidratos: ${hidPA}-${hidPA + 0.5} porções\n` +
+        `🥑 Gordura: ${gorPA}-${gorPA + 0.5} porções\n\n` +
+        sugestoes;
+    }
+
+    // ========== ALMOÇO ==========
+    if (texto.match(/\balmoco\b|meio.?dia|lunch/)) {
+      const protAlm = Math.round(porcoesProteina * 0.35);
+      const hidAlm = Math.round(porcoesHidratos * 0.35);
+      const gorAlm = Math.round(porcoesGordura * 0.3);
+
+      return `Para o TEU almoço (a refeição principal):\n\n` +
+        `🥩 Proteína: ${protAlm}-${protAlm + 0.5} porções (~${protAlm * 100}g carne/peixe)\n` +
+        `🥬 Vegetais: À vontade! Metade do prato\n` +
+        `🍚 Hidratos: ${hidAlm}-${hidAlm + 0.5} porções\n` +
+        `🥑 Gordura: ${gorAlm} porções (azeite na salada)\n\n` +
+        `${faseRestritiva ?
+          '**Na tua fase actual:**\nReduz os hidratos e aumenta vegetais e proteína. Ex: Salada grande com frango grelhado e azeite.' :
+          '**Sugestões:**\nFrango/peixe + arroz/batata + legumes salteados'}\n\n` +
+        `${evitar.length > 0 ? `⚠️ Evita: ${evitar.slice(0, 3).join(', ')}` : ''}`;
+    }
+
+    // ========== JANTAR ==========
+    if (texto.match(/jantar|noite|dinner/)) {
+      const protJan = Math.round(porcoesProteina * 0.35);
+      const hidJan = Math.round(porcoesHidratos * 0.25);
+
+      return `Para o TEU jantar (mais leve):\n\n` +
+        `🥩 Proteína: ${protJan} porções (essencial!)\n` +
+        `🥬 Vegetais: Abundantes\n` +
+        `🍚 Hidratos: ${hidJan}-${hidJan + 0.5} porções (menos que ao almoço)\n` +
+        `🥑 Gordura: ${Math.round(porcoesGordura * 0.3)} porções\n\n` +
+        `${faseRestritiva ?
+          '**Para a tua fase:**\nPeixe grelhado + salada grande OU sopa de legumes + ovo' :
+          '**Sugestões:**\nPeixe ao forno com vegetais OU salada com proteína'}\n\n` +
+        `💡 Janta 2-3h antes de dormir para melhor digestão e sono.`;
+    }
+
+    // ========== FRUTA ==========
+    if (texto.match(/fruta|frutos|banana|maca|laranja|morango/)) {
+      if (faseRestritiva || evitar.some(e => e.toLowerCase().includes('fruta'))) {
+        return `⚠️ ${nome ? nome + ', na' : 'Na'} tua fase actual (${fase}), a fruta está limitada.\n\n` +
+          `**Porquê?**\nA fruta contém frutose (açúcar) que pode dificultar os teus objectivos nesta fase.\n\n` +
+          `**O que podes comer:**\n` +
+          `• Frutos vermelhos em pequena quantidade (morangos, mirtilos) - têm menos açúcar\n` +
+          `• Abacate (tecnicamente é fruta, mas é gordura boa)\n` +
+          `• Limão/lima para temperar\n\n` +
+          `**Evitar por agora:**\n` +
+          `• Banana, manga, uvas (muito açúcar)\n` +
+          `• Sumos de fruta (mesmo naturais)\n\n` +
+          `Quando avançares de fase, poderás reintroduzir mais fruta. Por agora, foca nos vegetais para fibra e vitaminas.`;
+      } else {
+        return `A fruta faz parte do teu plano! 🍎\n\n` +
+          `**Recomendação:** 2-3 peças por dia\n\n` +
+          `**Melhores opções:**\n` +
+          `• Frutos vermelhos (baixo açúcar, muitos antioxidantes)\n` +
+          `• Maçã, pêra (fibra, saciam)\n` +
+          `• Citrinos (vitamina C)\n\n` +
+          `**Melhores momentos:**\n` +
+          `• Pequeno-almoço (com proteína)\n` +
+          `• Lanche (com iogurte ou nozes)\n` +
+          `• Pós-treino (ajuda na recuperação)\n\n` +
+          `Evita comer fruta sozinha - combina sempre com proteína ou gordura para evitar picos de açúcar no sangue.`;
+      }
+    }
+
+    // ========== O QUE COMER / O QUE EVITAR ==========
+    if (texto.match(/o que (posso |devo )?(comer|coma)|permitido|pode comer/)) {
+      return `${nome ? nome + ', no' : 'No'} teu plano actual (Fase: ${fase}):\n\n` +
+        `✅ **PRIORIZAR:**\n${priorizar.length > 0 ? priorizar.map(p => `• ${p}`).join('\n') : '• Proteínas magras\n• Vegetais variados\n• Gorduras boas (azeite, abacate)'}\n\n` +
+        `❌ **EVITAR:**\n${evitar.length > 0 ? evitar.map(e => `• ${e}`).join('\n') : '• Açúcar refinado\n• Processados\n• Álcool'}\n\n` +
+        `${dicas.length > 0 ? `💡 **DICAS:**\n${dicas.map(d => `• ${d}`).join('\n')}` : ''}\n\n` +
+        `Tens alguma dúvida específica sobre um alimento?`;
+    }
+
+    if (texto.match(/evitar|n[aã]o (posso|devo)|proibido|restri/)) {
+      return `${nome ? nome + ', na' : 'Na'} tua fase actual deves EVITAR:\n\n` +
+        `${evitar.length > 0 ? evitar.map(e => `❌ ${e}`).join('\n') : '❌ Açúcar refinado\n❌ Alimentos processados\n❌ Farinhas brancas\n❌ Álcool\n❌ Refrigerantes'}\n\n` +
+        `${faseRestritiva ? '⚠️ Estás numa fase mais restritiva, por isso é importante seguir estas indicações para ver resultados.\n\n' : ''}` +
+        `Se tiveres uma ocasião especial, fala comigo antes para planearmos!`;
+    }
+
+    // ========== PROTEÍNA ==========
+    if (texto.match(/proteina|prote[íi]na/)) {
+      return `Sobre proteína no TEU plano:\n\n` +
+        `📊 **A tua meta:** ${porcoesProteina} porções/dia\n` +
+        `(1 porção = ~20g proteína = palma da mão)\n\n` +
+        `**Fontes recomendadas:**\n` +
+        `• Frango/peru: 100g = 1 porção\n` +
+        `• Peixe: 100g = 1 porção\n` +
+        `• Ovos: 2-3 ovos = 1 porção\n` +
+        `• Iogurte grego: 170g = ~0.75 porção\n\n` +
+        `**Distribuição:**\n` +
+        `• Peq. almoço: ${Math.round(porcoesProteina * 0.25)} porções\n` +
+        `• Almoço: ${Math.round(porcoesProteina * 0.35)} porções\n` +
+        `• Jantar: ${Math.round(porcoesProteina * 0.35)} porções\n\n` +
+        `A proteína é ESSENCIAL em todas as refeições para manter saciedade e preservar massa muscular.`;
+    }
+
+    // ========== HIDRATOS ==========
+    if (texto.match(/hidrato|carbo|carboidrato/)) {
+      return `Sobre hidratos no TEU plano:\n\n` +
+        `📊 **A tua meta:** ${porcoesHidratos} porções/dia\n` +
+        `${diasTreino.length > 0 ? `(+1 porção nos dias de treino: ${diasTreino.map(d => ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d-1]).join(', ')})` : ''}\n\n` +
+        `**Fontes permitidas:**\n` +
+        `${faseRestritiva ?
+          '• Vegetais (principal fonte nesta fase)\n• Leguminosas em moderação\n• Frutos vermelhos (pequenas quantidades)' :
+          '• Aveia\n• Arroz integral\n• Batata doce\n• Leguminosas\n• Fruta'}\n\n` +
+        `**Melhores momentos:**\n` +
+        `• Pequeno-almoço (energia para o dia)\n` +
+        `• Almoço (especialmente antes de treinar)\n` +
+        `• Menos ao jantar\n\n` +
+        `${faseRestritiva ? '⚠️ Estás numa fase com hidratos reduzidos - isto é intencional para potenciar a perda de gordura.' : ''}`;
+    }
+
+    // ========== GORDURA ==========
+    if (texto.match(/gordura|l[íi]pido|azeite|abacate|nozes|oleagino/)) {
+      return `Sobre gordura no TEU plano:\n\n` +
+        `📊 **A tua meta:** ${porcoesGordura} porções/dia\n` +
+        `(1 porção = 1 polegar = ~7g gordura)\n\n` +
+        `**Fontes BOAS (priorizar):**\n` +
+        `• Azeite extra virgem (1 colher sopa = 2 porções)\n` +
+        `• Abacate (1/4 = 2 porções)\n` +
+        `• Frutos secos (punhado = 2 porções)\n` +
+        `• Sementes (chia, linhaça)\n` +
+        `• Peixes gordos (salmão, sardinha)\n\n` +
+        `**Limitar:**\n` +
+        `• Manteiga\n• Queijos gordos\n\n` +
+        `**Evitar:**\n` +
+        `• Óleos refinados\n• Fritos\n• Gorduras trans\n\n` +
+        `Gordura boa é essencial - não tenhas medo dela!`;
+    }
+
+    // ========== JEJUM ==========
+    if (texto.match(/jejum|fasting|janela/)) {
+      if (aceitaJejum) {
+        const horasJejum = protocoloJejum === '16_8' ? 16 : protocoloJejum === '18_6' ? 18 : 16;
+        return `Sobre o TEU jejum intermitente:\n\n` +
+          `📊 **Protocolo:** ${protocoloJejum.replace('_', ':')}\n` +
+          `• ${horasJejum}h de jejum\n` +
+          `• ${24 - horasJejum}h de janela alimentar\n\n` +
+          `**Durante o jejum PODES:**\n` +
+          `• Água (obrigatório!)\n` +
+          `• Chá sem açúcar\n` +
+          `• Café preto (sem leite)\n\n` +
+          `**Durante o jejum EVITA:**\n` +
+          `• Qualquer alimento\n` +
+          `• Bebidas com calorias\n` +
+          `• Pastilhas/rebuçados\n\n` +
+          `💡 Se sentires muita fome, bebe água ou chá. O corpo adapta-se em 1-2 semanas.`;
+      } else {
+        return `O teu plano actual não inclui jejum intermitente.\n\n` +
+          `Se tens interesse em experimentar, podemos discutir isso numa consulta. O jejum não é para todos e deve ser adaptado ao teu estilo de vida.`;
+      }
+    }
+
+    // ========== TREINO ==========
+    if (texto.match(/treino|exerc[íi]cio|muscula|academia|gin[áa]sio/)) {
+      if (diasTreino.length > 0) {
+        return `Sobre treino e alimentação:\n\n` +
+          `📊 **Os teus dias de treino:** ${diasTreino.map(d => ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][d-1]).join(', ')}\n\n` +
+          `**Nesses dias, tens:**\n` +
+          `• +1 porção de hidratos (total: ${porcoesHidratos + 1})\n\n` +
+          `**Antes do treino (1-2h):**\n` +
+          `• Hidrato + proteína leve\n` +
+          `• Ex: Banana + iogurte\n\n` +
+          `**Depois do treino (até 1h):**\n` +
+          `• Proteína + hidrato\n` +
+          `• Ou uma refeição principal completa\n\n` +
+          `Se treinas em jejum, quebra o jejum logo após com proteína.`;
+      } else {
+        return `Ainda não configuraste os teus dias de treino no plano.\n\n` +
+          `Vai a "Meu Plano" no dashboard para definir os dias em que treinas. Isto permite-me ajustar os teus hidratos automaticamente.\n\n` +
+          `Queres que te explique como a alimentação deve variar nos dias de treino?`;
+      }
+    }
+
+    // ========== ÁGUA ==========
+    if (texto.match(/[áa]gua|beber|hidrat|litro/)) {
+      return `Sobre hidratação:\n\n` +
+        `📊 **Meta diária:** Mínimo 2L de água\n\n` +
+        `**Estratégias:**\n` +
+        `• 1 copo ao acordar (antes de qualquer coisa)\n` +
+        `• 1 copo antes de cada refeição\n` +
+        `• Garrafa sempre à vista\n` +
+        `• Usa a app para registar!\n\n` +
+        `**Se treinas:** +500ml por hora de exercício\n\n` +
+        `**Sinais de desidratação:**\n` +
+        `• Urina escura\n` +
+        `• Sede (já estás desidratada!)\n` +
+        `• Fadiga, dor de cabeça\n\n` +
+        `A água é fundamental para a perda de peso - ajuda na digestão e reduz retenção de líquidos.`;
+    }
+
+    // ========== SONO ==========
+    if (texto.match(/sono|dormir|descanso|ins[óo]nia|cansa/)) {
+      return `O sono é CRUCIAL para os teus resultados! 😴\n\n` +
+        `**Porque importa:**\n` +
+        `• Regula hormonas da fome (grelina/leptina)\n` +
+        `• Recuperação muscular\n` +
+        `• Menos cravings no dia seguinte\n` +
+        `• Melhores decisões alimentares\n\n` +
+        `**Meta:** 7-8 horas por noite\n\n` +
+        `**Dicas:**\n` +
+        `• Horário consistente (mesmo ao fim-de-semana)\n` +
+        `• Evita ecrãs 1h antes\n` +
+        `• Jantar leve, 2-3h antes de dormir\n` +
+        `• Evita cafeína após 14h\n` +
+        `• Quarto fresco e escuro\n\n` +
+        `Dormir mal pode sabotar todo o resto do plano!`;
+    }
+
+    // ========== FOME / CRAVINGS ==========
+    if (texto.match(/fome|craving|vontade|desejo|saciar|saciedade|apetite/)) {
+      return `Para controlar fome e cravings:\n\n` +
+        `**Estratégias:**\n` +
+        `• Proteína em TODAS as refeições (${porcoesProteina} porções/dia)\n` +
+        `• Muitos vegetais (fibra = saciedade)\n` +
+        `• Bebe água antes de comer\n` +
+        `• Come devagar (20 min mínimo)\n` +
+        `• Não saltes refeições!\n\n` +
+        `**Quando tens cravings:**\n` +
+        `• Bebe água ou chá primeiro\n` +
+        `• Espera 15-20 minutos\n` +
+        `• Pergunta: é fome real ou emocional?\n\n` +
+        `**Snacks seguros:**\n` +
+        `• Iogurte grego\n` +
+        `• Vegetais crus\n` +
+        `• Punhado de nozes\n\n` +
+        `Se tens MUITA fome consistentemente, o plano pode precisar de ajuste. Fala comigo!`;
+    }
+
+    // ========== MOTIVAÇÃO ==========
+    if (texto.match(/motiv|desanima|dif[íi]cil|cansar|desistir|conseguir|for[çc]a/)) {
+      return `${nome ? nome + ', entendo' : 'Entendo'} que por vezes é difícil. Mas estás aqui, e isso já mostra compromisso! 💚\n\n` +
+        `**Lembra-te:**\n` +
+        `• Progresso não é linear - haverá dias melhores e piores\n` +
+        `• Consistência > Perfeição\n` +
+        `• Cada refeição é uma nova oportunidade\n\n` +
+        `**O que te posso perguntar:**\n` +
+        `• O que está a ser mais difícil para ti?\n` +
+        `• Há alguma situação específica que te desafia?\n` +
+        `• Estás a dormir bem? (Afecta muito a motivação)\n\n` +
+        `Conta-me mais sobre o que sentes - posso ajudar-te com estratégias específicas.`;
+    }
+
+    // ========== PESO ==========
+    if (texto.match(/peso|emagrec|perder|balanca|kilo|kg/)) {
+      const pesoInicial = client?.peso_inicial || 0;
+      const pesoActual = client?.peso_actual || pesoInicial;
+      const pesoMeta = client?.peso_meta || pesoActual;
+      const perdido = pesoInicial - pesoActual;
+
+      return `Sobre o teu progresso de peso:\n\n` +
+        `📊 **Os teus números:**\n` +
+        `• Peso inicial: ${pesoInicial}kg\n` +
+        `• Peso actual: ${pesoActual}kg\n` +
+        `• Meta: ${pesoMeta}kg\n` +
+        `${perdido > 0 ? `• Já perdeste: ${perdido.toFixed(1)}kg! 🎉\n` : ''}\n` +
+        `**Expectativas realistas:**\n` +
+        `• 0.5-1kg por semana é saudável\n` +
+        `• O peso flutua diariamente (água, hormonas)\n` +
+        `• Mede também cintura e como a roupa fica\n\n` +
+        `**Dica:** Não te peses todos os dias. Uma vez por semana, de manhã em jejum, é suficiente.`;
+    }
+
+    // ========== SAUDAÇÕES ==========
+    if (texto.match(/^(ol[aá]|oi|bom dia|boa tarde|boa noite)\b/)) {
+      return `Olá${nome ? ' ' + nome : ''}! 👋\n\nComo posso ajudar-te hoje?\n\n` +
+        `Posso esclarecer dúvidas sobre:\n` +
+        `• O teu plano e porções\n` +
+        `• Distribuição de macros\n` +
+        `• O que comer e evitar\n` +
+        `• Treino e alimentação\n` +
+        `• Ou qualquer outra questão nutricional!`;
+    }
+
+    // ========== RESPOSTA PADRÃO (com contexto) ==========
+    return `${nome ? nome + ', posso' : 'Posso'} ajudar-te com questões sobre o teu plano! 💚\n\n` +
+      `**O teu plano actual (${fase}):**\n` +
+      `• ${porcoesProteina} porções proteína\n` +
+      `• ${porcoesHidratos} porções hidratos\n` +
+      `• ${porcoesGordura} porções gordura\n` +
+      `• ~${calorias} kcal/dia\n\n` +
+      `Pergunta-me sobre:\n` +
+      `• Como distribuir as refeições\n` +
+      `• O que comer e evitar\n` +
+      `• Dúvidas sobre alimentos específicos\n` +
+      `• Treino e alimentação\n` +
+      `• Estratégias para fome/cravings`;
   };
 
   const enviarMensagem = async () => {
@@ -267,10 +494,9 @@ export default function ChatCoach() {
     setMensagens(novasMsgs);
     setNovaMensagem('');
 
-    // Resposta da Vivianne com delay natural
+    // Resposta da Vivianne
     setTimeout(() => {
-      const intencao = detectarIntencao(textoEnviado);
-      const resposta = getRespostaVivianne(intencao, client);
+      const resposta = gerarRespostaVivianne(textoEnviado);
 
       const msgCoach = {
         id: Date.now() + 1,
@@ -281,11 +507,9 @@ export default function ChatCoach() {
 
       const msgsFinais = [...novasMsgs, msgCoach];
       setMensagens(msgsFinais);
-
-      // Guardar no localStorage
       localStorage.setItem(`vitalis-chat-${userId}`, JSON.stringify(msgsFinais));
       setEnviando(false);
-    }, 800 + Math.random() * 1200);
+    }, 600 + Math.random() * 800);
   };
 
   const limparConversa = () => {
@@ -294,7 +518,7 @@ export default function ChatCoach() {
     const nome = client?.nome_completo?.split(' ')[0] || 'querida';
     const boasVindas = {
       id: Date.now(),
-      texto: `Olá ${nome}! 👋\n\nSou a Vivianne, a tua coach de nutrição pessoal. Estou aqui para te ajudar com:\n\n📊 Dúvidas sobre macros e distribuição\n🍽️ Ideias de refeições\n💪 Motivação e apoio\n💧 Dicas de hidratação\n🏋️ Alimentação e treino\n\nPergunta-me o que quiseres! Como posso ajudar-te hoje? 💚`,
+      texto: `Olá ${nome}! 👋\n\nSou a Vivianne, a tua nutricionista. Estou aqui para te ajudar a entender melhor o teu plano e esclarecer qualquer dúvida.\n\nComo posso ajudar-te hoje?`,
       remetente: 'coach',
       timestamp: new Date().toISOString()
     };
@@ -319,7 +543,6 @@ export default function ChatCoach() {
     return data.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' });
   };
 
-  // Agrupar mensagens por data
   const mensagensAgrupadas = mensagens.reduce((acc, msg) => {
     const data = formatarData(msg.timestamp);
     if (!acc[data]) acc[data] = [];
@@ -332,7 +555,7 @@ export default function ChatCoach() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
         <div className="text-center">
           <div className="text-5xl mb-4 animate-pulse">💬</div>
-          <p className="text-[#6B5C4C]">A carregar chat...</p>
+          <p className="text-[#6B5C4C]">A carregar...</p>
         </div>
       </div>
     );
@@ -354,7 +577,7 @@ export default function ChatCoach() {
               <h1 className="font-bold">Vivianne</h1>
               <p className="text-white/70 text-sm flex items-center gap-1">
                 <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                Coach de Nutrição
+                Nutricionista
               </p>
             </div>
             <button
@@ -373,14 +596,12 @@ export default function ChatCoach() {
         <div className="max-w-2xl mx-auto space-y-4">
           {Object.entries(mensagensAgrupadas).map(([data, msgs]) => (
             <div key={data}>
-              {/* Separador de data */}
               <div className="flex justify-center my-4">
                 <span className="px-3 py-1 bg-white/80 rounded-full text-xs text-gray-500">
                   {data}
                 </span>
               </div>
 
-              {/* Mensagens do dia */}
               {msgs.map((msg) => (
                 <div
                   key={msg.id}
@@ -425,11 +646,10 @@ export default function ChatCoach() {
       <div className="bg-white/50 px-4 py-2 overflow-x-auto">
         <div className="max-w-2xl mx-auto flex gap-2">
           {[
-            { texto: 'Como distribuir macros?', emoji: '📊' },
-            { texto: 'Fontes de proteína', emoji: '🥩' },
-            { texto: 'Quando comer hidratos?', emoji: '🍚' },
-            { texto: 'Ideias de refeições', emoji: '🍽️' },
-            { texto: 'Preciso de motivação', emoji: '💪' }
+            { texto: 'Como distribuir as refeições?', emoji: '📊' },
+            { texto: 'O que posso comer?', emoji: '✅' },
+            { texto: 'E a fruta?', emoji: '🍎' },
+            { texto: 'Tenho fome', emoji: '😋' },
           ].map((quick, i) => (
             <button
               key={i}

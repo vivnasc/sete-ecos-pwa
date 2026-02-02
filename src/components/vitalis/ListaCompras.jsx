@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link } from 'react-router-dom';
 
-// Categorias de alimentos para organizar a lista
+// Categorias de alimentos
 const CATEGORIAS = {
   proteinas: { nome: 'Proteínas', icone: '🥩', cor: 'red' },
   laticinios: { nome: 'Laticínios', icone: '🥛', cor: 'blue' },
@@ -10,56 +10,20 @@ const CATEGORIAS = {
   frutas: { nome: 'Frutas', icone: '🍎', cor: 'pink' },
   cereais: { nome: 'Cereais e Grãos', icone: '🌾', cor: 'yellow' },
   gorduras: { nome: 'Gorduras Saudáveis', icone: '🥑', cor: 'emerald' },
-  temperos: { nome: 'Temperos e Ervas', icone: '🌿', cor: 'lime' },
-  bebidas: { nome: 'Bebidas', icone: '🥤', cor: 'cyan' },
+  temperos: { nome: 'Temperos', icone: '🌿', cor: 'lime' },
   outros: { nome: 'Outros', icone: '🛒', cor: 'gray' }
-};
-
-// Mapeamento de alimentos para categorias
-const ALIMENTOS_CATEGORIA = {
-  // Proteínas
-  'frango': 'proteinas', 'peito de frango': 'proteinas', 'peru': 'proteinas',
-  'carne': 'proteinas', 'vaca': 'proteinas', 'porco': 'proteinas',
-  'peixe': 'proteinas', 'salmão': 'proteinas', 'atum': 'proteinas', 'bacalhau': 'proteinas',
-  'camarão': 'proteinas', 'ovo': 'proteinas', 'ovos': 'proteinas',
-  'tofu': 'proteinas', 'seitan': 'proteinas',
-  // Laticínios
-  'leite': 'laticinios', 'iogurte': 'laticinios', 'queijo': 'laticinios',
-  'natas': 'laticinios', 'manteiga': 'laticinios', 'requeijão': 'laticinios',
-  'skyr': 'laticinios', 'kefir': 'laticinios',
-  // Vegetais
-  'alface': 'vegetais', 'espinafre': 'vegetais', 'couve': 'vegetais',
-  'brócolos': 'vegetais', 'cenoura': 'vegetais', 'tomate': 'vegetais',
-  'pepino': 'vegetais', 'pimento': 'vegetais', 'cebola': 'vegetais',
-  'alho': 'vegetais', 'cogumelos': 'vegetais', 'abobrinha': 'vegetais',
-  'beringela': 'vegetais', 'feijão verde': 'vegetais',
-  // Frutas
-  'maçã': 'frutas', 'banana': 'frutas', 'laranja': 'frutas',
-  'morango': 'frutas', 'mirtilos': 'frutas', 'framboesas': 'frutas',
-  'abacate': 'gorduras', 'limão': 'frutas', 'kiwi': 'frutas',
-  // Cereais
-  'arroz': 'cereais', 'massa': 'cereais', 'pão': 'cereais',
-  'aveia': 'cereais', 'quinoa': 'cereais', 'batata': 'cereais',
-  'batata doce': 'cereais', 'farinha': 'cereais',
-  // Gorduras
-  'azeite': 'gorduras', 'óleo': 'gorduras', 'nozes': 'gorduras',
-  'amêndoas': 'gorduras', 'sementes': 'gorduras', 'manteiga amendoim': 'gorduras',
-  // Temperos
-  'sal': 'temperos', 'pimenta': 'temperos', 'oregãos': 'temperos',
-  'manjericão': 'temperos', 'salsa': 'temperos', 'coentros': 'temperos',
-  'canela': 'temperos', 'gengibre': 'temperos',
 };
 
 export default function ListaCompras() {
   const [loading, setLoading] = useState(true);
   const [plano, setPlano] = useState(null);
+  const [planoCompleto, setPlanoCompleto] = useState(null);
   const [itens, setItens] = useState([]);
   const [itensComprados, setItensComprados] = useState({});
-  const [semana, setSemana] = useState('atual');
+  const [faseRestritiva, setFaseRestritiva] = useState(false);
 
   useEffect(() => {
     loadListaCompras();
-    // Carregar itens já comprados do localStorage
     const comprados = JSON.parse(localStorage.getItem('vitalis-lista-comprados') || '{}');
     setItensComprados(comprados);
   }, []);
@@ -90,7 +54,25 @@ export default function ListaCompras() {
 
         if (planoData) {
           setPlano(planoData);
-          gerarListaCompras(planoData);
+
+          // Carregar regras da fase
+          const { data: planoDia } = await supabase.rpc('vitalis_plano_do_dia', {
+            p_user_id: userData.id
+          });
+
+          if (planoDia && !planoDia.erro) {
+            setPlanoCompleto(planoDia);
+
+            // Verificar se é fase restritiva
+            const fase = planoDia.fase?.nome?.toLowerCase() || '';
+            const porcoesHidratos = planoData.porcoes_hidratos || 3;
+            const isRestritiva = fase.includes('ceto') || fase.includes('low') || porcoesHidratos <= 2;
+            setFaseRestritiva(isRestritiva);
+
+            gerarListaCompras(planoData, planoDia, isRestritiva);
+          } else {
+            gerarListaCompras(planoData, null, false);
+          }
         }
       }
     } catch (error) {
@@ -100,57 +82,101 @@ export default function ListaCompras() {
     }
   };
 
-  const gerarListaCompras = (plano) => {
-    // Extrair ingredientes do plano
+  const gerarListaCompras = (plano, planoDia, isRestritiva) => {
     const ingredientes = [];
+    const evitar = planoDia?.regras?.evitar || [];
 
-    // Lista base baseada nas porções do plano
+    // Função para verificar se item deve ser evitado
+    const deveEvitar = (item) => {
+      const itemLower = item.toLowerCase();
+      return evitar.some(e => itemLower.includes(e.toLowerCase()) || e.toLowerCase().includes(itemLower));
+    };
+
+    // Porções do plano
     const porcoesProteina = plano.porcoes_proteina || 6;
     const porcoesHidratos = plano.porcoes_hidratos || 3;
     const porcoesGordura = plano.porcoes_gordura || 8;
 
-    // Proteínas (20g por porção, 7 dias)
+    // ========== PROTEÍNAS ==========
     const proteinaSemanal = porcoesProteina * 7;
     ingredientes.push(
-      { nome: 'Peito de Frango', quantidade: `${Math.round(proteinaSemanal * 20 * 0.4 / 100)}`, unidade: 'kg', categoria: 'proteinas' },
-      { nome: 'Ovos', quantidade: `${Math.round(proteinaSemanal * 0.3)}`, unidade: 'unidades', categoria: 'proteinas' },
-      { nome: 'Peixe (salmão/pescada)', quantidade: `${Math.round(proteinaSemanal * 20 * 0.2 / 100)}`, unidade: 'kg', categoria: 'proteinas' },
-      { nome: 'Iogurte Grego/Skyr', quantidade: `${Math.round(proteinaSemanal * 0.2)}`, unidade: 'unidades', categoria: 'laticinios' }
+      { nome: 'Peito de Frango', quantidade: `${Math.max(1, Math.round(proteinaSemanal * 20 * 0.35 / 1000))}`, unidade: 'kg', categoria: 'proteinas' },
+      { nome: 'Ovos', quantidade: `${Math.round(proteinaSemanal * 0.3) * 2}`, unidade: 'unidades', categoria: 'proteinas' },
+      { nome: 'Peixe (salmão ou pescada)', quantidade: `${Math.max(0.5, Math.round(proteinaSemanal * 20 * 0.2 / 1000 * 10) / 10)}`, unidade: 'kg', categoria: 'proteinas' }
     );
 
-    // Hidratos (30g por porção)
-    const hidratosSemanal = porcoesHidratos * 7;
+    // ========== LATICÍNIOS ==========
     ingredientes.push(
-      { nome: 'Arroz/Quinoa', quantidade: `${Math.round(hidratosSemanal * 30 * 0.3 / 1000)}`, unidade: 'kg', categoria: 'cereais' },
-      { nome: 'Batata Doce', quantidade: `${Math.round(hidratosSemanal * 30 * 0.3 / 100)}`, unidade: 'kg', categoria: 'cereais' },
-      { nome: 'Aveia', quantidade: `${Math.round(hidratosSemanal * 30 * 0.2 / 100)}`, unidade: 'kg', categoria: 'cereais' },
-      { nome: 'Fruta Variada', quantidade: `${Math.round(hidratosSemanal * 0.3)}`, unidade: 'peças', categoria: 'frutas' }
+      { nome: 'Iogurte Grego Natural', quantidade: `${Math.round(proteinaSemanal * 0.15)}`, unidade: 'unidades', categoria: 'laticinios' },
+      { nome: 'Queijo Fresco', quantidade: '500', unidade: 'g', categoria: 'laticinios' }
     );
 
-    // Gorduras (7g por porção)
-    const gorduraSemanal = porcoesGordura * 7;
+    // ========== HIDRATOS (se não restritiva) ==========
+    if (!isRestritiva && porcoesHidratos > 2) {
+      ingredientes.push(
+        { nome: 'Arroz Integral', quantidade: '500', unidade: 'g', categoria: 'cereais' },
+        { nome: 'Batata Doce', quantidade: '1', unidade: 'kg', categoria: 'cereais' },
+        { nome: 'Aveia', quantidade: '500', unidade: 'g', categoria: 'cereais' }
+      );
+
+      // Fruta - APENAS se não restritiva
+      if (!deveEvitar('fruta')) {
+        ingredientes.push(
+          { nome: 'Maçãs', quantidade: '6', unidade: 'unidades', categoria: 'frutas' },
+          { nome: 'Bananas', quantidade: '6', unidade: 'unidades', categoria: 'frutas' }
+        );
+      }
+    } else {
+      // Fase restritiva - hidratos limitados
+      ingredientes.push(
+        { nome: 'Couve-flor (substituto arroz)', quantidade: '2', unidade: 'unidades', categoria: 'vegetais' }
+      );
+
+      // Apenas frutos vermelhos em pequena quantidade
+      if (!deveEvitar('fruta')) {
+        ingredientes.push(
+          { nome: 'Frutos Vermelhos (morangos/mirtilos)', quantidade: '250', unidade: 'g', categoria: 'frutas', nota: 'Consumo moderado' }
+        );
+      }
+    }
+
+    // ========== VEGETAIS (sempre necessários) ==========
+    ingredientes.push(
+      { nome: 'Brócolos', quantidade: '500', unidade: 'g', categoria: 'vegetais' },
+      { nome: 'Espinafres', quantidade: '300', unidade: 'g', categoria: 'vegetais' },
+      { nome: 'Tomate', quantidade: '1', unidade: 'kg', categoria: 'vegetais' },
+      { nome: 'Pepino', quantidade: '3', unidade: 'unidades', categoria: 'vegetais' },
+      { nome: 'Alface/Rúcula', quantidade: '2', unidade: 'embalagens', categoria: 'vegetais' },
+      { nome: 'Cebola', quantidade: '500', unidade: 'g', categoria: 'vegetais' },
+      { nome: 'Alho', quantidade: '2', unidade: 'cabeças', categoria: 'vegetais' },
+      { nome: 'Cogumelos', quantidade: '400', unidade: 'g', categoria: 'vegetais' }
+    );
+
+    // ========== GORDURAS ==========
     ingredientes.push(
       { nome: 'Azeite Extra Virgem', quantidade: '500', unidade: 'ml', categoria: 'gorduras' },
-      { nome: 'Abacate', quantidade: `${Math.round(gorduraSemanal * 0.2)}`, unidade: 'unidades', categoria: 'gorduras' },
-      { nome: 'Frutos Secos (nozes, amêndoas)', quantidade: `${Math.round(gorduraSemanal * 7 * 0.3 / 100)}`, unidade: 'kg', categoria: 'gorduras' }
+      { nome: 'Abacate', quantidade: `${Math.round(porcoesGordura * 0.2)}`, unidade: 'unidades', categoria: 'gorduras' },
+      { nome: 'Amêndoas ou Nozes', quantidade: '200', unidade: 'g', categoria: 'gorduras' }
     );
 
-    // Vegetais (sempre necessários)
+    // Se fase restritiva, adicionar mais gorduras boas
+    if (isRestritiva) {
+      ingredientes.push(
+        { nome: 'Sementes (chia ou linhaça)', quantidade: '200', unidade: 'g', categoria: 'gorduras' },
+        { nome: 'Manteiga de Amendoim (sem açúcar)', quantidade: '1', unidade: 'frasco', categoria: 'gorduras' }
+      );
+    }
+
+    // ========== TEMPEROS ==========
     ingredientes.push(
-      { nome: 'Legumes Variados (brócolos, espinafres)', quantidade: '2', unidade: 'kg', categoria: 'vegetais' },
-      { nome: 'Salada (alface, rúcula)', quantidade: '500', unidade: 'g', categoria: 'vegetais' },
-      { nome: 'Tomate', quantidade: '1', unidade: 'kg', categoria: 'vegetais' },
-      { nome: 'Cebola', quantidade: '500', unidade: 'g', categoria: 'vegetais' },
-      { nome: 'Alho', quantidade: '2', unidade: 'cabeças', categoria: 'vegetais' }
+      { nome: 'Limões', quantidade: '4', unidade: 'unidades', categoria: 'temperos' },
+      { nome: 'Ervas Aromáticas', quantidade: '1', unidade: 'embalagem', categoria: 'temperos' }
     );
 
-    // Extras
-    ingredientes.push(
-      { nome: 'Leite (ou bebida vegetal)', quantidade: '2', unidade: 'L', categoria: 'laticinios' },
-      { nome: 'Queijo fresco/cottage', quantidade: '500', unidade: 'g', categoria: 'laticinios' }
-    );
+    // Filtrar itens que devem ser evitados
+    const itensFiltrados = ingredientes.filter(item => !deveEvitar(item.nome));
 
-    setItens(ingredientes);
+    setItens(itensFiltrados);
   };
 
   const toggleComprado = (index) => {
@@ -165,16 +191,17 @@ export default function ListaCompras() {
   };
 
   const partilharLista = async () => {
+    const fase = planoCompleto?.fase?.nome || 'Actual';
     const listaTexto = Object.entries(
       itens.reduce((acc, item) => {
         const cat = CATEGORIAS[item.categoria]?.nome || 'Outros';
         if (!acc[cat]) acc[cat] = [];
-        acc[cat].push(`${item.nome}: ${item.quantidade} ${item.unidade}`);
+        acc[cat].push(`${item.nome}: ${item.quantidade} ${item.unidade}${item.nota ? ` (${item.nota})` : ''}`);
         return acc;
       }, {})
-    ).map(([cat, items]) => `\n${cat}:\n${items.map(i => `  - ${i}`).join('\n')}`).join('\n');
+    ).map(([cat, items]) => `\n${cat}:\n${items.map(i => `  • ${i}`).join('\n')}`).join('\n');
 
-    const texto = `Lista de Compras Vitalis\n${'='.repeat(25)}${listaTexto}`;
+    const texto = `Lista de Compras Vitalis\nFase: ${fase}\n${'='.repeat(25)}${listaTexto}\n\n💡 Lista personalizada para o teu plano!`;
 
     if (navigator.share) {
       try {
@@ -184,7 +211,7 @@ export default function ListaCompras() {
       }
     } else {
       navigator.clipboard.writeText(texto);
-      alert('Lista copiada para a área de transferência!');
+      alert('Lista copiada!');
     }
   };
 
@@ -205,7 +232,7 @@ export default function ListaCompras() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
         <div className="text-center">
           <div className="text-5xl mb-4 animate-pulse">🛒</div>
-          <p className="text-[#6B5C4C]">A gerar lista de compras...</p>
+          <p className="text-[#6B5C4C]">A gerar lista personalizada...</p>
         </div>
       </div>
     );
@@ -223,7 +250,9 @@ export default function ListaCompras() {
               </Link>
               <div>
                 <h1 className="text-xl font-bold">Lista de Compras</h1>
-                <p className="text-white/70 text-sm">Semana {semana === 'atual' ? 'Atual' : 'Próxima'}</p>
+                <p className="text-white/70 text-sm">
+                  {planoCompleto?.fase?.nome || 'Personalizada'} • {plano?.porcoes_proteina || 6}P {plano?.porcoes_hidratos || 3}H {plano?.porcoes_gordura || 8}G
+                </p>
               </div>
             </div>
             <button
@@ -251,21 +280,25 @@ export default function ListaCompras() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-4">
-        {/* Ações rápidas */}
-        <div className="flex gap-2">
-          <button
-            onClick={limparLista}
-            className="flex-1 py-2 bg-white rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors shadow"
-          >
-            🔄 Recomeçar
-          </button>
-          <button
-            onClick={() => setSemana(semana === 'atual' ? 'proxima' : 'atual')}
-            className="flex-1 py-2 bg-white rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors shadow"
-          >
-            📅 {semana === 'atual' ? 'Próxima Semana' : 'Semana Atual'}
-          </button>
-        </div>
+        {/* Aviso de fase restritiva */}
+        {faseRestritiva && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <p className="text-amber-800 text-sm font-medium">
+              ⚠️ Lista ajustada à tua fase actual
+            </p>
+            <p className="text-amber-700 text-xs mt-1">
+              Hidratos e frutas reduzidos conforme o teu plano.
+            </p>
+          </div>
+        )}
+
+        {/* Botão recomeçar */}
+        <button
+          onClick={limparLista}
+          className="w-full py-2 bg-white rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors shadow"
+        >
+          🔄 Limpar marcações
+        </button>
 
         {/* Lista por categoria */}
         {Object.entries(itensPorCategoria).map(([categoria, items]) => {
@@ -274,13 +307,13 @@ export default function ListaCompras() {
 
           return (
             <div key={categoria} className="bg-white rounded-2xl shadow-lg overflow-hidden">
-              <div className={`px-4 py-3 bg-${cat.cor}-50 border-b border-${cat.cor}-100 flex items-center justify-between`}>
+              <div className={`px-4 py-3 bg-${cat.cor}-50 border-b flex items-center justify-between`}>
                 <div className="flex items-center gap-2">
                   <span className="text-xl">{cat.icone}</span>
                   <span className="font-semibold text-gray-700">{cat.nome}</span>
                   <span className="text-xs text-gray-500">({items.length})</span>
                 </div>
-                {todosComprados && <span className="text-green-500">✓</span>}
+                {todosComprados && <span className="text-green-500 text-lg">✓</span>}
               </div>
 
               <div className="divide-y divide-gray-100">
@@ -303,6 +336,9 @@ export default function ListaCompras() {
                       <p className={`font-medium ${itensComprados[item.index] ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
                         {item.nome}
                       </p>
+                      {item.nota && (
+                        <p className="text-xs text-amber-600">{item.nota}</p>
+                      )}
                     </div>
                     <span className={`text-sm ${itensComprados[item.index] ? 'text-gray-400' : 'text-gray-500'}`}>
                       {item.quantidade} {item.unidade}
@@ -315,13 +351,13 @@ export default function ListaCompras() {
         })}
 
         {/* Dicas */}
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
-          <h3 className="font-semibold text-amber-800 mb-2">💡 Dicas de Compras</h3>
-          <ul className="text-sm text-amber-700 space-y-1">
+        <div className="bg-[#E8E4DC] border border-[#D5D0C8] rounded-2xl p-4">
+          <h3 className="font-semibold text-[#4A4035] mb-2">💡 Dicas para o teu plano</h3>
+          <ul className="text-sm text-[#6B5C4C] space-y-1">
             <li>• Compra vegetais frescos 2x por semana</li>
-            <li>• Verifica sempre as datas de validade</li>
-            <li>• Prefere produtos da época (mais baratos)</li>
-            <li>• Congela porções de proteína para a semana</li>
+            <li>• Congela as proteínas em porções individuais</li>
+            {faseRestritiva && <li>• Evita a zona dos cereais e doces</li>}
+            <li>• Lê sempre os rótulos (açúcares escondidos)</li>
           </ul>
         </div>
       </main>
