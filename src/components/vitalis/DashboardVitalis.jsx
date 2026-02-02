@@ -413,8 +413,9 @@ export default function DashboardVitalis() {
   }
 
   // Dias de treino
+  // getDay() retorna 0-6 (Domingo=0), mas o sistema usa 1-7 (Domingo=1)
   const diasTreino = plano?.dias_treino || [];
-  const diaAtual = new Date().getDay();
+  const diaAtual = new Date().getDay() + 1; // Converter para formato 1-7
   const ehDiaTreino = diasTreino.includes(diaAtual);
 
   if (loading) {

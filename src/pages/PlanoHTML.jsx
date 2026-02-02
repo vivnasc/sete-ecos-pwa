@@ -112,16 +112,36 @@ export default function PlanoHTML() {
     <>
       <style>{`
         @page { size: A4; margin: 0; }
-        @media print {
-          body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          .no-print { display: none !important; }
-          .page { page-break-after: always; page-break-inside: avoid; }
-          .page:last-child { page-break-after: auto; }
-        }
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #FAF7F2; color: #4A4035; }
-        .page { width: 210mm; min-height: 297mm; background: #FAF7F2; position: relative; overflow: hidden; margin: 0 auto; }
-        @media screen { .page { margin: 20px auto; box-shadow: 0 5px 30px rgba(0,0,0,0.15); } }
+        .page { width: 210mm; height: 297mm; min-height: 297mm; max-height: 297mm; background: #FAF7F2; position: relative; overflow: hidden; }
+        @media screen {
+          .page { margin: 20px auto; box-shadow: 0 5px 30px rgba(0,0,0,0.15); }
+        }
+        @media print {
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 210mm !important;
+            height: auto !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          .no-print { display: none !important; }
+          .page {
+            page-break-after: always !important;
+            page-break-inside: avoid !important;
+            width: 210mm !important;
+            height: 297mm !important;
+            min-height: 297mm !important;
+            max-height: 297mm !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+          }
+          .page:last-child { page-break-after: auto !important; }
+        }
       `}</style>
 
       {/* Botão flutuante */}
