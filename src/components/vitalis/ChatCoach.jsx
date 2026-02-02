@@ -159,8 +159,8 @@ export default function ChatCoach() {
         `🍚 ${hid}-${hid + 1} mãos concha de hidratos\n` +
         `🫒 ${gord}-${gord + 1} polegares de gordura\n\n` +
         `${faseRestritiva ?
-          `**Ideias para a tua fase:**\n• Ovos mexidos (2-3 ovos = ~1 palma)\n• Iogurte grego natural\n• Omelete com legumes` :
-          `**Ideias:**\n• Ovos + aveia\n• Iogurte com fruta\n• Omelete + tosta integral`}\n\n` +
+          `**Ideias para a tua fase:**\n• Ovos mexidos com bacon e queijo\n• Café keto (café + óleo coco + manteiga)\n• Omelete com cogumelos e abacate\n• Batido proteico (whey + leite amêndoa)\n• Iogurte grego com sementes` :
+          `**Ideias:**\n• Ovos com bacon ou fiambre\n• Batido de whey com aveia\n• Iogurte grego com fruta\n• Omelete + tosta integral`}\n\n` +
         `Lembra-te: a proteína de manhã ajuda a controlar a fome durante o dia.`;
     }
 
@@ -174,11 +174,14 @@ export default function ChatCoach() {
         `🥬 1-2 punhos de legumes (ou mais!)\n` +
         `🍚 ${hid}-${hid + 1} mãos concha de hidratos\n` +
         `🫒 ${Math.round(polegares * 0.3)} polegares de gordura\n\n` +
+        `**Exemplos de proteína:**\n` +
+        `• Bife de vaca, frango, peru\n` +
+        `• Salmão, pescada, atum\n` +
+        `• Costeletas de porco\n\n` +
         `**Como montar o prato:**\n` +
         `• Metade do prato = legumes\n` +
-        `• Um quarto = proteína\n` +
-        `• Um quarto = hidratos\n` +
-        `• Gordura = tempero (azeite) ou parte da proteína\n\n` +
+        `• Um quarto = proteína (cozinhada em ghee/azeite)\n` +
+        `• Um quarto = hidratos (se tiveres na fase)\n\n` +
         `${evitar.length > 0 ? `Lembra-te de evitar: ${evitar.slice(0, 2).join(', ')}` : ''}`;
     }
 
@@ -193,8 +196,8 @@ export default function ChatCoach() {
         `🍚 ${hid}-${hid + 1} mãos concha de hidratos (menos que ao almoço)\n` +
         `🫒 ${Math.round(polegares * 0.3)} polegares de gordura\n\n` +
         `${faseRestritiva ?
-          `**Na tua fase, ao jantar prioriza:**\n• Proteína + legumes\n• Reduzir ainda mais os hidratos\n• Sopa é uma boa opção` :
-          `**Dica:** O jantar deve ser mais leve que o almoço.`}\n\n` +
+          `**Ideias para a tua fase:**\n• Bife com cogumelos em manteiga\n• Salmão com legumes e azeite\n• Hambúrguer caseiro sem pão\n• Omelete com queijo e salada\n• Sopa cremosa com frango` :
+          `**Ideias:**\n• Peixe grelhado com batata doce\n• Frango ao forno com arroz\n• Carne estufada com legumes`}\n\n` +
         `Janta pelo menos 2-3h antes de dormir.`;
     }
 
@@ -203,10 +206,11 @@ export default function ChatCoach() {
       return `Sobre a proteína no teu plano:\n\n` +
         `🖐️ **A tua meta: ${palmas} palmas por dia**\n\n` +
         `**Uma palma equivale a:**\n` +
-        `• Peito de frango (tamanho da palma)\n` +
-        `• Peixe (mesmo tamanho)\n` +
-        `• 2-3 ovos\n` +
-        `• Carne magra\n\n` +
+        `• Frango, peru (tamanho da palma)\n` +
+        `• Carne de vaca, porco, borrego\n` +
+        `• Peixe (salmão, pescada, atum)\n` +
+        `• 2-3 ovos = 1 palma\n` +
+        `• Whey protein (1 scoop) = 1 palma\n\n` +
         `**Distribuição sugerida:**\n` +
         `• Peq. almoço: ${Math.round(palmas * 0.25)} palmas\n` +
         `• Almoço: ${Math.round(palmas * 0.35)} palmas\n` +
@@ -231,20 +235,31 @@ export default function ChatCoach() {
     }
 
     // ========== GORDURA ==========
-    if (texto.match(/gordura|azeite|abacate|oleagino|polegar/)) {
-      return `Sobre a gordura no teu plano:\n\n` +
+    if (texto.match(/gordura|azeite|abacate|oleagino|polegar|coco|ghee|manteiga|mct/)) {
+      const respBase = `Sobre a gordura no teu plano:\n\n` +
         `👍 **A tua meta: ${polegares} polegares por dia**\n\n` +
         `**Um polegar equivale a:**\n` +
-        `• 1 colher de sopa de azeite (≈ 2 polegares)\n` +
+        `• 1 colher de sopa de azeite/óleo (≈ 2 polegares)\n` +
         `• 1/4 de abacate (≈ 2 polegares)\n` +
-        `• Punhado pequeno de frutos secos (≈ 2 polegares)\n\n` +
+        `• Punhado pequeno de frutos secos (≈ 2 polegares)\n` +
+        `• 1 colher de manteiga/ghee (≈ 1 polegar)\n\n` +
         `**Fontes a priorizar:**\n` +
-        `• Azeite extra virgem\n` +
+        `• Azeite extra virgem (temperar)\n` +
+        `• Ghee ou manteiga (cozinhar)\n` +
+        `• Óleo de coco (cozinhar, café keto)\n` +
         `• Abacate\n` +
-        `• Frutos secos\n` +
-        `• Sementes\n` +
-        `• Peixes gordos\n\n` +
-        `A gordura boa é essencial - ajuda na saciedade e na absorção de vitaminas.`;
+        `• Frutos secos e sementes\n` +
+        `• Azeitonas\n` +
+        `• Peixes gordos (salmão, sardinha)\n`;
+
+      if (faseRestritiva) {
+        return respBase + `\n**Na tua fase (${fase}):**\n` +
+          `A gordura é a tua principal fonte de energia! Podes aumentar:\n` +
+          `• Café keto (café + óleo coco + manteiga)\n` +
+          `• MCT oil para energia rápida\n` +
+          `• Coco ralado em receitas`;
+      }
+      return respBase + `\nA gordura boa é essencial - ajuda na saciedade e na absorção de vitaminas.`;
     }
 
     // ========== FRUTA ==========
@@ -318,6 +333,39 @@ export default function ChatCoach() {
         return `Ainda não definiste os dias de treino.\n\n` +
           `Vai a "Meu Plano" para configurar. Nos dias de treino, tens direito a +1 mão concha de hidratos.`;
       }
+    }
+
+    // ========== CAFÉ KETO / BULLETPROOF ==========
+    if (texto.match(/caf[eé]\s*keto|bulletproof|caf[eé].*coco|caf[eé].*manteiga/)) {
+      return `O Café Keto (Bulletproof):\n\n` +
+        `☕ **Receita:**\n` +
+        `• 1 café expresso ou longo\n` +
+        `• 1 colher de óleo de coco ou MCT\n` +
+        `• 1 colher de manteiga ou ghee\n` +
+        `• Bater tudo no liquidificador\n\n` +
+        `**Porções:** ≈ 3 polegares de gordura\n\n` +
+        `**Quando usar:**\n` +
+        `• Energia matinal sem hidratos\n` +
+        `• Jejum intermitente prolongado\n` +
+        `• Treino em jejum\n\n` +
+        `${faseRestritiva ? '✅ Excelente para a tua fase!' : '⚠️ Usa com moderação se não estás em fase restritiva.'}`;
+    }
+
+    // ========== WHEY / BATIDOS ==========
+    if (texto.match(/whey|batido|shake|protein.*po/)) {
+      return `Sobre Whey e Batidos:\n\n` +
+        `🥤 **1 scoop de whey = 1 palma de proteína**\n\n` +
+        `**Batido rápido:**\n` +
+        `• 1 scoop whey\n` +
+        `• Leite de amêndoa ou água\n` +
+        `• 1 colher de manteiga de amendoim\n` +
+        `• Gelo\n\n` +
+        `**Porções:** ~2 palmas P + 1-2 polegares G\n\n` +
+        `**Quando usar:**\n` +
+        `• Pequeno-almoço rápido\n` +
+        `• Pós-treino\n` +
+        `• Snack proteico\n\n` +
+        `${faseRestritiva ? 'Evita adicionar fruta! Usa cacau em pó ou canela.' : 'Podes adicionar fruta se quiseres.'}`;
     }
 
     // ========== FOME ==========
