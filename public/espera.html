@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vitalis — Lista de Espera | Sete Ecos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Nunito+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/logos/VITALIS_LOGO_V3.png">
+    
+    <style>
+        :root {
+            --marfim: #FAF6F0;
+            --marfim-quente: #F5EEE3;
+            --dourado: #C9A227;
+            --dourado-claro: #E8D5A3;
+            --ambar: #D4A84B;
+            --verde-vitalis: #7A8B5C;
+            --verde-claro: #9AAD7C;
+            --lavanda: #9B8AA6;
+            --rosa-aurora: #D4A5A5;
+            --terracota: #B56B4F;
+            --azul-agua: #7BA3A8;
+            --violeta: #7B5D7B;
+            --texto: #4A4035;
+            --texto-suave: #7A6B5C;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html { font-size: 16px; }
+        
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            background: var(--marfim);
+            min-height: 100vh;
+            min-height: 100dvh;
+            color: var(--texto);
+            overflow-x: hidden;
+        }
+        
+        /* ===== HERO ===== */
+        .hero {
+            position: relative;
+            padding: 40px 20px 50px;
+            background: linear-gradient(
+                to bottom,
+                #A8C090 0%,
+                #B5C9A0 20%,
+                #C5D4B5 40%,
+                var(--marfim-quente) 85%,
+                var(--marfim) 100%
+            );
+            text-align: center;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200%;
+            height: 100%;
+            background: radial-gradient(
+                ellipse 50% 60% at 50% 20%,
+                rgba(255, 255, 255, 0.5) 0%,
+                transparent 70%
+            );
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 440px;
+            margin: 0 auto;
+        }
+        
+        .ecosystem-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--texto-suave);
+            margin-bottom: 28px;
+            border: 1px solid rgba(201, 162, 39, 0.2);
+        }
+        
+        .ecosystem-badge .dot {
+            width: 5px;
+            height: 5px;
+            background: var(--dourado);
+            border-radius: 50%;
+        }
+        
+        .logo-vitalis {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 16px;
+        }
+        
+        .logo-vitalis img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 12px rgba(122, 139, 92, 0.3));
+        }
+        
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            color: var(--texto);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        
+        .hero .tagline {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.05rem;
+            font-style: italic;
+            color: var(--texto-suave);
+            letter-spacing: 0.03em;
+            line-height: 1.5;
+        }
+        
+        /* ===== MAIN CONTENT ===== */
+        .value-section {
+            padding: 0 20px;
+            margin-top: -20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .value-card {
+            background: #FFFFFF;
+            border-radius: 24px;
+            padding: 32px 24px;
+            box-shadow: 0 8px 40px rgba(74, 64, 53, 0.08), 0 2px 8px rgba(74, 64, 53, 0.04);
+            max-width: 440px;
+            margin: 0 auto 20px;
+        }
+        
+        .value-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        
+        .value-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--texto);
+            margin-bottom: 14px;
+            line-height: 1.35;
+        }
+        
+        .value-header p {
+            font-size: 0.9rem;
+            color: var(--texto-suave);
+            line-height: 1.65;
+        }
+        
+        /* Diferenciais */
+        .differentials { margin-bottom: 28px; }
+        
+        .diff-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--verde-vitalis);
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        
+        .diff-item {
+            display: flex;
+            gap: 14px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(122, 139, 92, 0.06), rgba(154, 173, 124, 0.03));
+            border-radius: 16px;
+            margin-bottom: 12px;
+            border-left: 3px solid var(--verde-vitalis);
+        }
+        
+        .diff-item:last-child { margin-bottom: 0; }
+        
+        .diff-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--verde-vitalis), var(--verde-claro));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(122, 139, 92, 0.25);
+        }
+        
+        .diff-content h4 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--texto);
+            margin-bottom: 4px;
+        }
+        
+        .diff-content p {
+            font-size: 0.8rem;
+            color: var(--texto-suave);
+            line-height: 1.5;
+        }
+        
+        /* Espaço de Retorno */
+        .emotional-section {
+            background: linear-gradient(135deg, rgba(155, 138, 166, 0.08), rgba(212, 165, 165, 0.06));
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(155, 138, 166, 0.15);
+        }
+        
+        .emotional-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        
+        .emotional-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--lavanda), #B8A5C4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+        
+        .emotional-header h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--texto);
+        }
+        
+        .emotional-text {
+            font-size: 0.85rem;
+            color: var(--texto-suave);
+            line-height: 1.6;
+            font-style: italic;
+        }
+        
+        .emotional-states {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+        }
+        
+        .state-tag {
+            font-size: 0.7rem;
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50px;
+            color: var(--texto-suave);
+        }
+        
+        /* Formulário */
+        .form-section {
+            border-top: 1px solid rgba(122, 139, 92, 0.12);
+            padding-top: 24px;
+        }
+        
+        .form-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--texto);
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        
+        .form-group { margin-bottom: 14px; }
+        
+        .form-label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--texto-suave);
+            margin-bottom: 6px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid rgba(122, 139, 92, 0.2);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Nunito Sans', sans-serif;
+            background: var(--marfim);
+            color: var(--texto);
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--verde-vitalis);
+            box-shadow: 0 0 0 3px rgba(122, 139, 92, 0.1);
+            background: #FFFFFF;
+        }
+        
+        .form-input::placeholder { color: rgba(74, 64, 53, 0.35); }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, var(--verde-vitalis), var(--verde-claro));
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: 'Nunito Sans', sans-serif;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(122, 139, 92, 0.3);
+            letter-spacing: 0.02em;
+            margin-top: 6px;
+        }
+        
+        .submit-btn:active { transform: scale(0.98); }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .privacy-note {
+            text-align: center;
+            font-size: 0.68rem;
+            color: var(--texto-suave);
+            margin-top: 12px;
+            opacity: 0.6;
+        }
+        
+        /* ===== ECOSSISTEMA COM LOGOS REAIS ===== */
+        .ecosystem-section {
+            max-width: 440px;
+            margin: 0 auto;
+            padding: 28px 20px;
+        }
+        
+        .ecosystem-intro {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .ecosystem-intro h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: var(--texto);
+            margin-bottom: 10px;
+        }
+        
+        .ecosystem-intro p {
+            font-size: 0.85rem;
+            color: var(--texto-suave);
+            line-height: 1.6;
+        }
+        
+        /* Flor dos 7 Ecos com logos reais */
+        .ecos-flower {
+            position: relative;
+            width: 300px;
+            height: 320px;
+            margin: 0 auto 24px;
+        }
+        
+        .eco-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            z-index: 5;
+        }
+        
+        .eco-center img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px rgba(201, 162, 39, 0.4));
+        }
+        
+        .eco-petal {
+            position: absolute;
+            width: 55px;
+            height: 55px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .eco-petal img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.15));
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+        
+        .eco-petal.active img {
+            opacity: 1;
+            filter: drop-shadow(0 4px 12px rgba(122, 139, 92, 0.4));
+            transform: scale(1.1);
+        }
+        
+        .eco-petal span {
+            font-size: 0.55rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--texto-suave);
+            margin-top: 4px;
+        }
+        
+        .eco-petal.active span {
+            color: var(--verde-vitalis);
+        }
+        
+        /* Linhas conectoras */
+        .eco-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .eco-lines svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .eco-lines line {
+            stroke: var(--dourado-claro);
+            stroke-width: 1;
+            opacity: 0.4;
+        }
+        
+        /* Posições em círculo */
+        .eco-vitalis { top: 0; left: 50%; transform: translateX(-50%); }
+        .eco-aurea { top: 12%; right: 5%; }
+        .eco-serena { top: 45%; right: 0; }
+        .eco-ignis { bottom: 8%; right: 15%; }
+        .eco-ventis { bottom: 8%; left: 15%; }
+        .eco-ecoa { top: 45%; left: 0; }
+        .eco-imago { top: 12%; left: 5%; }
+        
+        .eco-badge {
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--verde-vitalis);
+            color: white;
+            font-size: 0.5rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+        
+        .ecosystem-footer { text-align: center; }
+        
+        .ecosystem-tagline {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            font-style: italic;
+            color: var(--texto-suave);
+            margin-bottom: 8px;
+        }
+        
+        .lumina-note {
+            font-size: 0.75rem;
+            color: var(--texto-suave);
+        }
+        
+        .lumina-note strong { color: var(--lavanda); }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 24px 20px;
+            border-top: 1px solid rgba(201, 162, 39, 0.08);
+        }
+        
+        .footer-logo {
+            width: 45px;
+            height: 45px;
+            margin: 0 auto 10px;
+            opacity: 0.5;
+        }
+        
+        .footer-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .footer-text {
+            font-size: 0.68rem;
+            color: var(--texto-suave);
+            opacity: 0.5;
+            margin-bottom: 10px;
+        }
+        
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--verde-vitalis);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 8px 16px;
+            background: rgba(122, 139, 92, 0.08);
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:active { background: rgba(122, 139, 92, 0.15); }
+        
+        /* Sucesso */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 32px 16px;
+        }
+        
+        .success-message.show {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .success-icon {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, var(--verde-vitalis), var(--verde-claro));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 1.8rem;
+            box-shadow: 0 8px 25px rgba(122, 139, 92, 0.3);
+        }
+        
+        .success-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: var(--verde-vitalis);
+            margin-bottom: 10px;
+        }
+        
+        .success-text {
+            font-size: 0.9rem;
+            color: var(--texto-suave);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .success-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(122, 139, 92, 0.1);
+            border-radius: 10px;
+            color: var(--verde-vitalis);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        
+        /* Erro */
+        .error-message {
+            background: rgba(181, 107, 79, 0.1);
+            border: 1px solid rgba(181, 107, 79, 0.3);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: var(--terracota);
+            display: none;
+        }
+        
+        .error-message.show { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .hero-content { animation: fadeIn 0.6s ease-out; }
+        .value-card { animation: fadeIn 0.6s ease-out 0.1s both; }
+        .ecosystem-section { animation: fadeIn 0.6s ease-out 0.2s both; }
+    </style>
+</head>
+<body>
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="ecosystem-badge">
+                <span class="dot"></span>
+                Ecossistema Sete Ecos
+                <span class="dot"></span>
+            </div>
+            
+            <div class="logo-vitalis">
+                <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis">
+            </div>
+            
+            <h1>Vitalis</h1>
+            <p class="tagline">O caminho do corpo.<br>Nutrição que te devolve a ti mesma.</p>
+        </div>
+    </section>
+    
+    <!-- PROPOSTA DE VALOR -->
+    <main class="value-section">
+        <div class="value-card">
+            <div id="formContainer">
+                <div class="value-header">
+                    <h2>Mais do que um plano alimentar.<br>Um regresso ao corpo como casa.</h2>
+                    <p>
+                        O Vitalis nasceu para mulheres que já experimentaram tudo 
+                        e perceberam que dietas não funcionam sem cuidar das emoções. 
+                        Aqui, nutrição e consciência caminham juntas.
+                    </p>
+                </div>
+                
+                <div class="differentials">
+                    <p class="diff-title">O que torna isto diferente</p>
+                    
+                    <div class="diff-item">
+                        <div class="diff-icon">🤲</div>
+                        <div class="diff-content">
+                            <h4>A tua mão é a medida</h4>
+                            <p>Porções medidas pela palma, punho e polegar. Sem balança, sem stress. O teu corpo já sabe o tamanho certo.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="diff-item">
+                        <div class="diff-icon">🍽️</div>
+                        <div class="diff-content">
+                            <h4>Receitas da nossa terra</h4>
+                            <p>Mais de 150 receitas rápidas — moçambicanas, zambezianas, portuguesas, indianas. Todas em menos de 20 minutos.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="diff-item">
+                        <div class="diff-icon">📊</div>
+                        <div class="diff-content">
+                            <h4>Acompanhamento real</h4>
+                            <p>Dashboard completo, relatórios semanais, tracking de água, sono, jejum. E uma comunidade no WhatsApp.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="emotional-section">
+                    <div class="emotional-header">
+                        <div class="emotional-icon">💜</div>
+                        <h3>Espaço de Retorno</h3>
+                    </div>
+                    <p class="emotional-text">
+                        "Quando o corpo quer comer, mas a verdadeira fome é outra."
+                        Um refúgio para os momentos em que a comida parece a única saída. 
+                        Respiração guiada, escrita livre, palavras de conforto — em 90 segundos, 
+                        o impulso transforma-se em escolha.
+                    </p>
+                    <div class="emotional-states">
+                        <span class="state-tag">🔋 Cansaço</span>
+                        <span class="state-tag">🌀 Ansiedade</span>
+                        <span class="state-tag">💧 Tristeza</span>
+                        <span class="state-tag">🔥 Raiva</span>
+                        <span class="state-tag">◯ Vazio</span>
+                        <span class="state-tag">🌑 Solidão</span>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <p class="form-title">Reserva o teu lugar</p>
+                    
+                    <form id="waitlistForm">
+                        <div class="form-group">
+                            <label class="form-label">O teu nome</label>
+                            <input type="text" class="form-input" name="nome" id="nome" placeholder="Como te chamas?" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">O teu email</label>
+                            <input type="email" class="form-input" name="email" id="email" placeholder="Para te avisarmos quando abrir" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">WhatsApp (opcional)</label>
+                            <input type="tel" class="form-input" name="whatsapp" id="whatsapp" placeholder="+258 84 XXX XXXX">
+                        </div>
+                        
+                        <button type="submit" class="submit-btn" id="submitBtn">
+                            Quero Ser Avisada
+                        </button>
+                        
+                        <p class="privacy-note">🔒 Os teus dados ficam seguros connosco</p>
+                        
+                        <div class="error-message" id="errorMessage"></div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">🌱</div>
+                <h3 class="success-title">Estás na lista!</h3>
+                <p class="success-text">
+                    Obrigada por confiares neste caminho.<br>
+                    Vamos avisar-te em primeira mão.
+                </p>
+                <a href="https://instagram.com/seteecos" class="success-cta">
+                    📸 Segue-nos no Instagram
+                </a>
+            </div>
+        </div>
+    </main>
+    
+    <!-- ECOSSISTEMA COM LOGOS REAIS -->
+    <section class="ecosystem-section">
+        <div class="ecosystem-intro">
+            <h3>Parte de algo maior</h3>
+            <p>
+                O Vitalis é um dos sete caminhos do ecossistema <strong>Sete Ecos</strong> — 
+                uma app de transmutação feminina que guia mulheres através de sete dimensões: 
+                corpo, emoção, vontade, ritmo, expressão, identidade e consciência.
+            </p>
+        </div>
+        
+        <div class="ecos-flower">
+            <!-- Linhas conectoras -->
+            <div class="eco-lines">
+                <svg viewBox="0 0 300 320">
+                    <line x1="150" y1="160" x2="150" y2="55"/>
+                    <line x1="150" y1="160" x2="250" y2="70"/>
+                    <line x1="150" y1="160" x2="275" y2="165"/>
+                    <line x1="150" y1="160" x2="225" y2="265"/>
+                    <line x1="150" y1="160" x2="75" y2="265"/>
+                    <line x1="150" y1="160" x2="25" y2="165"/>
+                    <line x1="150" y1="160" x2="50" y2="70"/>
+                </svg>
+            </div>
+            
+            <!-- Centro - Aurora ou TU -->
+            <div class="eco-center">
+                <img src="/logos/AURORA_LOGO_V3.png" alt="Aurora">
+            </div>
+            
+            <!-- Vitalis - ACTIVO -->
+            <div class="eco-petal eco-vitalis active">
+                <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis">
+                <span>Vitalis</span>
+                <div class="eco-badge">Estás aqui</div>
+            </div>
+            
+            <!-- Aurea -->
+            <div class="eco-petal eco-aurea">
+                <img src="/logos/AUREA_LOGO_V3.png" alt="Aurea">
+                <span>Aurea</span>
+            </div>
+            
+            <!-- Serena -->
+            <div class="eco-petal eco-serena">
+                <img src="/logos/SERENA_LOGO_V3.png" alt="Serena">
+                <span>Serena</span>
+            </div>
+            
+            <!-- Ignis -->
+            <div class="eco-petal eco-ignis">
+                <img src="/logos/IGNIS-LOGO-V3.png" alt="Ignis">
+                <span>Ignis</span>
+            </div>
+            
+            <!-- Ventis -->
+            <div class="eco-petal eco-ventis">
+                <img src="/logos/VENTIS_LOGO_V3.png" alt="Ventis">
+                <span>Ventis</span>
+            </div>
+            
+            <!-- Ecoa -->
+            <div class="eco-petal eco-ecoa">
+                <img src="/logos/ECOA_LOGO_V3.png" alt="Ecoa">
+                <span>Ecoa</span>
+            </div>
+            
+            <!-- Imago -->
+            <div class="eco-petal eco-imago">
+                <img src="/logos/IMAGO_LOGO_V3.png" alt="Imago">
+                <span>Imago</span>
+            </div>
+        </div>
+        
+        <div class="ecosystem-footer">
+            <p class="ecosystem-tagline">Sete caminhos. Uma travessia.</p>
+            <p class="lumina-note">
+                <strong>Lumina</strong> é a porta de entrada gratuita — o espelho que revela por onde começar.
+            </p>
+        </div>
+    </section>
+    
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-logo">
+            <img src="/logos/seteecos_logo_v2.png" alt="Sete Ecos">
+        </div>
+        <p class="footer-text">© 2026 Sete Ecos · Por Vivianne Saraiva</p>
+        <a href="https://instagram.com/seteecos" class="social-link">
+            📸 @seteecos
+        </a>
+    </footer>
+    
+    <!-- SUPABASE SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ============================================
+        // CONFIGURAÇÃO SUPABASE - SUBSTITUIR AQUI
+        // ============================================
+        const SUPABASE_URL = 'https://vvvdtogvlutrybultffx.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2dmR0b2d2bHV0cnlidWx0ZmZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MjQwODgsImV4cCI6MjA4NTAwMDA4OH0.8RGSlyNCuD5vC8ad2gkZN4wTJXkR35jENiPQNjS9BY0';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // ============================================
+        // LÓGICA DO FORMULÁRIO
+        // ============================================
+        const form = document.getElementById('waitlistForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorDiv = document.getElementById('errorMessage');
+        const formContainer = document.getElementById('formContainer');
+        const successMessage = document.getElementById('successMessage');
+        
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Desabilitar botão
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'A registar...';
+            errorDiv.classList.remove('show');
+            
+            const data = {
+                nome: document.getElementById('nome').value.trim(),
+                email: document.getElementById('email').value.trim().toLowerCase(),
+                whatsapp: document.getElementById('whatsapp').value.trim() || null,
+                produto: 'vitalis'
+            };
+            
+            try {
+                const { error } = await supabase
+                    .from('waitlist')
+                    .insert([data]);
+                
+                if (error) {
+                    // Email duplicado
+                    if (error.code === '23505') {
+                        errorDiv.textContent = 'Este email já está na lista de espera! 💚';
+                    } else {
+                        errorDiv.textContent = 'Erro ao registar. Tenta novamente.';
+                        console.error('Supabase error:', error);
+                    }
+                    errorDiv.classList.add('show');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Quero Ser Avisada';
+                    return;
+                }
+                
+                // Sucesso
+                formContainer.style.display = 'none';
+                successMessage.classList.add('show');
+                
+            } catch (err) {
+                errorDiv.textContent = 'Erro de conexão. Verifica a internet e tenta novamente.';
+                errorDiv.classList.add('show');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Quero Ser Avisada';
+                console.error('Network error:', err);
+            }
+        });
+    </script>
+</body>
+</html>
