@@ -247,18 +247,25 @@ export default function RelatorioSemanal() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 pb-8">
-      
+
       {/* Header */}
-      <header className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
+      <header className="bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white">
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between mb-4">
-            <button 
+            <button
               onClick={() => navigate('/vitalis/dashboard')}
               className="text-white/80 hover:text-white flex items-center gap-2"
             >
               ← Voltar
             </button>
-            <h1 className="text-2xl font-bold">Relatório Semanal</h1>
+            <div className="flex items-center gap-3">
+              <img
+                src="/logos/VITALIS_LOGO_V3.png"
+                alt="Vitalis"
+                className="w-10 h-10 object-contain drop-shadow-lg"
+              />
+              <h1 className="text-2xl font-bold">Relatório Semanal</h1>
+            </div>
             <div className="w-16"></div>
           </div>
           

@@ -226,15 +226,24 @@ export default function RelatoriosHub() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50 pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 pt-8 pb-6">
+      <div className="bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white px-4 pt-8 pb-6">
         <div className="max-w-md mx-auto">
-          <Link to="/vitalis/dashboard" className="inline-flex items-center gap-1 text-indigo-100 hover:text-white mb-4">
+          <Link to="/vitalis/dashboard" className="inline-flex items-center gap-1 text-orange-100 hover:text-white mb-4">
             <Icons.ArrowLeft />
             <span>Voltar</span>
           </Link>
-          
-          <h1 className="text-2xl font-bold">Relatórios</h1>
-          <p className="text-indigo-100 mt-1">Acompanha a tua evolução</p>
+
+          <div className="flex items-center gap-3">
+            <img
+              src="/logos/VITALIS_LOGO_V3.png"
+              alt="Vitalis"
+              className="w-12 h-12 object-contain drop-shadow-lg"
+            />
+            <div>
+              <h1 className="text-2xl font-bold">Relatórios</h1>
+              <p className="text-orange-100 mt-1">Acompanha a tua evolução</p>
+            </div>
+          </div>
         </div>
       </div>
 

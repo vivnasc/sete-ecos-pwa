@@ -174,13 +174,20 @@ const ReceitaDetalhe = () => {
       
       {/* Header com gradiente */}
       <div className={`bg-gradient-to-br ${gradiente} pt-12 pb-20 px-4 relative`}>
-        {/* Botão voltar */}
-        <button
-          onClick={() => navigate('/vitalis/receitas')}
-          className="absolute top-4 left-4 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white"
-        >
-          ←
-        </button>
+        {/* Botão voltar com logo */}
+        <div className="absolute top-4 left-4 flex items-center gap-2">
+          <button
+            onClick={() => navigate('/vitalis/receitas')}
+            className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-gray-700"
+          >
+            ←
+          </button>
+          <img
+            src="/logos/VITALIS_LOGO_V3.png"
+            alt="Vitalis"
+            className="w-8 h-8 object-contain drop-shadow"
+          />
+        </div>
 
         {/* Botão favorito */}
         <button

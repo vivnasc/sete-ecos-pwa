@@ -59,14 +59,14 @@ export default function GeradorPDFPlano({ userId, onClose }) {
     <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999,padding:'20px'}}>
       <div style={{background:'white',borderRadius:'24px',maxWidth:'480px',width:'100%',overflow:'hidden',boxShadow:'0 25px 80px rgba(0,0,0,0.3)'}}>
         
-        {/* Header com Logo REAL */}
-        <div style={{background:'linear-gradient(135deg, #C1634A 0%, #8B4513 100%)',padding:'35px',textAlign:'center',color:'white'}}>
-          <img 
-            src="/logos/vitalis-logo-transparent.png" 
-            alt="Vitalis" 
-            style={{width:'100px',height:'100px',objectFit:'contain',marginBottom:'15px'}}
+        {/* Header com Logo V3 */}
+        <div style={{background:'linear-gradient(135deg, #C1634A 0%, #D97706 50%, #A54E38 100%)',padding:'35px',textAlign:'center',color:'white'}}>
+          <img
+            src="/logos/VITALIS_LOGO_V3.png"
+            alt="Vitalis"
+            style={{width:'100px',height:'100px',objectFit:'contain',marginBottom:'15px',filter:'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'}}
           />
-          <h2 style={{fontSize:'24px',fontWeight:'600',margin:'0 0 8px'}}>Plano Alimentar</h2>
+          <h2 style={{fontSize:'24px',fontWeight:'600',margin:'0 0 8px',fontFamily:'Cormorant Garamond, serif'}}>Plano Alimentar</h2>
           <p style={{fontSize:'15px',opacity:0.9,margin:0}}>{dados?.nome}</p>
         </div>
 
