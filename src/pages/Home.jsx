@@ -10,147 +10,148 @@ export default function Home() {
   }
 
   const ecos = [
-    { 
-      nome: 'VITALIS', 
+    {
+      nome: 'VITALIS',
       slogan: 'A Raiz da Transformação',
-      cor: 'vitalis', 
-      logo: '/logos/vitalis_logo.png',
+      logo: '/logos/VITALIS_LOGO_V3.png',
       disponivel: true,
-      rota: '/vitalis/login'
+      rota: '/vitalis/login',
+      posicao: 'petala-1'
     },
-    { 
-      nome: 'SERENA', 
+    {
+      nome: 'AUREA',
+      slogan: 'A luz interior',
+      logo: '/logos/AUREA_LOGO_V3.png',
+      disponivel: false,
+      posicao: 'petala-2'
+    },
+    {
+      nome: 'SERENA',
       slogan: 'Regular para fluir',
-      cor: 'serena',
-      logo: '/logos/serena_logo.png',
-      disponivel: false 
+      logo: '/logos/SERENA_LOGO_V3.png',
+      disponivel: false,
+      posicao: 'petala-3'
     },
-    { 
-      nome: 'IGNIS', 
+    {
+      nome: 'IGNIS',
       slogan: 'Agir com direcção',
-      cor: 'ignis',
-      logo: '/logos/ignis_logo.png',
-      disponivel: false 
+      logo: '/logos/IGNIS-LOGO-V3.png',
+      disponivel: false,
+      posicao: 'petala-4'
     },
-    { 
-      nome: 'VENTIS', 
+    {
+      nome: 'VENTIS',
       slogan: 'Ritmo sustentável',
-      cor: 'ventis',
-      logo: '/logos/ventis_logo.png',
-      disponivel: false 
+      logo: '/logos/VENTIS_LOGO_V3.png',
+      disponivel: false,
+      posicao: 'petala-5'
     },
-    { 
-      nome: 'ECOA', 
+    {
+      nome: 'ECOA',
       slogan: 'A expressão que ressoa',
-      cor: 'ecoa',
-      logo: '/logos/ecoa_logo.png',
-      disponivel: false 
+      logo: '/logos/ECOA_LOGO_V3.png',
+      disponivel: false,
+      posicao: 'petala-6'
     },
-    { 
-      nome: 'IMAGO', 
+    {
+      nome: 'IMAGO',
       slogan: 'O reflexo da essência',
-      cor: 'imago',
-      logo: '/logos/imago_logo.png',
-      disponivel: false 
+      logo: '/logos/IMAGO_LOGO_V3.png',
+      disponivel: false,
+      posicao: 'petala-7'
     }
   ]
 
   return (
     <div className="home">
-      <header className="home-header">
-        <img 
-          src="/logos/seteecos_logo.png" 
-          alt="Sete Ecos" 
-          style={{ width: '100px', height: '100px', marginBottom: '1rem' }}
-        />
-        <h1 className="home-title">SETE ECOS</h1>
-      <p className="home-subtitle">Sete caminhos. Uma travessia.</p>
-     </header>
-
-      <section className="home-section">
-        <div className="lumina-card" onClick={() => navigate('/lumina')}>
-          <div className="lumina-card-header">
-            <img 
-              src="/logos/lumina-eye.png" 
-              alt="Lumina" 
-              style={{ width: '60px', height: '60px' }}
-            />
-            <div>
-              <h2 className="lumina-card-title">LUMINA</h2>
-              <p className="lumina-card-desc">O espelho interior</p>
-            </div>
-          </div>
-          <p className="lumina-card-cta">Check-in diário — Como te sentes hoje?</p>
-          <div className="lumina-card-arrow">→</div>
+      {/* HERO */}
+      <section className="hero">
+        <div className="hero-content">
+          <h1 className="hero-title">Sete Ecos</h1>
+          <p className="hero-tagline">Sete caminhos. Uma travessia.</p>
         </div>
       </section>
 
-      <section className="home-section">
-        <h3 className="section-title">Os Sete Caminhos</h3>
-        <div className="ecos-grid">
+      {/* LUMINA */}
+      <section className="lumina-section">
+        <div className="lumina-card" onClick={() => navigate('/lumina')}>
+          <img src="/logos/lumina-logo_v2.png" alt="Lumina" className="lumina-icon" />
+          <div className="lumina-content">
+            <h2 className="lumina-title">LUMINA</h2>
+            <p className="lumina-desc">O espelho interior</p>
+            <span className="lumina-cta">Começa aqui →</span>
+          </div>
+        </div>
+      </section>
+
+      {/* OS 7 ECOS */}
+      <section className="section-title">
+        <h3>Os Sete Caminhos</h3>
+      </section>
+
+      <div className="flor-wrapper">
+        <div className="flor-container">
+          {/* Linhas conectoras */}
+          <svg className="linhas-svg" viewBox="0 0 360 360">
+            <line x1="180" y1="180" x2="180" y2="55" />
+            <line x1="180" y1="180" x2="295" y2="80" />
+            <line x1="180" y1="180" x2="320" y2="180" />
+            <line x1="180" y1="180" x2="280" y2="290" />
+            <line x1="180" y1="180" x2="80" y2="290" />
+            <line x1="180" y1="180" x2="40" y2="180" />
+            <line x1="180" y1="180" x2="65" y2="80" />
+          </svg>
+
+          {/* Centro */}
+          <div className="flor-centro">
+            <img src="/logos/CENTRO_7ECOS.png" alt="Tu" />
+          </div>
+
+          {/* Pétalas / Ecos */}
           {ecos.map(eco => (
-            <div 
-              key={eco.nome} 
-              className={`eco-card eco-card-${eco.cor} ${!eco.disponivel ? 'disabled' : ''}`}
+            <div
+              key={eco.nome}
+              className={`petala ${eco.posicao} ${!eco.disponivel ? 'disabled' : ''}`}
               onClick={() => eco.disponivel && navigate(eco.rota)}
-              style={{ cursor: eco.disponivel ? 'pointer' : 'not-allowed' }}
             >
-              <img 
-                src={eco.logo} 
-                alt={eco.nome}
-                style={{ 
-                  width: '100px', 
-                  height: '100px', 
-                  marginBottom: '1rem',
-                  objectFit: 'contain'
-                }}
-              />
-              <h4 className="eco-nome">{eco.nome}</h4>
-              <p className="eco-slogan">{eco.slogan}</p>
-              {!eco.disponivel && (
-                <span className="eco-badge" style={{ background: '#94a3b8' }}>Em breve</span>
-              )}
-              {eco.disponivel && (
-                <span className="eco-badge" style={{ background: '#10b981' }}>Disponível</span>
-              )}
+              <img src={eco.logo} alt={eco.nome} />
+              <span className="petala-label">{eco.nome}</span>
+              <span className={`badge ${eco.disponivel ? 'disponivel' : 'breve'}`}>
+                {eco.disponivel ? 'Aberto' : 'Breve'}
+              </span>
             </div>
           ))}
         </div>
-      </section>
+      </div>
 
-      <section className="home-section">
-        <div className="aurora-card">
-          <div className="aurora-card-glow"></div>
-          <div className="aurora-card-content">
-            <img 
-              src="/logos/aurora_logo.png" 
-              alt="Aurōra"
-              style={{ 
-                width: '100px', 
-                height: '100px', 
-                marginBottom: '1rem',
-                objectFit: 'contain'
-              }}
-            />
-            <h3 className="aurora-title">AURŌRA</h3>
-            <p className="aurora-desc">A Coroação — Presença plena</p>
-            <p className="aurora-info">
-              O bónus de integração para quem completa os 7 Ecos. 
-              Onde todas as partes se encontram e a mulher inteira nasce.
-            </p>
-            <div className="aurora-progress">
-              <span className="aurora-progress-label">0 de 7 Ecos completos</span>
-              <div className="aurora-progress-bar">
-                <div className="aurora-progress-fill" style={{ width: '0%' }}></div>
-              </div>
-            </div>
+      {/* AURORA */}
+      <section className="aurora-section">
+        <img src="/logos/AURORA_LOGO_V3.png" alt="Aurora" />
+        <h2>Aurōra</h2>
+        <p className="subtitle">A Coroação — Presença plena</p>
+        <p className="unlock-info">Desbloqueia ao completar os 7 caminhos</p>
+        <div className="progress-container">
+          <div className="progress-info">
+            <span>A tua jornada</span>
+            <span>1 de 7</span>
+          </div>
+          <div className="progress-track">
+            <div className="progress-bar" style={{ width: '14%' }}></div>
           </div>
         </div>
       </section>
 
-      <div className="home-footer">
-        <button className="logout-button" onClick={handleLogout}>Sair</button>
-      </div>
+      {/* NAVIGATION */}
+      <nav className="nav-bottom">
+        <a href="#" className="nav-item active">
+          <span className="nav-icon">🏠</span>
+          <span>Início</span>
+        </a>
+        <a href="#" className="nav-item" onClick={() => navigate('/lumina')}>
+          <span className="nav-icon">👁️</span>
+          <span>Lumina</span>
+        </a>
+      </nav>
     </div>
   )
 }
