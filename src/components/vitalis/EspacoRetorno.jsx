@@ -305,12 +305,14 @@ const EspacoRetorno = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 flex items-center justify-center p-4">
         <div className="max-w-lg w-full text-center">
-          {/* Animação de respiração suave */}
+          {/* Logo Vitalis com animação suave */}
           <div className="mb-8">
             <div className="w-32 h-32 mx-auto rounded-full bg-white/10 animate-pulse flex items-center justify-center">
-              <div className="w-24 h-24 rounded-full bg-white/20 flex items-center justify-center">
-                <span className="text-5xl">💜</span>
-              </div>
+              <img
+                src="/logos/VITALIS_LOGO_V3.png"
+                alt="Vitalis"
+                className="w-20 h-20 object-contain drop-shadow-lg"
+              />
             </div>
           </div>
 
@@ -812,8 +814,14 @@ const EspacoRetorno = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 flex items-center justify-center p-4">
         <div className="max-w-lg w-full text-center">
-          <div className="text-7xl mb-6 animate-bounce">💜</div>
-          
+          <div className="mb-6 animate-bounce">
+            <img
+              src="/logos/VITALIS_LOGO_V3.png"
+              alt="Vitalis"
+              className="w-24 h-24 mx-auto object-contain drop-shadow-lg"
+            />
+          </div>
+
           <h2 className="text-3xl font-bold text-white mb-4" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
             Momento Guardado
           </h2>

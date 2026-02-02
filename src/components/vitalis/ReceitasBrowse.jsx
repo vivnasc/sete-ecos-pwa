@@ -260,20 +260,29 @@ export const ReceitasBrowse = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 pb-24">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-orange-100">
+      <div className="bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-6">
-          <button 
+          <button
             onClick={() => navigate('/vitalis/dashboard')}
-            className="text-orange-600 hover:text-orange-700 mb-4 flex items-center gap-2"
+            className="text-white/80 hover:text-white mb-4 flex items-center gap-2"
           >
             ← Voltar
           </button>
-          <h1 className="text-3xl font-bold text-orange-900 mb-2" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
-            Biblioteca de Receitas 🍽️
-          </h1>
-          <p className="text-gray-600">
-            {receitasFiltradas.length} receitas disponíveis
-          </p>
+          <div className="flex items-center gap-4">
+            <img
+              src="/logos/VITALIS_LOGO_V3.png"
+              alt="Vitalis"
+              className="w-14 h-14 object-contain drop-shadow-lg"
+            />
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+                Biblioteca de Receitas 🍽️
+              </h1>
+              <p className="text-orange-100">
+                {receitasFiltradas.length} receitas disponíveis
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 

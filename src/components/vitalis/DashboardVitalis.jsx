@@ -433,7 +433,7 @@ export default function DashboardVitalis() {
       
       {/* Header */}
       <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-amber-600 via-orange-500 to-rose-500"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38]"></div>
         <div className="absolute inset-0 opacity-10">
           <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
             <path d="M0,50 Q25,30 50,50 T100,50 V100 H0 Z" fill="white"/>
@@ -441,9 +441,16 @@ export default function DashboardVitalis() {
         </div>
         <div className="relative max-w-6xl mx-auto px-4 py-5">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-white" style={{ fontFamily: 'Cormorant Garamond, serif' }}>VITALIS</h1>
-              <p className="text-amber-100 text-sm capitalize">{diaSemana}, {dataFormatada}</p>
+            <div className="flex items-center gap-3">
+              <img
+                src="/logos/VITALIS_LOGO_V3.png"
+                alt="Vitalis"
+                className="w-12 h-12 md:w-14 md:h-14 object-contain drop-shadow-lg"
+              />
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-white" style={{ fontFamily: 'Cormorant Garamond, serif' }}>VITALIS</h1>
+                <p className="text-orange-100 text-sm capitalize">{diaSemana}, {dataFormatada}</p>
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="hidden md:block text-right text-white">
