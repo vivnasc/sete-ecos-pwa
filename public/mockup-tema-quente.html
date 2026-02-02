@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mockup - Tema Quente SETE ECOS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* PALETA QUENTE */
+      --bg-primary: #FDF8F3;
+      --bg-secondary: #F5EDE4;
+      --bg-card: #FFFBF7;
+
+      --text-primary: #4A3728;
+      --text-secondary: #6B5344;
+      --text-muted: #8B7355;
+
+      --accent-gold: #C9A227;
+      --accent-gold-light: #E8D59E;
+      --accent-warm: #B8956B;
+
+      --vitalis-primary: #5D7A3A;
+      --vitalis-gold: #C9A227;
+      --vitalis-bg: #F4F9EE;
+
+      --lumina-gold: #C9A227;
+      --lumina-bg: #FFF9E6;
+
+      --shadow-warm: 0 4px 20px rgba(139, 105, 20, 0.1);
+      --shadow-card: 0 2px 12px rgba(74, 55, 40, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: var(--bg-primary);
+      min-height: 100vh;
+      color: var(--text-primary);
+    }
+
+    .mockup-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .mockup-header {
+      text-align: center;
+      padding: 30px;
+      background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-warm) 100%);
+      border-radius: 16px;
+      margin-bottom: 40px;
+      color: white;
+    }
+
+    .mockup-header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    h2, h3, h4 {
+      font-family: 'Cormorant Garamond', serif;
+      color: var(--text-primary);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+      border-bottom: 2px solid var(--accent-gold-light);
+      padding-bottom: 10px;
+    }
+
+    /* ========== PREVIEW GRIDS ========== */
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+
+    .preview-box {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow-warm);
+    }
+
+    .preview-label {
+      background: var(--bg-secondary);
+      padding: 12px 20px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .preview-content {
+      padding: 20px;
+    }
+
+    /* ========== HOME PAGE MOCKUP ========== */
+    .home-mockup {
+      background: var(--bg-primary);
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    .home-header {
+      text-align: center;
+      padding: 30px 0;
+    }
+
+    .home-logo {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 16px;
+    }
+
+    .home-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .home-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      letter-spacing: 0.15em;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .home-subtitle {
+      font-style: italic;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Lumina Card */
+    .lumina-card-new {
+      background: linear-gradient(135deg, var(--lumina-bg) 0%, #FFF5D6 100%);
+      border: 2px solid var(--accent-gold-light);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .lumina-card-new:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(201, 162, 39, 0.2);
+    }
+
+    .lumina-card-new img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+    }
+
+    .lumina-card-new h3 {
+      font-size: 1.5rem;
+      color: var(--accent-gold);
+      letter-spacing: 0.1em;
+    }
+
+    .lumina-card-new p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .lumina-card-new .cta {
+      margin-top: 8px;
+      color: var(--text-primary);
+    }
+
+    /* Eco Cards Grid */
+    .ecos-grid-new {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .eco-card-new {
+      background: var(--bg-card);
+      border: 1px solid var(--accent-gold-light);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .eco-card-new:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-warm);
+    }
+
+    .eco-card-new.vitalis {
+      border-color: var(--vitalis-primary);
+      border-width: 2px;
+    }
+
+    .eco-card-new img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 12px;
+    }
+
+    .eco-card-new h4 {
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .eco-card-new .slogan {
+      font-size: 0.8rem;
+      font-style: italic;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .eco-badge-new {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    .eco-badge-new.disponivel {
+      background: rgba(93, 122, 58, 0.15);
+      color: var(--vitalis-primary);
+    }
+
+    .eco-badge-new.breve {
+      background: var(--bg-secondary);
+      color: var(--text-muted);
+    }
+
+    /* ========== VITALIS DASHBOARD MOCKUP ========== */
+    .vitalis-mockup {
+      background: var(--bg-primary);
+      border-radius: 12px;
+    }
+
+    .vitalis-header {
+      background: linear-gradient(135deg, #4A5D23 0%, var(--vitalis-primary) 50%, #7A9E4A 100%);
+      padding: 24px;
+      border-radius: 12px 12px 0 0;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .vitalis-header h2 {
+      color: white;
+      font-size: 1.8rem;
+      letter-spacing: 0.1em;
+    }
+
+    .vitalis-header .date {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .vitalis-header .user-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .vitalis-header .streak {
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .vitalis-header .streak-num {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .vitalis-body {
+      padding: 24px;
+    }
+
+    .vitalis-quote {
+      background: var(--bg-card);
+      border-left: 4px solid var(--accent-gold);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .vitalis-quote p {
+      font-style: italic;
+      color: var(--text-secondary);
+    }
+
+    .vitalis-quote .meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    .vitalis-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .vitalis-stat-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      border: 1px solid var(--accent-gold-light);
+    }
+
+    .vitalis-stat-card .label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .vitalis-stat-card .value {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--vitalis-primary);
+    }
+
+    .vitalis-stat-card .unit {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    /* ========== NAVIGATION MOCKUP ========== */
+    .nav-mockup {
+      background: var(--bg-card);
+      border-top: 1px solid var(--accent-gold-light);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-around;
+      border-radius: 0 0 12px 12px;
+    }
+
+    .nav-item {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .nav-item.active {
+      color: var(--accent-gold);
+    }
+
+    .nav-item .icon {
+      font-size: 1.2rem;
+      margin-bottom: 4px;
+    }
+
+    /* ========== COLOR PALETTE ========== */
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .color-swatch {
+      aspect-ratio: 1;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 12px;
+      font-size: 0.75rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .color-swatch .name {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .color-swatch .hex {
+      opacity: 0.8;
+      font-family: monospace;
+    }
+
+    .color-swatch.light {
+      color: var(--text-primary);
+      border: 1px solid var(--accent-gold-light);
+    }
+
+    .color-swatch.dark {
+      color: white;
+    }
+
+    /* Footer */
+    .mockup-footer {
+      text-align: center;
+      padding: 30px;
+      color: var(--text-muted);
+    }
+
+    .btn-approve {
+      background: var(--vitalis-primary);
+      color: white;
+      border: none;
+      padding: 14px 40px;
+      border-radius: 12px;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      margin: 10px;
+      transition: all 0.2s;
+    }
+
+    .btn-approve:hover {
+      background: #4a6530;
+      transform: translateY(-2px);
+    }
+
+    .btn-adjust {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 2px solid var(--accent-gold-light);
+      padding: 14px 40px;
+      border-radius: 12px;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      margin: 10px;
+      transition: all 0.2s;
+    }
+
+    .btn-adjust:hover {
+      background: var(--bg-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="mockup-container">
+
+    <!-- Header -->
+    <div class="mockup-header">
+      <h1>Mockup - Tema Quente</h1>
+      <p>SETE ECOS - Nova identidade visual com os logos v2</p>
+    </div>
+
+    <!-- Paleta de Cores -->
+    <h2 class="section-title">Paleta de Cores</h2>
+    <div class="palette-grid">
+      <div class="color-swatch light" style="background: #FDF8F3;">
+        <span class="name">Fundo</span>
+        <span class="hex">#FDF8F3</span>
+      </div>
+      <div class="color-swatch light" style="background: #F5EDE4;">
+        <span class="name">Secundario</span>
+        <span class="hex">#F5EDE4</span>
+      </div>
+      <div class="color-swatch dark" style="background: #4A3728;">
+        <span class="name">Texto</span>
+        <span class="hex">#4A3728</span>
+      </div>
+      <div class="color-swatch dark" style="background: #C9A227;">
+        <span class="name">Dourado</span>
+        <span class="hex">#C9A227</span>
+      </div>
+      <div class="color-swatch dark" style="background: #5D7A3A;">
+        <span class="name">Vitalis</span>
+        <span class="hex">#5D7A3A</span>
+      </div>
+      <div class="color-swatch dark" style="background: #6B5344;">
+        <span class="name">Texto 2</span>
+        <span class="hex">#6B5344</span>
+      </div>
+    </div>
+
+    <!-- Preview Grid -->
+    <div class="preview-grid">
+
+      <!-- HOME PAGE -->
+      <div class="preview-box">
+        <div class="preview-label">Pagina Inicial (Home)</div>
+        <div class="preview-content">
+          <div class="home-mockup">
+
+            <div class="home-header">
+              <div class="home-logo">
+                <img src="/logos/seteecos_logo_v2.png" alt="Sete Ecos">
+              </div>
+              <h1 class="home-title">SETE ECOS</h1>
+              <p class="home-subtitle">Sete caminhos. Uma travessia.</p>
+            </div>
+
+            <div class="lumina-card-new">
+              <img src="/logos/lumina-logo_v2.png" alt="Lumina">
+              <div>
+                <h3>LUMINA</h3>
+                <p>O espelho interior</p>
+                <p class="cta">Check-in diario - Como te sentes hoje?</p>
+              </div>
+            </div>
+
+            <h4 style="margin-bottom: 16px; color: var(--text-secondary);">Os Sete Caminhos</h4>
+
+            <div class="ecos-grid-new">
+              <div class="eco-card-new vitalis">
+                <img src="/logos/vitalis-logo_v2.png" alt="Vitalis">
+                <h4>VITALIS</h4>
+                <p class="slogan">A Raiz da Transformacao</p>
+                <span class="eco-badge-new disponivel">Disponivel</span>
+              </div>
+              <div class="eco-card-new">
+                <div style="width:80px;height:80px;background:var(--bg-secondary);border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);">S</div>
+                <h4>SERENA</h4>
+                <p class="slogan">Regular para fluir</p>
+                <span class="eco-badge-new breve">Em breve</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- VITALIS DASHBOARD -->
+      <div class="preview-box">
+        <div class="preview-label">Dashboard Vitalis</div>
+        <div class="preview-content">
+          <div class="vitalis-mockup">
+
+            <div class="vitalis-header">
+              <div>
+                <h2>VITALIS</h2>
+                <span class="date">Domingo, 2 de Fevereiro</span>
+              </div>
+              <div class="user-area">
+                <div class="streak">
+                  <div class="streak-num">4</div>
+                  <div style="font-size:0.7rem;">dias</div>
+                </div>
+                <img src="/logos/vitalis-logo_v2.png" alt="" style="width:40px;height:40px;">
+              </div>
+            </div>
+
+            <div class="vitalis-body">
+              <div class="vitalis-quote">
+                <p>"Cada escolha consciente te aproxima da melhor versao de ti."</p>
+                <div class="meta">Dia 4 da tua jornada - Semana 1</div>
+              </div>
+
+              <div class="vitalis-cards">
+                <div class="vitalis-stat-card">
+                  <div class="label">Refeicoes</div>
+                  <div class="value">0/3</div>
+                </div>
+                <div class="vitalis-stat-card">
+                  <div class="label">Agua</div>
+                  <div class="value">0.0<span class="unit">L</span></div>
+                </div>
+                <div class="vitalis-stat-card">
+                  <div class="label">Peso</div>
+                  <div class="value">74.7<span class="unit">kg</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="nav-mockup">
+              <div class="nav-item active">
+                <div class="icon">🏠</div>
+                <div>Inicio</div>
+              </div>
+              <div class="nav-item">
+                <div class="icon">👁️</div>
+                <div>LUMINA</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Logos Preview -->
+    <h2 class="section-title">Novos Logos</h2>
+    <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 30px; margin-bottom: 50px; background: var(--bg-card); padding: 40px; border-radius: 20px;">
+      <div style="text-align: center;">
+        <img src="/logos/seteecos_logo_v2.png" alt="Sete Ecos" style="width: 120px; height: 120px; object-fit: contain;">
+        <p style="margin-top: 12px; color: var(--text-secondary); font-size: 0.9rem;">Sete Ecos</p>
+      </div>
+      <div style="text-align: center;">
+        <img src="/logos/lumina-logo_v2.png" alt="Lumina" style="width: 120px; height: 120px; object-fit: contain;">
+        <p style="margin-top: 12px; color: var(--text-secondary); font-size: 0.9rem;">Lumina</p>
+      </div>
+      <div style="text-align: center;">
+        <img src="/logos/vitalis-logo_v2.png" alt="Vitalis" style="width: 120px; height: 120px; object-fit: contain;">
+        <p style="margin-top: 12px; color: var(--text-secondary); font-size: 0.9rem;">Vitalis</p>
+      </div>
+      <div style="text-align: center;">
+        <img src="/logos/vitalis-logo-nome_v2.png" alt="Vitalis com nome" style="width: 120px; height: 120px; object-fit: contain; background: #1a1a1a; border-radius: 12px;">
+        <p style="margin-top: 12px; color: var(--text-secondary); font-size: 0.9rem;">Vitalis (fundo escuro)</p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mockup-footer">
+      <p style="margin-bottom: 20px;">Visualize e aprove o novo visual</p>
+      <button class="btn-approve" onclick="alert('Avisa ao Claude para implementar!')">Aprovar</button>
+      <button class="btn-adjust" onclick="alert('Diz ao Claude o que quer ajustar!')">Pedir ajustes</button>
+    </div>
+
+  </div>
+</body>
+</html>

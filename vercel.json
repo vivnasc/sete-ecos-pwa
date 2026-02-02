@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/mockup-tema-quente.html",
+      "destination": "/mockup-tema-quente.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
