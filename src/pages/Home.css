@@ -280,11 +280,12 @@
   background: linear-gradient(90deg, transparent, var(--dourado), transparent);
 }
 
-.aurora-section img {
+.aurora-icon {
   width: 90px;
   height: 90px;
   object-fit: contain;
-  margin-bottom: 16px;
+  margin: 0 auto 16px auto;
+  display: block;
   filter: drop-shadow(0 0 25px rgba(201, 162, 39, 0.4));
 }
 
@@ -447,7 +448,7 @@
     height: 140px;
   }
 
-  .aurora-section img {
+  .aurora-icon {
     width: 120px;
     height: 120px;
   }
@@ -510,7 +511,7 @@
     height: 160px;
   }
 
-  .aurora-section img {
+  .aurora-icon {
     width: 140px;
     height: 140px;
   }
