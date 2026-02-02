@@ -1,9 +1,54 @@
 // src/components/vitalis/GraficosTendencia.jsx
-// Gráficos de tendência para peso, sono, água e aderência
+// Gráficos de tendência para peso, sono, água, aderência e composição corporal
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase.js';
+
+// Fórmula para calcular % de gordura corporal (método simplificado baseado em BMI e medidas)
+// Usa a fórmula de Deurenberg adaptada + ajuste por rácio cintura/anca
+const calcularPercentagemGordura = (peso, altura, idade, genero, cintura, anca) => {
+  if (!peso || !altura || !idade) return null;
+
+  // IMC (BMI)
+  const alturaM = altura / 100;
+  const imc = peso / (alturaM * alturaM);
+
+  // Fórmula de Deurenberg (1991): %BF = (1.20 × BMI) + (0.23 × Idade) − 10.8 × Sexo − 5.4
+  // Sexo: 0 para mulheres, 1 para homens
+  const sexoFactor = genero === 'masculino' ? 1 : 0;
+  let percentagemBase = (1.20 * imc) + (0.23 * idade) - (10.8 * sexoFactor) - 5.4;
+
+  // Ajuste baseado no rácio cintura/anca (se disponível)
+  // Rácio saudável: <0.80 mulheres, <0.95 homens
+  if (cintura && anca) {
+    const racio = cintura / anca;
+    const racioIdeal = genero === 'masculino' ? 0.90 : 0.75;
+    const ajusteRacio = (racio - racioIdeal) * 10; // Ajuste moderado
+    percentagemBase += ajusteRacio;
+  }
+
+  return Math.max(5, Math.min(60, percentagemBase)); // Limitar entre 5% e 60%
+};
+
+// Classificação da % de gordura corporal
+const classificarGordura = (percentagem, genero) => {
+  if (!percentagem) return null;
+
+  if (genero === 'masculino') {
+    if (percentagem < 6) return { nivel: 'Essencial', cor: 'text-red-600', bg: 'bg-red-50' };
+    if (percentagem < 14) return { nivel: 'Atleta', cor: 'text-blue-600', bg: 'bg-blue-50' };
+    if (percentagem < 18) return { nivel: 'Fitness', cor: 'text-green-600', bg: 'bg-green-50' };
+    if (percentagem < 25) return { nivel: 'Aceitável', cor: 'text-yellow-600', bg: 'bg-yellow-50' };
+    return { nivel: 'Excesso', cor: 'text-orange-600', bg: 'bg-orange-50' };
+  } else {
+    if (percentagem < 14) return { nivel: 'Essencial', cor: 'text-red-600', bg: 'bg-red-50' };
+    if (percentagem < 21) return { nivel: 'Atleta', cor: 'text-blue-600', bg: 'bg-blue-50' };
+    if (percentagem < 25) return { nivel: 'Fitness', cor: 'text-green-600', bg: 'bg-green-50' };
+    if (percentagem < 32) return { nivel: 'Aceitável', cor: 'text-yellow-600', bg: 'bg-yellow-50' };
+    return { nivel: 'Excesso', cor: 'text-orange-600', bg: 'bg-orange-50' };
+  }
+};
 
 // Componente de gráfico de linha simples (SVG)
 function LineChart({ data, color = '#7C8B6F', height = 150, showLabels = true, unit = '', meta = null }) {
@@ -157,6 +202,8 @@ export default function GraficosTendencia() {
   const [dadosAderencia, setDadosAderencia] = useState([]);
   const [dadosCintura, setDadosCintura] = useState([]);
   const [dadosAnca, setDadosAnca] = useState([]);
+  const [dadosGordura, setDadosGordura] = useState([]);
+  const [clienteInfo, setClienteInfo] = useState(null);
   const [estatisticas, setEstatisticas] = useState({});
 
   useEffect(() => {
@@ -189,9 +236,21 @@ export default function GraficosTendencia() {
         supabase.from('vitalis_agua_log').select('*').eq('user_id', userData.id).gte('data', dataInicioStr).order('data'),
         supabase.from('vitalis_sono_log').select('*').eq('user_id', userData.id).gte('data', dataInicioStr).order('data'),
         supabase.from('vitalis_registos').select('*').eq('user_id', userData.id).gte('data', dataInicioStr).order('data'),
-        supabase.from('vitalis_clients').select('peso_inicial, peso_actual, peso_meta, cintura_cm, anca_cm').eq('user_id', userData.id).single(),
+        supabase.from('vitalis_clients').select('peso_inicial, peso_actual, peso_meta, cintura_cm, anca_cm, altura_cm, data_nascimento, genero').eq('user_id', userData.id).single(),
         supabase.from('vitalis_medidas_log').select('*').eq('user_id', userData.id).gte('data', dataInicioStr).order('data')
       ]);
+
+      // Guardar info do cliente para cálculos
+      if (clientRes.data) {
+        const idade = clientRes.data.data_nascimento
+          ? Math.floor((new Date() - new Date(clientRes.data.data_nascimento)) / (365.25 * 24 * 60 * 60 * 1000))
+          : 35; // Idade padrão se não disponível
+        setClienteInfo({
+          ...clientRes.data,
+          idade,
+          genero: clientRes.data.genero || 'feminino'
+        });
+      }
 
       // Processar dados de peso
       if (pesoRes.data && pesoRes.data.length > 0) {
@@ -282,6 +341,11 @@ export default function GraficosTendencia() {
         ancaInicial: clientRes.data?.anca_cm,
         cinturaActual: medidasRes.data?.length > 0 ? medidasRes.data[medidasRes.data.length - 1]?.cintura_cm : clientRes.data?.cintura_cm,
         ancaActual: medidasRes.data?.length > 0 ? medidasRes.data[medidasRes.data.length - 1]?.anca_cm : clientRes.data?.anca_cm,
+        altura: clientRes.data?.altura_cm,
+        genero: clientRes.data?.genero || 'feminino',
+        idade: clientRes.data?.data_nascimento
+          ? Math.floor((new Date() - new Date(clientRes.data.data_nascimento)) / (365.25 * 24 * 60 * 60 * 1000))
+          : 35,
         mediaAgua: aguaRes.data?.length > 0
           ? (Object.values(aguaRes.data.reduce((acc, a) => {
               if (!acc[a.data]) acc[a.data] = 0;
@@ -529,6 +593,105 @@ export default function GraficosTendencia() {
                 💡 Regista as tuas medidas semanalmente no check-in para acompanhar a evolução
               </p>
             )}
+          </div>
+        )}
+
+        {/* Percentagem de Gordura Corporal */}
+        {estatisticas.pesoActual && estatisticas.altura && (
+          <div className="bg-white rounded-2xl p-5 shadow-lg">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xl">🎯</span>
+              <h3 className="font-bold text-gray-800">Composição Corporal (Estimativa)</h3>
+            </div>
+
+            {(() => {
+              const percentagem = calcularPercentagemGordura(
+                estatisticas.pesoActual,
+                estatisticas.altura,
+                estatisticas.idade,
+                estatisticas.genero,
+                estatisticas.cinturaActual,
+                estatisticas.ancaActual
+              );
+
+              const percentagemInicial = calcularPercentagemGordura(
+                estatisticas.pesoInicial,
+                estatisticas.altura,
+                estatisticas.idade,
+                estatisticas.genero,
+                estatisticas.cinturaInicial,
+                estatisticas.ancaInicial
+              );
+
+              const classificacao = classificarGordura(percentagem, estatisticas.genero);
+              const diferencaGordura = percentagemInicial && percentagem ? percentagemInicial - percentagem : null;
+
+              if (!percentagem) return (
+                <p className="text-sm text-gray-500 text-center py-4">
+                  Dados insuficientes para calcular. Necessário: peso, altura e idade.
+                </p>
+              );
+
+              return (
+                <div className="space-y-4">
+                  {/* Valor principal */}
+                  <div className="flex items-center justify-center gap-6">
+                    <div className="text-center">
+                      <p className="text-5xl font-bold text-[#7C8B6F]">{percentagem.toFixed(1)}%</p>
+                      <p className="text-sm text-gray-500 mt-1">Gordura Corporal</p>
+                    </div>
+                    {classificacao && (
+                      <div className={`px-4 py-2 rounded-xl ${classificacao.bg}`}>
+                        <p className={`font-semibold ${classificacao.cor}`}>{classificacao.nivel}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Progresso desde o início */}
+                  {diferencaGordura !== null && Math.abs(diferencaGordura) > 0.1 && (
+                    <div className={`text-center p-3 rounded-xl ${diferencaGordura > 0 ? 'bg-green-50' : 'bg-orange-50'}`}>
+                      <p className={`font-semibold ${diferencaGordura > 0 ? 'text-green-600' : 'text-orange-600'}`}>
+                        {diferencaGordura > 0 ? '↓' : '↑'} {Math.abs(diferencaGordura).toFixed(1)}% desde o início
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {percentagemInicial?.toFixed(1)}% → {percentagem.toFixed(1)}%
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Escala visual */}
+                  <div className="mt-4">
+                    <div className="flex justify-between text-xs text-gray-400 mb-1">
+                      <span>Atleta</span>
+                      <span>Fitness</span>
+                      <span>Aceitável</span>
+                      <span>Excesso</span>
+                    </div>
+                    <div className="h-3 bg-gray-100 rounded-full overflow-hidden flex">
+                      <div className="bg-blue-400 flex-1"></div>
+                      <div className="bg-green-400 flex-1"></div>
+                      <div className="bg-yellow-400 flex-1"></div>
+                      <div className="bg-orange-400 flex-1"></div>
+                    </div>
+                    {/* Marcador de posição */}
+                    <div className="relative h-0">
+                      <div
+                        className="absolute -top-4 w-2 h-2 bg-gray-800 rounded-full transform -translate-x-1/2"
+                        style={{
+                          left: `${Math.min(100, Math.max(0, (percentagem - 10) / 35 * 100))}%`
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Nota explicativa */}
+                  <p className="text-xs text-gray-400 text-center mt-4 bg-gray-50 rounded-lg p-3">
+                    📊 Estimativa baseada na fórmula de Deurenberg + rácio cintura/anca.
+                    Para medição precisa, consulta um profissional (bioimpedância ou DEXA).
+                  </p>
+                </div>
+              );
+            })()}
           </div>
         )}
 

@@ -82,12 +82,59 @@ export default function DashboardVitalis() {
   const [sonoMinutos, setSonoMinutos] = useState('');
   const [sonoQualidade, setSonoQualidade] = useState(0);
 
+  // Estados para PWA install e notificações
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isPWAInstalled, setIsPWAInstalled] = useState(false);
+  const [notificacoesAtivas, setNotificacoesAtivas] = useState(false);
+  const [mostrarBannerPWA, setMostrarBannerPWA] = useState(false);
+
   const hoje = new Date().toISOString().split('T')[0];
   const diaSemana = new Date().toLocaleDateString('pt-PT', { weekday: 'long' });
   const dataFormatada = new Date().toLocaleDateString('pt-PT', { day: 'numeric', month: 'long' });
 
   useEffect(() => {
     loadDashboard();
+  }, []);
+
+  // Detectar se PWA está instalada e configurar eventos
+  useEffect(() => {
+    // Verificar se já está instalada
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+    setIsPWAInstalled(isStandalone);
+
+    // Verificar estado das notificações
+    if ('Notification' in window) {
+      setNotificacoesAtivas(Notification.permission === 'granted');
+    }
+
+    // Verificar se já fechou o banner antes (durante 7 dias)
+    const bannerFechado = localStorage.getItem('vitalis-pwa-banner-fechado');
+    if (bannerFechado) {
+      const dataFecho = new Date(bannerFechado);
+      const agora = new Date();
+      const diasPassados = (agora - dataFecho) / (1000 * 60 * 60 * 24);
+      if (diasPassados < 7) {
+        setMostrarBannerPWA(false);
+      } else {
+        setMostrarBannerPWA(!isStandalone);
+      }
+    } else {
+      setMostrarBannerPWA(!isStandalone);
+    }
+
+    // Capturar evento de instalação PWA
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setMostrarBannerPWA(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, []);
 
   // Dark mode effect
@@ -740,7 +787,112 @@ export default function DashboardVitalis() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-5 space-y-5">
-        
+
+        {/* Banner PWA e Notificações */}
+        {mostrarBannerPWA && (
+          <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-2xl p-4 shadow-xl relative overflow-hidden">
+            {/* Background decorativo */}
+            <div className="absolute inset-0 opacity-10">
+              <svg viewBox="0 0 100 100" className="w-full h-full">
+                <circle cx="0" cy="100" r="60" fill="white"/>
+                <circle cx="100" cy="0" r="40" fill="white"/>
+              </svg>
+            </div>
+
+            <div className="relative z-10">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <span className="text-2xl">📱</span>
+                  </div>
+                  <div>
+                    <h3 className="text-white font-bold text-lg">Instala o Vitalis!</h3>
+                    <p className="text-white/80 text-sm">Acede offline e recebe notificações</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setMostrarBannerPWA(false);
+                    localStorage.setItem('vitalis-pwa-banner-fechado', new Date().toISOString());
+                  }}
+                  className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {/* Botão de instalação - só aparece se tiver deferredPrompt (Chrome/Edge/etc) */}
+                {deferredPrompt && (
+                  <button
+                    onClick={async () => {
+                      deferredPrompt.prompt();
+                      const { outcome } = await deferredPrompt.userChoice;
+                      if (outcome === 'accepted') {
+                        setIsPWAInstalled(true);
+                        setMostrarBannerPWA(false);
+                      }
+                      setDeferredPrompt(null);
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-white text-indigo-700 rounded-lg font-semibold text-sm hover:bg-indigo-50 transition-colors shadow-md"
+                  >
+                    <span>⬇️</span>
+                    <span>Instalar App</span>
+                  </button>
+                )}
+
+                {/* Botão para ativar notificações */}
+                {!notificacoesAtivas && (
+                  <button
+                    onClick={async () => {
+                      const resultado = await solicitarPermissaoNotificacoes();
+                      setNotificacoesAtivas(resultado);
+                      if (resultado) {
+                        enviarNotificacao('Notificações ativadas! 🔔', {
+                          body: 'Vais receber alertas quando a janela alimentar abrir.'
+                        });
+                      }
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-white/20 text-white rounded-lg font-semibold text-sm hover:bg-white/30 transition-colors border border-white/30"
+                  >
+                    <span>🔔</span>
+                    <span>Ativar Notificações</span>
+                  </button>
+                )}
+
+                {/* Link para o guia (especialmente para iOS) */}
+                <Link
+                  to="/vitalis/guia"
+                  className="flex items-center gap-2 px-4 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-colors border border-white/20"
+                >
+                  <span>📖</span>
+                  <span>Ver Guia</span>
+                </Link>
+              </div>
+
+              {/* Dica para iOS */}
+              {!deferredPrompt && (
+                <p className="text-white/70 text-xs mt-3 flex items-center gap-1">
+                  <span>💡</span>
+                  <span>iPhone/iPad: Usa Safari → Partilhar → "Adicionar ao ecrã inicial"</span>
+                </p>
+              )}
+
+              {/* Indicadores de status */}
+              <div className="flex gap-4 mt-3 pt-3 border-t border-white/20">
+                <div className="flex items-center gap-2 text-sm">
+                  <span className={`w-2 h-2 rounded-full ${isPWAInstalled ? 'bg-green-400' : 'bg-white/40'}`}></span>
+                  <span className="text-white/80">{isPWAInstalled ? 'App instalada' : 'Não instalada'}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className={`w-2 h-2 rounded-full ${notificacoesAtivas ? 'bg-green-400' : 'bg-white/40'}`}></span>
+                  <span className="text-white/80">{notificacoesAtivas ? 'Notificações ativas' : 'Notificações off'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Mensagem + Streak */}
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 bg-white/80 backdrop-blur rounded-2xl p-4 border border-white/50 shadow-lg">
@@ -1399,6 +1551,13 @@ export default function DashboardVitalis() {
               <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">📅</div>
               <p className="font-semibold text-white text-sm">Calendário</p>
               <p className="text-white/70 text-xs mt-1">Planear semana</p>
+            </Link>
+
+            {/* Guia do Utilizador */}
+            <Link to="/vitalis/guia" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
+              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">📖</div>
+              <p className="font-semibold text-white text-sm">Guia</p>
+              <p className="text-white/70 text-xs mt-1">Manual da app</p>
             </Link>
           </div>
 
