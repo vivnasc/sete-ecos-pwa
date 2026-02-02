@@ -65,6 +65,34 @@
             background: linear-gradient(to bottom, transparent, var(--marfim));
         }
 
+        .hero-content {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 5;
+        }
+
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            font-weight: 400;
+            letter-spacing: 0.35em;
+            color: var(--texto);
+            text-transform: uppercase;
+            text-shadow: 0 2px 15px rgba(250, 246, 240, 0.9);
+            margin-bottom: 6px;
+        }
+
+        .hero-tagline {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            font-style: italic;
+            color: var(--texto-suave);
+            letter-spacing: 0.1em;
+        }
+
         /* ===== LUMINA CARD ===== */
         .lumina-section {
             padding: 0 20px;
@@ -87,8 +115,8 @@
         }
 
         .lumina-card img {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             object-fit: contain;
         }
 
@@ -102,6 +130,16 @@
         .lumina-card p {
             font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.9);
+        }
+
+        .lumina-cta {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #FFF;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .lumina-arrow {
@@ -152,7 +190,7 @@
         .linhas-svg line {
             stroke: var(--dourado-claro);
             stroke-width: 1.5;
-            opacity: 0.4;
+            opacity: 0.5;
         }
 
         /* Centro da flor */
@@ -248,18 +286,15 @@
             left: 5px;
         }
 
-        /* Badge */
+        /* Badge - abaixo do nome */
         .badge {
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
             font-size: 0.55rem;
             font-weight: 600;
             padding: 3px 8px;
             border-radius: 8px;
             text-transform: uppercase;
             white-space: nowrap;
+            margin-top: 4px;
         }
 
         .badge.disponivel {
@@ -316,7 +351,14 @@
             font-size: 0.95rem;
             font-style: italic;
             color: var(--texto-suave);
-            margin-bottom: 24px;
+            margin-bottom: 8px;
+        }
+
+        .aurora-section .unlock-info {
+            font-size: 0.8rem;
+            color: var(--dourado);
+            margin-bottom: 20px;
+            opacity: 0.85;
         }
 
         .progress-container {
@@ -394,20 +436,25 @@
 </head>
 <body>
 
-    <div class="mockup-badge">MOCKUP v3.1</div>
+    <div class="mockup-badge">MOCKUP v3.2</div>
 
-    <!-- HERO - Altura aumentada -->
-    <section class="hero"></section>
+    <!-- HERO - Com título e tagline -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Sete Ecos</h1>
+            <p class="hero-tagline">Sete caminhos. Uma travessia.</p>
+        </div>
+    </section>
 
-    <!-- LUMINA - Texto corrigido -->
+    <!-- LUMINA - Portal de entrada -->
     <section class="lumina-section">
         <div class="lumina-card">
             <img src="/logos/lumina-logo_v2.png" alt="Lumina">
             <div>
                 <h2>LUMINA</h2>
                 <p>O espelho interior</p>
+                <span class="lumina-cta">Começa aqui →</span>
             </div>
-            <span class="lumina-arrow">→</span>
         </div>
     </section>
 
@@ -494,6 +541,7 @@
         <img src="/logos/AURORA_LOGO_V3.png" alt="Aurora">
         <h2>Aurōra</h2>
         <p class="subtitle">A Coroação — Presença plena</p>
+        <p class="unlock-info">Desbloqueia ao completar os 7 caminhos</p>
         <div class="progress-container">
             <div class="progress-info">
                 <span>A tua jornada</span>
