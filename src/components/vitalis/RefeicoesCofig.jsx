@@ -164,30 +164,35 @@ export default function RefeicoesCofig() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3]">
         <div className="text-center">
-          <div className="text-6xl mb-4">🍽️</div>
-          <p className="text-gray-600">A carregar...</p>
+          <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-16 h-16 mx-auto mb-4 animate-pulse" />
+          <p className="text-[#6B4423]">A carregar...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3]">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-orange-100">
+      <div className="bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] shadow-lg">
         <div className="max-w-2xl mx-auto px-4 py-6">
-          <button 
+          <button
             onClick={() => navigate('/vitalis/dashboard')}
-            className="text-orange-600 hover:text-orange-700 mb-4 flex items-center gap-2"
+            className="text-white/80 hover:text-white mb-4 flex items-center gap-2"
           >
             ← Voltar
           </button>
-          <h1 className="text-3xl font-bold text-orange-900" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
-            As Minhas Refeições
-          </h1>
-          <p className="text-gray-600 mt-2">Configura as refeições que fazes no teu dia</p>
+          <div className="flex items-center gap-3">
+            <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-12 h-12 object-contain drop-shadow-lg" />
+            <div>
+              <h1 className="text-3xl font-bold text-white" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+                As Minhas Refeições
+              </h1>
+              <p className="text-orange-100 mt-1">Configura as refeições que fazes no teu dia</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -215,21 +220,21 @@ export default function RefeicoesCofig() {
             {refeicoes.map((ref, index) => (
               <div 
                 key={ref.id} 
-                className="flex items-center gap-3 p-4 bg-orange-50 rounded-xl border-2 border-orange-100"
+                className="flex items-center gap-3 p-4 bg-[#F5F0E8] rounded-xl border-2 border-[#D2B48C]/50"
               >
                 {/* Ordem */}
                 <div className="flex flex-col gap-1">
                   <button
                     onClick={() => moverRefeicao(index, -1)}
                     disabled={index === 0}
-                    className="text-gray-400 hover:text-orange-600 disabled:opacity-30"
+                    className="text-gray-400 hover:text-[#C1634A] disabled:opacity-30"
                   >
                     ▲
                   </button>
                   <button
                     onClick={() => moverRefeicao(index, 1)}
                     disabled={index === refeicoes.length - 1}
-                    className="text-gray-400 hover:text-orange-600 disabled:opacity-30"
+                    className="text-gray-400 hover:text-[#C1634A] disabled:opacity-30"
                   >
                     ▼
                   </button>
@@ -240,7 +245,7 @@ export default function RefeicoesCofig() {
                   type="text"
                   value={ref.nome}
                   onChange={(e) => actualizarRefeicao(ref.id, 'nome', e.target.value)}
-                  className="flex-1 px-3 py-2 border-2 border-transparent rounded-lg bg-white focus:border-orange-300 focus:outline-none"
+                  className="flex-1 px-3 py-2 border-2 border-transparent rounded-lg bg-white focus:border-[#C1634A] focus:outline-none"
                 />
 
                 {/* Hora */}
@@ -248,7 +253,7 @@ export default function RefeicoesCofig() {
                   type="time"
                   value={ref.hora_habitual || ''}
                   onChange={(e) => actualizarRefeicao(ref.id, 'hora_habitual', e.target.value)}
-                  className="w-28 px-3 py-2 border-2 border-transparent rounded-lg bg-white focus:border-orange-300 focus:outline-none"
+                  className="w-28 px-3 py-2 border-2 border-transparent rounded-lg bg-white focus:border-[#C1634A] focus:outline-none"
                 />
 
                 {/* Remover */}
@@ -273,19 +278,19 @@ export default function RefeicoesCofig() {
               placeholder="Nome (ex: Almoço, Lanche, Pós-treino)"
               value={novaRefeicao.nome}
               onChange={(e) => setNovaRefeicao({ ...novaRefeicao, nome: e.target.value })}
-              className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-400 focus:outline-none"
+              className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#C1634A] focus:outline-none"
             />
             <input
               type="time"
               value={novaRefeicao.hora_habitual}
               onChange={(e) => setNovaRefeicao({ ...novaRefeicao, hora_habitual: e.target.value })}
-              className="w-full sm:w-32 px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-400 focus:outline-none"
+              className="w-full sm:w-32 px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#C1634A] focus:outline-none"
               placeholder="Hora"
             />
             <button
               onClick={adicionarRefeicao}
               disabled={saving || !novaRefeicao.nome.trim()}
-              className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+              className="px-6 py-3 bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
             >
               {saving ? '...' : '+ Adicionar'}
             </button>
