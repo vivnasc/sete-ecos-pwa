@@ -432,11 +432,147 @@
         .lumina-card { animation: fadeIn 0.5s ease-out 0.1s both; }
         .flor-container { animation: fadeIn 0.5s ease-out 0.2s both; }
         .aurora-section { animation: fadeIn 0.5s ease-out 0.3s both; }
+
+        /* ===== RESPONSIVE - DESKTOP ===== */
+        @media (min-width: 768px) {
+            .hero {
+                min-height: 500px;
+                height: 60vh;
+                max-height: 650px;
+            }
+
+            .hero-title {
+                font-size: 3.5rem;
+                letter-spacing: 0.4em;
+            }
+
+            .hero-tagline {
+                font-size: 1.3rem;
+            }
+
+            .hero-content {
+                bottom: 100px;
+            }
+
+            .lumina-card {
+                max-width: 500px;
+                padding: 28px 32px;
+            }
+
+            .lumina-card img {
+                width: 100px;
+                height: 100px;
+            }
+
+            .lumina-card h2 {
+                font-size: 1.8rem;
+            }
+
+            .section-title h3 {
+                font-size: 1.1rem;
+                letter-spacing: 0.4em;
+            }
+
+            .flor-container {
+                width: 480px;
+                height: 480px;
+            }
+
+            .petala {
+                width: 110px;
+            }
+
+            .petala img {
+                width: 105px;
+                height: 105px;
+            }
+
+            .petala-label {
+                font-size: 1rem;
+            }
+
+            .flor-centro {
+                width: 140px;
+                height: 140px;
+            }
+
+            .aurora-section img {
+                width: 120px;
+                height: 120px;
+            }
+
+            .aurora-section h2 {
+                font-size: 2rem;
+            }
+
+            .progress-container {
+                max-width: 350px;
+            }
+        }
+
+        /* ===== RESPONSIVE - LARGE DESKTOP ===== */
+        @media (min-width: 1200px) {
+            .hero {
+                min-height: 550px;
+                height: 65vh;
+                max-height: 750px;
+            }
+
+            .hero-title {
+                font-size: 4.5rem;
+            }
+
+            .hero-tagline {
+                font-size: 1.5rem;
+            }
+
+            .lumina-card {
+                max-width: 550px;
+                padding: 32px 40px;
+            }
+
+            .lumina-card img {
+                width: 110px;
+                height: 110px;
+            }
+
+            .flor-container {
+                width: 550px;
+                height: 550px;
+            }
+
+            .petala {
+                width: 130px;
+            }
+
+            .petala img {
+                width: 120px;
+                height: 120px;
+            }
+
+            .petala-label {
+                font-size: 1.1rem;
+            }
+
+            .flor-centro {
+                width: 160px;
+                height: 160px;
+            }
+
+            .aurora-section img {
+                width: 140px;
+                height: 140px;
+            }
+
+            .aurora-section h2 {
+                font-size: 2.2rem;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="mockup-badge">MOCKUP v3.2</div>
+    <div class="mockup-badge">MOCKUP v3.3</div>
 
     <!-- HERO - Com título e tagline -->
     <section class="hero">
