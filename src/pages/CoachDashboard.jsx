@@ -282,10 +282,10 @@ const CoachDashboard = () => {
   // ============================================================
   if (loading) {
     return (
-      <div className="min-h-screen bg-sete-creme flex items-center justify-center">
+      <div className="min-h-screen bg-amber-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-sete-dourado border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-sete-castanho">A carregar dashboard...</p>
+          <div className="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-amber-900">A carregar dashboard...</p>
         </div>
       </div>
     );
@@ -295,19 +295,19 @@ const CoachDashboard = () => {
   // RENDER - MAIN
   // ============================================================
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sete-creme to-sete-bege">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-sete-dourado/20 px-6 py-4">
+      <header className="bg-white shadow-sm border-b border-amber-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-display text-sete-castanho">
+            <h1 className="text-2xl font-semibold text-amber-900">
               🎯 Dashboard Coach
             </h1>
-            <p className="text-sm text-sete-cinza">Sete Ecos - Painel de Controlo</p>
+            <p className="text-sm text-gray-500">Sete Ecos - Painel de Controlo</p>
           </div>
           <button 
             onClick={loadAllData}
-            className="px-4 py-2 bg-sete-dourado text-white rounded-lg hover:bg-sete-dourado/90 transition"
+            className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition"
           >
             🔄 Actualizar
           </button>
@@ -356,7 +356,7 @@ const CoachDashboard = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 border-b border-sete-dourado/20 pb-2">
+        <div className="flex gap-2 mb-6 border-b border-amber-200 pb-2">
           {[
             { id: 'resumo', label: '📊 Resumo', count: null },
             { id: 'alertas', label: '🔔 Alertas', count: alerts.length },
@@ -368,13 +368,13 @@ const CoachDashboard = () => {
               onClick={() => { setActiveTab(tab.id); setSelectedUser(null); }}
               className={`px-4 py-2 rounded-t-lg font-medium transition ${
                 activeTab === tab.id
-                  ? 'bg-white text-sete-castanho shadow-sm'
-                  : 'text-sete-cinza hover:text-sete-castanho'
+                  ? 'bg-white text-amber-900 shadow-sm'
+                  : 'text-gray-500 hover:text-amber-900'
               }`}
             >
               {tab.label}
               {tab.count > 0 && (
-                <span className="ml-2 px-2 py-0.5 bg-sete-dourado/20 text-sete-castanho text-xs rounded-full">
+                <span className="ml-2 px-2 py-0.5 bg-amber-100 text-amber-800 text-xs rounded-full">
                   {tab.count}
                 </span>
               )}
@@ -387,22 +387,23 @@ const CoachDashboard = () => {
           {/* TAB: RESUMO */}
           {activeTab === 'resumo' && (
             <div className="space-y-6">
-              <h2 className="text-xl font-display text-sete-castanho mb-4">
+              <h2 className="text-xl font-semibold text-amber-900 mb-4">
                 Visão Geral
               </h2>
               
               {/* Últimos registos */}
               <div>
-                <h3 className="font-medium text-sete-castanho mb-3">Últimos Registos</h3>
+                <h3 className="font-medium text-amber-900 mb-3">Últimos Registos</h3>
                 <div className="space-y-2">
                   {users.slice(0, 5).map(user => (
                     <div 
                       key={user.id}
-                      className="flex items-center justify-between p-3 bg-sete-creme/50 rounded-lg"
+                      onClick={() => { setActiveTab('users'); loadUserDetails(user.id); }}
+                      className="flex items-center justify-between p-3 bg-amber-50/50 rounded-lg cursor-pointer hover:bg-amber-100/50 transition"
                     >
                       <div>
-                        <p className="font-medium text-sete-castanho">{user.nome}</p>
-                        <p className="text-sm text-sete-cinza">{user.email}</p>
+                        <p className="font-medium text-amber-900">{user.nome}</p>
+                        <p className="text-sm text-gray-500">{user.email}</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className={user.temLumina ? 'text-green-500' : 'text-gray-300'}>
@@ -411,7 +412,7 @@ const CoachDashboard = () => {
                         <span className={user.temVitalis ? 'text-green-500' : 'text-gray-300'}>
                           🌱
                         </span>
-                        <span className="text-sm text-sete-cinza">
+                        <span className="text-sm text-gray-500">
                           {formatDateShort(user.created_at)}
                         </span>
                       </div>
@@ -423,7 +424,7 @@ const CoachDashboard = () => {
               {/* Alertas recentes */}
               {alerts.length > 0 && (
                 <div>
-                  <h3 className="font-medium text-sete-castanho mb-3">
+                  <h3 className="font-medium text-amber-900 mb-3">
                     🔔 Alertas Pendentes ({alerts.length})
                   </h3>
                   <div className="space-y-2">
@@ -447,12 +448,12 @@ const CoachDashboard = () => {
           {/* TAB: ALERTAS */}
           {activeTab === 'alertas' && (
             <div>
-              <h2 className="text-xl font-display text-sete-castanho mb-4">
+              <h2 className="text-xl font-semibold text-amber-900 mb-4">
                 🔔 Alertas
               </h2>
               
               {alerts.length === 0 ? (
-                <p className="text-center text-sete-cinza py-8">
+                <p className="text-center text-gray-500 py-8">
                   Nenhum alerta pendente ✨
                 </p>
               ) : (
@@ -460,7 +461,7 @@ const CoachDashboard = () => {
                   {alerts.map(alert => (
                     <div 
                       key={alert.id}
-                      className="flex items-center justify-between p-4 bg-sete-creme/50 rounded-lg border-l-4 border-sete-dourado"
+                      className="flex items-center justify-between p-4 bg-amber-50/50 rounded-lg border-l-4 border-amber-500"
                     >
                       <div>
                         <span className={`text-xs px-2 py-1 rounded-full ${
@@ -472,14 +473,14 @@ const CoachDashboard = () => {
                         }`}>
                           {alert.tipo_alerta}
                         </span>
-                        <p className="text-sete-castanho mt-2">{alert.descricao}</p>
-                        <p className="text-xs text-sete-cinza mt-1">
+                        <p className="text-amber-900 mt-2">{alert.descricao}</p>
+                        <p className="text-xs text-gray-500 mt-1">
                           {formatDate(alert.created_at)}
                         </p>
                       </div>
                       <button
                         onClick={() => markAlertAsRead(alert.id)}
-                        className="px-3 py-1 text-sm bg-sete-dourado/20 text-sete-castanho rounded hover:bg-sete-dourado/30 transition"
+                        className="px-3 py-1 text-sm bg-amber-100 text-amber-800 rounded hover:bg-amber-200 transition"
                       >
                         ✓ Marcar lido
                       </button>
@@ -493,32 +494,32 @@ const CoachDashboard = () => {
           {/* TAB: UTILIZADORES */}
           {activeTab === 'users' && !selectedUser && (
             <div>
-              <h2 className="text-xl font-display text-sete-castanho mb-4">
+              <h2 className="text-xl font-semibold text-amber-900 mb-4">
                 👥 Utilizadores ({users.length})
               </h2>
               
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-sete-dourado/20">
-                      <th className="text-left py-3 px-2 text-sm font-medium text-sete-cinza">Nome</th>
-                      <th className="text-left py-3 px-2 text-sm font-medium text-sete-cinza">Email</th>
-                      <th className="text-center py-3 px-2 text-sm font-medium text-sete-cinza">Lumina</th>
-                      <th className="text-center py-3 px-2 text-sm font-medium text-sete-cinza">Vitalis</th>
-                      <th className="text-left py-3 px-2 text-sm font-medium text-sete-cinza">Registo</th>
-                      <th className="text-right py-3 px-2 text-sm font-medium text-sete-cinza">Acções</th>
+                    <tr className="border-b border-amber-200">
+                      <th className="text-left py-3 px-2 text-sm font-medium text-gray-500">Nome</th>
+                      <th className="text-left py-3 px-2 text-sm font-medium text-gray-500">Email</th>
+                      <th className="text-center py-3 px-2 text-sm font-medium text-gray-500">Lumina</th>
+                      <th className="text-center py-3 px-2 text-sm font-medium text-gray-500">Vitalis</th>
+                      <th className="text-left py-3 px-2 text-sm font-medium text-gray-500">Registo</th>
+                      <th className="text-right py-3 px-2 text-sm font-medium text-gray-500">Acções</th>
                     </tr>
                   </thead>
                   <tbody>
                     {users.map(user => (
                       <tr 
                         key={user.id} 
-                        className="border-b border-sete-creme hover:bg-sete-creme/30 transition"
+                        className="border-b border-amber-100 hover:bg-amber-50/50 transition"
                       >
-                        <td className="py-3 px-2 font-medium text-sete-castanho">
+                        <td className="py-3 px-2 font-medium text-amber-900">
                           {user.nome}
                         </td>
-                        <td className="py-3 px-2 text-sm text-sete-cinza">
+                        <td className="py-3 px-2 text-sm text-gray-500">
                           {user.email}
                         </td>
                         <td className="py-3 px-2 text-center">
@@ -527,13 +528,13 @@ const CoachDashboard = () => {
                         <td className="py-3 px-2 text-center">
                           {user.temVitalis ? '✅' : '❌'}
                         </td>
-                        <td className="py-3 px-2 text-sm text-sete-cinza">
+                        <td className="py-3 px-2 text-sm text-gray-500">
                           {formatDateShort(user.created_at)}
                         </td>
                         <td className="py-3 px-2 text-right">
                           <button
                             onClick={() => loadUserDetails(user.id)}
-                            className="px-3 py-1 text-sm bg-sete-dourado text-white rounded hover:bg-sete-dourado/90 transition"
+                            className="px-3 py-1 text-sm bg-amber-500 text-white rounded hover:bg-amber-600 transition"
                           >
                             Ver detalhes
                           </button>
@@ -551,93 +552,127 @@ const CoachDashboard = () => {
             <div>
               <button
                 onClick={() => { setSelectedUser(null); setUserDetails(null); }}
-                className="mb-4 text-sete-dourado hover:underline"
+                className="mb-4 text-amber-600 hover:underline"
               >
                 ← Voltar à lista
               </button>
 
               <div className="space-y-6">
                 {/* Info básica */}
-                <div className="bg-sete-creme/50 rounded-xl p-6">
-                  <h3 className="text-xl font-display text-sete-castanho mb-4">
+                <div className="bg-amber-50/50 rounded-xl p-6">
+                  <h3 className="text-xl font-semibold text-amber-900 mb-4">
                     👤 {userDetails.user?.nome}
                   </h3>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-sete-cinza">Email:</span>
-                      <p className="text-sete-castanho">{userDetails.user?.email}</p>
+                      <span className="text-gray-500">Email:</span>
+                      <p className="text-amber-900">{userDetails.user?.email}</p>
                     </div>
                     <div>
-                      <span className="text-sete-cinza">Registo:</span>
-                      <p className="text-sete-castanho">{formatDate(userDetails.user?.created_at)}</p>
+                      <span className="text-gray-500">Registo:</span>
+                      <p className="text-amber-900">{formatDate(userDetails.user?.created_at)}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Lumina */}
-                <div className="bg-yellow-50/50 rounded-xl p-6">
-                  <h3 className="text-lg font-display text-sete-castanho mb-4">
+                <div className="bg-yellow-50 rounded-xl p-6">
+                  <h3 className="text-lg font-semibold text-amber-900 mb-4">
                     💡 Lumina
                   </h3>
                   {userDetails.lumina ? (
                     <div className="text-sm">
                       <p className="text-green-600 mb-2">✅ Completou em {formatDate(userDetails.lumina.created_at)}</p>
-                      {/* Adicionar mais dados do Lumina aqui */}
                     </div>
                   ) : (
-                    <p className="text-sete-cinza">❌ Ainda não completou o Lumina</p>
+                    <p className="text-gray-500">❌ Ainda não completou o Lumina</p>
                   )}
                 </div>
 
                 {/* Vitalis */}
-                <div className="bg-emerald-50/50 rounded-xl p-6">
-                  <h3 className="text-lg font-display text-sete-castanho mb-4">
+                <div className="bg-emerald-50 rounded-xl p-6">
+                  <h3 className="text-lg font-semibold text-amber-900 mb-4">
                     🌱 Vitalis
                   </h3>
                   {userDetails.vitalisClient ? (
                     <div className="space-y-3 text-sm">
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
-                          <span className="text-sete-cinza">Objectivo:</span>
-                          <p className="text-sete-castanho font-medium">
+                          <span className="text-gray-500">Objectivo:</span>
+                          <p className="text-amber-900 font-medium">
                             {userDetails.vitalisClient.objectivo_principal || '-'}
                           </p>
                         </div>
                         <div>
-                          <span className="text-sete-cinza">Fase:</span>
-                          <p className="text-sete-castanho font-medium">
+                          <span className="text-gray-500">Fase:</span>
+                          <p className="text-amber-900 font-medium">
                             {userDetails.vitalisClient.fase_actual || '-'}
                           </p>
                         </div>
                         <div>
-                          <span className="text-sete-cinza">Peso Inicial:</span>
-                          <p className="text-sete-castanho font-medium">
+                          <span className="text-gray-500">Peso Inicial:</span>
+                          <p className="text-amber-900 font-medium">
                             {userDetails.vitalisClient.peso_inicial || '-'} kg
                           </p>
                         </div>
                         <div>
-                          <span className="text-sete-cinza">Peso Actual:</span>
-                          <p className="text-sete-castanho font-medium">
+                          <span className="text-gray-500">Peso Actual:</span>
+                          <p className="text-amber-900 font-medium">
                             {userDetails.vitalisClient.peso_actual || '-'} kg
                           </p>
                         </div>
                       </div>
                       <div>
-                        <span className="text-sete-cinza">Último registo:</span>
-                        <p className="text-sete-castanho">
+                        <span className="text-gray-500">Último registo:</span>
+                        <p className="text-amber-900">
                           {formatDate(userDetails.vitalisClient.ultimo_registo)}
                         </p>
                       </div>
                     </div>
                   ) : (
-                    <p className="text-sete-cinza">❌ Ainda não entrou no Vitalis</p>
+                    <p className="text-gray-500">❌ Ainda não entrou no Vitalis</p>
                   )}
                 </div>
 
+                {/* Vitalis Plano */}
+                {userDetails.vitalisPlano && (
+                  <div className="bg-green-50 rounded-xl p-6">
+                    <h3 className="text-lg font-semibold text-amber-900 mb-4">
+                      📋 Plano Alimentar
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <span className="text-gray-500">Calorias:</span>
+                        <p className="text-amber-900 font-medium">
+                          {userDetails.vitalisPlano.calorias_diarias || '-'} kcal
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Proteína:</span>
+                        <p className="text-amber-900 font-medium">
+                          {userDetails.vitalisPlano.proteina_g || '-'} g
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Carboidratos:</span>
+                        <p className="text-amber-900 font-medium">
+                          {userDetails.vitalisPlano.carboidratos_g || '-'} g
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Gordura:</span>
+                        <p className="text-amber-900 font-medium">
+                          {userDetails.vitalisPlano.gordura_g || '-'} g
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* PDFs */}
                 {userDetails.pdfs?.length > 0 && (
-                  <div className="bg-blue-50/50 rounded-xl p-6">
-                    <h3 className="text-lg font-display text-sete-castanho mb-4">
+                  <div className="bg-blue-50 rounded-xl p-6">
+                    <h3 className="text-lg font-semibold text-amber-900 mb-4">
                       📄 PDFs Gerados ({userDetails.pdfs.length})
                     </h3>
                     <div className="space-y-2">
@@ -646,7 +681,7 @@ const CoachDashboard = () => {
                           key={index}
                           className="flex items-center justify-between p-3 bg-white rounded-lg"
                         >
-                          <span className="text-sm text-sete-castanho">
+                          <span className="text-sm text-amber-900">
                             {formatDate(pdf.created_at)}
                           </span>
                           {pdf.pdf_url && (
@@ -654,11 +689,28 @@ const CoachDashboard = () => {
                               href={pdf.pdf_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-sm text-sete-dourado hover:underline"
+                              className="text-sm text-amber-600 hover:underline font-medium"
                             >
                               Ver PDF →
                             </a>
                           )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tracking Água */}
+                {userDetails.agua?.length > 0 && (
+                  <div className="bg-cyan-50 rounded-xl p-6">
+                    <h3 className="text-lg font-semibold text-amber-900 mb-4">
+                      💧 Água (últimos 7 dias)
+                    </h3>
+                    <div className="grid grid-cols-7 gap-2">
+                      {userDetails.agua.map((log, index) => (
+                        <div key={index} className="text-center p-2 bg-white rounded-lg">
+                          <p className="text-xs text-gray-500">{formatDateShort(log.created_at)}</p>
+                          <p className="text-lg font-medium text-cyan-600">{log.quantidade || 0}ml</p>
                         </div>
                       ))}
                     </div>
@@ -671,39 +723,39 @@ const CoachDashboard = () => {
           {/* TAB: WAITLIST */}
           {activeTab === 'waitlist' && (
             <div>
-              <h2 className="text-xl font-display text-sete-castanho mb-4">
+              <h2 className="text-xl font-semibold text-amber-900 mb-4">
                 📋 Lista de Espera ({waitlist.length})
               </h2>
               
               {waitlist.length === 0 ? (
-                <p className="text-center text-sete-cinza py-8">
+                <p className="text-center text-gray-500 py-8">
                   Nenhum registo na lista de espera
                 </p>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-sete-dourado/20">
-                        <th className="text-left py-3 px-2 text-sm font-medium text-sete-cinza">Nome</th>
-                        <th className="text-left py-3 px-2 text-sm font-medium text-sete-cinza">Email</th>
-                        <th className="text-left py-3 px-2 text-sm font-medium text-sete-cinza">WhatsApp</th>
-                        <th className="text-left py-3 px-2 text-sm font-medium text-sete-cinza">Produto</th>
-                        <th className="text-left py-3 px-2 text-sm font-medium text-sete-cinza">Data</th>
+                      <tr className="border-b border-amber-200">
+                        <th className="text-left py-3 px-2 text-sm font-medium text-gray-500">Nome</th>
+                        <th className="text-left py-3 px-2 text-sm font-medium text-gray-500">Email</th>
+                        <th className="text-left py-3 px-2 text-sm font-medium text-gray-500">WhatsApp</th>
+                        <th className="text-left py-3 px-2 text-sm font-medium text-gray-500">Produto</th>
+                        <th className="text-left py-3 px-2 text-sm font-medium text-gray-500">Data</th>
                       </tr>
                     </thead>
                     <tbody>
                       {waitlist.map(lead => (
                         <tr 
                           key={lead.id} 
-                          className="border-b border-sete-creme hover:bg-sete-creme/30 transition"
+                          className="border-b border-amber-100 hover:bg-amber-50/50 transition"
                         >
-                          <td className="py-3 px-2 font-medium text-sete-castanho">
+                          <td className="py-3 px-2 font-medium text-amber-900">
                             {lead.nome}
                           </td>
-                          <td className="py-3 px-2 text-sm text-sete-cinza">
+                          <td className="py-3 px-2 text-sm text-gray-500">
                             {lead.email}
                           </td>
-                          <td className="py-3 px-2 text-sm text-sete-cinza">
+                          <td className="py-3 px-2 text-sm text-gray-500">
                             {lead.whatsapp ? (
                               <a 
                                 href={`https://wa.me/${lead.whatsapp.replace(/\D/g, '')}`}
@@ -716,11 +768,11 @@ const CoachDashboard = () => {
                             ) : '-'}
                           </td>
                           <td className="py-3 px-2">
-                            <span className="text-xs px-2 py-1 bg-sete-dourado/20 text-sete-castanho rounded-full">
+                            <span className="text-xs px-2 py-1 bg-amber-100 text-amber-800 rounded-full">
                               {lead.produto || 'geral'}
                             </span>
                           </td>
-                          <td className="py-3 px-2 text-sm text-sete-cinza">
+                          <td className="py-3 px-2 text-sm text-gray-500">
                             {formatDate(lead.created_at)}
                           </td>
                         </tr>
