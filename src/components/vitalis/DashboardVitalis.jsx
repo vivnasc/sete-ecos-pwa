@@ -345,14 +345,31 @@ export default function DashboardVitalis() {
       console.error('userId não disponível');
       return;
     }
-    
+
     const duracaoMin = (parseInt(sonoHoras) || 0) * 60 + (parseInt(sonoMinutos) || 0);
-    
-    if (duracaoMin === 0 && sonoQualidade === 0) {
-      alert('Preenche pelo menos as horas ou a qualidade');
+
+    if (duracaoMin === 0) {
+      alert('Preenche as horas de sono');
       return;
     }
-    
+
+    // Auto-calcular qualidade baseado nas horas se não foi selecionada manualmente
+    let qualidadeFinal = sonoQualidade;
+    if (qualidadeFinal === 0) {
+      const horas = duracaoMin / 60;
+      if (horas >= 7 && horas <= 9) {
+        qualidadeFinal = 5; // Sono ideal
+      } else if (horas >= 6 && horas < 7) {
+        qualidadeFinal = 4; // Bom
+      } else if ((horas >= 5 && horas < 6) || (horas > 9 && horas <= 10)) {
+        qualidadeFinal = 3; // Razoável
+      } else if ((horas >= 4 && horas < 5) || (horas > 10 && horas <= 11)) {
+        qualidadeFinal = 2; // Pouco
+      } else {
+        qualidadeFinal = 1; // Muito pouco ou demais
+      }
+    }
+
     try {
       const { data, error } = await supabase
         .from('vitalis_sono_log')
@@ -360,16 +377,16 @@ export default function DashboardVitalis() {
           user_id: userId,
           data: hoje,
           duracao_min: duracaoMin,
-          qualidade_1a5: sonoQualidade
+          qualidade_1a5: qualidadeFinal
         })
         .select()
         .single();
-      
+
       if (error) {
         console.error('Erro Supabase:', error.message);
         return;
       }
-      
+
       setSonoHoje(data);
       setMostrarSonoForm(false);
       setSonoHoras('');
@@ -574,9 +591,9 @@ export default function DashboardVitalis() {
 
           {/* Perfil do Utilizador */}
           <div className="flex items-center gap-4">
-            {/* Avatar */}
-            <div className="relative">
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/30 border-3 border-white shadow-lg flex items-center justify-center overflow-hidden">
+            {/* Avatar - Clicável para ir ao perfil */}
+            <Link to="/vitalis/perfil" className="relative group">
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/30 border-3 border-white shadow-lg flex items-center justify-center overflow-hidden group-hover:bg-white/40 transition-colors">
                 {client?.foto_url ? (
                   <img src={client.foto_url} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
@@ -587,14 +604,20 @@ export default function DashboardVitalis() {
               <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-yellow-400 border-2 border-white flex items-center justify-center text-xs font-bold shadow-md">
                 {Math.floor(xpTotal / 500) + 1}
               </div>
-            </div>
+              {/* Indicador de editar */}
+              <div className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-white flex items-center justify-center text-xs shadow opacity-0 group-hover:opacity-100 transition-opacity">
+                ✏️
+              </div>
+            </Link>
 
             {/* Info do utilizador */}
             <div className="flex-1">
               <p className="text-white/70 text-sm">Olá,</p>
-              <h2 className="text-xl md:text-2xl font-bold text-white">
-                {client?.nome_completo?.split(' ')[0] || 'Guerreira'}! 👋
-              </h2>
+              <Link to="/vitalis/perfil" className="block hover:opacity-80 transition-opacity">
+                <h2 className="text-xl md:text-2xl font-bold text-white">
+                  {client?.nome_completo?.split(' ')[0] || 'Guerreira'}! 👋
+                </h2>
+              </Link>
               <p className="text-white/80 text-sm capitalize">{diaSemana}, {dataFormatada}</p>
 
               {/* Barra de XP */}
