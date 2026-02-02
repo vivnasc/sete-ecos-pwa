@@ -12,10 +12,21 @@
 /* ===== BASE ===== */
 .home {
   font-family: 'Quicksand', sans-serif;
-  background: var(--marfim);
+  background: var(--marfim) !important;
   min-height: 100vh;
   color: var(--texto);
   padding-bottom: 100px;
+  position: relative;
+}
+
+/* Reset global overrides for home page */
+.home h1, .home h2, .home h3 {
+  color: inherit;
+}
+
+.home img {
+  max-width: 100%;
+  height: auto;
 }
 
 /* ===== HERO ===== */
@@ -94,9 +105,12 @@
 }
 
 .lumina-icon {
-  width: 80px;
-  height: 80px;
+  width: 80px !important;
+  height: 80px !important;
+  min-width: 80px;
+  min-height: 80px;
   object-fit: contain;
+  flex-shrink: 0;
 }
 
 .lumina-title {
@@ -280,12 +294,15 @@
   background: linear-gradient(90deg, transparent, var(--dourado), transparent);
 }
 
-.aurora-icon {
-  width: 90px;
-  height: 90px;
+.aurora-section .aurora-icon {
+  width: 90px !important;
+  height: 90px !important;
+  min-width: 90px;
+  min-height: 90px;
   object-fit: contain;
-  margin: 0 auto 16px auto;
-  display: block;
+  margin: 0 auto 16px auto !important;
+  display: block !important;
+  position: relative !important;
   filter: drop-shadow(0 0 25px rgba(201, 162, 39, 0.4));
 }
 
@@ -412,8 +429,10 @@
   }
 
   .lumina-icon {
-    width: 100px;
-    height: 100px;
+    width: 100px !important;
+    height: 100px !important;
+    min-width: 100px;
+    min-height: 100px;
   }
 
   .lumina-title {
@@ -448,9 +467,11 @@
     height: 140px;
   }
 
-  .aurora-icon {
-    width: 120px;
-    height: 120px;
+  .aurora-section .aurora-icon {
+    width: 120px !important;
+    height: 120px !important;
+    min-width: 120px;
+    min-height: 120px;
   }
 
   .aurora-section h2 {
@@ -511,12 +532,21 @@
     height: 160px;
   }
 
-  .aurora-icon {
-    width: 140px;
-    height: 140px;
+  .aurora-section .aurora-icon {
+    width: 140px !important;
+    height: 140px !important;
+    min-width: 140px;
+    min-height: 140px;
   }
 
   .aurora-section h2 {
     font-size: 2.2rem;
+  }
+
+  .lumina-icon {
+    width: 110px !important;
+    height: 110px !important;
+    min-width: 110px;
+    min-height: 110px;
   }
 }
