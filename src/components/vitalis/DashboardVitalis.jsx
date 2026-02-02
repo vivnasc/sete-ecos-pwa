@@ -1235,7 +1235,44 @@ export default function DashboardVitalis() {
             <span className="text-3xl">✨</span>
           </div>
 
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+            {/* Chat Coach */}
+            <Link to="/vitalis/chat" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
+              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">💬</div>
+              <p className="font-semibold text-white text-sm">Chat Coach</p>
+              <p className="text-white/70 text-xs mt-1">Fala com a coach</p>
+            </Link>
+
+            {/* Desafios */}
+            <Link to="/vitalis/desafios" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
+              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🎯</div>
+              <p className="font-semibold text-white text-sm">Desafios</p>
+              <p className="text-white/70 text-xs mt-1">Desafios semanais</p>
+            </Link>
+
+            {/* Lista de Compras */}
+            <Link to="/vitalis/lista-compras" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
+              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🛒</div>
+              <p className="font-semibold text-white text-sm">Compras</p>
+              <p className="text-white/70 text-xs mt-1">Lista automática</p>
+            </Link>
+
+            {/* Sugestões */}
+            <Link to="/vitalis/sugestoes" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
+              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">💡</div>
+              <p className="font-semibold text-white text-sm">Sugestões</p>
+              <p className="text-white/70 text-xs mt-1">O que comer</p>
+            </Link>
+          </div>
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {/* Fotos Progresso */}
+            <Link to="/vitalis/fotos-progresso" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
+              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">📸</div>
+              <p className="font-semibold text-white text-sm">Fotos</p>
+              <p className="text-white/70 text-xs mt-1">Antes e depois</p>
+            </Link>
+
             {/* Gráficos de Tendência */}
             <Link to="/vitalis/tendencias" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
               <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">📈</div>
@@ -1253,7 +1290,7 @@ export default function DashboardVitalis() {
             >
               <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🏆</div>
               <p className="font-semibold text-white text-sm">Conquistas</p>
-              <p className="text-white/70 text-xs mt-1">{conquistasDesbloqueadas.length} desbloqueadas</p>
+              <p className="text-white/70 text-xs mt-1">{conquistasDesbloqueadas.length} badges</p>
             </button>
 
             {/* Notificações */}
@@ -1261,13 +1298,6 @@ export default function DashboardVitalis() {
               <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🔔</div>
               <p className="font-semibold text-white text-sm">Lembretes</p>
               <p className="text-white/70 text-xs mt-1">Configurar alertas</p>
-            </Link>
-
-            {/* Scanner */}
-            <Link to="/vitalis/meals" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
-              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">📷</div>
-              <p className="font-semibold text-white text-sm">Scanner</p>
-              <p className="text-white/70 text-xs mt-1">Ler códigos de barras</p>
             </Link>
           </div>
         </div>
