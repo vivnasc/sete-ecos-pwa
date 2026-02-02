@@ -236,7 +236,7 @@ export default function RelatorioSemanal() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
         <div className="text-center">
           <div className="text-6xl mb-4 animate-pulse">📊</div>
           <p className="text-gray-600">A carregar relatório...</p>
@@ -246,10 +246,10 @@ export default function RelatorioSemanal() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 pb-8">
+    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-8">
 
       {/* Header */}
-      <header className="bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white">
+      <header className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white">
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between mb-4">
             <button
@@ -463,11 +463,11 @@ export default function RelatorioSemanal() {
         )}
 
         {/* Dicas/Insights */}
-        <div className="bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl p-5 border border-amber-200">
-          <h3 className="font-semibold text-amber-900 mb-3 flex items-center gap-2">
+        <div className="bg-gradient-to-br from-[#E8E4DC] to-[#F5F2ED] rounded-2xl p-5 border border-[#E8E2D9]">
+          <h3 className="font-semibold text-[#4A4035] mb-3 flex items-center gap-2">
             <span>💡</span> Insights da Semana
           </h3>
-          <ul className="space-y-2 text-sm text-amber-800">
+          <ul className="space-y-2 text-sm text-[#6B5C4C]">
             {stats.aderenciaRefeicoes < 70 && (
               <li>• Tenta planear as refeições com antecedência para melhorar a aderência</li>
             )}

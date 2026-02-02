@@ -626,7 +626,7 @@ const clientData = {
   const renderLegalSection = () => {
     return (
       <div className="space-y-6">
-        <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-6 border-2 border-[#D2B48C]">
+        <div className="bg-gradient-to-br from-[#E8E4DC] to-[#F5F2ED] rounded-xl p-6 border-2 border-[#D2B48C]">
           <h3 className="font-bold text-lg mb-4 text-[#4A4035]">📜 Documentos Legais</h3>
           <p className="text-sm text-gray-700 mb-4">
             Antes de continuar, por favor lê os seguintes documentos:
@@ -656,8 +656,8 @@ const clientData = {
           {renderField('comprometo_programa')}
         </div>
 
-        <div className="bg-amber-50 border-2 border-amber-300 rounded-lg p-4">
-          <p className="text-sm text-amber-900">
+        <div className="bg-[#F5F2ED] border-2 border-[#9CAF88] rounded-lg p-4">
+          <p className="text-sm text-[#4A4035]">
             ⚠️ <strong>Importante:</strong> O Vitalis é um programa de coaching nutricional. Se tens condições de saúde, recomendamos que consultes o teu médico antes de iniciar.
           </p>
         </div>
@@ -672,7 +672,7 @@ const clientData = {
     <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3]">
       <div className="fixed top-0 left-0 w-full h-1.5 bg-[#D2B48C]/30 z-50">
         <div
-          className="h-full bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] transition-all duration-300"
+          className="h-full bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -704,7 +704,7 @@ const clientData = {
             </p>
             <button
               onClick={handleNext}
-              className="bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white px-12 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-shadow"
+              className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-12 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-shadow"
             >
               Começar →
             </button>
@@ -734,7 +734,7 @@ const clientData = {
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="ml-auto px-8 py-3 bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white rounded-full font-semibold hover:shadow-lg transition-shadow"
+                    className="ml-auto px-8 py-3 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white rounded-full font-semibold hover:shadow-lg transition-shadow"
                   >
                     Continuar →
                   </button>
@@ -779,7 +779,7 @@ const clientData = {
                   setShowTermos(false);
                   handleChange('li_termos', true);
                 }}
-                className="w-full bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-shadow"
+                className="w-full bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-shadow"
               >
                 Li e Aceito os Termos
               </button>
@@ -813,7 +813,7 @@ const clientData = {
                   setShowPrivacidade(false);
                   handleChange('li_privacidade', true);
                 }}
-                className="w-full bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-shadow"
+                className="w-full bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-shadow"
               >
                 Li e Aceito a Política
               </button>

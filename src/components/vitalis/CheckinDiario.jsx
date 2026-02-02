@@ -95,11 +95,11 @@ export const CheckinDiario = () => {
   const Slider = ({ label, value, onChange, emoji }) => (
     <div className="mb-6">
       <div className="flex justify-between items-center mb-3">
-        <label className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+        <label className="text-lg font-semibold text-[#4A4035] flex items-center gap-2">
           <span className="text-2xl">{emoji}</span>
           {label}
         </label>
-        <span className="text-3xl font-bold text-orange-600">{value}</span>
+        <span className="text-3xl font-bold text-[#7C8B6F]">{value}</span>
       </div>
       <input
         type="range"
@@ -107,9 +107,9 @@ export const CheckinDiario = () => {
         max="10"
         value={value}
         onChange={onChange}
-        className="w-full h-3 bg-orange-200 rounded-lg appearance-none cursor-pointer slider"
+        className="w-full h-3 bg-[#E8E4DC] rounded-lg appearance-none cursor-pointer slider"
       />
-      <div className="flex justify-between text-xs text-gray-500 mt-1">
+      <div className="flex justify-between text-xs text-[#6B5C4C] mt-1">
         <span>Muito Baixo</span>
         <span>Médio</span>
         <span>Muito Alto</span>
@@ -119,20 +119,20 @@ export const CheckinDiario = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4 animate-bounce">✅</div>
-          <h2 className="text-3xl font-bold text-green-700 mb-2">Check-in Registado!</h2>
-          <p className="text-gray-600">A redirecionar para o dashboard...</p>
+          <h2 className="text-3xl font-bold text-[#7C8B6F] mb-2">Check-in Registado!</h2>
+          <p className="text-[#6B5C4C]">A redirecionar para o dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] shadow-lg">
+      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] shadow-lg">
         <div className="max-w-4xl mx-auto px-4 py-6">
           <button
             onClick={() => navigate('/vitalis/dashboard')}
@@ -147,10 +147,10 @@ export const CheckinDiario = () => {
               className="w-14 h-14 object-contain drop-shadow-lg"
             />
             <div>
-              <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+              <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Cormorant Garamond, serif', letterSpacing: '2px' }}>
                 Check-in Diário
               </h1>
-              <p className="text-orange-100">Como está o teu dia hoje? 🌱</p>
+              <p className="text-white/80">Como está o teu dia hoje? 🌱</p>
             </div>
           </div>
         </div>
@@ -259,7 +259,7 @@ export const CheckinDiario = () => {
             <button
               type="submit"
               disabled={loading || !formData.peso_kg}
-              className="flex-1 py-4 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 py-4 bg-[#7C8B6F] hover:bg-[#6B7A5D] text-white rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -296,7 +296,7 @@ export const CheckinDiario = () => {
           width: 24px;
           height: 24px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #C1634A, #D2B48C);
+          background: linear-gradient(135deg, #7C8B6F, #9CAF88);
           cursor: pointer;
           box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
@@ -305,7 +305,7 @@ export const CheckinDiario = () => {
           width: 24px;
           height: 24px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #C1634A, #D2B48C);
+          background: linear-gradient(135deg, #7C8B6F, #9CAF88);
           cursor: pointer;
           border: none;
           box-shadow: 0 2px 6px rgba(0,0,0,0.2);

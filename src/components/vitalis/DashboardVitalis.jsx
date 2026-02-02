@@ -419,21 +419,21 @@ export default function DashboardVitalis() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
         <div className="text-center">
           <div className="text-6xl mb-4 animate-pulse">🌱</div>
-          <p className="text-gray-600">A carregar o teu dia...</p>
+          <p className="text-[#6B5C4C]">A carregar o teu dia...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 pb-8">
+    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-8">
       
       {/* Header */}
       <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38]"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D]"></div>
         <div className="absolute inset-0 opacity-10">
           <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
             <path d="M0,50 Q25,30 50,50 T100,50 V100 H0 Z" fill="white"/>
@@ -448,8 +448,8 @@ export default function DashboardVitalis() {
                 className="w-12 h-12 md:w-14 md:h-14 object-contain drop-shadow-lg"
               />
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-white" style={{ fontFamily: 'Cormorant Garamond, serif' }}>VITALIS</h1>
-                <p className="text-orange-100 text-sm capitalize">{diaSemana}, {dataFormatada}</p>
+                <h1 className="text-2xl md:text-3xl font-bold text-white" style={{ fontFamily: 'Cormorant Garamond, serif', letterSpacing: '4px' }}>VITALIS</h1>
+                <p className="text-white/80 text-sm capitalize">{diaSemana}, {dataFormatada}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -484,12 +484,12 @@ export default function DashboardVitalis() {
           </div>
           
           {streak > 0 && (
-            <div className="md:w-48 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl p-4 text-white shadow-lg animate-pulse">
+            <div className="md:w-48 bg-gradient-to-br from-[#7C8B6F] to-[#6B7A5D] rounded-2xl p-4 text-white shadow-lg">
               <div className="flex items-center gap-3">
-                <div className="text-3xl">🔥</div>
+                <div className="text-3xl">🌿</div>
                 <div>
                   <p className="text-2xl font-bold">{streak} dias</p>
-                  <p className="text-amber-100 text-xs">Streak activo!</p>
+                  <p className="text-white/80 text-xs">Streak activo!</p>
                 </div>
               </div>
             </div>
@@ -521,8 +521,8 @@ export default function DashboardVitalis() {
                   
                   <defs>
                     <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#f59e0b"/>
-                      <stop offset="100%" stopColor="#ef4444"/>
+                      <stop offset="0%" stopColor="#7C8B6F"/>
+                      <stop offset="100%" stopColor="#9CAF88"/>
                     </linearGradient>
                   </defs>
                 </svg>
@@ -533,10 +533,10 @@ export default function DashboardVitalis() {
               </div>
 
               <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                <div className="p-2 bg-orange-50 rounded-lg">
-                  <div className="w-2 h-2 rounded-full bg-gradient-to-r from-amber-500 to-red-500 mx-auto mb-1"></div>
-                  <p className="font-semibold text-gray-700">{refeicoesConcluidas}/{totalRefeicoes}</p>
-                  <p className="text-gray-500">Refeições</p>
+                <div className="p-2 bg-[#F5F2ED] rounded-lg">
+                  <div className="w-2 h-2 rounded-full bg-gradient-to-r from-[#7C8B6F] to-[#9CAF88] mx-auto mb-1"></div>
+                  <p className="font-semibold text-[#4A4035]">{refeicoesConcluidas}/{totalRefeicoes}</p>
+                  <p className="text-[#6B5C4C]">Refeições</p>
                 </div>
                 <div className="p-2 bg-sky-50 rounded-lg">
                   <div className="w-2 h-2 rounded-full bg-sky-500 mx-auto mb-1"></div>
@@ -802,8 +802,8 @@ export default function DashboardVitalis() {
             {/* Refeições do Dia */}
             <div className="bg-white rounded-3xl shadow-xl p-5 flex-grow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Refeições Hoje</h3>
-                <Link to="/vitalis/refeicoes-config" className="text-xs text-amber-600 hover:text-amber-700 font-medium">
+                <h3 className="text-xs font-semibold text-[#6B5C4C] uppercase tracking-wider">Refeições Hoje</h3>
+                <Link to="/vitalis/refeicoes-config" className="text-xs text-[#7C8B6F] hover:text-[#6B7A5D] font-medium">
                   Configurar →
                 </Link>
               </div>
@@ -813,7 +813,7 @@ export default function DashboardVitalis() {
                   <p className="text-gray-500 text-sm mb-3">Ainda não configuraste as tuas refeições</p>
                   <Link 
                     to="/vitalis/refeicoes-config"
-                    className="inline-block px-4 py-2 bg-amber-500 text-white rounded-lg text-sm font-medium hover:bg-amber-600 transition-colors"
+                    className="inline-block px-4 py-2 bg-[#7C8B6F] text-white rounded-lg text-sm font-medium hover:bg-[#6B7A5D] transition-colors"
                   >
                     Configurar Agora
                   </Link>
@@ -859,7 +859,7 @@ export default function DashboardVitalis() {
                         ) : (
                           <Link 
                             to="/vitalis/meals"
-                            className="px-3 py-1.5 bg-amber-500 text-white text-xs rounded-full font-medium hover:bg-amber-600 transition-colors shadow-md"
+                            className="px-3 py-1.5 bg-[#7C8B6F] text-white text-xs rounded-full font-medium hover:bg-[#6B7A5D] transition-colors shadow-md"
                           >
                             Registar
                           </Link>
@@ -894,9 +894,9 @@ export default function DashboardVitalis() {
                   <span>Início: {pesoInicial}kg</span>
                   <span>Meta: {pesoMeta}kg</span>
                 </div>
-                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-gradient-to-r from-amber-400 to-green-500 rounded-full transition-all" 
+                <div className="h-2 bg-[#F5F2ED] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-[#9CAF88] to-[#7C8B6F] rounded-full transition-all"
                     style={{ width: `${Math.min(progressoPeso, 100)}%` }}
                   ></div>
                 </div>
@@ -947,14 +947,14 @@ export default function DashboardVitalis() {
               
               <div className="grid grid-cols-7 gap-1">
                 {ultimaSemana.map((dia, i) => (
-                  <div 
+                  <div
                     key={i}
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium mx-auto ${
-                      dia.status === 'verde' ? 'bg-green-500 text-white' :
-                      dia.status === 'amarelo' ? 'bg-yellow-400 text-white' :
-                      dia.status === 'vermelho' ? 'bg-red-400 text-white' :
-                      dia.ehHoje ? 'bg-amber-500 text-white ring-2 ring-amber-300 ring-offset-2' :
-                      'bg-gray-100 text-gray-400'
+                      dia.status === 'verde' ? 'bg-[#7C8B6F] text-white' :
+                      dia.status === 'amarelo' ? 'bg-[#9CAF88] text-white' :
+                      dia.status === 'vermelho' ? 'bg-[#C4A484] text-white' :
+                      dia.ehHoje ? 'bg-[#7C8B6F] text-white ring-2 ring-[#9CAF88] ring-offset-2' :
+                      'bg-[#F5F2ED] text-[#6B5C4C]'
                     }`}
                   >
                     {dia.dia}
@@ -962,9 +962,9 @@ export default function DashboardVitalis() {
                 ))}
               </div>
 
-              <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
-                <span className="text-xs text-gray-500">Aderência</span>
-                <span className="text-sm font-bold text-green-600">
+              <div className="mt-3 pt-3 border-t border-[#E8E2D9] flex items-center justify-between">
+                <span className="text-xs text-[#6B5C4C]">Aderência</span>
+                <span className="text-sm font-bold text-[#7C8B6F]">
                   {Math.round((ultimaSemana.filter(d => d.status === 'verde' || d.status === 'amarelo').length / 7) * 100)}%
                 </span>
               </div>
@@ -1026,25 +1026,25 @@ export default function DashboardVitalis() {
             </div>
 
             <div className="col-span-3">
-              <div className="bg-gradient-to-r from-amber-50 via-orange-50 to-red-50 rounded-2xl p-4">
+              <div className="bg-gradient-to-r from-[#E8E4DC] via-[#F5F2ED] to-[#FAF7F2] rounded-2xl p-4 border border-[#E8E2D9]">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">🔥</span>
-                    <span className="text-sm font-medium text-gray-700">Calorias</span>
+                    <span className="text-xl">🌿</span>
+                    <span className="text-sm font-medium text-[#4A4035]">Calorias</span>
                   </div>
-                  <span className="text-xs text-gray-500">Meta: {caloriasAlvo} kcal</span>
+                  <span className="text-xs text-[#6B5C4C]">Meta: {caloriasAlvo} kcal</span>
                 </div>
                 <div className="flex items-end gap-2 mb-2">
-                  <span className="text-3xl font-bold text-gray-800">{caloriasConsumidas}</span>
-                  <span className="text-gray-500 mb-1">/ {caloriasAlvo} kcal</span>
+                  <span className="text-3xl font-bold text-[#4A4035]">{caloriasConsumidas}</span>
+                  <span className="text-[#6B5C4C] mb-1">/ {caloriasAlvo} kcal</span>
                 </div>
                 <div className="h-3 bg-white rounded-full overflow-hidden shadow-inner">
-                  <div 
-                    className="h-full bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 rounded-full transition-all" 
+                  <div
+                    className="h-full bg-gradient-to-r from-[#9CAF88] via-[#7C8B6F] to-[#6B7A5D] rounded-full transition-all"
                     style={{ width: `${Math.min(progressoCalorias, 100)}%` }}
                   ></div>
                 </div>
-                <p className="text-xs text-gray-500 mt-2 text-center">
+                <p className="text-xs text-[#6B5C4C] mt-2 text-center">
                   Restam {Math.max(caloriasAlvo - caloriasConsumidas, 0)} kcal para hoje
                 </p>
               </div>
@@ -1054,34 +1054,34 @@ export default function DashboardVitalis() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-          <Link to="/vitalis/plano" className="group bg-white hover:bg-gradient-to-br hover:from-amber-500 hover:to-orange-600 rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center">
+          <Link to="/vitalis/plano" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
             <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">📋</div>
-            <p className="font-medium text-gray-800 group-hover:text-white text-xs">Meu Plano</p>
+            <p className="font-medium text-[#4A4035] group-hover:text-white text-xs">Meu Plano</p>
           </Link>
-          
-          <Link to="/vitalis/meals" className="group bg-white hover:bg-gradient-to-br hover:from-teal-500 hover:to-cyan-600 rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center">
+
+          <Link to="/vitalis/meals" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
             <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">🍽️</div>
-            <p className="font-medium text-gray-800 group-hover:text-white text-xs">Refeições</p>
+            <p className="font-medium text-[#4A4035] group-hover:text-white text-xs">Refeições</p>
           </Link>
-          
-          <Link to="/vitalis/checkin" className="group bg-white hover:bg-gradient-to-br hover:from-green-500 hover:to-emerald-600 rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center">
+
+          <Link to="/vitalis/checkin" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
             <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">✅</div>
-            <p className="font-medium text-gray-800 group-hover:text-white text-xs">Check-in</p>
+            <p className="font-medium text-[#4A4035] group-hover:text-white text-xs">Check-in</p>
           </Link>
-          
-          <Link to="/vitalis/receitas" className="group bg-white hover:bg-gradient-to-br hover:from-orange-500 hover:to-red-600 rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center">
+
+          <Link to="/vitalis/receitas" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
             <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">🍳</div>
-            <p className="font-medium text-gray-800 group-hover:text-white text-xs">Receitas</p>
+            <p className="font-medium text-[#4A4035] group-hover:text-white text-xs">Receitas</p>
           </Link>
-          
-          <Link to="/vitalis/espaco-retorno" className="group bg-white hover:bg-gradient-to-br hover:from-purple-500 hover:to-pink-600 rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center">
+
+          <Link to="/vitalis/espaco-retorno" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
             <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">💜</div>
-            <p className="font-medium text-gray-800 group-hover:text-white text-xs">Espaço Retorno</p>
+            <p className="font-medium text-[#4A4035] group-hover:text-white text-xs">Espaço Retorno</p>
           </Link>
-          
-          <Link to="/vitalis/relatorios" className="group bg-white hover:bg-gradient-to-br hover:from-indigo-500 hover:to-violet-600 rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center">
+
+          <Link to="/vitalis/relatorios" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
             <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">📊</div>
-            <p className="font-medium text-gray-800 group-hover:text-white text-xs">Relatórios</p>
+            <p className="font-medium text-[#4A4035] group-hover:text-white text-xs">Relatórios</p>
           </Link>
         </div>
 

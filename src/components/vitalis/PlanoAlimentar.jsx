@@ -205,7 +205,7 @@ function ConfigurarDiasTreino({ userId, diasActuais = [], onSave }) {
     <div className="bg-white rounded-2xl p-5 shadow-sm border border-orange-100">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="p-2 bg-orange-100 rounded-lg">
+          <div className="p-2 bg-[#E8E4DC] rounded-lg">
             <Icons.Dumbbell />
           </div>
           <div>
@@ -224,8 +224,8 @@ function ConfigurarDiasTreino({ userId, diasActuais = [], onSave }) {
             className={`
               w-10 h-10 rounded-full text-sm font-medium transition-all
               ${dias.includes(dia.valor)
-                ? 'bg-orange-500 text-white shadow-md'
-                : 'bg-gray-100 text-gray-500 hover:bg-orange-100'
+                ? 'bg-[#7C8B6F] text-white shadow-md'
+                : 'bg-gray-100 text-gray-500 hover:bg-[#E8E4DC]'
               }
             `}
             title={dia.nomeLongo}
@@ -236,7 +236,7 @@ function ConfigurarDiasTreino({ userId, diasActuais = [], onSave }) {
       </div>
 
       {dias.length > 0 && (
-        <p className="text-center text-sm text-orange-600 mb-4">
+        <p className="text-center text-sm text-[#7C8B6F] mb-4">
           +1 mão de hidratos nos dias de treino 🍚
         </p>
       )}
@@ -245,7 +245,7 @@ function ConfigurarDiasTreino({ userId, diasActuais = [], onSave }) {
         <button
           onClick={handleSave}
           disabled={loading}
-          className="w-full py-2 bg-orange-100 text-orange-700 rounded-lg font-medium hover:bg-orange-200 transition-all disabled:opacity-50"
+          className="w-full py-2 bg-[#E8E4DC] text-[#6B7A5D] rounded-lg font-medium hover:bg-[#D5D0C8] transition-all disabled:opacity-50"
         >
           {loading ? 'A guardar...' : 'Guardar alterações'}
         </button>
@@ -306,7 +306,7 @@ export default function PlanoAlimentar() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-orange-300 border-t-orange-600 rounded-full animate-spin mx-auto"></div>
           <p className="mt-4 text-gray-600">A carregar o teu plano...</p>
@@ -317,14 +317,14 @@ export default function PlanoAlimentar() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 p-4">
+      <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] p-4">
         <div className="max-w-md mx-auto mt-20 bg-white rounded-2xl p-6 text-center shadow-lg">
           <div className="text-5xl mb-4">🥗</div>
           <h2 className="text-xl font-bold text-gray-800 mb-2">Plano não disponível</h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <a 
             href="/vitalis/intake"
-            className="inline-block px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-full font-semibold"
+            className="inline-block px-6 py-3 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-full font-semibold"
           >
             Completar Intake
           </a>
@@ -338,11 +338,11 @@ export default function PlanoAlimentar() {
   const duracaoFase = plano.fase?.duracao_semanas || 4;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white px-4 pt-8 pb-6">
+      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-4 pt-8 pb-6">
         <div className="max-w-md mx-auto">
-          <Link to="/vitalis/dashboard" className="inline-flex items-center gap-1 text-orange-100 hover:text-white mb-4">
+          <Link to="/vitalis/dashboard" className="inline-flex items-center gap-1 text-white/80 hover:text-white mb-4">
             <Icons.ArrowLeft />
             <span>Voltar</span>
           </Link>
@@ -355,7 +355,7 @@ export default function PlanoAlimentar() {
             />
             <div>
               <h1 className="text-2xl font-bold">O Meu Plano</h1>
-              <p className="text-orange-100 mt-1">Resumo do teu plano alimentar</p>
+              <p className="text-white/80 mt-1">Resumo do teu plano alimentar</p>
             </div>
           </div>
         </div>
@@ -366,7 +366,7 @@ export default function PlanoAlimentar() {
         {/* Card Fase Actual - DESTAQUE */}
         <div className="bg-white rounded-2xl p-5 shadow-lg border-2 border-orange-200">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-orange-100 rounded-xl">
+            <div className="p-3 bg-[#E8E4DC] rounded-xl">
               <Icons.Target />
             </div>
             <div>
@@ -379,11 +379,11 @@ export default function PlanoAlimentar() {
           <div className="mb-4">
             <div className="flex justify-between text-sm mb-1">
               <span className="text-gray-600">Semana {semanaActual} de {duracaoFase}</span>
-              <span className="font-medium text-orange-600">{Math.round((semanaActual / duracaoFase) * 100)}%</span>
+              <span className="font-medium text-[#7C8B6F]">{Math.round((semanaActual / duracaoFase) * 100)}%</span>
             </div>
-            <div className="h-3 bg-orange-100 rounded-full overflow-hidden">
+            <div className="h-3 bg-[#E8E4DC] rounded-full overflow-hidden">
               <div 
-                className="h-full bg-gradient-to-r from-orange-400 to-amber-500 rounded-full transition-all"
+                className="h-full bg-gradient-to-r from-[#9CAF88] to-[#7C8B6F] rounded-full transition-all"
                 style={{ width: `${(semanaActual / duracaoFase) * 100}%` }}
               />
             </div>
@@ -400,7 +400,7 @@ export default function PlanoAlimentar() {
         {/* BOTÃO PDF - DESTACADO */}
         <button
           onClick={() => setShowPDFModal(true)}
-          className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all flex items-center justify-between"
+          className="w-full bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all flex items-center justify-between"
         >
           <div className="flex items-center gap-4">
             <div className="p-3 bg-white bg-opacity-20 rounded-xl">
@@ -408,7 +408,7 @@ export default function PlanoAlimentar() {
             </div>
             <div className="text-left">
               <p className="font-bold text-lg">Descarregar Plano PDF</p>
-              <p className="text-amber-100 text-sm">Plano completo para consultar offline</p>
+              <p className="text-white/80 text-sm">Plano completo para consultar offline</p>
             </div>
           </div>
           <span className="text-2xl">📄</span>
@@ -436,7 +436,7 @@ export default function PlanoAlimentar() {
               quantidade={plano.porcoes?.hidratos_base || 0}
               tamanho={plano.tamanhos?.mao_g || 20}
               extra={plano.e_dia_treino ? (plano.porcoes?.carbs_extra_treino || 0) : 0}
-              cor="from-amber-50 to-yellow-100"
+              cor="from-[#E8E4DC] to-[#F5F2ED]"
             />
             <PorcaoCard 
               tipo="gordura"
@@ -516,7 +516,7 @@ export default function PlanoAlimentar() {
               </div>
               <div className="text-center">
                 <p className="text-xs text-gray-500">Actual</p>
-                <p className="text-2xl font-bold text-orange-600">{plano.peso.actual} kg</p>
+                <p className="text-2xl font-bold text-[#7C8B6F]">{plano.peso.actual} kg</p>
               </div>
               <div className="text-center">
                 <p className="text-xs text-gray-500">Meta</p>
@@ -527,7 +527,7 @@ export default function PlanoAlimentar() {
             <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
               {plano.peso.meta && plano.peso.inicial && plano.peso.actual && (
                 <div 
-                  className="h-full bg-gradient-to-r from-orange-400 to-green-500 rounded-full transition-all"
+                  className="h-full bg-gradient-to-r from-[#9CAF88] to-[#7C8B6F] rounded-full transition-all"
                   style={{ 
                     width: `${Math.min(100, Math.max(0, 
                       ((plano.peso.inicial - plano.peso.actual) / (plano.peso.inicial - plano.peso.meta)) * 100

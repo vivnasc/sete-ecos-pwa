@@ -64,12 +64,8 @@ export default function Home() {
 
   return (
     <div className="home">
-      {/* HERO */}
+      {/* HERO - texto já incluído na imagem de fundo */}
       <section className="hero">
-        <div className="hero-content">
-          <h1 className="hero-title">Sete Ecos</h1>
-          <p className="hero-tagline">Sete caminhos. Uma travessia.</p>
-        </div>
       </section>
 
       {/* LUMINA */}

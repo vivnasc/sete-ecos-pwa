@@ -226,7 +226,7 @@ export default function RelatoriosHub() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50 pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white px-4 pt-8 pb-6">
+      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-4 pt-8 pb-6">
         <div className="max-w-md mx-auto">
           <Link to="/vitalis/dashboard" className="inline-flex items-center gap-1 text-orange-100 hover:text-white mb-4">
             <Icons.ArrowLeft />
@@ -374,7 +374,7 @@ export default function RelatoriosHub() {
               {relatoriosDisponiveis.final ? (
                 <button
                   onClick={gerarPDFFinal}
-                  className="flex items-center justify-between w-full p-4 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 rounded-xl transition-colors border border-amber-200"
+                  className="flex items-center justify-between w-full p-4 bg-gradient-to-r from-[#E8E4DC] to-[#F5F2ED] hover:from-[#D5D0C8] hover:to-[#E8E4DC] rounded-xl transition-colors border border-[#E8E2D9]"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-3xl">🏆</span>

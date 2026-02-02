@@ -211,7 +211,7 @@
 /* Pétalas */
 .petala {
   position: absolute;
-  width: 90px;
+  width: 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -231,33 +231,34 @@
 }
 
 .petala img {
-  width: 85px;
-  height: 85px;
+  width: 75px;
+  height: 75px;
   object-fit: contain;
   filter: drop-shadow(0 4px 15px rgba(0,0,0,0.18));
 }
 
 .petala-label {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--texto-suave);
-  margin-top: 4px;
+  margin-top: 2px;
   text-align: center;
+  white-space: nowrap;
 }
 
-/* Posições das pétalas */
-.petala-1 { top: 0; left: 50%; transform: translateX(-50%); }
+/* Posições das pétalas - ajustadas para evitar sobreposição */
+.petala-1 { top: -10px; left: 50%; transform: translateX(-50%); }
 .petala-1:hover { transform: translateX(-50%) scale(1.1); }
 
-.petala-2 { top: 25px; right: 5px; }
-.petala-3 { top: 135px; right: -15px; }
-.petala-4 { bottom: 25px; right: 25px; }
-.petala-5 { bottom: 25px; left: 25px; }
-.petala-6 { top: 135px; left: -15px; }
-.petala-7 { top: 25px; left: 5px; }
+.petala-2 { top: 35px; right: -5px; }
+.petala-3 { top: 145px; right: -25px; }
+.petala-4 { bottom: 15px; right: 35px; }
+.petala-5 { bottom: 15px; left: 35px; }
+.petala-6 { top: 145px; left: -25px; }
+.petala-7 { top: 35px; left: -5px; }
 
 /* Badge */
 .badge {

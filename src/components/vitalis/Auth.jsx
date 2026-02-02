@@ -65,11 +65,11 @@ export default function VitalisAuth() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] flex items-center justify-center p-4">
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[#C1634A]/10 to-transparent rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-[#D97706]/10 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[#7C8B6F]/20 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-[#9CAF88]/15 to-transparent rounded-full blur-3xl"></div>
       </div>
 
       <div className="max-w-md w-full relative z-10">
@@ -84,23 +84,23 @@ export default function VitalisAuth() {
           </div>
           <h1
             className="text-4xl font-bold text-[#4A4035] mb-2"
-            style={{ fontFamily: 'Cormorant Garamond, serif', letterSpacing: '3px' }}
+            style={{ fontFamily: 'Cormorant Garamond, serif', letterSpacing: '6px' }}
           >
             VITALIS
           </h1>
-          <p className="text-[#8B4513] italic text-lg">A Raiz da Transformação</p>
+          <p className="text-[#6B5C4C] italic text-lg">O caminho do corpo.</p>
         </div>
 
         {/* Auth Card */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-[#D2B48C]/30">
+        <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-[#E8E2D9]">
           {/* Tabs */}
-          <div className="flex gap-2 mb-6 bg-[#F5F0E8] p-1.5 rounded-2xl">
+          <div className="flex gap-2 mb-6 bg-[#F5F2ED] p-1.5 rounded-2xl">
             <button
               onClick={() => setIsLogin(true)}
               className={`flex-1 py-3.5 rounded-xl font-semibold transition-all ${
                 isLogin
-                  ? 'bg-gradient-to-r from-[#C1634A] to-[#A54E38] text-white shadow-lg'
-                  : 'text-[#6B4423] hover:text-[#4A4035]'
+                  ? 'bg-[#7C8B6F] text-white shadow-lg'
+                  : 'text-[#6B5C4C] hover:text-[#4A4035]'
               }`}
             >
               Entrar
@@ -109,8 +109,8 @@ export default function VitalisAuth() {
               onClick={() => setIsLogin(false)}
               className={`flex-1 py-3.5 rounded-xl font-semibold transition-all ${
                 !isLogin
-                  ? 'bg-gradient-to-r from-[#C1634A] to-[#A54E38] text-white shadow-lg'
-                  : 'text-[#6B4423] hover:text-[#4A4035]'
+                  ? 'bg-[#7C8B6F] text-white shadow-lg'
+                  : 'text-[#6B5C4C] hover:text-[#4A4035]'
               }`}
             >
               Criar Conta
@@ -129,7 +129,7 @@ export default function VitalisAuth() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="exemplo@email.com"
                 required
-                className="w-full px-4 py-3.5 border-2 border-[#D2B48C]/50 rounded-xl focus:border-[#C1634A] focus:ring-2 focus:ring-[#C1634A]/20 outline-none transition-all bg-white/80"
+                className="w-full px-4 py-3.5 border-2 border-[#E8E2D9] rounded-xl focus:border-[#7C8B6F] focus:ring-2 focus:ring-[#7C8B6F]/20 outline-none transition-all bg-white"
               />
             </div>
 
@@ -144,7 +144,7 @@ export default function VitalisAuth() {
                 placeholder="Mínimo 6 caracteres"
                 required
                 minLength={6}
-                className="w-full px-4 py-3.5 border-2 border-[#D2B48C]/50 rounded-xl focus:border-[#C1634A] focus:ring-2 focus:ring-[#C1634A]/20 outline-none transition-all bg-white/80"
+                className="w-full px-4 py-3.5 border-2 border-[#E8E2D9] rounded-xl focus:border-[#7C8B6F] focus:ring-2 focus:ring-[#7C8B6F]/20 outline-none transition-all bg-white"
               />
             </div>
 
@@ -157,7 +157,7 @@ export default function VitalisAuth() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white font-bold py-4 rounded-xl hover:shadow-xl transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#7C8B6F] hover:bg-[#6B7A5D] text-white font-bold py-4 rounded-xl hover:shadow-xl transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -167,7 +167,7 @@ export default function VitalisAuth() {
                   </svg>
                   A processar...
                 </span>
-              ) : isLogin ? '🌱 Entrar' : '🌱 Criar Conta'}
+              ) : isLogin ? 'Entrar' : 'Criar Conta'}
             </button>
           </form>
 
@@ -175,7 +175,7 @@ export default function VitalisAuth() {
           <div className="mt-6 text-center">
             <button
               onClick={() => navigate('/')}
-              className="text-[#8B4513] hover:text-[#C1634A] text-sm font-medium transition-colors"
+              className="text-[#6B5C4C] hover:text-[#7C8B6F] text-sm font-medium transition-colors"
             >
               ← Voltar à Página Inicial
             </button>
@@ -183,18 +183,18 @@ export default function VitalisAuth() {
         </div>
 
         {/* Help Text */}
-        <p className="text-center text-[#6B4423] text-sm mt-6">
+        <p className="text-center text-[#6B5C4C] text-sm mt-6">
           {isLogin ? 'Esqueceste a password?' : 'Já tens conta?'}{' '}
           <button
             onClick={() => setIsLogin(!isLogin)}
-            className="text-[#C1634A] hover:text-[#A54E38] font-semibold"
+            className="text-[#7C8B6F] hover:text-[#6B7A5D] font-semibold"
           >
             {isLogin ? 'Fala connosco' : 'Faz login'}
           </button>
         </p>
 
         {/* Brand footer */}
-        <div className="text-center mt-8 text-[#8B4513]/60 text-xs">
+        <div className="text-center mt-8 text-[#6B5C4C]/60 text-xs">
           <p>Powered by SETE ECOS</p>
         </div>
       </div>

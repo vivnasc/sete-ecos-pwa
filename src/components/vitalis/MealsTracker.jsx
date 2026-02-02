@@ -181,7 +181,7 @@ export default function MealsTracker() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
         <div className="text-center">
           <div className="text-6xl mb-4">🍽️</div>
           <p className="text-gray-600">A carregar...</p>
@@ -194,7 +194,7 @@ export default function MealsTracker() {
   if (refeicoes.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3]">
-        <div className="bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] shadow-lg">
+        <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] shadow-lg">
           <div className="max-w-2xl mx-auto px-4 py-6">
             <button
               onClick={() => navigate('/vitalis/dashboard')}
@@ -218,7 +218,7 @@ export default function MealsTracker() {
             </p>
             <button
               onClick={() => navigate('/vitalis/refeicoes-config')}
-              className="px-8 py-4 bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white rounded-xl font-semibold text-lg hover:shadow-lg transition-all"
+              className="px-8 py-4 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white rounded-xl font-semibold text-lg hover:shadow-lg transition-all"
             >
               Configurar Refeições →
             </button>
@@ -231,7 +231,7 @@ export default function MealsTracker() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3]">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] shadow-lg">
+      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] shadow-lg">
         <div className="max-w-2xl mx-auto px-4 py-6">
           <button
             onClick={() => navigate('/vitalis/dashboard')}
@@ -540,7 +540,7 @@ function DetalheRefeicao({ refeicao, registo, plano, onSave, saving }) {
       <button
         onClick={() => onSave(detalhes)}
         disabled={saving}
-        className="w-full py-3 bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+        className="w-full py-3 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
       >
         {saving ? 'A guardar...' : '✓ Guardar Detalhes'}
       </button>

@@ -176,7 +176,7 @@ export default function RefeicoesCofig() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3]">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] shadow-lg">
+      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] shadow-lg">
         <div className="max-w-2xl mx-auto px-4 py-6">
           <button
             onClick={() => navigate('/vitalis/dashboard')}
@@ -290,7 +290,7 @@ export default function RefeicoesCofig() {
             <button
               onClick={adicionarRefeicao}
               disabled={saving || !novaRefeicao.nome.trim()}
-              className="px-6 py-3 bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+              className="px-6 py-3 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
             >
               {saving ? '...' : '+ Adicionar'}
             </button>
