@@ -862,12 +862,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // ============================================
-        // CONFIGURAÇÃO SUPABASE - SUBSTITUIR AQUI
+        // CONFIGURAÇÃO SUPABASE
         // ============================================
-        const SUPABASE_URL = 'https://vvvdtogvlutrybultffx.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2dmR0b2d2bHV0cnlidWx0ZmZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MjQwODgsImV4cCI6MjA4NTAwMDA4OH0.8RGSlyNCuD5vC8ad2gkZN4wTJXkR35jENiPQNjS9BY0';
+        const SUPABASE_URL_WAITLIST = 'https://vvvdtogvlutrybultffx.supabase.co';
+        const SUPABASE_ANON_KEY_WAITLIST = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2dmR0b2d2bHV0cnlidWx0ZmZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MjQwODgsImV4cCI6MjA4NTAwMDA4OH0.8RGSlyNCuD5vC8ad2gkZN4wTJXkR35jENiPQNjS9BY0';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Usar cliente existente ou criar novo
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL_WAITLIST, SUPABASE_ANON_KEY_WAITLIST);
         
         // ============================================
         // LÓGICA DO FORMULÁRIO
@@ -894,7 +895,7 @@
             };
             
             try {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('waitlist')
                     .insert([data]);
                 
