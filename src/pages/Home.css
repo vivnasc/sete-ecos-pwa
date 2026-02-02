@@ -86,22 +86,23 @@
 }
 
 .lumina-card {
-  background: linear-gradient(135deg, #B8A5C4 0%, var(--lumina-lavanda) 100%);
+  background: linear-gradient(135deg, #6B4C8A 0%, #4B0082 50%, #2A1B5E 100%);
   border-radius: 20px;
-  padding: 20px 24px;
+  padding: 24px 28px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  box-shadow: 0 8px 30px rgba(155, 138, 166, 0.35);
+  gap: 20px;
+  box-shadow: 0 10px 40px rgba(75, 0, 130, 0.4);
   cursor: pointer;
-  max-width: 400px;
+  max-width: 450px;
   margin: 0 auto;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.15);
 }
 
 .lumina-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(155, 138, 166, 0.45);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 16px 50px rgba(75, 0, 130, 0.55);
 }
 
 .lumina-icon {
@@ -128,13 +129,18 @@
 }
 
 .lumina-cta {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: #FFF;
-  margin-top: 4px;
-  display: flex;
+  color: #FFD700;
+  margin-top: 8px;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  background: rgba(255, 215, 0, 0.15);
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 /* ===== SECTION TITLE ===== */
