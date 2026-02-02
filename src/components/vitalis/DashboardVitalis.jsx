@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link, useNavigate } from 'react-router-dom';
-import { StreakDisplay, CelebracaoModal, CONQUISTAS } from './Gamificacao.jsx';
+import { StreakDisplay, CelebracaoModal, ConquistasSection, NivelProgresso, CONQUISTAS } from './Gamificacao.jsx';
+import { useOnboarding, OnboardingWrapper } from './OnboardingTutorial.jsx';
 
 export default function DashboardVitalis() {
   const navigate = useNavigate();
@@ -21,12 +22,17 @@ export default function DashboardVitalis() {
   const [melhorStreak, setMelhorStreak] = useState(0);
   const [showCelebracao, setShowCelebracao] = useState(false);
   const [conquistaActual, setConquistaActual] = useState(null);
+  const [conquistasDesbloqueadas, setConquistasDesbloqueadas] = useState([]);
+  const [xpTotal, setXpTotal] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('vitalis-theme') === 'dark';
     }
     return false;
   });
+
+  // Hook do onboarding
+  const { mostrarOnboarding, completarOnboarding } = useOnboarding();
 
   // Estados para Sono interactivo
   const [mostrarSonoForm, setMostrarSonoForm] = useState(false);
@@ -152,11 +158,60 @@ export default function DashboardVitalis() {
       if (jejumData) setJejumActual(jejumData);
 
       calcularStreak(userData.id);
+      calcularConquistas(userData.id);
 
     } catch (error) {
       console.error('Erro ao carregar dashboard:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Calcular conquistas desbloqueadas
+  const calcularConquistas = async (userId) => {
+    try {
+      // Buscar dados para verificar conquistas
+      const [aguaCount, mealsCount, treinoCount, checkinCount] = await Promise.all([
+        supabase.from('vitalis_agua_log').select('id', { count: 'exact' }).eq('user_id', userId),
+        supabase.from('vitalis_meals_log').select('id', { count: 'exact' }).eq('user_id', userId),
+        supabase.from('vitalis_workouts_log').select('id', { count: 'exact' }).eq('user_id', userId),
+        supabase.from('vitalis_registos').select('id', { count: 'exact' }).eq('user_id', userId)
+      ]);
+
+      const conquistas = [];
+      let xp = 0;
+
+      // Conquista primeiro registo
+      if ((checkinCount.count || 0) >= 1) {
+        conquistas.push('primeiro_registo');
+        xp += CONQUISTAS.primeiro_registo?.xp || 50;
+      }
+
+      // Conquistas de streak
+      const streakAtual = parseInt(localStorage.getItem('vitalis-melhor-streak') || '0');
+      if (streakAtual >= 3) { conquistas.push('streak_3'); xp += 100; }
+      if (streakAtual >= 7) { conquistas.push('streak_7'); xp += 200; }
+      if (streakAtual >= 14) { conquistas.push('streak_14'); xp += 350; }
+      if (streakAtual >= 30) { conquistas.push('streak_30'); xp += 500; }
+
+      // Conquistas de água
+      if ((aguaCount.count || 0) >= 1) { conquistas.push('agua_1'); xp += 50; }
+      if ((aguaCount.count || 0) >= 50) { conquistas.push('agua_50'); xp += 150; }
+
+      // Conquistas de treino
+      if ((treinoCount.count || 0) >= 1) { conquistas.push('treino_1'); xp += 75; }
+      if ((treinoCount.count || 0) >= 10) { conquistas.push('treino_10'); xp += 200; }
+
+      // Conquistas de refeições
+      if ((mealsCount.count || 0) >= 10) { conquistas.push('refeicoes_10'); xp += 100; }
+      if ((mealsCount.count || 0) >= 50) { conquistas.push('refeicoes_50'); xp += 250; }
+
+      setConquistasDesbloqueadas(conquistas);
+      setXpTotal(xp);
+      localStorage.setItem('vitalis-xp', xp.toString());
+      localStorage.setItem('vitalis-conquistas', JSON.stringify(conquistas));
+    } catch (error) {
+      console.error('Erro ao calcular conquistas:', error);
     }
   };
 
@@ -475,7 +530,7 @@ export default function DashboardVitalis() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-8">
       
-      {/* Header */}
+      {/* Header com Perfil */}
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D]"></div>
         <div className="absolute inset-0 opacity-10">
@@ -483,36 +538,85 @@ export default function DashboardVitalis() {
             <path d="M0,50 Q25,30 50,50 T100,50 V100 H0 Z" fill="white"/>
           </svg>
         </div>
-        <div className="relative max-w-6xl mx-auto px-4 py-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+        <div className="relative max-w-6xl mx-auto px-4 py-4">
+          {/* Top bar com logo e ações */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
               <img
                 src="/logos/VITALIS_LOGO_V3.png"
                 alt="Vitalis"
-                className="w-12 h-12 md:w-14 md:h-14 object-contain drop-shadow-lg"
+                className="w-10 h-10 object-contain drop-shadow-lg"
               />
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-white" style={{ fontFamily: 'Cormorant Garamond, serif', letterSpacing: '4px' }}>VITALIS</h1>
-                <p className="text-white/80 text-sm capitalize">{diaSemana}, {dataFormatada}</p>
-              </div>
+              <h1 className="text-xl font-bold text-white" style={{ fontFamily: 'Cormorant Garamond, serif', letterSpacing: '3px' }}>VITALIS</h1>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              {/* Notificações */}
+              <Link
+                to="/vitalis/notificacoes"
+                className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-base border border-white/30 hover:bg-white/30 transition-colors"
+                title="Notificações"
+              >
+                🔔
+              </Link>
               {/* Dark Mode Toggle */}
               <button
                 onClick={toggleDarkMode}
-                className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-lg border-2 border-white/30 hover:bg-white/30 transition-colors"
+                className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-base border border-white/30 hover:bg-white/30 transition-colors"
                 title={isDarkMode ? 'Modo claro' : 'Modo escuro'}
               >
                 {isDarkMode ? '☀️' : '🌙'}
               </button>
-              <div className="hidden md:block text-right text-white">
-                <p className="text-xs opacity-80">Bem-vinda,</p>
-                <p className="font-semibold">{client?.nome_completo?.split(' ')[0] || 'Guerreira'} 🌱</p>
-              </div>
-              <Link to="/" className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center text-xl border-2 border-white/30 hover:bg-white/30 transition-colors">
+              <Link to="/" className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-base border border-white/30 hover:bg-white/30 transition-colors">
                 ←
               </Link>
             </div>
+          </div>
+
+          {/* Perfil do Utilizador */}
+          <div className="flex items-center gap-4">
+            {/* Avatar */}
+            <div className="relative">
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/30 border-3 border-white shadow-lg flex items-center justify-center overflow-hidden">
+                {client?.foto_url ? (
+                  <img src={client.foto_url} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-3xl md:text-4xl">{client?.genero === 'M' ? '👨' : '👩'}</span>
+                )}
+              </div>
+              {/* Badge de nível */}
+              <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-yellow-400 border-2 border-white flex items-center justify-center text-xs font-bold shadow-md">
+                {Math.floor(xpTotal / 500) + 1}
+              </div>
+            </div>
+
+            {/* Info do utilizador */}
+            <div className="flex-1">
+              <p className="text-white/70 text-sm">Olá,</p>
+              <h2 className="text-xl md:text-2xl font-bold text-white">
+                {client?.nome_completo?.split(' ')[0] || 'Guerreira'}! 👋
+              </h2>
+              <p className="text-white/80 text-sm capitalize">{diaSemana}, {dataFormatada}</p>
+
+              {/* Barra de XP */}
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden max-w-[150px]">
+                  <div
+                    className="h-full bg-yellow-400 rounded-full transition-all"
+                    style={{ width: `${(xpTotal % 500) / 500 * 100}%` }}
+                  ></div>
+                </div>
+                <span className="text-xs text-white/80">{xpTotal} XP</span>
+              </div>
+            </div>
+
+            {/* Streak compacto no header */}
+            {streak > 0 && (
+              <div className="hidden md:flex flex-col items-center bg-white/20 rounded-xl px-4 py-2">
+                <span className="text-2xl">🔥</span>
+                <span className="text-white font-bold">{streak}</span>
+                <span className="text-white/70 text-xs">dias</span>
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -1098,6 +1202,53 @@ export default function DashboardVitalis() {
           </div>
         </div>
 
+        {/* Funcionalidades Premium - NOVAS */}
+        <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 rounded-3xl p-5 shadow-xl">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-white font-bold text-lg">Funcionalidades Premium</h3>
+              <p className="text-white/70 text-sm">Explora todas as ferramentas</p>
+            </div>
+            <span className="text-3xl">✨</span>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {/* Gráficos de Tendência */}
+            <Link to="/vitalis/tendencias" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
+              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">📈</div>
+              <p className="font-semibold text-white text-sm">Tendências</p>
+              <p className="text-white/70 text-xs mt-1">Peso, água, sono</p>
+            </Link>
+
+            {/* Conquistas/Gamificação */}
+            <button
+              onClick={() => {
+                const el = document.getElementById('conquistas-section');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm"
+            >
+              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🏆</div>
+              <p className="font-semibold text-white text-sm">Conquistas</p>
+              <p className="text-white/70 text-xs mt-1">{conquistasDesbloqueadas.length} desbloqueadas</p>
+            </button>
+
+            {/* Notificações */}
+            <Link to="/vitalis/notificacoes" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
+              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🔔</div>
+              <p className="font-semibold text-white text-sm">Lembretes</p>
+              <p className="text-white/70 text-xs mt-1">Configurar alertas</p>
+            </Link>
+
+            {/* Scanner */}
+            <Link to="/vitalis/meals" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
+              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">📷</div>
+              <p className="font-semibold text-white text-sm">Scanner</p>
+              <p className="text-white/70 text-xs mt-1">Ler códigos de barras</p>
+            </Link>
+          </div>
+        </div>
+
         {/* Quick Actions */}
         <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
           <Link to="/vitalis/plano" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
@@ -1131,6 +1282,62 @@ export default function DashboardVitalis() {
           </Link>
         </div>
 
+        {/* Secção de Conquistas */}
+        <div id="conquistas-section" className="bg-white rounded-3xl shadow-xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                🏆 Minhas Conquistas
+              </h3>
+              <p className="text-sm text-gray-500">Nível {Math.floor(xpTotal / 500) + 1} • {xpTotal} XP total</p>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-[#7C8B6F]">{conquistasDesbloqueadas.length}</p>
+              <p className="text-xs text-gray-500">conquistas</p>
+            </div>
+          </div>
+
+          {/* Barra de progresso para próximo nível */}
+          <div className="mb-4 p-3 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl">
+            <div className="flex items-center justify-between text-sm mb-2">
+              <span className="text-gray-600">Próximo nível</span>
+              <span className="font-semibold text-amber-600">{500 - (xpTotal % 500)} XP restantes</span>
+            </div>
+            <div className="h-3 bg-amber-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full transition-all"
+                style={{ width: `${(xpTotal % 500) / 500 * 100}%` }}
+              ></div>
+            </div>
+          </div>
+
+          {/* Lista de conquistas */}
+          <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
+            {Object.entries(CONQUISTAS).slice(0, 8).map(([id, conquista]) => {
+              const desbloqueada = conquistasDesbloqueadas.includes(id);
+              return (
+                <div
+                  key={id}
+                  className={`relative p-3 rounded-xl text-center transition-all ${
+                    desbloqueada
+                      ? 'bg-gradient-to-br from-yellow-100 to-amber-100 shadow-md'
+                      : 'bg-gray-100 opacity-50'
+                  }`}
+                  title={conquista.nome}
+                >
+                  <span className={`text-2xl ${desbloqueada ? '' : 'grayscale'}`}>
+                    {conquista.icone}
+                  </span>
+                  <p className="text-xs mt-1 font-medium text-gray-700 truncate">{conquista.nome?.split(' ')[0]}</p>
+                  {desbloqueada && (
+                    <span className="absolute -top-1 -right-1 text-xs">✨</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
       </main>
 
       {/* Modal de Celebração de Conquistas */}
@@ -1142,6 +1349,11 @@ export default function DashboardVitalis() {
           setConquistaActual(null);
         }}
       />
+
+      {/* Onboarding para novos utilizadores */}
+      {mostrarOnboarding && (
+        <OnboardingWrapper onComplete={completarOnboarding} />
+      )}
     </div>
   );
 }
