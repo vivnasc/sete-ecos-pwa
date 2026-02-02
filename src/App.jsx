@@ -21,6 +21,11 @@ import ReceitaDetalhe from './components/vitalis/ReceitaDetalhe'
 import NotificacoesConfig from './components/vitalis/NotificacoesConfig'
 import GraficosTendencia from './components/vitalis/GraficosTendencia'
 import PerfilVitalis from './components/vitalis/PerfilVitalis'
+import ListaCompras from './components/vitalis/ListaCompras'
+import SugestoesRefeicoes from './components/vitalis/SugestoesRefeicoes'
+import ChatCoach from './components/vitalis/ChatCoach'
+import FotosProgresso from './components/vitalis/FotosProgresso'
+import DesafiosSemanais from './components/vitalis/DesafiosSemanais'
 import PlanoHTML from './pages/PlanoHTML'
 import CoachDashboard from './pages/CoachDashboard'
 
@@ -62,6 +67,11 @@ function App() {
           <Route path="/vitalis/notificacoes" element={session ? <NotificacoesConfig /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/tendencias" element={session ? <GraficosTendencia /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/perfil" element={session ? <PerfilVitalis /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/lista-compras" element={session ? <ListaCompras /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/sugestoes" element={session ? <SugestoesRefeicoes /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/chat" element={session ? <ChatCoach /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/fotos-progresso" element={session ? <FotosProgresso /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/desafios" element={session ? <DesafiosSemanais /> : <Navigate to="/vitalis/login" />} />
           <Route path="/coach" element={session?.user?.email === 'viv.saraiva@gmail.com' ? <CoachDashboard /> : <Navigate to="/" />} />
           <Route path="/vitalis/plano-pdf" element={<PlanoHTML />} />
           <Route path="*" element={<Navigate to="/" />} />
