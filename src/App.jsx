@@ -19,6 +19,7 @@ import RelatorioSemanal from './components/vitalis/RelatorioSemanal'
 import RelatoriosHub from './components/vitalis/RelatoriosHub'
 import ReceitaDetalhe from './components/vitalis/ReceitaDetalhe'
 import NotificacoesConfig from './components/vitalis/NotificacoesConfig'
+import GraficosTendencia from './components/vitalis/GraficosTendencia'
 import PlanoHTML from './pages/PlanoHTML'
 import CoachDashboard from './pages/CoachDashboard'
 
@@ -58,6 +59,7 @@ function App() {
           <Route path="/vitalis/relatorio-semanal" element={session ? <RelatorioSemanal /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/receita/:id" element={<ReceitaDetalhe />} />
           <Route path="/vitalis/notificacoes" element={session ? <NotificacoesConfig /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/tendencias" element={session ? <GraficosTendencia /> : <Navigate to="/vitalis/login" />} />
           <Route path="/coach" element={session?.user?.email === 'viv.saraiva@gmail.com' ? <CoachDashboard /> : <Navigate to="/" />} />
           <Route path="/vitalis/plano-pdf" element={<PlanoHTML />} />
           <Route path="*" element={<Navigate to="/" />} />
