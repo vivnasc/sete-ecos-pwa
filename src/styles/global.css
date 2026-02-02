@@ -2,9 +2,9 @@
    SETE ECOS — CSS Global Oficial
    ============================================================ */
 
-/* Forçar light mode independente do sistema */
+/* Suporte a Light/Dark Mode */
 :root {
-  color-scheme: light only;
+  color-scheme: light dark;
 }
 
 * {
@@ -135,4 +135,190 @@ input:focus, textarea:focus {
 ::selection {
   background: rgba(75, 0, 130, 0.2);
   color: var(--lumina-indigo);
+}
+
+/* ============================================================
+   GAMIFICAÇÃO — Animações
+   ============================================================ */
+
+@keyframes confetti {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(124, 139, 111, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(124, 139, 111, 0.8); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.animate-confetti {
+  animation: confetti 3s ease-out forwards;
+}
+
+.animate-bounceIn {
+  animation: bounceIn 0.5s ease-out forwards;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* ============================================================
+   DARK MODE — Variáveis e Overrides
+   ============================================================ */
+
+:root.dark {
+  /* Fundos */
+  --dark-bg-primary: #1a1a2e;
+  --dark-bg-secondary: #16213e;
+  --dark-bg-card: #1f2937;
+  --dark-bg-elevated: #374151;
+
+  /* Texto */
+  --dark-text-primary: #f3f4f6;
+  --dark-text-secondary: #d1d5db;
+  --dark-text-muted: #9ca3af;
+
+  /* Bordas */
+  --dark-border: #374151;
+  --dark-border-light: #4b5563;
+
+  /* Cores de destaque (mantêm vibrância) */
+  --dark-accent-green: #9CAF88;
+  --dark-accent-sage: #7C8B6F;
+}
+
+.dark body {
+  background: linear-gradient(180deg, var(--dark-bg-primary) 0%, var(--dark-bg-secondary) 100%);
+  color: var(--dark-text-primary);
+}
+
+.dark .bg-white {
+  background-color: var(--dark-bg-card) !important;
+}
+
+.dark .bg-gray-50,
+.dark .bg-gray-100 {
+  background-color: var(--dark-bg-elevated) !important;
+}
+
+.dark .text-gray-800,
+.dark .text-gray-900 {
+  color: var(--dark-text-primary) !important;
+}
+
+.dark .text-gray-600,
+.dark .text-gray-700 {
+  color: var(--dark-text-secondary) !important;
+}
+
+.dark .text-gray-400,
+.dark .text-gray-500 {
+  color: var(--dark-text-muted) !important;
+}
+
+.dark .border-gray-200,
+.dark .border-gray-100 {
+  border-color: var(--dark-border) !important;
+}
+
+.dark .shadow-lg,
+.dark .shadow-xl {
+  --tw-shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+.dark input,
+.dark textarea,
+.dark select {
+  background: var(--dark-bg-elevated);
+  border-color: var(--dark-border);
+  color: var(--dark-text-primary);
+}
+
+.dark input:focus,
+.dark textarea:focus {
+  border-color: var(--dark-accent-sage);
+  box-shadow: 0 0 0 3px rgba(124, 139, 111, 0.2);
+}
+
+/* Scrollbar dark mode */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: var(--dark-bg-secondary);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--dark-border-light);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--dark-text-muted);
 }

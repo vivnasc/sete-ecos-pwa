@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link, useNavigate } from 'react-router-dom';
+import { StreakDisplay, CelebracaoModal, CONQUISTAS } from './Gamificacao.jsx';
 
 export default function DashboardVitalis() {
   const navigate = useNavigate();
@@ -17,6 +18,15 @@ export default function DashboardVitalis() {
   const [jejumActual, setJejumActual] = useState(null);
   const [humor, setHumor] = useState(null);
   const [streak, setStreak] = useState(0);
+  const [melhorStreak, setMelhorStreak] = useState(0);
+  const [showCelebracao, setShowCelebracao] = useState(false);
+  const [conquistaActual, setConquistaActual] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('vitalis-theme') === 'dark';
+    }
+    return false;
+  });
 
   // Estados para Sono interactivo
   const [mostrarSonoForm, setMostrarSonoForm] = useState(false);
@@ -31,6 +41,19 @@ export default function DashboardVitalis() {
   useEffect(() => {
     loadDashboard();
   }, []);
+
+  // Dark mode effect
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDarkMode) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('vitalis-theme', isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => setIsDarkMode(prev => !prev);
 
   const loadDashboard = async () => {
     try {
@@ -142,12 +165,12 @@ export default function DashboardVitalis() {
     try {
       const hoje = new Date();
       let count = 0;
-      
-      for (let i = 0; i < 30; i++) {
+
+      for (let i = 0; i < 60; i++) { // Estendido para 60 dias
         const data = new Date(hoje);
         data.setDate(data.getDate() - i);
         const dataStr = data.toISOString().split('T')[0];
-        
+
         // Verificar se há algum registo neste dia
         const [agua, meals, treino, sono, checkin] = await Promise.all([
           supabase.from('vitalis_agua_log').select('id').eq('user_id', userId).eq('data', dataStr).limit(1),
@@ -156,14 +179,14 @@ export default function DashboardVitalis() {
           supabase.from('vitalis_sono_log').select('id').eq('user_id', userId).eq('data', dataStr).limit(1),
           supabase.from('vitalis_registos').select('id').eq('user_id', userId).eq('data', dataStr).limit(1)
         ]);
-        
-        const temRegisto = 
+
+        const temRegisto =
           (agua.data && agua.data.length > 0) ||
           (meals.data && meals.data.length > 0) ||
           (treino.data && treino.data.length > 0) ||
           (sono.data && sono.data.length > 0) ||
           (checkin.data && checkin.data.length > 0);
-        
+
         if (temRegisto) {
           count++;
         } else if (i > 0) {
@@ -171,8 +194,28 @@ export default function DashboardVitalis() {
           break;
         }
       }
-      
+
       setStreak(count);
+
+      // Verificar melhor streak (guardar no localStorage)
+      const melhor = parseInt(localStorage.getItem('vitalis-melhor-streak') || '0');
+      if (count > melhor) {
+        localStorage.setItem('vitalis-melhor-streak', count.toString());
+        setMelhorStreak(count);
+
+        // Verificar conquistas de streak
+        const streakMilestones = [3, 7, 14, 30, 60];
+        for (const milestone of streakMilestones) {
+          if (count >= milestone && melhor < milestone) {
+            const conquistaId = `streak_${milestone}`;
+            setConquistaActual(conquistaId);
+            setShowCelebracao(true);
+            break;
+          }
+        }
+      } else {
+        setMelhorStreak(melhor);
+      }
     } catch (error) {
       console.error('Erro ao calcular streak:', error);
       setStreak(0);
@@ -454,6 +497,14 @@ export default function DashboardVitalis() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={toggleDarkMode}
+                className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-lg border-2 border-white/30 hover:bg-white/30 transition-colors"
+                title={isDarkMode ? 'Modo claro' : 'Modo escuro'}
+              >
+                {isDarkMode ? '☀️' : '🌙'}
+              </button>
               <div className="hidden md:block text-right text-white">
                 <p className="text-xs opacity-80">Bem-vinda,</p>
                 <p className="font-semibold">{client?.nome_completo?.split(' ')[0] || 'Guerreira'} 🌱</p>
@@ -485,14 +536,8 @@ export default function DashboardVitalis() {
           </div>
           
           {streak > 0 && (
-            <div className="md:w-48 bg-gradient-to-br from-[#7C8B6F] to-[#6B7A5D] rounded-2xl p-4 text-white shadow-lg">
-              <div className="flex items-center gap-3">
-                <div className="text-3xl">🌿</div>
-                <div>
-                  <p className="text-2xl font-bold">{streak} dias</p>
-                  <p className="text-white/80 text-xs">Streak activo!</p>
-                </div>
-              </div>
+            <div className="md:w-64">
+              <StreakDisplay streak={streak} melhorStreak={melhorStreak} compacto={false} />
             </div>
           )}
         </div>
@@ -1087,6 +1132,16 @@ export default function DashboardVitalis() {
         </div>
 
       </main>
+
+      {/* Modal de Celebração de Conquistas */}
+      <CelebracaoModal
+        conquista={conquistaActual}
+        show={showCelebracao}
+        onClose={() => {
+          setShowCelebracao(false);
+          setConquistaActual(null);
+        }}
+      />
     </div>
   );
 }
