@@ -19,6 +19,7 @@ import RelatorioSemanal from './components/vitalis/RelatorioSemanal'
 import RelatoriosHub from './components/vitalis/RelatoriosHub'
 import ReceitaDetalhe from './components/vitalis/ReceitaDetalhe'
 import PlanoHTML from './pages/PlanoHTML'
+import CoachDashboard from './pages/CoachDashboard'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -55,6 +56,7 @@ function App() {
           <Route path="/vitalis/relatorios" element={session ? <RelatoriosHub /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/relatorio-semanal" element={session ? <RelatorioSemanal /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/receita/:id" element={<ReceitaDetalhe />} />
+          <Route path="/coach" element={session?.user?.email === 'viv.saraiva@gmail.com' ? <CoachDashboard /> : <Navigate to="/" />} />
           <Route path="/vitalis/plano-pdf" element={<PlanoHTML />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
