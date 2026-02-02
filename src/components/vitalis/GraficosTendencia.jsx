@@ -155,6 +155,8 @@ export default function GraficosTendencia() {
   const [dadosAgua, setDadosAgua] = useState([]);
   const [dadosSono, setDadosSono] = useState([]);
   const [dadosAderencia, setDadosAderencia] = useState([]);
+  const [dadosCintura, setDadosCintura] = useState([]);
+  const [dadosAnca, setDadosAnca] = useState([]);
   const [estatisticas, setEstatisticas] = useState({});
 
   useEffect(() => {
@@ -182,12 +184,13 @@ export default function GraficosTendencia() {
       const dataInicioStr = dataInicio.toISOString().split('T')[0];
 
       // Carregar todos os dados em paralelo
-      const [pesoRes, aguaRes, sonoRes, checkinRes, clientRes] = await Promise.all([
+      const [pesoRes, aguaRes, sonoRes, checkinRes, clientRes, medidasRes] = await Promise.all([
         supabase.from('vitalis_peso_log').select('*').eq('user_id', userData.id).gte('data', dataInicioStr).order('data'),
         supabase.from('vitalis_agua_log').select('*').eq('user_id', userData.id).gte('data', dataInicioStr).order('data'),
         supabase.from('vitalis_sono_log').select('*').eq('user_id', userData.id).gte('data', dataInicioStr).order('data'),
         supabase.from('vitalis_registos').select('*').eq('user_id', userData.id).gte('data', dataInicioStr).order('data'),
-        supabase.from('vitalis_clients').select('peso_inicial, peso_actual, peso_meta').eq('user_id', userData.id).single()
+        supabase.from('vitalis_clients').select('peso_inicial, peso_actual, peso_meta, cintura_cm, anca_cm').eq('user_id', userData.id).single(),
+        supabase.from('vitalis_medidas_log').select('*').eq('user_id', userData.id).gte('data', dataInicioStr).order('data')
       ]);
 
       // Processar dados de peso
@@ -239,12 +242,46 @@ export default function GraficosTendencia() {
         })));
       }
 
+      // Processar medidas (cintura e anca)
+      if (medidasRes.data && medidasRes.data.length > 0) {
+        setDadosCintura(medidasRes.data.filter(m => m.cintura_cm).map(m => ({
+          value: m.cintura_cm,
+          label: new Date(m.data).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' }),
+          date: m.data
+        })));
+        setDadosAnca(medidasRes.data.filter(m => m.anca_cm).map(m => ({
+          value: m.anca_cm,
+          label: new Date(m.data).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' }),
+          date: m.data
+        })));
+      } else if (clientRes.data) {
+        // Usar medidas do cliente se não houver log
+        if (clientRes.data.cintura_cm) {
+          setDadosCintura([{
+            value: clientRes.data.cintura_cm,
+            label: 'Inicial',
+            date: new Date().toISOString()
+          }]);
+        }
+        if (clientRes.data.anca_cm) {
+          setDadosAnca([{
+            value: clientRes.data.anca_cm,
+            label: 'Inicial',
+            date: new Date().toISOString()
+          }]);
+        }
+      }
+
       // Calcular estatísticas
       const stats = {
         pesoInicial: clientRes.data?.peso_inicial,
         pesoActual: clientRes.data?.peso_actual,
         pesoMeta: clientRes.data?.peso_meta,
         pesoPerdido: (clientRes.data?.peso_inicial || 0) - (clientRes.data?.peso_actual || 0),
+        cinturaInicial: clientRes.data?.cintura_cm,
+        ancaInicial: clientRes.data?.anca_cm,
+        cinturaActual: medidasRes.data?.length > 0 ? medidasRes.data[medidasRes.data.length - 1]?.cintura_cm : clientRes.data?.cintura_cm,
+        ancaActual: medidasRes.data?.length > 0 ? medidasRes.data[medidasRes.data.length - 1]?.anca_cm : clientRes.data?.anca_cm,
         mediaAgua: aguaRes.data?.length > 0
           ? (Object.values(aguaRes.data.reduce((acc, a) => {
               if (!acc[a.data]) acc[a.data] = 0;
@@ -425,6 +462,75 @@ export default function GraficosTendencia() {
             unit="%"
           />
         </div>
+
+        {/* Gráficos de Medidas Corporais */}
+        {(dadosCintura.length > 0 || dadosAnca.length > 0) && (
+          <div className="bg-white rounded-2xl p-5 shadow-lg">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xl">📏</span>
+              <h3 className="font-bold text-gray-800">Medidas Corporais</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Cintura */}
+              {dadosCintura.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-600">Cintura</span>
+                    {estatisticas.cinturaInicial && estatisticas.cinturaActual && (
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        estatisticas.cinturaActual < estatisticas.cinturaInicial
+                          ? 'bg-green-50 text-green-600'
+                          : 'bg-gray-50 text-gray-600'
+                      }`}>
+                        {estatisticas.cinturaActual < estatisticas.cinturaInicial ? '-' : '+'}
+                        {Math.abs(estatisticas.cinturaInicial - estatisticas.cinturaActual).toFixed(1)}cm
+                      </span>
+                    )}
+                  </div>
+                  <LineChart
+                    data={dadosCintura}
+                    color="#f59e0b"
+                    height={120}
+                    unit="cm"
+                  />
+                </div>
+              )}
+
+              {/* Anca */}
+              {dadosAnca.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-600">Anca</span>
+                    {estatisticas.ancaInicial && estatisticas.ancaActual && (
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        estatisticas.ancaActual < estatisticas.ancaInicial
+                          ? 'bg-green-50 text-green-600'
+                          : 'bg-gray-50 text-gray-600'
+                      }`}>
+                        {estatisticas.ancaActual < estatisticas.ancaInicial ? '-' : '+'}
+                        {Math.abs(estatisticas.ancaInicial - estatisticas.ancaActual).toFixed(1)}cm
+                      </span>
+                    )}
+                  </div>
+                  <LineChart
+                    data={dadosAnca}
+                    color="#ec4899"
+                    height={120}
+                    unit="cm"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Dica para registar medidas */}
+            {(dadosCintura.length <= 1 || dadosAnca.length <= 1) && (
+              <p className="text-xs text-gray-500 text-center mt-4 bg-gray-50 rounded-lg p-3">
+                💡 Regista as tuas medidas semanalmente no check-in para acompanhar a evolução
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Insights */}
         <div className="bg-gradient-to-r from-[#7C8B6F]/10 to-[#9CAF88]/10 rounded-2xl p-5 border border-[#7C8B6F]/20">

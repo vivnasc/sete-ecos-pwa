@@ -1,8 +1,46 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link, useNavigate } from 'react-router-dom';
 import { StreakDisplay, CelebracaoModal, ConquistasSection, NivelProgresso, CONQUISTAS } from './Gamificacao.jsx';
 import { useOnboarding, OnboardingWrapper } from './OnboardingTutorial.jsx';
+
+// Função para solicitar permissão de notificações
+const solicitarPermissaoNotificacoes = async () => {
+  if (!('Notification' in window)) {
+    console.log('Este browser não suporta notificações');
+    return false;
+  }
+
+  if (Notification.permission === 'granted') {
+    return true;
+  }
+
+  if (Notification.permission !== 'denied') {
+    const permission = await Notification.requestPermission();
+    return permission === 'granted';
+  }
+
+  return false;
+};
+
+// Função para enviar notificação
+const enviarNotificacao = (titulo, opcoes = {}) => {
+  if (Notification.permission === 'granted') {
+    const notif = new Notification(titulo, {
+      icon: '/pwa-192x192.png',
+      badge: '/pwa-192x192.png',
+      vibrate: [200, 100, 200],
+      ...opcoes
+    });
+
+    notif.onclick = () => {
+      window.focus();
+      notif.close();
+    };
+
+    return notif;
+  }
+};
 
 export default function DashboardVitalis() {
   const navigate = useNavigate();
@@ -34,6 +72,10 @@ export default function DashboardVitalis() {
   // Hook do onboarding
   const { mostrarOnboarding, completarOnboarding } = useOnboarding();
 
+  // Ref para controlar se já enviamos notificação do jejum
+  const notificacaoJejumEnviada = useRef(false);
+  const jejumTimerRef = useRef(null);
+
   // Estados para Sono interactivo
   const [mostrarSonoForm, setMostrarSonoForm] = useState(false);
   const [sonoHoras, setSonoHoras] = useState('');
@@ -58,6 +100,59 @@ export default function DashboardVitalis() {
     }
     localStorage.setItem('vitalis-theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
+
+  // Fasting notification effect - monitora o timer e notifica quando a janela abre
+  useEffect(() => {
+    if (!jejumActual || !plano?.horas_jejum) return;
+
+    const verificarJanelaAlimentar = () => {
+      const inicio = new Date(jejumActual.hora_inicio);
+      const agora = new Date();
+      const diffMin = Math.floor((agora - inicio) / (1000 * 60));
+      const horasDecorridas = diffMin / 60;
+      const horasJejumMeta = plano.horas_jejum || 16;
+
+      // Se completou o jejum e ainda não notificamos
+      if (horasDecorridas >= horasJejumMeta && !notificacaoJejumEnviada.current) {
+        notificacaoJejumEnviada.current = true;
+
+        // Enviar notificação
+        enviarNotificacao('Janela Alimentar Aberta! 🎉', {
+          body: `Parabéns! Completaste ${horasJejumMeta}h de jejum. Podes começar a comer agora.`,
+          tag: 'jejum-completo',
+          requireInteraction: true
+        });
+
+        // Guardar no localStorage que notificação foi enviada para esta sessão
+        localStorage.setItem(`jejum-notif-${jejumActual.id}`, 'true');
+      }
+    };
+
+    // Verificar se já enviamos notificação para este jejum
+    const jaNotificou = localStorage.getItem(`jejum-notif-${jejumActual.id}`);
+    if (jaNotificou) {
+      notificacaoJejumEnviada.current = true;
+    }
+
+    // Verificar imediatamente
+    verificarJanelaAlimentar();
+
+    // Verificar a cada minuto
+    jejumTimerRef.current = setInterval(verificarJanelaAlimentar, 60000);
+
+    return () => {
+      if (jejumTimerRef.current) {
+        clearInterval(jejumTimerRef.current);
+      }
+    };
+  }, [jejumActual, plano?.horas_jejum]);
+
+  // Reset notification flag when fasting ends
+  useEffect(() => {
+    if (!jejumActual) {
+      notificacaoJejumEnviada.current = false;
+    }
+  }, [jejumActual]);
 
   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
 
@@ -403,6 +498,9 @@ export default function DashboardVitalis() {
       console.error('userId não disponível');
       return;
     }
+
+    // Solicitar permissão para notificações ao iniciar jejum
+    await solicitarPermissaoNotificacoes();
     
     try {
       const { data, error } = await supabase
@@ -1292,6 +1390,15 @@ export default function DashboardVitalis() {
               <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">💡</div>
               <p className="font-semibold text-white text-sm">Sugestões</p>
               <p className="text-white/70 text-xs mt-1">O que comer</p>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+            {/* Calendário de Refeições */}
+            <Link to="/vitalis/calendario" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
+              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">📅</div>
+              <p className="font-semibold text-white text-sm">Calendário</p>
+              <p className="text-white/70 text-xs mt-1">Planear semana</p>
             </Link>
           </div>
 

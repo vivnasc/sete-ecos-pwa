@@ -26,6 +26,7 @@ import SugestoesRefeicoes from './components/vitalis/SugestoesRefeicoes'
 import ChatCoach from './components/vitalis/ChatCoach'
 import FotosProgresso from './components/vitalis/FotosProgresso'
 import DesafiosSemanais from './components/vitalis/DesafiosSemanais'
+import CalendarioRefeicoes from './components/vitalis/CalendarioRefeicoes'
 import PlanoHTML from './pages/PlanoHTML'
 import CoachDashboard from './pages/CoachDashboard'
 
@@ -72,6 +73,7 @@ function App() {
           <Route path="/vitalis/chat" element={session ? <ChatCoach /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/fotos-progresso" element={session ? <FotosProgresso /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/desafios" element={session ? <DesafiosSemanais /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/calendario" element={session ? <CalendarioRefeicoes /> : <Navigate to="/vitalis/login" />} />
           <Route path="/coach" element={session?.user?.email === 'viv.saraiva@gmail.com' ? <CoachDashboard /> : <Navigate to="/" />} />
           <Route path="/vitalis/plano-pdf" element={<PlanoHTML />} />
           <Route path="*" element={<Navigate to="/" />} />
