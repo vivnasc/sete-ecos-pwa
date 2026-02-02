@@ -45,11 +45,13 @@
             box-shadow: 0 4px 15px rgba(201, 162, 39, 0.4);
         }
 
-        /* ===== HERO ===== */
+        /* ===== HERO - CORRIGIDO ===== */
         .hero {
             width: 100%;
-            height: 280px;
-            background: url('/logos/SETEECOS_HERO.png') center center / cover no-repeat;
+            min-height: 380px;
+            height: 45vh;
+            max-height: 450px;
+            background: url('/logos/SETEECOS_HERO.png') center 20% / cover no-repeat;
             position: relative;
         }
 
@@ -59,14 +61,14 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 100px;
+            height: 120px;
             background: linear-gradient(to bottom, transparent, var(--marfim));
         }
 
         /* ===== LUMINA CARD ===== */
         .lumina-section {
             padding: 0 20px;
-            margin-top: -50px;
+            margin-top: -60px;
             position: relative;
             z-index: 10;
         }
@@ -74,66 +76,83 @@
         .lumina-card {
             background: linear-gradient(135deg, #B8A5C4 0%, var(--lumina-lavanda) 100%);
             border-radius: 20px;
-            padding: 18px 22px;
+            padding: 20px 24px;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
             box-shadow: 0 8px 30px rgba(155, 138, 166, 0.35);
             cursor: pointer;
-            max-width: 380px;
+            max-width: 400px;
             margin: 0 auto;
         }
 
         .lumina-card img {
-            width: 55px;
-            height: 55px;
+            width: 60px;
+            height: 60px;
             object-fit: contain;
         }
 
         .lumina-card h2 {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             color: #FFF;
             letter-spacing: 0.12em;
         }
 
         .lumina-card p {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .lumina-arrow {
             margin-left: auto;
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             color: rgba(255,255,255,0.7);
         }
 
         /* ===== SECTION TITLE ===== */
         .section-title {
             text-align: center;
-            padding: 35px 20px 15px;
+            padding: 40px 20px 20px;
         }
 
         .section-title h3 {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 400;
             letter-spacing: 0.3em;
             color: var(--texto-suave);
             text-transform: uppercase;
         }
 
-        /* ===== FLOR DOS 7 ECOS - CIRCULAR PERFEITO ===== */
+        /* ===== FLOR DOS 7 ECOS - CORRIGIDO ===== */
         .flor-wrapper {
             display: flex;
             justify-content: center;
-            padding: 10px 20px 30px;
+            padding: 10px 20px 40px;
         }
 
         .flor-container {
             position: relative;
-            width: 320px;
-            height: 320px;
+            width: 360px;
+            height: 360px;
+        }
+
+        /* Linhas conectoras SVG */
+        .linhas-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .linhas-svg line {
+            stroke: var(--dourado-claro);
+            stroke-width: 1.5;
+            opacity: 0.4;
         }
 
         /* Centro da flor */
@@ -142,8 +161,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 100px;
-            height: 100px;
+            width: 110px;
+            height: 110px;
             z-index: 10;
         }
 
@@ -151,92 +170,94 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            filter: drop-shadow(0 0 25px rgba(201, 162, 39, 0.5));
+            filter: drop-shadow(0 0 30px rgba(201, 162, 39, 0.5));
         }
 
-        /* Pétalas - posicionadas em círculo perfeito */
+        /* Pétalas - TAMANHO AUMENTADO */
         .petala {
             position: absolute;
-            width: 75px;
+            width: 90px;
             display: flex;
             flex-direction: column;
             align-items: center;
             cursor: pointer;
             transition: transform 0.3s ease;
+            z-index: 5;
         }
 
         .petala:hover {
-            transform: scale(1.08);
+            transform: scale(1.1);
+            z-index: 15;
         }
 
         .petala img {
-            width: 65px;
-            height: 65px;
+            width: 85px;
+            height: 85px;
             object-fit: contain;
-            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+            filter: drop-shadow(0 4px 15px rgba(0,0,0,0.18));
         }
 
         .petala-label {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 0.65rem;
+            font-size: 0.85rem;
             font-weight: 500;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
             color: var(--texto-suave);
-            margin-top: 3px;
+            margin-top: 4px;
             text-align: center;
         }
 
-        /* 7 pétalas em círculo - 360°/7 = 51.43° cada
-           Raio: 115px do centro (160,160) */
+        /* 7 pétalas em círculo perfeito - 360°/7 = 51.43°
+           Centro: 180, 180 | Raio: 125px */
 
-        .petala-1 { /* VITALIS - 270° (topo) */
-            top: 5px;
+        .petala-1 { /* VITALIS - Topo (270°) */
+            top: 0;
             left: 50%;
             transform: translateX(-50%);
         }
-        .petala-1:hover { transform: translateX(-50%) scale(1.08); }
+        .petala-1:hover { transform: translateX(-50%) scale(1.1); }
 
-        .petala-2 { /* AUREA - 321.43° */
-            top: 30px;
-            right: 20px;
+        .petala-2 { /* AUREA - 321° */
+            top: 25px;
+            right: 5px;
         }
 
-        .petala-3 { /* SERENA - 12.86° */
-            top: 120px;
-            right: -5px;
+        .petala-3 { /* SERENA - 13° */
+            top: 135px;
+            right: -15px;
         }
 
-        .petala-4 { /* IGNIS - 64.29° */
-            bottom: 35px;
-            right: 35px;
+        .petala-4 { /* IGNIS - 64° */
+            bottom: 25px;
+            right: 25px;
         }
 
-        .petala-5 { /* VENTIS - 115.71° */
-            bottom: 35px;
-            left: 35px;
+        .petala-5 { /* VENTIS - 116° */
+            bottom: 25px;
+            left: 25px;
         }
 
-        .petala-6 { /* ECOA - 167.14° */
-            top: 120px;
-            left: -5px;
+        .petala-6 { /* ECOA - 167° */
+            top: 135px;
+            left: -15px;
         }
 
-        .petala-7 { /* IMAGO - 218.57° */
-            top: 30px;
-            left: 20px;
+        .petala-7 { /* IMAGO - 219° */
+            top: 25px;
+            left: 5px;
         }
 
         /* Badge */
         .badge {
             position: absolute;
-            bottom: 18px;
+            bottom: -8px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 0.5rem;
+            font-size: 0.55rem;
             font-weight: 600;
-            padding: 2px 6px;
-            border-radius: 6px;
+            padding: 3px 8px;
+            border-radius: 8px;
             text-transform: uppercase;
             white-space: nowrap;
         }
@@ -254,9 +275,9 @@
 
         /* ===== AURORA SECTION ===== */
         .aurora-section {
-            margin-top: 20px;
-            padding: 30px 20px 40px;
-            background: linear-gradient(180deg, var(--marfim) 0%, rgba(232, 213, 163, 0.15) 50%, rgba(212, 165, 165, 0.1) 100%);
+            margin-top: 30px;
+            padding: 35px 20px 45px;
+            background: linear-gradient(180deg, var(--marfim) 0%, rgba(232, 213, 163, 0.2) 50%, rgba(212, 165, 165, 0.12) 100%);
             text-align: center;
             position: relative;
         }
@@ -267,22 +288,22 @@
             top: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 100px;
+            width: 120px;
             height: 1px;
             background: linear-gradient(90deg, transparent, var(--dourado), transparent);
         }
 
         .aurora-section img {
-            width: 80px;
-            height: 80px;
+            width: 90px;
+            height: 90px;
             object-fit: contain;
-            margin-bottom: 14px;
-            filter: drop-shadow(0 0 20px rgba(201, 162, 39, 0.35));
+            margin-bottom: 16px;
+            filter: drop-shadow(0 0 25px rgba(201, 162, 39, 0.4));
         }
 
         .aurora-section h2 {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             font-weight: 400;
             letter-spacing: 0.25em;
             color: var(--dourado);
@@ -292,29 +313,29 @@
 
         .aurora-section .subtitle {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-style: italic;
             color: var(--texto-suave);
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .progress-container {
-            max-width: 260px;
+            max-width: 280px;
             margin: 0 auto;
         }
 
         .progress-info {
             display: flex;
             justify-content: space-between;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: var(--texto-suave);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .progress-track {
-            height: 6px;
+            height: 8px;
             background: rgba(201, 162, 39, 0.12);
-            border-radius: 3px;
+            border-radius: 4px;
             overflow: hidden;
         }
 
@@ -322,7 +343,7 @@
             height: 100%;
             width: 14%;
             background: linear-gradient(90deg, #D4A5A5, var(--dourado));
-            border-radius: 3px;
+            border-radius: 4px;
         }
 
         /* ===== BOTTOM NAV ===== */
@@ -334,7 +355,7 @@
             background: rgba(250, 246, 240, 0.97);
             backdrop-filter: blur(10px);
             border-top: 1px solid var(--dourado-claro);
-            padding: 12px 20px 24px;
+            padding: 12px 20px 28px;
             display: flex;
             justify-content: space-around;
             z-index: 100;
@@ -347,7 +368,7 @@
             gap: 4px;
             text-decoration: none;
             color: var(--texto-suave);
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -357,7 +378,7 @@
         }
 
         .nav-icon {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
         /* Animations */
@@ -373,18 +394,18 @@
 </head>
 <body>
 
-    <div class="mockup-badge">MOCKUP v3</div>
+    <div class="mockup-badge">MOCKUP v3.1</div>
 
-    <!-- HERO -->
+    <!-- HERO - Altura aumentada -->
     <section class="hero"></section>
 
-    <!-- LUMINA -->
+    <!-- LUMINA - Texto corrigido -->
     <section class="lumina-section">
         <div class="lumina-card">
             <img src="/logos/lumina-logo_v2.png" alt="Lumina">
             <div>
                 <h2>LUMINA</h2>
-                <p>O espelho interior — Check-in diário</p>
+                <p>O espelho interior</p>
             </div>
             <span class="lumina-arrow">→</span>
         </div>
@@ -397,6 +418,19 @@
 
     <div class="flor-wrapper">
         <div class="flor-container">
+
+            <!-- LINHAS CONECTORAS -->
+            <svg class="linhas-svg" viewBox="0 0 360 360">
+                <!-- Centro: 180,180 -->
+                <!-- Linhas do centro para cada eco -->
+                <line x1="180" y1="180" x2="180" y2="55"/>      <!-- VITALIS (topo) -->
+                <line x1="180" y1="180" x2="295" y2="80"/>      <!-- AUREA -->
+                <line x1="180" y1="180" x2="320" y2="180"/>     <!-- SERENA -->
+                <line x1="180" y1="180" x2="280" y2="290"/>     <!-- IGNIS -->
+                <line x1="180" y1="180" x2="80" y2="290"/>      <!-- VENTIS -->
+                <line x1="180" y1="180" x2="40" y2="180"/>      <!-- ECOA -->
+                <line x1="180" y1="180" x2="65" y2="80"/>       <!-- IMAGO -->
+            </svg>
 
             <!-- Centro -->
             <div class="flor-centro">
