@@ -248,7 +248,7 @@ export const ReceitasBrowse = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-amber-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
         <div className="text-center">
           <div className="text-5xl mb-4 animate-pulse">🍽️</div>
           <p className="text-gray-600">A carregar receitas...</p>
@@ -258,9 +258,9 @@ export const ReceitasBrowse = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] shadow-lg">
+      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <button
             onClick={() => navigate('/vitalis/dashboard')}
@@ -278,7 +278,7 @@ export const ReceitasBrowse = () => {
               <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
                 Biblioteca de Receitas 🍽️
               </h1>
-              <p className="text-orange-100">
+              <p className="text-white/80">
                 {receitasFiltradas.length} receitas disponíveis
               </p>
             </div>
@@ -345,7 +345,7 @@ export const ReceitasBrowse = () => {
                   onClick={() => setFiltroTipo(tipo.value)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
                     filtroTipo === tipo.value
-                      ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white'
+                      ? 'bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -365,7 +365,7 @@ export const ReceitasBrowse = () => {
                   onClick={() => setFiltroOrigem(origem.value)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
                     filtroOrigem === origem.value
-                      ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white'
+                      ? 'bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >

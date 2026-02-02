@@ -140,7 +140,7 @@ const ReceitaDetalhe = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-amber-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
         <div className="text-center">
           <div className="text-5xl mb-4 animate-pulse">🍽️</div>
           <p className="text-gray-600">A carregar receita...</p>
@@ -151,13 +151,13 @@ const ReceitaDetalhe = () => {
 
   if (!receita) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-amber-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
         <div className="text-center">
           <div className="text-5xl mb-4">😕</div>
           <p className="text-gray-600 mb-4">Receita não encontrada</p>
           <button
             onClick={() => navigate('/vitalis/receitas')}
-            className="px-6 py-2 bg-orange-500 text-white rounded-full"
+            className="px-6 py-2 bg-[#7C8B6F] text-white rounded-full"
           >
             Voltar às Receitas
           </button>
@@ -170,7 +170,7 @@ const ReceitaDetalhe = () => {
   const ingredientes = receita.ingredientes || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-24">
       
       {/* Header com gradiente */}
       <div className={`bg-gradient-to-br ${gradiente} pt-12 pb-20 px-4 relative`}>
@@ -216,7 +216,7 @@ const ReceitaDetalhe = () => {
 
           {/* Info rápida */}
           <div className="flex flex-wrap gap-3 mb-6">
-            <div className="flex items-center gap-1 bg-orange-50 px-3 py-1.5 rounded-full text-sm">
+            <div className="flex items-center gap-1 bg-[#F5F2ED] px-3 py-1.5 rounded-full text-sm">
               <span>⏱️</span>
               <span className="font-medium">{receita.tempo_preparo_min} min</span>
             </div>
@@ -231,11 +231,11 @@ const ReceitaDetalhe = () => {
           </div>
 
           {/* Macros */}
-          <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl p-4 mb-6">
+          <div className="bg-gradient-to-r from-[#E8E4DC] to-[#F5F2ED] rounded-2xl p-4 mb-6">
             <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3">Informação Nutricional</h3>
             <div className="grid grid-cols-4 gap-3">
               <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600">{receita.calorias}</div>
+                <div className="text-2xl font-bold text-[#7C8B6F]">{receita.calorias}</div>
                 <div className="text-xs text-gray-500">kcal</div>
               </div>
               <div className="text-center">
@@ -280,7 +280,7 @@ const ReceitaDetalhe = () => {
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">🤲</span>
                     <div>
-                      <div className="font-semibold text-amber-700">{receita.porcoes_hidratos} mão(s) concha</div>
+                      <div className="font-semibold text-[#6B7A5D]">{receita.porcoes_hidratos} mão(s) concha</div>
                       <div className="text-xs text-gray-500">Hidratos</div>
                     </div>
                   </div>
@@ -369,7 +369,7 @@ const ReceitaDetalhe = () => {
               
               return (
                 <div key={index} className="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0">
-                  <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 text-sm font-medium flex-shrink-0 mt-0.5">
+                  <div className="w-6 h-6 bg-[#E8E4DC] rounded-full flex items-center justify-center text-[#7C8B6F] text-sm font-medium flex-shrink-0 mt-0.5">
                     {index + 1}
                   </div>
                   <div className="flex-1">
@@ -377,7 +377,7 @@ const ReceitaDetalhe = () => {
                     {(quantidade || porcaoMao) && (
                       <div className="text-sm text-gray-500">
                         {quantidade}
-                        {porcaoMao && <span className="text-orange-600"> • {porcaoMao}</span>}
+                        {porcaoMao && <span className="text-[#7C8B6F]"> • {porcaoMao}</span>}
                       </div>
                     )}
                   </div>
@@ -398,7 +398,7 @@ const ReceitaDetalhe = () => {
         {/* Botão voltar */}
         <button
           onClick={() => navigate('/vitalis/receitas')}
-          className="w-full mt-6 py-4 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-2xl font-semibold shadow-lg"
+          className="w-full mt-6 py-4 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-2xl font-semibold shadow-lg"
         >
           ← Voltar às Receitas
         </button>

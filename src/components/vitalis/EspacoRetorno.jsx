@@ -485,13 +485,13 @@ const EspacoRetorno = () => {
                   setTimerActivo(true);
                   setTempoRestante(600);
                 }}
-                className="w-full mt-4 p-5 bg-gradient-to-r from-amber-500/30 to-orange-500/30 hover:from-amber-500/40 hover:to-orange-500/40 rounded-2xl text-left transition-all border border-amber-400/30"
+                className="w-full mt-4 p-5 bg-gradient-to-r from-[#7C8B6F]/30 to-[#9CAF88]/30 hover:from-[#7C8B6F]/40 hover:to-[#9CAF88]/40 rounded-2xl text-left transition-all border border-[#9CAF88]/30"
               >
                 <div className="flex items-center gap-4">
                   <span className="text-3xl">⏰</span>
                   <div>
                     <h4 className="text-white font-bold">Pausa de 10 Minutos</h4>
-                    <p className="text-amber-200 text-sm">Espera antes de decidir comer</p>
+                    <p className="text-[#C5D1BC] text-sm">Espera antes de decidir comer</p>
                   </div>
                 </div>
               </button>
