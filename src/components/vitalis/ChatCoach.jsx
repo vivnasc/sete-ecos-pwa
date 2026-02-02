@@ -460,15 +460,19 @@ export default function ChatCoach() {
     if (texto.match(/fome|saciedade|craving/)) {
       return `Para controlar a fome:\n\n` +
         `**Estratégias do método:**\n` +
-        `• Proteína em TODAS as refeições (${palmas} palmas/dia)\n` +
+        `• Proteína em TODAS as refeições que fizeres (${palmas} palmas/dia)\n` +
         `• Legumes à vontade - enchem o prato sem "gastar" porções\n` +
-        `• Não saltes refeições\n` +
-        `• Bebe água antes de comer\n\n` +
-        `**Se tiveres fome entre refeições:**\n` +
-        `• Snack com proteína (ovo cozido, iogurte)\n` +
-        `• Legumes crus\n` +
-        `• Verifica se estás a cumprir as ${palmas} palmas de proteína\n\n` +
-        `Se tens fome constante, pode ser sinal de que precisas de ajustar algo. Diz-me mais!`;
+        `• Gordura dá saciedade prolongada\n` +
+        `• Bebe água - muitas vezes confundimos sede com fome\n\n` +
+        `**Sobre a fome:**\n` +
+        `• A grelina (hormona da fome) é um HÁBITO\n` +
+        `• Adapta-se em 1-2 semanas a novos horários\n` +
+        `• Fome antes da refeição habitual é normal - vai passar!\n\n` +
+        `**Se sentires fome:**\n` +
+        `• Água ou chá primeiro\n` +
+        `• Snack com proteína + gordura (ovo, iogurte grego, queijo)\n` +
+        `• ${faseRestritiva ? 'Café keto pode ajudar a prolongar o jejum' : 'Verifica se estás a cumprir as porções de proteína'}\n\n` +
+        `Se tens fome constante, pode ser sinal de que precisas de mais proteína ou gordura.`;
     }
 
     // ========== ÁGUA ==========
@@ -609,7 +613,7 @@ export default function ChatCoach() {
               <h1 className="font-bold">Vivianne</h1>
               <p className="text-white/70 text-sm flex items-center gap-1">
                 <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                Nutricionista
+                Coach PN Level 1
               </p>
             </div>
             <button onClick={limparConversa} className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-sm hover:bg-white/30">🗑️</button>
