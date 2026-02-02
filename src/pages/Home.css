@@ -114,12 +114,13 @@
   flex-shrink: 0;
 }
 
-.lumina-title {
+.lumina-card .lumina-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 1.4rem;
-  color: #FFF;
-  letter-spacing: 0.12em;
+  font-size: 1.6rem;
+  color: #FFFFFF !important;
+  letter-spacing: 0.15em;
   margin: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .lumina-desc {
