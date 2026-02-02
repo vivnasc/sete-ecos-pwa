@@ -193,29 +193,32 @@ export default function MealsTracker() {
   // Se não tem refeições configuradas
   if (refeicoes.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
-        <div className="bg-white shadow-sm border-b border-orange-100">
+      <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3]">
+        <div className="bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] shadow-lg">
           <div className="max-w-2xl mx-auto px-4 py-6">
-            <button 
+            <button
               onClick={() => navigate('/vitalis/dashboard')}
-              className="text-orange-600 hover:text-orange-700 mb-4 flex items-center gap-2"
+              className="text-white/80 hover:text-white mb-4 flex items-center gap-2"
             >
               ← Voltar
             </button>
-            <h1 className="text-3xl font-bold text-orange-900">Registo de Refeições</h1>
+            <div className="flex items-center gap-3">
+              <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-12 h-12 object-contain drop-shadow-lg" />
+              <h1 className="text-3xl font-bold text-white" style={{ fontFamily: 'Cormorant Garamond, serif' }}>Registo de Refeições</h1>
+            </div>
           </div>
         </div>
 
         <div className="max-w-2xl mx-auto px-4 py-12">
-          <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg p-8 text-center border border-[#D2B48C]/30">
             <div className="text-6xl mb-4">🍽️</div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Configura as tuas refeições</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-2xl font-bold text-[#4A4035] mb-2">Configura as tuas refeições</h2>
+            <p className="text-[#6B4423] mb-6">
               Antes de começar a registar, define quais refeições fazes no teu dia.
             </p>
             <button
               onClick={() => navigate('/vitalis/refeicoes-config')}
-              className="px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-xl font-semibold text-lg hover:shadow-lg transition-all"
+              className="px-8 py-4 bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white rounded-xl font-semibold text-lg hover:shadow-lg transition-all"
             >
               Configurar Refeições →
             </button>
@@ -226,23 +229,30 @@ export default function MealsTracker() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3]">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-orange-100">
+      <div className="bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] shadow-lg">
         <div className="max-w-2xl mx-auto px-4 py-6">
-          <button 
+          <button
             onClick={() => navigate('/vitalis/dashboard')}
-            className="text-orange-600 hover:text-orange-700 mb-4 flex items-center gap-2"
+            className="text-white/80 hover:text-white mb-4 flex items-center gap-2"
           >
             ← Voltar
           </button>
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-orange-900" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
-              Refeições
-            </h1>
+            <div className="flex items-center gap-3">
+              <img
+                src="/logos/VITALIS_LOGO_V3.png"
+                alt="Vitalis"
+                className="w-12 h-12 object-contain drop-shadow-lg"
+              />
+              <h1 className="text-3xl font-bold text-white" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+                Refeições
+              </h1>
+            </div>
             <button
               onClick={() => navigate('/vitalis/refeicoes-config')}
-              className="text-sm text-orange-600 hover:text-orange-700"
+              className="text-sm text-white/80 hover:text-white bg-white/20 px-3 py-2 rounded-lg"
             >
               ⚙️ Configurar
             </button>
@@ -260,7 +270,7 @@ export default function MealsTracker() {
                 d.setDate(d.getDate() - 1);
                 setDataSeleccionada(d.toISOString().split('T')[0]);
               }}
-              className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg"
+              className="p-2 text-[#C1634A] hover:bg-[#C1634A]/10 rounded-lg"
             >
               ←
             </button>
@@ -272,7 +282,7 @@ export default function MealsTracker() {
                 className="text-lg font-semibold text-gray-800 border-none text-center bg-transparent cursor-pointer"
               />
               {dataSeleccionada === new Date().toISOString().split('T')[0] && (
-                <p className="text-sm text-orange-600">Hoje</p>
+                <p className="text-sm text-[#C1634A]">Hoje</p>
               )}
             </div>
             <button
@@ -284,7 +294,7 @@ export default function MealsTracker() {
                 }
               }}
               disabled={dataSeleccionada === new Date().toISOString().split('T')[0]}
-              className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg disabled:opacity-30"
+              className="p-2 text-[#C1634A] hover:bg-[#C1634A]/10 rounded-lg disabled:opacity-30"
             >
               →
             </button>
@@ -429,7 +439,7 @@ function DetalheRefeicao({ refeicao, registo, plano, onSave, saving }) {
           <select
             value={detalhes.seguiu_plano}
             onChange={(e) => setDetalhes({ ...detalhes, seguiu_plano: e.target.value })}
-            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-400 focus:outline-none"
+            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none"
           >
             <option value="sim">✅ Seguiu o plano</option>
             <option value="parcial">⚠️ Parcialmente</option>
@@ -444,7 +454,7 @@ function DetalheRefeicao({ refeicao, registo, plano, onSave, saving }) {
             type="time"
             value={detalhes.hora}
             onChange={(e) => setDetalhes({ ...detalhes, hora: e.target.value })}
-            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-400 focus:outline-none"
+            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none"
           />
         </div>
       </div>
@@ -457,7 +467,7 @@ function DetalheRefeicao({ refeicao, registo, plano, onSave, saving }) {
         <div className="grid grid-cols-4 gap-2">
           <div>
             <label className="block text-xs text-gray-500 mb-1">
-              🥩 Proteína {plano && <span className="text-orange-500">({plano.porcoes_proteina})</span>}
+              🥩 Proteína {plano && <span className="text-[#C1634A]">({plano.porcoes_proteina})</span>}
             </label>
             <input
               type="number"
@@ -466,12 +476,12 @@ function DetalheRefeicao({ refeicao, registo, plano, onSave, saving }) {
               value={detalhes.porcoes_proteina}
               onChange={(e) => setDetalhes({ ...detalhes, porcoes_proteina: e.target.value })}
               placeholder="0"
-              className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-400 focus:outline-none text-center"
+              className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none text-center"
             />
           </div>
           <div>
             <label className="block text-xs text-gray-500 mb-1">
-              🍚 Hidratos {plano && <span className="text-orange-500">({plano.porcoes_hidratos})</span>}
+              🍚 Hidratos {plano && <span className="text-[#C1634A]">({plano.porcoes_hidratos})</span>}
             </label>
             <input
               type="number"
@@ -480,12 +490,12 @@ function DetalheRefeicao({ refeicao, registo, plano, onSave, saving }) {
               value={detalhes.porcoes_hidratos}
               onChange={(e) => setDetalhes({ ...detalhes, porcoes_hidratos: e.target.value })}
               placeholder="0"
-              className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-400 focus:outline-none text-center"
+              className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none text-center"
             />
           </div>
           <div>
             <label className="block text-xs text-gray-500 mb-1">
-              🥑 Gordura {plano && <span className="text-orange-500">({plano.porcoes_gordura})</span>}
+              🥑 Gordura {plano && <span className="text-[#C1634A]">({plano.porcoes_gordura})</span>}
             </label>
             <input
               type="number"
@@ -494,12 +504,12 @@ function DetalheRefeicao({ refeicao, registo, plano, onSave, saving }) {
               value={detalhes.porcoes_gordura}
               onChange={(e) => setDetalhes({ ...detalhes, porcoes_gordura: e.target.value })}
               placeholder="0"
-              className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-400 focus:outline-none text-center"
+              className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none text-center"
             />
           </div>
           <div>
             <label className="block text-xs text-gray-500 mb-1">
-              🥬 Legumes {plano && <span className="text-orange-500">({plano.porcoes_legumes})</span>}
+              🥬 Legumes {plano && <span className="text-[#C1634A]">({plano.porcoes_legumes})</span>}
             </label>
             <input
               type="number"
@@ -508,7 +518,7 @@ function DetalheRefeicao({ refeicao, registo, plano, onSave, saving }) {
               value={detalhes.porcoes_legumes}
               onChange={(e) => setDetalhes({ ...detalhes, porcoes_legumes: e.target.value })}
               placeholder="0"
-              className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-400 focus:outline-none text-center"
+              className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none text-center"
             />
           </div>
         </div>
@@ -522,7 +532,7 @@ function DetalheRefeicao({ refeicao, registo, plano, onSave, saving }) {
           onChange={(e) => setDetalhes({ ...detalhes, notas: e.target.value })}
           placeholder="Ex: Comi fora, escolhi grelhados..."
           rows={2}
-          className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-400 focus:outline-none"
+          className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none"
         />
       </div>
 
@@ -530,7 +540,7 @@ function DetalheRefeicao({ refeicao, registo, plano, onSave, saving }) {
       <button
         onClick={() => onSave(detalhes)}
         disabled={saving}
-        className="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+        className="w-full py-3 bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
       >
         {saving ? 'A guardar...' : '✓ Guardar Detalhes'}
       </button>

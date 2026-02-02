@@ -473,7 +473,7 @@ const clientData = {
 
     const value = formData[fieldId];
     const hasError = validationErrors[fieldId];
-    const inputClass = `w-full px-4 py-3 border-2 ${hasError ? 'border-red-500' : 'border-gray-200'} rounded-lg focus:border-orange-400 focus:outline-none transition-colors`;
+    const inputClass = `w-full px-4 py-3 border-2 ${hasError ? 'border-red-500' : 'border-[#D2B48C]/50'} rounded-xl focus:border-[#C1634A] focus:ring-2 focus:ring-[#C1634A]/20 focus:outline-none transition-colors bg-white/80`;
 
     switch (config.type) {
       case 'text':
@@ -527,14 +527,14 @@ const clientData = {
             </p>
             <div className="space-y-2">
               {config.options.map((opt, i) => (
-                <label key={opt} className="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 cursor-pointer transition-colors">
+                <label key={opt} className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#C1634A]/10 cursor-pointer transition-colors">
                   <input
                     type="radio"
                     name={fieldId}
                     value={opt}
                     checked={value === opt}
                     onChange={(e) => handleChange(fieldId, e.target.value)}
-                    className="w-5 h-5 text-orange-500"
+                    className="w-5 h-5 text-[#C1634A]"
                   />
                   <span className="text-sm">{config.labels ? config.labels[i] : opt}</span>
                 </label>
@@ -552,12 +552,12 @@ const clientData = {
             </p>
             <div className="space-y-2">
               {config.options.map(opt => (
-                <label key={opt} className="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 cursor-pointer transition-colors">
+                <label key={opt} className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#C1634A]/10 cursor-pointer transition-colors">
                   <input
                     type="checkbox"
                     checked={(value || []).includes(opt)}
                     onChange={(e) => handleCheckbox(fieldId, opt, e.target.checked)}
-                    className="w-5 h-5 text-orange-500 rounded"
+                    className="w-5 h-5 text-[#C1634A] rounded"
                   />
                   <span className="text-sm">{opt}</span>
                 </label>
@@ -574,7 +574,7 @@ const clientData = {
               type="checkbox"
               checked={value || false}
               onChange={(e) => handleChange(fieldId, e.target.checked)}
-              className="w-5 h-5 text-orange-500 rounded"
+              className="w-5 h-5 text-[#C1634A] rounded"
             />
             <span className="text-sm font-semibold text-gray-700">{config.label}</span>
           </label>
@@ -582,13 +582,13 @@ const clientData = {
 
       case 'checkbox_legal':
         return (
-          <label className={`flex items-start gap-3 mb-4 p-4 rounded-lg cursor-pointer transition-colors ${hasError ? 'bg-red-50 border-2 border-red-300' : 'bg-orange-50 hover:bg-orange-100'}`} id={`field-${fieldId}`}>
+          <label className={`flex items-start gap-3 mb-4 p-4 rounded-lg cursor-pointer transition-colors ${hasError ? 'bg-red-50 border-2 border-red-300' : 'bg-[#F5F0E8] hover:bg-[#C1634A]/15'}`} id={`field-${fieldId}`}>
             <input
               type="checkbox"
               checked={value || false}
               onChange={(e) => handleChange(fieldId, e.target.checked)}
               required={config.required}
-              className="w-5 h-5 text-orange-500 rounded mt-0.5 flex-shrink-0"
+              className="w-5 h-5 text-[#C1634A] rounded mt-0.5 flex-shrink-0"
             />
             <span className={`text-sm ${hasError ? 'text-red-700 font-semibold' : 'text-gray-800'}`}>
               {config.label} {config.required && <span className="text-red-500">*</span>}
@@ -609,12 +609,12 @@ const clientData = {
               step={config.step || '1'}
               value={value}
               onChange={(e) => handleChange(fieldId, e.target.value)}
-              className="w-full h-2 bg-orange-200 rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 bg-[#D2B48C] rounded-lg appearance-none cursor-pointer"
             />
             <div className="flex justify-between text-xs text-gray-600 mt-2">
               {config.labels?.map((l, i) => <span key={i}>{l}</span>)}
             </div>
-            <div className="text-center mt-2 text-xl font-bold text-orange-600">{value}</div>
+            <div className="text-center mt-2 text-xl font-bold text-[#C1634A]">{value}</div>
           </div>
         );
 
@@ -626,8 +626,8 @@ const clientData = {
   const renderLegalSection = () => {
     return (
       <div className="space-y-6">
-        <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-6 border-2 border-orange-200">
-          <h3 className="font-bold text-lg mb-4 text-orange-900">📜 Documentos Legais</h3>
+        <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-6 border-2 border-[#D2B48C]">
+          <h3 className="font-bold text-lg mb-4 text-[#4A4035]">📜 Documentos Legais</h3>
           <p className="text-sm text-gray-700 mb-4">
             Antes de continuar, por favor lê os seguintes documentos:
           </p>
@@ -635,14 +635,14 @@ const clientData = {
             <button 
               type="button"
               onClick={() => setShowTermos(true)}
-              className="w-full text-left px-4 py-3 bg-white rounded-lg border-2 border-orange-300 hover:border-orange-500 hover:shadow-md transition-all text-orange-700 font-semibold"
+              className="w-full text-left px-4 py-3 bg-white rounded-lg border-2 border-[#C1634A]/50 hover:border-[#C1634A] hover:shadow-md transition-all text-[#C1634A] font-semibold"
             >
               📄 Ler Termos de Serviço →
             </button>
             <button 
               type="button"
               onClick={() => setShowPrivacidade(true)}
-              className="w-full text-left px-4 py-3 bg-white rounded-lg border-2 border-orange-300 hover:border-orange-500 hover:shadow-md transition-all text-orange-700 font-semibold"
+              className="w-full text-left px-4 py-3 bg-white rounded-lg border-2 border-[#C1634A]/50 hover:border-[#C1634A] hover:shadow-md transition-all text-[#C1634A] font-semibold"
             >
               🔒 Ler Política de Privacidade →
             </button>
@@ -669,33 +669,42 @@ const clientData = {
   const progress = (currentSection / (sections.length - 1)) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-      <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
-        <div 
-          className="h-full bg-gradient-to-r from-orange-500 to-amber-600 transition-all duration-300" 
-          style={{ width: `${progress}%` }} 
+    <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3]">
+      <div className="fixed top-0 left-0 w-full h-1.5 bg-[#D2B48C]/30 z-50">
+        <div
+          className="h-full bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] transition-all duration-300"
+          style={{ width: `${progress}%` }}
         />
       </div>
 
       <div className="container mx-auto px-4 py-12 max-w-3xl pt-20">
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-orange-900 mb-3" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+          <img
+            src="/logos/VITALIS_LOGO_V3.png"
+            alt="Vitalis"
+            className="w-20 h-20 mx-auto mb-4 drop-shadow-lg"
+          />
+          <h1 className="text-4xl font-bold text-[#4A4035] mb-3" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
             {section.title}
           </h1>
-          {section.subtitle && <p className="text-gray-600 italic text-sm">{section.subtitle}</p>}
-          {!section.isWelcome && <p className="text-sm text-gray-600 mt-4">Secção {currentSection} de {sections.length - 1}</p>}
+          {section.subtitle && <p className="text-[#6B4423] italic text-sm">{section.subtitle}</p>}
+          {!section.isWelcome && <p className="text-sm text-[#8B4513] mt-4">Secção {currentSection} de {sections.length - 1}</p>}
         </div>
 
         {section.isWelcome ? (
-          <div className="bg-white rounded-2xl shadow-xl p-10 text-center">
-            <div className="text-6xl mb-6">🌱</div>
-            <p className="text-lg text-gray-700 mb-8">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-10 text-center border border-[#D2B48C]/30">
+            <img
+              src="/logos/VITALIS_LOGO_V3.png"
+              alt="Vitalis"
+              className="w-24 h-24 mx-auto mb-6 drop-shadow-lg"
+            />
+            <p className="text-lg text-[#4A4035] mb-8">
               Responde com honestidade. Não há respostas certas ou erradas.<br />
-              <span className="font-semibold text-orange-600">⏱️ 10-15 minutos</span>
+              <span className="font-semibold text-[#C1634A]">⏱️ 10-15 minutos</span>
             </p>
-            <button 
-              onClick={handleNext} 
-              className="bg-gradient-to-r from-orange-500 to-amber-600 text-white px-12 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-shadow"
+            <button
+              onClick={handleNext}
+              className="bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white px-12 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-shadow"
             >
               Começar →
             </button>
@@ -711,31 +720,31 @@ const clientData = {
                 </div>
               )}
 
-              <div className="flex justify-between mt-10 pt-6 border-t">
+              <div className="flex justify-between mt-10 pt-6 border-t border-[#D2B48C]/30">
                 {currentSection > 1 && (
-                  <button 
-                    type="button" 
-                    onClick={handlePrevious} 
-                    className="px-6 py-3 border-2 border-orange-300 text-orange-700 rounded-full font-semibold hover:bg-orange-50 transition-colors"
+                  <button
+                    type="button"
+                    onClick={handlePrevious}
+                    className="px-6 py-3 border-2 border-[#C1634A]/50 text-[#C1634A] rounded-full font-semibold hover:bg-[#C1634A]/10 transition-colors"
                   >
                     ← Anterior
                   </button>
                 )}
                 {currentSection < sections.length - 1 ? (
-                  <button 
-                    type="button" 
-                    onClick={handleNext} 
-                    className="ml-auto px-8 py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-full font-semibold hover:shadow-lg transition-shadow"
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    className="ml-auto px-8 py-3 bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white rounded-full font-semibold hover:shadow-lg transition-shadow"
                   >
                     Continuar →
                   </button>
                 ) : (
-                  <button 
-                    type="submit" 
-                    disabled={loading} 
-                    className="ml-auto px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full font-semibold hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="ml-auto px-8 py-3 bg-gradient-to-r from-[#6B8E23] to-[#556B2F] text-white rounded-full font-semibold hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {loading ? 'A enviar...' : 'Finalizar ✓'}
+                    {loading ? 'A enviar...' : '🌱 Finalizar'}
                   </button>
                 )}
               </div>
@@ -749,7 +758,7 @@ const clientData = {
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
             <div className="p-6 border-b flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-orange-900">Termos de Serviço</h2>
+              <h2 className="text-2xl font-bold text-[#4A4035]">Termos de Serviço</h2>
               <button 
                 onClick={() => setShowTermos(false)}
                 className="text-gray-500 hover:text-gray-700 text-3xl leading-none"
@@ -770,7 +779,7 @@ const clientData = {
                   setShowTermos(false);
                   handleChange('li_termos', true);
                 }}
-                className="w-full bg-gradient-to-r from-orange-500 to-amber-600 text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-shadow"
+                className="w-full bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-shadow"
               >
                 Li e Aceito os Termos
               </button>
@@ -783,7 +792,7 @@ const clientData = {
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
             <div className="p-6 border-b flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-orange-900">Política de Privacidade</h2>
+              <h2 className="text-2xl font-bold text-[#4A4035]">Política de Privacidade</h2>
               <button 
                 onClick={() => setShowPrivacidade(false)}
                 className="text-gray-500 hover:text-gray-700 text-3xl leading-none"
@@ -804,7 +813,7 @@ const clientData = {
                   setShowPrivacidade(false);
                   handleChange('li_privacidade', true);
                 }}
-                className="w-full bg-gradient-to-r from-orange-500 to-amber-600 text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-shadow"
+                className="w-full bg-gradient-to-r from-[#C1634A] via-[#D97706] to-[#A54E38] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-shadow"
               >
                 Li e Aceito a Política
               </button>
