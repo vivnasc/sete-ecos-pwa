@@ -1,268 +1,521 @@
+/* ===== VARIÁVEIS TEMA QUENTE ===== */
+:root {
+  --marfim: #FAF6F0;
+  --marfim-quente: #F5EEE3;
+  --dourado: #C9A227;
+  --dourado-claro: #E8D5A3;
+  --texto: #4A3728;
+  --texto-suave: #6B5344;
+  --lumina-lavanda: #9B8AA6;
+}
+
+/* ===== BASE ===== */
 .home {
-  padding: 24px 20px;
-  max-width: 600px;
-  margin: 0 auto;
+  font-family: 'Quicksand', sans-serif;
+  background: var(--marfim);
+  min-height: 100vh;
+  color: var(--texto);
+  padding-bottom: 100px;
 }
 
-.home-header {
-  text-align: center;
-  padding: 20px 0 40px;
-}
-
-.home-logo {
-  font-size: 2.5rem;
-  color: var(--lumina-violeta);
-  margin-bottom: 12px;
-}
-
-.home-title {
-  font-family: var(--font-titulos);
-  font-size: 2.25rem;
-  letter-spacing: 0.12em;
-  color: var(--lumina-indigo);
-  margin-bottom: 8px;
-}
-
-.home-subtitle {
-  font-family: var(--font-titulos);
-  font-size: 0.95rem;
-  font-style: italic;
-  color: var(--lumina-texto-hint);
-}
-
-.home-section {
-  margin-bottom: 32px;
-}
-
-.section-title {
-  font-family: var(--font-titulos);
-  font-size: 1.1rem;
-  color: var(--lumina-texto-suave);
-  margin-bottom: 16px;
-}
-
-/* LUMINA Card */
-.lumina-card {
-  background: linear-gradient(135deg, var(--lumina-indigo) 0%, var(--lumina-violeta) 100%);
-  color: white;
-  padding: 28px 24px;
-  border-radius: 20px;
-  cursor: pointer;
+/* ===== HERO ===== */
+.hero {
+  width: 100%;
+  min-height: 420px;
+  height: 50vh;
+  max-height: 500px;
+  background: url('/logos/SETEECOS_HERO.png') center 15% / cover no-repeat;
   position: relative;
-  box-shadow: 0 8px 32px rgba(75, 0, 130, 0.3);
-  transition: all 0.25s ease;
 }
 
-.lumina-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(75, 0, 130, 0.4);
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 150px;
+  background: linear-gradient(to bottom, transparent 0%, var(--marfim) 100%);
 }
 
-.lumina-card-header {
+.hero-content {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 5;
+}
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem;
+  font-weight: 400;
+  letter-spacing: 0.35em;
+  color: var(--texto);
+  text-transform: uppercase;
+  text-shadow: 0 2px 15px rgba(250, 246, 240, 0.9);
+  margin-bottom: 6px;
+}
+
+.hero-tagline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--texto-suave);
+  letter-spacing: 0.1em;
+}
+
+/* ===== LUMINA CARD ===== */
+.lumina-section {
+  padding: 0 20px;
+  margin-top: 24px;
+  position: relative;
+  z-index: 10;
+}
+
+.lumina-card {
+  background: linear-gradient(135deg, #B8A5C4 0%, var(--lumina-lavanda) 100%);
+  border-radius: 20px;
+  padding: 20px 24px;
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 16px;
+  box-shadow: 0 8px 30px rgba(155, 138, 166, 0.35);
+  cursor: pointer;
+  max-width: 400px;
+  margin: 0 auto;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.lumina-card-icon { font-size: 2rem; }
-
-.lumina-card-title {
-  font-family: var(--font-titulos);
-  font-size: 1.75rem;
-  letter-spacing: 0.08em;
-  color: white;
+.lumina-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(155, 138, 166, 0.45);
 }
 
-.lumina-card-desc {
-  font-size: 0.9rem;
-  opacity: 0.85;
-  font-style: italic;
+.lumina-icon {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
 }
 
-.lumina-card-cta { font-size: 1rem; opacity: 0.95; margin: 0; }
-
-.lumina-card-arrow {
-  position: absolute;
-  right: 24px;
-  bottom: 24px;
-  font-size: 1.5rem;
-  opacity: 0.7;
+.lumina-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  color: #FFF;
+  letter-spacing: 0.12em;
+  margin: 0;
 }
 
-/* Ecos Grid */
-.ecos-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+.lumina-desc {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
 }
 
-.eco-card {
-  background: white;
-  padding: 20px 16px;
-  border-radius: 16px;
-  border: 1px solid var(--lumina-cinza);
-  position: relative;
-}
-
-.eco-card::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 4px;
-  border-radius: 16px 0 0 16px;
-}
-
-.eco-card.disabled { opacity: 0.65; }
-
-.eco-card-vitalis::before { background: var(--eco-1-vitalis); }
-.eco-card-serena::before { background: var(--eco-2-serena); }
-.eco-card-ignis::before { background: var(--eco-3-ignis); }
-.eco-card-ventis::before { background: var(--eco-4-ventis); }
-.eco-card-ecoa::before { background: var(--eco-5-ecoa); }
-.eco-card-lumina::before { background: var(--eco-6-lumina); }
-.eco-card-imago::before { background: var(--eco-7-imago); }
-
-.eco-num {
-  position: absolute;
-  top: 12px; right: 12px;
+.lumina-cta {
   font-size: 0.8rem;
-  color: var(--lumina-texto-hint);
+  font-weight: 600;
+  color: #FFF;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ===== SECTION TITLE ===== */
+.section-title {
+  text-align: center;
+  padding: 40px 20px 20px;
+}
+
+.section-title h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* ===== FLOR DOS 7 ECOS ===== */
+.flor-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 10px 20px 40px;
+}
+
+.flor-container {
+  position: relative;
+  width: 360px;
+  height: 360px;
+}
+
+/* Linhas conectoras SVG */
+.linhas-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.linhas-svg line {
+  stroke: var(--dourado-claro);
+  stroke-width: 1.5;
   opacity: 0.5;
 }
 
-.eco-nome {
-  font-family: var(--font-titulos);
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--lumina-indigo);
-  margin-bottom: 4px;
+/* Centro da flor */
+.flor-centro {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 110px;
+  height: 110px;
+  z-index: 10;
 }
 
-.eco-slogan {
+.flor-centro img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 30px rgba(201, 162, 39, 0.5));
+}
+
+/* Pétalas */
+.petala {
+  position: absolute;
+  width: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  z-index: 5;
+}
+
+.petala:hover {
+  transform: scale(1.1);
+  z-index: 15;
+}
+
+.petala.disabled {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.petala img {
+  width: 85px;
+  height: 85px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 15px rgba(0,0,0,0.18));
+}
+
+.petala-label {
+  font-family: 'Cormorant Garamond', serif;
   font-size: 0.85rem;
-  font-style: italic;
-  color: var(--lumina-texto-hint);
-  text-align: center;
-  margin: 0.5rem 0;
-  line-height: 1.3;
-}
-
-.eco-area {
-  font-size: 0.9rem;
-  color: var(--lumina-texto-suave);
-  margin-bottom: 4px;
-}
-
-.eco-elemento {
-  font-size: 0.75rem;
-  color: var(--lumina-texto-hint);
-  font-style: italic;
-}
-
-.eco-badge {
-  position: absolute;
-  bottom: 12px; right: 12px;
-  font-size: 0.65rem;
-  font-weight: 600;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 6px;
-}
-
-/* AURŌRA Card */
-.aurora-card {
-  position: relative;
-  background: linear-gradient(135deg, #1A1A4E 0%, #2A2A5E 50%, #4B0082 100%);
-  padding: 28px 24px;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba(255, 215, 0, 0.15);
-}
-
-.aurora-card-glow {
-  position: absolute;
-  top: -50%; left: -50%;
-  width: 200%; height: 200%;
-  background: radial-gradient(circle at 70% 30%, rgba(255, 215, 0, 0.15) 0%, transparent 40%);
-}
-
-.aurora-card-content {
-  position: relative;
-  z-index: 1;
+  color: var(--texto-suave);
+  margin-top: 4px;
   text-align: center;
 }
 
-.aurora-symbol {
-  display: block;
-  font-size: 2.5rem;
-  margin-bottom: 12px;
-  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+/* Posições das pétalas */
+.petala-1 { top: 0; left: 50%; transform: translateX(-50%); }
+.petala-1:hover { transform: translateX(-50%) scale(1.1); }
+
+.petala-2 { top: 25px; right: 5px; }
+.petala-3 { top: 135px; right: -15px; }
+.petala-4 { bottom: 25px; right: 25px; }
+.petala-5 { bottom: 25px; left: 25px; }
+.petala-6 { top: 135px; left: -15px; }
+.petala-7 { top: 25px; left: 5px; }
+
+/* Badge */
+.badge {
+  font-size: 0.55rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  margin-top: 4px;
 }
 
-.aurora-title {
-  font-family: var(--font-titulos);
-  font-size: 1.75rem;
-  letter-spacing: 0.1em;
-  color: var(--aurora);
+.badge.disponivel {
+  background: #5D7A3A;
+  color: white;
+}
+
+.badge.breve {
+  background: rgba(201, 162, 39, 0.15);
+  color: var(--dourado);
+  border: 1px solid var(--dourado-claro);
+}
+
+/* ===== AURORA SECTION ===== */
+.aurora-section {
+  margin-top: 30px;
+  padding: 35px 20px 45px;
+  background: linear-gradient(180deg, var(--marfim) 0%, rgba(232, 213, 163, 0.2) 50%, rgba(212, 165, 165, 0.12) 100%);
+  text-align: center;
+  position: relative;
+}
+
+.aurora-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--dourado), transparent);
+}
+
+.aurora-section img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 25px rgba(201, 162, 39, 0.4));
+}
+
+.aurora-section h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0.25em;
+  color: var(--dourado);
+  text-transform: uppercase;
   margin-bottom: 4px;
 }
 
-.aurora-desc {
-  font-family: var(--font-titulos);
-  font-size: 1rem;
+.aurora-section .subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.95rem;
   font-style: italic;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 16px;
+  color: var(--texto-suave);
+  margin-bottom: 8px;
 }
 
-.aurora-info {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.85);
-  margin-bottom: 20px;
-}
-
-.aurora-progress {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 16px;
-  border-radius: 12px;
-}
-
-.aurora-progress-label {
-  display: block;
+.aurora-section .unlock-info {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--dourado);
+  margin-bottom: 20px;
+  opacity: 0.85;
+}
+
+.progress-container {
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--texto-suave);
   margin-bottom: 10px;
 }
 
-.aurora-progress-bar {
-  height: 6px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
+.progress-track {
+  height: 8px;
+  background: rgba(201, 162, 39, 0.12);
+  border-radius: 4px;
+  overflow: hidden;
 }
 
-.aurora-progress-fill {
+.progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, var(--aurora) 0%, #FFF8DC 100%);
-  border-radius: 3px;
+  background: linear-gradient(90deg, #D4A5A5, var(--dourado));
+  border-radius: 4px;
 }
 
-/* Footer */
-.home-footer { padding-top: 20px; }
-
-.logout-button {
-  width: 100%;
-  padding: 14px;
-  background: transparent;
-  border: 1px solid var(--lumina-cinza);
-  border-radius: 12px;
-  color: var(--lumina-texto-hint);
-  font-size: 0.95rem;
+/* ===== BOTTOM NAV ===== */
+.nav-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(250, 246, 240, 0.97);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--dourado-claro);
+  padding: 12px 20px 28px;
+  display: flex;
+  justify-content: space-around;
+  z-index: 100;
 }
 
-.logout-button:hover {
-  background: var(--lumina-fundo-2);
-  color: var(--lumina-texto-suave);
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  color: var(--texto-suave);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.nav-item.active {
+  color: var(--dourado);
+}
+
+.nav-icon {
+  font-size: 1.3rem;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.lumina-card { animation: fadeIn 0.5s ease-out 0.1s both; }
+.flor-container { animation: fadeIn 0.5s ease-out 0.2s both; }
+.aurora-section { animation: fadeIn 0.5s ease-out 0.3s both; }
+
+/* ===== RESPONSIVE - DESKTOP ===== */
+@media (min-width: 768px) {
+  .hero {
+    min-height: 500px;
+    height: 60vh;
+    max-height: 650px;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    letter-spacing: 0.4em;
+  }
+
+  .hero-tagline {
+    font-size: 1.3rem;
+  }
+
+  .hero-content {
+    bottom: 100px;
+  }
+
+  .lumina-card {
+    max-width: 500px;
+    padding: 28px 32px;
+  }
+
+  .lumina-icon {
+    width: 100px;
+    height: 100px;
+  }
+
+  .lumina-title {
+    font-size: 1.8rem;
+  }
+
+  .section-title h3 {
+    font-size: 1.1rem;
+    letter-spacing: 0.4em;
+  }
+
+  .flor-container {
+    width: 480px;
+    height: 480px;
+  }
+
+  .petala {
+    width: 110px;
+  }
+
+  .petala img {
+    width: 105px;
+    height: 105px;
+  }
+
+  .petala-label {
+    font-size: 1rem;
+  }
+
+  .flor-centro {
+    width: 140px;
+    height: 140px;
+  }
+
+  .aurora-section img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .aurora-section h2 {
+    font-size: 2rem;
+  }
+
+  .progress-container {
+    max-width: 350px;
+  }
+}
+
+/* ===== RESPONSIVE - LARGE DESKTOP ===== */
+@media (min-width: 1200px) {
+  .hero {
+    min-height: 550px;
+    height: 65vh;
+    max-height: 750px;
+  }
+
+  .hero-title {
+    font-size: 4.5rem;
+  }
+
+  .hero-tagline {
+    font-size: 1.5rem;
+  }
+
+  .lumina-card {
+    max-width: 550px;
+    padding: 32px 40px;
+  }
+
+  .lumina-icon {
+    width: 110px;
+    height: 110px;
+  }
+
+  .flor-container {
+    width: 550px;
+    height: 550px;
+  }
+
+  .petala {
+    width: 130px;
+  }
+
+  .petala img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .petala-label {
+    font-size: 1.1rem;
+  }
+
+  .flor-centro {
+    width: 160px;
+    height: 160px;
+  }
+
+  .aurora-section img {
+    width: 140px;
+    height: 140px;
+  }
+
+  .aurora-section h2 {
+    font-size: 2.2rem;
+  }
 }
