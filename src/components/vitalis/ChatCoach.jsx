@@ -55,7 +55,7 @@ export default function ChatCoach() {
         const nome = clientData?.nome_completo?.split(' ')[0] || 'querida';
         const boasVindas = {
           id: Date.now(),
-          texto: `Olá ${nome}! 👋\n\nSou a Vivianne. Estou aqui para te ajudar a entender o teu plano de adaptação metabólica.\n\nPergunta-me sobre:\n• As tuas porções (palmas, punhos, mãos, polegares)\n• Como montar os pratos\n• O que priorizar ou evitar na tua fase\n• Dúvidas sobre o método\n\nComo posso ajudar?`,
+          texto: `Olá ${nome}! 👋\n\nSou a Vivianne. Estou aqui para te ajudar a entender o teu plano de adaptação metabólica.\n\nPergunta-me sobre:\n• As tuas porções (palmas, punhos, mãos, polegares)\n• Como montar os pratos\n• O que priorizar ou evitar na tua fase\n• Jejum intermitente e ciência por trás\n• Hormonas (insulina, grelina, leptina)\n• Autofagia e renovação celular\n\nComo posso ajudar?`,
           remetente: 'coach',
           timestamp: new Date().toISOString()
         };
@@ -368,6 +368,94 @@ export default function ChatCoach() {
         `${faseRestritiva ? 'Evita adicionar fruta! Usa cacau em pó ou canela.' : 'Podes adicionar fruta se quiseres.'}`;
     }
 
+    // ========== JEJUM INTERMITENTE - EDUCATIVO ==========
+    if (texto.match(/jejum|fasting|16.?8|intermitente|autofagia|autofago/)) {
+      return `📚 **Jejum Intermitente - A Ciência**\n\n` +
+        `O jejum intermitente é uma estratégia alimentar com décadas de investigação científica.\n\n` +
+        `**🔬 O QUE DIZ A CIÊNCIA:**\n\n` +
+        `**1. Regulação Hormonal**\n` +
+        `• **Insulina:** Baixa durante o jejum, permitindo que o corpo aceda às reservas de gordura (estudos: Harvie et al., 2011; Varady, 2011)\n` +
+        `• **Grelina (hormona da fome):** Adapta-se em 1-2 semanas - a fome diminui naturalmente (Natalucci et al., 2005)\n` +
+        `• **Leptina:** Melhora a sensibilidade, ajudando a reconhecer a saciedade (Ahmet et al., 2011)\n` +
+        `• **Hormona do Crescimento:** Aumenta até 5x, preservando massa muscular (Ho et al., 1988)\n\n` +
+        `**2. Autofagia (Prémio Nobel 2016)**\n` +
+        `O Dr. Yoshinori Ohsumi ganhou o Nobel por descobrir como as células se "limpam" durante o jejum:\n` +
+        `• Remove proteínas danificadas\n` +
+        `• Recicla componentes celulares\n` +
+        `• Activa-se significativamente após 16-18h de jejum\n` +
+        `• Benefícios: anti-envelhecimento, prevenção de doenças\n\n` +
+        `**3. Perda de Peso**\n` +
+        `Meta-análises mostram:\n` +
+        `• Redução de 3-8% do peso em 3-24 semanas (Welton et al., 2020)\n` +
+        `• Preservação de massa muscular superior a dietas contínuas\n` +
+        `• Redução da gordura visceral (a mais perigosa)\n\n` +
+        `**📖 PROTOCOLOS COMUNS:**\n` +
+        `• **16:8** - 16h jejum, 8h alimentação (mais popular)\n` +
+        `• **18:6** - 18h jejum, 6h alimentação\n` +
+        `• **20:4** - 20h jejum, 4h alimentação (avançado)\n\n` +
+        `**🎯 COMO COMBINAR COM VITALIS:**\n` +
+        `${faseRestritiva ?
+          `Na tua fase actual, o jejum potencia a adaptação metabólica:\n• Café keto de manhã (não quebra o jejum metabólico)\n• Primeira refeição: almoço com ${Math.round(palmas * 0.4)} palmas\n• Jantar com ${Math.round(palmas * 0.35)} palmas\n• Snack se necessário` :
+          `Podes experimentar 14:8 ou 16:8:\n• Pequeno-almoço às 10h ou almoço às 12h\n• Última refeição até às 20h\n• Água, chá e café sem açúcar durante o jejum`}\n\n` +
+        `**⚠️ NOTA:** O jejum não é obrigatório no método Vitalis, mas é uma ferramenta poderosa se te sentires confortável.`;
+    }
+
+    // ========== MAIS SOBRE HORMONAS ==========
+    if (texto.match(/hormon|grelina|insulina|leptina|cortisol/)) {
+      return `🧬 **Hormonas e Alimentação**\n\n` +
+        `O teu corpo é regulado por hormonas que controlam fome, saciedade e armazenamento de gordura.\n\n` +
+        `**INSULINA** 📉\n` +
+        `• Libertada quando comes (especialmente hidratos)\n` +
+        `• Níveis altos = corpo em "modo armazenamento"\n` +
+        `• Níveis baixos = corpo acede à gordura\n` +
+        `• O método Vitalis ajuda: ${faseRestritiva ? 'a tua fase mantém insulina baixa' : 'porções controladas evitam picos'}\n\n` +
+        `**GRELINA** (hormona da fome) 🍽️\n` +
+        `• Aumenta antes das refeições habituais\n` +
+        `• É um HÁBITO, não uma necessidade real\n` +
+        `• Adapta-se em 1-2 semanas a novos horários\n` +
+        `• Proteína e gordura reduzem grelina por mais tempo\n\n` +
+        `**LEPTINA** (hormona da saciedade) ✋\n` +
+        `• Diz ao cérebro "estou satisfeito"\n` +
+        `• O excesso de peso pode causar "resistência à leptina"\n` +
+        `• O método Vitalis melhora esta sensibilidade\n\n` +
+        `**CORTISOL** (stress) 😰\n` +
+        `• Níveis altos = armazenamento de gordura abdominal\n` +
+        `• O sono e a alimentação regular ajudam a controlar\n\n` +
+        `**📚 Referências:**\n` +
+        `• Cummings DE et al. (2001) - Grelina\n` +
+        `• Considine RV et al. (1996) - Leptina\n` +
+        `• Dallman MF et al. (2003) - Cortisol`;
+    }
+
+    // ========== AUTOFAGIA DETALHADA ==========
+    if (texto.match(/autofag|limpeza celular|renovar celula|detox real/)) {
+      return `🔬 **Autofagia - A Limpeza Celular**\n\n` +
+        `A autofagia (do grego "comer-se a si próprio") é o processo de reciclagem celular. O Dr. Yoshinori Ohsumi recebeu o **Prémio Nobel de 2016** por esta descoberta.\n\n` +
+        `**O QUE ACONTECE:**\n` +
+        `• As células identificam componentes danificados\n` +
+        `• Envolvem-nos em membranas (autofagossomas)\n` +
+        `• Decompõem e reciclam para criar novas proteínas\n\n` +
+        `**BENEFÍCIOS COMPROVADOS:**\n` +
+        `• ♻️ Remove proteínas mal-formadas (prevenção Alzheimer)\n` +
+        `• 🦠 Elimina patógenos intracelulares\n` +
+        `• 🧬 Previne danos no DNA\n` +
+        `• ⏰ Efeito anti-envelhecimento\n` +
+        `• 💪 Preserva massa muscular durante restrição calórica\n\n` +
+        `**QUANDO SE ACTIVA:**\n` +
+        `• Começa gradualmente após 12-14h de jejum\n` +
+        `• Pico significativo às 16-18h\n` +
+        `• Máxima activação às 24-48h (jejum prolongado)\n\n` +
+        `**COMO POTENCIAR:**\n` +
+        `• Jejum intermitente (16:8 ou mais)\n` +
+        `• Exercício (especialmente em jejum)\n` +
+        `• Café (activa autofagia mesmo sem jejum!)\n` +
+        `• Restrição calórica moderada\n\n` +
+        `**📚 Referências Científicas:**\n` +
+        `• Ohsumi Y. (2014) - Molecular Biology of the Cell\n` +
+        `• Levine B & Kroemer G (2008) - Cell\n` +
+        `• Alirezaei M et al. (2010) - Autophagy`;
+    }
+
     // ========== FOME ==========
     if (texto.match(/fome|saciedade|craving/)) {
       return `Para controlar a fome:\n\n` +
@@ -565,9 +653,10 @@ export default function ChatCoach() {
         <div className="max-w-2xl mx-auto flex gap-2">
           {[
             { texto: 'Como medir porções?', emoji: '🖐️' },
-            { texto: 'O que posso comer?', emoji: '✅' },
-            { texto: 'Como distribuir?', emoji: '📊' },
-            { texto: 'Tenho fome', emoji: '😋' },
+            { texto: 'Jejum intermitente', emoji: '⏰' },
+            { texto: 'Autofagia', emoji: '🔬' },
+            { texto: 'Hormonas da fome', emoji: '🧬' },
+            { texto: 'Café keto', emoji: '☕' },
           ].map((quick, i) => (
             <button key={i} onClick={() => setNovaMensagem(quick.texto)} className="flex items-center gap-1 px-3 py-1.5 bg-white rounded-full text-sm text-gray-600 hover:bg-gray-50 whitespace-nowrap shadow-sm">
               <span>{quick.emoji}</span><span>{quick.texto}</span>
