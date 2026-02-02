@@ -126,7 +126,7 @@ export default function Home() {
 
       {/* AURORA */}
       <section className="aurora-section">
-        <img src="/logos/AURORA_LOGO_V3.png" alt="Aurora" />
+        <img src="/logos/AURORA_LOGO_V3.png" alt="Aurora" className="aurora-icon" />
         <h2>Aurōra</h2>
         <p className="subtitle">A Coroação — Presença plena</p>
         <p className="unlock-info">Desbloqueia ao completar os 7 caminhos</p>
