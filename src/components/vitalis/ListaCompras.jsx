@@ -100,16 +100,33 @@ export default function ListaCompras() {
     // ========== PROTEÍNAS ==========
     const proteinaSemanal = porcoesProteina * 7;
     ingredientes.push(
-      { nome: 'Peito de Frango', quantidade: `${Math.max(1, Math.round(proteinaSemanal * 20 * 0.35 / 1000))}`, unidade: 'kg', categoria: 'proteinas' },
-      { nome: 'Ovos', quantidade: `${Math.round(proteinaSemanal * 0.3) * 2}`, unidade: 'unidades', categoria: 'proteinas' },
-      { nome: 'Peixe (salmão ou pescada)', quantidade: `${Math.max(0.5, Math.round(proteinaSemanal * 20 * 0.2 / 1000 * 10) / 10)}`, unidade: 'kg', categoria: 'proteinas' }
+      { nome: 'Peito de Frango', quantidade: `${Math.max(0.8, Math.round(proteinaSemanal * 20 * 0.25 / 1000 * 10) / 10)}`, unidade: 'kg', categoria: 'proteinas' },
+      { nome: 'Carne de Vaca (bifes ou picada magra)', quantidade: `${Math.max(0.5, Math.round(proteinaSemanal * 20 * 0.2 / 1000 * 10) / 10)}`, unidade: 'kg', categoria: 'proteinas' },
+      { nome: 'Ovos', quantidade: `${Math.max(12, Math.round(proteinaSemanal * 0.35) * 2)}`, unidade: 'unidades', categoria: 'proteinas' },
+      { nome: 'Peixe (salmão, pescada ou dourada)', quantidade: `${Math.max(0.5, Math.round(proteinaSemanal * 20 * 0.2 / 1000 * 10) / 10)}`, unidade: 'kg', categoria: 'proteinas' },
+      { nome: 'Whey Protein', quantidade: '1', unidade: 'embalagem', categoria: 'proteinas', nota: 'Para batidos rápidos' }
     );
+
+    // Adicionar peru/bacon se não restritivo demais
+    if (!deveEvitar('porco')) {
+      ingredientes.push(
+        { nome: 'Peito de Peru ou Bacon', quantidade: '400', unidade: 'g', categoria: 'proteinas' }
+      );
+    }
 
     // ========== LATICÍNIOS ==========
     ingredientes.push(
-      { nome: 'Iogurte Grego Natural', quantidade: `${Math.round(proteinaSemanal * 0.15)}`, unidade: 'unidades', categoria: 'laticinios' },
-      { nome: 'Queijo Fresco', quantidade: '500', unidade: 'g', categoria: 'laticinios' }
+      { nome: 'Iogurte Grego Natural (sem açúcar)', quantidade: `${Math.max(4, Math.round(proteinaSemanal * 0.15))}`, unidade: 'unidades', categoria: 'laticinios' },
+      { nome: 'Queijo Fresco ou Requeijão', quantidade: '500', unidade: 'g', categoria: 'laticinios' },
+      { nome: 'Queijo Curado (parmesão, cheddar)', quantidade: '200', unidade: 'g', categoria: 'laticinios' }
     );
+
+    // Manteiga e natas para keto
+    if (isRestritiva) {
+      ingredientes.push(
+        { nome: 'Natas para Cozinhar', quantidade: '2', unidade: 'embalagens', categoria: 'laticinios' }
+      );
+    }
 
     // ========== HIDRATOS (se não restritiva) ==========
     if (!isRestritiva && porcoesHidratos > 2) {
@@ -153,25 +170,52 @@ export default function ListaCompras() {
     );
 
     // ========== GORDURAS ==========
+    // Gorduras essenciais (sempre)
     ingredientes.push(
-      { nome: 'Azeite Extra Virgem', quantidade: '500', unidade: 'ml', categoria: 'gorduras' },
-      { nome: 'Abacate', quantidade: `${Math.round(porcoesGordura * 0.2)}`, unidade: 'unidades', categoria: 'gorduras' },
-      { nome: 'Amêndoas ou Nozes', quantidade: '200', unidade: 'g', categoria: 'gorduras' }
+      { nome: 'Azeite Extra Virgem', quantidade: '750', unidade: 'ml', categoria: 'gorduras' },
+      { nome: 'Abacate', quantidade: `${Math.max(3, Math.round(porcoesGordura * 0.25))}`, unidade: 'unidades', categoria: 'gorduras' },
+      { nome: 'Manteiga ou Ghee', quantidade: '250', unidade: 'g', categoria: 'gorduras', nota: 'Para cozinhar' },
+      { nome: 'Amêndoas ou Nozes', quantidade: '250', unidade: 'g', categoria: 'gorduras' },
+      { nome: 'Manteiga de Amendoim/Amêndoa (sem açúcar)', quantidade: '1', unidade: 'frasco', categoria: 'gorduras' }
     );
 
-    // Se fase restritiva, adicionar mais gorduras boas
+    // Se fase restritiva (keto/low carb) - MAIS GORDURAS
     if (isRestritiva) {
       ingredientes.push(
-        { nome: 'Sementes (chia ou linhaça)', quantidade: '200', unidade: 'g', categoria: 'gorduras' },
-        { nome: 'Manteiga de Amendoim (sem açúcar)', quantidade: '1', unidade: 'frasco', categoria: 'gorduras' }
+        { nome: 'Óleo de Coco', quantidade: '250', unidade: 'ml', categoria: 'gorduras', nota: 'Para café keto e cozinhar' },
+        { nome: 'Óleo MCT', quantidade: '1', unidade: 'frasco', categoria: 'gorduras', nota: 'Opcional - energia rápida' },
+        { nome: 'Sementes (chia, linhaça, abóbora)', quantidade: '300', unidade: 'g', categoria: 'gorduras' },
+        { nome: 'Azeitonas', quantidade: '2', unidade: 'frascos', categoria: 'gorduras' },
+        { nome: 'Coco Ralado (sem açúcar)', quantidade: '200', unidade: 'g', categoria: 'gorduras' }
+      );
+    } else {
+      ingredientes.push(
+        { nome: 'Sementes (chia ou linhaça)', quantidade: '200', unidade: 'g', categoria: 'gorduras' }
       );
     }
 
     // ========== TEMPEROS ==========
     ingredientes.push(
-      { nome: 'Limões', quantidade: '4', unidade: 'unidades', categoria: 'temperos' },
-      { nome: 'Ervas Aromáticas', quantidade: '1', unidade: 'embalagem', categoria: 'temperos' }
+      { nome: 'Limões', quantidade: '6', unidade: 'unidades', categoria: 'temperos' },
+      { nome: 'Ervas Aromáticas (salsa, coentros)', quantidade: '2', unidade: 'molhos', categoria: 'temperos' },
+      { nome: 'Especiarias (pimenta, paprika, curcuma)', quantidade: '3', unidade: 'frascos', categoria: 'temperos' },
+      { nome: 'Mostarda Dijon', quantidade: '1', unidade: 'frasco', categoria: 'temperos' },
+      { nome: 'Vinagre de Maçã', quantidade: '1', unidade: 'garrafa', categoria: 'temperos' }
     );
+
+    // ========== OUTROS ESSENCIAIS ==========
+    ingredientes.push(
+      { nome: 'Café (grão ou moído)', quantidade: '250', unidade: 'g', categoria: 'outros' }
+    );
+
+    // Extras para fase keto
+    if (isRestritiva) {
+      ingredientes.push(
+        { nome: 'Cacau em Pó (sem açúcar)', quantidade: '200', unidade: 'g', categoria: 'outros', nota: 'Para receitas e batidos' },
+        { nome: 'Eritritol ou Stevia', quantidade: '1', unidade: 'embalagem', categoria: 'outros', nota: 'Adoçante natural' },
+        { nome: 'Farinha de Amêndoa', quantidade: '250', unidade: 'g', categoria: 'outros', nota: 'Para receitas low carb' }
+      );
+    }
 
     // Filtrar itens que devem ser evitados
     const itensFiltrados = ingredientes.filter(item => !deveEvitar(item.nome));
