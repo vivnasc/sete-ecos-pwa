@@ -12,8 +12,8 @@ const FASES_CONFIG = {
   manutencao: { nome: 'Fase 4: Manutenção', duracao: 'Contínua', descricao: 'Manter os resultados com um estilo de vida equilibrado.', priorizar: ['Consistência', 'Movimento regular', 'Sono de qualidade', 'Gestão do stress'], evitar: ['Voltar aos velhos hábitos', 'Ignorar sinais do corpo', 'Perder a rotina'], dicas: ['Pesagem semanal', 'Ajusta conforme necessário', 'Celebra as vitórias'] }
 };
 
-// Caminho do logo
-const LOGO_PATH = '/logos/vitalis-logo-transparent.png';
+// Caminho do logo V3
+const LOGO_PATH = '/logos/VITALIS_LOGO_V3.png';
 
 export default function PlanoHTML() {
   const [searchParams] = useSearchParams();
