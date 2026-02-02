@@ -583,9 +583,6 @@ export default function DashboardVitalis() {
               >
                 {isDarkMode ? '☀️' : '🌙'}
               </button>
-              <Link to="/" className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-base border border-white/30 hover:bg-white/30 transition-colors">
-                ←
-              </Link>
             </div>
           </div>
 
@@ -667,6 +664,39 @@ export default function DashboardVitalis() {
               <StreakDisplay streak={streak} melhorStreak={melhorStreak} compacto={false} />
             </div>
           )}
+        </div>
+
+        {/* Quick Actions - Navegação Principal */}
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+          <Link to="/vitalis/plano" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
+            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">📋</div>
+            <p className="font-medium text-[#4A4035] group-hover:text-white text-sm">Meu Plano</p>
+          </Link>
+
+          <Link to="/vitalis/checkin" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
+            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">✅</div>
+            <p className="font-medium text-[#4A4035] group-hover:text-white text-sm">Check-in</p>
+          </Link>
+
+          <Link to="/vitalis/meals" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
+            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">🍽️</div>
+            <p className="font-medium text-[#4A4035] group-hover:text-white text-sm">Refeições</p>
+          </Link>
+
+          <Link to="/vitalis/receitas" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
+            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">🍳</div>
+            <p className="font-medium text-[#4A4035] group-hover:text-white text-sm">Receitas</p>
+          </Link>
+
+          <Link to="/vitalis/espaco-retorno" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
+            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">💜</div>
+            <p className="font-medium text-[#4A4035] group-hover:text-white text-sm">Espaço Retorno</p>
+          </Link>
+
+          <Link to="/vitalis/relatorios" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
+            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">📊</div>
+            <p className="font-medium text-[#4A4035] group-hover:text-white text-sm">Relatórios</p>
+          </Link>
         </div>
 
         {/* Grid Principal */}
@@ -1300,39 +1330,6 @@ export default function DashboardVitalis() {
               <p className="text-white/70 text-xs mt-1">Configurar alertas</p>
             </Link>
           </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-          <Link to="/vitalis/plano" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
-            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">📋</div>
-            <p className="font-medium text-[#4A4035] group-hover:text-white text-xs">Meu Plano</p>
-          </Link>
-
-          <Link to="/vitalis/meals" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
-            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">🍽️</div>
-            <p className="font-medium text-[#4A4035] group-hover:text-white text-xs">Refeições</p>
-          </Link>
-
-          <Link to="/vitalis/checkin" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
-            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">✅</div>
-            <p className="font-medium text-[#4A4035] group-hover:text-white text-xs">Check-in</p>
-          </Link>
-
-          <Link to="/vitalis/receitas" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
-            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">🍳</div>
-            <p className="font-medium text-[#4A4035] group-hover:text-white text-xs">Receitas</p>
-          </Link>
-
-          <Link to="/vitalis/espaco-retorno" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
-            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">💜</div>
-            <p className="font-medium text-[#4A4035] group-hover:text-white text-xs">Espaço Retorno</p>
-          </Link>
-
-          <Link to="/vitalis/relatorios" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
-            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">📊</div>
-            <p className="font-medium text-[#4A4035] group-hover:text-white text-xs">Relatórios</p>
-          </Link>
         </div>
 
         {/* Secção de Conquistas */}
