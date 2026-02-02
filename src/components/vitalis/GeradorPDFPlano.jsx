@@ -47,8 +47,8 @@ export default function GeradorPDFPlano({ userId, onClose }) {
     return (
       <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.6)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999}}>
         <div style={{background:'white',borderRadius:'20px',padding:'40px',textAlign:'center'}}>
-          <div style={{width:'50px',height:'50px',border:'4px solid #f3f3f3',borderTop:'4px solid #C1634A',borderRadius:'50%',animation:'spin 1s linear infinite',margin:'0 auto'}}></div>
-          <p style={{marginTop:'20px',color:'#666',fontSize:'15px'}}>A preparar...</p>
+          <div style={{width:'50px',height:'50px',border:'4px solid #f3f3f3',borderTop:'4px solid #7C8B6F',borderRadius:'50%',animation:'spin 1s linear infinite',margin:'0 auto'}}></div>
+          <p style={{marginTop:'20px',color:'#6B5C4C',fontSize:'15px'}}>A preparar...</p>
           <style>{`@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}`}</style>
         </div>
       </div>
@@ -60,7 +60,7 @@ export default function GeradorPDFPlano({ userId, onClose }) {
       <div style={{background:'white',borderRadius:'24px',maxWidth:'480px',width:'100%',overflow:'hidden',boxShadow:'0 25px 80px rgba(0,0,0,0.3)'}}>
         
         {/* Header com Logo V3 */}
-        <div style={{background:'linear-gradient(135deg, #C1634A 0%, #D97706 50%, #A54E38 100%)',padding:'35px',textAlign:'center',color:'white'}}>
+        <div style={{background:'linear-gradient(135deg, #7C8B6F 0%, #8B9A7A 50%, #6B7A5D 100%)',padding:'35px',textAlign:'center',color:'white'}}>
           <img
             src="/logos/VITALIS_LOGO_V3.png"
             alt="Vitalis"
@@ -72,18 +72,18 @@ export default function GeradorPDFPlano({ userId, onClose }) {
 
         {/* Content */}
         <div style={{padding:'35px'}}>
-          <div style={{background:'linear-gradient(135deg, #F5F0E8, #EDE5D8)',borderRadius:'16px',padding:'22px',marginBottom:'25px'}}>
+          <div style={{background:'linear-gradient(135deg, #F5F2ED, #E8E4DC)',borderRadius:'16px',padding:'22px',marginBottom:'25px'}}>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'15px'}}>
-              <span style={{color:'#8B4513',fontSize:'14px'}}>📄 Formato</span>
-              <span style={{color:'#6B4423',fontWeight:'600'}}>PDF Alta Qualidade</span>
+              <span style={{color:'#6B5C4C',fontSize:'14px'}}>📄 Formato</span>
+              <span style={{color:'#4A4035',fontWeight:'600'}}>PDF Alta Qualidade</span>
             </div>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'15px'}}>
-              <span style={{color:'#8B4513',fontSize:'14px'}}>📑 Páginas</span>
-              <span style={{color:'#6B4423',fontWeight:'600'}}>10</span>
+              <span style={{color:'#6B5C4C',fontSize:'14px'}}>📑 Páginas</span>
+              <span style={{color:'#4A4035',fontWeight:'600'}}>10</span>
             </div>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-              <span style={{color:'#8B4513',fontSize:'14px'}}>🔥 Fase</span>
-              <span style={{color:'#6B4423',fontWeight:'600',textTransform:'capitalize'}}>{dados?.fase?.replace('_', ' ')}</span>
+              <span style={{color:'#6B5C4C',fontSize:'14px'}}>🌿 Fase</span>
+              <span style={{color:'#4A4035',fontWeight:'600',textTransform:'capitalize'}}>{dados?.fase?.replace('_', ' ')}</span>
             </div>
           </div>
 
@@ -111,9 +111,9 @@ export default function GeradorPDFPlano({ userId, onClose }) {
             >
               Cancelar
             </button>
-            <button 
+            <button
               onClick={abrirParaImprimir}
-              style={{flex:2,padding:'16px',background:'linear-gradient(135deg, #C1634A, #8B4513)',color:'white',border:'none',borderRadius:'14px',fontSize:'15px',fontWeight:'600',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'10px',transition:'all 0.2s',boxShadow:'0 4px 15px rgba(193,99,74,0.4)'}}
+              style={{flex:2,padding:'16px',background:'linear-gradient(135deg, #7C8B6F, #6B7A5D)',color:'white',border:'none',borderRadius:'14px',fontSize:'15px',fontWeight:'600',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'10px',transition:'all 0.2s',boxShadow:'0 4px 15px rgba(124,139,111,0.4)'}}
             >
               📄 Abrir Plano
             </button>
