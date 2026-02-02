@@ -254,9 +254,268 @@ function calcularIMC(peso, altura) {
 
 // Função para recalcular plano (quando muda de fase ou peso estagna)
 export async function recalcularPlano(userId, novaFase = null) {
-  // Similar à gerarPlanoAutomatico mas usa peso_actual do cliente
-  // e pode ajustar macros baseado na nova fase
-  // TODO: Implementar lógica de ajuste por fase
+  try {
+    // 1. Buscar dados actuais do cliente
+    const { data: client, error: clientError } = await supabase
+      .from('vitalis_clients')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (clientError) throw clientError;
+
+    // 2. Buscar dados do intake original
+    const { data: intake, error: intakeError } = await supabase
+      .from('vitalis_intake')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (intakeError) throw intakeError;
+
+    // 3. Buscar plano actual
+    const { data: planoActual, error: planoError } = await supabase
+      .from('vitalis_meal_plans')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('status', 'activo')
+      .single();
+
+    if (planoError) throw planoError;
+
+    // 4. Buscar altura do user
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('altura_cm')
+      .eq('id', userId)
+      .single();
+
+    if (userError) throw userError;
+
+    // 5. Calcular TMB com peso actual (não o inicial)
+    const altura = intake.altura_cm || user.altura_cm;
+    const peso = client.peso_actual || intake.peso_actual;
+    const idade = intake.idade;
+    const sexo = intake.sexo;
+
+    let tmb;
+    if (sexo === 'masculino') {
+      tmb = (10 * peso) + (6.25 * altura) - (5 * idade) + 5;
+    } else {
+      tmb = (10 * peso) + (6.25 * altura) - (5 * idade) - 161;
+    }
+
+    // 6. Ajustar por nível de actividade
+    const factoresActividade = {
+      'sedentaria': 1.2,
+      'leve': 1.375,
+      'moderada': 1.55,
+      'intensa': 1.725
+    };
+    const factor = factoresActividade[intake.nivel_actividade] || 1.2;
+    const tdee = tmb * factor;
+
+    // 7. Determinar fase (usar nova fase se fornecida)
+    const faseAnterior = client.fase_actual || 'inducao';
+    const fase = novaFase || faseAnterior;
+
+    // 8. Aplicar ajustes específicos por fase
+    // Cada fase tem diferentes objectivos calóricos e de macros
+    const ajustesFase = {
+      'inducao': {
+        // Fase 1: Deficit moderado, foco em criar hábitos
+        deficitMultiplier: 0.80,  // 20% deficit
+        proteinaRatio: 0.30,
+        carboidratosRatio: 0.35,
+        gorduraRatio: 0.35
+      },
+      'transicao': {
+        // Fase 2: Deficit menor, aumentar carbs gradualmente
+        deficitMultiplier: 0.85,  // 15% deficit
+        proteinaRatio: 0.30,
+        carboidratosRatio: 0.40,
+        gorduraRatio: 0.30
+      },
+      'recomposicao': {
+        // Fase 3: Próximo da manutenção, foco em recomposição corporal
+        deficitMultiplier: 0.92,  // 8% deficit
+        proteinaRatio: 0.35,      // Mais proteína para preservar músculo
+        carboidratosRatio: 0.40,
+        gorduraRatio: 0.25
+      },
+      'manutencao': {
+        // Fase 4: Manutenção do peso alcançado
+        deficitMultiplier: 1.0,   // Sem deficit
+        proteinaRatio: 0.30,
+        carboidratosRatio: 0.45,
+        gorduraRatio: 0.25
+      }
+    };
+
+    const ajuste = ajustesFase[fase] || ajustesFase['inducao'];
+
+    // 9. Calcular calorias baseado no objectivo e fase
+    let caloriasAlvo;
+    const objectivo = intake.objectivo_principal;
+
+    if (objectivo === 'perder_peso') {
+      caloriasAlvo = Math.round(tdee * ajuste.deficitMultiplier);
+    } else if (objectivo === 'ganhar_massa') {
+      // Ganhar massa: inverter o deficit para superavit
+      const superavitMultiplier = 1 + (1 - ajuste.deficitMultiplier);
+      caloriasAlvo = Math.round(tdee * superavitMultiplier);
+    } else {
+      caloriasAlvo = Math.round(tdee);
+    }
+
+    // 10. Respeitar abordagem preferida se keto/low-carb
+    const abordagem = intake.abordagem_preferida || 'equilibrado';
+    let proteinaG, carboidratosG, gorduraG;
+
+    if (abordagem === 'keto_if') {
+      proteinaG = Math.round((caloriasAlvo * 0.25) / 4);
+      carboidratosG = Math.round((caloriasAlvo * 0.05) / 4);
+      gorduraG = Math.round((caloriasAlvo * 0.70) / 9);
+    } else if (abordagem === 'low_carb') {
+      proteinaG = Math.round((caloriasAlvo * 0.40) / 4);
+      carboidratosG = Math.round((caloriasAlvo * 0.30) / 4);
+      gorduraG = Math.round((caloriasAlvo * 0.30) / 9);
+    } else {
+      // Usar ratios da fase para abordagem equilibrada
+      proteinaG = Math.round((caloriasAlvo * ajuste.proteinaRatio) / 4);
+      carboidratosG = Math.round((caloriasAlvo * ajuste.carboidratosRatio) / 4);
+      gorduraG = Math.round((caloriasAlvo * ajuste.gorduraRatio) / 9);
+    }
+
+    // 11. Converter para porções (método da mão)
+    const porcoesProteina = Math.round(proteinaG / 25);
+    const porcoesLegumes = 4;
+    const porcoesHidratos = Math.round(carboidratosG / 30);
+    const porcoesGordura = Math.round(gorduraG / 10);
+
+    // 12. Manter configuração de refeições existente
+    const configActual = planoActual.receitas_incluidas
+      ? JSON.parse(planoActual.receitas_incluidas)
+      : { num_refeicoes: 3 };
+
+    const numRefeicoes = configActual.num_refeicoes || 3;
+    const horariosRefeicoes = configActual.horarios || ['08:00', '13:00', '19:00'];
+
+    const porcoesPorRefeicao = {
+      proteina: Math.ceil(porcoesProteina / numRefeicoes),
+      legumes: Math.ceil(porcoesLegumes / numRefeicoes),
+      hidratos: Math.ceil(porcoesHidratos / numRefeicoes),
+      gordura: Math.ceil(porcoesGordura / numRefeicoes)
+    };
+
+    // 13. Desactivar plano anterior
+    await supabase
+      .from('vitalis_meal_plans')
+      .update({ status: 'inactivo' })
+      .eq('id', planoActual.id);
+
+    // 14. Criar novo plano com versão incrementada
+    const { data: novoPlano, error: novoPlanoError } = await supabase
+      .from('vitalis_meal_plans')
+      .insert([{
+        user_id: userId,
+        versao: (planoActual.versao || 1) + 1,
+        fase: fase,
+        abordagem: abordagem,
+        calorias_alvo: caloriasAlvo,
+        proteina_g: proteinaG,
+        carboidratos_g: carboidratosG,
+        gordura_g: gorduraG,
+        status: 'activo',
+        receitas_incluidas: JSON.stringify({
+          porções_por_refeicao: porcoesPorRefeicao,
+          num_refeicoes: numRefeicoes,
+          horarios: horariosRefeicoes
+        })
+      }])
+      .select()
+      .single();
+
+    if (novoPlanoError) throw novoPlanoError;
+
+    // 15. Actualizar fase do cliente se mudou
+    if (novaFase && novaFase !== faseAnterior) {
+      await supabase
+        .from('vitalis_clients')
+        .update({
+          fase_actual: novaFase,
+          imc_actual: calcularIMC(peso, altura)
+        })
+        .eq('user_id', userId);
+
+      // 16. Criar hábitos para a nova fase
+      const habitosPorFase = {
+        'transicao': [
+          { habito: 'Adicionar 1 porção extra de legumes', categoria: 'nutricao', dias_total: 14 },
+          { habito: 'Praticar alimentação consciente', categoria: 'mindset', dias_total: 14 },
+          { habito: 'Caminhar 30min por dia', categoria: 'movimento', dias_total: 14 }
+        ],
+        'recomposicao': [
+          { habito: 'Treino de força 3x por semana', categoria: 'movimento', dias_total: 21 },
+          { habito: 'Aumentar proteína em cada refeição', categoria: 'nutricao', dias_total: 21 },
+          { habito: 'Registar progresso semanal', categoria: 'mindset', dias_total: 21 }
+        ],
+        'manutencao': [
+          { habito: 'Manter rotina alimentar estabelecida', categoria: 'nutricao', dias_total: 28 },
+          { habito: 'Variar treinos para manter motivação', categoria: 'movimento', dias_total: 28 },
+          { habito: 'Praticar flexibilidade consciente', categoria: 'mindset', dias_total: 28 }
+        ]
+      };
+
+      const novosHabitos = habitosPorFase[novaFase];
+      if (novosHabitos) {
+        const habitosComUserId = novosHabitos.map(h => ({
+          ...h,
+          user_id: userId,
+          fase: novaFase,
+          data_inicio: new Date().toISOString().split('T')[0]
+        }));
+        await supabase.from('vitalis_habitos').insert(habitosComUserId);
+      }
+    }
+
+    // 17. Retornar resumo do plano recalculado
+    return {
+      success: true,
+      plano: {
+        calorias: caloriasAlvo,
+        macros: {
+          proteina: proteinaG,
+          carboidratos: carboidratosG,
+          gordura: gorduraG
+        },
+        porcoes: {
+          proteina: porcoesProteina,
+          legumes: porcoesLegumes,
+          hidratos: porcoesHidratos,
+          gordura: porcoesGordura
+        },
+        porcoes_por_refeicao: porcoesPorRefeicao,
+        num_refeicoes: numRefeicoes,
+        horarios: horariosRefeicoes,
+        fase: fase,
+        faseAnterior: faseAnterior,
+        abordagem: abordagem,
+        versao: (planoActual.versao || 1) + 1
+      },
+      mudancas: {
+        faseMudou: fase !== faseAnterior,
+        caloriasDiferenca: caloriasAlvo - planoActual.calorias_alvo
+      }
+    };
+
+  } catch (error) {
+    console.error('Erro ao recalcular plano:', error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
 }
 
 export default {
