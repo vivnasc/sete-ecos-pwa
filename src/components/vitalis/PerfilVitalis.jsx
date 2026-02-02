@@ -184,7 +184,7 @@ export default function PerfilVitalis() {
         <div className="relative max-w-2xl mx-auto px-4 py-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link to="/vitalis" className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-lg border border-white/30">
+              <Link to="/vitalis/dashboard" className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-lg border border-white/30">
                 ←
               </Link>
               <h1 className="text-xl font-bold text-white">Meu Perfil</h1>

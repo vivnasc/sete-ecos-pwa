@@ -199,7 +199,7 @@ export default function ChatCoach() {
       <header className="bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
-            <Link to="/vitalis" className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+            <Link to="/vitalis/dashboard" className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
               ←
             </Link>
             <div className="w-12 h-12 rounded-full bg-white/30 flex items-center justify-center text-2xl">
