@@ -3,8 +3,12 @@ import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { checkVitalisAccess } from '../../lib/subscriptions';
 
-// Coach email - acesso automático
-const COACH_EMAIL = 'viv.saraiva@gmail.com';
+// Emails com acesso automático (coach + testers)
+const BYPASS_EMAILS = [
+  'viv.saraiva@gmail.com',      // Coach principal
+  'vivnasc@gmail.com',          // Email alternativo
+  'teste@seteecos.com',         // Conta de testes
+];
 
 export default function VitalisAuth() {
   const navigate = useNavigate();
@@ -28,8 +32,8 @@ export default function VitalisAuth() {
         });
         if (error) throw error;
 
-        // Coach tem acesso directo
-        if (email.toLowerCase() === COACH_EMAIL) {
+        // Emails com bypass têm acesso directo
+        if (BYPASS_EMAILS.includes(email.toLowerCase())) {
           navigate('/vitalis/dashboard');
           return;
         }
