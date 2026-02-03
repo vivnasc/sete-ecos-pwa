@@ -68,12 +68,15 @@ export default function PerfilVitalis() {
 
       const { data: userData } = await supabase
         .from('users')
-        .select('id')
+        .select('id, nome')
         .eq('auth_id', user.id)
         .single();
 
       if (!userData) throw new Error('Utilizador não encontrado');
       setUserId(userData.id);
+
+      // Usar nome da tabela users como fallback
+      const nomeDoUser = userData.nome || user.user_metadata?.name || user.email.split('@')[0];
 
       const { data: clientData } = await supabase
         .from('vitalis_clients')
@@ -83,7 +86,7 @@ export default function PerfilVitalis() {
 
       if (clientData) {
         setClient(clientData);
-        setNomeCompleto(clientData.nome_completo || '');
+        setNomeCompleto(clientData.nome_completo || nomeDoUser);
         setTelefone(clientData.telefone || '');
         setDataNascimento(clientData.data_nascimento || '');
         setGenero(clientData.genero || '');
@@ -91,6 +94,9 @@ export default function PerfilVitalis() {
         setAltura(clientData.altura?.toString() || '');
         setPesoAtual(clientData.peso_actual?.toString() || '');
         setPesoMeta(clientData.peso_meta?.toString() || '');
+      } else {
+        // Bypass user sem vitalis_clients - usar dados básicos
+        setNomeCompleto(nomeDoUser);
       }
 
       // Carregar estatísticas
@@ -117,6 +123,15 @@ export default function PerfilVitalis() {
       setErro('Erro ao carregar dados do perfil');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Erro ao sair:', error);
     }
   };
 
@@ -406,6 +421,20 @@ export default function PerfilVitalis() {
         >
           {saving ? 'A guardar...' : 'Guardar Alterações'}
         </button>
+
+        {/* Secção de Conta */}
+        <div className="bg-white rounded-3xl shadow-xl p-6 mt-6">
+          <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Conta</h3>
+
+          <div className="space-y-3">
+            <button
+              onClick={handleLogout}
+              className="w-full py-3 px-4 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              <span>🚪</span> Terminar Sessão
+            </button>
+          </div>
+        </div>
 
       </main>
     </div>
