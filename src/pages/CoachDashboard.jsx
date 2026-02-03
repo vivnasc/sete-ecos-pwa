@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
+import {
+  SUBSCRIPTION_STATUS,
+  SUBSCRIPTION_CONFIG,
+  setAsTester,
+  startTrial,
+  confirmManualPayment,
+  getSubscriptionStats
+} from '../lib/subscriptions';
 
 /**
  * SETE ECOS - SUPER COACH DASHBOARD
@@ -45,6 +53,12 @@ const CoachDashboard = () => {
   const [coachNotifications, setCoachNotifications] = useState([]);
   const [motivationQueue, setMotivationQueue] = useState([]);
 
+  // Subscricoes
+  const [subscriptionStats, setSubscriptionStats] = useState(null);
+  const [vitalisClients, setVitalisClients] = useState([]);
+  const [pendingPayments, setPendingPayments] = useState([]);
+  const [showConfirmPaymentModal, setShowConfirmPaymentModal] = useState(null);
+
   // Auto-refresh
   const refreshInterval = useRef(null);
 
@@ -64,7 +78,8 @@ const CoachDashboard = () => {
       loadWaitlist(),
       loadActivityFeed(),
       loadClientsNeedAttention(),
-      generateCoachNotifications()
+      generateCoachNotifications(),
+      loadSubscriptionData()
     ]);
     setLoading(false);
   };
@@ -325,6 +340,74 @@ const CoachDashboard = () => {
     }
 
     setCoachNotifications(notifications);
+  };
+
+  // ============================================================
+  // CARREGAR DADOS DE SUBSCRICOES
+  // ============================================================
+  const loadSubscriptionData = async () => {
+    try {
+      // Stats de subscricao
+      const stats = await getSubscriptionStats();
+      setSubscriptionStats(stats);
+
+      // Clientes Vitalis com info de subscricao
+      const { data: clients } = await supabase
+        .from('vitalis_clients')
+        .select('*, users(nome, email)')
+        .order('subscription_updated', { ascending: false });
+
+      setVitalisClients(clients || []);
+
+      // Pagamentos pendentes
+      const pending = (clients || []).filter(c => c.subscription_status === 'pending');
+      setPendingPayments(pending);
+
+      // Notificacao para pagamentos pendentes
+      if (pending.length > 0) {
+        setCoachNotifications(prev => {
+          const filtered = prev.filter(n => n.type !== 'pending_payment');
+          return [...filtered, {
+            type: 'pending_payment',
+            icon: '💰',
+            title: `${pending.length} pagamento(s) pendente(s)`,
+            text: 'Aguardam confirmacao',
+            priority: 'high',
+            action: () => setActiveTab('subscriptions')
+          }];
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao carregar subscricoes:', error);
+    }
+  };
+
+  // Marcar como tester
+  const handleSetAsTester = async (userId, notes = '') => {
+    const result = await setAsTester(userId, notes);
+    if (result.success) {
+      await loadSubscriptionData();
+    }
+    return result;
+  };
+
+  // Iniciar trial
+  const handleStartTrial = async (userId) => {
+    const result = await startTrial(userId);
+    if (result.success) {
+      await loadSubscriptionData();
+    }
+    return result;
+  };
+
+  // Confirmar pagamento manual
+  const handleConfirmPayment = async (userId, paymentDetails) => {
+    const result = await confirmManualPayment(userId, paymentDetails);
+    if (result.success) {
+      setShowConfirmPaymentModal(null);
+      await loadSubscriptionData();
+    }
+    return result;
   };
 
   // ============================================================
@@ -608,6 +691,7 @@ const CoachDashboard = () => {
           {[
             { id: 'command', label: '🎯 Comando', count: null },
             { id: 'attention', label: '⚠️ Atencao', count: clientsNeedAttention.length },
+            { id: 'subscriptions', label: '💰 Subscricoes', count: pendingPayments.length },
             { id: 'users', label: '👥 Clientes', count: users.length },
             { id: 'waitlist', label: '📋 Waitlist', count: waitlist.length },
             { id: 'alertas', label: '🔔 Alertas', count: alerts.length },
@@ -820,6 +904,223 @@ const CoachDashboard = () => {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* TAB: SUBSCRICOES */}
+          {activeTab === 'subscriptions' && (
+            <div className="p-6">
+              <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                💰 Gestao de Subscricoes
+              </h2>
+
+              {/* Stats de Subscricao */}
+              {subscriptionStats && (
+                <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
+                  <div className="bg-emerald-500/20 rounded-xl p-4 text-center border border-emerald-500/30">
+                    <p className="text-2xl font-bold text-emerald-400">{subscriptionStats.testers}</p>
+                    <p className="text-xs text-purple-300">Testers</p>
+                  </div>
+                  <div className="bg-blue-500/20 rounded-xl p-4 text-center border border-blue-500/30">
+                    <p className="text-2xl font-bold text-blue-400">{subscriptionStats.trial}</p>
+                    <p className="text-xs text-purple-300">Trial</p>
+                  </div>
+                  <div className="bg-green-500/20 rounded-xl p-4 text-center border border-green-500/30">
+                    <p className="text-2xl font-bold text-green-400">{subscriptionStats.active}</p>
+                    <p className="text-xs text-purple-300">Ativos</p>
+                  </div>
+                  <div className="bg-yellow-500/20 rounded-xl p-4 text-center border border-yellow-500/30">
+                    <p className="text-2xl font-bold text-yellow-400">{subscriptionStats.pending}</p>
+                    <p className="text-xs text-purple-300">Pendentes</p>
+                  </div>
+                  <div className="bg-red-500/20 rounded-xl p-4 text-center border border-red-500/30">
+                    <p className="text-2xl font-bold text-red-400">{subscriptionStats.expired}</p>
+                    <p className="text-xs text-purple-300">Expirados</p>
+                  </div>
+                  <div className="bg-gray-500/20 rounded-xl p-4 text-center border border-gray-500/30">
+                    <p className="text-2xl font-bold text-gray-400">{subscriptionStats.none}</p>
+                    <p className="text-xs text-purple-300">Sem Sub</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Pagamentos Pendentes */}
+              {pendingPayments.length > 0 && (
+                <div className="mb-6 bg-yellow-500/10 rounded-2xl p-5 border border-yellow-500/30">
+                  <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    ⏳ Pagamentos Pendentes ({pendingPayments.length})
+                  </h3>
+                  <div className="space-y-3">
+                    {pendingPayments.map(client => (
+                      <div key={client.user_id} className="p-4 bg-white/5 rounded-xl flex items-center justify-between">
+                        <div>
+                          <p className="font-bold text-white">{client.users?.nome}</p>
+                          <p className="text-sm text-purple-300">{client.users?.email}</p>
+                          <p className="text-xs text-yellow-400 mt-1">
+                            {client.payment_method === 'paypal' ? '💳 PayPal' :
+                             client.payment_method === 'mpesa' ? '📱 M-Pesa' :
+                             client.payment_method === 'transfer' ? '🏦 Transferencia' :
+                             '❓ ' + (client.payment_method || 'Metodo desconhecido')}
+                            {client.payment_reference && ` - Ref: ${client.payment_reference}`}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => setShowConfirmPaymentModal(client)}
+                          className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl font-medium transition-all"
+                        >
+                          ✓ Confirmar
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Lista de Clientes Vitalis */}
+              <div className="bg-white/5 rounded-2xl p-5">
+                <h3 className="text-lg font-bold text-white mb-4">
+                  🌱 Clientes Vitalis ({vitalisClients.length})
+                </h3>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-purple-500/20">
+                        <th className="text-left py-3 px-3 text-sm font-medium text-purple-300">Nome</th>
+                        <th className="text-center py-3 px-3 text-sm font-medium text-purple-300">Status</th>
+                        <th className="text-center py-3 px-3 text-sm font-medium text-purple-300">Metodo</th>
+                        <th className="text-center py-3 px-3 text-sm font-medium text-purple-300">Expira</th>
+                        <th className="text-right py-3 px-3 text-sm font-medium text-purple-300">Acoes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {vitalisClients.map(client => (
+                        <tr key={client.user_id} className="border-b border-purple-500/10 hover:bg-white/5 transition-all">
+                          <td className="py-3 px-3">
+                            <p className="font-medium text-white">{client.users?.nome}</p>
+                            <p className="text-xs text-purple-400">{client.users?.email}</p>
+                          </td>
+                          <td className="py-3 px-3 text-center">
+                            <span className={`text-xs px-3 py-1 rounded-full ${
+                              client.subscription_status === 'tester' ? 'bg-emerald-500/30 text-emerald-300' :
+                              client.subscription_status === 'trial' ? 'bg-blue-500/30 text-blue-300' :
+                              client.subscription_status === 'active' ? 'bg-green-500/30 text-green-300' :
+                              client.subscription_status === 'pending' ? 'bg-yellow-500/30 text-yellow-300' :
+                              client.subscription_status === 'expired' ? 'bg-red-500/30 text-red-300' :
+                              'bg-gray-500/30 text-gray-300'
+                            }`}>
+                              {client.subscription_status || 'sem status'}
+                            </span>
+                          </td>
+                          <td className="py-3 px-3 text-center text-sm text-purple-300">
+                            {client.payment_method || '-'}
+                          </td>
+                          <td className="py-3 px-3 text-center text-sm text-purple-300">
+                            {client.subscription_expires ? formatDateShort(client.subscription_expires) : '-'}
+                          </td>
+                          <td className="py-3 px-3 text-right">
+                            <div className="flex gap-2 justify-end">
+                              {(!client.subscription_status || client.subscription_status === 'expired' || !client.subscription_status) && (
+                                <>
+                                  <button
+                                    onClick={() => handleSetAsTester(client.user_id, 'Via Coach Dashboard')}
+                                    className="px-3 py-1 bg-emerald-500/30 hover:bg-emerald-500/50 text-emerald-300 rounded-lg text-xs transition-all"
+                                  >
+                                    Tester
+                                  </button>
+                                  <button
+                                    onClick={() => handleStartTrial(client.user_id)}
+                                    className="px-3 py-1 bg-blue-500/30 hover:bg-blue-500/50 text-blue-300 rounded-lg text-xs transition-all"
+                                  >
+                                    Trial
+                                  </button>
+                                </>
+                              )}
+                              {client.subscription_status === 'pending' && (
+                                <button
+                                  onClick={() => setShowConfirmPaymentModal(client)}
+                                  className="px-3 py-1 bg-green-500/30 hover:bg-green-500/50 text-green-300 rounded-lg text-xs transition-all"
+                                >
+                                  Confirmar $
+                                </button>
+                              )}
+                              {client.subscription_status === 'trial' && (
+                                <button
+                                  onClick={() => handleSetAsTester(client.user_id, 'Upgrade de trial')}
+                                  className="px-3 py-1 bg-emerald-500/30 hover:bg-emerald-500/50 text-emerald-300 rounded-lg text-xs transition-all"
+                                >
+                                  → Tester
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Info Box */}
+              <div className="mt-6 p-4 bg-purple-500/10 rounded-xl border border-purple-500/20">
+                <h4 className="font-medium text-white mb-2">ℹ️ Sobre os Status</h4>
+                <ul className="text-sm text-purple-300 space-y-1">
+                  <li>• <span className="text-emerald-400">Tester</span>: Acesso gratuito permanente (para testers)</li>
+                  <li>• <span className="text-blue-400">Trial</span>: {SUBSCRIPTION_CONFIG.TRIAL_DAYS} dias de teste gratuito</li>
+                  <li>• <span className="text-green-400">Active</span>: Pagamento confirmado (1 mes)</li>
+                  <li>• <span className="text-yellow-400">Pending</span>: Aguarda confirmacao de pagamento</li>
+                  <li>• <span className="text-red-400">Expired</span>: Trial ou subscricao expirou</li>
+                  <li>• <strong>Precos</strong>: {SUBSCRIPTION_CONFIG.PRICE_USD} USD / {SUBSCRIPTION_CONFIG.PRICE_MZN} MZN</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {/* Modal Confirmar Pagamento */}
+          {showConfirmPaymentModal && (
+            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+              <div className="bg-slate-800 rounded-2xl p-6 max-w-md w-full border border-purple-500/30">
+                <h3 className="text-xl font-bold text-white mb-4">✓ Confirmar Pagamento</h3>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-purple-300 text-sm">Cliente</p>
+                    <p className="text-white font-medium">{showConfirmPaymentModal.users?.nome}</p>
+                  </div>
+                  <div>
+                    <p className="text-purple-300 text-sm">Metodo</p>
+                    <p className="text-white">{showConfirmPaymentModal.payment_method || 'Nao especificado'}</p>
+                  </div>
+                  {showConfirmPaymentModal.payment_reference && (
+                    <div>
+                      <p className="text-purple-300 text-sm">Referencia</p>
+                      <p className="text-white">{showConfirmPaymentModal.payment_reference}</p>
+                    </div>
+                  )}
+                  <div className="bg-yellow-500/10 p-3 rounded-xl">
+                    <p className="text-yellow-300 text-sm">
+                      Ao confirmar, o cliente tera acesso por 1 mes a partir de hoje.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3 mt-6">
+                  <button
+                    onClick={() => setShowConfirmPaymentModal(null)}
+                    className="flex-1 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-medium transition-all"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={() => handleConfirmPayment(showConfirmPaymentModal.user_id, {
+                      method: showConfirmPaymentModal.payment_method,
+                      reference: showConfirmPaymentModal.payment_reference,
+                      amount: SUBSCRIPTION_CONFIG.PRICE_USD
+                    })}
+                    className="flex-1 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-medium transition-all"
+                  >
+                    ✓ Confirmar
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
