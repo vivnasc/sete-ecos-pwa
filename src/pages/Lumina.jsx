@@ -1146,6 +1146,19 @@ export default function Lumina() {
                 Começa pelo corpo. Nutrição consciente e transformação.
               </div>
             </a>
+
+            {/* Login para clientes existentes */}
+            <a href="/vitalis/login" style={{
+              display: 'block',
+              marginTop: '10px',
+              padding: '10px',
+              color: '#7C8B6F',
+              textDecoration: 'none',
+              textAlign: 'center',
+              fontSize: '13px'
+            }}>
+              Já sou cliente → <span style={{ fontWeight: 'bold' }}>Entrar</span>
+            </a>
           </div>
 
           {/* Assinatura e botão dentro do container para evitar sobreposição */}
