@@ -273,20 +273,47 @@ export const registerPendingPayment = async (userId, paymentDetails) => {
   try {
     const plan = SUBSCRIPTION_PLANS[paymentDetails.planId?.toUpperCase()] || SUBSCRIPTION_PLANS.MONTHLY;
 
-    const { error } = await supabase
+    // Primeiro, verificar se ja existe um registo vitalis_clients
+    const { data: existingClient } = await supabase
       .from('vitalis_clients')
-      .update({
-        subscription_status: SUBSCRIPTION_STATUS.PENDING,
-        subscription_plan: plan.id,
-        payment_method: paymentDetails.method,
-        payment_reference: paymentDetails.reference,
-        payment_amount: paymentDetails.amount,
-        payment_currency: paymentDetails.currency || 'MZN',
-        subscription_updated: new Date().toISOString()
-      })
-      .eq('user_id', userId);
+      .select('id')
+      .eq('user_id', userId)
+      .single();
 
-    if (error) throw error;
+    if (existingClient) {
+      // Atualizar registo existente
+      const { error } = await supabase
+        .from('vitalis_clients')
+        .update({
+          subscription_status: SUBSCRIPTION_STATUS.PENDING,
+          subscription_plan: plan.id,
+          payment_method: paymentDetails.method,
+          payment_reference: paymentDetails.reference,
+          payment_amount: paymentDetails.amount,
+          payment_currency: paymentDetails.currency || 'MZN',
+          subscription_updated: new Date().toISOString()
+        })
+        .eq('user_id', userId);
+
+      if (error) throw error;
+    } else {
+      // Criar novo registo com pagamento pendente
+      const { error } = await supabase
+        .from('vitalis_clients')
+        .insert({
+          user_id: userId,
+          subscription_status: SUBSCRIPTION_STATUS.PENDING,
+          subscription_plan: plan.id,
+          payment_method: paymentDetails.method,
+          payment_reference: paymentDetails.reference,
+          payment_amount: paymentDetails.amount,
+          payment_currency: paymentDetails.currency || 'MZN',
+          subscription_updated: new Date().toISOString(),
+          created_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+    }
 
     // Criar alerta para a coach
     await supabase.from('vitalis_alerts').insert({

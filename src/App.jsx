@@ -29,6 +29,7 @@ import DesafiosSemanais from './components/vitalis/DesafiosSemanais'
 import CalendarioRefeicoes from './components/vitalis/CalendarioRefeicoes'
 import GuiaUtilizador from './components/vitalis/GuiaUtilizador'
 import PagamentoVitalis from './components/vitalis/PagamentoVitalis'
+import VitalisAccessGuard from './components/vitalis/VitalisAccessGuard'
 import PlanoHTML from './pages/PlanoHTML'
 import CoachDashboard from './pages/CoachDashboard'
 import LandingGeral from './pages/LandingGeral'
@@ -60,28 +61,29 @@ function App() {
           <Route path="/vitalis" element={<LandingVitalis />} />
           <Route path="/lumina" element={session ? <Lumina /> : <Auth />} />
           <Route path="/vitalis/login" element={<VitalisAuth />} />
-          <Route path="/vitalis/intake" element={session ? <VitalisIntakeComplete /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/dashboard" element={session ? <DashboardVitalis /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/checkin" element={session ? <CheckinDiario /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/receitas" element={session ? <ReceitasBrowse /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/espaco-retorno" element={session ? <EspacoRetorno /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/plano" element={session ? <PlanoAlimentar /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/meals" element={session ? <MealsTracker /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/refeicoes-config" element={session ? <RefeicoesCofig /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/relatorios" element={session ? <RelatoriosHub /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/relatorio-semanal" element={session ? <RelatorioSemanal /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/receita/:id" element={<ReceitaDetalhe />} />
-          <Route path="/vitalis/notificacoes" element={session ? <NotificacoesConfig /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/tendencias" element={session ? <GraficosTendencia /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/perfil" element={session ? <PerfilVitalis /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/lista-compras" element={session ? <ListaCompras /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/sugestoes" element={session ? <SugestoesRefeicoes /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/chat" element={session ? <ChatCoach /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/fotos-progresso" element={session ? <FotosProgresso /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/desafios" element={session ? <DesafiosSemanais /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/calendario" element={session ? <CalendarioRefeicoes /> : <Navigate to="/vitalis/login" />} />
-          <Route path="/vitalis/guia" element={session ? <GuiaUtilizador /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/pagamento" element={session ? <PagamentoVitalis /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/receita/:id" element={<ReceitaDetalhe />} />
+          {/* Rotas protegidas - requerem subscricao ativa */}
+          <Route path="/vitalis/intake" element={session ? <VitalisAccessGuard><VitalisIntakeComplete /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/dashboard" element={session ? <VitalisAccessGuard><DashboardVitalis /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/checkin" element={session ? <VitalisAccessGuard><CheckinDiario /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/receitas" element={session ? <VitalisAccessGuard><ReceitasBrowse /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/espaco-retorno" element={session ? <VitalisAccessGuard><EspacoRetorno /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/plano" element={session ? <VitalisAccessGuard><PlanoAlimentar /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/meals" element={session ? <VitalisAccessGuard><MealsTracker /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/refeicoes-config" element={session ? <VitalisAccessGuard><RefeicoesCofig /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/relatorios" element={session ? <VitalisAccessGuard><RelatoriosHub /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/relatorio-semanal" element={session ? <VitalisAccessGuard><RelatorioSemanal /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/notificacoes" element={session ? <VitalisAccessGuard><NotificacoesConfig /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/tendencias" element={session ? <VitalisAccessGuard><GraficosTendencia /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/perfil" element={session ? <VitalisAccessGuard><PerfilVitalis /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/lista-compras" element={session ? <VitalisAccessGuard><ListaCompras /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/sugestoes" element={session ? <VitalisAccessGuard><SugestoesRefeicoes /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/chat" element={session ? <VitalisAccessGuard><ChatCoach /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/fotos-progresso" element={session ? <VitalisAccessGuard><FotosProgresso /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/desafios" element={session ? <VitalisAccessGuard><DesafiosSemanais /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/calendario" element={session ? <VitalisAccessGuard><CalendarioRefeicoes /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/guia" element={session ? <VitalisAccessGuard><GuiaUtilizador /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
           <Route path="/coach" element={session?.user?.email === 'viv.saraiva@gmail.com' ? <CoachDashboard /> : <Navigate to="/" />} />
           <Route path="/vitalis/plano-pdf" element={<PlanoHTML />} />
           <Route path="*" element={<Navigate to="/" />} />
