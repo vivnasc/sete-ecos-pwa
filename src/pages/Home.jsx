@@ -107,21 +107,29 @@ export default function Home() {
           <a href="#aurora" className="text-[#4A3728] hover:text-[#C9A227] transition-colors">Aurora</a>
           <a href="#vivianne" className="text-[#4A3728] hover:text-[#C9A227] transition-colors">Sobre</a>
         </div>
-        {session ? (
+        <div className="flex gap-3 items-center">
           <Link
-            to="/lumina"
-            className="px-5 py-2 bg-[#6B4C8A] text-white rounded-full font-semibold text-sm hover:bg-[#5A3D7A] transition-all shadow-md"
+            to="/vitalis/login"
+            className="text-[#7C8B6F] font-semibold text-sm hover:text-[#6B7A5D] transition-colors"
           >
-            Meu Espaço
+            Entrar
           </Link>
-        ) : (
-          <Link
-            to="/lumina"
-            className="px-5 py-2 bg-[#C9A227] text-white rounded-full font-semibold text-sm hover:bg-[#B8911E] transition-all shadow-md"
-          >
-            Começar
-          </Link>
-        )}
+          {session ? (
+            <Link
+              to="/lumina"
+              className="px-5 py-2 bg-[#6B4C8A] text-white rounded-full font-semibold text-sm hover:bg-[#5A3D7A] transition-all shadow-md"
+            >
+              Meu Espaço
+            </Link>
+          ) : (
+            <Link
+              to="/lumina"
+              className="px-5 py-2 bg-[#C9A227] text-white rounded-full font-semibold text-sm hover:bg-[#B8911E] transition-all shadow-md"
+            >
+              Começar
+            </Link>
+          )}
+        </div>
       </nav>
 
       {/* Hero */}
