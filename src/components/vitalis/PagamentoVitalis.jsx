@@ -13,9 +13,9 @@ import { EmailTriggers } from '../../lib/emails';
 
 // Emails com acesso automático (coach + testers)
 const BYPASS_EMAILS = [
-  'viv.saraiva@gmail.com',      // Coach principal
-  'vivnasc@gmail.com',          // Email alternativo
-  'teste@seteecos.com',         // Conta de testes
+  'viv.saraiva@gmail.com',           // Coach principal
+  'vivnasc@gmail.com',               // Email alternativo
+  'vivianne.saraiva@outlook.com',    // Conta de testes
 ];
 
 /**
