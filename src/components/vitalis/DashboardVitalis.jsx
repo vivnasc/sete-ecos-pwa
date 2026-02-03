@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase.js';
 import { Link, useNavigate } from 'react-router-dom';
 import { StreakDisplay, CelebracaoModal, ConquistasSection, NivelProgresso, CONQUISTAS } from './Gamificacao.jsx';
 import { useOnboarding, OnboardingWrapper } from './OnboardingTutorial.jsx';
+import { EmailTriggers } from '../../lib/emails';
 
 // Função para solicitar permissão de notificações
 const solicitarPermissaoNotificacoes = async () => {
@@ -46,6 +47,7 @@ export default function DashboardVitalis() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
+  const [userEmail, setUserEmail] = useState('');
   const [client, setClient] = useState(null);
   const [plano, setPlano] = useState(null);
   const [registos, setRegistos] = useState([]);
@@ -210,10 +212,11 @@ export default function DashboardVitalis() {
         navigate('/vitalis/login');
         return;
       }
+      setUserEmail(user.email);
 
       const { data: userData } = await supabase
         .from('users')
-        .select('id')
+        .select('id, nome')
         .eq('auth_id', user.id)
         .single();
 
@@ -300,7 +303,7 @@ export default function DashboardVitalis() {
       if (jejumData) setJejumActual(jejumData);
 
       calcularStreak(userData.id);
-      calcularConquistas(userData.id);
+      calcularConquistas(userData.id, userData.nome || user.email.split('@')[0], user.email);
 
     } catch (error) {
       console.error('Erro ao carregar dashboard:', error);
@@ -310,7 +313,7 @@ export default function DashboardVitalis() {
   };
 
   // Calcular conquistas desbloqueadas
-  const calcularConquistas = async (userId) => {
+  const calcularConquistas = async (userId, userName, email) => {
     try {
       // Buscar dados para verificar conquistas
       const [aguaCount, mealsCount, treinoCount, checkinCount] = await Promise.all([
@@ -347,6 +350,38 @@ export default function DashboardVitalis() {
       // Conquistas de refeições
       if ((mealsCount.count || 0) >= 10) { conquistas.push('refeicoes_10'); xp += 100; }
       if ((mealsCount.count || 0) >= 50) { conquistas.push('refeicoes_50'); xp += 250; }
+
+      // Verificar novas conquistas para enviar email
+      const conquistasNotificadas = JSON.parse(localStorage.getItem('vitalis-conquistas-notificadas') || '[]');
+      const novasConquistas = conquistas.filter(c => !conquistasNotificadas.includes(c));
+
+      // Se há novas conquistas, notificar por email
+      if (novasConquistas.length > 0 && email) {
+        for (const conquistaId of novasConquistas) {
+          const conquista = CONQUISTAS[conquistaId];
+          if (conquista) {
+            // Mostrar celebração para a primeira nova conquista
+            if (novasConquistas.indexOf(conquistaId) === 0) {
+              setConquistaActual(conquistaId);
+              setShowCelebracao(true);
+            }
+
+            // Enviar email (async, não bloqueia)
+            EmailTriggers.onConquista(
+              { nome: userName, email: email },
+              {
+                nome: conquista.nome,
+                emoji: conquista.icone,
+                mensagem: conquista.descricao,
+                xp: conquista.pontos || conquista.xp
+              }
+            ).catch(err => console.error('Erro ao enviar email conquista:', err));
+          }
+        }
+
+        // Guardar conquistas já notificadas
+        localStorage.setItem('vitalis-conquistas-notificadas', JSON.stringify(conquistas));
+      }
 
       setConquistasDesbloqueadas(conquistas);
       setXpTotal(xp);
