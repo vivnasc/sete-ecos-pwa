@@ -65,6 +65,15 @@ const ReceitaDetalhe = () => {
     internacional: '🌍 Internacional'
   };
 
+  // Gerar URL de imagem automática se não tiver imagem
+  const getAutoImageUrl = () => {
+    if (!receita) return '';
+    if (receita.imagem_url) return receita.imagem_url;
+    // Usando Picsum com seed para consistência
+    const seed = `vitalis-${receita.id}`;
+    return `https://picsum.photos/seed/${seed}/600/400`;
+  };
+
   useEffect(() => {
     loadReceita();
   }, [id]);
@@ -203,13 +212,13 @@ const ReceitaDetalhe = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F5F2ED] via-[#E8E4DC] to-[#C5D1BC] pb-24">
 
-      {/* Header com imagem ou gradiente */}
+      {/* Header com imagem */}
       <div className="relative h-72 md:h-80 overflow-hidden">
-        {/* Imagem de fundo se existir */}
-        {receita.imagem_url && !imageError ? (
+        {/* Imagem - usa auto-gerada se não tiver */}
+        {!imageError ? (
           <>
             <img
-              src={receita.imagem_url}
+              src={getAutoImageUrl()}
               alt={receita.titulo}
               className="w-full h-full object-cover"
               onError={() => setImageError(true)}
@@ -218,7 +227,7 @@ const ReceitaDetalhe = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
           </>
         ) : (
-          /* Fallback: gradiente premium com emoji */
+          /* Fallback se imagem falhar: gradiente com emoji */
           <div className={`w-full h-full bg-gradient-to-br ${gradiente}`}>
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-8xl drop-shadow-2xl">{getMainEmoji()}</span>
