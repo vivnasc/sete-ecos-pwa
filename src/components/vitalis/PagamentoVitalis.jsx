@@ -301,7 +301,7 @@ const PagamentoVitalis = () => {
               )}
 
               {selectedPlan === key && (
-                <div className="absolute top-1/2 -translate-y-1/2 right-28 w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                <div className="absolute top-1/2 -translate-y-1/2 left-4 w-6 h-6 bg-white rounded-full flex items-center justify-center">
                   <span className="text-[#7C8B6F] text-sm font-bold">✓</span>
                 </div>
               )}
