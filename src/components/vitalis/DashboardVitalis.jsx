@@ -690,7 +690,7 @@ export default function DashboardVitalis() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-8">
+    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-20">
       
       {/* Header com Perfil */}
       <header className="relative overflow-hidden">

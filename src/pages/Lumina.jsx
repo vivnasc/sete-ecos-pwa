@@ -842,13 +842,22 @@ export default function Lumina() {
           )}
           
           {ecoRecomendado && (
-            <div className="pattern-alert" style={{ borderLeftColor: '#4B0082' }}>
-              <div className="pattern-alert-title">sugestão</div>
+            <div className="pattern-alert" style={{ borderLeftColor: ecoRecomendado.disponivel ? '#7C8B6F' : '#9CA3AF' }}>
+              <div className="pattern-alert-title">sugestão • {ecoRecomendado.eco}</div>
               <div className="pattern-alert-text">
-                {ecoRecomendado.msg}{' '}
-                <a href={ecoRecomendado.link} className="eco-link">
-                  Ir para {ecoRecomendado.eco} →
-                </a>
+                {ecoRecomendado.msg}
+                {ecoRecomendado.disponivel && ecoRecomendado.link ? (
+                  <>
+                    {' '}
+                    <a href={ecoRecomendado.link} className="eco-link">
+                      Ir para {ecoRecomendado.eco} →
+                    </a>
+                  </>
+                ) : (
+                  <span className="eco-coming-soon" style={{ display: 'block', marginTop: '8px', opacity: 0.7, fontSize: '13px', fontStyle: 'italic' }}>
+                    (Em breve disponível)
+                  </span>
+                )}
               </div>
             </div>
           )}

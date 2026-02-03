@@ -223,29 +223,90 @@ export function obterLeitura(padrao) {
 // RECOMENDAÇÃO DE ECO BASEADA NO ESTADO
 // ============================================================
 
+// Ecos disponíveis (activos no sistema)
+const ECOS_DISPONIVEIS = {
+  Vitalis: { link: '/vitalis', disponivel: true },
+  Serena: { link: null, disponivel: false },
+  Ignis: { link: null, disponivel: false },
+  Ventis: { link: null, disponivel: false },
+  Ecoa: { link: null, disponivel: false },
+  Imago: { link: null, disponivel: false }
+};
+
 export function obterRecomendacaoEco(respostas) {
   const { corpo, passado, impulso, futuro, mente, espelho } = respostas;
   const recs = [];
 
+  // Vitalis - corpo (disponível)
   if (['pesado', 'tenso'].includes(corpo)) {
-    recs.push({ eco: 'Vitalis', msg: 'O corpo precisa de atenção.', link: '/vitalis' });
-  }
-  if (['preso', 'apesar'].includes(passado)) {
-    recs.push({ eco: 'Serena', msg: 'Há emoção por fluir.', link: '/serena' });
-  }
-  if (['esconder', 'parar'].includes(impulso) && ['pesado', 'tenso'].includes(corpo)) {
-    recs.push({ eco: 'Ignis', msg: 'A vontade precisa de direcção.', link: '/ignis' });
-  }
-  if (['escuro', 'pesado'].includes(futuro)) {
-    recs.push({ eco: 'Ventis', msg: 'Precisas de ar, de ritmo.', link: '/ventis' });
-  }
-  if (['caotica', 'barulhenta'].includes(mente)) {
-    recs.push({ eco: 'Ecoa', msg: 'Há ruído por expressar.', link: '/ecoa' });
-  }
-  if (['invisivel', 'apagada'].includes(espelho)) {
-    recs.push({ eco: 'Imago', msg: 'Não te estás a ver.', link: '/imago' });
+    recs.push({
+      eco: 'Vitalis',
+      msg: 'O corpo precisa de atenção. O Vitalis pode ajudar-te a nutrir e cuidar do teu corpo.',
+      link: '/vitalis',
+      disponivel: true
+    });
   }
 
+  // Serena - passado/emoção (em breve)
+  if (['preso', 'apesar'].includes(passado)) {
+    recs.push({
+      eco: 'Serena',
+      msg: 'Há emoção por fluir. O Serena vai ajudar-te a processar o passado.',
+      link: null,
+      disponivel: false,
+      emBreve: true
+    });
+  }
+
+  // Ignis - impulso/vontade (em breve)
+  if (['esconder', 'parar'].includes(impulso) && ['pesado', 'tenso'].includes(corpo)) {
+    recs.push({
+      eco: 'Ignis',
+      msg: 'A vontade precisa de direcção. O Ignis vai ajudar-te a agir com propósito.',
+      link: null,
+      disponivel: false,
+      emBreve: true
+    });
+  }
+
+  // Ventis - futuro/ritmo (em breve)
+  if (['escuro', 'pesado'].includes(futuro)) {
+    recs.push({
+      eco: 'Ventis',
+      msg: 'Precisas de ar, de ritmo. O Ventis vai trazer leveza ao teu futuro.',
+      link: null,
+      disponivel: false,
+      emBreve: true
+    });
+  }
+
+  // Ecoa - mente/expressão (em breve)
+  if (['caotica', 'barulhenta'].includes(mente)) {
+    recs.push({
+      eco: 'Ecoa',
+      msg: 'Há ruído por expressar. O Ecoa vai ajudar-te a encontrar a tua voz.',
+      link: null,
+      disponivel: false,
+      emBreve: true
+    });
+  }
+
+  // Imago - espelho/identidade (em breve)
+  if (['invisivel', 'apagada'].includes(espelho)) {
+    recs.push({
+      eco: 'Imago',
+      msg: 'Não te estás a ver. O Imago vai ajudar-te a reconhecer a tua essência.',
+      link: null,
+      disponivel: false,
+      emBreve: true
+    });
+  }
+
+  // Priorizar Ecos disponíveis
+  const disponivel = recs.find(r => r.disponivel);
+  if (disponivel) return disponivel;
+
+  // Se não há Eco disponível, retornar o primeiro com nota de "em breve"
   return recs.length > 0 ? recs[0] : null;
 }
 
