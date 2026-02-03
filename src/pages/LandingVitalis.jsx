@@ -27,21 +27,21 @@ const LandingVitalis = () => {
   const fases = [
     {
       numero: '01',
-      nome: 'Inducao',
+      nome: 'Indução',
       duracao: '4-6 semanas',
       icone: '🚀',
-      descricao: 'Activar a queima de gordura e reduzir inflamacao. O corpo aprende a usar gordura como combustivel.'
+      descricao: 'Activar a queima de gordura e reduzir inflamação. O corpo aprende a usar gordura como combustível.'
     },
     {
       numero: '02',
-      nome: 'Estabilizacao',
+      nome: 'Estabilização',
       duracao: '6-8 semanas',
       icone: '⚖️',
-      descricao: 'Consolidar habitos e introduzir flexibilidade. Aprender a viver sem depender de regras rigidas.'
+      descricao: 'Consolidar hábitos e introduzir flexibilidade. Aprender a viver sem depender de regras rígidas.'
     },
     {
       numero: '03',
-      nome: 'Reeducacao',
+      nome: 'Reeducação',
       duracao: '6-8 semanas',
       icone: '🦋',
       descricao: 'Autonomia alimentar completa. Liberdade para fazer escolhas conscientes, sem culpa.'
@@ -52,17 +52,17 @@ const LandingVitalis = () => {
     {
       icone: '📊',
       titulo: 'Dashboard Inteligente',
-      desc: 'Acompanha o teu progresso diario com streak, XP e conquistas. Ve tudo num so lugar.'
+      desc: 'Acompanha o teu progresso diário com streak, XP e conquistas. Vê tudo num só lugar.'
     },
     {
       icone: '🍽️',
-      titulo: 'Registo de Refeicoes',
-      desc: 'Regista refeicoes com porcoes medidas a mao. Sem contar calorias, sem stress.'
+      titulo: 'Registo de Refeições',
+      desc: 'Regista refeições com porções medidas à mão. Sem contar calorias, sem stress.'
     },
     {
       icone: '💧',
-      titulo: 'Tracker de Agua',
-      desc: 'Acompanha a tua hidratacao diaria com botoes rapidos para registar.'
+      titulo: 'Tracker de Água',
+      desc: 'Acompanha a tua hidratação diária com botões rápidos para registar.'
     },
     {
       icone: '😴',
@@ -72,32 +72,32 @@ const LandingVitalis = () => {
     {
       icone: '⏱️',
       titulo: 'Timer de Jejum',
-      desc: 'Protocolo 16/8 com notificacoes quando a janela alimentar abre.'
+      desc: 'Protocolo 16/8 com notificações quando a janela alimentar abre.'
     },
     {
       icone: '🍳',
       titulo: 'Receitas Adaptadas',
-      desc: 'Centenas de receitas com ingredientes locais acessiveis.'
+      desc: 'Centenas de receitas com ingredientes locais acessíveis.'
     },
     {
       icone: '💬',
       titulo: 'Chat Coach IA',
-      desc: 'Conversa com a Vivianne virtual para duvidas e motivacao a qualquer hora.'
+      desc: 'Conversa com a Vivianne virtual para dúvidas e motivação a qualquer hora.'
     },
     {
       icone: '📈',
-      titulo: 'Graficos de Tendencia',
-      desc: 'Visualiza a evolucao do peso, agua e sono ao longo do tempo.'
+      titulo: 'Gráficos de Tendência',
+      desc: 'Visualiza a evolução do peso, água e sono ao longo do tempo.'
     },
     {
       icone: '💜',
-      titulo: 'Espaco de Retorno',
-      desc: 'Apoio emocional para quando a emocao pede comida. Unico em Mocambique.'
+      titulo: 'Espaço de Retorno',
+      desc: 'Apoio emocional para quando a emoção pede comida. Único em Moçambique.'
     },
     {
       icone: '🎯',
       titulo: 'Desafios Semanais',
-      desc: 'Missoes para manter a motivacao e ganhar XP extra.'
+      desc: 'Missões para manter a motivação e ganhar XP extra.'
     },
     {
       icone: '🛒',
@@ -107,58 +107,58 @@ const LandingVitalis = () => {
     {
       icone: '📸',
       titulo: 'Fotos de Progresso',
-      desc: 'Regista a tua transformacao visual ao longo do tempo.'
+      desc: 'Regista a tua transformação visual ao longo do tempo.'
     }
   ];
 
   const estadosEmocionais = [
-    { icone: '🔋', nome: 'Cansaco' },
+    { icone: '🔋', nome: 'Cansaço' },
     { icone: '🌀', nome: 'Ansiedade' },
     { icone: '💧', nome: 'Tristeza' },
     { icone: '🔥', nome: 'Raiva' },
     { icone: '◯', nome: 'Vazio' },
-    { icone: '🌑', nome: 'Solidao' },
-    { icone: '🪞', nome: 'Negacao' }
+    { icone: '🌑', nome: 'Solidão' },
+    { icone: '🪞', nome: 'Negação' }
   ];
 
   const testemunhos = [
     {
       iniciais: 'MJ',
       resultado: '-8kg em 3 meses',
-      texto: 'Finalmente um metodo que nao me faz sentir em dieta. Perdi 8kg em 3 meses e aprendi a comer sem culpa.'
+      texto: 'Finalmente um método que não me faz sentir em dieta. Perdi 8kg em 3 meses e aprendi a comer sem culpa.'
     },
     {
       iniciais: 'CM',
       resultado: '-6kg em 2 meses',
-      texto: 'O Espaco de Retorno mudou tudo. Percebi que comia por ansiedade, nao por fome. Agora sei a diferenca.'
+      texto: 'O Espaço de Retorno mudou tudo. Percebi que comia por ansiedade, não por fome. Agora sei a diferença.'
     },
     {
       iniciais: 'AB',
       resultado: '-12kg em 6 meses',
-      texto: 'A app e tao facil de usar. Os graficos mostram exactamente o meu progresso e isso motiva imenso.'
+      texto: 'A app é tão fácil de usar. Os gráficos mostram exactamente o meu progresso e isso motiva imenso.'
     }
   ];
 
   const faqs = [
     {
-      pergunta: 'E realmente diferente das outras dietas?',
-      resposta: 'Sim, completamente. Nao e dieta restritiva. E reeducacao alimentar baseada em metodo cientifico (Precision Nutrition) + apoio emocional unico (Espaco de Retorno). Trabalhamos corpo E mente, nao apenas calorias.'
+      pergunta: 'É realmente diferente das outras dietas?',
+      resposta: 'Sim, completamente. Não é dieta restritiva. É reeducação alimentar baseada em método científico (Precision Nutrition) + apoio emocional único (Espaço de Retorno). Trabalhamos corpo E mente, não apenas calorias.'
     },
     {
-      pergunta: 'Funciona para mim em Mocambique?',
-      resposta: 'Totalmente! As receitas usam ingredientes locais acessiveis, as porcoes sao adaptadas, e nao precisas produtos caros importados. O programa foi criado especificamente pensando na realidade mocambicana.'
+      pergunta: 'Funciona para mim em Moçambique?',
+      resposta: 'Totalmente! As receitas usam ingredientes locais acessíveis, as porções são adaptadas, e não precisas produtos caros importados. O programa foi criado especificamente pensando na realidade moçambicana.'
     },
     {
-      pergunta: 'E se eu nao souber usar tecnologia?',
-      resposta: 'A app e tao simples como usar WhatsApp. Se sabes enviar mensagem no WhatsApp, consegues usar o Vitalis. E tens suporte para qualquer duvida que apareca.'
+      pergunta: 'E se eu não souber usar tecnologia?',
+      resposta: 'A app é tão simples como usar WhatsApp. Se sabes enviar mensagem no WhatsApp, consegues usar o Vitalis. E tens suporte para qualquer dúvida que apareça.'
     },
     {
-      pergunta: 'Quanto tempo ate ver resultados?',
-      resposta: 'Primeiros 7 dias: -2 a -4kg (retencao liquidos + desinchaco). Depois: -0.5 a -2kg/semana consistente. Em 3 meses: -8 a -15kg tipico. Mas resultados variam por pessoa.'
+      pergunta: 'Quanto tempo até ver resultados?',
+      resposta: 'Primeiros 7 dias: -2 a -4kg (retenção líquidos + desinchaço). Depois: -0.5 a -2kg/semana consistente. Em 3 meses: -8 a -15kg típico. Mas resultados variam por pessoa.'
     },
     {
       pergunta: 'Preciso comprar suplementos ou produtos especiais?',
-      resposta: 'Nao! Zero suplementos obrigatorios, zero shakes, zero produtos vendidos. So comida real que encontras no mercado ou supermercado. O programa e completo como esta.'
+      resposta: 'Não! Zero suplementos obrigatórios, zero shakes, zero produtos vendidos. Só comida real que encontras no mercado ou supermercado. O programa é completo como está.'
     }
   ];
 
@@ -181,16 +181,16 @@ const LandingVitalis = () => {
           </span>
         </Link>
         <div className="hidden md:flex gap-6">
-          <a href="#metodo" className="text-[#4A4035] hover:text-[#7C8B6F] transition-colors">Metodo</a>
+          <a href="#metodo" className="text-[#4A4035] hover:text-[#7C8B6F] transition-colors">Método</a>
           <a href="#plataforma" className="text-[#4A4035] hover:text-[#7C8B6F] transition-colors">Plataforma</a>
           <a href="#resultados" className="text-[#4A4035] hover:text-[#7C8B6F] transition-colors">Resultados</a>
-          <a href="#precos" className="text-[#4A4035] hover:text-[#7C8B6F] transition-colors">Precos</a>
+          <a href="#precos" className="text-[#4A4035] hover:text-[#7C8B6F] transition-colors">Preços</a>
         </div>
         <button
           onClick={handleComecar}
           className="px-6 py-2 bg-[#7C8B6F] text-white rounded-full font-semibold text-sm hover:bg-[#6B7A5D] transition-all shadow-md"
         >
-          Comecar Agora
+          Começar Agora
         </button>
       </nav>
 
@@ -206,19 +206,19 @@ const LandingVitalis = () => {
             VITALIS
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>
-            A raiz da transformacao
+            A raiz da transformação
           </p>
           <p className="text-lg text-white/80 mb-2">🌿 Quando o excesso cai, o corpo responde</p>
           <p className="text-white/90 mb-8 max-w-xl mx-auto">
-            Coaching nutricional personalizado baseado no metodo Precision Nutrition.
-            App completa com dashboard, receitas, e apoio emocional unico.
+            Coaching nutricional personalizado baseado no método Precision Nutrition.
+            App completa com dashboard, receitas, e apoio emocional único.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={handleComecar}
               className="px-10 py-4 bg-white text-[#7C8B6F] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
             >
-              Comecar a Transformacao →
+              Começar a Transformação →
             </button>
             <a
               href="#plataforma"
@@ -234,12 +234,12 @@ const LandingVitalis = () => {
       <section className="py-12 bg-white border-b-4 border-[#7C8B6F]">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-[#4A4035] mb-8" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-            Ja Mudou Vidas. Pode Mudar a Tua.
+            Já Mudou Vidas. Pode Mudar a Tua.
           </h2>
           <div className="flex flex-wrap justify-center gap-8 md:gap-16 mb-6">
             <div className="text-center">
               <span className="text-4xl md:text-5xl font-bold text-[#7C8B6F]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>84%</span>
-              <p className="text-sm text-[#6B5C4C] uppercase tracking-wider">Taxa Sucesso Metodo PN</p>
+              <p className="text-sm text-[#6B5C4C] uppercase tracking-wider">Taxa Sucesso Método PN</p>
             </div>
             <div className="text-center">
               <span className="text-4xl md:text-5xl font-bold text-[#7C8B6F]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>100K+</span>
@@ -247,30 +247,30 @@ const LandingVitalis = () => {
             </div>
           </div>
           <span className="inline-block px-6 py-3 bg-gradient-to-r from-[#7C8B6F] to-[#9CAF88] text-white rounded-full font-semibold">
-            🏆 Unico programa com Espaco de Retorno em Mocambique
+            🏆 Único programa com Espaço de Retorno em Moçambique
           </span>
         </div>
       </section>
 
-      {/* O que funciona vs nao funciona */}
+      {/* O que funciona vs não funciona */}
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-            Cansada de dietas que nao funcionam?
+            Cansada de dietas que não funcionam?
           </h2>
-          <p className="text-center text-[#6B5C4C] mb-10">Nao es tu que falhas. Sao as dietas que te falharam.</p>
+          <p className="text-center text-[#6B5C4C] mb-10">Não és tu que falhas. São as dietas que te falharam.</p>
 
           <div className="grid md:grid-cols-2 gap-6">
             <div className="p-6 rounded-2xl border-2 border-[#E8E2D9] bg-red-50 border-l-4 border-l-red-400">
               <h3 className="text-xl font-bold text-red-700 mb-4 flex items-center gap-2">
-                ❌ O que NAO funciona
+                ❌ O que NÃO funciona
               </h3>
               <ul className="space-y-2 text-[#4A4035]">
                 <li className="flex items-start gap-2"><span>❌</span> Contar calorias obsessivamente</li>
                 <li className="flex items-start gap-2"><span>❌</span> Pesar cada grama de comida</li>
                 <li className="flex items-start gap-2"><span>❌</span> Passar fome para ver resultados</li>
-                <li className="flex items-start gap-2"><span>❌</span> Dietas genericas de revista</li>
-                <li className="flex items-start gap-2"><span>❌</span> Solucoes rapidas insustentaveis</li>
+                <li className="flex items-start gap-2"><span>❌</span> Dietas genéricas de revista</li>
+                <li className="flex items-start gap-2"><span>❌</span> Soluções rápidas insustentáveis</li>
               </ul>
             </div>
 
@@ -279,10 +279,10 @@ const LandingVitalis = () => {
                 ✅ O que FUNCIONA
               </h3>
               <ul className="space-y-2 text-[#4A4035]">
-                <li className="flex items-start gap-2"><span>✅</span> Porcoes medidas com a mao</li>
+                <li className="flex items-start gap-2"><span>✅</span> Porções medidas com a mão</li>
                 <li className="flex items-start gap-2"><span>✅</span> Adaptar o metabolismo gradualmente</li>
-                <li className="flex items-start gap-2"><span>✅</span> Plano personalizado a tua vida</li>
-                <li className="flex items-start gap-2"><span>✅</span> Comer ate estar satisfeita</li>
+                <li className="flex items-start gap-2"><span>✅</span> Plano personalizado à tua vida</li>
+                <li className="flex items-start gap-2"><span>✅</span> Comer até estar satisfeita</li>
                 <li className="flex items-start gap-2"><span>✅</span> Acompanhamento que motiva</li>
               </ul>
             </div>
@@ -290,22 +290,22 @@ const LandingVitalis = () => {
         </div>
       </section>
 
-      {/* Metodo */}
+      {/* Método */}
       <section id="metodo" className="py-16 bg-[#F5F2ED]">
         <div className="max-w-5xl mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-            O Metodo Precision Nutrition
+            O Método Precision Nutrition
           </h2>
           <p className="text-center text-[#6B5C4C] mb-10 max-w-xl mx-auto">
-            Um metodo cientifico que transforma a forma como o teu corpo queima gordura
+            Um método científico que transforma a forma como o teu corpo queima gordura
           </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icone: '🖐️', titulo: 'Porcoes com a Mao', desc: 'Esquece balancas e apps. A tua mao e a medida perfeita para proteinas, legumes e gorduras.' },
-              { icone: '🔥', titulo: 'Adaptacao Metabolica', desc: 'Reprogramamos o teu corpo para queimar gordura como combustivel principal.' },
-              { icone: '⏰', titulo: 'Jejum Flexivel', desc: 'Janelas alimentares adaptadas a tua rotina. Tu escolhes o que funciona melhor.' },
-              { icone: '💬', titulo: 'Acompanhamento Real', desc: 'Chat coach IA + suporte humano. Nunca estas sozinha nesta jornada.' }
+              { icone: '🖐️', titulo: 'Porções com a Mão', desc: 'Esquece balanças e apps. A tua mão é a medida perfeita para proteínas, legumes e gorduras.' },
+              { icone: '🔥', titulo: 'Adaptação Metabólica', desc: 'Reprogramamos o teu corpo para queimar gordura como combustível principal.' },
+              { icone: '⏰', titulo: 'Jejum Flexível', desc: 'Janelas alimentares adaptadas à tua rotina. Tu escolhes o que funciona melhor.' },
+              { icone: '💬', titulo: 'Acompanhamento Real', desc: 'Chat coach IA + suporte humano. Nunca estás sozinha nesta jornada.' }
             ].map((item, i) => (
               <div key={i} className="bg-white p-6 rounded-2xl border-2 border-[#E8E2D9] hover:border-[#7C8B6F] hover:translate-y-[-3px] hover:shadow-lg transition-all">
                 <div className="w-14 h-14 bg-gradient-to-br from-[#7C8B6F]/20 to-[#9CAF88]/20 rounded-xl flex items-center justify-center text-3xl mb-4">
@@ -325,10 +325,10 @@ const LandingVitalis = () => {
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-            As 3 Fases da Transformacao
+            As 3 Fases da Transformação
           </h2>
           <p className="text-center text-[#6B5C4C] mb-10 max-w-xl mx-auto">
-            Um metodo progressivo que respeita o teu corpo e cria resultados duradouros
+            Um método progressivo que respeita o teu corpo e cria resultados duradouros
           </p>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -372,7 +372,7 @@ const LandingVitalis = () => {
           </div>
 
           <div className="mt-12 text-center">
-            <p className="text-white/80 mb-4">App disponivel como PWA - instala no telemovel sem ir a App Store</p>
+            <p className="text-white/80 mb-4">App disponível como PWA - instala no telemóvel sem ir à App Store</p>
             <button
               onClick={handleComecar}
               className="px-8 py-4 bg-white text-[#7C8B6F] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
@@ -383,19 +383,19 @@ const LandingVitalis = () => {
         </div>
       </section>
 
-      {/* Espaco de Retorno */}
+      {/* Espaço de Retorno */}
       <section className="py-16 text-white relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #5D4E6D 0%, #3D3249 100%)' }}>
         <div className="absolute top-[-100px] right-[-100px] w-[350px] h-[350px] bg-white/5 rounded-full blur-3xl"></div>
         <div className="max-w-4xl mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-            💜 Espaco de Retorno
+            💜 Espaço de Retorno
           </h2>
           <p className="text-center text-white/80 mb-6">
-            Quando a emocao pede comida, ha outra resposta possivel
+            Quando a emoção pede comida, há outra resposta possível
           </p>
           <p className="text-center text-white/85 max-w-2xl mx-auto mb-8">
             O Vitalis inclui algo que nenhum outro programa oferece: um sistema de apoio emocional
-            para os momentos em que o corpo quer comer, mas a verdadeira fome e outra.
+            para os momentos em que o corpo quer comer, mas a verdadeira fome é outra.
           </p>
 
           <div className="grid grid-cols-3 md:grid-cols-7 gap-3 mb-10">
@@ -412,7 +412,7 @@ const LandingVitalis = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { num: 1, titulo: 'Identificar', desc: 'Reconhecer o estado emocional' },
-                { num: 2, titulo: 'Pausar', desc: 'Interromper o impulso automatico' },
+                { num: 2, titulo: 'Pausar', desc: 'Interromper o impulso automático' },
                 { num: 3, titulo: 'Aliviar', desc: 'Usar a resposta adequada' },
                 { num: 4, titulo: 'Escolher', desc: 'Decidir com clareza' }
               ].map((passo) => (
@@ -429,14 +429,14 @@ const LandingVitalis = () => {
         </div>
       </section>
 
-      {/* Precos */}
+      {/* Preços */}
       <section id="precos" className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
             Escolhe o Teu Plano
           </h2>
           <p className="text-center text-[#6B5C4C] mb-10">
-            Precos simples. Sem complicacoes.
+            Preços simples. Sem complicações.
           </p>
 
           <div className="grid md:grid-cols-3 gap-6 mb-10">
@@ -491,10 +491,10 @@ const LandingVitalis = () => {
             </h3>
             <div className="grid md:grid-cols-2 gap-6">
               {[
-                { icone: '✅', titulo: '7 Dias Garantia', desc: 'Se nao gostares, reembolso total sem perguntas' },
+                { icone: '✅', titulo: '7 Dias Garantia', desc: 'Se não gostares, reembolso total sem perguntas' },
                 { icone: '🎯', titulo: 'Resultados em 30 Dias', desc: 'Ou ajustamos teu plano gratuitamente' },
-                { icone: '💬', titulo: 'Suporte Incluido', desc: 'WhatsApp sempre disponivel, nunca estas sozinha' },
-                { icone: '🚪', titulo: 'Cancela Quando Quiseres', desc: 'Sem multas, sem complicacoes, sem stress' }
+                { icone: '💬', titulo: 'Suporte Incluído', desc: 'WhatsApp sempre disponível, nunca estás sozinha' },
+                { icone: '🚪', titulo: 'Cancela Quando Quiseres', desc: 'Sem multas, sem complicações, sem stress' }
               ].map((garantia) => (
                 <div key={garantia.titulo} className="flex items-start gap-4">
                   <span className="text-2xl">{garantia.icone}</span>
@@ -515,7 +515,7 @@ const LandingVitalis = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
             O Que Dizem as Clientes
           </h2>
-          <p className="text-center text-[#6B5C4C] mb-10">Historias reais de transformacao</p>
+          <p className="text-center text-[#6B5C4C] mb-10">Histórias reais de transformação</p>
 
           <div className="grid md:grid-cols-3 gap-6">
             {testemunhos.map((t, i) => (
@@ -572,15 +572,15 @@ const LandingVitalis = () => {
                 Vivianne Saraiva
               </h3>
               <p className="text-[#6B5C4C] mb-4">
-                Sou autora de <em>Os 7 Veus</em>, onde exploro os veus que nos separam de nos mesmos.
+                Sou autora de <em>Os 7 Véus</em>, onde exploro os véus que nos separam de nós mesmos.
               </p>
               <p className="text-[#6B5C4C] mb-4">
-                Essa mesma sabedoria esta presente no Vitalis: quando o excesso cai - mental, emocional, fisico - o corpo responde.
+                Essa mesma sabedoria está presente no Vitalis: quando o excesso cai - mental, emocional, físico - o corpo responde.
               </p>
               <div className="bg-[#F5F2ED] p-5 rounded-xl border-l-4 border-[#7C8B6F] italic">
                 <p className="text-[#4A4035]">
-                  "Juntei ciencia internacional (Precision Nutrition), sabedoria dos 7 Veus, e tecnologia,
-                  para criar algo unico em Mocambique: um programa que trata a pessoa inteira, nao apenas o corpo."
+                  "Juntei ciência internacional (Precision Nutrition), sabedoria dos 7 Véus, e tecnologia,
+                  para criar algo único em Moçambique: um programa que trata a pessoa inteira, não apenas o corpo."
                 </p>
                 <cite className="block text-right font-semibold text-[#7C8B6F] mt-2 not-italic">- Vivianne Saraiva</cite>
               </div>
@@ -593,14 +593,14 @@ const LandingVitalis = () => {
       <section className="py-16 text-white text-center" style={{ background: 'linear-gradient(135deg, #7C8B6F 0%, #6B7A5D 100%)' }}>
         <div className="max-w-2xl mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-            Pronta para comecar a tua transformacao?
+            Pronta para começar a tua transformação?
           </h2>
-          <p className="text-white/90 mb-8">Escolhe o teu plano e da o primeiro passo hoje</p>
+          <p className="text-white/90 mb-8">Escolhe o teu plano e dá o primeiro passo hoje</p>
           <button
             onClick={handleComecar}
             className="px-10 py-4 bg-white text-[#7C8B6F] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
           >
-            Comecar Agora →
+            Começar Agora →
           </button>
         </div>
       </section>
@@ -611,7 +611,7 @@ const LandingVitalis = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
             Perguntas Frequentes
           </h2>
-          <p className="text-center text-[#6B5C4C] mb-10">Respondemos as duvidas mais comuns</p>
+          <p className="text-center text-[#6B5C4C] mb-10">Respondemos às dúvidas mais comuns</p>
 
           <div className="space-y-4">
             {faqs.map((faq, i) => (
@@ -646,7 +646,7 @@ const LandingVitalis = () => {
                 <h3 className="font-bold text-[#9CAF88]">Vitalis</h3>
               </div>
               <p className="text-white/70 text-sm">
-                A raiz da transformacao.<br />
+                A raiz da transformação.<br />
                 Quando o excesso cai, o corpo responde.
               </p>
             </div>
@@ -654,12 +654,12 @@ const LandingVitalis = () => {
               <h3 className="font-bold text-[#9CAF88] mb-3">Contacto</h3>
               <p className="text-white/70 text-sm">📱 +258 84 524 3875</p>
               <p className="text-white/70 text-sm">📧 vitalis@setecos.com</p>
-              <p className="text-white/70 text-sm">📍 Maputo, Mocambique</p>
+              <p className="text-white/70 text-sm">📍 Maputo, Moçambique</p>
             </div>
             <div>
               <h3 className="font-bold text-[#9CAF88] mb-3">Links</h3>
               <div className="flex flex-col gap-1">
-                <a href="#precos" className="text-white/70 text-sm hover:text-white">Precos</a>
+                <a href="#precos" className="text-white/70 text-sm hover:text-white">Preços</a>
                 <Link to="/landing" className="text-white/70 text-sm hover:text-white">Sete Ecos</Link>
                 <Link to="/lumina" className="text-white/70 text-sm hover:text-white">Lumina</Link>
               </div>
