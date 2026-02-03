@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
+import { checkVitalisAccess } from '../../lib/subscriptions';
+
+// Coach email - acesso automático
+const COACH_EMAIL = 'viv.saraiva@gmail.com';
 
 export default function VitalisAuth() {
   const navigate = useNavigate();
@@ -24,6 +28,12 @@ export default function VitalisAuth() {
         });
         if (error) throw error;
 
+        // Coach tem acesso directo
+        if (email.toLowerCase() === COACH_EMAIL) {
+          navigate('/vitalis/dashboard');
+          return;
+        }
+
         // Buscar users.id primeiro
         const { data: userData, error: userError } = await supabase
           .from('users')
@@ -35,29 +45,13 @@ export default function VitalisAuth() {
           throw new Error('Utilizador não encontrado na base de dados');
         }
 
-        // Verificar se tem client
-        const { data: client } = await supabase
-          .from('vitalis_clients')
-          .select('id')
-          .eq('user_id', userData.id)
-          .single();
+        // Usar a mesma função de verificação que o VitalisAccessGuard
+        const access = await checkVitalisAccess(userData.id);
 
-        if (client) {
-          // Verificar se tem subscrição activa
-          const { data: subscription } = await supabase
-            .from('vitalis_clients')
-            .select('subscription_status')
-            .eq('user_id', userData.id)
-            .single();
-
-          if (subscription?.subscription_status === 'active' || subscription?.subscription_status === 'tester') {
-            navigate('/vitalis/dashboard');
-          } else {
-            // Tem conta mas sem subscrição activa → página de pagamento
-            navigate('/vitalis/pagamento');
-          }
+        if (access.hasAccess) {
+          navigate('/vitalis/dashboard');
         } else {
-          // Novo utilizador → página de pagamento
+          // Sem acesso → página de pagamento
           navigate('/vitalis/pagamento');
         }
 
