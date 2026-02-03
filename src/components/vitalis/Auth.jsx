@@ -43,9 +43,22 @@ export default function VitalisAuth() {
           .single();
 
         if (client) {
-          navigate('/vitalis/dashboard');
+          // Verificar se tem subscrição activa
+          const { data: subscription } = await supabase
+            .from('vitalis_clients')
+            .select('subscription_status')
+            .eq('user_id', userData.id)
+            .single();
+
+          if (subscription?.subscription_status === 'active' || subscription?.subscription_status === 'tester') {
+            navigate('/vitalis/dashboard');
+          } else {
+            // Tem conta mas sem subscrição activa → página de pagamento
+            navigate('/vitalis/pagamento');
+          }
         } else {
-          navigate('/vitalis/intake');
+          // Novo utilizador → página de pagamento
+          navigate('/vitalis/pagamento');
         }
 
       } else {
@@ -55,7 +68,8 @@ export default function VitalisAuth() {
           password,
         });
         if (error) throw error;
-        navigate('/vitalis/intake');
+        // Novo utilizador → página de pagamento
+        navigate('/vitalis/pagamento');
       }
     } catch (error) {
       setError(error.message);
