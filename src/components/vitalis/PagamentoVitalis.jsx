@@ -8,7 +8,11 @@ import {
   useInviteCode,
   checkVitalisAccess
 } from '../../lib/subscriptions';
+
 import { EmailTriggers } from '../../lib/emails';
+
+// Coach email - acesso automático
+const COACH_EMAIL = 'viv.saraiva@gmail.com';
 
 /**
  * VITALIS - Pagina de Pagamento
@@ -71,6 +75,12 @@ const PagamentoVitalis = () => {
 
       setIsAuthenticated(true);
       setUserEmail(user.email);
+
+      // Coach tem acesso directo - não precisa verificar subscrição
+      if (user.email.toLowerCase() === COACH_EMAIL) {
+        navigate('/vitalis/dashboard');
+        return;
+      }
 
       // Usar upsert como o Lumina - evita erros 400 nos SELECTs
       const { data: userData, error: upsertError } = await supabase
@@ -286,9 +296,21 @@ const PagamentoVitalis = () => {
               )}
 
               <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-bold text-white text-lg">{plan.name}</h3>
-                  <p className="text-sm text-white/60">{plan.duration} {plan.duration === 1 ? 'mês' : 'meses'}</p>
+                <div className="flex items-center gap-3">
+                  {/* Checkmark indicador de seleção */}
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                    selectedPlan === key
+                      ? 'bg-white'
+                      : 'bg-white/20 border-2 border-white/40'
+                  }`}>
+                    {selectedPlan === key && (
+                      <span className="text-[#7C8B6F] text-sm font-bold">✓</span>
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-white text-lg">{plan.name}</h3>
+                    <p className="text-sm text-white/60">{plan.duration} {plan.duration === 1 ? 'mês' : 'meses'}</p>
+                  </div>
                 </div>
                 <div className="text-right">
                   <p className="text-2xl font-bold text-white">${plan.price_usd}</p>
@@ -297,13 +319,7 @@ const PagamentoVitalis = () => {
               </div>
 
               {plan.savings_usd > 0 && (
-                <p className="text-xs text-green-300 mt-2">Poupas ${plan.savings_usd} vs mensal</p>
-              )}
-
-              {selectedPlan === key && (
-                <div className="absolute top-1/2 -translate-y-1/2 left-4 w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                  <span className="text-[#7C8B6F] text-sm font-bold">✓</span>
-                </div>
+                <p className="text-xs text-green-300 mt-2 ml-9">Poupas ${plan.savings_usd} vs mensal</p>
               )}
             </button>
           ))}
