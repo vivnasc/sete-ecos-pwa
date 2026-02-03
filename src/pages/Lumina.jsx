@@ -612,7 +612,7 @@ export default function Lumina() {
           opacity: 0.8,
           marginTop: '8px'
         }}>
-          O Oráculo Feminino
+          Diagnóstico Interior
         </div>
         <div style={{
           fontSize: '12px',
@@ -652,8 +652,8 @@ export default function Lumina() {
   function renderOnboarding() {
     return (
       <div className={`screen ${screen === 'onboarding' ? 'active' : ''}`}>
-        <div className="onboarding-title">Bem-vinda ao Oráculo</div>
-        <div className="onboarding-subtitle">A LUMINA vê o que tu ainda não vês</div>
+        <div className="onboarding-title">Bem-vinda à LUMINA</div>
+        <div className="onboarding-subtitle">Vê-te antes de agir</div>
 
         <div className="form-group">
           <label className="form-label">Como te chamas?</label>
@@ -726,7 +726,7 @@ export default function Lumina() {
         </div>
 
         <button className="start-button" onClick={saveOnboarding} style={{ marginTop: '20px' }}>
-          ENTRAR NO ORÁCULO
+          COMEÇAR
         </button>
       </div>
     );
@@ -897,7 +897,7 @@ export default function Lumina() {
 
     return (
       <div className={`screen ${screen === 'reading' ? 'active' : ''}`} style={{ overflowY: 'auto', paddingBottom: '100px' }}>
-        <div className="logo-small">✧ LEITURA ✧</div>
+        <div className="logo-small">A TUA LEITURA</div>
 
         {diasCount > 0 && (
           <div className="days-badge">{diasCount} dias contigo</div>
@@ -940,7 +940,7 @@ export default function Lumina() {
               borderLeft: `4px solid ${ecoRecomendado.disponivel ? '#7C8B6F' : '#9CA3AF'}`
             }}>
               <div style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '14px' }}>
-                ✦ A LUMINA recomenda: {ecoRecomendado.eco}
+                Sugestão: {ecoRecomendado.eco}
               </div>
               <div style={{ fontSize: '14px', lineHeight: 1.5 }}>
                 {ecoRecomendado.msg}
@@ -1035,7 +1035,7 @@ export default function Lumina() {
           marginTop: '16px',
           padding: '12px 30px'
         }}>
-          ✧ Guardar Leitura ✧
+          Guardar e Fechar
         </button>
       </div>
     );
