@@ -3,6 +3,13 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { checkVitalisAccess, SUBSCRIPTION_STATUS } from '../../lib/subscriptions';
 
+// Emails com acesso automático (coach + testers)
+const BYPASS_EMAILS = [
+  'viv.saraiva@gmail.com',           // Coach principal
+  'vivnasc@gmail.com',               // Email alternativo
+  'vivianne.saraiva@outlook.com',    // Conta de testes
+];
+
 /**
  * VITALIS ACCESS GUARD
  *
@@ -37,6 +44,14 @@ const VitalisAccessGuard = ({ children }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         setHasAccess(false);
+        setLoading(false);
+        return;
+      }
+
+      // Bypass emails têm acesso directo
+      if (BYPASS_EMAILS.includes(user.email.toLowerCase())) {
+        setAccessInfo({ hasAccess: true, status: 'bypass', reason: 'bypass_email' });
+        setHasAccess(true);
         setLoading(false);
         return;
       }
