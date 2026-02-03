@@ -368,7 +368,7 @@ const PagamentoVitalis = () => {
                   Não foi possível associar a tua conta. Por favor contacta o suporte.
                 </p>
                 <a
-                  href="https://wa.me/258843989573?text=Olá! Tenho um problema ao aceder à página de pagamento do Vitalis. O meu email é: "
+                  href="https://wa.me/258845243875?text=Olá! Tenho um problema ao aceder à página de pagamento do Vitalis. O meu email é: "
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block bg-[#25D366] text-white px-4 py-2 rounded-lg text-sm font-medium"
