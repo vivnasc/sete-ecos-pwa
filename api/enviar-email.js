@@ -53,7 +53,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'Vitalis <vitalis@seteecos.com>',
+        from: 'Sete Ecos <feedback@seteecos.com>',
         to: destinatario,
         subject: template.assunto,
         html: template.html
