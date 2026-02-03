@@ -72,52 +72,21 @@ const PagamentoVitalis = () => {
       setIsAuthenticated(true);
       setUserEmail(user.email);
 
-      // Try to get existing user (maybeSingle doesn't throw if not found)
-      const { data: existingUsers } = await supabase
+      // Usar upsert como o Lumina - evita erros 400 nos SELECTs
+      const { data: userData, error: upsertError } = await supabase
         .from('users')
+        .upsert({
+          auth_id: user.id,
+          email: user.email,
+          nome: user.user_metadata?.name || user.email.split('@')[0]
+        }, { onConflict: 'auth_id' })
         .select('id, nome')
-        .eq('auth_id', user.id);
+        .single();
 
-      let userData = existingUsers && existingUsers.length > 0 ? existingUsers[0] : null;
-
-      // If user doesn't exist by auth_id, try to find by email or create
-      if (!userData) {
-        // First try by email (user might exist from Lumina)
-        const { data: byEmail } = await supabase
-          .from('users')
-          .select('id, nome, auth_id')
-          .eq('email', user.email);
-
-        if (byEmail && byEmail.length > 0) {
-          userData = byEmail[0];
-          // Update auth_id if missing
-          if (!userData.auth_id) {
-            await supabase
-              .from('users')
-              .update({ auth_id: user.id })
-              .eq('id', userData.id);
-          }
-        } else {
-          // Create new user with INSERT
-          const { data: newUser, error: insertError } = await supabase
-            .from('users')
-            .insert({
-              auth_id: user.id,
-              email: user.email,
-              nome: user.user_metadata?.name || user.email.split('@')[0]
-            })
-            .select('id, nome')
-            .single();
-
-          if (!insertError && newUser) {
-            userData = newUser;
-          } else {
-            console.error('Insert error:', insertError);
-          }
-        }
-      }
-
-      if (userData) {
+      if (upsertError) {
+        console.error('Upsert error:', upsertError);
+        setUserLoadError(true);
+      } else if (userData) {
         setUserId(userData.id);
         setUserName(userData.nome);
         setUserLoadError(false);
@@ -128,7 +97,6 @@ const PagamentoVitalis = () => {
           return;
         }
       } else {
-        // Could not find or create user - likely RLS issue
         console.error('Could not find or create user for:', user.email);
         setUserLoadError(true);
       }

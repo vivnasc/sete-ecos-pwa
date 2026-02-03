@@ -317,51 +317,20 @@ try {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Não autenticado');
 
-  // 🔧 BUSCAR O ID CORRECTO DA TABELA USERS (com fallbacks)
-  // Primeiro tenta por auth_id
-  const { data: existingUsers } = await supabase
+  // 🔧 USAR UPSERT COMO O LUMINA - evita erros 400 nos SELECTs
+  const { data: userData, error: upsertError } = await supabase
     .from('users')
-    .select('id, nome, auth_id')
-    .eq('auth_id', user.id);
+    .upsert({
+      auth_id: user.id,
+      email: user.email,
+      nome: formData.nome || user.user_metadata?.name || user.email.split('@')[0]
+    }, { onConflict: 'auth_id' })
+    .select('id, nome')
+    .single();
 
-  let userData = existingUsers && existingUsers.length > 0 ? existingUsers[0] : null;
-
-  // Se não encontrou por auth_id, tenta por email ou cria
-  if (!userData) {
-    // Tenta encontrar por email (utilizador pode vir do Lumina)
-    const { data: byEmail } = await supabase
-      .from('users')
-      .select('id, nome, auth_id')
-      .eq('email', user.email);
-
-    if (byEmail && byEmail.length > 0) {
-      userData = byEmail[0];
-      // Actualiza auth_id se estiver em falta
-      if (!userData.auth_id) {
-        await supabase
-          .from('users')
-          .update({ auth_id: user.id })
-          .eq('id', userData.id);
-      }
-    } else {
-      // Cria novo utilizador
-      const { data: newUser, error: insertError } = await supabase
-        .from('users')
-        .insert({
-          auth_id: user.id,
-          email: user.email,
-          nome: formData.nome || user.user_metadata?.name || user.email.split('@')[0]
-        })
-        .select('id, nome')
-        .single();
-
-      if (!insertError && newUser) {
-        userData = newUser;
-      } else {
-        console.error('Erro ao criar utilizador:', insertError);
-        throw new Error('Erro ao criar perfil de utilizador. Tente novamente ou contacte suporte.');
-      }
-    }
+  if (upsertError) {
+    console.error('Erro no upsert:', upsertError);
+    throw new Error('Erro ao carregar perfil de utilizador. Tente novamente.');
   }
 
   if (!userData) {
