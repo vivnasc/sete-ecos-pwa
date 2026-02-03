@@ -603,7 +603,7 @@ export default function ChatCoach() {
   }
 
   return (
-    <div className="min-h-screen bg-[#E8E4DC] flex flex-col">
+    <div className="min-h-screen bg-[#E8E4DC] flex flex-col pb-20">
       <header className="bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4">
           <div className="flex items-center gap-3">

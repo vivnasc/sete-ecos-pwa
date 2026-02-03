@@ -137,17 +137,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* NAVIGATION */}
-      <nav className="nav-bottom">
-        <a href="#" className="nav-item active">
-          <span className="nav-icon">🏠</span>
-          <span>Início</span>
-        </a>
-        <a href="#" className="nav-item" onClick={() => navigate('/lumina')}>
-          <span className="nav-icon">👁️</span>
-          <span>Lumina</span>
-        </a>
-      </nav>
+      {/* Spacer for global navigation */}
+      <div className="h-20"></div>
     </div>
   )
 }

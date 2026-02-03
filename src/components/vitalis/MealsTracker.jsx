@@ -229,7 +229,7 @@ export default function MealsTracker() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3]">
+    <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3] pb-20">
       {/* Header */}
       <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] shadow-lg">
         <div className="max-w-2xl mx-auto px-4 py-6">
