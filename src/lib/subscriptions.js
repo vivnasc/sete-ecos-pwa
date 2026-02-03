@@ -21,11 +21,47 @@ export const SUBSCRIPTION_STATUS = {
   NONE: null                  // Sem subscricao
 };
 
-// Configuracoes
+// Planos de subscricao
+export const SUBSCRIPTION_PLANS = {
+  MONTHLY: {
+    id: 'monthly',
+    name: 'Mensal',
+    duration: 1, // meses
+    price_mzn: 2500,
+    price_usd: 38,
+    discount: 0
+  },
+  SEMESTRAL: {
+    id: 'semestral',
+    name: 'Semestral',
+    duration: 6, // meses
+    price_mzn: 12500,
+    price_usd: 190,
+    discount: 17,
+    savings_mzn: 2500, // economia vs mensal
+    savings_usd: 38
+  },
+  ANNUAL: {
+    id: 'annual',
+    name: 'Anual',
+    duration: 12, // meses
+    price_mzn: 21000,
+    price_usd: 320,
+    discount: 30,
+    savings_mzn: 9000, // economia vs mensal
+    savings_usd: 136
+  }
+};
+
+// Configuracoes gerais
 export const SUBSCRIPTION_CONFIG = {
-  TRIAL_DAYS: 14,             // Dias de trial gratuito
-  PRICE_MZN: 1500,            // Preco em Meticais
-  PRICE_USD: 25,              // Preco em USD (PayPal)
+  TRIAL_DAYS: 0,              // Sem trial - o plano personalizado JA e o valor
+  DEFAULT_PLAN: 'monthly',
+  CURRENCY_MZN: 'MZN',
+  CURRENCY_USD: 'USD',
+  // PayPal
+  PAYPAL_CLIENT_ID: import.meta.env.VITE_PAYPAL_CLIENT_ID || null,
+  PAYPAL_MODE: import.meta.env.VITE_PAYPAL_MODE || 'sandbox', // 'sandbox' ou 'live'
 };
 
 /**
@@ -187,20 +223,27 @@ export const setAsTester = async (userId, notes = '') => {
 
 /**
  * Confirma pagamento manual (PayPal, M-Pesa, etc)
+ * @param {string} userId - ID do utilizador
+ * @param {object} paymentDetails - { method, reference, amount, planId }
  */
 export const confirmManualPayment = async (userId, paymentDetails) => {
   try {
+    // Determinar duracao baseado no plano
+    const plan = SUBSCRIPTION_PLANS[paymentDetails.planId?.toUpperCase()] || SUBSCRIPTION_PLANS.MONTHLY;
+
     const expiresAt = new Date();
-    expiresAt.setMonth(expiresAt.getMonth() + 1); // 1 mes de acesso
+    expiresAt.setMonth(expiresAt.getMonth() + plan.duration);
 
     const { error } = await supabase
       .from('vitalis_clients')
       .update({
         subscription_status: SUBSCRIPTION_STATUS.ACTIVE,
         subscription_expires: expiresAt.toISOString(),
+        subscription_plan: plan.id,
         payment_method: paymentDetails.method, // 'paypal', 'mpesa', 'transfer'
         payment_reference: paymentDetails.reference,
         payment_amount: paymentDetails.amount,
+        payment_currency: paymentDetails.currency || 'MZN',
         subscription_updated: new Date().toISOString()
       })
       .eq('user_id', userId);
@@ -209,10 +252,12 @@ export const confirmManualPayment = async (userId, paymentDetails) => {
 
     await logSubscriptionChange(userId, SUBSCRIPTION_STATUS.ACTIVE, {
       action: 'payment_confirmed',
+      plan: plan.id,
+      duration: plan.duration,
       ...paymentDetails
     });
 
-    return { success: true, expiresAt };
+    return { success: true, expiresAt, plan };
   } catch (error) {
     console.error('Erro ao confirmar pagamento:', error);
     return { success: false, error };
@@ -221,15 +266,22 @@ export const confirmManualPayment = async (userId, paymentDetails) => {
 
 /**
  * Regista pedido de pagamento pendente
+ * @param {string} userId - ID do utilizador
+ * @param {object} paymentDetails - { method, reference, amount, currency, planId }
  */
 export const registerPendingPayment = async (userId, paymentDetails) => {
   try {
+    const plan = SUBSCRIPTION_PLANS[paymentDetails.planId?.toUpperCase()] || SUBSCRIPTION_PLANS.MONTHLY;
+
     const { error } = await supabase
       .from('vitalis_clients')
       .update({
         subscription_status: SUBSCRIPTION_STATUS.PENDING,
+        subscription_plan: plan.id,
         payment_method: paymentDetails.method,
         payment_reference: paymentDetails.reference,
+        payment_amount: paymentDetails.amount,
+        payment_currency: paymentDetails.currency || 'MZN',
         subscription_updated: new Date().toISOString()
       })
       .eq('user_id', userId);
@@ -240,12 +292,12 @@ export const registerPendingPayment = async (userId, paymentDetails) => {
     await supabase.from('vitalis_alerts').insert({
       user_id: userId,
       tipo_alerta: 'pagamento_pendente',
-      descricao: `Pagamento pendente via ${paymentDetails.method}: ${paymentDetails.reference}`,
+      descricao: `Pagamento pendente via ${paymentDetails.method} - Plano: ${plan.name} (${paymentDetails.amount} ${paymentDetails.currency || 'MZN'})`,
       prioridade: 'alta',
       status: 'pendente'
     });
 
-    return { success: true };
+    return { success: true, plan };
   } catch (error) {
     console.error('Erro ao registar pagamento pendente:', error);
     return { success: false, error };

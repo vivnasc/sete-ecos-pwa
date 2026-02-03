@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import {
   SUBSCRIPTION_STATUS,
   SUBSCRIPTION_CONFIG,
+  SUBSCRIPTION_PLANS,
   setAsTester,
   startTrial,
   confirmManualPayment,
@@ -1066,12 +1067,18 @@ const CoachDashboard = () => {
                 <h4 className="font-medium text-white mb-2">ℹ️ Sobre os Status</h4>
                 <ul className="text-sm text-purple-300 space-y-1">
                   <li>• <span className="text-emerald-400">Tester</span>: Acesso gratuito permanente (para testers)</li>
-                  <li>• <span className="text-blue-400">Trial</span>: {SUBSCRIPTION_CONFIG.TRIAL_DAYS} dias de teste gratuito</li>
-                  <li>• <span className="text-green-400">Active</span>: Pagamento confirmado (1 mes)</li>
+                  <li>• <span className="text-green-400">Active</span>: Pagamento confirmado</li>
                   <li>• <span className="text-yellow-400">Pending</span>: Aguarda confirmacao de pagamento</li>
-                  <li>• <span className="text-red-400">Expired</span>: Trial ou subscricao expirou</li>
-                  <li>• <strong>Precos</strong>: {SUBSCRIPTION_CONFIG.PRICE_USD} USD / {SUBSCRIPTION_CONFIG.PRICE_MZN} MZN</li>
+                  <li>• <span className="text-red-400">Expired</span>: Subscricao expirou</li>
                 </ul>
+                <div className="mt-3 pt-3 border-t border-purple-500/20">
+                  <p className="text-purple-300 text-sm mb-2"><strong>Planos:</strong></p>
+                  <ul className="text-xs text-purple-400 space-y-1">
+                    <li>• Mensal: {SUBSCRIPTION_PLANS.MONTHLY.price_mzn.toLocaleString()} MZN / ${SUBSCRIPTION_PLANS.MONTHLY.price_usd}</li>
+                    <li>• Semestral: {SUBSCRIPTION_PLANS.SEMESTRAL.price_mzn.toLocaleString()} MZN / ${SUBSCRIPTION_PLANS.SEMESTRAL.price_usd} (-{SUBSCRIPTION_PLANS.SEMESTRAL.discount}%)</li>
+                    <li>• Anual: {SUBSCRIPTION_PLANS.ANNUAL.price_mzn.toLocaleString()} MZN / ${SUBSCRIPTION_PLANS.ANNUAL.price_usd} (-{SUBSCRIPTION_PLANS.ANNUAL.discount}%)</li>
+                  </ul>
+                </div>
               </div>
             </div>
           )}
@@ -1087,8 +1094,20 @@ const CoachDashboard = () => {
                     <p className="text-white font-medium">{showConfirmPaymentModal.users?.nome}</p>
                   </div>
                   <div>
+                    <p className="text-purple-300 text-sm">Plano</p>
+                    <p className="text-white">
+                      {SUBSCRIPTION_PLANS[showConfirmPaymentModal.subscription_plan?.toUpperCase()]?.name || 'Mensal'}
+                    </p>
+                  </div>
+                  <div>
                     <p className="text-purple-300 text-sm">Metodo</p>
                     <p className="text-white">{showConfirmPaymentModal.payment_method || 'Nao especificado'}</p>
+                  </div>
+                  <div>
+                    <p className="text-purple-300 text-sm">Valor</p>
+                    <p className="text-white">
+                      {showConfirmPaymentModal.payment_amount} {showConfirmPaymentModal.payment_currency || 'MZN'}
+                    </p>
                   </div>
                   {showConfirmPaymentModal.payment_reference && (
                     <div>
@@ -1098,7 +1117,7 @@ const CoachDashboard = () => {
                   )}
                   <div className="bg-yellow-500/10 p-3 rounded-xl">
                     <p className="text-yellow-300 text-sm">
-                      Ao confirmar, o cliente tera acesso por 1 mes a partir de hoje.
+                      Ao confirmar, o cliente tera acesso por {SUBSCRIPTION_PLANS[showConfirmPaymentModal.subscription_plan?.toUpperCase()]?.duration || 1} mes(es) a partir de hoje.
                     </p>
                   </div>
                 </div>
@@ -1113,7 +1132,9 @@ const CoachDashboard = () => {
                     onClick={() => handleConfirmPayment(showConfirmPaymentModal.user_id, {
                       method: showConfirmPaymentModal.payment_method,
                       reference: showConfirmPaymentModal.payment_reference,
-                      amount: SUBSCRIPTION_CONFIG.PRICE_USD
+                      amount: showConfirmPaymentModal.payment_amount,
+                      currency: showConfirmPaymentModal.payment_currency,
+                      planId: showConfirmPaymentModal.subscription_plan || 'monthly'
                     })}
                     className="flex-1 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-medium transition-all"
                   >
