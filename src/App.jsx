@@ -1,23 +1,32 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { supabase } from './lib/supabase'
-import Auth from './components/Auth'
+
+// ===== PÁGINAS PRINCIPAIS =====
 import Home from './pages/Home'
 import Lumina from './pages/Lumina'
+import ComingSoon from './pages/ComingSoon'
+import Auth from './components/Auth'
 import Navigation from './components/Navigation'
-// Vitalis
+import CoachDashboard from './pages/CoachDashboard'
+import LandingGeral from './pages/LandingGeral'
+
+// ===== ECO 1: VITALIS (Nutrição) =====
+import LandingVitalis from './pages/LandingVitalis'
 import VitalisAuth from './components/vitalis/Auth'
+import VitalisAccessGuard from './components/vitalis/VitalisAccessGuard'
+import PagamentoVitalis from './components/vitalis/PagamentoVitalis'
 import VitalisIntakeComplete from './components/vitalis/VitalisIntakeComplete'
 import DashboardVitalis from './components/vitalis/DashboardVitalis'
 import CheckinDiario from './components/vitalis/CheckinDiario'
 import ReceitasBrowse from './components/vitalis/ReceitasBrowse'
+import ReceitaDetalhe from './components/vitalis/ReceitaDetalhe'
 import EspacoRetorno from './components/vitalis/EspacoRetorno'
 import PlanoAlimentar from './components/vitalis/PlanoAlimentar'
 import MealsTracker from './components/vitalis/MealsTracker'
 import RefeicoesCofig from './components/vitalis/RefeicoesCofig'
 import RelatorioSemanal from './components/vitalis/RelatorioSemanal'
 import RelatoriosHub from './components/vitalis/RelatoriosHub'
-import ReceitaDetalhe from './components/vitalis/ReceitaDetalhe'
 import NotificacoesConfig from './components/vitalis/NotificacoesConfig'
 import GraficosTendencia from './components/vitalis/GraficosTendencia'
 import PerfilVitalis from './components/vitalis/PerfilVitalis'
@@ -28,12 +37,7 @@ import FotosProgresso from './components/vitalis/FotosProgresso'
 import DesafiosSemanais from './components/vitalis/DesafiosSemanais'
 import CalendarioRefeicoes from './components/vitalis/CalendarioRefeicoes'
 import GuiaUtilizador from './components/vitalis/GuiaUtilizador'
-import PagamentoVitalis from './components/vitalis/PagamentoVitalis'
-import VitalisAccessGuard from './components/vitalis/VitalisAccessGuard'
 import PlanoHTML from './pages/PlanoHTML'
-import CoachDashboard from './pages/CoachDashboard'
-import LandingGeral from './pages/LandingGeral'
-import LandingVitalis from './pages/LandingVitalis'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -56,14 +60,20 @@ function App() {
     <BrowserRouter>
       <div className="app">
         <Routes>
+          {/* ===== ROTAS PÚBLICAS ===== */}
           <Route path="/" element={<Home />} />
           <Route path="/landing" element={<LandingGeral />} />
-          <Route path="/vitalis" element={<LandingVitalis />} />
+
+          {/* ===== LUMINA - Diagnóstico Gratuito ===== */}
           <Route path="/lumina" element={session ? <Lumina /> : <Auth />} />
+
+          {/* ===== ECO 1: VITALIS - Nutrição ===== */}
+          <Route path="/vitalis" element={<LandingVitalis />} />
           <Route path="/vitalis/login" element={<VitalisAuth />} />
           <Route path="/vitalis/pagamento" element={session ? <PagamentoVitalis /> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/receita/:id" element={<ReceitaDetalhe />} />
-          {/* Rotas protegidas - requerem subscricao ativa */}
+          <Route path="/vitalis/plano-pdf" element={<PlanoHTML />} />
+          {/* Vitalis - Rotas protegidas (requerem subscrição activa) */}
           <Route path="/vitalis/intake" element={session ? <VitalisAccessGuard><VitalisIntakeComplete /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/dashboard" element={session ? <VitalisAccessGuard><DashboardVitalis /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/checkin" element={session ? <VitalisAccessGuard><CheckinDiario /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
@@ -84,8 +94,22 @@ function App() {
           <Route path="/vitalis/desafios" element={session ? <VitalisAccessGuard><DesafiosSemanais /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/calendario" element={session ? <VitalisAccessGuard><CalendarioRefeicoes /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/guia" element={session ? <VitalisAccessGuard><GuiaUtilizador /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+
+          {/* ===== ECOS 2-7: Em Breve ===== */}
+          <Route path="/aurea" element={<ComingSoon />} />
+          <Route path="/serena" element={<ComingSoon />} />
+          <Route path="/ignis" element={<ComingSoon />} />
+          <Route path="/ventis" element={<ComingSoon />} />
+          <Route path="/ecoa" element={<ComingSoon />} />
+          <Route path="/imago" element={<ComingSoon />} />
+
+          {/* ===== AURORA - Integração Final ===== */}
+          <Route path="/aurora" element={<ComingSoon />} />
+
+          {/* ===== ADMIN / COACH ===== */}
           <Route path="/coach" element={session?.user?.email === 'viv.saraiva@gmail.com' ? <CoachDashboard /> : <Navigate to="/" />} />
-          <Route path="/vitalis/plano-pdf" element={<PlanoHTML />} />
+
+          {/* ===== FALLBACK ===== */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
         <Navigation />
