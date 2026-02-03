@@ -9,6 +9,8 @@ const ReceitaDetalhe = () => {
   const [loading, setLoading] = useState(true);
   const [isFavorita, setIsFavorita] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [imageError, setImageError] = useState(false);
+  const [activeStep, setActiveStep] = useState(null);
 
   // Emojis por tipo de refeição
   const tipoEmojis = {
@@ -128,14 +130,42 @@ const ReceitaDetalhe = () => {
   // Determinar emoji principal
   const getMainEmoji = () => {
     if (!receita) return '🍽️';
-    
+
     // Verificar tags especiais primeiro
     if (receita.tags?.includes('jejum_friendly') || receita.tags?.includes('diuretico')) return '🥤';
     if (receita.tags?.includes('alta_proteina')) return '🥤';
     if (receita.tags?.includes('marisco')) return '🦐';
     if (receita.tags?.includes('picante')) return '🌶️';
-    
+
     return tipoEmojis[receita.tipo_refeicao] || '🍽️';
+  };
+
+  // Parsear modo de preparo em passos
+  const parseSteps = (text) => {
+    if (!text) return [];
+
+    // Tentar diferentes formatos de separação
+    // 1. Linhas numeradas (1. ou 1) ou 1-)
+    // 2. Linhas separadas por \n
+    // 3. Frases separadas por ponto final
+
+    let steps = [];
+
+    // Primeiro tentar por números
+    const numberedRegex = /(?:^|\n)\s*(?:\d+[\.\)\-]\s*)/;
+    if (numberedRegex.test(text)) {
+      steps = text.split(/(?:^|\n)\s*\d+[\.\)\-]\s*/).filter(s => s.trim());
+    }
+    // Depois por linhas
+    else if (text.includes('\n')) {
+      steps = text.split('\n').filter(s => s.trim());
+    }
+    // Por último por frases (ponto seguido de maiúscula ou espaço)
+    else {
+      steps = text.split(/\.\s+(?=[A-Z])/).map(s => s.trim()).filter(s => s);
+    }
+
+    return steps.map(s => s.trim().replace(/^\d+[\.\)\-]\s*/, ''));
   };
 
   if (loading) {
@@ -168,42 +198,73 @@ const ReceitaDetalhe = () => {
 
   const gradiente = tipoGradientes[receita.tipo_refeicao] || tipoGradientes.snack;
   const ingredientes = receita.ingredientes || [];
+  const steps = parseSteps(receita.modo_preparo);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-24">
-      
-      {/* Header com gradiente */}
-      <div className={`bg-gradient-to-br ${gradiente} pt-12 pb-20 px-4 relative`}>
+    <div className="min-h-screen bg-gradient-to-b from-[#F5F2ED] via-[#E8E4DC] to-[#C5D1BC] pb-24">
+
+      {/* Header com imagem ou gradiente */}
+      <div className="relative h-72 md:h-80 overflow-hidden">
+        {/* Imagem de fundo se existir */}
+        {receita.imagem_url && !imageError ? (
+          <>
+            <img
+              src={receita.imagem_url}
+              alt={receita.titulo}
+              className="w-full h-full object-cover"
+              onError={() => setImageError(true)}
+            />
+            {/* Overlay para legibilidade */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
+          </>
+        ) : (
+          /* Fallback: gradiente premium com emoji */
+          <div className={`w-full h-full bg-gradient-to-br ${gradiente}`}>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-8xl drop-shadow-2xl">{getMainEmoji()}</span>
+            </div>
+          </div>
+        )}
+
         {/* Botão voltar com logo */}
         <div className="absolute top-4 left-4 flex items-center gap-2">
           <button
             onClick={() => navigate('/vitalis/receitas')}
-            className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-gray-700"
+            className="w-11 h-11 bg-black/30 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/50 transition-colors shadow-lg"
           >
-            ←
+            <span className="text-lg">←</span>
           </button>
-          <img
-            src="/logos/VITALIS_LOGO_V3.png"
-            alt="Vitalis"
-            className="w-8 h-8 object-contain drop-shadow"
-          />
+          <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg">
+            <img
+              src="/logos/VITALIS_LOGO_V3.png"
+              alt="Vitalis"
+              className="w-7 h-7 object-contain"
+            />
+          </div>
         </div>
 
         {/* Botão favorito */}
         <button
           onClick={toggleFavorito}
-          className="absolute top-4 right-4 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center"
+          className="absolute top-4 right-4 w-11 h-11 bg-black/30 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-black/50 transition-colors shadow-lg"
         >
           <span className="text-2xl">{isFavorita ? '❤️' : '🤍'}</span>
         </button>
 
-        {/* Emoji central e título */}
-        <div className="text-center pt-4">
-          <div className="text-6xl mb-3 drop-shadow-lg">{getMainEmoji()}</div>
-          <h1 className="text-xl font-bold text-gray-800 mb-2 px-4">{receita.titulo}</h1>
-          <div className="inline-block bg-white/30 backdrop-blur-sm px-3 py-1 rounded-full text-gray-700 text-xs font-medium">
-            {origemLabels[receita.origem] || '🌍 Internacional'}
+        {/* Info no fundo da imagem */}
+        <div className="absolute bottom-0 left-0 right-0 p-5">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold shadow-md flex items-center gap-1.5">
+              <span className="text-base">{tipoEmojis[receita.tipo_refeicao]}</span>
+              <span className="capitalize text-gray-700">{receita.tipo_refeicao?.replace('_', ' ')}</span>
+            </span>
+            <span className="bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium shadow-md">
+              {origemLabels[receita.origem] || '🌍 Internacional'}
+            </span>
           </div>
+          <h1 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+            {receita.titulo}
+          </h1>
         </div>
       </div>
 
@@ -387,12 +448,68 @@ const ReceitaDetalhe = () => {
           </div>
         </div>
 
-        {/* Modo de preparo */}
+        {/* Modo de preparo com passos */}
         <div className="bg-white rounded-3xl shadow-xl p-6 mt-4">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">👩‍🍳 Modo de Preparo</h3>
-          <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-            {receita.modo_preparo}
-          </p>
+          <h3 className="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
+            <span className="w-8 h-8 bg-[#7C8B6F] rounded-full flex items-center justify-center text-white text-sm">👩‍🍳</span>
+            Modo de Preparo
+          </h3>
+
+          {steps.length > 1 ? (
+            /* Passos numerados interactivos */
+            <div className="space-y-4">
+              {steps.map((step, index) => (
+                <div
+                  key={index}
+                  onClick={() => setActiveStep(activeStep === index ? null : index)}
+                  className={`flex gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-200 ${
+                    activeStep === index
+                      ? 'bg-[#7C8B6F]/10 border-2 border-[#7C8B6F]'
+                      : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
+                  }`}
+                >
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-lg transition-colors ${
+                    activeStep === index
+                      ? 'bg-[#7C8B6F] text-white'
+                      : 'bg-[#E8E4DC] text-[#5A6B4E]'
+                  }`}>
+                    {index + 1}
+                  </div>
+                  <div className="flex-1">
+                    <p className={`leading-relaxed ${activeStep === index ? 'text-gray-800 font-medium' : 'text-gray-700'}`}>
+                      {step}
+                    </p>
+                    {activeStep === index && (
+                      <div className="mt-2 text-xs text-[#7C8B6F] font-medium">
+                        ✓ Passo {index + 1} de {steps.length}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            /* Texto simples se não for possível dividir em passos */
+            <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+              {receita.modo_preparo}
+            </p>
+          )}
+
+          {/* Barra de progresso para os passos */}
+          {steps.length > 1 && (
+            <div className="mt-6 pt-4 border-t border-gray-100">
+              <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
+                <span>Progresso</span>
+                <span>{activeStep !== null ? activeStep + 1 : 0} de {steps.length} passos</span>
+              </div>
+              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-[#7C8B6F] to-[#5A6B4E] rounded-full transition-all duration-300"
+                  style={{ width: `${activeStep !== null ? ((activeStep + 1) / steps.length) * 100 : 0}%` }}
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Botão voltar */}
