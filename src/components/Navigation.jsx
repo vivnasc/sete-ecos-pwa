@@ -60,21 +60,21 @@ export default function Navigation({ variant = 'default' }) {
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E8E2D9] shadow-lg z-50">
         <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
           <NavItem
-            icon="🏠"
+            logo="/logos/CENTRO_7ECOS.png"
             label="Hub"
             active={isActive('/')}
             onClick={() => navigate('/')}
             color="#4A4035"
           />
           <NavItem
-            icon="👁️"
+            logo="/logos/lumina-logo_v2.png"
             label="Lumina"
             active={isActive('/lumina')}
             onClick={() => navigate('/lumina')}
             color="#4B0082"
           />
           <NavItem
-            icon="📊"
+            logo="/logos/VITALIS_LOGO_V3.png"
             label="Vitalis"
             active={isVitalisSection}
             onClick={() => navigate(hasVitalisAccess ? '/vitalis/dashboard' : '/vitalis')}
@@ -99,21 +99,21 @@ export default function Navigation({ variant = 'default' }) {
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
       <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
         <NavItem
-          icon="🏠"
+          logo="/logos/CENTRO_7ECOS.png"
           label="Início"
           active={isActive('/')}
           onClick={() => navigate('/')}
           color="#1A1A4E"
         />
         <NavItem
-          icon="👁️"
+          logo="/logos/lumina-logo_v2.png"
           label="Lumina"
           active={isLuminaSection}
           onClick={() => navigate('/lumina')}
           color="#4B0082"
         />
         <NavItem
-          icon="🌱"
+          logo="/logos/VITALIS_LOGO_V3.png"
           label="Vitalis"
           active={isVitalisSection}
           onClick={() => navigate(hasVitalisAccess ? '/vitalis/dashboard' : '/vitalis')}
@@ -124,7 +124,7 @@ export default function Navigation({ variant = 'default' }) {
   )
 }
 
-function NavItem({ icon, label, active, onClick, color }) {
+function NavItem({ icon, logo, label, active, onClick, color }) {
   return (
     <button
       onClick={onClick}
@@ -138,7 +138,11 @@ function NavItem({ icon, label, active, onClick, color }) {
         minWidth: '60px'
       }}
     >
-      <span className="text-xl mb-0.5">{icon}</span>
+      {logo ? (
+        <img src={logo} alt={label} className="w-6 h-6 mb-0.5 object-contain" style={{ opacity: active ? 1 : 0.5 }} />
+      ) : (
+        <span className="text-xl mb-0.5">{icon}</span>
+      )}
       <span className={`text-xs ${active ? 'font-semibold' : 'font-normal'}`}>
         {label}
       </span>

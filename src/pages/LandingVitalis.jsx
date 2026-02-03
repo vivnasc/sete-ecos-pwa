@@ -163,11 +163,8 @@ const LandingVitalis = () => {
   ];
 
   const handleComecar = () => {
-    if (session) {
-      navigate('/vitalis/pagamento');
-    } else {
-      navigate('/vitalis/login');
-    }
+    // Sempre vai para pagamento - a página de pagamento trata da autenticação
+    navigate('/vitalis/pagamento');
   };
 
   return (

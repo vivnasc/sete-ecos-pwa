@@ -38,6 +38,15 @@ const PagamentoVitalis = () => {
   const [userEmail, setUserEmail] = useState('');
   const [userName, setUserName] = useState('');
   const [accessStatus, setAccessStatus] = useState(null);
+  const [needsAuth, setNeedsAuth] = useState(false);
+
+  // Auth form states
+  const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [authName, setAuthName] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
 
   // Selecao de plano
   const [selectedPlan, setSelectedPlan] = useState('MONTHLY');
@@ -70,7 +79,9 @@ const PagamentoVitalis = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        navigate('/vitalis/login');
+        // Mostrar formulário de autenticação em vez de redirecionar
+        setNeedsAuth(true);
+        setLoading(false);
         return;
       }
 
@@ -98,6 +109,48 @@ const PagamentoVitalis = () => {
       console.error('Erro ao carregar dados:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Autenticação
+  const handleAuth = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthLoading(true);
+
+    try {
+      if (authMode === 'login') {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: authEmail,
+          password: authPassword
+        });
+        if (error) throw error;
+      } else {
+        // Registo
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: authEmail,
+          password: authPassword
+        });
+        if (authError) throw authError;
+
+        // Criar user na tabela users
+        if (authData.user) {
+          await supabase.from('users').insert([{
+            auth_id: authData.user.id,
+            email: authEmail,
+            nome: authName || authEmail.split('@')[0]
+          }]);
+        }
+      }
+
+      // Recarregar dados do utilizador
+      setNeedsAuth(false);
+      setLoading(true);
+      await loadUserData();
+    } catch (error) {
+      setAuthError(error.message || 'Erro na autenticação');
+    } finally {
+      setAuthLoading(false);
     }
   };
 
@@ -267,6 +320,115 @@ const PagamentoVitalis = () => {
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-emerald-300">A carregar...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Formulário de autenticação se necessário
+  if (needsAuth) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-teal-900 to-emerald-900 p-4 pb-24">
+        <div className="max-w-md mx-auto">
+          {/* Header */}
+          <div className="text-center py-8">
+            <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-20 h-20 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-white mb-2">Vitalis</h1>
+            <p className="text-emerald-300 text-sm">
+              {authMode === 'login' ? 'Entra na tua conta para continuar' : 'Cria uma conta para começar'}
+            </p>
+          </div>
+
+          {/* Auth Form */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-emerald-500/30">
+            {/* Toggle Login/Register */}
+            <div className="flex gap-2 mb-6">
+              <button
+                onClick={() => setAuthMode('login')}
+                className={`flex-1 py-2 rounded-xl font-semibold transition-all ${
+                  authMode === 'login'
+                    ? 'bg-emerald-500 text-white'
+                    : 'bg-white/10 text-emerald-300 hover:bg-white/20'
+                }`}
+              >
+                Entrar
+              </button>
+              <button
+                onClick={() => setAuthMode('register')}
+                className={`flex-1 py-2 rounded-xl font-semibold transition-all ${
+                  authMode === 'register'
+                    ? 'bg-emerald-500 text-white'
+                    : 'bg-white/10 text-emerald-300 hover:bg-white/20'
+                }`}
+              >
+                Criar Conta
+              </button>
+            </div>
+
+            <form onSubmit={handleAuth} className="space-y-4">
+              {authMode === 'register' && (
+                <div>
+                  <label className="block text-sm text-emerald-300 mb-1">Nome</label>
+                  <input
+                    type="text"
+                    value={authName}
+                    onChange={(e) => setAuthName(e.target.value)}
+                    placeholder="O teu nome"
+                    className="w-full p-3 bg-white/10 border border-emerald-500/30 rounded-xl text-white placeholder-emerald-400/50 focus:outline-none focus:border-emerald-400"
+                  />
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm text-emerald-300 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={authEmail}
+                  onChange={(e) => setAuthEmail(e.target.value)}
+                  placeholder="email@exemplo.com"
+                  required
+                  className="w-full p-3 bg-white/10 border border-emerald-500/30 rounded-xl text-white placeholder-emerald-400/50 focus:outline-none focus:border-emerald-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-emerald-300 mb-1">Palavra-passe</label>
+                <input
+                  type="password"
+                  value={authPassword}
+                  onChange={(e) => setAuthPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  minLength={6}
+                  className="w-full p-3 bg-white/10 border border-emerald-500/30 rounded-xl text-white placeholder-emerald-400/50 focus:outline-none focus:border-emerald-400"
+                />
+              </div>
+
+              {authError && (
+                <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-xl text-red-200 text-sm">
+                  {authError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={authLoading}
+                className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white rounded-xl font-semibold transition-all"
+              >
+                {authLoading ? 'A processar...' : authMode === 'login' ? 'Entrar' : 'Criar Conta'}
+              </button>
+            </form>
+          </div>
+
+          {/* Back to landing */}
+          <div className="text-center mt-6">
+            <button
+              onClick={() => navigate('/vitalis')}
+              className="text-emerald-400 hover:text-emerald-300 text-sm"
+            >
+              ← Voltar à página do Vitalis
+            </button>
+          </div>
         </div>
       </div>
     );
