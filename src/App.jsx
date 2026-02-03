@@ -70,7 +70,7 @@ function App() {
           {/* ===== ECO 1: VITALIS - Nutrição ===== */}
           <Route path="/vitalis" element={<LandingVitalis />} />
           <Route path="/vitalis/login" element={<VitalisAuth />} />
-          <Route path="/vitalis/pagamento" element={session ? <PagamentoVitalis /> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/pagamento" element={<PagamentoVitalis />} />
           <Route path="/vitalis/receita/:id" element={<ReceitaDetalhe />} />
           <Route path="/vitalis/plano-pdf" element={<PlanoHTML />} />
           {/* Vitalis - Rotas protegidas (requerem subscrição activa) */}
