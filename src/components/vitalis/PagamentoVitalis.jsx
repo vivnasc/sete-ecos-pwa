@@ -78,29 +78,28 @@ const PagamentoVitalis = () => {
         .eq('auth_id', user.id)
         .single();
 
-      // If user doesn't exist in users table, create it
+      // If user doesn't exist in users table, create it using UPSERT
       if (!userData) {
         const { data: newUser, error: createError } = await supabase
           .from('users')
-          .insert([{
+          .upsert({
             auth_id: user.id,
             email: user.email,
             nome: user.user_metadata?.name || user.email.split('@')[0]
-          }])
+          }, { onConflict: 'auth_id', ignoreDuplicates: false })
           .select('id, nome')
           .single();
 
-        if (createError) {
-          console.error('Erro ao criar utilizador:', createError);
-          // Try one more time to fetch (maybe race condition)
-          const { data: retryUser } = await supabase
+        if (!createError && newUser) {
+          userData = newUser;
+        } else {
+          // Fallback: fetch existing user
+          const { data: existingUser } = await supabase
             .from('users')
             .select('id, nome')
             .eq('auth_id', user.id)
             .single();
-          userData = retryUser;
-        } else {
-          userData = newUser;
+          userData = existingUser;
         }
       }
 
@@ -143,13 +142,13 @@ const PagamentoVitalis = () => {
         });
         if (signUpError) throw signUpError;
 
-        // Create user record immediately after signup
+        // Create user record immediately after signup using UPSERT
         if (authData.user) {
-          await supabase.from('users').insert([{
+          await supabase.from('users').upsert({
             auth_id: authData.user.id,
             email: authEmail,
             nome: authName || authEmail.split('@')[0]
-          }]);
+          }, { onConflict: 'auth_id', ignoreDuplicates: false });
         }
       }
 
