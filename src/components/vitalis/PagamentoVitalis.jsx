@@ -8,6 +8,7 @@ import {
   useInviteCode,
   checkVitalisAccess
 } from '../../lib/subscriptions';
+import { EmailTriggers } from '../../lib/emails';
 
 /**
  * VITALIS - Pagina de Pagamento com PayPal Automatico
@@ -172,6 +173,19 @@ const PagamentoVitalis = () => {
               text: `Pagamento confirmado! Bem-vindo ao Vitalis ${plan.name}!`
             });
 
+            // Calcular data de validade
+            const validoAte = new Date();
+            validoAte.setMonth(validoAte.getMonth() + plan.duration);
+
+            // Enviar emails de confirmacao (async, nao bloqueia)
+            EmailTriggers.onPagamentoSucesso({
+              nome: userName || userEmail.split('@')[0],
+              email: userEmail,
+              plano: plan.name,
+              valor: `$${plan.price_usd}`,
+              validoAte: validoAte.toLocaleDateString('pt-PT')
+            }).catch(err => console.error('Erro ao enviar emails:', err));
+
             // Redirecionar apos 2 segundos
             setTimeout(() => {
               navigate('/vitalis/intake');
@@ -222,6 +236,16 @@ const PagamentoVitalis = () => {
 
       if (result.success) {
         setMessage({ type: 'success', text: 'Codigo aplicado! A redirecionar...' });
+
+        // Enviar emails de boas-vindas (async)
+        EmailTriggers.onPagamentoSucesso({
+          nome: userName || userEmail.split('@')[0],
+          email: userEmail,
+          plano: 'Convite Especial',
+          valor: 'Cortesia',
+          validoAte: 'Conforme convite'
+        }).catch(err => console.error('Erro ao enviar emails:', err));
+
         setTimeout(() => navigate('/vitalis/intake'), 1500);
       } else {
         setMessage({ type: 'error', text: result.error || 'Codigo invalido.' });
