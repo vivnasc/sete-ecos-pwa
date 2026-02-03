@@ -125,36 +125,55 @@ export default function Home() {
       </nav>
 
       {/* Hero */}
-      <header className="pt-24 pb-12 px-4 text-center relative overflow-hidden min-h-[70vh] flex flex-col justify-center"
+      <header className="pt-24 pb-12 px-4 relative overflow-hidden min-h-[85vh] flex flex-col justify-center"
         style={{
-          background: 'linear-gradient(180deg, #FAF6F0 0%, #F5EEE3 50%, rgba(232, 213, 163, 0.3) 100%)'
+          background: 'linear-gradient(180deg, #FAF6F0 0%, #F5EEE3 30%, #E8D5A3 100%)'
         }}>
-        <div className="absolute top-[10%] right-[-10%] w-[400px] h-[400px] bg-[#C9A227]/10 rounded-full blur-3xl"></div>
+        {/* Background decorations */}
+        <div className="absolute top-[10%] right-[-10%] w-[400px] h-[400px] bg-[#C9A227]/15 rounded-full blur-3xl"></div>
         <div className="absolute bottom-[10%] left-[-10%] w-[300px] h-[300px] bg-[#6B4C8A]/10 rounded-full blur-3xl"></div>
 
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <div className="w-28 h-28 mx-auto mb-6">
-            <img src="/logos/CENTRO_7ECOS.png" alt="Sete Ecos" className="w-full h-full object-contain drop-shadow-lg" />
+        <div className="relative z-10 max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+          {/* Texto */}
+          <div className="text-center md:text-left order-2 md:order-1">
+            <div className="flex items-center gap-3 justify-center md:justify-start mb-4">
+              <img src="/logos/seteecos_logo_v2.png" alt="Sete Ecos" className="w-16 h-16 object-contain" />
+            </div>
+
+            <h1 className="text-4xl md:text-5xl font-bold text-[#4A3728] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", letterSpacing: '0.15em' }}>
+              SETE ECOS
+            </h1>
+            <p className="text-xl md:text-2xl text-[#6B5344] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>
+              Sistema de Transmutação Feminina
+            </p>
+            <p className="text-[#6B5344] mb-6 max-w-lg">
+              Sete caminhos para despertar cada dimensão da tua essência feminina.
+              Uma jornada completa de transformação.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+              <button
+                onClick={() => navigate('/lumina')}
+                className="px-7 py-3 bg-gradient-to-r from-[#6B4C8A] to-[#4B0082] text-white rounded-full font-semibold hover:translate-y-[-2px] hover:shadow-lg transition-all"
+              >
+                ✨ Começa com Lumina — Gratuito
+              </button>
+              <a
+                href="#ecos"
+                className="px-7 py-3 border-2 border-[#C9A227] text-[#C9A227] rounded-full font-semibold hover:bg-[#C9A227] hover:text-white transition-all text-center"
+              >
+                Descobrir os Ecos
+              </a>
+            </div>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-bold text-[#4A3728] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", letterSpacing: '0.2em' }}>
-            SETE ECOS
-          </h1>
-          <p className="text-xl md:text-2xl text-[#6B5344] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>
-            Sistema de Transmutação Feminina
-          </p>
-          <p className="text-[#6B5344] mb-8 max-w-xl mx-auto">
-            Sete caminhos. Uma transformação completa.
-            Desperta cada eco da tua essência feminina.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={() => navigate('/lumina')}
-              className="px-8 py-4 bg-gradient-to-r from-[#6B4C8A] to-[#4B0082] text-white rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
-            >
-              ✨ Começa com Lumina — Gratuito
-            </button>
+          {/* Hero Image */}
+          <div className="order-1 md:order-2 flex justify-center">
+            <img
+              src="/logos/SETEECOS_HERO.png"
+              alt="Sete Ecos - Sistema de Transmutação Feminina"
+              className="w-full max-w-md drop-shadow-2xl"
+            />
           </div>
         </div>
       </header>
