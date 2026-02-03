@@ -622,42 +622,31 @@ export default function Lumina() {
           width: '120px',
           height: '120px',
           objectFit: 'contain',
-          filter: 'drop-shadow(0 0 20px rgba(124, 139, 111, 0.3))'
+          filter: 'drop-shadow(0 0 30px rgba(75, 0, 130, 0.25))'
         }} />
 
-        <div className="splash-title" style={{ letterSpacing: '8px', marginTop: '20px' }}>LUMINA</div>
-        <div className="splash-subtitle" style={{
-          fontSize: '14px',
-          opacity: 0.8,
-          marginTop: '8px'
-        }}>
+        <div className="splash-title">LUMINA</div>
+        <div className="splash-subtitle">
           Diagnóstico Interior
         </div>
         <div style={{
-          fontSize: '12px',
+          fontSize: '13px',
           opacity: 0.6,
-          marginTop: '16px',
+          marginTop: '20px',
           fontStyle: 'italic',
-          maxWidth: '280px',
-          lineHeight: 1.5
+          maxWidth: '300px',
+          lineHeight: 1.6,
+          textAlign: 'center'
         }}>
           "Antes de agires, vê-te.<br/>
           Antes de decidires, conhece-te."
         </div>
 
-        <button className="splash-tap" onClick={handleSplashTap} style={{
-          marginTop: '30px',
-          padding: '14px 40px',
-          fontSize: '13px',
-          letterSpacing: '2px'
-        }}>
+        <button className="splash-tap" onClick={handleSplashTap}>
           ENTRAR
         </button>
 
-        <button className="splash-history" onClick={showHistory} style={{
-          marginTop: '16px',
-          fontSize: '12px'
-        }}>
+        <button className="splash-history" onClick={showHistory}>
           ver histórico ({diasCount} {diasCount === 1 ? 'dia' : 'dias'})
         </button>
       </div>
@@ -789,7 +778,7 @@ export default function Lumina() {
 
         {cycleDesc && (
           <div className="cycle-note visible" style={{
-            background: 'rgba(124, 139, 111, 0.15)',
+            background: 'rgba(75, 0, 130, 0.08)',
             padding: '16px',
             borderRadius: '12px',
             marginTop: '20px',
@@ -901,21 +890,23 @@ export default function Lumina() {
   // ============================================================
   
   function renderReading() {
-    const showCycleContext = faseCiclo && ['vazia', 'baixa'].includes(respostas.energia);
-
-    // Os 7 Ecos com descrições
+    // Os 7 Ecos - LUMINA NÃO É UM ECO, ela observa e guia
     const SETE_ECOS = [
       { nome: 'Vitalis', chakra: 'Raiz', foco: 'Corpo & Nutrição', cor: '#7C8B6F', disponivel: true, link: '/vitalis' },
       { nome: 'Serena', chakra: 'Sacral', foco: 'Emoção & Fluidez', cor: '#E8927C', disponivel: false },
       { nome: 'Ignis', chakra: 'Plexo Solar', foco: 'Vontade & Foco', cor: '#F4A460', disponivel: false },
       { nome: 'Ventis', chakra: 'Coração', foco: 'Ritmo & Energia', cor: '#90EE90', disponivel: false },
       { nome: 'Ecoa', chakra: 'Garganta', foco: 'Voz & Expressão', cor: '#87CEEB', disponivel: false },
-      { nome: 'Lumina', chakra: 'Terceiro Olho', foco: 'Visão & Clareza', cor: '#9370DB', disponivel: true, link: '/lumina' },
-      { nome: 'Imago', chakra: 'Coroa', foco: 'Identidade & Essência', cor: '#DDA0DD', disponivel: false }
+      { nome: 'Imago', chakra: 'Terceiro Olho', foco: 'Visão & Identidade', cor: '#9370DB', disponivel: false },
+      { nome: 'Aurora', chakra: 'Coroa', foco: 'Integração Final', cor: '#DDA0DD', disponivel: false }
     ];
 
     // Informação do ciclo para mostrar
     const cicloInfo = faseCiclo?.phase ? CICLO_ECO_MAP[faseCiclo.phase] : null;
+
+    // Cor índigo da Lumina
+    const INDIGO = '#4B0082';
+    const INDIGO_LIGHT = 'rgba(75, 0, 130, 0.1)';
 
     return (
       <div className={`screen ${screen === 'reading' ? 'active' : ''}`} style={{ overflowY: 'auto', paddingBottom: '100px' }}>
@@ -926,18 +917,24 @@ export default function Lumina() {
         )}
 
         <div className="reading-container">
-          <p className="reading-text" style={{ fontSize: '17px', lineHeight: 1.7, fontStyle: 'italic' }}>
+          <p className="reading-text" style={{
+            fontSize: '17px',
+            lineHeight: 1.8,
+            fontStyle: 'italic',
+            wordBreak: 'break-word',
+            hyphens: 'auto'
+          }}>
             "{leitura}"
           </p>
 
           {/* Contexto do Ciclo com Eco Map */}
           {cicloInfo && (
             <div style={{
-              background: 'rgba(124, 139, 111, 0.1)',
+              background: INDIGO_LIGHT,
               padding: '16px',
               borderRadius: '12px',
               marginTop: '20px',
-              borderLeft: '4px solid #7C8B6F'
+              borderLeft: `4px solid ${INDIGO}`
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                 <span style={{ fontSize: '24px' }}>{cicloInfo.lua}</span>
@@ -962,14 +959,14 @@ export default function Lumina() {
           {/* Insights Personalizados (aprendizagem) */}
           {insightsPersonalizados && insightsPersonalizados.length > 0 && (
             <div style={{
-              background: 'rgba(147, 112, 219, 0.1)',
+              background: INDIGO_LIGHT,
               padding: '16px',
               borderRadius: '12px',
               marginTop: '16px',
-              borderLeft: '4px solid #9370DB'
+              borderLeft: `4px solid ${INDIGO}`
             }}>
               <div style={{ fontSize: '12px', letterSpacing: '1px', opacity: 0.7, marginBottom: '10px' }}>
-                📊 A LUMINA APRENDEU CONTIGO
+                A LUMINA APRENDEU CONTIGO
               </div>
               {insightsPersonalizados.map((insight, i) => (
                 <div key={i} style={{
@@ -977,11 +974,11 @@ export default function Lumina() {
                   lineHeight: 1.5,
                   marginBottom: i < insightsPersonalizados.length - 1 ? '10px' : 0,
                   padding: '8px',
-                  background: insight.tipo === 'atencao' ? 'rgba(255, 193, 7, 0.1)' : 'rgba(76, 175, 80, 0.1)',
+                  background: insight.tipo === 'atencao' ? 'rgba(255, 193, 7, 0.1)' : 'rgba(75, 0, 130, 0.05)',
                   borderRadius: '8px'
                 }}>
                   <span style={{ marginRight: '6px' }}>
-                    {insight.tipo === 'atencao' ? '⚠️' : insight.tipo === 'confirmacao' ? '✓' : '📈'}
+                    {insight.tipo === 'atencao' ? '!' : insight.tipo === 'confirmacao' ? '·' : '·'}
                   </span>
                   {insight.msg}
                 </div>
@@ -994,9 +991,9 @@ export default function Lumina() {
             <div style={{
               marginTop: '16px',
               padding: '16px',
-              background: recomendacaoCiclo.disponivel ? 'rgba(124, 139, 111, 0.15)' : 'rgba(156, 163, 175, 0.1)',
+              background: recomendacaoCiclo.eco === 'Vitalis' ? 'rgba(124, 139, 111, 0.1)' : INDIGO_LIGHT,
               borderRadius: '12px',
-              borderLeft: `4px solid ${recomendacaoCiclo.disponivel ? '#7C8B6F' : '#9CA3AF'}`
+              borderLeft: `4px solid ${recomendacaoCiclo.eco === 'Vitalis' ? '#7C8B6F' : INDIGO}`
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <span style={{ fontSize: '16px' }}>{recomendacaoCiclo.lua}</span>
@@ -1015,7 +1012,7 @@ export default function Lumina() {
                   display: 'inline-block',
                   marginTop: '12px',
                   padding: '10px 20px',
-                  background: '#7C8B6F',
+                  background: recomendacaoCiclo.eco === 'Vitalis' ? '#7C8B6F' : INDIGO,
                   color: 'white',
                   borderRadius: '20px',
                   textDecoration: 'none',
@@ -1033,9 +1030,9 @@ export default function Lumina() {
             <div style={{
               marginTop: '20px',
               padding: '16px',
-              background: ecoRecomendado.disponivel ? 'rgba(124, 139, 111, 0.15)' : 'rgba(156, 163, 175, 0.1)',
+              background: ecoRecomendado.eco === 'Vitalis' ? 'rgba(124, 139, 111, 0.1)' : INDIGO_LIGHT,
               borderRadius: '12px',
-              borderLeft: `4px solid ${ecoRecomendado.disponivel ? '#7C8B6F' : '#9CA3AF'}`
+              borderLeft: `4px solid ${ecoRecomendado.eco === 'Vitalis' ? '#7C8B6F' : INDIGO}`
             }}>
               <div style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '14px' }}>
                 Sugestão: {ecoRecomendado.eco}
@@ -1048,7 +1045,7 @@ export default function Lumina() {
                   display: 'inline-block',
                   marginTop: '12px',
                   padding: '10px 20px',
-                  background: '#7C8B6F',
+                  background: ecoRecomendado.eco === 'Vitalis' ? '#7C8B6F' : INDIGO,
                   color: 'white',
                   borderRadius: '20px',
                   textDecoration: 'none',
@@ -1068,7 +1065,7 @@ export default function Lumina() {
           {/* Padrão Semanal */}
           {padraoSemanal && (
             <div className="pattern-alert" style={{ marginTop: '16px' }}>
-              <div className="pattern-alert-title">⚡ Padrão Detectado</div>
+              <div className="pattern-alert-title">Padrão Detectado</div>
               <div className="pattern-alert-text">{padraoSemanal.message}</div>
             </div>
           )}
@@ -1076,29 +1073,29 @@ export default function Lumina() {
           {/* Tendências Mensais */}
           {tendenciasMensais && tendenciasMensais.insights.length > 0 && (
             <div style={{
-              background: 'rgba(135, 206, 235, 0.1)',
+              background: INDIGO_LIGHT,
               padding: '14px',
               borderRadius: '10px',
               marginTop: '16px',
-              borderLeft: '3px solid #87CEEB'
+              borderLeft: `3px solid ${INDIGO}`
             }}>
               <div style={{ fontSize: '12px', letterSpacing: '1px', opacity: 0.7, marginBottom: '8px' }}>
-                📅 TENDÊNCIA MENSAL
+                TENDÊNCIA MENSAL
               </div>
               {tendenciasMensais.insights.map((insight, i) => (
                 <div key={i} style={{ fontSize: '13px', lineHeight: 1.5, marginBottom: i < tendenciasMensais.insights.length - 1 ? '6px' : 0 }}>
-                  {tendenciasMensais.direcao === 'subir' ? '↗️' : tendenciasMensais.direcao === 'descer' ? '↘️' : '→'} {insight}
+                  {insight}
                 </div>
               ))}
             </div>
           )}
 
-          {/* Os 7 Ecos */}
+          {/* Os 7 Ecos - LUMINA observa, não faz parte */}
           <div style={{ marginTop: '30px' }}>
             <div style={{ textAlign: 'center', marginBottom: '16px' }}>
               <div style={{ fontSize: '13px', letterSpacing: '2px', opacity: 0.6 }}>OS SETE ECOS</div>
               <div style={{ fontSize: '11px', opacity: 0.5, marginTop: '4px' }}>
-                Um sistema completo de transformação feminina
+                A LUMINA observa e guia-te para o Eco certo
               </div>
             </div>
 
@@ -1144,7 +1141,7 @@ export default function Lumina() {
               textDecoration: 'none',
               textAlign: 'center'
             }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>🌿 VITALIS</div>
+              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>VITALIS</div>
               <div style={{ fontSize: '12px', opacity: 0.9 }}>
                 Começa pelo corpo. Nutrição consciente e transformação.
               </div>
