@@ -5,13 +5,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { 
-  detectarPadrao, 
-  obterLeitura, 
+import {
+  detectarPadrao,
+  obterLeitura,
   obterRecomendacaoEco,
   analisarPadroesSemanais,
   obterInsightsSemanais,
-  analisarPadroesPeriodo
+  analisarPadroesPeriodo,
+  CICLO_ECO_MAP,
+  obterInsightsPersonalizados,
+  obterRecomendacaoCicloEco,
+  analisarTendenciasMensais
 } from '../lib/lumina-leituras';
 import './Lumina.css';
 
@@ -150,6 +154,9 @@ export default function Lumina() {
   const [leitura, setLeitura] = useState('');
   const [ecoRecomendado, setEcoRecomendado] = useState(null);
   const [padraoSemanal, setPadraoSemanal] = useState(null);
+  const [insightsPersonalizados, setInsightsPersonalizados] = useState(null);
+  const [recomendacaoCiclo, setRecomendacaoCiclo] = useState(null);
+  const [tendenciasMensais, setTendenciasMensais] = useState(null);
   
   // Estados do ciclo menstrual
   const [faseCiclo, setFaseCiclo] = useState(null);
@@ -327,11 +334,20 @@ export default function Lumina() {
     const recomendacao = obterRecomendacaoEco(respostas);
     const padraoSem = analisarPadroesSemanais(historico);
 
+    // Insights personalizados baseados no histórico e fase do ciclo
+    const faseActual = faseCiclo?.phase || null;
+    const insightsPersonais = obterInsightsPersonalizados(historico, faseActual);
+    const recCiclo = obterRecomendacaoCicloEco(respostas, faseActual, historico);
+    const tendencias = analisarTendenciasMensais(historico);
+
     setPadrao(padraoDetectado);
     setLeitura(textoLeitura);
     setEcoRecomendado(recomendacao);
     setPadraoSemanal(padraoSem);
-    
+    setInsightsPersonalizados(insightsPersonais);
+    setRecomendacaoCiclo(recCiclo);
+    setTendenciasMensais(tendencias);
+
     setScreen('reading');
   }
 
@@ -419,6 +435,9 @@ export default function Lumina() {
     setLeitura('');
     setEcoRecomendado(null);
     setPadraoSemanal(null);
+    setInsightsPersonalizados(null);
+    setRecomendacaoCiclo(null);
+    setTendenciasMensais(null);
     setQuestionIndex(0);
     setScreen('splash');
   }
@@ -895,6 +914,9 @@ export default function Lumina() {
       { nome: 'Imago', chakra: 'Coroa', foco: 'Identidade & Essência', cor: '#DDA0DD', disponivel: false }
     ];
 
+    // Informação do ciclo para mostrar
+    const cicloInfo = faseCiclo?.phase ? CICLO_ECO_MAP[faseCiclo.phase] : null;
+
     return (
       <div className={`screen ${screen === 'reading' ? 'active' : ''}`} style={{ overflowY: 'auto', paddingBottom: '100px' }}>
         <div className="logo-small">A TUA LEITURA</div>
@@ -908,30 +930,106 @@ export default function Lumina() {
             "{leitura}"
           </p>
 
-          {showCycleContext && faseCiclo && (
-            <div className="cycle-context visible" style={{
+          {/* Contexto do Ciclo com Eco Map */}
+          {cicloInfo && (
+            <div style={{
               background: 'rgba(124, 139, 111, 0.1)',
-              padding: '14px',
-              borderRadius: '10px',
-              marginTop: '16px',
-              borderLeft: '3px solid #7C8B6F'
+              padding: '16px',
+              borderRadius: '12px',
+              marginTop: '20px',
+              borderLeft: '4px solid #7C8B6F'
             }}>
-              <div style={{ fontSize: '12px', opacity: 0.7, marginBottom: '4px' }}>
-                🌙 Contexto do Ciclo
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                <span style={{ fontSize: '24px' }}>{cicloInfo.lua}</span>
+                <div>
+                  <div style={{ fontWeight: 'bold', fontSize: '14px' }}>
+                    Dia {faseCiclo.day} · {cicloInfo.fase}
+                  </div>
+                  <div style={{ fontSize: '11px', opacity: 0.7 }}>
+                    Dias {cicloInfo.dias} · Energia {cicloInfo.energia}
+                  </div>
+                </div>
               </div>
-              {faseCiclo.message}
+              <div style={{ fontSize: '13px', lineHeight: 1.5, marginBottom: '10px' }}>
+                {cicloInfo.mensagem}
+              </div>
+              <div style={{ fontSize: '11px', opacity: 0.6 }}>
+                Estados comuns: {cicloInfo.estadosComuns.join(', ')}
+              </div>
             </div>
           )}
 
-          {padraoSemanal && (
-            <div className="pattern-alert" style={{ marginTop: '16px' }}>
-              <div className="pattern-alert-title">⚡ Padrão Detectado</div>
-              <div className="pattern-alert-text">{padraoSemanal.message}</div>
+          {/* Insights Personalizados (aprendizagem) */}
+          {insightsPersonalizados && insightsPersonalizados.length > 0 && (
+            <div style={{
+              background: 'rgba(147, 112, 219, 0.1)',
+              padding: '16px',
+              borderRadius: '12px',
+              marginTop: '16px',
+              borderLeft: '4px solid #9370DB'
+            }}>
+              <div style={{ fontSize: '12px', letterSpacing: '1px', opacity: 0.7, marginBottom: '10px' }}>
+                📊 A LUMINA APRENDEU CONTIGO
+              </div>
+              {insightsPersonalizados.map((insight, i) => (
+                <div key={i} style={{
+                  fontSize: '13px',
+                  lineHeight: 1.5,
+                  marginBottom: i < insightsPersonalizados.length - 1 ? '10px' : 0,
+                  padding: '8px',
+                  background: insight.tipo === 'atencao' ? 'rgba(255, 193, 7, 0.1)' : 'rgba(76, 175, 80, 0.1)',
+                  borderRadius: '8px'
+                }}>
+                  <span style={{ marginRight: '6px' }}>
+                    {insight.tipo === 'atencao' ? '⚠️' : insight.tipo === 'confirmacao' ? '✓' : '📈'}
+                  </span>
+                  {insight.msg}
+                </div>
+              ))}
             </div>
           )}
 
-          {/* Recomendação do Eco */}
-          {ecoRecomendado && (
+          {/* Recomendação Ciclo + Eco */}
+          {recomendacaoCiclo && (
+            <div style={{
+              marginTop: '16px',
+              padding: '16px',
+              background: recomendacaoCiclo.disponivel ? 'rgba(124, 139, 111, 0.15)' : 'rgba(156, 163, 175, 0.1)',
+              borderRadius: '12px',
+              borderLeft: `4px solid ${recomendacaoCiclo.disponivel ? '#7C8B6F' : '#9CA3AF'}`
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <span style={{ fontSize: '16px' }}>{recomendacaoCiclo.lua}</span>
+                <span style={{ fontWeight: 'bold', fontSize: '14px' }}>
+                  {recomendacaoCiclo.eco} para esta fase
+                </span>
+              </div>
+              <div style={{ fontSize: '13px', lineHeight: 1.5, marginBottom: '8px' }}>
+                {recomendacaoCiclo.razao}
+              </div>
+              <div style={{ fontSize: '12px', opacity: 0.8, fontStyle: 'italic' }}>
+                {recomendacaoCiclo.contextoCiclo}
+              </div>
+              {recomendacaoCiclo.disponivel && recomendacaoCiclo.link && (
+                <a href={recomendacaoCiclo.link} style={{
+                  display: 'inline-block',
+                  marginTop: '12px',
+                  padding: '10px 20px',
+                  background: '#7C8B6F',
+                  color: 'white',
+                  borderRadius: '20px',
+                  textDecoration: 'none',
+                  fontSize: '13px',
+                  fontWeight: 'bold'
+                }}>
+                  Explorar {recomendacaoCiclo.eco} →
+                </a>
+              )}
+            </div>
+          )}
+
+          {/* Fallback para Eco Recomendado (sem ciclo) */}
+          {!recomendacaoCiclo && ecoRecomendado && (
             <div style={{
               marginTop: '20px',
               padding: '16px',
@@ -964,6 +1062,34 @@ export default function Lumina() {
                   Em breve disponível
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Padrão Semanal */}
+          {padraoSemanal && (
+            <div className="pattern-alert" style={{ marginTop: '16px' }}>
+              <div className="pattern-alert-title">⚡ Padrão Detectado</div>
+              <div className="pattern-alert-text">{padraoSemanal.message}</div>
+            </div>
+          )}
+
+          {/* Tendências Mensais */}
+          {tendenciasMensais && tendenciasMensais.insights.length > 0 && (
+            <div style={{
+              background: 'rgba(135, 206, 235, 0.1)',
+              padding: '14px',
+              borderRadius: '10px',
+              marginTop: '16px',
+              borderLeft: '3px solid #87CEEB'
+            }}>
+              <div style={{ fontSize: '12px', letterSpacing: '1px', opacity: 0.7, marginBottom: '8px' }}>
+                📅 TENDÊNCIA MENSAL
+              </div>
+              {tendenciasMensais.insights.map((insight, i) => (
+                <div key={i} style={{ fontSize: '13px', lineHeight: 1.5, marginBottom: i < tendenciasMensais.insights.length - 1 ? '6px' : 0 }}>
+                  {tendenciasMensais.direcao === 'subir' ? '↗️' : tendenciasMensais.direcao === 'descer' ? '↘️' : '→'} {insight}
+                </div>
+              ))}
             </div>
           )}
 

@@ -374,7 +374,7 @@ export function obterInsightsSemanais(historico) {
 export function analisarPadroesPeriodo(historico, dias) {
   const cutoff = Date.now() - (dias * 24 * 60 * 60 * 1000);
   const periodo = historico.filter(e => new Date(e.created_at).getTime() > cutoff);
-  
+
   const minDias = dias === 14 ? 3 : 7;
   if (periodo.length < minDias) return null;
 
@@ -388,4 +388,306 @@ export function analisarPadroesPeriodo(historico, dias) {
   };
 
   return { counts, total: periodo.length, minDias };
+}
+
+// ============================================================
+// CICLO MENSTRUAL - 7 ESTADOS EMOCIONAIS - 7 ECOS
+// ============================================================
+
+// Mapeamento das fases do ciclo aos estados emocionais e Ecos
+export const CICLO_ECO_MAP = {
+  menstrual: {
+    fase: 'Menstruação',
+    dias: '1-5',
+    lua: '🌑',
+    energia: 'baixa',
+    estadosComuns: ['recolhimento', 'cansaço', 'introspecção', 'sensibilidade'],
+    ecosPrioritarios: ['Vitalis', 'Serena'],
+    mensagem: 'Tempo de recolher e nutrir. O corpo precisa de descanso e cuidado.',
+    recomendacoes: {
+      Vitalis: 'Alimentação nutritiva e reconfortante. Evita restrições.',
+      Serena: 'Permite-te sentir sem julgamento. Honra as emoções.',
+      Ignis: 'Pausa na acção. Conserva energia.',
+      Ventis: 'Ritmo lento. Pouco movimento intenso.',
+      Ecoa: 'Silêncio e escuta interna.',
+      Lumina: 'Observa sem forçar clareza.',
+      Imago: 'Não te julgues. O espelho mente nesta fase.'
+    }
+  },
+  folicular: {
+    fase: 'Fase Folicular',
+    dias: '6-13',
+    lua: '🌒',
+    energia: 'a subir',
+    estadosComuns: ['curiosidade', 'optimismo', 'criatividade', 'abertura'],
+    ecosPrioritarios: ['Ignis', 'Ecoa', 'Lumina'],
+    mensagem: 'Energia a crescer. Boa altura para iniciar projectos e explorar.',
+    recomendacoes: {
+      Vitalis: 'Experimenta novos alimentos. O corpo aceita bem mudanças.',
+      Serena: 'Emoções mais leves. Aproveita para processar o que ficou.',
+      Ignis: 'Excelente para começar coisas novas. Age.',
+      Ventis: 'Aumenta gradualmente o movimento.',
+      Ecoa: 'Voz clara. Boa altura para comunicar.',
+      Lumina: 'Clareza crescente. Planeia.',
+      Imago: 'Reconecta contigo. Vês-te mais claramente.'
+    }
+  },
+  ovulacao: {
+    fase: 'Ovulação',
+    dias: '14-16',
+    lua: '🌕',
+    energia: 'pico',
+    estadosComuns: ['confiança', 'clareza', 'conexão', 'expressão'],
+    ecosPrioritarios: ['Ecoa', 'Imago', 'Ignis'],
+    mensagem: 'O teu pico natural. Máxima energia, clareza e presença social.',
+    recomendacoes: {
+      Vitalis: 'Corpo forte. Podes ser mais ousada na alimentação.',
+      Serena: 'Emoções equilibradas. Altura para conexões profundas.',
+      Ignis: 'Acção máxima. Decide, lidera, cria.',
+      Ventis: 'Movimento intenso bem-vindo.',
+      Ecoa: 'A tua voz é mais clara. Fala, apresenta, comunica.',
+      Lumina: 'Visão clara. Faz escolhas importantes.',
+      Imago: 'Vês-te no teu melhor. Confia no reflexo.'
+    }
+  },
+  lutea: {
+    fase: 'Fase Lútea',
+    dias: '17-28',
+    lua: '🌘',
+    energia: 'a descer',
+    estadosComuns: ['irritabilidade', 'ansiedade', 'auto-crítica', 'necessidade de completar'],
+    ecosPrioritarios: ['Serena', 'Vitalis', 'Ventis'],
+    mensagem: 'Energia a baixar. Completa em vez de iniciar. Cuida das emoções.',
+    recomendacoes: {
+      Vitalis: 'Evita açúcar e processados. O corpo precisa de estabilidade.',
+      Serena: 'Emoções intensas são normais. Não te julgues.',
+      Ignis: 'Completa tarefas. Evita começar coisas novas.',
+      Ventis: 'Movimento suave. Não forces intensidade.',
+      Ecoa: 'Cuidado com palavras impulsivas. Espera antes de falar.',
+      Lumina: 'Pensamentos negativos não são verdade. Questiona-os.',
+      Imago: 'A auto-crítica é amplificada. O que vês não é real.'
+    }
+  }
+};
+
+// ============================================================
+// APRENDIZAGEM PERSONALIZADA - PADRÕES POR FASE DO CICLO
+// ============================================================
+
+export function analisarPadroesPorFase(historico) {
+  if (!historico || historico.length < 7) return null;
+
+  const padroesPorFase = {
+    menstrual: { registos: [], energia: [], corpo: [], mente: [], espelho: [] },
+    folicular: { registos: [], energia: [], corpo: [], mente: [], espelho: [] },
+    ovulacao: { registos: [], energia: [], corpo: [], mente: [], espelho: [] },
+    lutea: { registos: [], energia: [], corpo: [], mente: [], espelho: [] }
+  };
+
+  // Agrupa registos por fase
+  historico.forEach(entry => {
+    const fase = entry.fase_ciclo;
+    if (fase && padroesPorFase[fase]) {
+      padroesPorFase[fase].registos.push(entry);
+      padroesPorFase[fase].energia.push(entry.energia);
+      padroesPorFase[fase].corpo.push(entry.corpo);
+      padroesPorFase[fase].mente.push(entry.mente);
+      padroesPorFase[fase].espelho.push(entry.espelho);
+    }
+  });
+
+  // Calcula tendências por fase
+  const tendencias = {};
+  Object.keys(padroesPorFase).forEach(fase => {
+    const dados = padroesPorFase[fase];
+    if (dados.registos.length >= 2) {
+      tendencias[fase] = {
+        totalRegistos: dados.registos.length,
+        energiaBaixa: dados.energia.filter(e => ['vazia', 'baixa'].includes(e)).length,
+        corpoFechado: dados.corpo.filter(c => ['pesado', 'tenso'].includes(c)).length,
+        menteAgitada: dados.mente.filter(m => ['caotica', 'barulhenta'].includes(m)).length,
+        espelhoMau: dados.espelho.filter(e => ['invisivel', 'apagada'].includes(e)).length
+      };
+    }
+  });
+
+  return Object.keys(tendencias).length > 0 ? tendencias : null;
+}
+
+// ============================================================
+// INSIGHTS PERSONALIZADOS BASEADOS NO HISTÓRICO
+// ============================================================
+
+export function obterInsightsPersonalizados(historico, faseActual) {
+  const tendencias = analisarPadroesPorFase(historico);
+  if (!tendencias || !faseActual || !tendencias[faseActual]) return null;
+
+  const dadosFase = tendencias[faseActual];
+  const cicloInfo = CICLO_ECO_MAP[faseActual];
+  const insights = [];
+
+  // Compara com o esperado para a fase
+  const percentEnergiaBaixa = (dadosFase.energiaBaixa / dadosFase.totalRegistos) * 100;
+  const percentCorpoFechado = (dadosFase.corpoFechado / dadosFase.totalRegistos) * 100;
+  const percentMenteAgitada = (dadosFase.menteAgitada / dadosFase.totalRegistos) * 100;
+
+  if (faseActual === 'menstrual') {
+    if (percentEnergiaBaixa > 70) {
+      insights.push({
+        tipo: 'confirmacao',
+        msg: `Nos teus registos, ${Math.round(percentEnergiaBaixa)}% das vezes tens energia baixa nesta fase. Isto é normal e esperado.`,
+        eco: 'Vitalis'
+      });
+    }
+  } else if (faseActual === 'folicular') {
+    if (percentEnergiaBaixa > 50) {
+      insights.push({
+        tipo: 'atencao',
+        msg: `A tua energia na fase folicular costuma estar baixa (${Math.round(percentEnergiaBaixa)}%). Algo pode estar a drenar-te quando devias estar a subir.`,
+        eco: 'Vitalis'
+      });
+    }
+  } else if (faseActual === 'ovulacao') {
+    if (percentCorpoFechado > 40) {
+      insights.push({
+        tipo: 'atencao',
+        msg: `Na ovulação costumas ter o corpo fechado (${Math.round(percentCorpoFechado)}%). Esta fase devia ser de abertura máxima.`,
+        eco: 'Ventis'
+      });
+    }
+  } else if (faseActual === 'lutea') {
+    if (percentMenteAgitada > 60) {
+      insights.push({
+        tipo: 'confirmacao',
+        msg: `A tua mente costuma ficar agitada na fase lútea (${Math.round(percentMenteAgitada)}%). Isto é comum - não te culpes.`,
+        eco: 'Serena'
+      });
+    }
+  }
+
+  // Insight geral sobre o padrão mais forte
+  const maisProblemático = [
+    { tipo: 'energia', pct: percentEnergiaBaixa, msg: 'energia baixa' },
+    { tipo: 'corpo', pct: percentCorpoFechado, msg: 'corpo fechado' },
+    { tipo: 'mente', pct: percentMenteAgitada, msg: 'mente agitada' }
+  ].sort((a, b) => b.pct - a.pct)[0];
+
+  if (maisProblemático.pct > 50) {
+    insights.push({
+      tipo: 'padrao',
+      msg: `O teu padrão mais forte nesta fase é ${maisProblemático.msg}. A LUMINA vai lembrar-te disto.`,
+      eco: cicloInfo.ecosPrioritarios[0]
+    });
+  }
+
+  return insights.length > 0 ? insights : null;
+}
+
+// ============================================================
+// RECOMENDAÇÃO CONTEXTUAL - CICLO + ESTADO + ECO
+// ============================================================
+
+export function obterRecomendacaoCicloEco(respostas, faseActual, historico) {
+  if (!faseActual) return null;
+
+  const cicloInfo = CICLO_ECO_MAP[faseActual];
+  const tendencias = analisarPadroesPorFase(historico);
+
+  // Identifica o Eco mais necessário com base no estado actual
+  const { corpo, energia, mente, espelho, passado, futuro } = respostas;
+
+  let ecoSugerido = cicloInfo.ecosPrioritarios[0];
+  let razao = '';
+
+  // Prioriza baseado no estado actual
+  if (['pesado', 'tenso'].includes(corpo) || ['vazia', 'baixa'].includes(energia)) {
+    ecoSugerido = 'Vitalis';
+    razao = 'O corpo precisa de atenção primeiro.';
+  } else if (['preso', 'apesar'].includes(passado) || ['caotica', 'barulhenta'].includes(mente)) {
+    ecoSugerido = 'Serena';
+    razao = 'Há emoção a processar.';
+  } else if (['esconder', 'parar'].includes(respostas.impulso)) {
+    ecoSugerido = 'Ignis';
+    razao = 'A vontade precisa de direcção.';
+  } else if (['invisivel', 'apagada'].includes(espelho)) {
+    ecoSugerido = 'Imago';
+    razao = 'Precisas de te reconectar contigo.';
+  }
+
+  // Adiciona contexto do ciclo
+  const recomendacaoFase = cicloInfo.recomendacoes[ecoSugerido];
+
+  return {
+    eco: ecoSugerido,
+    razao,
+    contextoCiclo: recomendacaoFase,
+    fase: cicloInfo.fase,
+    lua: cicloInfo.lua,
+    disponivel: ecoSugerido === 'Vitalis' || ecoSugerido === 'Lumina',
+    link: ecoSugerido === 'Vitalis' ? '/vitalis' : null
+  };
+}
+
+// ============================================================
+// TENDÊNCIAS MENSAIS COM APRENDIZAGEM
+// ============================================================
+
+export function analisarTendenciasMensais(historico) {
+  if (!historico || historico.length < 14) return null;
+
+  const mes = Date.now() - (30 * 24 * 60 * 60 * 1000);
+  const registosMes = historico.filter(e => new Date(e.created_at).getTime() > mes);
+
+  if (registosMes.length < 10) return null;
+
+  // Agrupa por semana
+  const semanas = [[], [], [], []];
+  registosMes.forEach(entry => {
+    const diasAtras = Math.floor((Date.now() - new Date(entry.created_at).getTime()) / (24 * 60 * 60 * 1000));
+    const semana = Math.min(3, Math.floor(diasAtras / 7));
+    semanas[semana].push(entry);
+  });
+
+  // Calcula média de energia por semana
+  const mediasEnergia = semanas.map(sem => {
+    if (sem.length === 0) return null;
+    const scores = sem.map(e => {
+      const map = { vazia: 1, baixa: 2, normal: 3, boa: 4, cheia: 5 };
+      return map[e.energia] || 3;
+    });
+    return scores.reduce((a, b) => a + b, 0) / scores.length;
+  });
+
+  // Detecta tendência
+  const tendencia = {
+    semanas: mediasEnergia,
+    direcao: 'estavel',
+    insights: []
+  };
+
+  const semanaActual = mediasEnergia[0];
+  const semanaPassada = mediasEnergia[1];
+
+  if (semanaActual && semanaPassada) {
+    if (semanaActual > semanaPassada + 0.5) {
+      tendencia.direcao = 'subir';
+      tendencia.insights.push('A energia tem subido esta semana. Bom sinal.');
+    } else if (semanaActual < semanaPassada - 0.5) {
+      tendencia.direcao = 'descer';
+      tendencia.insights.push('A energia tem descido. Algo pode estar a mudar.');
+    }
+  }
+
+  // Analisa consistência
+  const diasConsecutivos = registosMes.filter((e, i) => {
+    if (i === 0) return true;
+    const diff = new Date(registosMes[i-1].created_at) - new Date(e.created_at);
+    return diff <= 2 * 24 * 60 * 60 * 1000; // 2 dias
+  }).length;
+
+  if (diasConsecutivos >= 7) {
+    tendencia.insights.push(`Tens usado a LUMINA com consistência. Isso ajuda a ver padrões.`);
+  }
+
+  return tendencia;
 }
