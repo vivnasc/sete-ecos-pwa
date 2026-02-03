@@ -10,6 +10,7 @@ export const ReceitasBrowse = () => {
   const [userId, setUserId] = useState(null);
   const [userIntake, setUserIntake] = useState(null);
   const [userPlano, setUserPlano] = useState(null);
+  const [imageErrors, setImageErrors] = useState({});
 
   // Filtros
   const [filtroTipo, setFiltroTipo] = useState('todos');
@@ -28,13 +29,13 @@ export const ReceitasBrowse = () => {
     sobremesa: '🍰'
   };
 
-  // Gradientes suaves por tipo de refeição
+  // Gradientes premium por tipo de refeição
   const tipoGradientes = {
-    pequeno_almoco: 'from-amber-200 to-orange-300',
-    almoco: 'from-emerald-200 to-green-300',
-    jantar: 'from-indigo-200 to-purple-300',
-    snack: 'from-rose-200 to-pink-300',
-    sobremesa: 'from-fuchsia-200 to-purple-300'
+    pequeno_almoco: 'from-amber-400/90 via-orange-300/80 to-yellow-200/70',
+    almoco: 'from-emerald-500/90 via-green-400/80 to-lime-200/70',
+    jantar: 'from-indigo-500/90 via-purple-400/80 to-pink-200/70',
+    snack: 'from-rose-400/90 via-pink-300/80 to-red-200/70',
+    sobremesa: 'from-fuchsia-500/90 via-purple-400/80 to-pink-200/70'
   };
 
   // Emojis especiais por tags
@@ -44,6 +45,11 @@ export const ReceitasBrowse = () => {
     if (receita.tags?.includes('picante')) return '🌶️';
     if (receita.tags?.includes('tropical')) return '🥭';
     return tipoEmojis[receita.tipo_refeicao] || '🍽️';
+  };
+
+  // Handle image error - fallback to emoji
+  const handleImageError = (receitaId) => {
+    setImageErrors(prev => ({ ...prev, [receitaId]: true }));
   };
 
   useEffect(() => {
@@ -258,29 +264,48 @@ export const ReceitasBrowse = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-24">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-gradient-to-b from-[#F5F2ED] via-[#E8E4DC] to-[#C5D1BC] pb-24">
+      {/* Header Premium */}
+      <div className="relative overflow-hidden">
+        {/* Background com gradiente e padrão */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#7C8B6F] via-[#6B7A5D] to-[#5A6B4E]" />
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
+
+        <div className="relative max-w-7xl mx-auto px-4 py-8">
           <button
             onClick={() => navigate('/vitalis/dashboard')}
-            className="text-white/80 hover:text-white mb-4 flex items-center gap-2"
+            className="text-white/80 hover:text-white mb-6 flex items-center gap-2 font-medium transition-colors"
           >
-            ← Voltar
+            <span className="text-lg">←</span> Voltar ao Dashboard
           </button>
-          <div className="flex items-center gap-4">
-            <img
-              src="/logos/VITALIS_LOGO_V3.png"
-              alt="Vitalis"
-              className="w-14 h-14 object-contain drop-shadow-lg"
-            />
+
+          <div className="flex items-center gap-5">
+            <div className="w-20 h-20 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg">
+              <img
+                src="/logos/VITALIS_LOGO_V3.png"
+                alt="Vitalis"
+                className="w-14 h-14 object-contain drop-shadow-lg"
+              />
+            </div>
             <div>
-              <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
-                Biblioteca de Receitas 🍽️
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+                Biblioteca de Receitas
               </h1>
-              <p className="text-white/80">
-                {receitasFiltradas.length} receitas disponíveis
+              <p className="text-white/90 text-lg">
+                <span className="font-semibold">{receitasFiltradas.length}</span> receitas deliciosas para ti
               </p>
+            </div>
+          </div>
+
+          {/* Stats rápidos */}
+          <div className="flex gap-4 mt-6">
+            <div className="bg-white/15 backdrop-blur-sm px-4 py-2 rounded-xl">
+              <span className="text-white/70 text-sm">Favoritas</span>
+              <span className="text-white font-bold ml-2">{receitasFavoritas.length}</span>
+            </div>
+            <div className="bg-white/15 backdrop-blur-sm px-4 py-2 rounded-xl">
+              <span className="text-white/70 text-sm">Filtro activo</span>
+              <span className="text-white font-bold ml-2">{filtroAutoActivo ? '✓' : '—'}</span>
             </div>
           </div>
         </div>
@@ -415,62 +440,100 @@ export const ReceitasBrowse = () => {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {receitasFiltradas.map(receita => (
               <div
                 key={receita.id}
                 onClick={() => navigate(`/vitalis/receita/${receita.id}`)}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all cursor-pointer transform hover:scale-[1.02]"
+                className="group bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:scale-[1.03] hover:-translate-y-1"
               >
-                {/* Header colorido com emoji */}
-                <div className={`relative h-32 bg-gradient-to-br ${tipoGradientes[receita.tipo_refeicao] || tipoGradientes.snack} flex items-center justify-center`}>
-                  <span className="text-6xl drop-shadow-lg">{getSpecialEmoji(receita)}</span>
-                  
+                {/* Header com imagem ou gradiente */}
+                <div className={`relative h-44 overflow-hidden`}>
+                  {/* Imagem de fundo se existir */}
+                  {receita.imagem_url && !imageErrors[receita.id] ? (
+                    <>
+                      <img
+                        src={receita.imagem_url}
+                        alt={receita.titulo}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        onError={() => handleImageError(receita.id)}
+                      />
+                      {/* Overlay gradiente para legibilidade */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    </>
+                  ) : (
+                    /* Fallback: gradiente com emoji */
+                    <div className={`w-full h-full bg-gradient-to-br ${tipoGradientes[receita.tipo_refeicao] || tipoGradientes.snack} flex items-center justify-center`}>
+                      <span className="text-7xl drop-shadow-lg group-hover:scale-110 transition-transform duration-300">{getSpecialEmoji(receita)}</span>
+                    </div>
+                  )}
+
                   {/* Botão Favoritar */}
                   <button
                     onClick={(e) => toggleFavorito(receita.id, e)}
-                    className="absolute top-3 right-3 w-9 h-9 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:scale-110 transition-transform"
+                    className="absolute top-3 right-3 w-10 h-10 bg-white/25 backdrop-blur-md rounded-full flex items-center justify-center hover:scale-110 hover:bg-white/40 transition-all shadow-lg"
                   >
-                    <span className="text-xl">{receitasFavoritas.includes(receita.id) ? '❤️' : '🤍'}</span>
+                    <span className="text-xl drop-shadow">{receitasFavoritas.includes(receita.id) ? '❤️' : '🤍'}</span>
                   </button>
 
-                  {/* Tipo badge */}
-                  <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full text-xs font-medium">
-                    {tipoEmojis[receita.tipo_refeicao]} {receita.tipo_refeicao?.replace('_', ' ')}
+                  {/* Badge de tempo */}
+                  <div className="absolute top-3 left-3 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-semibold flex items-center gap-1">
+                    <span>⏱️</span> {receita.tempo_preparo_min} min
                   </div>
+
+                  {/* Tipo badge no fundo */}
+                  <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold shadow-md flex items-center gap-1.5">
+                    <span className="text-base">{tipoEmojis[receita.tipo_refeicao]}</span>
+                    <span className="capitalize text-gray-700">{receita.tipo_refeicao?.replace('_', ' ')}</span>
+                  </div>
+
+                  {/* Origem badge */}
+                  {receita.origem && receita.origem !== 'internacional' && (
+                    <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium shadow-md">
+                      {receita.origem === 'mocambicana' ? '🇲🇿' :
+                       receita.origem === 'portuguesa' ? '🇵🇹' :
+                       receita.origem === 'indiana' ? '🇮🇳' : '🌍'}
+                    </div>
+                  )}
                 </div>
 
                 {/* Conteúdo */}
-                <div className="p-4">
-                  <h3 className="text-lg font-bold text-gray-800 mb-1 line-clamp-1">
+                <div className="p-5">
+                  <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-1 group-hover:text-[#7C8B6F] transition-colors">
                     {receita.titulo}
                   </h3>
-                  <p className="text-sm text-gray-500 mb-3 line-clamp-2">
+                  <p className="text-sm text-gray-500 mb-4 line-clamp-2 leading-relaxed">
                     {receita.descricao}
                   </p>
 
-                  {/* Info rápida */}
-                  <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
-                    <span>⏱️ {receita.tempo_preparo_min} min</span>
-                    <span>•</span>
-                    <span>🔥 {receita.calorias} kcal</span>
-                    <span>•</span>
-                    <span>💪 {receita.proteina_g}g</span>
+                  {/* Macros em pills */}
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="flex items-center gap-1 bg-orange-50 text-orange-700 px-2.5 py-1 rounded-lg text-xs font-semibold">
+                      <span>🔥</span> {receita.calorias} kcal
+                    </div>
+                    <div className="flex items-center gap-1 bg-red-50 text-red-700 px-2.5 py-1 rounded-lg text-xs font-semibold">
+                      <span>💪</span> {receita.proteina_g}g
+                    </div>
+                    {receita.carboidratos_g && (
+                      <div className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2.5 py-1 rounded-lg text-xs font-semibold">
+                        <span>🍚</span> {receita.carboidratos_g}g
+                      </div>
+                    )}
                   </div>
 
-                  {/* Tags preview */}
+                  {/* Tags preview com estilo melhorado */}
                   {receita.tags && receita.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap gap-1.5">
                       {receita.tags.slice(0, 3).map(tag => (
                         <span
                           key={tag}
-                          className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"
+                          className="text-xs bg-[#E8E4DC] text-[#5A6B4E] px-2.5 py-1 rounded-full font-medium"
                         >
                           {tag.replace(/_/g, ' ')}
                         </span>
                       ))}
                       {receita.tags.length > 3 && (
-                        <span className="text-xs text-gray-400">+{receita.tags.length - 3}</span>
+                        <span className="text-xs text-gray-400 px-1">+{receita.tags.length - 3}</span>
                       )}
                     </div>
                   )}
