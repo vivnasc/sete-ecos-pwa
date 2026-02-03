@@ -13,6 +13,15 @@
     "api/gerar-pdf.js": {
       "memory": 1024,
       "maxDuration": 60
+    },
+    "api/tarefas-agendadas.js": {
+      "maxDuration": 30
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/tarefas-agendadas",
+      "schedule": "0 9 * * *"
+    }
+  ]
 }

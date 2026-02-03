@@ -546,7 +546,7 @@ const LandingVitalis = () => {
             <div className="text-center md:text-left">
               <div className="relative inline-block">
                 <img
-                  src="/vivianne-foto.jpeg"
+                  src="/vivianne-foto.jpg.jpeg"
                   alt="Vivianne Saraiva"
                   className="w-64 h-64 object-cover rounded-2xl shadow-lg mx-auto md:mx-0"
                   onError={(e) => {
@@ -653,7 +653,7 @@ const LandingVitalis = () => {
             <div>
               <h3 className="font-bold text-[#9CAF88] mb-3">Contacto</h3>
               <p className="text-white/70 text-sm">📱 +258 84 524 3875</p>
-              <p className="text-white/70 text-sm">📧 vitalis@setecos.com</p>
+              <p className="text-white/70 text-sm">📧 feedback@seteecos.com</p>
               <p className="text-white/70 text-sm">📍 Maputo, Moçambique</p>
             </div>
             <div>

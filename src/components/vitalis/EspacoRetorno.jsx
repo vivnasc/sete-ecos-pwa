@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
+import { EmailTriggers } from '../../lib/emails';
 
 const EspacoRetorno = () => {
   const navigate = useNavigate();
@@ -276,7 +277,7 @@ const EspacoRetorno = () => {
       const { data: { user } } = await supabase.auth.getUser();
       const { data: userData } = await supabase
         .from('users')
-        .select('id')
+        .select('id, nome, email')
         .eq('auth_id', user.id)
         .single();
 
@@ -289,6 +290,16 @@ const EspacoRetorno = () => {
           escrita_livre: escritaLivre || null,
           completou_timer: tempoRestante === 0
         }]);
+
+      // Notificar coach sobre uso do Espaço de Retorno (async)
+      const estadoInfo = estados.find(e => e.id === estadoSelecionado);
+      EmailTriggers.onEspacoRetorno(
+        {
+          nome: userData.nome || user.email.split('@')[0],
+          email: user.email
+        },
+        estadoInfo?.nome || estadoSelecionado
+      ).catch(err => console.error('Erro ao notificar coach:', err));
 
       setEtapa('sucesso');
     } catch (error) {
