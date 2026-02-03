@@ -296,7 +296,7 @@ export default function Home() {
             <div className="text-center md:text-left">
               <div className="relative inline-block">
                 <img
-                  src="/vivianne-foto.jpeg"
+                  src="/vivianne-foto.jpg.jpeg"
                   alt="Vivianne Saraiva"
                   className="w-48 h-48 object-cover rounded-2xl shadow-lg mx-auto md:mx-0"
                   onError={(e) => {
