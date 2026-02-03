@@ -224,8 +224,10 @@ export function obterLeitura(padrao) {
 // ============================================================
 
 // Ecos disponíveis (activos no sistema)
+// Os 7 Ecos: Vitalis, Aurea, Serena, Ignis, Ventis, Ecoa, Imago
 const ECOS_DISPONIVEIS = {
   Vitalis: { link: '/vitalis', disponivel: true },
+  Aurea: { link: null, disponivel: false },
   Serena: { link: null, disponivel: false },
   Ignis: { link: null, disponivel: false },
   Ventis: { link: null, disponivel: false },
@@ -406,11 +408,11 @@ export const CICLO_ECO_MAP = {
     mensagem: 'Tempo de recolher e nutrir. O corpo precisa de descanso e cuidado.',
     recomendacoes: {
       Vitalis: 'Alimentação nutritiva e reconfortante. Evita restrições.',
+      Aurea: 'Recolhe energia. Não é altura de expandir.',
       Serena: 'Permite-te sentir sem julgamento. Honra as emoções.',
       Ignis: 'Pausa na acção. Conserva energia.',
       Ventis: 'Ritmo lento. Pouco movimento intenso.',
       Ecoa: 'Silêncio e escuta interna.',
-      Lumina: 'Observa sem forçar clareza.',
       Imago: 'Não te julgues. O espelho mente nesta fase.'
     }
   },
@@ -420,15 +422,15 @@ export const CICLO_ECO_MAP = {
     lua: '🌒',
     energia: 'a subir',
     estadosComuns: ['curiosidade', 'optimismo', 'criatividade', 'abertura'],
-    ecosPrioritarios: ['Ignis', 'Ecoa', 'Lumina'],
+    ecosPrioritarios: ['Ignis', 'Aurea', 'Ecoa'],
     mensagem: 'Energia a crescer. Boa altura para iniciar projectos e explorar.',
     recomendacoes: {
       Vitalis: 'Experimenta novos alimentos. O corpo aceita bem mudanças.',
+      Aurea: 'Boa altura para semear. Planeia abundância.',
       Serena: 'Emoções mais leves. Aproveita para processar o que ficou.',
       Ignis: 'Excelente para começar coisas novas. Age.',
       Ventis: 'Aumenta gradualmente o movimento.',
       Ecoa: 'Voz clara. Boa altura para comunicar.',
-      Lumina: 'Clareza crescente. Planeia.',
       Imago: 'Reconecta contigo. Vês-te mais claramente.'
     }
   },
@@ -438,15 +440,15 @@ export const CICLO_ECO_MAP = {
     lua: '🌕',
     energia: 'pico',
     estadosComuns: ['confiança', 'clareza', 'conexão', 'expressão'],
-    ecosPrioritarios: ['Ecoa', 'Imago', 'Ignis'],
+    ecosPrioritarios: ['Ecoa', 'Imago', 'Aurea'],
     mensagem: 'O teu pico natural. Máxima energia, clareza e presença social.',
     recomendacoes: {
       Vitalis: 'Corpo forte. Podes ser mais ousada na alimentação.',
+      Aurea: 'Pico de manifestação. Age sobre a abundância.',
       Serena: 'Emoções equilibradas. Altura para conexões profundas.',
       Ignis: 'Acção máxima. Decide, lidera, cria.',
       Ventis: 'Movimento intenso bem-vindo.',
       Ecoa: 'A tua voz é mais clara. Fala, apresenta, comunica.',
-      Lumina: 'Visão clara. Faz escolhas importantes.',
       Imago: 'Vês-te no teu melhor. Confia no reflexo.'
     }
   },
@@ -460,11 +462,11 @@ export const CICLO_ECO_MAP = {
     mensagem: 'Energia a baixar. Completa em vez de iniciar. Cuida das emoções.',
     recomendacoes: {
       Vitalis: 'Evita açúcar e processados. O corpo precisa de estabilidade.',
+      Aurea: 'Colhe o que semeaste. Não inicies novos projectos.',
       Serena: 'Emoções intensas são normais. Não te julgues.',
       Ignis: 'Completa tarefas. Evita começar coisas novas.',
       Ventis: 'Movimento suave. Não forces intensidade.',
       Ecoa: 'Cuidado com palavras impulsivas. Espera antes de falar.',
-      Lumina: 'Pensamentos negativos não são verdade. Questiona-os.',
       Imago: 'A auto-crítica é amplificada. O que vês não é real.'
     }
   }
