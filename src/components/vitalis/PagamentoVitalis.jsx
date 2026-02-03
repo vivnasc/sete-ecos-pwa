@@ -114,16 +114,27 @@ const PagamentoVitalis = () => {
         if (authError) throw authError;
 
         if (authData.user) {
-          await supabase.from('users').insert([{
-            auth_id: authData.user.id,
-            email: authEmail,
-            nome: authName || authEmail.split('@')[0]
-          }]);
+          // Use upsert to handle existing users
+          const { data: insertedUser, error: insertError } = await supabase
+            .from('users')
+            .upsert([{
+              auth_id: authData.user.id,
+              email: authEmail,
+              nome: authName || authEmail.split('@')[0]
+            }], { onConflict: 'auth_id' })
+            .select('id')
+            .single();
+
+          if (insertedUser) {
+            setUserId(insertedUser.id);
+            setUserEmail(authEmail);
+            setUserName(authName || authEmail.split('@')[0]);
+          }
         }
       }
 
       setIsAuthenticated(true);
-      setLoading(true);
+      // Reload to ensure we have the userId
       await loadUserData();
     } catch (error) {
       setAuthError(error.message || 'Erro na autenticação');
@@ -311,15 +322,25 @@ const PagamentoVitalis = () => {
                 <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
                 <p className="text-white/80">A processar...</p>
               </div>
-            ) : (
-              <div ref={paypalRef} className="min-h-[50px]">
-                {!paypalLoaded && (
-                  <div className="bg-white/10 rounded-xl p-4 text-center">
-                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                    <p className="text-white/60 text-sm">A carregar PayPal...</p>
-                  </div>
-                )}
+            ) : !userId ? (
+              <div className="bg-white/10 rounded-xl p-4 text-center">
+                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                <p className="text-white/60 text-sm">A preparar pagamento...</p>
               </div>
+            ) : (
+              <>
+                <div ref={paypalRef} className="min-h-[60px] bg-white rounded-xl p-3">
+                  {!paypalLoaded && (
+                    <div className="text-center py-2">
+                      <div className="w-6 h-6 border-2 border-[#7C8B6F] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                      <p className="text-gray-500 text-sm">A carregar PayPal...</p>
+                    </div>
+                  )}
+                </div>
+                <p className="text-white/60 text-xs text-center mt-2">
+                  Paga com cartão de crédito/débito ou conta PayPal
+                </p>
+              </>
             )}
           </div>
         ) : (
