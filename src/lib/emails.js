@@ -103,10 +103,30 @@ export async function enviarResumoDiario(dados) {
   return enviarEmail('coach-resumo-diario', COACH_EMAIL, dados);
 }
 
+// ===== WHATSAPP NOTIFICATIONS =====
+
+/**
+ * Envia notificação WhatsApp para coach
+ */
+async function enviarWhatsAppCoach(mensagem) {
+  try {
+    const response = await fetch('/api/whatsapp-notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mensagem })
+    });
+    return response.ok;
+  } catch (error) {
+    console.error('Erro WhatsApp:', error);
+    return false;
+  }
+}
+
 // ===== TRIGGERS AUTOMÁTICOS =====
 
 /**
  * Triggers que podem ser chamados em diferentes pontos da aplicação
+ * Enviam email E WhatsApp para alertas críticos
  */
 export const EmailTriggers = {
 
@@ -114,6 +134,7 @@ export const EmailTriggers = {
    * Chamar após pagamento bem-sucedido
    */
   async onPagamentoSucesso(cliente) {
+    // Email para cliente
     await enviarConfirmacaoPagamento(cliente.email, {
       nome: cliente.nome,
       plano: cliente.plano,
@@ -122,12 +143,22 @@ export const EmailTriggers = {
       validoAte: cliente.validoAte
     });
 
+    // Email para coach
     await notificarNovaCliente({
       nome: cliente.nome,
       email: cliente.email,
       plano: cliente.plano,
       data: new Date().toLocaleDateString('pt-PT')
     });
+
+    // WhatsApp para coach (alerta imediato)
+    await enviarWhatsAppCoach(`🎉 *NOVA CLIENTE VITALIS*
+
+👤 ${cliente.nome}
+📧 ${cliente.email}
+💰 ${cliente.plano} - ${cliente.valor}
+
+Bem-vinda à comunidade! 🌱`);
   },
 
   /**
@@ -141,12 +172,14 @@ export const EmailTriggers = {
       mensagem: conquista.mensagem,
       xp: conquista.xp
     });
+    // Conquistas não enviam WhatsApp (não é crítico)
   },
 
   /**
    * Chamar quando cliente usa Espaço de Retorno
    */
   async onEspacoRetorno(cliente, estado) {
+    // Email para coach
     await notificarAlertaCliente({
       tipo: 'Espaço de Retorno activado',
       descricao: `${cliente.nome} usou o Espaço de Retorno (${estado})`,
@@ -155,6 +188,15 @@ export const EmailTriggers = {
       ultimaActividade: new Date().toLocaleDateString('pt-PT'),
       whatsapp: cliente.whatsapp
     });
+
+    // WhatsApp para coach (alerta crítico - cliente pode precisar de apoio)
+    await enviarWhatsAppCoach(`⚠️ *ALERTA ESPAÇO RETORNO*
+
+👤 ${cliente.nome}
+😔 Estado: ${estado}
+🕐 ${new Date().toLocaleTimeString('pt-PT')}
+
+A cliente pode precisar de apoio. 💚`);
   }
 };
 
