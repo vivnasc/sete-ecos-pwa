@@ -599,17 +599,47 @@ export default function Lumina() {
   function renderSplash() {
     return (
       <div className={`screen ${screen === 'splash' ? 'active' : ''}`}>
-        <img src="/lumina-eye.png" alt="LUMINA" className="splash-eye" />
-        
-        <div className="splash-title">LUMINA</div>
-        <div className="splash-subtitle">— Antes de agir, vê-te —</div>
-        
-        <button className="splash-tap" onClick={handleSplashTap}>
-          toca para entrar
+        <img src="/logos/lumina-logo_v2.png" alt="LUMINA" className="splash-eye" style={{
+          width: '120px',
+          height: '120px',
+          objectFit: 'contain',
+          filter: 'drop-shadow(0 0 20px rgba(124, 139, 111, 0.3))'
+        }} />
+
+        <div className="splash-title" style={{ letterSpacing: '8px', marginTop: '20px' }}>LUMINA</div>
+        <div className="splash-subtitle" style={{
+          fontSize: '14px',
+          opacity: 0.8,
+          marginTop: '8px'
+        }}>
+          O Oráculo Feminino
+        </div>
+        <div style={{
+          fontSize: '12px',
+          opacity: 0.6,
+          marginTop: '16px',
+          fontStyle: 'italic',
+          maxWidth: '280px',
+          lineHeight: 1.5
+        }}>
+          "Antes de agires, vê-te.<br/>
+          Antes de decidires, conhece-te."
+        </div>
+
+        <button className="splash-tap" onClick={handleSplashTap} style={{
+          marginTop: '30px',
+          padding: '14px 40px',
+          fontSize: '13px',
+          letterSpacing: '2px'
+        }}>
+          ENTRAR
         </button>
-        
-        <button className="splash-history" onClick={showHistory}>
-          ver histórico
+
+        <button className="splash-history" onClick={showHistory} style={{
+          marginTop: '16px',
+          fontSize: '12px'
+        }}>
+          ver histórico ({diasCount} {diasCount === 1 ? 'dia' : 'dias'})
         </button>
       </div>
     );
@@ -622,9 +652,9 @@ export default function Lumina() {
   function renderOnboarding() {
     return (
       <div className={`screen ${screen === 'onboarding' ? 'active' : ''}`}>
-        <div className="onboarding-title">Bem-vinda</div>
-        <div className="onboarding-subtitle">Vamos conhecer-nos</div>
-        
+        <div className="onboarding-title">Bem-vinda ao Oráculo</div>
+        <div className="onboarding-subtitle">A LUMINA vê o que tu ainda não vês</div>
+
         <div className="form-group">
           <label className="form-label">Como te chamas?</label>
           <input
@@ -635,43 +665,53 @@ export default function Lumina() {
             onChange={(e) => setNome(e.target.value)}
           />
         </div>
-        
+
         <div className="form-group">
-          <label className="form-label">Acompanhas o teu ciclo?</label>
+          <label className="form-label">Acompanhas o teu ciclo menstrual?</label>
+          <p style={{ fontSize: '12px', opacity: 0.7, marginBottom: '12px', lineHeight: 1.4 }}>
+            O ciclo menstrual influencia energia, emoções e clareza mental.
+            Se acompanhares, a LUMINA ajusta a leitura à tua fase.
+          </p>
           <div className="radio-group">
-            <div 
+            <div
               className={`radio-option ${tracksCycle === 'sim' ? 'selected' : ''}`}
               onClick={() => setTracksCycle('sim')}
             >
-              Sim
+              Sim, acompanho
             </div>
-            <div 
+            <div
               className={`radio-option ${tracksCycle === 'nao' ? 'selected' : ''}`}
               onClick={() => setTracksCycle('nao')}
             >
-              Não
+              Não acompanho
             </div>
-            <div 
+            <div
               className={`radio-option ${tracksCycle === 'menopausa' ? 'selected' : ''}`}
               onClick={() => setTracksCycle('menopausa')}
             >
-              Já não tenho
+              Menopausa / Não se aplica
             </div>
           </div>
         </div>
-        
+
         <div className={`cycle-section ${tracksCycle === 'sim' ? 'visible' : ''}`}>
           <div className="form-group">
-            <label className="form-label">Último período (1º dia)</label>
+            <label className="form-label">Quando começou a última menstruação?</label>
+            <p style={{ fontSize: '11px', opacity: 0.6, marginBottom: '8px' }}>
+              O 1º dia em que veio sangue
+            </p>
             <input
               type="date"
               value={lastPeriod}
               onChange={(e) => setLastPeriod(e.target.value)}
             />
           </div>
-          
+
           <div className="form-group">
-            <label className="form-label">Duração média do ciclo</label>
+            <label className="form-label">Quantos dias dura o teu ciclo?</label>
+            <p style={{ fontSize: '11px', opacity: 0.6, marginBottom: '8px' }}>
+              Do 1º dia de uma menstruação até ao 1º dia da seguinte (normalmente 21-35 dias)
+            </p>
             <div className="slider-value">
               <span style={{ fontSize: '24px' }}>{cycleLength}</span> <span>dias</span>
             </div>
@@ -684,9 +724,9 @@ export default function Lumina() {
             />
           </div>
         </div>
-        
+
         <button className="start-button" onClick={saveOnboarding} style={{ marginTop: '20px' }}>
-          COMEÇAR
+          ENTRAR NO ORÁCULO
         </button>
       </div>
     );
@@ -697,28 +737,55 @@ export default function Lumina() {
   // ============================================================
   
   function renderIntro() {
-    const cycleNote = getCycleNote();
     const primeiroNome = getPrimeiroNome();
-    
+
+    // Descrição clara da fase do ciclo
+    const getCycleDescription = () => {
+      if (!faseCiclo) return null;
+      const descriptions = {
+        menstrual: { emoji: '🌑', nome: 'Menstruação', desc: 'Tempo de recolhimento e descanso' },
+        folicular: { emoji: '🌒', nome: 'Fase Folicular', desc: 'Energia a subir, boa altura para iniciar' },
+        ovulacao: { emoji: '🌕', nome: 'Ovulação', desc: 'Pico de energia e clareza' },
+        lutea: { emoji: '🌘', nome: 'Fase Lútea', desc: 'Energia a descer, tempo de completar' }
+      };
+      return descriptions[faseCiclo.phase];
+    };
+
+    const cycleDesc = getCycleDescription();
+
     return (
       <div className={`screen ${screen === 'intro' ? 'active' : ''}`}>
         <div className="intro-greeting">
-          {primeiroNome ? `Olá, ${primeiroNome}.` : 'Olá.'}
+          {primeiroNome ? `${primeiroNome},` : 'Mulher,'}
         </div>
-        
-        <div className="intro-text">
-          Antes de agir,<br />
-          <em>vê-te</em>.<br /><br />
-          7 perguntas.<br />
-          1 leitura.
+
+        <div className="intro-text" style={{ fontSize: '18px', lineHeight: 1.6 }}>
+          Antes de agires,<br />
+          <em style={{ fontSize: '22px' }}>vê-te</em>.<br /><br />
+          <span style={{ opacity: 0.8, fontSize: '15px' }}>
+            7 perguntas sobre o teu estado.<br />
+            1 leitura que revela o que precisas saber.
+          </span>
         </div>
-        
-        {cycleNote && (
-          <div className="cycle-note visible">{cycleNote}</div>
+
+        {cycleDesc && (
+          <div className="cycle-note visible" style={{
+            background: 'rgba(124, 139, 111, 0.15)',
+            padding: '16px',
+            borderRadius: '12px',
+            marginTop: '20px',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontSize: '24px', marginBottom: '4px' }}>{cycleDesc.emoji}</div>
+            <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+              Dia {faseCiclo.day} · {cycleDesc.nome}
+            </div>
+            <div style={{ fontSize: '13px', opacity: 0.8 }}>{cycleDesc.desc}</div>
+          </div>
         )}
-        
-        <button className="start-button" onClick={startJourney}>
-          ENTRAR
+
+        <button className="start-button" onClick={startJourney} style={{ marginTop: '24px' }}>
+          COMEÇAR LEITURA
         </button>
       </div>
     );
@@ -804,7 +871,7 @@ export default function Lumina() {
   function renderPause() {
     return (
       <div className={`screen pause-screen ${screen === 'pause' ? 'active' : ''}`}>
-        <img src="/lumina-eye.png" alt="LUMINA" className="pause-eye" />
+        <img src="/logos/lumina-logo_v2.png" alt="LUMINA" className="pause-eye" />
         <p className="pause-text">a ler-te...</p>
       </div>
     );
@@ -817,59 +884,158 @@ export default function Lumina() {
   function renderReading() {
     const showCycleContext = faseCiclo && ['vazia', 'baixa'].includes(respostas.energia);
 
+    // Os 7 Ecos com descrições
+    const SETE_ECOS = [
+      { nome: 'Vitalis', chakra: 'Raiz', foco: 'Corpo & Nutrição', cor: '#7C8B6F', disponivel: true, link: '/vitalis' },
+      { nome: 'Serena', chakra: 'Sacral', foco: 'Emoção & Fluidez', cor: '#E8927C', disponivel: false },
+      { nome: 'Ignis', chakra: 'Plexo Solar', foco: 'Vontade & Foco', cor: '#F4A460', disponivel: false },
+      { nome: 'Ventis', chakra: 'Coração', foco: 'Ritmo & Energia', cor: '#90EE90', disponivel: false },
+      { nome: 'Ecoa', chakra: 'Garganta', foco: 'Voz & Expressão', cor: '#87CEEB', disponivel: false },
+      { nome: 'Lumina', chakra: 'Terceiro Olho', foco: 'Visão & Clareza', cor: '#9370DB', disponivel: true, link: '/lumina' },
+      { nome: 'Imago', chakra: 'Coroa', foco: 'Identidade & Essência', cor: '#DDA0DD', disponivel: false }
+    ];
+
     return (
-      <div className={`screen ${screen === 'reading' ? 'active' : ''}`}>
-        <div className="logo-small">LUMINA</div>
-        
+      <div className={`screen ${screen === 'reading' ? 'active' : ''}`} style={{ overflowY: 'auto', paddingBottom: '100px' }}>
+        <div className="logo-small">✧ LEITURA ✧</div>
+
         {diasCount > 0 && (
-          <div className="days-badge">{diasCount} dias</div>
+          <div className="days-badge">{diasCount} dias contigo</div>
         )}
-        
+
         <div className="reading-container">
-          <p className="reading-text">{leitura}</p>
-          
-          {showCycleContext && (
-            <div className="cycle-context visible">
+          <p className="reading-text" style={{ fontSize: '17px', lineHeight: 1.7, fontStyle: 'italic' }}>
+            "{leitura}"
+          </p>
+
+          {showCycleContext && faseCiclo && (
+            <div className="cycle-context visible" style={{
+              background: 'rgba(124, 139, 111, 0.1)',
+              padding: '14px',
+              borderRadius: '10px',
+              marginTop: '16px',
+              borderLeft: '3px solid #7C8B6F'
+            }}>
+              <div style={{ fontSize: '12px', opacity: 0.7, marginBottom: '4px' }}>
+                🌙 Contexto do Ciclo
+              </div>
               {faseCiclo.message}
             </div>
           )}
-          
+
           {padraoSemanal && (
-            <div className="pattern-alert">
-              <div className="pattern-alert-title">padrão detectado</div>
+            <div className="pattern-alert" style={{ marginTop: '16px' }}>
+              <div className="pattern-alert-title">⚡ Padrão Detectado</div>
               <div className="pattern-alert-text">{padraoSemanal.message}</div>
             </div>
           )}
-          
+
+          {/* Recomendação do Eco */}
           {ecoRecomendado && (
-            <div className="pattern-alert" style={{ borderLeftColor: ecoRecomendado.disponivel ? '#7C8B6F' : '#9CA3AF' }}>
-              <div className="pattern-alert-title">sugestão • {ecoRecomendado.eco}</div>
-              <div className="pattern-alert-text">
-                {ecoRecomendado.msg}
-                {ecoRecomendado.disponivel && ecoRecomendado.link ? (
-                  <>
-                    {' '}
-                    <a href={ecoRecomendado.link} className="eco-link">
-                      Ir para {ecoRecomendado.eco} →
-                    </a>
-                  </>
-                ) : (
-                  <span className="eco-coming-soon" style={{ display: 'block', marginTop: '8px', opacity: 0.7, fontSize: '13px', fontStyle: 'italic' }}>
-                    (Em breve disponível)
-                  </span>
-                )}
+            <div style={{
+              marginTop: '20px',
+              padding: '16px',
+              background: ecoRecomendado.disponivel ? 'rgba(124, 139, 111, 0.15)' : 'rgba(156, 163, 175, 0.1)',
+              borderRadius: '12px',
+              borderLeft: `4px solid ${ecoRecomendado.disponivel ? '#7C8B6F' : '#9CA3AF'}`
+            }}>
+              <div style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '14px' }}>
+                ✦ A LUMINA recomenda: {ecoRecomendado.eco}
               </div>
+              <div style={{ fontSize: '14px', lineHeight: 1.5 }}>
+                {ecoRecomendado.msg}
+              </div>
+              {ecoRecomendado.disponivel && ecoRecomendado.link ? (
+                <a href={ecoRecomendado.link} style={{
+                  display: 'inline-block',
+                  marginTop: '12px',
+                  padding: '10px 20px',
+                  background: '#7C8B6F',
+                  color: 'white',
+                  borderRadius: '20px',
+                  textDecoration: 'none',
+                  fontSize: '13px',
+                  fontWeight: 'bold'
+                }}>
+                  Explorar {ecoRecomendado.eco} →
+                </a>
+              ) : (
+                <div style={{ marginTop: '8px', fontSize: '12px', opacity: 0.6, fontStyle: 'italic' }}>
+                  Em breve disponível
+                </div>
+              )}
             </div>
           )}
+
+          {/* Os 7 Ecos */}
+          <div style={{ marginTop: '30px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+              <div style={{ fontSize: '13px', letterSpacing: '2px', opacity: 0.6 }}>OS SETE ECOS</div>
+              <div style={{ fontSize: '11px', opacity: 0.5, marginTop: '4px' }}>
+                Um sistema completo de transformação feminina
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+              {SETE_ECOS.slice(0, 4).map(eco => (
+                <div key={eco.nome} style={{
+                  textAlign: 'center',
+                  padding: '10px 4px',
+                  background: eco.disponivel ? 'rgba(124, 139, 111, 0.1)' : 'rgba(0,0,0,0.03)',
+                  borderRadius: '8px',
+                  opacity: eco.disponivel ? 1 : 0.6
+                }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: eco.cor, margin: '0 auto 6px' }} />
+                  <div style={{ fontSize: '10px', fontWeight: 'bold' }}>{eco.nome}</div>
+                  <div style={{ fontSize: '8px', opacity: 0.6 }}>{eco.foco}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginTop: '8px' }}>
+              {SETE_ECOS.slice(4).map(eco => (
+                <div key={eco.nome} style={{
+                  textAlign: 'center',
+                  padding: '10px 4px',
+                  background: eco.disponivel ? 'rgba(124, 139, 111, 0.1)' : 'rgba(0,0,0,0.03)',
+                  borderRadius: '8px',
+                  opacity: eco.disponivel ? 1 : 0.6
+                }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: eco.cor, margin: '0 auto 6px' }} />
+                  <div style={{ fontSize: '10px', fontWeight: 'bold' }}>{eco.nome}</div>
+                  <div style={{ fontSize: '8px', opacity: 0.6 }}>{eco.foco}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA Vitalis */}
+            <a href="/vitalis" style={{
+              display: 'block',
+              marginTop: '20px',
+              padding: '14px',
+              background: 'linear-gradient(135deg, #7C8B6F 0%, #6B7A5E 100%)',
+              color: 'white',
+              borderRadius: '12px',
+              textDecoration: 'none',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>🌿 VITALIS</div>
+              <div style={{ fontSize: '12px', opacity: 0.9 }}>
+                Começa pelo corpo. Nutrição consciente e transformação.
+              </div>
+            </a>
+          </div>
         </div>
-        
-        <div className="reading-signature">
+
+        <div className="reading-signature" style={{ marginTop: '24px' }}>
           LUMINA · Sete Ecos<br />
-          © Vivianne dos Santos
+          <span style={{ fontSize: '10px' }}>© Vivianne dos Santos</span>
         </div>
-        
-        <button className="close-button" onClick={saveAndRestart}>
-          guardar
+
+        <button className="close-button" onClick={saveAndRestart} style={{
+          marginTop: '16px',
+          padding: '12px 30px'
+        }}>
+          ✧ Guardar Leitura ✧
         </button>
       </div>
     );
