@@ -183,12 +183,20 @@ const LandingVitalis = () => {
           <a href="#resultados" className="text-[#4A4035] hover:text-[#7C8B6F] transition-colors">Resultados</a>
           <a href="#precos" className="text-[#4A4035] hover:text-[#7C8B6F] transition-colors">Preços</a>
         </div>
-        <button
-          onClick={handleComecar}
-          className="px-6 py-2 bg-[#7C8B6F] text-white rounded-full font-semibold text-sm hover:bg-[#6B7A5D] transition-all shadow-md"
-        >
-          Começar Agora
-        </button>
+        <div className="flex gap-3 items-center">
+          <Link
+            to="/vitalis/login"
+            className="px-5 py-2 text-[#7C8B6F] font-semibold text-sm hover:text-[#6B7A5D] transition-colors"
+          >
+            Entrar
+          </Link>
+          <button
+            onClick={handleComecar}
+            className="px-6 py-2 bg-[#7C8B6F] text-white rounded-full font-semibold text-sm hover:bg-[#6B7A5D] transition-all shadow-md"
+          >
+            Começar Agora
+          </button>
+        </div>
       </nav>
 
       {/* Hero */}
