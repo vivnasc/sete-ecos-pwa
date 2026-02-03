@@ -30,6 +30,8 @@ import CalendarioRefeicoes from './components/vitalis/CalendarioRefeicoes'
 import GuiaUtilizador from './components/vitalis/GuiaUtilizador'
 import PlanoHTML from './pages/PlanoHTML'
 import CoachDashboard from './pages/CoachDashboard'
+import LandingGeral from './pages/LandingGeral'
+import LandingVitalis from './pages/LandingVitalis'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -53,6 +55,8 @@ function App() {
       <div className="app">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/landing" element={<LandingGeral />} />
+          <Route path="/vitalis" element={<LandingVitalis />} />
           <Route path="/lumina" element={session ? <Lumina /> : <Auth />} />
           <Route path="/vitalis/login" element={<VitalisAuth />} />
           <Route path="/vitalis/intake" element={session ? <VitalisIntakeComplete /> : <Navigate to="/vitalis/login" />} />
