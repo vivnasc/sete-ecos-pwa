@@ -61,19 +61,29 @@
 }
 
 /* ============================================================
-   PHONE FRAME (Container principal)
+   CONTAINER PRINCIPAL - RESPONSIVO
    ============================================================ */
 .phone-frame {
-  width: 375px;
-  height: 812px;
+  width: 100%;
+  max-width: 600px;
+  min-height: 100vh;
   background: linear-gradient(180deg, #FFFFFF 0%, #FCFCFF 50%, #F8F8FC 100%);
-  border-radius: 45px;
-  box-shadow: 
-    0 25px 80px rgba(26, 26, 78, 0.12),
-    0 10px 30px rgba(26, 26, 78, 0.08);
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(26, 26, 78, 0.06);
+}
+
+/* Desktop: centrado com sombra subtil */
+@media (min-width: 768px) {
+  .phone-frame {
+    min-height: auto;
+    height: auto;
+    margin: 40px auto;
+    border-radius: 24px;
+    box-shadow:
+      0 25px 80px rgba(26, 26, 78, 0.08),
+      0 10px 30px rgba(26, 26, 78, 0.04);
+    border: 1px solid rgba(26, 26, 78, 0.06);
+  }
 }
 
 /* ============================================================
@@ -81,12 +91,12 @@
    ============================================================ */
 .screen {
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 50px 30px;
+  padding: 60px 24px;
   position: absolute;
   top: 0;
   left: 0;
@@ -96,10 +106,18 @@
   pointer-events: none;
 }
 
+@media (min-width: 768px) {
+  .screen {
+    min-height: auto;
+    padding: 60px 40px;
+  }
+}
+
 .screen.active {
   opacity: 1;
   transform: translateY(0);
   pointer-events: all;
+  position: relative;
 }
 
 .screen.exit {
@@ -150,8 +168,7 @@
 }
 
 .splash-tap {
-  position: absolute;
-  bottom: 100px;
+  margin-top: 40px;
   font-size: 11px;
   color: var(--texto-hint);
   letter-spacing: 3px;
@@ -161,11 +178,20 @@
   background: none;
   border: none;
   font-family: 'Quicksand', sans-serif;
+  padding: 16px 40px;
+  border: 1px solid var(--indigo);
+  border-radius: 30px;
+  color: var(--indigo);
+  transition: all 0.3s ease;
+}
+
+.splash-tap:hover {
+  background: var(--indigo);
+  color: white;
 }
 
 .splash-history {
-  position: absolute;
-  bottom: 55px;
+  margin-top: 20px;
   font-size: 10px;
   color: var(--indigo);
   letter-spacing: 2px;
@@ -414,8 +440,7 @@ input[type="date"] {
    QUESTION SCREENS
    ============================================================ */
 .logo-small {
-  position: absolute;
-  top: 50px;
+  margin-bottom: 20px;
   font-family: 'Cormorant Garamond', serif;
   font-size: 14px;
   letter-spacing: 6px;
@@ -423,8 +448,7 @@ input[type="date"] {
 }
 
 .progress {
-  position: absolute;
-  top: 90px;
+  margin-bottom: 30px;
   display: flex;
   gap: 8px;
 }
@@ -673,8 +697,7 @@ input[type="date"] {
 }
 
 .reading-signature {
-  position: absolute;
-  bottom: 95px;
+  margin-top: 30px;
   font-family: 'Cormorant Garamond', serif;
   font-size: 9px;
   color: var(--texto-hint);
@@ -685,8 +708,8 @@ input[type="date"] {
 }
 
 .close-button {
-  position: absolute;
-  bottom: 45px;
+  margin-top: 20px;
+  margin-bottom: 40px;
   background: transparent;
   border: 1px solid var(--indigo);
   font-family: 'Quicksand', sans-serif;
@@ -878,12 +901,34 @@ input[type="date"] {
    RESPONSIVE
    ============================================================ */
 @media (max-width: 400px) {
-  .phone-frame {
-    width: 100vw;
-    height: 100vh;
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
+  .screen {
+    padding: 50px 20px;
+  }
+
+  .reading-container {
+    max-width: 100%;
+    padding: 0 10px;
+  }
+
+  .splash-title {
+    font-size: 36px;
+    letter-spacing: 8px;
+  }
+}
+
+/* Desktop enhancements */
+@media (min-width: 768px) {
+  .reading-container {
+    max-width: 500px;
+  }
+
+  .reading-text {
+    font-size: 20px !important;
+  }
+
+  .history-container {
+    max-width: 500px;
+    margin: 0 auto;
   }
 }
 
