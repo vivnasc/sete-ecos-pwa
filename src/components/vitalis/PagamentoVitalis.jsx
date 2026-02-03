@@ -79,30 +79,40 @@ const PagamentoVitalis = () => {
 
       let userData = existingUsers && existingUsers.length > 0 ? existingUsers[0] : null;
 
-      // If user doesn't exist, create using upsert (same as Lumina)
+      // If user doesn't exist by auth_id, try to find by email or create
       if (!userData) {
-        const profileData = {
-          auth_id: user.id,
-          email: user.email,
-          nome: user.user_metadata?.name || user.email.split('@')[0]
-        };
-
-        const { data: upsertedUser, error: upsertError } = await supabase
+        // First try by email (user might exist from Lumina)
+        const { data: byEmail } = await supabase
           .from('users')
-          .upsert(profileData, { onConflict: 'auth_id' })
-          .select()
-          .single();
+          .select('id, nome, auth_id')
+          .eq('email', user.email);
 
-        if (upsertError) {
-          console.error('Erro upsert:', upsertError);
-          // Try one more fetch
-          const { data: retryUsers } = await supabase
-            .from('users')
-            .select('id, nome')
-            .eq('auth_id', user.id);
-          userData = retryUsers && retryUsers.length > 0 ? retryUsers[0] : null;
+        if (byEmail && byEmail.length > 0) {
+          userData = byEmail[0];
+          // Update auth_id if missing
+          if (!userData.auth_id) {
+            await supabase
+              .from('users')
+              .update({ auth_id: user.id })
+              .eq('id', userData.id);
+          }
         } else {
-          userData = upsertedUser;
+          // Create new user with INSERT
+          const { data: newUser, error: insertError } = await supabase
+            .from('users')
+            .insert({
+              auth_id: user.id,
+              email: user.email,
+              nome: user.user_metadata?.name || user.email.split('@')[0]
+            })
+            .select('id, nome')
+            .single();
+
+          if (!insertError && newUser) {
+            userData = newUser;
+          } else {
+            console.error('Insert error:', insertError);
+          }
         }
       }
 
@@ -145,17 +155,17 @@ const PagamentoVitalis = () => {
         });
         if (signUpError) throw signUpError;
 
-        // Create user record immediately after signup using UPSERT
+        // Create user record - loadUserData will handle if this fails
         if (authData.user) {
-          await supabase.from('users').upsert({
+          await supabase.from('users').insert({
             auth_id: authData.user.id,
             email: authEmail,
             nome: authName || authEmail.split('@')[0]
-          }, { onConflict: 'auth_id', ignoreDuplicates: false });
+          });
         }
       }
 
-      // loadUserData will handle setting userId (and create user if insert failed)
+      // loadUserData will find or create user as needed
       setIsAuthenticated(true);
       await loadUserData();
     } catch (error) {
