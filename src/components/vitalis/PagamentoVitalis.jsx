@@ -47,6 +47,7 @@ const PagamentoVitalis = () => {
   const [showInviteInput, setShowInviteInput] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [showCommunityModal, setShowCommunityModal] = useState(false);
+  const [userLoadError, setUserLoadError] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -119,15 +120,21 @@ const PagamentoVitalis = () => {
       if (userData) {
         setUserId(userData.id);
         setUserName(userData.nome);
+        setUserLoadError(false);
 
         const access = await checkVitalisAccess(userData.id);
         if (access.hasAccess && access.status !== SUBSCRIPTION_STATUS.PENDING) {
           navigate('/vitalis/dashboard');
           return;
         }
+      } else {
+        // Could not find or create user - likely RLS issue
+        console.error('Could not find or create user for:', user.email);
+        setUserLoadError(true);
       }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
+      setUserLoadError(true);
     } finally {
       setLoading(false);
     }
@@ -353,6 +360,21 @@ const PagamentoVitalis = () => {
               <div className="bg-white/10 rounded-xl p-6 text-center">
                 <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
                 <p className="text-white/80">A processar...</p>
+              </div>
+            ) : userLoadError ? (
+              <div className="bg-red-500/20 border border-red-400 rounded-xl p-4 text-center">
+                <p className="text-red-100 font-medium mb-2">Erro ao carregar dados da conta</p>
+                <p className="text-red-200 text-sm mb-3">
+                  Não foi possível associar a tua conta. Por favor contacta o suporte.
+                </p>
+                <a
+                  href="https://wa.me/258843989573?text=Olá! Tenho um problema ao aceder à página de pagamento do Vitalis. O meu email é: "
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-[#25D366] text-white px-4 py-2 rounded-lg text-sm font-medium"
+                >
+                  Contactar via WhatsApp
+                </a>
               </div>
             ) : !userId ? (
               <div className="bg-white/10 rounded-xl p-4 text-center">

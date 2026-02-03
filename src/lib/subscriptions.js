@@ -319,14 +319,18 @@ export const activateSubscription = async (userId, paymentDetails) => {
       ...paymentDetails
     });
 
-    // Criar alerta informativo para a coach
-    await supabase.from('vitalis_alerts').insert({
-      user_id: userId,
-      tipo_alerta: 'pagamento_confirmado',
-      descricao: `Pagamento automatico confirmado via ${paymentDetails.method} - Plano: ${plan.name} ($${paymentDetails.amount})`,
-      prioridade: 'baixa',
-      status: 'info'
-    });
+    // Criar alerta informativo para a coach (ignore errors - constraint may not allow this tipo_alerta)
+    try {
+      await supabase.from('vitalis_alerts').insert({
+        user_id: userId,
+        tipo_alerta: 'novo_pagamento',
+        descricao: `Pagamento automatico confirmado via ${paymentDetails.method} - Plano: ${plan.name} ($${paymentDetails.amount})`,
+        prioridade: 'baixa',
+        status: 'pendente'
+      });
+    } catch (alertError) {
+      console.warn('Alert insert failed (non-blocking):', alertError);
+    }
 
     return { success: true, expiresAt, plan };
   } catch (error) {
@@ -386,14 +390,18 @@ export const registerPendingPayment = async (userId, paymentDetails) => {
       if (error) throw error;
     }
 
-    // Criar alerta para a coach
-    await supabase.from('vitalis_alerts').insert({
-      user_id: userId,
-      tipo_alerta: 'pagamento_pendente',
-      descricao: `Pagamento pendente via ${paymentDetails.method} - Plano: ${plan.name} (${paymentDetails.amount} ${paymentDetails.currency || 'MZN'})`,
-      prioridade: 'alta',
-      status: 'pendente'
-    });
+    // Criar alerta para a coach (ignore errors - constraint may not allow this tipo_alerta)
+    try {
+      await supabase.from('vitalis_alerts').insert({
+        user_id: userId,
+        tipo_alerta: 'novo_pagamento',
+        descricao: `Pagamento pendente via ${paymentDetails.method} - Plano: ${plan.name} (${paymentDetails.amount} ${paymentDetails.currency || 'MZN'})`,
+        prioridade: 'alta',
+        status: 'pendente'
+      });
+    } catch (alertError) {
+      console.warn('Alert insert failed (non-blocking):', alertError);
+    }
 
     return { success: true, plan };
   } catch (error) {
