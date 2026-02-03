@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase';
  * SETE ECOS - Landing Page Geral
  * landing.app.setecos.com
  *
- * Apresentacao do ecossistema completo dos 7 Ecos
+ * Apresentação do ecossistema completo dos 7 Ecos
  */
 
 const LandingGeral = () => {
@@ -19,59 +19,87 @@ const LandingGeral = () => {
   const ecos = [
     {
       nome: 'VITALIS',
-      slogan: 'A Raiz da Transformacao',
-      descricao: 'Nutricao consciente e adaptacao metabolica',
+      slogan: 'A Raiz da Transformação',
+      descricao: 'O chão do sistema. Corpo, nutrição, peso. Baseado em Precision Nutrition — hábitos pequenos, porções com as mãos, Espaço de Retorno para gatilhos emocionais.',
+      detalhe: 'Regista refeições, água, sono, peso. Uso diário + semanal.',
       logo: '/logos/VITALIS_LOGO_V3.png',
       cor: 'from-emerald-500 to-green-600',
-      disponivel: true
+      bgCor: 'bg-emerald-500/20',
+      disponivel: true,
+      modelo: 'Subscrição mensal',
+      rota: '/vitalis'
     },
     {
       nome: 'AUREA',
-      slogan: 'A Luz Interior',
-      descricao: 'Autoconhecimento e mentalidade de abundancia',
+      slogan: 'O Valor Encarnado',
+      descricao: 'Para mulheres que gastam tudo nos outros e sentem culpa quando cuidam de si. Trabalha a relação com dinheiro, prazer, roupa, beleza e mimo.',
+      detalhe: 'Quota de Presença, dinheiro como espelho, prazer sem culpa.',
       logo: '/logos/AUREA_LOGO_V3.png',
       cor: 'from-amber-500 to-yellow-600',
-      disponivel: false
+      bgCor: 'bg-amber-500/20',
+      disponivel: false,
+      modelo: 'Subscrição mensal',
+      rota: null
     },
     {
       nome: 'SERENA',
-      slogan: 'Regular para Fluir',
-      descricao: 'Gestao emocional e equilibrio hormonal',
+      slogan: 'A Maré Interior',
+      descricao: 'O fluxo do sistema. Regulação emocional. Para mulheres em caos emocional — botão SOS para crises, diário emocional, correlação com ciclo menstrual.',
+      detalhe: 'Práticas de 3-5 min para momentos de crise + check-in diário.',
       logo: '/logos/SERENA_LOGO_V3.png',
       cor: 'from-blue-500 to-cyan-600',
-      disponivel: false
+      bgCor: 'bg-blue-500/20',
+      disponivel: false,
+      modelo: 'Subscrição mensal',
+      rota: null
     },
     {
       nome: 'IGNIS',
-      slogan: 'Agir com Direccao',
-      descricao: 'Movimento intencional e energia vital',
+      slogan: 'O Fogo Interior',
+      descricao: 'O eixo do sistema. Vontade, direcção, foco. Para mulheres dispersas — define UM foco semanal, regista decisões tomadas e adiadas.',
+      detalhe: 'Aprende a dizer não. Clarificação de vontade, não planeamento.',
       logo: '/logos/IGNIS-LOGO-V3.png',
       cor: 'from-orange-500 to-red-600',
-      disponivel: false
+      bgCor: 'bg-orange-500/20',
+      disponivel: false,
+      modelo: 'Subscrição mensal',
+      rota: null
     },
     {
       nome: 'VENTIS',
-      slogan: 'Ritmo Sustentavel',
-      descricao: 'Respiracao, sono e recuperacao',
+      slogan: 'O Fôlego Vital',
+      descricao: 'O ritmo do sistema. Energia, pausas, sustentabilidade. Para mulheres em exaustão crónica — mapeia energia, sono, pausas.',
+      detalhe: 'Devolve padrões, práticas de respiração, permissão para parar.',
       logo: '/logos/VENTIS_LOGO_V3.png',
       cor: 'from-sky-500 to-blue-600',
-      disponivel: false
+      bgCor: 'bg-sky-500/20',
+      disponivel: false,
+      modelo: 'Subscrição mensal',
+      rota: null
     },
     {
       nome: 'ECOA',
-      slogan: 'A Expressao que Ressoa',
-      descricao: 'Comunicacao autentica e conexoes',
+      slogan: 'A Voz que Ressoa',
+      descricao: 'A expressão do sistema. Voz, escrita, desbloqueio. Para mulheres silenciadas — journaling diário, regista o que disse e engoliu.',
+      detalhe: 'Práticas vocais, prompts de escrita, celebra expressão.',
       logo: '/logos/ECOA_LOGO_V3.png',
       cor: 'from-pink-500 to-rose-600',
-      disponivel: false
+      bgCor: 'bg-pink-500/20',
+      disponivel: false,
+      modelo: 'Subscrição mensal',
+      rota: null
     },
     {
       nome: 'IMAGO',
-      slogan: 'O Reflexo da Essencia',
-      descricao: 'Imagem pessoal alinhada com a alma',
+      slogan: 'O Reflexo da Essência',
+      descricao: 'O espelho do sistema. Identidade, auto-imagem. Jornada de 8 semanas com início e fim — práticas de espelho, cartas para si, ritual de nomeação.',
+      detalhe: 'Diferente dos outros: não é uso contínuo, é jornada estruturada.',
       logo: '/logos/IMAGO_LOGO_V3.png',
       cor: 'from-purple-500 to-violet-600',
-      disponivel: false
+      bgCor: 'bg-purple-500/20',
+      disponivel: false,
+      modelo: 'Pagamento único',
+      rota: null
     }
   ];
 
@@ -94,7 +122,7 @@ const LandingGeral = () => {
 
       if (error) {
         if (error.code === '23505') {
-          setErro('Este email ja esta registado');
+          setErro('Este email já está registado');
         } else {
           throw error;
         }
@@ -129,6 +157,9 @@ const LandingGeral = () => {
             <Link to="/lumina" className="px-4 py-2 text-purple-300 hover:text-white transition-colors">
               Lumina
             </Link>
+            <Link to="/vitalis" className="px-4 py-2 text-emerald-300 hover:text-white transition-colors">
+              Vitalis
+            </Link>
             <Link to="/vitalis/login" className="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-medium hover:shadow-lg hover:shadow-purple-500/30 transition-all">
               Entrar
             </Link>
@@ -142,11 +173,11 @@ const LandingGeral = () => {
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-purple-200 mb-4 max-w-3xl mx-auto">
-            Um ecossistema de transformacao integral
+            Um ecossistema de transformação integral para a mulher moderna
           </p>
           <p className="text-lg text-purple-300/80 mb-12 max-w-2xl mx-auto">
             Sete caminhos que se complementam para te guiar numa jornada de autodescoberta,
-            equilibrio e plenitude. Cada eco desperta uma dimensao essencial do teu ser.
+            equilíbrio e plenitude. Cada eco desperta uma dimensão essencial do teu ser.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -154,115 +185,210 @@ const LandingGeral = () => {
               to="/lumina"
               className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-xl font-medium hover:bg-white/20 transition-all border border-white/20"
             >
-              💡 Comecar pelo Lumina (Gratuito)
+              💡 Começar pelo Lumina (Gratuito)
             </Link>
-            <a
-              href="#waitlist"
-              className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-purple-500/30 transition-all"
+            <Link
+              to="/vitalis"
+              className="px-8 py-4 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-emerald-500/30 transition-all"
             >
-              Quero saber mais
-            </a>
+              🌱 Ir directo ao Vitalis
+            </Link>
           </div>
         </div>
       </header>
 
-      {/* Lumina Section */}
-      <section className="py-20 bg-gradient-to-r from-purple-900/50 to-indigo-900/50">
+      {/* O que está disponível */}
+      <section className="py-16 bg-gradient-to-r from-emerald-900/30 to-purple-900/30">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <span className="text-purple-400 text-sm uppercase tracking-wider">Ponto de Partida</span>
-              <h2 className="text-4xl font-bold text-white mt-2 mb-6">
-                💡 LUMINA
-              </h2>
-              <p className="text-xl text-purple-200 mb-4">O Espelho Interior</p>
-              <p className="text-purple-300/80 mb-6">
-                Antes de transformar, e preciso ver. O Lumina e um ritual diario de auto-observacao
-                que te ajuda a reconhecer padroes, honrar o teu ciclo e conectar contigo mesma.
+          <div className="text-center mb-12">
+            <span className="inline-block px-4 py-2 bg-green-500/20 rounded-full text-green-400 text-sm mb-4">
+              ✨ Já disponível
+            </span>
+            <h2 className="text-3xl font-bold text-white mb-4">Começa a Tua Jornada Hoje</h2>
+            <p className="text-purple-300 max-w-2xl mx-auto">
+              Dois caminhos já abertos para ti — escolhe onde começar
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Lumina */}
+            <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-purple-500/30 hover:border-purple-500/50 transition-all">
+              <div className="flex items-start justify-between mb-4">
+                <img src="/logos/lumina-logo_v2.png" alt="Lumina" className="w-20 h-20" />
+                <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">
+                  Gratuito
+                </span>
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">LUMINA</h3>
+              <p className="text-purple-300 text-lg mb-4">O Espelho Interior</p>
+              <p className="text-purple-400/80 mb-6">
+                Antes de transformar, é preciso ver. Ritual diário de auto-observação
+                com 7 perguntas para consciência, leituras personalizadas e rastreamento do ciclo.
               </p>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center gap-3 text-purple-200">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/30 flex items-center justify-center text-sm">✓</span>
-                  7 perguntas para consciencia diaria
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center gap-2 text-purple-200 text-sm">
+                  <span className="text-green-400">✓</span> 7 perguntas diárias
                 </li>
-                <li className="flex items-center gap-3 text-purple-200">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/30 flex items-center justify-center text-sm">✓</span>
-                  Leituras personalizadas baseadas nas tuas respostas
+                <li className="flex items-center gap-2 text-purple-200 text-sm">
+                  <span className="text-green-400">✓</span> Leituras personalizadas
                 </li>
-                <li className="flex items-center gap-3 text-purple-200">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/30 flex items-center justify-center text-sm">✓</span>
-                  Rastreamento do ciclo menstrual
-                </li>
-                <li className="flex items-center gap-3 text-purple-200">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/30 flex items-center justify-center text-sm">✓</span>
-                  100% gratuito
+                <li className="flex items-center gap-2 text-purple-200 text-sm">
+                  <span className="text-green-400">✓</span> Rastreamento do ciclo
                 </li>
               </ul>
               <Link
                 to="/lumina"
-                className="inline-block px-8 py-4 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl font-medium hover:shadow-lg transition-all"
+                className="block text-center py-3 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl font-medium hover:shadow-lg transition-all"
               >
                 Experimentar Lumina →
               </Link>
             </div>
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-3xl blur-2xl"></div>
-              <div className="relative bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10">
-                <img src="/logos/lumina-logo_v2.png" alt="Lumina" className="w-32 h-32 mx-auto mb-6" />
-                <div className="space-y-4">
-                  <div className="h-3 bg-white/10 rounded-full w-full"></div>
-                  <div className="h-3 bg-white/10 rounded-full w-4/5"></div>
-                  <div className="h-3 bg-white/10 rounded-full w-3/5"></div>
-                </div>
-                <p className="text-center text-purple-300 mt-6 text-sm">
-                  "O primeiro passo para a mudanca e a consciencia"
-                </p>
+
+            {/* Vitalis */}
+            <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-emerald-500/30 hover:border-emerald-500/50 transition-all">
+              <div className="flex items-start justify-between mb-4">
+                <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-20 h-20" />
+                <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-sm">
+                  Desde 2.500 MT/mês
+                </span>
               </div>
+              <h3 className="text-2xl font-bold text-white mb-2">VITALIS</h3>
+              <p className="text-emerald-300 text-lg mb-4">A Raiz da Transformação</p>
+              <p className="text-purple-400/80 mb-6">
+                Coaching nutricional baseado em Precision Nutrition. Sem dietas restritivas,
+                sem pesar alimentos — porções com as mãos e Espaço de Retorno emocional.
+              </p>
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center gap-2 text-purple-200 text-sm">
+                  <span className="text-green-400">✓</span> Plano personalizado
+                </li>
+                <li className="flex items-center gap-2 text-purple-200 text-sm">
+                  <span className="text-green-400">✓</span> Coach IA (Vivianne)
+                </li>
+                <li className="flex items-center gap-2 text-purple-200 text-sm">
+                  <span className="text-green-400">✓</span> Resultados sustentáveis
+                </li>
+              </ul>
+              <Link
+                to="/vitalis"
+                className="block text-center py-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl font-medium hover:shadow-lg transition-all"
+              >
+                Conhecer Vitalis →
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Os 7 Ecos */}
+      {/* Flor dos 7 Ecos */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-4">Os Sete Caminhos</h2>
             <p className="text-purple-300 max-w-2xl mx-auto">
-              Cada eco representa uma dimensao essencial da tua vida.
-              Juntos, formam um ecossistema completo de transformacao.
+              Cada eco representa uma dimensão essencial da tua vida.
+              Juntos, formam um ecossistema completo de transformação.
             </p>
           </div>
 
+          {/* Flor Visual */}
+          <div className="relative max-w-lg mx-auto mb-16" style={{ aspectRatio: '1/1' }}>
+            {/* Centro */}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+              <div className="w-24 h-24 bg-gradient-to-br from-amber-400 to-pink-500 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30">
+                <img src="/logos/CENTRO_7ECOS.png" alt="Tu" className="w-16 h-16" />
+              </div>
+              <p className="text-center text-white/60 text-sm mt-2">Tu</p>
+            </div>
+
+            {/* Pétalas */}
+            {ecos.map((eco, index) => {
+              const angle = (index * 360 / 7) - 90;
+              const radius = 42;
+              const x = 50 + radius * Math.cos(angle * Math.PI / 180);
+              const y = 50 + radius * Math.sin(angle * Math.PI / 180);
+
+              return (
+                <div
+                  key={eco.nome}
+                  className={`absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
+                    eco.disponivel ? 'cursor-pointer hover:scale-110' : 'opacity-60'
+                  }`}
+                  style={{ left: `${x}%`, top: `${y}%` }}
+                  onClick={() => eco.rota && window.location.assign(eco.rota)}
+                >
+                  <div className={`w-20 h-20 ${eco.bgCor} rounded-full flex items-center justify-center border-2 ${
+                    eco.disponivel ? 'border-white/30' : 'border-white/10'
+                  }`}>
+                    <img src={eco.logo} alt={eco.nome} className="w-14 h-14" />
+                  </div>
+                  <p className="text-center text-white text-xs mt-1 font-medium">{eco.nome}</p>
+                  <span className={`block text-center text-xs px-2 py-0.5 rounded-full mt-1 ${
+                    eco.disponivel ? 'bg-green-500/30 text-green-400' : 'bg-white/10 text-white/50'
+                  }`}>
+                    {eco.disponivel ? 'Aberto' : 'Breve'}
+                  </span>
+                </div>
+              );
+            })}
+
+            {/* Linhas conectoras */}
+            <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }}>
+              {ecos.map((eco, index) => {
+                const angle = (index * 360 / 7) - 90;
+                const radius = 42;
+                const x = 50 + radius * Math.cos(angle * Math.PI / 180);
+                const y = 50 + radius * Math.sin(angle * Math.PI / 180);
+                return (
+                  <line
+                    key={eco.nome}
+                    x1="50%"
+                    y1="50%"
+                    x2={`${x}%`}
+                    y2={`${y}%`}
+                    stroke={eco.disponivel ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)'}
+                    strokeWidth="1"
+                  />
+                );
+              })}
+            </svg>
+          </div>
+
+          {/* Cards detalhados */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {ecos.map((eco, index) => (
+            {ecos.map((eco) => (
               <div
                 key={eco.nome}
                 className={`relative group overflow-hidden rounded-2xl border transition-all duration-300 ${
                   eco.disponivel
                     ? 'border-white/20 hover:border-white/40 cursor-pointer'
-                    : 'border-white/10 opacity-70'
+                    : 'border-white/10 opacity-80'
                 }`}
+                onClick={() => eco.rota && window.location.assign(eco.rota)}
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${eco.cor} opacity-10 group-hover:opacity-20 transition-opacity`}></div>
                 <div className="relative p-6">
                   <div className="flex items-start justify-between mb-4">
                     <img src={eco.logo} alt={eco.nome} className="w-16 h-16" />
-                    <span className={`text-xs px-3 py-1 rounded-full ${
-                      eco.disponivel
-                        ? 'bg-green-500/20 text-green-400'
-                        : 'bg-white/10 text-white/50'
-                    }`}>
-                      {eco.disponivel ? 'Disponivel' : 'Em breve'}
-                    </span>
+                    <div className="text-right">
+                      <span className={`text-xs px-3 py-1 rounded-full ${
+                        eco.disponivel
+                          ? 'bg-green-500/20 text-green-400'
+                          : 'bg-white/10 text-white/50'
+                      }`}>
+                        {eco.disponivel ? 'Disponível' : 'Em breve'}
+                      </span>
+                      <p className="text-xs text-white/40 mt-1">{eco.modelo}</p>
+                    </div>
                   </div>
                   <h3 className="text-xl font-bold text-white mb-1">{eco.nome}</h3>
-                  <p className="text-purple-300 text-sm mb-2">{eco.slogan}</p>
-                  <p className="text-purple-400/80 text-sm">{eco.descricao}</p>
+                  <p className="text-purple-300 text-sm mb-3">{eco.slogan}</p>
+                  <p className="text-purple-400/80 text-sm mb-3">{eco.descricao}</p>
+                  <p className="text-purple-500/60 text-xs italic">{eco.detalhe}</p>
 
                   {eco.disponivel && (
                     <Link
-                      to="/vitalis/login"
+                      to={eco.rota}
                       className="mt-4 inline-block text-sm text-purple-300 hover:text-white transition-colors"
                     >
                       Explorar →
@@ -275,20 +401,42 @@ const LandingGeral = () => {
         </div>
       </section>
 
+      {/* Em breve - Teaser motivador */}
+      <section className="py-16 bg-gradient-to-r from-purple-900/30 to-pink-900/30">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <span className="inline-block px-4 py-2 bg-purple-500/20 rounded-full text-purple-300 text-sm mb-6">
+            🚀 Em desenvolvimento
+          </span>
+          <h2 className="text-3xl font-bold text-white mb-4">Mais Caminhos a Abrir</h2>
+          <p className="text-purple-300 mb-8 max-w-2xl mx-auto">
+            Os restantes ecos estão a ser desenvolvidos com o mesmo cuidado e profundidade.
+            Cada um desenhado para complementar a tua jornada de transformação integral.
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {ecos.filter(e => !e.disponivel).map(eco => (
+              <div key={eco.nome} className="bg-white/5 rounded-xl p-4 text-center">
+                <img src={eco.logo} alt={eco.nome} className="w-12 h-12 mx-auto mb-2 opacity-60" />
+                <p className="text-white/70 text-sm font-medium">{eco.nome}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Aurora - O Destino */}
       <section className="py-20 bg-gradient-to-b from-transparent to-amber-900/20">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <img src="/logos/AURORA_LOGO_V3.png" alt="Aurora" className="w-24 h-24 mx-auto mb-6" />
           <h2 className="text-4xl font-bold text-white mb-4">
             <span className="bg-gradient-to-r from-amber-200 to-pink-200 bg-clip-text text-transparent">
-              Aurora
+              Aurōra
             </span>
           </h2>
-          <p className="text-xl text-amber-200 mb-4">A Coroacao — Presenca Plena</p>
+          <p className="text-xl text-amber-200 mb-4">A Coroação — Presença Plena</p>
           <p className="text-purple-300/80 max-w-2xl mx-auto mb-8">
-            Ao completares os sete caminhos, atinges a Aurora — o estado de integracao
-            onde todas as dimensoes do teu ser vibram em harmonia.
-            Nao e um fim, mas um novo comecar, com raizes profundas e asas prontas a voar.
+            Ao completares os sete caminhos, atinges a Aurōra — o estado de integração
+            onde todas as dimensões do teu ser vibram em harmonia.
+            Não é um fim, mas um novo começar, com raízes profundas e asas prontas a voar.
           </p>
           <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 rounded-full">
             <span className="text-amber-300">✨</span>
@@ -302,7 +450,7 @@ const LandingGeral = () => {
         <div className="max-w-xl mx-auto px-6">
           <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-4">Junta-te a Jornada</h2>
+              <h2 className="text-3xl font-bold text-white mb-4">Junta-te à Jornada</h2>
               <p className="text-purple-300">
                 Recebe novidades sobre os novos ecos e acesso antecipado.
               </p>
@@ -364,13 +512,16 @@ const LandingGeral = () => {
             </div>
             <div className="flex gap-6">
               <Link to="/lumina" className="text-purple-300 hover:text-white transition-colors">Lumina</Link>
-              <Link to="/vitalis/login" className="text-purple-300 hover:text-white transition-colors">Vitalis</Link>
+              <Link to="/vitalis" className="text-purple-300 hover:text-white transition-colors">Vitalis</Link>
               <a href="https://instagram.com/viv_saraiva" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-white transition-colors">
                 Instagram
               </a>
+              <a href="https://wa.me/258845243875" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-white transition-colors">
+                WhatsApp
+              </a>
             </div>
             <p className="text-purple-400 text-sm">
-              © 2024 Sete Ecos. Todos os direitos reservados.
+              © 2026 Sete Ecos · Vivianne Saraiva
             </p>
           </div>
         </div>
