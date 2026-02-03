@@ -1147,19 +1147,22 @@ export default function Lumina() {
               </div>
             </a>
           </div>
-        </div>
 
-        <div className="reading-signature" style={{ marginTop: '24px' }}>
-          LUMINA · Sete Ecos<br />
-          <span style={{ fontSize: '10px' }}>© Vivianne dos Santos</span>
-        </div>
+          {/* Assinatura e botão dentro do container para evitar sobreposição */}
+          <div style={{ marginTop: '40px', textAlign: 'center' }}>
+            <div style={{ fontSize: '9px', color: '#6B6B9D', letterSpacing: '1px' }}>
+              LUMINA · Sete Ecos<br />
+              <span style={{ fontSize: '10px' }}>© Vivianne dos Santos</span>
+            </div>
 
-        <button className="close-button" onClick={saveAndRestart} style={{
-          marginTop: '16px',
-          padding: '12px 30px'
-        }}>
-          Guardar e Fechar
-        </button>
+            <button className="close-button" onClick={saveAndRestart} style={{
+              marginTop: '20px',
+              padding: '14px 35px'
+            }}>
+              Guardar e Fechar
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
