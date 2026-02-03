@@ -222,7 +222,7 @@ export const setAsTester = async (userId, notes = '') => {
 };
 
 /**
- * Confirma pagamento manual (PayPal, M-Pesa, etc)
+ * Confirma pagamento manual (para coach confirmar no dashboard)
  * @param {string} userId - ID do utilizador
  * @param {object} paymentDetails - { method, reference, amount, planId }
  */
@@ -240,7 +240,7 @@ export const confirmManualPayment = async (userId, paymentDetails) => {
         subscription_status: SUBSCRIPTION_STATUS.ACTIVE,
         subscription_expires: expiresAt.toISOString(),
         subscription_plan: plan.id,
-        payment_method: paymentDetails.method, // 'paypal', 'mpesa', 'transfer'
+        payment_method: paymentDetails.method,
         payment_reference: paymentDetails.reference,
         payment_amount: paymentDetails.amount,
         payment_currency: paymentDetails.currency || 'MZN',
@@ -260,6 +260,77 @@ export const confirmManualPayment = async (userId, paymentDetails) => {
     return { success: true, expiresAt, plan };
   } catch (error) {
     console.error('Erro ao confirmar pagamento:', error);
+    return { success: false, error };
+  }
+};
+
+/**
+ * Ativa subscricao automaticamente (para pagamentos automaticos PayPal, etc)
+ * @param {string} userId - ID do utilizador
+ * @param {object} paymentDetails - { method, transactionId, amount, currency, planId, payerEmail }
+ */
+export const activateSubscription = async (userId, paymentDetails) => {
+  try {
+    const plan = SUBSCRIPTION_PLANS[paymentDetails.planId?.toUpperCase()] || SUBSCRIPTION_PLANS.MONTHLY;
+
+    const expiresAt = new Date();
+    expiresAt.setMonth(expiresAt.getMonth() + plan.duration);
+
+    // Verificar se ja existe um registo vitalis_clients
+    const { data: existingClient } = await supabase
+      .from('vitalis_clients')
+      .select('id')
+      .eq('user_id', userId)
+      .single();
+
+    const subscriptionData = {
+      subscription_status: SUBSCRIPTION_STATUS.ACTIVE,
+      subscription_expires: expiresAt.toISOString(),
+      subscription_plan: plan.id,
+      payment_method: paymentDetails.method,
+      payment_reference: paymentDetails.transactionId,
+      payment_amount: paymentDetails.amount,
+      payment_currency: paymentDetails.currency || 'USD',
+      payer_email: paymentDetails.payerEmail,
+      subscription_updated: new Date().toISOString()
+    };
+
+    if (existingClient) {
+      const { error } = await supabase
+        .from('vitalis_clients')
+        .update(subscriptionData)
+        .eq('user_id', userId);
+      if (error) throw error;
+    } else {
+      const { error } = await supabase
+        .from('vitalis_clients')
+        .insert({
+          user_id: userId,
+          ...subscriptionData,
+          created_at: new Date().toISOString()
+        });
+      if (error) throw error;
+    }
+
+    await logSubscriptionChange(userId, SUBSCRIPTION_STATUS.ACTIVE, {
+      action: 'payment_automatic',
+      plan: plan.id,
+      duration: plan.duration,
+      ...paymentDetails
+    });
+
+    // Criar alerta informativo para a coach
+    await supabase.from('vitalis_alerts').insert({
+      user_id: userId,
+      tipo_alerta: 'pagamento_confirmado',
+      descricao: `Pagamento automatico confirmado via ${paymentDetails.method} - Plano: ${plan.name} ($${paymentDetails.amount})`,
+      prioridade: 'baixa',
+      status: 'info'
+    });
+
+    return { success: true, expiresAt, plan };
+  } catch (error) {
+    console.error('Erro ao ativar subscricao:', error);
     return { success: false, error };
   }
 };
