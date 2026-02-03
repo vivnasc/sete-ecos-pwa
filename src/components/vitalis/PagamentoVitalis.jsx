@@ -71,35 +71,38 @@ const PagamentoVitalis = () => {
       setIsAuthenticated(true);
       setUserEmail(user.email);
 
-      // Try to get existing user
-      let { data: userData } = await supabase
+      // Try to get existing user (maybeSingle doesn't throw if not found)
+      const { data: existingUsers } = await supabase
         .from('users')
         .select('id, nome')
-        .eq('auth_id', user.id)
-        .single();
+        .eq('auth_id', user.id);
 
-      // If user doesn't exist in users table, create it using UPSERT
+      let userData = existingUsers && existingUsers.length > 0 ? existingUsers[0] : null;
+
+      // If user doesn't exist, create using upsert (same as Lumina)
       if (!userData) {
-        const { data: newUser, error: createError } = await supabase
+        const profileData = {
+          auth_id: user.id,
+          email: user.email,
+          nome: user.user_metadata?.name || user.email.split('@')[0]
+        };
+
+        const { data: upsertedUser, error: upsertError } = await supabase
           .from('users')
-          .upsert({
-            auth_id: user.id,
-            email: user.email,
-            nome: user.user_metadata?.name || user.email.split('@')[0]
-          }, { onConflict: 'auth_id', ignoreDuplicates: false })
-          .select('id, nome')
+          .upsert(profileData, { onConflict: 'auth_id' })
+          .select()
           .single();
 
-        if (!createError && newUser) {
-          userData = newUser;
-        } else {
-          // Fallback: fetch existing user
-          const { data: existingUser } = await supabase
+        if (upsertError) {
+          console.error('Erro upsert:', upsertError);
+          // Try one more fetch
+          const { data: retryUsers } = await supabase
             .from('users')
             .select('id, nome')
-            .eq('auth_id', user.id)
-            .single();
-          userData = existingUser;
+            .eq('auth_id', user.id);
+          userData = retryUsers && retryUsers.length > 0 ? retryUsers[0] : null;
+        } else {
+          userData = upsertedUser;
         }
       }
 
