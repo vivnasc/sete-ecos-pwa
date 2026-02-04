@@ -359,6 +359,8 @@ export default function DashboardVitalis() {
       // Conquistas de treino
       if ((treinoCount.count || 0) >= 1) { conquistas.push('treino_1'); xp += 75; }
       if ((treinoCount.count || 0) >= 10) { conquistas.push('treino_10'); xp += 200; }
+      if ((treinoCount.count || 0) >= 25) { conquistas.push('treino_25'); xp += 350; }
+      if ((treinoCount.count || 0) >= 50) { conquistas.push('treino_50'); xp += 500; }
 
       // Conquistas de refeições
       if ((mealsCount.count || 0) >= 10) { conquistas.push('refeicoes_10'); xp += 100; }
@@ -1125,29 +1127,29 @@ export default function DashboardVitalis() {
                 </div>
               </div>
 
-              {/* Treino */}
-              <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-xl mb-2">
-                <div className="flex items-center gap-2">
+              {/* Treino - Clicável para biblioteca */}
+              <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-xl mb-2 hover:bg-emerald-100 transition-colors">
+                <Link to="/vitalis/treinos" className="flex items-center gap-2 flex-1">
                   <span className="text-xl">🏃‍♀️</span>
                   <div>
                     <p className="font-semibold text-gray-800 text-sm">
                       {ehDiaTreino ? 'Dia de Treino' : 'Dia de Descanso'}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {treinoHoje ? `Feito às ${treinoHoje.hora || treinoHoje.created_at?.substring(11, 16) || '—'}` : (ehDiaTreino ? 'Por fazer' : 'Recupera bem!')}
+                      {treinoHoje ? `Feito às ${treinoHoje.hora || treinoHoje.created_at?.substring(11, 16) || '—'}` : (ehDiaTreino ? 'Toca para ver exercícios →' : 'Recupera bem!')}
                     </p>
                   </div>
-                </div>
+                </Link>
                 {ehDiaTreino && !treinoHoje && (
-                  <button 
-                    onClick={registarTreino}
-                    className="px-3 py-1.5 bg-emerald-500 text-white text-xs rounded-full font-medium hover:bg-emerald-600 transition-colors shadow-md"
+                  <button
+                    onClick={(e) => { e.stopPropagation(); registarTreino(); }}
+                    className="px-3 py-1.5 bg-emerald-500 text-white text-xs rounded-full font-medium hover:bg-emerald-600 transition-colors shadow-md z-10"
                   >
                     ✓ Feito
                   </button>
                 )}
                 {treinoHoje && (
-                  <span className="text-emerald-500 text-xl">✓</span>
+                  <Link to="/vitalis/treinos" className="text-emerald-500 text-xl hover:scale-110 transition-transform">✓</Link>
                 )}
               </div>
 
