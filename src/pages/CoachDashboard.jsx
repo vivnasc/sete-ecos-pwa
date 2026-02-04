@@ -360,16 +360,30 @@ const CoachDashboard = () => {
       const needAttention = [];
 
       for (const client of vitalisClients) {
-        const { data: lastRegisto } = await supabase
-          .from('vitalis_registos')
-          .select('created_at, aderencia_1a10')
-          .eq('user_id', client.user_id)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single();
+        // Verificar múltiplas fontes de actividade
+        const [registosRes, aguaRes, mealsRes, treinoRes] = await Promise.all([
+          supabase.from('vitalis_registos').select('created_at, aderencia_1a10').eq('user_id', client.user_id).order('created_at', { ascending: false }).limit(1).single(),
+          supabase.from('vitalis_agua_log').select('created_at').eq('user_id', client.user_id).order('created_at', { ascending: false }).limit(1).single(),
+          supabase.from('vitalis_meals_log').select('created_at').eq('user_id', client.user_id).order('created_at', { ascending: false }).limit(1).single(),
+          supabase.from('vitalis_workouts_log').select('created_at').eq('user_id', client.user_id).order('created_at', { ascending: false }).limit(1).single(),
+        ]);
 
-        const daysSinceActivity = lastRegisto
-          ? Math.floor((new Date() - new Date(lastRegisto.created_at)) / (1000 * 60 * 60 * 24))
+        // Encontrar a data de actividade mais recente entre todas as fontes
+        const activityDates = [
+          registosRes.data?.created_at,
+          aguaRes.data?.created_at,
+          mealsRes.data?.created_at,
+          treinoRes.data?.created_at,
+        ].filter(Boolean).map(d => new Date(d));
+
+        const lastActivity = activityDates.length > 0
+          ? new Date(Math.max(...activityDates))
+          : null;
+
+        const lastRegisto = registosRes.data;
+
+        const daysSinceActivity = lastActivity
+          ? Math.floor((new Date() - lastActivity) / (1000 * 60 * 60 * 24))
           : 999;
 
         const reasons = [];
@@ -504,7 +518,7 @@ const CoachDashboard = () => {
             type: 'pending_payment',
             icon: '💰',
             title: `${pending.length} pagamento(s) pendente(s)`,
-            text: 'Aguardam confirmacao',
+            text: 'Aguardam confirmação',
             priority: 'high',
             action: () => setActiveTab('subscriptions')
           }];
@@ -1206,8 +1220,8 @@ const CoachDashboard = () => {
                 <ul className="text-sm text-purple-300 space-y-1">
                   <li>• <span className="text-emerald-400">Tester</span>: Acesso gratuito permanente (para testers)</li>
                   <li>• <span className="text-green-400">Active</span>: Pagamento confirmado</li>
-                  <li>• <span className="text-yellow-400">Pending</span>: Aguarda confirmacao de pagamento</li>
-                  <li>• <span className="text-red-400">Expired</span>: Subscricao expirou</li>
+                  <li>• <span className="text-yellow-400">Pending</span>: Aguarda confirmação de pagamento</li>
+                  <li>• <span className="text-red-400">Expired</span>: Subscrição expirou</li>
                 </ul>
                 <div className="mt-3 pt-3 border-t border-purple-500/20">
                   <p className="text-purple-300 text-sm mb-2"><strong>Planos:</strong></p>
@@ -1375,10 +1389,13 @@ const CoachDashboard = () => {
                       </div>
                       <div className="flex gap-2">
                         <button
-                          onClick={() => sendMotivation(selectedUser, 'progress')}
+                          onClick={async () => {
+                            await sendMotivation(selectedUser, 'progress');
+                            alert('✅ Mensagem de motivação enviada!');
+                          }}
                           className="px-4 py-2 bg-purple-500/30 hover:bg-purple-500/50 text-purple-300 rounded-xl transition-all"
                         >
-                          💜 Enviar Motivacao
+                          💜 Enviar Motivação
                         </button>
                       </div>
                     </div>
@@ -1389,15 +1406,15 @@ const CoachDashboard = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="bg-white/5 rounded-xl p-4 text-center">
                         <p className="text-3xl font-bold text-purple-400">{userDetails.metrics.avgAderencia || '-'}</p>
-                        <p className="text-sm text-purple-300">Aderencia Media</p>
+                        <p className="text-sm text-purple-300">Aderência Média</p>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 text-center">
                         <p className="text-3xl font-bold text-blue-400">{userDetails.metrics.avgAgua || '-'}L</p>
-                        <p className="text-sm text-purple-300">Agua Media</p>
+                        <p className="text-sm text-purple-300">Água Média</p>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 text-center">
                         <p className="text-3xl font-bold text-green-400">{userDetails.metrics.mealAdherence}%</p>
-                        <p className="text-sm text-purple-300">Refeicoes Seguidas</p>
+                        <p className="text-sm text-purple-300">Refeições Seguidas</p>
                       </div>
                       <div className="bg-white/5 rounded-xl p-4 text-center">
                         <p className="text-3xl font-bold text-orange-400">{userDetails.metrics.streak}</p>
@@ -1465,27 +1482,36 @@ const CoachDashboard = () => {
 
                 {/* Sidebar */}
                 <div className="space-y-6">
-                  {/* Acoes Rapidas */}
+                  {/* Acções Rápidas */}
                   <div className="bg-white/5 rounded-2xl p-5">
-                    <h3 className="text-lg font-bold text-white mb-4">🎯 Acoes</h3>
+                    <h3 className="text-lg font-bold text-white mb-4">🎯 Acções</h3>
                     <div className="space-y-2">
                       <button
-                        onClick={() => sendMotivation(selectedUser, 'progress')}
+                        onClick={async () => {
+                          await sendMotivation(selectedUser, 'progress');
+                          alert('✅ Mensagem de parabéns enviada!');
+                        }}
                         className="w-full p-3 bg-purple-500/20 hover:bg-purple-500/30 rounded-xl text-left text-purple-300 transition-all"
                       >
-                        💜 Parabens pelo progresso
+                        💜 Parabéns pelo progresso
                       </button>
                       <button
-                        onClick={() => sendMotivation(selectedUser, 'struggle')}
+                        onClick={async () => {
+                          await sendMotivation(selectedUser, 'struggle');
+                          alert('✅ Mensagem de apoio enviada!');
+                        }}
                         className="w-full p-3 bg-pink-500/20 hover:bg-pink-500/30 rounded-xl text-left text-pink-300 transition-all"
                       >
                         🤗 Apoio emocional
                       </button>
                       <button
-                        onClick={() => sendMotivation(selectedUser, 'weekly')}
+                        onClick={async () => {
+                          await sendMotivation(selectedUser, 'weekly');
+                          alert('✅ Motivação semanal enviada!');
+                        }}
                         className="w-full p-3 bg-blue-500/20 hover:bg-blue-500/30 rounded-xl text-left text-blue-300 transition-all"
                       >
-                        ✨ Motivacao semanal
+                        ✨ Motivação semanal
                       </button>
                     </div>
                   </div>

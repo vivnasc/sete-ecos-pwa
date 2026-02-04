@@ -434,6 +434,92 @@ const LandingVitalis = () => {
         </div>
       </section>
 
+      {/* Funcionalidades Exclusivas */}
+      <section className="py-16 bg-gradient-to-b from-[#F5F2ED] to-white">
+        <div className="max-w-5xl mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            ✨ Funcionalidades Exclusivas
+          </h2>
+          <p className="text-center text-[#6B5C4C] mb-10 max-w-xl mx-auto">
+            Ferramentas que não encontras em mais nenhuma app de nutrição
+          </p>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Calendário */}
+            <div className="bg-white p-8 rounded-2xl border-2 border-[#7C8B6F] shadow-xl relative overflow-hidden group hover:scale-[1.02] transition-transform">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#7C8B6F]/20 to-transparent rounded-bl-full"></div>
+              <div className="relative">
+                <span className="inline-block px-3 py-1 bg-[#7C8B6F] text-white text-xs font-semibold rounded-full mb-4">
+                  ÚNICO
+                </span>
+                <div className="w-16 h-16 bg-gradient-to-br from-[#7C8B6F] to-[#9CAF88] rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-lg">
+                  📅
+                </div>
+                <h3 className="text-xl font-bold text-[#4A4035] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  Calendário Semanal
+                </h3>
+                <p className="text-[#6B5C4C] text-sm mb-4">
+                  Planeia as tuas refeições para a semana inteira. Vê o que vais comer cada dia e nunca mais fiques sem ideias.
+                </p>
+                <ul className="text-xs text-[#6B5C4C] space-y-1">
+                  <li className="flex items-center gap-2"><span className="text-[#7C8B6F]">✓</span> Arrasta e solta receitas</li>
+                  <li className="flex items-center gap-2"><span className="text-[#7C8B6F]">✓</span> Vista semanal completa</li>
+                  <li className="flex items-center gap-2"><span className="text-[#7C8B6F]">✓</span> Adapta às tuas porções</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Lista de Compras */}
+            <div className="bg-white p-8 rounded-2xl border-2 border-[#7C8B6F] shadow-xl relative overflow-hidden group hover:scale-[1.02] transition-transform">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#7C8B6F]/20 to-transparent rounded-bl-full"></div>
+              <div className="relative">
+                <span className="inline-block px-3 py-1 bg-[#7C8B6F] text-white text-xs font-semibold rounded-full mb-4">
+                  AUTOMÁTICO
+                </span>
+                <div className="w-16 h-16 bg-gradient-to-br from-[#7C8B6F] to-[#9CAF88] rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-lg">
+                  🛒
+                </div>
+                <h3 className="text-xl font-bold text-[#4A4035] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  Lista de Compras Inteligente
+                </h3>
+                <p className="text-[#6B5C4C] text-sm mb-4">
+                  Gera automaticamente a lista do que precisas comprar baseado no teu plano alimentar.
+                </p>
+                <ul className="text-xs text-[#6B5C4C] space-y-1">
+                  <li className="flex items-center gap-2"><span className="text-[#7C8B6F]">✓</span> Organizada por categorias</li>
+                  <li className="flex items-center gap-2"><span className="text-[#7C8B6F]">✓</span> Partilha por WhatsApp</li>
+                  <li className="flex items-center gap-2"><span className="text-[#7C8B6F]">✓</span> Imprime ou copia</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Sugestões */}
+            <div className="bg-white p-8 rounded-2xl border-2 border-[#7C8B6F] shadow-xl relative overflow-hidden group hover:scale-[1.02] transition-transform">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#7C8B6F]/20 to-transparent rounded-bl-full"></div>
+              <div className="relative">
+                <span className="inline-block px-3 py-1 bg-[#7C8B6F] text-white text-xs font-semibold rounded-full mb-4">
+                  PERSONALIZADO
+                </span>
+                <div className="w-16 h-16 bg-gradient-to-br from-[#7C8B6F] to-[#9CAF88] rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-lg">
+                  💡
+                </div>
+                <h3 className="text-xl font-bold text-[#4A4035] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  Sugestões "O Que Comer"
+                </h3>
+                <p className="text-[#6B5C4C] text-sm mb-4">
+                  Sem ideias? A app sugere o que comer baseado nas tuas porções restantes do dia.
+                </p>
+                <ul className="text-xs text-[#6B5C4C] space-y-1">
+                  <li className="flex items-center gap-2"><span className="text-[#7C8B6F]">✓</span> Adapta à tua fase</li>
+                  <li className="flex items-center gap-2"><span className="text-[#7C8B6F]">✓</span> Considera o que já comeste</li>
+                  <li className="flex items-center gap-2"><span className="text-[#7C8B6F]">✓</span> Receitas rápidas incluídas</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Preços */}
       <section id="precos" className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4">

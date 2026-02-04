@@ -5,40 +5,46 @@ import React, { useState, useEffect } from 'react';
 
 // Definição de todas as conquistas possíveis
 export const CONQUISTAS = {
+  // Primeiro passo
+  primeiro_registo: { id: 'primeiro_registo', nome: 'Primeiro Passo', descricao: 'Primeiro registo na app', icone: '🎊', cor: 'from-pink-400 to-rose-500', pontos: 50, xp: 50 },
+
   // Streaks
-  streak_3: { id: 'streak_3', nome: 'Início Promissor', descricao: '3 dias consecutivos', icone: '🌱', cor: 'from-green-400 to-emerald-500', pontos: 10 },
-  streak_7: { id: 'streak_7', nome: 'Semana Vitalis', descricao: '7 dias consecutivos', icone: '🌿', cor: 'from-emerald-500 to-teal-600', pontos: 25 },
-  streak_14: { id: 'streak_14', nome: 'Guerreira de 2 Semanas', descricao: '14 dias consecutivos', icone: '🌳', cor: 'from-teal-500 to-cyan-600', pontos: 50 },
-  streak_30: { id: 'streak_30', nome: 'Mestre do Mês', descricao: '30 dias consecutivos', icone: '🏆', cor: 'from-amber-400 to-orange-500', pontos: 100 },
-  streak_60: { id: 'streak_60', nome: 'Lenda Vitalis', descricao: '60 dias consecutivos', icone: '👑', cor: 'from-purple-500 to-pink-600', pontos: 200 },
+  streak_3: { id: 'streak_3', nome: 'Início Promissor', descricao: '3 dias consecutivos', icone: '🌱', cor: 'from-green-400 to-emerald-500', pontos: 100, xp: 100 },
+  streak_7: { id: 'streak_7', nome: 'Semana Vitalis', descricao: '7 dias consecutivos', icone: '🌿', cor: 'from-emerald-500 to-teal-600', pontos: 200, xp: 200 },
+  streak_14: { id: 'streak_14', nome: 'Guerreira de 2 Semanas', descricao: '14 dias consecutivos', icone: '🌳', cor: 'from-teal-500 to-cyan-600', pontos: 350, xp: 350 },
+  streak_30: { id: 'streak_30', nome: 'Mestre do Mês', descricao: '30 dias consecutivos', icone: '🏆', cor: 'from-amber-400 to-orange-500', pontos: 500, xp: 500 },
+  streak_60: { id: 'streak_60', nome: 'Lenda Vitalis', descricao: '60 dias consecutivos', icone: '👑', cor: 'from-purple-500 to-pink-600', pontos: 1000, xp: 1000 },
 
   // Água
-  agua_7dias: { id: 'agua_7dias', nome: 'Hidratação em Dia', descricao: 'Meta de água por 7 dias', icone: '💧', cor: 'from-blue-400 to-cyan-500', pontos: 20 },
-  agua_30dias: { id: 'agua_30dias', nome: 'Rainha da Água', descricao: 'Meta de água por 30 dias', icone: '🌊', cor: 'from-cyan-500 to-blue-600', pontos: 75 },
+  agua_1: { id: 'agua_1', nome: 'Primeira Gota', descricao: 'Primeiro registo de água', icone: '💧', cor: 'from-blue-300 to-cyan-400', pontos: 50, xp: 50 },
+  agua_50: { id: 'agua_50', nome: 'Hidratação Master', descricao: '50 registos de água', icone: '🌊', cor: 'from-cyan-500 to-blue-600', pontos: 150, xp: 150 },
 
   // Treino
-  treino_10: { id: 'treino_10', nome: 'Em Movimento', descricao: '10 treinos registados', icone: '🏃‍♀️', cor: 'from-orange-400 to-red-500', pontos: 30 },
-  treino_30: { id: 'treino_30', nome: 'Atleta Dedicada', descricao: '30 treinos registados', icone: '💪', cor: 'from-red-500 to-rose-600', pontos: 80 },
+  treino_1: { id: 'treino_1', nome: 'Corpo em Movimento', descricao: 'Primeiro treino registado', icone: '🏃‍♀️', cor: 'from-orange-300 to-red-400', pontos: 75, xp: 75 },
+  treino_10: { id: 'treino_10', nome: 'Atleta em Treino', descricao: '10 treinos registados', icone: '💪', cor: 'from-orange-400 to-red-500', pontos: 200, xp: 200 },
+
+  // Refeições
+  refeicoes_10: { id: 'refeicoes_10', nome: 'Chef Iniciante', descricao: '10 refeições registadas', icone: '🍽️', cor: 'from-amber-400 to-yellow-500', pontos: 100, xp: 100 },
+  refeicoes_50: { id: 'refeicoes_50', nome: 'Chef Dedicada', descricao: '50 refeições registadas', icone: '👩‍🍳', cor: 'from-yellow-500 to-orange-500', pontos: 250, xp: 250 },
 
   // Peso
-  peso_1kg: { id: 'peso_1kg', nome: 'Primeiro Quilo', descricao: 'Perdeste 1kg', icone: '⚖️', cor: 'from-lime-400 to-green-500', pontos: 15 },
-  peso_5kg: { id: 'peso_5kg', nome: 'Transformação', descricao: 'Perdeste 5kg', icone: '🎯', cor: 'from-green-500 to-emerald-600', pontos: 50 },
-  peso_10kg: { id: 'peso_10kg', nome: 'Nova Pessoa', descricao: 'Perdeste 10kg', icone: '🦋', cor: 'from-violet-500 to-purple-600', pontos: 100 },
-  peso_meta: { id: 'peso_meta', nome: 'Objectivo Alcançado!', descricao: 'Atingiste o peso meta', icone: '🎉', cor: 'from-yellow-400 to-amber-500', pontos: 200 },
+  peso_1kg: { id: 'peso_1kg', nome: 'Primeiro Quilo', descricao: 'Perdeste 1kg', icone: '⚖️', cor: 'from-lime-400 to-green-500', pontos: 150, xp: 150 },
+  peso_5kg: { id: 'peso_5kg', nome: 'Transformação', descricao: 'Perdeste 5kg', icone: '🎯', cor: 'from-green-500 to-emerald-600', pontos: 300, xp: 300 },
+  peso_10kg: { id: 'peso_10kg', nome: 'Nova Pessoa', descricao: 'Perdeste 10kg', icone: '🦋', cor: 'from-violet-500 to-purple-600', pontos: 500, xp: 500 },
+  peso_meta: { id: 'peso_meta', nome: 'Objectivo Alcançado!', descricao: 'Atingiste o peso meta', icone: '🎉', cor: 'from-yellow-400 to-amber-500', pontos: 1000, xp: 1000 },
 
   // Check-ins
-  checkin_7: { id: 'checkin_7', nome: 'Consistente', descricao: '7 check-ins feitos', icone: '✅', cor: 'from-indigo-400 to-violet-500', pontos: 15 },
-  checkin_30: { id: 'checkin_30', nome: 'Comprometida', descricao: '30 check-ins feitos', icone: '📝', cor: 'from-violet-500 to-purple-600', pontos: 60 },
+  checkin_7: { id: 'checkin_7', nome: 'Consistente', descricao: '7 check-ins feitos', icone: '✅', cor: 'from-indigo-400 to-violet-500', pontos: 75, xp: 75 },
+  checkin_30: { id: 'checkin_30', nome: 'Comprometida', descricao: '30 check-ins feitos', icone: '📝', cor: 'from-violet-500 to-purple-600', pontos: 200, xp: 200 },
 
   // Fases
-  fase_inducao: { id: 'fase_inducao', nome: 'Indução Completa', descricao: 'Completaste a Fase 1', icone: '🌅', cor: 'from-amber-400 to-orange-500', pontos: 75 },
-  fase_estabilizacao: { id: 'fase_estabilizacao', nome: 'Estabilização Completa', descricao: 'Completaste a Fase 2', icone: '⛰️', cor: 'from-orange-500 to-red-500', pontos: 100 },
-  fase_reeducacao: { id: 'fase_reeducacao', nome: 'Reeducação Completa', descricao: 'Completaste a Fase 3', icone: '🎓', cor: 'from-red-500 to-pink-500', pontos: 125 },
+  fase_inducao: { id: 'fase_inducao', nome: 'Indução Completa', descricao: 'Completaste a Fase 1', icone: '🌅', cor: 'from-amber-400 to-orange-500', pontos: 250, xp: 250 },
+  fase_estabilizacao: { id: 'fase_estabilizacao', nome: 'Estabilização Completa', descricao: 'Completaste a Fase 2', icone: '⛰️', cor: 'from-orange-500 to-red-500', pontos: 350, xp: 350 },
+  fase_reeducacao: { id: 'fase_reeducacao', nome: 'Reeducação Completa', descricao: 'Completaste a Fase 3', icone: '🎓', cor: 'from-red-500 to-pink-500', pontos: 500, xp: 500 },
 
   // Especiais
-  primeiro_dia: { id: 'primeiro_dia', nome: 'Bem-vinda!', descricao: 'Primeiro dia na Vitalis', icone: '🎊', cor: 'from-pink-400 to-rose-500', pontos: 5 },
-  receita_5: { id: 'receita_5', nome: 'Chef em Treino', descricao: 'Viste 5 receitas', icone: '👩‍🍳', cor: 'from-amber-400 to-yellow-500', pontos: 10 },
-  sono_perfeito: { id: 'sono_perfeito', nome: 'Bela Adormecida', descricao: '7 noites com 7+ horas', icone: '😴', cor: 'from-indigo-500 to-blue-600', pontos: 35 },
+  sono_perfeito: { id: 'sono_perfeito', nome: 'Bela Adormecida', descricao: '7 noites com 7+ horas', icone: '😴', cor: 'from-indigo-500 to-blue-600', pontos: 125, xp: 125 },
+  receita_5: { id: 'receita_5', nome: 'Explorador de Receitas', descricao: 'Viste 5 receitas', icone: '📚', cor: 'from-amber-400 to-yellow-500', pontos: 50, xp: 50 },
 };
 
 // Componente de Badge Individual
