@@ -57,6 +57,7 @@ import PerfilAurea from './components/aurea/PerfilAurea'
 import ChatAurea from './components/aurea/ChatAurea'
 import AnalisePadroes from './components/aurea/AnalisePadroes'
 import AudioMeditacoes from './components/aurea/AudioMeditacoes'
+import NotificacoesAurea from './components/aurea/NotificacoesAurea'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -131,6 +132,7 @@ function App() {
           <Route path="/aurea/padroes" element={session ? <AureaAccessGuard><AnalisePadroes /></AureaAccessGuard> : <Navigate to="/aurea/login" />} />
           <Route path="/aurea/audios" element={session ? <AureaAccessGuard><AudioMeditacoes /></AureaAccessGuard> : <Navigate to="/aurea/login" />} />
           <Route path="/aurea/meditacoes" element={session ? <AureaAccessGuard><AudioMeditacoes /></AureaAccessGuard> : <Navigate to="/aurea/login" />} />
+          <Route path="/aurea/notificacoes" element={session ? <AureaAccessGuard><NotificacoesAurea /></AureaAccessGuard> : <Navigate to="/aurea/login" />} />
 
           {/* ===== ECOS 3-7: Em Breve ===== */}
           <Route path="/serena" element={<ComingSoon />} />

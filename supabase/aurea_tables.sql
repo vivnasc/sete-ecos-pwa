@@ -25,10 +25,10 @@ CREATE TABLE IF NOT EXISTS aurea_clients (
   payment_currency TEXT DEFAULT 'MZN',
   payer_email TEXT,
 
-  -- Quota de Presença
-  quota_tempo_horas INTEGER DEFAULT 2,
-  quota_dinheiro_mzn INTEGER DEFAULT 100,
-  quota_energia_actividades INTEGER DEFAULT 1,
+  -- Quota de Presença (valores realistas: café=100MT, massagem=3000MT)
+  quota_tempo_horas INTEGER DEFAULT 3,
+  quota_dinheiro_mzn INTEGER DEFAULT 2000,
+  quota_energia_actividades INTEGER DEFAULT 2,
 
   -- Gamificação
   joias_total INTEGER DEFAULT 0,
@@ -39,6 +39,11 @@ CREATE TABLE IF NOT EXISTS aurea_clients (
   -- Onboarding
   onboarding_complete BOOLEAN DEFAULT FALSE,
   onboarding_date TIMESTAMPTZ,
+
+  -- Notificações
+  notificacoes_config JSONB DEFAULT '[]'::jsonb,
+  whatsapp_numero TEXT,
+  whatsapp_activo BOOLEAN DEFAULT FALSE,
 
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id)

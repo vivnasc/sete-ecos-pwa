@@ -14,10 +14,10 @@ export default function AureaOnboarding() {
   const [saving, setSaving] = useState(false);
   const [userId, setUserId] = useState(null);
 
-  // Quota values
-  const [quotaTempo, setQuotaTempo] = useState(2);
-  const [quotaDinheiro, setQuotaDinheiro] = useState(100);
-  const [quotaEnergia, setQuotaEnergia] = useState(1);
+  // Quota values - valores realistas para Moçambique (café=100MT, massagem=3000MT)
+  const [quotaTempo, setQuotaTempo] = useState(3);
+  const [quotaDinheiro, setQuotaDinheiro] = useState(2000);
+  const [quotaEnergia, setQuotaEnergia] = useState(2);
 
   useEffect(() => {
     checkAuth();
@@ -205,18 +205,23 @@ export default function AureaOnboarding() {
                   <span className="text-xl">💰</span>
                   <span className="text-amber-100 font-medium">Dinheiro</span>
                 </div>
-                <span className="text-amber-300 font-bold">{quotaDinheiro} MT / mês</span>
+                <span className="text-amber-300 font-bold">{quotaDinheiro.toLocaleString()} MT / mês</span>
               </div>
               <input
                 type="range"
-                min="50"
-                max="500"
-                step="50"
+                min="500"
+                max="10000"
+                step="500"
                 value={quotaDinheiro}
                 onChange={(e) => setQuotaDinheiro(parseInt(e.target.value))}
                 className="w-full h-2 bg-amber-900/50 rounded-lg appearance-none cursor-pointer accent-amber-500"
               />
-              <p className="text-amber-200/50 text-xs mt-2">Só para prazer (não utilidade)</p>
+              <div className="flex justify-between text-amber-200/40 text-xs mt-2">
+                <span>500 MT</span>
+                <span>Só para ti (não utilidade)</span>
+                <span>10.000 MT</span>
+              </div>
+              <p className="text-amber-200/50 text-xs mt-1 text-center">~{Math.round(quotaDinheiro/30)} MT/dia | ~{Math.round(quotaDinheiro/100)} cafés/mês</p>
             </div>
 
             {/* Energia */}

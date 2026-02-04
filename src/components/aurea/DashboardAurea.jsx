@@ -254,9 +254,20 @@ export default function DashboardAurea() {
         {!quotaHoje && (
           <div className="p-4 bg-gradient-to-br from-amber-600/20 to-amber-500/20 rounded-2xl border border-amber-500/30">
             <h3 className="text-amber-100 font-bold mb-2">Hoje respeitaste a tua quota?</h3>
-            <p className="text-amber-200/60 text-sm mb-4">
-              Tempo: {client?.quota_tempo_horas || 2}h | Dinheiro: {client?.quota_dinheiro_mzn || 100} MT | Energia: {client?.quota_energia_actividades || 1} act.
-            </p>
+            <div className="grid grid-cols-3 gap-2 mb-4 p-3 bg-white/5 rounded-xl">
+              <div className="text-center">
+                <div className="text-amber-300 font-bold">{client?.quota_tempo_horas || 3}h</div>
+                <div className="text-amber-200/50 text-xs">tempo/semana</div>
+              </div>
+              <div className="text-center border-x border-amber-500/20">
+                <div className="text-amber-300 font-bold">{(client?.quota_dinheiro_mzn || 2000).toLocaleString()} MT</div>
+                <div className="text-amber-200/50 text-xs">dinheiro/mês</div>
+              </div>
+              <div className="text-center">
+                <div className="text-amber-300 font-bold">{client?.quota_energia_actividades || 2}</div>
+                <div className="text-amber-200/50 text-xs">actividades</div>
+              </div>
+            </div>
             <div className="grid grid-cols-3 gap-2">
               <button
                 onClick={() => handleQuotaCheckin('sim')}
@@ -372,17 +383,27 @@ export default function DashboardAurea() {
           </Link>
         </div>
 
-        {/* Insights Link */}
-        <Link to="/aurea/insights" className="block p-4 bg-white/5 rounded-2xl border border-amber-500/20 hover:border-amber-500/40 transition-colors">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">📊</span>
-            <div className="flex-1">
-              <div className="text-amber-100 font-medium">Insights Semanais</div>
-              <div className="text-amber-200/60 text-sm">Ver relatório de progresso</div>
+        {/* Row 3 - Insights e Notificações */}
+        <div className="grid grid-cols-2 gap-3">
+          <Link to="/aurea/insights" className="p-4 bg-white/5 rounded-2xl border border-amber-500/20 hover:border-amber-500/40 transition-colors">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">📊</span>
+              <div className="flex-1">
+                <div className="text-amber-100 font-medium text-sm">Insights</div>
+                <div className="text-amber-200/50 text-xs">Relatório semanal</div>
+              </div>
             </div>
-            <span className="text-amber-400">→</span>
-          </div>
-        </Link>
+          </Link>
+          <Link to="/aurea/notificacoes" className="p-4 bg-gradient-to-br from-green-500/10 to-green-600/10 rounded-2xl border border-green-500/30 hover:border-green-500/50 transition-colors">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">📱</span>
+              <div className="flex-1">
+                <div className="text-amber-100 font-medium text-sm">Lembretes</div>
+                <div className="text-green-300/60 text-xs">WhatsApp + Push</div>
+              </div>
+            </div>
+          </Link>
+        </div>
 
         {/* Níveis mais altos */}
         {nivelInfo.nivelActual.id === 'prata' && (
