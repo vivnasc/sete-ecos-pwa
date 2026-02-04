@@ -187,7 +187,7 @@ const CoachDashboard = () => {
     try {
       const { data } = await supabase
         .from('vitalis_clients')
-        .select('*, users(id, nome, email, created_at)')
+        .select('*, users(id, nome, email, created_at), telefone, whatsapp')
         .order('created_at', { ascending: false });
       setVitalisClients(data || []);
     } catch (error) {
@@ -271,27 +271,69 @@ const CoachDashboard = () => {
     }
   };
 
-  const sendInteraction = async (client, template, customMsg = '') => {
+  const sendInteraction = async (client, template, customMsg = '', viaWhatsApp = false) => {
     setSendingMessage(true);
     try {
       const message = customMsg || template.message;
-      const clientName = client.users?.nome || client.nome_completo || 'Cliente';
-      const clientEmail = client.users?.email || '';
+      const clientName = client.users?.nome || client.nome_completo || client.nome || 'Cliente';
+      const clientEmail = client.users?.email || client.email || '';
+      // user_id pode vir de diferentes fontes dependendo do contexto
+      const userId = client.user_id || client.users?.id;
 
-      if (!clientEmail) {
+      if (!clientEmail && !viaWhatsApp) {
         alert('Cliente sem email registado');
         setSendingMessage(false);
         return;
       }
 
+      // Se for WhatsApp, abrir link directo
+      if (viaWhatsApp) {
+        const phone = client.telefone || client.whatsapp || '';
+        if (!phone) {
+          alert('Cliente sem número de telefone registado');
+          setSendingMessage(false);
+          return;
+        }
+        // Limpar número (remover +, espaços, etc)
+        const cleanPhone = phone.replace(/\D/g, '');
+        const encodedMessage = encodeURIComponent(message);
+        window.open(`https://wa.me/${cleanPhone}?text=${encodedMessage}`, '_blank');
+
+        // Guardar no histórico mesmo assim
+        if (userId) {
+          await supabase.from('vitalis_alerts').insert({
+            user_id: userId,
+            tipo_alerta: 'interaction_whatsapp',
+            descricao: `[WhatsApp] ${message}`,
+            prioridade: 'baixa',
+            status: 'enviado'
+          });
+        }
+
+        await loadInteractionHistory();
+        setCustomMessage('');
+        setShowInteractionPanel(false);
+        setSelectedCategory(null);
+        setSendingMessage(false);
+        return;
+      }
+
       // Guardar na base de dados
-      await supabase.from('vitalis_alerts').insert({
-        user_id: client.user_id,
-        tipo_alerta: 'interaction_coach',
-        descricao: message,
-        prioridade: 'baixa',
-        status: 'enviado'
-      });
+      if (userId) {
+        const { error: insertError } = await supabase.from('vitalis_alerts').insert({
+          user_id: userId,
+          tipo_alerta: 'interaction_coach',
+          descricao: message,
+          prioridade: 'baixa',
+          status: 'enviado'
+        });
+
+        if (insertError) {
+          console.error('Erro ao guardar alerta:', insertError);
+        }
+      } else {
+        console.warn('user_id não encontrado para o cliente:', client);
+      }
 
       // Enviar email
       const emailResult = await enviarEmail('lembrete-checkin', clientEmail, {
@@ -301,8 +343,8 @@ const CoachDashboard = () => {
       });
 
       alert(emailResult.success
-        ? `Mensagem enviada para ${clientName}!`
-        : `Mensagem guardada, mas email pode não ter sido enviado.`
+        ? `✅ Mensagem enviada para ${clientName}!`
+        : `⚠️ Mensagem guardada, mas email pode não ter sido enviado.`
       );
 
       await loadInteractionHistory();
@@ -590,12 +632,27 @@ const CoachDashboard = () => {
                           <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(client.subscription_status)}`}>
                             {client.subscription_status || 'sem status'}
                           </span>
-                          <button
-                            onClick={() => { setSelectedClient(client); setShowInteractionPanel(true); }}
-                            className="px-4 py-2 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-sm font-medium transition-all border border-purple-500/30"
-                          >
-                            Mensagem
-                          </button>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => { setSelectedClient(client); setShowInteractionPanel(true); }}
+                              className="px-3 py-2 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-sm font-medium transition-all border border-purple-500/30"
+                              title="Enviar por Email"
+                            >
+                              📧
+                            </button>
+                            {(client.telefone || client.whatsapp) && (
+                              <button
+                                onClick={() => {
+                                  const phone = (client.telefone || client.whatsapp || '').replace(/\D/g, '');
+                                  window.open(`https://wa.me/${phone}`, '_blank');
+                                }}
+                                className="px-3 py-2 rounded-xl bg-green-500/20 hover:bg-green-500/30 text-green-300 text-sm font-medium transition-all border border-green-500/30"
+                                title="Abrir WhatsApp"
+                              >
+                                💬
+                              </button>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -648,12 +705,26 @@ const CoachDashboard = () => {
                                 </div>
                               </div>
                             </div>
-                            <button
-                              onClick={() => { setSelectedClient(client); setShowInteractionPanel(true); }}
-                              className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all"
-                            >
-                              Enviar Mensagem
-                            </button>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => { setSelectedClient(client); setShowInteractionPanel(true); }}
+                                className="px-5 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all"
+                              >
+                                📧 Email
+                              </button>
+                              {(client.telefone || client.whatsapp) && (
+                                <button
+                                  onClick={() => {
+                                    const phone = (client.telefone || client.whatsapp || '').replace(/\D/g, '');
+                                    const msg = encodeURIComponent(`Olá ${client.nome}! `);
+                                    window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+                                  }}
+                                  className="px-5 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium hover:shadow-lg hover:shadow-green-500/25 transition-all"
+                                >
+                                  💬 WhatsApp
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -879,17 +950,31 @@ const CoachDashboard = () => {
 
               {/* Templates */}
               {selectedCategory && (
-                <div className="space-y-2 mb-6">
+                <div className="space-y-3 mb-6">
                   {INTERACTION_CATEGORIES[selectedCategory].templates.map((t) => (
-                    <button
+                    <div
                       key={t.id}
-                      onClick={() => sendInteraction(selectedClient, t)}
-                      disabled={sendingMessage}
-                      className={`w-full p-4 rounded-xl text-left transition-all border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 disabled:opacity-50`}
+                      className="p-4 rounded-xl border border-white/10 bg-white/5"
                     >
                       <p className="font-medium text-white">{t.title}</p>
-                      <p className="text-white/50 text-sm mt-1">{t.message}</p>
-                    </button>
+                      <p className="text-white/50 text-sm mt-1 mb-3">{t.message}</p>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => sendInteraction(selectedClient, t, '', false)}
+                          disabled={sendingMessage}
+                          className="flex-1 py-2 px-3 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-sm font-medium transition-all disabled:opacity-50 border border-purple-500/30"
+                        >
+                          📧 Email
+                        </button>
+                        <button
+                          onClick={() => sendInteraction(selectedClient, t, '', true)}
+                          disabled={sendingMessage}
+                          className="flex-1 py-2 px-3 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-300 text-sm font-medium transition-all disabled:opacity-50 border border-green-500/30"
+                        >
+                          💬 WhatsApp
+                        </button>
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}
@@ -905,22 +990,33 @@ const CoachDashboard = () => {
                   rows={4}
                 />
                 {customMessage && (
-                  <button
-                    onClick={() => sendInteraction(selectedClient, { message: customMessage }, customMessage)}
-                    disabled={sendingMessage}
-                    className="mt-3 w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all disabled:opacity-50"
-                  >
-                    {sendingMessage ? 'A enviar...' : 'Enviar Mensagem'}
-                  </button>
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      onClick={() => sendInteraction(selectedClient, { message: customMessage }, customMessage, false)}
+                      disabled={sendingMessage}
+                      className="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all disabled:opacity-50"
+                    >
+                      {sendingMessage ? 'A enviar...' : '📧 Email'}
+                    </button>
+                    <button
+                      onClick={() => sendInteraction(selectedClient, { message: customMessage }, customMessage, true)}
+                      disabled={sendingMessage}
+                      className="flex-1 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium hover:shadow-lg hover:shadow-green-500/25 transition-all disabled:opacity-50"
+                    >
+                      {sendingMessage ? 'A enviar...' : '💬 WhatsApp'}
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
 
             {/* Footer */}
             <div className="p-4 border-t border-white/10 bg-white/5">
-              <p className="text-white/40 text-sm text-center">
-                📧 A mensagem será enviada por email
-              </p>
+              <div className="flex items-center justify-center gap-4 text-sm">
+                <span className="text-white/40">📧 Email</span>
+                <span className="text-white/20">|</span>
+                <span className="text-green-400/70">💬 WhatsApp</span>
+              </div>
             </div>
           </div>
         </div>
