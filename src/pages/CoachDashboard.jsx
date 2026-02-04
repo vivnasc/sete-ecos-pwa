@@ -1,137 +1,107 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
+import { Link } from 'react-router-dom';
 import {
-  SUBSCRIPTION_STATUS,
-  SUBSCRIPTION_CONFIG,
-  SUBSCRIPTION_PLANS,
   setAsTester,
-  startTrial,
-  confirmManualPayment,
   getSubscriptionStats
 } from '../lib/subscriptions';
-import { enviarNotificacao, pedirPermissao, temPermissao } from '../utils/notifications';
+import { pedirPermissao } from '../utils/notifications';
 import { enviarEmail } from '../lib/emails';
-import { WhatsAppAlertas } from '../lib/whatsapp';
 
 /**
- * SETE ECOS - COACH DASHBOARD v3
- * Design sofisticado, cores equilibradas, UX profissional
- * Paleta: Sage (#7C8B6F), Terracota (#C4A484), Cream (#FAF8F5)
+ * SETE ECOS - COACH DASHBOARD v4
+ * Design Premium - Interface Profissional para Coaching
  */
 
 const WHATSAPP_COMMUNITY_LINK = 'https://chat.whatsapp.com/FbHbQuDPGAZ3myiu29CmHO';
 
-// Paleta de cores
-const colors = {
-  sage: '#7C8B6F',
-  sageDark: '#5A6B4F',
-  sageLight: '#A8B89A',
-  terracota: '#C4A484',
-  terracotaDark: '#A68B6A',
-  cream: '#FAF8F5',
-  warmGray: '#6B6560',
-  warmGrayLight: '#9A938C',
+// Categorias de Interação organizadas
+const INTERACTION_CATEGORIES = {
+  boasVindas: {
+    name: 'Boas-vindas',
+    icon: '👋',
+    color: 'from-blue-500 to-cyan-500',
+    bgColor: 'bg-blue-50',
+    templates: [
+      { id: 'welcome-new', title: 'Novo cliente', message: 'Bem-vinda ao Vitalis! Estou muito feliz por começares esta jornada comigo. Qualquer dúvida, estou aqui. Vamos juntas!' },
+      { id: 'welcome-back', title: 'Retorno', message: 'Que bom ver-te de volta! A tua jornada continua, e estou aqui para te apoiar. Vamos retomar com calma.' },
+    ]
+  },
+  checkin: {
+    name: 'Check-in',
+    icon: '💬',
+    color: 'from-teal-500 to-emerald-500',
+    bgColor: 'bg-teal-50',
+    templates: [
+      { id: 'checkin-how', title: 'Como estás?', message: 'Olá! Só a passar para saber como te estás a sentir. Como está a correr a semana?' },
+      { id: 'checkin-goals', title: 'Objetivos', message: 'Como estão os teus objetivos? Precisas de ajustar algo no plano? Estou aqui para te ajudar.' },
+      { id: 'checkin-weekend', title: 'Fim de semana', message: 'Bom fim de semana! Lembra-te: descansar também faz parte do processo. Como estás?' },
+    ]
+  },
+  motivacao: {
+    name: 'Motivação',
+    icon: '🔥',
+    color: 'from-orange-500 to-red-500',
+    bgColor: 'bg-orange-50',
+    templates: [
+      { id: 'motivation-daily', title: 'Diária', message: 'Novo dia, nova oportunidade! Tu consegues. Cada pequeno passo conta. Vamos lá!' },
+      { id: 'motivation-progress', title: 'Progresso', message: 'Estou a ver o teu progresso e estou orgulhosa! Continua assim, estás no caminho certo.' },
+      { id: 'motivation-push', title: 'Impulso', message: 'Sei que às vezes é difícil, mas lembra-te do porquê começaste. A tua versão futura vai agradecer!' },
+    ]
+  },
+  celebracao: {
+    name: 'Celebração',
+    icon: '🎉',
+    color: 'from-yellow-500 to-amber-500',
+    bgColor: 'bg-yellow-50',
+    templates: [
+      { id: 'celebrate-milestone', title: 'Marco atingido', message: 'PARABÉNS! Que conquista incrível! Estou tão feliz por ti. Mereces toda a celebração!' },
+      { id: 'celebrate-streak', title: 'Streak', message: 'Que consistência! A tua dedicação está a dar frutos. Continua a brilhar!' },
+      { id: 'celebrate-goal', title: 'Meta alcançada', message: 'Conseguiste! Este momento é teu. Celebra cada vitória, por menor que pareça!' },
+    ]
+  },
+  suporte: {
+    name: 'Suporte',
+    icon: '🤗',
+    color: 'from-pink-500 to-rose-500',
+    bgColor: 'bg-pink-50',
+    templates: [
+      { id: 'support-hard', title: 'Dia difícil', message: 'Sei que nem todos os dias são fáceis. Está tudo bem. Estou aqui contigo. Vamos com calma.' },
+      { id: 'support-slip', title: 'Recaída', message: 'Um deslize não apaga o teu progresso. Amanhã é um novo dia. Levanta-te e continua. Estou aqui.' },
+      { id: 'support-listen', title: 'Ouvir', message: 'Quero que saibas que estou aqui para te ouvir. Se precisares de falar, é só dizer.' },
+    ]
+  },
+  lembrete: {
+    name: 'Lembrete',
+    icon: '⏰',
+    color: 'from-purple-500 to-violet-500',
+    bgColor: 'bg-purple-50',
+    templates: [
+      { id: 'reminder-checkin', title: 'Check-in', message: 'Ainda não fizeste o check-in de hoje. Quando puderes, passa por lá. Cada registo ajuda!' },
+      { id: 'reminder-water', title: 'Hidratação', message: 'Lembrete amigo: já bebeste água hoje? A hidratação é fundamental. Vai buscar um copo!' },
+      { id: 'reminder-meal', title: 'Refeição', message: 'Não te esqueças de fazer as tuas refeições com calma e atenção. O teu corpo agradece.' },
+    ]
+  }
 };
 
-// Templates de motivação
-const MOTIVATION_TEMPLATES = [
-  { id: 'comeback', emoji: '🌿', title: 'Regresso', message: 'Olá! Senti a tua falta por aqui. Lembra-te: cada dia é uma nova oportunidade para cuidares de ti. Estou aqui para te apoiar!' },
-  { id: 'progress', emoji: '🌱', title: 'Progresso', message: 'Parabéns pelo teu progresso! Continua assim, estás a fazer um trabalho incrível! O teu esforço está a dar frutos.' },
-  { id: 'struggle', emoji: '🤍', title: 'Apoio', message: 'Sei que nem todos os dias são fáceis. Lembra-te que pequenos passos também contam. Estou aqui contigo, não desistas!' },
-  { id: 'weekly', emoji: '✨', title: 'Semanal', message: 'Nova semana, novas possibilidades! Vamos definir uma intenção para esta semana? Estou aqui para te ajudar a alcançar os teus objetivos.' },
-  { id: 'celebration', emoji: '🎉', title: 'Celebração', message: 'Que conquista! Estou tão orgulhosa do teu caminho. Continua a brilhar!' },
-];
-
-// Ícones SVG minimalistas
-const Icons = {
-  Users: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-      <circle cx="9" cy="7" r="4"/>
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-    </svg>
-  ),
-  Leaf: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
-      <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
-      <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
-    </svg>
-  ),
-  Heart: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-    </svg>
-  ),
-  AlertCircle: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
-      <circle cx="12" cy="12" r="10"/>
-      <line x1="12" y1="8" x2="12" y2="12"/>
-      <line x1="12" y1="16" x2="12.01" y2="16"/>
-    </svg>
-  ),
-  List: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
-      <line x1="8" y1="6" x2="21" y2="6"/>
-      <line x1="8" y1="12" x2="21" y2="12"/>
-      <line x1="8" y1="18" x2="21" y2="18"/>
-      <line x1="3" y1="6" x2="3.01" y2="6"/>
-      <line x1="3" y1="12" x2="3.01" y2="12"/>
-      <line x1="3" y1="18" x2="3.01" y2="18"/>
-    </svg>
-  ),
-  Send: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
-      <line x1="22" y1="2" x2="11" y2="13"/>
-      <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-    </svg>
-  ),
-  Refresh: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
-      <polyline points="23 4 23 10 17 10"/>
-      <polyline points="1 20 1 14 7 14"/>
-      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-    </svg>
-  ),
-  ChevronRight: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
-      <polyline points="9 18 15 12 9 6"/>
-    </svg>
-  ),
-  ArrowLeft: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
-      <line x1="19" y1="12" x2="5" y2="12"/>
-      <polyline points="12 19 5 12 12 5"/>
-    </svg>
-  ),
-  X: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
-      <line x1="18" y1="6" x2="6" y2="18"/>
-      <line x1="6" y1="6" x2="18" y2="18"/>
-    </svg>
-  ),
-  Mail: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
-      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-      <polyline points="22,6 12,13 2,6"/>
-    </svg>
-  ),
-  Clock: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
-      <circle cx="12" cy="12" r="10"/>
-      <polyline points="12 6 12 12 16 14"/>
-    </svg>
-  ),
+// Configurações de automação
+const AUTOMATION_SETTINGS = {
+  inactivityReminder: { days: 3, enabled: true },
+  weeklyMotivation: { dayOfWeek: 'monday', enabled: true },
+  streakCelebration: { minStreak: 7, enabled: true },
+  welcomeMessage: { delay: 0, enabled: true },
 };
 
 const CoachDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState('overview');
   const [selectedClient, setSelectedClient] = useState(null);
-  const [showMotivationPanel, setShowMotivationPanel] = useState(false);
-  const [motivationHistory, setMotivationHistory] = useState([]);
-  const [sendingMotivation, setSendingMotivation] = useState(false);
+  const [showInteractionPanel, setShowInteractionPanel] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [interactionHistory, setInteractionHistory] = useState([]);
+  const [sendingMessage, setSendingMessage] = useState(false);
   const [customMessage, setCustomMessage] = useState('');
+  const [showAutomation, setShowAutomation] = useState(false);
 
   // Data
   const [stats, setStats] = useState({
@@ -141,10 +111,8 @@ const CoachDashboard = () => {
     comLumina: 0,
     comVitalis: 0,
     waitlistTotal: 0,
-    activeToday: 0,
     needAttention: 0
   });
-  const [users, setUsers] = useState([]);
   const [vitalisClients, setVitalisClients] = useState([]);
   const [waitlist, setWaitlist] = useState([]);
   const [clientsNeedAttention, setClientsNeedAttention] = useState([]);
@@ -156,7 +124,6 @@ const CoachDashboard = () => {
     pedirPermissao();
     loadAllData();
     refreshInterval.current = setInterval(loadAllData, 60000);
-
     return () => {
       if (refreshInterval.current) clearInterval(refreshInterval.current);
     };
@@ -166,11 +133,10 @@ const CoachDashboard = () => {
     try {
       await Promise.all([
         loadStats(),
-        loadUsers(),
         loadVitalisClients(),
         loadWaitlist(),
         loadClientsNeedAttention(),
-        loadMotivationHistory()
+        loadInteractionHistory()
       ]);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -210,24 +176,10 @@ const CoachDashboard = () => {
         comLumina: comLumina || 0,
         comVitalis: comVitalis || 0,
         waitlistTotal: waitlistTotal || 0,
-        activeToday: 0,
         needAttention: 0
       });
     } catch (error) {
       console.error('Erro stats:', error);
-    }
-  };
-
-  const loadUsers = async () => {
-    try {
-      const { data } = await supabase
-        .from('users')
-        .select('*, vitalis_clients(*), lumina_checkins(created_at)')
-        .order('created_at', { ascending: false })
-        .limit(100);
-      setUsers(data || []);
-    } catch (error) {
-      console.error('Erro users:', error);
     }
   };
 
@@ -277,10 +229,14 @@ const CoachDashboard = () => {
         if (lastActivity) {
           const daysSince = Math.floor((Date.now() - new Date(lastActivity).getTime()) / (1000 * 60 * 60 * 24));
           if (daysSince >= 3) {
-            reasons.push({ text: `${daysSince} dias inativo`, priority: daysSince >= 7 ? 'high' : 'medium' });
+            reasons.push({
+              text: `${daysSince} dias sem atividade`,
+              priority: daysSince >= 7 ? 'high' : 'medium',
+              type: 'inactivity'
+            });
           }
         } else {
-          reasons.push({ text: 'Sem registos ainda', priority: 'medium' });
+          reasons.push({ text: 'Nunca registou', priority: 'medium', type: 'new' });
         }
 
         if (reasons.length > 0) {
@@ -301,27 +257,22 @@ const CoachDashboard = () => {
     }
   };
 
-  const loadMotivationHistory = async () => {
+  const loadInteractionHistory = async () => {
     try {
       const { data } = await supabase
         .from('vitalis_alerts')
         .select('*, users(nome, email)')
-        .eq('tipo_alerta', 'motivacao_coach')
+        .in('tipo_alerta', ['motivacao_coach', 'interaction_coach'])
         .order('created_at', { ascending: false })
-        .limit(50);
-      setMotivationHistory(data || []);
+        .limit(100);
+      setInteractionHistory(data || []);
     } catch (error) {
-      console.error('Erro motivation history:', error);
+      console.error('Erro interaction history:', error);
     }
   };
 
-  const loadClientDetails = async (client) => {
-    setSelectedClient(client);
-    setActiveView('client-detail');
-  };
-
-  const sendMotivation = async (client, template, customMsg = '') => {
-    setSendingMotivation(true);
+  const sendInteraction = async (client, template, customMsg = '') => {
+    setSendingMessage(true);
     try {
       const message = customMsg || template.message;
       const clientName = client.users?.nome || client.nome_completo || 'Cliente';
@@ -329,43 +280,40 @@ const CoachDashboard = () => {
 
       if (!clientEmail) {
         alert('Cliente sem email registado');
-        setSendingMotivation(false);
+        setSendingMessage(false);
         return;
       }
 
+      // Guardar na base de dados
       await supabase.from('vitalis_alerts').insert({
         user_id: client.user_id,
-        tipo_alerta: 'motivacao_coach',
+        tipo_alerta: 'interaction_coach',
         descricao: message,
         prioridade: 'baixa',
         status: 'enviado'
       });
 
+      // Enviar email
       const emailResult = await enviarEmail('lembrete-checkin', clientEmail, {
         nome: clientName,
         dias: 'alguns',
         mensagem: message
       });
 
-      const whatsappResult = await WhatsAppAlertas.motivacaoEnviada(
-        { nome: clientName, email: clientEmail },
-        message
+      alert(emailResult.success
+        ? `Mensagem enviada para ${clientName}!`
+        : `Mensagem guardada, mas email pode não ter sido enviado.`
       );
 
-      let feedback = `Motivação enviada para ${clientName}`;
-      if (emailResult.success) feedback += '\nEmail enviado com sucesso';
-      if (whatsappResult.success) feedback += '\nWhatsApp notificado';
-
-      alert(feedback);
-
-      await loadMotivationHistory();
+      await loadInteractionHistory();
       setCustomMessage('');
-      setShowMotivationPanel(false);
+      setShowInteractionPanel(false);
+      setSelectedCategory(null);
     } catch (error) {
-      console.error('Erro ao enviar motivação:', error);
-      alert('Erro ao enviar motivação: ' + error.message);
+      console.error('Erro ao enviar:', error);
+      alert('Erro ao enviar: ' + error.message);
     } finally {
-      setSendingMotivation(false);
+      setSendingMessage(false);
     }
   };
 
@@ -393,267 +341,220 @@ const CoachDashboard = () => {
     return `${Math.floor(diff / 86400)}d`;
   };
 
-  const getStatusStyle = (status) => {
-    switch (status) {
-      case 'tester': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-      case 'active': return 'bg-green-100 text-green-800 border-green-200';
-      case 'pending': return 'bg-amber-100 text-amber-800 border-amber-200';
-      case 'trial': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'expired': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-600 border-gray-200';
-    }
+  const getStatusBadge = (status) => {
+    const styles = {
+      tester: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+      active: 'bg-green-500/20 text-green-300 border-green-500/30',
+      pending: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+      trial: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+      expired: 'bg-red-500/20 text-red-300 border-red-500/30',
+    };
+    return styles[status] || 'bg-gray-500/20 text-gray-300 border-gray-500/30';
   };
 
   // ========== RENDER ==========
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: colors.cream }}>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-3 rounded-full animate-spin mx-auto mb-4"
-               style={{ borderColor: `${colors.sageLight} transparent ${colors.sage} transparent` }}></div>
-          <p style={{ color: colors.warmGray }}>A carregar...</p>
+          <div className="w-16 h-16 border-4 border-purple-400/30 border-t-purple-400 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-purple-200">A carregar dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F5F3EF' }}>
-      {/* Header */}
-      <header className="border-b px-4 lg:px-8 py-4 sticky top-0 z-50"
-              style={{ backgroundColor: 'rgba(250, 248, 245, 0.95)', backdropFilter: 'blur(8px)', borderColor: '#E8E4DC' }}>
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm"
-                 style={{ backgroundColor: colors.sage }}>
-              <Icons.Leaf />
-              <style>{`.w-10.h-10.rounded-xl svg { color: white; }`}</style>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-900">
+      {/* Header Premium */}
+      <header className="border-b border-white/10 bg-black/20 backdrop-blur-xl sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 lg:px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/25">
+                <span className="text-2xl">🎯</span>
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-white">Coach Dashboard</h1>
+                <p className="text-sm text-purple-300">Sete Ecos • Gestão de Clientes</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-lg font-semibold" style={{ color: colors.warmGray }}>Coach Dashboard</h1>
-              <p className="text-sm" style={{ color: colors.warmGrayLight }}>Sete Ecos • Vitalis</p>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-3">
-            <a
-              href={WHATSAPP_COMMUNITY_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:shadow-sm"
-              style={{ backgroundColor: '#E8F5E9', color: '#2E7D32' }}
-            >
-              <span className="hidden sm:inline">Comunidade</span>
-              <span className="sm:hidden">WA</span>
-            </a>
-            <button
-              onClick={loadAllData}
-              className="p-2 rounded-lg transition-all hover:shadow-sm"
-              style={{ backgroundColor: '#F0EDE8', color: colors.warmGray }}
-              title="Atualizar"
-            >
-              <Icons.Refresh />
-            </button>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/vitalis/dashboard"
+                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-sm font-medium transition-all border border-white/10"
+              >
+                ← Vitalis
+              </Link>
+              <a
+                href={WHATSAPP_COMMUNITY_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 rounded-xl bg-green-500/20 hover:bg-green-500/30 text-green-300 text-sm font-medium transition-all border border-green-500/30"
+              >
+                WhatsApp
+              </a>
+              <button
+                onClick={loadAllData}
+                className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all border border-white/10 flex items-center justify-center"
+                title="Atualizar"
+              >
+                ↻
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 lg:px-8 py-6">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="p-4 rounded-2xl shadow-sm" style={{ backgroundColor: 'white' }}>
-            <div className="flex items-center justify-between mb-2">
-              <span className="p-2 rounded-lg" style={{ backgroundColor: '#F3E8FF' }}>
-                <Icons.Users />
-              </span>
-              <span className="text-2xl font-bold" style={{ color: colors.warmGray }}>{stats.totalUsers}</span>
-            </div>
-            <p className="text-sm" style={{ color: colors.warmGrayLight }}>Total Utilizadores</p>
-          </div>
-
-          <div className="p-4 rounded-2xl shadow-sm" style={{ backgroundColor: 'white' }}>
-            <div className="flex items-center justify-between mb-2">
-              <span className="p-2 rounded-lg" style={{ backgroundColor: '#E8F5E9' }}>
-                <Icons.Leaf />
-              </span>
-              <span className="text-2xl font-bold" style={{ color: colors.warmGray }}>{stats.comVitalis}</span>
-            </div>
-            <p className="text-sm" style={{ color: colors.warmGrayLight }}>Clientes Vitalis</p>
-          </div>
-
-          <div className="p-4 rounded-2xl shadow-sm" style={{ backgroundColor: 'white' }}>
-            <div className="flex items-center justify-between mb-2">
-              <span className="p-2 rounded-lg" style={{ backgroundColor: '#FFF3E0' }}>
-                <Icons.AlertCircle />
-              </span>
-              <span className="text-2xl font-bold" style={{ color: clientsNeedAttention.length > 0 ? '#E65100' : colors.warmGray }}>
-                {clientsNeedAttention.length}
-              </span>
-            </div>
-            <p className="text-sm" style={{ color: colors.warmGrayLight }}>Precisam Atenção</p>
-          </div>
-
-          <div className="p-4 rounded-2xl shadow-sm" style={{ backgroundColor: 'white' }}>
-            <div className="flex items-center justify-between mb-2">
-              <span className="p-2 rounded-lg" style={{ backgroundColor: '#FBE9E7' }}>
-                <Icons.List />
-              </span>
-              <span className="text-2xl font-bold" style={{ color: colors.warmGray }}>{waitlist.length}</span>
-            </div>
-            <p className="text-sm" style={{ color: colors.warmGrayLight }}>Waitlist</p>
-          </div>
+      <main className="max-w-7xl mx-auto px-4 lg:px-6 py-6">
+        {/* Stats Cards - Visão Rápida */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
+          {[
+            { icon: '👥', label: 'Total', value: stats.totalUsers, gradient: 'from-blue-500 to-cyan-500' },
+            { icon: '✨', label: 'Hoje', value: stats.novosHoje, gradient: 'from-green-500 to-emerald-500' },
+            { icon: '📅', label: 'Semana', value: stats.novosSemana, gradient: 'from-teal-500 to-cyan-500' },
+            { icon: '👁️', label: 'Lumina', value: stats.comLumina, gradient: 'from-indigo-500 to-purple-500' },
+            { icon: '🌿', label: 'Vitalis', value: stats.comVitalis, gradient: 'from-green-500 to-lime-500' },
+            { icon: '⚠️', label: 'Atenção', value: stats.needAttention, gradient: 'from-orange-500 to-red-500', highlight: stats.needAttention > 0 },
+            { icon: '📋', label: 'Waitlist', value: waitlist.length, gradient: 'from-purple-500 to-pink-500' },
+          ].map((stat, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                if (stat.label === 'Atenção') setActiveView('attention');
+                else if (stat.label === 'Waitlist') setActiveView('waitlist');
+                else if (stat.label === 'Vitalis') setActiveView('clients');
+                else setActiveView('overview');
+              }}
+              className={`relative p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group ${stat.highlight ? 'ring-2 ring-orange-500/50' : ''}`}
+            >
+              <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-10 transition-opacity`}></div>
+              <div className="relative">
+                <span className="text-2xl">{stat.icon}</span>
+                <p className="text-2xl font-bold text-white mt-1">{stat.value}</p>
+                <p className="text-xs text-white/50">{stat.label}</p>
+              </div>
+            </button>
+          ))}
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-3 gap-6">
-
-          {/* Left Column - Navigation & Quick Actions */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Navigation */}
-            <div className="rounded-2xl shadow-sm overflow-hidden" style={{ backgroundColor: 'white' }}>
-              <div className="p-4 border-b" style={{ borderColor: '#E8E4DC' }}>
-                <h2 className="font-semibold" style={{ color: colors.warmGray }}>Menu</h2>
-              </div>
-              <nav className="p-2">
+        <div className="grid lg:grid-cols-4 gap-6">
+          {/* Sidebar - Navigation */}
+          <div className="lg:col-span-1 space-y-4">
+            {/* Menu */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+              <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">Menu</h3>
+              <nav className="space-y-1">
                 {[
-                  { id: 'overview', icon: <Icons.Users />, label: 'Resumo' },
-                  { id: 'clients', icon: <Icons.Leaf />, label: `Clientes (${vitalisClients.length})` },
-                  { id: 'attention', icon: <Icons.AlertCircle />, label: `Atenção (${clientsNeedAttention.length})`, highlight: clientsNeedAttention.length > 0 },
-                  { id: 'waitlist', icon: <Icons.List />, label: `Waitlist (${waitlist.length})` },
-                  { id: 'motivations', icon: <Icons.Heart />, label: 'Motivações' },
+                  { id: 'overview', icon: '📊', label: 'Resumo' },
+                  { id: 'clients', icon: '🌿', label: `Clientes (${vitalisClients.length})` },
+                  { id: 'attention', icon: '⚠️', label: `Atenção (${clientsNeedAttention.length})`, alert: clientsNeedAttention.length > 0 },
+                  { id: 'waitlist', icon: '📋', label: `Waitlist (${waitlist.length})` },
+                  { id: 'interactions', icon: '💬', label: 'Interações' },
+                  { id: 'automation', icon: '⚡', label: 'Automação' },
                 ].map((item) => (
                   <button
                     key={item.id}
-                    onClick={() => { setActiveView(item.id); setSelectedClient(null); }}
-                    className={`w-full flex items-center justify-between p-3 rounded-xl mb-1 transition-all ${
-                      activeView === item.id ? 'shadow-sm' : 'hover:bg-gray-50'
+                    onClick={() => setActiveView(item.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                      activeView === item.id
+                        ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white border border-purple-500/30'
+                        : 'text-white/60 hover:text-white hover:bg-white/5'
                     }`}
-                    style={{
-                      backgroundColor: activeView === item.id ? colors.sage : 'transparent',
-                      color: activeView === item.id ? 'white' : colors.warmGray
-                    }}
                   >
-                    <div className="flex items-center gap-3">
-                      {item.icon}
-                      <span className="font-medium">{item.label}</span>
-                    </div>
-                    {item.highlight && activeView !== item.id && (
-                      <span className="w-2 h-2 rounded-full bg-orange-500"></span>
-                    )}
-                    <Icons.ChevronRight />
+                    <span className="text-lg">{item.icon}</span>
+                    <span className="font-medium flex-1 text-left">{item.label}</span>
+                    {item.alert && <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>}
                   </button>
                 ))}
               </nav>
             </div>
 
-            {/* Subscriptions Summary */}
-            <div className="rounded-2xl shadow-sm p-4" style={{ backgroundColor: 'white' }}>
-              <h3 className="font-semibold mb-4" style={{ color: colors.warmGray }}>Subscrições</h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm" style={{ color: colors.warmGrayLight }}>Testers</span>
-                  <span className="font-semibold px-2 py-1 rounded-lg text-sm"
-                        style={{ backgroundColor: '#E8F5E9', color: '#2E7D32' }}>
-                    {subscriptionStats?.testers || 0}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm" style={{ color: colors.warmGrayLight }}>Ativos</span>
-                  <span className="font-semibold px-2 py-1 rounded-lg text-sm"
-                        style={{ backgroundColor: '#E3F2FD', color: '#1565C0' }}>
-                    {subscriptionStats?.active || 0}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm" style={{ color: colors.warmGrayLight }}>Pendentes</span>
-                  <span className="font-semibold px-2 py-1 rounded-lg text-sm"
-                        style={{ backgroundColor: '#FFF8E1', color: '#F57F17' }}>
-                    {subscriptionStats?.pending || 0}
-                  </span>
-                </div>
+            {/* Quick Stats */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+              <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">Subscrições</h3>
+              <div className="space-y-2">
+                {[
+                  { label: 'Testers', value: subscriptionStats?.testers || 0, color: 'text-emerald-400' },
+                  { label: 'Ativos', value: subscriptionStats?.active || 0, color: 'text-green-400' },
+                  { label: 'Pendentes', value: subscriptionStats?.pending || 0, color: 'text-amber-400' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center justify-between py-2 px-3 rounded-lg bg-white/5">
+                    <span className="text-white/60 text-sm">{item.label}</span>
+                    <span className={`font-bold ${item.color}`}>{item.value}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Right Column - Main Content */}
-          <div className="lg:col-span-2">
-            <div className="rounded-2xl shadow-sm overflow-hidden" style={{ backgroundColor: 'white' }}>
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden min-h-[600px]">
 
               {/* OVERVIEW */}
               {activeView === 'overview' && (
                 <div className="p-6">
-                  <h2 className="text-xl font-semibold mb-6" style={{ color: colors.warmGray }}>
-                    Resumo Geral
-                  </h2>
+                  <h2 className="text-xl font-bold text-white mb-6">Resumo do Dia</h2>
 
-                  {/* Quick Stats Row */}
-                  <div className="grid grid-cols-4 gap-4 mb-8">
-                    {[
-                      { label: 'Hoje', value: stats.novosHoje, color: '#4CAF50' },
-                      { label: 'Semana', value: stats.novosSemana, color: '#2196F3' },
-                      { label: 'Lumina', value: stats.comLumina, color: '#FF9800' },
-                      { label: 'Testers', value: subscriptionStats?.testers || 0, color: '#9C27B0' },
-                    ].map((stat, i) => (
-                      <div key={i} className="text-center p-3 rounded-xl" style={{ backgroundColor: '#F9F7F4' }}>
-                        <div className="text-2xl font-bold" style={{ color: stat.color }}>{stat.value}</div>
-                        <div className="text-xs" style={{ color: colors.warmGrayLight }}>{stat.label}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Attention Alert */}
+                  {/* Alert Banner */}
                   {clientsNeedAttention.length > 0 && (
                     <button
                       onClick={() => setActiveView('attention')}
-                      className="w-full p-4 rounded-xl mb-6 flex items-center justify-between transition-all hover:shadow-md"
-                      style={{ backgroundColor: '#FFF3E0', border: '1px solid #FFE0B2' }}
+                      className="w-full p-4 rounded-xl bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 mb-6 flex items-center gap-4 hover:from-orange-500/30 hover:to-red-500/30 transition-all"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg" style={{ backgroundColor: '#FFE0B2' }}>
-                          <Icons.AlertCircle />
-                        </div>
-                        <div className="text-left">
-                          <p className="font-semibold" style={{ color: '#E65100' }}>
-                            {clientsNeedAttention.length} cliente{clientsNeedAttention.length !== 1 ? 's' : ''} precisa{clientsNeedAttention.length !== 1 ? 'm' : ''} de atenção
-                          </p>
-                          <p className="text-sm" style={{ color: '#F57C00' }}>Clica para ver detalhes</p>
-                        </div>
+                      <div className="w-12 h-12 rounded-xl bg-orange-500/30 flex items-center justify-center">
+                        <span className="text-2xl">⚠️</span>
                       </div>
-                      <Icons.ChevronRight />
+                      <div className="flex-1 text-left">
+                        <p className="font-semibold text-orange-200">
+                          {clientsNeedAttention.length} cliente{clientsNeedAttention.length !== 1 ? 's' : ''} precisa{clientsNeedAttention.length !== 1 ? 'm' : ''} de atenção
+                        </p>
+                        <p className="text-sm text-orange-300/70">Clica para ver e enviar mensagens</p>
+                      </div>
+                      <span className="text-orange-300">→</span>
                     </button>
                   )}
 
-                  {/* Recent Motivations */}
+                  {/* Categorias de Interação - Quick Access */}
+                  <div className="mb-6">
+                    <h3 className="text-sm font-semibold text-white/60 mb-3">Enviar Interação Rápida</h3>
+                    <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                      {Object.entries(INTERACTION_CATEGORIES).map(([key, cat]) => (
+                        <button
+                          key={key}
+                          onClick={() => { setSelectedCategory(key); setActiveView('interactions'); }}
+                          className={`p-3 rounded-xl bg-gradient-to-br ${cat.color} opacity-80 hover:opacity-100 transition-all text-center`}
+                        >
+                          <span className="text-2xl block mb-1">{cat.icon}</span>
+                          <span className="text-xs text-white font-medium">{cat.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Recent Interactions */}
                   <div>
-                    <h3 className="font-semibold mb-4" style={{ color: colors.warmGray }}>
-                      Motivações Recentes
-                    </h3>
-                    {motivationHistory.length === 0 ? (
-                      <div className="text-center py-8 rounded-xl" style={{ backgroundColor: '#F9F7F4' }}>
-                        <Icons.Heart />
-                        <p className="mt-2" style={{ color: colors.warmGrayLight }}>Nenhuma motivação enviada</p>
+                    <h3 className="text-sm font-semibold text-white/60 mb-3">Interações Recentes</h3>
+                    {interactionHistory.length === 0 ? (
+                      <div className="text-center py-8 bg-white/5 rounded-xl">
+                        <span className="text-4xl block mb-2">💬</span>
+                        <p className="text-white/40">Nenhuma interação ainda</p>
                       </div>
                     ) : (
-                      <div className="space-y-3">
-                        {motivationHistory.slice(0, 4).map((m, i) => (
-                          <div key={i} className="flex items-center gap-3 p-3 rounded-xl" style={{ backgroundColor: '#F9F7F4' }}>
-                            <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-medium"
-                                 style={{ backgroundColor: colors.sage }}>
-                              {m.users?.nome?.[0]?.toUpperCase() || 'C'}
+                      <div className="space-y-2 max-h-80 overflow-y-auto">
+                        {interactionHistory.slice(0, 5).map((item, i) => (
+                          <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold">
+                              {item.users?.nome?.[0]?.toUpperCase() || 'C'}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium truncate" style={{ color: colors.warmGray }}>
-                                {m.users?.nome || 'Cliente'}
-                              </p>
-                              <p className="text-sm truncate" style={{ color: colors.warmGrayLight }}>
-                                {m.descricao}
-                              </p>
+                              <p className="text-white font-medium truncate">{item.users?.nome || 'Cliente'}</p>
+                              <p className="text-white/40 text-sm truncate">{item.descricao}</p>
                             </div>
-                            <div className="flex items-center gap-1 text-xs" style={{ color: colors.warmGrayLight }}>
-                              <Icons.Clock />
-                              <span>{formatTimeAgo(m.created_at)}</span>
-                            </div>
+                            <span className="text-white/30 text-xs">{formatTimeAgo(item.created_at)}</span>
                           </div>
                         ))}
                       </div>
@@ -662,54 +563,39 @@ const CoachDashboard = () => {
                 </div>
               )}
 
-              {/* CLIENTS LIST */}
-              {activeView === 'clients' && !selectedClient && (
+              {/* CLIENTS */}
+              {activeView === 'clients' && (
                 <div className="p-6">
-                  <h2 className="text-xl font-semibold mb-6" style={{ color: colors.warmGray }}>
-                    Clientes Vitalis ({vitalisClients.length})
-                  </h2>
+                  <h2 className="text-xl font-bold text-white mb-6">Clientes Vitalis ({vitalisClients.length})</h2>
 
                   {vitalisClients.length === 0 ? (
-                    <div className="text-center py-12">
-                      <Icons.Leaf />
-                      <p className="mt-2" style={{ color: colors.warmGrayLight }}>Nenhum cliente ainda</p>
+                    <div className="text-center py-16">
+                      <span className="text-5xl block mb-4">🌿</span>
+                      <p className="text-white/40">Nenhum cliente ainda</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
                       {vitalisClients.map((client) => (
                         <div
                           key={client.id}
-                          className="flex items-center justify-between p-4 rounded-xl transition-all hover:shadow-sm"
-                          style={{ backgroundColor: '#F9F7F4' }}
+                          className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
                         >
-                          <div className="flex items-center gap-3">
-                            <div className="w-11 h-11 rounded-full flex items-center justify-center text-white font-medium"
-                                 style={{ backgroundColor: colors.sage }}>
-                              {client.users?.nome?.[0]?.toUpperCase() || 'C'}
-                            </div>
-                            <div>
-                              <p className="font-medium" style={{ color: colors.warmGray }}>
-                                {client.users?.nome || client.nome_completo || 'Sem nome'}
-                              </p>
-                              <p className="text-sm" style={{ color: colors.warmGrayLight }}>
-                                {client.users?.email}
-                              </p>
-                            </div>
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-bold text-lg">
+                            {client.users?.nome?.[0]?.toUpperCase() || '🌿'}
                           </div>
-
-                          <div className="flex items-center gap-2">
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusStyle(client.subscription_status)}`}>
-                              {client.subscription_status || 'sem status'}
-                            </span>
-
-                            <button
-                              onClick={() => loadClientDetails(client)}
-                              className="p-2 rounded-lg transition-all hover:shadow-sm"
-                              style={{ backgroundColor: '#E8E4DC', color: colors.warmGray }}
-                            >
-                              <Icons.ChevronRight />
-                            </button>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-semibold">{client.users?.nome || client.nome_completo || 'Sem nome'}</p>
+                            <p className="text-white/40 text-sm truncate">{client.users?.email}</p>
                           </div>
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(client.subscription_status)}`}>
+                            {client.subscription_status || 'sem status'}
+                          </span>
+                          <button
+                            onClick={() => { setSelectedClient(client); setShowInteractionPanel(true); }}
+                            className="px-4 py-2 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-sm font-medium transition-all border border-purple-500/30"
+                          >
+                            Mensagem
+                          </button>
                         </div>
                       ))}
                     </div>
@@ -717,142 +603,57 @@ const CoachDashboard = () => {
                 </div>
               )}
 
-              {/* CLIENT DETAIL */}
-              {activeView === 'client-detail' && selectedClient && (
-                <div className="p-6">
-                  <button
-                    onClick={() => { setSelectedClient(null); setActiveView('clients'); }}
-                    className="flex items-center gap-2 mb-6 transition-all hover:opacity-70"
-                    style={{ color: colors.sage }}
-                  >
-                    <Icons.ArrowLeft />
-                    <span className="font-medium">Voltar</span>
-                  </button>
-
-                  <div className="flex items-center gap-4 mb-8">
-                    <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl text-white font-bold"
-                         style={{ backgroundColor: colors.sage }}>
-                      {selectedClient.users?.nome?.[0]?.toUpperCase() || 'C'}
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold" style={{ color: colors.warmGray }}>
-                        {selectedClient.users?.nome || selectedClient.nome_completo || 'Cliente'}
-                      </h2>
-                      <p style={{ color: colors.warmGrayLight }}>{selectedClient.users?.email}</p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 mb-8">
-                    <div className="p-4 rounded-xl" style={{ backgroundColor: '#F9F7F4' }}>
-                      <p className="text-sm mb-1" style={{ color: colors.warmGrayLight }}>Status</p>
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusStyle(selectedClient.subscription_status)}`}>
-                        {selectedClient.subscription_status || 'N/A'}
-                      </span>
-                    </div>
-                    <div className="p-4 rounded-xl" style={{ backgroundColor: '#F9F7F4' }}>
-                      <p className="text-sm mb-1" style={{ color: colors.warmGrayLight }}>Expira</p>
-                      <p className="font-semibold" style={{ color: colors.warmGray }}>
-                        {formatDate(selectedClient.subscription_expires)}
-                      </p>
-                    </div>
-                    <div className="p-4 rounded-xl" style={{ backgroundColor: '#F9F7F4' }}>
-                      <p className="text-sm mb-1" style={{ color: colors.warmGrayLight }}>Pagamento</p>
-                      <p className="font-semibold" style={{ color: colors.warmGray }}>
-                        {selectedClient.payment_method || 'N/A'}
-                      </p>
-                    </div>
-                    <div className="p-4 rounded-xl" style={{ backgroundColor: '#F9F7F4' }}>
-                      <p className="text-sm mb-1" style={{ color: colors.warmGrayLight }}>Registo</p>
-                      <p className="font-semibold" style={{ color: colors.warmGray }}>
-                        {formatDate(selectedClient.created_at)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap gap-3">
-                    <button
-                      onClick={() => setShowMotivationPanel(true)}
-                      className="flex items-center gap-2 px-4 py-2 rounded-xl text-white font-medium transition-all hover:shadow-md"
-                      style={{ backgroundColor: colors.sage }}
-                    >
-                      <Icons.Heart />
-                      Enviar Motivação
-                    </button>
-                    <a
-                      href={`https://api.whatsapp.com/send?text=Olá ${selectedClient.users?.nome || 'Cliente'}! Como estás?`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all hover:shadow-md"
-                      style={{ backgroundColor: '#E8F5E9', color: '#2E7D32' }}
-                    >
-                      WhatsApp
-                    </a>
-                    {(!selectedClient.subscription_status || selectedClient.subscription_status === 'expired') && (
-                      <button
-                        onClick={() => handleSetAsTester(selectedClient.user_id, 'Via Dashboard')}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all hover:shadow-md"
-                        style={{ backgroundColor: '#E3F2FD', color: '#1565C0' }}
-                      >
-                        Tornar Tester
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* ATTENTION LIST */}
+              {/* ATTENTION */}
               {activeView === 'attention' && (
                 <div className="p-6">
-                  <h2 className="text-xl font-semibold mb-6" style={{ color: colors.warmGray }}>
-                    Clientes que Precisam de Atenção ({clientsNeedAttention.length})
-                  </h2>
+                  <h2 className="text-xl font-bold text-white mb-6">Clientes que Precisam de Atenção ({clientsNeedAttention.length})</h2>
 
                   {clientsNeedAttention.length === 0 ? (
-                    <div className="text-center py-12 rounded-xl" style={{ backgroundColor: '#E8F5E9' }}>
-                      <span className="text-4xl block mb-2">🎉</span>
-                      <p style={{ color: '#2E7D32' }}>Todos os clientes estão bem!</p>
+                    <div className="text-center py-16 bg-green-500/10 rounded-xl border border-green-500/20">
+                      <span className="text-5xl block mb-4">🎉</span>
+                      <p className="text-green-300 font-semibold">Todos os clientes estão bem!</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
                       {clientsNeedAttention.map((client, i) => (
                         <div
                           key={i}
-                          className="p-4 rounded-xl border-l-4"
-                          style={{
-                            backgroundColor: client.priority === 'high' ? '#FFF3E0' : '#FFFDE7',
-                            borderLeftColor: client.priority === 'high' ? '#E65100' : '#F9A825'
-                          }}
+                          className={`p-4 rounded-xl border-l-4 ${
+                            client.priority === 'high'
+                              ? 'bg-red-500/10 border-l-red-500'
+                              : 'bg-orange-500/10 border-l-orange-500'
+                          }`}
                         >
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div>
-                              <p className="font-semibold text-lg" style={{ color: colors.warmGray }}>{client.nome}</p>
-                              <p className="text-sm" style={{ color: colors.warmGrayLight }}>{client.email}</p>
-                              <div className="flex flex-wrap gap-2 mt-2">
-                                {client.reasons.map((r, j) => (
-                                  <span
-                                    key={j}
-                                    className="text-xs px-2 py-1 rounded-full"
-                                    style={{
-                                      backgroundColor: r.priority === 'high' ? '#FFCCBC' : '#FFF9C4',
-                                      color: r.priority === 'high' ? '#BF360C' : '#F57F17'
-                                    }}
-                                  >
-                                    {r.text}
-                                  </span>
-                                ))}
+                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                              <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold ${
+                                client.priority === 'high' ? 'bg-red-500/30' : 'bg-orange-500/30'
+                              }`}>
+                                {client.nome?.[0]?.toUpperCase() || '?'}
+                              </div>
+                              <div>
+                                <p className="text-white font-semibold text-lg">{client.nome}</p>
+                                <p className="text-white/50 text-sm">{client.email}</p>
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                  {client.reasons.map((r, j) => (
+                                    <span
+                                      key={j}
+                                      className={`text-xs px-2 py-1 rounded-full ${
+                                        r.priority === 'high' ? 'bg-red-500/30 text-red-200' : 'bg-orange-500/30 text-orange-200'
+                                      }`}
+                                    >
+                                      {r.text}
+                                    </span>
+                                  ))}
+                                </div>
                               </div>
                             </div>
-
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => { setSelectedClient(client); setShowMotivationPanel(true); }}
-                                className="flex items-center gap-2 px-4 py-2 rounded-xl text-white font-medium transition-all hover:shadow-md"
-                                style={{ backgroundColor: colors.sage }}
-                              >
-                                <Icons.Heart />
-                                Motivar
-                              </button>
-                            </div>
+                            <button
+                              onClick={() => { setSelectedClient(client); setShowInteractionPanel(true); }}
+                              className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all"
+                            >
+                              Enviar Mensagem
+                            </button>
                           </div>
                         </div>
                       ))}
@@ -864,31 +665,32 @@ const CoachDashboard = () => {
               {/* WAITLIST */}
               {activeView === 'waitlist' && (
                 <div className="p-6">
-                  <h2 className="text-xl font-semibold mb-6" style={{ color: colors.warmGray }}>
-                    Waitlist ({waitlist.length})
-                  </h2>
+                  <h2 className="text-xl font-bold text-white mb-6">Waitlist ({waitlist.length})</h2>
 
                   {waitlist.length === 0 ? (
-                    <div className="text-center py-12 rounded-xl" style={{ backgroundColor: '#F9F7F4' }}>
-                      <Icons.List />
-                      <p className="mt-2" style={{ color: colors.warmGrayLight }}>Waitlist vazia</p>
+                    <div className="text-center py-16">
+                      <span className="text-5xl block mb-4">📋</span>
+                      <p className="text-white/40">Waitlist vazia</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
                       {waitlist.map((item) => (
-                        <div key={item.id} className="flex items-center justify-between p-4 rounded-xl" style={{ backgroundColor: '#F9F7F4' }}>
-                          <div>
-                            <p className="font-medium" style={{ color: colors.warmGray }}>{item.nome}</p>
-                            <p className="text-sm" style={{ color: colors.warmGrayLight }}>{item.email}</p>
+                        <div key={item.id} className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
+                          <div className="w-12 h-12 rounded-full bg-purple-500/30 flex items-center justify-center text-purple-300 font-bold">
+                            {item.nome?.[0]?.toUpperCase() || '?'}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-semibold">{item.nome}</p>
+                            <p className="text-white/40 text-sm">{item.email}</p>
                             {item.whatsapp && (
-                              <p className="text-sm" style={{ color: '#2E7D32' }}>📱 {item.whatsapp}</p>
+                              <p className="text-green-400 text-sm">📱 {item.whatsapp}</p>
                             )}
                           </div>
                           <div className="text-right">
-                            <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: '#FFF3E0', color: '#E65100' }}>
+                            <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-medium border border-purple-500/30">
                               {item.produto || 'Vitalis'}
                             </span>
-                            <p className="text-xs mt-1" style={{ color: colors.warmGrayLight }}>{formatDate(item.created_at)}</p>
+                            <p className="text-white/30 text-xs mt-1">{formatDate(item.created_at)}</p>
                           </div>
                         </div>
                       ))}
@@ -897,67 +699,130 @@ const CoachDashboard = () => {
                 </div>
               )}
 
-              {/* MOTIVATIONS */}
-              {activeView === 'motivations' && (
+              {/* INTERACTIONS */}
+              {activeView === 'interactions' && (
                 <div className="p-6">
-                  <h2 className="text-xl font-semibold mb-6" style={{ color: colors.warmGray }}>
-                    Sistema de Motivações
-                  </h2>
+                  <h2 className="text-xl font-bold text-white mb-6">Central de Interações</h2>
 
-                  <div className="mb-8">
-                    <h3 className="font-semibold mb-4" style={{ color: colors.warmGray }}>Templates</h3>
-                    <div className="grid sm:grid-cols-2 gap-3">
-                      {MOTIVATION_TEMPLATES.map((t) => (
-                        <div key={t.id} className="p-4 rounded-xl" style={{ backgroundColor: '#F9F7F4' }}>
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="text-xl">{t.emoji}</span>
-                            <span className="font-semibold" style={{ color: colors.sage }}>{t.title}</span>
+                  {/* Categories Grid */}
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                    {Object.entries(INTERACTION_CATEGORIES).map(([key, cat]) => (
+                      <div key={key} className={`rounded-xl ${cat.bgColor} p-4`}>
+                        <div className="flex items-center gap-3 mb-3">
+                          <span className="text-2xl">{cat.icon}</span>
+                          <h3 className="font-bold text-gray-800">{cat.name}</h3>
+                        </div>
+                        <div className="space-y-2">
+                          {cat.templates.map((t) => (
+                            <button
+                              key={t.id}
+                              onClick={() => {
+                                if (selectedClient) {
+                                  sendInteraction(selectedClient, t);
+                                } else {
+                                  setActiveView('clients');
+                                  alert('Seleciona primeiro um cliente');
+                                }
+                              }}
+                              className="w-full p-3 bg-white/80 hover:bg-white rounded-lg text-left transition-all"
+                            >
+                              <p className="font-medium text-gray-800 text-sm">{t.title}</p>
+                              <p className="text-gray-500 text-xs line-clamp-2">{t.message}</p>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* History */}
+                  <h3 className="text-sm font-semibold text-white/60 mb-3">Histórico de Interações</h3>
+                  {interactionHistory.length === 0 ? (
+                    <div className="text-center py-8 bg-white/5 rounded-xl">
+                      <p className="text-white/40">Nenhuma interação registada</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                      {interactionHistory.map((item, i) => (
+                        <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+                          <div className="w-8 h-8 rounded-full bg-purple-500/30 flex items-center justify-center text-purple-300 text-xs font-bold flex-shrink-0">
+                            {item.users?.nome?.[0]?.toUpperCase() || 'C'}
                           </div>
-                          <p className="text-sm line-clamp-2" style={{ color: colors.warmGrayLight }}>{t.message}</p>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-medium">{item.users?.nome || 'Cliente'}</p>
+                            <p className="text-white/50 text-sm">{item.descricao}</p>
+                            <p className="text-white/30 text-xs mt-1">{formatDate(item.created_at)}</p>
+                          </div>
                         </div>
                       ))}
                     </div>
-                  </div>
+                  )}
+                </div>
+              )}
 
-                  <div className="mb-8">
-                    <button
-                      onClick={() => setActiveView('attention')}
-                      className="w-full p-4 rounded-xl flex items-center justify-between transition-all hover:shadow-md"
-                      style={{ backgroundColor: '#FFF3E0', border: '1px solid #FFE0B2' }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Icons.AlertCircle />
-                        <span className="font-medium" style={{ color: '#E65100' }}>
-                          Ver {clientsNeedAttention.length} cliente{clientsNeedAttention.length !== 1 ? 's' : ''} que precisa{clientsNeedAttention.length !== 1 ? 'm' : ''} de atenção
-                        </span>
-                      </div>
-                      <Icons.ChevronRight />
-                    </button>
-                  </div>
+              {/* AUTOMATION */}
+              {activeView === 'automation' && (
+                <div className="p-6">
+                  <h2 className="text-xl font-bold text-white mb-2">Automação</h2>
+                  <p className="text-white/50 mb-6">Configure mensagens automáticas para os seus clientes</p>
 
-                  <div>
-                    <h3 className="font-semibold mb-4" style={{ color: colors.warmGray }}>Histórico</h3>
-                    {motivationHistory.length === 0 ? (
-                      <div className="text-center py-8 rounded-xl" style={{ backgroundColor: '#F9F7F4' }}>
-                        <p style={{ color: colors.warmGrayLight }}>Nenhuma motivação enviada</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-2 max-h-80 overflow-y-auto">
-                        {motivationHistory.map((m, i) => (
-                          <div key={i} className="flex items-start gap-3 p-3 rounded-xl" style={{ backgroundColor: '#F9F7F4' }}>
-                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium flex-shrink-0"
-                                 style={{ backgroundColor: colors.sage }}>
-                              {m.users?.nome?.[0]?.toUpperCase() || 'C'}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium" style={{ color: colors.warmGray }}>{m.users?.nome || 'Cliente'}</p>
-                              <p className="text-sm" style={{ color: colors.warmGrayLight }}>{m.descricao}</p>
-                              <p className="text-xs mt-1" style={{ color: colors.warmGrayLight }}>{formatDate(m.created_at)}</p>
-                            </div>
+                  <div className="space-y-4">
+                    {[
+                      {
+                        icon: '⏰',
+                        title: 'Lembrete de Inatividade',
+                        description: 'Envia mensagem automática após X dias sem atividade',
+                        setting: '3 dias',
+                        enabled: true
+                      },
+                      {
+                        icon: '📅',
+                        title: 'Motivação Semanal',
+                        description: 'Envia mensagem motivacional toda segunda-feira',
+                        setting: 'Segunda-feira',
+                        enabled: true
+                      },
+                      {
+                        icon: '🔥',
+                        title: 'Celebração de Streak',
+                        description: 'Celebra automaticamente streaks de 7+ dias',
+                        setting: '7 dias',
+                        enabled: true
+                      },
+                      {
+                        icon: '👋',
+                        title: 'Boas-vindas Automáticas',
+                        description: 'Envia mensagem de boas-vindas a novos clientes',
+                        setting: 'Imediato',
+                        enabled: false
+                      },
+                    ].map((auto, i) => (
+                      <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
+                        <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                          <span className="text-2xl">{auto.icon}</span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-white font-semibold">{auto.title}</p>
+                          <p className="text-white/50 text-sm">{auto.description}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-purple-300 text-sm font-medium">{auto.setting}</p>
+                          <div className={`mt-1 px-3 py-1 rounded-full text-xs font-medium ${
+                            auto.enabled
+                              ? 'bg-green-500/20 text-green-300 border border-green-500/30'
+                              : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                          }`}>
+                            {auto.enabled ? 'Ativo' : 'Inativo'}
                           </div>
-                        ))}
+                        </div>
                       </div>
-                    )}
+                    ))}
+                  </div>
+
+                  <div className="mt-6 p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                    <p className="text-purple-200 text-sm">
+                      <span className="font-semibold">Nota:</span> A configuração de automação será disponibilizada em breve. Por agora, as interações são manuais através do painel.
+                    </p>
                   </div>
                 </div>
               )}
@@ -966,75 +831,96 @@ const CoachDashboard = () => {
         </div>
       </main>
 
-      {/* Motivation Panel Modal */}
-      {showMotivationPanel && selectedClient && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>
-          <div className="rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto" style={{ backgroundColor: 'white' }}>
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-xl font-bold" style={{ color: colors.warmGray }}>Enviar Motivação</h3>
-                  <p style={{ color: colors.sage }}>
-                    Para: {selectedClient.users?.nome || selectedClient.nome_completo || selectedClient.nome}
-                  </p>
+      {/* Interaction Panel Modal */}
+      {showInteractionPanel && selectedClient && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-white/10 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+            {/* Header */}
+            <div className="p-6 border-b border-white/10 bg-gradient-to-r from-purple-500/20 to-pink-500/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-xl font-bold">
+                    {selectedClient.users?.nome?.[0]?.toUpperCase() || selectedClient.nome?.[0]?.toUpperCase() || 'C'}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">
+                      {selectedClient.users?.nome || selectedClient.nome_completo || selectedClient.nome || 'Cliente'}
+                    </h3>
+                    <p className="text-purple-300">{selectedClient.users?.email || selectedClient.email}</p>
+                  </div>
                 </div>
                 <button
-                  onClick={() => { setShowMotivationPanel(false); setCustomMessage(''); }}
-                  className="p-2 rounded-lg transition-all hover:bg-gray-100"
-                  style={{ color: colors.warmGray }}
+                  onClick={() => { setShowInteractionPanel(false); setSelectedCategory(null); setCustomMessage(''); }}
+                  className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/60 hover:text-white transition-all"
                 >
-                  <Icons.X />
+                  ✕
                 </button>
               </div>
+            </div>
 
-              <div className="mb-6">
-                <p className="text-sm font-medium mb-3" style={{ color: colors.warmGray }}>Escolhe um template:</p>
-                <div className="space-y-2">
-                  {MOTIVATION_TEMPLATES.map((t) => (
+            {/* Content */}
+            <div className="p-6 max-h-[60vh] overflow-y-auto">
+              {/* Category Selector */}
+              <div className="flex flex-wrap gap-2 mb-6">
+                {Object.entries(INTERACTION_CATEGORIES).map(([key, cat]) => (
+                  <button
+                    key={key}
+                    onClick={() => setSelectedCategory(selectedCategory === key ? null : key)}
+                    className={`px-4 py-2 rounded-xl font-medium text-sm transition-all ${
+                      selectedCategory === key
+                        ? `bg-gradient-to-r ${cat.color} text-white`
+                        : 'bg-white/5 text-white/60 hover:text-white border border-white/10'
+                    }`}
+                  >
+                    {cat.icon} {cat.name}
+                  </button>
+                ))}
+              </div>
+
+              {/* Templates */}
+              {selectedCategory && (
+                <div className="space-y-2 mb-6">
+                  {INTERACTION_CATEGORIES[selectedCategory].templates.map((t) => (
                     <button
                       key={t.id}
-                      onClick={() => sendMotivation(selectedClient, t)}
-                      disabled={sendingMotivation}
-                      className="w-full p-4 rounded-xl text-left transition-all hover:shadow-md disabled:opacity-50"
-                      style={{ backgroundColor: '#F9F7F4' }}
+                      onClick={() => sendInteraction(selectedClient, t)}
+                      disabled={sendingMessage}
+                      className={`w-full p-4 rounded-xl text-left transition-all border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 disabled:opacity-50`}
                     >
-                      <div className="flex items-center gap-2 mb-1">
-                        <span>{t.emoji}</span>
-                        <span className="font-semibold" style={{ color: colors.sage }}>{t.title}</span>
-                      </div>
-                      <p className="text-sm line-clamp-2" style={{ color: colors.warmGrayLight }}>{t.message}</p>
+                      <p className="font-medium text-white">{t.title}</p>
+                      <p className="text-white/50 text-sm mt-1">{t.message}</p>
                     </button>
                   ))}
                 </div>
-              </div>
+              )}
 
-              <div className="mb-6">
-                <p className="text-sm font-medium mb-3" style={{ color: colors.warmGray }}>Ou mensagem personalizada:</p>
+              {/* Custom Message */}
+              <div>
+                <p className="text-sm font-medium text-white/60 mb-2">Ou escreve uma mensagem personalizada:</p>
                 <textarea
                   value={customMessage}
                   onChange={(e) => setCustomMessage(e.target.value)}
-                  placeholder="Escreve aqui..."
-                  className="w-full p-4 rounded-xl resize-none focus:outline-none focus:ring-2"
-                  style={{ backgroundColor: '#F9F7F4', focusRing: colors.sage }}
+                  placeholder="Escreve aqui a tua mensagem..."
+                  className="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 resize-none focus:outline-none focus:border-purple-500/50"
                   rows={4}
                 />
                 {customMessage && (
                   <button
-                    onClick={() => sendMotivation(selectedClient, { message: customMessage }, customMessage)}
-                    disabled={sendingMotivation}
-                    className="mt-3 w-full py-3 rounded-xl text-white font-medium transition-all hover:shadow-md disabled:opacity-50"
-                    style={{ backgroundColor: colors.sage }}
+                    onClick={() => sendInteraction(selectedClient, { message: customMessage }, customMessage)}
+                    disabled={sendingMessage}
+                    className="mt-3 w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all disabled:opacity-50"
                   >
-                    {sendingMotivation ? 'A enviar...' : 'Enviar Mensagem'}
+                    {sendingMessage ? 'A enviar...' : 'Enviar Mensagem'}
                   </button>
                 )}
               </div>
+            </div>
 
-              <div className="p-4 rounded-xl" style={{ backgroundColor: '#E3F2FD' }}>
-                <p className="text-sm" style={{ color: '#1565C0' }}>
-                  <Icons.Mail /> A motivação será enviada por email e guardada no histórico.
-                </p>
-              </div>
+            {/* Footer */}
+            <div className="p-4 border-t border-white/10 bg-white/5">
+              <p className="text-white/40 text-sm text-center">
+                📧 A mensagem será enviada por email
+              </p>
             </div>
           </div>
         </div>
