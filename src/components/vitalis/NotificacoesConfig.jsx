@@ -18,18 +18,36 @@ export default function NotificacoesConfig() {
   const [permissao, setPermissao] = useState(temPermissao());
   const [lembretes, setLembretes] = useState(carregarLembretes());
   const [saved, setSaved] = useState(false);
+  const [aPedir, setAPedir] = useState(false);
 
-  const suportado = notificacoesSuportadas();
+  // Verificar se browser suporta notificações (não precisa de serviceWorker)
+  const suportado = 'Notification' in window;
 
   const handlePedirPermissao = async () => {
-    const resultado = await pedirPermissao();
-    setPermissao(resultado);
-    if (resultado) {
-      // Enviar notificação de teste
-      enviarNotificacao('🎉 Notificações activadas!', {
-        body: 'Agora vais receber lembretes para manter o foco.',
-        tag: 'vitalis-welcome'
-      });
+    if (aPedir) return;
+    setAPedir(true);
+
+    try {
+      const resultado = await pedirPermissao();
+      setPermissao(resultado);
+
+      if (resultado) {
+        // Enviar notificação de teste
+        setTimeout(() => {
+          enviarNotificacao('🎉 Notificações activadas!', {
+            body: 'Agora vais receber lembretes para manter o foco.',
+            tag: 'vitalis-welcome'
+          });
+        }, 500);
+      } else {
+        // Mostrar mensagem se foi negado
+        alert('Permissão de notificações negada. Podes activar nas definições do browser.');
+      }
+    } catch (error) {
+      console.error('Erro ao pedir permissão:', error);
+      alert('Erro ao pedir permissão. Tenta novamente.');
+    } finally {
+      setAPedir(false);
     }
   };
 
@@ -120,9 +138,10 @@ export default function NotificacoesConfig() {
             {suportado && !permissao && (
               <button
                 onClick={handlePedirPermissao}
-                className="px-4 py-2 bg-[#7C8B6F] text-white rounded-lg font-medium hover:bg-[#6B7A5D] transition-colors"
+                disabled={aPedir}
+                className="px-4 py-2 bg-[#7C8B6F] text-white rounded-lg font-medium hover:bg-[#6B7A5D] transition-colors disabled:opacity-50"
               >
-                Activar
+                {aPedir ? 'A activar...' : 'Activar'}
               </button>
             )}
           </div>

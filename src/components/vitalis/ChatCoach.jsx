@@ -515,6 +515,220 @@ export default function ChatCoach() {
         `Conta-me mais - posso ajudar com estratégias específicas.`;
     }
 
+    // ========== SNACKS / LANCHES ==========
+    if (texto.match(/snack|lanche|meio.?manha|meio.?tarde|merenda/)) {
+      return `Sobre snacks e lanches:\n\n` +
+        `**Opções rápidas (contam nas porções):**\n` +
+        `• 1 iogurte grego natural = ~0.5 palma proteína\n` +
+        `• 2-3 ovos cozidos = 1 palma proteína\n` +
+        `• Punhado de amêndoas = 2 polegares gordura\n` +
+        `• Queijo + 2 nozes = proteína + gordura\n` +
+        `• Batido whey = 1 palma proteína\n\n` +
+        `${faseRestritiva ?
+          `**Na tua fase, prioriza:**\n• Snacks ricos em gordura e proteína\n• Evita fruta e cereais` :
+          `**Opções com hidratos:**\n• Maçã + manteiga de amendoim\n• Iogurte grego com aveia`}\n\n` +
+        `**Dica:** Snacks devem complementar, não substituir refeições principais.`;
+    }
+
+    // ========== ÁLCOOL ==========
+    if (texto.match(/alcool|vinho|cerveja|bebida.*alcoo|beber.*alcool/)) {
+      return `Sobre álcool e o método Vitalis:\n\n` +
+        `**O que deves saber:**\n` +
+        `• O álcool é metabolizado primeiro - pausa a queima de gordura\n` +
+        `• Aumenta a fome e reduz a disciplina alimentar\n` +
+        `• Afecta a qualidade do sono (menos recuperação)\n\n` +
+        `${faseRestritiva ?
+          `**Na tua fase (${fase}):**\nRecomendo evitar completamente. Estás num período de adaptação metabólica importante.` :
+          `**Se fores beber:**\n• Prefere vinho tinto (1-2 copos)\n• Evita cocktails doces e cerveja\n• Não bebas de estômago vazio\n• Hidrata bem antes e depois`}\n\n` +
+        `**A regra dos 80/20:** Se 80% do tempo estiveres no caminho certo, uma ocasião especial não vai arruinar o progresso.`;
+    }
+
+    // ========== SUPLEMENTOS ==========
+    if (texto.match(/suplement|vitamin|omega|magnesio|creatina|colageno/)) {
+      return `Sobre suplementos:\n\n` +
+        `**Essenciais (se não obtens pela alimentação):**\n` +
+        `• **Vitamina D** - especialmente se pouca exposição solar\n` +
+        `• **Ómega 3** - se não comes peixe gordo 2-3x/semana\n` +
+        `• **Magnésio** - ajuda no sono e recuperação muscular\n\n` +
+        `**Úteis no método Vitalis:**\n` +
+        `• **Whey Protein** - para atingir as ${palmas} palmas\n` +
+        `${faseRestritiva ? `• **Electrólitos** - importante em fases low carb\n• **MCT Oil** - energia rápida sem hidratos\n` : ''}` +
+        `• **Colágeno** - para pele e articulações\n\n` +
+        `**Não substitui comida!** Suplementos são complemento, não base.`;
+    }
+
+    // ========== COMER FORA / RESTAURANTE ==========
+    if (texto.match(/restaurante|comer fora|festa|evento|jantar.*fora|almoco.*fora/)) {
+      return `Comer fora seguindo o método:\n\n` +
+        `**Antes de ir:**\n` +
+        `• Consulta o menu online se possível\n` +
+        `• Não vás com muita fome (snack proteico antes)\n\n` +
+        `**No restaurante:**\n` +
+        `• Pede a proteína grelhada/assada (não frita)\n` +
+        `• Troca batatas fritas por legumes ou salada\n` +
+        `• Pede molhos à parte\n` +
+        `• Controla o pão antes da refeição\n\n` +
+        `**Montagem do prato:**\n` +
+        `• Visualiza as tuas porções (${palmas} palmas/dia)\n` +
+        `• Metade legumes, um quarto proteína, um quarto resto\n\n` +
+        `${faseRestritiva ?
+          `**Na tua fase:** Escolhe grelhados sem molhos, pede legumes extra em vez de acompanhamentos.` :
+          `**Flexibilidade:** Uma refeição fora do plano não arruina a semana. Desfruta e volta ao normal na próxima.`}`;
+    }
+
+    // ========== AÇÚCAR / DOCES ==========
+    if (texto.match(/acucar|doce|sobremesa|chocolate|gelado|bolo/)) {
+      return `Sobre açúcar e doces:\n\n` +
+        `**A verdade:**\n` +
+        `• O açúcar provoca picos de insulina\n` +
+        `• Quanto mais comes, mais queres (viciante)\n` +
+        `• Engorda porque estimula o armazenamento\n\n` +
+        `${faseRestritiva ?
+          `**Na tua fase actual:**\nDoces estão fora. Mas tens alternativas:\n• Chocolate 85%+ cacau (1-2 quadrados)\n• Mousse de abacate com cacau\n• Gelatina sem açúcar\n• Frutos vermelhos em pequena quantidade` :
+          `**Estratégias:**\n• Guarda doces para ocasiões especiais\n• Chocolate negro (70%+) em vez de ao leite\n• Se vais comer, faz parte da refeição (nunca sozinho)`}\n\n` +
+        `**Vontade de doce?**\n` +
+        `• Pode ser falta de proteína\n` +
+        `• Pode ser desidratação\n` +
+        `• Pode ser hábito (quebre o ciclo!)`;
+    }
+
+    // ========== CONSTIPAÇÃO / DIGESTÃO ==========
+    if (texto.match(/obstip|prisao.*ventre|intestino|diges|barriga.*inchada|gases/)) {
+      return `Sobre digestão e intestino:\n\n` +
+        `**Causas comuns de inchaço:**\n` +
+        `• Pouca fibra (legumes insuficientes)\n` +
+        `• Pouca água (meta: 2L/dia)\n` +
+        `• Mudança brusca de alimentação\n` +
+        `• Comer muito rápido\n\n` +
+        `**Soluções:**\n` +
+        `• Aumenta os legumes gradualmente\n` +
+        `• Bebe água ao longo do dia (não só às refeições)\n` +
+        `• Sementes de linhaça ou chia (1 colher/dia)\n` +
+        `• Caminha após refeições\n\n` +
+        `${faseRestritiva ?
+          `**Em fases restritivas:** É normal alguma mudança intestinal nas primeiras 1-2 semanas. O corpo está a adaptar-se.` :
+          `**Probióticos:** Iogurte natural, kefir ou suplemento podem ajudar.`}\n\n` +
+        `Se persistir por mais de 2 semanas, consulta um profissional.`;
+    }
+
+    // ========== RETENÇÃO / PESO NÃO DESCE ==========
+    if (texto.match(/reten|peso.*para|peso.*desce|estagnado|plateau|nao.*perco|nao.*emagreco/)) {
+      return `Peso estagnado? Vamos analisar:\n\n` +
+        `**Primeiro, verifica:**\n` +
+        `• Estás a cumprir as porções exactas?\n` +
+        `• Estás a contar os "pequenos extras"?\n` +
+        `• Dormes bem (7-8h)?\n` +
+        `• Bebes água suficiente?\n\n` +
+        `**O peso flutua!**\n` +
+        `• Retenção de água (sal, ciclo menstrual, stress)\n` +
+        `• Ganho de músculo (se treinas)\n` +
+        `• Não uses a balança como única métrica\n\n` +
+        `**Estratégias para quebrar plateau:**\n` +
+        `• Refeed day (1 dia com +2 mãos de hidratos)\n` +
+        `• Mudar horários das refeições\n` +
+        `• Adicionar/mudar tipo de exercício\n` +
+        `• Verificar se não estás a comer de menos(!)\n\n` +
+        `**Paciência:** Às vezes o corpo precisa de tempo para se ajustar. Confia no processo!`;
+    }
+
+    // ========== MENSTRUAÇÃO / CICLO ==========
+    if (texto.match(/menstrua|periodo|ciclo|tpm|antes.*periodo/)) {
+      return `Alimentação e ciclo menstrual:\n\n` +
+        `**Fase Pré-menstrual (TPM):**\n` +
+        `• Aumento de fome é NORMAL (metabolismo acelera)\n` +
+        `• Retenção de água pode aumentar 1-3kg\n` +
+        `• Vontade de doces é hormonal\n\n` +
+        `**O que fazer:**\n` +
+        `• Aumenta ligeiramente as porções (+1 palma proteína)\n` +
+        `• Magnésio ajuda nas cãibras\n` +
+        `• Chocolate negro 85% para a vontade\n` +
+        `• Não te peses nesta fase!\n\n` +
+        `**Durante a menstruação:**\n` +
+        `• Mantém as porções normais\n` +
+        `• Hidrata bem\n` +
+        `• Alimentos ricos em ferro (carne vermelha, espinafres)\n\n` +
+        `**Pós-menstruação:** Melhor altura para ser mais estrita - energia e disposição aumentam!`;
+    }
+
+    // ========== STRESS / EMOCIONAL ==========
+    if (texto.match(/stress|ansiedade|nervos|emocional|comer.*emocao|comfor.*food/)) {
+      return `Alimentação emocional:\n\n` +
+        `**Reconhecer:**\n` +
+        `• Fome real vs fome emocional\n` +
+        `• Fome real: cresce gradualmente, qualquer comida satisfaz\n` +
+        `• Fome emocional: súbita, específica, nunca satisfaz\n\n` +
+        `**Estratégias:**\n` +
+        `• Pausa antes de comer (5 respirações profundas)\n` +
+        `• Pergunta: "Estou mesmo com fome?"\n` +
+        `• Bebe água primeiro\n` +
+        `• Caminha 10 minutos antes de decidir\n\n` +
+        `**Alternativas ao comfort food:**\n` +
+        `• Chá quente\n` +
+        `• Banho quente\n` +
+        `• Ligar a alguém\n` +
+        `• Escrever o que sentes\n\n` +
+        `**Compaixão:** Se comeres por emoção, não te castigues. Identifica o gatilho e aprende para a próxima.`;
+    }
+
+    // ========== VEGETARIANO / VEGAN ==========
+    if (texto.match(/vegetariano|vegan|sem.*carne|nao.*como.*carne/)) {
+      return `Opções vegetarianas no método:\n\n` +
+        `**Fontes de proteína vegetariana:**\n` +
+        `• Ovos (se comes) - excelente fonte\n` +
+        `• Tofu/tempeh - 1 palma = 100-150g\n` +
+        `• Leguminosas (feijão, grão, lentilhas)\n` +
+        `• Iogurte grego e queijo\n` +
+        `• Seitan (se não és celíaco)\n\n` +
+        `**Combinações completas:**\n` +
+        `• Arroz + feijão = proteína completa\n` +
+        `• Hummus + pão integral\n` +
+        `• Tofu + quinoa\n\n` +
+        `**Nota importante:**\n` +
+        `• Proteína vegetal é menos biodisponível\n` +
+        `• Pode precisar de +1 palma para igualar animal\n` +
+        `• Suplementar B12 se vegan\n\n` +
+        `O método funciona, mas requer mais planeamento.`;
+    }
+
+    // ========== SONO E ALIMENTAÇÃO ==========
+    if (texto.match(/insonia|dormir.*mal|acordar.*noite|sono.*ruim/)) {
+      return `Alimentação para melhor sono:\n\n` +
+        `**O que afecta o sono:**\n` +
+        `• Cafeína após 14h\n` +
+        `• Refeição pesada à noite\n` +
+        `• Álcool (parece ajudar mas prejudica qualidade)\n` +
+        `• Açúcar à noite\n\n` +
+        `**Jantar ideal:**\n` +
+        `• ${Math.round(palmas * 0.35)} palmas de proteína\n` +
+        `• Legumes à vontade\n` +
+        `• Hidratos leves (se a tua fase permite)\n` +
+        `• 2-3h antes de deitar\n\n` +
+        `**Alimentos que ajudam:**\n` +
+        `• Peixes gordos (ómega 3)\n` +
+        `• Frutos secos (magnésio)\n` +
+        `• Chá de camomila\n` +
+        `• Kiwi antes de dormir\n\n` +
+        `**Rotina:** Evita ecrãs 1h antes, quarto fresco e escuro.`;
+    }
+
+    // ========== EXERCÍCIO E ALIMENTAÇÃO ==========
+    if (texto.match(/comer.*antes.*treino|comer.*depois.*treino|pre.?treino|pos.?treino/)) {
+      return `Alimentação à volta do treino:\n\n` +
+        `**PRÉ-TREINO (1-2h antes):**\n` +
+        `• 1 palma de proteína\n` +
+        `• 1 mão concha de hidratos (se treino intenso)\n` +
+        `• Pouca gordura (digestão lenta)\n\n` +
+        `**Exemplos:**\n` +
+        `• Iogurte grego + banana\n` +
+        `• Omelete + tosta\n` +
+        `• Batido whey + aveia\n\n` +
+        `**PÓS-TREINO (até 2h depois):**\n` +
+        `• 1-2 palmas de proteína (fundamental!)\n` +
+        `• Hidratos para repor glicogénio\n` +
+        `• É a melhor altura para comer hidratos!\n\n` +
+        `**Lembra-te:** Nos teus dias de treino (${diasTreino.length > 0 ? diasTreino.map(d => ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d-1]).join(', ') : 'não definidos'}), tens +1 mão concha de hidratos.`;
+    }
+
     // ========== SAUDAÇÕES ==========
     if (texto.match(/^(ol[aá]|oi|bom dia|boa tarde|boa noite)\b/)) {
       return `Olá${nome ? ' ' + nome : ''}! 👋\n\nComo posso ajudar?\n\n` +
@@ -523,6 +737,39 @@ export default function ChatCoach() {
         `• Como montar as refeições\n` +
         `• O que priorizar ou evitar\n` +
         `• A tua fase actual`;
+    }
+
+    // ========== AJUDA / COMANDOS ==========
+    if (texto.match(/ajuda|help|o que (sabes|podes)|comandos|perguntas/)) {
+      return `${nome ? nome + ', posso' : 'Posso'} ajudar com muitos temas!\n\n` +
+        `**📏 Porções e Medidas:**\n` +
+        `• "Como medir porções?"\n` +
+        `• "Quanto devo comer de proteína?"\n` +
+        `• "Quantos hidratos posso comer?"\n\n` +
+        `**🍽️ Refeições:**\n` +
+        `• "O que comer ao pequeno-almoço?"\n` +
+        `• "Ideias para o almoço"\n` +
+        `• "Snacks saudáveis"\n\n` +
+        `**🔬 Ciência e Método:**\n` +
+        `• "O que é jejum intermitente?"\n` +
+        `• "Autofagia"\n` +
+        `• "Hormonas da fome"\n\n` +
+        `**💪 Situações Específicas:**\n` +
+        `• "Comer fora de casa"\n` +
+        `• "Peso estagnado"\n` +
+        `• "Alimentação e treino"\n` +
+        `• "Alimentação emocional"\n\n` +
+        `Pergunta o que quiseres!`;
+    }
+
+    // ========== OBRIGADA / FEEDBACK ==========
+    if (texto.match(/obrigad|agradec|muito (util|bom)|ajudou/)) {
+      return `${nome ? 'De nada, ' + nome : 'De nada'}! 😊\n\n` +
+        `Fico feliz em ajudar. Lembra-te:\n` +
+        `• As tuas porções: ${palmas}P ${maos}H ${polegares}G\n` +
+        `• Fase actual: ${fase}\n` +
+        `• Consistência > Perfeição\n\n` +
+        `Estou aqui sempre que precisares!`;
     }
 
     // ========== RESPOSTA PADRÃO ==========
@@ -535,7 +782,10 @@ export default function ChatCoach() {
       `Pergunta-me sobre:\n` +
       `• Como medir as porções\n` +
       `• Como distribuir pelas refeições\n` +
-      `• O que priorizar ou evitar`;
+      `• O que priorizar ou evitar\n` +
+      `• Jejum intermitente e autofagia\n` +
+      `• Situações específicas (restaurantes, treino, etc.)\n\n` +
+      `Escreve "ajuda" para ver todos os temas disponíveis!`;
   };
 
   const enviarMensagem = async () => {
@@ -657,10 +907,12 @@ export default function ChatCoach() {
         <div className="max-w-2xl mx-auto flex gap-2">
           {[
             { texto: 'Como medir porções?', emoji: '🖐️' },
+            { texto: 'Snacks saudáveis', emoji: '🥜' },
+            { texto: 'Peso estagnado', emoji: '⚖️' },
             { texto: 'Jejum intermitente', emoji: '⏰' },
-            { texto: 'Autofagia', emoji: '🔬' },
-            { texto: 'Hormonas da fome', emoji: '🧬' },
-            { texto: 'Café keto', emoji: '☕' },
+            { texto: 'Comer fora', emoji: '🍽️' },
+            { texto: 'Alimentação emocional', emoji: '💭' },
+            { texto: 'Ajuda', emoji: '❓' },
           ].map((quick, i) => (
             <button key={i} onClick={() => setNovaMensagem(quick.texto)} className="flex items-center gap-1 px-3 py-1.5 bg-white rounded-full text-sm text-gray-600 hover:bg-gray-50 whitespace-nowrap shadow-sm">
               <span>{quick.emoji}</span><span>{quick.texto}</span>

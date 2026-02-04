@@ -234,7 +234,9 @@ export default function ListaCompras() {
     localStorage.removeItem('vitalis-lista-comprados');
   };
 
-  const partilharLista = async () => {
+  const [showShareMenu, setShowShareMenu] = useState(false);
+
+  const gerarTextoLista = () => {
     const fase = planoCompleto?.fase?.nome || 'Actual';
     const listaTexto = Object.entries(
       itens.reduce((acc, item) => {
@@ -245,8 +247,88 @@ export default function ListaCompras() {
       }, {})
     ).map(([cat, items]) => `\n${cat}:\n${items.map(i => `  • ${i}`).join('\n')}`).join('\n');
 
-    const texto = `Lista de Compras Vitalis\nFase: ${fase}\n${'='.repeat(25)}${listaTexto}\n\n💡 Lista personalizada para o teu plano!`;
+    return `🛒 Lista de Compras Vitalis\nFase: ${fase}\n${'='.repeat(25)}${listaTexto}\n\n💡 Lista personalizada para o teu plano!`;
+  };
 
+  const copiarLista = async () => {
+    const texto = gerarTextoLista();
+    try {
+      await navigator.clipboard.writeText(texto);
+      alert('✅ Lista copiada para a área de transferência!');
+    } catch (err) {
+      console.error('Erro ao copiar:', err);
+      alert('Erro ao copiar. Tenta novamente.');
+    }
+    setShowShareMenu(false);
+  };
+
+  const partilharWhatsApp = () => {
+    const texto = gerarTextoLista();
+    const url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+    window.open(url, '_blank');
+    setShowShareMenu(false);
+  };
+
+  const imprimirLista = () => {
+    const fase = planoCompleto?.fase?.nome || 'Actual';
+
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Lista de Compras Vitalis</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+          h1 { color: #7C8B6F; font-size: 24px; border-bottom: 2px solid #7C8B6F; padding-bottom: 10px; }
+          h2 { color: #4A4035; font-size: 16px; margin-top: 20px; margin-bottom: 10px; }
+          .categoria { margin-bottom: 20px; }
+          .categoria-header { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #6B5C4C; border-bottom: 1px solid #E8E4DC; padding-bottom: 5px; }
+          ul { list-style: none; padding: 0; margin: 5px 0; }
+          li { padding: 5px 0; border-bottom: 1px dashed #eee; display: flex; justify-content: space-between; }
+          .item-nome { flex: 1; }
+          .item-qtd { color: #666; min-width: 100px; text-align: right; }
+          .nota { font-size: 12px; color: #888; font-style: italic; }
+          .footer { margin-top: 30px; text-align: center; color: #999; font-size: 12px; }
+          @media print { body { padding: 0; } }
+        </style>
+      </head>
+      <body>
+        <h1>🛒 Lista de Compras Vitalis</h1>
+        <h2>Fase: ${fase} • ${plano?.porcoes_proteina || 6}P ${plano?.porcoes_hidratos || 3}H ${plano?.porcoes_gordura || 8}G</h2>
+        ${Object.entries(itensPorCategoria).map(([categoria, items]) => {
+          const cat = CATEGORIAS[categoria] || CATEGORIAS.outros;
+          return `
+            <div class="categoria">
+              <div class="categoria-header">${cat.icone} ${cat.nome}</div>
+              <ul>
+                ${items.map(item => `
+                  <li>
+                    <span class="item-nome">${item.nome}${item.nota ? `<span class="nota"> (${item.nota})</span>` : ''}</span>
+                    <span class="item-qtd">${item.quantidade} ${item.unidade}</span>
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+          `;
+        }).join('')}
+        <div class="footer">Lista personalizada pelo método Vitalis • sete-ecos.com</div>
+      </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 250);
+    setShowShareMenu(false);
+  };
+
+  const partilharNativo = async () => {
+    const texto = gerarTextoLista();
     if (navigator.share) {
       try {
         await navigator.share({ title: 'Lista de Compras Vitalis', text: texto });
@@ -254,9 +336,9 @@ export default function ListaCompras() {
         console.log('Partilha cancelada');
       }
     } else {
-      navigator.clipboard.writeText(texto);
-      alert('Lista copiada!');
+      copiarLista();
     }
+    setShowShareMenu(false);
   };
 
   // Agrupar por categoria
@@ -299,12 +381,56 @@ export default function ListaCompras() {
                 </p>
               </div>
             </div>
-            <button
-              onClick={partilharLista}
-              className="px-4 py-2 bg-white/20 rounded-full text-sm font-medium hover:bg-white/30 transition-colors"
-            >
-              📤 Partilhar
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowShareMenu(!showShareMenu)}
+                className="px-4 py-2 bg-white/20 rounded-full text-sm font-medium hover:bg-white/30 transition-colors"
+              >
+                📤 Partilhar
+              </button>
+
+              {/* Dropdown Menu */}
+              {showShareMenu && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setShowShareMenu(false)}
+                  ></div>
+                  <div className="absolute right-0 top-full mt-2 bg-white rounded-xl shadow-xl z-50 overflow-hidden min-w-[200px]">
+                    <button
+                      onClick={partilharWhatsApp}
+                      className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left text-gray-700"
+                    >
+                      <span className="text-xl">💬</span>
+                      <span>WhatsApp</span>
+                    </button>
+                    <button
+                      onClick={copiarLista}
+                      className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left text-gray-700 border-t"
+                    >
+                      <span className="text-xl">📋</span>
+                      <span>Copiar texto</span>
+                    </button>
+                    <button
+                      onClick={imprimirLista}
+                      className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left text-gray-700 border-t"
+                    >
+                      <span className="text-xl">🖨️</span>
+                      <span>Imprimir</span>
+                    </button>
+                    {navigator.share && (
+                      <button
+                        onClick={partilharNativo}
+                        className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left text-gray-700 border-t"
+                      >
+                        <span className="text-xl">📤</span>
+                        <span>Mais opções...</span>
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Progresso */}

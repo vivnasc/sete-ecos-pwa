@@ -78,6 +78,9 @@ export default function DashboardVitalis() {
   const notificacaoJejumEnviada = useRef(false);
   const jejumTimerRef = useRef(null);
 
+  // Ref para controlar conquistas já mostradas nesta sessão
+  const conquistasMostradasRef = useRef(new Set());
+
   // Estados para Sono interactivo
   const [mostrarSonoForm, setMostrarSonoForm] = useState(false);
   const [sonoHoras, setSonoHoras] = useState('');
@@ -357,13 +360,22 @@ export default function DashboardVitalis() {
 
       // Se há novas conquistas, notificar por email
       if (novasConquistas.length > 0 && email) {
+        // Guardar conquistas já notificadas PRIMEIRO para evitar duplicados
+        localStorage.setItem('vitalis-conquistas-notificadas', JSON.stringify(conquistas));
+
         for (const conquistaId of novasConquistas) {
           const conquista = CONQUISTAS[conquistaId];
           if (conquista) {
-            // Mostrar celebração para a primeira nova conquista
-            if (novasConquistas.indexOf(conquistaId) === 0) {
-              setConquistaActual(conquistaId);
-              setShowCelebracao(true);
+            // Verificar se já mostramos esta conquista nesta sessão
+            if (!conquistasMostradasRef.current.has(conquistaId)) {
+              // Marcar como mostrada nesta sessão
+              conquistasMostradasRef.current.add(conquistaId);
+
+              // Mostrar celebração para a primeira nova conquista não mostrada
+              if (!showCelebracao) {
+                setConquistaActual(conquistaId);
+                setShowCelebracao(true);
+              }
             }
 
             // Enviar email (async, não bloqueia)
@@ -378,15 +390,11 @@ export default function DashboardVitalis() {
             ).catch(err => console.error('Erro ao enviar email conquista:', err));
           }
         }
-
-        // Guardar conquistas já notificadas
-        localStorage.setItem('vitalis-conquistas-notificadas', JSON.stringify(conquistas));
       }
 
       setConquistasDesbloqueadas(conquistas);
       setXpTotal(xp);
       localStorage.setItem('vitalis-xp', xp.toString());
-      localStorage.setItem('vitalis-conquistas', JSON.stringify(conquistas));
     } catch (error) {
       console.error('Erro ao calcular conquistas:', error);
     }
@@ -725,7 +733,11 @@ export default function DashboardVitalis() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-20">
+    <div className={`min-h-screen pb-20 transition-colors duration-300 ${
+      isDarkMode
+        ? 'bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f0f23]'
+        : 'bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]'
+    }`}>
       
       {/* Header com Perfil */}
       <header className="relative overflow-hidden">
@@ -1550,6 +1562,16 @@ export default function DashboardVitalis() {
             <span className="text-3xl">✨</span>
           </div>
 
+          {/* Guia do Utilizador - Destacado no topo */}
+          <Link to="/vitalis/guia" className="group flex items-center gap-4 bg-white/30 hover:bg-white/40 rounded-xl p-4 transition-all backdrop-blur-sm mb-3">
+            <div className="text-4xl group-hover:scale-110 transition-transform">📖</div>
+            <div className="flex-1">
+              <p className="font-bold text-white">Guia do Utilizador</p>
+              <p className="text-white/80 text-sm">Aprende a usar todas as funcionalidades da app</p>
+            </div>
+            <span className="text-white/60 text-xl">→</span>
+          </Link>
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
             {/* Chat Coach */}
             <Link to="/vitalis/chat" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
@@ -1587,13 +1609,6 @@ export default function DashboardVitalis() {
               <p className="font-semibold text-white text-sm">Calendário</p>
               <p className="text-white/70 text-xs mt-1">Planear semana</p>
             </Link>
-
-            {/* Guia do Utilizador */}
-            <Link to="/vitalis/guia" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
-              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">📖</div>
-              <p className="font-semibold text-white text-sm">Guia</p>
-              <p className="text-white/70 text-xs mt-1">Manual da app</p>
-            </Link>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -1615,7 +1630,12 @@ export default function DashboardVitalis() {
             <button
               onClick={() => {
                 const el = document.getElementById('conquistas-section');
-                el?.scrollIntoView({ behavior: 'smooth' });
+                if (el) {
+                  // Use offset to account for sticky header
+                  const yOffset = -80;
+                  const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                  window.scrollTo({ top: y, behavior: 'smooth' });
+                }
               }}
               className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm"
             >
