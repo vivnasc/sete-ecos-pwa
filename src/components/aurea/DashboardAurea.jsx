@@ -340,25 +340,49 @@ export default function DashboardAurea() {
           )}
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* Quick Actions - Row 1 */}
+        <div className="grid grid-cols-3 gap-3">
           <Link to="/aurea/roupa" className="p-4 bg-white/5 rounded-2xl border border-amber-500/20 hover:border-amber-500/40 transition-colors text-center">
             <div className="text-2xl mb-2">👗</div>
-            <div className="text-amber-100 text-sm font-medium">Espelho de Roupa</div>
+            <div className="text-amber-100 text-xs font-medium">Roupa</div>
           </Link>
           <Link to="/aurea/carteira" className="p-4 bg-white/5 rounded-2xl border border-amber-500/20 hover:border-amber-500/40 transition-colors text-center">
             <div className="text-2xl mb-2">💰</div>
-            <div className="text-amber-100 text-sm font-medium">Carteira</div>
+            <div className="text-amber-100 text-xs font-medium">Carteira</div>
           </Link>
           <Link to="/aurea/diario" className="p-4 bg-white/5 rounded-2xl border border-amber-500/20 hover:border-amber-500/40 transition-colors text-center">
             <div className="text-2xl mb-2">📝</div>
-            <div className="text-amber-100 text-sm font-medium">Diário</div>
-          </Link>
-          <Link to="/aurea/insights" className="p-4 bg-white/5 rounded-2xl border border-amber-500/20 hover:border-amber-500/40 transition-colors text-center">
-            <div className="text-2xl mb-2">📊</div>
-            <div className="text-amber-100 text-sm font-medium">Insights</div>
+            <div className="text-amber-100 text-xs font-medium">Diário</div>
           </Link>
         </div>
+
+        {/* Quick Actions - Row 2 */}
+        <div className="grid grid-cols-3 gap-3">
+          <Link to="/aurea/chat" className="p-4 bg-gradient-to-br from-amber-500/10 to-amber-600/10 rounded-2xl border border-amber-500/30 hover:border-amber-500/50 transition-colors text-center">
+            <div className="text-2xl mb-2">💬</div>
+            <div className="text-amber-100 text-xs font-medium">Chat Coach</div>
+          </Link>
+          <Link to="/aurea/padroes" className="p-4 bg-gradient-to-br from-purple-500/10 to-purple-600/10 rounded-2xl border border-purple-500/30 hover:border-purple-500/50 transition-colors text-center">
+            <div className="text-2xl mb-2">🔍</div>
+            <div className="text-amber-100 text-xs font-medium">Padrões</div>
+          </Link>
+          <Link to="/aurea/audios" className="p-4 bg-gradient-to-br from-indigo-500/10 to-indigo-600/10 rounded-2xl border border-indigo-500/30 hover:border-indigo-500/50 transition-colors text-center">
+            <div className="text-2xl mb-2">🎧</div>
+            <div className="text-amber-100 text-xs font-medium">Áudios</div>
+          </Link>
+        </div>
+
+        {/* Insights Link */}
+        <Link to="/aurea/insights" className="block p-4 bg-white/5 rounded-2xl border border-amber-500/20 hover:border-amber-500/40 transition-colors">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">📊</span>
+            <div className="flex-1">
+              <div className="text-amber-100 font-medium">Insights Semanais</div>
+              <div className="text-amber-200/60 text-sm">Ver relatório de progresso</div>
+            </div>
+            <span className="text-amber-400">→</span>
+          </div>
+        </Link>
 
         {/* Níveis mais altos */}
         {nivelInfo.nivelActual.id === 'prata' && (

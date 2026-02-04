@@ -21,34 +21,38 @@ export const SUBSCRIPTION_STATUS = {
 };
 
 // Planos de subscricao ÁUREA
+// Referência: café=100MT, massagem/limpeza facial=3000MT
 export const AUREA_PLANS = {
   MONTHLY: {
     id: 'monthly',
     name: 'Mensal',
     duration: 1, // meses
-    price_mzn: 975,
-    price_usd: 15,
-    discount: 0
+    price_mzn: 3500,
+    price_usd: 54,
+    discount: 0,
+    comparativo: 'Menos que 2 tratamentos de beleza'
   },
   SEMESTRAL: {
     id: 'semestral',
     name: 'Semestral',
     duration: 6, // meses
-    price_mzn: 5265,
-    price_usd: 81,
-    discount: 10,
-    savings_mzn: 585,
-    savings_usd: 9
+    price_mzn: 17500,
+    price_usd: 270,
+    discount: 17,
+    savings_mzn: 3500,
+    savings_usd: 54,
+    comparativo: '1 mês grátis incluído'
   },
   ANNUAL: {
     id: 'annual',
     name: 'Anual',
     duration: 12, // meses
-    price_mzn: 9945,
-    price_usd: 153,
-    discount: 15,
-    savings_mzn: 1755,
-    savings_usd: 27
+    price_mzn: 29400,
+    price_usd: 450,
+    discount: 30,
+    savings_mzn: 12600,
+    savings_usd: 198,
+    comparativo: '3+ meses grátis incluídos'
   }
 };
 
