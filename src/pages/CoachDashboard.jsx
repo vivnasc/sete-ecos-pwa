@@ -19,7 +19,7 @@ import { enviarNotificacao, pedirPermissao, temPermissao } from '../utils/notifi
  * - Clientes que precisam de atencao
  * - WhatsApp comunidade
  * - Sistema de motivacoes automaticas
- * - Notificacoes importantes
+ * - Notificações importantes
  * - Quick actions
  */
 
@@ -375,15 +375,18 @@ const CoachDashboard = () => {
         const reasons = [];
 
         if (daysSinceActivity >= 3) {
-          reasons.push({ type: 'inactive', text: `Inativo ha ${daysSinceActivity} dias`, priority: daysSinceActivity >= 7 ? 'high' : 'medium' });
+          const inactiveText = daysSinceActivity >= 999
+            ? 'Sem registos ainda'
+            : `Inativo há ${daysSinceActivity} dias`;
+          reasons.push({ type: 'inactive', text: inactiveText, priority: daysSinceActivity >= 7 ? 'high' : 'medium' });
         }
 
         if (lastRegisto?.aderencia_1a10 && lastRegisto.aderencia_1a10 <= 4) {
-          reasons.push({ type: 'struggling', text: `Aderencia baixa (${lastRegisto.aderencia_1a10}/10)`, priority: 'high' });
+          reasons.push({ type: 'struggling', text: `Aderência baixa (${lastRegisto.aderencia_1a10}/10)`, priority: 'high' });
         }
 
         if (client.peso_actual && client.peso_inicial && client.peso_actual > client.peso_inicial) {
-          reasons.push({ type: 'weight_gain', text: 'Ganhou peso desde o inicio', priority: 'medium' });
+          reasons.push({ type: 'weight_gain', text: 'Ganhou peso desde o início', priority: 'medium' });
         }
 
         if (reasons.length > 0) {
@@ -435,7 +438,7 @@ const CoachDashboard = () => {
       });
     }
 
-    // Clientes inativos ha muito tempo
+    // Clientes inativos há muito tempo
     const { data: inactiveCheck } = await supabase
       .from('vitalis_clients')
       .select('user_id, users(nome)')
@@ -446,7 +449,7 @@ const CoachDashboard = () => {
         type: 'inactive',
         icon: '⚠️',
         title: `${inactiveCheck.length} clientes inativos`,
-        text: 'Ha mais de 7 dias sem atividade',
+        text: 'Há mais de 7 dias sem atividade',
         priority: 'high',
         action: () => setActiveTab('attention')
       });
@@ -463,7 +466,7 @@ const CoachDashboard = () => {
         type: 'alerts',
         icon: '🔔',
         title: `${alertCount} alertas pendentes`,
-        text: 'Requerem a tua atencao',
+        text: 'Requerem a tua atenção',
         priority: 'medium',
         action: () => setActiveTab('alertas')
       });
@@ -578,13 +581,13 @@ const CoachDashboard = () => {
   };
 
   const sendMotivation = async (userId, type, customMessage = null) => {
-    // Guardar na fila de motivacoes
+    // Guardar na fila de motivações
     const motivationTemplates = {
-      comeback: '🌟 Ola! Senti a tua falta por aqui. Lembra-te: cada dia e uma nova oportunidade para cuidares de ti. Estou aqui para te apoiar!',
-      progress: '💪 Parabens pelo teu progresso! Continua assim, estas a fazer um trabalho incrivel!',
-      struggle: '💜 Sei que nem todos os dias sao faceis. Lembra-te que pequenos passos tambem contam. Estou aqui contigo.',
-      weekly: '✨ Nova semana, novas possibilidades! Vamos definir uma intencao para esta semana?',
-      celebration: '🎉 Que conquista! Estou tao orgulhosa do teu caminho. Continua a brilhar!'
+      comeback: '🌟 Olá! Senti a tua falta por aqui. Lembra-te: cada dia é uma nova oportunidade para cuidares de ti. Estou aqui para te apoiar!',
+      progress: '💪 Parabéns pelo teu progresso! Continua assim, estás a fazer um trabalho incrível!',
+      struggle: '💜 Sei que nem todos os dias são fáceis. Lembra-te que pequenos passos também contam. Estou aqui contigo.',
+      weekly: '✨ Nova semana, novas possibilidades! Vamos definir uma intenção para esta semana?',
+      celebration: '🎉 Que conquista! Estou tão orgulhosa do teu caminho. Continua a brilhar!'
     };
 
     const message = customMessage || motivationTemplates[type];
@@ -742,7 +745,7 @@ const CoachDashboard = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Notificacoes */}
+            {/* Notificações */}
             <button
               onClick={() => setShowNotifications(!showNotifications)}
               className="relative p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-all"
@@ -776,11 +779,11 @@ const CoachDashboard = () => {
           </div>
         </div>
 
-        {/* Dropdown Notificacoes */}
+        {/* Dropdown Notificações */}
         {showNotifications && coachNotifications.length > 0 && (
           <div className="absolute right-6 top-20 w-80 bg-slate-800/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-500/20 overflow-hidden z-50">
             <div className="p-4 border-b border-purple-500/20">
-              <h3 className="font-bold text-white">Notificacoes</h3>
+              <h3 className="font-bold text-white">Notificações</h3>
             </div>
             <div className="max-h-80 overflow-y-auto">
               {coachNotifications.map((notif, i) => (
@@ -1007,20 +1010,26 @@ const CoachDashboard = () => {
                         </div>
                         <div className="flex gap-2">
                           <button
-                            onClick={() => sendMotivation(client.user_id, 'comeback')}
+                            onClick={async () => {
+                              await sendMotivation(client.user_id, 'comeback');
+                              alert('✅ Mensagem de motivação enviada!');
+                            }}
                             className="px-3 py-2 bg-purple-500/30 hover:bg-purple-500/50 text-purple-300 rounded-lg text-sm transition-all"
                           >
                             💜 Motivar
                           </button>
                           <button
-                            onClick={() => loadUserDetails(client.user_id)}
+                            onClick={() => {
+                              setActiveTab('users');
+                              loadUserDetails(client.user_id);
+                            }}
                             className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm transition-all"
                           >
                             Ver →
                           </button>
                           {client.users?.email && (
                             <a
-                              href={`https://wa.me/?text=Ola ${client.nome}! Como estas? Senti a tua falta no Vitalis 🌱`}
+                              href={`https://wa.me/?text=Olá ${client.nome}! Como estás? Senti a tua falta no Vitalis 🌱`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="px-3 py-2 bg-green-500/30 hover:bg-green-500/50 text-green-300 rounded-lg text-sm transition-all"

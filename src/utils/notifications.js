@@ -8,18 +8,30 @@ export const notificacoesSuportadas = () => {
 
 // Pedir permissão para notificações
 export const pedirPermissao = async () => {
-  if (!notificacoesSuportadas()) {
+  if (!('Notification' in window)) {
     console.log('Notificações não suportadas neste browser');
     return false;
   }
 
-  const permissao = await Notification.requestPermission();
-  return permissao === 'granted';
+  try {
+    // Handle both callback and promise-based APIs (for older browsers)
+    let permissao;
+    if (typeof Notification.requestPermission === 'function') {
+      // Modern promise-based API
+      permissao = await Notification.requestPermission();
+    }
+
+    console.log('Permissão de notificação:', permissao);
+    return permissao === 'granted';
+  } catch (error) {
+    console.error('Erro ao pedir permissão de notificações:', error);
+    return false;
+  }
 };
 
 // Verificar se já tem permissão
 export const temPermissao = () => {
-  if (!notificacoesSuportadas()) return false;
+  if (!('Notification' in window)) return false;
   return Notification.permission === 'granted';
 };
 
