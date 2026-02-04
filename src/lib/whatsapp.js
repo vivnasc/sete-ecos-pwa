@@ -1,40 +1,57 @@
 /**
- * WhatsApp Notifications para Coach via CallMeBot
+ * WhatsApp Notifications via Twilio
  *
- * CONFIGURAÇÃO INICIAL (apenas uma vez):
- * 1. Adicionar +34 644 51 95 23 aos contactos do WhatsApp
- * 2. Enviar "I allow callmebot to send me messages" para este número
- * 3. Guardar a API Key recebida como CALLMEBOT_API_KEY no Vercel
- *
- * Documentação: https://www.callmebot.com/blog/free-api-whatsapp-messages/
+ * Configuração no Vercel:
+ * 1. Criar conta em twilio.com
+ * 2. Activar WhatsApp Sandbox ou Business API
+ * 3. Adicionar variáveis de ambiente:
+ *    - TWILIO_ACCOUNT_SID
+ *    - TWILIO_AUTH_TOKEN
+ *    - TWILIO_WHATSAPP_NUMBER (ex: whatsapp:+14155238886)
+ *    - COACH_WHATSAPP_NUMBER (ex: whatsapp:+258845243875)
  */
 
-const COACH_PHONE = '258845243875'; // Número da Vivianne (sem +)
+const COACH_PHONE = '+258845243875';
 
 /**
- * Envia mensagem WhatsApp via CallMeBot
+ * Envia mensagem WhatsApp via Twilio
+ * @param {string} mensagem - Texto da mensagem
+ * @param {string} para - Número de destino (opcional, usa coach por defeito)
  */
-export async function enviarWhatsApp(mensagem) {
+export async function enviarWhatsApp(mensagem, para = null) {
   try {
-    const response = await fetch('/api/whatsapp-notify', {
+    const response = await fetch('/api/whatsapp-twilio', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mensagem })
+      body: JSON.stringify({
+        mensagem,
+        para: para ? `whatsapp:${para}` : null
+      })
     });
 
+    const result = await response.json();
+
     if (!response.ok) {
-      throw new Error('Erro ao enviar WhatsApp');
+      console.error('Erro WhatsApp:', result.error);
+      return { success: false, error: result.error };
     }
 
-    return { success: true };
+    return { success: true, sid: result.sid };
   } catch (error) {
-    console.error('Erro WhatsApp:', error);
-    return { success: false, error: error.message };
+    console.error('Erro de rede WhatsApp:', error);
+    return { success: false, error: 'Erro de rede' };
   }
 }
 
 /**
- * Alertas WhatsApp para situações críticas
+ * Envia WhatsApp para a coach
+ */
+export async function enviarWhatsAppCoach(mensagem) {
+  return enviarWhatsApp(mensagem);
+}
+
+/**
+ * Alertas WhatsApp pré-definidos
  */
 export const WhatsAppAlertas = {
 
@@ -83,6 +100,22 @@ Considera enviar uma mensagem de apoio. 🌱`;
   },
 
   /**
+   * Motivação enviada para cliente
+   */
+  async motivacaoEnviada(cliente, mensagem) {
+    const msg = `💜 *MOTIVAÇÃO ENVIADA*
+
+👤 Para: ${cliente.nome}
+📧 ${cliente.email}
+
+💬 "${mensagem.substring(0, 100)}${mensagem.length > 100 ? '...' : ''}"
+
+✅ Email enviado com sucesso!`;
+
+    return enviarWhatsApp(msg);
+  },
+
+  /**
    * Resumo diário
    */
   async resumoDiario(dados) {
@@ -99,4 +132,4 @@ Bom dia! 🌱`;
   }
 };
 
-export default { enviarWhatsApp, WhatsAppAlertas };
+export default { enviarWhatsApp, enviarWhatsAppCoach, WhatsAppAlertas };
