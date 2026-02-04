@@ -2,8 +2,6 @@
    SETE ECOS — CSS Global Oficial
    ============================================================ */
 
-@import "tailwindcss";
-
 /* Suporte a Light/Dark Mode */
 :root {
   color-scheme: light dark;
