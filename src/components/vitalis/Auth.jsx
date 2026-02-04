@@ -2,13 +2,8 @@ import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { checkVitalisAccess } from '../../lib/subscriptions';
-
-// Emails com acesso automático (coach + testers)
-const BYPASS_EMAILS = [
-  'viv.saraiva@gmail.com',           // Coach principal
-  'vivnasc@gmail.com',               // Email alternativo
-  'vivianne.saraiva@outlook.com',    // Conta de testes
-];
+import { isCoach } from '../../lib/coach';
+import { validarEmail, validarPassword } from '../../lib/validacao';
 
 export default function VitalisAuth() {
   const navigate = useNavigate();
@@ -17,11 +12,27 @@ export default function VitalisAuth() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const handleAuth = async (e) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
     setLoading(true);
+
+    // Validação
+    const emailResult = validarEmail(email);
+    const passwordResult = validarPassword(password);
+
+    const newFieldErrors = {};
+    if (!emailResult.valido) newFieldErrors.email = emailResult.erro;
+    if (!passwordResult.valido) newFieldErrors.password = passwordResult.erro;
+
+    if (Object.keys(newFieldErrors).length > 0) {
+      setFieldErrors(newFieldErrors);
+      setLoading(false);
+      return;
+    }
 
     try {
       if (isLogin) {
@@ -33,7 +44,7 @@ export default function VitalisAuth() {
         if (error) throw error;
 
         // Emails com bypass têm acesso directo
-        if (BYPASS_EMAILS.includes(email.toLowerCase())) {
+        if (isCoach(email)) {
           navigate('/vitalis/dashboard');
           return;
         }
@@ -138,11 +149,21 @@ export default function VitalisAuth() {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: null }));
+                }}
                 placeholder="exemplo@email.com"
                 required
-                className="w-full px-4 py-3.5 border-2 border-[#E8E2D9] rounded-xl focus:border-[#7C8B6F] focus:ring-2 focus:ring-[#7C8B6F]/20 outline-none transition-all bg-white"
+                className={`w-full px-4 py-3.5 border-2 rounded-xl focus:ring-2 outline-none transition-all bg-white ${
+                  fieldErrors.email
+                    ? 'border-red-300 focus:border-red-400 focus:ring-red-200'
+                    : 'border-[#E8E2D9] focus:border-[#7C8B6F] focus:ring-[#7C8B6F]/20'
+                }`}
               />
+              {fieldErrors.email && (
+                <p className="text-red-500 text-xs mt-1">{fieldErrors.email}</p>
+              )}
             </div>
 
             <div>
@@ -152,12 +173,22 @@ export default function VitalisAuth() {
               <input
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (fieldErrors.password) setFieldErrors(prev => ({ ...prev, password: null }));
+                }}
                 placeholder="Mínimo 6 caracteres"
                 required
                 minLength={6}
-                className="w-full px-4 py-3.5 border-2 border-[#E8E2D9] rounded-xl focus:border-[#7C8B6F] focus:ring-2 focus:ring-[#7C8B6F]/20 outline-none transition-all bg-white"
+                className={`w-full px-4 py-3.5 border-2 rounded-xl focus:ring-2 outline-none transition-all bg-white ${
+                  fieldErrors.password
+                    ? 'border-red-300 focus:border-red-400 focus:ring-red-200'
+                    : 'border-[#E8E2D9] focus:border-[#7C8B6F] focus:ring-[#7C8B6F]/20'
+                }`}
               />
+              {fieldErrors.password && (
+                <p className="text-red-500 text-xs mt-1">{fieldErrors.password}</p>
+              )}
             </div>
 
             {error && (

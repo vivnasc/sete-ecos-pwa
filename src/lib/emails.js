@@ -80,27 +80,30 @@ export async function enviarAvisoExpiracao(email, nome, dias) {
 
 // ===== EMAILS PARA COACH =====
 
-const COACH_EMAIL = 'viv.saraiva@gmail.com';
+import { getCoachEmails } from './coach';
+
+// Email principal da coach (primeiro da lista)
+const getCoachEmail = () => getCoachEmails()[0] || 'viv.saraiva@gmail.com';
 
 /**
  * Notifica coach sobre nova cliente
  */
 export async function notificarNovaCliente(dados) {
-  return enviarEmail('coach-nova-cliente', COACH_EMAIL, dados);
+  return enviarEmail('coach-nova-cliente', getCoachEmail(), dados);
 }
 
 /**
  * Notifica coach sobre alerta de cliente
  */
 export async function notificarAlertaCliente(dados) {
-  return enviarEmail('coach-alerta', COACH_EMAIL, dados);
+  return enviarEmail('coach-alerta', getCoachEmail(), dados);
 }
 
 /**
  * Envia resumo diário para coach
  */
 export async function enviarResumoDiario(dados) {
-  return enviarEmail('coach-resumo-diario', COACH_EMAIL, dados);
+  return enviarEmail('coach-resumo-diario', getCoachEmail(), dados);
 }
 
 // ===== WHATSAPP NOTIFICATIONS =====

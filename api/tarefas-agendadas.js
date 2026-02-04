@@ -20,7 +20,8 @@ import { createClient } from '@supabase/supabase-js';
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-const COACH_EMAIL = 'viv.saraiva@gmail.com';
+// Coach email - configurável via Vercel ENV
+const COACH_EMAIL = process.env.COACH_EMAIL || 'viv.saraiva@gmail.com';
 
 export default async function handler(req, res) {
   // Verificar autorização (cron jobs do Vercel enviam header específico)

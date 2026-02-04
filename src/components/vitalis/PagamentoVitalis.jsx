@@ -10,13 +10,7 @@ import {
 } from '../../lib/subscriptions';
 
 import { EmailTriggers } from '../../lib/emails';
-
-// Emails com acesso automático (coach + testers)
-const BYPASS_EMAILS = [
-  'viv.saraiva@gmail.com',           // Coach principal
-  'vivnasc@gmail.com',               // Email alternativo
-  'vivianne.saraiva@outlook.com',    // Conta de testes
-];
+import { isCoach } from '../../lib/coach';
 
 /**
  * VITALIS - Pagina de Pagamento
@@ -81,7 +75,7 @@ const PagamentoVitalis = () => {
       setUserEmail(user.email);
 
       // Emails com bypass têm acesso directo - não precisa verificar subscrição
-      if (BYPASS_EMAILS.includes(user.email.toLowerCase())) {
+      if (isCoach(user.email)) {
         navigate('/vitalis/dashboard');
         return;
       }
