@@ -9,6 +9,7 @@ import {
   confirmManualPayment,
   getSubscriptionStats
 } from '../lib/subscriptions';
+import { enviarNotificacao, pedirPermissao, temPermissao } from '../utils/notifications';
 
 /**
  * SETE ECOS - SUPER COACH DASHBOARD
@@ -60,14 +61,142 @@ const CoachDashboard = () => {
   const [pendingPayments, setPendingPayments] = useState([]);
   const [showConfirmPaymentModal, setShowConfirmPaymentModal] = useState(null);
 
-  // Auto-refresh
+  // Auto-refresh e real-time subscriptions
   const refreshInterval = useRef(null);
+  const audioRef = useRef(null);
+
+  // Som de notificação
+  const playNotificationSound = () => {
+    try {
+      // Criar audio context para som de notificação
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.value = 800;
+      oscillator.type = 'sine';
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.5);
+    } catch (e) {
+      console.log('Audio não suportado');
+    }
+  };
+
+  // Função para notificar coach
+  const notifyCoach = (title, body) => {
+    // Som
+    playNotificationSound();
+
+    // Push notification se tiver permissão
+    if (temPermissao()) {
+      enviarNotificacao(title, {
+        body,
+        tag: 'coach-alert',
+        requireInteraction: true
+      });
+    }
+
+    // Vibrar se suportado
+    if ('vibrate' in navigator) {
+      navigator.vibrate([200, 100, 200]);
+    }
+  };
 
   useEffect(() => {
+    // Pedir permissão para notificações ao carregar
+    pedirPermissao();
+
     loadAllData();
-    // Auto-refresh a cada 60 segundos
-    refreshInterval.current = setInterval(loadAllData, 60000);
-    return () => clearInterval(refreshInterval.current);
+
+    // Auto-refresh a cada 30 segundos (mais rápido)
+    refreshInterval.current = setInterval(loadAllData, 30000);
+
+    // ===== REAL-TIME SUBSCRIPTIONS =====
+    // Waitlist - quando alguém se inscreve
+    const waitlistSubscription = supabase
+      .channel('waitlist-changes')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'waitlist'
+      }, (payload) => {
+        console.log('Nova entrada na waitlist:', payload.new);
+        notifyCoach(
+          '📋 Nova inscrição na Waitlist!',
+          `${payload.new.nome || 'Alguém'} quer entrar no ${payload.new.produto || 'Vitalis'}`
+        );
+        loadWaitlist();
+        loadStats();
+      })
+      .subscribe();
+
+    // Alertas - novos alertas de clientes
+    const alertsSubscription = supabase
+      .channel('alerts-changes')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'vitalis_alerts'
+      }, (payload) => {
+        console.log('Novo alerta:', payload.new);
+        notifyCoach(
+          '🔔 Novo alerta de cliente!',
+          payload.new.descricao || 'Um cliente precisa de atenção'
+        );
+        loadAlerts();
+      })
+      .subscribe();
+
+    // Novos pagamentos pendentes
+    const paymentsSubscription = supabase
+      .channel('payments-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'vitalis_clients',
+        filter: 'subscription_status=eq.pending'
+      }, (payload) => {
+        console.log('Pagamento pendente:', payload);
+        notifyCoach(
+          '💰 Pagamento pendente!',
+          'Um cliente registou um novo pagamento para verificar'
+        );
+        loadSubscriptionData();
+      })
+      .subscribe();
+
+    // Novos utilizadores
+    const usersSubscription = supabase
+      .channel('users-changes')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'users'
+      }, (payload) => {
+        console.log('Novo utilizador:', payload.new);
+        notifyCoach(
+          '👋 Novo utilizador!',
+          `${payload.new.nome || payload.new.email} criou conta`
+        );
+        loadUsers();
+        loadStats();
+      })
+      .subscribe();
+
+    return () => {
+      clearInterval(refreshInterval.current);
+      // Limpar subscriptions
+      supabase.removeChannel(waitlistSubscription);
+      supabase.removeChannel(alertsSubscription);
+      supabase.removeChannel(paymentsSubscription);
+      supabase.removeChannel(usersSubscription);
+    };
   }, []);
 
   const loadAllData = async () => {
