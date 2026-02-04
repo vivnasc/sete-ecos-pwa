@@ -52,17 +52,6 @@ export const ReceitasBrowse = () => {
     setImageErrors(prev => ({ ...prev, [receitaId]: true }));
   };
 
-  // Gerar URL de imagem automática se não tiver imagem
-  const getAutoImageUrl = (receita) => {
-    // Se tem imagem definida, usar essa
-    if (receita.imagem_url) return receita.imagem_url;
-
-    // Gerar imagem automática baseada no tipo de refeição
-    // Usando Picsum com seed para consistência (mesma receita = mesma imagem)
-    const seed = `vitalis-${receita.id}`;
-    return `https://picsum.photos/seed/${seed}/400/300`;
-  };
-
   useEffect(() => {
     loadReceitas();
   }, []);
@@ -458,13 +447,13 @@ export const ReceitasBrowse = () => {
                 onClick={() => navigate(`/vitalis/receita/${receita.id}`)}
                 className="group bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:scale-[1.03] hover:-translate-y-1"
               >
-                {/* Header com imagem */}
+                {/* Header com imagem ou gradiente */}
                 <div className={`relative h-44 overflow-hidden`}>
-                  {/* Imagem - usa auto-gerada se não tiver */}
-                  {!imageErrors[receita.id] ? (
+                  {/* Imagem de fundo se existir na base de dados */}
+                  {receita.imagem_url && !imageErrors[receita.id] ? (
                     <>
                       <img
-                        src={getAutoImageUrl(receita)}
+                        src={receita.imagem_url}
                         alt={receita.titulo}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         onError={() => handleImageError(receita.id)}
@@ -473,7 +462,7 @@ export const ReceitasBrowse = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                     </>
                   ) : (
-                    /* Fallback se imagem falhar: gradiente com emoji */
+                    /* Gradiente bonito com emoji representativo */
                     <div className={`w-full h-full bg-gradient-to-br ${tipoGradientes[receita.tipo_refeicao] || tipoGradientes.snack} flex items-center justify-center`}>
                       <span className="text-7xl drop-shadow-lg group-hover:scale-110 transition-transform duration-300">{getSpecialEmoji(receita)}</span>
                     </div>
