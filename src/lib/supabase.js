@@ -3,7 +3,21 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Configurar cliente com persistência de sessão
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    // Persistir sessão no localStorage
+    persistSession: true,
+    // Auto-refresh do token antes de expirar
+    autoRefreshToken: true,
+    // Detectar sessão em outras tabs/janelas
+    detectSessionInUrl: true,
+    // Storage key para a sessão
+    storageKey: 'sete-ecos-auth',
+    // Usar localStorage (mais persistente que sessionStorage)
+    storage: window.localStorage
+  }
+})
 
 export async function saveCheckin(userId, checkinData) {
   const { data, error } = await supabase
