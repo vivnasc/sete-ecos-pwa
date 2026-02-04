@@ -515,6 +515,144 @@ export default function ChatCoach() {
         `Conta-me mais - posso ajudar com estratégias específicas.`;
     }
 
+    // ========== MÉTODO VITALIS / O QUE É ==========
+    if (texto.match(/o que [eé] ?(o )?(m[eé]todo )?vitalis|como funciona o (m[eé]todo|vitalis)|explica.*m[eé]todo|sobre o m[eé]todo/i)) {
+      return `O Método Vitalis:\n\n` +
+        `**O que é?**\n` +
+        `É um programa de reeducação alimentar baseado no Precision Nutrition, o método científico mais respeitado mundialmente (84% taxa de sucesso).\n\n` +
+        `**3 Pilares:**\n` +
+        `🖐️ **Porções com a mão** - Sem contar calorias, só medir com a mão\n` +
+        `⏰ **Jejum flexível** - Janelas alimentares adaptadas a ti\n` +
+        `💜 **Apoio emocional** - Espaço de Retorno único\n\n` +
+        `**As 3 Fases:**\n` +
+        `1️⃣ **Indução** (4-6 semanas): Activar queima de gordura\n` +
+        `2️⃣ **Estabilização** (6-8 semanas): Consolidar hábitos\n` +
+        `3️⃣ **Reeducação** (6-8 semanas): Autonomia alimentar\n\n` +
+        `Tu estás na fase: **${fase}** com ${palmas}P ${maos}H ${polegares}G`;
+    }
+
+    // ========== COMO USAR A APP ==========
+    if (texto.match(/como (usar|funciona|uso) ?(a )?app|navegar|onde (fica|est[aá])|funcionalidades/i)) {
+      return `Como usar a app Vitalis:\n\n` +
+        `**📊 Dashboard (página inicial)**\n` +
+        `• Vê o teu progresso, streak, XP\n` +
+        `• Regista água, refeições, sono, treino\n` +
+        `• Controla o jejum intermitente\n\n` +
+        `**🍽️ Plano Alimentar**\n` +
+        `• Vê as tuas porções personalizadas\n` +
+        `• Lista de alimentos recomendados\n\n` +
+        `**🍳 Receitas**\n` +
+        `• Centenas de receitas adaptadas\n` +
+        `• Filtros por refeição e tempo\n\n` +
+        `**📅 Calendário**\n` +
+        `• Planeia a semana inteira\n\n` +
+        `**🛒 Lista de Compras**\n` +
+        `• Gerada automaticamente\n` +
+        `• Partilha por WhatsApp\n\n` +
+        `**💡 Sugestões**\n` +
+        `• "O que comer agora?"\n\n` +
+        `**📖 Guia** - Manual completo da app`;
+    }
+
+    // ========== ESPAÇO DE RETORNO ==========
+    if (texto.match(/espa[cç]o.*retorno|quando.*emo[cç]|fome.*emocional|comer.*sentimento/i)) {
+      return `O Espaço de Retorno:\n\n` +
+        `É o nosso sistema único de apoio emocional - para quando a emoção pede comida.\n\n` +
+        `**Como funciona (90 segundos):**\n` +
+        `1️⃣ **Identificar** - Qual é a emoção?\n` +
+        `2️⃣ **Pausar** - Interrompe o impulso automático\n` +
+        `3️⃣ **Aliviar** - Usa a resposta adequada\n` +
+        `4️⃣ **Escolher** - Decide com clareza\n\n` +
+        `**Estados que reconhecemos:**\n` +
+        `🔋 Cansaço → Descanso, não comida\n` +
+        `🌀 Ansiedade → Respiração, movimento\n` +
+        `💧 Tristeza → Conexão, auto-compaixão\n` +
+        `🔥 Raiva → Movimento físico, expressão\n` +
+        `◯ Vazio → Propósito, criatividade\n` +
+        `🌑 Solidão → Conexão humana\n\n` +
+        `Acede em: Dashboard → Espaço de Retorno`;
+    }
+
+    // ========== FASES DO MÉTODO ==========
+    if (texto.match(/fase|indu[cç][aã]o|estabiliza[cç][aã]o|reeduca[cç][aã]o|qual.*fase/i)) {
+      return `As Fases do Método Vitalis:\n\n` +
+        `**Tu estás na fase: ${fase}**\n\n` +
+        `**1️⃣ INDUÇÃO (4-6 semanas)**\n` +
+        `• Hidratos reduzidos (≤2 mãos)\n` +
+        `• Activar queima de gordura\n` +
+        `• Corpo aprende a usar gordura como combustível\n` +
+        `• Possível: fadiga inicial, desejos\n\n` +
+        `**2️⃣ ESTABILIZAÇÃO (6-8 semanas)**\n` +
+        `• Hidratos aumentam gradualmente (3-4 mãos)\n` +
+        `• Consolidar hábitos sem rigidez\n` +
+        `• Introduzir flexibilidade\n` +
+        `• Aprender a ouvir o corpo\n\n` +
+        `**3️⃣ REEDUCAÇÃO (6-8 semanas)**\n` +
+        `• Autonomia alimentar completa\n` +
+        `• Liberdade para escolher\n` +
+        `• Sem culpa, sem restrição mental\n` +
+        `• Comer intuitivo guiado\n\n` +
+        `A transição de fase é avaliada individualmente.`;
+    }
+
+    // ========== PORÇÕES / COMO MEDIR ==========
+    if (texto.match(/por[cç][oõ]es|como medir|quanto.*comer|minha.*meta|minhas.*por[cç][oõ]es/i)) {
+      return `As Tuas Porções Personalizadas:\n\n` +
+        `**Fase actual: ${fase}**\n\n` +
+        `🖐️ **PROTEÍNA: ${palmas} palmas/dia**\n` +
+        `Uma palma = porção do tamanho da tua palma\n` +
+        `Ex: frango, peixe, carne, ovos\n\n` +
+        `🤲 **HIDRATOS: ${maos} mãos concha/dia**\n` +
+        `${diasTreino.length > 0 ? `(+1 mão nos dias de treino)\n` : ''}` +
+        `Uma mão concha = porção na tua mão em concha\n` +
+        `Ex: arroz, batata, fruta, aveia\n\n` +
+        `👍 **GORDURA: ${polegares} polegares/dia**\n` +
+        `Um polegar = porção do tamanho do polegar\n` +
+        `Ex: azeite, abacate, frutos secos\n\n` +
+        `🥬 **LEGUMES: À vontade!**\n` +
+        `Sem limite - come o que quiseres\n\n` +
+        `📍 **Dica:** Usa a TUA mão - é personalizado ao teu tamanho!`;
+    }
+
+    // ========== STREAK / GAMIFICAÇÃO ==========
+    if (texto.match(/streak|sequencia|dias.*seguidos|xp|pontos|conquista|badge/i)) {
+      return `Sistema de Gamificação:\n\n` +
+        `**🔥 Streak (Sequência)**\n` +
+        `• Dias consecutivos com pelo menos 1 registo\n` +
+        `• Água, refeição, sono ou treino contam\n` +
+        `• Marcos: 3, 7, 14, 30, 60 dias\n\n` +
+        `**⭐ XP (Pontos de Experiência)**\n` +
+        `• Ganhas XP por cada conquista\n` +
+        `• Sobe de nível a cada 500 XP\n` +
+        `• Níveis: Semente → Broto → Planta → Árvore → Floresta → Jardim → Paraíso → Lenda\n\n` +
+        `**🏆 Conquistas**\n` +
+        `• Primeiro registo: 50 XP\n` +
+        `• Streak de 7 dias: 200 XP\n` +
+        `• 50 registos de água: 150 XP\n` +
+        `• E muitas mais!\n\n` +
+        `Vê todas as tuas conquistas no Dashboard!`;
+    }
+
+    // ========== REGISTAR / COMO REGISTAR ==========
+    if (texto.match(/como regist|registar|adicionar|marcar/i)) {
+      return `Como Registar na App:\n\n` +
+        `**💧 Água**\n` +
+        `Dashboard → Secção Água → Clica no copo\n` +
+        `Cada clique = 250ml\n\n` +
+        `**🍽️ Refeições**\n` +
+        `Dashboard → Secção Refeições → "+ Adicionar"\n` +
+        `Escolhe o tipo e as porções\n\n` +
+        `**😴 Sono**\n` +
+        `Dashboard → Secção Sono → Clica para registar\n` +
+        `Indica horas e qualidade\n\n` +
+        `**🏋️ Treino**\n` +
+        `Dashboard → Secção Treino → "+ Registar"\n` +
+        `Escolhe tipo e duração\n\n` +
+        `**⏰ Jejum**\n` +
+        `Dashboard → Timer de Jejum → "Iniciar/Terminar"\n\n` +
+        `**Dica:** Registar diariamente mantém o teu streak!`;
+    }
+
     // ========== SNACKS / LANCHES ==========
     if (texto.match(/snack|lanche|meio.?manha|meio.?tarde|merenda/)) {
       return `Sobre snacks e lanches:\n\n` +
@@ -906,12 +1044,12 @@ export default function ChatCoach() {
       <div className="bg-white/50 px-4 py-2 overflow-x-auto">
         <div className="max-w-2xl mx-auto flex gap-2">
           {[
-            { texto: 'Como medir porções?', emoji: '🖐️' },
-            { texto: 'Snacks saudáveis', emoji: '🥜' },
-            { texto: 'Peso estagnado', emoji: '⚖️' },
+            { texto: 'O que é o método Vitalis?', emoji: '🌱' },
+            { texto: 'Minhas porções', emoji: '🖐️' },
+            { texto: 'Como usar a app', emoji: '📱' },
+            { texto: 'Espaço de Retorno', emoji: '💜' },
             { texto: 'Jejum intermitente', emoji: '⏰' },
-            { texto: 'Comer fora', emoji: '🍽️' },
-            { texto: 'Alimentação emocional', emoji: '💭' },
+            { texto: 'Peso estagnado', emoji: '⚖️' },
             { texto: 'Ajuda', emoji: '❓' },
           ].map((quick, i) => (
             <button key={i} onClick={() => setNovaMensagem(quick.texto)} className="flex items-center gap-1 px-3 py-1.5 bg-white rounded-full text-sm text-gray-600 hover:bg-gray-50 whitespace-nowrap shadow-sm">

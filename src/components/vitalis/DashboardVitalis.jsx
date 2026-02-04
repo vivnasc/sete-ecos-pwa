@@ -64,6 +64,14 @@ export default function DashboardVitalis() {
   const [conquistaActual, setConquistaActual] = useState(null);
   const [conquistasDesbloqueadas, setConquistasDesbloqueadas] = useState([]);
   const [xpTotal, setXpTotal] = useState(0);
+  const [avatarIcon, setAvatarIcon] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('vitalis-avatar') || '🌱';
+    }
+    return '🌱';
+  });
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [showConquistasModal, setShowConquistasModal] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('vitalis-theme') === 'dark';
@@ -780,15 +788,19 @@ export default function DashboardVitalis() {
 
           {/* Perfil do Utilizador */}
           <div className="flex items-center gap-4">
-            {/* Avatar - Clicável para ir ao perfil */}
-            <Link to="/vitalis/perfil" className="relative group">
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/30 border-3 border-white shadow-lg flex items-center justify-center overflow-hidden group-hover:bg-white/40 transition-colors">
+            {/* Avatar - Clicável para mudar ícone */}
+            <div className="relative group">
+              <button
+                onClick={() => setShowAvatarPicker(true)}
+                className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/30 border-3 border-white shadow-lg flex items-center justify-center overflow-hidden hover:bg-white/40 transition-colors"
+                title="Clica para mudar o avatar"
+              >
                 {client?.foto_url ? (
                   <img src={client.foto_url} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-3xl md:text-4xl">{client?.genero === 'M' ? '👨' : '👩'}</span>
+                  <span className="text-3xl md:text-4xl">{avatarIcon}</span>
                 )}
-              </div>
+              </button>
               {/* Badge de nível */}
               <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-yellow-400 border-2 border-white flex items-center justify-center text-xs font-bold shadow-md">
                 {Math.floor(xpTotal / 500) + 1}
@@ -797,7 +809,7 @@ export default function DashboardVitalis() {
               <div className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-white flex items-center justify-center text-xs shadow opacity-0 group-hover:opacity-100 transition-opacity">
                 ✏️
               </div>
-            </Link>
+            </div>
 
             {/* Info do utilizador */}
             <div className="flex-1">
@@ -1628,15 +1640,7 @@ export default function DashboardVitalis() {
 
             {/* Conquistas/Gamificação */}
             <button
-              onClick={() => {
-                const el = document.getElementById('conquistas-section');
-                if (el) {
-                  // Use offset to account for sticky header
-                  const yOffset = -80;
-                  const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                  window.scrollTo({ top: y, behavior: 'smooth' });
-                }
-              }}
+              onClick={() => setShowConquistasModal(true)}
               className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm"
             >
               <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🏆</div>
@@ -1720,6 +1724,159 @@ export default function DashboardVitalis() {
           setConquistaActual(null);
         }}
       />
+
+      {/* Modal de Seleção de Avatar */}
+      {showAvatarPicker && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowAvatarPicker(false)} />
+          <div className="relative bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-bounceIn">
+            <h3 className="text-xl font-bold text-gray-800 mb-2 text-center">Escolhe o teu avatar</h3>
+            <p className="text-sm text-gray-500 text-center mb-4">Representa o teu progresso na jornada</p>
+
+            <div className="grid grid-cols-5 gap-3 mb-4">
+              {['🌱', '🌿', '🌳', '🌻', '🌸', '🦋', '🔥', '⭐', '💎', '🏆', '👑', '🌙', '☀️', '🌈', '🍀'].map((emoji) => (
+                <button
+                  key={emoji}
+                  onClick={() => {
+                    setAvatarIcon(emoji);
+                    localStorage.setItem('vitalis-avatar', emoji);
+                    setShowAvatarPicker(false);
+                  }}
+                  className={`w-12 h-12 rounded-xl text-2xl flex items-center justify-center transition-all ${
+                    avatarIcon === emoji
+                      ? 'bg-[#7C8B6F] scale-110 shadow-lg'
+                      : 'bg-gray-100 hover:bg-gray-200'
+                  }`}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowAvatarPicker(false)}
+              className="w-full py-3 bg-gray-100 text-gray-600 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Conquistas */}
+      {showConquistasModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowConquistasModal(false)} />
+          <div className="relative bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl animate-bounceIn max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                  🏆 Todas as Conquistas
+                </h3>
+                <p className="text-sm text-gray-500">
+                  {conquistasDesbloqueadas.length} de {Object.keys(CONQUISTAS).length} desbloqueadas
+                </p>
+              </div>
+              <button
+                onClick={() => setShowConquistasModal(false)}
+                className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Nível e XP */}
+            <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-2xl p-4 mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center text-2xl font-bold text-white shadow-lg">
+                    {Math.floor(xpTotal / 500) + 1}
+                  </div>
+                  <div>
+                    <p className="font-bold text-gray-800">Nível {Math.floor(xpTotal / 500) + 1}</p>
+                    <p className="text-sm text-gray-600">{xpTotal} XP total</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-amber-600">{conquistasDesbloqueadas.length}</p>
+                  <p className="text-xs text-gray-500">conquistas</p>
+                </div>
+              </div>
+              <div className="h-3 bg-amber-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full transition-all"
+                  style={{ width: `${(xpTotal % 500) / 500 * 100}%` }}
+                ></div>
+              </div>
+              <p className="text-xs text-gray-500 mt-1 text-center">{500 - (xpTotal % 500)} XP para o próximo nível</p>
+            </div>
+
+            {/* Lista de todas as conquistas */}
+            <div className="space-y-3">
+              {Object.entries(CONQUISTAS).map(([id, conquista]) => {
+                const desbloqueada = conquistasDesbloqueadas.includes(id);
+                return (
+                  <div
+                    key={id}
+                    className={`flex items-center gap-4 p-4 rounded-xl transition-all ${
+                      desbloqueada
+                        ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200'
+                        : 'bg-gray-50 border-2 border-dashed border-gray-200 opacity-60'
+                    }`}
+                  >
+                    {/* Ícone */}
+                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-3xl ${
+                      desbloqueada
+                        ? `bg-gradient-to-br ${conquista.cor || 'from-yellow-400 to-amber-500'} shadow-md`
+                        : 'bg-gray-200 grayscale'
+                    }`}>
+                      {conquista.icone}
+                    </div>
+
+                    {/* Info */}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className={`font-bold ${desbloqueada ? 'text-gray-800' : 'text-gray-400'}`}>
+                          {conquista.nome}
+                        </p>
+                        {desbloqueada && <span className="text-yellow-500">✨</span>}
+                      </div>
+                      <p className={`text-sm ${desbloqueada ? 'text-gray-600' : 'text-gray-400'}`}>
+                        {conquista.descricao}
+                      </p>
+                    </div>
+
+                    {/* XP Badge */}
+                    <div className={`px-3 py-1.5 rounded-full text-sm font-bold ${
+                      desbloqueada
+                        ? 'bg-yellow-100 text-yellow-700'
+                        : 'bg-gray-100 text-gray-400'
+                    }`}>
+                      +{conquista.xp || conquista.pontos} XP
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Footer com dica */}
+            <div className="mt-4 p-3 bg-purple-50 rounded-xl text-center">
+              <p className="text-sm text-purple-700">
+                💡 Continua a registar o teu progresso diariamente para desbloquear mais conquistas!
+              </p>
+            </div>
+
+            {/* Botão fechar */}
+            <button
+              onClick={() => setShowConquistasModal(false)}
+              className="w-full mt-4 py-3 bg-[#7C8B6F] text-white rounded-xl font-semibold hover:bg-[#6B7A5D] transition-colors"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Onboarding para novos utilizadores */}
       {mostrarOnboarding && (
