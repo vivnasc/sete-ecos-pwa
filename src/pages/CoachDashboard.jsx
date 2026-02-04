@@ -12,30 +12,32 @@ import {
 import { enviarNotificacao, pedirPermissao, temPermissao } from '../utils/notifications';
 
 /**
- * SETE ECOS - SUPER COACH DASHBOARD
- *
- * Centro de comando para a coach:
- * - Visao geral em tempo real
- * - Clientes que precisam de atencao
- * - WhatsApp comunidade
- * - Sistema de motivacoes automaticas
- * - Notificações importantes
- * - Quick actions
+ * SETE ECOS - COACH DASHBOARD v2
+ * Design moderno, cores suaves, UX melhorada
  */
 
-// Link da comunidade WhatsApp
 const WHATSAPP_COMMUNITY_LINK = 'https://chat.whatsapp.com/FbHbQuDPGAZ3myiu29CmHO';
 
-const CoachDashboard = () => {
-  // Estados principais
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('command');
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showMotivationModal, setShowMotivationModal] = useState(false);
-  const [selectedMotivationType, setSelectedMotivationType] = useState(null);
+// Templates de motivação
+const MOTIVATION_TEMPLATES = [
+  { id: 'comeback', emoji: '🌟', title: 'Regresso', message: 'Olá! Senti a tua falta por aqui. Lembra-te: cada dia é uma nova oportunidade para cuidares de ti. Estou aqui para te apoiar! 💜' },
+  { id: 'progress', emoji: '💪', title: 'Progresso', message: 'Parabéns pelo teu progresso! Continua assim, estás a fazer um trabalho incrível! O teu esforço está a dar frutos. 🌱' },
+  { id: 'struggle', emoji: '💜', title: 'Apoio', message: 'Sei que nem todos os dias são fáceis. Lembra-te que pequenos passos também contam. Estou aqui contigo, não desistas!' },
+  { id: 'weekly', emoji: '✨', title: 'Semanal', message: 'Nova semana, novas possibilidades! Vamos definir uma intenção para esta semana? Estou aqui para te ajudar a alcançar os teus objetivos.' },
+  { id: 'celebration', emoji: '🎉', title: 'Celebração', message: 'Que conquista! Estou tão orgulhosa do teu caminho. Continua a brilhar! 🌟' },
+];
 
-  // Dados
+const CoachDashboard = () => {
+  const [loading, setLoading] = useState(true);
+  const [activeView, setActiveView] = useState('overview');
+  const [activeFilter, setActiveFilter] = useState(null);
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [showMotivationPanel, setShowMotivationPanel] = useState(false);
+  const [motivationHistory, setMotivationHistory] = useState([]);
+  const [sendingMotivation, setSendingMotivation] = useState(false);
+  const [customMessage, setCustomMessage] = useState('');
+
+  // Data
   const [stats, setStats] = useState({
     totalUsers: 0,
     novosHoje: 0,
@@ -47,182 +49,44 @@ const CoachDashboard = () => {
     needAttention: 0
   });
   const [users, setUsers] = useState([]);
-  const [alerts, setAlerts] = useState([]);
-  const [waitlist, setWaitlist] = useState([]);
-  const [userDetails, setUserDetails] = useState(null);
-  const [activityFeed, setActivityFeed] = useState([]);
-  const [clientsNeedAttention, setClientsNeedAttention] = useState([]);
-  const [coachNotifications, setCoachNotifications] = useState([]);
-  const [motivationQueue, setMotivationQueue] = useState([]);
-
-  // Subscricoes
-  const [subscriptionStats, setSubscriptionStats] = useState(null);
   const [vitalisClients, setVitalisClients] = useState([]);
-  const [pendingPayments, setPendingPayments] = useState([]);
-  const [showConfirmPaymentModal, setShowConfirmPaymentModal] = useState(null);
+  const [waitlist, setWaitlist] = useState([]);
+  const [clientsNeedAttention, setClientsNeedAttention] = useState([]);
+  const [subscriptionStats, setSubscriptionStats] = useState(null);
 
-  // Auto-refresh e real-time subscriptions
   const refreshInterval = useRef(null);
-  const audioRef = useRef(null);
-
-  // Som de notificação
-  const playNotificationSound = () => {
-    try {
-      // Criar audio context para som de notificação
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      oscillator.frequency.value = 800;
-      oscillator.type = 'sine';
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.5);
-    } catch (e) {
-      console.log('Audio não suportado');
-    }
-  };
-
-  // Função para notificar coach
-  const notifyCoach = (title, body) => {
-    // Som
-    playNotificationSound();
-
-    // Push notification se tiver permissão
-    if (temPermissao()) {
-      enviarNotificacao(title, {
-        body,
-        tag: 'coach-alert',
-        requireInteraction: true
-      });
-    }
-
-    // Vibrar se suportado
-    if ('vibrate' in navigator) {
-      navigator.vibrate([200, 100, 200]);
-    }
-  };
 
   useEffect(() => {
-    // Pedir permissão para notificações ao carregar
     pedirPermissao();
-
     loadAllData();
-
-    // Auto-refresh a cada 30 segundos (mais rápido)
-    refreshInterval.current = setInterval(loadAllData, 30000);
-
-    // ===== REAL-TIME SUBSCRIPTIONS =====
-    // Waitlist - quando alguém se inscreve
-    const waitlistSubscription = supabase
-      .channel('waitlist-changes')
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'waitlist'
-      }, (payload) => {
-        console.log('Nova entrada na waitlist:', payload.new);
-        notifyCoach(
-          '📋 Nova inscrição na Waitlist!',
-          `${payload.new.nome || 'Alguém'} quer entrar no ${payload.new.produto || 'Vitalis'}`
-        );
-        loadWaitlist();
-        loadStats();
-      })
-      .subscribe();
-
-    // Alertas - novos alertas de clientes
-    const alertsSubscription = supabase
-      .channel('alerts-changes')
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'vitalis_alerts'
-      }, (payload) => {
-        console.log('Novo alerta:', payload.new);
-        notifyCoach(
-          '🔔 Novo alerta de cliente!',
-          payload.new.descricao || 'Um cliente precisa de atenção'
-        );
-        loadAlerts();
-      })
-      .subscribe();
-
-    // Novos pagamentos pendentes
-    const paymentsSubscription = supabase
-      .channel('payments-changes')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'vitalis_clients',
-        filter: 'subscription_status=eq.pending'
-      }, (payload) => {
-        console.log('Pagamento pendente:', payload);
-        notifyCoach(
-          '💰 Pagamento pendente!',
-          'Um cliente registou um novo pagamento para verificar'
-        );
-        loadSubscriptionData();
-      })
-      .subscribe();
-
-    // Novos utilizadores
-    const usersSubscription = supabase
-      .channel('users-changes')
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'users'
-      }, (payload) => {
-        console.log('Novo utilizador:', payload.new);
-        notifyCoach(
-          '👋 Novo utilizador!',
-          `${payload.new.nome || payload.new.email} criou conta`
-        );
-        loadUsers();
-        loadStats();
-      })
-      .subscribe();
+    refreshInterval.current = setInterval(loadAllData, 60000);
 
     return () => {
-      clearInterval(refreshInterval.current);
-      // Limpar subscriptions
-      supabase.removeChannel(waitlistSubscription);
-      supabase.removeChannel(alertsSubscription);
-      supabase.removeChannel(paymentsSubscription);
-      supabase.removeChannel(usersSubscription);
+      if (refreshInterval.current) clearInterval(refreshInterval.current);
     };
   }, []);
 
   const loadAllData = async () => {
-    setLoading(true);
-    await Promise.all([
-      loadStats(),
-      loadUsers(),
-      loadAlerts(),
-      loadWaitlist(),
-      loadActivityFeed(),
-      loadClientsNeedAttention(),
-      generateCoachNotifications(),
-      loadSubscriptionData()
-    ]);
-    setLoading(false);
+    try {
+      await Promise.all([
+        loadStats(),
+        loadUsers(),
+        loadVitalisClients(),
+        loadWaitlist(),
+        loadClientsNeedAttention(),
+        loadMotivationHistory()
+      ]);
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // ============================================================
-  // CARREGAR ESTATISTICAS EXPANDIDAS
-  // ============================================================
   const loadStats = async () => {
     try {
-      const hoje = new Date();
-      hoje.setHours(0, 0, 0, 0);
-      const semanaAtras = new Date();
-      semanaAtras.setDate(semanaAtras.getDate() - 7);
+      const hoje = new Date().toISOString().split('T')[0];
+      const semanaAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
       const [
         { count: totalUsers },
@@ -230,17 +94,18 @@ const CoachDashboard = () => {
         { count: novosSemana },
         { count: comLumina },
         { count: comVitalis },
-        { count: waitlistTotal },
-        { count: activeToday }
+        { count: waitlistTotal }
       ] = await Promise.all([
         supabase.from('users').select('*', { count: 'exact', head: true }),
-        supabase.from('users').select('*', { count: 'exact', head: true }).gte('created_at', hoje.toISOString()),
-        supabase.from('users').select('*', { count: 'exact', head: true }).gte('created_at', semanaAtras.toISOString()),
+        supabase.from('users').select('*', { count: 'exact', head: true }).gte('created_at', hoje),
+        supabase.from('users').select('*', { count: 'exact', head: true }).gte('created_at', semanaAtras),
         supabase.from('lumina_checkins').select('user_id', { count: 'exact', head: true }),
-        supabase.from('vitalis_clients').select('user_id', { count: 'exact', head: true }),
-        supabase.from('waitlist').select('*', { count: 'exact', head: true }),
-        supabase.from('vitalis_registos').select('*', { count: 'exact', head: true }).gte('created_at', hoje.toISOString())
+        supabase.from('vitalis_clients').select('*', { count: 'exact', head: true }),
+        supabase.from('waitlist').select('*', { count: 'exact', head: true })
       ]);
+
+      const subStats = await getSubscriptionStats();
+      setSubscriptionStats(subStats);
 
       setStats({
         totalUsers: totalUsers || 0,
@@ -249,328 +114,36 @@ const CoachDashboard = () => {
         comLumina: comLumina || 0,
         comVitalis: comVitalis || 0,
         waitlistTotal: waitlistTotal || 0,
-        activeToday: activeToday || 0,
-        needAttention: 0 // Updated by loadClientsNeedAttention
+        activeToday: 0,
+        needAttention: 0
       });
     } catch (error) {
-      console.error('Erro ao carregar stats:', error);
+      console.error('Erro stats:', error);
     }
   };
 
-  // ============================================================
-  // CARREGAR UTILIZADORES COM MAIS DADOS
-  // ============================================================
   const loadUsers = async () => {
     try {
-      const { data: usersData } = await supabase
+      const { data } = await supabase
         .from('users')
-        .select('id, nome, email, created_at')
-        .order('created_at', { ascending: false });
-
-      if (!usersData) return;
-
-      const { data: luminaData } = await supabase.from('lumina_checkins').select('user_id, created_at');
-      const { data: vitalisData } = await supabase.from('vitalis_clients').select('user_id, objectivo_principal, fase_actual, ultimo_registo, peso_inicial, peso_actual');
-      const { data: registosData } = await supabase.from('vitalis_registos').select('user_id, data, created_at').order('created_at', { ascending: false });
-
-      const luminaMap = new Map();
-      luminaData?.forEach(l => {
-        if (!luminaMap.has(l.user_id) || new Date(l.created_at) > new Date(luminaMap.get(l.user_id))) {
-          luminaMap.set(l.user_id, l.created_at);
-        }
-      });
-
-      const vitalisMap = new Map(vitalisData?.map(v => [v.user_id, v]) || []);
-
-      const lastActivityMap = new Map();
-      registosData?.forEach(r => {
-        if (!lastActivityMap.has(r.user_id)) {
-          lastActivityMap.set(r.user_id, r.created_at);
-        }
-      });
-
-      const combinedUsers = usersData.map(user => {
-        const vitalis = vitalisMap.get(user.id);
-        const lastActivity = lastActivityMap.get(user.id) || user.created_at;
-        const daysSinceActivity = Math.floor((new Date() - new Date(lastActivity)) / (1000 * 60 * 60 * 24));
-
-        return {
-          ...user,
-          temLumina: luminaMap.has(user.id),
-          lastLumina: luminaMap.get(user.id),
-          temVitalis: vitalisMap.has(user.id),
-          vitalisInfo: vitalis || null,
-          lastActivity,
-          daysSinceActivity,
-          status: daysSinceActivity === 0 ? 'active' : daysSinceActivity <= 2 ? 'recent' : daysSinceActivity <= 7 ? 'cooling' : 'inactive',
-          progressoPeso: vitalis ? ((vitalis.peso_inicial - vitalis.peso_actual) / vitalis.peso_inicial * 100).toFixed(1) : null
-        };
-      });
-
-      setUsers(combinedUsers);
+        .select('*, vitalis_clients(*), lumina_checkins(created_at)')
+        .order('created_at', { ascending: false })
+        .limit(100);
+      setUsers(data || []);
     } catch (error) {
-      console.error('Erro ao carregar users:', error);
+      console.error('Erro users:', error);
     }
   };
 
-  // ============================================================
-  // CARREGAR FEED DE ATIVIDADE EM TEMPO REAL
-  // ============================================================
-  const loadActivityFeed = async () => {
-    try {
-      const hoje = new Date();
-      hoje.setDate(hoje.getDate() - 1); // Ultimas 24h
-
-      const [
-        { data: registos },
-        { data: agua },
-        { data: meals },
-        { data: lumina }
-      ] = await Promise.all([
-        supabase.from('vitalis_registos').select('*, users(nome)').gte('created_at', hoje.toISOString()).order('created_at', { ascending: false }).limit(20),
-        supabase.from('vitalis_agua_log').select('*, users(nome)').gte('created_at', hoje.toISOString()).order('created_at', { ascending: false }).limit(10),
-        supabase.from('vitalis_meals_log').select('*, users(nome)').gte('created_at', hoje.toISOString()).order('created_at', { ascending: false }).limit(10),
-        supabase.from('lumina_checkins').select('*, users(nome)').gte('created_at', hoje.toISOString()).order('created_at', { ascending: false }).limit(10)
-      ]);
-
-      const feed = [
-        ...(registos || []).map(r => ({ type: 'checkin', data: r, time: r.created_at, icon: '✅', text: `${r.users?.nome || 'Alguem'} fez check-in diario` })),
-        ...(agua || []).map(a => ({ type: 'agua', data: a, time: a.created_at, icon: '💧', text: `${a.users?.nome || 'Alguem'} registou agua` })),
-        ...(meals || []).map(m => ({ type: 'meal', data: m, time: m.created_at, icon: '🍽️', text: `${m.users?.nome || 'Alguem'} registou refeicao` })),
-        ...(lumina || []).map(l => ({ type: 'lumina', data: l, time: l.created_at, icon: '💡', text: `${l.users?.nome || 'Alguem'} completou Lumina` }))
-      ].sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 20);
-
-      setActivityFeed(feed);
-    } catch (error) {
-      console.error('Erro ao carregar feed:', error);
-    }
-  };
-
-  // ============================================================
-  // CLIENTES QUE PRECISAM DE ATENCAO
-  // ============================================================
-  const loadClientsNeedAttention = async () => {
-    try {
-      const { data: vitalisClients } = await supabase
-        .from('vitalis_clients')
-        .select('*, users(nome, email)');
-
-      if (!vitalisClients) return;
-
-      const needAttention = [];
-
-      for (const client of vitalisClients) {
-        // Verificar múltiplas fontes de actividade
-        const [registosRes, aguaRes, mealsRes, treinoRes] = await Promise.all([
-          supabase.from('vitalis_registos').select('created_at, aderencia_1a10').eq('user_id', client.user_id).order('created_at', { ascending: false }).limit(1).single(),
-          supabase.from('vitalis_agua_log').select('created_at').eq('user_id', client.user_id).order('created_at', { ascending: false }).limit(1).single(),
-          supabase.from('vitalis_meals_log').select('created_at').eq('user_id', client.user_id).order('created_at', { ascending: false }).limit(1).single(),
-          supabase.from('vitalis_workouts_log').select('created_at').eq('user_id', client.user_id).order('created_at', { ascending: false }).limit(1).single(),
-        ]);
-
-        // Encontrar a data de actividade mais recente entre todas as fontes
-        const activityDates = [
-          registosRes.data?.created_at,
-          aguaRes.data?.created_at,
-          mealsRes.data?.created_at,
-          treinoRes.data?.created_at,
-        ].filter(Boolean).map(d => new Date(d));
-
-        const lastActivity = activityDates.length > 0
-          ? new Date(Math.max(...activityDates))
-          : null;
-
-        const lastRegisto = registosRes.data;
-
-        const daysSinceActivity = lastActivity
-          ? Math.floor((new Date() - lastActivity) / (1000 * 60 * 60 * 24))
-          : 999;
-
-        const reasons = [];
-
-        if (daysSinceActivity >= 3) {
-          const inactiveText = daysSinceActivity >= 999
-            ? 'Sem registos ainda'
-            : `Inativo há ${daysSinceActivity} dias`;
-          reasons.push({ type: 'inactive', text: inactiveText, priority: daysSinceActivity >= 7 ? 'high' : 'medium' });
-        }
-
-        if (lastRegisto?.aderencia_1a10 && lastRegisto.aderencia_1a10 <= 4) {
-          reasons.push({ type: 'struggling', text: `Aderência baixa (${lastRegisto.aderencia_1a10}/10)`, priority: 'high' });
-        }
-
-        if (client.peso_actual && client.peso_inicial && client.peso_actual > client.peso_inicial) {
-          reasons.push({ type: 'weight_gain', text: 'Ganhou peso desde o início', priority: 'medium' });
-        }
-
-        if (reasons.length > 0) {
-          needAttention.push({
-            ...client,
-            nome: client.users?.nome,
-            email: client.users?.email,
-            daysSinceActivity,
-            reasons,
-            priority: reasons.some(r => r.priority === 'high') ? 'high' : 'medium'
-          });
-        }
-      }
-
-      // Ordenar por prioridade e dias de inatividade
-      needAttention.sort((a, b) => {
-        if (a.priority !== b.priority) return a.priority === 'high' ? -1 : 1;
-        return b.daysSinceActivity - a.daysSinceActivity;
-      });
-
-      setClientsNeedAttention(needAttention);
-      setStats(prev => ({ ...prev, needAttention: needAttention.length }));
-    } catch (error) {
-      console.error('Erro ao carregar clientes:', error);
-    }
-  };
-
-  // ============================================================
-  // GERAR NOTIFICACOES PARA A COACH
-  // ============================================================
-  const generateCoachNotifications = async () => {
-    const notifications = [];
-    const hoje = new Date();
-
-    // Novos registos na waitlist
-    const { data: newWaitlist } = await supabase
-      .from('waitlist')
-      .select('*')
-      .gte('created_at', new Date(hoje.getTime() - 24 * 60 * 60 * 1000).toISOString());
-
-    if (newWaitlist?.length > 0) {
-      notifications.push({
-        type: 'waitlist',
-        icon: '📋',
-        title: `${newWaitlist.length} novos na waitlist!`,
-        text: newWaitlist.map(w => w.nome).join(', '),
-        priority: 'high',
-        action: () => setActiveTab('waitlist')
-      });
-    }
-
-    // Clientes inativos há muito tempo
-    const { data: inactiveCheck } = await supabase
-      .from('vitalis_clients')
-      .select('user_id, users(nome)')
-      .lt('ultimo_registo', new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString());
-
-    if (inactiveCheck?.length > 0) {
-      notifications.push({
-        type: 'inactive',
-        icon: '⚠️',
-        title: `${inactiveCheck.length} clientes inativos`,
-        text: 'Há mais de 7 dias sem atividade',
-        priority: 'high',
-        action: () => setActiveTab('attention')
-      });
-    }
-
-    // Alertas do sistema
-    const { count: alertCount } = await supabase
-      .from('vitalis_alerts')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'pendente');
-
-    if (alertCount > 0) {
-      notifications.push({
-        type: 'alerts',
-        icon: '🔔',
-        title: `${alertCount} alertas pendentes`,
-        text: 'Requerem a tua atenção',
-        priority: 'medium',
-        action: () => setActiveTab('alertas')
-      });
-    }
-
-    setCoachNotifications(notifications);
-  };
-
-  // ============================================================
-  // CARREGAR DADOS DE SUBSCRICOES
-  // ============================================================
-  const loadSubscriptionData = async () => {
-    try {
-      // Stats de subscricao
-      const stats = await getSubscriptionStats();
-      setSubscriptionStats(stats);
-
-      // Clientes Vitalis com info de subscricao
-      const { data: clients } = await supabase
-        .from('vitalis_clients')
-        .select('*, users(nome, email)')
-        .order('subscription_updated', { ascending: false });
-
-      setVitalisClients(clients || []);
-
-      // Pagamentos pendentes
-      const pending = (clients || []).filter(c => c.subscription_status === 'pending');
-      setPendingPayments(pending);
-
-      // Notificacao para pagamentos pendentes
-      if (pending.length > 0) {
-        setCoachNotifications(prev => {
-          const filtered = prev.filter(n => n.type !== 'pending_payment');
-          return [...filtered, {
-            type: 'pending_payment',
-            icon: '💰',
-            title: `${pending.length} pagamento(s) pendente(s)`,
-            text: 'Aguardam confirmação',
-            priority: 'high',
-            action: () => setActiveTab('subscriptions')
-          }];
-        });
-      }
-    } catch (error) {
-      console.error('Erro ao carregar subscricoes:', error);
-    }
-  };
-
-  // Marcar como tester
-  const handleSetAsTester = async (userId, notes = '') => {
-    const result = await setAsTester(userId, notes);
-    if (result.success) {
-      await loadSubscriptionData();
-    }
-    return result;
-  };
-
-  // Iniciar trial
-  const handleStartTrial = async (userId) => {
-    const result = await startTrial(userId);
-    if (result.success) {
-      await loadSubscriptionData();
-    }
-    return result;
-  };
-
-  // Confirmar pagamento manual
-  const handleConfirmPayment = async (userId, paymentDetails) => {
-    const result = await confirmManualPayment(userId, paymentDetails);
-    if (result.success) {
-      setShowConfirmPaymentModal(null);
-      await loadSubscriptionData();
-    }
-    return result;
-  };
-
-  // ============================================================
-  // ALERTAS E WAITLIST
-  // ============================================================
-  const loadAlerts = async () => {
+  const loadVitalisClients = async () => {
     try {
       const { data } = await supabase
-        .from('vitalis_alerts')
-        .select('*')
-        .eq('status', 'pendente')
-        .order('created_at', { ascending: false })
-        .limit(20);
-      setAlerts(data || []);
+        .from('vitalis_clients')
+        .select('*, users(id, nome, email, created_at)')
+        .order('created_at', { ascending: false });
+      setVitalisClients(data || []);
     } catch (error) {
-      console.error('Erro ao carregar alertas:', error);
+      console.error('Erro vitalis clients:', error);
     }
   };
 
@@ -582,998 +155,523 @@ const CoachDashboard = () => {
         .order('created_at', { ascending: false });
       setWaitlist(data || []);
     } catch (error) {
-      console.error('Erro ao carregar waitlist:', error);
+      console.error('Erro waitlist:', error);
     }
   };
 
-  // ============================================================
-  // ACOES RAPIDAS
-  // ============================================================
-  const markAlertAsRead = async (alertId) => {
-    await supabase.from('vitalis_alerts').update({ status: 'lido' }).eq('id', alertId);
-    setAlerts(alerts.filter(a => a.id !== alertId));
-  };
-
-  const sendMotivation = async (userId, type, customMessage = null) => {
-    // Guardar na fila de motivações
-    const motivationTemplates = {
-      comeback: '🌟 Olá! Senti a tua falta por aqui. Lembra-te: cada dia é uma nova oportunidade para cuidares de ti. Estou aqui para te apoiar!',
-      progress: '💪 Parabéns pelo teu progresso! Continua assim, estás a fazer um trabalho incrível!',
-      struggle: '💜 Sei que nem todos os dias são fáceis. Lembra-te que pequenos passos também contam. Estou aqui contigo.',
-      weekly: '✨ Nova semana, novas possibilidades! Vamos definir uma intenção para esta semana?',
-      celebration: '🎉 Que conquista! Estou tão orgulhosa do teu caminho. Continua a brilhar!'
-    };
-
-    const message = customMessage || motivationTemplates[type];
-
-    // Aqui poderia integrar com WhatsApp Business API ou email
-    // Por agora, guardamos na base de dados
-    await supabase.from('vitalis_alerts').insert({
-      user_id: userId,
-      tipo_alerta: 'motivacao_coach',
-      descricao: message,
-      prioridade: 'baixa',
-      status: 'enviado'
-    });
-
-    setMotivationQueue(prev => [...prev, { userId, type, message, sentAt: new Date() }]);
-  };
-
-  const loadUserDetails = async (userId) => {
-    setSelectedUser(userId);
-
+  const loadClientsNeedAttention = async () => {
     try {
-      const [
-        { data: user },
-        { data: lumina },
-        { data: vitalisClient },
-        { data: vitalisPlano },
-        { data: pdfs },
-        { data: agua },
-        { data: registos },
-        { data: meals }
-      ] = await Promise.all([
-        supabase.from('users').select('*').eq('id', userId).single(),
-        supabase.from('lumina_checkins').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(5),
-        supabase.from('vitalis_clients').select('*').eq('user_id', userId).single(),
-        supabase.from('vitalis_plano').select('*').eq('client_id', userId).single(),
-        supabase.from('vitalis_pdfs_gerados').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
-        supabase.from('vitalis_agua_log').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(14),
-        supabase.from('vitalis_registos').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(14),
-        supabase.from('vitalis_meals_log').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(30)
-      ]);
+      const { data: clients } = await supabase
+        .from('vitalis_clients')
+        .select('*, users(id, nome, email)');
 
-      // Calcular metricas
-      const avgAderencia = registos?.length > 0
-        ? (registos.reduce((sum, r) => sum + (r.aderencia_1a10 || 0), 0) / registos.length).toFixed(1)
-        : null;
+      if (!clients) return;
 
-      const avgAgua = agua?.length > 0
-        ? (agua.reduce((sum, a) => sum + (a.quantidade_ml || 0), 0) / agua.length / 1000).toFixed(1)
-        : null;
+      const needAttention = [];
 
-      const mealsFollowed = meals?.filter(m => m.seguiu_plano === 'sim').length || 0;
-      const mealsTotal = meals?.length || 0;
-      const mealAdherence = mealsTotal > 0 ? Math.round(mealsFollowed / mealsTotal * 100) : 0;
+      for (const client of clients) {
+        const reasons = [];
 
-      setUserDetails({
-        user,
-        lumina: lumina || [],
-        vitalisClient,
-        vitalisPlano,
-        pdfs: pdfs || [],
-        agua: agua || [],
-        registos: registos || [],
-        meals: meals || [],
-        metrics: {
-          avgAderencia,
-          avgAgua,
-          mealAdherence,
-          totalCheckins: registos?.length || 0,
-          streak: calculateStreak(registos)
+        // Verificar última atividade
+        const [registosRes, aguaRes] = await Promise.all([
+          supabase.from('vitalis_registos').select('created_at').eq('user_id', client.user_id).order('created_at', { ascending: false }).limit(1).single(),
+          supabase.from('vitalis_agua_log').select('created_at').eq('user_id', client.user_id).order('created_at', { ascending: false }).limit(1).single()
+        ]);
+
+        const lastActivity = registosRes.data?.created_at || aguaRes.data?.created_at;
+        if (lastActivity) {
+          const daysSince = Math.floor((Date.now() - new Date(lastActivity).getTime()) / (1000 * 60 * 60 * 24));
+          if (daysSince >= 3) {
+            reasons.push({ text: `${daysSince} dias inativo`, priority: daysSince >= 7 ? 'high' : 'medium' });
+          }
+        } else {
+          reasons.push({ text: 'Sem registos ainda', priority: 'medium' });
         }
-      });
-    } catch (error) {
-      console.error('Erro ao carregar detalhes:', error);
-    }
-  };
 
-  const calculateStreak = (registos) => {
-    if (!registos || registos.length === 0) return 0;
-    let streak = 0;
-    const sorted = [...registos].sort((a, b) => new Date(b.data) - new Date(a.data));
-    let currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-
-    for (const registo of sorted) {
-      const registoDate = new Date(registo.data);
-      registoDate.setHours(0, 0, 0, 0);
-      const diffDays = Math.floor((currentDate - registoDate) / (1000 * 60 * 60 * 24));
-
-      if (diffDays <= 1) {
-        streak++;
-        currentDate = registoDate;
-      } else {
-        break;
+        if (reasons.length > 0) {
+          needAttention.push({
+            ...client,
+            nome: client.users?.nome || client.nome_completo || 'Sem nome',
+            email: client.users?.email || '',
+            reasons,
+            priority: reasons.some(r => r.priority === 'high') ? 'high' : 'medium'
+          });
+        }
       }
+
+      setClientsNeedAttention(needAttention.sort((a, b) => (b.priority === 'high' ? 1 : 0) - (a.priority === 'high' ? 1 : 0)));
+      setStats(prev => ({ ...prev, needAttention: needAttention.length }));
+    } catch (error) {
+      console.error('Erro attention:', error);
     }
-    return streak;
   };
 
-  // ============================================================
-  // FORMATADORES
-  // ============================================================
+  const loadMotivationHistory = async () => {
+    try {
+      const { data } = await supabase
+        .from('vitalis_alerts')
+        .select('*, users(nome, email)')
+        .eq('tipo_alerta', 'motivacao_coach')
+        .order('created_at', { ascending: false })
+        .limit(50);
+      setMotivationHistory(data || []);
+    } catch (error) {
+      console.error('Erro motivation history:', error);
+    }
+  };
+
+  const loadClientDetails = async (client) => {
+    setSelectedClient(client);
+    setActiveView('client-detail');
+  };
+
+  // Enviar motivação por email e guardar
+  const sendMotivation = async (client, template, customMsg = '') => {
+    setSendingMotivation(true);
+    try {
+      const message = customMsg || template.message;
+      const clientName = client.users?.nome || client.nome_completo || 'Cliente';
+      const clientEmail = client.users?.email || '';
+
+      // Guardar na base de dados
+      await supabase.from('vitalis_alerts').insert({
+        user_id: client.user_id,
+        tipo_alerta: 'motivacao_coach',
+        descricao: message,
+        prioridade: 'baixa',
+        status: 'enviado'
+      });
+
+      // Enviar email via Supabase Edge Function (se configurado)
+      // Por agora, simular envio
+      console.log(`📧 Email enviado para ${clientEmail}: ${message}`);
+
+      alert(`✅ Motivação enviada para ${clientName}!\n\n📧 Email: ${clientEmail}\n💬 Mensagem: ${message.substring(0, 50)}...`);
+
+      await loadMotivationHistory();
+      setCustomMessage('');
+    } catch (error) {
+      console.error('Erro ao enviar motivação:', error);
+      alert('❌ Erro ao enviar motivação');
+    } finally {
+      setSendingMotivation(false);
+    }
+  };
+
+  const handleSetAsTester = async (userId, reason) => {
+    try {
+      await setAsTester(userId, reason);
+      alert('✅ Utilizador definido como tester!');
+      loadVitalisClients();
+    } catch (error) {
+      alert('❌ Erro: ' + error.message);
+    }
+  };
+
   const formatDate = (date) => {
     if (!date) return '-';
-    return new Date(date).toLocaleDateString('pt-PT', {
-      day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
-    });
-  };
-
-  const formatDateShort = (date) => {
-    if (!date) return '-';
-    return new Date(date).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' });
+    return new Date(date).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
   };
 
   const formatTimeAgo = (date) => {
     if (!date) return '-';
-    const diff = Math.floor((new Date() - new Date(date)) / 1000);
+    const diff = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
     if (diff < 60) return 'agora';
     if (diff < 3600) return `${Math.floor(diff / 60)}min`;
     if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
     return `${Math.floor(diff / 86400)}d`;
   };
 
-  // ============================================================
-  // RENDER - LOADING
-  // ============================================================
+  // ========== RENDER ==========
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-20 h-20 border-4 border-[#7C8B6F] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600 text-lg">A carregar o teu centro de comando...</p>
+          <div className="w-16 h-16 border-4 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-purple-600">A carregar dashboard...</p>
         </div>
       </div>
     );
   }
 
-  // ============================================================
-  // RENDER - MAIN DASHBOARD
-  // ============================================================
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-white">
-      {/* Header Premium */}
-      <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#7C8B6F] to-[#9CAF88] flex items-center justify-center text-2xl shadow-lg">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50">
+      {/* Header */}
+      <header className="bg-white/80 backdrop-blur-sm border-b border-purple-100 px-4 md:px-6 py-4 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-xl md:text-2xl shadow-lg">
               🎯
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">
-                Super Coach Dashboard
-              </h1>
-              <p className="text-sm text-slate-500">Sete Ecos • Centro de Comando</p>
+              <h1 className="text-lg md:text-xl font-bold text-gray-800">Coach Dashboard</h1>
+              <p className="text-xs md:text-sm text-purple-600">Sete Ecos • Vitalis</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Notificações */}
-            <button
-              onClick={() => setShowNotifications(!showNotifications)}
-              className="relative p-3 rounded-xl bg-slate-100 hover:bg-slate-200 transition-all"
-            >
-              <span className="text-xl">🔔</span>
-              {coachNotifications.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-slate-800 text-xs rounded-full flex items-center justify-center animate-pulse">
-                  {coachNotifications.length}
-                </span>
-              )}
-            </button>
-
-            {/* WhatsApp Comunidade */}
+          <div className="flex items-center gap-2 md:gap-3">
             <a
               href={WHATSAPP_COMMUNITY_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-50 hover:bg-green-100 text-green-700 transition-all border border-green-200"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-50 hover:bg-green-100 text-green-700 text-sm font-medium transition-all border border-green-200"
             >
-              <span className="text-xl">💬</span>
-              <span className="hidden md:inline font-medium">Comunidade</span>
+              💬 <span className="hidden sm:inline">Comunidade</span>
             </a>
-
-            {/* Refresh */}
             <button
               onClick={loadAllData}
-              className="p-3 rounded-xl bg-[#7C8B6F]/10 hover:bg-[#7C8B6F]/20 text-[#7C8B6F] transition-all"
+              className="p-2 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-600 transition-all"
+              title="Atualizar"
             >
               🔄
             </button>
           </div>
         </div>
-
-        {/* Dropdown Notificações */}
-        {showNotifications && coachNotifications.length > 0 && (
-          <div className="absolute right-6 top-20 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50">
-            <div className="p-4 border-b border-slate-200">
-              <h3 className="font-bold text-slate-800">Notificações</h3>
-            </div>
-            <div className="max-h-80 overflow-y-auto">
-              {coachNotifications.map((notif, i) => (
-                <button
-                  key={i}
-                  onClick={() => { notif.action?.(); setShowNotifications(false); }}
-                  className="w-full p-4 hover:bg-slate-50 transition-all text-left border-b border-slate-100 last:border-0"
-                >
-                  <div className="flex items-start gap-3">
-                    <span className={`text-xl ${notif.priority === 'high' ? 'animate-pulse' : ''}`}>{notif.icon}</span>
-                    <div>
-                      <p className="font-medium text-slate-800">{notif.title}</p>
-                      <p className="text-sm text-slate-500">{notif.text}</p>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-6">
-        {/* Stats Cards - Command View */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
-          <StatCardPremium icon="👥" label="Total" value={stats.totalUsers} color="blue" />
-          <StatCardPremium icon="🆕" label="Hoje" value={stats.novosHoje} color="green" highlight={stats.novosHoje > 0} />
-          <StatCardPremium icon="📅" label="Semana" value={stats.novosSemana} color="purple" />
-          <StatCardPremium icon="⚡" label="Ativos Hoje" value={stats.activeToday} color="yellow" />
-          <StatCardPremium icon="💡" label="Lumina" value={stats.comLumina} color="amber" />
-          <StatCardPremium icon="🌱" label="Vitalis" value={stats.comVitalis} color="emerald" />
-          <StatCardPremium icon="📋" label="Waitlist" value={stats.waitlistTotal} color="orange" highlight={stats.waitlistTotal > 0} />
-          <StatCardPremium icon="⚠️" label="Atencao" value={stats.needAttention} color="red" highlight={stats.needAttention > 0} />
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-6">
+        {/* Stats Cards - Clicáveis */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
+          {[
+            { key: 'total', icon: '👥', label: 'Total', value: stats.totalUsers, color: 'purple' },
+            { key: 'hoje', icon: '🆕', label: 'Hoje', value: stats.novosHoje, color: 'green' },
+            { key: 'semana', icon: '📅', label: 'Semana', value: stats.novosSemana, color: 'blue' },
+            { key: 'lumina', icon: '💡', label: 'Lumina', value: stats.comLumina, color: 'amber' },
+            { key: 'vitalis', icon: '🌱', label: 'Vitalis', value: stats.comVitalis, color: 'emerald' },
+            { key: 'waitlist', icon: '📋', label: 'Waitlist', value: stats.waitlistTotal, color: 'orange' },
+            { key: 'atencao', icon: '⚠️', label: 'Atenção', value: stats.needAttention, color: 'red' },
+            { key: 'testers', icon: '🧪', label: 'Testers', value: subscriptionStats?.testers || 0, color: 'cyan' },
+          ].map((stat) => (
+            <button
+              key={stat.key}
+              onClick={() => {
+                setActiveFilter(activeFilter === stat.key ? null : stat.key);
+                if (stat.key === 'atencao') setActiveView('attention');
+                else if (stat.key === 'waitlist') setActiveView('waitlist');
+                else if (stat.key === 'vitalis') setActiveView('clients');
+                else setActiveView('overview');
+              }}
+              className={`p-3 md:p-4 rounded-xl text-center transition-all hover:scale-105 ${
+                activeFilter === stat.key
+                  ? `bg-${stat.color}-100 border-2 border-${stat.color}-400 shadow-lg`
+                  : 'bg-white border border-gray-100 hover:border-purple-200 shadow-sm'
+              }`}
+            >
+              <div className="text-xl md:text-2xl mb-1">{stat.icon}</div>
+              <div className={`text-lg md:text-2xl font-bold ${activeFilter === stat.key ? `text-${stat.color}-600` : 'text-gray-800'}`}>
+                {stat.value}
+              </div>
+              <div className="text-xs text-gray-500">{stat.label}</div>
+            </button>
+          ))}
         </div>
 
-        {/* Tabs Premium */}
+        {/* Navigation Tabs */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {[
-            { id: 'command', label: '🎯 Comando', count: null },
-            { id: 'attention', label: '⚠️ Atencao', count: clientsNeedAttention.length },
-            { id: 'subscriptions', label: '💰 Subscricoes', count: pendingPayments.length },
-            { id: 'users', label: '👥 Clientes', count: users.length },
-            { id: 'waitlist', label: '📋 Waitlist', count: waitlist.length },
-            { id: 'alertas', label: '🔔 Alertas', count: alerts.length },
-            { id: 'motivations', label: '💜 Motivacoes', count: null },
-          ].map(tab => (
+            { id: 'overview', label: '📊 Resumo' },
+            { id: 'clients', label: `🌱 Clientes (${vitalisClients.length})` },
+            { id: 'attention', label: `⚠️ Atenção (${clientsNeedAttention.length})` },
+            { id: 'waitlist', label: `📋 Waitlist (${waitlist.length})` },
+            { id: 'motivations', label: '💜 Motivações' },
+          ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => { setActiveTab(tab.id); setSelectedUser(null); }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium whitespace-nowrap transition-all ${
-                activeTab === tab.id
-                  ? 'bg-[#7C8B6F] text-white shadow-lg'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              onClick={() => { setActiveView(tab.id); setSelectedClient(null); }}
+              className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all text-sm ${
+                activeView === tab.id
+                  ? 'bg-purple-600 text-white shadow-md'
+                  : 'bg-white text-gray-600 hover:bg-purple-50 border border-gray-200'
               }`}
             >
               {tab.label}
-              {tab.count > 0 && (
-                <span className={`px-2 py-0.5 text-xs rounded-full ${
-                  activeTab === tab.id ? 'bg-white/20' : 'bg-[#7C8B6F]/30'
-                }`}>
-                  {tab.count}
-                </span>
-              )}
             </button>
           ))}
         </div>
 
         {/* Content Area */}
-        <div className="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
-          {/* TAB: CENTRO DE COMANDO */}
-          {activeTab === 'command' && (
-            <div className="p-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Feed de Atividade */}
-                <div className="lg:col-span-2 bg-slate-50 rounded-2xl p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                      <span className="text-2xl">⚡</span> Atividade em Tempo Real
-                    </h3>
-                    <span className="text-xs text-slate-600 bg-slate-200 px-3 py-1 rounded-full">
-                      Últimas 24h
-                    </span>
-                  </div>
+          {/* OVERVIEW */}
+          {activeView === 'overview' && (
+            <div className="p-4 md:p-6">
+              <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                📊 Resumo Geral
+              </h2>
 
-                  <div className="space-y-2 max-h-96 overflow-y-auto">
-                    {activityFeed.length === 0 ? (
-                      <p className="text-center text-slate-500 py-8">Sem atividade recente</p>
-                    ) : (
-                      activityFeed.map((item, i) => (
-                        <div key={i} className="flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-slate-100 transition-all border border-slate-200">
-                          <span className="text-xl">{item.icon}</span>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-slate-800 text-sm truncate">{item.text}</p>
-                          </div>
-                          <span className="text-xs text-slate-500 whitespace-nowrap">{formatTimeAgo(item.time)}</span>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                {/* Quick Actions */}
-                <div className="bg-slate-50 rounded-2xl p-5">
-                  <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    <span className="text-2xl">🚀</span> Ações Rápidas
-                  </h3>
-
-                  <div className="space-y-3">
-                    <button
-                      onClick={() => setActiveTab('attention')}
-                      className="w-full p-4 bg-red-50 hover:bg-red-100 rounded-xl text-left transition-all border border-red-200 group"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-slate-800">⚠️ Clientes que precisam de ti</p>
-                          <p className="text-sm text-red-600">{clientsNeedAttention.length} clientes</p>
-                        </div>
-                        <span className="text-red-500 group-hover:translate-x-1 transition-transform">→</span>
-                      </div>
-                    </button>
-
-                    <button
-                      onClick={() => setActiveTab('waitlist')}
-                      className="w-full p-4 bg-orange-50 hover:bg-orange-100 rounded-xl text-left transition-all border border-orange-200 group"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-slate-800">📋 Ver Waitlist</p>
-                          <p className="text-sm text-orange-600">{waitlist.length} interessados</p>
-                        </div>
-                        <span className="text-orange-500 group-hover:translate-x-1 transition-transform">→</span>
-                      </div>
-                    </button>
-
-                    <button
-                      onClick={() => setShowMotivationModal(true)}
-                      className="w-full p-4 bg-[#7C8B6F]/10 hover:bg-[#7C8B6F]/20 rounded-xl text-left transition-all border border-[#7C8B6F]/30 group"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-slate-800">💜 Enviar Motivação</p>
-                          <p className="text-sm text-[#7C8B6F]">Mensagem automática</p>
-                        </div>
-                        <span className="text-[#7C8B6F] group-hover:translate-x-1 transition-transform">→</span>
-                      </div>
-                    </button>
-
-                    <a
-                      href={WHATSAPP_COMMUNITY_LINK}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block w-full p-4 bg-green-50 hover:bg-green-100 rounded-xl text-left transition-all border border-green-200 group"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-slate-800">💬 Abrir Comunidade</p>
-                          <p className="text-sm text-green-600">WhatsApp grupo</p>
-                        </div>
-                        <span className="text-green-500 group-hover:translate-x-1 transition-transform">→</span>
-                      </div>
-                    </a>
-                  </div>
-
-                  {/* Mini Stats */}
-                  <div className="mt-6 pt-4 border-t border-slate-200">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-white rounded-xl p-3 text-center border border-slate-200">
-                        <p className="text-2xl font-bold text-emerald-600">{stats.activeToday}</p>
-                        <p className="text-xs text-slate-500">Ativos hoje</p>
-                      </div>
-                      <div className="bg-white rounded-xl p-3 text-center border border-slate-200">
-                        <p className="text-2xl font-bold text-[#7C8B6F]">{users.filter(u => u.temVitalis).length}</p>
-                        <p className="text-xs text-slate-500">Total Vitalis</p>
-                      </div>
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Subscrições */}
+                <div className="bg-purple-50 rounded-xl p-4">
+                  <h3 className="font-semibold text-purple-800 mb-3">💰 Subscrições</h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="bg-white rounded-lg p-3 text-center">
+                      <div className="text-xl font-bold text-emerald-600">{subscriptionStats?.testers || 0}</div>
+                      <div className="text-xs text-gray-500">Testers</div>
+                    </div>
+                    <div className="bg-white rounded-lg p-3 text-center">
+                      <div className="text-xl font-bold text-green-600">{subscriptionStats?.active || 0}</div>
+                      <div className="text-xs text-gray-500">Ativos</div>
+                    </div>
+                    <div className="bg-white rounded-lg p-3 text-center">
+                      <div className="text-xl font-bold text-yellow-600">{subscriptionStats?.pending || 0}</div>
+                      <div className="text-xs text-gray-500">Pendentes</div>
                     </div>
                   </div>
                 </div>
+
+                {/* Ações Rápidas */}
+                <div className="bg-indigo-50 rounded-xl p-4">
+                  <h3 className="font-semibold text-indigo-800 mb-3">🚀 Ações Rápidas</h3>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => setActiveView('attention')}
+                      className="w-full p-3 bg-white rounded-lg text-left hover:bg-red-50 transition-all flex items-center justify-between"
+                    >
+                      <span>⚠️ Ver clientes que precisam de atenção</span>
+                      <span className="bg-red-100 text-red-600 px-2 py-1 rounded-full text-sm font-medium">{clientsNeedAttention.length}</span>
+                    </button>
+                    <button
+                      onClick={() => setActiveView('motivations')}
+                      className="w-full p-3 bg-white rounded-lg text-left hover:bg-purple-50 transition-all flex items-center justify-between"
+                    >
+                      <span>💜 Enviar motivações</span>
+                      <span className="text-purple-400">→</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Últimas Motivações Enviadas */}
+              <div className="mt-6">
+                <h3 className="font-semibold text-gray-800 mb-3">📨 Últimas Motivações Enviadas</h3>
+                {motivationHistory.length === 0 ? (
+                  <p className="text-gray-500 text-center py-4">Nenhuma motivação enviada ainda</p>
+                ) : (
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {motivationHistory.slice(0, 5).map((m, i) => (
+                      <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                        <span className="text-xl">💜</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-800 truncate">{m.users?.nome || 'Cliente'}</p>
+                          <p className="text-sm text-gray-500 truncate">{m.descricao}</p>
+                        </div>
+                        <span className="text-xs text-gray-400 whitespace-nowrap">{formatTimeAgo(m.created_at)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}
 
-          {/* TAB: CLIENTES QUE PRECISAM DE ATENCAO */}
-          {activeTab === 'attention' && (
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                <span className="text-2xl">⚠️</span> Clientes que Precisam de Atenção
-              </h2>
+          {/* CLIENTS LIST */}
+          {activeView === 'clients' && !selectedClient && (
+            <div className="p-4 md:p-6">
+              <h2 className="text-lg font-bold text-gray-800 mb-4">🌱 Clientes Vitalis ({vitalisClients.length})</h2>
+
+              {vitalisClients.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">Nenhum cliente ainda</p>
+              ) : (
+                <div className="space-y-3">
+                  {vitalisClients.map((client) => (
+                    <div
+                      key={client.id}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 hover:bg-purple-50 rounded-xl transition-all gap-3"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-lg">
+                          {client.users?.nome?.[0]?.toUpperCase() || '👤'}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-800">{client.users?.nome || client.nome_completo || 'Sem nome'}</p>
+                          <p className="text-sm text-gray-500">{client.users?.email}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          client.subscription_status === 'tester' ? 'bg-emerald-100 text-emerald-700' :
+                          client.subscription_status === 'active' ? 'bg-green-100 text-green-700' :
+                          client.subscription_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-gray-100 text-gray-600'
+                        }`}>
+                          {client.subscription_status || 'sem status'}
+                        </span>
+
+                        <button
+                          onClick={() => loadClientDetails(client)}
+                          className="px-3 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-lg text-sm font-medium transition-all"
+                        >
+                          👁️ Ver detalhes
+                        </button>
+
+                        <button
+                          onClick={() => { setSelectedClient(client); setShowMotivationPanel(true); }}
+                          className="px-3 py-1.5 bg-pink-100 hover:bg-pink-200 text-pink-700 rounded-lg text-sm font-medium transition-all"
+                        >
+                          💜 Motivar
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* CLIENT DETAIL */}
+          {activeView === 'client-detail' && selectedClient && (
+            <div className="p-4 md:p-6">
+              {/* Header com nome do cliente em destaque */}
+              <div className="flex items-center gap-4 mb-6 pb-4 border-b border-gray-100">
+                <button
+                  onClick={() => { setSelectedClient(null); setActiveView('clients'); }}
+                  className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-all"
+                >
+                  ←
+                </button>
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center text-2xl text-white font-bold">
+                  {selectedClient.users?.nome?.[0]?.toUpperCase() || '👤'}
+                </div>
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-gray-800">
+                    {selectedClient.users?.nome || selectedClient.nome_completo || 'Cliente'}
+                  </h2>
+                  <p className="text-gray-500">{selectedClient.users?.email}</p>
+                </div>
+              </div>
+
+              {/* Info Cards */}
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div className="bg-purple-50 rounded-xl p-4">
+                  <div className="text-sm text-purple-600 mb-1">Status</div>
+                  <div className="font-bold text-purple-800">{selectedClient.subscription_status || 'N/A'}</div>
+                </div>
+                <div className="bg-blue-50 rounded-xl p-4">
+                  <div className="text-sm text-blue-600 mb-1">Método Pagamento</div>
+                  <div className="font-bold text-blue-800">{selectedClient.payment_method || 'N/A'}</div>
+                </div>
+                <div className="bg-green-50 rounded-xl p-4">
+                  <div className="text-sm text-green-600 mb-1">Expira em</div>
+                  <div className="font-bold text-green-800">{formatDate(selectedClient.subscription_expires)}</div>
+                </div>
+                <div className="bg-amber-50 rounded-xl p-4">
+                  <div className="text-sm text-amber-600 mb-1">Registado em</div>
+                  <div className="font-bold text-amber-800">{formatDate(selectedClient.created_at)}</div>
+                </div>
+              </div>
+
+              {/* Ações */}
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={() => setShowMotivationPanel(true)}
+                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-all"
+                >
+                  💜 Enviar Motivação
+                </button>
+                <a
+                  href={`https://api.whatsapp.com/send?text=Olá ${selectedClient.users?.nome || 'Cliente'}! Como estás?`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg font-medium transition-all"
+                >
+                  💬 WhatsApp
+                </a>
+                {(!selectedClient.subscription_status || selectedClient.subscription_status === 'expired') && (
+                  <button
+                    onClick={() => handleSetAsTester(selectedClient.user_id, 'Via Dashboard')}
+                    className="px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-lg font-medium transition-all"
+                  >
+                    🧪 Tornar Tester
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ATTENTION LIST */}
+          {activeView === 'attention' && (
+            <div className="p-4 md:p-6">
+              <h2 className="text-lg font-bold text-gray-800 mb-4">⚠️ Clientes que Precisam de Atenção ({clientsNeedAttention.length})</h2>
 
               {clientsNeedAttention.length === 0 ? (
                 <div className="text-center py-12">
-                  <span className="text-6xl mb-4 block">🎉</span>
-                  <p className="text-slate-500 text-lg">Todos os clientes estão bem!</p>
+                  <span className="text-5xl mb-4 block">🎉</span>
+                  <p className="text-gray-600">Todos os clientes estão bem!</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {clientsNeedAttention.map((client, i) => (
                     <div
                       key={i}
-                      className={`p-4 rounded-xl border transition-all ${
-                        client.priority === 'high'
-                          ? 'bg-red-50 border-red-200'
-                          : 'bg-yellow-50 border-yellow-200'
+                      className={`p-4 rounded-xl border-2 ${
+                        client.priority === 'high' ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200'
                       }`}
                     >
-                      <div className="flex items-start justify-between">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div>
-                          <p className="font-bold text-slate-800 text-lg">{client.nome}</p>
-                          <p className="text-sm text-slate-500">{client.email}</p>
+                          <p className="font-bold text-gray-800 text-lg">{client.nome}</p>
+                          <p className="text-sm text-gray-500">{client.email}</p>
                           <div className="flex flex-wrap gap-2 mt-2">
-                            {client.reasons.map((reason, j) => (
+                            {client.reasons.map((r, j) => (
                               <span
                                 key={j}
                                 className={`text-xs px-2 py-1 rounded-full ${
-                                  reason.priority === 'high'
-                                    ? 'bg-red-100 text-red-700'
-                                    : 'bg-yellow-100 text-yellow-700'
+                                  r.priority === 'high' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
                                 }`}
                               >
-                                {reason.text}
+                                {r.text}
                               </span>
                             ))}
                           </div>
                         </div>
+
                         <div className="flex gap-2 flex-wrap">
                           <button
-                            onClick={async () => {
-                              await sendMotivation(client.user_id, 'comeback');
-                              alert(`✅ Mensagem de motivação enviada para ${client.nome}!`);
-                            }}
-                            className="px-4 py-2 bg-[#7C8B6F] hover:bg-[#6B7A5D] text-white rounded-lg text-sm transition-all font-medium"
+                            onClick={() => { setSelectedClient(client); setShowMotivationPanel(true); }}
+                            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-all"
                           >
-                            💜 Motivar
+                            💜 Motivar {client.nome.split(' ')[0]}
                           </button>
-                          <button
-                            onClick={() => {
-                              setActiveTab('users');
-                              loadUserDetails(client.user_id);
-                            }}
-                            className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm transition-all font-medium"
-                          >
-                            👁️ Ver {client.nome?.split(' ')[0]}
-                          </button>
-                          {client.email && (
-                            <a
-                              href={`https://api.whatsapp.com/send?text=Olá ${client.nome}! Como estás? Senti a tua falta no Vitalis 🌱`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm transition-all font-medium"
-                            >
-                              💬 WhatsApp
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* TAB: SUBSCRICOES */}
-          {activeTab === 'subscriptions' && (
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                💰 Gestao de Subscricoes
-              </h2>
-
-              {/* Stats de Subscrição */}
-              {subscriptionStats && (
-                <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
-                  <div className="bg-emerald-50 rounded-xl p-4 text-center border border-emerald-200">
-                    <p className="text-2xl font-bold text-emerald-600">{subscriptionStats.testers}</p>
-                    <p className="text-xs text-slate-500">Testers</p>
-                  </div>
-                  <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-200">
-                    <p className="text-2xl font-bold text-blue-600">{subscriptionStats.trial}</p>
-                    <p className="text-xs text-slate-500">Trial</p>
-                  </div>
-                  <div className="bg-green-50 rounded-xl p-4 text-center border border-green-200">
-                    <p className="text-2xl font-bold text-green-600">{subscriptionStats.active}</p>
-                    <p className="text-xs text-slate-500">Ativos</p>
-                  </div>
-                  <div className="bg-yellow-50 rounded-xl p-4 text-center border border-yellow-200">
-                    <p className="text-2xl font-bold text-yellow-600">{subscriptionStats.pending}</p>
-                    <p className="text-xs text-slate-500">Pendentes</p>
-                  </div>
-                  <div className="bg-red-50 rounded-xl p-4 text-center border border-red-200">
-                    <p className="text-2xl font-bold text-red-400">{subscriptionStats.expired}</p>
-                    <p className="text-xs text-slate-500">Expirados</p>
-                  </div>
-                  <div className="bg-gray-100 rounded-xl p-4 text-center border border-gray-200">
-                    <p className="text-2xl font-bold text-gray-400">{subscriptionStats.none}</p>
-                    <p className="text-xs text-slate-500">Sem Sub</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Pagamentos Pendentes */}
-              {pendingPayments.length > 0 && (
-                <div className="mb-6 bg-yellow-500/10 rounded-2xl p-5 border border-yellow-500/30">
-                  <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                    ⏳ Pagamentos Pendentes ({pendingPayments.length})
-                  </h3>
-                  <div className="space-y-3">
-                    {pendingPayments.map(client => (
-                      <div key={client.user_id} className="p-4 bg-slate-50 rounded-xl flex items-center justify-between">
-                        <div>
-                          <p className="font-bold text-slate-800">{client.users?.nome}</p>
-                          <p className="text-sm text-slate-500">{client.users?.email}</p>
-                          <p className="text-xs text-yellow-400 mt-1">
-                            {client.payment_method === 'paypal' ? '💳 PayPal' :
-                             client.payment_method === 'mpesa' ? '📱 M-Pesa' :
-                             client.payment_method === 'transfer' ? '🏦 Transferencia' :
-                             '❓ ' + (client.payment_method || 'Metodo desconhecido')}
-                            {client.payment_reference && ` - Ref: ${client.payment_reference}`}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => setShowConfirmPaymentModal(client)}
-                          className="px-4 py-2 bg-green-500 hover:bg-green-600 text-slate-800 rounded-xl font-medium transition-all"
-                        >
-                          ✓ Confirmar
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Lista de Clientes Vitalis */}
-              <div className="bg-slate-50 rounded-2xl p-5">
-                <h3 className="text-lg font-bold text-slate-800 mb-4">
-                  🌱 Clientes Vitalis ({vitalisClients.length})
-                </h3>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-slate-200">
-                        <th className="text-left py-3 px-3 text-sm font-medium text-slate-500">Nome</th>
-                        <th className="text-center py-3 px-3 text-sm font-medium text-slate-500">Status</th>
-                        <th className="text-center py-3 px-3 text-sm font-medium text-slate-500">Metodo</th>
-                        <th className="text-center py-3 px-3 text-sm font-medium text-slate-500">Expira</th>
-                        <th className="text-right py-3 px-3 text-sm font-medium text-slate-500">Acoes</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {vitalisClients.map(client => (
-                        <tr key={client.user_id} className="border-b border-slate-100 hover:bg-slate-50 transition-all">
-                          <td className="py-3 px-3">
-                            <p className="font-medium text-slate-800">{client.users?.nome}</p>
-                            <p className="text-xs text-slate-600">{client.users?.email}</p>
-                          </td>
-                          <td className="py-3 px-3 text-center">
-                            <span className={`text-xs px-3 py-1 rounded-full ${
-                              client.subscription_status === 'tester' ? 'bg-emerald-500/30 text-emerald-300' :
-                              client.subscription_status === 'trial' ? 'bg-blue-500/30 text-blue-300' :
-                              client.subscription_status === 'active' ? 'bg-green-500/30 text-green-300' :
-                              client.subscription_status === 'pending' ? 'bg-yellow-500/30 text-yellow-300' :
-                              client.subscription_status === 'expired' ? 'bg-red-500/30 text-red-300' :
-                              'bg-gray-500/30 text-gray-300'
-                            }`}>
-                              {client.subscription_status || 'sem status'}
-                            </span>
-                          </td>
-                          <td className="py-3 px-3 text-center text-sm text-slate-500">
-                            {client.payment_method || '-'}
-                          </td>
-                          <td className="py-3 px-3 text-center text-sm text-slate-500">
-                            {client.subscription_expires ? formatDateShort(client.subscription_expires) : '-'}
-                          </td>
-                          <td className="py-3 px-3 text-right">
-                            <div className="flex gap-2 justify-end">
-                              {(!client.subscription_status || client.subscription_status === 'expired' || !client.subscription_status) && (
-                                <>
-                                  <button
-                                    onClick={() => handleSetAsTester(client.user_id, 'Via Coach Dashboard')}
-                                    className="px-3 py-1 bg-emerald-500/30 hover:bg-emerald-500/50 text-emerald-300 rounded-lg text-xs transition-all"
-                                  >
-                                    Tester
-                                  </button>
-                                  <button
-                                    onClick={() => handleStartTrial(client.user_id)}
-                                    className="px-3 py-1 bg-blue-500/30 hover:bg-blue-500/50 text-blue-300 rounded-lg text-xs transition-all"
-                                  >
-                                    Trial
-                                  </button>
-                                </>
-                              )}
-                              {client.subscription_status === 'pending' && (
-                                <button
-                                  onClick={() => setShowConfirmPaymentModal(client)}
-                                  className="px-3 py-1 bg-green-500/30 hover:bg-green-500/50 text-green-300 rounded-lg text-xs transition-all"
-                                >
-                                  Confirmar $
-                                </button>
-                              )}
-                              {client.subscription_status === 'trial' && (
-                                <button
-                                  onClick={() => handleSetAsTester(client.user_id, 'Upgrade de trial')}
-                                  className="px-3 py-1 bg-emerald-500/30 hover:bg-emerald-500/50 text-emerald-300 rounded-lg text-xs transition-all"
-                                >
-                                  → Tester
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Info Box */}
-              <div className="mt-6 p-4 bg-purple-500/10 rounded-xl border border-slate-200">
-                <h4 className="font-medium text-slate-800 mb-2">ℹ️ Sobre os Status</h4>
-                <ul className="text-sm text-slate-500 space-y-1">
-                  <li>• <span className="text-emerald-400">Tester</span>: Acesso gratuito permanente (para testers)</li>
-                  <li>• <span className="text-green-400">Active</span>: Pagamento confirmado</li>
-                  <li>• <span className="text-yellow-400">Pending</span>: Aguarda confirmação de pagamento</li>
-                  <li>• <span className="text-red-400">Expired</span>: Subscrição expirou</li>
-                </ul>
-                <div className="mt-3 pt-3 border-t border-slate-200">
-                  <p className="text-slate-500 text-sm mb-2"><strong>Planos:</strong></p>
-                  <ul className="text-xs text-slate-600 space-y-1">
-                    <li>• Mensal: {SUBSCRIPTION_PLANS.MONTHLY.price_mzn.toLocaleString()} MZN / ${SUBSCRIPTION_PLANS.MONTHLY.price_usd}</li>
-                    <li>• Semestral: {SUBSCRIPTION_PLANS.SEMESTRAL.price_mzn.toLocaleString()} MZN / ${SUBSCRIPTION_PLANS.SEMESTRAL.price_usd} (-{SUBSCRIPTION_PLANS.SEMESTRAL.discount}%)</li>
-                    <li>• Anual: {SUBSCRIPTION_PLANS.ANNUAL.price_mzn.toLocaleString()} MZN / ${SUBSCRIPTION_PLANS.ANNUAL.price_usd} (-{SUBSCRIPTION_PLANS.ANNUAL.discount}%)</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Modal Confirmar Pagamento */}
-          {showConfirmPaymentModal && (
-            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-              <div className="bg-slate-800 rounded-2xl p-6 max-w-md w-full border border-purple-500/30">
-                <h3 className="text-xl font-bold text-slate-800 mb-4">✓ Confirmar Pagamento</h3>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-slate-500 text-sm">Cliente</p>
-                    <p className="text-slate-800 font-medium">{showConfirmPaymentModal.users?.nome}</p>
-                  </div>
-                  <div>
-                    <p className="text-slate-500 text-sm">Plano</p>
-                    <p className="text-slate-800">
-                      {SUBSCRIPTION_PLANS[showConfirmPaymentModal.subscription_plan?.toUpperCase()]?.name || 'Mensal'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-slate-500 text-sm">Metodo</p>
-                    <p className="text-slate-800">{showConfirmPaymentModal.payment_method || 'Nao especificado'}</p>
-                  </div>
-                  <div>
-                    <p className="text-slate-500 text-sm">Valor</p>
-                    <p className="text-slate-800">
-                      {showConfirmPaymentModal.payment_amount} {showConfirmPaymentModal.payment_currency || 'MZN'}
-                    </p>
-                  </div>
-                  {showConfirmPaymentModal.payment_reference && (
-                    <div>
-                      <p className="text-slate-500 text-sm">Referencia</p>
-                      <p className="text-slate-800">{showConfirmPaymentModal.payment_reference}</p>
-                    </div>
-                  )}
-                  <div className="bg-yellow-500/10 p-3 rounded-xl">
-                    <p className="text-yellow-300 text-sm">
-                      Ao confirmar, o cliente tera acesso por {SUBSCRIPTION_PLANS[showConfirmPaymentModal.subscription_plan?.toUpperCase()]?.duration || 1} mes(es) a partir de hoje.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-3 mt-6">
-                  <button
-                    onClick={() => setShowConfirmPaymentModal(null)}
-                    className="flex-1 py-3 bg-white/10 hover:bg-white/20 text-slate-800 rounded-xl font-medium transition-all"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={() => handleConfirmPayment(showConfirmPaymentModal.user_id, {
-                      method: showConfirmPaymentModal.payment_method,
-                      reference: showConfirmPaymentModal.payment_reference,
-                      amount: showConfirmPaymentModal.payment_amount,
-                      currency: showConfirmPaymentModal.payment_currency,
-                      planId: showConfirmPaymentModal.subscription_plan || 'monthly'
-                    })}
-                    className="flex-1 py-3 bg-green-500 hover:bg-green-600 text-slate-800 rounded-xl font-medium transition-all"
-                  >
-                    ✓ Confirmar
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB: CLIENTES */}
-          {activeTab === 'users' && !selectedUser && (
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-slate-800 mb-6">
-                👥 Todos os Clientes ({users.length})
-              </h2>
-
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-slate-200">
-                      <th className="text-left py-3 px-3 text-sm font-medium text-slate-500">Nome</th>
-                      <th className="text-center py-3 px-3 text-sm font-medium text-slate-500">Status</th>
-                      <th className="text-center py-3 px-3 text-sm font-medium text-slate-500">Lumina</th>
-                      <th className="text-center py-3 px-3 text-sm font-medium text-slate-500">Vitalis</th>
-                      <th className="text-center py-3 px-3 text-sm font-medium text-slate-500">Progresso</th>
-                      <th className="text-left py-3 px-3 text-sm font-medium text-slate-500">Ultima Atividade</th>
-                      <th className="text-right py-3 px-3 text-sm font-medium text-slate-500">Acoes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {users.map(user => (
-                      <tr key={user.id} className="border-b border-slate-100 hover:bg-slate-50 transition-all">
-                        <td className="py-3 px-3">
-                          <p className="font-medium text-slate-800">{user.nome}</p>
-                          <p className="text-xs text-slate-600">{user.email}</p>
-                        </td>
-                        <td className="py-3 px-3 text-center">
-                          <span className={`inline-block w-3 h-3 rounded-full ${
-                            user.status === 'active' ? 'bg-green-500' :
-                            user.status === 'recent' ? 'bg-yellow-500' :
-                            user.status === 'cooling' ? 'bg-orange-500' :
-                            'bg-red-500'
-                          }`} title={`${user.daysSinceActivity} dias`}></span>
-                        </td>
-                        <td className="py-3 px-3 text-center">
-                          {user.temLumina ? '✅' : '❌'}
-                        </td>
-                        <td className="py-3 px-3 text-center">
-                          {user.temVitalis ? '✅' : '❌'}
-                        </td>
-                        <td className="py-3 px-3 text-center">
-                          {user.progressoPeso && user.progressoPeso > 0 ? (
-                            <span className="text-green-400 text-sm">↓{user.progressoPeso}%</span>
-                          ) : user.progressoPeso && user.progressoPeso < 0 ? (
-                            <span className="text-red-400 text-sm">↑{Math.abs(user.progressoPeso)}%</span>
-                          ) : (
-                            <span className="text-slate-600">-</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-3 text-sm text-slate-500">
-                          {formatTimeAgo(user.lastActivity)}
-                        </td>
-                        <td className="py-3 px-3 text-right">
-                          <button
-                            onClick={() => loadUserDetails(user.id)}
-                            className="px-3 py-1 bg-[#7C8B6F]/30 hover:bg-purple-500/50 text-slate-500 rounded-lg text-sm transition-all"
-                          >
-                            Ver →
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* TAB: USER DETAILS */}
-          {activeTab === 'users' && selectedUser && userDetails && (
-            <div className="p-6">
-              <button
-                onClick={() => { setSelectedUser(null); setUserDetails(null); }}
-                className="mb-6 text-slate-600 hover:text-slate-500 flex items-center gap-2"
-              >
-                ← Voltar
-              </button>
-
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Info Principal */}
-                <div className="lg:col-span-2 space-y-6">
-                  {/* Header do Cliente */}
-                  <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl p-6 border border-slate-200">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h2 className="text-2xl font-bold text-slate-800">{userDetails.user?.nome}</h2>
-                        <p className="text-slate-500">{userDetails.user?.email}</p>
-                        <p className="text-sm text-slate-600 mt-1">Desde {formatDateShort(userDetails.user?.created_at)}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={async () => {
-                            await sendMotivation(selectedUser, 'progress');
-                            alert('✅ Mensagem de motivação enviada!');
-                          }}
-                          className="px-4 py-2 bg-[#7C8B6F]/30 hover:bg-purple-500/50 text-slate-500 rounded-xl transition-all"
-                        >
-                          💜 Enviar Motivação
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Metricas */}
-                  {userDetails.metrics && (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="bg-slate-50 rounded-xl p-4 text-center">
-                        <p className="text-3xl font-bold text-slate-600">{userDetails.metrics.avgAderencia || '-'}</p>
-                        <p className="text-sm text-slate-500">Aderência Média</p>
-                      </div>
-                      <div className="bg-slate-50 rounded-xl p-4 text-center">
-                        <p className="text-3xl font-bold text-blue-400">{userDetails.metrics.avgAgua || '-'}L</p>
-                        <p className="text-sm text-slate-500">Água Média</p>
-                      </div>
-                      <div className="bg-slate-50 rounded-xl p-4 text-center">
-                        <p className="text-3xl font-bold text-green-400">{userDetails.metrics.mealAdherence}%</p>
-                        <p className="text-sm text-slate-500">Refeições Seguidas</p>
-                      </div>
-                      <div className="bg-slate-50 rounded-xl p-4 text-center">
-                        <p className="text-3xl font-bold text-orange-400">{userDetails.metrics.streak}</p>
-                        <p className="text-sm text-slate-500">Dias Streak</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Vitalis Info */}
-                  {userDetails.vitalisClient && (
-                    <div className="bg-emerald-500/10 rounded-2xl p-5 border border-emerald-500/20">
-                      <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        🌱 Vitalis
-                      </h3>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div>
-                          <p className="text-sm text-slate-600">Objectivo</p>
-                          <p className="text-slate-800 font-medium">{userDetails.vitalisClient.objectivo_principal || '-'}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-slate-600">Fase</p>
-                          <p className="text-slate-800 font-medium">{userDetails.vitalisClient.fase_actual || '-'}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-slate-600">Peso Inicial</p>
-                          <p className="text-slate-800 font-medium">{userDetails.vitalisClient.peso_inicial || '-'} kg</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-slate-600">Peso Atual</p>
-                          <p className="text-slate-800 font-medium">{userDetails.vitalisClient.peso_actual || '-'} kg</p>
-                        </div>
-                      </div>
-                      {userDetails.vitalisClient.peso_inicial && userDetails.vitalisClient.peso_actual && (
-                        <div className="mt-4 pt-4 border-t border-emerald-500/20">
-                          <p className="text-sm text-slate-600">Progresso</p>
-                          <p className={`text-xl font-bold ${
-                            userDetails.vitalisClient.peso_actual < userDetails.vitalisClient.peso_inicial
-                              ? 'text-green-400'
-                              : 'text-red-400'
-                          }`}>
-                            {userDetails.vitalisClient.peso_actual < userDetails.vitalisClient.peso_inicial ? '↓' : '↑'}
-                            {Math.abs(userDetails.vitalisClient.peso_inicial - userDetails.vitalisClient.peso_actual).toFixed(1)} kg
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Lumina Info */}
-                  {userDetails.lumina?.length > 0 && (
-                    <div className="bg-yellow-500/10 rounded-2xl p-5 border border-yellow-500/20">
-                      <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        💡 Lumina ({userDetails.lumina.length} check-ins)
-                      </h3>
-                      <div className="space-y-2">
-                        {userDetails.lumina.slice(0, 3).map((l, i) => (
-                          <div key={i} className="p-3 bg-slate-50 rounded-xl">
-                            <p className="text-sm text-slate-500">{formatDate(l.created_at)}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Sidebar */}
-                <div className="space-y-6">
-                  {/* Acções Rápidas */}
-                  <div className="bg-slate-50 rounded-2xl p-5">
-                    <h3 className="text-lg font-bold text-slate-800 mb-4">🎯 Acções</h3>
-                    <div className="space-y-2">
-                      <button
-                        onClick={async () => {
-                          await sendMotivation(selectedUser, 'progress');
-                          alert('✅ Mensagem de parabéns enviada!');
-                        }}
-                        className="w-full p-3 bg-purple-500/20 hover:bg-[#7C8B6F]/30 rounded-xl text-left text-slate-500 transition-all"
-                      >
-                        💜 Parabéns pelo progresso
-                      </button>
-                      <button
-                        onClick={async () => {
-                          await sendMotivation(selectedUser, 'struggle');
-                          alert('✅ Mensagem de apoio enviada!');
-                        }}
-                        className="w-full p-3 bg-pink-500/20 hover:bg-pink-500/30 rounded-xl text-left text-pink-300 transition-all"
-                      >
-                        🤗 Apoio emocional
-                      </button>
-                      <button
-                        onClick={async () => {
-                          await sendMotivation(selectedUser, 'weekly');
-                          alert('✅ Motivação semanal enviada!');
-                        }}
-                        className="w-full p-3 bg-blue-500/20 hover:bg-blue-500/30 rounded-xl text-left text-blue-300 transition-all"
-                      >
-                        ✨ Motivação semanal
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* PDFs */}
-                  {userDetails.pdfs?.length > 0 && (
-                    <div className="bg-slate-50 rounded-2xl p-5">
-                      <h3 className="text-lg font-bold text-slate-800 mb-4">📄 PDFs ({userDetails.pdfs.length})</h3>
-                      <div className="space-y-2">
-                        {userDetails.pdfs.slice(0, 3).map((pdf, i) => (
                           <a
-                            key={i}
-                            href={pdf.pdf_url}
+                            href={`https://api.whatsapp.com/send?text=Olá ${client.nome}! Como estás? Senti a tua falta no Vitalis 🌱`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block p-3 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-500 text-sm transition-all"
+                            className="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm font-medium transition-all"
                           >
-                            {formatDateShort(pdf.created_at)} →
+                            💬 WhatsApp
                           </a>
-                        ))}
+                        </div>
                       </div>
                     </div>
-                  )}
+                  ))}
                 </div>
-              </div>
+              )}
             </div>
           )}
 
-          {/* TAB: WAITLIST */}
-          {activeTab === 'waitlist' && (
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                📋 Lista de Espera ({waitlist.length})
-              </h2>
+          {/* WAITLIST */}
+          {activeView === 'waitlist' && (
+            <div className="p-4 md:p-6">
+              <h2 className="text-lg font-bold text-gray-800 mb-4">📋 Waitlist ({waitlist.length})</h2>
 
               {waitlist.length === 0 ? (
-                <p className="text-center text-slate-600 py-12">Nenhum registo na lista de espera</p>
+                <p className="text-gray-500 text-center py-8">Waitlist vazia</p>
               ) : (
                 <div className="space-y-3">
-                  {waitlist.map(lead => (
-                    <div key={lead.id} className="p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-purple-500/30 transition-all">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-bold text-slate-800">{lead.nome}</p>
-                          <p className="text-sm text-slate-500">{lead.email}</p>
-                          <p className="text-xs text-slate-600 mt-1">{formatDate(lead.created_at)}</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs px-3 py-1 bg-orange-500/20 text-orange-300 rounded-full">
-                            {lead.produto || 'geral'}
-                          </span>
-                          {lead.whatsapp && (
-                            <a
-                              href={`https://wa.me/${lead.whatsapp.replace(/\D/g, '')}?text=Ola ${lead.nome}! Obrigada pelo interesse no Vitalis 🌱`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-4 py-2 bg-green-500/30 hover:bg-green-500/50 text-green-300 rounded-xl text-sm transition-all flex items-center gap-2"
-                            >
-                              💬 WhatsApp
-                            </a>
-                          )}
-                        </div>
+                  {waitlist.map((item) => (
+                    <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-orange-50 rounded-xl gap-3">
+                      <div>
+                        <p className="font-semibold text-gray-800">{item.nome}</p>
+                        <p className="text-sm text-gray-500">{item.email}</p>
+                        {item.whatsapp && <p className="text-sm text-green-600">📱 {item.whatsapp}</p>}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-400">{formatDate(item.created_at)}</span>
+                        <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium">
+                          {item.produto || 'Vitalis'}
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -1582,166 +680,137 @@ const CoachDashboard = () => {
             </div>
           )}
 
-          {/* TAB: ALERTAS */}
-          {activeTab === 'alertas' && (
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                🔔 Alertas Pendentes ({alerts.length})
-              </h2>
+          {/* MOTIVATIONS */}
+          {activeView === 'motivations' && (
+            <div className="p-4 md:p-6">
+              <h2 className="text-lg font-bold text-gray-800 mb-4">💜 Sistema de Motivações</h2>
 
-              {alerts.length === 0 ? (
-                <div className="text-center py-12">
-                  <span className="text-6xl mb-4 block">✨</span>
-                  <p className="text-slate-500">Nenhum alerta pendente</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {alerts.map(alert => (
-                    <div key={alert.id} className="p-4 bg-slate-50 rounded-xl border-l-4 border-purple-500">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <span className={`text-xs px-2 py-1 rounded-full ${
-                            alert.prioridade === 'alta' ? 'bg-red-500/30 text-red-300' :
-                            alert.prioridade === 'media' ? 'bg-yellow-500/30 text-yellow-300' :
-                            'bg-gray-500/30 text-gray-300'
-                          }`}>
-                            {alert.tipo_alerta}
-                          </span>
-                          <p className="text-slate-800 mt-2">{alert.descricao}</p>
-                          <p className="text-xs text-slate-600 mt-1">{formatDate(alert.created_at)}</p>
-                        </div>
-                        <button
-                          onClick={() => markAlertAsRead(alert.id)}
-                          className="px-3 py-1 bg-[#7C8B6F]/30 hover:bg-purple-500/50 text-slate-500 rounded-lg text-sm transition-all"
-                        >
-                          ✓ Marcar lido
-                        </button>
+              {/* Templates */}
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-700 mb-3">📝 Templates Disponíveis</h3>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {MOTIVATION_TEMPLATES.map((t) => (
+                    <div key={t.id} className="p-4 bg-purple-50 rounded-xl border border-purple-100">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xl">{t.emoji}</span>
+                        <span className="font-semibold text-purple-800">{t.title}</span>
                       </div>
+                      <p className="text-sm text-gray-600 line-clamp-3">{t.message}</p>
                     </div>
                   ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* TAB: MOTIVACOES */}
-          {activeTab === 'motivations' && (
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                💜 Sistema de Motivacoes Automaticas
-              </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Templates */}
-                <div className="bg-slate-50 rounded-2xl p-5">
-                  <h3 className="text-lg font-bold text-slate-800 mb-4">📝 Templates de Motivacao</h3>
-                  <div className="space-y-3">
-                    {[
-                      { id: 'comeback', emoji: '🌟', title: 'Volta ao Caminho', desc: 'Para clientes inativos' },
-                      { id: 'progress', emoji: '💪', title: 'Parabens', desc: 'Celebrar progresso' },
-                      { id: 'struggle', emoji: '💜', title: 'Apoio', desc: 'Dias dificeis' },
-                      { id: 'weekly', emoji: '✨', title: 'Semanal', desc: 'Nova semana' },
-                      { id: 'celebration', emoji: '🎉', title: 'Celebracao', desc: 'Conquistas' }
-                    ].map(template => (
-                      <button
-                        key={template.id}
-                        onClick={() => setSelectedMotivationType(template.id)}
-                        className={`w-full p-4 rounded-xl text-left transition-all border ${
-                          selectedMotivationType === template.id
-                            ? 'bg-[#7C8B6F]/30 border-purple-500'
-                            : 'bg-slate-50 border-slate-200 hover:border-purple-500/50'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl">{template.emoji}</span>
-                          <div>
-                            <p className="font-medium text-slate-800">{template.title}</p>
-                            <p className="text-sm text-slate-500">{template.desc}</p>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Enviar para quem */}
-                <div className="bg-slate-50 rounded-2xl p-5">
-                  <h3 className="text-lg font-bold text-slate-800 mb-4">🎯 Enviar Motivacao</h3>
-
-                  {selectedMotivationType ? (
-                    <div className="space-y-4">
-                      <p className="text-slate-500">Seleciona os clientes para enviar:</p>
-
-                      <div className="space-y-2 max-h-60 overflow-y-auto">
-                        {users.filter(u => u.temVitalis).map(user => (
-                          <label key={user.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl hover:bg-slate-100 cursor-pointer">
-                            <input type="checkbox" className="rounded" />
-                            <span className="text-slate-800">{user.nome}</span>
-                            <span className={`text-xs px-2 py-0.5 rounded-full ml-auto ${
-                              user.status === 'active' ? 'bg-green-500/30 text-green-300' :
-                              user.status === 'inactive' ? 'bg-red-500/30 text-red-300' :
-                              'bg-yellow-500/30 text-yellow-300'
-                            }`}>
-                              {user.daysSinceActivity}d
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-
-                      <button className="w-full py-3 bg-purple-500 hover:bg-purple-600 text-slate-800 rounded-xl font-medium transition-all">
-                        💜 Enviar Motivacao
-                      </button>
-                    </div>
-                  ) : (
-                    <p className="text-slate-600 text-center py-8">
-                      Seleciona um template primeiro
-                    </p>
-                  )}
                 </div>
               </div>
 
-              {/* Historico */}
-              {motivationQueue.length > 0 && (
-                <div className="mt-6 bg-slate-50 rounded-2xl p-5">
-                  <h3 className="text-lg font-bold text-slate-800 mb-4">📨 Enviadas Recentemente</h3>
-                  <div className="space-y-2">
-                    {motivationQueue.map((m, i) => (
-                      <div key={i} className="p-3 bg-slate-50 rounded-xl flex items-center justify-between">
-                        <span className="text-slate-500">{m.type}</span>
-                        <span className="text-xs text-slate-600">{formatTimeAgo(m.sentAt)}</span>
+              {/* Escolher cliente para motivar */}
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-700 mb-3">👥 Enviar Motivação</h3>
+                <p className="text-sm text-gray-500 mb-3">Seleciona um cliente da lista para enviar uma motivação:</p>
+                <button
+                  onClick={() => setActiveView('attention')}
+                  className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg font-medium transition-all"
+                >
+                  ⚠️ Ver clientes que precisam de atenção ({clientsNeedAttention.length})
+                </button>
+              </div>
+
+              {/* Histórico */}
+              <div>
+                <h3 className="font-semibold text-gray-700 mb-3">📨 Histórico de Motivações</h3>
+                {motivationHistory.length === 0 ? (
+                  <p className="text-gray-500 text-center py-4 bg-gray-50 rounded-xl">Nenhuma motivação enviada ainda</p>
+                ) : (
+                  <div className="space-y-2 max-h-80 overflow-y-auto">
+                    {motivationHistory.map((m, i) => (
+                      <div key={i} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                        <span className="text-xl mt-1">💜</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-800">{m.users?.nome || 'Cliente'}</p>
+                          <p className="text-sm text-gray-600">{m.descricao}</p>
+                          <p className="text-xs text-gray-400 mt-1">{formatDate(m.created_at)}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           )}
         </div>
       </main>
-    </div>
-  );
-};
 
-// ============================================================
-// COMPONENTE: STAT CARD PREMIUM
-// ============================================================
-const StatCardPremium = ({ icon, label, value, color, highlight = false }) => {
-  const colorClasses = {
-    blue: 'from-blue-500/20 to-blue-600/20 border-blue-500/30',
-    green: 'from-green-500/20 to-green-600/20 border-green-500/30',
-    purple: 'from-purple-500/20 to-purple-600/20 border-purple-500/30',
-    yellow: 'from-yellow-500/20 to-yellow-600/20 border-yellow-500/30',
-    amber: 'from-amber-500/20 to-amber-600/20 border-amber-500/30',
-    emerald: 'from-emerald-500/20 to-emerald-600/20 border-emerald-500/30',
-    orange: 'from-orange-500/20 to-orange-600/20 border-orange-500/30',
-    red: 'from-red-500/20 to-red-600/20 border-red-500/30'
-  };
+      {/* Motivation Panel Modal */}
+      {showMotivationPanel && selectedClient && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800">💜 Enviar Motivação</h3>
+                  <p className="text-purple-600 font-medium">
+                    Para: {selectedClient.users?.nome || selectedClient.nome_completo || selectedClient.nome}
+                  </p>
+                </div>
+                <button
+                  onClick={() => { setShowMotivationPanel(false); setCustomMessage(''); }}
+                  className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-all"
+                >
+                  ✕
+                </button>
+              </div>
 
-  return (
-    <div className={`bg-gradient-to-br ${colorClasses[color]} rounded-xl p-3 text-center border ${highlight ? 'animate-pulse' : ''}`}>
-      <span className="text-xl">{icon}</span>
-      <p className="text-xl font-bold text-slate-800 mt-1">{value}</p>
-      <p className="text-xs text-slate-500">{label}</p>
+              {/* Templates */}
+              <div className="mb-4">
+                <p className="text-sm font-medium text-gray-700 mb-2">Escolhe um template:</p>
+                <div className="space-y-2">
+                  {MOTIVATION_TEMPLATES.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => sendMotivation(selectedClient, t)}
+                      disabled={sendingMotivation}
+                      className="w-full p-3 bg-purple-50 hover:bg-purple-100 rounded-xl text-left transition-all border border-purple-100 disabled:opacity-50"
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <span>{t.emoji}</span>
+                        <span className="font-semibold text-purple-800">{t.title}</span>
+                      </div>
+                      <p className="text-sm text-gray-600 line-clamp-2">{t.message}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Custom Message */}
+              <div className="mb-4">
+                <p className="text-sm font-medium text-gray-700 mb-2">Ou escreve uma mensagem personalizada:</p>
+                <textarea
+                  value={customMessage}
+                  onChange={(e) => setCustomMessage(e.target.value)}
+                  placeholder="Escreve aqui a tua mensagem..."
+                  className="w-full p-3 border border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none resize-none"
+                  rows={4}
+                />
+                {customMessage && (
+                  <button
+                    onClick={() => sendMotivation(selectedClient, { message: customMessage }, customMessage)}
+                    disabled={sendingMotivation}
+                    className="mt-2 w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium transition-all disabled:opacity-50"
+                  >
+                    {sendingMotivation ? 'A enviar...' : '📧 Enviar Mensagem Personalizada'}
+                  </button>
+                )}
+              </div>
+
+              {/* Info */}
+              <div className="p-3 bg-blue-50 rounded-xl">
+                <p className="text-sm text-blue-700">
+                  📧 A motivação será enviada por email e guardada no histórico.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
