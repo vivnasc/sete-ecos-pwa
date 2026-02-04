@@ -1008,6 +1008,11 @@ export default function DashboardVitalis() {
             <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">📊</div>
             <p className="font-medium text-[#4A4035] group-hover:text-white text-sm">Relatórios</p>
           </Link>
+
+          <Link to="/vitalis/treinos" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
+            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">💪</div>
+            <p className="font-medium text-[#4A4035] group-hover:text-white text-sm">Treinos</p>
+          </Link>
         </div>
 
         {/* Grid Principal */}

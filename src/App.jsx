@@ -38,6 +38,7 @@ import FotosProgresso from './components/vitalis/FotosProgresso'
 import DesafiosSemanais from './components/vitalis/DesafiosSemanais'
 import CalendarioRefeicoes from './components/vitalis/CalendarioRefeicoes'
 import GuiaUtilizador from './components/vitalis/GuiaUtilizador'
+import TreinosVitalis from './components/vitalis/TreinosVitalis'
 import PlanoHTML from './pages/PlanoHTML'
 
 function App() {
@@ -95,6 +96,7 @@ function App() {
           <Route path="/vitalis/desafios" element={session ? <VitalisAccessGuard><DesafiosSemanais /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/calendario" element={session ? <VitalisAccessGuard><CalendarioRefeicoes /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/guia" element={session ? <VitalisAccessGuard><GuiaUtilizador /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
+          <Route path="/vitalis/treinos" element={session ? <VitalisAccessGuard><TreinosVitalis /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
 
           {/* ===== ECOS 2-7: Em Breve ===== */}
           <Route path="/aurea" element={<ComingSoon />} />
