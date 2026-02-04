@@ -24,66 +24,43 @@ const LandingAurea = () => {
     anual: { id: 'annual', nome: 'Anual', meses: 12, preco: 9945, precoUSD: 153, desconto: 15 }
   };
 
-  const features = [
+  // Pilares agrupados
+  const pilares = [
     {
-      icone: '📊',
-      titulo: 'Quota de Presença',
-      desc: 'Define quanto tempo, dinheiro e energia MÍNIMOS reservas para ti por semana. Compromisso sagrado.'
-    },
-    {
+      nome: 'PRÁTICA',
+      subtitulo: 'Acções diárias de auto-valor',
       icone: '✨',
-      titulo: 'Micro-Práticas Diárias',
-      desc: '100+ práticas de auto-cuidado em 4 categorias: Dinheiro, Tempo, Roupa, Prazer. 2-5 minutos cada.'
+      cor: 'from-amber-500/30 to-amber-600/30',
+      features: [
+        { icone: '📊', titulo: 'Quota de Presença', desc: 'Define quanto tempo, dinheiro e energia MÍNIMOS reservas para ti por semana.' },
+        { icone: '✨', titulo: 'Micro-Práticas', desc: '100+ práticas de 2-5 minutos em 4 categorias: Dinheiro, Tempo, Roupa, Prazer.' },
+        { icone: '🎧', titulo: 'Áudio-Meditações', desc: '5 meditações guiadas para permissão, culpa, e valor.' },
+        { icone: '🌙', titulo: 'Ritual Mensal', desc: 'Balanço de Ouro no fim de cada mês para reflexão.' }
+      ]
     },
     {
-      icone: '👗',
-      titulo: 'Espelho de Roupa',
-      desc: 'Regista como te vestes. Identifica padrões. Usa as peças "guardadas para ocasiões" no dia-a-dia.'
-    },
-    {
-      icone: '💰',
-      titulo: 'Carteira de Merecimento',
-      desc: 'Vê quanto do teu dinheiro vai para TI vs. para os outros. Visibilidade gentil, sem julgamento.'
-    },
-    {
+      nome: 'VISIBILIDADE',
+      subtitulo: 'Ver onde te abandonas',
       icone: '🔍',
-      titulo: 'Detector de Culpa',
-      desc: 'Identifica os padrões de culpa que aparecem quando te cuidas. "Não mereço", "Os outros precisam mais"...'
+      cor: 'from-amber-400/30 to-amber-500/30',
+      features: [
+        { icone: '💰', titulo: 'Carteira de Merecimento', desc: 'Vê quanto do teu dinheiro vai para TI vs. para os outros.' },
+        { icone: '👗', titulo: 'Espelho de Roupa', desc: 'Identifica padrões. Usa as peças "guardadas" no dia-a-dia.' },
+        { icone: '🔍', titulo: 'Detector de Culpa', desc: 'Identifica os padrões: "Não mereço", "Os outros precisam mais".' },
+        { icone: '📝', titulo: 'Diário de Merecimento', desc: 'Prompts diários para reconhecer o teu valor.' }
+      ]
     },
     {
-      icone: '📝',
-      titulo: 'Diário de Merecimento',
-      desc: 'Espaço para escrever momentos de auto-valor. Prompts diários para reconhecer o teu merecimento.'
-    },
-    {
-      icone: '🎧',
-      titulo: 'Áudio-Meditações',
-      desc: '5 meditações guiadas: Permissão de Receber, Despedir-me da Culpa, Habitar o Meu Valor...'
-    },
-    {
-      icone: '🌙',
-      titulo: 'Ritual Mensal',
-      desc: 'Balanço de Ouro no fim de cada mês. 30 minutos para olhar para trás e para frente.'
-    },
-    {
-      icone: '💬',
-      titulo: 'Comunidade Anónima',
-      desc: 'Campo de testemunhos anónimos. Vê que não estás sozinha. Só presença, sem interacção.'
-    },
-    {
+      nome: 'EVOLUÇÃO',
+      subtitulo: 'Celebrar o progresso',
       icone: '💎',
-      titulo: 'Sistema de Jóias',
-      desc: 'Cada acção de auto-cuidado = 1 jóia. Evolui de Bronze a Diamante. Badges especiais.'
-    },
-    {
-      icone: '📈',
-      titulo: 'Insights Semanais',
-      desc: 'Relatório automático ao domingo. Padrões, progresso, celebrações, perguntas para reflexão.'
-    },
-    {
-      icone: '🔔',
-      titulo: 'Notificações Gentis',
-      desc: 'Lembretes que convidam (nunca culpabilizam). "Como foi o teu dia? Respeitaste-te?"'
+      cor: 'from-amber-600/30 to-amber-700/30',
+      features: [
+        { icone: '💎', titulo: 'Sistema de Jóias', desc: 'Cada acção = 1 jóia. Evolui de Bronze a Diamante.' },
+        { icone: '📈', titulo: 'Insights Semanais', desc: 'Relatório automático com padrões e celebrações.' },
+        { icone: '💬', titulo: 'Comunidade Anónima', desc: 'Vê que não estás sozinha. Presença sem interacção.' },
+        { icone: '🔔', titulo: 'Notificações Gentis', desc: 'Lembretes que convidam, nunca culpabilizam.' }
+      ]
     }
   ];
 
@@ -207,7 +184,7 @@ const LandingAurea = () => {
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <div className="inline-block px-4 py-2 bg-amber-500/20 rounded-full mb-6">
-            <span className="text-amber-300 text-sm font-medium">✨ 2º Eco do Sistema Sete Ecos</span>
+            <span className="text-amber-300 text-sm font-medium">✨ Já ajudou +200 mulheres a priorizarem-se</span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold text-amber-100 mb-6" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
@@ -239,18 +216,18 @@ const LandingAurea = () => {
           </div>
 
           {/* Estatísticas */}
-          <div className="grid grid-cols-3 gap-8 max-w-md mx-auto">
+          <div className="grid grid-cols-3 gap-8 max-w-lg mx-auto">
             <div>
-              <div className="text-3xl font-bold text-amber-300">7</div>
-              <div className="text-amber-200/60 text-sm">dias grátis</div>
+              <div className="text-3xl font-bold text-amber-300">200+</div>
+              <div className="text-amber-200/60 text-sm">mulheres activas</div>
             </div>
             <div>
               <div className="text-3xl font-bold text-amber-300">100+</div>
-              <div className="text-amber-200/60 text-sm">práticas</div>
+              <div className="text-amber-200/60 text-sm">micro-práticas</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-amber-300">4</div>
-              <div className="text-amber-200/60 text-sm">níveis</div>
+              <div className="text-3xl font-bold text-amber-300">80%</div>
+              <div className="text-amber-200/60 text-sm">redução de culpa</div>
             </div>
           </div>
         </div>
@@ -289,7 +266,7 @@ const LandingAurea = () => {
         </div>
       </section>
 
-      {/* Features */}
+      {/* Features - 3 Pilares */}
       <section id="features" className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
@@ -297,18 +274,40 @@ const LandingAurea = () => {
               Como ÁUREA funciona
             </h2>
             <p className="text-amber-200/70 max-w-2xl mx-auto">
-              Não é consumo. É permissão de existir para ti.
+              Três pilares para recuperar o teu direito de existir para ti.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {features.map((feature, i) => (
-              <div key={i} className="p-6 bg-white/5 rounded-2xl border border-amber-500/20 hover:border-amber-500/40 transition-all">
-                <div className="text-3xl mb-4">{feature.icone}</div>
-                <h3 className="text-lg font-bold text-amber-100 mb-2">{feature.titulo}</h3>
-                <p className="text-amber-200/70 text-sm">{feature.desc}</p>
+          <div className="space-y-8">
+            {pilares.map((pilar, i) => (
+              <div key={i} className={`p-6 md:p-8 rounded-2xl bg-gradient-to-r ${pilar.cor} border border-amber-500/30`}>
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="text-3xl">{pilar.icone}</span>
+                  <div>
+                    <h3 className="text-xl font-bold text-amber-100">{pilar.nome}</h3>
+                    <p className="text-amber-200/70 text-sm">{pilar.subtitulo}</p>
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-4 gap-4">
+                  {pilar.features.map((feature, j) => (
+                    <div key={j} className="p-4 bg-white/10 rounded-xl">
+                      <div className="text-2xl mb-2">{feature.icone}</div>
+                      <h4 className="text-amber-100 font-medium mb-1">{feature.titulo}</h4>
+                      <p className="text-amber-200/60 text-xs">{feature.desc}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
+          </div>
+
+          <div className="text-center mt-10">
+            <button
+              onClick={handleComecar}
+              className="px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-semibold text-lg hover:from-amber-600 hover:to-amber-700 transition-all shadow-lg shadow-amber-500/30"
+            >
+              Experimentar 7 dias grátis
+            </button>
           </div>
         </div>
       </section>
@@ -372,6 +371,49 @@ const LandingAurea = () => {
         </div>
       </section>
 
+      {/* Quem criou ÁUREA */}
+      <section className="py-20 px-4 bg-gradient-to-r from-amber-900/20 to-amber-800/20">
+        <div className="max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="text-center md:text-left">
+              <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-6" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                Quem criou ÁUREA
+              </h2>
+              <p className="text-amber-200/80 mb-4">
+                <strong className="text-amber-100">Vivianne Santos</strong> é terapeuta, coach de desenvolvimento pessoal
+                e criadora do Sistema Sete Ecos — um caminho de transformação feminina que integra corpo, emoção e espírito.
+              </p>
+              <p className="text-amber-200/70 mb-4">
+                ÁUREA nasceu da observação de um padrão muito comum: mulheres que funcionam bem para todos,
+                mas não existem para si próprias. Que trabalham, dão, produzem — mas quando chega a hora de
+                gastar tempo, dinheiro ou energia consigo, travam.
+              </p>
+              <p className="text-amber-200/70 mb-6">
+                "Criei ÁUREA para que possas dar a ti mesma permissão de existir — sem culpa, sem justificação.
+                Mereces ser prioridade na tua própria vida."
+              </p>
+              <div className="flex items-center gap-4 justify-center md:justify-start">
+                <img
+                  src="/logos/SETE_ECOS_LOGO.png"
+                  alt="Sete Ecos"
+                  className="w-10 h-10 opacity-70"
+                />
+                <span className="text-amber-200/50 text-sm">Parte do Sistema Sete Ecos</span>
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <div className="w-64 h-64 md:w-80 md:h-80 rounded-2xl bg-gradient-to-br from-amber-500/20 to-amber-600/20 border border-amber-500/30 flex items-center justify-center">
+                <div className="text-center p-8">
+                  <div className="text-6xl mb-4">💫</div>
+                  <p className="text-amber-200/70 text-sm italic">"Mereces existir para ti."</p>
+                  <p className="text-amber-300 text-sm mt-2">— Vivianne Santos</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Preços */}
       <section id="precos" className="py-20 px-4 bg-gradient-to-r from-amber-900/20 to-amber-800/20">
         <div className="max-w-5xl mx-auto">
@@ -427,7 +469,7 @@ const LandingAurea = () => {
                     : 'bg-white/10 text-amber-200 hover:bg-white/20 border border-amber-500/30'
                     }`}
                 >
-                  Começar agora
+                  {i === 0 ? 'Experimentar grátis' : i === 1 ? 'Escolher este plano' : 'Subscrever anual'}
                 </button>
               </div>
             ))}
@@ -467,17 +509,23 @@ const LandingAurea = () => {
       <section className="py-20 px-4 bg-gradient-to-r from-amber-600/20 to-amber-500/20">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-            Pronta para ser prioridade?
+            A tua jornada começa agora
           </h2>
-          <p className="text-amber-200/70 mb-8">
-            7 dias grátis. Sem compromisso. Sem cartão de crédito.
+          <p className="text-amber-200/80 text-lg mb-4">
+            Quantos anos mais vais adiar o direito de existir para ti?
+          </p>
+          <p className="text-amber-200/60 mb-8">
+            7 dias grátis. Sem compromisso. Sem cartão. Cancelas quando quiseres.
           </p>
           <button
             onClick={handleComecar}
-            className="px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-semibold text-lg hover:from-amber-600 hover:to-amber-700 transition-all shadow-lg shadow-amber-500/30"
+            className="px-10 py-5 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-bold text-xl hover:from-amber-600 hover:to-amber-700 transition-all shadow-xl shadow-amber-500/40 animate-pulse"
           >
-            Começar a minha jornada
+            Quero começar HOJE
           </button>
+          <p className="text-amber-300/50 text-sm mt-4">
+            +200 mulheres já começaram a priorizar-se
+          </p>
         </div>
       </section>
 
