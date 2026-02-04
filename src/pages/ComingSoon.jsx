@@ -3,8 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 const ecosInfo = {
   aurea: {
     nome: 'AUREA',
-    slogan: 'A luz interior',
-    descricao: 'O segundo eco da transformação. Descobre a tua luz interior e ilumina o caminho da mudança.',
+    slogan: 'A que merece',
+    descricao: 'O segundo eco da transformação. Descobre o teu valor e cultiva a presença que mereces.',
     cor: '#C9A227',
     chakra: 'Svadhisthana'
   },

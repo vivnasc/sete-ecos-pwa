@@ -30,8 +30,8 @@ export default function Home() {
     },
     {
       nome: 'AUREA',
-      slogan: 'A luz interior',
-      descricao: 'Clareza & Visão',
+      slogan: 'A que merece',
+      descricao: 'Valor & Presença',
       logo: '/logos/AUREA_LOGO_V3.png',
       cor: '#C9A227',
       disponivel: false,
