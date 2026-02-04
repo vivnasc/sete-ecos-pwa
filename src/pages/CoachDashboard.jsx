@@ -11,6 +11,7 @@ import {
 } from '../lib/subscriptions';
 import { enviarNotificacao, pedirPermissao, temPermissao } from '../utils/notifications';
 import { enviarEmail } from '../lib/emails';
+import { WhatsAppAlertas } from '../lib/whatsapp';
 
 /**
  * SETE ECOS - COACH DASHBOARD v2
@@ -256,12 +257,28 @@ const CoachDashboard = () => {
         mensagem: message
       });
 
+      // 3. Enviar WhatsApp para coach (notificação)
+      const whatsappResult = await WhatsAppAlertas.motivacaoEnviada(
+        { nome: clientName, email: clientEmail },
+        message
+      );
+
+      // Feedback
+      let feedback = `✅ Motivação enviada!\n\n👤 Para: ${clientName}\n📧 Email: ${clientEmail}`;
+
       if (emailResult.success) {
-        alert(`✅ Motivação enviada com sucesso!\n\n👤 Para: ${clientName}\n📧 Email: ${clientEmail}\n💬 Mensagem enviada!`);
+        feedback += '\n✅ Email enviado';
       } else {
-        // Email falhou mas guardámos na base de dados
-        alert(`⚠️ Motivação guardada mas email pode não ter sido enviado.\n\nVerifica se RESEND_API_KEY está configurada no Vercel.`);
+        feedback += '\n⚠️ Email pode não ter sido enviado';
       }
+
+      if (whatsappResult.success) {
+        feedback += '\n✅ WhatsApp notificado';
+      } else {
+        feedback += '\n⚠️ WhatsApp não configurado';
+      }
+
+      alert(feedback);
 
       await loadMotivationHistory();
       setCustomMessage('');
