@@ -1,43 +1,107 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
+import { Link } from 'react-router-dom';
 import {
-  SUBSCRIPTION_STATUS,
-  SUBSCRIPTION_CONFIG,
-  SUBSCRIPTION_PLANS,
   setAsTester,
-  startTrial,
-  confirmManualPayment,
   getSubscriptionStats
 } from '../lib/subscriptions';
-import { enviarNotificacao, pedirPermissao, temPermissao } from '../utils/notifications';
+import { pedirPermissao } from '../utils/notifications';
 import { enviarEmail } from '../lib/emails';
-import { WhatsAppAlertas } from '../lib/whatsapp';
 
 /**
- * SETE ECOS - COACH DASHBOARD v2
- * Design moderno, cores suaves, UX melhorada
+ * SETE ECOS - COACH DASHBOARD v4
+ * Design Premium - Interface Profissional para Coaching
  */
 
 const WHATSAPP_COMMUNITY_LINK = 'https://chat.whatsapp.com/FbHbQuDPGAZ3myiu29CmHO';
 
-// Templates de motivação
-const MOTIVATION_TEMPLATES = [
-  { id: 'comeback', emoji: '🌟', title: 'Regresso', message: 'Olá! Senti a tua falta por aqui. Lembra-te: cada dia é uma nova oportunidade para cuidares de ti. Estou aqui para te apoiar! 💜' },
-  { id: 'progress', emoji: '💪', title: 'Progresso', message: 'Parabéns pelo teu progresso! Continua assim, estás a fazer um trabalho incrível! O teu esforço está a dar frutos. 🌱' },
-  { id: 'struggle', emoji: '💜', title: 'Apoio', message: 'Sei que nem todos os dias são fáceis. Lembra-te que pequenos passos também contam. Estou aqui contigo, não desistas!' },
-  { id: 'weekly', emoji: '✨', title: 'Semanal', message: 'Nova semana, novas possibilidades! Vamos definir uma intenção para esta semana? Estou aqui para te ajudar a alcançar os teus objetivos.' },
-  { id: 'celebration', emoji: '🎉', title: 'Celebração', message: 'Que conquista! Estou tão orgulhosa do teu caminho. Continua a brilhar! 🌟' },
-];
+// Categorias de Interação organizadas
+const INTERACTION_CATEGORIES = {
+  boasVindas: {
+    name: 'Boas-vindas',
+    icon: '👋',
+    color: 'from-blue-500 to-cyan-500',
+    bgColor: 'bg-blue-50',
+    templates: [
+      { id: 'welcome-new', title: 'Novo cliente', message: 'Bem-vinda ao Vitalis! Estou muito feliz por começares esta jornada comigo. Qualquer dúvida, estou aqui. Vamos juntas!' },
+      { id: 'welcome-back', title: 'Retorno', message: 'Que bom ver-te de volta! A tua jornada continua, e estou aqui para te apoiar. Vamos retomar com calma.' },
+    ]
+  },
+  checkin: {
+    name: 'Check-in',
+    icon: '💬',
+    color: 'from-teal-500 to-emerald-500',
+    bgColor: 'bg-teal-50',
+    templates: [
+      { id: 'checkin-how', title: 'Como estás?', message: 'Olá! Só a passar para saber como te estás a sentir. Como está a correr a semana?' },
+      { id: 'checkin-goals', title: 'Objetivos', message: 'Como estão os teus objetivos? Precisas de ajustar algo no plano? Estou aqui para te ajudar.' },
+      { id: 'checkin-weekend', title: 'Fim de semana', message: 'Bom fim de semana! Lembra-te: descansar também faz parte do processo. Como estás?' },
+    ]
+  },
+  motivacao: {
+    name: 'Motivação',
+    icon: '🔥',
+    color: 'from-orange-500 to-red-500',
+    bgColor: 'bg-orange-50',
+    templates: [
+      { id: 'motivation-daily', title: 'Diária', message: 'Novo dia, nova oportunidade! Tu consegues. Cada pequeno passo conta. Vamos lá!' },
+      { id: 'motivation-progress', title: 'Progresso', message: 'Estou a ver o teu progresso e estou orgulhosa! Continua assim, estás no caminho certo.' },
+      { id: 'motivation-push', title: 'Impulso', message: 'Sei que às vezes é difícil, mas lembra-te do porquê começaste. A tua versão futura vai agradecer!' },
+    ]
+  },
+  celebracao: {
+    name: 'Celebração',
+    icon: '🎉',
+    color: 'from-yellow-500 to-amber-500',
+    bgColor: 'bg-yellow-50',
+    templates: [
+      { id: 'celebrate-milestone', title: 'Marco atingido', message: 'PARABÉNS! Que conquista incrível! Estou tão feliz por ti. Mereces toda a celebração!' },
+      { id: 'celebrate-streak', title: 'Streak', message: 'Que consistência! A tua dedicação está a dar frutos. Continua a brilhar!' },
+      { id: 'celebrate-goal', title: 'Meta alcançada', message: 'Conseguiste! Este momento é teu. Celebra cada vitória, por menor que pareça!' },
+    ]
+  },
+  suporte: {
+    name: 'Suporte',
+    icon: '🤗',
+    color: 'from-pink-500 to-rose-500',
+    bgColor: 'bg-pink-50',
+    templates: [
+      { id: 'support-hard', title: 'Dia difícil', message: 'Sei que nem todos os dias são fáceis. Está tudo bem. Estou aqui contigo. Vamos com calma.' },
+      { id: 'support-slip', title: 'Recaída', message: 'Um deslize não apaga o teu progresso. Amanhã é um novo dia. Levanta-te e continua. Estou aqui.' },
+      { id: 'support-listen', title: 'Ouvir', message: 'Quero que saibas que estou aqui para te ouvir. Se precisares de falar, é só dizer.' },
+    ]
+  },
+  lembrete: {
+    name: 'Lembrete',
+    icon: '⏰',
+    color: 'from-purple-500 to-violet-500',
+    bgColor: 'bg-purple-50',
+    templates: [
+      { id: 'reminder-checkin', title: 'Check-in', message: 'Ainda não fizeste o check-in de hoje. Quando puderes, passa por lá. Cada registo ajuda!' },
+      { id: 'reminder-water', title: 'Hidratação', message: 'Lembrete amigo: já bebeste água hoje? A hidratação é fundamental. Vai buscar um copo!' },
+      { id: 'reminder-meal', title: 'Refeição', message: 'Não te esqueças de fazer as tuas refeições com calma e atenção. O teu corpo agradece.' },
+    ]
+  }
+};
+
+// Configurações de automação
+const AUTOMATION_SETTINGS = {
+  inactivityReminder: { days: 3, enabled: true },
+  weeklyMotivation: { dayOfWeek: 'monday', enabled: true },
+  streakCelebration: { minStreak: 7, enabled: true },
+  welcomeMessage: { delay: 0, enabled: true },
+};
 
 const CoachDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState('overview');
-  const [activeFilter, setActiveFilter] = useState(null);
   const [selectedClient, setSelectedClient] = useState(null);
-  const [showMotivationPanel, setShowMotivationPanel] = useState(false);
-  const [motivationHistory, setMotivationHistory] = useState([]);
-  const [sendingMotivation, setSendingMotivation] = useState(false);
+  const [showInteractionPanel, setShowInteractionPanel] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [interactionHistory, setInteractionHistory] = useState([]);
+  const [sendingMessage, setSendingMessage] = useState(false);
   const [customMessage, setCustomMessage] = useState('');
+  const [showAutomation, setShowAutomation] = useState(false);
 
   // Data
   const [stats, setStats] = useState({
@@ -47,10 +111,8 @@ const CoachDashboard = () => {
     comLumina: 0,
     comVitalis: 0,
     waitlistTotal: 0,
-    activeToday: 0,
     needAttention: 0
   });
-  const [users, setUsers] = useState([]);
   const [vitalisClients, setVitalisClients] = useState([]);
   const [waitlist, setWaitlist] = useState([]);
   const [clientsNeedAttention, setClientsNeedAttention] = useState([]);
@@ -62,7 +124,6 @@ const CoachDashboard = () => {
     pedirPermissao();
     loadAllData();
     refreshInterval.current = setInterval(loadAllData, 60000);
-
     return () => {
       if (refreshInterval.current) clearInterval(refreshInterval.current);
     };
@@ -72,11 +133,10 @@ const CoachDashboard = () => {
     try {
       await Promise.all([
         loadStats(),
-        loadUsers(),
         loadVitalisClients(),
         loadWaitlist(),
         loadClientsNeedAttention(),
-        loadMotivationHistory()
+        loadInteractionHistory()
       ]);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -116,24 +176,10 @@ const CoachDashboard = () => {
         comLumina: comLumina || 0,
         comVitalis: comVitalis || 0,
         waitlistTotal: waitlistTotal || 0,
-        activeToday: 0,
         needAttention: 0
       });
     } catch (error) {
       console.error('Erro stats:', error);
-    }
-  };
-
-  const loadUsers = async () => {
-    try {
-      const { data } = await supabase
-        .from('users')
-        .select('*, vitalis_clients(*), lumina_checkins(created_at)')
-        .order('created_at', { ascending: false })
-        .limit(100);
-      setUsers(data || []);
-    } catch (error) {
-      console.error('Erro users:', error);
     }
   };
 
@@ -174,7 +220,6 @@ const CoachDashboard = () => {
       for (const client of clients) {
         const reasons = [];
 
-        // Verificar última atividade
         const [registosRes, aguaRes] = await Promise.all([
           supabase.from('vitalis_registos').select('created_at').eq('user_id', client.user_id).order('created_at', { ascending: false }).limit(1).single(),
           supabase.from('vitalis_agua_log').select('created_at').eq('user_id', client.user_id).order('created_at', { ascending: false }).limit(1).single()
@@ -184,10 +229,14 @@ const CoachDashboard = () => {
         if (lastActivity) {
           const daysSince = Math.floor((Date.now() - new Date(lastActivity).getTime()) / (1000 * 60 * 60 * 24));
           if (daysSince >= 3) {
-            reasons.push({ text: `${daysSince} dias inativo`, priority: daysSince >= 7 ? 'high' : 'medium' });
+            reasons.push({
+              text: `${daysSince} dias sem atividade`,
+              priority: daysSince >= 7 ? 'high' : 'medium',
+              type: 'inactivity'
+            });
           }
         } else {
-          reasons.push({ text: 'Sem registos ainda', priority: 'medium' });
+          reasons.push({ text: 'Nunca registou', priority: 'medium', type: 'new' });
         }
 
         if (reasons.length > 0) {
@@ -208,102 +257,79 @@ const CoachDashboard = () => {
     }
   };
 
-  const loadMotivationHistory = async () => {
+  const loadInteractionHistory = async () => {
     try {
       const { data } = await supabase
         .from('vitalis_alerts')
         .select('*, users(nome, email)')
-        .eq('tipo_alerta', 'motivacao_coach')
+        .in('tipo_alerta', ['motivacao_coach', 'interaction_coach'])
         .order('created_at', { ascending: false })
-        .limit(50);
-      setMotivationHistory(data || []);
+        .limit(100);
+      setInteractionHistory(data || []);
     } catch (error) {
-      console.error('Erro motivation history:', error);
+      console.error('Erro interaction history:', error);
     }
   };
 
-  const loadClientDetails = async (client) => {
-    setSelectedClient(client);
-    setActiveView('client-detail');
-  };
-
-  // Enviar motivação por email e guardar
-  const sendMotivation = async (client, template, customMsg = '') => {
-    setSendingMotivation(true);
+  const sendInteraction = async (client, template, customMsg = '') => {
+    setSendingMessage(true);
     try {
       const message = customMsg || template.message;
       const clientName = client.users?.nome || client.nome_completo || 'Cliente';
       const clientEmail = client.users?.email || '';
 
       if (!clientEmail) {
-        alert('❌ Cliente não tem email registado');
-        setSendingMotivation(false);
+        alert('Cliente sem email registado');
+        setSendingMessage(false);
         return;
       }
 
-      // 1. Guardar na base de dados
+      // Guardar na base de dados
       await supabase.from('vitalis_alerts').insert({
         user_id: client.user_id,
-        tipo_alerta: 'motivacao_coach',
+        tipo_alerta: 'interaction_coach',
         descricao: message,
         prioridade: 'baixa',
         status: 'enviado'
       });
 
-      // 2. Enviar email via Resend API
+      // Enviar email
       const emailResult = await enviarEmail('lembrete-checkin', clientEmail, {
         nome: clientName,
         dias: 'alguns',
         mensagem: message
       });
 
-      // 3. Enviar WhatsApp para coach (notificação)
-      const whatsappResult = await WhatsAppAlertas.motivacaoEnviada(
-        { nome: clientName, email: clientEmail },
-        message
+      alert(emailResult.success
+        ? `Mensagem enviada para ${clientName}!`
+        : `Mensagem guardada, mas email pode não ter sido enviado.`
       );
 
-      // Feedback
-      let feedback = `✅ Motivação enviada!\n\n👤 Para: ${clientName}\n📧 Email: ${clientEmail}`;
-
-      if (emailResult.success) {
-        feedback += '\n✅ Email enviado';
-      } else {
-        feedback += '\n⚠️ Email pode não ter sido enviado';
-      }
-
-      if (whatsappResult.success) {
-        feedback += '\n✅ WhatsApp notificado';
-      } else {
-        feedback += '\n⚠️ WhatsApp não configurado';
-      }
-
-      alert(feedback);
-
-      await loadMotivationHistory();
+      await loadInteractionHistory();
       setCustomMessage('');
-      setShowMotivationPanel(false);
+      setShowInteractionPanel(false);
+      setSelectedCategory(null);
     } catch (error) {
-      console.error('Erro ao enviar motivação:', error);
-      alert('❌ Erro ao enviar motivação: ' + error.message);
+      console.error('Erro ao enviar:', error);
+      alert('Erro ao enviar: ' + error.message);
     } finally {
-      setSendingMotivation(false);
+      setSendingMessage(false);
     }
   };
 
   const handleSetAsTester = async (userId, reason) => {
     try {
       await setAsTester(userId, reason);
-      alert('✅ Utilizador definido como tester!');
+      alert('Utilizador definido como tester');
       loadVitalisClients();
     } catch (error) {
-      alert('❌ Erro: ' + error.message);
+      alert('Erro: ' + error.message);
     }
   };
 
   const formatDate = (date) => {
     if (!date) return '-';
-    return new Date(date).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    return new Date(date).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' });
   };
 
   const formatTimeAgo = (date) => {
@@ -315,531 +341,586 @@ const CoachDashboard = () => {
     return `${Math.floor(diff / 86400)}d`;
   };
 
+  const getStatusBadge = (status) => {
+    const styles = {
+      tester: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+      active: 'bg-green-500/20 text-green-300 border-green-500/30',
+      pending: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+      trial: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+      expired: 'bg-red-500/20 text-red-300 border-red-500/30',
+    };
+    return styles[status] || 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+  };
+
   // ========== RENDER ==========
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-purple-600">A carregar dashboard...</p>
+          <div className="w-16 h-16 border-4 border-purple-400/30 border-t-purple-400 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-purple-200">A carregar dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-purple-100 px-4 md:px-6 py-4 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-xl md:text-2xl shadow-lg">
-              🎯
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-900">
+      {/* Header Premium */}
+      <header className="border-b border-white/10 bg-black/20 backdrop-blur-xl sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 lg:px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/25">
+                <span className="text-2xl">🎯</span>
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-white">Coach Dashboard</h1>
+                <p className="text-sm text-purple-300">Sete Ecos • Gestão de Clientes</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-lg md:text-xl font-bold text-gray-800">Coach Dashboard</h1>
-              <p className="text-xs md:text-sm text-purple-600">Sete Ecos • Vitalis</p>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-2 md:gap-3">
-            <a
-              href={WHATSAPP_COMMUNITY_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-50 hover:bg-green-100 text-green-700 text-sm font-medium transition-all border border-green-200"
-            >
-              💬 <span className="hidden sm:inline">Comunidade</span>
-            </a>
-            <button
-              onClick={loadAllData}
-              className="p-2 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-600 transition-all"
-              title="Atualizar"
-            >
-              🔄
-            </button>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/vitalis/dashboard"
+                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-sm font-medium transition-all border border-white/10"
+              >
+                ← Vitalis
+              </Link>
+              <a
+                href={WHATSAPP_COMMUNITY_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 rounded-xl bg-green-500/20 hover:bg-green-500/30 text-green-300 text-sm font-medium transition-all border border-green-500/30"
+              >
+                WhatsApp
+              </a>
+              <button
+                onClick={loadAllData}
+                className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all border border-white/10 flex items-center justify-center"
+                title="Atualizar"
+              >
+                ↻
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-6">
-        {/* Stats Cards - Clicáveis */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
+      <main className="max-w-7xl mx-auto px-4 lg:px-6 py-6">
+        {/* Stats Cards - Visão Rápida */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
           {[
-            { key: 'total', icon: '👥', label: 'Total', value: stats.totalUsers, color: 'purple' },
-            { key: 'hoje', icon: '🆕', label: 'Hoje', value: stats.novosHoje, color: 'green' },
-            { key: 'semana', icon: '📅', label: 'Semana', value: stats.novosSemana, color: 'blue' },
-            { key: 'lumina', icon: '💡', label: 'Lumina', value: stats.comLumina, color: 'amber' },
-            { key: 'vitalis', icon: '🌱', label: 'Vitalis', value: stats.comVitalis, color: 'emerald' },
-            { key: 'waitlist', icon: '📋', label: 'Waitlist', value: stats.waitlistTotal, color: 'orange' },
-            { key: 'atencao', icon: '⚠️', label: 'Atenção', value: stats.needAttention, color: 'red' },
-            { key: 'testers', icon: '🧪', label: 'Testers', value: subscriptionStats?.testers || 0, color: 'cyan' },
-          ].map((stat) => (
+            { icon: '👥', label: 'Total', value: stats.totalUsers, gradient: 'from-blue-500 to-cyan-500' },
+            { icon: '✨', label: 'Hoje', value: stats.novosHoje, gradient: 'from-green-500 to-emerald-500' },
+            { icon: '📅', label: 'Semana', value: stats.novosSemana, gradient: 'from-teal-500 to-cyan-500' },
+            { icon: '👁️', label: 'Lumina', value: stats.comLumina, gradient: 'from-indigo-500 to-purple-500' },
+            { icon: '🌿', label: 'Vitalis', value: stats.comVitalis, gradient: 'from-green-500 to-lime-500' },
+            { icon: '⚠️', label: 'Atenção', value: stats.needAttention, gradient: 'from-orange-500 to-red-500', highlight: stats.needAttention > 0 },
+            { icon: '📋', label: 'Waitlist', value: waitlist.length, gradient: 'from-purple-500 to-pink-500' },
+          ].map((stat, i) => (
             <button
-              key={stat.key}
+              key={i}
               onClick={() => {
-                setActiveFilter(activeFilter === stat.key ? null : stat.key);
-                if (stat.key === 'atencao') setActiveView('attention');
-                else if (stat.key === 'waitlist') setActiveView('waitlist');
-                else if (stat.key === 'vitalis') setActiveView('clients');
+                if (stat.label === 'Atenção') setActiveView('attention');
+                else if (stat.label === 'Waitlist') setActiveView('waitlist');
+                else if (stat.label === 'Vitalis') setActiveView('clients');
                 else setActiveView('overview');
               }}
-              className={`p-3 md:p-4 rounded-xl text-center transition-all hover:scale-105 ${
-                activeFilter === stat.key
-                  ? `bg-${stat.color}-100 border-2 border-${stat.color}-400 shadow-lg`
-                  : 'bg-white border border-gray-100 hover:border-purple-200 shadow-sm'
-              }`}
+              className={`relative p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group ${stat.highlight ? 'ring-2 ring-orange-500/50' : ''}`}
             >
-              <div className="text-xl md:text-2xl mb-1">{stat.icon}</div>
-              <div className={`text-lg md:text-2xl font-bold ${activeFilter === stat.key ? `text-${stat.color}-600` : 'text-gray-800'}`}>
-                {stat.value}
+              <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-10 transition-opacity`}></div>
+              <div className="relative">
+                <span className="text-2xl">{stat.icon}</span>
+                <p className="text-2xl font-bold text-white mt-1">{stat.value}</p>
+                <p className="text-xs text-white/50">{stat.label}</p>
               </div>
-              <div className="text-xs text-gray-500">{stat.label}</div>
             </button>
           ))}
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-          {[
-            { id: 'overview', label: '📊 Resumo' },
-            { id: 'clients', label: `🌱 Clientes (${vitalisClients.length})` },
-            { id: 'attention', label: `⚠️ Atenção (${clientsNeedAttention.length})` },
-            { id: 'waitlist', label: `📋 Waitlist (${waitlist.length})` },
-            { id: 'motivations', label: '💜 Motivações' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => { setActiveView(tab.id); setSelectedClient(null); }}
-              className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all text-sm ${
-                activeView === tab.id
-                  ? 'bg-purple-600 text-white shadow-md'
-                  : 'bg-white text-gray-600 hover:bg-purple-50 border border-gray-200'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <div className="grid lg:grid-cols-4 gap-6">
+          {/* Sidebar - Navigation */}
+          <div className="lg:col-span-1 space-y-4">
+            {/* Menu */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+              <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">Menu</h3>
+              <nav className="space-y-1">
+                {[
+                  { id: 'overview', icon: '📊', label: 'Resumo' },
+                  { id: 'clients', icon: '🌿', label: `Clientes (${vitalisClients.length})` },
+                  { id: 'attention', icon: '⚠️', label: `Atenção (${clientsNeedAttention.length})`, alert: clientsNeedAttention.length > 0 },
+                  { id: 'waitlist', icon: '📋', label: `Waitlist (${waitlist.length})` },
+                  { id: 'interactions', icon: '💬', label: 'Interações' },
+                  { id: 'automation', icon: '⚡', label: 'Automação' },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveView(item.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                      activeView === item.id
+                        ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white border border-purple-500/30'
+                        : 'text-white/60 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <span className="text-lg">{item.icon}</span>
+                    <span className="font-medium flex-1 text-left">{item.label}</span>
+                    {item.alert && <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>}
+                  </button>
+                ))}
+              </nav>
+            </div>
 
-        {/* Content Area */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-
-          {/* OVERVIEW */}
-          {activeView === 'overview' && (
-            <div className="p-4 md:p-6">
-              <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                📊 Resumo Geral
-              </h2>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Subscrições */}
-                <div className="bg-purple-50 rounded-xl p-4">
-                  <h3 className="font-semibold text-purple-800 mb-3">💰 Subscrições</h3>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="bg-white rounded-lg p-3 text-center">
-                      <div className="text-xl font-bold text-emerald-600">{subscriptionStats?.testers || 0}</div>
-                      <div className="text-xs text-gray-500">Testers</div>
-                    </div>
-                    <div className="bg-white rounded-lg p-3 text-center">
-                      <div className="text-xl font-bold text-green-600">{subscriptionStats?.active || 0}</div>
-                      <div className="text-xs text-gray-500">Ativos</div>
-                    </div>
-                    <div className="bg-white rounded-lg p-3 text-center">
-                      <div className="text-xl font-bold text-yellow-600">{subscriptionStats?.pending || 0}</div>
-                      <div className="text-xs text-gray-500">Pendentes</div>
-                    </div>
+            {/* Quick Stats */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+              <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">Subscrições</h3>
+              <div className="space-y-2">
+                {[
+                  { label: 'Testers', value: subscriptionStats?.testers || 0, color: 'text-emerald-400' },
+                  { label: 'Ativos', value: subscriptionStats?.active || 0, color: 'text-green-400' },
+                  { label: 'Pendentes', value: subscriptionStats?.pending || 0, color: 'text-amber-400' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center justify-between py-2 px-3 rounded-lg bg-white/5">
+                    <span className="text-white/60 text-sm">{item.label}</span>
+                    <span className={`font-bold ${item.color}`}>{item.value}</span>
                   </div>
-                </div>
+                ))}
+              </div>
+            </div>
+          </div>
 
-                {/* Ações Rápidas */}
-                <div className="bg-indigo-50 rounded-xl p-4">
-                  <h3 className="font-semibold text-indigo-800 mb-3">🚀 Ações Rápidas</h3>
-                  <div className="space-y-2">
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden min-h-[600px]">
+
+              {/* OVERVIEW */}
+              {activeView === 'overview' && (
+                <div className="p-6">
+                  <h2 className="text-xl font-bold text-white mb-6">Resumo do Dia</h2>
+
+                  {/* Alert Banner */}
+                  {clientsNeedAttention.length > 0 && (
                     <button
                       onClick={() => setActiveView('attention')}
-                      className="w-full p-3 bg-white rounded-lg text-left hover:bg-red-50 transition-all flex items-center justify-between"
+                      className="w-full p-4 rounded-xl bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 mb-6 flex items-center gap-4 hover:from-orange-500/30 hover:to-red-500/30 transition-all"
                     >
-                      <span>⚠️ Ver clientes que precisam de atenção</span>
-                      <span className="bg-red-100 text-red-600 px-2 py-1 rounded-full text-sm font-medium">{clientsNeedAttention.length}</span>
+                      <div className="w-12 h-12 rounded-xl bg-orange-500/30 flex items-center justify-center">
+                        <span className="text-2xl">⚠️</span>
+                      </div>
+                      <div className="flex-1 text-left">
+                        <p className="font-semibold text-orange-200">
+                          {clientsNeedAttention.length} cliente{clientsNeedAttention.length !== 1 ? 's' : ''} precisa{clientsNeedAttention.length !== 1 ? 'm' : ''} de atenção
+                        </p>
+                        <p className="text-sm text-orange-300/70">Clica para ver e enviar mensagens</p>
+                      </div>
+                      <span className="text-orange-300">→</span>
                     </button>
-                    <button
-                      onClick={() => setActiveView('motivations')}
-                      className="w-full p-3 bg-white rounded-lg text-left hover:bg-purple-50 transition-all flex items-center justify-between"
-                    >
-                      <span>💜 Enviar motivações</span>
-                      <span className="text-purple-400">→</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
+                  )}
 
-              {/* Últimas Motivações Enviadas */}
-              <div className="mt-6">
-                <h3 className="font-semibold text-gray-800 mb-3">📨 Últimas Motivações Enviadas</h3>
-                {motivationHistory.length === 0 ? (
-                  <p className="text-gray-500 text-center py-4">Nenhuma motivação enviada ainda</p>
-                ) : (
-                  <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {motivationHistory.slice(0, 5).map((m, i) => (
-                      <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                        <span className="text-xl">💜</span>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-800 truncate">{m.users?.nome || 'Cliente'}</p>
-                          <p className="text-sm text-gray-500 truncate">{m.descricao}</p>
-                        </div>
-                        <span className="text-xs text-gray-400 whitespace-nowrap">{formatTimeAgo(m.created_at)}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* CLIENTS LIST */}
-          {activeView === 'clients' && !selectedClient && (
-            <div className="p-4 md:p-6">
-              <h2 className="text-lg font-bold text-gray-800 mb-4">🌱 Clientes Vitalis ({vitalisClients.length})</h2>
-
-              {vitalisClients.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">Nenhum cliente ainda</p>
-              ) : (
-                <div className="space-y-3">
-                  {vitalisClients.map((client) => (
-                    <div
-                      key={client.id}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 hover:bg-purple-50 rounded-xl transition-all gap-3"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-lg">
-                          {client.users?.nome?.[0]?.toUpperCase() || '👤'}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-gray-800">{client.users?.nome || client.nome_completo || 'Sem nome'}</p>
-                          <p className="text-sm text-gray-500">{client.users?.email}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          client.subscription_status === 'tester' ? 'bg-emerald-100 text-emerald-700' :
-                          client.subscription_status === 'active' ? 'bg-green-100 text-green-700' :
-                          client.subscription_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                          'bg-gray-100 text-gray-600'
-                        }`}>
-                          {client.subscription_status || 'sem status'}
-                        </span>
-
+                  {/* Categorias de Interação - Quick Access */}
+                  <div className="mb-6">
+                    <h3 className="text-sm font-semibold text-white/60 mb-3">Enviar Interação Rápida</h3>
+                    <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                      {Object.entries(INTERACTION_CATEGORIES).map(([key, cat]) => (
                         <button
-                          onClick={() => loadClientDetails(client)}
-                          className="px-3 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-lg text-sm font-medium transition-all"
+                          key={key}
+                          onClick={() => { setSelectedCategory(key); setActiveView('interactions'); }}
+                          className={`p-3 rounded-xl bg-gradient-to-br ${cat.color} opacity-80 hover:opacity-100 transition-all text-center`}
                         >
-                          👁️ Ver detalhes
+                          <span className="text-2xl block mb-1">{cat.icon}</span>
+                          <span className="text-xs text-white font-medium">{cat.name}</span>
                         </button>
-
-                        <button
-                          onClick={() => { setSelectedClient(client); setShowMotivationPanel(true); }}
-                          className="px-3 py-1.5 bg-pink-100 hover:bg-pink-200 text-pink-700 rounded-lg text-sm font-medium transition-all"
-                        >
-                          💜 Motivar
-                        </button>
-                      </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Recent Interactions */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-white/60 mb-3">Interações Recentes</h3>
+                    {interactionHistory.length === 0 ? (
+                      <div className="text-center py-8 bg-white/5 rounded-xl">
+                        <span className="text-4xl block mb-2">💬</span>
+                        <p className="text-white/40">Nenhuma interação ainda</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2 max-h-80 overflow-y-auto">
+                        {interactionHistory.slice(0, 5).map((item, i) => (
+                          <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold">
+                              {item.users?.nome?.[0]?.toUpperCase() || 'C'}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-white font-medium truncate">{item.users?.nome || 'Cliente'}</p>
+                              <p className="text-white/40 text-sm truncate">{item.descricao}</p>
+                            </div>
+                            <span className="text-white/30 text-xs">{formatTimeAgo(item.created_at)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
-            </div>
-          )}
 
-          {/* CLIENT DETAIL */}
-          {activeView === 'client-detail' && selectedClient && (
-            <div className="p-4 md:p-6">
-              {/* Header com nome do cliente em destaque */}
-              <div className="flex items-center gap-4 mb-6 pb-4 border-b border-gray-100">
-                <button
-                  onClick={() => { setSelectedClient(null); setActiveView('clients'); }}
-                  className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-all"
-                >
-                  ←
-                </button>
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center text-2xl text-white font-bold">
-                  {selectedClient.users?.nome?.[0]?.toUpperCase() || '👤'}
-                </div>
-                <div>
-                  <h2 className="text-xl md:text-2xl font-bold text-gray-800">
-                    {selectedClient.users?.nome || selectedClient.nome_completo || 'Cliente'}
-                  </h2>
-                  <p className="text-gray-500">{selectedClient.users?.email}</p>
-                </div>
-              </div>
+              {/* CLIENTS */}
+              {activeView === 'clients' && (
+                <div className="p-6">
+                  <h2 className="text-xl font-bold text-white mb-6">Clientes Vitalis ({vitalisClients.length})</h2>
 
-              {/* Info Cards */}
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div className="bg-purple-50 rounded-xl p-4">
-                  <div className="text-sm text-purple-600 mb-1">Status</div>
-                  <div className="font-bold text-purple-800">{selectedClient.subscription_status || 'N/A'}</div>
+                  {vitalisClients.length === 0 ? (
+                    <div className="text-center py-16">
+                      <span className="text-5xl block mb-4">🌿</span>
+                      <p className="text-white/40">Nenhum cliente ainda</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {vitalisClients.map((client) => (
+                        <div
+                          key={client.id}
+                          className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
+                        >
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-bold text-lg">
+                            {client.users?.nome?.[0]?.toUpperCase() || '🌿'}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-semibold">{client.users?.nome || client.nome_completo || 'Sem nome'}</p>
+                            <p className="text-white/40 text-sm truncate">{client.users?.email}</p>
+                          </div>
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(client.subscription_status)}`}>
+                            {client.subscription_status || 'sem status'}
+                          </span>
+                          <button
+                            onClick={() => { setSelectedClient(client); setShowInteractionPanel(true); }}
+                            className="px-4 py-2 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-sm font-medium transition-all border border-purple-500/30"
+                          >
+                            Mensagem
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <div className="bg-blue-50 rounded-xl p-4">
-                  <div className="text-sm text-blue-600 mb-1">Método Pagamento</div>
-                  <div className="font-bold text-blue-800">{selectedClient.payment_method || 'N/A'}</div>
-                </div>
-                <div className="bg-green-50 rounded-xl p-4">
-                  <div className="text-sm text-green-600 mb-1">Expira em</div>
-                  <div className="font-bold text-green-800">{formatDate(selectedClient.subscription_expires)}</div>
-                </div>
-                <div className="bg-amber-50 rounded-xl p-4">
-                  <div className="text-sm text-amber-600 mb-1">Registado em</div>
-                  <div className="font-bold text-amber-800">{formatDate(selectedClient.created_at)}</div>
-                </div>
-              </div>
+              )}
 
-              {/* Ações */}
-              <div className="flex flex-wrap gap-3">
-                <button
-                  onClick={() => setShowMotivationPanel(true)}
-                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-all"
-                >
-                  💜 Enviar Motivação
-                </button>
-                <a
-                  href={`https://api.whatsapp.com/send?text=Olá ${selectedClient.users?.nome || 'Cliente'}! Como estás?`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg font-medium transition-all"
-                >
-                  💬 WhatsApp
-                </a>
-                {(!selectedClient.subscription_status || selectedClient.subscription_status === 'expired') && (
-                  <button
-                    onClick={() => handleSetAsTester(selectedClient.user_id, 'Via Dashboard')}
-                    className="px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-lg font-medium transition-all"
-                  >
-                    🧪 Tornar Tester
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
+              {/* ATTENTION */}
+              {activeView === 'attention' && (
+                <div className="p-6">
+                  <h2 className="text-xl font-bold text-white mb-6">Clientes que Precisam de Atenção ({clientsNeedAttention.length})</h2>
 
-          {/* ATTENTION LIST */}
-          {activeView === 'attention' && (
-            <div className="p-4 md:p-6">
-              <h2 className="text-lg font-bold text-gray-800 mb-4">⚠️ Clientes que Precisam de Atenção ({clientsNeedAttention.length})</h2>
-
-              {clientsNeedAttention.length === 0 ? (
-                <div className="text-center py-12">
-                  <span className="text-5xl mb-4 block">🎉</span>
-                  <p className="text-gray-600">Todos os clientes estão bem!</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {clientsNeedAttention.map((client, i) => (
-                    <div
-                      key={i}
-                      className={`p-4 rounded-xl border-2 ${
-                        client.priority === 'high' ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200'
-                      }`}
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div>
-                          <p className="font-bold text-gray-800 text-lg">{client.nome}</p>
-                          <p className="text-sm text-gray-500">{client.email}</p>
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {client.reasons.map((r, j) => (
-                              <span
-                                key={j}
-                                className={`text-xs px-2 py-1 rounded-full ${
-                                  r.priority === 'high' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
-                                }`}
-                              >
-                                {r.text}
-                              </span>
-                            ))}
+                  {clientsNeedAttention.length === 0 ? (
+                    <div className="text-center py-16 bg-green-500/10 rounded-xl border border-green-500/20">
+                      <span className="text-5xl block mb-4">🎉</span>
+                      <p className="text-green-300 font-semibold">Todos os clientes estão bem!</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {clientsNeedAttention.map((client, i) => (
+                        <div
+                          key={i}
+                          className={`p-4 rounded-xl border-l-4 ${
+                            client.priority === 'high'
+                              ? 'bg-red-500/10 border-l-red-500'
+                              : 'bg-orange-500/10 border-l-orange-500'
+                          }`}
+                        >
+                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                              <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold ${
+                                client.priority === 'high' ? 'bg-red-500/30' : 'bg-orange-500/30'
+                              }`}>
+                                {client.nome?.[0]?.toUpperCase() || '?'}
+                              </div>
+                              <div>
+                                <p className="text-white font-semibold text-lg">{client.nome}</p>
+                                <p className="text-white/50 text-sm">{client.email}</p>
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                  {client.reasons.map((r, j) => (
+                                    <span
+                                      key={j}
+                                      className={`text-xs px-2 py-1 rounded-full ${
+                                        r.priority === 'high' ? 'bg-red-500/30 text-red-200' : 'bg-orange-500/30 text-orange-200'
+                                      }`}
+                                    >
+                                      {r.text}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => { setSelectedClient(client); setShowInteractionPanel(true); }}
+                              className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all"
+                            >
+                              Enviar Mensagem
+                            </button>
                           </div>
                         </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
-                        <div className="flex gap-2 flex-wrap">
-                          <button
-                            onClick={() => { setSelectedClient(client); setShowMotivationPanel(true); }}
-                            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-all"
-                          >
-                            💜 Motivar {client.nome.split(' ')[0]}
-                          </button>
-                          <a
-                            href={`https://api.whatsapp.com/send?text=Olá ${client.nome}! Como estás? Senti a tua falta no Vitalis 🌱`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm font-medium transition-all"
-                          >
-                            💬 WhatsApp
-                          </a>
+              {/* WAITLIST */}
+              {activeView === 'waitlist' && (
+                <div className="p-6">
+                  <h2 className="text-xl font-bold text-white mb-6">Waitlist ({waitlist.length})</h2>
+
+                  {waitlist.length === 0 ? (
+                    <div className="text-center py-16">
+                      <span className="text-5xl block mb-4">📋</span>
+                      <p className="text-white/40">Waitlist vazia</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {waitlist.map((item) => (
+                        <div key={item.id} className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
+                          <div className="w-12 h-12 rounded-full bg-purple-500/30 flex items-center justify-center text-purple-300 font-bold">
+                            {item.nome?.[0]?.toUpperCase() || '?'}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-semibold">{item.nome}</p>
+                            <p className="text-white/40 text-sm">{item.email}</p>
+                            {item.whatsapp && (
+                              <p className="text-green-400 text-sm">📱 {item.whatsapp}</p>
+                            )}
+                          </div>
+                          <div className="text-right">
+                            <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-medium border border-purple-500/30">
+                              {item.produto || 'Vitalis'}
+                            </span>
+                            <p className="text-white/30 text-xs mt-1">{formatDate(item.created_at)}</p>
+                          </div>
                         </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
-            </div>
-          )}
 
-          {/* WAITLIST */}
-          {activeView === 'waitlist' && (
-            <div className="p-4 md:p-6">
-              <h2 className="text-lg font-bold text-gray-800 mb-4">📋 Waitlist ({waitlist.length})</h2>
+              {/* INTERACTIONS */}
+              {activeView === 'interactions' && (
+                <div className="p-6">
+                  <h2 className="text-xl font-bold text-white mb-6">Central de Interações</h2>
 
-              {waitlist.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">Waitlist vazia</p>
-              ) : (
-                <div className="space-y-3">
-                  {waitlist.map((item) => (
-                    <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-orange-50 rounded-xl gap-3">
-                      <div>
-                        <p className="font-semibold text-gray-800">{item.nome}</p>
-                        <p className="text-sm text-gray-500">{item.email}</p>
-                        {item.whatsapp && <p className="text-sm text-green-600">📱 {item.whatsapp}</p>}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-400">{formatDate(item.created_at)}</span>
-                        <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium">
-                          {item.produto || 'Vitalis'}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* MOTIVATIONS */}
-          {activeView === 'motivations' && (
-            <div className="p-4 md:p-6">
-              <h2 className="text-lg font-bold text-gray-800 mb-4">💜 Sistema de Motivações</h2>
-
-              {/* Templates */}
-              <div className="mb-6">
-                <h3 className="font-semibold text-gray-700 mb-3">📝 Templates Disponíveis</h3>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {MOTIVATION_TEMPLATES.map((t) => (
-                    <div key={t.id} className="p-4 bg-purple-50 rounded-xl border border-purple-100">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xl">{t.emoji}</span>
-                        <span className="font-semibold text-purple-800">{t.title}</span>
-                      </div>
-                      <p className="text-sm text-gray-600 line-clamp-3">{t.message}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Escolher cliente para motivar */}
-              <div className="mb-6">
-                <h3 className="font-semibold text-gray-700 mb-3">👥 Enviar Motivação</h3>
-                <p className="text-sm text-gray-500 mb-3">Seleciona um cliente da lista para enviar uma motivação:</p>
-                <button
-                  onClick={() => setActiveView('attention')}
-                  className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg font-medium transition-all"
-                >
-                  ⚠️ Ver clientes que precisam de atenção ({clientsNeedAttention.length})
-                </button>
-              </div>
-
-              {/* Histórico */}
-              <div>
-                <h3 className="font-semibold text-gray-700 mb-3">📨 Histórico de Motivações</h3>
-                {motivationHistory.length === 0 ? (
-                  <p className="text-gray-500 text-center py-4 bg-gray-50 rounded-xl">Nenhuma motivação enviada ainda</p>
-                ) : (
-                  <div className="space-y-2 max-h-80 overflow-y-auto">
-                    {motivationHistory.map((m, i) => (
-                      <div key={i} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                        <span className="text-xl mt-1">💜</span>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-800">{m.users?.nome || 'Cliente'}</p>
-                          <p className="text-sm text-gray-600">{m.descricao}</p>
-                          <p className="text-xs text-gray-400 mt-1">{formatDate(m.created_at)}</p>
+                  {/* Categories Grid */}
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                    {Object.entries(INTERACTION_CATEGORIES).map(([key, cat]) => (
+                      <div key={key} className={`rounded-xl ${cat.bgColor} p-4`}>
+                        <div className="flex items-center gap-3 mb-3">
+                          <span className="text-2xl">{cat.icon}</span>
+                          <h3 className="font-bold text-gray-800">{cat.name}</h3>
+                        </div>
+                        <div className="space-y-2">
+                          {cat.templates.map((t) => (
+                            <button
+                              key={t.id}
+                              onClick={() => {
+                                if (selectedClient) {
+                                  sendInteraction(selectedClient, t);
+                                } else {
+                                  setActiveView('clients');
+                                  alert('Seleciona primeiro um cliente');
+                                }
+                              }}
+                              className="w-full p-3 bg-white/80 hover:bg-white rounded-lg text-left transition-all"
+                            >
+                              <p className="font-medium text-gray-800 text-sm">{t.title}</p>
+                              <p className="text-gray-500 text-xs line-clamp-2">{t.message}</p>
+                            </button>
+                          ))}
                         </div>
                       </div>
                     ))}
                   </div>
-                )}
-              </div>
+
+                  {/* History */}
+                  <h3 className="text-sm font-semibold text-white/60 mb-3">Histórico de Interações</h3>
+                  {interactionHistory.length === 0 ? (
+                    <div className="text-center py-8 bg-white/5 rounded-xl">
+                      <p className="text-white/40">Nenhuma interação registada</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                      {interactionHistory.map((item, i) => (
+                        <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+                          <div className="w-8 h-8 rounded-full bg-purple-500/30 flex items-center justify-center text-purple-300 text-xs font-bold flex-shrink-0">
+                            {item.users?.nome?.[0]?.toUpperCase() || 'C'}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-medium">{item.users?.nome || 'Cliente'}</p>
+                            <p className="text-white/50 text-sm">{item.descricao}</p>
+                            <p className="text-white/30 text-xs mt-1">{formatDate(item.created_at)}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* AUTOMATION */}
+              {activeView === 'automation' && (
+                <div className="p-6">
+                  <h2 className="text-xl font-bold text-white mb-2">Automação</h2>
+                  <p className="text-white/50 mb-6">Configure mensagens automáticas para os seus clientes</p>
+
+                  <div className="space-y-4">
+                    {[
+                      {
+                        icon: '⏰',
+                        title: 'Lembrete de Inatividade',
+                        description: 'Envia mensagem automática após X dias sem atividade',
+                        setting: '3 dias',
+                        enabled: true
+                      },
+                      {
+                        icon: '📅',
+                        title: 'Motivação Semanal',
+                        description: 'Envia mensagem motivacional toda segunda-feira',
+                        setting: 'Segunda-feira',
+                        enabled: true
+                      },
+                      {
+                        icon: '🔥',
+                        title: 'Celebração de Streak',
+                        description: 'Celebra automaticamente streaks de 7+ dias',
+                        setting: '7 dias',
+                        enabled: true
+                      },
+                      {
+                        icon: '👋',
+                        title: 'Boas-vindas Automáticas',
+                        description: 'Envia mensagem de boas-vindas a novos clientes',
+                        setting: 'Imediato',
+                        enabled: false
+                      },
+                    ].map((auto, i) => (
+                      <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
+                        <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                          <span className="text-2xl">{auto.icon}</span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-white font-semibold">{auto.title}</p>
+                          <p className="text-white/50 text-sm">{auto.description}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-purple-300 text-sm font-medium">{auto.setting}</p>
+                          <div className={`mt-1 px-3 py-1 rounded-full text-xs font-medium ${
+                            auto.enabled
+                              ? 'bg-green-500/20 text-green-300 border border-green-500/30'
+                              : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                          }`}>
+                            {auto.enabled ? 'Ativo' : 'Inativo'}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                    <p className="text-purple-200 text-sm">
+                      <span className="font-semibold">Nota:</span> A configuração de automação será disponibilizada em breve. Por agora, as interações são manuais através do painel.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </main>
 
-      {/* Motivation Panel Modal */}
-      {showMotivationPanel && selectedClient && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-800">💜 Enviar Motivação</h3>
-                  <p className="text-purple-600 font-medium">
-                    Para: {selectedClient.users?.nome || selectedClient.nome_completo || selectedClient.nome}
-                  </p>
+      {/* Interaction Panel Modal */}
+      {showInteractionPanel && selectedClient && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-white/10 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+            {/* Header */}
+            <div className="p-6 border-b border-white/10 bg-gradient-to-r from-purple-500/20 to-pink-500/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-xl font-bold">
+                    {selectedClient.users?.nome?.[0]?.toUpperCase() || selectedClient.nome?.[0]?.toUpperCase() || 'C'}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">
+                      {selectedClient.users?.nome || selectedClient.nome_completo || selectedClient.nome || 'Cliente'}
+                    </h3>
+                    <p className="text-purple-300">{selectedClient.users?.email || selectedClient.email}</p>
+                  </div>
                 </div>
                 <button
-                  onClick={() => { setShowMotivationPanel(false); setCustomMessage(''); }}
-                  className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-all"
+                  onClick={() => { setShowInteractionPanel(false); setSelectedCategory(null); setCustomMessage(''); }}
+                  className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/60 hover:text-white transition-all"
                 >
                   ✕
                 </button>
               </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 max-h-[60vh] overflow-y-auto">
+              {/* Category Selector */}
+              <div className="flex flex-wrap gap-2 mb-6">
+                {Object.entries(INTERACTION_CATEGORIES).map(([key, cat]) => (
+                  <button
+                    key={key}
+                    onClick={() => setSelectedCategory(selectedCategory === key ? null : key)}
+                    className={`px-4 py-2 rounded-xl font-medium text-sm transition-all ${
+                      selectedCategory === key
+                        ? `bg-gradient-to-r ${cat.color} text-white`
+                        : 'bg-white/5 text-white/60 hover:text-white border border-white/10'
+                    }`}
+                  >
+                    {cat.icon} {cat.name}
+                  </button>
+                ))}
+              </div>
 
               {/* Templates */}
-              <div className="mb-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Escolhe um template:</p>
-                <div className="space-y-2">
-                  {MOTIVATION_TEMPLATES.map((t) => (
+              {selectedCategory && (
+                <div className="space-y-2 mb-6">
+                  {INTERACTION_CATEGORIES[selectedCategory].templates.map((t) => (
                     <button
                       key={t.id}
-                      onClick={() => sendMotivation(selectedClient, t)}
-                      disabled={sendingMotivation}
-                      className="w-full p-3 bg-purple-50 hover:bg-purple-100 rounded-xl text-left transition-all border border-purple-100 disabled:opacity-50"
+                      onClick={() => sendInteraction(selectedClient, t)}
+                      disabled={sendingMessage}
+                      className={`w-full p-4 rounded-xl text-left transition-all border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 disabled:opacity-50`}
                     >
-                      <div className="flex items-center gap-2 mb-1">
-                        <span>{t.emoji}</span>
-                        <span className="font-semibold text-purple-800">{t.title}</span>
-                      </div>
-                      <p className="text-sm text-gray-600 line-clamp-2">{t.message}</p>
+                      <p className="font-medium text-white">{t.title}</p>
+                      <p className="text-white/50 text-sm mt-1">{t.message}</p>
                     </button>
                   ))}
                 </div>
-              </div>
+              )}
 
               {/* Custom Message */}
-              <div className="mb-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Ou escreve uma mensagem personalizada:</p>
+              <div>
+                <p className="text-sm font-medium text-white/60 mb-2">Ou escreve uma mensagem personalizada:</p>
                 <textarea
                   value={customMessage}
                   onChange={(e) => setCustomMessage(e.target.value)}
                   placeholder="Escreve aqui a tua mensagem..."
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none resize-none"
+                  className="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 resize-none focus:outline-none focus:border-purple-500/50"
                   rows={4}
                 />
                 {customMessage && (
                   <button
-                    onClick={() => sendMotivation(selectedClient, { message: customMessage }, customMessage)}
-                    disabled={sendingMotivation}
-                    className="mt-2 w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium transition-all disabled:opacity-50"
+                    onClick={() => sendInteraction(selectedClient, { message: customMessage }, customMessage)}
+                    disabled={sendingMessage}
+                    className="mt-3 w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all disabled:opacity-50"
                   >
-                    {sendingMotivation ? 'A enviar...' : '📧 Enviar Mensagem Personalizada'}
+                    {sendingMessage ? 'A enviar...' : 'Enviar Mensagem'}
                   </button>
                 )}
               </div>
+            </div>
 
-              {/* Info */}
-              <div className="p-3 bg-blue-50 rounded-xl">
-                <p className="text-sm text-blue-700">
-                  📧 A motivação será enviada por email e guardada no histórico.
-                </p>
-              </div>
+            {/* Footer */}
+            <div className="p-4 border-t border-white/10 bg-white/5">
+              <p className="text-white/40 text-sm text-center">
+                📧 A mensagem será enviada por email
+              </p>
             </div>
           </div>
         </div>

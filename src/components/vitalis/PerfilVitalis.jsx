@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link, useNavigate } from 'react-router-dom';
+import { isCoach } from '../../lib/coach';
 
 // Lista de avatares disponíveis
 const AVATARES = [
@@ -474,6 +475,16 @@ export default function PerfilVitalis() {
           <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Conta</h3>
 
           <div className="space-y-3">
+            {/* Link Coach - só aparece para coaches */}
+            {isCoach(email) && (
+              <Link
+                to="/coach"
+                className="w-full py-3 px-4 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl font-medium transition-all hover:shadow-lg flex items-center justify-center gap-2"
+              >
+                <span>🎯</span> Painel de Coach
+              </Link>
+            )}
+
             <button
               onClick={handleLogout}
               className="w-full py-3 px-4 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
