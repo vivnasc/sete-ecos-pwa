@@ -3,7 +3,59 @@ import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { checkVitalisAccess } from '../../lib/subscriptions';
 import { isCoach } from '../../lib/coach';
-import { validarEmail, validarPassword } from '../../lib/validacao';
+
+// Validação de email
+const validarEmail = (email) => {
+  if (!email || typeof email !== 'string') return { valido: false, erro: 'Email é obrigatório' };
+  const emailTrimmed = email.trim().toLowerCase();
+  if (emailTrimmed.length === 0) return { valido: false, erro: 'Email é obrigatório' };
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(emailTrimmed)) return { valido: false, erro: 'Introduz um email válido' };
+  return { valido: true, valor: emailTrimmed };
+};
+
+// Validação de password robusta
+const validarPassword = (password, isSignup = false) => {
+  if (!password) return { valido: false, erro: 'Password é obrigatória' };
+
+  if (isSignup) {
+    if (password.length < 8) {
+      return { valido: false, erro: 'Mínimo 8 caracteres' };
+    }
+    if (!/[A-Z]/.test(password)) {
+      return { valido: false, erro: 'Falta letra maiúscula' };
+    }
+    if (!/[a-z]/.test(password)) {
+      return { valido: false, erro: 'Falta letra minúscula' };
+    }
+    if (!/[0-9]/.test(password)) {
+      return { valido: false, erro: 'Falta um número' };
+    }
+  } else {
+    if (password.length < 6) {
+      return { valido: false, erro: 'Password muito curta' };
+    }
+  }
+
+  return { valido: true };
+};
+
+// Calcular força da password
+const calcularForcaPassword = (password) => {
+  if (!password) return { forca: 0, texto: '', cor: '', largura: '0%' };
+
+  let pontos = 0;
+  if (password.length >= 8) pontos++;
+  if (password.length >= 12) pontos++;
+  if (/[A-Z]/.test(password)) pontos++;
+  if (/[a-z]/.test(password)) pontos++;
+  if (/[0-9]/.test(password)) pontos++;
+  if (/[^A-Za-z0-9]/.test(password)) pontos++;
+
+  if (pontos <= 2) return { forca: 1, texto: 'Fraca', cor: 'bg-red-500', largura: '33%' };
+  if (pontos <= 4) return { forca: 2, texto: 'Média', cor: 'bg-yellow-500', largura: '66%' };
+  return { forca: 3, texto: 'Forte', cor: 'bg-green-500', largura: '100%' };
+};
 
 export default function VitalisAuth() {
   const navigate = useNavigate();
@@ -13,38 +65,53 @@ export default function VitalisAuth() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [confirmationEmail, setConfirmationEmail] = useState('');
+
+  const forcaPassword = calcularForcaPassword(password);
 
   const handleAuth = async (e) => {
     e.preventDefault();
     setError('');
     setFieldErrors({});
-    setLoading(true);
 
-    // Validação
+    // Validação do email
     const emailResult = validarEmail(email);
-    const passwordResult = validarPassword(password);
-
-    const newFieldErrors = {};
-    if (!emailResult.valido) newFieldErrors.email = emailResult.erro;
-    if (!passwordResult.valido) newFieldErrors.password = passwordResult.erro;
-
-    if (Object.keys(newFieldErrors).length > 0) {
-      setFieldErrors(newFieldErrors);
-      setLoading(false);
+    if (!emailResult.valido) {
+      setFieldErrors(prev => ({ ...prev, email: emailResult.erro }));
       return;
     }
+
+    // Validação da password
+    const passwordResult = validarPassword(password, !isLogin);
+    if (!passwordResult.valido) {
+      setFieldErrors(prev => ({ ...prev, password: passwordResult.erro }));
+      return;
+    }
+
+    setLoading(true);
 
     try {
       if (isLogin) {
         // LOGIN
         const { data, error } = await supabase.auth.signInWithPassword({
-          email,
+          email: emailResult.valor,
           password,
         });
-        if (error) throw error;
 
-        // Emails com bypass têm acesso directo
-        if (isCoach(email)) {
+        if (error) {
+          // Traduzir erros comuns
+          if (error.message.includes('Invalid login credentials')) {
+            throw new Error('Email ou password incorretos');
+          }
+          if (error.message.includes('Email not confirmed')) {
+            throw new Error('Confirma o teu email primeiro. Verifica a caixa de entrada.');
+          }
+          throw error;
+        }
+
+        // Coach tem acesso directo
+        if (isCoach(emailResult.valor)) {
           navigate('/vitalis/dashboard');
           return;
         }
@@ -66,19 +133,29 @@ export default function VitalisAuth() {
         if (access.hasAccess) {
           navigate('/vitalis/dashboard');
         } else {
-          // Sem acesso → página de pagamento
           navigate('/vitalis/pagamento');
         }
 
       } else {
         // SIGNUP
         const { data, error } = await supabase.auth.signUp({
-          email,
+          email: emailResult.valor,
           password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/vitalis/login`,
+          }
         });
-        if (error) throw error;
-        // Novo utilizador → página de pagamento
-        navigate('/vitalis/pagamento');
+
+        if (error) {
+          if (error.message.includes('already registered')) {
+            throw new Error('Este email já está registado. Faz login ou recupera a password.');
+          }
+          throw error;
+        }
+
+        // Mostrar mensagem de confirmação de email
+        setConfirmationEmail(emailResult.valor);
+        setShowConfirmation(true);
       }
     } catch (error) {
       setError(error.message);
@@ -86,6 +163,62 @@ export default function VitalisAuth() {
       setLoading(false);
     }
   };
+
+  // Tela de confirmação de email
+  if (showConfirmation) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] flex items-center justify-center p-4">
+        <div className="max-w-md w-full">
+          <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-[#E8E2D9] text-center">
+            {/* Success Icon */}
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+
+            <h2 className="text-2xl font-bold text-[#4A4035] mb-3" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+              Confirma o teu Email
+            </h2>
+
+            <p className="text-[#6B5C4C] mb-4">
+              Enviámos um email de confirmação para:
+            </p>
+
+            <p className="font-semibold text-[#7C8B6F] text-lg mb-6 break-all">
+              {confirmationEmail}
+            </p>
+
+            <div className="bg-[#F5F2ED] rounded-xl p-4 mb-6 text-left">
+              <p className="text-sm text-[#6B5C4C]">
+                <strong>Próximos passos:</strong>
+              </p>
+              <ol className="text-sm text-[#6B5C4C] mt-2 space-y-1 list-decimal list-inside">
+                <li>Abre o teu email</li>
+                <li>Clica no link de confirmação</li>
+                <li>Volta aqui e faz login</li>
+              </ol>
+            </div>
+
+            <p className="text-xs text-[#6B5C4C]/70 mb-6">
+              Não recebeste? Verifica a pasta de spam ou lixo.
+            </p>
+
+            <button
+              onClick={() => {
+                setShowConfirmation(false);
+                setIsLogin(true);
+                setPassword('');
+              }}
+              className="w-full bg-[#7C8B6F] hover:bg-[#6B7A5D] text-white font-bold py-4 rounded-xl transition-all shadow-lg"
+            >
+              Ir para Login
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] flex items-center justify-center p-4">
@@ -119,7 +252,7 @@ export default function VitalisAuth() {
           {/* Tabs */}
           <div className="flex gap-2 mb-6 bg-[#F5F2ED] p-1.5 rounded-2xl">
             <button
-              onClick={() => setIsLogin(true)}
+              onClick={() => { setIsLogin(true); setFieldErrors({}); setError(''); }}
               className={`flex-1 py-3.5 rounded-xl font-semibold transition-all ${
                 isLogin
                   ? 'bg-[#7C8B6F] text-white shadow-lg'
@@ -129,7 +262,7 @@ export default function VitalisAuth() {
               Entrar
             </button>
             <button
-              onClick={() => setIsLogin(false)}
+              onClick={() => { setIsLogin(false); setFieldErrors({}); setError(''); }}
               className={`flex-1 py-3.5 rounded-xl font-semibold transition-all ${
                 !isLogin
                   ? 'bg-[#7C8B6F] text-white shadow-lg'
@@ -149,20 +282,18 @@ export default function VitalisAuth() {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: null }));
-                }}
+                onChange={(e) => { setEmail(e.target.value); setFieldErrors(prev => ({ ...prev, email: '' })); }}
                 placeholder="exemplo@email.com"
-                required
                 className={`w-full px-4 py-3.5 border-2 rounded-xl focus:ring-2 outline-none transition-all bg-white ${
                   fieldErrors.email
-                    ? 'border-red-300 focus:border-red-400 focus:ring-red-200'
+                    ? 'border-red-400 focus:border-red-500 focus:ring-red-200'
                     : 'border-[#E8E2D9] focus:border-[#7C8B6F] focus:ring-[#7C8B6F]/20'
                 }`}
               />
               {fieldErrors.email && (
-                <p className="text-red-500 text-xs mt-1">{fieldErrors.email}</p>
+                <p className="text-red-600 text-xs mt-1 flex items-center gap-1">
+                  <span>⚠</span> {fieldErrors.email}
+                </p>
               )}
             </div>
 
@@ -173,21 +304,53 @@ export default function VitalisAuth() {
               <input
                 type="password"
                 value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (fieldErrors.password) setFieldErrors(prev => ({ ...prev, password: null }));
-                }}
-                placeholder="Mínimo 6 caracteres"
-                required
-                minLength={6}
+                onChange={(e) => { setPassword(e.target.value); setFieldErrors(prev => ({ ...prev, password: '' })); }}
+                placeholder={isLogin ? "A tua password" : "Mín. 8 caracteres, maiúscula, minúscula, número"}
                 className={`w-full px-4 py-3.5 border-2 rounded-xl focus:ring-2 outline-none transition-all bg-white ${
                   fieldErrors.password
-                    ? 'border-red-300 focus:border-red-400 focus:ring-red-200'
+                    ? 'border-red-400 focus:border-red-500 focus:ring-red-200'
                     : 'border-[#E8E2D9] focus:border-[#7C8B6F] focus:ring-[#7C8B6F]/20'
                 }`}
               />
               {fieldErrors.password && (
-                <p className="text-red-500 text-xs mt-1">{fieldErrors.password}</p>
+                <p className="text-red-600 text-xs mt-1 flex items-center gap-1">
+                  <span>⚠</span> {fieldErrors.password}
+                </p>
+              )}
+
+              {/* Indicador de força da password (só no signup) */}
+              {!isLogin && password.length > 0 && (
+                <div className="mt-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-[#6B5C4C]">Força da password:</span>
+                    <span className={`text-xs font-semibold ${
+                      forcaPassword.forca === 1 ? 'text-red-600' :
+                      forcaPassword.forca === 2 ? 'text-yellow-600' : 'text-green-600'
+                    }`}>
+                      {forcaPassword.texto}
+                    </span>
+                  </div>
+                  <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full ${forcaPassword.cor} transition-all duration-300`}
+                      style={{ width: forcaPassword.largura }}
+                    />
+                  </div>
+                  <div className="mt-2 text-xs text-[#6B5C4C]/80 space-y-0.5">
+                    <p className={password.length >= 8 ? 'text-green-600' : ''}>
+                      {password.length >= 8 ? '✓' : '○'} Mínimo 8 caracteres
+                    </p>
+                    <p className={/[A-Z]/.test(password) ? 'text-green-600' : ''}>
+                      {/[A-Z]/.test(password) ? '✓' : '○'} Uma letra maiúscula
+                    </p>
+                    <p className={/[a-z]/.test(password) ? 'text-green-600' : ''}>
+                      {/[a-z]/.test(password) ? '✓' : '○'} Uma letra minúscula
+                    </p>
+                    <p className={/[0-9]/.test(password) ? 'text-green-600' : ''}>
+                      {/[0-9]/.test(password) ? '✓' : '○'} Um número
+                    </p>
+                  </div>
+                </div>
               )}
             </div>
 
