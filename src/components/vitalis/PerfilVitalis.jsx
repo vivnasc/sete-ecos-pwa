@@ -147,31 +147,78 @@ export default function PerfilVitalis() {
         return;
       }
 
-      const updateData = {
-        nome_completo: nomeCompleto.trim(),
-        telefone: telefone.trim(),
-        data_nascimento: dataNascimento || null,
-        genero: genero || null,
-        avatar: avatarSelecionado || null,
-        altura: altura ? parseFloat(altura) : null,
-        peso_actual: pesoAtual ? parseFloat(pesoAtual) : null,
-        peso_meta: pesoMeta ? parseFloat(pesoMeta) : null,
-        updated_at: new Date().toISOString()
-      };
+      // 1. Atualizar nome na tabela users (sempre)
+      const { error: userError } = await supabase
+        .from('users')
+        .update({
+          nome: nomeCompleto.trim(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId);
 
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .update(updateData)
-        .eq('id', client.id);
+      if (userError) {
+        console.error('Erro ao atualizar users:', userError);
+      }
 
-      if (error) throw error;
+      // 2. Atualizar vitalis_clients se existir
+      if (client?.id) {
+        const updateData = {
+          nome_completo: nomeCompleto.trim(),
+          telefone: telefone.trim(),
+          data_nascimento: dataNascimento || null,
+          genero: genero || null,
+          avatar: avatarSelecionado || null,
+          altura: altura ? parseFloat(altura) : null,
+          peso_actual: pesoAtual ? parseFloat(pesoAtual) : null,
+          peso_meta: pesoMeta ? parseFloat(pesoMeta) : null,
+          updated_at: new Date().toISOString()
+        };
+
+        const { error: clientError } = await supabase
+          .from('vitalis_clients')
+          .update(updateData)
+          .eq('id', client.id);
+
+        if (clientError) {
+          console.error('Erro ao atualizar vitalis_clients:', clientError);
+          throw clientError;
+        }
+      } else {
+        // Se não tem vitalis_clients, criar um registo básico
+        const { error: insertError } = await supabase
+          .from('vitalis_clients')
+          .insert({
+            user_id: userId,
+            nome_completo: nomeCompleto.trim(),
+            telefone: telefone.trim(),
+            data_nascimento: dataNascimento || null,
+            genero: genero || null,
+            avatar: avatarSelecionado || null,
+            altura: altura ? parseFloat(altura) : null,
+            peso_actual: pesoAtual ? parseFloat(pesoAtual) : null,
+            peso_meta: pesoMeta ? parseFloat(pesoMeta) : null
+          });
+
+        if (insertError) {
+          console.error('Erro ao criar vitalis_clients:', insertError);
+          // Não falhar se não conseguir criar - o nome já foi guardado em users
+        }
+      }
+
+      // Atualizar também o avatar no localStorage para refletir imediatamente
+      if (avatarSelecionado) {
+        const avatarEmoji = AVATARES.find(a => a.id === avatarSelecionado)?.emoji;
+        if (avatarEmoji) {
+          localStorage.setItem('vitalis-avatar', avatarEmoji);
+        }
+      }
 
       setMensagemSucesso('Perfil atualizado com sucesso!');
       setTimeout(() => setMensagemSucesso(''), 3000);
 
     } catch (error) {
       console.error('Erro ao guardar perfil:', error);
-      setErro('Erro ao guardar alterações');
+      setErro('Erro ao guardar alterações. Tenta novamente.');
     } finally {
       setSaving(false);
     }
