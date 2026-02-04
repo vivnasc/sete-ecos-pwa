@@ -19,9 +19,9 @@ const LandingAurea = () => {
   }, []);
 
   const planos = {
-    mensal: { id: 'monthly', nome: 'Mensal', meses: 1, preco: 3500, precoUSD: 54, desconto: 0, comparativo: 'Menos que 2 tratamentos de beleza' },
-    semestral: { id: 'semestral', nome: 'Semestral', meses: 6, preco: 17500, precoUSD: 270, desconto: 17, comparativo: '1 mês grátis incluído' },
-    anual: { id: 'annual', nome: 'Anual', meses: 12, preco: 29400, precoUSD: 450, desconto: 30, comparativo: '3+ meses grátis incluídos' }
+    mensal: { id: 'monthly', nome: 'Mensal', meses: 1, preco: 975, precoUSD: 15, desconto: 0 },
+    semestral: { id: 'semestral', nome: 'Semestral', meses: 6, preco: 5265, precoUSD: 81, desconto: 10 },
+    anual: { id: 'annual', nome: 'Anual', meses: 12, preco: 9945, precoUSD: 153, desconto: 15 }
   };
 
   // Pilares agrupados - actualizado com novas features
@@ -426,20 +426,12 @@ const LandingAurea = () => {
             </p>
           </div>
 
-          {/* Contexto de preço */}
-          <div className="text-center mb-8 p-4 bg-white/5 rounded-xl border border-amber-500/20 max-w-2xl mx-auto">
-            <p className="text-amber-200/70 text-sm">
-              <span className="text-amber-300">Para contexto:</span> Um café custa ~100 MT, uma limpeza facial ~3.000 MT.
-              <br />ÁUREA é um investimento diário em ti mesma.
-            </p>
-          </div>
-
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {Object.values(planos).map((plano, i) => (
               <div
                 key={plano.id}
                 className={`p-6 rounded-2xl border ${i === 1
-                  ? 'bg-gradient-to-br from-amber-500/20 to-amber-600/20 border-amber-400 scale-105'
+                  ? 'bg-gradient-to-br from-amber-500/20 to-amber-600/20 border-amber-400'
                   : 'bg-white/5 border-amber-500/20'
                   }`}
               >
@@ -455,14 +447,9 @@ const LandingAurea = () => {
                   <span className="text-3xl font-bold text-amber-200">{plano.preco.toLocaleString()}</span>
                   <span className="text-amber-200/70"> MZN</span>
                   {plano.desconto > 0 && (
-                    <div className="text-amber-400 text-sm font-medium">-{plano.desconto}% desconto</div>
+                    <div className="text-amber-400 text-sm">-{plano.desconto}% desconto</div>
                   )}
                   <div className="text-amber-200/50 text-sm">(${plano.precoUSD} USD)</div>
-                  {plano.comparativo && (
-                    <div className="mt-2 px-3 py-1 bg-amber-500/10 rounded-full inline-block">
-                      <span className="text-amber-300 text-xs">{plano.comparativo}</span>
-                    </div>
-                  )}
                 </div>
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center gap-2 text-amber-200/80 text-sm">
@@ -484,11 +471,11 @@ const LandingAurea = () => {
                 <button
                   onClick={handleComecar}
                   className={`w-full py-3 rounded-xl font-semibold transition-all ${i === 1
-                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 shadow-lg shadow-amber-500/30'
+                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700'
                     : 'bg-white/10 text-amber-200 hover:bg-white/20 border border-amber-500/30'
                     }`}
                 >
-                  {i === 0 ? 'Começar 7 dias grátis' : i === 1 ? 'Escolher Semestral' : 'Escolher Anual'}
+                  {i === 0 ? 'Experimentar grátis' : i === 1 ? 'Escolher este plano' : 'Subscrever anual'}
                 </button>
               </div>
             ))}
