@@ -729,10 +729,10 @@ const CoachDashboard = () => {
   // ============================================================
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-white flex items-center justify-center">
         <div className="text-center">
-          <div className="w-20 h-20 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-purple-300 text-lg">A carregar o teu centro de comando...</p>
+          <div className="w-20 h-20 border-4 border-[#7C8B6F] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600 text-lg">A carregar o teu centro de comando...</p>
         </div>
       </div>
     );
@@ -742,19 +742,19 @@ const CoachDashboard = () => {
   // RENDER - MAIN DASHBOARD
   // ============================================================
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-white">
       {/* Header Premium */}
-      <header className="bg-black/30 backdrop-blur-xl border-b border-purple-500/20 px-6 py-4 sticky top-0 z-50">
+      <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/30">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#7C8B6F] to-[#9CAF88] flex items-center justify-center text-2xl shadow-lg">
               🎯
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">
+              <h1 className="text-2xl font-bold text-slate-800">
                 Super Coach Dashboard
               </h1>
-              <p className="text-sm text-purple-300">Sete Ecos • Centro de Comando</p>
+              <p className="text-sm text-slate-500">Sete Ecos • Centro de Comando</p>
             </div>
           </div>
 
@@ -762,11 +762,11 @@ const CoachDashboard = () => {
             {/* Notificações */}
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className="relative p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-all"
+              className="relative p-3 rounded-xl bg-slate-100 hover:bg-slate-200 transition-all"
             >
               <span className="text-xl">🔔</span>
               {coachNotifications.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-slate-800 text-xs rounded-full flex items-center justify-center animate-pulse">
                   {coachNotifications.length}
                 </span>
               )}
@@ -777,7 +777,7 @@ const CoachDashboard = () => {
               href={WHATSAPP_COMMUNITY_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-all border border-green-500/30"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-50 hover:bg-green-100 text-green-700 transition-all border border-green-200"
             >
               <span className="text-xl">💬</span>
               <span className="hidden md:inline font-medium">Comunidade</span>
@@ -786,7 +786,7 @@ const CoachDashboard = () => {
             {/* Refresh */}
             <button
               onClick={loadAllData}
-              className="p-3 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 transition-all"
+              className="p-3 rounded-xl bg-[#7C8B6F]/10 hover:bg-[#7C8B6F]/20 text-[#7C8B6F] transition-all"
             >
               🔄
             </button>
@@ -795,22 +795,22 @@ const CoachDashboard = () => {
 
         {/* Dropdown Notificações */}
         {showNotifications && coachNotifications.length > 0 && (
-          <div className="absolute right-6 top-20 w-80 bg-slate-800/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-500/20 overflow-hidden z-50">
-            <div className="p-4 border-b border-purple-500/20">
-              <h3 className="font-bold text-white">Notificações</h3>
+          <div className="absolute right-6 top-20 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50">
+            <div className="p-4 border-b border-slate-200">
+              <h3 className="font-bold text-slate-800">Notificações</h3>
             </div>
             <div className="max-h-80 overflow-y-auto">
               {coachNotifications.map((notif, i) => (
                 <button
                   key={i}
                   onClick={() => { notif.action?.(); setShowNotifications(false); }}
-                  className="w-full p-4 hover:bg-white/5 transition-all text-left border-b border-purple-500/10 last:border-0"
+                  className="w-full p-4 hover:bg-slate-50 transition-all text-left border-b border-slate-100 last:border-0"
                 >
                   <div className="flex items-start gap-3">
                     <span className={`text-xl ${notif.priority === 'high' ? 'animate-pulse' : ''}`}>{notif.icon}</span>
                     <div>
-                      <p className="font-medium text-white">{notif.title}</p>
-                      <p className="text-sm text-purple-300">{notif.text}</p>
+                      <p className="font-medium text-slate-800">{notif.title}</p>
+                      <p className="text-sm text-slate-500">{notif.text}</p>
                     </div>
                   </div>
                 </button>
@@ -849,14 +849,14 @@ const CoachDashboard = () => {
               onClick={() => { setActiveTab(tab.id); setSelectedUser(null); }}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium whitespace-nowrap transition-all ${
                 activeTab === tab.id
-                  ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/30'
-                  : 'bg-white/10 text-purple-300 hover:bg-white/20'
+                  ? 'bg-[#7C8B6F] text-white shadow-lg'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
               {tab.label}
               {tab.count > 0 && (
                 <span className={`px-2 py-0.5 text-xs rounded-full ${
-                  activeTab === tab.id ? 'bg-white/20' : 'bg-purple-500/30'
+                  activeTab === tab.id ? 'bg-white/20' : 'bg-[#7C8B6F]/30'
                 }`}>
                   {tab.count}
                 </span>
@@ -866,34 +866,34 @@ const CoachDashboard = () => {
         </div>
 
         {/* Content Area */}
-        <div className="bg-black/30 backdrop-blur-xl rounded-3xl border border-purple-500/20 overflow-hidden">
+        <div className="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
 
           {/* TAB: CENTRO DE COMANDO */}
           {activeTab === 'command' && (
             <div className="p-6">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Feed de Atividade */}
-                <div className="lg:col-span-2 bg-white/5 rounded-2xl p-5">
+                <div className="lg:col-span-2 bg-slate-50 rounded-2xl p-5">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
                       <span className="text-2xl">⚡</span> Atividade em Tempo Real
                     </h3>
-                    <span className="text-xs text-purple-400 bg-purple-500/20 px-3 py-1 rounded-full">
-                      Ultimas 24h
+                    <span className="text-xs text-slate-600 bg-slate-200 px-3 py-1 rounded-full">
+                      Últimas 24h
                     </span>
                   </div>
 
                   <div className="space-y-2 max-h-96 overflow-y-auto">
                     {activityFeed.length === 0 ? (
-                      <p className="text-center text-purple-400 py-8">Sem atividade recente</p>
+                      <p className="text-center text-slate-500 py-8">Sem atividade recente</p>
                     ) : (
                       activityFeed.map((item, i) => (
-                        <div key={i} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-all">
+                        <div key={i} className="flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-slate-100 transition-all border border-slate-200">
                           <span className="text-xl">{item.icon}</span>
                           <div className="flex-1 min-w-0">
-                            <p className="text-white text-sm truncate">{item.text}</p>
+                            <p className="text-slate-800 text-sm truncate">{item.text}</p>
                           </div>
-                          <span className="text-xs text-purple-400 whitespace-nowrap">{formatTimeAgo(item.time)}</span>
+                          <span className="text-xs text-slate-500 whitespace-nowrap">{formatTimeAgo(item.time)}</span>
                         </div>
                       ))
                     )}
@@ -901,48 +901,48 @@ const CoachDashboard = () => {
                 </div>
 
                 {/* Quick Actions */}
-                <div className="bg-white/5 rounded-2xl p-5">
-                  <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                    <span className="text-2xl">🚀</span> Acoes Rapidas
+                <div className="bg-slate-50 rounded-2xl p-5">
+                  <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span className="text-2xl">🚀</span> Ações Rápidas
                   </h3>
 
                   <div className="space-y-3">
                     <button
                       onClick={() => setActiveTab('attention')}
-                      className="w-full p-4 bg-red-500/20 hover:bg-red-500/30 rounded-xl text-left transition-all border border-red-500/20 group"
+                      className="w-full p-4 bg-red-50 hover:bg-red-100 rounded-xl text-left transition-all border border-red-200 group"
                     >
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-white">⚠️ Clientes que precisam de ti</p>
-                          <p className="text-sm text-red-300">{clientsNeedAttention.length} clientes</p>
+                          <p className="font-medium text-slate-800">⚠️ Clientes que precisam de ti</p>
+                          <p className="text-sm text-red-600">{clientsNeedAttention.length} clientes</p>
                         </div>
-                        <span className="text-red-400 group-hover:translate-x-1 transition-transform">→</span>
+                        <span className="text-red-500 group-hover:translate-x-1 transition-transform">→</span>
                       </div>
                     </button>
 
                     <button
                       onClick={() => setActiveTab('waitlist')}
-                      className="w-full p-4 bg-orange-500/20 hover:bg-orange-500/30 rounded-xl text-left transition-all border border-orange-500/20 group"
+                      className="w-full p-4 bg-orange-50 hover:bg-orange-100 rounded-xl text-left transition-all border border-orange-200 group"
                     >
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-white">📋 Ver Waitlist</p>
-                          <p className="text-sm text-orange-300">{waitlist.length} interessados</p>
+                          <p className="font-medium text-slate-800">📋 Ver Waitlist</p>
+                          <p className="text-sm text-orange-600">{waitlist.length} interessados</p>
                         </div>
-                        <span className="text-orange-400 group-hover:translate-x-1 transition-transform">→</span>
+                        <span className="text-orange-500 group-hover:translate-x-1 transition-transform">→</span>
                       </div>
                     </button>
 
                     <button
                       onClick={() => setShowMotivationModal(true)}
-                      className="w-full p-4 bg-purple-500/20 hover:bg-purple-500/30 rounded-xl text-left transition-all border border-purple-500/20 group"
+                      className="w-full p-4 bg-[#7C8B6F]/10 hover:bg-[#7C8B6F]/20 rounded-xl text-left transition-all border border-[#7C8B6F]/30 group"
                     >
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-white">💜 Enviar Motivacao</p>
-                          <p className="text-sm text-purple-300">Mensagem automatica</p>
+                          <p className="font-medium text-slate-800">💜 Enviar Motivação</p>
+                          <p className="text-sm text-[#7C8B6F]">Mensagem automática</p>
                         </div>
-                        <span className="text-purple-400 group-hover:translate-x-1 transition-transform">→</span>
+                        <span className="text-[#7C8B6F] group-hover:translate-x-1 transition-transform">→</span>
                       </div>
                     </button>
 
@@ -950,28 +950,28 @@ const CoachDashboard = () => {
                       href={WHATSAPP_COMMUNITY_LINK}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block w-full p-4 bg-green-500/20 hover:bg-green-500/30 rounded-xl text-left transition-all border border-green-500/20 group"
+                      className="block w-full p-4 bg-green-50 hover:bg-green-100 rounded-xl text-left transition-all border border-green-200 group"
                     >
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-white">💬 Abrir Comunidade</p>
-                          <p className="text-sm text-green-300">WhatsApp grupo</p>
+                          <p className="font-medium text-slate-800">💬 Abrir Comunidade</p>
+                          <p className="text-sm text-green-600">WhatsApp grupo</p>
                         </div>
-                        <span className="text-green-400 group-hover:translate-x-1 transition-transform">→</span>
+                        <span className="text-green-500 group-hover:translate-x-1 transition-transform">→</span>
                       </div>
                     </a>
                   </div>
 
                   {/* Mini Stats */}
-                  <div className="mt-6 pt-4 border-t border-purple-500/20">
+                  <div className="mt-6 pt-4 border-t border-slate-200">
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-white/5 rounded-xl p-3 text-center">
-                        <p className="text-2xl font-bold text-emerald-400">{stats.activeToday}</p>
-                        <p className="text-xs text-purple-300">Ativos hoje</p>
+                      <div className="bg-white rounded-xl p-3 text-center border border-slate-200">
+                        <p className="text-2xl font-bold text-emerald-600">{stats.activeToday}</p>
+                        <p className="text-xs text-slate-500">Ativos hoje</p>
                       </div>
-                      <div className="bg-white/5 rounded-xl p-3 text-center">
-                        <p className="text-2xl font-bold text-purple-400">{users.filter(u => u.temVitalis).length}</p>
-                        <p className="text-xs text-purple-300">Total Vitalis</p>
+                      <div className="bg-white rounded-xl p-3 text-center border border-slate-200">
+                        <p className="text-2xl font-bold text-[#7C8B6F]">{users.filter(u => u.temVitalis).length}</p>
+                        <p className="text-xs text-slate-500">Total Vitalis</p>
                       </div>
                     </div>
                   </div>
@@ -983,14 +983,14 @@ const CoachDashboard = () => {
           {/* TAB: CLIENTES QUE PRECISAM DE ATENCAO */}
           {activeTab === 'attention' && (
             <div className="p-6">
-              <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <span className="text-2xl">⚠️</span> Clientes que Precisam de Atencao
+              <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                <span className="text-2xl">⚠️</span> Clientes que Precisam de Atenção
               </h2>
 
               {clientsNeedAttention.length === 0 ? (
                 <div className="text-center py-12">
                   <span className="text-6xl mb-4 block">🎉</span>
-                  <p className="text-purple-300 text-lg">Todos os clientes estao bem!</p>
+                  <p className="text-slate-500 text-lg">Todos os clientes estão bem!</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -999,22 +999,22 @@ const CoachDashboard = () => {
                       key={i}
                       className={`p-4 rounded-xl border transition-all ${
                         client.priority === 'high'
-                          ? 'bg-red-500/10 border-red-500/30'
-                          : 'bg-yellow-500/10 border-yellow-500/30'
+                          ? 'bg-red-50 border-red-200'
+                          : 'bg-yellow-50 border-yellow-200'
                       }`}
                     >
                       <div className="flex items-start justify-between">
                         <div>
-                          <p className="font-bold text-white text-lg">{client.nome}</p>
-                          <p className="text-sm text-purple-300">{client.email}</p>
+                          <p className="font-bold text-slate-800 text-lg">{client.nome}</p>
+                          <p className="text-sm text-slate-500">{client.email}</p>
                           <div className="flex flex-wrap gap-2 mt-2">
                             {client.reasons.map((reason, j) => (
                               <span
                                 key={j}
                                 className={`text-xs px-2 py-1 rounded-full ${
                                   reason.priority === 'high'
-                                    ? 'bg-red-500/30 text-red-300'
-                                    : 'bg-yellow-500/30 text-yellow-300'
+                                    ? 'bg-red-100 text-red-700'
+                                    : 'bg-yellow-100 text-yellow-700'
                                 }`}
                               >
                                 {reason.text}
@@ -1022,13 +1022,13 @@ const CoachDashboard = () => {
                             ))}
                           </div>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-wrap">
                           <button
                             onClick={async () => {
                               await sendMotivation(client.user_id, 'comeback');
-                              alert('✅ Mensagem de motivação enviada!');
+                              alert(`✅ Mensagem de motivação enviada para ${client.nome}!`);
                             }}
-                            className="px-3 py-2 bg-purple-500/30 hover:bg-purple-500/50 text-purple-300 rounded-lg text-sm transition-all"
+                            className="px-4 py-2 bg-[#7C8B6F] hover:bg-[#6B7A5D] text-white rounded-lg text-sm transition-all font-medium"
                           >
                             💜 Motivar
                           </button>
@@ -1037,18 +1037,18 @@ const CoachDashboard = () => {
                               setActiveTab('users');
                               loadUserDetails(client.user_id);
                             }}
-                            className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm transition-all"
+                            className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm transition-all font-medium"
                           >
-                            Ver →
+                            👁️ Ver {client.nome?.split(' ')[0]}
                           </button>
-                          {client.users?.email && (
+                          {client.email && (
                             <a
-                              href={`https://wa.me/?text=Olá ${client.nome}! Como estás? Senti a tua falta no Vitalis 🌱`}
+                              href={`https://api.whatsapp.com/send?text=Olá ${client.nome}! Como estás? Senti a tua falta no Vitalis 🌱`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="px-3 py-2 bg-green-500/30 hover:bg-green-500/50 text-green-300 rounded-lg text-sm transition-all"
+                              className="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm transition-all font-medium"
                             >
-                              💬
+                              💬 WhatsApp
                             </a>
                           )}
                         </div>
@@ -1063,36 +1063,36 @@ const CoachDashboard = () => {
           {/* TAB: SUBSCRICOES */}
           {activeTab === 'subscriptions' && (
             <div className="p-6">
-              <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+              <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
                 💰 Gestao de Subscricoes
               </h2>
 
-              {/* Stats de Subscricao */}
+              {/* Stats de Subscrição */}
               {subscriptionStats && (
                 <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
-                  <div className="bg-emerald-500/20 rounded-xl p-4 text-center border border-emerald-500/30">
-                    <p className="text-2xl font-bold text-emerald-400">{subscriptionStats.testers}</p>
-                    <p className="text-xs text-purple-300">Testers</p>
+                  <div className="bg-emerald-50 rounded-xl p-4 text-center border border-emerald-200">
+                    <p className="text-2xl font-bold text-emerald-600">{subscriptionStats.testers}</p>
+                    <p className="text-xs text-slate-500">Testers</p>
                   </div>
-                  <div className="bg-blue-500/20 rounded-xl p-4 text-center border border-blue-500/30">
-                    <p className="text-2xl font-bold text-blue-400">{subscriptionStats.trial}</p>
-                    <p className="text-xs text-purple-300">Trial</p>
+                  <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-200">
+                    <p className="text-2xl font-bold text-blue-600">{subscriptionStats.trial}</p>
+                    <p className="text-xs text-slate-500">Trial</p>
                   </div>
-                  <div className="bg-green-500/20 rounded-xl p-4 text-center border border-green-500/30">
-                    <p className="text-2xl font-bold text-green-400">{subscriptionStats.active}</p>
-                    <p className="text-xs text-purple-300">Ativos</p>
+                  <div className="bg-green-50 rounded-xl p-4 text-center border border-green-200">
+                    <p className="text-2xl font-bold text-green-600">{subscriptionStats.active}</p>
+                    <p className="text-xs text-slate-500">Ativos</p>
                   </div>
-                  <div className="bg-yellow-500/20 rounded-xl p-4 text-center border border-yellow-500/30">
-                    <p className="text-2xl font-bold text-yellow-400">{subscriptionStats.pending}</p>
-                    <p className="text-xs text-purple-300">Pendentes</p>
+                  <div className="bg-yellow-50 rounded-xl p-4 text-center border border-yellow-200">
+                    <p className="text-2xl font-bold text-yellow-600">{subscriptionStats.pending}</p>
+                    <p className="text-xs text-slate-500">Pendentes</p>
                   </div>
-                  <div className="bg-red-500/20 rounded-xl p-4 text-center border border-red-500/30">
+                  <div className="bg-red-50 rounded-xl p-4 text-center border border-red-200">
                     <p className="text-2xl font-bold text-red-400">{subscriptionStats.expired}</p>
-                    <p className="text-xs text-purple-300">Expirados</p>
+                    <p className="text-xs text-slate-500">Expirados</p>
                   </div>
-                  <div className="bg-gray-500/20 rounded-xl p-4 text-center border border-gray-500/30">
+                  <div className="bg-gray-100 rounded-xl p-4 text-center border border-gray-200">
                     <p className="text-2xl font-bold text-gray-400">{subscriptionStats.none}</p>
-                    <p className="text-xs text-purple-300">Sem Sub</p>
+                    <p className="text-xs text-slate-500">Sem Sub</p>
                   </div>
                 </div>
               )}
@@ -1100,15 +1100,15 @@ const CoachDashboard = () => {
               {/* Pagamentos Pendentes */}
               {pendingPayments.length > 0 && (
                 <div className="mb-6 bg-yellow-500/10 rounded-2xl p-5 border border-yellow-500/30">
-                  <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
                     ⏳ Pagamentos Pendentes ({pendingPayments.length})
                   </h3>
                   <div className="space-y-3">
                     {pendingPayments.map(client => (
-                      <div key={client.user_id} className="p-4 bg-white/5 rounded-xl flex items-center justify-between">
+                      <div key={client.user_id} className="p-4 bg-slate-50 rounded-xl flex items-center justify-between">
                         <div>
-                          <p className="font-bold text-white">{client.users?.nome}</p>
-                          <p className="text-sm text-purple-300">{client.users?.email}</p>
+                          <p className="font-bold text-slate-800">{client.users?.nome}</p>
+                          <p className="text-sm text-slate-500">{client.users?.email}</p>
                           <p className="text-xs text-yellow-400 mt-1">
                             {client.payment_method === 'paypal' ? '💳 PayPal' :
                              client.payment_method === 'mpesa' ? '📱 M-Pesa' :
@@ -1119,7 +1119,7 @@ const CoachDashboard = () => {
                         </div>
                         <button
                           onClick={() => setShowConfirmPaymentModal(client)}
-                          className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl font-medium transition-all"
+                          className="px-4 py-2 bg-green-500 hover:bg-green-600 text-slate-800 rounded-xl font-medium transition-all"
                         >
                           ✓ Confirmar
                         </button>
@@ -1130,28 +1130,28 @@ const CoachDashboard = () => {
               )}
 
               {/* Lista de Clientes Vitalis */}
-              <div className="bg-white/5 rounded-2xl p-5">
-                <h3 className="text-lg font-bold text-white mb-4">
+              <div className="bg-slate-50 rounded-2xl p-5">
+                <h3 className="text-lg font-bold text-slate-800 mb-4">
                   🌱 Clientes Vitalis ({vitalisClients.length})
                 </h3>
 
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-purple-500/20">
-                        <th className="text-left py-3 px-3 text-sm font-medium text-purple-300">Nome</th>
-                        <th className="text-center py-3 px-3 text-sm font-medium text-purple-300">Status</th>
-                        <th className="text-center py-3 px-3 text-sm font-medium text-purple-300">Metodo</th>
-                        <th className="text-center py-3 px-3 text-sm font-medium text-purple-300">Expira</th>
-                        <th className="text-right py-3 px-3 text-sm font-medium text-purple-300">Acoes</th>
+                      <tr className="border-b border-slate-200">
+                        <th className="text-left py-3 px-3 text-sm font-medium text-slate-500">Nome</th>
+                        <th className="text-center py-3 px-3 text-sm font-medium text-slate-500">Status</th>
+                        <th className="text-center py-3 px-3 text-sm font-medium text-slate-500">Metodo</th>
+                        <th className="text-center py-3 px-3 text-sm font-medium text-slate-500">Expira</th>
+                        <th className="text-right py-3 px-3 text-sm font-medium text-slate-500">Acoes</th>
                       </tr>
                     </thead>
                     <tbody>
                       {vitalisClients.map(client => (
-                        <tr key={client.user_id} className="border-b border-purple-500/10 hover:bg-white/5 transition-all">
+                        <tr key={client.user_id} className="border-b border-slate-100 hover:bg-slate-50 transition-all">
                           <td className="py-3 px-3">
-                            <p className="font-medium text-white">{client.users?.nome}</p>
-                            <p className="text-xs text-purple-400">{client.users?.email}</p>
+                            <p className="font-medium text-slate-800">{client.users?.nome}</p>
+                            <p className="text-xs text-slate-600">{client.users?.email}</p>
                           </td>
                           <td className="py-3 px-3 text-center">
                             <span className={`text-xs px-3 py-1 rounded-full ${
@@ -1165,10 +1165,10 @@ const CoachDashboard = () => {
                               {client.subscription_status || 'sem status'}
                             </span>
                           </td>
-                          <td className="py-3 px-3 text-center text-sm text-purple-300">
+                          <td className="py-3 px-3 text-center text-sm text-slate-500">
                             {client.payment_method || '-'}
                           </td>
-                          <td className="py-3 px-3 text-center text-sm text-purple-300">
+                          <td className="py-3 px-3 text-center text-sm text-slate-500">
                             {client.subscription_expires ? formatDateShort(client.subscription_expires) : '-'}
                           </td>
                           <td className="py-3 px-3 text-right">
@@ -1215,17 +1215,17 @@ const CoachDashboard = () => {
               </div>
 
               {/* Info Box */}
-              <div className="mt-6 p-4 bg-purple-500/10 rounded-xl border border-purple-500/20">
-                <h4 className="font-medium text-white mb-2">ℹ️ Sobre os Status</h4>
-                <ul className="text-sm text-purple-300 space-y-1">
+              <div className="mt-6 p-4 bg-purple-500/10 rounded-xl border border-slate-200">
+                <h4 className="font-medium text-slate-800 mb-2">ℹ️ Sobre os Status</h4>
+                <ul className="text-sm text-slate-500 space-y-1">
                   <li>• <span className="text-emerald-400">Tester</span>: Acesso gratuito permanente (para testers)</li>
                   <li>• <span className="text-green-400">Active</span>: Pagamento confirmado</li>
                   <li>• <span className="text-yellow-400">Pending</span>: Aguarda confirmação de pagamento</li>
                   <li>• <span className="text-red-400">Expired</span>: Subscrição expirou</li>
                 </ul>
-                <div className="mt-3 pt-3 border-t border-purple-500/20">
-                  <p className="text-purple-300 text-sm mb-2"><strong>Planos:</strong></p>
-                  <ul className="text-xs text-purple-400 space-y-1">
+                <div className="mt-3 pt-3 border-t border-slate-200">
+                  <p className="text-slate-500 text-sm mb-2"><strong>Planos:</strong></p>
+                  <ul className="text-xs text-slate-600 space-y-1">
                     <li>• Mensal: {SUBSCRIPTION_PLANS.MONTHLY.price_mzn.toLocaleString()} MZN / ${SUBSCRIPTION_PLANS.MONTHLY.price_usd}</li>
                     <li>• Semestral: {SUBSCRIPTION_PLANS.SEMESTRAL.price_mzn.toLocaleString()} MZN / ${SUBSCRIPTION_PLANS.SEMESTRAL.price_usd} (-{SUBSCRIPTION_PLANS.SEMESTRAL.discount}%)</li>
                     <li>• Anual: {SUBSCRIPTION_PLANS.ANNUAL.price_mzn.toLocaleString()} MZN / ${SUBSCRIPTION_PLANS.ANNUAL.price_usd} (-{SUBSCRIPTION_PLANS.ANNUAL.discount}%)</li>
@@ -1239,32 +1239,32 @@ const CoachDashboard = () => {
           {showConfirmPaymentModal && (
             <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
               <div className="bg-slate-800 rounded-2xl p-6 max-w-md w-full border border-purple-500/30">
-                <h3 className="text-xl font-bold text-white mb-4">✓ Confirmar Pagamento</h3>
+                <h3 className="text-xl font-bold text-slate-800 mb-4">✓ Confirmar Pagamento</h3>
                 <div className="space-y-4">
                   <div>
-                    <p className="text-purple-300 text-sm">Cliente</p>
-                    <p className="text-white font-medium">{showConfirmPaymentModal.users?.nome}</p>
+                    <p className="text-slate-500 text-sm">Cliente</p>
+                    <p className="text-slate-800 font-medium">{showConfirmPaymentModal.users?.nome}</p>
                   </div>
                   <div>
-                    <p className="text-purple-300 text-sm">Plano</p>
-                    <p className="text-white">
+                    <p className="text-slate-500 text-sm">Plano</p>
+                    <p className="text-slate-800">
                       {SUBSCRIPTION_PLANS[showConfirmPaymentModal.subscription_plan?.toUpperCase()]?.name || 'Mensal'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-purple-300 text-sm">Metodo</p>
-                    <p className="text-white">{showConfirmPaymentModal.payment_method || 'Nao especificado'}</p>
+                    <p className="text-slate-500 text-sm">Metodo</p>
+                    <p className="text-slate-800">{showConfirmPaymentModal.payment_method || 'Nao especificado'}</p>
                   </div>
                   <div>
-                    <p className="text-purple-300 text-sm">Valor</p>
-                    <p className="text-white">
+                    <p className="text-slate-500 text-sm">Valor</p>
+                    <p className="text-slate-800">
                       {showConfirmPaymentModal.payment_amount} {showConfirmPaymentModal.payment_currency || 'MZN'}
                     </p>
                   </div>
                   {showConfirmPaymentModal.payment_reference && (
                     <div>
-                      <p className="text-purple-300 text-sm">Referencia</p>
-                      <p className="text-white">{showConfirmPaymentModal.payment_reference}</p>
+                      <p className="text-slate-500 text-sm">Referencia</p>
+                      <p className="text-slate-800">{showConfirmPaymentModal.payment_reference}</p>
                     </div>
                   )}
                   <div className="bg-yellow-500/10 p-3 rounded-xl">
@@ -1276,7 +1276,7 @@ const CoachDashboard = () => {
                 <div className="flex gap-3 mt-6">
                   <button
                     onClick={() => setShowConfirmPaymentModal(null)}
-                    className="flex-1 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-medium transition-all"
+                    className="flex-1 py-3 bg-white/10 hover:bg-white/20 text-slate-800 rounded-xl font-medium transition-all"
                   >
                     Cancelar
                   </button>
@@ -1288,7 +1288,7 @@ const CoachDashboard = () => {
                       currency: showConfirmPaymentModal.payment_currency,
                       planId: showConfirmPaymentModal.subscription_plan || 'monthly'
                     })}
-                    className="flex-1 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-medium transition-all"
+                    className="flex-1 py-3 bg-green-500 hover:bg-green-600 text-slate-800 rounded-xl font-medium transition-all"
                   >
                     ✓ Confirmar
                   </button>
@@ -1300,29 +1300,29 @@ const CoachDashboard = () => {
           {/* TAB: CLIENTES */}
           {activeTab === 'users' && !selectedUser && (
             <div className="p-6">
-              <h2 className="text-xl font-bold text-white mb-6">
+              <h2 className="text-xl font-bold text-slate-800 mb-6">
                 👥 Todos os Clientes ({users.length})
               </h2>
 
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-purple-500/20">
-                      <th className="text-left py-3 px-3 text-sm font-medium text-purple-300">Nome</th>
-                      <th className="text-center py-3 px-3 text-sm font-medium text-purple-300">Status</th>
-                      <th className="text-center py-3 px-3 text-sm font-medium text-purple-300">Lumina</th>
-                      <th className="text-center py-3 px-3 text-sm font-medium text-purple-300">Vitalis</th>
-                      <th className="text-center py-3 px-3 text-sm font-medium text-purple-300">Progresso</th>
-                      <th className="text-left py-3 px-3 text-sm font-medium text-purple-300">Ultima Atividade</th>
-                      <th className="text-right py-3 px-3 text-sm font-medium text-purple-300">Acoes</th>
+                    <tr className="border-b border-slate-200">
+                      <th className="text-left py-3 px-3 text-sm font-medium text-slate-500">Nome</th>
+                      <th className="text-center py-3 px-3 text-sm font-medium text-slate-500">Status</th>
+                      <th className="text-center py-3 px-3 text-sm font-medium text-slate-500">Lumina</th>
+                      <th className="text-center py-3 px-3 text-sm font-medium text-slate-500">Vitalis</th>
+                      <th className="text-center py-3 px-3 text-sm font-medium text-slate-500">Progresso</th>
+                      <th className="text-left py-3 px-3 text-sm font-medium text-slate-500">Ultima Atividade</th>
+                      <th className="text-right py-3 px-3 text-sm font-medium text-slate-500">Acoes</th>
                     </tr>
                   </thead>
                   <tbody>
                     {users.map(user => (
-                      <tr key={user.id} className="border-b border-purple-500/10 hover:bg-white/5 transition-all">
+                      <tr key={user.id} className="border-b border-slate-100 hover:bg-slate-50 transition-all">
                         <td className="py-3 px-3">
-                          <p className="font-medium text-white">{user.nome}</p>
-                          <p className="text-xs text-purple-400">{user.email}</p>
+                          <p className="font-medium text-slate-800">{user.nome}</p>
+                          <p className="text-xs text-slate-600">{user.email}</p>
                         </td>
                         <td className="py-3 px-3 text-center">
                           <span className={`inline-block w-3 h-3 rounded-full ${
@@ -1344,16 +1344,16 @@ const CoachDashboard = () => {
                           ) : user.progressoPeso && user.progressoPeso < 0 ? (
                             <span className="text-red-400 text-sm">↑{Math.abs(user.progressoPeso)}%</span>
                           ) : (
-                            <span className="text-purple-400">-</span>
+                            <span className="text-slate-600">-</span>
                           )}
                         </td>
-                        <td className="py-3 px-3 text-sm text-purple-300">
+                        <td className="py-3 px-3 text-sm text-slate-500">
                           {formatTimeAgo(user.lastActivity)}
                         </td>
                         <td className="py-3 px-3 text-right">
                           <button
                             onClick={() => loadUserDetails(user.id)}
-                            className="px-3 py-1 bg-purple-500/30 hover:bg-purple-500/50 text-purple-300 rounded-lg text-sm transition-all"
+                            className="px-3 py-1 bg-[#7C8B6F]/30 hover:bg-purple-500/50 text-slate-500 rounded-lg text-sm transition-all"
                           >
                             Ver →
                           </button>
@@ -1371,7 +1371,7 @@ const CoachDashboard = () => {
             <div className="p-6">
               <button
                 onClick={() => { setSelectedUser(null); setUserDetails(null); }}
-                className="mb-6 text-purple-400 hover:text-purple-300 flex items-center gap-2"
+                className="mb-6 text-slate-600 hover:text-slate-500 flex items-center gap-2"
               >
                 ← Voltar
               </button>
@@ -1380,12 +1380,12 @@ const CoachDashboard = () => {
                 {/* Info Principal */}
                 <div className="lg:col-span-2 space-y-6">
                   {/* Header do Cliente */}
-                  <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl p-6 border border-purple-500/20">
+                  <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl p-6 border border-slate-200">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h2 className="text-2xl font-bold text-white">{userDetails.user?.nome}</h2>
-                        <p className="text-purple-300">{userDetails.user?.email}</p>
-                        <p className="text-sm text-purple-400 mt-1">Desde {formatDateShort(userDetails.user?.created_at)}</p>
+                        <h2 className="text-2xl font-bold text-slate-800">{userDetails.user?.nome}</h2>
+                        <p className="text-slate-500">{userDetails.user?.email}</p>
+                        <p className="text-sm text-slate-600 mt-1">Desde {formatDateShort(userDetails.user?.created_at)}</p>
                       </div>
                       <div className="flex gap-2">
                         <button
@@ -1393,7 +1393,7 @@ const CoachDashboard = () => {
                             await sendMotivation(selectedUser, 'progress');
                             alert('✅ Mensagem de motivação enviada!');
                           }}
-                          className="px-4 py-2 bg-purple-500/30 hover:bg-purple-500/50 text-purple-300 rounded-xl transition-all"
+                          className="px-4 py-2 bg-[#7C8B6F]/30 hover:bg-purple-500/50 text-slate-500 rounded-xl transition-all"
                         >
                           💜 Enviar Motivação
                         </button>
@@ -1404,21 +1404,21 @@ const CoachDashboard = () => {
                   {/* Metricas */}
                   {userDetails.metrics && (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="bg-white/5 rounded-xl p-4 text-center">
-                        <p className="text-3xl font-bold text-purple-400">{userDetails.metrics.avgAderencia || '-'}</p>
-                        <p className="text-sm text-purple-300">Aderência Média</p>
+                      <div className="bg-slate-50 rounded-xl p-4 text-center">
+                        <p className="text-3xl font-bold text-slate-600">{userDetails.metrics.avgAderencia || '-'}</p>
+                        <p className="text-sm text-slate-500">Aderência Média</p>
                       </div>
-                      <div className="bg-white/5 rounded-xl p-4 text-center">
+                      <div className="bg-slate-50 rounded-xl p-4 text-center">
                         <p className="text-3xl font-bold text-blue-400">{userDetails.metrics.avgAgua || '-'}L</p>
-                        <p className="text-sm text-purple-300">Água Média</p>
+                        <p className="text-sm text-slate-500">Água Média</p>
                       </div>
-                      <div className="bg-white/5 rounded-xl p-4 text-center">
+                      <div className="bg-slate-50 rounded-xl p-4 text-center">
                         <p className="text-3xl font-bold text-green-400">{userDetails.metrics.mealAdherence}%</p>
-                        <p className="text-sm text-purple-300">Refeições Seguidas</p>
+                        <p className="text-sm text-slate-500">Refeições Seguidas</p>
                       </div>
-                      <div className="bg-white/5 rounded-xl p-4 text-center">
+                      <div className="bg-slate-50 rounded-xl p-4 text-center">
                         <p className="text-3xl font-bold text-orange-400">{userDetails.metrics.streak}</p>
-                        <p className="text-sm text-purple-300">Dias Streak</p>
+                        <p className="text-sm text-slate-500">Dias Streak</p>
                       </div>
                     </div>
                   )}
@@ -1426,30 +1426,30 @@ const CoachDashboard = () => {
                   {/* Vitalis Info */}
                   {userDetails.vitalisClient && (
                     <div className="bg-emerald-500/10 rounded-2xl p-5 border border-emerald-500/20">
-                      <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                      <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
                         🌱 Vitalis
                       </h3>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
-                          <p className="text-sm text-purple-400">Objectivo</p>
-                          <p className="text-white font-medium">{userDetails.vitalisClient.objectivo_principal || '-'}</p>
+                          <p className="text-sm text-slate-600">Objectivo</p>
+                          <p className="text-slate-800 font-medium">{userDetails.vitalisClient.objectivo_principal || '-'}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-purple-400">Fase</p>
-                          <p className="text-white font-medium">{userDetails.vitalisClient.fase_actual || '-'}</p>
+                          <p className="text-sm text-slate-600">Fase</p>
+                          <p className="text-slate-800 font-medium">{userDetails.vitalisClient.fase_actual || '-'}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-purple-400">Peso Inicial</p>
-                          <p className="text-white font-medium">{userDetails.vitalisClient.peso_inicial || '-'} kg</p>
+                          <p className="text-sm text-slate-600">Peso Inicial</p>
+                          <p className="text-slate-800 font-medium">{userDetails.vitalisClient.peso_inicial || '-'} kg</p>
                         </div>
                         <div>
-                          <p className="text-sm text-purple-400">Peso Atual</p>
-                          <p className="text-white font-medium">{userDetails.vitalisClient.peso_actual || '-'} kg</p>
+                          <p className="text-sm text-slate-600">Peso Atual</p>
+                          <p className="text-slate-800 font-medium">{userDetails.vitalisClient.peso_actual || '-'} kg</p>
                         </div>
                       </div>
                       {userDetails.vitalisClient.peso_inicial && userDetails.vitalisClient.peso_actual && (
                         <div className="mt-4 pt-4 border-t border-emerald-500/20">
-                          <p className="text-sm text-purple-400">Progresso</p>
+                          <p className="text-sm text-slate-600">Progresso</p>
                           <p className={`text-xl font-bold ${
                             userDetails.vitalisClient.peso_actual < userDetails.vitalisClient.peso_inicial
                               ? 'text-green-400'
@@ -1466,13 +1466,13 @@ const CoachDashboard = () => {
                   {/* Lumina Info */}
                   {userDetails.lumina?.length > 0 && (
                     <div className="bg-yellow-500/10 rounded-2xl p-5 border border-yellow-500/20">
-                      <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                      <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
                         💡 Lumina ({userDetails.lumina.length} check-ins)
                       </h3>
                       <div className="space-y-2">
                         {userDetails.lumina.slice(0, 3).map((l, i) => (
-                          <div key={i} className="p-3 bg-white/5 rounded-xl">
-                            <p className="text-sm text-purple-300">{formatDate(l.created_at)}</p>
+                          <div key={i} className="p-3 bg-slate-50 rounded-xl">
+                            <p className="text-sm text-slate-500">{formatDate(l.created_at)}</p>
                           </div>
                         ))}
                       </div>
@@ -1483,15 +1483,15 @@ const CoachDashboard = () => {
                 {/* Sidebar */}
                 <div className="space-y-6">
                   {/* Acções Rápidas */}
-                  <div className="bg-white/5 rounded-2xl p-5">
-                    <h3 className="text-lg font-bold text-white mb-4">🎯 Acções</h3>
+                  <div className="bg-slate-50 rounded-2xl p-5">
+                    <h3 className="text-lg font-bold text-slate-800 mb-4">🎯 Acções</h3>
                     <div className="space-y-2">
                       <button
                         onClick={async () => {
                           await sendMotivation(selectedUser, 'progress');
                           alert('✅ Mensagem de parabéns enviada!');
                         }}
-                        className="w-full p-3 bg-purple-500/20 hover:bg-purple-500/30 rounded-xl text-left text-purple-300 transition-all"
+                        className="w-full p-3 bg-purple-500/20 hover:bg-[#7C8B6F]/30 rounded-xl text-left text-slate-500 transition-all"
                       >
                         💜 Parabéns pelo progresso
                       </button>
@@ -1518,8 +1518,8 @@ const CoachDashboard = () => {
 
                   {/* PDFs */}
                   {userDetails.pdfs?.length > 0 && (
-                    <div className="bg-white/5 rounded-2xl p-5">
-                      <h3 className="text-lg font-bold text-white mb-4">📄 PDFs ({userDetails.pdfs.length})</h3>
+                    <div className="bg-slate-50 rounded-2xl p-5">
+                      <h3 className="text-lg font-bold text-slate-800 mb-4">📄 PDFs ({userDetails.pdfs.length})</h3>
                       <div className="space-y-2">
                         {userDetails.pdfs.slice(0, 3).map((pdf, i) => (
                           <a
@@ -1527,7 +1527,7 @@ const CoachDashboard = () => {
                             href={pdf.pdf_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block p-3 bg-white/5 hover:bg-white/10 rounded-xl text-purple-300 text-sm transition-all"
+                            className="block p-3 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-500 text-sm transition-all"
                           >
                             {formatDateShort(pdf.created_at)} →
                           </a>
@@ -1543,21 +1543,21 @@ const CoachDashboard = () => {
           {/* TAB: WAITLIST */}
           {activeTab === 'waitlist' && (
             <div className="p-6">
-              <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+              <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
                 📋 Lista de Espera ({waitlist.length})
               </h2>
 
               {waitlist.length === 0 ? (
-                <p className="text-center text-purple-400 py-12">Nenhum registo na lista de espera</p>
+                <p className="text-center text-slate-600 py-12">Nenhum registo na lista de espera</p>
               ) : (
                 <div className="space-y-3">
                   {waitlist.map(lead => (
-                    <div key={lead.id} className="p-4 bg-white/5 rounded-xl border border-purple-500/10 hover:border-purple-500/30 transition-all">
+                    <div key={lead.id} className="p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-purple-500/30 transition-all">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-bold text-white">{lead.nome}</p>
-                          <p className="text-sm text-purple-300">{lead.email}</p>
-                          <p className="text-xs text-purple-400 mt-1">{formatDate(lead.created_at)}</p>
+                          <p className="font-bold text-slate-800">{lead.nome}</p>
+                          <p className="text-sm text-slate-500">{lead.email}</p>
+                          <p className="text-xs text-slate-600 mt-1">{formatDate(lead.created_at)}</p>
                         </div>
                         <div className="flex items-center gap-3">
                           <span className="text-xs px-3 py-1 bg-orange-500/20 text-orange-300 rounded-full">
@@ -1585,19 +1585,19 @@ const CoachDashboard = () => {
           {/* TAB: ALERTAS */}
           {activeTab === 'alertas' && (
             <div className="p-6">
-              <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+              <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
                 🔔 Alertas Pendentes ({alerts.length})
               </h2>
 
               {alerts.length === 0 ? (
                 <div className="text-center py-12">
                   <span className="text-6xl mb-4 block">✨</span>
-                  <p className="text-purple-300">Nenhum alerta pendente</p>
+                  <p className="text-slate-500">Nenhum alerta pendente</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {alerts.map(alert => (
-                    <div key={alert.id} className="p-4 bg-white/5 rounded-xl border-l-4 border-purple-500">
+                    <div key={alert.id} className="p-4 bg-slate-50 rounded-xl border-l-4 border-purple-500">
                       <div className="flex items-start justify-between">
                         <div>
                           <span className={`text-xs px-2 py-1 rounded-full ${
@@ -1607,12 +1607,12 @@ const CoachDashboard = () => {
                           }`}>
                             {alert.tipo_alerta}
                           </span>
-                          <p className="text-white mt-2">{alert.descricao}</p>
-                          <p className="text-xs text-purple-400 mt-1">{formatDate(alert.created_at)}</p>
+                          <p className="text-slate-800 mt-2">{alert.descricao}</p>
+                          <p className="text-xs text-slate-600 mt-1">{formatDate(alert.created_at)}</p>
                         </div>
                         <button
                           onClick={() => markAlertAsRead(alert.id)}
-                          className="px-3 py-1 bg-purple-500/30 hover:bg-purple-500/50 text-purple-300 rounded-lg text-sm transition-all"
+                          className="px-3 py-1 bg-[#7C8B6F]/30 hover:bg-purple-500/50 text-slate-500 rounded-lg text-sm transition-all"
                         >
                           ✓ Marcar lido
                         </button>
@@ -1627,14 +1627,14 @@ const CoachDashboard = () => {
           {/* TAB: MOTIVACOES */}
           {activeTab === 'motivations' && (
             <div className="p-6">
-              <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+              <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
                 💜 Sistema de Motivacoes Automaticas
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Templates */}
-                <div className="bg-white/5 rounded-2xl p-5">
-                  <h3 className="text-lg font-bold text-white mb-4">📝 Templates de Motivacao</h3>
+                <div className="bg-slate-50 rounded-2xl p-5">
+                  <h3 className="text-lg font-bold text-slate-800 mb-4">📝 Templates de Motivacao</h3>
                   <div className="space-y-3">
                     {[
                       { id: 'comeback', emoji: '🌟', title: 'Volta ao Caminho', desc: 'Para clientes inativos' },
@@ -1648,15 +1648,15 @@ const CoachDashboard = () => {
                         onClick={() => setSelectedMotivationType(template.id)}
                         className={`w-full p-4 rounded-xl text-left transition-all border ${
                           selectedMotivationType === template.id
-                            ? 'bg-purple-500/30 border-purple-500'
-                            : 'bg-white/5 border-purple-500/20 hover:border-purple-500/50'
+                            ? 'bg-[#7C8B6F]/30 border-purple-500'
+                            : 'bg-slate-50 border-slate-200 hover:border-purple-500/50'
                         }`}
                       >
                         <div className="flex items-center gap-3">
                           <span className="text-2xl">{template.emoji}</span>
                           <div>
-                            <p className="font-medium text-white">{template.title}</p>
-                            <p className="text-sm text-purple-300">{template.desc}</p>
+                            <p className="font-medium text-slate-800">{template.title}</p>
+                            <p className="text-sm text-slate-500">{template.desc}</p>
                           </div>
                         </div>
                       </button>
@@ -1665,18 +1665,18 @@ const CoachDashboard = () => {
                 </div>
 
                 {/* Enviar para quem */}
-                <div className="bg-white/5 rounded-2xl p-5">
-                  <h3 className="text-lg font-bold text-white mb-4">🎯 Enviar Motivacao</h3>
+                <div className="bg-slate-50 rounded-2xl p-5">
+                  <h3 className="text-lg font-bold text-slate-800 mb-4">🎯 Enviar Motivacao</h3>
 
                   {selectedMotivationType ? (
                     <div className="space-y-4">
-                      <p className="text-purple-300">Seleciona os clientes para enviar:</p>
+                      <p className="text-slate-500">Seleciona os clientes para enviar:</p>
 
                       <div className="space-y-2 max-h-60 overflow-y-auto">
                         {users.filter(u => u.temVitalis).map(user => (
-                          <label key={user.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl hover:bg-white/10 cursor-pointer">
+                          <label key={user.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl hover:bg-slate-100 cursor-pointer">
                             <input type="checkbox" className="rounded" />
-                            <span className="text-white">{user.nome}</span>
+                            <span className="text-slate-800">{user.nome}</span>
                             <span className={`text-xs px-2 py-0.5 rounded-full ml-auto ${
                               user.status === 'active' ? 'bg-green-500/30 text-green-300' :
                               user.status === 'inactive' ? 'bg-red-500/30 text-red-300' :
@@ -1688,12 +1688,12 @@ const CoachDashboard = () => {
                         ))}
                       </div>
 
-                      <button className="w-full py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-medium transition-all">
+                      <button className="w-full py-3 bg-purple-500 hover:bg-purple-600 text-slate-800 rounded-xl font-medium transition-all">
                         💜 Enviar Motivacao
                       </button>
                     </div>
                   ) : (
-                    <p className="text-purple-400 text-center py-8">
+                    <p className="text-slate-600 text-center py-8">
                       Seleciona um template primeiro
                     </p>
                   )}
@@ -1702,13 +1702,13 @@ const CoachDashboard = () => {
 
               {/* Historico */}
               {motivationQueue.length > 0 && (
-                <div className="mt-6 bg-white/5 rounded-2xl p-5">
-                  <h3 className="text-lg font-bold text-white mb-4">📨 Enviadas Recentemente</h3>
+                <div className="mt-6 bg-slate-50 rounded-2xl p-5">
+                  <h3 className="text-lg font-bold text-slate-800 mb-4">📨 Enviadas Recentemente</h3>
                   <div className="space-y-2">
                     {motivationQueue.map((m, i) => (
-                      <div key={i} className="p-3 bg-white/5 rounded-xl flex items-center justify-between">
-                        <span className="text-purple-300">{m.type}</span>
-                        <span className="text-xs text-purple-400">{formatTimeAgo(m.sentAt)}</span>
+                      <div key={i} className="p-3 bg-slate-50 rounded-xl flex items-center justify-between">
+                        <span className="text-slate-500">{m.type}</span>
+                        <span className="text-xs text-slate-600">{formatTimeAgo(m.sentAt)}</span>
                       </div>
                     ))}
                   </div>
@@ -1740,8 +1740,8 @@ const StatCardPremium = ({ icon, label, value, color, highlight = false }) => {
   return (
     <div className={`bg-gradient-to-br ${colorClasses[color]} rounded-xl p-3 text-center border ${highlight ? 'animate-pulse' : ''}`}>
       <span className="text-xl">{icon}</span>
-      <p className="text-xl font-bold text-white mt-1">{value}</p>
-      <p className="text-xs text-purple-300">{label}</p>
+      <p className="text-xl font-bold text-slate-800 mt-1">{value}</p>
+      <p className="text-xs text-slate-500">{label}</p>
     </div>
   );
 };
