@@ -264,7 +264,8 @@ export default function ListaCompras() {
 
   const partilharWhatsApp = () => {
     const texto = gerarTextoLista();
-    const url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+    // Usar api.whatsapp.com que funciona melhor em web e mobile
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
     setShowShareMenu(false);
   };

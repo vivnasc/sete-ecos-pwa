@@ -48,6 +48,7 @@ export default function DashboardVitalis() {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
   const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState('');
   const [client, setClient] = useState(null);
   const [plano, setPlano] = useState(null);
   const [registos, setRegistos] = useState([]);
@@ -233,6 +234,7 @@ export default function DashboardVitalis() {
 
       if (!userData) throw new Error('Utilizador não encontrado');
       setUserId(userData.id);
+      setUserName(userData.nome || '');
 
       const { data: clientData } = await supabase
         .from('vitalis_clients')
@@ -816,7 +818,7 @@ export default function DashboardVitalis() {
               <p className="text-white/70 text-sm">Olá,</p>
               <Link to="/vitalis/perfil" className="block hover:opacity-80 transition-opacity">
                 <h2 className="text-xl md:text-2xl font-bold text-white">
-                  {client?.nome_completo?.split(' ')[0] || 'Guerreira'}! 👋
+                  {userName?.split(' ')[0] || client?.nome_completo?.split(' ')[0] || userEmail?.split('@')[0] || 'Guerreira'}! 👋
                 </h2>
               </Link>
               <p className="text-white/80 text-sm capitalize">{diaSemana}, {dataFormatada}</p>
@@ -1614,16 +1616,14 @@ export default function DashboardVitalis() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {/* Calendário de Refeições */}
             <Link to="/vitalis/calendario" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
               <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">📅</div>
               <p className="font-semibold text-white text-sm">Calendário</p>
               <p className="text-white/70 text-xs mt-1">Planear semana</p>
             </Link>
-          </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {/* Fotos Progresso */}
             <Link to="/vitalis/fotos-progresso" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
               <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">📸</div>
@@ -1637,16 +1637,6 @@ export default function DashboardVitalis() {
               <p className="font-semibold text-white text-sm">Tendências</p>
               <p className="text-white/70 text-xs mt-1">Peso, água, sono</p>
             </Link>
-
-            {/* Conquistas/Gamificação */}
-            <button
-              onClick={() => setShowConquistasModal(true)}
-              className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm"
-            >
-              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🏆</div>
-              <p className="font-semibold text-white text-sm">Conquistas</p>
-              <p className="text-white/70 text-xs mt-1">{conquistasDesbloqueadas.length} badges</p>
-            </button>
 
             {/* Notificações */}
             <Link to="/vitalis/notificacoes" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
@@ -1666,10 +1656,22 @@ export default function DashboardVitalis() {
               </h3>
               <p className="text-sm text-gray-500">Nível {Math.floor(xpTotal / 500) + 1} • {xpTotal} XP total</p>
             </div>
-            <div className="text-right">
-              <p className="text-2xl font-bold text-[#7C8B6F]">{conquistasDesbloqueadas.length}</p>
-              <p className="text-xs text-gray-500">conquistas</p>
-            </div>
+            <button
+              onClick={() => setShowConquistasModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-[#7C8B6F] text-white rounded-xl text-sm font-medium hover:bg-[#6B7A5D] transition-colors"
+            >
+              <span>Ver todas</span>
+              <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs">{conquistasDesbloqueadas.length}</span>
+            </button>
+          </div>
+
+          {/* Explicação clara */}
+          <div className="mb-4 p-3 bg-blue-50 rounded-xl border border-blue-100">
+            <p className="text-sm text-blue-800">
+              <strong>🔥 Streak</strong> = dias consecutivos com qualquer registo (água, refeições, treino, sono)
+              <br/>
+              <strong>🏆 Conquistas</strong> = badges desbloqueados por marcos específicos (ex: 3 dias seguidos, primeiro treino, 50 copos de água...)
+            </p>
           </div>
 
           {/* Barra de progresso para próximo nível */}
