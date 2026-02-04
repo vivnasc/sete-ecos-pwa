@@ -11,6 +11,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link } from 'react-router-dom';
+import { gerarRelatorioMensal, gerarRelatorioFase, gerarRelatorioFinal } from '../../lib/relatorios-pdf';
 
 // ============================================================
 // ÍCONES
@@ -192,19 +193,86 @@ export default function RelatoriosHub() {
     return fases[numero] || `Fase ${numero}`;
   };
 
-  const gerarPDFMensal = async (mes) => {
-    // TODO: Implementar geração de PDF mensal
-    alert(`A gerar relatório de ${mes}... (em desenvolvimento)`);
+  const [gerando, setGerando] = useState(null);
+
+  const gerarPDFMensal = async (relMensal) => {
+    setGerando(`mensal-${relMensal.mes}`);
+    try {
+      // Buscar registos do mês
+      const dataInicio = new Date(relMensal.data);
+      const dataFim = new Date(dataInicio);
+      dataFim.setMonth(dataFim.getMonth() + 1);
+
+      const { data: registos } = await supabase
+        .from('vitalis_registos')
+        .select('*')
+        .eq('user_id', client?.user_id)
+        .gte('data', dataInicio.toISOString().split('T')[0])
+        .lt('data', dataFim.toISOString().split('T')[0]);
+
+      await gerarRelatorioMensal({
+        mes: relMensal.mes,
+        registos: registos || [],
+        cliente: client
+      });
+    } catch (error) {
+      console.error('Erro ao gerar PDF mensal:', error);
+      alert('Erro ao gerar relatório. Tenta novamente.');
+    } finally {
+      setGerando(null);
+    }
   };
 
   const gerarPDFFase = async (fase) => {
-    // TODO: Implementar geração de PDF de fim de fase
-    alert(`A gerar relatório da ${fase.nome}... (em desenvolvimento)`);
+    setGerando(`fase-${fase.numero}`);
+    try {
+      // Buscar registos da fase
+      const { data: registos } = await supabase
+        .from('vitalis_registos')
+        .select('*')
+        .eq('user_id', client?.user_id);
+
+      await gerarRelatorioFase({
+        fase,
+        registos: registos || [],
+        cliente: client,
+        plano
+      });
+    } catch (error) {
+      console.error('Erro ao gerar PDF de fase:', error);
+      alert('Erro ao gerar relatório. Tenta novamente.');
+    } finally {
+      setGerando(null);
+    }
   };
 
   const gerarPDFFinal = async () => {
-    // TODO: Implementar geração de PDF final
-    alert('A gerar relatório final... (em desenvolvimento)');
+    setGerando('final');
+    try {
+      // Buscar todos os registos e conquistas
+      const [registosRes, conquistasRes] = await Promise.all([
+        supabase
+          .from('vitalis_registos')
+          .select('*')
+          .eq('user_id', client?.user_id),
+        supabase
+          .from('vitalis_conquistas')
+          .select('*')
+          .eq('user_id', client?.user_id)
+      ]);
+
+      await gerarRelatorioFinal({
+        cliente: client,
+        registos: registosRes.data || [],
+        conquistas: conquistasRes.data || [],
+        plano
+      });
+    } catch (error) {
+      console.error('Erro ao gerar PDF final:', error);
+      alert('Erro ao gerar relatório. Tenta novamente.');
+    } finally {
+      setGerando(null);
+    }
   };
 
   // Calcular semana actual
@@ -304,14 +372,17 @@ export default function RelatoriosHub() {
                   {relatoriosDisponiveis.mensais.map((rel, i) => (
                     <button
                       key={i}
-                      onClick={() => gerarPDFMensal(rel.mes)}
-                      className="flex items-center justify-between w-full p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors"
+                      onClick={() => gerarPDFMensal(rel)}
+                      disabled={gerando === `mensal-${rel.mes}`}
+                      className="flex items-center justify-between w-full p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors disabled:opacity-50"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl">📊</span>
+                        <span className="text-2xl">{gerando === `mensal-${rel.mes}` ? '⏳' : '📊'}</span>
                         <div className="text-left">
                           <p className="font-medium text-gray-800 capitalize">{rel.mes}</p>
-                          <p className="text-xs text-gray-500">Resumo mensal</p>
+                          <p className="text-xs text-gray-500">
+                            {gerando === `mensal-${rel.mes}` ? 'A gerar...' : 'Resumo mensal'}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-1 text-indigo-600">
@@ -341,13 +412,16 @@ export default function RelatoriosHub() {
                     <button
                       key={i}
                       onClick={() => gerarPDFFase(fase)}
-                      className="flex items-center justify-between w-full p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors"
+                      disabled={gerando === `fase-${fase.numero}`}
+                      className="flex items-center justify-between w-full p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors disabled:opacity-50"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl">🎯</span>
+                        <span className="text-2xl">{gerando === `fase-${fase.numero}` ? '⏳' : '🎯'}</span>
                         <div className="text-left">
                           <p className="font-medium text-gray-800">Fase {fase.numero}: {fase.nome}</p>
-                          <p className="text-xs text-gray-500">Análise completa da fase</p>
+                          <p className="text-xs text-gray-500">
+                            {gerando === `fase-${fase.numero}` ? 'A gerar...' : 'Análise completa da fase'}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-1 text-indigo-600">
@@ -374,13 +448,16 @@ export default function RelatoriosHub() {
               {relatoriosDisponiveis.final ? (
                 <button
                   onClick={gerarPDFFinal}
-                  className="flex items-center justify-between w-full p-4 bg-gradient-to-r from-[#E8E4DC] to-[#F5F2ED] hover:from-[#D5D0C8] hover:to-[#E8E4DC] rounded-xl transition-colors border border-[#E8E2D9]"
+                  disabled={gerando === 'final'}
+                  className="flex items-center justify-between w-full p-4 bg-gradient-to-r from-[#E8E4DC] to-[#F5F2ED] hover:from-[#D5D0C8] hover:to-[#E8E4DC] rounded-xl transition-colors border border-[#E8E2D9] disabled:opacity-50"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-3xl">🏆</span>
+                    <span className="text-3xl">{gerando === 'final' ? '⏳' : '🏆'}</span>
                     <div className="text-left">
                       <p className="font-bold text-gray-800">Relatório de Conclusão</p>
-                      <p className="text-xs text-gray-600">Toda a tua jornada documentada</p>
+                      <p className="text-xs text-gray-600">
+                        {gerando === 'final' ? 'A gerar...' : 'Toda a tua jornada documentada'}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1 text-amber-600">

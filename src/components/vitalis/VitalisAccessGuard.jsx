@@ -2,13 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { checkVitalisAccess, SUBSCRIPTION_STATUS } from '../../lib/subscriptions';
-
-// Emails com acesso automático (coach + testers)
-const BYPASS_EMAILS = [
-  'viv.saraiva@gmail.com',           // Coach principal
-  'vivnasc@gmail.com',               // Email alternativo
-  'vivianne.saraiva@outlook.com',    // Conta de testes
-];
+import { isCoach } from '../../lib/coach';
 
 /**
  * VITALIS ACCESS GUARD
@@ -49,7 +43,7 @@ const VitalisAccessGuard = ({ children }) => {
       }
 
       // Bypass emails têm acesso directo
-      if (BYPASS_EMAILS.includes(user.email.toLowerCase())) {
+      if (isCoach(user.email)) {
         setAccessInfo({ hasAccess: true, status: 'bypass', reason: 'bypass_email' });
         setHasAccess(true);
         setLoading(false);

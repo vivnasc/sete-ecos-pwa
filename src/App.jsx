@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { supabase } from './lib/supabase'
+import { isSessionCoach } from './lib/coach'
 
 // ===== PÁGINAS PRINCIPAIS =====
 import Home from './pages/Home'
@@ -108,7 +109,7 @@ function App() {
 
           {/* ===== ADMIN / COACH ===== */}
           <Route path="/coach" element={
-            ['viv.saraiva@gmail.com', 'vivianne.saraiva@outlook.com'].includes(session?.user?.email?.toLowerCase())
+            isSessionCoach(session)
               ? <CoachDashboard />
               : <Navigate to="/" />
           } />
