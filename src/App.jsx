@@ -41,6 +41,20 @@ import GuiaUtilizador from './components/vitalis/GuiaUtilizador'
 import TreinosVitalis from './components/vitalis/TreinosVitalis'
 import PlanoHTML from './pages/PlanoHTML'
 
+// ===== ECO 2: ÁUREA (Valor & Presença) =====
+import LandingAurea from './pages/LandingAurea'
+import AureaAuth from './components/aurea/Auth'
+import AureaAccessGuard from './components/aurea/AureaAccessGuard'
+import PagamentoAurea from './components/aurea/PagamentoAurea'
+import AureaOnboarding from './components/aurea/Onboarding'
+import DashboardAurea from './components/aurea/DashboardAurea'
+import MicroPraticas from './components/aurea/MicroPraticas'
+import EspelhoRoupa from './components/aurea/EspelhoRoupa'
+import CarteiraMerecimento from './components/aurea/CarteiraMerecimento'
+import DiarioMerecimento from './components/aurea/DiarioMerecimento'
+import InsightsSemanal from './components/aurea/InsightsSemanal'
+import PerfilAurea from './components/aurea/PerfilAurea'
+
 function App() {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -98,8 +112,20 @@ function App() {
           <Route path="/vitalis/guia" element={session ? <VitalisAccessGuard><GuiaUtilizador /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
           <Route path="/vitalis/treinos" element={session ? <VitalisAccessGuard><TreinosVitalis /></VitalisAccessGuard> : <Navigate to="/vitalis/login" />} />
 
-          {/* ===== ECOS 2-7: Em Breve ===== */}
-          <Route path="/aurea" element={<ComingSoon />} />
+          {/* ===== ECO 2: ÁUREA - Valor & Presença ===== */}
+          <Route path="/aurea" element={<LandingAurea />} />
+          <Route path="/aurea/login" element={<AureaAuth />} />
+          <Route path="/aurea/pagamento" element={<PagamentoAurea />} />
+          <Route path="/aurea/onboarding" element={session ? <AureaAccessGuard><AureaOnboarding /></AureaAccessGuard> : <Navigate to="/aurea/login" />} />
+          <Route path="/aurea/dashboard" element={session ? <AureaAccessGuard><DashboardAurea /></AureaAccessGuard> : <Navigate to="/aurea/login" />} />
+          <Route path="/aurea/praticas" element={session ? <AureaAccessGuard><MicroPraticas /></AureaAccessGuard> : <Navigate to="/aurea/login" />} />
+          <Route path="/aurea/roupa" element={session ? <AureaAccessGuard><EspelhoRoupa /></AureaAccessGuard> : <Navigate to="/aurea/login" />} />
+          <Route path="/aurea/carteira" element={session ? <AureaAccessGuard><CarteiraMerecimento /></AureaAccessGuard> : <Navigate to="/aurea/login" />} />
+          <Route path="/aurea/diario" element={session ? <AureaAccessGuard><DiarioMerecimento /></AureaAccessGuard> : <Navigate to="/aurea/login" />} />
+          <Route path="/aurea/insights" element={session ? <AureaAccessGuard><InsightsSemanal /></AureaAccessGuard> : <Navigate to="/aurea/login" />} />
+          <Route path="/aurea/perfil" element={session ? <AureaAccessGuard><PerfilAurea /></AureaAccessGuard> : <Navigate to="/aurea/login" />} />
+
+          {/* ===== ECOS 3-7: Em Breve ===== */}
           <Route path="/serena" element={<ComingSoon />} />
           <Route path="/ignis" element={<ComingSoon />} />
           <Route path="/ventis" element={<ComingSoon />} />

@@ -1,0 +1,505 @@
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
+
+/**
+ * ÁUREA - Landing Page
+ * "Valor & Presença" - A que merece
+ */
+
+const LandingAurea = () => {
+  const navigate = useNavigate();
+  const [faqAberta, setFaqAberta] = useState(null);
+  const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+  }, []);
+
+  const planos = {
+    mensal: { id: 'monthly', nome: 'Mensal', meses: 1, preco: 975, precoUSD: 15, desconto: 0 },
+    semestral: { id: 'semestral', nome: 'Semestral', meses: 6, preco: 5265, precoUSD: 81, desconto: 10 },
+    anual: { id: 'annual', nome: 'Anual', meses: 12, preco: 9945, precoUSD: 153, desconto: 15 }
+  };
+
+  const features = [
+    {
+      icone: '📊',
+      titulo: 'Quota de Presença',
+      desc: 'Define quanto tempo, dinheiro e energia MÍNIMOS reservas para ti por semana. Compromisso sagrado.'
+    },
+    {
+      icone: '✨',
+      titulo: 'Micro-Práticas Diárias',
+      desc: '100+ práticas de auto-cuidado em 4 categorias: Dinheiro, Tempo, Roupa, Prazer. 2-5 minutos cada.'
+    },
+    {
+      icone: '👗',
+      titulo: 'Espelho de Roupa',
+      desc: 'Regista como te vestes. Identifica padrões. Usa as peças "guardadas para ocasiões" no dia-a-dia.'
+    },
+    {
+      icone: '💰',
+      titulo: 'Carteira de Merecimento',
+      desc: 'Vê quanto do teu dinheiro vai para TI vs. para os outros. Visibilidade gentil, sem julgamento.'
+    },
+    {
+      icone: '🔍',
+      titulo: 'Detector de Culpa',
+      desc: 'Identifica os padrões de culpa que aparecem quando te cuidas. "Não mereço", "Os outros precisam mais"...'
+    },
+    {
+      icone: '📝',
+      titulo: 'Diário de Merecimento',
+      desc: 'Espaço para escrever momentos de auto-valor. Prompts diários para reconhecer o teu merecimento.'
+    },
+    {
+      icone: '🎧',
+      titulo: 'Áudio-Meditações',
+      desc: '5 meditações guiadas: Permissão de Receber, Despedir-me da Culpa, Habitar o Meu Valor...'
+    },
+    {
+      icone: '🌙',
+      titulo: 'Ritual Mensal',
+      desc: 'Balanço de Ouro no fim de cada mês. 30 minutos para olhar para trás e para frente.'
+    },
+    {
+      icone: '💬',
+      titulo: 'Comunidade Anónima',
+      desc: 'Campo de testemunhos anónimos. Vê que não estás sozinha. Só presença, sem interacção.'
+    },
+    {
+      icone: '💎',
+      titulo: 'Sistema de Jóias',
+      desc: 'Cada acção de auto-cuidado = 1 jóia. Evolui de Bronze a Diamante. Badges especiais.'
+    },
+    {
+      icone: '📈',
+      titulo: 'Insights Semanais',
+      desc: 'Relatório automático ao domingo. Padrões, progresso, celebrações, perguntas para reflexão.'
+    },
+    {
+      icone: '🔔',
+      titulo: 'Notificações Gentis',
+      desc: 'Lembretes que convidam (nunca culpabilizam). "Como foi o teu dia? Respeitaste-te?"'
+    }
+  ];
+
+  const niveis = [
+    {
+      nome: 'Bronze',
+      subtitulo: 'Despertar',
+      icone: '🥉',
+      joias: '0-50',
+      descricao: 'Estás a começar a ver onde te abandonas',
+      desbloqueios: ['Acesso a todas as Micro-Práticas (100+)']
+    },
+    {
+      nome: 'Prata',
+      subtitulo: 'Presença',
+      icone: '🥈',
+      joias: '51-150',
+      descricao: 'Já não vives só para os outros',
+      desbloqueios: ['Espelho de Roupa avançado', 'Áudio-meditações (5)']
+    },
+    {
+      nome: 'Ouro',
+      subtitulo: 'Valor',
+      icone: '🥇',
+      joias: '151-300',
+      descricao: 'Tratas-te como prioridade',
+      desbloqueios: ['Diário de Merecimento', 'Ritual Mensal', 'Badge "A que merece"']
+    },
+    {
+      nome: 'Diamante',
+      subtitulo: 'Integração',
+      icone: '💎',
+      joias: '301+',
+      descricao: 'És presença plena',
+      desbloqueios: ['Comunidade Anónima', 'Certificado completo']
+    }
+  ];
+
+  const faqs = [
+    {
+      pergunta: 'Isto é para mulheres que não se miman?',
+      resposta: 'É para mulheres que funcionam bem para os outros mas não existem para si próprias. Que sentem culpa quando cuidam de si. Que trabalham, dão, produzem — mas quando chega a hora de gastar tempo, dinheiro ou energia consigo, travam.'
+    },
+    {
+      pergunta: 'Como é diferente de outras apps de auto-cuidado?',
+      resposta: 'ÁUREA não te diz para "tomar banhos relaxantes". Trabalha a raiz: a relação com a matéria — dinheiro, roupa, prazer, mimo — sem culpa. Detecta os padrões de auto-sacrifício e ajuda-te a recuperar o direito de existir para ti mesma.'
+    },
+    {
+      pergunta: 'Quanto tempo preciso por dia?',
+      resposta: 'As práticas diárias levam 2-5 minutos. O check-in de quota leva 30 segundos. Podes usar mais se quiseres (diário, meditações), mas o mínimo é muito acessível.'
+    },
+    {
+      pergunta: 'Posso experimentar antes de pagar?',
+      resposta: 'Sim! Tens 7 dias de trial gratuito com acesso completo. Sem compromisso, sem cartão de crédito. Se no fim dos 7 dias quiseres continuar, escolhes um plano.'
+    },
+    {
+      pergunta: 'E se eu não conseguir manter a prática?',
+      resposta: 'ÁUREA não te pressiona. As notificações são gentis, nunca culpabilizam. Se faltares 3 dias, recebes: "Há 3 dias que não te vejo. Voltas quando quiseres." Ao teu ritmo, sempre.'
+    }
+  ];
+
+  const testemunhos = [
+    {
+      iniciais: 'MF',
+      texto: 'Finalmente percebi porque é que tinha roupas lindas no armário que "nunca usava". Hoje uso-as. São para mim.',
+      resultado: 'Nível Ouro em 3 meses'
+    },
+    {
+      iniciais: 'AS',
+      texto: 'O Detector de Culpa abriu-me os olhos. Dizia "os outros precisam mais" 12 vezes por semana. Agora são 2.',
+      resultado: 'Padrão de culpa reduzido 80%'
+    },
+    {
+      iniciais: 'RC',
+      texto: 'Gastava 3% do meu dinheiro comigo. Hoje são 12%. Não sou egoísta. Sou prioridade também.',
+      resultado: 'De 3% para 12% em 4 meses'
+    }
+  ];
+
+  const handleComecar = () => {
+    navigate('/aurea/pagamento');
+  };
+
+  return (
+    <div className="min-h-screen" style={{ fontFamily: "'DM Sans', sans-serif", background: 'linear-gradient(to bottom, #2D2A24, #3D3830, #2D2A24)' }}>
+      {/* Navegação */}
+      <nav className="fixed top-0 w-full px-4 md:px-8 py-4 flex justify-between items-center bg-[#2D2A24]/95 backdrop-blur-sm z-50 border-b border-amber-500/20">
+        <Link to="/landing" className="flex items-center gap-3">
+          <img src="/logos/AUREA_LOGO_V3.png" alt="ÁUREA" className="w-12 h-12" />
+          <span className="text-2xl font-bold text-amber-200" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            ÁUREA
+          </span>
+        </Link>
+        <div className="hidden md:flex gap-6">
+          <a href="#features" className="text-amber-100/70 hover:text-amber-200 transition-colors">Funcionalidades</a>
+          <a href="#niveis" className="text-amber-100/70 hover:text-amber-200 transition-colors">Níveis</a>
+          <a href="#testemunhos" className="text-amber-100/70 hover:text-amber-200 transition-colors">Resultados</a>
+          <a href="#precos" className="text-amber-100/70 hover:text-amber-200 transition-colors">Preços</a>
+        </div>
+        <div className="flex gap-3 items-center">
+          <Link
+            to="/aurea/login"
+            className="px-5 py-2 text-amber-200 font-semibold text-sm hover:text-amber-100 transition-colors"
+          >
+            Entrar
+          </Link>
+          <button
+            onClick={handleComecar}
+            className="px-6 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-full font-semibold text-sm hover:from-amber-600 hover:to-amber-700 transition-all shadow-lg shadow-amber-500/30"
+          >
+            7 Dias Grátis
+          </button>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <section className="pt-32 pb-20 px-4 relative overflow-hidden">
+        {/* Gradientes decorativos */}
+        <div className="absolute top-20 right-10 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 left-10 w-72 h-72 bg-amber-600/10 rounded-full blur-3xl"></div>
+
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <div className="inline-block px-4 py-2 bg-amber-500/20 rounded-full mb-6">
+            <span className="text-amber-300 text-sm font-medium">✨ 2º Eco do Sistema Sete Ecos</span>
+          </div>
+
+          <h1 className="text-5xl md:text-7xl font-bold text-amber-100 mb-6" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            Valor & Presença
+          </h1>
+
+          <p className="text-xl md:text-2xl text-amber-200/80 mb-4">
+            A que merece
+          </p>
+
+          <p className="text-lg text-amber-100/60 max-w-2xl mx-auto mb-8">
+            Para mulheres que funcionam bem para os outros mas não existem para si próprias.
+            ÁUREA trabalha a relação com dinheiro, roupa, prazer e mimo — sem culpa, sem justificação.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <button
+              onClick={handleComecar}
+              className="px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-semibold text-lg hover:from-amber-600 hover:to-amber-700 transition-all shadow-lg shadow-amber-500/30"
+            >
+              Começar 7 Dias Grátis
+            </button>
+            <a
+              href="#features"
+              className="px-8 py-4 bg-white/10 text-amber-200 rounded-xl font-semibold text-lg hover:bg-white/20 transition-all border border-amber-500/30"
+            >
+              Ver como funciona
+            </a>
+          </div>
+
+          {/* Estatísticas */}
+          <div className="grid grid-cols-3 gap-8 max-w-md mx-auto">
+            <div>
+              <div className="text-3xl font-bold text-amber-300">7</div>
+              <div className="text-amber-200/60 text-sm">dias grátis</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-amber-300">100+</div>
+              <div className="text-amber-200/60 text-sm">práticas</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-amber-300">4</div>
+              <div className="text-amber-200/60 text-sm">níveis</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* A Ferida */}
+      <section className="py-20 px-4 bg-gradient-to-r from-amber-900/20 to-amber-800/20">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              Reconheces-te?
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {[
+              'Trabalhas a usar tudo nos outros, nada em ti',
+              'Sentes culpa quando cuidas de ti',
+              'Tens roupas lindas "para ocasiões" que nunca usas',
+              'Compras para todos menos para ti',
+              'O teu prazer vem sempre por último',
+              'Justificas cada gasto contigo',
+              'Dizes "não preciso" quando precisas',
+              'Sentes que não mereces'
+            ].map((item, i) => (
+              <div key={i} className="flex items-start gap-3 p-4 bg-white/5 rounded-xl border border-amber-500/20">
+                <span className="text-amber-400">✓</span>
+                <span className="text-amber-100/80">{item}</span>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-center text-amber-200/70 mt-8 text-lg">
+            Se marcaste 3 ou mais, ÁUREA foi criada para ti.
+          </p>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section id="features" className="py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              Como ÁUREA funciona
+            </h2>
+            <p className="text-amber-200/70 max-w-2xl mx-auto">
+              Não é consumo. É permissão de existir para ti.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {features.map((feature, i) => (
+              <div key={i} className="p-6 bg-white/5 rounded-2xl border border-amber-500/20 hover:border-amber-500/40 transition-all">
+                <div className="text-3xl mb-4">{feature.icone}</div>
+                <h3 className="text-lg font-bold text-amber-100 mb-2">{feature.titulo}</h3>
+                <p className="text-amber-200/70 text-sm">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Sistema de Jóias / Níveis */}
+      <section id="niveis" className="py-20 px-4 bg-gradient-to-r from-amber-900/20 to-amber-800/20">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              Jóias de Ouro
+            </h2>
+            <p className="text-amber-200/70 max-w-2xl mx-auto">
+              Não são pontos arbitrários — são marcadores de evolução real.
+              Cada acção de auto-cuidado = 1 jóia.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-6">
+            {niveis.map((nivel, i) => (
+              <div key={i} className="p-6 bg-white/5 rounded-2xl border border-amber-500/20 text-center">
+                <div className="text-4xl mb-3">{nivel.icone}</div>
+                <h3 className="text-xl font-bold text-amber-100">{nivel.nome}</h3>
+                <p className="text-amber-300 text-sm mb-2">{nivel.subtitulo}</p>
+                <p className="text-amber-200/50 text-xs mb-4">{nivel.joias} jóias</p>
+                <p className="text-amber-200/70 text-sm mb-4">"{nivel.descricao}"</p>
+                <div className="space-y-1">
+                  {nivel.desbloqueios.map((d, j) => (
+                    <div key={j} className="text-xs text-amber-300/70 flex items-center gap-1 justify-center">
+                      <span>✓</span> {d}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testemunhos */}
+      <section id="testemunhos" className="py-20 px-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              Resultados reais
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {testemunhos.map((t, i) => (
+              <div key={i} className="p-6 bg-white/5 rounded-2xl border border-amber-500/20">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-white font-bold">
+                    {t.iniciais}
+                  </div>
+                  <div className="text-amber-300 text-sm">{t.resultado}</div>
+                </div>
+                <p className="text-amber-200/80 italic">"{t.texto}"</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Preços */}
+      <section id="precos" className="py-20 px-4 bg-gradient-to-r from-amber-900/20 to-amber-800/20">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              Investimento em ti
+            </h2>
+            <p className="text-amber-200/70">
+              Começa com 7 dias grátis. Sem compromisso.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {Object.values(planos).map((plano, i) => (
+              <div
+                key={plano.id}
+                className={`p-6 rounded-2xl border ${i === 1
+                  ? 'bg-gradient-to-br from-amber-500/20 to-amber-600/20 border-amber-400'
+                  : 'bg-white/5 border-amber-500/20'
+                  }`}
+              >
+                {i === 1 && (
+                  <div className="text-center mb-4">
+                    <span className="px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full">
+                      MAIS POPULAR
+                    </span>
+                  </div>
+                )}
+                <h3 className="text-xl font-bold text-amber-100 text-center mb-2">{plano.nome}</h3>
+                <div className="text-center mb-4">
+                  <span className="text-3xl font-bold text-amber-200">{plano.preco.toLocaleString()}</span>
+                  <span className="text-amber-200/70"> MZN</span>
+                  {plano.desconto > 0 && (
+                    <div className="text-amber-400 text-sm">-{plano.desconto}% desconto</div>
+                  )}
+                  <div className="text-amber-200/50 text-sm">(${plano.precoUSD} USD)</div>
+                </div>
+                <ul className="space-y-2 mb-6">
+                  <li className="flex items-center gap-2 text-amber-200/80 text-sm">
+                    <span className="text-amber-400">✓</span> Acesso completo
+                  </li>
+                  <li className="flex items-center gap-2 text-amber-200/80 text-sm">
+                    <span className="text-amber-400">✓</span> 100+ práticas
+                  </li>
+                  <li className="flex items-center gap-2 text-amber-200/80 text-sm">
+                    <span className="text-amber-400">✓</span> Todas as funcionalidades
+                  </li>
+                </ul>
+                <button
+                  onClick={handleComecar}
+                  className={`w-full py-3 rounded-xl font-semibold transition-all ${i === 1
+                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700'
+                    : 'bg-white/10 text-amber-200 hover:bg-white/20 border border-amber-500/30'
+                    }`}
+                >
+                  Começar agora
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-20 px-4">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-amber-100 text-center mb-12" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            Perguntas frequentes
+          </h2>
+
+          <div className="space-y-4">
+            {faqs.map((faq, i) => (
+              <div key={i} className="border border-amber-500/20 rounded-xl overflow-hidden">
+                <button
+                  onClick={() => setFaqAberta(faqAberta === i ? null : i)}
+                  className="w-full p-4 flex justify-between items-center text-left bg-white/5 hover:bg-white/10 transition-colors"
+                >
+                  <span className="text-amber-100 font-medium">{faq.pergunta}</span>
+                  <span className="text-amber-400 text-xl">{faqAberta === i ? '−' : '+'}</span>
+                </button>
+                {faqAberta === i && (
+                  <div className="p-4 bg-white/5 border-t border-amber-500/20">
+                    <p className="text-amber-200/80">{faq.resposta}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Final */}
+      <section className="py-20 px-4 bg-gradient-to-r from-amber-600/20 to-amber-500/20">
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            Pronta para ser prioridade?
+          </h2>
+          <p className="text-amber-200/70 mb-8">
+            7 dias grátis. Sem compromisso. Sem cartão de crédito.
+          </p>
+          <button
+            onClick={handleComecar}
+            className="px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-semibold text-lg hover:from-amber-600 hover:to-amber-700 transition-all shadow-lg shadow-amber-500/30"
+          >
+            Começar a minha jornada
+          </button>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-8 px-4 border-t border-amber-500/20">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-3">
+            <img src="/logos/AUREA_LOGO_V3.png" alt="ÁUREA" className="w-8 h-8" />
+            <span className="text-amber-200/70">ÁUREA - Sete Ecos</span>
+          </div>
+          <div className="flex gap-6 text-sm">
+            <Link to="/landing" className="text-amber-200/50 hover:text-amber-200">Sete Ecos</Link>
+            <a href="/termos.pdf" className="text-amber-200/50 hover:text-amber-200">Termos</a>
+            <a href="/privacidade.pdf" className="text-amber-200/50 hover:text-amber-200">Privacidade</a>
+          </div>
+          <div className="text-amber-200/50 text-sm">
+            © 2025 Sete Ecos
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default LandingAurea;

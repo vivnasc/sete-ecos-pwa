@@ -30,16 +30,16 @@ const LandingGeral = () => {
       rota: '/vitalis'
     },
     {
-      nome: 'AUREA',
-      slogan: 'O Valor Encarnado',
-      descricao: 'Para mulheres que gastam tudo nos outros e sentem culpa quando cuidam de si. Trabalha a relação com dinheiro, prazer, roupa, beleza e mimo.',
-      detalhe: 'Quota de Presença, dinheiro como espelho, prazer sem culpa.',
+      nome: 'ÁUREA',
+      slogan: 'Valor & Presença',
+      descricao: 'A que merece. Para mulheres que gastam tudo nos outros e sentem culpa quando cuidam de si. Trabalha a relação com dinheiro, prazer, roupa e mimo — sem culpa.',
+      detalhe: 'Quota de Presença, Micro-Práticas diárias, Espelho de Roupa, Carteira de Merecimento.',
       logo: '/logos/AUREA_LOGO_V3.png',
       cor: 'from-amber-500 to-yellow-600',
       bgCor: 'bg-amber-500/20',
-      disponivel: false,
+      disponivel: false, // Oculto até testes completos - acesso directo via /aurea
       modelo: 'Subscrição mensal',
-      rota: null
+      rota: '/aurea'
     },
     {
       nome: 'SERENA',
