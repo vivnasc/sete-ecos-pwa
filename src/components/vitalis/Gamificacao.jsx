@@ -22,6 +22,10 @@ export const CONQUISTAS = {
   // Treino
   treino_1: { id: 'treino_1', nome: 'Corpo em Movimento', descricao: 'Primeiro treino registado', icone: '🏃‍♀️', cor: 'from-orange-300 to-red-400', pontos: 75, xp: 75 },
   treino_10: { id: 'treino_10', nome: 'Atleta em Treino', descricao: '10 treinos registados', icone: '💪', cor: 'from-orange-400 to-red-500', pontos: 200, xp: 200 },
+  treino_25: { id: 'treino_25', nome: 'Guerreira Fitness', descricao: '25 treinos registados', icone: '🔥', cor: 'from-red-500 to-orange-600', pontos: 350, xp: 350 },
+  treino_50: { id: 'treino_50', nome: 'Mestre do Movimento', descricao: '50 treinos registados', icone: '🏆', cor: 'from-amber-500 to-yellow-500', pontos: 500, xp: 500 },
+  treino_semana: { id: 'treino_semana', nome: 'Semana Activa', descricao: '4 treinos numa semana', icone: '📅', cor: 'from-green-400 to-emerald-500', pontos: 150, xp: 150 },
+  treino_consistente: { id: 'treino_consistente', nome: 'Consistência', descricao: '3 semanas seguidas a treinar', icone: '⭐', cor: 'from-yellow-400 to-amber-500', pontos: 250, xp: 250 },
 
   // Refeições
   refeicoes_10: { id: 'refeicoes_10', nome: 'Chef Iniciante', descricao: '10 refeições registadas', icone: '🍽️', cor: 'from-amber-400 to-yellow-500', pontos: 100, xp: 100 },
