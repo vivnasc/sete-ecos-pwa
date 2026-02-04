@@ -10,6 +10,7 @@ import {
   getSubscriptionStats
 } from '../lib/subscriptions';
 import { enviarNotificacao, pedirPermissao, temPermissao } from '../utils/notifications';
+import { enviarEmail } from '../lib/emails';
 
 /**
  * SETE ECOS - COACH DASHBOARD v2
@@ -233,7 +234,13 @@ const CoachDashboard = () => {
       const clientName = client.users?.nome || client.nome_completo || 'Cliente';
       const clientEmail = client.users?.email || '';
 
-      // Guardar na base de dados
+      if (!clientEmail) {
+        alert('❌ Cliente não tem email registado');
+        setSendingMotivation(false);
+        return;
+      }
+
+      // 1. Guardar na base de dados
       await supabase.from('vitalis_alerts').insert({
         user_id: client.user_id,
         tipo_alerta: 'motivacao_coach',
@@ -242,17 +249,26 @@ const CoachDashboard = () => {
         status: 'enviado'
       });
 
-      // Enviar email via Supabase Edge Function (se configurado)
-      // Por agora, simular envio
-      console.log(`📧 Email enviado para ${clientEmail}: ${message}`);
+      // 2. Enviar email via Resend API
+      const emailResult = await enviarEmail('lembrete-checkin', clientEmail, {
+        nome: clientName,
+        dias: 'alguns',
+        mensagem: message
+      });
 
-      alert(`✅ Motivação enviada para ${clientName}!\n\n📧 Email: ${clientEmail}\n💬 Mensagem: ${message.substring(0, 50)}...`);
+      if (emailResult.success) {
+        alert(`✅ Motivação enviada com sucesso!\n\n👤 Para: ${clientName}\n📧 Email: ${clientEmail}\n💬 Mensagem enviada!`);
+      } else {
+        // Email falhou mas guardámos na base de dados
+        alert(`⚠️ Motivação guardada mas email pode não ter sido enviado.\n\nVerifica se RESEND_API_KEY está configurada no Vercel.`);
+      }
 
       await loadMotivationHistory();
       setCustomMessage('');
+      setShowMotivationPanel(false);
     } catch (error) {
       console.error('Erro ao enviar motivação:', error);
-      alert('❌ Erro ao enviar motivação');
+      alert('❌ Erro ao enviar motivação: ' + error.message);
     } finally {
       setSendingMotivation(false);
     }
