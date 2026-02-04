@@ -37,7 +37,7 @@ const LandingGeral = () => {
       logo: '/logos/AUREA_LOGO_V3.png',
       cor: 'from-amber-500 to-yellow-600',
       bgCor: 'bg-amber-500/20',
-      disponivel: true,
+      disponivel: false, // Oculto até testes completos - acesso directo via /aurea
       modelo: 'Subscrição mensal',
       rota: '/aurea'
     },
