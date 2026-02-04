@@ -107,7 +107,11 @@ function App() {
           <Route path="/aurora" element={<ComingSoon />} />
 
           {/* ===== ADMIN / COACH ===== */}
-          <Route path="/coach" element={session?.user?.email === 'viv.saraiva@gmail.com' ? <CoachDashboard /> : <Navigate to="/" />} />
+          <Route path="/coach" element={
+            ['viv.saraiva@gmail.com', 'vivianne.saraiva@outlook.com'].includes(session?.user?.email?.toLowerCase())
+              ? <CoachDashboard />
+              : <Navigate to="/" />
+          } />
 
           {/* ===== FALLBACK ===== */}
           <Route path="*" element={<Navigate to="/" />} />
