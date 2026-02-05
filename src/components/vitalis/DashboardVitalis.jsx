@@ -237,21 +237,27 @@ export default function DashboardVitalis() {
       setUserId(userData.id);
       setUserName(userData.nome || '');
 
-      const { data: clientData } = await supabase
+      const { data: clientData, error: clientError } = await supabase
         .from('vitalis_clients')
         .select('*')
         .eq('user_id', userData.id)
-        .single();
+        .maybeSingle();
+
+      // Se não tem cliente, redirecionar para pagamento
+      if (!clientData) {
+        console.log('Utilizador sem registo vitalis_clients');
+        navigate('/vitalis/pagamento');
+        return;
+      }
       setClient(clientData);
 
-      if (clientData) {
-        const { data: planoData } = await supabase
-          .from('vitalis_plano')
-          .select('*')
-          .eq('client_id', clientData.id)
-          .single();
-        setPlano(planoData);
-      }
+      // Buscar plano (pode não existir ainda)
+      const { data: planoData } = await supabase
+        .from('vitalis_plano')
+        .select('*')
+        .eq('client_id', clientData.id)
+        .maybeSingle();
+      setPlano(planoData || null);
 
       const { data: registosData } = await supabase
         .from('vitalis_registos')
@@ -285,15 +291,16 @@ export default function DashboardVitalis() {
       const totalAgua = (aguaData || []).reduce((sum, a) => sum + a.quantidade_ml, 0) / 1000;
       setAguaHoje(totalAgua);
 
+      // Usar maybeSingle() para evitar crashes quando não há dados
       const { data: treinoData } = await supabase
         .from('vitalis_workouts_log')
         .select('*')
         .eq('user_id', userData.id)
         .eq('data', hoje)
         .limit(1)
-        .single();
-      
-      if (treinoData) setTreinoHoje(treinoData);
+        .maybeSingle();
+
+      setTreinoHoje(treinoData || null);
 
       const { data: sonoData } = await supabase
         .from('vitalis_sono_log')
@@ -301,9 +308,9 @@ export default function DashboardVitalis() {
         .eq('user_id', userData.id)
         .eq('data', hoje)
         .limit(1)
-        .single();
-      
-      if (sonoData) setSonoHoje(sonoData);
+        .maybeSingle();
+
+      setSonoHoje(sonoData || null);
 
       const { data: jejumData } = await supabase
         .from('vitalis_fasting_log')
@@ -312,9 +319,9 @@ export default function DashboardVitalis() {
         .is('hora_fim', null)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
-      
-      if (jejumData) setJejumActual(jejumData);
+        .maybeSingle();
+
+      setJejumActual(jejumData || null);
 
       calcularStreak(userData.id);
       calcularConquistas(userData.id, userData.nome || user.email.split('@')[0], user.email);

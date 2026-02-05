@@ -154,20 +154,37 @@ export default function VitalisAuth() {
           throw error;
         }
 
-        // Se tem sessão, email confirmation está desactivado - ir directo para pagamento
-        if (data.session) {
-          // Criar registo na tabela users se não existir
+        // Criar registo na tabela users se não existir
+        if (data.user) {
           await supabase.from('users').upsert({
             auth_id: data.user.id,
             email: emailResult.valor,
             created_at: new Date().toISOString()
           }, { onConflict: 'auth_id' });
+        }
 
+        // Se tem sessão, email confirmation está desactivado - ir directo para pagamento
+        if (data.session) {
           navigate('/vitalis/pagamento');
+        } else if (data.user && !data.session) {
+          // Verificar se a conta foi criada mas precisa confirmação
+          // Tentar fazer login automático para ver se funciona
+          const { data: loginData } = await supabase.auth.signInWithPassword({
+            email: emailResult.valor,
+            password,
+          });
+
+          if (loginData?.session) {
+            // Login funcionou - confirmação não era necessária
+            navigate('/vitalis/pagamento');
+          } else {
+            // Realmente precisa confirmar email
+            setConfirmationEmail(emailResult.valor);
+            setShowConfirmation(true);
+          }
         } else {
-          // Email confirmation está activado - mostrar ecrã de confirmação
-          setConfirmationEmail(emailResult.valor);
-          setShowConfirmation(true);
+          // Fallback - ir para pagamento
+          navigate('/vitalis/pagamento');
         }
       }
     } catch (error) {

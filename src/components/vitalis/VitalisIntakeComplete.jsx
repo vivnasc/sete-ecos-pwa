@@ -479,7 +479,9 @@ try {
         }
       }
 
-      navigate('/vitalis/dashboard');
+      // Após intake, ir para pagamento (não dashboard!)
+      // O dashboard está protegido por VitalisAccessGuard que requer subscription_status activo
+      navigate('/vitalis/pagamento');
     } catch (err) {
       console.error('Erro completo:', err);
       setError(`Erro ao submeter: ${err.message}`);
