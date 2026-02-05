@@ -82,7 +82,7 @@ export const checkVitalisAccess = async (userId) => {
       .from('vitalis_clients')
       .select('subscription_status, subscription_expires, trial_started')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     if (error || !client) {
       return { hasAccess: false, status: SUBSCRIPTION_STATUS.NONE, reason: 'no_client' };
@@ -190,7 +190,7 @@ export const startTrial = async (userId) => {
       .from('vitalis_clients')
       .select('id')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     const trialData = {
       subscription_status: SUBSCRIPTION_STATUS.TRIAL,
@@ -237,7 +237,7 @@ export const setAsTester = async (userId, notes = '') => {
       .from('vitalis_clients')
       .select('id')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     const testerData = {
       subscription_status: SUBSCRIPTION_STATUS.TESTER,
@@ -334,7 +334,7 @@ export const activateSubscription = async (userId, paymentDetails) => {
       .from('vitalis_clients')
       .select('id')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     const subscriptionData = {
       subscription_status: SUBSCRIPTION_STATUS.ACTIVE,
@@ -406,7 +406,7 @@ export const registerPendingPayment = async (userId, paymentDetails) => {
       .from('vitalis_clients')
       .select('id')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     if (existingClient) {
       // Atualizar registo existente
@@ -517,10 +517,15 @@ export const useInviteCode = async (userId, code) => {
       .select('*')
       .eq('code', code.toUpperCase())
       .eq('active', true)
-      .single();
+      .maybeSingle();
 
     if (fetchError || !invite) {
       return { success: false, error: 'Codigo invalido ou expirado' };
+    }
+
+    // Verificar expiração do código
+    if (invite.expires_at && new Date(invite.expires_at) < new Date()) {
+      return { success: false, error: 'Codigo expirado' };
     }
 
     if (invite.uses_count >= invite.max_uses) {

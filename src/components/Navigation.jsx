@@ -23,7 +23,7 @@ export default function Navigation({ variant = 'default' }) {
           .from('users')
           .select('id')
           .eq('auth_id', user.id)
-          .single()
+          .maybeSingle()
 
         if (userData) {
           // Check Vitalis access
@@ -31,9 +31,9 @@ export default function Navigation({ variant = 'default' }) {
             .from('vitalis_clients')
             .select('subscription_status')
             .eq('user_id', userData.id)
-            .single()
+            .maybeSingle()
 
-          const activeStatuses = ['active', 'trial', 'tester']
+          const activeStatuses = ['active', 'trial', 'tester', 'pending']
           setHasVitalisAccess(vitalisData && activeStatuses.includes(vitalisData.subscription_status))
 
           // Check Aurea access
@@ -41,7 +41,7 @@ export default function Navigation({ variant = 'default' }) {
             .from('aurea_clients')
             .select('subscription_status')
             .eq('user_id', userData.id)
-            .single()
+            .maybeSingle()
 
           setHasAureaAccess(aureaData && activeStatuses.includes(aureaData.subscription_status))
         }

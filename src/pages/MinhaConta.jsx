@@ -35,7 +35,7 @@ export default function MinhaConta() {
         .from('users')
         .select('*')
         .eq('auth_id', session.user.id)
-        .single();
+        .maybeSingle();
 
       if (userData) {
         // Get Vitalis subscription
@@ -43,18 +43,18 @@ export default function MinhaConta() {
           .from('vitalis_clients')
           .select('*')
           .eq('user_id', userData.id)
-          .single();
+          .maybeSingle();
 
         // Get Aurea subscription (if exists)
         const { data: aureaData } = await supabase
           .from('aurea_clients')
           .select('*')
           .eq('user_id', userData.id)
-          .single();
+          .maybeSingle();
 
         setSubscriptions({
-          vitalis: vitalisData,
-          aurea: aureaData
+          vitalis: vitalisData || null,
+          aurea: aureaData || null
         });
       }
     } catch (error) {
