@@ -484,40 +484,55 @@ export default function ChatAurea() {
     }
   };
 
+  // Cores claras e femininas
+  const CORES = {
+    bg: '#FDF8F3',
+    bgCard: '#FFFFFF',
+    gold: '#C9A227',
+    goldLight: '#E8D59E',
+    rose: '#E8B4B8',
+    roseDark: '#D4919A',
+    text: '#4A3728',
+    textLight: '#8B7355',
+    accent: '#F5E6D3',
+    userBubble: '#C9A227',
+    assistantBubble: '#FFFFFF'
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #2D2A24 0%, #3D3830 50%, #2D2A24 100%)' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: CORES.bg }}>
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center animate-pulse">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center animate-pulse" style={{ background: `linear-gradient(135deg, ${CORES.rose} 0%, ${CORES.roseDark} 100%)` }}>
             <span className="text-2xl">💛</span>
           </div>
-          <p className="text-amber-200/60">A Esmeralda está a preparar-se...</p>
+          <p style={{ color: CORES.textLight }}>A Esmeralda está a chegar...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(135deg, #2D2A24 0%, #3D3830 50%, #2D2A24 100%)' }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: CORES.bg }}>
       {/* Header */}
-      <header className="px-4 py-4 border-b border-amber-500/20 bg-[#2D2A24]/95 backdrop-blur-sm">
+      <header className="px-4 py-4 border-b shadow-sm" style={{ backgroundColor: CORES.bgCard, borderColor: CORES.accent }}>
         <div className="flex items-center gap-4">
-          <Link to="/aurea/dashboard" className="text-amber-200/60 hover:text-amber-200">
+          <Link to="/aurea/dashboard" style={{ color: CORES.textLight }}>
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </Link>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center shadow-md" style={{ background: `linear-gradient(135deg, ${CORES.rose} 0%, ${CORES.roseDark} 100%)` }}>
                 <span className="text-xl">💛</span>
               </div>
-              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-[#2D2A24]"></div>
+              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2" style={{ borderColor: CORES.bgCard }}></div>
             </div>
             <div>
-              <h1 className="text-amber-100 font-bold text-lg">{PERSONA.nome}</h1>
-              <p className="text-green-400 text-xs flex items-center gap-1">
-                <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+              <h1 className="font-bold text-lg" style={{ color: CORES.text }}>{PERSONA.nome}</h1>
+              <p className="text-xs flex items-center gap-1" style={{ color: '#22C55E' }}>
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
                 Aqui para ti
               </p>
             </div>
@@ -525,8 +540,8 @@ export default function ChatAurea() {
 
           {/* Padrões identificados badge */}
           {memory.identifiedPatterns.length > 0 && (
-            <div className="ml-auto px-2 py-1 bg-amber-500/20 rounded-full">
-              <span className="text-amber-200 text-xs">{memory.identifiedPatterns.length} padrões</span>
+            <div className="ml-auto px-3 py-1 rounded-full" style={{ backgroundColor: CORES.accent }}>
+              <span className="text-xs" style={{ color: CORES.gold }}>{memory.identifiedPatterns.length} padrões</span>
             </div>
           )}
         </div>
@@ -540,19 +555,19 @@ export default function ChatAurea() {
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             {msg.role === 'assistant' && (
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mr-2 flex-shrink-0 mt-1">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center mr-2 flex-shrink-0 mt-1 shadow-sm" style={{ background: `linear-gradient(135deg, ${CORES.rose} 0%, ${CORES.roseDark} 100%)` }}>
                 <span className="text-sm">💛</span>
               </div>
             )}
             <div
-              className={`max-w-[85%] p-4 rounded-2xl ${
-                msg.role === 'user'
-                  ? 'bg-amber-500/30 border border-amber-500/40 text-amber-100 rounded-br-sm'
-                  : 'bg-white/10 border border-amber-500/20 text-amber-200 rounded-bl-sm'
-              }`}
+              className="max-w-[85%] p-4 rounded-2xl shadow-sm"
+              style={msg.role === 'user'
+                ? { backgroundColor: CORES.gold, color: 'white', borderBottomRightRadius: '4px' }
+                : { backgroundColor: CORES.bgCard, color: CORES.text, borderBottomLeftRadius: '4px', border: `1px solid ${CORES.accent}` }
+              }
             >
               <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-              <p className="text-[10px] text-amber-200/30 mt-2 text-right">
+              <p className="text-[10px] mt-2 text-right" style={{ opacity: 0.5 }}>
                 {new Date(msg.timestamp).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
@@ -561,16 +576,16 @@ export default function ChatAurea() {
 
         {isTyping && (
           <div className="flex justify-start">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mr-2 flex-shrink-0">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center mr-2 flex-shrink-0 shadow-sm" style={{ background: `linear-gradient(135deg, ${CORES.rose} 0%, ${CORES.roseDark} 100%)` }}>
               <span className="text-sm">💛</span>
             </div>
-            <div className="bg-white/10 border border-amber-500/20 p-4 rounded-2xl rounded-bl-sm">
+            <div className="p-4 rounded-2xl shadow-sm" style={{ backgroundColor: CORES.bgCard, border: `1px solid ${CORES.accent}`, borderBottomLeftRadius: '4px' }}>
               <div className="flex items-center gap-2">
-                <span className="text-amber-200/60 text-sm">A reflectir</span>
+                <span className="text-sm" style={{ color: CORES.textLight }}>A reflectir</span>
                 <div className="flex gap-1">
-                  <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                  <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                  <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                  <div className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: CORES.rose, animationDelay: '0ms' }}></div>
+                  <div className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: CORES.rose, animationDelay: '150ms' }}></div>
+                  <div className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: CORES.rose, animationDelay: '300ms' }}></div>
                 </div>
               </div>
             </div>
@@ -581,7 +596,7 @@ export default function ChatAurea() {
       </div>
 
       {/* Input */}
-      <div className="px-4 py-4 border-t border-amber-500/20 bg-[#2D2A24]/95 backdrop-blur-sm">
+      <div className="px-4 py-4 border-t shadow-lg" style={{ backgroundColor: CORES.bgCard, borderColor: CORES.accent }}>
         <div className="flex gap-3">
           <textarea
             value={inputValue}
@@ -589,20 +604,27 @@ export default function ChatAurea() {
             onKeyPress={handleKeyPress}
             placeholder="Partilha o que sentes..."
             rows={1}
-            className="flex-1 px-4 py-3 bg-white/10 border border-amber-500/30 rounded-xl text-amber-100 placeholder-amber-300/40 focus:outline-none focus:border-amber-400 resize-none"
-            style={{ minHeight: '48px', maxHeight: '120px' }}
+            className="flex-1 px-4 py-3 rounded-xl focus:outline-none resize-none"
+            style={{
+              backgroundColor: CORES.accent,
+              color: CORES.text,
+              border: `1px solid ${CORES.goldLight}`,
+              minHeight: '48px',
+              maxHeight: '120px'
+            }}
           />
           <button
             onClick={handleSend}
             disabled={!inputValue.trim() || isTyping}
-            className="px-4 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl disabled:opacity-50 hover:from-amber-600 hover:to-amber-700 transition-all"
+            className="px-4 py-3 rounded-xl text-white disabled:opacity-50 transition-all hover:scale-105"
+            style={{ background: `linear-gradient(135deg, ${CORES.rose} 0%, ${CORES.roseDark} 100%)` }}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
             </svg>
           </button>
         </div>
-        <p className="text-amber-200/30 text-xs text-center mt-2">
+        <p className="text-xs text-center mt-2" style={{ color: CORES.textLight }}>
           Sem julgamentos. Só honestidade.
         </p>
       </div>
