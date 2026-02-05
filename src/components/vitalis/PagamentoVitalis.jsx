@@ -270,11 +270,26 @@ const PagamentoVitalis = () => {
           valor: 'Cortesia',
           validoAte: 'Conforme convite'
         }).catch(console.error);
-        setShowCommunityModal(true);
+
+        // Verificar se já fez intake
+        const { data: intake } = await supabase
+          .from('vitalis_intake')
+          .select('id')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        if (intake) {
+          // Já fez intake - ir directo para dashboard
+          navigate('/vitalis/dashboard');
+        } else {
+          // Ainda não fez intake - ir para intake
+          navigate('/vitalis/intake');
+        }
       } else {
         setMessage({ type: 'error', text: result.error || 'Código inválido.' });
       }
-    } catch {
+    } catch (err) {
+      console.error('Erro ao usar código:', err);
       setMessage({ type: 'error', text: 'Erro ao verificar código.' });
     } finally {
       setProcessing(false);
