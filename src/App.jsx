@@ -6,6 +6,9 @@ import { isSessionCoach } from './lib/coach'
 // ===== PÁGINAS PRINCIPAIS =====
 import Home from './pages/Home'
 import Login from './pages/Login'
+import MinhaConta from './pages/MinhaConta'
+import Perfil from './pages/Perfil'
+import RecuperarPassword from './pages/RecuperarPassword'
 import Lumina from './pages/Lumina'
 import ComingSoon from './pages/ComingSoon'
 import Auth from './components/Auth'
@@ -97,6 +100,11 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/landing" element={<LandingGeral />} />
+          <Route path="/recuperar-password" element={<RecuperarPassword />} />
+
+          {/* ===== CONTA E PERFIL (requerem auth) ===== */}
+          <Route path="/conta" element={session ? <MinhaConta /> : <Navigate to="/login" state={{ from: '/conta' }} />} />
+          <Route path="/perfil" element={session ? <Perfil /> : <Navigate to="/login" state={{ from: '/perfil' }} />} />
 
           {/* ===== LUMINA - Diagnóstico Gratuito ===== */}
           <Route path="/lumina" element={session ? <Lumina /> : <Navigate to="/login" state={{ from: '/lumina', eco: 'Lumina' }} />} />

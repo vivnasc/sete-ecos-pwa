@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { StreakDisplay, CelebracaoModal, ConquistasSection, NivelProgresso, CONQUISTAS } from './Gamificacao.jsx';
 import { useOnboarding, OnboardingWrapper } from './OnboardingTutorial.jsx';
 import { EmailTriggers } from '../../lib/emails';
+import WelcomeTutorial from '../WelcomeTutorial.jsx';
 
 // Função para solicitar permissão de notificações
 const solicitarPermissaoNotificacoes = async () => {
@@ -748,7 +749,10 @@ export default function DashboardVitalis() {
         ? 'bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f0f23]'
         : 'bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]'
     }`}>
-      
+
+      {/* Tutorial de Boas-vindas - Primeira vez */}
+      <WelcomeTutorial eco="vitalis" />
+
       {/* Header com Perfil */}
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D]"></div>
