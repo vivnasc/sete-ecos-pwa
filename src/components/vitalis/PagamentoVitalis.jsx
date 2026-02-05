@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import {
   SUBSCRIPTION_PLANS,
@@ -24,6 +24,7 @@ const WHATSAPP_COMMUNITY = 'https://chat.whatsapp.com/FbHbQuDPGAZ3myiu29CmHO';
 
 const PagamentoVitalis = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const paypalRef = useRef(null);
 
   const [loading, setLoading] = useState(true);
@@ -54,7 +55,14 @@ const PagamentoVitalis = () => {
   useEffect(() => {
     loadUserData();
     loadPayPalScript();
-  }, []);
+
+    // Check for code in URL (e.g., /vitalis/pagamento?code=VITALIS-TESTER-2026)
+    const codeFromUrl = searchParams.get('code');
+    if (codeFromUrl) {
+      setInviteCode(codeFromUrl);
+      setShowInviteInput(true);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (paypalLoaded && userId) {
