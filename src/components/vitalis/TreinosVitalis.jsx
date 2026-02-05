@@ -1356,13 +1356,13 @@ export default function TreinosVitalis() {
 
             {/* Aviso se estiver em fase de indução */}
             {faseActual === 'inducao' && (
-              <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
-                <p className="text-amber-700 text-sm font-medium mb-1">
-                  ⚠️ Estás na Fase de Indução (Semanas 1-2)
+              <div className="bg-[#7C8B6F]/10 rounded-xl p-4 border border-[#7C8B6F]/30">
+                <p className="text-[#4A4035] text-sm font-medium mb-1">
+                  🌱 Estás na Fase de Indução (Semanas 1-2)
                 </p>
-                <p className="text-amber-600 text-sm">
-                  Mesmo que o teu ciclo sugira treinos mais intensos, nesta fase o foco é na adaptação metabólica.
-                  Alguns exercícios aparecem bloqueados para proteger os teus resultados a longo prazo.
+                <p className="text-[#4A4035]/70 text-sm">
+                  Estamos a proteger o teu progresso! Nesta fase, o teu corpo está a fazer ajustes importantes.
+                  Em breve vais poder aproveitar toda a energia do teu ciclo com treinos mais intensos.
                 </p>
               </div>
             )}
@@ -1386,12 +1386,12 @@ export default function TreinosVitalis() {
                       className={`px-3 py-1 rounded-full text-sm border ${
                         permitidoNaFase
                           ? 'bg-white text-[#4A4035] border-[#E8E2D9]'
-                          : 'bg-gray-100 text-gray-400 border-gray-200 line-through'
+                          : 'bg-[#7C8B6F]/5 text-[#4A4035]/40 border-[#7C8B6F]/20'
                       }`}
                       title={!permitidoNaFase ? `Disponível na fase ${faseMinima}` : ''}
                     >
                       {ex.icon} {ex.nome}
-                      {!permitidoNaFase && ' 🔒'}
+                      {!permitidoNaFase && ' 🌱'}
                     </span>
                   );
                 })}
@@ -1402,8 +1402,8 @@ export default function TreinosVitalis() {
                 const faseMinima = ex.fase_minima || 'inducao';
                 return ['transicao', 'construcao', 'manutencao'].includes(faseMinima);
               }) && (
-                <p className="text-gray-500 text-xs mt-2">
-                  🔒 = Disponível numa fase posterior do programa
+                <p className="text-[#7C8B6F] text-xs mt-2">
+                  🌱 Em breve disponível para ti
                 </p>
               )}
             </div>
