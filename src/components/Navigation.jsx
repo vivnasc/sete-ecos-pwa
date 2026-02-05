@@ -108,7 +108,7 @@ export default function Navigation({ variant = 'default' }) {
           {isAuthenticated && (
             <NavItem
               icon="community"
-              label="Social"
+              label="Rio"
               active={isCommunitySection}
               onClick={() => navigate('/comunidade')}
               color="#8B5CF6"
@@ -164,7 +164,7 @@ export default function Navigation({ variant = 'default' }) {
           {isAuthenticated && (
             <NavItem
               icon="community"
-              label="Social"
+              label="Rio"
               active={isCommunitySection}
               onClick={() => navigate('/comunidade')}
               color="#8B5CF6"
@@ -220,7 +220,7 @@ export default function Navigation({ variant = 'default' }) {
           {isAuthenticated && (
             <NavItem
               icon="community"
-              label="Social"
+              label="Rio"
               active={isCommunitySection}
               onClick={() => navigate('/comunidade')}
               color="#8B5CF6"
@@ -242,6 +242,11 @@ export default function Navigation({ variant = 'default' }) {
 
   // Community section navigation
   if (isCommunitySection) {
+    const isRio = location.pathname === '/comunidade'
+    const isCirculos = location.pathname === '/comunidade/circulos'
+    const isFogueira = location.pathname === '/comunidade/fogueira'
+    const isSussurros = location.pathname === '/comunidade/sussurros'
+
     return (
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-purple-100 shadow-lg z-50">
         {/* Current section indicator */}
@@ -260,18 +265,32 @@ export default function Navigation({ variant = 'default' }) {
             color="#1A1A4E"
           />
           <NavItem
-            icon="community"
-            label="Social"
-            active={isCommunitySection}
+            icon="rio"
+            label="Rio"
+            active={isRio}
             onClick={() => navigate('/comunidade')}
             color="#8B5CF6"
           />
           <NavItem
-            icon="account"
-            label="Conta"
-            active={isAccountSection}
-            onClick={() => navigate('/conta')}
-            color="#6B5C4C"
+            icon="circulos"
+            label="Circulos"
+            active={isCirculos}
+            onClick={() => navigate('/comunidade/circulos')}
+            color="#8B5CF6"
+          />
+          <NavItem
+            icon="fogueira"
+            label="Fogueira"
+            active={isFogueira}
+            onClick={() => navigate('/comunidade/fogueira')}
+            color="#F97316"
+          />
+          <NavItem
+            icon="sussurros"
+            label="Sussurros"
+            active={isSussurros}
+            onClick={() => navigate('/comunidade/sussurros')}
+            color="#EC4899"
           />
         </div>
       </nav>
@@ -336,10 +355,27 @@ function NavItem({ icon, logo, label, active, onClick, color }) {
         </svg>
       )
     }
-    if (icon === 'community') {
+    if (icon === 'community' || icon === 'rio') {
       return (
-        <svg className="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ opacity: active ? 1 : 0.5 }}>
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        <svg className="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ opacity: active ? 1 : 0.5 }}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+        </svg>
+      )
+    }
+    if (icon === 'circulos') {
+      return (
+        <svg className="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ opacity: active ? 1 : 0.5 }}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+        </svg>
+      )
+    }
+    if (icon === 'fogueira') {
+      return <span className="text-xl mb-0.5" style={{ opacity: active ? 1 : 0.5 }}>🔥</span>
+    }
+    if (icon === 'sussurros') {
+      return (
+        <svg className="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ opacity: active ? 1 : 0.5 }}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
         </svg>
       )
     }
