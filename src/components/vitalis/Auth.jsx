@@ -117,14 +117,30 @@ export default function VitalisAuth() {
         }
 
         // Buscar users.id primeiro
-        const { data: userData, error: userError } = await supabase
+        let { data: userData, error: userError } = await supabase
           .from('users')
           .select('id')
           .eq('auth_id', data.user.id)
           .single();
 
+        // Se não existir, criar registo (para utilizadores antigos)
         if (userError || !userData) {
-          throw new Error('Utilizador não encontrado na base de dados');
+          const { data: newUser, error: insertError } = await supabase
+            .from('users')
+            .insert({
+              auth_id: data.user.id,
+              email: data.user.email,
+              created_at: new Date().toISOString()
+            })
+            .select('id')
+            .single();
+
+          if (insertError) {
+            console.error('Erro ao criar utilizador:', insertError);
+            throw new Error('Erro ao sincronizar conta. Tenta novamente.');
+          }
+
+          userData = newUser;
         }
 
         // Usar a mesma função de verificação que o VitalisAccessGuard
@@ -151,6 +167,19 @@ export default function VitalisAuth() {
             throw new Error('Este email já está registado. Faz login ou recupera a password.');
           }
           throw error;
+        }
+
+        // Criar registo na tabela users
+        if (data.user) {
+          const { error: userError } = await supabase.from('users').insert({
+            auth_id: data.user.id,
+            email: data.user.email,
+            created_at: new Date().toISOString()
+          });
+
+          if (userError && !userError.message.includes('duplicate')) {
+            console.error('Erro ao criar registo de utilizador:', userError);
+          }
         }
 
         // Mostrar mensagem de confirmação de email
