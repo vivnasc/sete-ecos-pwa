@@ -441,7 +441,7 @@ try {
         .from('vitalis_clients')
         .select('id, subscription_status')
         .eq('user_id', userData.id)
-        .single();
+        .maybeSingle();
 
       const clientData = {
         user_id: userData.id,
@@ -479,9 +479,26 @@ try {
         }
       }
 
-      // Após intake, ir para pagamento (não dashboard!)
-      // O dashboard está protegido por VitalisAccessGuard que requer subscription_status activo
-      navigate('/vitalis/pagamento');
+      // IMPORTANTE: Re-buscar o cliente para obter o status ACTUAL após insert/update
+      const { data: currentClient } = await supabase
+        .from('vitalis_clients')
+        .select('subscription_status')
+        .eq('user_id', userData.id)
+        .maybeSingle();
+
+      // Verificar se já tem acesso (tester, active, pending, trial)
+      const statusComAcesso = ['tester', 'active', 'pending', 'trial'];
+      const temAcesso = currentClient && statusComAcesso.includes(currentClient.subscription_status);
+
+      console.log('Intake complete - subscription_status:', currentClient?.subscription_status, 'temAcesso:', temAcesso);
+
+      if (temAcesso) {
+        // Já tem acesso - ir para dashboard
+        navigate('/vitalis/dashboard');
+      } else {
+        // Não tem acesso - ir para pagamento
+        navigate('/vitalis/pagamento');
+      }
     } catch (err) {
       console.error('Erro completo:', err);
       setError(`Erro ao submeter: ${err.message}`);

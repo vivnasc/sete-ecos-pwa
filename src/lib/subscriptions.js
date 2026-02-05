@@ -532,11 +532,19 @@ export const useInviteCode = async (userId, code) => {
       return { success: false, error: 'Codigo ja foi usado o maximo de vezes' };
     }
 
-    // Aplicar beneficio
+    // Aplicar beneficio - VERIFICAR SE TEVE SUCESSO
+    let benefitResult = { success: false };
+
     if (invite.type === 'tester') {
-      await setAsTester(userId, `Codigo: ${code}`);
+      benefitResult = await setAsTester(userId, `Codigo: ${code}`);
     } else if (invite.type === 'trial') {
-      await startTrial(userId);
+      benefitResult = await startTrial(userId);
+    }
+
+    // Se falhou ao aplicar o benefício, retornar erro
+    if (!benefitResult.success) {
+      console.error('Erro ao aplicar beneficio do codigo:', benefitResult.error);
+      return { success: false, error: 'Erro ao aplicar beneficio. Tenta novamente.' };
     }
 
     // Incrementar uso
