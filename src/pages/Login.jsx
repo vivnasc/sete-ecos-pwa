@@ -286,19 +286,12 @@ export default function Login() {
             {/* Recuperar password */}
             {isLogin && (
               <div className="mt-4 text-center">
-                <button
-                  onClick={() => {
-                    if (email) {
-                      supabase.auth.resetPasswordForEmail(email);
-                      alert('Se o email existir, receberás um link para recuperar a password.');
-                    } else {
-                      setError('Insere o teu email primeiro');
-                    }
-                  }}
+                <Link
+                  to="/recuperar-password"
                   className="text-sm text-[#C9A227] hover:underline"
                 >
                   Esqueci a password
-                </button>
+                </Link>
               </div>
             )}
           </div>
