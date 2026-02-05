@@ -16,11 +16,30 @@ export default function Auth() {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
+
+        // Garantir que existe registo na tabela users
+        if (data.user) {
+          await supabase.from('users').upsert({
+            auth_id: data.user.id,
+            email: data.user.email,
+            created_at: new Date().toISOString()
+          }, { onConflict: 'auth_id' })
+        }
       } else {
-        const { error } = await supabase.auth.signUp({ email, password })
+        const { data, error } = await supabase.auth.signUp({ email, password })
         if (error) throw error
+
+        // Criar registo na tabela users
+        if (data.user) {
+          await supabase.from('users').upsert({
+            auth_id: data.user.id,
+            email: data.user.email,
+            created_at: new Date().toISOString()
+          }, { onConflict: 'auth_id' })
+        }
+
         setMessage('Conta criada! Podes entrar agora.')
         setIsLogin(true)
       }

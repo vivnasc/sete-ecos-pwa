@@ -148,11 +148,11 @@ const PagamentoVitalis = () => {
 
         // Create user record - loadUserData will handle if this fails
         if (authData.user) {
-          await supabase.from('users').insert({
+          await supabase.from('users').upsert({
             auth_id: authData.user.id,
             email: authEmail,
             nome: authName || authEmail.split('@')[0]
-          });
+          }, { onConflict: 'auth_id' });
         }
       }
 
