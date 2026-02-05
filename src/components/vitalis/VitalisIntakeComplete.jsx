@@ -436,10 +436,16 @@ try {
         throw intakeError;
       }
 
-    // Depois inserir client
-const clientData = {
-  user_id: userData.id,  // ✅ CORRIGIDO!
-  objectivo_principal: formData.objectivo_principal,
+    // Verificar se já existe registo com subscription_status
+      const { data: existingClient } = await supabase
+        .from('vitalis_clients')
+        .select('id, subscription_status')
+        .eq('user_id', userData.id)
+        .single();
+
+      const clientData = {
+        user_id: userData.id,
+        objectivo_principal: formData.objectivo_principal,
         peso_inicial: parseFloat(formData.peso_actual),
         peso_actual: parseFloat(formData.peso_actual),
         peso_meta: parseFloat(formData.peso_meta),
@@ -448,13 +454,29 @@ const clientData = {
         status: 'novo'
       };
 
-      const { error: clientError } = await supabase
-        .from('vitalis_clients')
-        .upsert(clientData, { onConflict: 'user_id' });
-
-      if (clientError) {
-        console.error('Erro no client:', clientError);
-        throw clientError;
+      if (existingClient) {
+        // Atualizar mas NÃO sobrescrever subscription_status
+        const { error: clientError } = await supabase
+          .from('vitalis_clients')
+          .update(clientData)
+          .eq('user_id', userData.id);
+        if (clientError) {
+          console.error('Erro no client:', clientError);
+          throw clientError;
+        }
+      } else {
+        // Criar novo (subscription_status será 'none' por defeito)
+        const { error: clientError } = await supabase
+          .from('vitalis_clients')
+          .insert({
+            ...clientData,
+            subscription_status: 'none',
+            created_at: new Date().toISOString()
+          });
+        if (clientError) {
+          console.error('Erro no client:', clientError);
+          throw clientError;
+        }
       }
 
       navigate('/vitalis/dashboard');

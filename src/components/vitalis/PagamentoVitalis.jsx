@@ -51,6 +51,7 @@ const PagamentoVitalis = () => {
   const [message, setMessage] = useState({ type: '', text: '' });
   const [showCommunityModal, setShowCommunityModal] = useState(false);
   const [userLoadError, setUserLoadError] = useState(false);
+  const [showTestPlan, setShowTestPlan] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -234,6 +235,15 @@ const PagamentoVitalis = () => {
 
   const handleInviteCode = async () => {
     if (!inviteCode.trim()) return;
+
+    // Código especial para teste PayPal $1
+    if (inviteCode.toUpperCase() === 'PAYPAL-TEST-1') {
+      setShowTestPlan(true);
+      setSelectedPlan('TEST');
+      setMessage({ type: 'success', text: 'Plano de teste $1 activado!' });
+      return;
+    }
+
     setProcessing(true);
     try {
       const result = await useInviteCode(userId, inviteCode);
@@ -279,7 +289,9 @@ const PagamentoVitalis = () => {
 
         {/* PLANOS - SEMPRE VISÍVEIS */}
         <div className="space-y-3 mb-6">
-          {Object.entries(SUBSCRIPTION_PLANS).map(([key, plan]) => (
+          {Object.entries(SUBSCRIPTION_PLANS)
+            .filter(([key, plan]) => !plan.hidden || (showTestPlan && key === 'TEST'))
+            .map(([key, plan]) => (
             <button
               key={key}
               onClick={() => setSelectedPlan(key)}
@@ -458,7 +470,9 @@ const PagamentoVitalis = () => {
 
         {message.text && (
           <div className={`p-4 rounded-xl mb-6 ${
-            message.type === 'error' ? 'bg-red-500/20 text-red-100' : 'bg-blue-500/20 text-blue-100'
+            message.type === 'error' ? 'bg-red-500/20 text-red-100' :
+            message.type === 'success' ? 'bg-green-500/20 text-green-100' :
+            'bg-blue-500/20 text-blue-100'
           }`}>
             {message.text}
           </div>
