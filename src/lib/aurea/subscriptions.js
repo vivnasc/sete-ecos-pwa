@@ -230,7 +230,6 @@ export const setAureaTester = async (userId, notes = '') => {
 
     const testerData = {
       subscription_status: SUBSCRIPTION_STATUS.TESTER,
-      subscription_notes: notes,
       subscription_updated: new Date().toISOString()
     };
 
