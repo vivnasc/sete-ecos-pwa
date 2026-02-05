@@ -892,13 +892,13 @@ export default function Lumina() {
   function renderReading() {
     // Os 7 Ecos - LUMINA NÃO É UM ECO, ela observa e guia
     const SETE_ECOS = [
-      { nome: 'Vitalis', chakra: 'Raiz', foco: 'Corpo & Nutrição', cor: '#7C8B6F', disponivel: true, link: '/vitalis' },
-      { nome: 'Aurea', chakra: 'Sacral', foco: 'Abundância & Fluxo', cor: '#FFD700', disponivel: false },
-      { nome: 'Serena', chakra: 'Plexo Solar', foco: 'Emoção & Fluidez', cor: '#E8927C', disponivel: false },
-      { nome: 'Ignis', chakra: 'Coração', foco: 'Vontade & Foco', cor: '#F4A460', disponivel: false },
-      { nome: 'Ventis', chakra: 'Garganta', foco: 'Ritmo & Energia', cor: '#90EE90', disponivel: false },
-      { nome: 'Ecoa', chakra: 'Terceiro Olho', foco: 'Voz & Expressão', cor: '#87CEEB', disponivel: false },
-      { nome: 'Imago', chakra: 'Coroa', foco: 'Identidade & Essência', cor: '#9370DB', disponivel: false }
+      { nome: 'Vitalis', foco: 'Corpo & Nutrição', cor: '#7C8B6F', disponivel: true, link: '/vitalis' },
+      { nome: 'Áurea', foco: 'Auto-Valor & Merecimento', cor: '#C9A227', disponivel: true, link: '/aurea' },
+      { nome: 'Serena', foco: 'Emoção & Fluidez', cor: '#6B8E9B', disponivel: false },
+      { nome: 'Ignis', foco: 'Vontade & Foco', cor: '#C1634A', disponivel: false },
+      { nome: 'Ventis', foco: 'Ritmo & Energia', cor: '#5D9B84', disponivel: false },
+      { nome: 'Ecoa', foco: 'Voz & Expressão', cor: '#4A90A4', disponivel: false },
+      { nome: 'Imago', foco: 'Identidade & Essência', cor: '#8B7BA5', disponivel: false }
     ];
 
     // Informação do ciclo para mostrar
