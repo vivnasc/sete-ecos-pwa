@@ -45,9 +45,12 @@ import GuiaUtilizador from './components/vitalis/GuiaUtilizador'
 import TreinosVitalis from './components/vitalis/TreinosVitalis'
 import PlanoHTML from './pages/PlanoHTML'
 
-// ===== COMUNIDADE (Social) =====
-import FeedComunidade from './components/comunidade/FeedComunidade'
-import PerfilPublico from './components/comunidade/PerfilPublico'
+// ===== COMUNIDADE — Espaço de Autoconhecimento =====
+import Rio from './components/comunidade/Rio'
+import Jornada from './components/comunidade/Jornada'
+import Circulos from './components/comunidade/Circulos'
+import Fogueira from './components/comunidade/Fogueira'
+import Sussurros from './components/comunidade/Sussurros'
 
 // ===== ECO 2: ÁUREA (Valor & Presença) =====
 import LandingAurea from './pages/LandingAurea'
@@ -155,9 +158,12 @@ function App() {
           <Route path="/aurea/insights" element={session ? <AureaAccessGuard><InsightsSemanal /></AureaAccessGuard> : <Navigate to="/login" state={{ from: '/aurea/insights', eco: 'Áurea' }} />} />
           <Route path="/aurea/perfil" element={session ? <AureaAccessGuard><PerfilAurea /></AureaAccessGuard> : <Navigate to="/login" state={{ from: '/aurea/perfil', eco: 'Áurea' }} />} />
 
-          {/* ===== COMUNIDADE - Rede Social ===== */}
-          <Route path="/comunidade" element={session ? <FeedComunidade /> : <Navigate to="/login" state={{ from: '/comunidade' }} />} />
-          <Route path="/comunidade/perfil/:userId" element={session ? <PerfilPublico /> : <Navigate to="/login" state={{ from: '/comunidade' }} />} />
+          {/* ===== COMUNIDADE — Espaço de Autoconhecimento ===== */}
+          <Route path="/comunidade" element={session ? <Rio /> : <Navigate to="/login" state={{ from: '/comunidade' }} />} />
+          <Route path="/comunidade/jornada/:userId" element={session ? <Jornada /> : <Navigate to="/login" state={{ from: '/comunidade' }} />} />
+          <Route path="/comunidade/circulos" element={session ? <Circulos /> : <Navigate to="/login" state={{ from: '/comunidade' }} />} />
+          <Route path="/comunidade/fogueira" element={session ? <Fogueira /> : <Navigate to="/login" state={{ from: '/comunidade' }} />} />
+          <Route path="/comunidade/sussurros" element={session ? <Sussurros /> : <Navigate to="/login" state={{ from: '/comunidade' }} />} />
 
           {/* ===== ECOS 3-7: Em Breve ===== */}
           <Route path="/serena" element={<ComingSoon />} />
