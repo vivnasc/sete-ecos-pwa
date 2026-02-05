@@ -535,6 +535,17 @@ const PagamentoVitalis = () => {
                 className="w-full p-3 border border-gray-200 rounded-xl focus:border-[#7C8B6F] focus:outline-none"
               />
 
+              {authMode === 'login' && (
+                <div className="text-right">
+                  <a
+                    href="/recuperar-password"
+                    className="text-sm text-white/70 hover:text-white underline"
+                  >
+                    Esqueceste a password?
+                  </a>
+                </div>
+              )}
+
               {authError && (
                 <p className="text-red-500 text-sm text-center">{authError}</p>
               )}
