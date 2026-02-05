@@ -154,9 +154,21 @@ export default function VitalisAuth() {
           throw error;
         }
 
-        // Mostrar mensagem de confirmação de email
-        setConfirmationEmail(emailResult.valor);
-        setShowConfirmation(true);
+        // Se tem sessão, email confirmation está desactivado - ir directo para pagamento
+        if (data.session) {
+          // Criar registo na tabela users se não existir
+          await supabase.from('users').upsert({
+            auth_id: data.user.id,
+            email: emailResult.valor,
+            created_at: new Date().toISOString()
+          }, { onConflict: 'auth_id' });
+
+          navigate('/vitalis/pagamento');
+        } else {
+          // Email confirmation está activado - mostrar ecrã de confirmação
+          setConfirmationEmail(emailResult.valor);
+          setShowConfirmation(true);
+        }
       }
     } catch (error) {
       setError(error.message);
