@@ -44,6 +44,28 @@ const VitalisAccessGuard = ({ children }) => {
 
       // Bypass emails têm acesso directo
       if (isCoach(user.email)) {
+        // Garantir que coach tem registo na tabela users
+        const { data: coachUser } = await supabase
+          .from('users')
+          .upsert({
+            auth_id: user.id,
+            email: user.email,
+            nome: user.user_metadata?.name || user.email.split('@')[0]
+          }, { onConflict: 'auth_id' })
+          .select('id')
+          .single();
+
+        if (coachUser) {
+          // Garantir que coach tem registo vitalis_clients com status tester
+          await supabase
+            .from('vitalis_clients')
+            .upsert({
+              user_id: coachUser.id,
+              subscription_status: 'tester',
+              status: 'activo'
+            }, { onConflict: 'user_id' });
+        }
+
         setAccessInfo({ hasAccess: true, status: 'bypass', reason: 'bypass_email' });
         setHasAccess(true);
         setLoading(false);
@@ -55,7 +77,7 @@ const VitalisAccessGuard = ({ children }) => {
         .from('users')
         .select('id')
         .eq('auth_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (!userData) {
         setHasAccess(false);
