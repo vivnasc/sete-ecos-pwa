@@ -59,13 +59,29 @@ function App() {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
   
+  // Garantir que utilizador existe na tabela users
+  const ensureUserRecord = async (user) => {
+    if (!user) return
+    try {
+      await supabase.from('users').upsert({
+        auth_id: user.id,
+        email: user.email,
+        created_at: new Date().toISOString()
+      }, { onConflict: 'auth_id' })
+    } catch (error) {
+      console.error('Erro ao sincronizar user:', error)
+    }
+  }
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
+      if (session?.user) ensureUserRecord(session.user)
       setLoading(false)
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
+      if (session?.user) ensureUserRecord(session.user)
     })
     return () => subscription.unsubscribe()
   }, [])

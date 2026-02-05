@@ -94,11 +94,11 @@ export default function PagamentoAurea() {
           return;
         }
         if (data.user) {
-          await supabase.from('users').insert({
+          await supabase.from('users').upsert({
             auth_id: data.user.id,
             email: data.user.email,
             created_at: new Date().toISOString()
-          });
+          }, { onConflict: 'auth_id' });
         }
       }
       setShowAuthForm(false);
