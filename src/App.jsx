@@ -45,6 +45,10 @@ import GuiaUtilizador from './components/vitalis/GuiaUtilizador'
 import TreinosVitalis from './components/vitalis/TreinosVitalis'
 import PlanoHTML from './pages/PlanoHTML'
 
+// ===== COMUNIDADE (Social) =====
+import FeedComunidade from './components/comunidade/FeedComunidade'
+import PerfilPublico from './components/comunidade/PerfilPublico'
+
 // ===== ECO 2: ÁUREA (Valor & Presença) =====
 import LandingAurea from './pages/LandingAurea'
 import AureaAuth from './components/aurea/Auth'
@@ -150,6 +154,10 @@ function App() {
           <Route path="/aurea/diario" element={session ? <AureaAccessGuard><DiarioMerecimento /></AureaAccessGuard> : <Navigate to="/login" state={{ from: '/aurea/diario', eco: 'Áurea' }} />} />
           <Route path="/aurea/insights" element={session ? <AureaAccessGuard><InsightsSemanal /></AureaAccessGuard> : <Navigate to="/login" state={{ from: '/aurea/insights', eco: 'Áurea' }} />} />
           <Route path="/aurea/perfil" element={session ? <AureaAccessGuard><PerfilAurea /></AureaAccessGuard> : <Navigate to="/login" state={{ from: '/aurea/perfil', eco: 'Áurea' }} />} />
+
+          {/* ===== COMUNIDADE - Rede Social ===== */}
+          <Route path="/comunidade" element={session ? <FeedComunidade /> : <Navigate to="/login" state={{ from: '/comunidade' }} />} />
+          <Route path="/comunidade/perfil/:userId" element={session ? <PerfilPublico /> : <Navigate to="/login" state={{ from: '/comunidade' }} />} />
 
           {/* ===== ECOS 3-7: Em Breve ===== */}
           <Route path="/serena" element={<ComingSoon />} />

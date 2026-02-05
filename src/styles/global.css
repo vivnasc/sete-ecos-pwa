@@ -385,3 +385,28 @@ input:focus, textarea:focus {
 .dark .text-black {
   color: var(--dark-text-primary) !important;
 }
+
+/* ============================================================
+   COMUNIDADE — Social Feed Styles
+   ============================================================ */
+
+/* Community section dark mode */
+.dark .border-purple-100 {
+  border-color: rgba(139, 92, 246, 0.2) !important;
+}
+
+.dark .from-purple-100 {
+  --tw-gradient-from: rgba(139, 92, 246, 0.15);
+}
+
+.dark .to-pink-100 {
+  --tw-gradient-to: rgba(236, 72, 153, 0.15);
+}
+
+.dark .from-purple-50 {
+  --tw-gradient-from: rgba(139, 92, 246, 0.1);
+}
+
+.dark .to-pink-50 {
+  --tw-gradient-to: rgba(236, 72, 153, 0.1);
+}
