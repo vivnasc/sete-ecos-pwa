@@ -61,6 +61,7 @@ export default function Navigation({ variant = 'default' }) {
   const isAureaSection = location.pathname.startsWith('/aurea')
   const isLuminaSection = location.pathname === '/lumina'
   const isAccountSection = location.pathname === '/conta' || location.pathname === '/perfil'
+  const isCommunitySection = location.pathname.startsWith('/comunidade')
 
   // Get current Eco info for header badge
   const getCurrentEco = () => {
@@ -104,6 +105,15 @@ export default function Navigation({ variant = 'default' }) {
             onClick={() => navigate(hasAureaAccess ? '/aurea/dashboard' : '/aurea')}
             color="#C9A227"
           />
+          {isAuthenticated && (
+            <NavItem
+              icon="community"
+              label="Social"
+              active={isCommunitySection}
+              onClick={() => navigate('/comunidade')}
+              color="#8B5CF6"
+            />
+          )}
           {isAuthenticated && (
             <NavItem
               icon="account"
@@ -153,6 +163,15 @@ export default function Navigation({ variant = 'default' }) {
           />
           {isAuthenticated && (
             <NavItem
+              icon="community"
+              label="Social"
+              active={isCommunitySection}
+              onClick={() => navigate('/comunidade')}
+              color="#8B5CF6"
+            />
+          )}
+          {isAuthenticated && (
+            <NavItem
               icon="account"
               label="Conta"
               active={isAccountSection}
@@ -200,6 +219,15 @@ export default function Navigation({ variant = 'default' }) {
           />
           {isAuthenticated && (
             <NavItem
+              icon="community"
+              label="Social"
+              active={isCommunitySection}
+              onClick={() => navigate('/comunidade')}
+              color="#8B5CF6"
+            />
+          )}
+          {isAuthenticated && (
+            <NavItem
               icon="account"
               label="Conta"
               active={isAccountSection}
@@ -207,6 +235,44 @@ export default function Navigation({ variant = 'default' }) {
               color="#6B5C4C"
             />
           )}
+        </div>
+      </nav>
+    )
+  }
+
+  // Community section navigation
+  if (isCommunitySection) {
+    return (
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-purple-100 shadow-lg z-50">
+        {/* Current section indicator */}
+        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+          <div className="bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] px-4 py-1 rounded-t-lg shadow-md">
+            <span className="text-white text-xs font-semibold tracking-wide">COMUNIDADE</span>
+          </div>
+        </div>
+
+        <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
+          <NavItem
+            logo="/logos/CENTRO_7ECOS.png"
+            label="Hub"
+            active={isActive('/')}
+            onClick={() => navigate('/')}
+            color="#1A1A4E"
+          />
+          <NavItem
+            icon="community"
+            label="Social"
+            active={isCommunitySection}
+            onClick={() => navigate('/comunidade')}
+            color="#8B5CF6"
+          />
+          <NavItem
+            icon="account"
+            label="Conta"
+            active={isAccountSection}
+            onClick={() => navigate('/conta')}
+            color="#6B5C4C"
+          />
         </div>
       </nav>
     )
@@ -239,6 +305,15 @@ export default function Navigation({ variant = 'default' }) {
         />
         {isAuthenticated && (
           <NavItem
+            icon="community"
+            label="Social"
+            active={isCommunitySection}
+            onClick={() => navigate('/comunidade')}
+            color="#8B5CF6"
+          />
+        )}
+        {isAuthenticated && (
+          <NavItem
             icon="account"
             label="Conta"
             active={isAccountSection}
@@ -258,6 +333,13 @@ function NavItem({ icon, logo, label, active, onClick, color }) {
       return (
         <svg className="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ opacity: active ? 1 : 0.5 }}>
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      )
+    }
+    if (icon === 'community') {
+      return (
+        <svg className="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ opacity: active ? 1 : 0.5 }}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
       )
     }
