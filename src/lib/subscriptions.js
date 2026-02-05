@@ -176,16 +176,38 @@ export const updateSubscriptionStatus = async (userId, newStatus, options = {}) 
  */
 export const startTrial = async (userId) => {
   try {
-    const { error } = await supabase
+    // Verificar se já existe registo
+    const { data: existingClient } = await supabase
       .from('vitalis_clients')
-      .update({
-        subscription_status: SUBSCRIPTION_STATUS.TRIAL,
-        trial_started: new Date().toISOString(),
-        subscription_updated: new Date().toISOString()
-      })
-      .eq('user_id', userId);
+      .select('id')
+      .eq('user_id', userId)
+      .single();
 
-    if (error) throw error;
+    const trialData = {
+      subscription_status: SUBSCRIPTION_STATUS.TRIAL,
+      trial_started: new Date().toISOString(),
+      subscription_updated: new Date().toISOString()
+    };
+
+    if (existingClient) {
+      // Atualizar registo existente
+      const { error } = await supabase
+        .from('vitalis_clients')
+        .update(trialData)
+        .eq('user_id', userId);
+      if (error) throw error;
+    } else {
+      // Criar novo registo
+      const { error } = await supabase
+        .from('vitalis_clients')
+        .insert({
+          user_id: userId,
+          ...trialData,
+          status: 'novo',
+          created_at: new Date().toISOString()
+        });
+      if (error) throw error;
+    }
 
     await logSubscriptionChange(userId, SUBSCRIPTION_STATUS.TRIAL, { action: 'trial_started' });
 
@@ -201,16 +223,38 @@ export const startTrial = async (userId) => {
  */
 export const setAsTester = async (userId, notes = '') => {
   try {
-    const { error } = await supabase
+    // Verificar se já existe registo
+    const { data: existingClient } = await supabase
       .from('vitalis_clients')
-      .update({
-        subscription_status: SUBSCRIPTION_STATUS.TESTER,
-        subscription_notes: notes,
-        subscription_updated: new Date().toISOString()
-      })
-      .eq('user_id', userId);
+      .select('id')
+      .eq('user_id', userId)
+      .single();
 
-    if (error) throw error;
+    const testerData = {
+      subscription_status: SUBSCRIPTION_STATUS.TESTER,
+      subscription_notes: notes,
+      subscription_updated: new Date().toISOString()
+    };
+
+    if (existingClient) {
+      // Atualizar registo existente
+      const { error } = await supabase
+        .from('vitalis_clients')
+        .update(testerData)
+        .eq('user_id', userId);
+      if (error) throw error;
+    } else {
+      // Criar novo registo
+      const { error } = await supabase
+        .from('vitalis_clients')
+        .insert({
+          user_id: userId,
+          ...testerData,
+          status: 'novo',
+          created_at: new Date().toISOString()
+        });
+      if (error) throw error;
+    }
 
     await logSubscriptionChange(userId, SUBSCRIPTION_STATUS.TESTER, { action: 'set_as_tester', notes });
 
