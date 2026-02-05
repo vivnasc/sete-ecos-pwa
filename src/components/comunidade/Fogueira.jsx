@@ -14,6 +14,11 @@ import { supabase } from '../../lib/supabase'
 // "Onde nos sentamos em circulo"
 // ============================================================
 
+const FIRE = '\uD83D\uDD25'
+const CANDLE = '\uD83D\uDD6F\uFE0F'
+const FLOWER = '\uD83C\uDF38'
+const CLOCK = '\u23F0'
+
 export default function Fogueira({ userId }) {
   // --- Fogueira state ---
   const [fogueira, setFogueira] = useState(null)
@@ -106,7 +111,6 @@ export default function Fogueira({ userId }) {
           filter: `fogueira_id=eq.${fogueira.id}`
         },
         async () => {
-          // Reload chamas on new insert
           try {
             const chamasData = await getChamas(fogueira.id)
             setChamas(chamasData)
@@ -143,7 +147,6 @@ export default function Fogueira({ userId }) {
     try {
       await adicionarChama(fogueira.id, userId, novaChama.trim())
       setNovaChama('')
-      // Chamas will reload via realtime, but also fetch immediately
       const chamasData = await getChamas(fogueira.id)
       setChamas(chamasData)
     } catch (error) {
@@ -187,6 +190,15 @@ export default function Fogueira({ userId }) {
     return { scale: 1, label: 'pequeno' }
   }
 
+  const getFireEmojis = () => {
+    const count = chamas.length
+    if (count > 15) return FIRE.repeat(5)
+    if (count > 10) return FIRE.repeat(4)
+    if (count > 5) return FIRE.repeat(3)
+    if (count > 2) return FIRE.repeat(2)
+    return FIRE
+  }
+
   const fireSize = getFireSize()
 
   // Unique contributors
@@ -224,7 +236,7 @@ export default function Fogueira({ userId }) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#1A1A2E] to-[#2D1B42]">
         <div className="text-center">
-          <div className="text-4xl animate-pulse-subtle mb-3">&#x1F525;</div>
+          <div className="text-4xl animate-pulse-subtle mb-3">{FIRE}</div>
           <p className="text-white/50 text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>
             A procurar a fogueira...
           </p>
@@ -242,7 +254,7 @@ export default function Fogueira({ userId }) {
       <div className="min-h-screen bg-gradient-to-b from-[#1A1A2E] to-[#2D1B42] flex flex-col">
         {/* Header */}
         <div className="text-center pt-12 pb-6 px-4">
-          <p className="text-3xl mb-2">&#x1F56F;&#xFE0F;</p>
+          <p className="text-3xl mb-2">{CANDLE}</p>
           <h2
             className="text-white text-xl font-bold mb-1"
             style={{ fontFamily: 'var(--font-titulos)' }}
@@ -253,7 +265,7 @@ export default function Fogueira({ userId }) {
             className="text-white/40 text-sm italic"
             style={{ fontFamily: 'var(--font-corpo)' }}
           >
-            Onde nos sentamos em circulo
+            Onde nos sentamos em c&#xed;rculo
           </p>
         </div>
 
@@ -268,7 +280,7 @@ export default function Fogueira({ userId }) {
                   background: 'radial-gradient(circle, rgba(249,115,22,0.15) 0%, rgba(249,115,22,0.05) 50%, transparent 70%)'
                 }}
               >
-                <span className="text-4xl opacity-50">&#x1F56F;&#xFE0F;</span>
+                <span className="text-4xl opacity-50">{CANDLE}</span>
               </div>
             </div>
 
@@ -276,7 +288,7 @@ export default function Fogueira({ userId }) {
               className="text-white/60 text-base mb-2"
               style={{ fontFamily: 'var(--font-titulos)' }}
             >
-              As brasas estao frias...
+              As brasas est&#xe3;o frias...
             </p>
             <p
               className="text-white/30 text-sm mb-8"
@@ -291,7 +303,7 @@ export default function Fogueira({ userId }) {
                 type="text"
                 value={novaTema}
                 onChange={(e) => setNovaTema(e.target.value)}
-                placeholder="Tema da fogueira (ex: Gratidao pelo caminho)"
+                placeholder="Tema da fogueira (ex: Gratid\u00E3o pelo caminho)"
                 className="w-full px-4 py-3 rounded-xl text-sm text-white placeholder-white/40 border border-white/20 focus:border-orange-400/60 focus:outline-none transition-colors"
                 style={{
                   backgroundColor: 'rgba(255,255,255,0.08)',
@@ -320,7 +332,7 @@ export default function Fogueira({ userId }) {
                   fontFamily: 'var(--font-titulos)'
                 }}
               >
-                {criando ? 'A acender...' : '&#x1F525; Acender Fogueira'}
+                {criando ? 'A acender...' : `${FIRE} Acender Fogueira`}
               </button>
             </div>
           </div>
@@ -342,13 +354,13 @@ export default function Fogueira({ userId }) {
           className="text-white text-lg font-bold"
           style={{ fontFamily: 'var(--font-titulos)' }}
         >
-          &#x1F525; A Fogueira &#x1F525;
+          {FIRE} A Fogueira {FIRE}
         </h2>
         <p
           className="text-white/30 text-xs italic"
           style={{ fontFamily: 'var(--font-corpo)' }}
         >
-          Onde nos sentamos em circulo
+          Onde nos sentamos em c&#xed;rculo
         </p>
       </div>
 
@@ -380,11 +392,7 @@ export default function Fogueira({ userId }) {
                 textShadow: '0 0 20px rgba(249,115,22,0.6), 0 0 40px rgba(239,68,68,0.3)'
               }}
             >
-              {chamas.length <= 2 && '&#x1F525;'}
-              {chamas.length > 2 && chamas.length <= 5 && '&#x1F525;&#x1F525;'}
-              {chamas.length > 5 && chamas.length <= 10 && '&#x1F525;&#x1F525;&#x1F525;'}
-              {chamas.length > 10 && chamas.length <= 15 && '&#x1F525;&#x1F525;&#x1F525;&#x1F525;'}
-              {chamas.length > 15 && '&#x1F525;&#x1F525;&#x1F525;&#x1F525;&#x1F525;'}
+              {getFireEmojis()}
             </div>
           </div>
         </div>
@@ -401,13 +409,13 @@ export default function Fogueira({ userId }) {
             className="text-white/50 text-xs italic mb-3 px-4"
             style={{ fontFamily: 'var(--font-corpo)' }}
           >
-            "{fogueira.prompt}"
+            &ldquo;{fogueira.prompt}&rdquo;
           </p>
         )}
 
         {/* Time remaining */}
         <div className="flex items-center justify-center gap-1.5 mb-4">
-          <span className="text-white/30 text-xs">&#x23F0;</span>
+          <span className="text-white/30 text-xs">{CLOCK}</span>
           <span
             className="text-white/40 text-xs"
             style={{ fontFamily: 'var(--font-corpo)' }}
@@ -432,7 +440,7 @@ export default function Fogueira({ userId }) {
                   {c.perfil?.avatar_url ? (
                     <img src={c.perfil.avatar_url} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    <span>{c.perfil?.avatar_emoji || '&#x1F338;'}</span>
+                    <span>{c.perfil?.avatar_emoji || FLOWER}</span>
                   )}
                 </div>
               ))}
@@ -449,7 +457,7 @@ export default function Fogueira({ userId }) {
               className="text-white/30 text-xs"
               style={{ fontFamily: 'var(--font-corpo)' }}
             >
-              {contribuidores.length} {contribuidores.length === 1 ? 'alma' : 'almas'} a volta da fogueira
+              {contribuidores.length} {contribuidores.length === 1 ? 'alma' : 'almas'} &#xe0; volta da fogueira
             </p>
           </div>
         )}
@@ -468,7 +476,7 @@ export default function Fogueira({ userId }) {
               A fogueira espera a primeira chama...
             </p>
             <p className="text-white/10 text-xs mt-1" style={{ fontFamily: 'var(--font-corpo)' }}>
-              Se a primeira a partilhar
+              S&#xea; a primeira a partilhar
             </p>
           </div>
         )}
@@ -493,14 +501,14 @@ export default function Fogueira({ userId }) {
                   {perfil?.avatar_url ? (
                     <img src={perfil.avatar_url} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    <span>{perfil?.avatar_emoji || '&#x1F338;'}</span>
+                    <span>{perfil?.avatar_emoji || FLOWER}</span>
                   )}
                 </div>
                 <span
                   className="text-white/60 text-xs font-medium"
                   style={{ fontFamily: 'var(--font-corpo)' }}
                 >
-                  {perfil?.display_name || 'Alma Anonima'}
+                  {perfil?.display_name || 'Alma An\u00F3nima'}
                 </span>
                 <span className="text-white/20 text-[10px] ml-auto">
                   {tempoRelativoChama(chama.created_at)}
@@ -561,7 +569,7 @@ export default function Fogueira({ userId }) {
             {enviando ? (
               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
-              <span className="text-lg">&#x1F525;</span>
+              <span className="text-lg">{FIRE}</span>
             )}
           </button>
         </div>
