@@ -405,6 +405,22 @@ const PagamentoVitalis = () => {
         {/* SE AUTENTICADO: Mostrar PayPal */}
         {isAuthenticated ? (
           <div className="mb-6">
+            {/* Info de conta logada */}
+            <div className="bg-white/10 rounded-xl p-3 mb-4 flex items-center justify-between">
+              <div className="text-sm">
+                <span className="text-white/60">Conta: </span>
+                <span className="text-white font-medium">{userEmail}</span>
+              </div>
+              <button
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  window.location.reload();
+                }}
+                className="text-white/60 hover:text-white text-xs underline"
+              >
+                Usar outra conta
+              </button>
+            </div>
             {paypalError ? (
               <div className="bg-red-500/20 border border-red-400 rounded-xl p-4 text-center text-red-200">
                 {paypalError}
