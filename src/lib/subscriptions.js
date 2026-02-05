@@ -50,6 +50,15 @@ export const SUBSCRIPTION_PLANS = {
     discount: 30,
     savings_mzn: 9000, // economia vs mensal
     savings_usd: 136
+  },
+  TEST: {
+    id: 'test',
+    name: 'Teste PayPal',
+    duration: 1, // 1 mês para teste
+    price_mzn: 65,
+    price_usd: 1,
+    discount: 97,
+    hidden: true // Só aparece com código especial
   }
 };
 
