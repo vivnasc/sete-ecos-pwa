@@ -686,13 +686,16 @@ const LandingVitalis = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
             Pronta para começar a tua transformação?
           </h2>
-          <p className="text-white/90 mb-8">Escolhe o teu plano e dá o primeiro passo hoje</p>
+          <p className="text-white/90 mb-6">Escolhe o teu plano e dá o primeiro passo hoje</p>
           <button
             onClick={handleComecar}
             className="px-10 py-4 bg-white text-[#7C8B6F] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
           >
             Começar Agora →
           </button>
+          <p className="text-white/70 text-sm mt-4">
+            🎟️ Tens um código de convite? Podes usá-lo na página de pagamento
+          </p>
         </div>
       </section>
 
