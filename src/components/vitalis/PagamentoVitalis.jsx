@@ -114,8 +114,18 @@ const PagamentoVitalis = () => {
           try {
             const result = await useInviteCode(userData.id, codeToApply);
             if (result.success) {
-              setMessage({ type: 'success', text: 'Código aplicado com sucesso!' });
-              setShowCommunityModal(true);
+              // Navegar directamente (como handleInviteCode) - evita problemas de timing
+              const { data: intake } = await supabase
+                .from('vitalis_intake')
+                .select('id')
+                .eq('user_id', userData.id)
+                .maybeSingle();
+
+              if (intake) {
+                navigate('/vitalis/dashboard');
+              } else {
+                navigate('/vitalis/intake');
+              }
               return;
             }
           } catch (e) {
@@ -235,7 +245,19 @@ const PagamentoVitalis = () => {
               valor: `$${plan.price_usd}`,
               validoAte: validoAte.toLocaleDateString('pt-PT')
             }).catch(console.error);
-            setShowCommunityModal(true);
+
+            // Navegar directamente - evita problemas de timing com modal
+            const { data: intake } = await supabase
+              .from('vitalis_intake')
+              .select('id')
+              .eq('user_id', userId)
+              .maybeSingle();
+
+            if (intake) {
+              navigate('/vitalis/dashboard');
+            } else {
+              navigate('/vitalis/intake');
+            }
           }
         } catch (error) {
           setMessage({ type: 'error', text: 'Erro ao processar pagamento.' });
