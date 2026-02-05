@@ -464,33 +464,26 @@ const PagamentoVitalis = () => {
           </div>
         )}
 
-        {/* Código de Convite */}
+        {/* Código de Convite - sempre visível */}
         {isAuthenticated && (
-          <div className="mb-6">
-            {!showInviteInput ? (
-              <button onClick={() => setShowInviteInput(true)} className="w-full py-3 text-white/70 text-sm">
-                🎟️ Tens um código de convite?
+          <div className="mb-6 bg-white/10 rounded-xl p-4">
+            <p className="text-white/80 text-sm mb-3 text-center">🎟️ Tens um código de convite?</p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={inviteCode}
+                onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                placeholder="VITALIS-XXXXX"
+                className="flex-1 p-3 bg-white/10 border border-white/30 rounded-xl text-white placeholder-white/40"
+              />
+              <button
+                onClick={handleInviteCode}
+                disabled={!inviteCode.trim()}
+                className="px-4 py-3 bg-white text-[#7C8B6F] rounded-xl font-medium disabled:opacity-50"
+              >
+                Aplicar
               </button>
-            ) : (
-              <div className="bg-white/10 rounded-xl p-4">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={inviteCode}
-                    onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-                    placeholder="VITALIS-XXXXX"
-                    className="flex-1 p-3 bg-white/10 border border-white/30 rounded-xl text-white placeholder-white/40"
-                  />
-                  <button
-                    onClick={handleInviteCode}
-                    disabled={!inviteCode.trim()}
-                    className="px-4 py-3 bg-white text-[#7C8B6F] rounded-xl font-medium"
-                  >
-                    Aplicar
-                  </button>
-                </div>
-              </div>
-            )}
+            </div>
           </div>
         )}
 
