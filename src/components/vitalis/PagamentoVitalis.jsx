@@ -108,6 +108,21 @@ const PagamentoVitalis = () => {
         setUserName(userData.nome);
         setUserLoadError(false);
 
+        // Auto-aplicar código se existe (do URL ou digitado antes de auth)
+        const codeToApply = searchParams.get('code') || inviteCode;
+        if (codeToApply && codeToApply.trim()) {
+          try {
+            const result = await useInviteCode(userData.id, codeToApply);
+            if (result.success) {
+              setMessage({ type: 'success', text: 'Código aplicado com sucesso!' });
+              setShowCommunityModal(true);
+              return;
+            }
+          } catch (e) {
+            console.warn('Auto-apply code failed:', e);
+          }
+        }
+
         const access = await checkVitalisAccess(userData.id);
         if (access.hasAccess && access.status !== SUBSCRIPTION_STATUS.PENDING) {
           navigate('/vitalis/dashboard');
@@ -286,6 +301,42 @@ const PagamentoVitalis = () => {
           <h1 className="text-2xl font-bold text-white mb-1">Vitalis</h1>
           <p className="text-white/80 text-sm">Escolhe o teu plano e começa a transformação</p>
         </div>
+
+        {/* Código de Convite - LOGO NO TOPO, bem visível */}
+        <div className="mb-6 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-400/30 rounded-2xl p-4">
+          <p className="text-white font-medium text-sm mb-3 text-center">🎟️ Tens um código de convite ou desconto?</p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={inviteCode}
+              onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+              placeholder="Insere o teu código aqui"
+              className="flex-1 p-3 bg-white/10 border border-white/30 rounded-xl text-white placeholder-white/50 text-center font-medium"
+            />
+            <button
+              onClick={isAuthenticated ? handleInviteCode : () => setMessage({ type: 'info', text: 'Cria conta primeiro para usar o código.' })}
+              disabled={!inviteCode.trim() || processing}
+              className="px-5 py-3 bg-yellow-500 hover:bg-yellow-400 text-black rounded-xl font-semibold disabled:opacity-50 transition-all"
+            >
+              Aplicar
+            </button>
+          </div>
+          {!isAuthenticated && inviteCode.trim() && (
+            <p className="text-yellow-200 text-xs mt-2 text-center">
+              ↓ Cria conta abaixo e o código será aplicado automaticamente
+            </p>
+          )}
+        </div>
+
+        {message.text && (
+          <div className={`p-4 rounded-xl mb-4 ${
+            message.type === 'error' ? 'bg-red-500/20 text-red-100' :
+            message.type === 'success' ? 'bg-green-500/20 text-green-100' :
+            'bg-blue-500/20 text-blue-100'
+          }`}>
+            {message.text}
+          </div>
+        )}
 
         {/* PLANOS - SEMPRE VISÍVEIS */}
         <div className="space-y-3 mb-6">
@@ -468,39 +519,6 @@ const PagamentoVitalis = () => {
           </div>
         )}
 
-        {message.text && (
-          <div className={`p-4 rounded-xl mb-6 ${
-            message.type === 'error' ? 'bg-red-500/20 text-red-100' :
-            message.type === 'success' ? 'bg-green-500/20 text-green-100' :
-            'bg-blue-500/20 text-blue-100'
-          }`}>
-            {message.text}
-          </div>
-        )}
-
-        {/* Código de Convite - sempre visível */}
-        {isAuthenticated && (
-          <div className="mb-6 bg-white/10 rounded-xl p-4">
-            <p className="text-white/80 text-sm mb-3 text-center">🎟️ Tens um código de convite?</p>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={inviteCode}
-                onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-                placeholder="VITALIS-XXXXX"
-                className="flex-1 p-3 bg-white/10 border border-white/30 rounded-xl text-white placeholder-white/40"
-              />
-              <button
-                onClick={handleInviteCode}
-                disabled={!inviteCode.trim()}
-                className="px-4 py-3 bg-white text-[#7C8B6F] rounded-xl font-medium disabled:opacity-50"
-              >
-                Aplicar
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* O que inclui */}
         <div className="bg-white/10 rounded-2xl p-5 mb-6">
           <h3 className="font-bold text-white mb-3">O que inclui:</h3>
@@ -525,30 +543,58 @@ const PagamentoVitalis = () => {
         </div>
       </div>
 
-      {/* Modal Comunidade */}
+      {/* Modal Sucesso - com passos do onboarding */}
       {showCommunityModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-2xl">
-            <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-              <span className="text-4xl">🎉</span>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full text-center shadow-2xl my-4">
+            <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl">🎉</span>
             </div>
             <h2 className="text-2xl font-bold text-[#4A4035] mb-2">Bem-vinda ao Vitalis!</h2>
-            <p className="text-gray-600 mb-6">Pagamento confirmado com sucesso.</p>
+            <p className="text-gray-600 mb-6">Acesso confirmado com sucesso.</p>
+
+            {/* Passos do Onboarding */}
+            <div className="bg-[#F5F2ED] rounded-xl p-4 mb-6 text-left">
+              <p className="text-sm font-semibold text-[#4A4035] mb-3">📋 Os próximos passos:</p>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-[#7C8B6F] text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">1</div>
+                  <div>
+                    <p className="font-medium text-[#4A4035] text-sm">Questionário inicial</p>
+                    <p className="text-xs text-gray-500">~5 minutos - conhecer os teus objectivos</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">2</div>
+                  <div>
+                    <p className="font-medium text-gray-500 text-sm">Plano personalizado</p>
+                    <p className="text-xs text-gray-400">Recebe o teu plano alimentar</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">3</div>
+                  <div>
+                    <p className="font-medium text-gray-500 text-sm">Dashboard</p>
+                    <p className="text-xs text-gray-400">Começa a tua transformação</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <a
               href={WHATSAPP_COMMUNITY}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded-full font-semibold mb-4"
+              className="inline-flex items-center gap-2 bg-[#25D366] text-white px-5 py-2.5 rounded-full font-medium text-sm mb-4"
             >
               💬 Entrar na Comunidade WhatsApp
             </a>
 
             <button
               onClick={() => navigate('/vitalis/intake')}
-              className="w-full py-4 bg-[#7C8B6F] text-white rounded-xl font-semibold"
+              className="w-full py-4 bg-[#7C8B6F] hover:bg-[#6B7A5D] text-white rounded-xl font-semibold transition-all"
             >
-              Continuar para o Questionário →
+              Começar Questionário →
             </button>
           </div>
         </div>

@@ -2,6 +2,22 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
+// Traduzir erros do Supabase para português
+const traduzirErro = (error) => {
+  const msg = error?.message || error || '';
+
+  if (msg.includes('Invalid login')) return 'Email ou password incorrectos';
+  if (msg.includes('already registered')) return 'Este email já está registado. Faz login.';
+  if (msg.includes('Email not confirmed')) return 'Confirma o teu email antes de entrar.';
+  if (msg.includes('Invalid email')) return 'Email inválido. Verifica o formato.';
+  if (msg.includes('Password should be')) return 'Password deve ter pelo menos 6 caracteres.';
+  if (msg.includes('rate limit')) return 'Demasiadas tentativas. Aguarda um momento.';
+  if (msg.includes('network')) return 'Erro de conexão. Verifica a tua internet.';
+  if (msg.includes('User not found')) return 'Utilizador não encontrado.';
+
+  return msg || 'Ocorreu um erro. Tenta novamente.';
+};
+
 /**
  * LOGIN UNIFICADO - SETE ECOS
  * Uma conta para todos os Ecos
@@ -48,12 +64,7 @@ export default function Login() {
           password
         });
 
-        if (error) {
-          if (error.message.includes('Invalid login')) {
-            throw new Error('Email ou password incorrectos');
-          }
-          throw error;
-        }
+        if (error) throw error;
 
         // Garantir registo na tabela users
         if (data.user) {
@@ -80,12 +91,7 @@ export default function Login() {
           }
         });
 
-        if (error) {
-          if (error.message.includes('already registered')) {
-            throw new Error('Este email já está registado. Faz login.');
-          }
-          throw error;
-        }
+        if (error) throw error;
 
         // Criar registo na tabela users
         if (data.user) {
@@ -108,7 +114,7 @@ export default function Login() {
         }
       }
     } catch (err) {
-      setError(err.message);
+      setError(traduzirErro(err));
     } finally {
       setLoading(false);
     }
