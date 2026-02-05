@@ -62,7 +62,7 @@ const VitalisAccessGuard = ({ children }) => {
             .upsert({
               user_id: coachUser.id,
               subscription_status: 'tester',
-              status: 'activo'
+              status: 'active'
             }, { onConflict: 'user_id' });
         }
 

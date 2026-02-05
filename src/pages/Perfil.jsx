@@ -37,7 +37,7 @@ export default function Perfil() {
         .from('users')
         .select('*')
         .eq('auth_id', session.user.id)
-        .single();
+        .maybeSingle();
 
       setFormData({
         nome: userData?.nome || session.user.user_metadata?.name || session.user.email?.split('@')[0] || '',
@@ -75,7 +75,7 @@ export default function Perfil() {
         .from('users')
         .select('id')
         .eq('auth_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (userData) {
         await supabase
