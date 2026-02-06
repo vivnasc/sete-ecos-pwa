@@ -73,30 +73,39 @@ export function AuthProvider({ children }) {
     }
   }
 
+  // Load user record and module access in background (non-blocking)
+  const loadUserData = async (user) => {
+    if (!user) {
+      setUserRecord(null)
+      setVitalisAccess(false)
+      setAureaAccess(false)
+      return
+    }
+    try {
+      const userData = await ensureUserRecord(user)
+      setUserRecord(userData)
+      await checkModuleAccess(userData?.id)
+    } catch (error) {
+      console.error('Erro ao carregar dados do utilizador:', error)
+    }
+  }
+
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    // Get initial session - set loading false IMMEDIATELY, load extras in background
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
+      setLoading(false)
       if (session?.user) {
-        const userData = await ensureUserRecord(session.user)
-        setUserRecord(userData)
-        await checkModuleAccess(userData?.id)
+        loadUserData(session.user)
       }
+    }).catch(() => {
       setLoading(false)
     })
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
-      if (session?.user) {
-        const userData = await ensureUserRecord(session.user)
-        setUserRecord(userData)
-        await checkModuleAccess(userData?.id)
-      } else {
-        setUserRecord(null)
-        setVitalisAccess(false)
-        setAureaAccess(false)
-      }
+      loadUserData(session?.user || null)
     })
 
     return () => subscription.unsubscribe()
