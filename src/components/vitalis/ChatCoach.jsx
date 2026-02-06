@@ -16,6 +16,7 @@ export default function ChatCoach() {
   const [client, setClient] = useState(null);
   const [plano, setPlano] = useState(null);
   const [planoCompleto, setPlanoCompleto] = useState(null);
+  const [mostrarBoasVindas, setMostrarBoasVindas] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => { loadChat(); }, []);
@@ -23,6 +24,21 @@ export default function ChatCoach() {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Rich text: **bold** → real bold, styled for coach vs user
+  const renderTexto = (texto, isUser = false) => {
+    return texto.split('\n').map((line, i) => {
+      if (line.trim() === '') return <br key={i} />;
+      const parts = line.split(/(\*\*.*?\*\*)/g);
+      const rendered = parts.map((part, j) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return <strong key={j} className={isUser ? 'font-semibold' : 'font-semibold text-[#4A5D3E]'}>{part.slice(2, -2)}</strong>;
+        }
+        return part;
+      });
+      return <span key={i} className="block">{rendered}</span>;
+    });
   };
 
   const loadChat = async () => {
@@ -52,14 +68,8 @@ export default function ChatCoach() {
 
       const msgsSalvas = JSON.parse(localStorage.getItem(`vitalis-chat-${userData.id}`) || '[]');
       if (msgsSalvas.length === 0) {
-        const nome = clientData?.nome_completo?.split(' ')[0] || 'querida';
-        const boasVindas = {
-          id: Date.now(),
-          texto: `Olá ${nome}! 👋\n\nSou a Vivianne. Estou aqui para te ajudar a entender o teu plano de adaptação metabólica.\n\nPergunta-me sobre:\n• As tuas porções (palmas, punhos, mãos, polegares)\n• Como montar os pratos\n• O que priorizar ou evitar na tua fase\n• Jejum intermitente e ciência por trás\n• Hormonas (insulina, grelina, leptina)\n• Autofagia e renovação celular\n\nComo posso ajudar?`,
-          remetente: 'coach',
-          timestamp: new Date().toISOString()
-        };
-        setMensagens([boasVindas]);
+        setMostrarBoasVindas(true);
+        setMensagens([]);
       } else {
         setMensagens(msgsSalvas);
       }
@@ -1008,10 +1018,11 @@ export default function ChatCoach() {
       `Escreve "ajuda" para ver todos os temas disponíveis!`;
   };
 
-  const enviarMensagem = async () => {
-    if (!novaMensagem.trim() || enviando) return;
+  const enviarMensagem = async (textoDirecto) => {
+    const textoEnviado = (textoDirecto || novaMensagem).trim();
+    if (!textoEnviado || enviando) return;
+    setMostrarBoasVindas(false);
     setEnviando(true);
-    const textoEnviado = novaMensagem;
     const msgUser = {
       id: Date.now(), texto: textoEnviado, remetente: 'user', timestamp: new Date().toISOString()
     };
@@ -1034,13 +1045,8 @@ export default function ChatCoach() {
   const limparConversa = () => {
     if (!confirm('Limpar conversa?')) return;
     localStorage.removeItem(`vitalis-chat-${userId}`);
-    const nome = client?.nome_completo?.split(' ')[0] || 'querida';
-    setMensagens([{
-      id: Date.now(),
-      texto: `Olá ${nome}! 👋\n\nSou a Vivianne. Como posso ajudar com o teu plano de adaptação metabólica?`,
-      remetente: 'coach',
-      timestamp: new Date().toISOString()
-    }]);
+    setMensagens([]);
+    setMostrarBoasVindas(true);
   };
 
   const formatarHora = (timestamp) => new Date(timestamp).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
@@ -1092,49 +1098,79 @@ export default function ChatCoach() {
         </div>
       </header>
 
-      {/* Mensagens - scrollable */}
+      {/* Mensagens ou Welcome */}
       <main className="flex-1 overflow-y-auto px-3 py-3">
-        <div className="max-w-2xl mx-auto space-y-1">
-          {Object.entries(mensagensAgrupadas).map(([data, msgs]) => (
-            <div key={data}>
-              <div className="flex justify-center my-3">
-                <span className="px-3 py-0.5 bg-white/70 rounded-full text-[11px] text-gray-500 shadow-sm">{data}</span>
-              </div>
-              {msgs.map((msg) => (
-                <div key={msg.id} className={`flex ${msg.remetente === 'user' ? 'justify-end' : 'justify-start'} mb-2.5`}>
-                  {msg.remetente === 'coach' && (
-                    <div className="w-7 h-7 rounded-full bg-[#7C8B6F] flex items-center justify-center flex-shrink-0 mr-2 mt-1 shadow-sm"><span className="text-white text-xs font-bold">V</span></div>
-                  )}
-                  <div className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 ${
-                    msg.remetente === 'user'
-                      ? 'bg-[#7C8B6F] text-white rounded-br-sm'
-                      : 'bg-white text-gray-800 rounded-bl-sm shadow-sm border border-gray-100'
-                  }`}>
-                    <p className="whitespace-pre-line text-[13px] leading-relaxed">{msg.texto}</p>
-                    <p className={`text-[10px] mt-1 text-right ${msg.remetente === 'user' ? 'text-white/60' : 'text-gray-400'}`}>{formatarHora(msg.timestamp)}</p>
-                  </div>
-                </div>
+        {mostrarBoasVindas ? (
+          <div className="max-w-sm mx-auto flex flex-col items-center justify-center h-full px-2">
+            <img src="/logos/VITALIS_LOGO_V3.png" alt="Vivianne" className="w-16 h-16 rounded-full bg-white p-2 shadow-lg mb-4" />
+            <h2 className="text-lg font-bold text-[#4A5D3E] mb-1">Olá{client?.nome_completo ? `, ${client.nome_completo.split(' ')[0]}` : ''}!</h2>
+            <p className="text-sm text-gray-500 mb-6 text-center leading-relaxed">Sou a Vivianne, a tua coach Vitalis.<br />Escolhe um tema ou escreve a tua dúvida.</p>
+
+            <div className="grid grid-cols-2 gap-2.5 w-full">
+              {[
+                { emoji: '🖐️', titulo: 'Minhas Porções', desc: 'As tuas medidas', pergunta: 'Quais são as minhas porções?' },
+                { emoji: '🍽️', titulo: 'Montar Prato', desc: 'Compor refeições', pergunta: 'Como distribuo as porções pelas refeições?' },
+                { emoji: '⏰', titulo: 'Jejum', desc: 'Como funciona', pergunta: 'Como funciona o jejum intermitente?' },
+                { emoji: '💪', titulo: 'Treino', desc: 'Comer + exercício', pergunta: 'O que comer antes e depois do treino?' },
+                { emoji: '🌙', titulo: 'Ramadão', desc: 'Nutrição adaptada', pergunta: 'Como adaptar a alimentação no Ramadão?' },
+                { emoji: '❓', titulo: 'Ajuda', desc: 'Todos os temas', pergunta: 'Ajuda' },
+              ].map((topic, i) => (
+                <button
+                  key={i}
+                  onClick={() => enviarMensagem(topic.pergunta)}
+                  className="flex flex-col items-center gap-1.5 p-3.5 bg-white rounded-xl shadow-sm border border-gray-100 hover:border-[#7C8B6F] hover:shadow-md active:scale-95 transition-all text-center"
+                  style={{ animationDelay: `${i * 80}ms` }}
+                >
+                  <span className="text-2xl">{topic.emoji}</span>
+                  <span className="text-sm font-medium text-[#4A5D3E]">{topic.titulo}</span>
+                  <span className="text-[11px] text-gray-400 leading-tight">{topic.desc}</span>
+                </button>
               ))}
             </div>
-          ))}
-          {enviando && (
-            <div className="flex justify-start mb-2.5">
-              <div className="w-7 h-7 rounded-full bg-[#7C8B6F] flex items-center justify-center flex-shrink-0 mr-2 mt-1 shadow-sm"><span className="text-white text-xs font-bold">V</span></div>
-              <div className="bg-white rounded-2xl px-4 py-3 shadow-sm rounded-bl-sm border border-gray-100">
-                <div className="flex gap-1.5">
-                  <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                  <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                  <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+          </div>
+        ) : (
+          <div className="max-w-2xl mx-auto space-y-1">
+            {Object.entries(mensagensAgrupadas).map(([data, msgs]) => (
+              <div key={data}>
+                <div className="flex justify-center my-3">
+                  <span className="px-3 py-0.5 bg-white/70 rounded-full text-[11px] text-gray-500 shadow-sm">{data}</span>
+                </div>
+                {msgs.map((msg) => (
+                  <div key={msg.id} className={`flex ${msg.remetente === 'user' ? 'justify-end' : 'justify-start'} mb-2.5`}>
+                    {msg.remetente === 'coach' && (
+                      <div className="w-7 h-7 rounded-full bg-[#7C8B6F] flex items-center justify-center flex-shrink-0 mr-2 mt-1 shadow-sm"><span className="text-white text-xs font-bold">V</span></div>
+                    )}
+                    <div className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 ${
+                      msg.remetente === 'user'
+                        ? 'bg-[#7C8B6F] text-white rounded-br-sm'
+                        : 'bg-white text-gray-800 rounded-bl-sm shadow-sm border border-gray-100'
+                    }`}>
+                      <div className="text-[13px] leading-relaxed">{renderTexto(msg.texto, msg.remetente === 'user')}</div>
+                      <p className={`text-[10px] mt-1 text-right ${msg.remetente === 'user' ? 'text-white/60' : 'text-gray-400'}`}>{formatarHora(msg.timestamp)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+            {enviando && (
+              <div className="flex justify-start mb-2.5">
+                <div className="w-7 h-7 rounded-full bg-[#7C8B6F] flex items-center justify-center flex-shrink-0 mr-2 mt-1 shadow-sm"><span className="text-white text-xs font-bold">V</span></div>
+                <div className="bg-white rounded-2xl px-4 py-3 shadow-sm rounded-bl-sm border border-gray-100">
+                  <div className="flex gap-1.5">
+                    <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                    <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                    <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
       </main>
 
-      {/* Sugestões rápidas */}
-      <div className="bg-[#F5F1EB] border-t border-gray-200/60 px-3 py-2 flex-shrink-0">
+      {/* Sugestões rápidas - hidden on welcome */}
+      {!mostrarBoasVindas && <div className="bg-[#F5F1EB] border-t border-gray-200/60 px-3 py-2 flex-shrink-0">
         <div className="max-w-2xl mx-auto overflow-x-auto scrollbar-hide">
           <div className="flex gap-1.5 pb-0.5" style={{ WebkitOverflowScrolling: 'touch' }}>
             {[
@@ -1152,7 +1188,7 @@ export default function ChatCoach() {
             ))}
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* Input */}
       <div className="bg-white border-t border-gray-200 px-3 py-2.5 flex-shrink-0">
