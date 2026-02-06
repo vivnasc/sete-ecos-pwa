@@ -368,19 +368,9 @@ export default function ChatCoach() {
         `${faseRestritiva ? 'Evita adicionar fruta! Usa cacau em pó ou canela.' : 'Podes adicionar fruta se quiseres.'}`;
     }
 
-    // ========== RAMADÃO - COACHING CONVERSACIONAL ==========
-    if (texto.match(/ramad[aã]o|ramadan|jejum.*sagrado|mes.*sagrado/)) {
-      return `🌙 ${nome ? nome + ', R' : 'R'}amadan Mubarak!\n\n` +
-        `Que bom que estás aqui. O Ramadão é um período especial e o teu corpo merece atenção extra.\n\n` +
-        `Como te estás a sentir? Posso ajudar-te com:\n` +
-        `• Como estás a gerir a energia durante o dia?\n` +
-        `• Tens sentido mais fome ou cansaço do que o esperado?\n` +
-        `• Precisas de ideias práticas para o Suhoor ou Iftar?\n\n` +
-        `As tuas porções diárias mantêm-se (${palmas}P ${maos}H ${polegares}G), só distribuímos em 2 momentos.\n\n` +
-        `Diz-me o que precisas e eu adapto ao teu dia. Também tens o 📖 **Guia Ramadão** completo na app com tudo detalhado!`;
-    }
+    // ========== RAMADÃO - RESPOSTAS ESPECÍFICAS (antes da geral!) ==========
 
-    // ========== SUHOOR ESPECÍFICO ==========
+    // SUHOOR ESPECÍFICO
     if (texto.match(/suhoor|suhur|antes.*amanhecer|refeicao.*madrugada/)) {
       const protSuhoor = Math.round(palmas * 0.4);
       const hidSuhoor = Math.round(maos * 0.4);
@@ -395,7 +385,7 @@ export default function ChatCoach() {
         `Dica: bebe pelo menos 500ml de água e evita o muito salgado (aumenta a sede). Qual destes combos te atrai mais?`;
     }
 
-    // ========== IFTAR ESPECÍFICO ==========
+    // IFTAR ESPECÍFICO
     if (texto.match(/iftar|quebr.*jejum|por.?do.?sol|abrir.*jejum/)) {
       const protIftar = Math.round(palmas * 0.6);
       const hidIftar = Math.round(maos * 0.6);
@@ -408,7 +398,7 @@ export default function ChatCoach() {
         `**Uma ideia para hoje:** Sopa de lentilhas para começar + prato principal com proteína e legumes. Que achas?`;
     }
 
-    // ========== TÂMARAS ==========
+    // TÂMARAS
     if (texto.match(/t[aâ]mara|tamara|datil/)) {
       return `🌴 As tâmaras são um alimento incrível!\n\n` +
         `3 tâmaras (~75g) dão-te energia rápida, fibra e minerais como potássio e magnésio. No método Vitalis, contam como ~1 mão concha de hidratos.\n\n` +
@@ -419,7 +409,7 @@ export default function ChatCoach() {
         `Queres que te sugira uma combinação com tâmaras para o teu próximo Suhoor ou Iftar?`;
     }
 
-    // ========== HIDRATAÇÃO RAMADÃO ==========
+    // HIDRATAÇÃO RAMADÃO
     if (texto.match(/(hidrat|agua|beber).*ramad|(ramad).*(hidrat|agua|beber)|sede.*ramad/)) {
       return `💧 ${nome ? nome + ', a' : 'A'} hidratação é mesmo o maior desafio, não é?\n\n` +
         `O truque é distribuir ao longo da noite, nunca tudo de uma vez:\n` +
@@ -431,7 +421,7 @@ export default function ChatCoach() {
         `Estás a conseguir beber o suficiente? Conta-me como está a correr.`;
     }
 
-    // ========== EXERCÍCIO RAMADÃO ==========
+    // EXERCÍCIO RAMADÃO
     if (texto.match(/(exerc|treino|trein).*ramad|(ramad).*(exerc|treino|trein)/)) {
       return `🏃‍♀️ Sim, podes e deves continuar a mexer-te!\n\n` +
         `Mas adapta — o teu corpo está a trabalhar diferente durante o jejum.\n\n` +
@@ -443,6 +433,18 @@ export default function ChatCoach() {
         `• Caminhadas e yoga são excelentes opções\n` +
         `• Se sentires tonturas, PARA — ouve o teu corpo\n\n` +
         `${diasTreino.length > 0 ? `Os teus dias de treino (${diasTreino.map(d => ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d-1]).join(', ')}) mantêm as porções extra. ` : ''}Como tem sido o teu treino durante o jejum?`;
+    }
+
+    // RAMADÃO GERAL (apanha o que não foi capturado acima)
+    if (texto.match(/ramad[aã]o|ramadan|jejum.*sagrado|mes.*sagrado/)) {
+      return `🌙 ${nome ? nome + ', R' : 'R'}amadan Mubarak!\n\n` +
+        `Que bom que estás aqui. O Ramadão é um período especial e o teu corpo merece atenção extra.\n\n` +
+        `Como te estás a sentir? Posso ajudar-te com:\n` +
+        `• Como estás a gerir a energia durante o dia?\n` +
+        `• Tens sentido mais fome ou cansaço do que o esperado?\n` +
+        `• Precisas de ideias práticas para o Suhoor ou Iftar?\n\n` +
+        `As tuas porções diárias mantêm-se (${palmas}P ${maos}H ${polegares}G), só distribuímos em 2 momentos.\n\n` +
+        `Diz-me o que precisas e eu adapto ao teu dia. Também tens o 📖 **Guia Ramadão** completo na app com tudo detalhado!`;
     }
 
     // ========== JEJUM INTERMITENTE - EDUCATIVO ==========
