@@ -14,7 +14,12 @@ export default function Home() {
   const userName = userRecord?.nome || session?.user?.email?.split('@')[0] || ''
 
   const getGreeting = () => {
-    const hour = new Date().getHours()
+    const agora = new Date()
+    const hour = agora.getHours()
+    // Ramadão 2026: ~17 Fev - 19 Mar
+    const inicioRamadao = new Date(2026, 1, 17)
+    const fimRamadao = new Date(2026, 2, 20)
+    if (agora >= inicioRamadao && agora <= fimRamadao) return 'Ramadan Mubarak'
     if (hour < 12) return 'Bom dia'
     if (hour < 18) return 'Boa tarde'
     return 'Boa noite'

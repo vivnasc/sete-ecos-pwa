@@ -159,6 +159,10 @@ const LandingVitalis = () => {
     {
       pergunta: 'Preciso comprar suplementos ou produtos especiais?',
       resposta: 'Não! Zero suplementos obrigatórios, zero shakes, zero produtos vendidos. Só comida real que encontras no mercado ou supermercado. O programa é completo como está.'
+    },
+    {
+      pergunta: 'O Vitalis funciona durante o Ramadão?',
+      resposta: 'Perfeitamente! O método adapta-se ao jejum do Ramadão. As porções mantêm-se, distribuídas entre Suhoor e Iftar. Tens guia nutricional específico, dicas de hidratação nocturna, receitas adaptadas e a coach Vivianne preparada para te apoiar durante o mês sagrado. O Vitalis é inclusivo e respeita as tuas práticas.'
     }
   ];
 
@@ -234,6 +238,41 @@ const LandingVitalis = () => {
           </div>
         </div>
       </header>
+
+      {/* Banner Sazonal Ramadão */}
+      {(() => {
+        const agora = new Date();
+        const inicioRamadao = new Date(2026, 1, 17);
+        const fimRamadao = new Date(2026, 2, 20);
+        const mostraPreRamadao = new Date(inicioRamadao);
+        mostraPreRamadao.setDate(mostraPreRamadao.getDate() - 10);
+        if (agora < mostraPreRamadao || agora > fimRamadao) return null;
+        const dentroRamadao = agora >= inicioRamadao && agora <= fimRamadao;
+        return (
+          <section className="py-8 bg-gradient-to-r from-[#1a1a3e] via-[#2d2d5e] to-[#1a3a4e] relative overflow-hidden">
+            <div className="absolute top-2 right-8 text-6xl opacity-10">🌙</div>
+            <div className="absolute top-6 right-28 text-2xl opacity-10">⭐</div>
+            <div className="max-w-4xl mx-auto px-4 text-center">
+              <p className="text-yellow-300 text-sm font-semibold tracking-widest uppercase mb-2">
+                {dentroRamadao ? 'Ramadan Mubarak' : 'O Ramadão está a chegar'}
+              </p>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                Nutrição consciente durante o mês sagrado
+              </h2>
+              <p className="text-white/70 text-sm max-w-xl mx-auto mb-4">
+                O Vitalis adapta-se ao Ramadão com guia nutricional para Suhoor e Iftar,
+                plano de hidratação nocturna e apoio da coach Vivianne. Porque inclusão é cuidado.
+              </p>
+              <button
+                onClick={handleComecar}
+                className="px-8 py-3 bg-white text-[#1a1a3e] rounded-full font-semibold hover:translate-y-[-2px] hover:shadow-lg transition-all"
+              >
+                Começar com apoio Ramadão →
+              </button>
+            </div>
+          </section>
+        );
+      })()}
 
       {/* Prova Social */}
       <section className="py-12 bg-white border-b-4 border-[#7C8B6F]">
