@@ -148,6 +148,49 @@ export default function ChatCoach() {
         `${diasTreino.length > 0 ? `Nos dias de treino tens +1 mão concha de hidratos.` : ''}`;
     }
 
+    // ========== PERGUNTA SOBRE ALIMENTO / "POSSO COMER...?" ==========
+    const ePerguntaAlimento =
+      texto.match(/(posso|pode|devo|consigo|funciona).*(comer|tomar|beber|na\s*(indu|fase|estab|reeduc|ceto))/) ||
+      texto.match(/(comer|tomar|beber).*(pode|posso|devo)/) ||
+      texto.match(/pode.*(na|nesta|durante).*(indu|fase|estab|reeduc|ceto)/) ||
+      texto.match(/\+.*(pode|posso|bom|ok)\b/);
+
+    if (ePerguntaAlimento) {
+      const temProteina = !!texto.match(/ovo|frango|galinha|peixe|carne|bife|atum|salmao|iogurte|queijo|whey|peru|porco|borrego|tofu|fiambre|presunto|sardinha|camarao|lula|polvo/);
+      const temHidrato = !!texto.match(/pao|arroz|batata|aveia|massa|esparguete|banana|fruta|cereal|tamara|quinoa|milho|mandioca|feijao|grao|lentilha|bolacha|tosta/);
+      const temGordura = !!texto.match(/abacate|azeite|manteiga|nozes|amendoim|coco|amendoa|castanha|noz\b|azeitona|ghee/);
+      const temLegume = !!texto.match(/salada|brocol|espinafre|couve|legume|tomate|pepino|cenoura|alface|courgette|cogumelo/);
+
+      if (temProteina || temHidrato || temGordura || temLegume) {
+        let resp = `${nome ? nome + ', ' : ''}`;
+
+        if (faseRestritiva && temHidrato) {
+          resp += `podes, mas atenção ao hidrato!\n\n`;
+          if (temProteina) resp += `✅ Proteína — perfeito\n`;
+          resp += `⚠️ Hidrato — conta para as tuas **${maos} mãos/dia**\n`;
+          if (temGordura) resp += `✅ Gordura boa — excelente na tua fase\n`;
+          if (temLegume) resp += `✅ Legumes — à vontade\n`;
+          resp += `\nNa fase **${fase}** tens ${maos} mãos de hidratos por dia. Esta refeição gasta 1 mão. Se for a única dessa refeição, está OK!\n\n`;
+          resp += `Queres uma alternativa sem hidratos?`;
+        } else if (temHidrato && !temProteina) {
+          resp += `falta proteína nessa refeição!\n\n`;
+          if (temHidrato) resp += `✅ Hidrato (${maos} mãos/dia)\n`;
+          if (temGordura) resp += `✅ Gordura\n`;
+          if (temLegume) resp += `✅ Legumes\n`;
+          resp += `\n**Sugestão:** Junta proteína (ovos, frango, iogurte grego) — deve estar em todas as refeições principais. As tuas ${palmas} palmas diárias são fundamentais!`;
+        } else {
+          resp += `sim, boa combinação! ✅\n\n`;
+          if (temProteina) resp += `✅ Proteína\n`;
+          if (temHidrato) resp += `✅ Hidrato (${maos} mãos/dia)\n`;
+          if (temGordura) resp += `✅ Gordura boa\n`;
+          if (temLegume) resp += `✅ Legumes\n`;
+          resp += `\nEncaixa na fase **${fase}**. Conta nas porções diárias (${palmas}P ${maos}H ${polegares}G).`;
+        }
+
+        return resp;
+      }
+    }
+
     // ========== PEQUENO-ALMOÇO ==========
     if (texto.match(/pequeno.?almoco|manha|pa\b/)) {
       const prot = Math.round(palmas * 0.25);
@@ -320,7 +363,7 @@ export default function ChatCoach() {
     }
 
     // ========== TREINO ==========
-    if (texto.match(/treino|exerc|muscula/)) {
+    if (texto.match(/treino|exerc|muscula/) && !texto.match(/ramad/)) {
       if (diasTreino.length > 0) {
         return `Sobre os dias de treino:\n\n` +
           `📅 **Os teus dias:** ${diasTreino.map(d => ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][d-1]).join(', ')}\n\n` +
