@@ -506,6 +506,50 @@ export const generateInviteCode = async (type = 'tester', maxUses = 1, notes = '
 };
 
 /**
+ * Activa subscricao promocional (1 mes)
+ */
+const activatePromo = async (userId, code, notes = '') => {
+  try {
+    const { data: existingClient } = await supabase
+      .from('vitalis_clients')
+      .select('id')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    const expiresAt = new Date();
+    expiresAt.setMonth(expiresAt.getMonth() + 1);
+
+    const promoData = {
+      subscription_status: SUBSCRIPTION_STATUS.ACTIVE,
+      subscription_expires: expiresAt.toISOString(),
+      subscription_plan: 'promo',
+      payment_method: 'promo_code',
+      payment_reference: `Codigo: ${code} | ${notes}`,
+      subscription_updated: new Date().toISOString()
+    };
+
+    if (existingClient) {
+      const { error } = await supabase
+        .from('vitalis_clients')
+        .update(promoData)
+        .eq('user_id', userId);
+      if (error) throw error;
+    } else {
+      const { error } = await supabase
+        .from('vitalis_clients')
+        .insert({ user_id: userId, ...promoData });
+      if (error) throw error;
+    }
+
+    await logSubscriptionChange(userId, SUBSCRIPTION_STATUS.ACTIVE, `Promo: ${code}`);
+    return { success: true };
+  } catch (error) {
+    console.error('Erro ao activar promo:', error);
+    return { success: false, error };
+  }
+};
+
+/**
  * Usa codigo de convite
  */
 export const useInviteCode = async (userId, code) => {
@@ -538,6 +582,9 @@ export const useInviteCode = async (userId, code) => {
       benefitResult = await setAsTester(userId, `Codigo: ${code}`);
     } else if (invite.type === 'trial') {
       benefitResult = await startTrial(userId);
+    } else if (invite.type === 'promo') {
+      // Promo: activa 1 mes de subscricao (como pagamento confirmado)
+      benefitResult = await activatePromo(userId, code, invite.notes);
     }
 
     // Se falhou ao aplicar o benefício, retornar erro
