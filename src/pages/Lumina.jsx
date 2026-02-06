@@ -17,6 +17,16 @@ import {
   obterRecomendacaoCicloEco,
   analisarTendenciasMensais
 } from '../lib/lumina-leituras';
+import {
+  GENEROS,
+  saudacao,
+  bemVindo,
+  opcaoLabel,
+  explicacaoAdaptada,
+  adaptarTextoGenero,
+  mostrarCicloMenstrual
+} from '../lib/genero';
+import { setSexo } from '../utils/genero';
 import './Lumina.css';
 
 // ============================================================
@@ -183,6 +193,7 @@ export default function Lumina() {
   
   // Estados do onboarding
   const [nome, setNome] = useState('');
+  const [genero, setGenero] = useState(null);
   const [tracksCycle, setTracksCycle] = useState(null);
   const [lastPeriod, setLastPeriod] = useState('');
   const [cycleLength, setCycleLength] = useState(28);
@@ -220,6 +231,9 @@ export default function Lumina() {
         
         if (profileData) {
           setProfile(profileData);
+          if (profileData.genero) {
+            setGenero(profileData.genero);
+          }
           if (profileData.ciclo_activo && profileData.ultimo_periodo) {
             calcularFaseCiclo(profileData);
           }
@@ -345,7 +359,8 @@ export default function Lumina() {
   
   function gerarLeitura() {
     const padraoDetectado = detectarPadrao(respostas);
-    const textoLeitura = obterLeitura(padraoDetectado);
+    const textoLeituraOriginal = obterLeitura(padraoDetectado);
+    const textoLeitura = adaptarTextoGenero(textoLeituraOriginal, genero || profile?.genero);
     const recomendacao = obterRecomendacaoEco(respostas);
     const padraoSem = analisarPadroesSemanais(historico);
 
@@ -477,6 +492,7 @@ export default function Lumina() {
           auth_id: authUser.id,
           nome: nome.trim(),
           email: authUser.email,
+          genero: genero || null,
           ciclo_activo: tracksCycle === 'sim',
           duracao_ciclo: cycleLength,
           ultimo_periodo: tracksCycle === 'sim' && lastPeriod ? lastPeriod : null
@@ -489,10 +505,17 @@ export default function Lumina() {
           .single();
 
         if (error) throw error;
-        
+
         setProfile(data);
         if (data.ciclo_activo && data.ultimo_periodo) {
           calcularFaseCiclo(data);
+        }
+
+        // Sincronizar genero com localStorage para g() funcionar em toda a app
+        if (genero === 'M') {
+          setSexo('masculino');
+        } else if (genero === 'F') {
+          setSexo('feminino');
         }
       }
     } catch (error) {
@@ -675,9 +698,11 @@ export default function Lumina() {
   // ============================================================
   
   function renderOnboarding() {
+    const showCycleSection = mostrarCicloMenstrual(genero);
+
     return (
       <div className={`screen ${screen === 'onboarding' ? 'active' : ''}`}>
-        <div className="onboarding-title">Boas-vindas à LUMINA</div>
+        <div className="onboarding-title">{bemVindo(genero)} à LUMINA</div>
         <div className="onboarding-subtitle">Vê-te antes de agir</div>
 
         <div className="form-group">
@@ -692,32 +717,58 @@ export default function Lumina() {
         </div>
 
         <div className="form-group">
-          <label className="form-label">Acompanhas o teu ciclo menstrual?</label>
+          <label className="form-label">Como te identificas?</label>
           <p style={{ fontSize: '12px', opacity: 0.7, marginBottom: '12px', lineHeight: 1.4 }}>
-            O ciclo menstrual influencia energia, emoções e clareza mental.
-            Se acompanhares, a LUMINA ajusta a leitura à tua fase.
+            Isto ajuda a LUMINA a personalizar a tua experiência.
           </p>
           <div className="radio-group">
-            <div
-              className={`radio-option ${tracksCycle === 'sim' ? 'selected' : ''}`}
-              onClick={() => setTracksCycle('sim')}
-            >
-              Sim, acompanho
-            </div>
-            <div
-              className={`radio-option ${tracksCycle === 'nao' ? 'selected' : ''}`}
-              onClick={() => setTracksCycle('nao')}
-            >
-              Não acompanho
-            </div>
-            <div
-              className={`radio-option ${tracksCycle === 'menopausa' ? 'selected' : ''}`}
-              onClick={() => setTracksCycle('menopausa')}
-            >
-              Menopausa / Não se aplica
-            </div>
+            {GENEROS.map(g => (
+              <div
+                key={g.valor}
+                className={`radio-option ${genero === g.valor ? 'selected' : ''}`}
+                onClick={() => {
+                  setGenero(g.valor);
+                  // Reset cycle tracking when switching to male
+                  if (g.valor === 'M') {
+                    setTracksCycle('nao');
+                  }
+                }}
+              >
+                {g.label}
+              </div>
+            ))}
           </div>
         </div>
+
+        {showCycleSection && (
+          <div className="form-group">
+            <label className="form-label">Acompanhas o teu ciclo menstrual?</label>
+            <p style={{ fontSize: '12px', opacity: 0.7, marginBottom: '12px', lineHeight: 1.4 }}>
+              O ciclo menstrual influencia energia, emoções e clareza mental.
+              Se acompanhares, a LUMINA ajusta a leitura à tua fase.
+            </p>
+            <div className="radio-group">
+              <div
+                className={`radio-option ${tracksCycle === 'sim' ? 'selected' : ''}`}
+                onClick={() => setTracksCycle('sim')}
+              >
+                Sim, acompanho
+              </div>
+              <div
+                className={`radio-option ${tracksCycle === 'nao' ? 'selected' : ''}`}
+                onClick={() => setTracksCycle('nao')}
+              >
+                Não acompanho
+              </div>
+              <div
+                className={`radio-option ${tracksCycle === 'menopausa' ? 'selected' : ''}`}
+                onClick={() => setTracksCycle('menopausa')}
+              >
+                Menopausa / Não se aplica
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className={`cycle-section ${tracksCycle === 'sim' ? 'visible' : ''}`}>
           <div className="form-group">
@@ -781,14 +832,14 @@ export default function Lumina() {
     return (
       <div className={`screen ${screen === 'intro' ? 'active' : ''}`}>
         <div className="intro-greeting">
-          {primeiroNome ? `${primeiroNome},` : 'Mulher,'}
+          {primeiroNome ? `${primeiroNome},` : `${saudacao(genero || profile?.genero)},`}
         </div>
 
         <div className="intro-text" style={{ fontSize: '18px', lineHeight: 1.6 }}>
           Antes de agires,<br />
           <em style={{ fontSize: '22px' }}>vê-te</em>.<br /><br />
           <span style={{ opacity: 0.8, fontSize: '15px' }}>
-            7 perguntas sobre o teu estado.<br />
+            8 perguntas sobre o teu estado.<br />
             1 leitura que revela o que precisas saber.
           </span>
         </div>
@@ -823,7 +874,8 @@ export default function Lumina() {
   function renderQuestion() {
     const pergunta = PERGUNTAS[questionIndex];
     const ecoClass = `eco-${pergunta.eco}`;
-    
+    const userGenero = genero || profile?.genero;
+
     const negativos = pergunta.opcoes.filter(o => o.posicao === 'negativo');
     const neutro = pergunta.opcoes.find(o => o.posicao === 'neutro');
     const positivos = pergunta.opcoes.filter(o => o.posicao === 'positivo');
@@ -831,56 +883,56 @@ export default function Lumina() {
     return (
       <div className={`screen ${ecoClass} ${screen === 'question' ? 'active' : ''}`}>
         <div className="logo-small">LUMINA</div>
-        
+
         <div className="progress">
           {PERGUNTAS.map((_, i) => (
-            <div 
-              key={i} 
+            <div
+              key={i}
               className={`progress-dot ${i <= questionIndex ? `eco-${i + 1} filled` : ''}`}
             />
           ))}
         </div>
-        
+
         <div className="question-container">
           <p className={`question ${ecoClass}`}>
             <span className="i">{pergunta.inicial}</span>
             {pergunta.titulo.slice(1)}
           </p>
-          <p className="question-explanation">{pergunta.explicacao}</p>
+          <p className="question-explanation">{explicacaoAdaptada(pergunta.id, pergunta.explicacao, userGenero)}</p>
         </div>
-        
+
         <div className="options">
           <div className="options-row">
             {negativos.map(opcao => (
-              <button 
+              <button
                 key={opcao.valor}
                 className="option"
                 onClick={() => handleAnswer(pergunta.id, opcao.valor)}
               >
-                {opcao.valor}
+                {opcaoLabel(opcao.valor, userGenero)}
               </button>
             ))}
           </div>
-          
+
           <div className="options-row">
             {neutro && (
-              <button 
+              <button
                 className="option"
                 onClick={() => handleAnswer(pergunta.id, neutro.valor)}
               >
-                {neutro.valor}
+                {opcaoLabel(neutro.valor, userGenero)}
               </button>
             )}
           </div>
-          
+
           <div className="options-row">
             {positivos.map(opcao => (
-              <button 
+              <button
                 key={opcao.valor}
                 className="option"
                 onClick={() => handleAnswer(pergunta.id, opcao.valor)}
               >
-                {opcao.valor}
+                {opcaoLabel(opcao.valor, userGenero)}
               </button>
             ))}
           </div>
