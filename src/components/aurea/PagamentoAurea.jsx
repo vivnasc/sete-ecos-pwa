@@ -34,41 +34,51 @@ export default function PagamentoAurea() {
   }, []);
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    setSession(session);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
 
-    if (session) {
-      // Obter userId
-      const { data: userData } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_id', session.user.id)
-        .single();
+      if (session) {
+        // Garantir que o utilizador existe na tabela users
+        await supabase.from('users').upsert({
+          auth_id: session.user.id,
+          email: session.user.email,
+          created_at: new Date().toISOString()
+        }, { onConflict: 'auth_id' });
 
-      if (userData) {
-        setUserId(userData.id);
+        const { data: userData } = await supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', session.user.id)
+          .maybeSingle();
 
-        // Verificar se já tem acesso
-        const { data: aureaClient } = await supabase
-          .from('aurea_clients')
-          .select('subscription_status, onboarding_complete')
-          .eq('user_id', userData.id)
-          .single();
+        if (userData) {
+          setUserId(userData.id);
 
-        if (aureaClient?.subscription_status === 'active' ||
-          aureaClient?.subscription_status === 'trial' ||
-          aureaClient?.subscription_status === 'tester') {
-          if (aureaClient?.onboarding_complete) {
-            navigate('/aurea/dashboard');
-          } else {
-            navigate('/aurea/onboarding');
+          // Verificar se já tem acesso
+          const { data: aureaClient } = await supabase
+            .from('aurea_clients')
+            .select('subscription_status, onboarding_complete')
+            .eq('user_id', userData.id)
+            .maybeSingle();
+
+          if (aureaClient?.subscription_status === 'active' ||
+            aureaClient?.subscription_status === 'trial' ||
+            aureaClient?.subscription_status === 'tester') {
+            if (aureaClient?.onboarding_complete) {
+              navigate('/aurea/dashboard');
+            } else {
+              navigate('/aurea/onboarding');
+            }
+            return;
           }
-          return;
         }
       }
+    } catch (error) {
+      console.error('Erro ao verificar autenticação:', error);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const handleAuth = async (e) => {
@@ -82,6 +92,15 @@ export default function PagamentoAurea() {
         if (error) {
           setAuthError(error.message.includes('Invalid') ? 'Email ou password incorrectos' : error.message);
           return;
+        }
+        // Garantir registo na tabela users após login
+        const { data: loginSession } = await supabase.auth.getSession();
+        if (loginSession?.session?.user) {
+          await supabase.from('users').upsert({
+            auth_id: loginSession.session.user.id,
+            email: loginSession.session.user.email,
+            created_at: new Date().toISOString()
+          }, { onConflict: 'auth_id' });
         }
       } else {
         const { data, error } = await supabase.auth.signUp({
