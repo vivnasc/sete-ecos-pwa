@@ -21,32 +21,43 @@ export default function AureaAuth() {
   useEffect(() => {
     // Verificar se já está autenticado
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        // Verificar se já tem cliente ÁUREA ou precisa de onboarding
-        const { data: userData } = await supabase
-          .from('users')
-          .select('id')
-          .eq('auth_id', session.user.id)
-          .single();
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          // Garantir que o utilizador existe na tabela users
+          await supabase.from('users').upsert({
+            auth_id: session.user.id,
+            email: session.user.email,
+            created_at: new Date().toISOString()
+          }, { onConflict: 'auth_id' });
 
-        if (userData) {
-          const { data: aureaClient } = await supabase
-            .from('aurea_clients')
-            .select('onboarding_complete')
-            .eq('user_id', userData.id)
-            .single();
+          const { data: userData } = await supabase
+            .from('users')
+            .select('id')
+            .eq('auth_id', session.user.id)
+            .maybeSingle();
 
-          if (aureaClient?.onboarding_complete) {
-            navigate('/aurea/dashboard');
+          if (userData) {
+            const { data: aureaClient } = await supabase
+              .from('aurea_clients')
+              .select('onboarding_complete')
+              .eq('user_id', userData.id)
+              .maybeSingle();
+
+            if (aureaClient?.onboarding_complete) {
+              navigate('/aurea/dashboard');
+            } else {
+              navigate('/aurea/pagamento');
+            }
           } else {
             navigate('/aurea/pagamento');
           }
-        } else {
-          navigate('/aurea/pagamento');
         }
+      } catch (error) {
+        console.error('Erro ao verificar sessão ÁUREA:', error);
+      } finally {
+        setCheckingSession(false);
       }
-      setCheckingSession(false);
     };
 
     checkSession();
@@ -77,23 +88,15 @@ export default function AureaAuth() {
           return;
         }
 
-        // Verificar/criar registo na tabela users (para utilizadores antigos)
+        // Garantir registo na tabela users (para utilizadores antigos)
         const { data: session } = await supabase.auth.getSession();
         if (session?.session?.user) {
           const authUser = session.session.user;
-          const { data: existingUser } = await supabase
-            .from('users')
-            .select('id')
-            .eq('auth_id', authUser.id)
-            .single();
-
-          if (!existingUser) {
-            await supabase.from('users').insert({
-              auth_id: authUser.id,
-              email: authUser.email,
-              created_at: new Date().toISOString()
-            });
-          }
+          await supabase.from('users').upsert({
+            auth_id: authUser.id,
+            email: authUser.email,
+            created_at: new Date().toISOString()
+          }, { onConflict: 'auth_id' });
         }
 
         // Redirecionar após login bem-sucedido
