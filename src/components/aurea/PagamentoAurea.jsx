@@ -39,13 +39,6 @@ export default function PagamentoAurea() {
       setSession(session);
 
       if (session) {
-        // Garantir que o utilizador existe na tabela users
-        await supabase.from('users').upsert({
-          auth_id: session.user.id,
-          email: session.user.email,
-          created_at: new Date().toISOString()
-        }, { onConflict: 'auth_id' });
-
         const { data: userData } = await supabase
           .from('users')
           .select('id')
@@ -92,15 +85,6 @@ export default function PagamentoAurea() {
         if (error) {
           setAuthError(error.message.includes('Invalid') ? 'Email ou password incorrectos' : error.message);
           return;
-        }
-        // Garantir registo na tabela users após login
-        const { data: loginSession } = await supabase.auth.getSession();
-        if (loginSession?.session?.user) {
-          await supabase.from('users').upsert({
-            auth_id: loginSession.session.user.id,
-            email: loginSession.session.user.email,
-            created_at: new Date().toISOString()
-          }, { onConflict: 'auth_id' });
         }
       } else {
         const { data, error } = await supabase.auth.signUp({

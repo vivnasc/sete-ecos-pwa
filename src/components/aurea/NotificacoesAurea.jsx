@@ -87,7 +87,7 @@ export default function NotificacoesAurea() {
         .from('users')
         .select('id, email')
         .eq('auth_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (uData) {
         setUserId(uData.id);
@@ -98,7 +98,7 @@ export default function NotificacoesAurea() {
           .from('aurea_clients')
           .select('notificacoes_config, whatsapp_numero, whatsapp_activo')
           .eq('user_id', uData.id)
-          .single();
+          .maybeSingle();
 
         if (prefs) {
           if (prefs.notificacoes_config) {

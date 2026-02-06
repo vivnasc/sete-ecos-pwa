@@ -383,9 +383,9 @@ export default function ChatAurea() {
 
       const { data: userData } = await supabase
         .from('users')
-        .select('id, name, email')
+        .select('id, nome, email')
         .eq('auth_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (userData) {
         setUserId(userData.id);

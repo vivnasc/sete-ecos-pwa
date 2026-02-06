@@ -58,7 +58,7 @@ export default function EspelhoRoupa() {
         .from('users')
         .select('id')
         .eq('auth_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (userData) {
         setUserId(userData.id);
@@ -69,7 +69,7 @@ export default function EspelhoRoupa() {
           .select('*')
           .eq('user_id', userData.id)
           .gte('data', inicioSemana)
-          .single();
+          .maybeSingle();
 
         setCheckinSemanal(checkin);
 
@@ -121,7 +121,7 @@ export default function EspelhoRoupa() {
         .from('aurea_clients')
         .select('joias_total')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
       await supabase
         .from('aurea_clients')

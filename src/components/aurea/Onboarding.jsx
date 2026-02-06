@@ -35,7 +35,7 @@ export default function AureaOnboarding() {
       .from('users')
       .select('id')
       .eq('auth_id', user.id)
-      .single();
+      .maybeSingle();
 
     if (userData) {
       setUserId(userData.id);
@@ -45,7 +45,7 @@ export default function AureaOnboarding() {
         .from('aurea_clients')
         .select('onboarding_complete')
         .eq('user_id', userData.id)
-        .single();
+        .maybeSingle();
 
       if (aureaClient?.onboarding_complete) {
         navigate('/aurea/dashboard');
@@ -65,7 +65,7 @@ export default function AureaOnboarding() {
         .from('aurea_clients')
         .select('id')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
       const clientData = {
         quota_tempo_horas: quotaTempo,

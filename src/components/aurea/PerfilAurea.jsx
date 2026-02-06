@@ -47,7 +47,7 @@ export default function PerfilAurea() {
         .from('users')
         .select('id')
         .eq('auth_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (userData) {
         setUserId(userData.id);
@@ -57,7 +57,7 @@ export default function PerfilAurea() {
           .from('aurea_clients')
           .select('*')
           .eq('user_id', userData.id)
-          .single();
+          .maybeSingle();
 
         if (clientData) {
           setClient(clientData);
