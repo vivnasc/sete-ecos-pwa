@@ -150,7 +150,7 @@ export default function VitalisIntakeComplete() {
     tentou_alternativas: { label: 'Já tentaste lidar com isto de outra forma?', type: 'checkbox_single' },
     que_alternativas: { label: 'O que tentaste?', type: 'textarea', placeholder: 'Ex: meditação, exercício, terapia...', rows: 2, conditional: 'tentou_alternativas' },
     
-    nivel_actividade: { label: 'Nível de actividade física no dia-a-dia', type: 'radio', options: ['sedentaria', 'leve', 'moderada', 'intensa'], labels: ['Sedentária (sentada maior parte do dia)', 'Leve (caminho um pouco)', 'Moderada (bastante activa)', 'Intensa (muito activa)'], required: true },
+    nivel_actividade: { label: 'Nível de actividade física no dia-a-dia', type: 'radio', options: ['sedentaria', 'leve', 'moderada', 'intensa'], labels: ['Sedentário/a (sentado/a maior parte do dia)', 'Leve (caminho um pouco)', 'Moderado/a (bastante activo/a)', 'Intenso/a (muito activo/a)'], required: true },
     faz_exercicio: { label: 'Fazes exercício regular?', type: 'checkbox_single' },
     tipo_exercicio: { label: 'Que tipo de exercício?', type: 'checkbox', options: ['Caminhada', 'Corrida', 'Ginásio', 'Natação', 'Yoga', 'Dança', 'Outro'], conditional: 'faz_exercicio' },
     horas_sono: { label: 'Quantas horas dormes por noite?', type: 'radio', options: ['menos_5h', '5-6h', '7-8h', 'mais_8h'], labels: ['Menos de 5h', '5-6h', '7-8h', 'Mais de 8h'] },
