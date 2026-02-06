@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { isCoach } from '../lib/coach'
 
 const AuthContext = createContext()
 
@@ -34,7 +35,14 @@ export function AuthProvider({ children }) {
   }
 
   // Verificar acesso aos módulos
-  const checkModuleAccess = async (userId) => {
+  const checkModuleAccess = async (userId, userEmail) => {
+    // Coaches têm acesso a todos os módulos
+    if (isCoach(userEmail)) {
+      setVitalisAccess(true)
+      setAureaAccess(true)
+      return
+    }
+
     if (!userId) {
       setVitalisAccess(false)
       setAureaAccess(false)
@@ -68,9 +76,7 @@ export function AuthProvider({ children }) {
 
   // Refresh module access (can be called after subscription changes)
   const refreshAccess = async () => {
-    if (userRecord?.id) {
-      await checkModuleAccess(userRecord.id)
-    }
+    await checkModuleAccess(userRecord?.id, session?.user?.email)
   }
 
   // Load user record and module access in background (non-blocking)
@@ -84,7 +90,7 @@ export function AuthProvider({ children }) {
     try {
       const userData = await ensureUserRecord(user)
       setUserRecord(userData)
-      await checkModuleAccess(userData?.id)
+      await checkModuleAccess(userData?.id, user.email)
     } catch (error) {
       console.error('Erro ao carregar dados do utilizador:', error)
     }
