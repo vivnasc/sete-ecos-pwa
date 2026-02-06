@@ -45,7 +45,7 @@ const VitalisAccessGuard = ({ children }) => {
       // Bypass emails têm acesso directo
       if (isCoach(user.email)) {
         // Garantir que coach tem registo na tabela users
-        const { data: coachUser } = await supabase
+        const { data: coachUser, error: coachError } = await supabase
           .from('users')
           .upsert({
             auth_id: user.id,
@@ -53,19 +53,27 @@ const VitalisAccessGuard = ({ children }) => {
             nome: user.user_metadata?.name || user.email.split('@')[0]
           }, { onConflict: 'auth_id' })
           .select('id')
-          .single();
+          .maybeSingle();
+
+        if (coachError) {
+          console.error('Coach user upsert error:', coachError);
+        }
 
         if (coachUser) {
           // Garantir que coach tem registo vitalis_clients com status tester
-          await supabase
+          const { error: clientError } = await supabase
             .from('vitalis_clients')
             .upsert({
               user_id: coachUser.id,
-              subscription_status: 'tester',
-              status: 'active'
+              subscription_status: 'tester'
             }, { onConflict: 'user_id' });
+
+          if (clientError) {
+            console.error('Coach vitalis_clients upsert error:', clientError);
+          }
         }
 
+        // Coach SEMPRE tem acesso, mesmo se upserts falharem
         setAccessInfo({ hasAccess: true, status: 'bypass', reason: 'bypass_email' });
         setHasAccess(true);
         setLoading(false);
