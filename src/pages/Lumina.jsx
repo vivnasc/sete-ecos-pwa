@@ -120,6 +120,20 @@ const PERGUNTAS = [
       { valor: 'visivel', posicao: 'positivo' },
       { valor: 'luminosa', posicao: 'positivo' }
     ]
+  },
+  {
+    id: 'cuidado',
+    eco: 8,
+    titulo: 'Cuidado Próprio',
+    inicial: 'C',
+    explicacao: 'Como tens tratado a ti mesma ultimamente?',
+    opcoes: [
+      { valor: 'esquecida', posicao: 'negativo' },
+      { valor: 'por ultimo', posicao: 'negativo' },
+      { valor: 'normal', posicao: 'neutro' },
+      { valor: 'presente', posicao: 'positivo' },
+      { valor: 'prioritaria', posicao: 'positivo' }
+    ]
   }
 ];
 
@@ -146,7 +160,8 @@ export default function Lumina() {
     futuro: null,
     mente: null,
     energia: null,
-    espelho: null
+    espelho: null,
+    cuidado: null
   });
   
   // Estados da leitura
@@ -374,6 +389,7 @@ export default function Lumina() {
         mente: respostas.mente,
         energia: respostas.energia,
         espelho: respostas.espelho,
+        cuidado: respostas.cuidado,
         fase_ciclo: faseCiclo?.phase || null,
         dia_ciclo: diaCiclo || null
       };
@@ -429,7 +445,8 @@ export default function Lumina() {
       futuro: null,
       mente: null,
       energia: null,
-      espelho: null
+      espelho: null,
+      cuidado: null
     });
     setPadrao(null);
     setLeitura('');
@@ -991,13 +1008,25 @@ export default function Lumina() {
             <div style={{
               marginTop: '16px',
               padding: '16px',
-              background: recomendacaoCiclo.eco === 'Vitalis' ? 'rgba(124, 139, 111, 0.1)' : INDIGO_LIGHT,
+              background: recomendacaoCiclo.eco === 'Áurea'
+                ? 'linear-gradient(135deg, rgba(201, 162, 39, 0.15) 0%, rgba(212, 175, 55, 0.1) 100%)'
+                : recomendacaoCiclo.eco === 'Vitalis' ? 'rgba(124, 139, 111, 0.1)' : INDIGO_LIGHT,
               borderRadius: '12px',
-              borderLeft: `4px solid ${recomendacaoCiclo.eco === 'Vitalis' ? '#7C8B6F' : INDIGO}`
+              borderLeft: `4px solid ${
+                recomendacaoCiclo.eco === 'Áurea' ? '#C9A227'
+                : recomendacaoCiclo.eco === 'Vitalis' ? '#7C8B6F' : INDIGO
+              }`,
+              boxShadow: recomendacaoCiclo.eco === 'Áurea' ? '0 2px 12px rgba(201, 162, 39, 0.2)' : 'none'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '16px' }}>{recomendacaoCiclo.lua}</span>
-                <span style={{ fontWeight: 'bold', fontSize: '14px' }}>
+                <span style={{ fontSize: '16px' }}>
+                  {recomendacaoCiclo.eco === 'Áurea' ? '✧' : recomendacaoCiclo.lua}
+                </span>
+                <span style={{
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                  color: recomendacaoCiclo.eco === 'Áurea' ? '#B8941F' : 'inherit'
+                }}>
                   {recomendacaoCiclo.eco} para esta fase
                 </span>
               </div>
@@ -1012,12 +1041,15 @@ export default function Lumina() {
                   display: 'inline-block',
                   marginTop: '12px',
                   padding: '10px 20px',
-                  background: recomendacaoCiclo.eco === 'Vitalis' ? '#7C8B6F' : INDIGO,
+                  background: recomendacaoCiclo.eco === 'Áurea'
+                    ? 'linear-gradient(135deg, #C9A227 0%, #D4AF37 100%)'
+                    : recomendacaoCiclo.eco === 'Vitalis' ? '#7C8B6F' : INDIGO,
                   color: 'white',
                   borderRadius: '20px',
                   textDecoration: 'none',
                   fontSize: '13px',
-                  fontWeight: 'bold'
+                  fontWeight: 'bold',
+                  boxShadow: recomendacaoCiclo.eco === 'Áurea' ? '0 4px 15px rgba(201, 162, 39, 0.3)' : 'none'
                 }}>
                   Explorar {recomendacaoCiclo.eco} →
                 </a>
@@ -1030,27 +1062,63 @@ export default function Lumina() {
             <div style={{
               marginTop: '20px',
               padding: '16px',
-              background: ecoRecomendado.eco === 'Vitalis' ? 'rgba(124, 139, 111, 0.1)' : INDIGO_LIGHT,
+              background: ecoRecomendado.eco === 'Áurea'
+                ? 'linear-gradient(135deg, rgba(201, 162, 39, 0.15) 0%, rgba(212, 175, 55, 0.1) 100%)'
+                : ecoRecomendado.eco === 'Vitalis'
+                  ? 'rgba(124, 139, 111, 0.1)'
+                  : INDIGO_LIGHT,
               borderRadius: '12px',
-              borderLeft: `4px solid ${ecoRecomendado.eco === 'Vitalis' ? '#7C8B6F' : INDIGO}`
+              borderLeft: `4px solid ${
+                ecoRecomendado.eco === 'Áurea' ? '#C9A227'
+                : ecoRecomendado.eco === 'Vitalis' ? '#7C8B6F'
+                : INDIGO
+              }`,
+              boxShadow: ecoRecomendado.eco === 'Áurea' ? '0 2px 12px rgba(201, 162, 39, 0.2)' : 'none'
             }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '14px' }}>
-                Sugestão: {ecoRecomendado.eco}
+              {/* Ícone dourado para ÁUREA */}
+              {ecoRecomendado.eco === 'Áurea' && (
+                <div style={{
+                  textAlign: 'center',
+                  marginBottom: '12px',
+                  fontSize: '32px'
+                }}>
+                  ✧
+                </div>
+              )}
+              <div style={{
+                fontWeight: 'bold',
+                marginBottom: '8px',
+                fontSize: '14px',
+                color: ecoRecomendado.eco === 'Áurea' ? '#B8941F' : 'inherit',
+                textAlign: ecoRecomendado.eco === 'Áurea' ? 'center' : 'left'
+              }}>
+                {ecoRecomendado.eco === 'Áurea' ? 'Parece que precisas de ÁUREA' : `Sugestão: ${ecoRecomendado.eco}`}
               </div>
-              <div style={{ fontSize: '14px', lineHeight: 1.5 }}>
-                {ecoRecomendado.msg}
+              <div style={{
+                fontSize: '14px',
+                lineHeight: 1.6,
+                textAlign: ecoRecomendado.eco === 'Áurea' ? 'center' : 'left'
+              }}>
+                {ecoRecomendado.eco === 'Áurea'
+                  ? 'ÁUREA trabalha o valor próprio encarnado. Ajuda-te a existir para ti — sem culpa.'
+                  : ecoRecomendado.msg
+                }
               </div>
               {ecoRecomendado.disponivel && ecoRecomendado.link ? (
                 <a href={ecoRecomendado.link} style={{
-                  display: 'inline-block',
-                  marginTop: '12px',
-                  padding: '10px 20px',
-                  background: ecoRecomendado.eco === 'Vitalis' ? '#7C8B6F' : INDIGO,
+                  display: 'block',
+                  marginTop: '16px',
+                  padding: '12px 24px',
+                  background: ecoRecomendado.eco === 'Áurea'
+                    ? 'linear-gradient(135deg, #C9A227 0%, #D4AF37 100%)'
+                    : ecoRecomendado.eco === 'Vitalis' ? '#7C8B6F' : INDIGO,
                   color: 'white',
-                  borderRadius: '20px',
+                  borderRadius: '25px',
                   textDecoration: 'none',
-                  fontSize: '13px',
-                  fontWeight: 'bold'
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  boxShadow: ecoRecomendado.eco === 'Áurea' ? '0 4px 15px rgba(201, 162, 39, 0.3)' : 'none'
                 }}>
                   Explorar {ecoRecomendado.eco} →
                 </a>
@@ -1130,35 +1198,63 @@ export default function Lumina() {
               ))}
             </div>
 
-            {/* CTA Vitalis */}
-            <a href="/vitalis" style={{
-              display: 'block',
-              marginTop: '20px',
-              padding: '14px',
-              background: 'linear-gradient(135deg, #7C8B6F 0%, #6B7A5E 100%)',
-              color: 'white',
-              borderRadius: '12px',
-              textDecoration: 'none',
-              textAlign: 'center'
-            }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>VITALIS</div>
-              <div style={{ fontSize: '12px', opacity: 0.9 }}>
-                Começa pelo corpo. Nutrição consciente e transformação.
-              </div>
-            </a>
+            {/* CTAs dos Ecos Disponíveis */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '20px' }}>
+              {/* CTA Vitalis */}
+              <a href="/vitalis" style={{
+                display: 'block',
+                padding: '14px 10px',
+                background: 'linear-gradient(135deg, #7C8B6F 0%, #6B7A5E 100%)',
+                color: 'white',
+                borderRadius: '12px',
+                textDecoration: 'none',
+                textAlign: 'center'
+              }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '4px', fontSize: '13px' }}>VITALIS</div>
+                <div style={{ fontSize: '10px', opacity: 0.9, lineHeight: 1.3 }}>
+                  Corpo & Nutrição
+                </div>
+              </a>
+
+              {/* CTA ÁUREA */}
+              <a href="/aurea" style={{
+                display: 'block',
+                padding: '14px 10px',
+                background: 'linear-gradient(135deg, #C9A227 0%, #D4AF37 100%)',
+                color: 'white',
+                borderRadius: '12px',
+                textDecoration: 'none',
+                textAlign: 'center',
+                boxShadow: '0 2px 10px rgba(201, 162, 39, 0.25)'
+              }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '4px', fontSize: '13px' }}>ÁUREA</div>
+                <div style={{ fontSize: '10px', opacity: 0.9, lineHeight: 1.3 }}>
+                  Valor Próprio
+                </div>
+              </a>
+            </div>
 
             {/* Login para clientes existentes */}
-            <a href="/vitalis/login" style={{
-              display: 'block',
-              marginTop: '10px',
-              padding: '10px',
-              color: '#7C8B6F',
-              textDecoration: 'none',
-              textAlign: 'center',
-              fontSize: '13px'
-            }}>
-              Já sou cliente → <span style={{ fontWeight: 'bold' }}>Entrar</span>
-            </a>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '10px' }}>
+              <a href="/vitalis/login" style={{
+                padding: '10px',
+                color: '#7C8B6F',
+                textDecoration: 'none',
+                textAlign: 'center',
+                fontSize: '11px'
+              }}>
+                Vitalis → <span style={{ fontWeight: 'bold' }}>Entrar</span>
+              </a>
+              <a href="/aurea/login" style={{
+                padding: '10px',
+                color: '#B8941F',
+                textDecoration: 'none',
+                textAlign: 'center',
+                fontSize: '11px'
+              }}>
+                Áurea → <span style={{ fontWeight: 'bold' }}>Entrar</span>
+              </a>
+            </div>
           </div>
 
           {/* Assinatura e botão dentro do container para evitar sobreposição */}
