@@ -271,6 +271,7 @@ export default function Home() {
         <div className="hidden md:flex gap-6">
           <a href="#lumina" className="text-[#4A3728] hover:text-[#C9A227] transition-colors">Lumina</a>
           <a href="#ecos" className="text-[#4A3728] hover:text-[#C9A227] transition-colors">Os 7 Ecos</a>
+          <a href="#comunidade" className="text-[#4A3728] hover:text-[#C9A227] transition-colors">Comunidade</a>
           <a href="#aurora" className="text-[#4A3728] hover:text-[#C9A227] transition-colors">Aurora</a>
           <a href="#vivianne" className="text-[#4A3728] hover:text-[#C9A227] transition-colors">Sobre</a>
         </div>
@@ -448,6 +449,48 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Comunidade - Espaço de Autoconhecimento */}
+      <section id="comunidade" className="py-16 px-4" style={{ background: 'linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 50%, #F5F3FF 100%)' }}>
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider mb-4" style={{ backgroundColor: '#8B5CF620', color: '#8B5CF6' }}>
+              NOVO
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-[#1A1A4E] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              Comunidade
+            </h2>
+            <p className="text-[#6B5344] max-w-xl mx-auto" style={{ fontFamily: "'Quicksand', sans-serif" }}>
+              Um espaço de autoconhecimento colectivo. Não é uma rede social — é um rio onde reflexões fluem entre mulheres que caminham juntas.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {[
+              { emoji: '🌊', nome: 'O Rio', desc: 'Reflexões guiadas' },
+              { emoji: '🔥', nome: 'Fogueira', desc: 'Espaço efémero 24h' },
+              { emoji: '👥', nome: 'Círculos', desc: 'Grupos de apoio' },
+              { emoji: '💜', nome: 'Sussurros', desc: 'Apoio privado' },
+            ].map((item) => (
+              <div key={item.nome} className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 text-center border border-purple-100/60 hover:border-purple-200 transition-all">
+                <span className="text-3xl block mb-2">{item.emoji}</span>
+                <h3 className="text-sm font-bold text-[#1A1A4E] mb-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{item.nome}</h3>
+                <p className="text-xs text-gray-500">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <button
+              onClick={() => navigate('/comunidade')}
+              className="px-8 py-3 text-white rounded-full font-semibold hover:translate-y-[-2px] hover:shadow-lg transition-all"
+              style={{ backgroundColor: '#8B5CF6', boxShadow: '0 4px 14px rgba(139, 92, 246, 0.3)' }}
+            >
+              Explorar a Comunidade
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* Aurora - A Coroação */}
       <section id="aurora" className="py-16 px-4 relative overflow-hidden"
         style={{ background: 'linear-gradient(180deg, rgba(232, 213, 163, 0.2) 0%, rgba(212, 165, 165, 0.15) 50%, #FAF6F0 100%)' }}>
@@ -577,6 +620,7 @@ export default function Home() {
               <div className="flex flex-col gap-1">
                 <Link to="/lumina" className="text-white/70 text-sm hover:text-white">Lumina (Gratuito)</Link>
                 <Link to="/vitalis" className="text-white/70 text-sm hover:text-white">Vitalis</Link>
+                <Link to="/comunidade" className="text-white/70 text-sm hover:text-white">Comunidade</Link>
               </div>
             </div>
           </div>

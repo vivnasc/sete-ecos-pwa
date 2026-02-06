@@ -242,7 +242,8 @@ export default function Navigation({ variant = 'default' }) {
 
   // Community section navigation
   if (isCommunitySection) {
-    const isRio = location.pathname === '/comunidade'
+    const isHub = location.pathname === '/comunidade'
+    const isRio = location.pathname === '/comunidade/rio'
     const isCirculos = location.pathname === '/comunidade/circulos'
     const isFogueira = location.pathname === '/comunidade/fogueira'
     const isSussurros = location.pathname === '/comunidade/sussurros'
@@ -258,17 +259,17 @@ export default function Navigation({ variant = 'default' }) {
 
         <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
           <NavItem
-            logo="/logos/CENTRO_7ECOS.png"
-            label="Hub"
-            active={isActive('/')}
-            onClick={() => navigate('/')}
-            color="#1A1A4E"
+            icon="community"
+            label="Inicio"
+            active={isHub}
+            onClick={() => navigate('/comunidade')}
+            color="#8B5CF6"
           />
           <NavItem
             icon="rio"
             label="Rio"
             active={isRio}
-            onClick={() => navigate('/comunidade')}
+            onClick={() => navigate('/comunidade/rio')}
             color="#8B5CF6"
           />
           <NavItem
@@ -325,7 +326,7 @@ export default function Navigation({ variant = 'default' }) {
         {isAuthenticated && (
           <NavItem
             icon="community"
-            label="Social"
+            label="Comunidade"
             active={isCommunitySection}
             onClick={() => navigate('/comunidade')}
             color="#8B5CF6"

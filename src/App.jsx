@@ -46,6 +46,7 @@ import TreinosVitalis from './components/vitalis/TreinosVitalis'
 import PlanoHTML from './pages/PlanoHTML'
 
 // ===== COMUNIDADE — Espaço de Autoconhecimento =====
+import HubComunidade from './components/comunidade/HubComunidade'
 import Rio from './components/comunidade/Rio'
 import Jornada from './components/comunidade/Jornada'
 import Circulos from './components/comunidade/Circulos'
@@ -168,7 +169,8 @@ function App() {
           <Route path="/aurea/notificacoes" element={session ? <AureaAccessGuard><NotificacoesAurea /></AureaAccessGuard> : <Navigate to="/login" state={{ from: '/aurea/notificacoes', eco: 'Áurea' }} />} />
 
           {/* ===== COMUNIDADE — Espaço de Autoconhecimento ===== */}
-          <Route path="/comunidade" element={session ? <Rio /> : <Navigate to="/login" state={{ from: '/comunidade' }} />} />
+          <Route path="/comunidade" element={session ? <HubComunidade /> : <Navigate to="/login" state={{ from: '/comunidade' }} />} />
+          <Route path="/comunidade/rio" element={session ? <Rio /> : <Navigate to="/login" state={{ from: '/comunidade' }} />} />
           <Route path="/comunidade/jornada/:userId" element={session ? <Jornada /> : <Navigate to="/login" state={{ from: '/comunidade' }} />} />
           <Route path="/comunidade/circulos" element={session ? <Circulos /> : <Navigate to="/login" state={{ from: '/comunidade' }} />} />
           <Route path="/comunidade/fogueira" element={session ? <Fogueira /> : <Navigate to="/login" state={{ from: '/comunidade' }} />} />
