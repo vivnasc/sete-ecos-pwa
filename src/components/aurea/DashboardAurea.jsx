@@ -58,9 +58,9 @@ export default function DashboardAurea() {
 
       const { data: userData } = await supabase
         .from('users')
-        .select('id, email, name')
+        .select('id, email, nome')
         .eq('auth_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (!userData) {
         navigate('/aurea/login');
@@ -68,13 +68,13 @@ export default function DashboardAurea() {
       }
 
       setUserId(userData.id);
-      setUserName(userData.name || userData.email.split('@')[0]);
+      setUserName(userData.nome || userData.email?.split('@')[0] || '');
 
       const { data: clientData } = await supabase
         .from('aurea_clients')
         .select('*')
         .eq('user_id', userData.id)
-        .single();
+        .maybeSingle();
 
       if (clientData) {
         setClient(clientData);
@@ -87,7 +87,7 @@ export default function DashboardAurea() {
         .select('*')
         .eq('user_id', userData.id)
         .eq('data', hoje)
-        .single();
+        .maybeSingle();
 
       setQuotaHoje(quotaData);
 

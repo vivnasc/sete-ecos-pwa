@@ -71,7 +71,7 @@ export const checkAureaAccess = async (userId) => {
       .from('aurea_clients')
       .select('subscription_status, subscription_expires, trial_started')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     if (error || !client) {
       return { hasAccess: false, status: SUBSCRIPTION_STATUS.NONE, reason: 'no_client' };
@@ -179,7 +179,7 @@ export const startAureaTrial = async (userId) => {
       .from('aurea_clients')
       .select('id, trial_started')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     if (existingClient?.trial_started) {
       return { success: false, error: 'Trial ja utilizado anteriormente' };
@@ -226,7 +226,7 @@ export const setAureaTester = async (userId, notes = '') => {
       .from('aurea_clients')
       .select('id')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     const testerData = {
       subscription_status: SUBSCRIPTION_STATUS.TESTER,
@@ -273,7 +273,7 @@ export const confirmAureaPayment = async (userId, paymentDetails) => {
       .from('aurea_clients')
       .select('id')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     const subscriptionData = {
       subscription_status: SUBSCRIPTION_STATUS.ACTIVE,
@@ -329,7 +329,7 @@ export const registerAureaPendingPayment = async (userId, paymentDetails) => {
       .from('aurea_clients')
       .select('id')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     const pendingData = {
       subscription_status: SUBSCRIPTION_STATUS.PENDING,

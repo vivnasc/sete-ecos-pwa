@@ -439,7 +439,7 @@ export default function AudioMeditacoes() {
         .from('users')
         .select('id')
         .eq('auth_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (userData) {
         setUserId(userData.id);
@@ -448,7 +448,7 @@ export default function AudioMeditacoes() {
           .from('aurea_clients')
           .select('joias_total')
           .eq('user_id', userData.id)
-          .single();
+          .maybeSingle();
 
         if (client) {
           const joias = client.joias_total || 0;
@@ -500,7 +500,7 @@ export default function AudioMeditacoes() {
         .from('aurea_clients')
         .select('joias_total')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
       await supabase
         .from('aurea_clients')

@@ -38,7 +38,7 @@ export default function InsightsSemanal() {
         .from('users')
         .select('id')
         .eq('auth_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (userData) {
         setUserId(userData.id);
@@ -49,7 +49,7 @@ export default function InsightsSemanal() {
           .from('aurea_clients')
           .select('joias_total, streak_quota')
           .eq('user_id', userData.id)
-          .single();
+          .maybeSingle();
 
         // Quota stats
         const { data: quotas } = await supabase
@@ -87,7 +87,7 @@ export default function InsightsSemanal() {
           .select('*')
           .eq('user_id', userData.id)
           .eq('semana', inicioSemana)
-          .single();
+          .maybeSingle();
 
         // Roupa
         const { data: roupa } = await supabase
@@ -95,7 +95,7 @@ export default function InsightsSemanal() {
           .select('*')
           .eq('user_id', userData.id)
           .gte('data', inicioSemana)
-          .single();
+          .maybeSingle();
 
         // Culpa patterns
         const { data: culpaData } = await supabase

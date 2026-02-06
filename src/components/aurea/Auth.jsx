@@ -24,13 +24,6 @@ export default function AureaAuth() {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          // Garantir que o utilizador existe na tabela users
-          await supabase.from('users').upsert({
-            auth_id: session.user.id,
-            email: session.user.email,
-            created_at: new Date().toISOString()
-          }, { onConflict: 'auth_id' });
-
           const { data: userData } = await supabase
             .from('users')
             .select('id')
@@ -86,17 +79,6 @@ export default function AureaAuth() {
             setError(error.message);
           }
           return;
-        }
-
-        // Garantir registo na tabela users (para utilizadores antigos)
-        const { data: session } = await supabase.auth.getSession();
-        if (session?.session?.user) {
-          const authUser = session.session.user;
-          await supabase.from('users').upsert({
-            auth_id: authUser.id,
-            email: authUser.email,
-            created_at: new Date().toISOString()
-          }, { onConflict: 'auth_id' });
         }
 
         // Redirecionar após login bem-sucedido

@@ -45,7 +45,7 @@ export default function CarteiraMerecimento() {
         .from('users')
         .select('id')
         .eq('auth_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (userData) {
         setUserId(userData.id);
@@ -56,7 +56,7 @@ export default function CarteiraMerecimento() {
           .select('*')
           .eq('user_id', userData.id)
           .eq('semana', inicioSemana)
-          .single();
+          .maybeSingle();
 
         setRegistoSemanal(registo);
 
@@ -112,7 +112,7 @@ export default function CarteiraMerecimento() {
           .from('aurea_clients')
           .select('joias_total')
           .eq('user_id', userId)
-          .single();
+          .maybeSingle();
 
         await supabase
           .from('aurea_clients')

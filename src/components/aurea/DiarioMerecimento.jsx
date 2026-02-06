@@ -49,7 +49,7 @@ export default function DiarioMerecimento() {
         .from('users')
         .select('id')
         .eq('auth_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (userData) {
         setUserId(userData.id);
@@ -60,7 +60,7 @@ export default function DiarioMerecimento() {
           .select('*')
           .eq('user_id', userData.id)
           .eq('data', hoje)
-          .single();
+          .maybeSingle();
 
         setEntradaHoje(entradaHj);
         if (entradaHj) {
@@ -109,7 +109,7 @@ export default function DiarioMerecimento() {
           .from('aurea_clients')
           .select('joias_total')
           .eq('user_id', userId)
-          .single();
+          .maybeSingle();
 
         await supabase
           .from('aurea_clients')
