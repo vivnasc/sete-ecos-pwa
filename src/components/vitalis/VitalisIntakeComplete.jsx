@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
+import { setSexo } from '../../utils/genero';
 
 export default function VitalisIntakeComplete() {
   const navigate = useNavigate();
@@ -493,6 +494,9 @@ try {
       const temAcesso = currentClient && statusComAcesso.includes(currentClient.subscription_status);
 
       console.log('Intake complete - subscription_status:', currentClient?.subscription_status, 'temAcesso:', temAcesso);
+
+      // Guardar género para personalizar textos na app
+      setSexo(formData.sexo);
 
       if (temAcesso) {
         // Já tem acesso - ir para dashboard

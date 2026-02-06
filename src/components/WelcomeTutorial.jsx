@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { g } from '../utils/genero';
 
 /**
  * WELCOME TUTORIAL - First-time user onboarding
@@ -21,7 +22,7 @@ export default function WelcomeTutorial({ eco = 'vitalis', onComplete }) {
 
   const tutorials = {
     vitalis: {
-      title: 'Bem-vinda ao Vitalis!',
+      title: g('Bem-vindo ao Vitalis!', 'Bem-vinda ao Vitalis!'),
       color: '#7C8B6F',
       steps: [
         {
@@ -50,14 +51,14 @@ export default function WelcomeTutorial({ eco = 'vitalis', onComplete }) {
           icon: '💬'
         },
         {
-          title: 'Estamos juntas!',
+          title: g('Estamos juntos!', 'Estamos juntas!'),
           description: 'Esta e a TUA jornada. Vai ao teu ritmo, celebra cada pequena vitoria. Estou aqui contigo!',
           icon: '💚'
         }
       ]
     },
     aurea: {
-      title: 'Bem-vinda ao Aurea!',
+      title: g('Bem-vindo ao Aurea!', 'Bem-vinda ao Aurea!'),
       color: '#C9A227',
       steps: [
         {
@@ -88,7 +89,7 @@ export default function WelcomeTutorial({ eco = 'vitalis', onComplete }) {
       ]
     },
     lumina: {
-      title: 'Bem-vinda ao Lumina!',
+      title: g('Bem-vindo ao Lumina!', 'Bem-vinda ao Lumina!'),
       color: '#8B5CF6',
       steps: [
         {

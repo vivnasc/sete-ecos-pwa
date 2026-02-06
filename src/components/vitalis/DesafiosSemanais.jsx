@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link } from 'react-router-dom';
+import { g } from '../../utils/genero';
 
 // Desafios disponíveis
 const DESAFIOS_DISPONIVEIS = [
@@ -28,7 +29,7 @@ const DESAFIOS_DISPONIVEIS = [
   },
   {
     id: 'treino_4x',
-    nome: 'Guerreira Fitness',
+    nome: g('Guerreiro Fitness', 'Guerreira Fitness'),
     descricao: 'Treina 4 vezes esta semana',
     icone: '💪',
     cor: 'orange',

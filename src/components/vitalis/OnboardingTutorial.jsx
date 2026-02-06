@@ -2,11 +2,12 @@
 // Tutorial interactivo para novos utilizadores
 
 import React, { useState, useEffect } from 'react';
+import { g } from '../../utils/genero';
 
 const TUTORIAL_STEPS = [
   {
     id: 'welcome',
-    titulo: 'Bem-vinda ao Vitalis! 🌱',
+    titulo: g('Bem-vindo ao Vitalis! 🌱', 'Bem-vinda ao Vitalis! 🌱'),
     descricao: 'A tua jornada de transformação começa aqui. Deixa-me mostrar-te como tirar o máximo proveito da app.',
     icone: '🌿',
     cor: 'from-[#7C8B6F] to-[#6B7A5D]',
@@ -70,7 +71,7 @@ const TUTORIAL_STEPS = [
   },
   {
     id: 'ready',
-    titulo: 'Estás Pronta! 🚀',
+    titulo: g('Estás Pronto! 🚀', 'Estás Pronta! 🚀'),
     descricao: 'Agora tens tudo o que precisas. Lembra-te: consistência supera perfeição. Um dia de cada vez!',
     icone: '✨',
     cor: 'from-[#7C8B6F] to-[#9CAF88]',

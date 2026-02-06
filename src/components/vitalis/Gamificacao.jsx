@@ -2,6 +2,7 @@
 // Sistema de gamificação: Badges, Conquistas e Celebrações
 
 import React, { useState, useEffect } from 'react';
+import { g } from '../../utils/genero';
 
 // Definição de todas as conquistas possíveis
 export const CONQUISTAS = {
@@ -11,7 +12,7 @@ export const CONQUISTAS = {
   // Streaks
   streak_3: { id: 'streak_3', nome: 'Início Promissor', descricao: '3 dias consecutivos', icone: '🌱', cor: 'from-green-400 to-emerald-500', pontos: 100, xp: 100 },
   streak_7: { id: 'streak_7', nome: 'Semana Vitalis', descricao: '7 dias consecutivos', icone: '🌿', cor: 'from-emerald-500 to-teal-600', pontos: 200, xp: 200 },
-  streak_14: { id: 'streak_14', nome: 'Guerreira de 2 Semanas', descricao: '14 dias consecutivos', icone: '🌳', cor: 'from-teal-500 to-cyan-600', pontos: 350, xp: 350 },
+  streak_14: { id: 'streak_14', get nome() { return g('Guerreiro de 2 Semanas', 'Guerreira de 2 Semanas'); }, descricao: '14 dias consecutivos', icone: '🌳', cor: 'from-teal-500 to-cyan-600', pontos: 350, xp: 350 },
   streak_30: { id: 'streak_30', nome: 'Mestre do Mês', descricao: '30 dias consecutivos', icone: '🏆', cor: 'from-amber-400 to-orange-500', pontos: 500, xp: 500 },
   streak_60: { id: 'streak_60', nome: 'Lenda Vitalis', descricao: '60 dias consecutivos', icone: '👑', cor: 'from-purple-500 to-pink-600', pontos: 1000, xp: 1000 },
 
@@ -25,7 +26,7 @@ export const CONQUISTAS = {
 
   // Refeições
   refeicoes_10: { id: 'refeicoes_10', nome: 'Chef Iniciante', descricao: '10 refeições registadas', icone: '🍽️', cor: 'from-amber-400 to-yellow-500', pontos: 100, xp: 100 },
-  refeicoes_50: { id: 'refeicoes_50', nome: 'Chef Dedicada', descricao: '50 refeições registadas', icone: '👩‍🍳', cor: 'from-yellow-500 to-orange-500', pontos: 250, xp: 250 },
+  refeicoes_50: { id: 'refeicoes_50', get nome() { return g('Chef Dedicado', 'Chef Dedicada'); }, descricao: '50 refeições registadas', icone: '👩‍🍳', cor: 'from-yellow-500 to-orange-500', pontos: 250, xp: 250 },
 
   // Peso
   peso_1kg: { id: 'peso_1kg', nome: 'Primeiro Quilo', descricao: 'Perdeste 1kg', icone: '⚖️', cor: 'from-lime-400 to-green-500', pontos: 150, xp: 150 },
@@ -35,7 +36,7 @@ export const CONQUISTAS = {
 
   // Check-ins
   checkin_7: { id: 'checkin_7', nome: 'Consistente', descricao: '7 check-ins feitos', icone: '✅', cor: 'from-indigo-400 to-violet-500', pontos: 75, xp: 75 },
-  checkin_30: { id: 'checkin_30', nome: 'Comprometida', descricao: '30 check-ins feitos', icone: '📝', cor: 'from-violet-500 to-purple-600', pontos: 200, xp: 200 },
+  checkin_30: { id: 'checkin_30', get nome() { return g('Comprometido', 'Comprometida'); }, descricao: '30 check-ins feitos', icone: '📝', cor: 'from-violet-500 to-purple-600', pontos: 200, xp: 200 },
 
   // Fases
   fase_inducao: { id: 'fase_inducao', nome: 'Indução Completa', descricao: 'Completaste a Fase 1', icone: '🌅', cor: 'from-amber-400 to-orange-500', pontos: 250, xp: 250 },
@@ -152,9 +153,9 @@ export function StreakDisplay({ streak, melhorStreak = 0, compacto = false }) {
   const nivelStreak =
     streak >= 60 ? { nome: 'Lenda', cor: 'from-purple-500 to-pink-600', icone: '👑' } :
     streak >= 30 ? { nome: 'Mestre', cor: 'from-amber-400 to-orange-500', icone: '🏆' } :
-    streak >= 14 ? { nome: 'Guerreira', cor: 'from-teal-500 to-cyan-600', icone: '🌳' } :
-    streak >= 7 ? { nome: 'Dedicada', cor: 'from-emerald-500 to-teal-600', icone: '🌿' } :
-    streak >= 3 ? { nome: 'Promissora', cor: 'from-green-400 to-emerald-500', icone: '🌱' } :
+    streak >= 14 ? { nome: g('Guerreiro', 'Guerreira'), cor: 'from-teal-500 to-cyan-600', icone: '🌳' } :
+    streak >= 7 ? { nome: g('Dedicado', 'Dedicada'), cor: 'from-emerald-500 to-teal-600', icone: '🌿' } :
+    streak >= 3 ? { nome: g('Promissor', 'Promissora'), cor: 'from-green-400 to-emerald-500', icone: '🌱' } :
     { nome: 'Iniciante', cor: 'from-gray-400 to-gray-500', icone: '🌰' };
 
   if (compacto) {

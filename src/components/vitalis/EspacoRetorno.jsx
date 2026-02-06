@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { EmailTriggers } from '../../lib/emails';
+import { g } from '../../utils/genero';
 
 const EspacoRetorno = () => {
   const navigate = useNavigate();
@@ -56,15 +57,15 @@ const EspacoRetorno = () => {
       emoji: '◯', 
       cor: 'from-gray-300 to-gray-500',
       desc: 'Sem propósito, entediada',
-      mensagem: 'O vazio pede presença, não preenchimento. Vamos estar aqui, juntas.'
+      mensagem: g('O vazio pede presença, não preenchimento. Vamos estar aqui, juntos.', 'O vazio pede presença, não preenchimento. Vamos estar aqui, juntas.')
     },
     { 
       id: 'solidao', 
       nome: 'Solidão', 
       emoji: '🌑', 
       cor: 'from-purple-400 to-purple-700',
-      desc: 'Sozinha, isolada',
-      mensagem: 'A solidão pede conexão. Neste momento, estás conectada comigo. Não estás sozinha.'
+      desc: g('Sozinho, isolado', 'Sozinha, isolada'),
+      mensagem: g('A solidão pede conexão. Neste momento, estás conectado comigo. Não estás sozinho.', 'A solidão pede conexão. Neste momento, estás conectada comigo. Não estás sozinha.')
     },
     { 
       id: 'negacao', 
@@ -155,7 +156,7 @@ const EspacoRetorno = () => {
     solidao: [
       "Neste momento, estás conectada comigo.",
       "A solidão é uma sensação, não uma verdade.",
-      "Podes estar sozinha sem estar abandonada.",
+      g("Podes estar sozinho sem estar abandonado.", "Podes estar sozinha sem estar abandonada."),
       "Vieste aqui. Isso é cuidar de ti.",
       "Mereces companhia. Começa por ti mesma."
     ],
@@ -545,7 +546,7 @@ const EspacoRetorno = () => {
                 <div className="space-y-6">
                   <p className="text-purple-200">
                     Esta técnica activa o sistema nervoso parassimpático.<br/>
-                    Vamos fazer 5 ciclos juntas.
+                    Vamos fazer 5 ciclos {g('juntos', 'juntas')}.
                   </p>
                   <div className="w-40 h-40 mx-auto rounded-full bg-white/10 flex items-center justify-center">
                     <span className="text-6xl">🫁</span>

@@ -3,6 +3,7 @@
  *
  * Usa html2pdf.js para gerar PDFs no cliente
  */
+import { g } from '../utils/genero';
 
 import html2pdf from 'html2pdf.js';
 
@@ -267,7 +268,7 @@ export async function gerarRelatorioFinal(dados) {
       <div style="padding: 0 20px;">
         <div style="text-align: center; margin-bottom: 30px;">
           <span style="font-size: 60px;">🎉</span>
-          <h2 style="margin: 10px 0; color: #7C8B6F;">Parabéns, ${cliente?.nome || 'Guerreira'}!</h2>
+          <h2 style="margin: 10px 0; color: #7C8B6F;">Parabéns, ${cliente?.nome || g('Guerreiro', 'Guerreira')}!</h2>
           <p style="color: #6B5C4C;">Completaste o programa Vitalis de 12 semanas.</p>
         </div>
 

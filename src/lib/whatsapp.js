@@ -65,7 +65,7 @@ export const WhatsAppAlertas = {
 📧 ${cliente.email}
 💰 ${cliente.plano} - ${cliente.valor}
 
-Bem-vinda à comunidade! 🌱`;
+Boas-vindas à comunidade! 🌱`;
 
     return enviarWhatsApp(msg);
   },

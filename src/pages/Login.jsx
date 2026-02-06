@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { g } from '../utils/genero';
 
 // Traduzir erros do Supabase para português
 const traduzirErro = (error) => {
@@ -152,7 +153,7 @@ export default function Login() {
             <div className="text-center mb-8">
               <img src="/logos/CENTRO_7ECOS.png" alt="Sete Ecos" className="w-16 h-16 mx-auto mb-4" />
               <h1 className="text-2xl font-bold text-[#4A3728] mb-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                {isLogin ? 'Bem-vinda de volta' : 'Cria a tua conta'}
+                {isLogin ? g('Bem-vindo de volta', 'Bem-vinda de volta') : 'Cria a tua conta'}
               </h1>
               <p className="text-[#6B5344] text-sm">
                 Uma conta para todos os Ecos
