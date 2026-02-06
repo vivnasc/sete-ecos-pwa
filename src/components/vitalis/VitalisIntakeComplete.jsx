@@ -163,19 +163,19 @@ export default function VitalisIntakeComplete() {
       labels: ['Empregada (tempo inteiro)', 'Empregada (meio tempo)', 'Autónoma/Empresária', 'Desempregada', 'Estudante', 'Reformada'],
       required: true
     },
-    situacao_familiar: { 
-      label: 'Situação familiar', 
+    situacao_familiar: {
+      label: 'Com quem vives?',
       type: 'radio',
-      options: ['sozinha', 'com_parceiro', 'com_parceiro_filhos', 'com_familia', 'outro'],
-      labels: ['Vivo sozinha', 'Com parceiro/a', 'Com parceiro/a e filhos', 'Com família', 'Outro'],
+      options: ['sozinha', 'com_parceiro', 'com_parceiro_filhos', 'mae_solteira', 'com_familia', 'com_irmaos', 'com_filhos_adultos', 'outro'],
+      labels: ['Sozinha', 'Com parceiro/a', 'Com parceiro/a e filhos', 'Mãe solteira com filhos', 'Com família (pais, avós...)', 'Com irmãos/irmãs', 'Com filhos adultos', 'Outra situação'],
       required: true
     },
     filhos_pequenos: { label: 'Tens filhos pequenos (< 10 anos)?', type: 'checkbox_single' },
-    quem_cozinha: { 
-      label: 'Quem cozinha em casa?', 
+    quem_cozinha: {
+      label: 'Quem cozinha em casa?',
       type: 'radio',
-      options: ['eu', 'parceiro', 'partilhado', 'empregada', 'nao_cozinho'],
-      labels: ['Eu', 'Meu/minha parceiro/a', 'Partilhamos', 'Empregada doméstica', 'Não costumo cozinhar'],
+      options: ['eu', 'parceiro', 'partilhado', 'familiar', 'empregada', 'nao_cozinho'],
+      labels: ['Eu', 'Meu/minha parceiro/a', 'Partilhamos', 'Familiar (mãe, irmã...)', 'Empregada doméstica', 'Não costumo cozinhar'],
       required: true
     },
     
