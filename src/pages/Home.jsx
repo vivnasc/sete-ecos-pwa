@@ -5,7 +5,7 @@ import LandingGeral from './LandingGeral'
 
 /**
  * HOME PRINCIPAL - app.seteecos.com
- * Sistema de Transmutação Feminina
+ * Sistema de Transmutacao Integral
  */
 
 export default function Home() {
@@ -233,7 +233,7 @@ export default function Home() {
             <div className="relative p-6">
               <p className="text-[#C9A227] text-xs font-semibold tracking-widest uppercase mb-2">Descobrir</p>
               <p className="text-white/80 text-sm mb-4 leading-relaxed">
-                Explora os 7 Ecos e descobre todo o sistema de transformacao feminina.
+                Explora os 7 Ecos e descobre todo o sistema de transformacao integral.
               </p>
               <button
                 onClick={() => navigate('/landing')}

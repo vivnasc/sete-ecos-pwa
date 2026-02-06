@@ -100,7 +100,7 @@ export default function Auth() {
           </button>
         </div>
 
-        <p className="auth-footer">Sistema de Transmutação Feminina</p>
+        <p className="auth-footer">Uma PWA. Sete caminhos. Uma travessia.</p>
       </div>
     </div>
   )
