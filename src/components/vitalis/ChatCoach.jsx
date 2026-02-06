@@ -1119,7 +1119,7 @@ export default function ChatCoach() {
           ))}
           {enviando && (
             <div className="flex justify-start mb-2.5">
-              <div className="w-7 h-7 rounded-full bg-[#7C8B6F] flex items-center justify-center text-sm flex-shrink-0 mr-2 mt-1 shadow-sm">👩‍⚕️</div>
+              <div className="w-7 h-7 rounded-full bg-[#7C8B6F] flex items-center justify-center flex-shrink-0 mr-2 mt-1 shadow-sm"><span className="text-white text-xs font-bold">V</span></div>
               <div className="bg-white rounded-2xl px-4 py-3 shadow-sm rounded-bl-sm border border-gray-100">
                 <div className="flex gap-1.5">
                   <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
