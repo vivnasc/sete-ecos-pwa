@@ -153,18 +153,23 @@ const LandingGeral = () => {
             <img src="/logos/CENTRO_7ECOS.png" alt="Sete Ecos" className="w-12 h-12" />
             <span className="text-2xl font-bold text-white">Sete Ecos</span>
           </div>
-          <div className="flex gap-4">
-            <Link to="/lumina" className="px-4 py-2 text-purple-300 hover:text-white transition-colors">
+          <div className="hidden md:flex gap-4 items-center">
+            <a href="#lumina" className="px-4 py-2 text-purple-300 hover:text-white transition-colors">
               Lumina
-            </Link>
-            <Link to="/vitalis" className="px-4 py-2 text-emerald-300 hover:text-white transition-colors">
-              Vitalis
-            </Link>
-            <Link to="/comunidade" className="px-4 py-2 text-purple-300 hover:text-white transition-colors">
+            </a>
+            <a href="#ecos" className="px-4 py-2 text-emerald-300 hover:text-white transition-colors">
+              Os Ecos
+            </a>
+            <a href="#comunidade" className="px-4 py-2 text-purple-300 hover:text-white transition-colors">
               Comunidade
-            </Link>
-            <Link to="/vitalis/login" className="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-medium hover:shadow-lg hover:shadow-purple-500/30 transition-all">
+            </a>
+          </div>
+          <div className="flex gap-3 items-center">
+            <Link to="/login" className="px-4 py-2 text-purple-300 hover:text-white transition-colors font-medium text-sm">
               Entrar
+            </Link>
+            <Link to="/lumina" className="px-5 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-medium text-sm hover:shadow-lg hover:shadow-purple-500/30 transition-all">
+              Começar
             </Link>
           </div>
         </nav>
@@ -201,7 +206,7 @@ const LandingGeral = () => {
       </header>
 
       {/* O que está disponível */}
-      <section className="py-16 bg-gradient-to-r from-emerald-900/30 to-purple-900/30">
+      <section id="lumina" className="py-16 bg-gradient-to-r from-emerald-900/30 to-purple-900/30">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
             <span className="inline-block px-4 py-2 bg-green-500/20 rounded-full text-green-400 text-sm mb-4">
@@ -284,7 +289,7 @@ const LandingGeral = () => {
       </section>
 
       {/* Flor dos 7 Ecos */}
-      <section className="py-20">
+      <section id="ecos" className="py-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-4">Os Sete Caminhos</h2>
@@ -405,7 +410,7 @@ const LandingGeral = () => {
       </section>
 
       {/* Comunidade - Espaço de Autoconhecimento */}
-      <section className="py-20 bg-gradient-to-r from-purple-900/20 to-indigo-900/20">
+      <section id="comunidade" className="py-20 bg-gradient-to-r from-purple-900/20 to-indigo-900/20">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-12">
             <span className="inline-block px-4 py-2 bg-purple-500/20 rounded-full text-purple-300 text-sm mb-4">
@@ -504,9 +509,67 @@ const LandingGeral = () => {
             onde todas as dimensões do teu ser vibram em harmonia.
             Não é um fim, mas um novo começar, com raízes profundas e asas prontas a voar.
           </p>
-          <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 rounded-full">
-            <span className="text-amber-300">✨</span>
-            <span className="text-white">Desbloqueia ao completar os 7 ecos</span>
+          <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-amber-500/20 max-w-md mx-auto">
+            <div className="flex justify-between text-sm text-purple-300 mb-3">
+              <span>A tua jornada</span>
+              <span className="font-semibold text-amber-200">1 de 7 Ecos</span>
+            </div>
+            <div className="h-3 bg-white/10 rounded-full overflow-hidden">
+              <div className="h-full rounded-full bg-gradient-to-r from-pink-400 to-amber-400" style={{ width: '14%' }}></div>
+            </div>
+            <p className="text-xs text-amber-300 mt-3">
+              ✨ Desbloqueia ao completar os 7 caminhos
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Vivianne - Quem está por trás */}
+      <section className="py-20 bg-white/5">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-10 items-center">
+            <div className="text-center md:text-left">
+              <div className="relative inline-block">
+                <img
+                  src="/vivianne-foto.jpg.jpeg"
+                  alt="Vivianne Saraiva"
+                  className="w-48 h-48 object-cover rounded-2xl shadow-lg mx-auto md:mx-0 border-2 border-purple-500/30"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="hidden w-48 h-48 bg-gradient-to-br from-amber-400 to-purple-500 rounded-2xl items-center justify-center text-white text-5xl mx-auto md:mx-0">
+                  VS
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-2">
+                Vivianne Saraiva
+              </h3>
+              <p className="text-amber-300 text-sm font-semibold mb-4">Criadora do Sistema Sete Ecos</p>
+
+              <p className="text-purple-300/80 mb-4">
+                Autora de <em className="text-purple-200">Os 7 Véus</em>, onde exploro os véus que nos separam de nós mesmas.
+                O Sistema Sete Ecos nasce dessa mesma sabedoria: cada eco é um véu a ser transcendido.
+              </p>
+
+              <p className="text-purple-300/80 mb-6">
+                Certificada em Precision Nutrition e ISSA, combino ciência, espiritualidade e tecnologia
+                para criar ferramentas de transformação únicas em Moçambique.
+              </p>
+
+              <a
+                href="https://wa.me/258845243875?text=Olá%20Vivianne%2C%20vim%20do%20Sete%20Ecos%20e%20gostaria%20de%20saber%20mais."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#25D366] text-white rounded-full font-semibold hover:bg-[#20BD5A] transition-all"
+              >
+                💬 Falar com Vivianne
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -568,27 +631,56 @@ const LandingGeral = () => {
         </div>
       </section>
 
+      {/* WhatsApp Flutuante */}
+      <a
+        href="https://wa.me/258845243875?text=Olá%20Vivianne%2C%20vim%20do%20Sete%20Ecos%20e%20gostaria%20de%20saber%20mais."
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center text-white text-2xl shadow-lg hover:scale-110 transition-transform z-50"
+        title="Falar no WhatsApp"
+      >
+        💬
+      </a>
+
       {/* Footer */}
       <footer className="py-12 border-t border-white/10">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-3">
-              <img src="/logos/CENTRO_7ECOS.png" alt="Sete Ecos" className="w-10 h-10" />
-              <span className="text-white font-medium">Sete Ecos</span>
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <img src="/logos/CENTRO_7ECOS.png" alt="Sete Ecos" className="w-8 h-8" />
+                <h3 className="font-bold text-amber-200">Sete Ecos</h3>
+              </div>
+              <p className="text-purple-300/70 text-sm">
+                Sistema de Transmutação Feminina.<br />
+                Sete caminhos. Uma transformação completa.
+              </p>
             </div>
-            <div className="flex gap-6">
-              <Link to="/lumina" className="text-purple-300 hover:text-white transition-colors">Lumina</Link>
-              <Link to="/vitalis" className="text-purple-300 hover:text-white transition-colors">Vitalis</Link>
-              <a href="https://instagram.com/viv_saraiva" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-white transition-colors">
-                Instagram
-              </a>
-              <a href="https://wa.me/258845243875" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-white transition-colors">
-                WhatsApp
-              </a>
+            <div>
+              <h3 className="font-bold text-amber-200 mb-3">Contacto</h3>
+              <p className="text-purple-300/70 text-sm">📱 +258 84 524 3875</p>
+              <p className="text-purple-300/70 text-sm">📧 feedback@seteecos.com</p>
+              <p className="text-purple-300/70 text-sm">📍 Maputo, Moçambique</p>
+              <div className="flex gap-4 mt-3">
+                <a href="https://instagram.com/viv_saraiva" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-white transition-colors text-sm">
+                  Instagram
+                </a>
+                <a href="https://wa.me/258845243875" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-white transition-colors text-sm">
+                  WhatsApp
+                </a>
+              </div>
             </div>
-            <p className="text-purple-400 text-sm">
-              © 2026 Sete Ecos · Vivianne Saraiva
-            </p>
+            <div>
+              <h3 className="font-bold text-amber-200 mb-3">Ecos Disponíveis</h3>
+              <div className="flex flex-col gap-1">
+                <Link to="/lumina" className="text-purple-300/70 text-sm hover:text-white transition-colors">Lumina (Gratuito)</Link>
+                <Link to="/vitalis" className="text-purple-300/70 text-sm hover:text-white transition-colors">Vitalis</Link>
+                <Link to="/comunidade" className="text-purple-300/70 text-sm hover:text-white transition-colors">Comunidade</Link>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-white/10 pt-6 text-center text-purple-400/50 text-sm">
+            © 2026 Sete Ecos · Vivianne Saraiva · Todos os direitos reservados
           </div>
         </div>
       </footer>

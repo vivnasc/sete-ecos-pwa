@@ -13,7 +13,7 @@ import ComingSoon from './pages/ComingSoon'
 import Auth from './components/Auth'
 import Navigation from './components/Navigation'
 import CoachDashboard from './pages/CoachDashboard'
-import LandingGeral from './pages/LandingGeral'
+// LandingGeral now rendered via Home.jsx for non-auth users
 
 // ===== ECO 1: VITALIS (Nutrição) =====
 import LandingVitalis from './pages/LandingVitalis'
@@ -81,7 +81,7 @@ function AppRoutes() {
           {/* ===== ROTAS PÚBLICAS ===== */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/landing" element={<LandingGeral />} />
+          <Route path="/landing" element={<Navigate to="/" />} />
           <Route path="/recuperar-password" element={<RecuperarPassword />} />
 
           {/* ===== CONTA E PERFIL (requerem auth) ===== */}
