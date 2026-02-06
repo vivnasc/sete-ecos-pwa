@@ -52,6 +52,8 @@ const PagamentoVitalis = () => {
   const [showCommunityModal, setShowCommunityModal] = useState(false);
   const [userLoadError, setUserLoadError] = useState(false);
   const [showTestPlan, setShowTestPlan] = useState(false);
+  const [promoDiscount, setPromoDiscount] = useState(0); // 0 a 100 (%)
+  const [promoCode, setPromoCode] = useState('');
 
   useEffect(() => {
     loadUserData();
@@ -69,7 +71,7 @@ const PagamentoVitalis = () => {
     if (paypalLoaded && userId) {
       renderPayPalButtons();
     }
-  }, [selectedPlan, paypalLoaded, userId]);
+  }, [selectedPlan, paypalLoaded, userId, promoDiscount]);
 
   const loadUserData = async () => {
     try {
@@ -212,13 +214,15 @@ const PagamentoVitalis = () => {
 
     const plan = SUBSCRIPTION_PLANS[selectedPlan];
 
+    const discounted = getDiscountedPrice(plan);
+
     window.paypal.Buttons({
       style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay', height: 50 },
       createOrder: (data, actions) => {
         return actions.order.create({
           purchase_units: [{
-            description: `Vitalis ${plan.name} - ${userName || userEmail}`,
-            amount: { currency_code: 'USD', value: plan.price_usd.toString() }
+            description: `Vitalis ${plan.name}${promoDiscount ? ` (${promoDiscount}% off)` : ''} - ${userName || userEmail}`,
+            amount: { currency_code: 'USD', value: discounted.usd.toString() }
           }]
         });
       },
@@ -229,11 +233,16 @@ const PagamentoVitalis = () => {
           const result = await activateSubscription(userId, {
             method: 'paypal',
             transactionId: details.id,
-            amount: plan.price_usd,
+            amount: discounted.usd,
             currency: 'USD',
             planId: plan.id,
             payerEmail: details.payer?.email_address
           });
+
+          // Mark promo code as used if applicable
+          if (promoCode) {
+            await useInviteCode(userId, promoCode).catch(console.error);
+          }
 
           if (result.success) {
             const validoAte = new Date();
@@ -283,6 +292,24 @@ const PagamentoVitalis = () => {
 
     setProcessing(true);
     try {
+      // Check if it's a promo code (discount) by querying the code type first
+      const { data: codeData } = await supabase
+        .from('vitalis_invite_codes')
+        .select('type, notes')
+        .eq('code', inviteCode.toUpperCase())
+        .eq('active', true)
+        .maybeSingle();
+
+      if (codeData?.type === 'promo') {
+        // Promo code: apply 50% discount to PayPal prices
+        setPromoDiscount(50);
+        setPromoCode(inviteCode.toUpperCase());
+        setMessage({ type: 'success', text: '50% de desconto aplicado! Escolhe o teu plano e paga com PayPal.' });
+        setProcessing(false);
+        return;
+      }
+
+      // Other codes (tester, trial): activate immediately
       const result = await useInviteCode(userId, inviteCode);
       if (result.success) {
         EmailTriggers.onPagamentoSucesso({
@@ -293,7 +320,6 @@ const PagamentoVitalis = () => {
           validoAte: 'Conforme convite'
         }).catch(console.error);
 
-        // Verificar se já fez intake
         const { data: intake } = await supabase
           .from('vitalis_intake')
           .select('id')
@@ -301,10 +327,8 @@ const PagamentoVitalis = () => {
           .maybeSingle();
 
         if (intake) {
-          // Já fez intake - ir directo para dashboard
           navigate('/vitalis/dashboard');
         } else {
-          // Ainda não fez intake - ir para intake
           navigate('/vitalis/intake');
         }
       } else {
@@ -319,6 +343,15 @@ const PagamentoVitalis = () => {
   };
 
   const getCurrentPlan = () => SUBSCRIPTION_PLANS[selectedPlan];
+
+  const getDiscountedPrice = (plan) => {
+    if (!promoDiscount) return { usd: plan.price_usd, mzn: plan.price_mzn };
+    const factor = (100 - promoDiscount) / 100;
+    return {
+      usd: Math.round(plan.price_usd * factor),
+      mzn: Math.round(plan.price_mzn * factor)
+    };
+  };
 
   if (loading) {
     return (
@@ -419,8 +452,18 @@ const PagamentoVitalis = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-white">${plan.price_usd}</p>
-                  <p className="text-xs text-white/50">{plan.price_mzn.toLocaleString()} MZN</p>
+                  {promoDiscount > 0 ? (
+                    <>
+                      <p className="text-sm text-white/40 line-through">${plan.price_usd}</p>
+                      <p className="text-2xl font-bold text-green-300">${getDiscountedPrice(plan).usd}</p>
+                      <p className="text-xs text-white/50">{getDiscountedPrice(plan).mzn.toLocaleString()} MZN</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-2xl font-bold text-white">${plan.price_usd}</p>
+                      <p className="text-xs text-white/50">{plan.price_mzn.toLocaleString()} MZN</p>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -433,9 +476,22 @@ const PagamentoVitalis = () => {
 
         {/* Resumo */}
         <div className="bg-white/10 rounded-2xl p-4 mb-6">
+          {promoDiscount > 0 && (
+            <div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/10">
+              <span className="bg-green-500/20 text-green-300 text-xs font-bold px-2 py-1 rounded-full">-{promoDiscount}% PROMO</span>
+              <span className="text-green-300 text-xs">Desconto aplicado</span>
+            </div>
+          )}
           <div className="flex justify-between items-center">
             <span className="text-white/80">Total a pagar:</span>
-            <span className="text-white font-bold text-2xl">${getCurrentPlan().price_usd}</span>
+            <div className="text-right">
+              {promoDiscount > 0 && (
+                <span className="text-white/40 text-sm line-through mr-2">${getCurrentPlan().price_usd}</span>
+              )}
+              <span className={`font-bold text-2xl ${promoDiscount > 0 ? 'text-green-300' : 'text-white'}`}>
+                ${getDiscountedPrice(getCurrentPlan()).usd}
+              </span>
+            </div>
           </div>
         </div>
 

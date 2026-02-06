@@ -583,8 +583,8 @@ export const useInviteCode = async (userId, code) => {
     } else if (invite.type === 'trial') {
       benefitResult = await startTrial(userId);
     } else if (invite.type === 'promo') {
-      // Promo: activa 1 mes de subscricao (como pagamento confirmado)
-      benefitResult = await activatePromo(userId, code, invite.notes);
+      // Promo codes apply discounts on PayPal — just mark as used
+      benefitResult = { success: true };
     }
 
     // Se falhou ao aplicar o benefício, retornar erro
