@@ -134,14 +134,14 @@ export default function Jornada() {
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6">
         <span className="text-5xl">🌸</span>
         <p className="text-gray-500 text-center" style={{ fontFamily: 'var(--font-corpo)' }}>
-          Esta jornada ainda nao comecou.
+          Esta jornada ainda não começou.
         </p>
         <button
           onClick={() => navigate('/comunidade')}
           className="text-sm font-medium px-4 py-2 rounded-full transition-all hover:opacity-80"
           style={{ color: '#8B5CF6' }}
         >
-          Voltar a Comunidade
+          Voltar à Comunidade
         </button>
       </div>
     )
@@ -211,7 +211,7 @@ export default function Jornada() {
                 {numReflexoes}
               </p>
               <p className="text-xs text-gray-400" style={{ fontFamily: 'var(--font-corpo)' }}>
-                Reflexoes
+                Reflexões
               </p>
             </div>
             <div className="text-center">
@@ -219,7 +219,7 @@ export default function Jornada() {
                 {numRessonancia}
               </p>
               <p className="text-xs text-gray-400" style={{ fontFamily: 'var(--font-corpo)' }}>
-                Ressonancia
+                Ressonância
               </p>
             </div>
             <div className="text-center">
@@ -227,7 +227,7 @@ export default function Jornada() {
                 {contadores.seguidores}
               </p>
               <p className="text-xs text-gray-400" style={{ fontFamily: 'var(--font-corpo)' }}>
-                Conexoes
+                Conexões
               </p>
             </div>
           </div>
@@ -295,7 +295,7 @@ export default function Jornada() {
               <div className="flex items-center gap-3">
                 <span className="text-base flex-shrink-0">🌱</span>
                 <p className="text-sm text-gray-700" style={{ fontFamily: 'var(--font-corpo)' }}>
-                  <span className="font-semibold">Inicio:</span> {formatarDataInicio()}
+                  <span className="font-semibold">Início:</span> {formatarDataInicio()}
                 </p>
               </div>
             )}
@@ -304,7 +304,7 @@ export default function Jornada() {
             <div className="flex items-center gap-3">
               <span className="text-base flex-shrink-0">📝</span>
               <p className="text-sm text-gray-700" style={{ fontFamily: 'var(--font-corpo)' }}>
-                <span className="font-semibold">{numReflexoes}</span> {numReflexoes === 1 ? 'reflexao partilhada' : 'reflexoes partilhadas'}
+                <span className="font-semibold">{numReflexoes}</span> {numReflexoes === 1 ? 'reflexão partilhada' : 'reflexões partilhadas'}
               </p>
             </div>
 
@@ -312,7 +312,7 @@ export default function Jornada() {
             <div className="flex items-center gap-3">
               <span className="text-base flex-shrink-0">🫧</span>
               <p className="text-sm text-gray-700" style={{ fontFamily: 'var(--font-corpo)' }}>
-                <span className="font-semibold">{numRessonancia}</span> {numRessonancia === 1 ? 'ressonancia recebida' : 'ressonancias recebidas'}
+                <span className="font-semibold">{numRessonancia}</span> {numRessonancia === 1 ? 'ressonância recebida' : 'ressonâncias recebidas'}
               </p>
             </div>
 
@@ -348,7 +348,7 @@ export default function Jornada() {
             className="text-sm font-semibold uppercase tracking-wider mb-4"
             style={{ fontFamily: 'var(--font-titulos)', color: '#8B5CF6' }}
           >
-            Reflexoes
+            Reflexões
           </h3>
 
           {reflexoes.length === 0 ? (
@@ -356,8 +356,8 @@ export default function Jornada() {
               <span className="text-4xl block mb-3">📝</span>
               <p className="text-sm text-gray-400" style={{ fontFamily: 'var(--font-corpo)' }}>
                 {isOwnProfile
-                  ? 'Ainda nao partilhaste reflexoes. Comeca a tua jornada!'
-                  : 'Ainda sem reflexoes partilhadas.'
+                  ? 'Ainda não partilhaste reflexões. Começa a tua jornada!'
+                  : 'Ainda sem reflexões partilhadas.'
                 }
               </p>
               {isOwnProfile && (
@@ -366,7 +366,7 @@ export default function Jornada() {
                   className="mt-4 text-sm font-medium px-4 py-2 rounded-full text-white transition-all hover:opacity-90"
                   style={{ backgroundColor: '#8B5CF6' }}
                 >
-                  Partilhar reflexao
+                  Partilhar reflexão
                 </button>
               )}
             </div>

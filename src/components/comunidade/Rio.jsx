@@ -214,7 +214,7 @@ export default function Rio() {
                 O Rio
               </h1>
               <p className="text-xs text-gray-400" style={{ fontFamily: 'var(--font-corpo)' }}>
-                Reflexoes que fluem entre nos
+                Reflexões que fluem entre nós
               </p>
             </div>
 
@@ -323,17 +323,17 @@ export default function Rio() {
           <div className="text-center py-20">
             <span className="text-5xl block mb-4">🌱</span>
             <h3 className="text-lg font-semibold text-gray-600 mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
-              O rio esta quieto...
+              O rio está quieto...
             </h3>
             <p className="text-sm text-gray-400 max-w-xs mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-corpo)' }}>
-              Se a primeira a deixar fluir uma reflexao
+              Sê a primeira a deixar fluir uma reflexão
             </p>
             <button
               onClick={() => setShowCriarReflexao(true)}
               className="mt-6 text-sm font-medium px-5 py-2.5 rounded-full text-white transition-all hover:shadow-md active:scale-95"
               style={{ backgroundColor: '#8B5CF6' }}
             >
-              Criar reflexao
+              Criar reflexão
             </button>
           </div>
         ) : (
@@ -394,7 +394,7 @@ export default function Rio() {
           backgroundColor: '#8B5CF6',
           boxShadow: '0 8px 24px rgba(139, 92, 246, 0.35)'
         }}
-        aria-label="Criar reflexao"
+        aria-label="Criar reflexão"
       >
         <span className="text-xl" style={{ fontFamily: 'var(--font-titulos)' }}>&#10022;</span>
       </button>

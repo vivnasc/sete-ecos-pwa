@@ -131,14 +131,14 @@ export default function EditarJornada({ userId, perfil, onPerfilAtualizado, onFe
               className="text-xs text-gray-400 font-medium uppercase tracking-wide block mb-1.5"
               style={{ fontFamily: 'var(--font-corpo)' }}
             >
-              A tua intencao
+              A tua intenção
             </label>
             <textarea
               value={bio}
               onChange={(e) => {
                 if (e.target.value.length <= 150) setBio(e.target.value)
               }}
-              placeholder="Uma frase sobre o teu caminho de transformacao..."
+              placeholder="Uma frase sobre o teu caminho de transformação..."
               maxLength={150}
               rows={3}
               className="w-full text-sm py-3 px-4 rounded-xl border border-gray-200 focus:border-purple-300 outline-none focus:ring-2 focus:ring-purple-100 resize-none transition-all"
@@ -155,7 +155,7 @@ export default function EditarJornada({ userId, perfil, onPerfilAtualizado, onFe
               className="text-xs text-gray-400 font-medium uppercase tracking-wide block mb-2.5"
               style={{ fontFamily: 'var(--font-corpo)' }}
             >
-              Ecos que estas a explorar
+              Ecos que estás a explorar
             </label>
             <div className="flex flex-wrap gap-2">
               {Object.entries(ECOS_INFO)
@@ -191,10 +191,10 @@ export default function EditarJornada({ userId, perfil, onPerfilAtualizado, onFe
               <span className="text-xl flex-shrink-0">✨</span>
               <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-700" style={{ fontFamily: 'var(--font-titulos)' }}>
-                  Partilha anonima por padrao
+                  Partilha anónima por padrão
                 </p>
                 <p className="text-xs text-gray-400 mt-0.5" style={{ fontFamily: 'var(--font-corpo)' }}>
-                  As tuas reflexoes serao anonimas por padrao
+                  As tuas reflexões serão anónimas por padrão
                 </p>
               </div>
             </div>
