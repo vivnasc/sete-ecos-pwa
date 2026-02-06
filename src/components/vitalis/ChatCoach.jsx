@@ -1079,7 +1079,7 @@ export default function ChatCoach() {
         <div className="max-w-2xl mx-auto px-4 py-3">
           <div className="flex items-center gap-3">
             <Link to="/vitalis/dashboard" className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-lg hover:bg-white/30 transition-colors">←</Link>
-            <div className="w-11 h-11 rounded-full bg-white/90 flex items-center justify-center text-2xl shadow-sm flex-shrink-0">👩‍⚕️</div>
+            <img src="/logos/VITALIS_LOGO_V3.png" alt="Vivianne" className="w-11 h-11 rounded-full bg-white/90 object-contain shadow-sm flex-shrink-0 p-1" />
             <div className="flex-1 min-w-0">
               <h1 className="font-bold text-base">Vivianne</h1>
               <p className="text-white/80 text-xs flex items-center gap-1.5">
@@ -1103,7 +1103,7 @@ export default function ChatCoach() {
               {msgs.map((msg) => (
                 <div key={msg.id} className={`flex ${msg.remetente === 'user' ? 'justify-end' : 'justify-start'} mb-2.5`}>
                   {msg.remetente === 'coach' && (
-                    <div className="w-7 h-7 rounded-full bg-[#7C8B6F] flex items-center justify-center text-sm flex-shrink-0 mr-2 mt-1 shadow-sm">👩‍⚕️</div>
+                    <div className="w-7 h-7 rounded-full bg-[#7C8B6F] flex items-center justify-center flex-shrink-0 mr-2 mt-1 shadow-sm"><span className="text-white text-xs font-bold">V</span></div>
                   )}
                   <div className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 ${
                     msg.remetente === 'user'
