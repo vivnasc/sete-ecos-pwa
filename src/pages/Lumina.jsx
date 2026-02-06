@@ -1210,6 +1210,62 @@ export default function Lumina() {
             </div>
           )}
 
+          {/* Ponte Contextual: Lumina → Vitalis/Áurea */}
+          {(() => {
+            // Determinar se o check-in sugere necessidade de Vitalis
+            const vals = Object.values(respostas || {});
+            const media = vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : 5;
+            const corpo = respostas?.corpo || respostas?.energia || 5;
+            const espelho = respostas?.espelho || 5;
+            const needsVitalis = corpo <= 4 || media <= 4;
+            const needsAurea = espelho <= 3;
+            const eco = needsAurea ? 'aurea' : 'vitalis';
+            const ecoNome = needsAurea ? 'ÁUREA' : 'VITALIS';
+            const ecoMsg = needsAurea
+              ? 'Os teus padroes mostram que a tua relacao contigo pode precisar de atencao. A ÁUREA trabalha o valor proprio — sem culpa, sem pressao.'
+              : 'O teu corpo esta a pedir atencao. O VITALIS combina nutricao cientifica com apoio emocional para uma transformacao real e sustentavel.';
+            const ecoCor = needsAurea ? '#C9A227' : '#7C8B6F';
+            const ecoBg = needsAurea
+              ? 'linear-gradient(135deg, rgba(201, 162, 39, 0.12) 0%, rgba(212, 175, 55, 0.06) 100%)'
+              : 'linear-gradient(135deg, rgba(124, 139, 111, 0.12) 0%, rgba(156, 175, 136, 0.06) 100%)';
+
+            return (
+              <div style={{
+                marginTop: '24px',
+                padding: '20px',
+                background: ecoBg,
+                borderRadius: '16px',
+                border: `1px solid ${ecoCor}30`,
+                textAlign: 'center'
+              }}>
+                <div style={{ fontSize: '11px', letterSpacing: '2px', opacity: 0.6, marginBottom: '8px' }}>
+                  O PROXIMO PASSO
+                </div>
+                <div style={{ fontSize: '15px', fontWeight: 'bold', color: ecoCor, marginBottom: '8px' }}>
+                  {ecoNome} pode ajudar-te
+                </div>
+                <div style={{ fontSize: '13px', lineHeight: 1.6, opacity: 0.85, marginBottom: '16px' }}>
+                  {ecoMsg}
+                </div>
+                <a href={`/${eco}?utm_source=lumina&utm_medium=upsell&utm_campaign=pos-checkin`} style={{
+                  display: 'inline-block',
+                  padding: '12px 28px',
+                  background: ecoCor,
+                  color: 'white',
+                  borderRadius: '25px',
+                  textDecoration: 'none',
+                  fontSize: '13px',
+                  fontWeight: 'bold'
+                }}>
+                  Conhecer {ecoNome} →
+                </a>
+                <div style={{ fontSize: '11px', opacity: 0.5, marginTop: '10px' }}>
+                  {needsAurea ? 'Desde 975 MT/mes · 7 dias de garantia' : 'Desde 2.500 MT/mes · 7 dias de garantia'}
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Os 7 Ecos - LUMINA observa, não faz parte */}
           <div style={{ marginTop: '30px' }}>
             <div style={{ textAlign: 'center', marginBottom: '16px' }}>

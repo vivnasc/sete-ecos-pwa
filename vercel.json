@@ -16,12 +16,19 @@
     },
     "api/tarefas-agendadas.js": {
       "maxDuration": 30
+    },
+    "api/email-sequencia.js": {
+      "maxDuration": 30
     }
   },
   "crons": [
     {
       "path": "/api/tarefas-agendadas",
       "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/email-sequencia",
+      "schedule": "0 10 * * *"
     }
   ]
 }
