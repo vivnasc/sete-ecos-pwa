@@ -25,10 +25,10 @@ CREATE TABLE IF NOT EXISTS aurea_clients (
   payment_currency TEXT DEFAULT 'MZN',
   payer_email TEXT,
 
-  -- Quota de Presença
-  quota_tempo_horas INTEGER DEFAULT 2,
-  quota_dinheiro_mzn INTEGER DEFAULT 100,
-  quota_energia_actividades INTEGER DEFAULT 1,
+  -- Quota de Presença (valores realistas: café=100MT, massagem=3000MT)
+  quota_tempo_horas INTEGER DEFAULT 3,
+  quota_dinheiro_mzn INTEGER DEFAULT 2000,
+  quota_energia_actividades INTEGER DEFAULT 2,
 
   -- Gamificação
   joias_total INTEGER DEFAULT 0,
@@ -39,6 +39,11 @@ CREATE TABLE IF NOT EXISTS aurea_clients (
   -- Onboarding
   onboarding_complete BOOLEAN DEFAULT FALSE,
   onboarding_date TIMESTAMPTZ,
+
+  -- Notificações
+  notificacoes_config JSONB DEFAULT '[]'::jsonb,
+  whatsapp_numero TEXT,
+  whatsapp_activo BOOLEAN DEFAULT FALSE,
 
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id)
@@ -144,6 +149,44 @@ CREATE TABLE IF NOT EXISTS aurea_diario (
   UNIQUE(user_id, data)
 );
 
+-- Chat Coach Esmeralda - Mensagens
+CREATE TABLE IF NOT EXISTS aurea_chat_messages (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role TEXT NOT NULL, -- user, assistant
+  content TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Chat - Temas detectados (para análise de padrões)
+CREATE TABLE IF NOT EXISTS aurea_chat_themes (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  themes TEXT[] NOT NULL, -- culpa, merecimento, tempo, dinheiro, roupa, prazer
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Carteira - Entradas individuais de gastos
+CREATE TABLE IF NOT EXISTS aurea_carteira_entries (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  valor DECIMAL(10,2) NOT NULL,
+  para_quem TEXT NOT NULL, -- eu, casa, outros
+  descricao TEXT,
+  categoria TEXT, -- alimentacao, roupa, beleza, lazer, etc
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Áudios/Meditações - Log de escutas
+CREATE TABLE IF NOT EXISTS aurea_audios_log (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  audio_id TEXT NOT NULL,
+  duracao_ouvida INTEGER, -- segundos
+  completed BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- =====================================================
 -- ÍNDICES para performance
 -- =====================================================
@@ -154,6 +197,10 @@ CREATE INDEX IF NOT EXISTS idx_aurea_praticas_log_user_data ON aurea_praticas_lo
 CREATE INDEX IF NOT EXISTS idx_aurea_joias_log_user ON aurea_joias_log(user_id);
 CREATE INDEX IF NOT EXISTS idx_aurea_carteira_user_semana ON aurea_carteira(user_id, semana);
 CREATE INDEX IF NOT EXISTS idx_aurea_diario_user_data ON aurea_diario(user_id, data);
+CREATE INDEX IF NOT EXISTS idx_aurea_chat_messages_user ON aurea_chat_messages(user_id);
+CREATE INDEX IF NOT EXISTS idx_aurea_chat_themes_user ON aurea_chat_themes(user_id);
+CREATE INDEX IF NOT EXISTS idx_aurea_carteira_entries_user ON aurea_carteira_entries(user_id);
+CREATE INDEX IF NOT EXISTS idx_aurea_audios_log_user ON aurea_audios_log(user_id);
 
 -- =====================================================
 -- RLS (Row Level Security) - Opcional mas recomendado
@@ -170,6 +217,10 @@ ALTER TABLE aurea_roupa_checkins ENABLE ROW LEVEL SECURITY;
 ALTER TABLE aurea_roupa_pecas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE aurea_carteira ENABLE ROW LEVEL SECURITY;
 ALTER TABLE aurea_diario ENABLE ROW LEVEL SECURITY;
+ALTER TABLE aurea_chat_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE aurea_chat_themes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE aurea_carteira_entries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE aurea_audios_log ENABLE ROW LEVEL SECURITY;
 
 -- Políticas: utilizadores só vêem os seus próprios dados
 CREATE POLICY "Users can view own aurea_clients" ON aurea_clients
@@ -200,4 +251,16 @@ CREATE POLICY "Users can view own aurea_carteira" ON aurea_carteira
   FOR ALL USING (user_id IN (SELECT id FROM users WHERE auth_id = auth.uid()));
 
 CREATE POLICY "Users can view own aurea_diario" ON aurea_diario
+  FOR ALL USING (user_id IN (SELECT id FROM users WHERE auth_id = auth.uid()));
+
+CREATE POLICY "Users can view own aurea_chat_messages" ON aurea_chat_messages
+  FOR ALL USING (user_id IN (SELECT id FROM users WHERE auth_id = auth.uid()));
+
+CREATE POLICY "Users can view own aurea_chat_themes" ON aurea_chat_themes
+  FOR ALL USING (user_id IN (SELECT id FROM users WHERE auth_id = auth.uid()));
+
+CREATE POLICY "Users can view own aurea_carteira_entries" ON aurea_carteira_entries
+  FOR ALL USING (user_id IN (SELECT id FROM users WHERE auth_id = auth.uid()));
+
+CREATE POLICY "Users can view own aurea_audios_log" ON aurea_audios_log
   FOR ALL USING (user_id IN (SELECT id FROM users WHERE auth_id = auth.uid()));

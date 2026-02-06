@@ -24,7 +24,7 @@ const LandingAurea = () => {
     anual: { id: 'annual', nome: 'Anual', meses: 12, preco: 9945, precoUSD: 153, desconto: 15 }
   };
 
-  // Pilares agrupados
+  // Pilares agrupados - actualizado com novas features
   const pilares = [
     {
       nome: 'PRÁTICA',
@@ -34,8 +34,8 @@ const LandingAurea = () => {
       features: [
         { icone: '📊', titulo: 'Quota de Presença', desc: 'Define quanto tempo, dinheiro e energia MÍNIMOS reservas para ti por semana.' },
         { icone: '✨', titulo: 'Micro-Práticas', desc: '100+ práticas de 2-5 minutos em 4 categorias: Dinheiro, Tempo, Roupa, Prazer.' },
-        { icone: '🎧', titulo: 'Áudio-Meditações', desc: '5 meditações guiadas para permissão, culpa, e valor.' },
-        { icone: '🌙', titulo: 'Ritual Mensal', desc: 'Balanço de Ouro no fim de cada mês para reflexão.' }
+        { icone: '🎧', titulo: 'Áudio-Meditações', desc: '8+ meditações guiadas para permissão, culpa, valor e rituais.' },
+        { icone: '🌙', titulo: 'Rituais', desc: 'Despertar com intenção, ritual da noite, balanço mensal.' }
       ]
     },
     {
@@ -46,19 +46,19 @@ const LandingAurea = () => {
       features: [
         { icone: '💰', titulo: 'Carteira de Merecimento', desc: 'Vê quanto do teu dinheiro vai para TI vs. para os outros.' },
         { icone: '👗', titulo: 'Espelho de Roupa', desc: 'Identifica padrões. Usa as peças "guardadas" no dia-a-dia.' },
-        { icone: '🔍', titulo: 'Detector de Culpa', desc: 'Identifica os padrões: "Não mereço", "Os outros precisam mais".' },
+        { icone: '🔍', titulo: 'Análise de Padrões', desc: 'Detecta os 5 padrões: culpa, auto-abandono, roupa escondida, dinheiro, justificação.' },
         { icone: '📝', titulo: 'Diário de Merecimento', desc: 'Prompts diários para reconhecer o teu valor.' }
       ]
     },
     {
-      nome: 'EVOLUÇÃO',
-      subtitulo: 'Celebrar o progresso',
-      icone: '💎',
+      nome: 'SUPORTE',
+      subtitulo: 'Nunca estás sozinha',
+      icone: '💬',
       cor: 'from-amber-600/30 to-amber-700/30',
       features: [
+        { icone: '💬', titulo: 'Chat Esmeralda', desc: 'Coach virtual gentil que ajuda a quebrar padrões de culpa e auto-abandono.' },
         { icone: '💎', titulo: 'Sistema de Jóias', desc: 'Cada acção = 1 jóia. Evolui de Bronze a Diamante.' },
-        { icone: '📈', titulo: 'Insights Semanais', desc: 'Relatório automático com padrões e celebrações.' },
-        { icone: '💬', titulo: 'Comunidade Anónima', desc: 'Vê que não estás sozinha. Presença sem interacção.' },
+        { icone: '📈', titulo: 'Insights Semanais', desc: 'Relatório automático com padrões detectados e celebrações.' },
         { icone: '🔔', titulo: 'Notificações Gentis', desc: 'Lembretes que convidam, nunca culpabilizam.' }
       ]
     }
@@ -453,13 +453,19 @@ const LandingAurea = () => {
                 </div>
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center gap-2 text-amber-200/80 text-sm">
-                    <span className="text-amber-400">✓</span> Acesso completo
+                    <span className="text-amber-400">✓</span> Chat Coach Esmeralda
                   </li>
                   <li className="flex items-center gap-2 text-amber-200/80 text-sm">
-                    <span className="text-amber-400">✓</span> 100+ práticas
+                    <span className="text-amber-400">✓</span> 100+ micro-práticas
                   </li>
                   <li className="flex items-center gap-2 text-amber-200/80 text-sm">
-                    <span className="text-amber-400">✓</span> Todas as funcionalidades
+                    <span className="text-amber-400">✓</span> Análise de padrões
+                  </li>
+                  <li className="flex items-center gap-2 text-amber-200/80 text-sm">
+                    <span className="text-amber-400">✓</span> 8+ áudio-meditações
+                  </li>
+                  <li className="flex items-center gap-2 text-amber-200/80 text-sm">
+                    <span className="text-amber-400">✓</span> Todas as ferramentas
                   </li>
                 </ul>
                 <button

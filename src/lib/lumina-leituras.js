@@ -135,6 +135,38 @@ export const LEITURAS = {
     "Há mistério em ti que não se decifra. E está bem. Não precisas de respostas hoje. Só de continuares.",
     "Estado indefinido. Não catalogável. Às vezes somos isso. Aceita o não-saber.",
     "Hoje não tens rótulo. E não precisas. Vive o dia sem o nomear. A clareza nem sempre é necessária."
+  ],
+
+  // ============================================================
+  // PADRÕES ÁUREA - AUTO-SACRIFÍCIO E VALOR PRÓPRIO
+  // ============================================================
+
+  // Auto-sacrifício + Corpo tenso
+  aurea_corpoTenso: [
+    "Estás em modo de serviço constante. O corpo sente mas tu ignoras. ÁUREA pode ajudar-te a recuperar o que é teu.",
+    "O teu corpo carrega o peso do que dás aos outros. Tens reservado pouco para ti. ÁUREA ensina-te a receber também.",
+    "Tensão física e entrega total aos outros. O corpo grita o que tu não dizes. ÁUREA ajuda-te a existir para ti."
+  ],
+
+  // Auto-sacrifício + Energia baixa
+  aurea_energiaBaixa: [
+    "A tua energia vai toda para fora. Nada fica para ti. ÁUREA ensina-te a reservar quota de presença.",
+    "Estás vazia porque te esvaziaste nos outros. ÁUREA pode ajudar-te a guardar algo só teu.",
+    "Drenaste-te em serviço. A energia que dás não volta porque não a reclamas. ÁUREA mostra-te como."
+  ],
+
+  // Auto-sacrifício + Espelho invisível
+  aurea_espelhoInvisivel: [
+    "Não te vês porque não te tratas como visível. ÁUREA ajuda-te a ocupar o teu lugar sem culpa.",
+    "Tornaste-te invisível à força de servir. ÁUREA ensina-te a ser vista — por ti mesma primeiro.",
+    "O espelho está vazio porque te apagaste. ÁUREA ajuda-te a reaparecer na tua própria vida."
+  ],
+
+  // Auto-sacrifício isolado (sistema equilibrado mas não se prioriza)
+  aurea_isolado: [
+    "O sistema está equilibrado, mas há uma ferida: não te colocas na lista. ÁUREA ajuda-te a ser prioridade também.",
+    "Tudo parece bem — mas e tu? Quando foi a última vez que fizeste algo só para ti? ÁUREA trabalha isso.",
+    "Equilibrada para fora, esquecida por dentro. ÁUREA ajuda-te a existir na tua própria agenda."
   ]
 };
 
@@ -143,7 +175,7 @@ export const LEITURAS = {
 // ============================================================
 
 export function detectarPadrao(respostas) {
-  const { energia, corpo, mente, passado, impulso, futuro, espelho } = respostas;
+  const { energia, corpo, mente, passado, impulso, futuro, espelho, cuidado } = respostas;
 
   // Classificações
   const eBaixa = ['vazia', 'baixa'].includes(energia);
@@ -159,16 +191,27 @@ export function detectarPadrao(respostas) {
   const eMau = ['invisivel', 'apagada'].includes(espelho);
   const eBom = ['visivel', 'luminosa'].includes(espelho);
 
+  // Classificações ÁUREA - Auto-sacrifício
+  const autoSacrificio = ['esquecida', 'por ultimo'].includes(cuidado);
+  const cuidadoBom = ['presente', 'prioritaria'].includes(cuidado);
+
   // Contagem de normais e positivos
-  const normais = [energia, corpo, mente, passado, impulso, futuro, espelho]
+  const normais = [energia, corpo, mente, passado, impulso, futuro, espelho, cuidado]
     .filter(x => x === 'normal' || x === 'nada').length;
-  const pos = (eAlta ? 1 : 0) + (cAberto ? 1 : 0) + (mClara ? 1 : 0) + 
-              (pLeve ? 1 : 0) + (fConv ? 1 : 0) + (eBom ? 1 : 0);
+  const pos = (eAlta ? 1 : 0) + (cAberto ? 1 : 0) + (mClara ? 1 : 0) +
+              (pLeve ? 1 : 0) + (fConv ? 1 : 0) + (eBom ? 1 : 0) + (cuidadoBom ? 1 : 0);
 
   // CRÍTICOS (prioridade máxima)
   if (energia === 'vazia' && eMau && impulso === 'decidir') return 'crit_vid';
   if (pPesa && fAmeaca && mRuid) return 'crit_pfm';
   if (corpo === 'tenso' && eBaixa && eMau) return 'crit_tba';
+
+  // PADRÕES ÁUREA - Auto-sacrifício (prioridade alta quando detectado)
+  if (autoSacrificio && cFechado) return 'aurea_corpoTenso';
+  if (autoSacrificio && eBaixa) return 'aurea_energiaBaixa';
+  if (autoSacrificio && eMau) return 'aurea_espelhoInvisivel';
+  // Auto-sacrifício isolado: quando tudo está equilibrado mas não se prioriza
+  if (autoSacrificio && normais >= 4) return 'aurea_isolado';
 
   // MÁXIMOS
   if (energia === 'cheia' && corpo === 'solto' && mente === 'silenciosa' && espelho === 'luminosa') return 'forcaMax';
@@ -224,10 +267,10 @@ export function obterLeitura(padrao) {
 // ============================================================
 
 // Ecos disponíveis (activos no sistema)
-// Os 7 Ecos: Vitalis, Aurea, Serena, Ignis, Ventis, Ecoa, Imago
+// Os 7 Ecos: Vitalis, Áurea, Serena, Ignis, Ventis, Ecoa, Imago
 const ECOS_DISPONIVEIS = {
   Vitalis: { link: '/vitalis', disponivel: true },
-  Aurea: { link: null, disponivel: false },
+  Aurea: { link: '/aurea', disponivel: true },
   Serena: { link: null, disponivel: false },
   Ignis: { link: null, disponivel: false },
   Ventis: { link: null, disponivel: false },
@@ -236,8 +279,19 @@ const ECOS_DISPONIVEIS = {
 };
 
 export function obterRecomendacaoEco(respostas) {
-  const { corpo, passado, impulso, futuro, mente, espelho } = respostas;
+  const { corpo, passado, impulso, futuro, mente, espelho, cuidado } = respostas;
   const recs = [];
+
+  // ÁUREA - auto-sacrifício/valor próprio (disponível) - PRIORIDADE
+  if (['esquecida', 'por ultimo'].includes(cuidado)) {
+    recs.push({
+      eco: 'Áurea',
+      msg: 'Parece que precisas de ÁUREA. Trabalha o valor próprio encarnado — ajuda-te a existir para ti, sem culpa.',
+      link: '/aurea',
+      disponivel: true,
+      prioridade: true
+    });
+  }
 
   // Vitalis - corpo (disponível)
   if (['pesado', 'tenso'].includes(corpo)) {
@@ -304,7 +358,11 @@ export function obterRecomendacaoEco(respostas) {
     });
   }
 
-  // Priorizar Ecos disponíveis
+  // Priorizar ÁUREA se detectado padrão de auto-sacrifício
+  const aureaPrioritaria = recs.find(r => r.prioridade && r.eco === 'Áurea');
+  if (aureaPrioritaria) return aureaPrioritaria;
+
+  // Priorizar outros Ecos disponíveis
   const disponivel = recs.find(r => r.disponivel);
   if (disponivel) return disponivel;
 
@@ -408,7 +466,7 @@ export const CICLO_ECO_MAP = {
     mensagem: 'Tempo de recolher e nutrir. O corpo precisa de descanso e cuidado.',
     recomendacoes: {
       Vitalis: 'Alimentação nutritiva e reconfortante. Evita restrições.',
-      Aurea: 'Recolhe energia. Não é altura de expandir.',
+      Áurea: 'Tempo de receber. Permite que os outros cuidem de ti.',
       Serena: 'Permite-te sentir sem julgamento. Honra as emoções.',
       Ignis: 'Pausa na acção. Conserva energia.',
       Ventis: 'Ritmo lento. Pouco movimento intenso.',
@@ -422,11 +480,11 @@ export const CICLO_ECO_MAP = {
     lua: '🌒',
     energia: 'a subir',
     estadosComuns: ['curiosidade', 'optimismo', 'criatividade', 'abertura'],
-    ecosPrioritarios: ['Ignis', 'Aurea', 'Ecoa'],
+    ecosPrioritarios: ['Ignis', 'Áurea', 'Ecoa'],
     mensagem: 'Energia a crescer. Boa altura para iniciar projectos e explorar.',
     recomendacoes: {
       Vitalis: 'Experimenta novos alimentos. O corpo aceita bem mudanças.',
-      Aurea: 'Boa altura para semear. Planeia abundância.',
+      Áurea: 'Boa altura para investir em ti. O que queres para ti mesma?',
       Serena: 'Emoções mais leves. Aproveita para processar o que ficou.',
       Ignis: 'Excelente para começar coisas novas. Age.',
       Ventis: 'Aumenta gradualmente o movimento.',
@@ -440,11 +498,11 @@ export const CICLO_ECO_MAP = {
     lua: '🌕',
     energia: 'pico',
     estadosComuns: ['confiança', 'clareza', 'conexão', 'expressão'],
-    ecosPrioritarios: ['Ecoa', 'Imago', 'Aurea'],
+    ecosPrioritarios: ['Ecoa', 'Imago', 'Áurea'],
     mensagem: 'O teu pico natural. Máxima energia, clareza e presença social.',
     recomendacoes: {
       Vitalis: 'Corpo forte. Podes ser mais ousada na alimentação.',
-      Aurea: 'Pico de manifestação. Age sobre a abundância.',
+      Áurea: 'O teu pico de valor. Celebra quem és e o que mereces.',
       Serena: 'Emoções equilibradas. Altura para conexões profundas.',
       Ignis: 'Acção máxima. Decide, lidera, cria.',
       Ventis: 'Movimento intenso bem-vindo.',
@@ -462,7 +520,7 @@ export const CICLO_ECO_MAP = {
     mensagem: 'Energia a baixar. Completa em vez de iniciar. Cuida das emoções.',
     recomendacoes: {
       Vitalis: 'Evita açúcar e processados. O corpo precisa de estabilidade.',
-      Aurea: 'Colhe o que semeaste. Não inicies novos projectos.',
+      Áurea: 'Honra o que fizeste por ti. Não te exijas mais.',
       Serena: 'Emoções intensas são normais. Não te julgues.',
       Ignis: 'Completa tarefas. Evita começar coisas novas.',
       Ventis: 'Movimento suave. Não forces intensidade.',
@@ -596,13 +654,18 @@ export function obterRecomendacaoCicloEco(respostas, faseActual, historico) {
   const tendencias = analisarPadroesPorFase(historico);
 
   // Identifica o Eco mais necessário com base no estado actual
-  const { corpo, energia, mente, espelho, passado, futuro } = respostas;
+  const { corpo, energia, mente, espelho, passado, futuro, cuidado } = respostas;
 
   let ecoSugerido = cicloInfo.ecosPrioritarios[0];
   let razao = '';
 
+  // ÁUREA tem PRIORIDADE quando auto-sacrifício é detectado
+  if (['esquecida', 'por ultimo'].includes(cuidado)) {
+    ecoSugerido = 'Áurea';
+    razao = 'Não te colocas em primeiro lugar. ÁUREA ajuda-te a existir para ti.';
+  }
   // Prioriza baseado no estado actual
-  if (['pesado', 'tenso'].includes(corpo) || ['vazia', 'baixa'].includes(energia)) {
+  else if (['pesado', 'tenso'].includes(corpo) || ['vazia', 'baixa'].includes(energia)) {
     ecoSugerido = 'Vitalis';
     razao = 'O corpo precisa de atenção primeiro.';
   } else if (['preso', 'apesar'].includes(passado) || ['caotica', 'barulhenta'].includes(mente)) {
@@ -617,7 +680,7 @@ export function obterRecomendacaoCicloEco(respostas, faseActual, historico) {
   }
 
   // Adiciona contexto do ciclo
-  const recomendacaoFase = cicloInfo.recomendacoes[ecoSugerido];
+  const recomendacaoFase = cicloInfo.recomendacoes[ecoSugerido] || 'Cuida de ti nesta fase.';
 
   return {
     eco: ecoSugerido,
@@ -625,8 +688,8 @@ export function obterRecomendacaoCicloEco(respostas, faseActual, historico) {
     contextoCiclo: recomendacaoFase,
     fase: cicloInfo.fase,
     lua: cicloInfo.lua,
-    disponivel: ecoSugerido === 'Vitalis' || ecoSugerido === 'Lumina',
-    link: ecoSugerido === 'Vitalis' ? '/vitalis' : null
+    disponivel: ['Vitalis', 'Áurea'].includes(ecoSugerido),
+    link: ecoSugerido === 'Vitalis' ? '/vitalis' : ecoSugerido === 'Áurea' ? '/aurea' : null
   };
 }
 

@@ -76,6 +76,25 @@ export default function AureaAuth() {
           return;
         }
 
+        // Verificar/criar registo na tabela users (para utilizadores antigos)
+        const { data: session } = await supabase.auth.getSession();
+        if (session?.session?.user) {
+          const authUser = session.session.user;
+          const { data: existingUser } = await supabase
+            .from('users')
+            .select('id')
+            .eq('auth_id', authUser.id)
+            .single();
+
+          if (!existingUser) {
+            await supabase.from('users').insert({
+              auth_id: authUser.id,
+              email: authUser.email,
+              created_at: new Date().toISOString()
+            });
+          }
+        }
+
         // Redirecionar após login bem-sucedido
         navigate('/aurea/pagamento');
       } else {

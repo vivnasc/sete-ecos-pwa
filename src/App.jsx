@@ -65,6 +65,10 @@ import CarteiraMerecimento from './components/aurea/CarteiraMerecimento'
 import DiarioMerecimento from './components/aurea/DiarioMerecimento'
 import InsightsSemanal from './components/aurea/InsightsSemanal'
 import PerfilAurea from './components/aurea/PerfilAurea'
+import ChatAurea from './components/aurea/ChatAurea'
+import AnalisePadroes from './components/aurea/AnalisePadroes'
+import AudioMeditacoes from './components/aurea/AudioMeditacoes'
+import NotificacoesAurea from './components/aurea/NotificacoesAurea'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -157,6 +161,11 @@ function App() {
           <Route path="/aurea/diario" element={session ? <AureaAccessGuard><DiarioMerecimento /></AureaAccessGuard> : <Navigate to="/login" state={{ from: '/aurea/diario', eco: 'Áurea' }} />} />
           <Route path="/aurea/insights" element={session ? <AureaAccessGuard><InsightsSemanal /></AureaAccessGuard> : <Navigate to="/login" state={{ from: '/aurea/insights', eco: 'Áurea' }} />} />
           <Route path="/aurea/perfil" element={session ? <AureaAccessGuard><PerfilAurea /></AureaAccessGuard> : <Navigate to="/login" state={{ from: '/aurea/perfil', eco: 'Áurea' }} />} />
+          <Route path="/aurea/chat" element={session ? <AureaAccessGuard><ChatAurea /></AureaAccessGuard> : <Navigate to="/login" state={{ from: '/aurea/chat', eco: 'Áurea' }} />} />
+          <Route path="/aurea/padroes" element={session ? <AureaAccessGuard><AnalisePadroes /></AureaAccessGuard> : <Navigate to="/login" state={{ from: '/aurea/padroes', eco: 'Áurea' }} />} />
+          <Route path="/aurea/audios" element={session ? <AureaAccessGuard><AudioMeditacoes /></AureaAccessGuard> : <Navigate to="/login" state={{ from: '/aurea/audios', eco: 'Áurea' }} />} />
+          <Route path="/aurea/meditacoes" element={session ? <AureaAccessGuard><AudioMeditacoes /></AureaAccessGuard> : <Navigate to="/login" state={{ from: '/aurea/meditacoes', eco: 'Áurea' }} />} />
+          <Route path="/aurea/notificacoes" element={session ? <AureaAccessGuard><NotificacoesAurea /></AureaAccessGuard> : <Navigate to="/login" state={{ from: '/aurea/notificacoes', eco: 'Áurea' }} />} />
 
           {/* ===== COMUNIDADE — Espaço de Autoconhecimento ===== */}
           <Route path="/comunidade" element={session ? <Rio /> : <Navigate to="/login" state={{ from: '/comunidade' }} />} />

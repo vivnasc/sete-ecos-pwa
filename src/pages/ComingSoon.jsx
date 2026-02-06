@@ -1,54 +1,47 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 
 const ecosInfo = {
-  aurea: {
-    nome: 'AUREA',
-    slogan: 'A que merece',
-    descricao: 'O segundo eco da transformação. Descobre o teu valor e cultiva a presença que mereces.',
-    cor: '#C9A227',
-    chakra: 'Svadhisthana'
-  },
   serena: {
     nome: 'SERENA',
     slogan: 'Regular para fluir',
     descricao: 'Equilibra as emoções e encontra a serenidade no fluxo da vida.',
     cor: '#6B8E9B',
-    chakra: 'Manipura'
+    foco: 'Emoção & Fluidez'
   },
   ignis: {
     nome: 'IGNIS',
     slogan: 'Agir com direcção',
     descricao: 'Acende o fogo interior. Encontra a vontade e o foco para transformar intenção em acção.',
     cor: '#C1634A',
-    chakra: 'Anahata'
+    foco: 'Vontade & Foco'
   },
   ventis: {
     nome: 'VENTIS',
     slogan: 'Ritmo sustentável',
     descricao: 'Respira e encontra o ritmo. Energia e movimento em harmonia com o teu corpo.',
     cor: '#5D9B84',
-    chakra: 'Vishuddha'
+    foco: 'Energia & Ritmo'
   },
   ecoa: {
     nome: 'ECOA',
     slogan: 'A expressão que ressoa',
     descricao: 'Encontra a tua voz autêntica. Expressa-te e faz ecoar a tua verdade interior.',
     cor: '#4A90A4',
-    chakra: 'Ajna'
+    foco: 'Voz & Expressão'
   },
   imago: {
     nome: 'IMAGO',
     slogan: 'O reflexo da essência',
     descricao: 'O sétimo eco. Integra todos os aspectos e revela a imagem completa de quem és.',
     cor: '#8B7BA5',
-    chakra: 'Sahasrara'
+    foco: 'Identidade & Essência'
   },
   aurora: {
     nome: 'AURORA',
     slogan: 'A coroação da jornada',
     descricao: 'O momento de integração final. Quando todos os ecos se encontram, nasce a Aurora.',
     cor: '#D4A5A5',
-    chakra: 'Integração'
+    foco: 'Integração Total'
   }
 };
 
@@ -56,7 +49,13 @@ export default function ComingSoon() {
   const location = useLocation();
   const navigate = useNavigate();
   const eco = location.pathname.replace('/', '').toLowerCase();
-  const info = ecosInfo[eco] || ecosInfo.aurea;
+
+  // ÁUREA já está disponível - redirecionar para landing
+  if (eco === 'aurea') {
+    return <Navigate to="/aurea" replace />;
+  }
+
+  const info = ecosInfo[eco] || ecosInfo.serena;
 
   return (
     <div style={{
@@ -122,9 +121,19 @@ export default function ComingSoon() {
         color: '#4A3728',
         maxWidth: '400px',
         lineHeight: '1.7',
-        marginBottom: '40px'
+        marginBottom: '20px'
       }}>
         {info.descricao}
+      </p>
+
+      {/* Focus area */}
+      <p style={{
+        fontSize: '0.9rem',
+        color: info.cor,
+        fontWeight: '500',
+        marginBottom: '30px'
+      }}>
+        {info.foco}
       </p>
 
       {/* Coming soon badge */}
@@ -147,16 +156,6 @@ export default function ComingSoon() {
           Em Breve
         </p>
       </div>
-
-      {/* Chakra info */}
-      <p style={{
-        fontSize: '0.85rem',
-        color: '#6B5344',
-        opacity: 0.7,
-        marginBottom: '30px'
-      }}>
-        Chakra: {info.chakra}
-      </p>
 
       {/* Back button */}
       <button

@@ -40,16 +40,17 @@ export const CATEGORIAS = {
 };
 
 // PRÁTICAS DE DINHEIRO (25+)
+// Referência de preços em Moçambique: café=100MT, refeição=300-500MT, massagem=3000MT
 export const PRATICAS_DINHEIRO = [
   {
     id: 'd1',
-    texto: 'Gasta 50 MT só contigo hoje. Sem justificação.',
+    texto: 'Gasta 200 MT só contigo hoje. Sem justificação.',
     nivel: 'bronze',
     joias: 1
   },
   {
     id: 'd2',
-    texto: 'Compra algo pequeno que te dá prazer (não utilidade).',
+    texto: 'Compra algo que te dá prazer (não utilidade) - sem limite de valor.',
     nivel: 'bronze',
     joias: 1
   },
@@ -61,7 +62,7 @@ export const PRATICAS_DINHEIRO = [
   },
   {
     id: 'd4',
-    texto: 'Reserva 100 MT esta semana só para ti.',
+    texto: 'Reserva 500 MT esta semana só para ti.',
     nivel: 'bronze',
     joias: 1
   },
@@ -73,7 +74,7 @@ export const PRATICAS_DINHEIRO = [
   },
   {
     id: 'd6',
-    texto: 'Guarda o troco de hoje num frasco "para mim".',
+    texto: 'Abre uma poupança "para mim" e deposita 200 MT.',
     nivel: 'bronze',
     joias: 1
   },
@@ -85,13 +86,13 @@ export const PRATICAS_DINHEIRO = [
   },
   {
     id: 'd8',
-    texto: 'Paga o teu próprio café antes de pagar o de alguém.',
+    texto: 'Paga o teu próprio café/refeição antes de pagar o de alguém.',
     nivel: 'prata',
     joias: 1
   },
   {
     id: 'd9',
-    texto: 'Compra um livro ou revista só para ti.',
+    texto: 'Compra um livro, revista ou subscrição que quiseres.',
     nivel: 'prata',
     joias: 1
   },
@@ -103,13 +104,13 @@ export const PRATICAS_DINHEIRO = [
   },
   {
     id: 'd11',
-    texto: 'Compra a fruta que gostas, mesmo que seja mais cara.',
+    texto: 'Compra a comida/fruta que gostas, mesmo que seja cara.',
     nivel: 'bronze',
     joias: 1
   },
   {
     id: 'd12',
-    texto: 'Reserva dinheiro para um tratamento de beleza.',
+    texto: 'Marca um tratamento de beleza ou massagem para ti.',
     nivel: 'ouro',
     joias: 2
   },
@@ -133,61 +134,61 @@ export const PRATICAS_DINHEIRO = [
   },
   {
     id: 'd16',
-    texto: 'Compra o snack que desejas sem calcular calorias.',
+    texto: 'Compra o snack ou doce que desejas sem culpa.',
     nivel: 'bronze',
     joias: 1
   },
   {
     id: 'd17',
-    texto: 'Paga por um serviço em vez de fazeres tu (limpeza, etc).',
+    texto: 'Paga por um serviço (limpeza, lavandaria, etc) para teres tempo.',
     nivel: 'ouro',
     joias: 2
   },
   {
     id: 'd18',
-    texto: 'Compra uma peça de roupa interior bonita.',
+    texto: 'Compra uma peça de roupa interior bonita ou pijama novo.',
     nivel: 'prata',
     joias: 1
   },
   {
     id: 'd19',
-    texto: 'Investe num creme ou perfume que sempre quiseste.',
+    texto: 'Investe num creme, perfume ou maquilhagem que quiseres.',
     nivel: 'prata',
     joias: 1
   },
   {
     id: 'd20',
-    texto: 'Compra algo decorativo só porque é bonito.',
+    texto: 'Compra algo decorativo para a tua casa/quarto.',
     nivel: 'prata',
     joias: 1
   },
   {
     id: 'd21',
-    texto: 'Reserva dinheiro para um workshop ou curso que queres.',
+    texto: 'Investe num workshop, curso ou formação que queres.',
     nivel: 'ouro',
     joias: 2
   },
   {
     id: 'd22',
-    texto: 'Compra um presente para ti mesma.',
+    texto: 'Compra um presente para ti mesma como se fosses amiga.',
     nivel: 'prata',
     joias: 1
   },
   {
     id: 'd23',
-    texto: 'Investe em algo que facilita o TEU dia (não dos outros).',
+    texto: 'Investe em algo que facilita o TEU dia (não o dos outros).',
     nivel: 'ouro',
     joias: 2
   },
   {
     id: 'd24',
-    texto: 'Compra velas aromáticas para o teu espaço.',
+    texto: 'Compra velas, incenso ou aromas para o teu espaço.',
     nivel: 'bronze',
     joias: 1
   },
   {
     id: 'd25',
-    texto: 'Pede delivery em vez de cozinhar hoje.',
+    texto: 'Pede comida entregue em casa em vez de cozinhares.',
     nivel: 'prata',
     joias: 1
   }
