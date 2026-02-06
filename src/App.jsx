@@ -41,6 +41,7 @@ import FotosProgresso from './components/vitalis/FotosProgresso'
 import DesafiosSemanais from './components/vitalis/DesafiosSemanais'
 import CalendarioRefeicoes from './components/vitalis/CalendarioRefeicoes'
 import GuiaUtilizador from './components/vitalis/GuiaUtilizador'
+import GuiaRamadao from './components/vitalis/GuiaRamadao'
 import TreinosVitalis from './components/vitalis/TreinosVitalis'
 import PlanoHTML from './pages/PlanoHTML'
 
@@ -118,6 +119,7 @@ function AppRoutes() {
           <Route path="/vitalis/desafios" element={session ? <VitalisAccessGuard><DesafiosSemanais /></VitalisAccessGuard> : <Navigate to="/login" state={{ from: '/vitalis/desafios', eco: 'Vitalis' }} />} />
           <Route path="/vitalis/calendario" element={session ? <VitalisAccessGuard><CalendarioRefeicoes /></VitalisAccessGuard> : <Navigate to="/login" state={{ from: '/vitalis/calendario', eco: 'Vitalis' }} />} />
           <Route path="/vitalis/guia" element={session ? <VitalisAccessGuard><GuiaUtilizador /></VitalisAccessGuard> : <Navigate to="/login" state={{ from: '/vitalis/guia', eco: 'Vitalis' }} />} />
+          <Route path="/vitalis/guia-ramadao" element={session ? <VitalisAccessGuard><GuiaRamadao /></VitalisAccessGuard> : <Navigate to="/login" state={{ from: '/vitalis/guia-ramadao', eco: 'Vitalis' }} />} />
           <Route path="/vitalis/treinos" element={session ? <VitalisAccessGuard><TreinosVitalis /></VitalisAccessGuard> : <Navigate to="/login" state={{ from: '/vitalis/treinos', eco: 'Vitalis' }} />} />
 
           {/* ===== ECO 2: ÁUREA - Valor & Presença ===== */}

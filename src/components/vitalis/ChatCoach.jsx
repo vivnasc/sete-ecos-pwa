@@ -368,6 +368,128 @@ export default function ChatCoach() {
         `${faseRestritiva ? 'Evita adicionar fruta! Usa cacau em pó ou canela.' : 'Podes adicionar fruta se quiseres.'}`;
     }
 
+    // ========== RAMADÃO - GUIA ESPECÍFICO ==========
+    if (texto.match(/ramad[aã]o|ramadan|suhoor|suhur|iftar|t[aâ]mara|jejum.*sagrado|mes.*sagrado/)) {
+      return `🌙 **Ramadão - Nutrição Durante o Mês Sagrado**\n\n` +
+        `Ramadan Mubarak${nome ? ', ' + nome : ''}!\n\n` +
+        `O método Vitalis adapta-se ao Ramadão. As tuas porções diárias mantêm-se (${palmas} palmas, ${maos} mãos, ${polegares} polegares), distribuídas em 2 refeições:\n\n` +
+        `🌅 **SUHOOR (antes do amanhecer) - ~40% das porções:**\n` +
+        `• ${Math.round(palmas * 0.4)} palmas de proteína (ovos, iogurte grego, queijo)\n` +
+        `• ${Math.round(maos * 0.4)} mãos concha de hidratos (aveia, pão integral, tâmaras)\n` +
+        `• ${Math.round(polegares * 0.4)} polegares de gordura (abacate, manteiga de amendoim)\n` +
+        `• Foco: energia lenta e sustentada!\n\n` +
+        `🌇 **IFTAR (ao pôr-do-sol) - ~60% das porções:**\n` +
+        `• Começa com 1-3 tâmaras + água (tradição do Profeta SAW)\n` +
+        `• Pausa 15-20 min (momento de oração)\n` +
+        `• Depois: ${Math.round(palmas * 0.6)} palmas proteína + ${Math.round(maos * 0.6)} mãos hidratos + legumes\n\n` +
+        `💧 **HIDRATAÇÃO (entre Iftar e Suhoor):**\n` +
+        `• Meta: 2-2.5L de água\n` +
+        `• Bebe aos poucos, não tudo de uma vez\n` +
+        `• Inclui alimentos ricos em água (melancia, pepino)\n\n` +
+        `**Pergunta-me sobre:** "suhoor", "iftar", "hidratação ramadão", "exercício ramadão", "tâmaras"\n\n` +
+        `📖 Visita o Guia Ramadão completo na app para mais detalhes!`;
+    }
+
+    // ========== SUHOOR ESPECÍFICO ==========
+    if (texto.match(/suhoor|suhur|antes.*amanhecer|refeicao.*madrugada/)) {
+      return `🌅 **Suhoor - A Tua Refeição Antes do Amanhecer**\n\n` +
+        `${nome ? nome + ', o' : 'O'} Suhoor é fundamental! Não o saltes.\n\n` +
+        `**As tuas porções (~40% do dia):**\n` +
+        `• 🥩 ${Math.round(palmas * 0.4)} palmas de proteína\n` +
+        `• 🍚 ${Math.round(maos * 0.4)} mãos concha de hidratos complexos\n` +
+        `• 🫒 ${Math.round(polegares * 0.4)} polegares de gordura\n\n` +
+        `**Ideias de Suhoor:**\n` +
+        `• 3 ovos + pão integral + abacate\n` +
+        `• Iogurte grego + aveia + tâmaras + nozes\n` +
+        `• Batido: whey + banana + manteiga amendoim + leite\n\n` +
+        `**Dicas essenciais:**\n` +
+        `• Prioriza proteína e gordura (saciedade prolongada)\n` +
+        `• Hidratos complexos (aveia, pão integral) - libertam energia devagar\n` +
+        `• Bebe pelo menos 500ml de água\n` +
+        `• Evita comida muito salgada (aumenta a sede)\n` +
+        `• Tâmaras são excelentes - ricas em fibra e energia natural`;
+    }
+
+    // ========== IFTAR ESPECÍFICO ==========
+    if (texto.match(/iftar|quebr.*jejum|por.?do.?sol|abrir.*jejum/)) {
+      return `🌇 **Iftar - Quebra do Jejum ao Pôr-do-Sol**\n\n` +
+        `${nome ? nome + ', o' : 'O'} Iftar é momento de gratidão e nutrição.\n\n` +
+        `**A sequência ideal:**\n` +
+        `1️⃣ 1-3 tâmaras + 1 copo de água\n` +
+        `2️⃣ Pausa de 15-20 min (oração)\n` +
+        `3️⃣ Refeição principal equilibrada\n\n` +
+        `**As tuas porções (~60% do dia):**\n` +
+        `• 🥩 ${Math.round(palmas * 0.6)} palmas de proteína\n` +
+        `• 🍚 ${Math.round(maos * 0.6)} mãos concha de hidratos\n` +
+        `• 🫒 ${Math.round(polegares * 0.6)} polegares de gordura\n` +
+        `• 🥬 Legumes à vontade (sopa é óptima!)\n\n` +
+        `**Ideias de Iftar:**\n` +
+        `• Sopa de lentilhas + frango grelhado com arroz + salada\n` +
+        `• Hummus + peixe assado + cuscuz + legumes\n` +
+        `• Carne estufada + batata + legumes + iogurte\n\n` +
+        `**Evita:** Comer rápido demais, frituras em excesso, bebidas açucaradas`;
+    }
+
+    // ========== TÂMARAS ==========
+    if (texto.match(/t[aâ]mara|tamara|datil/)) {
+      return `🌴 **Tâmaras - O Alimento do Ramadão**\n\n` +
+        `As tâmaras são perfeitas para quebrar o jejum:\n\n` +
+        `**Nutrição (por 3 tâmaras ~75g):**\n` +
+        `• ~200 kcal de energia natural\n` +
+        `• Fibra (ajuda na digestão)\n` +
+        `• Potássio (repõe electrólitos)\n` +
+        `• Magnésio (reduz fadiga)\n` +
+        `• Açúcares naturais (restauram a glicose rapidamente)\n\n` +
+        `**Como usar no método Vitalis:**\n` +
+        `• 3 tâmaras = ~1 mão concha de hidratos\n` +
+        `• Ideais para quebrar o jejum no Iftar\n` +
+        `• No Suhoor: com iogurte grego e nozes = combo perfeito\n` +
+        `• Energia rápida e natural sem picos excessivos de insulina\n\n` +
+        `**Tradição e ciência:** O Profeta (SAW) quebrava o jejum com tâmaras e água. A ciência moderna confirma que é nutricionalmente ideal para restaurar a energia após o jejum.`;
+    }
+
+    // ========== HIDRATAÇÃO RAMADÃO ==========
+    if (texto.match(/(hidrat|agua|beber).*ramad|(ramad).*(hidrat|agua|beber)|sede.*ramad/)) {
+      return `💧 **Hidratação Durante o Ramadão**\n\n` +
+        `${nome ? nome + ', a' : 'A'} hidratação é o maior desafio do Ramadão.\n\n` +
+        `**Plano de hidratação nocturna:**\n` +
+        `🌇 Iftar: 2-3 copos (500-750ml)\n` +
+        `🌙 Entre Iftar e Suhoor: 3-4 copos (750ml-1L)\n` +
+        `🌅 Suhoor: 2 copos (500ml)\n` +
+        `📊 **Meta total: 2-2.5L**\n\n` +
+        `**Dicas importantes:**\n` +
+        `• Bebe aos poucos ao longo da noite\n` +
+        `• Não tentes beber tudo de uma vez\n` +
+        `• Água de coco repõe electrólitos naturalmente\n` +
+        `• Sopas contam como hidratação\n` +
+        `• Limita a cafeína (é diurética)\n\n` +
+        `**Alimentos ricos em água:**\n` +
+        `🍉 Melancia (92% água)\n` +
+        `🥒 Pepino (96% água)\n` +
+        `🍅 Tomate (94% água)\n\n` +
+        `Inclui estes alimentos no Suhoor e Iftar para ajudar na hidratação!`;
+    }
+
+    // ========== EXERCÍCIO RAMADÃO ==========
+    if (texto.match(/(exerc|treino|trein).*ramad|(ramad).*(exerc|treino|trein)/)) {
+      return `🏃‍♀️ **Exercício Durante o Ramadão**\n\n` +
+        `Podes e deves continuar a mexer-te, mas adaptado:\n\n` +
+        `**Melhor horário: 30-60 min antes do Iftar**\n` +
+        `• Treino leve a moderado\n` +
+        `• Vais poder hidratar e comer logo a seguir\n` +
+        `• A autofagia está no pico!\n\n` +
+        `**Alternativa: 1-2h após o Iftar**\n` +
+        `• Para treinos mais intensos\n` +
+        `• Corpo já hidratado e nutrido\n\n` +
+        `**Adaptações recomendadas:**\n` +
+        `• Reduz a intensidade em 30-40%\n` +
+        `• Treinos mais curtos (30-45 min)\n` +
+        `• Caminhadas são excelentes\n` +
+        `• Yoga e alongamentos são perfeitos\n` +
+        `• Se sentires tonturas, PARA imediatamente\n\n` +
+        `${diasTreino.length > 0 ? `Os teus dias de treino (${diasTreino.map(d => ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d-1]).join(', ')}) mantêm o +1 mão concha de hidratos.` : ''}`;
+    }
+
     // ========== JEJUM INTERMITENTE - EDUCATIVO ==========
     if (texto.match(/jejum|fasting|16.?8|intermitente|autofagia|autofago/)) {
       return `📚 **Jejum Intermitente - A Ciência**\n\n` +
@@ -897,6 +1019,12 @@ export default function ChatCoach() {
         `• "Peso estagnado"\n` +
         `• "Alimentação e treino"\n` +
         `• "Alimentação emocional"\n\n` +
+        `**🌙 Ramadão:**\n` +
+        `• "Ramadão" - guia completo\n` +
+        `• "Suhoor" - refeição antes do amanhecer\n` +
+        `• "Iftar" - quebra do jejum\n` +
+        `• "Hidratação ramadão"\n` +
+        `• "Tâmaras"\n\n` +
         `Pergunta o que quiseres!`;
     }
 
@@ -1048,6 +1176,7 @@ export default function ChatCoach() {
             { texto: 'Minhas porções', emoji: '🖐️' },
             { texto: 'Como usar a app', emoji: '📱' },
             { texto: 'Espaço de Retorno', emoji: '💜' },
+            { texto: 'Guia Ramadão', emoji: '🌙' },
             { texto: 'Jejum intermitente', emoji: '⏰' },
             { texto: 'Peso estagnado', emoji: '⚖️' },
             { texto: 'Ajuda', emoji: '❓' },

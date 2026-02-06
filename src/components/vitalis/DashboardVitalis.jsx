@@ -1595,6 +1595,44 @@ export default function DashboardVitalis() {
           </div>
         </div>
 
+        {/* Banner Ramadão - Visível durante o período */}
+        {(() => {
+          const agora = new Date();
+          // Ramadão 2026 aproximado: 17 Fev - 19 Mar (ajustar conforme necessário)
+          const inicioRamadao = new Date(2026, 1, 17); // 17 Fev
+          const fimRamadao = new Date(2026, 2, 20);    // 20 Mar (dia extra para Eid)
+          // Mostrar banner 5 dias antes e durante todo o Ramadão
+          const mostraPreRamadao = new Date(inicioRamadao);
+          mostraPreRamadao.setDate(mostraPreRamadao.getDate() - 5);
+          const mostrarBanner = agora >= mostraPreRamadao && agora <= fimRamadao;
+          const dentroRamadao = agora >= inicioRamadao && agora <= fimRamadao;
+
+          if (!mostrarBanner) return null;
+
+          return (
+            <Link to="/vitalis/guia-ramadao" className="block">
+              <div className="bg-gradient-to-r from-[#1a1a3e] via-[#2d2d5e] to-[#1a3a4e] rounded-3xl p-5 shadow-xl relative overflow-hidden">
+                <div className="absolute top-2 right-4 text-5xl opacity-20">🌙</div>
+                <div className="absolute top-8 right-16 text-xl opacity-15">⭐</div>
+                <div className="relative flex items-center gap-4">
+                  <div className="text-4xl">🌙</div>
+                  <div className="flex-1">
+                    <h3 className="text-white font-bold text-lg">
+                      {dentroRamadao ? 'Ramadan Mubarak!' : 'O Ramadão está a chegar!'}
+                    </h3>
+                    <p className="text-white/70 text-sm mt-1">
+                      {dentroRamadao
+                        ? 'Guia nutricional completo para o mês sagrado - Suhoor, Iftar e mais'
+                        : 'Prepara-te com o nosso guia nutricional para o mês sagrado'}
+                    </p>
+                  </div>
+                  <div className="text-white/60 text-xl">→</div>
+                </div>
+              </div>
+            </Link>
+          );
+        })()}
+
         {/* Funcionalidades Premium - NOVAS */}
         <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 rounded-3xl p-5 shadow-xl">
           <div className="flex items-center justify-between mb-4">
