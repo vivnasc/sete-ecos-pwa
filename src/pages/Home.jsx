@@ -1,7 +1,5 @@
-import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
-import { checkVitalisAccess } from '../lib/subscriptions'
+import { useAuth } from '../contexts/AuthContext'
 
 /**
  * HOME PRINCIPAL - app.seteecos.com
@@ -10,48 +8,9 @@ import { checkVitalisAccess } from '../lib/subscriptions'
 
 export default function Home() {
   const navigate = useNavigate()
-  const [session, setSession] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [userName, setUserName] = useState('')
-  const [vitalisAccess, setVitalisAccess] = useState(false)
+  const { session, loading, userRecord, vitalisAccess } = useAuth()
 
-  useEffect(() => {
-    const loadUserData = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setSession(session)
-
-      if (session?.user) {
-        // Buscar nome do utilizador
-        const { data: userData } = await supabase
-          .from('users')
-          .select('nome')
-          .eq('auth_id', session.user.id)
-          .maybeSingle()
-
-        if (userData?.nome) {
-          setUserName(userData.nome)
-        } else {
-          setUserName(session.user.email?.split('@')[0] || '')
-        }
-
-        // Verificar acesso ao Vitalis
-        const { data: userRecord } = await supabase
-          .from('users')
-          .select('id')
-          .eq('auth_id', session.user.id)
-          .maybeSingle()
-
-        if (userRecord) {
-          const access = await checkVitalisAccess(userRecord.id)
-          setVitalisAccess(access.hasAccess)
-        }
-      }
-
-      setLoading(false)
-    }
-
-    loadUserData()
-  }, [])
+  const userName = userRecord?.nome || session?.user?.email?.split('@')[0] || ''
 
   // 7 Ecos na ordem correcta (Aurea é o 2º)
   const ecos = [
@@ -222,10 +181,7 @@ export default function Home() {
           <div className="bg-gradient-to-r from-[#C9A227]/20 to-[#E8D5A3]/20 p-4 rounded-xl">
             <p className="text-[#4A3728] mb-2">Explora os 7 Ecos e descobre todo o sistema de transformação.</p>
             <button
-              onClick={() => {
-                setSession(null) // Temporariamente mostrar landing
-                setTimeout(() => setSession(session), 100)
-              }}
+              onClick={() => navigate('/landing')}
               className="text-[#C9A227] font-semibold text-sm"
             >
               Ver todos os Ecos →
@@ -233,25 +189,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Bottom Navigation */}
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E8D5A3]/30 px-4 py-2 flex justify-around">
-          <button className="flex flex-col items-center py-2 text-[#C9A227]">
-            <span className="text-xl">🏠</span>
-            <span className="text-xs font-medium">Hub</span>
-          </button>
-          <button onClick={() => navigate('/lumina')} className="flex flex-col items-center py-2 text-[#6B5344]">
-            <span className="text-xl">💜</span>
-            <span className="text-xs">Lumina</span>
-          </button>
-          <button onClick={() => navigate(vitalisAccess ? '/vitalis/dashboard' : '/vitalis')} className="flex flex-col items-center py-2 text-[#6B5344]">
-            <span className="text-xl">🌿</span>
-            <span className="text-xs">Vitalis</span>
-          </button>
-          <button onClick={() => navigate('/conta')} className="flex flex-col items-center py-2 text-[#6B5344]">
-            <span className="text-xl">👤</span>
-            <span className="text-xs">Conta</span>
-          </button>
-        </nav>
+        {/* Bottom Navigation provided by global Navigation component */}
       </div>
     )
   }

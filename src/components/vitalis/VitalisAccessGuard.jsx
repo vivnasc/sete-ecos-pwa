@@ -3,23 +3,13 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { checkVitalisAccess, SUBSCRIPTION_STATUS } from '../../lib/subscriptions';
 import { isCoach } from '../../lib/coach';
+import { useAuth } from '../../contexts/AuthContext';
 
 /**
  * VITALIS ACCESS GUARD
  *
  * Componente que verifica se o utilizador tem acesso ao Vitalis.
  * Se nao tiver, redireciona para a pagina de pagamento.
- *
- * Fluxo:
- * 1. User vai para /vitalis/dashboard (ou outra pagina protegida)
- * 2. VitalisAccessGuard verifica se tem subscricao ativa
- * 3. Se SIM -> mostra o conteudo
- * 4. Se NAO -> redireciona para /vitalis/pagamento
- *
- * Status com acesso:
- * - tester (acesso permanente)
- * - active (pagamento confirmado)
- * - pending (aguarda confirmacao - acesso temporario)
  */
 
 const VitalisAccessGuard = ({ children }) => {
@@ -27,19 +17,15 @@ const VitalisAccessGuard = ({ children }) => {
   const [hasAccess, setHasAccess] = useState(false);
   const [accessInfo, setAccessInfo] = useState(null);
   const location = useLocation();
+  const { user, userRecord } = useAuth();
 
   useEffect(() => {
     checkAccess();
-  }, []);
+  }, [user, userRecord]);
 
   const checkAccess = async () => {
     try {
-      // Verificar se esta autenticado
-      const { data: { user } } = await supabase.auth.getUser();
-      console.log('VitalisAccessGuard - user:', user?.email);
-
       if (!user) {
-        console.log('VitalisAccessGuard - no user, denying access');
         setHasAccess(false);
         setLoading(false);
         return;
@@ -47,7 +33,6 @@ const VitalisAccessGuard = ({ children }) => {
 
       // Bypass emails têm acesso directo
       const coachCheck = isCoach(user.email);
-      console.log('VitalisAccessGuard - isCoach check:', user.email, coachCheck);
 
       if (coachCheck) {
         // Garantir que coach tem registo na tabela users
@@ -86,28 +71,31 @@ const VitalisAccessGuard = ({ children }) => {
         return;
       }
 
-      // Obter o ID do utilizador na tabela users
-      const { data: userData } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_id', user.id)
-        .maybeSingle();
+      // Usar userRecord do contexto, ou buscar se necessário
+      let userId = userRecord?.id;
+      if (!userId) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', user.id)
+          .maybeSingle();
+        userId = userData?.id;
+      }
 
-      if (!userData) {
+      if (!userId) {
         setHasAccess(false);
         setLoading(false);
         return;
       }
 
       // Verificar acesso ao Vitalis
-      const access = await checkVitalisAccess(userData.id);
+      const access = await checkVitalisAccess(userId);
       setAccessInfo(access);
       setHasAccess(access.hasAccess);
     } catch (error) {
       console.error('VitalisAccessGuard - CATCH ERROR:', error);
       setHasAccess(false);
     } finally {
-      console.log('VitalisAccessGuard - finally, hasAccess will be:', hasAccess);
       setLoading(false);
     }
   };

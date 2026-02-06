@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { supabase } from './lib/supabase'
 import { isSessionCoach } from './lib/coach'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
 
 // ===== PÁGINAS PRINCIPAIS =====
 import Home from './pages/Home'
@@ -70,43 +69,14 @@ import AnalisePadroes from './components/aurea/AnalisePadroes'
 import AudioMeditacoes from './components/aurea/AudioMeditacoes'
 import NotificacoesAurea from './components/aurea/NotificacoesAurea'
 
-function App() {
-  const [session, setSession] = useState(null)
-  const [loading, setLoading] = useState(true)
-  
-  // Garantir que utilizador existe na tabela users
-  const ensureUserRecord = async (user) => {
-    if (!user) return
-    try {
-      await supabase.from('users').upsert({
-        auth_id: user.id,
-        email: user.email,
-        created_at: new Date().toISOString()
-      }, { onConflict: 'auth_id' })
-    } catch (error) {
-      console.error('Erro ao sincronizar user:', error)
-    }
-  }
+function AppRoutes() {
+  const { session, loading } = useAuth()
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      if (session?.user) ensureUserRecord(session.user)
-      setLoading(false)
-    })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-      if (session?.user) ensureUserRecord(session.user)
-    })
-    return () => subscription.unsubscribe()
-  }, [])
-  
   if (loading) return <div className="loading">A carregar...</div>
-  
+
   return (
-    <BrowserRouter>
-      <div className="app">
-        <Routes>
+    <>
+      <Routes>
           {/* ===== ROTAS PÚBLICAS ===== */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -195,7 +165,18 @@ function App() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
         <Navigation />
-      </div>
+    </>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <div className="app">
+          <AppRoutes />
+        </div>
+      </AuthProvider>
     </BrowserRouter>
   )
 }

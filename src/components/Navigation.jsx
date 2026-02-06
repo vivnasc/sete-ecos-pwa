@@ -1,55 +1,11 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function Navigation({ variant = 'default' }) {
   const navigate = useNavigate()
   const location = useLocation()
-  const [hasVitalisAccess, setHasVitalisAccess] = useState(false)
-  const [hasAureaAccess, setHasAureaAccess] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-
-  useEffect(() => {
-    checkAuthAndAccess()
-  }, [])
-
-  const checkAuthAndAccess = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      setIsAuthenticated(!!user)
-
-      if (user) {
-        const { data: userData } = await supabase
-          .from('users')
-          .select('id')
-          .eq('auth_id', user.id)
-          .maybeSingle()
-
-        if (userData) {
-          // Check Vitalis access
-          const { data: vitalisData } = await supabase
-            .from('vitalis_clients')
-            .select('subscription_status')
-            .eq('user_id', userData.id)
-            .maybeSingle()
-
-          const activeStatuses = ['active', 'trial', 'tester', 'pending']
-          setHasVitalisAccess(vitalisData && activeStatuses.includes(vitalisData.subscription_status))
-
-          // Check Aurea access
-          const { data: aureaData } = await supabase
-            .from('aurea_clients')
-            .select('subscription_status')
-            .eq('user_id', userData.id)
-            .maybeSingle()
-
-          setHasAureaAccess(aureaData && activeStatuses.includes(aureaData.subscription_status))
-        }
-      }
-    } catch (error) {
-      console.error('Erro ao verificar acesso:', error)
-    }
-  }
+  const { session, vitalisAccess: hasVitalisAccess, aureaAccess: hasAureaAccess } = useAuth()
+  const isAuthenticated = !!session
 
   const isActive = (path) => {
     if (path === '/') return location.pathname === '/'

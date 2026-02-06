@@ -3,24 +3,13 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { checkAureaAccess, SUBSCRIPTION_STATUS } from '../../lib/aurea/subscriptions';
 import { isCoach } from '../../lib/coach';
+import { useAuth } from '../../contexts/AuthContext';
 
 /**
  * ÁUREA ACCESS GUARD
  *
  * Componente que verifica se o utilizador tem acesso ao ÁUREA.
  * Se não tiver, redireciona para a página de pagamento.
- *
- * Fluxo:
- * 1. User vai para /aurea/dashboard (ou outra página protegida)
- * 2. AureaAccessGuard verifica se tem subscrição activa ou trial
- * 3. Se SIM -> mostra o conteúdo
- * 4. Se NAO -> redireciona para /aurea/pagamento
- *
- * Status com acesso:
- * - tester (acesso permanente)
- * - active (pagamento confirmado)
- * - trial (7 dias grátis)
- * - pending (aguarda confirmação - acesso temporário)
  */
 
 const AureaAccessGuard = ({ children }) => {
@@ -28,15 +17,14 @@ const AureaAccessGuard = ({ children }) => {
   const [hasAccess, setHasAccess] = useState(false);
   const [accessInfo, setAccessInfo] = useState(null);
   const location = useLocation();
+  const { user, userRecord } = useAuth();
 
   useEffect(() => {
     checkAccess();
-  }, []);
+  }, [user, userRecord]);
 
   const checkAccess = async () => {
     try {
-      // Verificar se está autenticado
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         setHasAccess(false);
         setLoading(false);
@@ -51,21 +39,25 @@ const AureaAccessGuard = ({ children }) => {
         return;
       }
 
-      // Obter o ID do utilizador na tabela users
-      const { data: userData } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_id', user.id)
-        .single();
+      // Usar userRecord do contexto, ou buscar se necessário
+      let userId = userRecord?.id;
+      if (!userId) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', user.id)
+          .maybeSingle();
+        userId = userData?.id;
+      }
 
-      if (!userData) {
+      if (!userId) {
         setHasAccess(false);
         setLoading(false);
         return;
       }
 
       // Verificar acesso ao ÁUREA
-      const access = await checkAureaAccess(userData.id);
+      const access = await checkAureaAccess(userId);
       setAccessInfo(access);
       setHasAccess(access.hasAccess);
     } catch (error) {
