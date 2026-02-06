@@ -88,7 +88,7 @@ function ConversasSussurrosList({ userId, conversas, loading, onAbrirConversa })
                 Sussurros
               </h1>
               <p className="text-xs text-purple-400" style={{ fontFamily: 'var(--font-corpo)', fontStyle: 'italic' }}>
-                Palavras que aquecem em silencio
+                Palavras que aquecem em silêncio
               </p>
             </div>
           </div>
@@ -106,7 +106,7 @@ function ConversasSussurrosList({ userId, conversas, loading, onAbrirConversa })
               Ainda sem sussurros
             </h3>
             <p className="text-sm text-gray-400 max-w-xs mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-corpo)' }}>
-              Envia uma palavra de apoio a alguem da comunidade. Cada sussurro aquece o caminho de outra mulher.
+              Envia uma palavra de apoio a alguém da comunidade. Cada sussurro aquece o caminho de outra mulher.
             </p>
           </div>
         ) : (
@@ -541,7 +541,7 @@ export default function Sussurros() {
           🔒
         </div>
         <p className="text-gray-500 text-center text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>
-          Precisas de iniciar sessao para ver os teus sussurros.
+          Precisas de iniciar sessão para ver os teus sussurros.
         </p>
         <button
           onClick={() => navigate('/comunidade')}

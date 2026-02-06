@@ -65,7 +65,7 @@ export default function CriarReflexao({ userId, onReflexaoCriada, onFechar, prom
     if (!file) return
 
     if (file.size > 5 * 1024 * 1024) {
-      alert('Imagem demasiado grande. Maximo 5MB.')
+      alert('Imagem demasiado grande. Máximo 5MB.')
       return
     }
 

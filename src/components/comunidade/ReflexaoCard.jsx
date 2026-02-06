@@ -135,7 +135,7 @@ export default function ReflexaoCard({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Reflexao — SETE ECOS',
+          title: 'Reflexão — SETE ECOS',
           text: post.conteudo?.slice(0, 120),
           url: window.location.origin + '/comunidade'
         })
@@ -176,7 +176,7 @@ export default function ReflexaoCard({
           {renderAvatar(perfil)}
           <div className="text-left">
             <p className="font-semibold text-sm text-gray-800" style={{ fontFamily: 'var(--font-corpo)' }}>
-              {isAnonymous ? 'Alma Anonima' : (perfil?.display_name || 'Utilizadora')}
+              {isAnonymous ? 'Alma Anónima' : (perfil?.display_name || 'Utilizadora')}
             </p>
             <div className="flex items-center gap-1.5">
               <span className="text-xs text-gray-400">{tempoRelativo(post.created_at)}</span>
@@ -304,7 +304,7 @@ export default function ReflexaoCard({
       {ressonanciaCount > 0 && (
         <div className="px-4 pb-2">
           <p className="text-xs text-gray-400">
-            {ressonanciaCount} {ressonanciaCount === 1 ? 'ressonancia' : 'ressonancias'}
+            {ressonanciaCount} {ressonanciaCount === 1 ? 'ressonância' : 'ressonâncias'}
           </p>
         </div>
       )}
@@ -320,7 +320,7 @@ export default function ReflexaoCard({
               </div>
             ) : espelhos.length === 0 ? (
               <div className="text-center py-3">
-                <span className="text-sm text-gray-400">Se a primeira a espelhar esta reflexao</span>
+                <span className="text-sm text-gray-400">Sê a primeira a espelhar esta reflexão</span>
               </div>
             ) : (
               espelhos.map(e => (
@@ -364,7 +364,7 @@ export default function ReflexaoCard({
               type="text"
               value={novoEspelho}
               onChange={(e) => setNovoEspelho(e.target.value)}
-              placeholder="Espelha esta reflexao..."
+              placeholder="Espelha esta reflexão..."
               className="flex-1 text-sm py-2 px-3 rounded-full border border-gray-200 focus:border-purple-300 focus:outline-none"
               style={{ fontFamily: 'var(--font-corpo)' }}
               maxLength={500}

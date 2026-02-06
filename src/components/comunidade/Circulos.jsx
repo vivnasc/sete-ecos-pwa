@@ -155,7 +155,7 @@ export default function Circulos({ userId }) {
           &#9675;
         </div>
         <p className="text-gray-400 italic" style={{ fontFamily: 'var(--font-titulos)' }}>
-          A carregar circulos...
+          A carregar círculos...
         </p>
       </div>
     )
@@ -174,10 +174,10 @@ export default function Circulos({ userId }) {
             </button>
             <div>
               <h1 className="text-xl font-bold" style={{ fontFamily: 'var(--font-titulos)', color: '#1A1A4E' }}>
-                Circulos de Eco
+                Círculos de Eco
               </h1>
               <p className="text-xs text-gray-400" style={{ fontFamily: 'var(--font-corpo)' }}>
-                Pequenos circulos de transformacao
+                Pequenos círculos de transformação
               </p>
             </div>
           </div>
@@ -220,10 +220,10 @@ export default function Circulos({ userId }) {
               <div className="text-center py-16">
                 <span className="text-5xl block mb-4">&#9675;</span>
                 <h3 className="text-lg font-semibold text-gray-700 mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
-                  Ainda nao fazes parte de nenhum circulo
+                  Ainda não fazes parte de nenhum círculo
                 </h3>
                 <p className="text-sm text-gray-400 mb-6" style={{ fontFamily: 'var(--font-corpo)' }}>
-                  Explora os circulos existentes ou cria o teu proprio
+                  Explora os círculos existentes ou cria o teu próprio
                 </p>
                 <div className="flex justify-center gap-3">
                   <button
@@ -265,7 +265,7 @@ export default function Circulos({ userId }) {
                 >
                   <span className="text-2xl block mb-1">+</span>
                   <p className="text-sm font-semibold" style={{ fontFamily: 'var(--font-titulos)' }}>
-                    Criar novo Circulo
+                    Criar novo Círculo
                   </p>
                 </button>
               </div>
@@ -304,7 +304,7 @@ export default function Circulos({ userId }) {
               <div className="text-center py-12">
                 <span className="text-4xl block mb-3">{ECOS_INFO[ecoSelecionado]?.emoji || '🌸'}</span>
                 <p className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'var(--font-corpo)' }}>
-                  Ainda nao existem circulos de {ECOS_INFO[ecoSelecionado]?.label}
+                  Ainda não existem círculos de {ECOS_INFO[ecoSelecionado]?.label}
                 </p>
                 <p className="text-xs text-gray-400 mb-4">Sê a primeira a criar um!</p>
                 <button
@@ -312,7 +312,7 @@ export default function Circulos({ userId }) {
                   className="text-sm font-medium px-5 py-2 rounded-full border-2 border-dashed transition-all hover:bg-purple-50"
                   style={{ borderColor: '#8B5CF6', color: '#8B5CF6' }}
                 >
-                  + Criar Circulo de {ECOS_INFO[ecoSelecionado]?.label}
+                  + Criar Círculo de {ECOS_INFO[ecoSelecionado]?.label}
                 </button>
               </div>
             ) : (
@@ -338,7 +338,7 @@ export default function Circulos({ userId }) {
                 >
                   <span className="text-2xl block mb-1">+</span>
                   <p className="text-sm font-semibold" style={{ fontFamily: 'var(--font-titulos)' }}>
-                    Criar Circulo de {ECOS_INFO[ecoSelecionado]?.label}
+                    Criar Círculo de {ECOS_INFO[ecoSelecionado]?.label}
                   </p>
                 </button>
               </div>
@@ -396,7 +396,7 @@ export default function Circulos({ userId }) {
                   style={{ backgroundColor: (ECOS_INFO[circuloAberto.eco]?.cor || '#8B5CF6') + '10' }}
                 >
                   <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: ECOS_INFO[circuloAberto.eco]?.cor || '#8B5CF6' }}>
-                    Intencao do Circulo
+                    Intenção do Círculo
                   </p>
                   <p className="text-sm text-gray-700 leading-relaxed italic" style={{ fontFamily: 'var(--font-corpo)' }}>
                     "{circuloAberto.intencao}"
@@ -407,7 +407,7 @@ export default function Circulos({ userId }) {
               {/* Description */}
               {circuloAberto.descricao && (
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Descricao</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Descrição</p>
                   <p className="text-sm text-gray-600 leading-relaxed" style={{ fontFamily: 'var(--font-corpo)' }}>
                     {circuloAberto.descricao}
                   </p>
@@ -438,7 +438,7 @@ export default function Circulos({ userId }) {
                             {perfilMembro?.display_name || 'Utilizadora'}
                           </p>
                           {membro.role === 'guardia' && (
-                            <span className="text-xs text-purple-500 font-medium">Guardia</span>
+                            <span className="text-xs text-purple-500 font-medium">Guardiã</span>
                           )}
                         </div>
                         {membro.user_id !== userId && (
@@ -463,7 +463,7 @@ export default function Circulos({ userId }) {
                     className="w-full py-3 rounded-full text-sm font-semibold border border-gray-200 text-gray-500 transition-all hover:bg-gray-50 active:scale-98"
                     style={{ fontFamily: 'var(--font-corpo)' }}
                   >
-                    Sair do Circulo
+                    Sair do Círculo
                   </button>
                 ) : (
                   <button
@@ -475,8 +475,8 @@ export default function Circulos({ userId }) {
                     {acaoEmCurso[circuloAberto.id]
                       ? 'A entrar...'
                       : circuloCheio(circuloAberto)
-                        ? 'Circulo cheio'
-                        : 'Entrar neste Circulo'
+                        ? 'Círculo cheio'
+                        : 'Entrar neste Círculo'
                     }
                   </button>
                 )}
@@ -493,10 +493,10 @@ export default function Circulos({ userId }) {
           <div className="relative bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl text-center">
             <span className="text-4xl block mb-3">🌸</span>
             <h3 className="text-lg font-bold text-gray-800 mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
-              Sair do Circulo?
+              Sair do Círculo?
             </h3>
             <p className="text-sm text-gray-500 mb-6" style={{ fontFamily: 'var(--font-corpo)' }}>
-              Podes voltar a entrar mais tarde, se houver espaco.
+              Podes voltar a entrar mais tarde, se houver espaço.
             </p>
             <div className="flex gap-3">
               <button
@@ -530,7 +530,7 @@ export default function Circulos({ userId }) {
               <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-3" />
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-gray-800" style={{ fontFamily: 'var(--font-titulos)' }}>
-                  Criar Circulo
+                  Criar Círculo
                 </h2>
                 <button
                   onClick={() => setShowCriar(false)}
@@ -547,13 +547,13 @@ export default function Circulos({ userId }) {
               {/* Name */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
-                  Nome do Circulo
+                  Nome do Círculo
                 </label>
                 <input
                   type="text"
                   value={criarNome}
                   onChange={(e) => setCriarNome(e.target.value.slice(0, 60))}
-                  placeholder='Ex: "Raizes de Vitalis"'
+                  placeholder='Ex: "Raízes de Vitalis"'
                   className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all bg-gray-50 focus:bg-white"
                   style={{ fontFamily: 'var(--font-corpo)' }}
                   maxLength={60}
@@ -588,12 +588,12 @@ export default function Circulos({ userId }) {
               {/* Intention */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
-                  Intencao
+                  Intenção
                 </label>
                 <textarea
                   value={criarIntencao}
                   onChange={(e) => setCriarIntencao(e.target.value.slice(0, 200))}
-                  placeholder="Qual e a intencao sagrada deste circulo?"
+                  placeholder="Qual é a intenção sagrada deste círculo?"
                   rows={3}
                   className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all bg-gray-50 focus:bg-white resize-none"
                   style={{ fontFamily: 'var(--font-corpo)' }}
@@ -605,7 +605,7 @@ export default function Circulos({ userId }) {
               {/* Max members slider */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
-                  Maximo de membros: {criarMax}
+                  Máximo de membros: {criarMax}
                 </label>
                 <input
                   type="range"
@@ -629,7 +629,7 @@ export default function Circulos({ userId }) {
                   className="w-full py-3 rounded-full text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-98 disabled:opacity-50"
                   style={{ backgroundColor: '#8B5CF6', fontFamily: 'var(--font-corpo)' }}
                 >
-                  {criando ? 'A criar...' : 'Criar Circulo'}
+                  {criando ? 'A criar...' : 'Criar Círculo'}
                 </button>
               </div>
             </div>
