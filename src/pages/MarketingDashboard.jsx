@@ -12,6 +12,7 @@ import {
   gerarLinksUTM,
   getSequenciaCompleta,
 } from '../lib/marketing-engine';
+import TemplateVisual from '../components/TemplateVisual';
 
 /**
  * Marketing Dashboard - Painel de automacao de marketing para a Vivianne
@@ -97,6 +98,7 @@ export default function MarketingDashboard() {
     { id: 'semana', label: 'Semana', icon: '📋' },
     { id: 'whatsapp', label: 'WhatsApp', icon: '💬' },
     { id: 'instagram', label: 'Instagram', icon: '📸' },
+    { id: 'imagens', label: 'Imagens', icon: '🎨' },
     { id: 'links', label: 'Links UTM', icon: '🔗' },
     { id: 'emails', label: 'Email Seq.', icon: '📧' },
   ];
@@ -342,6 +344,26 @@ export default function MarketingDashboard() {
           </>
         )}
 
+        {/* ===== TAB: IMAGENS ===== */}
+        {tab === 'imagens' && (
+          <>
+            <Card titulo="Gerar Imagem com Identidade Visual" badge="Descarrega PNG">
+              <p className="text-sm text-[#6B5C4C] mb-4">
+                Cria imagens prontas para publicar no Instagram, Stories e WhatsApp Status
+                com as cores e logo oficiais. Escolhe marca, formato e estilo.
+              </p>
+              <TemplateVisual
+                texto={conteudoHoje.dica}
+                subtitulo="VITALIS - Coaching Nutricional Personalizado"
+              />
+            </Card>
+
+            <Card titulo="Criar com Texto Personalizado">
+              <PersonalizedImageGenerator />
+            </Card>
+          </>
+        )}
+
         {/* ===== TAB: LINKS UTM ===== */}
         {tab === 'links' && (
           <Card titulo="Links de Campanha (com UTM)">
@@ -437,6 +459,38 @@ function CopyBtn({ onClick, copiado, label, small }) {
     >
       {copiado ? '✓ Copiado' : label}
     </button>
+  );
+}
+
+function PersonalizedImageGenerator() {
+  const [texto, setTexto] = useState('');
+  const [subtitulo, setSubtitulo] = useState('');
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <label className="text-xs font-semibold text-[#6B5C4C] block mb-1">Texto principal</label>
+        <textarea
+          value={texto}
+          onChange={(e) => setTexto(e.target.value)}
+          placeholder="Ex: Comer bem nao e passar fome. E saber escolher."
+          className="w-full p-3 border-2 border-[#E8E2D9] rounded-xl text-sm focus:border-[#7C8B6F] focus:outline-none resize-none"
+          rows={3}
+        />
+      </div>
+      <div>
+        <label className="text-xs font-semibold text-[#6B5C4C] block mb-1">Subtitulo (opcional)</label>
+        <input
+          value={subtitulo}
+          onChange={(e) => setSubtitulo(e.target.value)}
+          placeholder="Ex: VITALIS - Coaching Nutricional"
+          className="w-full p-3 border-2 border-[#E8E2D9] rounded-xl text-sm focus:border-[#7C8B6F] focus:outline-none"
+        />
+      </div>
+      {texto.length > 5 && (
+        <TemplateVisual texto={texto} subtitulo={subtitulo || undefined} />
+      )}
+    </div>
   );
 }
 
