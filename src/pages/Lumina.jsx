@@ -677,7 +677,7 @@ export default function Lumina() {
   function renderOnboarding() {
     return (
       <div className={`screen ${screen === 'onboarding' ? 'active' : ''}`}>
-        <div className="onboarding-title">Bem-vinda à LUMINA</div>
+        <div className="onboarding-title">Boas-vindas à LUMINA</div>
         <div className="onboarding-subtitle">Vê-te antes de agir</div>
 
         <div className="form-group">

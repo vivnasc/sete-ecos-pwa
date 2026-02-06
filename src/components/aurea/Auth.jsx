@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { g } from '../../utils/genero';
 
 /**
  * ÁUREA - Autenticação
@@ -171,7 +172,7 @@ export default function AureaAuth() {
               <span className="text-3xl">✨</span>
             </div>
             <h1 className="text-2xl font-bold text-amber-100 mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-              {isLogin ? 'Bem-vinda de volta' : 'Começa a tua jornada'}
+              {isLogin ? g('Bem-vindo de volta', 'Bem-vinda de volta') : 'Começa a tua jornada'}
             </h1>
             <p className="text-amber-200/70">
               {isLogin ? 'Entra na tua conta ÁUREA' : 'Cria a tua conta para começar'}

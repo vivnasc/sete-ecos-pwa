@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
+import { setSexo } from '../../utils/genero';
 
 export default function VitalisIntakeComplete() {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function VitalisIntakeComplete() {
   });
 
   const sections = [
-    { title: 'Bem-vinda ao Vitalis 💪', isWelcome: true },
+    { title: 'Boas-vindas ao Vitalis 💪', isWelcome: true },
     { title: 'Dados Pessoais', fields: ['nome', 'email', 'whatsapp', 'idade', 'sexo'] },
     { title: 'Medidas Corporais', fields: ['altura_cm', 'peso_actual', 'peso_meta', 'cintura_cm', 'anca_cm'] },
     { title: 'Objectivo e Prazo', fields: ['objectivo_principal', 'prazo', 'porque_importante'] },
@@ -80,9 +81,9 @@ export default function VitalisIntakeComplete() {
     prazo: { label: 'Em quanto tempo?', type: 'radio', options: ['3m', '6m', '9m', '12m', 'sem_pressa'], labels: ['3 meses', '6 meses', '9 meses', '12 meses', 'Sem pressa'], required: true },
     porque_importante: { label: 'Porquê é importante para ti?', type: 'textarea', placeholder: 'O que vai mudar na tua vida?', rows: 3 },
     abordagem_preferida: { label: 'Que abordagem preferes?', type: 'radio', options: ['keto_if', 'low_carb', 'equilibrado', 'nao_sei'], labels: ['Keto + Jejum Intermitente', 'Low Carb', 'Equilibrado', 'Não sei'], required: true },
-    restricoes_alimentares: { label: 'Restrições alimentares', type: 'checkbox', options: ['Vegetariana', 'Vegana', 'Sem glúten', 'Sem lactose', 'Halal', 'Nenhuma'] },
+    restricoes_alimentares: { label: 'Restrições alimentares', type: 'checkbox', options: ['Vegetariano/a', 'Vegano/a', 'Sem glúten', 'Sem lactose', 'Halal', 'Nenhuma'] },
     observa_ramadao: { label: '🌙 Observas o jejum do Ramadão?', type: 'radio', options: ['sim', 'nao', 'as_vezes'], labels: ['Sim, todos os anos', 'Não', 'Às vezes / parcialmente'] },
-    condicoes_saude: { label: 'Condições de saúde', type: 'checkbox', options: ['Diabetes', 'Hipertensão', 'Colesterol alto', 'Problemas de tiroide', 'SOP', 'Nenhuma'] },
+    condicoes_saude: { label: 'Condições de saúde', type: 'checkbox', options: ['Diabetes', 'Hipertensão', 'Colesterol alto', 'Problemas de tiroide', 'SOP (Síndrome do Ovário Policístico)', 'Problemas de próstata', 'Nenhuma'] },
     medicacao: { label: 'Medicação e suplementos actuais', type: 'textarea', placeholder: 'Lista medicamentos e suplementos (ou "Nenhum")', rows: 2 },
     
     // REFEIÇÕES - CORRIGIDO
@@ -136,7 +137,7 @@ export default function VitalisIntakeComplete() {
     como_sente_depois: { 
       label: 'Como te sentes depois de comer por emoção?', 
       type: 'checkbox',
-      options: ['Culpada', 'Aliviada temporariamente', 'Pior que antes', 'Entorpecida', 'Arrependida', 'Indiferente'],
+      options: ['Culpa', 'Alívio temporário', 'Pior que antes', 'Entorpecimento', 'Arrependimento', 'Indiferença'],
       required: true
     },
     quando_comecou_padrao: { 
@@ -148,7 +149,7 @@ export default function VitalisIntakeComplete() {
     tentou_alternativas: { label: 'Já tentaste lidar com isto de outra forma?', type: 'checkbox_single' },
     que_alternativas: { label: 'O que tentaste?', type: 'textarea', placeholder: 'Ex: meditação, exercício, terapia...', rows: 2, conditional: 'tentou_alternativas' },
     
-    nivel_actividade: { label: 'Nível de actividade física no dia-a-dia', type: 'radio', options: ['sedentaria', 'leve', 'moderada', 'intensa'], labels: ['Sedentária (sentada maior parte do dia)', 'Leve (caminho um pouco)', 'Moderada (bastante activa)', 'Intensa (muito activa)'], required: true },
+    nivel_actividade: { label: 'Nível de actividade física no dia-a-dia', type: 'radio', options: ['sedentario', 'leve', 'moderado', 'intenso'], labels: ['Sedentário/a (sentado/a maior parte do dia)', 'Leve (caminho um pouco)', 'Moderado/a (bastante activo/a)', 'Intenso/a (muito activo/a)'], required: true },
     faz_exercicio: { label: 'Fazes exercício regular?', type: 'checkbox_single' },
     tipo_exercicio: { label: 'Que tipo de exercício?', type: 'checkbox', options: ['Caminhada', 'Corrida', 'Ginásio', 'Natação', 'Yoga', 'Dança', 'Outro'], conditional: 'faz_exercicio' },
     horas_sono: { label: 'Quantas horas dormes por noite?', type: 'radio', options: ['menos_5h', '5-6h', '7-8h', 'mais_8h'], labels: ['Menos de 5h', '5-6h', '7-8h', 'Mais de 8h'] },
@@ -159,23 +160,23 @@ export default function VitalisIntakeComplete() {
     situacao_profissional: { 
       label: 'Situação profissional', 
       type: 'radio',
-      options: ['empregada_tempo_inteiro', 'empregada_meio_tempo', 'autonoma', 'desempregada', 'estudante', 'reforma'],
-      labels: ['Empregada (tempo inteiro)', 'Empregada (meio tempo)', 'Autónoma/Empresária', 'Desempregada', 'Estudante', 'Reformada'],
+      options: ['empregado_tempo_inteiro', 'empregado_meio_tempo', 'autonomo', 'desempregado', 'estudante', 'reforma'],
+      labels: ['Empregado/a (tempo inteiro)', 'Empregado/a (meio tempo)', 'Autónomo/a / Empresário/a', 'Desempregado/a', 'Estudante', 'Reformado/a'],
       required: true
     },
-    situacao_familiar: { 
-      label: 'Situação familiar', 
+    situacao_familiar: {
+      label: 'Com quem vives?',
       type: 'radio',
-      options: ['sozinha', 'com_parceiro', 'com_parceiro_filhos', 'com_familia', 'outro'],
-      labels: ['Vivo sozinha', 'Com parceiro/a', 'Com parceiro/a e filhos', 'Com família', 'Outro'],
+      options: ['sozinho', 'com_parceiro', 'com_parceiro_filhos', 'pai_mae_solteiro', 'com_familia', 'com_irmaos', 'com_filhos_adultos', 'outro'],
+      labels: ['Sozinho/a', 'Com parceiro/a', 'Com parceiro/a e filhos', 'Pai/Mãe solteiro/a com filhos', 'Com família (pais, avós...)', 'Com irmãos/irmãs', 'Com filhos adultos', 'Outra situação'],
       required: true
     },
     filhos_pequenos: { label: 'Tens filhos pequenos (< 10 anos)?', type: 'checkbox_single' },
-    quem_cozinha: { 
-      label: 'Quem cozinha em casa?', 
+    quem_cozinha: {
+      label: 'Quem cozinha em casa?',
       type: 'radio',
-      options: ['eu', 'parceiro', 'partilhado', 'empregada', 'nao_cozinho'],
-      labels: ['Eu', 'Meu/minha parceiro/a', 'Partilhamos', 'Empregada doméstica', 'Não costumo cozinhar'],
+      options: ['eu', 'parceiro', 'partilhado', 'familiar', 'empregada', 'nao_cozinho'],
+      labels: ['Eu', 'Meu/minha parceiro/a', 'Partilhamos', 'Familiar (mãe, irmã...)', 'Empregada doméstica', 'Não costumo cozinhar'],
       required: true
     },
     
@@ -197,17 +198,17 @@ export default function VitalisIntakeComplete() {
       options: ['fome_emocional', 'falta_tempo', 'familia', 'custo', 'motivacao', 'conhecimento', 'outro'],
       labels: ['Fome emocional', 'Falta de tempo', 'Família não apoia', 'Custo', 'Falta de motivação', 'Não sei o que comer', 'Outro']
     },
-    gatilhos_sair_plano: { label: 'O que te faz sair do plano?', type: 'checkbox', options: ['Stress', 'Eventos sociais', 'TPM', 'Fins de semana', 'Viagens', 'Falta de tempo', 'Desânimo', 'Fome emocional'] },
+    gatilhos_sair_plano: { label: 'O que te faz sair do plano?', type: 'checkbox', options: ['Stress', 'Eventos sociais', 'Alterações hormonais (TPM, etc.)', 'Fins de semana', 'Viagens', 'Falta de tempo', 'Desânimo', 'Fome emocional'] },
     
     abordagem_realista: { label: 'Preferes abordagem...', type: 'radio', options: ['gradual', 'intensiva'], labels: ['Gradual (mudanças lentas e sustentáveis)', 'Intensiva (mudanças rápidas e profundas)'], required: true },
-    preferencias_alimentares: { label: 'Preferências alimentares', type: 'checkbox', options: ['Vegetariana', 'Vegana', 'Sem glúten', 'Sem lactose', 'Sem restrições'] },
-    medir_pesar_comida: { label: 'Estás disposta a medir/pesar comida?', type: 'radio', options: ['sim', 'nao', 'as_vezes'], labels: ['Sim', 'Não', 'Às vezes'] },
+    preferencias_alimentares: { label: 'Preferências alimentares', type: 'checkbox', options: ['Vegetariano/a', 'Vegano/a', 'Sem glúten', 'Sem lactose', 'Sem restrições'] },
+    medir_pesar_comida: { label: 'Estás disposto/a a medir/pesar comida?', type: 'radio', options: ['sim', 'nao', 'as_vezes'], labels: ['Sim', 'Não', 'Às vezes'] },
     acesso_ingredientes: { label: 'Acesso a ingredientes saudáveis', type: 'radio', options: ['facil', 'moderado', 'dificil'], labels: ['Fácil', 'Moderado', 'Difícil'] },
     
     como_conheceu: { label: 'Como conheceste o Vitalis?', type: 'checkbox', options: ['Instagram', 'Facebook', 'Indicação', 'Google', 'Outro'], required: true },
-    o_que_espera_ganhar: { label: 'O que MAIS esperas ganhar com o Vitalis?', type: 'textarea', required: true, placeholder: 'Sê específica…', rows: 3 },
+    o_que_espera_ganhar: { label: 'O que MAIS esperas ganhar com o Vitalis?', type: 'textarea', required: true, placeholder: 'Sê específico/a…', rows: 3 },
     observacoes_adicionais: { label: 'Algo mais que queiras partilhar?', type: 'textarea', rows: 3 },
-    prontidao_1a10: { label: 'Numa escala de 1-10, quão pronta estás para mudar?', type: 'slider', min: '1', max: '10', labels: ['1 - Não muito', '5 - Moderadamente', '10 - Totalmente pronta'], required: true },
+    prontidao_1a10: { label: 'Numa escala de 1-10, quão pronto/a estás para mudar?', type: 'slider', min: '1', max: '10', labels: ['1 - Não muito', '5 - Moderadamente', '10 - Totalmente'], required: true },
     autoriza_dados_pesquisa: { label: 'Autorizo uso de dados anonimizados para pesquisa', type: 'checkbox_single' },
     
     // Campos legais
@@ -421,7 +422,8 @@ try {
         o_que_espera_ganhar: formData.o_que_espera_ganhar,
         observacoes_adicionais: formData.observacoes_adicionais,
         prontidao_1a10: parseInt(formData.prontidao_1a10),
-        autoriza_dados_pesquisa: formData.autoriza_dados_pesquisa
+        autoriza_dados_pesquisa: formData.autoriza_dados_pesquisa,
+        observa_ramadao: formData.observa_ramadao || null
       };
 
       // Inserir intake primeiro
@@ -492,6 +494,9 @@ try {
       const temAcesso = currentClient && statusComAcesso.includes(currentClient.subscription_status);
 
       console.log('Intake complete - subscription_status:', currentClient?.subscription_status, 'temAcesso:', temAcesso);
+
+      // Guardar género para personalizar textos na app
+      setSexo(formData.sexo);
 
       if (temAcesso) {
         // Já tem acesso - ir para dashboard

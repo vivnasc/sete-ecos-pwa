@@ -183,7 +183,7 @@ export default function PlanoHTML() {
       {/* PÁGINA 2 - BEM-VINDA */}
       <div className="page" style={{padding:'45px'}}>
         <PageHeader />
-        <div style={{fontSize:'24px',fontWeight:'600',color:'#4A4035',marginBottom:'20px'}}>👋 Bem-vinda à Tua Jornada</div>
+        <div style={{fontSize:'24px',fontWeight:'600',color:'#4A4035',marginBottom:'20px'}}>👋 Boas-vindas à Tua Jornada</div>
         <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'14px',padding:'25px',marginBottom:'18px'}}><p style={{fontSize:'15px',lineHeight:'2'}}><strong>{dados.nome}</strong>, este guia foi criado especialmente para ti, com base nas tuas respostas, objectivos e estilo de vida. Cada porção, cada recomendação, foi calculada para o teu corpo e para onde queres chegar.</p></div>
         <div style={{fontSize:'24px',fontWeight:'600',color:'#4A4035',marginBottom:'20px',marginTop:'30px'}}>🔥 {faseConfig.nome}</div>
         <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'14px',padding:'25px',marginBottom:'18px'}}><span style={{display:'inline-block',padding:'8px 20px',background:'#F5F0E8',borderRadius:'20px',fontSize:'12px',marginBottom:'15px'}}>Duração: {faseConfig.duracao}</span><p style={{fontSize:'15px',lineHeight:'1.9'}}>{faseConfig.descricao}</p></div>

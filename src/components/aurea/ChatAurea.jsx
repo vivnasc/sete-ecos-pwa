@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { g } from '../../utils/genero';
 
 /**
  * ÁUREA - ChatBot Coach Inteligente
@@ -170,7 +171,7 @@ function generateCoachResponse(analysis, memory, messageHistory) {
     responses = [
       `Ouvir-te dizer isso... sinto o peso dessas palavras. ${needsExploration ? 'Consegues dizer-me mais sobre o que estás a sentir?' : 'O que desencadeou esse sentimento?'}`,
       `O que sentes é real e válido. Não precisas de o justificar. ${keyPhrases[0] ? `Quando dizes "${keyPhrases[0]}", o que há por trás disso?` : 'Conta-me mais.'}`,
-      `Estou aqui contigo neste momento. ${intensity === 'high' ? 'Parece intenso. Queres que exploremos isso juntas?' : 'O que precisas agora?'}`,
+      `Estou aqui contigo neste momento. ${intensity === 'high' ? 'Parece intenso. Queres que exploremos isso ' + g('juntos', 'juntas') + '?' : 'O que precisas agora?'}`,
       `Obrigada por partilhares isso comigo. Há coragem em admitir o que sentes. O que te ajudaria neste momento?`
     ];
   }
@@ -188,7 +189,7 @@ function generateCoachResponse(analysis, memory, messageHistory) {
     } else if (topics.includes('tempo')) {
       responses = [
         `Quando dizes que não tens tempo... para quem tens tempo? E porque é que elas vêm antes de ti?`,
-        `Se amanhã tivesses 2 horas só tuas, sem culpa, o que farias? Sê específica.`,
+        `Se amanhã tivesses 2 horas só tuas, sem culpa, o que farias? Sê ${g('específico', 'específica')}.`,
         `O tempo para ti não aparece - cria-se. O que precisarias de soltar para te encontrar?`,
         `Quem te ensinou que o teu tempo valia menos que o dos outros?`
       ];

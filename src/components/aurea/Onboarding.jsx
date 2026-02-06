@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { g } from '../../utils/genero';
 
 /**
  * ÁUREA - Onboarding
@@ -106,7 +107,7 @@ export default function AureaOnboarding() {
             <span className="text-4xl">✨</span>
           </div>
           <h1 className="text-3xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-            Bem-vinda à ÁUREA
+            {g('Bem-vindo à ÁUREA', 'Bem-vinda à ÁUREA')}
           </h1>
           <p className="text-amber-200/80 text-lg leading-relaxed">
             Isto não é mais uma app de produtividade.

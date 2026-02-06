@@ -27,7 +27,7 @@ const INTERACTION_CATEGORIES = {
     color: 'from-blue-500 to-cyan-500',
     bgColor: 'bg-blue-50',
     templates: [
-      { id: 'welcome-new', title: 'Novo cliente', message: 'Bem-vinda ao Vitalis! Estou muito feliz por começares esta jornada comigo. Qualquer dúvida, estou aqui. Vamos juntas!' },
+      { id: 'welcome-new', title: 'Novo cliente', message: 'Bem-vindo/a ao Vitalis! Estou muito feliz por começares esta jornada comigo. Qualquer dúvida, estou aqui. Vamos nesta jornada!' },
       { id: 'welcome-back', title: 'Retorno', message: 'Que bom ver-te de volta! A tua jornada continua, e estou aqui para te apoiar. Vamos retomar com calma.' },
     ]
   },

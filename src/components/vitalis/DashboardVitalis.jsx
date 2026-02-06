@@ -6,6 +6,7 @@ import { useOnboarding, OnboardingWrapper } from './OnboardingTutorial.jsx';
 import { EmailTriggers } from '../../lib/emails';
 import WelcomeTutorial from '../WelcomeTutorial.jsx';
 import { isCoach } from '../../lib/coach';
+import { g, setSexo } from '../../utils/genero';
 
 // Função para solicitar permissão de notificações
 const solicitarPermissaoNotificacoes = async () => {
@@ -263,6 +264,14 @@ export default function DashboardVitalis() {
       } else {
         setClient(clientData);
       }
+
+      // Buscar sexo do intake para adaptar género na UI
+      const { data: intakeData } = await supabase
+        .from('vitalis_intake')
+        .select('sexo')
+        .eq('user_id', userData.id)
+        .maybeSingle();
+      if (intakeData?.sexo) setSexo(intakeData.sexo);
 
       // Buscar plano (pode não existir ainda)
       const { data: planoData } = await supabase
@@ -842,7 +851,7 @@ export default function DashboardVitalis() {
               <p className="text-white/70 text-sm">Olá,</p>
               <Link to="/vitalis/perfil" className="block hover:opacity-80 transition-opacity">
                 <h2 className="text-xl md:text-2xl font-bold text-white">
-                  {userName?.split(' ')[0] || client?.nome_completo?.split(' ')[0] || userEmail?.split('@')[0] || 'Guerreira'}! 👋
+                  {userName?.split(' ')[0] || client?.nome_completo?.split(' ')[0] || userEmail?.split('@')[0] || g('Guerreiro', 'Guerreira')}! 👋
                 </h2>
               </Link>
               <p className="text-white/80 text-sm capitalize">{diaSemana}, {dataFormatada}</p>

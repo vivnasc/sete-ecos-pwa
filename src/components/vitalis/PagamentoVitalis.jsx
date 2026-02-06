@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { g } from '../../utils/genero';
 import {
   SUBSCRIPTION_PLANS,
   SUBSCRIPTION_STATUS,
@@ -670,7 +671,7 @@ const PagamentoVitalis = () => {
             <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-3xl">🎉</span>
             </div>
-            <h2 className="text-2xl font-bold text-[#4A4035] mb-2">Bem-vinda ao Vitalis!</h2>
+            <h2 className="text-2xl font-bold text-[#4A4035] mb-2">{g('Bem-vindo ao Vitalis!', 'Bem-vinda ao Vitalis!')}</h2>
             <p className="text-gray-600 mb-6">Acesso confirmado com sucesso.</p>
 
             {/* Passos do Onboarding */}

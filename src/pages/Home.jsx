@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { g } from '../utils/genero'
 import LandingGeral from './LandingGeral'
 
 /**
@@ -55,7 +56,7 @@ export default function Home() {
             <div>
               <p className="text-[#C9A227] text-xs font-semibold tracking-widest uppercase mb-1">{getGreeting()}</p>
               <h1 className="text-3xl font-bold text-[#4A3728]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                {userName || 'Guerreira'}
+                {userName || g('Guerreiro', 'Guerreira')}
               </h1>
             </div>
             <Link
