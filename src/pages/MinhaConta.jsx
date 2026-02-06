@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
+import { isCoach } from '../lib/coach';
 
 /**
  * MINHA CONTA - Central Account Management
@@ -225,6 +226,22 @@ export default function MinhaConta() {
           </div>
 
           <div className="bg-white/50 backdrop-blur-md rounded-3xl border border-white/60 shadow-lg overflow-hidden divide-y divide-[#E8D5A3]/15">
+            {isCoach(user?.email) && (
+              <Link to="/coach" className="flex items-center gap-3 p-3.5 hover:bg-white/40 transition-colors">
+                <div className="w-9 h-9 bg-emerald-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <span className="text-[#4A3728] font-medium text-sm">Coach Dashboard</span>
+                </div>
+                <svg className="w-4 h-4 text-[#6B5344]/25" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            )}
+
             <Link to="/perfil" className="flex items-center gap-3 p-3.5 hover:bg-white/40 transition-colors">
               <div className="w-9 h-9 bg-[#C9A227]/10 rounded-xl flex items-center justify-center flex-shrink-0">
                 <svg className="w-4 h-4 text-[#C9A227]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
