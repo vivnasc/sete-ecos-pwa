@@ -91,24 +91,29 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    // Get initial session - set loading false IMMEDIATELY, load extras in background
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Safety timeout - NEVER stay stuck on loading
+    const safetyTimeout = setTimeout(() => {
+      setLoading(false)
+    }, 3000)
+
+    // onAuthStateChange fires INITIAL_SESSION immediately on setup
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      clearTimeout(safetyTimeout)
       setSession(session)
       setLoading(false)
       if (session?.user) {
         loadUserData(session.user)
+      } else {
+        setUserRecord(null)
+        setVitalisAccess(false)
+        setAureaAccess(false)
       }
-    }).catch(() => {
-      setLoading(false)
     })
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-      loadUserData(session?.user || null)
-    })
-
-    return () => subscription.unsubscribe()
+    return () => {
+      clearTimeout(safetyTimeout)
+      subscription.unsubscribe()
+    }
   }, [])
 
   return (
