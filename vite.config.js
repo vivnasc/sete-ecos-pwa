@@ -136,7 +136,6 @@ export default defineConfig({
           // Separar vendor pesados para melhor caching
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-supabase': ['@supabase/supabase-js'],
-          'vendor-charts': ['recharts'],
         }
       }
     }

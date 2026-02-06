@@ -5,7 +5,15 @@
  */
 import { g } from '../utils/genero';
 
-import html2pdf from 'html2pdf.js';
+// html2pdf loaded dynamically to avoid 600KB+ in the initial chunk
+let html2pdfModule = null;
+async function getHtml2pdf() {
+  if (!html2pdfModule) {
+    const mod = await import('html2pdf.js');
+    html2pdfModule = mod.default || mod;
+  }
+  return html2pdfModule;
+}
 
 /**
  * Configurações padrão do PDF
@@ -175,6 +183,7 @@ export async function gerarRelatorioMensal(dados) {
     filename: `Vitalis_Relatorio_${mes.replace(/\s/g, '_')}.pdf`
   };
 
+  const html2pdf = await getHtml2pdf();
   await html2pdf().set(opt).from(container).save();
 
   // Limpar
@@ -247,6 +256,7 @@ export async function gerarRelatorioFase(dados) {
     filename: `Vitalis_Fase${fase.numero}_${fase.nome}.pdf`
   };
 
+  const html2pdf = await getHtml2pdf();
   await html2pdf().set(opt).from(container).save();
   document.body.removeChild(container);
 }
@@ -358,6 +368,7 @@ export async function gerarRelatorioFinal(dados) {
     filename: `Vitalis_Relatorio_Final_${cliente?.nome || 'Conclusao'}.pdf`
   };
 
+  const html2pdf = await getHtml2pdf();
   await html2pdf().set(opt).from(container).save();
   document.body.removeChild(container);
 }

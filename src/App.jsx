@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { isSessionCoach } from './lib/coach'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { I18nProvider } from './contexts/I18nContext'
+import { ThemeProvider } from './contexts/ThemeContext'
+import { ToastProvider } from './components/Toast'
 import ErrorBoundary from './components/ErrorBoundary'
 import Navigation from './components/Navigation'
 
@@ -229,15 +231,19 @@ function AppRoutes() {
 function App() {
   return (
     <BrowserRouter>
-      <I18nProvider>
-        <AuthProvider>
-          <ErrorBoundary>
+      <ThemeProvider>
+        <I18nProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <ErrorBoundary>
             <div className="app">
               <AppRoutes />
             </div>
-          </ErrorBoundary>
-        </AuthProvider>
-      </I18nProvider>
+              </ErrorBoundary>
+            </ToastProvider>
+          </AuthProvider>
+        </I18nProvider>
+      </ThemeProvider>
     </BrowserRouter>
   )
 }

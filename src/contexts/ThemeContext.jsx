@@ -1,75 +1,87 @@
-// src/contexts/ThemeContext.jsx
-// Context para gestão do tema (Light/Dark Mode)
+import { createContext, useContext, useState, useEffect } from 'react'
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-
-const ThemeContext = createContext();
+const ThemeContext = createContext()
 
 export function ThemeProvider({ children }) {
-  // Inicializa com preferência guardada ou light mode por defeito
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('vitalis-theme');
-      if (saved) return saved === 'dark';
-      // Verifica preferência do sistema (desactivado por agora - sempre light por defeito)
-      // return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const saved = localStorage.getItem('sete-ecos-theme')
+      if (saved) return saved === 'dark'
+      return window.matchMedia('(prefers-color-scheme: dark)').matches
     }
-    return false;
-  });
+    return false
+  })
 
-  // Aplica a classe ao documento
+  // Sync with system preference changes
   useEffect(() => {
-    const root = document.documentElement;
-    if (isDark) {
-      root.classList.add('dark');
-      root.style.colorScheme = 'dark';
-    } else {
-      root.classList.remove('dark');
-      root.style.colorScheme = 'light';
+    const mq = window.matchMedia('(prefers-color-scheme: dark)')
+    const handler = (e) => {
+      // Only follow system if user hasn't explicitly set a preference
+      if (!localStorage.getItem('sete-ecos-theme')) {
+        setIsDark(e.matches)
+      }
     }
-    localStorage.setItem('vitalis-theme', isDark ? 'dark' : 'light');
-  }, [isDark]);
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
-  const toggleTheme = () => setIsDark(prev => !prev);
-  const setLight = () => setIsDark(false);
-  const setDark = () => setIsDark(true);
+  // Apply dark class to document
+  useEffect(() => {
+    const root = document.documentElement
+    if (isDark) {
+      root.classList.add('dark')
+      root.style.colorScheme = 'dark'
+    } else {
+      root.classList.remove('dark')
+      root.style.colorScheme = 'light'
+    }
+    localStorage.setItem('sete-ecos-theme', isDark ? 'dark' : 'light')
+  }, [isDark])
+
+  const toggleTheme = () => setIsDark(prev => !prev)
 
   return (
-    <ThemeContext.Provider value={{ isDark, toggleTheme, setLight, setDark }}>
+    <ThemeContext.Provider value={{ isDark, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
-  );
+  )
 }
 
 export function useTheme() {
-  const context = useContext(ThemeContext);
+  const context = useContext(ThemeContext)
   if (!context) {
-    throw new Error('useTheme deve ser usado dentro de ThemeProvider');
+    throw new Error('useTheme deve ser usado dentro de ThemeProvider')
   }
-  return context;
+  return context
 }
 
-// Componente de Toggle para Dark Mode
+/**
+ * DarkModeToggle — Accessible toggle switch for dark/light mode
+ * WCAG: role="switch", aria-checked, keyboard accessible
+ */
 export function DarkModeToggle({ className = '' }) {
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark, toggleTheme } = useTheme()
 
   return (
     <button
       onClick={toggleTheme}
-      className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${
-        isDark ? 'bg-indigo-600' : 'bg-gray-200'
+      role="switch"
+      aria-checked={isDark}
+      aria-label={isDark ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
+      className={`relative w-14 h-7 rounded-full transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current ${
+        isDark ? 'bg-indigo-600' : 'bg-gray-300'
       } ${className}`}
-      aria-label="Alternar tema"
     >
-      <div
+      <span
+        aria-hidden="true"
         className={`absolute top-0.5 left-0.5 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-300 flex items-center justify-center ${
           isDark ? 'translate-x-7' : 'translate-x-0'
         }`}
       >
         <span className="text-sm">{isDark ? '🌙' : '☀️'}</span>
-      </div>
+      </span>
     </button>
-  );
+  )
 }
 
-export default ThemeContext;
+export default ThemeContext
