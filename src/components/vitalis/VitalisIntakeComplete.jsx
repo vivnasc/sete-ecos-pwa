@@ -421,7 +421,8 @@ try {
         o_que_espera_ganhar: formData.o_que_espera_ganhar,
         observacoes_adicionais: formData.observacoes_adicionais,
         prontidao_1a10: parseInt(formData.prontidao_1a10),
-        autoriza_dados_pesquisa: formData.autoriza_dados_pesquisa
+        autoriza_dados_pesquisa: formData.autoriza_dados_pesquisa,
+        observa_ramadao: formData.observa_ramadao || null
       };
 
       // Inserir intake primeiro
