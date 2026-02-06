@@ -1,22 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 /**
  * ÁUREA - Landing Page
  * "Valor & Presença" - A que merece
+ * Redireciona utilizadores com acesso activo para o dashboard
  */
 
 const LandingAurea = () => {
   const navigate = useNavigate();
   const [faqAberta, setFaqAberta] = useState(null);
-  const [session, setSession] = useState(null);
+  const { session, aureaAccess } = useAuth();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-  }, []);
+    // Se já tem acesso, vai directo para o dashboard
+    if (aureaAccess) {
+      navigate('/aurea/dashboard', { replace: true });
+      return;
+    }
+
+    // Se tem sessão mas ainda não sabemos o acesso, verificar directamente
+    if (session && !aureaAccess) {
+      const checkAccess = async () => {
+        try {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('id')
+            .eq('auth_id', session.user.id)
+            .maybeSingle();
+
+          if (userData) {
+            const { data: aureaClient } = await supabase
+              .from('aurea_clients')
+              .select('subscription_status, onboarding_complete')
+              .eq('user_id', userData.id)
+              .maybeSingle();
+
+            if (aureaClient && ['active', 'trial', 'tester', 'pending'].includes(aureaClient.subscription_status)) {
+              if (aureaClient.onboarding_complete) {
+                navigate('/aurea/dashboard', { replace: true });
+              } else {
+                navigate('/aurea/onboarding', { replace: true });
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Erro ao verificar acesso ÁUREA:', err);
+        }
+      };
+      checkAccess();
+    }
+  }, [session, aureaAccess, navigate]);
 
   const planos = {
     mensal: { id: 'monthly', nome: 'Mensal', meses: 1, preco: 975, precoUSD: 15, desconto: 0 },
@@ -141,7 +177,7 @@ const LandingAurea = () => {
   ];
 
   const handleComecar = () => {
-    navigate('/aurea/pagamento');
+    navigate(session ? '/aurea/pagamento' : '/aurea/login');
   };
 
   return (

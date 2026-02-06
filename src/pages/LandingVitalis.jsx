@@ -1,23 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import { isNearRamadan } from '../utils/ramadao';
 
 /**
  * VITALIS - Landing Page
  * Actualizada com cores sage green e features reais da plataforma
+ * Redireciona utilizadores com acesso activo para o dashboard
  */
 
 const LandingVitalis = () => {
   const navigate = useNavigate();
   const [faqAberta, setFaqAberta] = useState(null);
-  const [session, setSession] = useState(null);
+  const { session, vitalisAccess } = useAuth();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-  }, []);
+    if (vitalisAccess) {
+      navigate('/vitalis/dashboard', { replace: true });
+      return;
+    }
+
+    if (session && !vitalisAccess) {
+      const checkAccess = async () => {
+        try {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('id')
+            .eq('auth_id', session.user.id)
+            .maybeSingle();
+
+          if (userData) {
+            const { data: vitalisClient } = await supabase
+              .from('vitalis_clients')
+              .select('subscription_status')
+              .eq('user_id', userData.id)
+              .maybeSingle();
+
+            if (vitalisClient && ['active', 'trial', 'tester', 'pending'].includes(vitalisClient.subscription_status)) {
+              navigate('/vitalis/dashboard', { replace: true });
+            }
+          }
+        } catch (err) {
+          console.error('Erro ao verificar acesso VITALIS:', err);
+        }
+      };
+      checkAccess();
+    }
+  }, [session, vitalisAccess, navigate]);
 
   const planos = {
     mensal: { id: 'monthly', nome: 'Mensal', meses: 1, preco: 2500, precoUSD: 38, desconto: 0 },
@@ -168,8 +198,7 @@ const LandingVitalis = () => {
   ];
 
   const handleComecar = () => {
-    // Sempre vai para pagamento - a página de pagamento trata da autenticação
-    navigate('/vitalis/pagamento');
+    navigate(session ? '/vitalis/pagamento' : '/vitalis/login');
   };
 
   return (
