@@ -998,12 +998,20 @@ const CoachDashboard = () => {
                   <div className="mb-8">
                     <h3 className="text-lg font-semibold text-purple-300 mb-4 flex items-center justify-between">
                       <span>🎟️ Códigos de Convite</span>
-                      <button
-                        onClick={() => handleGenerateCode('tester')}
-                        className="px-3 py-1.5 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-sm font-medium transition-all border border-purple-500/30"
-                      >
-                        + Gerar Código
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleGenerateCode('promo')}
+                          className="px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-sm font-medium transition-all border border-emerald-500/30"
+                        >
+                          + Promo 1 Mes
+                        </button>
+                        <button
+                          onClick={() => handleGenerateCode('tester')}
+                          className="px-3 py-1.5 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-sm font-medium transition-all border border-purple-500/30"
+                        >
+                          + Tester
+                        </button>
+                      </div>
                     </h3>
 
                     {inviteCodes.length === 0 ? (

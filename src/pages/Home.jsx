@@ -43,6 +43,7 @@ export default function Home() {
           <div className="absolute bottom-40 left-0 w-60 h-60 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, #8B5CF6 0%, transparent 70%)', filter: 'blur(50px)' }} />
         </div>
 
+       <div className="max-w-lg mx-auto">
         {/* Header hero area */}
         <header className="relative px-5 pt-8 pb-6">
           <div className="flex justify-between items-start mb-8">
@@ -85,20 +86,17 @@ export default function Home() {
             <button
               onClick={() => navigate('/lumina')}
               className="group relative overflow-hidden rounded-3xl text-left shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-              style={{ aspectRatio: '1/1.1' }}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-[#8B5CF6] to-[#4B0082]" />
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: 'radial-gradient(circle at 70% 30%, rgba(255,255,255,0.15) 0%, transparent 60%)' }} />
-              <div className="relative h-full p-5 flex flex-col justify-between">
-                <div className="w-14 h-14 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                  <img src="/logos/lumina-logo_v2.png" alt="Lumina" className="w-10 h-10" />
+              <div className="relative p-4 flex flex-col gap-4">
+                <div className="w-12 h-12 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                  <img src="/logos/lumina-logo_v2.png" alt="Lumina" className="w-8 h-8" />
                 </div>
                 <div>
-                  <h3 className="text-white font-bold text-lg tracking-wide">LUMINA</h3>
+                  <h3 className="text-white font-bold tracking-wide">LUMINA</h3>
                   <p className="text-white/60 text-xs mt-0.5">Diagnostico diario</p>
-                  <div className="flex items-center gap-1 mt-2">
-                    <span className="text-[10px] text-white/40 bg-white/10 px-2 py-0.5 rounded-full">Gratuito</span>
-                  </div>
+                  <span className="inline-block mt-2 text-[10px] text-white/40 bg-white/10 px-2 py-0.5 rounded-full">Gratuito</span>
                 </div>
               </div>
             </button>
@@ -107,22 +105,19 @@ export default function Home() {
             <button
               onClick={() => navigate(vitalisAccess ? '/vitalis/dashboard' : '/vitalis')}
               className="group relative overflow-hidden rounded-3xl text-left shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-              style={{ aspectRatio: '1/1.1' }}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-[#7C8B6F] to-[#3D4D35]" />
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: 'radial-gradient(circle at 70% 30%, rgba(255,255,255,0.15) 0%, transparent 60%)' }} />
-              <div className="relative h-full p-5 flex flex-col justify-between">
-                <div className="w-14 h-14 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                  <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-10 h-10" />
+              <div className="relative p-4 flex flex-col gap-4">
+                <div className="w-12 h-12 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                  <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-8 h-8" />
                 </div>
                 <div>
-                  <h3 className="text-white font-bold text-lg tracking-wide">VITALIS</h3>
+                  <h3 className="text-white font-bold tracking-wide">VITALIS</h3>
                   <p className="text-white/60 text-xs mt-0.5">Corpo & Nutricao</p>
-                  <div className="flex items-center gap-1 mt-2">
-                    <span className="text-[10px] text-white/40 bg-white/10 px-2 py-0.5 rounded-full">
-                      {vitalisAccess ? 'Activo' : 'Comecar'}
-                    </span>
-                  </div>
+                  <span className="inline-block mt-2 text-[10px] text-white/40 bg-white/10 px-2 py-0.5 rounded-full">
+                    {vitalisAccess ? 'Activo' : 'Comecar'}
+                  </span>
                 </div>
               </div>
             </button>
@@ -131,22 +126,19 @@ export default function Home() {
             <button
               onClick={() => navigate(aureaAccess ? '/aurea/dashboard' : '/aurea')}
               className="group relative overflow-hidden rounded-3xl text-left shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-              style={{ aspectRatio: '1/1.1' }}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-[#C9A227] to-[#8B6914]" />
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: 'radial-gradient(circle at 70% 30%, rgba(255,255,255,0.15) 0%, transparent 60%)' }} />
-              <div className="relative h-full p-5 flex flex-col justify-between">
-                <div className="w-14 h-14 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                  <img src="/logos/logo_aurea.png" alt="Aurea" className="w-10 h-10" onError={(e) => { e.target.style.display = 'none' }} />
+              <div className="relative p-4 flex flex-col gap-4">
+                <div className="w-12 h-12 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                  <img src="/logos/logo_aurea.png" alt="Aurea" className="w-8 h-8" onError={(e) => { e.target.style.display = 'none' }} />
                 </div>
                 <div>
-                  <h3 className="text-white font-bold text-lg tracking-wide">AUREA</h3>
+                  <h3 className="text-white font-bold tracking-wide">AUREA</h3>
                   <p className="text-white/60 text-xs mt-0.5">Autocuidado & Beleza</p>
-                  <div className="flex items-center gap-1 mt-2">
-                    <span className="text-[10px] text-white/40 bg-white/10 px-2 py-0.5 rounded-full">
-                      {aureaAccess ? 'Activo' : 'Comecar'}
-                    </span>
-                  </div>
+                  <span className="inline-block mt-2 text-[10px] text-white/40 bg-white/10 px-2 py-0.5 rounded-full">
+                    {aureaAccess ? 'Activo' : 'Comecar'}
+                  </span>
                 </div>
               </div>
             </button>
@@ -155,22 +147,19 @@ export default function Home() {
             <button
               onClick={() => navigate('/comunidade')}
               className="group relative overflow-hidden rounded-3xl text-left shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-              style={{ aspectRatio: '1/1.1' }}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-[#EC4899] to-[#9333EA]" />
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: 'radial-gradient(circle at 70% 30%, rgba(255,255,255,0.15) 0%, transparent 60%)' }} />
-              <div className="relative h-full p-5 flex flex-col justify-between">
-                <div className="w-14 h-14 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+              <div className="relative p-4 flex flex-col gap-4">
+                <div className="w-12 h-12 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-white font-bold text-lg tracking-wide">COMUNIDADE</h3>
+                  <h3 className="text-white font-bold tracking-wide">COMUNIDADE</h3>
                   <p className="text-white/60 text-xs mt-0.5">Reflexao & Partilha</p>
-                  <div className="flex items-center gap-1 mt-2">
-                    <span className="text-[10px] text-white/40 bg-white/10 px-2 py-0.5 rounded-full">Aberto</span>
-                  </div>
+                  <span className="inline-block mt-2 text-[10px] text-white/40 bg-white/10 px-2 py-0.5 rounded-full">Aberto</span>
                 </div>
               </div>
             </button>
@@ -252,6 +241,7 @@ export default function Home() {
             </div>
           </div>
         </section>
+       </div>
       </div>
     )
   }
