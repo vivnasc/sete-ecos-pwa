@@ -5,6 +5,7 @@ import { StreakDisplay, CelebracaoModal, ConquistasSection, NivelProgresso, CONQ
 import { useOnboarding, OnboardingWrapper } from './OnboardingTutorial.jsx';
 import { EmailTriggers } from '../../lib/emails';
 import WelcomeTutorial from '../WelcomeTutorial.jsx';
+import { isCoach } from '../../lib/coach';
 
 // Função para solicitar permissão de notificações
 const solicitarPermissaoNotificacoes = async () => {
@@ -243,13 +244,25 @@ export default function DashboardVitalis() {
         .eq('user_id', userData.id)
         .maybeSingle();
 
-      // Se não tem cliente, redirecionar para pagamento
+      // Se não tem cliente, verificar se é coach
       if (!clientData) {
-        console.log('Utilizador sem registo vitalis_clients');
-        navigate('/vitalis/pagamento');
-        return;
+        if (isCoach(user.email)) {
+          // Coach sem registo - criar registo mínimo ou usar dummy
+          console.log('Coach sem registo vitalis_clients - permitindo acesso');
+          setClient({
+            id: 'coach-temp',
+            user_id: userData.id,
+            subscription_status: 'tester',
+            fase_actual: 'aprendizagem'
+          });
+        } else {
+          console.log('Utilizador sem registo vitalis_clients');
+          navigate('/vitalis/pagamento');
+          return;
+        }
+      } else {
+        setClient(clientData);
       }
-      setClient(clientData);
 
       // Buscar plano (pode não existir ainda)
       const { data: planoData } = await supabase
