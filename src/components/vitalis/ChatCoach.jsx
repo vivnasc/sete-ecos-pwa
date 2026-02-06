@@ -1074,48 +1074,58 @@ export default function ChatCoach() {
   }
 
   return (
-    <div className="min-h-screen bg-[#E8E4DC] flex flex-col pb-20">
-      <header className="bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-4">
+    <div className="fixed inset-0 bg-[#F5F1EB] flex flex-col" style={{ paddingBottom: '64px' }}>
+      {/* Header - Vivianne sempre visível */}
+      <header className="bg-gradient-to-r from-[#7C8B6F] to-[#5D6B4F] text-white shadow-md z-10 flex-shrink-0">
+        <div className="max-w-2xl mx-auto px-4 py-3">
           <div className="flex items-center gap-3">
-            <Link to="/vitalis/dashboard" className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">←</Link>
-            <div className="w-12 h-12 rounded-full bg-white/30 flex items-center justify-center text-2xl">👩‍⚕️</div>
-            <div className="flex-1">
-              <h1 className="font-bold">Vivianne</h1>
-              <p className="text-white/70 text-sm flex items-center gap-1">
-                <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                Coach PN Level 1
+            <Link to="/vitalis/dashboard" className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-lg hover:bg-white/30 transition-colors">←</Link>
+            <div className="w-11 h-11 rounded-full bg-white/90 flex items-center justify-center text-2xl shadow-sm flex-shrink-0">👩‍⚕️</div>
+            <div className="flex-1 min-w-0">
+              <h1 className="font-bold text-base">Vivianne</h1>
+              <p className="text-white/80 text-xs flex items-center gap-1.5">
+                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                Coach Vitalis
               </p>
             </div>
-            <button onClick={limparConversa} className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-sm hover:bg-white/30">🗑️</button>
+            <button onClick={limparConversa} className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-sm hover:bg-white/25 transition-colors" title="Limpar conversa">🗑️</button>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="max-w-2xl mx-auto space-y-4">
+      {/* Mensagens - scrollable */}
+      <main className="flex-1 overflow-y-auto px-3 py-3">
+        <div className="max-w-2xl mx-auto space-y-1">
           {Object.entries(mensagensAgrupadas).map(([data, msgs]) => (
             <div key={data}>
-              <div className="flex justify-center my-4">
-                <span className="px-3 py-1 bg-white/80 rounded-full text-xs text-gray-500">{data}</span>
+              <div className="flex justify-center my-3">
+                <span className="px-3 py-0.5 bg-white/70 rounded-full text-[11px] text-gray-500 shadow-sm">{data}</span>
               </div>
               {msgs.map((msg) => (
-                <div key={msg.id} className={`flex ${msg.remetente === 'user' ? 'justify-end' : 'justify-start'} mb-3`}>
-                  <div className={`max-w-[85%] rounded-2xl px-4 py-3 ${msg.remetente === 'user' ? 'bg-[#7C8B6F] text-white rounded-br-md' : 'bg-white text-gray-800 rounded-bl-md shadow'}`}>
-                    <p className="whitespace-pre-line text-sm leading-relaxed">{msg.texto}</p>
-                    <p className={`text-xs mt-1 ${msg.remetente === 'user' ? 'text-white/70' : 'text-gray-400'}`}>{formatarHora(msg.timestamp)}</p>
+                <div key={msg.id} className={`flex ${msg.remetente === 'user' ? 'justify-end' : 'justify-start'} mb-2.5`}>
+                  {msg.remetente === 'coach' && (
+                    <div className="w-7 h-7 rounded-full bg-[#7C8B6F] flex items-center justify-center text-sm flex-shrink-0 mr-2 mt-1 shadow-sm">👩‍⚕️</div>
+                  )}
+                  <div className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 ${
+                    msg.remetente === 'user'
+                      ? 'bg-[#7C8B6F] text-white rounded-br-sm'
+                      : 'bg-white text-gray-800 rounded-bl-sm shadow-sm border border-gray-100'
+                  }`}>
+                    <p className="whitespace-pre-line text-[13px] leading-relaxed">{msg.texto}</p>
+                    <p className={`text-[10px] mt-1 text-right ${msg.remetente === 'user' ? 'text-white/60' : 'text-gray-400'}`}>{formatarHora(msg.timestamp)}</p>
                   </div>
                 </div>
               ))}
             </div>
           ))}
           {enviando && (
-            <div className="flex justify-start mb-3">
-              <div className="bg-white rounded-2xl px-4 py-3 shadow rounded-bl-md">
-                <div className="flex gap-1">
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+            <div className="flex justify-start mb-2.5">
+              <div className="w-7 h-7 rounded-full bg-[#7C8B6F] flex items-center justify-center text-sm flex-shrink-0 mr-2 mt-1 shadow-sm">👩‍⚕️</div>
+              <div className="bg-white rounded-2xl px-4 py-3 shadow-sm rounded-bl-sm border border-gray-100">
+                <div className="flex gap-1.5">
+                  <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                  <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                  <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
                 </div>
               </div>
             </div>
@@ -1124,26 +1134,29 @@ export default function ChatCoach() {
         </div>
       </main>
 
-      <div className="bg-white/50 px-4 py-2 overflow-x-auto">
-        <div className="max-w-2xl mx-auto flex gap-2">
-          {[
-            { texto: 'O que é o método Vitalis?', emoji: '🌱' },
-            { texto: 'Minhas porções', emoji: '🖐️' },
-            { texto: 'Como usar a app', emoji: '📱' },
-            { texto: 'Espaço de Retorno', emoji: '💜' },
-            { texto: 'Guia Ramadão', emoji: '🌙' },
-            { texto: 'Jejum intermitente', emoji: '⏰' },
-            { texto: 'Peso estagnado', emoji: '⚖️' },
-            { texto: 'Ajuda', emoji: '❓' },
-          ].map((quick, i) => (
-            <button key={i} onClick={() => setNovaMensagem(quick.texto)} className="flex items-center gap-1 px-3 py-1.5 bg-white rounded-full text-sm text-gray-600 hover:bg-gray-50 whitespace-nowrap shadow-sm">
-              <span>{quick.emoji}</span><span>{quick.texto}</span>
-            </button>
-          ))}
+      {/* Sugestões rápidas */}
+      <div className="bg-[#F5F1EB] border-t border-gray-200/60 px-3 py-2 flex-shrink-0">
+        <div className="max-w-2xl mx-auto overflow-x-auto scrollbar-hide">
+          <div className="flex gap-1.5 pb-0.5" style={{ WebkitOverflowScrolling: 'touch' }}>
+            {[
+              { texto: 'Porções', emoji: '🖐️' },
+              { texto: 'Refeições', emoji: '🍽️' },
+              { texto: 'Jejum', emoji: '⏰' },
+              { texto: 'Ramadão', emoji: '🌙' },
+              { texto: 'Treino', emoji: '💪' },
+              { texto: 'Peso', emoji: '⚖️' },
+              { texto: 'Ajuda', emoji: '❓' },
+            ].map((quick, i) => (
+              <button key={i} onClick={() => { setNovaMensagem(quick.texto); }} className="flex items-center gap-1 px-2.5 py-1 bg-white rounded-full text-xs text-[#6B5C4C] hover:bg-[#7C8B6F] hover:text-white whitespace-nowrap shadow-sm border border-gray-200/80 transition-colors flex-shrink-0">
+                <span>{quick.emoji}</span><span>{quick.texto}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="bg-white border-t border-gray-200 px-4 py-3 sticky bottom-0">
+      {/* Input */}
+      <div className="bg-white border-t border-gray-200 px-3 py-2.5 flex-shrink-0">
         <div className="max-w-2xl mx-auto flex items-center gap-2">
           <input
             type="text"
@@ -1151,9 +1164,11 @@ export default function ChatCoach() {
             onChange={(e) => setNovaMensagem(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && enviarMensagem()}
             placeholder="Pergunta à Vivianne..."
-            className="flex-1 px-4 py-3 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-[#7C8B6F]"
+            className="flex-1 px-4 py-2.5 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#7C8B6F]/50 focus:bg-white transition-colors"
           />
-          <button onClick={enviarMensagem} disabled={!novaMensagem.trim() || enviando} className="w-12 h-12 bg-[#7C8B6F] text-white rounded-full flex items-center justify-center hover:bg-[#6B7A5D] transition-colors disabled:opacity-50">➤</button>
+          <button onClick={enviarMensagem} disabled={!novaMensagem.trim() || enviando} className="w-10 h-10 bg-[#7C8B6F] text-white rounded-full flex items-center justify-center hover:bg-[#5D6B4F] transition-colors disabled:opacity-40 flex-shrink-0 shadow-sm">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>
+          </button>
         </div>
       </div>
     </div>
