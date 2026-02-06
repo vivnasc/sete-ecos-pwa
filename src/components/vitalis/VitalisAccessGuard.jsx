@@ -36,14 +36,20 @@ const VitalisAccessGuard = ({ children }) => {
     try {
       // Verificar se esta autenticado
       const { data: { user } } = await supabase.auth.getUser();
+      console.log('VitalisAccessGuard - user:', user?.email);
+
       if (!user) {
+        console.log('VitalisAccessGuard - no user, denying access');
         setHasAccess(false);
         setLoading(false);
         return;
       }
 
       // Bypass emails têm acesso directo
-      if (isCoach(user.email)) {
+      const coachCheck = isCoach(user.email);
+      console.log('VitalisAccessGuard - isCoach check:', user.email, coachCheck);
+
+      if (coachCheck) {
         // Garantir que coach tem registo na tabela users
         const { data: coachUser, error: coachError } = await supabase
           .from('users')
@@ -98,9 +104,10 @@ const VitalisAccessGuard = ({ children }) => {
       setAccessInfo(access);
       setHasAccess(access.hasAccess);
     } catch (error) {
-      console.error('Erro ao verificar acesso:', error);
+      console.error('VitalisAccessGuard - CATCH ERROR:', error);
       setHasAccess(false);
     } finally {
+      console.log('VitalisAccessGuard - finally, hasAccess will be:', hasAccess);
       setLoading(false);
     }
   };
