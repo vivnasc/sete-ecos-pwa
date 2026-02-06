@@ -190,6 +190,11 @@ export default function Lumina() {
   // Estados do histórico
   const [historico, setHistorico] = useState([]);
   const [diasCount, setDiasCount] = useState(0);
+
+  // Email capture (funil para visitantes nao autenticadas)
+  const [captureEmail, setCaptureEmail] = useState('');
+  const [captureSubmitted, setCaptureSubmitted] = useState(false);
+  const [captureLoading, setCaptureLoading] = useState(false);
   
   // Estados do onboarding
   const [nome, setNome] = useState('');
@@ -486,8 +491,9 @@ export default function Lumina() {
 
     try {
       const { data: { user: authUser } } = await supabase.auth.getUser();
-      
+
       if (authUser) {
+        // Utilizadora autenticada - guardar em Supabase
         const profileData = {
           auth_id: authUser.id,
           nome: nome.trim(),
@@ -510,16 +516,32 @@ export default function Lumina() {
         if (data.ciclo_activo && data.ultimo_periodo) {
           calcularFaseCiclo(data);
         }
-
-        // Sincronizar genero com localStorage para g() funcionar em toda a app
-        if (genero === 'M') {
-          setSexo('masculino');
-        } else if (genero === 'F') {
-          setSexo('feminino');
+      } else {
+        // Visitante nao autenticada - perfil local temporario
+        const localProfile = {
+          id: null,
+          nome: nome.trim(),
+          genero: genero || null,
+          ciclo_activo: tracksCycle === 'sim',
+          duracao_ciclo: cycleLength,
+          ultimo_periodo: tracksCycle === 'sim' && lastPeriod ? lastPeriod : null
+        };
+        setProfile(localProfile);
+        if (localProfile.ciclo_activo && localProfile.ultimo_periodo) {
+          calcularFaseCiclo(localProfile);
         }
+      }
+
+      // Sincronizar genero com localStorage para g() funcionar em toda a app
+      if (genero === 'M') {
+        setSexo('masculino');
+      } else if (genero === 'F') {
+        setSexo('feminino');
       }
     } catch (error) {
       console.error('Erro ao guardar onboarding:', error);
+      // Mesmo com erro, criar perfil local para permitir check-in
+      setProfile({ id: null, nome: nome.trim(), genero: genero || null });
     }
 
     setScreen('intro');
@@ -1265,6 +1287,107 @@ export default function Lumina() {
               </div>
             );
           })()}
+
+          {/* Captura de email - so para visitantes nao autenticadas */}
+          {!user && !captureSubmitted && (
+            <div style={{
+              marginTop: '24px',
+              padding: '24px 20px',
+              background: 'linear-gradient(135deg, rgba(107, 91, 149, 0.08) 0%, rgba(155, 89, 182, 0.04) 100%)',
+              borderRadius: '16px',
+              border: '1px solid rgba(107, 91, 149, 0.15)',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '24px', marginBottom: '8px' }}>✉️</div>
+              <div style={{ fontSize: '15px', fontWeight: 'bold', marginBottom: '6px' }}>
+                Queres receber os teus padroes por email?
+              </div>
+              <div style={{ fontSize: '13px', opacity: 0.7, marginBottom: '16px', lineHeight: 1.5 }}>
+                Recebe a tua leitura + dicas personalizadas baseadas nos teus resultados. Gratis.
+              </div>
+              <div style={{ display: 'flex', gap: '8px', maxWidth: '320px', margin: '0 auto' }}>
+                <input
+                  type="email"
+                  value={captureEmail}
+                  onChange={(e) => setCaptureEmail(e.target.value)}
+                  placeholder="O teu email"
+                  style={{
+                    flex: 1,
+                    padding: '12px 16px',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(107, 91, 149, 0.2)',
+                    background: 'white',
+                    fontSize: '14px',
+                    outline: 'none'
+                  }}
+                />
+                <button
+                  disabled={captureLoading || !captureEmail.includes('@')}
+                  onClick={async () => {
+                    if (!captureEmail.includes('@')) return;
+                    setCaptureLoading(true);
+                    try {
+                      await supabase.from('waitlist').insert({
+                        nome: profile?.nome || '',
+                        email: captureEmail.trim(),
+                        produto: 'lumina-checkin'
+                      });
+                    } catch (err) {
+                      // Duplicado ou erro, ignorar silenciosamente
+                    }
+                    setCaptureSubmitted(true);
+                    setCaptureLoading(false);
+                  }}
+                  style={{
+                    padding: '12px 20px',
+                    borderRadius: '12px',
+                    background: captureLoading ? '#999' : '#6B5B95',
+                    color: 'white',
+                    border: 'none',
+                    fontWeight: 'bold',
+                    fontSize: '14px',
+                    cursor: captureLoading ? 'wait' : 'pointer',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  {captureLoading ? '...' : 'Enviar'}
+                </button>
+              </div>
+              <div style={{ fontSize: '11px', opacity: 0.4, marginTop: '10px' }}>
+                Sem spam. Podes cancelar quando quiseres.
+              </div>
+            </div>
+          )}
+
+          {/* Confirmacao de captura */}
+          {!user && captureSubmitted && (
+            <div style={{
+              marginTop: '24px',
+              padding: '20px',
+              background: 'rgba(16, 185, 129, 0.08)',
+              borderRadius: '16px',
+              border: '1px solid rgba(16, 185, 129, 0.2)',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '24px', marginBottom: '6px' }}>✓</div>
+              <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#059669' }}>
+                Obrigada! Vais receber os teus resultados em breve.
+              </div>
+              <a href="/login" style={{
+                display: 'inline-block',
+                marginTop: '12px',
+                padding: '10px 24px',
+                background: '#6B5B95',
+                color: 'white',
+                borderRadius: '20px',
+                textDecoration: 'none',
+                fontSize: '13px',
+                fontWeight: 'bold'
+              }}>
+                Criar conta para guardar historico →
+              </a>
+            </div>
+          )}
 
           {/* Os 7 Ecos - LUMINA observa, não faz parte */}
           <div style={{ marginTop: '30px' }}>

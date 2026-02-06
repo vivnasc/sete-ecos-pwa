@@ -232,6 +232,9 @@ export default function MarketingDashboard() {
                   { id: 'promo', label: 'Promocao' },
                   { id: 'testemunho', label: 'Testemunho' },
                   { id: 'lumina', label: 'Lumina Gratis' },
+                  { id: 'luminaDica', label: 'Lumina + Dica' },
+                  { id: 'luminaDirecto', label: 'Lumina Directo' },
+                  { id: 'luminaResultado', label: 'Lumina Resultados' },
                   { id: 'status', label: 'Status' },
                 ].map(t => (
                   <button

@@ -164,6 +164,13 @@ export function gerarMensagemWhatsApp(tipo = 'dica', campanha = '') {
     lumina: `*Conhece-te melhor em 2 minutos* 🔮\n\nO LUMINA e um diagnostico gratuito que revela padroes sobre energia, emocao e corpo.\n\nExperimenta agora (e gratis!):\n${buildUTMUrl(`${BASE_URL}/lumina`, UTM_TEMPLATES.whatsappBroadcast(camp + '-lumina'))}`,
 
     status: `${hoje.dica}\n\n🌿 VITALIS - Coaching Nutricional\n${link}`,
+
+    // === LUMINA FUNNEL ===
+    luminaDica: `*Descobre o que o teu corpo te diz* 🔮\n\n${hoje.dica}\n\nFaz o diagnostico GRATUITO do LUMINA (2 min):\n${buildUTMUrl(`${BASE_URL}/lumina`, UTM_TEMPLATES.whatsappBroadcast(camp + '-lumina'))}`,
+
+    luminaDirecto: `*Conhece-te em 2 minutos* 🔮\n\nO LUMINA e um diagnostico gratuito que revela padroes sobre a tua energia, emocao e corpo.\n\n7 perguntas. 23 padroes. Uma leitura personalizada.\n\nExperimenta agora:\n${buildUTMUrl(`${BASE_URL}/lumina`, UTM_TEMPLATES.whatsappBroadcast(camp + '-lumina'))}`,
+
+    luminaResultado: `*Sabias que...* 🔮\n\nMulheres que usam o LUMINA diariamente reportam:\n✓ Mais consciencia emocional\n✓ Melhor previsao de dias dificeis\n✓ Correlacao com o ciclo menstrual\n\nE 100% gratuito. Experimenta:\n${buildUTMUrl(`${BASE_URL}/lumina`, UTM_TEMPLATES.whatsappBroadcast(camp + '-lumina'))}`,
   };
 
   return {

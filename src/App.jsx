@@ -90,8 +90,8 @@ function AppRoutes() {
           <Route path="/conta" element={session ? <MinhaConta /> : <Navigate to="/login" state={{ from: '/conta' }} />} />
           <Route path="/perfil" element={session ? <Perfil /> : <Navigate to="/login" state={{ from: '/perfil' }} />} />
 
-          {/* ===== LUMINA - Diagnóstico Gratuito ===== */}
-          <Route path="/lumina" element={session ? <Lumina /> : <Navigate to="/login" state={{ from: '/lumina', eco: 'Lumina' }} />} />
+          {/* ===== LUMINA - Diagnóstico Gratuito (aberto a todos) ===== */}
+          <Route path="/lumina" element={<Lumina />} />
 
           {/* ===== ECO 1: VITALIS - Nutrição ===== */}
           <Route path="/vitalis" element={<LandingVitalis />} />

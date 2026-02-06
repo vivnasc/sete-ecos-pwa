@@ -594,59 +594,45 @@ const LandingGeral = () => {
         </div>
       </section>
 
-      {/* Waitlist Section */}
-      <section id="waitlist" className="py-20">
+      {/* Lumina CTA - Funil Gratuito */}
+      <section id="lumina-cta" className="py-20">
         <div className="max-w-xl mx-auto px-6">
-          <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-4">Junta-te à Jornada</h2>
-              <p className="text-purple-300">
-                Recebe novidades sobre os novos ecos e acesso antecipado.
-              </p>
+          <div className="bg-gradient-to-br from-purple-900/40 to-indigo-900/40 backdrop-blur-sm rounded-3xl p-8 border border-purple-500/20 text-center">
+            <div className="w-20 h-20 mx-auto mb-6 bg-purple-500/20 rounded-full flex items-center justify-center">
+              <img src="/logos/lumina-eye.png" alt="Lumina" className="w-12 h-12" onError={(e) => { e.target.style.display='none'; }} />
+            </div>
+            <h2 className="text-3xl font-bold text-white mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              Comeca por te Conhecer
+            </h2>
+            <p className="text-purple-200 mb-2 text-lg">
+              O <strong>LUMINA</strong> e um diagnostico gratuito que revela padroes sobre a tua energia, emocao e corpo.
+            </p>
+            <p className="text-purple-300/80 mb-6 text-sm">
+              7 perguntas. 2 minutos. Uma leitura que pode mudar o teu dia.
+            </p>
+
+            <div className="flex flex-col gap-3 items-center">
+              <Link
+                to="/lumina"
+                className="w-full max-w-xs py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all text-center block"
+              >
+                Fazer o Meu Diagnostico Gratuito
+              </Link>
+              <span className="text-purple-400/60 text-xs">Sem registo obrigatorio · 100% gratuito</span>
             </div>
 
-            {sucesso ? (
-              <div className="text-center py-8">
-                <span className="text-5xl mb-4 block">🎉</span>
-                <p className="text-green-400 text-lg font-medium">Obrigada por te juntares!</p>
-                <p className="text-purple-300 mt-2">Vamos manter-te informada.</p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm text-purple-300 mb-2">Nome</label>
-                  <input
-                    type="text"
-                    value={nome}
-                    onChange={(e) => setNome(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:border-purple-500 focus:outline-none"
-                    placeholder="O teu nome"
-                  />
+            <div className="mt-8 grid grid-cols-3 gap-4">
+              {[
+                { num: '7', label: 'Perguntas' },
+                { num: '2 min', label: 'Duracao' },
+                { num: '23', label: 'Padroes' },
+              ].map(s => (
+                <div key={s.label} className="text-center">
+                  <div className="text-2xl font-bold text-white">{s.num}</div>
+                  <div className="text-xs text-purple-300/70">{s.label}</div>
                 </div>
-                <div>
-                  <label className="block text-sm text-purple-300 mb-2">Email</label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:border-purple-500 focus:outline-none"
-                    placeholder="o.teu@email.com"
-                  />
-                </div>
-
-                {erro && (
-                  <p className="text-red-400 text-sm">{erro}</p>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-purple-500/30 transition-all disabled:opacity-50"
-                >
-                  {loading ? 'A registar...' : 'Quero fazer parte'}
-                </button>
-              </form>
-            )}
+              ))}
+            </div>
           </div>
         </div>
       </section>
