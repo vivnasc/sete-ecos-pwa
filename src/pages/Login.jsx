@@ -314,7 +314,7 @@ export default function Login() {
 
       {/* Footer */}
       <footer className="py-4 text-center text-[#6B5344]/60 text-xs">
-        <p>© 2026 Sete Ecos · Sistema de Transmutação Feminina</p>
+        <p>© 2026 Sete Ecos · Uma PWA. Sete caminhos.</p>
       </footer>
     </div>
   );
