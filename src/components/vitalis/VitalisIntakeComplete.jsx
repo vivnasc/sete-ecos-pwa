@@ -436,10 +436,16 @@ try {
         throw intakeError;
       }
 
-    // Depois inserir client
-const clientData = {
-  user_id: userData.id,  // ✅ CORRIGIDO!
-  objectivo_principal: formData.objectivo_principal,
+    // Verificar se já existe registo com subscription_status
+      const { data: existingClient } = await supabase
+        .from('vitalis_clients')
+        .select('id, subscription_status')
+        .eq('user_id', userData.id)
+        .maybeSingle();
+
+      const clientData = {
+        user_id: userData.id,
+        objectivo_principal: formData.objectivo_principal,
         peso_inicial: parseFloat(formData.peso_actual),
         peso_actual: parseFloat(formData.peso_actual),
         peso_meta: parseFloat(formData.peso_meta),
@@ -448,16 +454,51 @@ const clientData = {
         status: 'novo'
       };
 
-      const { error: clientError } = await supabase
-        .from('vitalis_clients')
-        .upsert(clientData, { onConflict: 'user_id' });
-
-      if (clientError) {
-        console.error('Erro no client:', clientError);
-        throw clientError;
+      if (existingClient) {
+        // Atualizar mas NÃO sobrescrever subscription_status
+        const { error: clientError } = await supabase
+          .from('vitalis_clients')
+          .update(clientData)
+          .eq('user_id', userData.id);
+        if (clientError) {
+          console.error('Erro no client:', clientError);
+          throw clientError;
+        }
+      } else {
+        // Criar novo (subscription_status será 'none' por defeito)
+        const { error: clientError } = await supabase
+          .from('vitalis_clients')
+          .insert({
+            ...clientData,
+            subscription_status: 'none',
+            created_at: new Date().toISOString()
+          });
+        if (clientError) {
+          console.error('Erro no client:', clientError);
+          throw clientError;
+        }
       }
 
-      navigate('/vitalis/dashboard');
+      // IMPORTANTE: Re-buscar o cliente para obter o status ACTUAL após insert/update
+      const { data: currentClient } = await supabase
+        .from('vitalis_clients')
+        .select('subscription_status')
+        .eq('user_id', userData.id)
+        .maybeSingle();
+
+      // Verificar se já tem acesso (tester, active, pending, trial)
+      const statusComAcesso = ['tester', 'active', 'pending', 'trial'];
+      const temAcesso = currentClient && statusComAcesso.includes(currentClient.subscription_status);
+
+      console.log('Intake complete - subscription_status:', currentClient?.subscription_status, 'temAcesso:', temAcesso);
+
+      if (temAcesso) {
+        // Já tem acesso - ir para dashboard
+        navigate('/vitalis/dashboard');
+      } else {
+        // Não tem acesso - ir para pagamento
+        navigate('/vitalis/pagamento');
+      }
     } catch (err) {
       console.error('Erro completo:', err);
       setError(`Erro ao submeter: ${err.message}`);

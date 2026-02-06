@@ -36,14 +36,50 @@ const VitalisAccessGuard = ({ children }) => {
     try {
       // Verificar se esta autenticado
       const { data: { user } } = await supabase.auth.getUser();
+      console.log('VitalisAccessGuard - user:', user?.email);
+
       if (!user) {
+        console.log('VitalisAccessGuard - no user, denying access');
         setHasAccess(false);
         setLoading(false);
         return;
       }
 
       // Bypass emails têm acesso directo
-      if (isCoach(user.email)) {
+      const coachCheck = isCoach(user.email);
+      console.log('VitalisAccessGuard - isCoach check:', user.email, coachCheck);
+
+      if (coachCheck) {
+        // Garantir que coach tem registo na tabela users
+        const { data: coachUser, error: coachError } = await supabase
+          .from('users')
+          .upsert({
+            auth_id: user.id,
+            email: user.email,
+            nome: user.user_metadata?.name || user.email.split('@')[0]
+          }, { onConflict: 'auth_id' })
+          .select('id')
+          .maybeSingle();
+
+        if (coachError) {
+          console.error('Coach user upsert error:', coachError);
+        }
+
+        if (coachUser) {
+          // Garantir que coach tem registo vitalis_clients com status tester
+          const { error: clientError } = await supabase
+            .from('vitalis_clients')
+            .upsert({
+              user_id: coachUser.id,
+              subscription_status: 'tester'
+            }, { onConflict: 'user_id' });
+
+          if (clientError) {
+            console.error('Coach vitalis_clients upsert error:', clientError);
+          }
+        }
+
+        // Coach SEMPRE tem acesso, mesmo se upserts falharem
         setAccessInfo({ hasAccess: true, status: 'bypass', reason: 'bypass_email' });
         setHasAccess(true);
         setLoading(false);
@@ -55,7 +91,7 @@ const VitalisAccessGuard = ({ children }) => {
         .from('users')
         .select('id')
         .eq('auth_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (!userData) {
         setHasAccess(false);
@@ -68,9 +104,10 @@ const VitalisAccessGuard = ({ children }) => {
       setAccessInfo(access);
       setHasAccess(access.hasAccess);
     } catch (error) {
-      console.error('Erro ao verificar acesso:', error);
+      console.error('VitalisAccessGuard - CATCH ERROR:', error);
       setHasAccess(false);
     } finally {
+      console.log('VitalisAccessGuard - finally, hasAccess will be:', hasAccess);
       setLoading(false);
     }
   };

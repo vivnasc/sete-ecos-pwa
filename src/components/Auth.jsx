@@ -19,21 +19,13 @@ export default function Auth() {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
 
-        // Verificar/criar registo na tabela users (para utilizadores antigos)
+        // Garantir que existe registo na tabela users
         if (data.user) {
-          const { data: existingUser } = await supabase
-            .from('users')
-            .select('id')
-            .eq('auth_id', data.user.id)
-            .single()
-
-          if (!existingUser) {
-            await supabase.from('users').insert({
-              auth_id: data.user.id,
-              email: data.user.email,
-              created_at: new Date().toISOString()
-            })
-          }
+          await supabase.from('users').upsert({
+            auth_id: data.user.id,
+            email: data.user.email,
+            created_at: new Date().toISOString()
+          }, { onConflict: 'auth_id' })
         }
       } else {
         const { data, error } = await supabase.auth.signUp({ email, password })
@@ -41,15 +33,11 @@ export default function Auth() {
 
         // Criar registo na tabela users
         if (data.user) {
-          const { error: userError } = await supabase.from('users').insert({
+          await supabase.from('users').upsert({
             auth_id: data.user.id,
             email: data.user.email,
             created_at: new Date().toISOString()
-          })
-
-          if (userError && !userError.message.includes('duplicate')) {
-            console.error('Erro ao criar registo de utilizador:', userError)
-          }
+          }, { onConflict: 'auth_id' })
         }
 
         setMessage('Conta criada! Podes entrar agora.')

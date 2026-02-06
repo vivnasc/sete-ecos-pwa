@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { StreakDisplay, CelebracaoModal, ConquistasSection, NivelProgresso, CONQUISTAS } from './Gamificacao.jsx';
 import { useOnboarding, OnboardingWrapper } from './OnboardingTutorial.jsx';
 import { EmailTriggers } from '../../lib/emails';
+import WelcomeTutorial from '../WelcomeTutorial.jsx';
+import { isCoach } from '../../lib/coach';
 
 // Função para solicitar permissão de notificações
 const solicitarPermissaoNotificacoes = async () => {
@@ -236,21 +238,39 @@ export default function DashboardVitalis() {
       setUserId(userData.id);
       setUserName(userData.nome || '');
 
-      const { data: clientData } = await supabase
+      const { data: clientData, error: clientError } = await supabase
         .from('vitalis_clients')
         .select('*')
         .eq('user_id', userData.id)
-        .single();
-      setClient(clientData);
+        .maybeSingle();
 
-      if (clientData) {
-        const { data: planoData } = await supabase
-          .from('vitalis_plano')
-          .select('*')
-          .eq('client_id', clientData.id)
-          .single();
-        setPlano(planoData);
+      // Se não tem cliente, verificar se é coach
+      if (!clientData) {
+        if (isCoach(user.email)) {
+          // Coach sem registo - criar registo mínimo ou usar dummy
+          console.log('Coach sem registo vitalis_clients - permitindo acesso');
+          setClient({
+            id: 'coach-temp',
+            user_id: userData.id,
+            subscription_status: 'tester',
+            fase_actual: 'aprendizagem'
+          });
+        } else {
+          console.log('Utilizador sem registo vitalis_clients');
+          navigate('/vitalis/pagamento');
+          return;
+        }
+      } else {
+        setClient(clientData);
       }
+
+      // Buscar plano (pode não existir ainda)
+      const { data: planoData } = await supabase
+        .from('vitalis_plano')
+        .select('*')
+        .eq('client_id', clientData.id)
+        .maybeSingle();
+      setPlano(planoData || null);
 
       const { data: registosData } = await supabase
         .from('vitalis_registos')
@@ -284,15 +304,16 @@ export default function DashboardVitalis() {
       const totalAgua = (aguaData || []).reduce((sum, a) => sum + a.quantidade_ml, 0) / 1000;
       setAguaHoje(totalAgua);
 
+      // Usar maybeSingle() para evitar crashes quando não há dados
       const { data: treinoData } = await supabase
         .from('vitalis_workouts_log')
         .select('*')
         .eq('user_id', userData.id)
         .eq('data', hoje)
         .limit(1)
-        .single();
-      
-      if (treinoData) setTreinoHoje(treinoData);
+        .maybeSingle();
+
+      setTreinoHoje(treinoData || null);
 
       const { data: sonoData } = await supabase
         .from('vitalis_sono_log')
@@ -300,9 +321,9 @@ export default function DashboardVitalis() {
         .eq('user_id', userData.id)
         .eq('data', hoje)
         .limit(1)
-        .single();
-      
-      if (sonoData) setSonoHoje(sonoData);
+        .maybeSingle();
+
+      setSonoHoje(sonoData || null);
 
       const { data: jejumData } = await supabase
         .from('vitalis_fasting_log')
@@ -311,9 +332,9 @@ export default function DashboardVitalis() {
         .is('hora_fim', null)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
-      
-      if (jejumData) setJejumActual(jejumData);
+        .maybeSingle();
+
+      setJejumActual(jejumData || null);
 
       calcularStreak(userData.id);
       calcularConquistas(userData.id, userData.nome || user.email.split('@')[0], user.email);
@@ -748,7 +769,10 @@ export default function DashboardVitalis() {
         ? 'bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f0f23]'
         : 'bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]'
     }`}>
-      
+
+      {/* Tutorial de Boas-vindas - Primeira vez */}
+      <WelcomeTutorial eco="vitalis" />
+
       {/* Header com Perfil */}
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D]"></div>

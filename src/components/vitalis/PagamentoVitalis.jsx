@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import {
   SUBSCRIPTION_PLANS,
@@ -24,6 +24,7 @@ const WHATSAPP_COMMUNITY = 'https://chat.whatsapp.com/FbHbQuDPGAZ3myiu29CmHO';
 
 const PagamentoVitalis = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const paypalRef = useRef(null);
 
   const [loading, setLoading] = useState(true);
@@ -50,11 +51,19 @@ const PagamentoVitalis = () => {
   const [message, setMessage] = useState({ type: '', text: '' });
   const [showCommunityModal, setShowCommunityModal] = useState(false);
   const [userLoadError, setUserLoadError] = useState(false);
+  const [showTestPlan, setShowTestPlan] = useState(false);
 
   useEffect(() => {
     loadUserData();
     loadPayPalScript();
-  }, []);
+
+    // Check for code in URL (e.g., /vitalis/pagamento?code=VITALIS-TESTER-2026)
+    const codeFromUrl = searchParams.get('code');
+    if (codeFromUrl) {
+      setInviteCode(codeFromUrl);
+      setShowInviteInput(true);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (paypalLoaded && userId) {
@@ -99,6 +108,31 @@ const PagamentoVitalis = () => {
         setUserName(userData.nome);
         setUserLoadError(false);
 
+        // Auto-aplicar código se existe (do URL ou digitado antes de auth)
+        const codeToApply = searchParams.get('code') || inviteCode;
+        if (codeToApply && codeToApply.trim()) {
+          try {
+            const result = await useInviteCode(userData.id, codeToApply);
+            if (result.success) {
+              // Navegar directamente (como handleInviteCode) - evita problemas de timing
+              const { data: intake } = await supabase
+                .from('vitalis_intake')
+                .select('id')
+                .eq('user_id', userData.id)
+                .maybeSingle();
+
+              if (intake) {
+                navigate('/vitalis/dashboard');
+              } else {
+                navigate('/vitalis/intake');
+              }
+              return;
+            }
+          } catch (e) {
+            console.warn('Auto-apply code failed:', e);
+          }
+        }
+
         const access = await checkVitalisAccess(userData.id);
         if (access.hasAccess && access.status !== SUBSCRIPTION_STATUS.PENDING) {
           navigate('/vitalis/dashboard');
@@ -140,11 +174,11 @@ const PagamentoVitalis = () => {
 
         // Create user record - loadUserData will handle if this fails
         if (authData.user) {
-          await supabase.from('users').insert({
+          await supabase.from('users').upsert({
             auth_id: authData.user.id,
             email: authEmail,
             nome: authName || authEmail.split('@')[0]
-          });
+          }, { onConflict: 'auth_id' });
         }
       }
 
@@ -211,7 +245,19 @@ const PagamentoVitalis = () => {
               valor: `$${plan.price_usd}`,
               validoAte: validoAte.toLocaleDateString('pt-PT')
             }).catch(console.error);
-            setShowCommunityModal(true);
+
+            // Navegar directamente - evita problemas de timing com modal
+            const { data: intake } = await supabase
+              .from('vitalis_intake')
+              .select('id')
+              .eq('user_id', userId)
+              .maybeSingle();
+
+            if (intake) {
+              navigate('/vitalis/dashboard');
+            } else {
+              navigate('/vitalis/intake');
+            }
           }
         } catch (error) {
           setMessage({ type: 'error', text: 'Erro ao processar pagamento.' });
@@ -226,6 +272,15 @@ const PagamentoVitalis = () => {
 
   const handleInviteCode = async () => {
     if (!inviteCode.trim()) return;
+
+    // Código especial para teste PayPal $1
+    if (inviteCode.toUpperCase() === 'PAYPAL-TEST-1') {
+      setShowTestPlan(true);
+      setSelectedPlan('TEST');
+      setMessage({ type: 'success', text: 'Plano de teste $1 activado!' });
+      return;
+    }
+
     setProcessing(true);
     try {
       const result = await useInviteCode(userId, inviteCode);
@@ -237,11 +292,26 @@ const PagamentoVitalis = () => {
           valor: 'Cortesia',
           validoAte: 'Conforme convite'
         }).catch(console.error);
-        setShowCommunityModal(true);
+
+        // Verificar se já fez intake
+        const { data: intake } = await supabase
+          .from('vitalis_intake')
+          .select('id')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        if (intake) {
+          // Já fez intake - ir directo para dashboard
+          navigate('/vitalis/dashboard');
+        } else {
+          // Ainda não fez intake - ir para intake
+          navigate('/vitalis/intake');
+        }
       } else {
         setMessage({ type: 'error', text: result.error || 'Código inválido.' });
       }
-    } catch {
+    } catch (err) {
+      console.error('Erro ao usar código:', err);
       setMessage({ type: 'error', text: 'Erro ao verificar código.' });
     } finally {
       setProcessing(false);
@@ -269,9 +339,47 @@ const PagamentoVitalis = () => {
           <p className="text-white/80 text-sm">Escolhe o teu plano e começa a transformação</p>
         </div>
 
+        {/* Código de Convite - LOGO NO TOPO, bem visível */}
+        <div className="mb-6 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-400/30 rounded-2xl p-4">
+          <p className="text-white font-medium text-sm mb-3 text-center">🎟️ Tens um código de convite ou desconto?</p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={inviteCode}
+              onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+              placeholder="Insere o teu código aqui"
+              className="flex-1 p-3 bg-white/10 border border-white/30 rounded-xl text-white placeholder-white/50 text-center font-medium"
+            />
+            <button
+              onClick={isAuthenticated ? handleInviteCode : () => setMessage({ type: 'info', text: 'Cria conta primeiro para usar o código.' })}
+              disabled={!inviteCode.trim() || processing}
+              className="px-5 py-3 bg-yellow-500 hover:bg-yellow-400 text-black rounded-xl font-semibold disabled:opacity-50 transition-all"
+            >
+              Aplicar
+            </button>
+          </div>
+          {!isAuthenticated && inviteCode.trim() && (
+            <p className="text-yellow-200 text-xs mt-2 text-center">
+              ↓ Cria conta abaixo e o código será aplicado automaticamente
+            </p>
+          )}
+        </div>
+
+        {message.text && (
+          <div className={`p-4 rounded-xl mb-4 ${
+            message.type === 'error' ? 'bg-red-500/20 text-red-100' :
+            message.type === 'success' ? 'bg-green-500/20 text-green-100' :
+            'bg-blue-500/20 text-blue-100'
+          }`}>
+            {message.text}
+          </div>
+        )}
+
         {/* PLANOS - SEMPRE VISÍVEIS */}
         <div className="space-y-3 mb-6">
-          {Object.entries(SUBSCRIPTION_PLANS).map(([key, plan]) => (
+          {Object.entries(SUBSCRIPTION_PLANS)
+            .filter(([key, plan]) => !plan.hidden || (showTestPlan && key === 'TEST'))
+            .map(([key, plan]) => (
             <button
               key={key}
               onClick={() => setSelectedPlan(key)}
@@ -334,6 +442,22 @@ const PagamentoVitalis = () => {
         {/* SE AUTENTICADO: Mostrar PayPal */}
         {isAuthenticated ? (
           <div className="mb-6">
+            {/* Info de conta logada */}
+            <div className="bg-white/10 rounded-xl p-3 mb-4 flex items-center justify-between">
+              <div className="text-sm">
+                <span className="text-white/60">Conta: </span>
+                <span className="text-white font-medium">{userEmail}</span>
+              </div>
+              <button
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  window.location.reload();
+                }}
+                className="text-white/60 hover:text-white text-xs underline"
+              >
+                Usar outra conta
+              </button>
+            </div>
             {paypalError ? (
               <div className="bg-red-500/20 border border-red-400 rounded-xl p-4 text-center text-red-200">
                 {paypalError}
@@ -433,6 +557,17 @@ const PagamentoVitalis = () => {
                 className="w-full p-3 border border-gray-200 rounded-xl focus:border-[#7C8B6F] focus:outline-none"
               />
 
+              {authMode === 'login' && (
+                <div className="text-right">
+                  <a
+                    href="/recuperar-password"
+                    className="text-sm text-white/70 hover:text-white underline"
+                  >
+                    Esqueceste a password?
+                  </a>
+                </div>
+              )}
+
               {authError && (
                 <p className="text-red-500 text-sm text-center">{authError}</p>
               )}
@@ -445,44 +580,6 @@ const PagamentoVitalis = () => {
                 {authLoading ? 'A processar...' : authMode === 'register' ? 'Criar Conta e Pagar' : 'Entrar e Pagar'}
               </button>
             </form>
-          </div>
-        )}
-
-        {message.text && (
-          <div className={`p-4 rounded-xl mb-6 ${
-            message.type === 'error' ? 'bg-red-500/20 text-red-100' : 'bg-blue-500/20 text-blue-100'
-          }`}>
-            {message.text}
-          </div>
-        )}
-
-        {/* Código de Convite */}
-        {isAuthenticated && (
-          <div className="mb-6">
-            {!showInviteInput ? (
-              <button onClick={() => setShowInviteInput(true)} className="w-full py-3 text-white/70 text-sm">
-                🎟️ Tens um código de convite?
-              </button>
-            ) : (
-              <div className="bg-white/10 rounded-xl p-4">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={inviteCode}
-                    onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-                    placeholder="VITALIS-XXXXX"
-                    className="flex-1 p-3 bg-white/10 border border-white/30 rounded-xl text-white placeholder-white/40"
-                  />
-                  <button
-                    onClick={handleInviteCode}
-                    disabled={!inviteCode.trim()}
-                    className="px-4 py-3 bg-white text-[#7C8B6F] rounded-xl font-medium"
-                  >
-                    Aplicar
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -510,30 +607,58 @@ const PagamentoVitalis = () => {
         </div>
       </div>
 
-      {/* Modal Comunidade */}
+      {/* Modal Sucesso - com passos do onboarding */}
       {showCommunityModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-2xl">
-            <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-              <span className="text-4xl">🎉</span>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full text-center shadow-2xl my-4">
+            <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl">🎉</span>
             </div>
             <h2 className="text-2xl font-bold text-[#4A4035] mb-2">Bem-vinda ao Vitalis!</h2>
-            <p className="text-gray-600 mb-6">Pagamento confirmado com sucesso.</p>
+            <p className="text-gray-600 mb-6">Acesso confirmado com sucesso.</p>
+
+            {/* Passos do Onboarding */}
+            <div className="bg-[#F5F2ED] rounded-xl p-4 mb-6 text-left">
+              <p className="text-sm font-semibold text-[#4A4035] mb-3">📋 Os próximos passos:</p>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-[#7C8B6F] text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">1</div>
+                  <div>
+                    <p className="font-medium text-[#4A4035] text-sm">Questionário inicial</p>
+                    <p className="text-xs text-gray-500">~5 minutos - conhecer os teus objectivos</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">2</div>
+                  <div>
+                    <p className="font-medium text-gray-500 text-sm">Plano personalizado</p>
+                    <p className="text-xs text-gray-400">Recebe o teu plano alimentar</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">3</div>
+                  <div>
+                    <p className="font-medium text-gray-500 text-sm">Dashboard</p>
+                    <p className="text-xs text-gray-400">Começa a tua transformação</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <a
               href={WHATSAPP_COMMUNITY}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded-full font-semibold mb-4"
+              className="inline-flex items-center gap-2 bg-[#25D366] text-white px-5 py-2.5 rounded-full font-medium text-sm mb-4"
             >
               💬 Entrar na Comunidade WhatsApp
             </a>
 
             <button
               onClick={() => navigate('/vitalis/intake')}
-              className="w-full py-4 bg-[#7C8B6F] text-white rounded-xl font-semibold"
+              className="w-full py-4 bg-[#7C8B6F] hover:bg-[#6B7A5D] text-white rounded-xl font-semibold transition-all"
             >
-              Continuar para o Questionário →
+              Começar Questionário →
             </button>
           </div>
         </div>

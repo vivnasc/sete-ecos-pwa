@@ -50,6 +50,15 @@ export const SUBSCRIPTION_PLANS = {
     discount: 30,
     savings_mzn: 9000, // economia vs mensal
     savings_usd: 136
+  },
+  TEST: {
+    id: 'test',
+    name: 'Teste PayPal',
+    duration: 1, // 1 mês para teste
+    price_mzn: 65,
+    price_usd: 1,
+    discount: 97,
+    hidden: true // Só aparece com código especial
   }
 };
 
@@ -73,7 +82,7 @@ export const checkVitalisAccess = async (userId) => {
       .from('vitalis_clients')
       .select('subscription_status, subscription_expires, trial_started')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     if (error || !client) {
       return { hasAccess: false, status: SUBSCRIPTION_STATUS.NONE, reason: 'no_client' };
@@ -176,16 +185,38 @@ export const updateSubscriptionStatus = async (userId, newStatus, options = {}) 
  */
 export const startTrial = async (userId) => {
   try {
-    const { error } = await supabase
+    // Verificar se já existe registo
+    const { data: existingClient } = await supabase
       .from('vitalis_clients')
-      .update({
-        subscription_status: SUBSCRIPTION_STATUS.TRIAL,
-        trial_started: new Date().toISOString(),
-        subscription_updated: new Date().toISOString()
-      })
-      .eq('user_id', userId);
+      .select('id')
+      .eq('user_id', userId)
+      .maybeSingle();
 
-    if (error) throw error;
+    const trialData = {
+      subscription_status: SUBSCRIPTION_STATUS.TRIAL,
+      trial_started: new Date().toISOString(),
+      subscription_updated: new Date().toISOString()
+    };
+
+    if (existingClient) {
+      // Atualizar registo existente
+      const { error } = await supabase
+        .from('vitalis_clients')
+        .update(trialData)
+        .eq('user_id', userId);
+      if (error) throw error;
+    } else {
+      // Criar novo registo
+      const { error } = await supabase
+        .from('vitalis_clients')
+        .insert({
+          user_id: userId,
+          ...trialData,
+          status: 'novo',
+          created_at: new Date().toISOString()
+        });
+      if (error) throw error;
+    }
 
     await logSubscriptionChange(userId, SUBSCRIPTION_STATUS.TRIAL, { action: 'trial_started' });
 
@@ -201,16 +232,37 @@ export const startTrial = async (userId) => {
  */
 export const setAsTester = async (userId, notes = '') => {
   try {
-    const { error } = await supabase
+    // Verificar se já existe registo
+    const { data: existingClient } = await supabase
       .from('vitalis_clients')
-      .update({
-        subscription_status: SUBSCRIPTION_STATUS.TESTER,
-        subscription_notes: notes,
-        subscription_updated: new Date().toISOString()
-      })
-      .eq('user_id', userId);
+      .select('id')
+      .eq('user_id', userId)
+      .maybeSingle();
 
-    if (error) throw error;
+    const testerData = {
+      subscription_status: SUBSCRIPTION_STATUS.TESTER,
+      subscription_updated: new Date().toISOString()
+    };
+
+    if (existingClient) {
+      // Atualizar registo existente
+      const { error } = await supabase
+        .from('vitalis_clients')
+        .update(testerData)
+        .eq('user_id', userId);
+      if (error) throw error;
+    } else {
+      // Criar novo registo
+      const { error } = await supabase
+        .from('vitalis_clients')
+        .insert({
+          user_id: userId,
+          ...testerData,
+          status: 'novo',
+          created_at: new Date().toISOString()
+        });
+      if (error) throw error;
+    }
 
     await logSubscriptionChange(userId, SUBSCRIPTION_STATUS.TESTER, { action: 'set_as_tester', notes });
 
@@ -281,7 +333,7 @@ export const activateSubscription = async (userId, paymentDetails) => {
       .from('vitalis_clients')
       .select('id')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     const subscriptionData = {
       subscription_status: SUBSCRIPTION_STATUS.ACTIVE,
@@ -353,7 +405,7 @@ export const registerPendingPayment = async (userId, paymentDetails) => {
       .from('vitalis_clients')
       .select('id')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     if (existingClient) {
       // Atualizar registo existente
@@ -464,21 +516,34 @@ export const useInviteCode = async (userId, code) => {
       .select('*')
       .eq('code', code.toUpperCase())
       .eq('active', true)
-      .single();
+      .maybeSingle();
 
     if (fetchError || !invite) {
       return { success: false, error: 'Codigo invalido ou expirado' };
+    }
+
+    // Verificar expiração do código
+    if (invite.expires_at && new Date(invite.expires_at) < new Date()) {
+      return { success: false, error: 'Codigo expirado' };
     }
 
     if (invite.uses_count >= invite.max_uses) {
       return { success: false, error: 'Codigo ja foi usado o maximo de vezes' };
     }
 
-    // Aplicar beneficio
+    // Aplicar beneficio - VERIFICAR SE TEVE SUCESSO
+    let benefitResult = { success: false };
+
     if (invite.type === 'tester') {
-      await setAsTester(userId, `Codigo: ${code}`);
+      benefitResult = await setAsTester(userId, `Codigo: ${code}`);
     } else if (invite.type === 'trial') {
-      await startTrial(userId);
+      benefitResult = await startTrial(userId);
+    }
+
+    // Se falhou ao aplicar o benefício, retornar erro
+    if (!benefitResult.success) {
+      console.error('Erro ao aplicar beneficio do codigo:', benefitResult.error);
+      return { success: false, error: 'Erro ao aplicar beneficio. Tenta novamente.' };
     }
 
     // Incrementar uso

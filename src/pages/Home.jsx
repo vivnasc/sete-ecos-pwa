@@ -109,7 +109,7 @@ export default function Home() {
         </div>
         <div className="flex gap-3 items-center">
           <Link
-            to="/vitalis/login"
+            to="/login"
             className="text-[#7C8B6F] font-semibold text-sm hover:text-[#6B7A5D] transition-colors"
           >
             Entrar

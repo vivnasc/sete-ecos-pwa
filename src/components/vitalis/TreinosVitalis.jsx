@@ -101,6 +101,8 @@ const FASES_VITALIS = {
 };
 
 // Fases do ciclo menstrual
+// NOTA: Os exercícios 'ideal' usam IDs que existem em EXERCICIOS
+// A fase de treino do utilizador (indução, transição, etc.) pode bloquear alguns destes
 const FASES_CICLO = {
   menstrual: {
     nome: 'Menstrual',
@@ -110,7 +112,7 @@ const FASES_CICLO = {
     energia: 30,
     recomendacao: 'Treinos leves: yoga, caminhada, alongamentos. Respeita o teu corpo.',
     evitar: 'HIIT, treino pesado, exercícios de alto impacto',
-    ideal: ['yoga', 'caminhada', 'alongamentos', 'natacao', 'pilates_leve']
+    ideal: ['yoga', 'caminhada', 'alongamentos', 'natacao', 'pilates', 'ponte_gluteos', 'prancha']
   },
   folicular: {
     nome: 'Folicular',
@@ -120,7 +122,7 @@ const FASES_CICLO = {
     energia: 75,
     recomendacao: 'Energia crescente! Ideal para novos desafios e aumentar intensidade.',
     evitar: 'Nada - fase óptima para qualquer treino',
-    ideal: ['forca', 'hiit', 'cardio', 'funcional', 'crossfit']
+    ideal: ['agachamento_livre', 'lunges', 'hiit', 'corrida', 'flexoes', 'bicicleta']
   },
   ovulacao: {
     nome: 'Ovulação',
@@ -130,7 +132,7 @@ const FASES_CICLO = {
     energia: 100,
     recomendacao: 'Pico de energia e força! Aproveita para treinos intensos e bater recordes.',
     evitar: 'Cuidado com lesões - articulações mais flexíveis',
-    ideal: ['forca_maxima', 'hiit', 'sprint', 'treino_pesado']
+    ideal: ['hip_thrust', 'deadlift_romeno', 'hiit', 'saltar_corda', 'agachamento_bulgaro']
   },
   lutea: {
     nome: 'Lútea',
@@ -140,7 +142,7 @@ const FASES_CICLO = {
     energia: 50,
     recomendacao: 'Energia a baixar. Foca em treinos moderados e não te frustres com performance.',
     evitar: 'Expectativas altas, treinos muito longos',
-    ideal: ['forca_moderada', 'cardio_moderado', 'yoga', 'pilates']
+    ideal: ['yoga', 'pilates', 'caminhada', 'ponte_gluteos', 'prancha', 'alongamentos']
   }
 };
 
@@ -1352,19 +1354,58 @@ export default function TreinosVitalis() {
               </div>
             </div>
 
-            {/* Exercícios ideais para o ciclo */}
+            {/* Aviso se estiver em fase de indução */}
+            {faseActual === 'inducao' && (
+              <div className="bg-[#7C8B6F]/10 rounded-xl p-4 border border-[#7C8B6F]/30">
+                <p className="text-[#4A4035] text-sm font-medium mb-1">
+                  🌱 Estás na Fase de Indução (Semanas 1-2)
+                </p>
+                <p className="text-[#4A4035]/70 text-sm">
+                  Estamos a proteger o teu progresso! Nesta fase, o teu corpo está a fazer ajustes importantes.
+                  Em breve vais poder aproveitar toda a energia do teu ciclo com treinos mais intensos.
+                </p>
+              </div>
+            )}
+
+            {/* Exercícios ideais para o ciclo - filtrados pela fase de treino */}
             <div>
               <h3 className="font-bold text-[#4A4035] mb-2">Exercícios ideais:</h3>
               <div className="flex flex-wrap gap-2">
                 {cicloInfo.ideal.map(id => {
                   const ex = EXERCICIOS[id];
-                  return ex ? (
-                    <span key={id} className="bg-white px-3 py-1 rounded-full text-sm text-[#4A4035] border border-[#E8E2D9]">
+                  if (!ex) return null;
+
+                  // Verificar se exercício está permitido na fase actual
+                  const faseOrdem = ['inducao', 'transicao', 'construcao', 'manutencao'];
+                  const faseMinima = ex.fase_minima || 'inducao';
+                  const permitidoNaFase = faseOrdem.indexOf(faseActual) >= faseOrdem.indexOf(faseMinima);
+
+                  return (
+                    <span
+                      key={id}
+                      className={`px-3 py-1 rounded-full text-sm border ${
+                        permitidoNaFase
+                          ? 'bg-white text-[#4A4035] border-[#E8E2D9]'
+                          : 'bg-[#7C8B6F]/5 text-[#4A4035]/40 border-[#7C8B6F]/20'
+                      }`}
+                      title={!permitidoNaFase ? `Disponível na fase ${faseMinima}` : ''}
+                    >
                       {ex.icon} {ex.nome}
+                      {!permitidoNaFase && ' 🌱'}
                     </span>
-                  ) : null;
+                  );
                 })}
               </div>
+              {faseActual === 'inducao' && cicloInfo.ideal.some(id => {
+                const ex = EXERCICIOS[id];
+                if (!ex) return false;
+                const faseMinima = ex.fase_minima || 'inducao';
+                return ['transicao', 'construcao', 'manutencao'].includes(faseMinima);
+              }) && (
+                <p className="text-[#7C8B6F] text-xs mt-2">
+                  🌱 Em breve disponível para ti
+                </p>
+              )}
             </div>
           </div>
         )}

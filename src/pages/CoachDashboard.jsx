@@ -3,7 +3,11 @@ import { supabase } from '../lib/supabase';
 import { Link } from 'react-router-dom';
 import {
   setAsTester,
-  getSubscriptionStats
+  getSubscriptionStats,
+  confirmManualPayment,
+  generateInviteCode,
+  SUBSCRIPTION_PLANS,
+  SUBSCRIPTION_STATUS
 } from '../lib/subscriptions';
 import { pedirPermissao } from '../utils/notifications';
 import { enviarEmail } from '../lib/emails';
@@ -118,6 +122,19 @@ const CoachDashboard = () => {
   const [clientsNeedAttention, setClientsNeedAttention] = useState([]);
   const [subscriptionStats, setSubscriptionStats] = useState(null);
 
+  // Pagamentos
+  const [pendingPayments, setPendingPayments] = useState([]);
+  const [expiringSubscriptions, setExpiringSubscriptions] = useState([]);
+  const [paymentHistory, setPaymentHistory] = useState([]);
+  const [inviteCodes, setInviteCodes] = useState([]);
+  const [revenueStats, setRevenueStats] = useState({ thisMonth: 0, lastMonth: 0, total: 0 });
+  const [showActivateModal, setShowActivateModal] = useState(false);
+  const [activateClient, setActivateClient] = useState(null);
+  const [activatePlan, setActivatePlan] = useState('SEMESTRAL');
+  const [activateRef, setActivateRef] = useState('');
+  const [activateMethod, setActivateMethod] = useState('mpesa');
+  const [processingPayment, setProcessingPayment] = useState(false);
+
   const refreshInterval = useRef(null);
 
   useEffect(() => {
@@ -136,7 +153,11 @@ const CoachDashboard = () => {
         loadVitalisClients(),
         loadWaitlist(),
         loadClientsNeedAttention(),
-        loadInteractionHistory()
+        loadInteractionHistory(),
+        loadPendingPayments(),
+        loadExpiringSubscriptions(),
+        loadPaymentHistory(),
+        loadInviteCodes()
       ]);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -268,6 +289,196 @@ const CoachDashboard = () => {
       setInteractionHistory(data || []);
     } catch (error) {
       console.error('Erro interaction history:', error);
+    }
+  };
+
+  // ========== PAYMENT FUNCTIONS ==========
+
+  const loadPendingPayments = async () => {
+    try {
+      const { data } = await supabase
+        .from('vitalis_clients')
+        .select('*, users(id, nome, email)')
+        .eq('subscription_status', 'pending')
+        .order('subscription_updated', { ascending: false });
+      setPendingPayments(data || []);
+    } catch (error) {
+      console.error('Erro pending payments:', error);
+    }
+  };
+
+  const loadExpiringSubscriptions = async () => {
+    try {
+      const now = new Date();
+      const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+      const { data } = await supabase
+        .from('vitalis_clients')
+        .select('*, users(id, nome, email)')
+        .eq('subscription_status', 'active')
+        .not('subscription_expires', 'is', null)
+        .lte('subscription_expires', in30Days.toISOString())
+        .order('subscription_expires', { ascending: true });
+
+      // Categorizar por urgência
+      const categorized = (data || []).map(client => {
+        const expires = new Date(client.subscription_expires);
+        const daysLeft = Math.ceil((expires - now) / (1000 * 60 * 60 * 24));
+        return {
+          ...client,
+          daysLeft,
+          urgency: daysLeft <= 7 ? 'critical' : daysLeft <= 14 ? 'warning' : 'info'
+        };
+      });
+
+      setExpiringSubscriptions(categorized);
+    } catch (error) {
+      console.error('Erro expiring subscriptions:', error);
+    }
+  };
+
+  const loadPaymentHistory = async () => {
+    try {
+      const { data } = await supabase
+        .from('vitalis_subscription_log')
+        .select('*, users(nome, email)')
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      setPaymentHistory(data || []);
+
+      // Calcular receita
+      const now = new Date();
+      const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+
+      let thisMonth = 0, lastMonth = 0, total = 0;
+
+      (data || []).forEach(log => {
+        try {
+          const details = JSON.parse(log.details || '{}');
+          const amount = parseFloat(details.amount) || 0;
+          const currency = details.currency || 'USD';
+          const amountUSD = currency === 'MZN' ? amount / 65 : amount; // Aproximação
+
+          if (details.action === 'payment_confirmed' || details.action === 'payment_automatic') {
+            total += amountUSD;
+            const logDate = new Date(log.created_at);
+            if (logDate >= thisMonthStart) thisMonth += amountUSD;
+            else if (logDate >= lastMonthStart && logDate <= lastMonthEnd) lastMonth += amountUSD;
+          }
+        } catch (e) { /* ignore parse errors */ }
+      });
+
+      setRevenueStats({
+        thisMonth: Math.round(thisMonth),
+        lastMonth: Math.round(lastMonth),
+        total: Math.round(total)
+      });
+    } catch (error) {
+      console.error('Erro payment history:', error);
+    }
+  };
+
+  const loadInviteCodes = async () => {
+    try {
+      const { data } = await supabase
+        .from('vitalis_invite_codes')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50);
+      setInviteCodes(data || []);
+    } catch (error) {
+      console.error('Erro invite codes:', error);
+    }
+  };
+
+  const handleApprovePayment = async (client) => {
+    if (!confirm(`Aprovar pagamento de ${client.users?.nome || 'Cliente'}?`)) return;
+
+    setProcessingPayment(true);
+    try {
+      const result = await confirmManualPayment(client.user_id, {
+        method: client.payment_method || 'manual',
+        reference: client.payment_reference || 'Aprovado manualmente',
+        amount: client.payment_amount,
+        currency: client.payment_currency || 'MZN',
+        planId: client.subscription_plan || 'monthly'
+      });
+
+      if (result.success) {
+        alert(`✅ Pagamento aprovado! Válido até ${result.expiresAt.toLocaleDateString('pt-PT')}`);
+        loadAllData();
+      } else {
+        alert('Erro ao aprovar pagamento');
+      }
+    } catch (error) {
+      alert('Erro: ' + error.message);
+    } finally {
+      setProcessingPayment(false);
+    }
+  };
+
+  const handleManualActivation = async () => {
+    if (!activateClient) return;
+
+    setProcessingPayment(true);
+    try {
+      const result = await confirmManualPayment(activateClient.user_id, {
+        method: activateMethod,
+        reference: activateRef || `Manual-${Date.now()}`,
+        amount: SUBSCRIPTION_PLANS[activatePlan].price_usd,
+        currency: 'USD',
+        planId: activatePlan
+      });
+
+      if (result.success) {
+        alert(`✅ Subscrição ativada! Válida até ${result.expiresAt.toLocaleDateString('pt-PT')}`);
+        setShowActivateModal(false);
+        setActivateClient(null);
+        setActivateRef('');
+        loadAllData();
+      } else {
+        alert('Erro ao ativar subscrição');
+      }
+    } catch (error) {
+      alert('Erro: ' + error.message);
+    } finally {
+      setProcessingPayment(false);
+    }
+  };
+
+  const handleGenerateCode = async (type) => {
+    const notes = prompt('Notas para este código (opcional):');
+    const result = await generateInviteCode(type, 1, notes || '');
+    if (result.success) {
+      alert(`✅ Código gerado: ${result.code}`);
+      loadInviteCodes();
+    } else {
+      alert('Erro ao gerar código');
+    }
+  };
+
+  const sendRenewalReminder = async (client) => {
+    const clientName = client.users?.nome || 'Cliente';
+    const clientEmail = client.users?.email;
+    const daysLeft = client.daysLeft;
+
+    if (!clientEmail) {
+      alert('Cliente sem email');
+      return;
+    }
+
+    try {
+      await enviarEmail('lembrete-checkin', clientEmail, {
+        nome: clientName,
+        dias: daysLeft,
+        mensagem: `A tua subscrição Vitalis expira em ${daysLeft} dias. Renova agora para continuar a tua transformação!`
+      });
+      alert(`✅ Lembrete enviado para ${clientName}`);
+    } catch (error) {
+      alert('Erro ao enviar lembrete');
     }
   };
 
@@ -491,6 +702,7 @@ const CoachDashboard = () => {
               <nav className="space-y-1">
                 {[
                   { id: 'overview', icon: '📊', label: 'Resumo' },
+                  { id: 'payments', icon: '💰', label: `Pagamentos${pendingPayments.length > 0 ? ` (${pendingPayments.length})` : ''}`, alert: pendingPayments.length > 0 },
                   { id: 'clients', icon: '🌿', label: `Clientes (${vitalisClients.length})` },
                   { id: 'attention', icon: '⚠️', label: `Atenção (${clientsNeedAttention.length})`, alert: clientsNeedAttention.length > 0 },
                   { id: 'waitlist', icon: '📋', label: `Waitlist (${waitlist.length})` },
@@ -522,12 +734,32 @@ const CoachDashboard = () => {
                   { label: 'Testers', value: subscriptionStats?.testers || 0, color: 'text-emerald-400' },
                   { label: 'Ativos', value: subscriptionStats?.active || 0, color: 'text-green-400' },
                   { label: 'Pendentes', value: subscriptionStats?.pending || 0, color: 'text-amber-400' },
+                  { label: 'A Expirar', value: expiringSubscriptions.length, color: 'text-orange-400' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center justify-between py-2 px-3 rounded-lg bg-white/5">
                     <span className="text-white/60 text-sm">{item.label}</span>
                     <span className={`font-bold ${item.color}`}>{item.value}</span>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Revenue Stats */}
+            <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-2xl p-4">
+              <h3 className="text-xs font-semibold text-green-300/60 uppercase tracking-wider mb-3">💰 Receita</h3>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-black/20">
+                  <span className="text-green-200/60 text-sm">Este mês</span>
+                  <span className="font-bold text-green-300">${revenueStats.thisMonth}</span>
+                </div>
+                <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-black/20">
+                  <span className="text-green-200/60 text-sm">Mês passado</span>
+                  <span className="font-bold text-green-300/70">${revenueStats.lastMonth}</span>
+                </div>
+                <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-black/20">
+                  <span className="text-green-200/60 text-sm">Total</span>
+                  <span className="font-bold text-green-200">${revenueStats.total}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -599,6 +831,239 @@ const CoachDashboard = () => {
                             <span className="text-white/30 text-xs">{formatTimeAgo(item.created_at)}</span>
                           </div>
                         ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* PAYMENTS */}
+              {activeView === 'payments' && (
+                <div className="p-6">
+                  <h2 className="text-xl font-bold text-white mb-6">💰 Gestão de Pagamentos</h2>
+
+                  {/* Pending Payments Section */}
+                  <div className="mb-8">
+                    <h3 className="text-lg font-semibold text-amber-300 mb-4 flex items-center gap-2">
+                      ⏳ Pagamentos Pendentes
+                      {pendingPayments.length > 0 && (
+                        <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 text-sm rounded-full">
+                          {pendingPayments.length}
+                        </span>
+                      )}
+                    </h3>
+
+                    {pendingPayments.length === 0 ? (
+                      <div className="text-center py-8 bg-white/5 rounded-xl border border-white/10">
+                        <span className="text-3xl block mb-2">✅</span>
+                        <p className="text-white/40">Nenhum pagamento pendente</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {pendingPayments.map((client) => (
+                          <div key={client.id} className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                              <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-full bg-amber-500/30 flex items-center justify-center text-amber-200 font-bold">
+                                  {client.users?.nome?.[0]?.toUpperCase() || '?'}
+                                </div>
+                                <div>
+                                  <p className="text-white font-semibold">{client.users?.nome || 'Cliente'}</p>
+                                  <p className="text-white/50 text-sm">{client.users?.email}</p>
+                                  <div className="flex gap-2 mt-1 text-xs">
+                                    <span className="px-2 py-0.5 bg-white/10 rounded text-white/60">
+                                      {client.payment_method || 'Método?'}
+                                    </span>
+                                    <span className="px-2 py-0.5 bg-white/10 rounded text-white/60">
+                                      {client.payment_amount} {client.payment_currency || 'MZN'}
+                                    </span>
+                                    <span className="px-2 py-0.5 bg-white/10 rounded text-white/60">
+                                      {client.subscription_plan || 'Plano?'}
+                                    </span>
+                                  </div>
+                                  {client.payment_reference && (
+                                    <p className="text-amber-300/70 text-xs mt-1">Ref: {client.payment_reference}</p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => handleApprovePayment(client)}
+                                  disabled={processingPayment}
+                                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium hover:shadow-lg transition-all disabled:opacity-50"
+                                >
+                                  ✓ Aprovar
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Expiring Subscriptions */}
+                  <div className="mb-8">
+                    <h3 className="text-lg font-semibold text-orange-300 mb-4 flex items-center gap-2">
+                      ⏰ A Expirar (próximos 30 dias)
+                      {expiringSubscriptions.length > 0 && (
+                        <span className="px-2 py-0.5 bg-orange-500/20 text-orange-300 text-sm rounded-full">
+                          {expiringSubscriptions.length}
+                        </span>
+                      )}
+                    </h3>
+
+                    {expiringSubscriptions.length === 0 ? (
+                      <div className="text-center py-8 bg-white/5 rounded-xl border border-white/10">
+                        <span className="text-3xl block mb-2">🎉</span>
+                        <p className="text-white/40">Nenhuma subscrição a expirar</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {expiringSubscriptions.map((client) => (
+                          <div
+                            key={client.id}
+                            className={`p-4 rounded-xl border-l-4 ${
+                              client.urgency === 'critical'
+                                ? 'bg-red-500/10 border-l-red-500'
+                                : client.urgency === 'warning'
+                                ? 'bg-orange-500/10 border-l-orange-500'
+                                : 'bg-yellow-500/10 border-l-yellow-500'
+                            }`}
+                          >
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                              <div className="flex items-center gap-4">
+                                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold ${
+                                  client.urgency === 'critical' ? 'bg-red-500/30 text-red-200' :
+                                  client.urgency === 'warning' ? 'bg-orange-500/30 text-orange-200' :
+                                  'bg-yellow-500/30 text-yellow-200'
+                                }`}>
+                                  {client.daysLeft}d
+                                </div>
+                                <div>
+                                  <p className="text-white font-semibold">{client.users?.nome || 'Cliente'}</p>
+                                  <p className="text-white/50 text-sm">{client.users?.email}</p>
+                                  <p className={`text-sm mt-1 ${
+                                    client.urgency === 'critical' ? 'text-red-300' :
+                                    client.urgency === 'warning' ? 'text-orange-300' : 'text-yellow-300'
+                                  }`}>
+                                    Expira em {client.daysLeft} dias ({new Date(client.subscription_expires).toLocaleDateString('pt-PT')})
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => sendRenewalReminder(client)}
+                                  className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-all"
+                                >
+                                  📧 Lembrete
+                                </button>
+                                <button
+                                  onClick={() => { setActivateClient(client); setShowActivateModal(true); }}
+                                  className="px-4 py-2 rounded-xl bg-green-500/20 hover:bg-green-500/30 text-green-300 text-sm font-medium transition-all border border-green-500/30"
+                                >
+                                  🔄 Renovar
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Manual Activation */}
+                  <div className="mb-8">
+                    <h3 className="text-lg font-semibold text-blue-300 mb-4">⚡ Ativação Manual</h3>
+                    <p className="text-white/50 text-sm mb-4">Seleciona um cliente da lista abaixo para ativar manualmente:</p>
+
+                    <div className="grid md:grid-cols-2 gap-3 max-h-60 overflow-y-auto p-1">
+                      {vitalisClients.filter(c => c.subscription_status !== 'active' && c.subscription_status !== 'tester').map((client) => (
+                        <button
+                          key={client.id}
+                          onClick={() => { setActivateClient(client); setShowActivateModal(true); }}
+                          className="p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-blue-500/30 transition-all text-left"
+                        >
+                          <p className="text-white font-medium">{client.users?.nome || 'Sem nome'}</p>
+                          <p className="text-white/40 text-xs">{client.users?.email}</p>
+                          <span className={`inline-block mt-1 px-2 py-0.5 rounded text-xs ${getStatusBadge(client.subscription_status)}`}>
+                            {client.subscription_status || 'sem status'}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Invite Codes */}
+                  <div className="mb-8">
+                    <h3 className="text-lg font-semibold text-purple-300 mb-4 flex items-center justify-between">
+                      <span>🎟️ Códigos de Convite</span>
+                      <button
+                        onClick={() => handleGenerateCode('tester')}
+                        className="px-3 py-1.5 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-sm font-medium transition-all border border-purple-500/30"
+                      >
+                        + Gerar Código
+                      </button>
+                    </h3>
+
+                    {inviteCodes.length === 0 ? (
+                      <div className="text-center py-6 bg-white/5 rounded-xl border border-white/10">
+                        <p className="text-white/40">Nenhum código gerado</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {inviteCodes.map((code) => (
+                          <div key={code.id} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                            <div>
+                              <p className="text-white font-mono font-medium">{code.code}</p>
+                              <p className="text-white/40 text-xs">{code.type} • {code.uses_count}/{code.max_uses} usos</p>
+                            </div>
+                            <span className={`px-2 py-0.5 rounded text-xs ${code.active ? 'bg-green-500/20 text-green-300' : 'bg-gray-500/20 text-gray-400'}`}>
+                              {code.active ? 'Ativo' : 'Inativo'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Payment History */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-white/80 mb-4">📜 Histórico de Pagamentos</h3>
+
+                    {paymentHistory.length === 0 ? (
+                      <div className="text-center py-8 bg-white/5 rounded-xl border border-white/10">
+                        <p className="text-white/40">Nenhum pagamento registado</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2 max-h-64 overflow-y-auto">
+                        {paymentHistory.filter(log => {
+                          try {
+                            const details = JSON.parse(log.details || '{}');
+                            return details.action?.includes('payment');
+                          } catch { return false; }
+                        }).slice(0, 20).map((log) => {
+                          const details = JSON.parse(log.details || '{}');
+                          return (
+                            <div key={log.id} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-300">
+                                  💰
+                                </div>
+                                <div>
+                                  <p className="text-white font-medium">{log.users?.nome || 'Cliente'}</p>
+                                  <p className="text-white/40 text-xs">
+                                    {details.method || 'Manual'} • {details.plan || 'Plano'}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-green-300 font-medium">${details.amount || '?'}</p>
+                                <p className="text-white/30 text-xs">{formatDate(log.created_at)}</p>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -1016,6 +1481,120 @@ const CoachDashboard = () => {
                 <span className="text-white/40">📧 Email</span>
                 <span className="text-white/20">|</span>
                 <span className="text-green-400/70">💬 WhatsApp</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Activation Modal */}
+      {showActivateModal && activateClient && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-white/10 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div className="p-6 border-b border-white/10 bg-gradient-to-r from-green-500/20 to-emerald-500/20">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-white">⚡ Ativar Subscrição</h3>
+                <button
+                  onClick={() => { setShowActivateModal(false); setActivateClient(null); }}
+                  className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/60 hover:text-white"
+                >
+                  ✕
+                </button>
+              </div>
+              <p className="text-green-200 mt-1">{activateClient.users?.nome || 'Cliente'}</p>
+              <p className="text-green-200/60 text-sm">{activateClient.users?.email}</p>
+            </div>
+
+            <div className="p-6 space-y-4">
+              {/* Plan Selection */}
+              <div>
+                <label className="block text-white/60 text-sm mb-2">Plano</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {Object.entries(SUBSCRIPTION_PLANS).map(([key, plan]) => (
+                    <button
+                      key={key}
+                      onClick={() => setActivatePlan(key)}
+                      className={`p-3 rounded-xl border-2 transition-all text-center ${
+                        activatePlan === key
+                          ? 'bg-green-500/20 border-green-500 text-white'
+                          : 'bg-white/5 border-white/10 text-white/60 hover:border-white/30'
+                      }`}
+                    >
+                      <p className="font-bold">{plan.name}</p>
+                      <p className="text-xs">${plan.price_usd}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Payment Method */}
+              <div>
+                <label className="block text-white/60 text-sm mb-2">Método de Pagamento</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'mpesa', label: 'M-Pesa', icon: '📱' },
+                    { id: 'paypal', label: 'PayPal', icon: '💳' },
+                    { id: 'transfer', label: 'Transf.', icon: '🏦' }
+                  ].map((method) => (
+                    <button
+                      key={method.id}
+                      onClick={() => setActivateMethod(method.id)}
+                      className={`p-2 rounded-xl border-2 transition-all ${
+                        activateMethod === method.id
+                          ? 'bg-blue-500/20 border-blue-500 text-white'
+                          : 'bg-white/5 border-white/10 text-white/60 hover:border-white/30'
+                      }`}
+                    >
+                      <span className="text-lg">{method.icon}</span>
+                      <p className="text-xs mt-1">{method.label}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Reference */}
+              <div>
+                <label className="block text-white/60 text-sm mb-2">Referência (opcional)</label>
+                <input
+                  type="text"
+                  value={activateRef}
+                  onChange={(e) => setActivateRef(e.target.value)}
+                  placeholder="ID transação, comprovativo..."
+                  className="w-full p-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-green-500/50"
+                />
+              </div>
+
+              {/* Summary */}
+              <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                <div className="flex justify-between items-center">
+                  <span className="text-white/60">Plano:</span>
+                  <span className="text-white font-medium">{SUBSCRIPTION_PLANS[activatePlan].name}</span>
+                </div>
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-white/60">Duração:</span>
+                  <span className="text-white font-medium">{SUBSCRIPTION_PLANS[activatePlan].duration} meses</span>
+                </div>
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-white/60">Valor:</span>
+                  <span className="text-green-300 font-bold">${SUBSCRIPTION_PLANS[activatePlan].price_usd}</span>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setShowActivateModal(false); setActivateClient(null); }}
+                  className="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 font-medium transition-all"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleManualActivation}
+                  disabled={processingPayment}
+                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium hover:shadow-lg hover:shadow-green-500/25 transition-all disabled:opacity-50"
+                >
+                  {processingPayment ? 'A processar...' : '✓ Ativar'}
+                </button>
               </div>
             </div>
           </div>
