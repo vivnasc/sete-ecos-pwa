@@ -320,24 +320,20 @@ try {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Não autenticado');
 
-  // 🔧 USAR UPSERT COMO O LUMINA - evita erros 400 nos SELECTs
-  const { data: userData, error: upsertError } = await supabase
+  // Buscar user record (já criado pelo AuthContext)
+  const { data: userData, error: userError } = await supabase
     .from('users')
-    .upsert({
-      auth_id: user.id,
-      email: user.email,
-      nome: formData.nome || user.user_metadata?.name || user.email.split('@')[0]
-    }, { onConflict: 'auth_id' })
     .select('id, nome')
-    .single();
+    .eq('auth_id', user.id)
+    .maybeSingle();
 
-  if (upsertError) {
-    console.error('Erro no upsert:', upsertError);
+  if (userError) {
+    console.error('Erro ao buscar utilizador:', userError);
     throw new Error('Erro ao carregar perfil de utilizador. Tente novamente.');
   }
 
   if (!userData) {
-    throw new Error('Não foi possível carregar ou criar o perfil de utilizador');
+    throw new Error('Perfil de utilizador não encontrado. Faça logout e login novamente.');
   }
 
   const aceita_jejum = formData.abordagem_preferida === 'keto_if';
