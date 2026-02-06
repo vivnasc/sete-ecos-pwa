@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { isNearRamadan } from '../utils/ramadao';
+import SEOHead from '../components/SEOHead';
+import PartilharSocial from '../components/PartilharSocial';
 
 /**
  * VITALIS - Landing Page
@@ -203,6 +205,28 @@ const LandingVitalis = () => {
 
   return (
     <div className="min-h-screen" style={{ fontFamily: "'DM Sans', sans-serif", background: 'linear-gradient(to bottom, #F5F2ED, #E8E4DC, #C5D1BC)' }}>
+      <SEOHead
+        title="VITALIS - Coaching Nutricional Personalizado | Sete Ecos"
+        description="Coaching nutricional baseado em Precision Nutrition. App completa com plano personalizado, receitas adaptadas, apoio emocional e coach IA. Desde 2.500 MZN/mes."
+        url="https://app.seteecos.com/vitalis"
+        image="https://app.seteecos.com/og-image.png"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": "VITALIS - Coaching Nutricional",
+          "description": "Coaching nutricional personalizado baseado no metodo Precision Nutrition com app completa, receitas e apoio emocional.",
+          "brand": { "@type": "Brand", "name": "Sete Ecos" },
+          "offers": [
+            { "@type": "Offer", "name": "Mensal", "price": "2500", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Semestral", "price": "12500", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Anual", "price": "21000", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" }
+          ],
+          "review": [
+            { "@type": "Review", "reviewRating": { "@type": "Rating", "ratingValue": "5" }, "reviewBody": "Perdi 8kg em 3 meses e aprendi a comer sem culpa." },
+            { "@type": "Review", "reviewRating": { "@type": "Rating", "ratingValue": "5" }, "reviewBody": "O Espaco de Retorno mudou tudo. Percebi que comia por ansiedade." }
+          ]
+        }}
+      />
       {/* Navegacao */}
       <nav className="fixed top-0 w-full px-4 md:px-8 py-4 flex justify-between items-center bg-white/95 backdrop-blur-sm z-50 border-b border-[#E8E2D9]">
         <Link to="/landing" className="flex items-center gap-3">
@@ -831,6 +855,14 @@ const LandingVitalis = () => {
                 <Link to="/lumina" className="text-white/70 text-sm hover:text-white">Lumina</Link>
               </div>
             </div>
+          </div>
+          <div className="flex justify-center mb-6">
+            <PartilharSocial
+              compact
+              url="https://app.seteecos.com/vitalis"
+              titulo="VITALIS - Coaching Nutricional Personalizado"
+              texto="Descobre o VITALIS, coaching nutricional com app completa, receitas e apoio emocional unico."
+            />
           </div>
           <div className="border-t border-white/10 pt-6 text-center text-white/50 text-sm">
             © 2026 Vitalis · Vivianne Saraiva · Precision Nutrition Level 1 & ISSA Certified

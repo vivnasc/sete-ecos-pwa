@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import SEOHead from '../components/SEOHead';
+import PartilharSocial from '../components/PartilharSocial';
 
 /**
  * SETE ECOS - Landing Page Geral
@@ -141,6 +143,24 @@ const LandingGeral = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f0f23]">
+      <SEOHead
+        title="SETE ECOS - Sistema de Transmutacao Feminina"
+        description="Um ecossistema de transformacao integral para a mulher moderna. Sete caminhos que se complementam: nutricao, emocao, foco, energia, expressao, visao e identidade."
+        url="https://app.seteecos.com/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Sete Ecos",
+          "url": "https://app.seteecos.com",
+          "description": "Sistema de Transmutacao Feminina - Sete caminhos para despertar cada dimensao da tua essencia feminina.",
+          "inLanguage": "pt",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://app.seteecos.com/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        }}
+      />
       {/* Hero Section */}
       <header className="relative overflow-hidden">
         <div className="absolute inset-0">
@@ -677,6 +697,14 @@ const LandingGeral = () => {
                 <Link to="/comunidade" className="text-purple-300/70 text-sm hover:text-white transition-colors">Comunidade</Link>
               </div>
             </div>
+          </div>
+          <div className="flex justify-center mb-6">
+            <PartilharSocial
+              compact
+              url="https://app.seteecos.com/"
+              titulo="Sete Ecos - Sistema de Transmutacao Feminina"
+              texto="Descobre os Sete Ecos, uma jornada de transformacao feminina integral."
+            />
           </div>
           <div className="border-t border-white/10 pt-6 text-center text-purple-400/50 text-sm">
             © 2026 Sete Ecos · Vivianne Saraiva · Todos os direitos reservados
