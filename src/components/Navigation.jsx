@@ -198,7 +198,6 @@ export default function Navigation({ variant = 'default' }) {
 
   // Community section navigation
   if (isCommunitySection) {
-    const isHub = location.pathname === '/comunidade'
     const isRio = location.pathname === '/comunidade/rio'
     const isCirculos = location.pathname === '/comunidade/circulos'
     const isFogueira = location.pathname === '/comunidade/fogueira'
@@ -206,20 +205,20 @@ export default function Navigation({ variant = 'default' }) {
 
     return (
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-purple-100 shadow-lg z-50">
-        {/* Current section indicator */}
+        {/* Current section indicator — clickable to go to community hub */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
-          <div className="bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] px-4 py-1 rounded-t-lg shadow-md">
+          <button onClick={() => navigate('/comunidade')} className="bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] px-4 py-1 rounded-t-lg shadow-md cursor-pointer hover:opacity-90 transition-opacity">
             <span className="text-white text-xs font-semibold tracking-wide">COMUNIDADE</span>
-          </div>
+          </button>
         </div>
 
         <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
           <NavItem
-            icon="community"
-            label="Inicio"
-            active={isHub}
-            onClick={() => navigate('/comunidade')}
-            color="#8B5CF6"
+            logo="/logos/CENTRO_7ECOS.png"
+            label="Hub"
+            active={false}
+            onClick={() => navigate('/')}
+            color="#1A1A4E"
           />
           <NavItem
             icon="rio"
