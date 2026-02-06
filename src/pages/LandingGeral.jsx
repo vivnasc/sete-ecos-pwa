@@ -160,6 +160,9 @@ const LandingGeral = () => {
             <Link to="/vitalis" className="px-4 py-2 text-emerald-300 hover:text-white transition-colors">
               Vitalis
             </Link>
+            <Link to="/comunidade" className="px-4 py-2 text-purple-300 hover:text-white transition-colors">
+              Comunidade
+            </Link>
             <Link to="/vitalis/login" className="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-medium hover:shadow-lg hover:shadow-purple-500/30 transition-all">
               Entrar
             </Link>
@@ -397,6 +400,69 @@ const LandingGeral = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Comunidade - Espaço de Autoconhecimento */}
+      <section className="py-20 bg-gradient-to-r from-purple-900/20 to-indigo-900/20">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <span className="inline-block px-4 py-2 bg-purple-500/20 rounded-full text-purple-300 text-sm mb-4">
+              🌊 Espaço Colectivo
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Comunidade de Autoconhecimento</h2>
+            <p className="text-purple-300 max-w-2xl mx-auto">
+              Mais do que uma rede social — um espaço sagrado onde mulheres partilham reflexões,
+              oferecem ressonância e caminham juntas na transformação.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-10">
+            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20 text-center">
+              <span className="text-4xl block mb-3">🌊</span>
+              <h3 className="text-lg font-bold text-white mb-2">O Rio</h3>
+              <p className="text-purple-300/80 text-sm">Um diário colectivo de reflexões guiadas. Partilha pensamentos profundos com prompts de autoconhecimento.</p>
+            </div>
+            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-orange-500/20 text-center">
+              <span className="text-4xl block mb-3">🔥</span>
+              <h3 className="text-lg font-bold text-white mb-2">Fogueira</h3>
+              <p className="text-purple-300/80 text-sm">Um espaço efémero de 24 horas. Todas se reúnem em torno de um tema. Quando o fogo apaga, ficam as cinzas da memória.</p>
+            </div>
+            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-pink-500/20 text-center">
+              <span className="text-4xl block mb-3">👥</span>
+              <h3 className="text-lg font-bold text-white mb-2">Círculos de Eco</h3>
+              <p className="text-purple-300/80 text-sm">Pequenos grupos de 7-12 mulheres que exploram o mesmo caminho. Intimidade, apoio e partilha verdadeira.</p>
+            </div>
+          </div>
+
+          <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20 max-w-2xl mx-auto">
+            <div className="flex items-start gap-4">
+              <span className="text-3xl flex-shrink-0">✨</span>
+              <div>
+                <h3 className="text-lg font-bold text-white mb-2">Ressonância, não Likes</h3>
+                <p className="text-purple-300/80 text-sm mb-3">
+                  Aqui não existem likes. Ofereces <strong className="text-purple-200">ressonância</strong> — cinco formas de reconhecer o que alguém partilhou:
+                  Ressoo, Luz, Força, Espelho, Raiz. Cada uma com um significado profundo.
+                </p>
+                <div className="flex gap-3 text-xl">
+                  <span title="Ressoo">🫧</span>
+                  <span title="Luz">💡</span>
+                  <span title="Força">💪</span>
+                  <span title="Espelho">🪞</span>
+                  <span title="Raiz">🌿</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-10">
+            <Link
+              to="/comunidade"
+              className="px-8 py-4 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-purple-500/30 transition-all inline-block"
+            >
+              Entrar na Comunidade
+            </Link>
           </div>
         </div>
       </section>
