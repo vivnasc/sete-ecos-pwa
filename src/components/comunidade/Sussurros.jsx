@@ -106,7 +106,7 @@ function ConversasSussurrosList({ userId, conversas, loading, onAbrirConversa })
               Ainda sem sussurros
             </h3>
             <p className="text-sm text-gray-400 max-w-xs mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-corpo)' }}>
-              Envia uma palavra de apoio a alguém da comunidade. Cada sussurro aquece o caminho de outra mulher.
+              Envia uma palavra de apoio a alguém da comunidade. Cada sussurro aquece o caminho de quem o recebe.
             </p>
           </div>
         ) : (

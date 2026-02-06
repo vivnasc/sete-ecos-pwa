@@ -148,6 +148,49 @@ export default function ChatCoach() {
         `${diasTreino.length > 0 ? `Nos dias de treino tens +1 mão concha de hidratos.` : ''}`;
     }
 
+    // ========== PERGUNTA SOBRE ALIMENTO / "POSSO COMER...?" ==========
+    const ePerguntaAlimento =
+      texto.match(/(posso|pode|devo|consigo|funciona).*(comer|tomar|beber|na\s*(indu|fase|estab|reeduc|ceto))/) ||
+      texto.match(/(comer|tomar|beber).*(pode|posso|devo)/) ||
+      texto.match(/pode.*(na|nesta|durante).*(indu|fase|estab|reeduc|ceto)/) ||
+      texto.match(/\+.*(pode|posso|bom|ok)\b/);
+
+    if (ePerguntaAlimento) {
+      const temProteina = !!texto.match(/ovo|frango|galinha|peixe|carne|bife|atum|salmao|iogurte|queijo|whey|peru|porco|borrego|tofu|fiambre|presunto|sardinha|camarao|lula|polvo/);
+      const temHidrato = !!texto.match(/pao|arroz|batata|aveia|massa|esparguete|banana|fruta|cereal|tamara|quinoa|milho|mandioca|feijao|grao|lentilha|bolacha|tosta/);
+      const temGordura = !!texto.match(/abacate|azeite|manteiga|nozes|amendoim|coco|amendoa|castanha|noz\b|azeitona|ghee/);
+      const temLegume = !!texto.match(/salada|brocol|espinafre|couve|legume|tomate|pepino|cenoura|alface|courgette|cogumelo/);
+
+      if (temProteina || temHidrato || temGordura || temLegume) {
+        let resp = `${nome ? nome + ', ' : ''}`;
+
+        if (faseRestritiva && temHidrato) {
+          resp += `podes, mas atenção ao hidrato!\n\n`;
+          if (temProteina) resp += `✅ Proteína — perfeito\n`;
+          resp += `⚠️ Hidrato — conta para as tuas **${maos} mãos/dia**\n`;
+          if (temGordura) resp += `✅ Gordura boa — excelente na tua fase\n`;
+          if (temLegume) resp += `✅ Legumes — à vontade\n`;
+          resp += `\nNa fase **${fase}** tens ${maos} mãos de hidratos por dia. Esta refeição gasta 1 mão. Se for a única dessa refeição, está OK!\n\n`;
+          resp += `Queres uma alternativa sem hidratos?`;
+        } else if (temHidrato && !temProteina) {
+          resp += `falta proteína nessa refeição!\n\n`;
+          if (temHidrato) resp += `✅ Hidrato (${maos} mãos/dia)\n`;
+          if (temGordura) resp += `✅ Gordura\n`;
+          if (temLegume) resp += `✅ Legumes\n`;
+          resp += `\n**Sugestão:** Junta proteína (ovos, frango, iogurte grego) — deve estar em todas as refeições principais. As tuas ${palmas} palmas diárias são fundamentais!`;
+        } else {
+          resp += `sim, boa combinação! ✅\n\n`;
+          if (temProteina) resp += `✅ Proteína\n`;
+          if (temHidrato) resp += `✅ Hidrato (${maos} mãos/dia)\n`;
+          if (temGordura) resp += `✅ Gordura boa\n`;
+          if (temLegume) resp += `✅ Legumes\n`;
+          resp += `\nEncaixa na fase **${fase}**. Conta nas porções diárias (${palmas}P ${maos}H ${polegares}G).`;
+        }
+
+        return resp;
+      }
+    }
+
     // ========== PEQUENO-ALMOÇO ==========
     if (texto.match(/pequeno.?almoco|manha|pa\b/)) {
       const prot = Math.round(palmas * 0.25);
@@ -320,7 +363,7 @@ export default function ChatCoach() {
     }
 
     // ========== TREINO ==========
-    if (texto.match(/treino|exerc|muscula/)) {
+    if (texto.match(/treino|exerc|muscula/) && !texto.match(/ramad/)) {
       if (diasTreino.length > 0) {
         return `Sobre os dias de treino:\n\n` +
           `📅 **Os teus dias:** ${diasTreino.map(d => ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][d-1]).join(', ')}\n\n` +
@@ -368,214 +411,127 @@ export default function ChatCoach() {
         `${faseRestritiva ? 'Evita adicionar fruta! Usa cacau em pó ou canela.' : 'Podes adicionar fruta se quiseres.'}`;
     }
 
-    // ========== RAMADÃO - GUIA ESPECÍFICO ==========
-    if (texto.match(/ramad[aã]o|ramadan|suhoor|suhur|iftar|t[aâ]mara|jejum.*sagrado|mes.*sagrado/)) {
-      return `🌙 **Ramadão - Nutrição Durante o Mês Sagrado**\n\n` +
-        `Ramadan Mubarak${nome ? ', ' + nome : ''}!\n\n` +
-        `O método Vitalis adapta-se ao Ramadão. As tuas porções diárias mantêm-se (${palmas} palmas, ${maos} mãos, ${polegares} polegares), distribuídas em 2 refeições:\n\n` +
-        `🌅 **SUHOOR (antes do amanhecer) - ~40% das porções:**\n` +
-        `• ${Math.round(palmas * 0.4)} palmas de proteína (ovos, iogurte grego, queijo)\n` +
-        `• ${Math.round(maos * 0.4)} mãos concha de hidratos (aveia, pão integral, tâmaras)\n` +
-        `• ${Math.round(polegares * 0.4)} polegares de gordura (abacate, manteiga de amendoim)\n` +
-        `• Foco: energia lenta e sustentada!\n\n` +
-        `🌇 **IFTAR (ao pôr-do-sol) - ~60% das porções:**\n` +
-        `• Começa com 1-3 tâmaras + água (tradição do Profeta SAW)\n` +
-        `• Pausa 15-20 min (momento de oração)\n` +
-        `• Depois: ${Math.round(palmas * 0.6)} palmas proteína + ${Math.round(maos * 0.6)} mãos hidratos + legumes\n\n` +
-        `💧 **HIDRATAÇÃO (entre Iftar e Suhoor):**\n` +
-        `• Meta: 2-2.5L de água\n` +
-        `• Bebe aos poucos, não tudo de uma vez\n` +
-        `• Inclui alimentos ricos em água (melancia, pepino)\n\n` +
-        `**Pergunta-me sobre:** "suhoor", "iftar", "hidratação ramadão", "exercício ramadão", "tâmaras"\n\n` +
-        `📖 Visita o Guia Ramadão completo na app para mais detalhes!`;
-    }
+    // ========== RAMADÃO - RESPOSTAS ESPECÍFICAS (antes da geral!) ==========
 
-    // ========== SUHOOR ESPECÍFICO ==========
+    // SUHOOR ESPECÍFICO
     if (texto.match(/suhoor|suhur|antes.*amanhecer|refeicao.*madrugada/)) {
-      return `🌅 **Suhoor - A Tua Refeição Antes do Amanhecer**\n\n` +
-        `${nome ? nome + ', o' : 'O'} Suhoor é fundamental! Não o saltes.\n\n` +
-        `**As tuas porções (~40% do dia):**\n` +
-        `• 🥩 ${Math.round(palmas * 0.4)} palmas de proteína\n` +
-        `• 🍚 ${Math.round(maos * 0.4)} mãos concha de hidratos complexos\n` +
-        `• 🫒 ${Math.round(polegares * 0.4)} polegares de gordura\n\n` +
-        `**Ideias de Suhoor:**\n` +
-        `• 3 ovos + pão integral + abacate\n` +
-        `• Iogurte grego + aveia + tâmaras + nozes\n` +
-        `• Batido: whey + banana + manteiga amendoim + leite\n\n` +
-        `**Dicas essenciais:**\n` +
-        `• Prioriza proteína e gordura (saciedade prolongada)\n` +
-        `• Hidratos complexos (aveia, pão integral) - libertam energia devagar\n` +
-        `• Bebe pelo menos 500ml de água\n` +
-        `• Evita comida muito salgada (aumenta a sede)\n` +
-        `• Tâmaras são excelentes - ricas em fibra e energia natural`;
+      const protSuhoor = Math.round(palmas * 0.4);
+      const hidSuhoor = Math.round(maos * 0.4);
+      const gorSuhoor = Math.round(polegares * 0.4);
+      return `🌅 ${nome ? nome + ', o' : 'O'} Suhoor faz toda a diferença no teu dia!\n\n` +
+        `O segredo é: **energia lenta**. Queres aguentar até ao Iftar sem aquela quebra a meio da tarde.\n\n` +
+        `Para ti: ${protSuhoor} palmas proteína + ${hidSuhoor} mão hidratos complexos + ${gorSuhoor} polegares gordura.\n\n` +
+        `**3 combos rápidos que funcionam:**\n` +
+        `🥚 Ovos mexidos + pão integral + abacate\n` +
+        `🥣 Aveia com iogurte grego + tâmaras + nozes\n` +
+        `🥤 Batido de whey + banana + manteiga de amendoim\n\n` +
+        `Dica: bebe pelo menos 500ml de água e evita o muito salgado (aumenta a sede). Qual destes combos te atrai mais?`;
     }
 
-    // ========== IFTAR ESPECÍFICO ==========
+    // IFTAR ESPECÍFICO
     if (texto.match(/iftar|quebr.*jejum|por.?do.?sol|abrir.*jejum/)) {
-      return `🌇 **Iftar - Quebra do Jejum ao Pôr-do-Sol**\n\n` +
-        `${nome ? nome + ', o' : 'O'} Iftar é momento de gratidão e nutrição.\n\n` +
-        `**A sequência ideal:**\n` +
-        `1️⃣ 1-3 tâmaras + 1 copo de água\n` +
-        `2️⃣ Pausa de 15-20 min (oração)\n` +
-        `3️⃣ Refeição principal equilibrada\n\n` +
-        `**As tuas porções (~60% do dia):**\n` +
-        `• 🥩 ${Math.round(palmas * 0.6)} palmas de proteína\n` +
-        `• 🍚 ${Math.round(maos * 0.6)} mãos concha de hidratos\n` +
-        `• 🫒 ${Math.round(polegares * 0.6)} polegares de gordura\n` +
-        `• 🥬 Legumes à vontade (sopa é óptima!)\n\n` +
-        `**Ideias de Iftar:**\n` +
-        `• Sopa de lentilhas + frango grelhado com arroz + salada\n` +
-        `• Hummus + peixe assado + cuscuz + legumes\n` +
-        `• Carne estufada + batata + legumes + iogurte\n\n` +
-        `**Evita:** Comer rápido demais, frituras em excesso, bebidas açucaradas`;
+      const protIftar = Math.round(palmas * 0.6);
+      const hidIftar = Math.round(maos * 0.6);
+      return `🌇 ${nome ? nome + ', ' : ''}O Iftar é o momento de nutrir o corpo com calma e gratidão.\n\n` +
+        `**O ritual que funciona:**\n` +
+        `1️⃣ Tâmaras + água (restaura a glicose suavemente)\n` +
+        `2️⃣ Pausa para oração\n` +
+        `3️⃣ Refeição equilibrada: ${protIftar} palmas proteína + ${hidIftar} mãos hidratos + legumes à vontade\n\n` +
+        `O erro mais comum? Comer tudo de uma vez, muito rápido. O estômago está mais sensível — come devagar, saboreia.\n\n` +
+        `**Uma ideia para hoje:** Sopa de lentilhas para começar + prato principal com proteína e legumes. Que achas?`;
     }
 
-    // ========== TÂMARAS ==========
+    // TÂMARAS
     if (texto.match(/t[aâ]mara|tamara|datil/)) {
-      return `🌴 **Tâmaras - O Alimento do Ramadão**\n\n` +
-        `As tâmaras são perfeitas para quebrar o jejum:\n\n` +
-        `**Nutrição (por 3 tâmaras ~75g):**\n` +
-        `• ~200 kcal de energia natural\n` +
-        `• Fibra (ajuda na digestão)\n` +
-        `• Potássio (repõe electrólitos)\n` +
-        `• Magnésio (reduz fadiga)\n` +
-        `• Açúcares naturais (restauram a glicose rapidamente)\n\n` +
-        `**Como usar no método Vitalis:**\n` +
-        `• 3 tâmaras = ~1 mão concha de hidratos\n` +
-        `• Ideais para quebrar o jejum no Iftar\n` +
-        `• No Suhoor: com iogurte grego e nozes = combo perfeito\n` +
-        `• Energia rápida e natural sem picos excessivos de insulina\n\n` +
-        `**Tradição e ciência:** O Profeta (SAW) quebrava o jejum com tâmaras e água. A ciência moderna confirma que é nutricionalmente ideal para restaurar a energia após o jejum.`;
+      return `🌴 As tâmaras são um alimento incrível!\n\n` +
+        `3 tâmaras (~75g) dão-te energia rápida, fibra e minerais como potássio e magnésio. No método Vitalis, contam como ~1 mão concha de hidratos.\n\n` +
+        `São ideais para:\n` +
+        `• Quebrar o jejum no Iftar (tradição com base científica!)\n` +
+        `• No Suhoor com iogurte e nozes\n` +
+        `• Como snack natural entre Iftar e Suhoor\n\n` +
+        `Queres que te sugira uma combinação com tâmaras para o teu próximo Suhoor ou Iftar?`;
     }
 
-    // ========== HIDRATAÇÃO RAMADÃO ==========
+    // HIDRATAÇÃO RAMADÃO
     if (texto.match(/(hidrat|agua|beber).*ramad|(ramad).*(hidrat|agua|beber)|sede.*ramad/)) {
-      return `💧 **Hidratação Durante o Ramadão**\n\n` +
-        `${nome ? nome + ', a' : 'A'} hidratação é o maior desafio do Ramadão.\n\n` +
-        `**Plano de hidratação nocturna:**\n` +
-        `🌇 Iftar: 2-3 copos (500-750ml)\n` +
-        `🌙 Entre Iftar e Suhoor: 3-4 copos (750ml-1L)\n` +
-        `🌅 Suhoor: 2 copos (500ml)\n` +
-        `📊 **Meta total: 2-2.5L**\n\n` +
-        `**Dicas importantes:**\n` +
-        `• Bebe aos poucos ao longo da noite\n` +
-        `• Não tentes beber tudo de uma vez\n` +
-        `• Água de coco repõe electrólitos naturalmente\n` +
-        `• Sopas contam como hidratação\n` +
-        `• Limita a cafeína (é diurética)\n\n` +
-        `**Alimentos ricos em água:**\n` +
-        `🍉 Melancia (92% água)\n` +
-        `🥒 Pepino (96% água)\n` +
-        `🍅 Tomate (94% água)\n\n` +
-        `Inclui estes alimentos no Suhoor e Iftar para ajudar na hidratação!`;
+      return `💧 ${nome ? nome + ', a' : 'A'} hidratação é mesmo o maior desafio, não é?\n\n` +
+        `O truque é distribuir ao longo da noite, nunca tudo de uma vez:\n` +
+        `• 🌇 Iftar: 2-3 copos com calma\n` +
+        `• 🌙 Durante a noite: vai bebendo aos poucos\n` +
+        `• 🌅 Suhoor: mais 2 copos\n` +
+        `• Meta: 2-2.5L no total\n\n` +
+        `**Dica prática:** Sopas e alimentos ricos em água (melancia, pepino) ajudam muito! E cuidado com a cafeína — é diurética.\n\n` +
+        `Estás a conseguir beber o suficiente? Conta-me como está a correr.`;
     }
 
-    // ========== EXERCÍCIO RAMADÃO ==========
+    // EXERCÍCIO RAMADÃO
     if (texto.match(/(exerc|treino|trein).*ramad|(ramad).*(exerc|treino|trein)/)) {
-      return `🏃‍♀️ **Exercício Durante o Ramadão**\n\n` +
-        `Podes e deves continuar a mexer-te, mas adaptado:\n\n` +
-        `**Melhor horário: 30-60 min antes do Iftar**\n` +
-        `• Treino leve a moderado\n` +
-        `• Vais poder hidratar e comer logo a seguir\n` +
-        `• A autofagia está no pico!\n\n` +
-        `**Alternativa: 1-2h após o Iftar**\n` +
-        `• Para treinos mais intensos\n` +
-        `• Corpo já hidratado e nutrido\n\n` +
-        `**Adaptações recomendadas:**\n` +
-        `• Reduz a intensidade em 30-40%\n` +
-        `• Treinos mais curtos (30-45 min)\n` +
-        `• Caminhadas são excelentes\n` +
-        `• Yoga e alongamentos são perfeitos\n` +
-        `• Se sentires tonturas, PARA imediatamente\n\n` +
-        `${diasTreino.length > 0 ? `Os teus dias de treino (${diasTreino.map(d => ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d-1]).join(', ')}) mantêm o +1 mão concha de hidratos.` : ''}`;
+      return `🏃‍♀️ Sim, podes e deves continuar a mexer-te!\n\n` +
+        `Mas adapta — o teu corpo está a trabalhar diferente durante o jejum.\n\n` +
+        `**Melhor horário:** 30-60 min antes do Iftar\n` +
+        `Porquê? Treino leve, e logo comes e hidrata a seguir. A autofagia está no pico!\n\n` +
+        `**Como adaptar:**\n` +
+        `• Intensidade: reduz 30-40% do habitual\n` +
+        `• Duração: 30-45 min é suficiente\n` +
+        `• Caminhadas e yoga são excelentes opções\n` +
+        `• Se sentires tonturas, PARA — ouve o teu corpo\n\n` +
+        `${diasTreino.length > 0 ? `Os teus dias de treino (${diasTreino.map(d => ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d-1]).join(', ')}) mantêm as porções extra. ` : ''}Como tem sido o teu treino durante o jejum?`;
     }
 
-    // ========== JEJUM INTERMITENTE - EDUCATIVO ==========
-    if (texto.match(/jejum|fasting|16.?8|intermitente|autofagia|autofago/)) {
-      return `📚 **Jejum Intermitente - A Ciência**\n\n` +
-        `O jejum intermitente é uma estratégia alimentar com décadas de investigação científica.\n\n` +
-        `**🔬 O QUE DIZ A CIÊNCIA:**\n\n` +
-        `**1. Regulação Hormonal**\n` +
-        `• **Insulina:** Baixa durante o jejum, permitindo que o corpo aceda às reservas de gordura (estudos: Harvie et al., 2011; Varady, 2011)\n` +
-        `• **Grelina (hormona da fome):** Adapta-se em 1-2 semanas - a fome diminui naturalmente (Natalucci et al., 2005)\n` +
-        `• **Leptina:** Melhora a sensibilidade, ajudando a reconhecer a saciedade (Ahmet et al., 2011)\n` +
-        `• **Hormona do Crescimento:** Aumenta até 5x, preservando massa muscular (Ho et al., 1988)\n\n` +
-        `**2. Autofagia (Prémio Nobel 2016)**\n` +
-        `O Dr. Yoshinori Ohsumi ganhou o Nobel por descobrir como as células se "limpam" durante o jejum:\n` +
-        `• Remove proteínas danificadas\n` +
-        `• Recicla componentes celulares\n` +
-        `• Activa-se significativamente após 16-18h de jejum\n` +
-        `• Benefícios: anti-envelhecimento, prevenção de doenças\n\n` +
-        `**3. Perda de Peso**\n` +
-        `Meta-análises mostram:\n` +
-        `• Redução de 3-8% do peso em 3-24 semanas (Welton et al., 2020)\n` +
-        `• Preservação de massa muscular superior a dietas contínuas\n` +
-        `• Redução da gordura visceral (a mais perigosa)\n\n` +
-        `**📖 PROTOCOLOS COMUNS:**\n` +
-        `• **16:8** - 16h jejum, 8h alimentação (mais popular)\n` +
-        `• **18:6** - 18h jejum, 6h alimentação\n` +
-        `• **20:4** - 20h jejum, 4h alimentação (avançado)\n\n` +
-        `**🎯 COMO COMBINAR COM VITALIS:**\n` +
+    // RAMADÃO GERAL (apanha o que não foi capturado acima)
+    if (texto.match(/ramad[aã]o|ramadan|jejum.*sagrado|mes.*sagrado/)) {
+      return `🌙 ${nome ? nome + ', R' : 'R'}amadan Mubarak!\n\n` +
+        `Que bom que estás aqui. O Ramadão é um período especial e o teu corpo merece atenção extra.\n\n` +
+        `Como te estás a sentir? Posso ajudar-te com:\n` +
+        `• Como estás a gerir a energia durante o dia?\n` +
+        `• Tens sentido mais fome ou cansaço do que o esperado?\n` +
+        `• Precisas de ideias práticas para o Suhoor ou Iftar?\n\n` +
+        `As tuas porções diárias mantêm-se (${palmas}P ${maos}H ${polegares}G), só distribuímos em 2 momentos.\n\n` +
+        `Diz-me o que precisas e eu adapto ao teu dia. Também tens o 📖 **Guia Ramadão** completo na app com tudo detalhado!`;
+    }
+
+    // ========== JEJUM INTERMITENTE ==========
+    if (texto.match(/jejum|fasting|16.?8|intermitente/)) {
+      return `${nome ? nome + ', o' : 'O'} jejum intermitente é uma das ferramentas mais poderosas do método Vitalis.\n\n` +
+        `**Como funciona:** defines uma janela para comer e jejuas no resto.\n\n` +
+        `**Protocolos:**\n` +
+        `• **16:8** — 16h jejum, 8h alimentação (o mais comum)\n` +
+        `• **14:10** — mais suave para começar\n` +
+        `• **18:6** — mais avançado\n\n` +
+        `**O que acontece no corpo:**\n` +
+        `• Insulina baixa → queima gordura\n` +
+        `• Autofagia (limpeza celular) activa após 16h\n` +
+        `• A fome adapta-se em 1-2 semanas\n\n` +
         `${faseRestritiva ?
-          `Na tua fase actual, o jejum potencia a adaptação metabólica:\n• Café keto de manhã (não quebra o jejum metabólico)\n• Primeira refeição: almoço com ${Math.round(palmas * 0.4)} palmas\n• Jantar com ${Math.round(palmas * 0.35)} palmas\n• Snack se necessário` :
-          `Podes experimentar 14:8 ou 16:8:\n• Pequeno-almoço às 10h ou almoço às 12h\n• Última refeição até às 20h\n• Água, chá e café sem açúcar durante o jejum`}\n\n` +
-        `**⚠️ NOTA:** O jejum não é obrigatório no método Vitalis, mas é uma ferramenta poderosa se te sentires confortável.`;
+          `**Para a tua fase:** O jejum potencia a adaptação. Experimenta 16:8 — almoço + jantar com as tuas porções (${palmas}P ${maos}H ${polegares}G).` :
+          `**Para ti:** Experimenta 14:10 ou 16:8. Última refeição até às 20h, primeira às 10h-12h.`}\n\n` +
+        `Não é obrigatório, mas funciona muito bem! Queres ajuda a planear a tua janela?`;
     }
 
-    // ========== MAIS SOBRE HORMONAS ==========
+    // ========== HORMONAS ==========
     if (texto.match(/hormon|grelina|insulina|leptina|cortisol/)) {
-      return `🧬 **Hormonas e Alimentação**\n\n` +
-        `O teu corpo é regulado por hormonas que controlam fome, saciedade e armazenamento de gordura.\n\n` +
-        `**INSULINA** 📉\n` +
-        `• Libertada quando comes (especialmente hidratos)\n` +
-        `• Níveis altos = corpo em "modo armazenamento"\n` +
-        `• Níveis baixos = corpo acede à gordura\n` +
-        `• O método Vitalis ajuda: ${faseRestritiva ? 'a tua fase mantém insulina baixa' : 'porções controladas evitam picos'}\n\n` +
-        `**GRELINA** (hormona da fome) 🍽️\n` +
-        `• Aumenta antes das refeições habituais\n` +
-        `• É um HÁBITO, não uma necessidade real\n` +
-        `• Adapta-se em 1-2 semanas a novos horários\n` +
-        `• Proteína e gordura reduzem grelina por mais tempo\n\n` +
-        `**LEPTINA** (hormona da saciedade) ✋\n` +
-        `• Diz ao cérebro "estou satisfeito"\n` +
-        `• O excesso de peso pode causar "resistência à leptina"\n` +
-        `• O método Vitalis melhora esta sensibilidade\n\n` +
-        `**CORTISOL** (stress) 😰\n` +
-        `• Níveis altos = armazenamento de gordura abdominal\n` +
-        `• O sono e a alimentação regular ajudam a controlar\n\n` +
-        `**📚 Referências:**\n` +
-        `• Cummings DE et al. (2001) - Grelina\n` +
-        `• Considine RV et al. (1996) - Leptina\n` +
-        `• Dallman MF et al. (2003) - Cortisol`;
+      return `${nome ? nome + ', as' : 'As'} hormonas-chave na alimentação:\n\n` +
+        `📉 **Insulina** — ${faseRestritiva ? 'a tua fase mantém-na baixa = corpo queima gordura' : 'porções controladas evitam picos = menos armazenamento de gordura'}\n\n` +
+        `🍽️ **Grelina** (fome) — é um HÁBITO! Adapta-se em 1-2 semanas. A fome que sentes antes da refeição habitual vai passar.\n\n` +
+        `✋ **Leptina** (saciedade) — diz ao cérebro "chega". O método Vitalis melhora esta sensibilidade.\n\n` +
+        `😰 **Cortisol** (stress) — níveis altos = gordura abdominal. Dorme bem e come regularmente.\n\n` +
+        `Qual destas queres perceber melhor?`;
     }
 
-    // ========== AUTOFAGIA DETALHADA ==========
+    // ========== AUTOFAGIA ==========
     if (texto.match(/autofag|limpeza celular|renovar celula|detox real/)) {
-      return `🔬 **Autofagia - A Limpeza Celular**\n\n` +
-        `A autofagia (do grego "comer-se a si próprio") é o processo de reciclagem celular. O Dr. Yoshinori Ohsumi recebeu o **Prémio Nobel de 2016** por esta descoberta.\n\n` +
-        `**O QUE ACONTECE:**\n` +
-        `• As células identificam componentes danificados\n` +
-        `• Envolvem-nos em membranas (autofagossomas)\n` +
-        `• Decompõem e reciclam para criar novas proteínas\n\n` +
-        `**BENEFÍCIOS COMPROVADOS:**\n` +
-        `• ♻️ Remove proteínas mal-formadas (prevenção Alzheimer)\n` +
-        `• 🦠 Elimina patógenos intracelulares\n` +
-        `• 🧬 Previne danos no DNA\n` +
-        `• ⏰ Efeito anti-envelhecimento\n` +
-        `• 💪 Preserva massa muscular durante restrição calórica\n\n` +
-        `**QUANDO SE ACTIVA:**\n` +
-        `• Começa gradualmente após 12-14h de jejum\n` +
-        `• Pico significativo às 16-18h\n` +
-        `• Máxima activação às 24-48h (jejum prolongado)\n\n` +
-        `**COMO POTENCIAR:**\n` +
-        `• Jejum intermitente (16:8 ou mais)\n` +
+      return `${nome ? nome + ', a' : 'A'} autofagia é a "limpeza celular" do corpo — as células reciclam partes danificadas e renovam-se. Prémio Nobel de 2016!\n\n` +
+        `**Quando se activa:**\n` +
+        `• Após 12-14h de jejum começa gradualmente\n` +
+        `• Pico às 16-18h — é aqui que a magia acontece\n\n` +
+        `**Benefícios:** anti-envelhecimento, prevenção de doenças, preserva músculo.\n\n` +
+        `**Como potenciar:**\n` +
+        `• Jejum 16:8 ou mais\n` +
         `• Exercício (especialmente em jejum)\n` +
-        `• Café (activa autofagia mesmo sem jejum!)\n` +
-        `• Restrição calórica moderada\n\n` +
-        `**📚 Referências Científicas:**\n` +
-        `• Ohsumi Y. (2014) - Molecular Biology of the Cell\n` +
-        `• Levine B & Kroemer G (2008) - Cell\n` +
-        `• Alirezaei M et al. (2010) - Autophagy`;
+        `• Café — sim, o café activa autofagia!\n\n` +
+        `${faseRestritiva ?
+          `Na tua fase, já estás a beneficiar! O jejum + baixos hidratos maximiza este processo.` :
+          `É um dos maiores benefícios do jejum intermitente. Queres experimentar?`}`;
     }
 
     // ========== FOME ==========
@@ -1020,11 +976,9 @@ export default function ChatCoach() {
         `• "Alimentação e treino"\n` +
         `• "Alimentação emocional"\n\n` +
         `**🌙 Ramadão:**\n` +
-        `• "Ramadão" - guia completo\n` +
-        `• "Suhoor" - refeição antes do amanhecer\n` +
-        `• "Iftar" - quebra do jejum\n` +
-        `• "Hidratação ramadão"\n` +
-        `• "Tâmaras"\n\n` +
+        `• "Ramadão" - apoio durante o mês sagrado\n` +
+        `• "Suhoor" / "Iftar" - dicas práticas\n` +
+        `• "Hidratação ramadão" / "Exercício ramadão"\n\n` +
         `Pergunta o que quiseres!`;
     }
 
@@ -1119,48 +1073,58 @@ export default function ChatCoach() {
   }
 
   return (
-    <div className="min-h-screen bg-[#E8E4DC] flex flex-col pb-20">
-      <header className="bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-4">
+    <div className="fixed inset-0 bg-[#F5F1EB] flex flex-col" style={{ paddingBottom: '64px' }}>
+      {/* Header - Vivianne sempre visível */}
+      <header className="bg-gradient-to-r from-[#7C8B6F] to-[#5D6B4F] text-white shadow-md z-10 flex-shrink-0">
+        <div className="max-w-2xl mx-auto px-4 py-3">
           <div className="flex items-center gap-3">
-            <Link to="/vitalis/dashboard" className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">←</Link>
-            <div className="w-12 h-12 rounded-full bg-white/30 flex items-center justify-center text-2xl">👩‍⚕️</div>
-            <div className="flex-1">
-              <h1 className="font-bold">Vivianne</h1>
-              <p className="text-white/70 text-sm flex items-center gap-1">
-                <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                Coach PN Level 1
+            <Link to="/vitalis/dashboard" className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-lg hover:bg-white/30 transition-colors">←</Link>
+            <img src="/logos/VITALIS_LOGO_V3.png" alt="Vivianne" className="w-11 h-11 rounded-full bg-white/90 object-contain shadow-sm flex-shrink-0 p-1" />
+            <div className="flex-1 min-w-0">
+              <h1 className="font-bold text-base">Vivianne</h1>
+              <p className="text-white/80 text-xs flex items-center gap-1.5">
+                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                Coach Vitalis
               </p>
             </div>
-            <button onClick={limparConversa} className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-sm hover:bg-white/30">🗑️</button>
+            <button onClick={limparConversa} className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-sm hover:bg-white/25 transition-colors" title="Limpar conversa">🗑️</button>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="max-w-2xl mx-auto space-y-4">
+      {/* Mensagens - scrollable */}
+      <main className="flex-1 overflow-y-auto px-3 py-3">
+        <div className="max-w-2xl mx-auto space-y-1">
           {Object.entries(mensagensAgrupadas).map(([data, msgs]) => (
             <div key={data}>
-              <div className="flex justify-center my-4">
-                <span className="px-3 py-1 bg-white/80 rounded-full text-xs text-gray-500">{data}</span>
+              <div className="flex justify-center my-3">
+                <span className="px-3 py-0.5 bg-white/70 rounded-full text-[11px] text-gray-500 shadow-sm">{data}</span>
               </div>
               {msgs.map((msg) => (
-                <div key={msg.id} className={`flex ${msg.remetente === 'user' ? 'justify-end' : 'justify-start'} mb-3`}>
-                  <div className={`max-w-[85%] rounded-2xl px-4 py-3 ${msg.remetente === 'user' ? 'bg-[#7C8B6F] text-white rounded-br-md' : 'bg-white text-gray-800 rounded-bl-md shadow'}`}>
-                    <p className="whitespace-pre-line text-sm leading-relaxed">{msg.texto}</p>
-                    <p className={`text-xs mt-1 ${msg.remetente === 'user' ? 'text-white/70' : 'text-gray-400'}`}>{formatarHora(msg.timestamp)}</p>
+                <div key={msg.id} className={`flex ${msg.remetente === 'user' ? 'justify-end' : 'justify-start'} mb-2.5`}>
+                  {msg.remetente === 'coach' && (
+                    <div className="w-7 h-7 rounded-full bg-[#7C8B6F] flex items-center justify-center flex-shrink-0 mr-2 mt-1 shadow-sm"><span className="text-white text-xs font-bold">V</span></div>
+                  )}
+                  <div className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 ${
+                    msg.remetente === 'user'
+                      ? 'bg-[#7C8B6F] text-white rounded-br-sm'
+                      : 'bg-white text-gray-800 rounded-bl-sm shadow-sm border border-gray-100'
+                  }`}>
+                    <p className="whitespace-pre-line text-[13px] leading-relaxed">{msg.texto}</p>
+                    <p className={`text-[10px] mt-1 text-right ${msg.remetente === 'user' ? 'text-white/60' : 'text-gray-400'}`}>{formatarHora(msg.timestamp)}</p>
                   </div>
                 </div>
               ))}
             </div>
           ))}
           {enviando && (
-            <div className="flex justify-start mb-3">
-              <div className="bg-white rounded-2xl px-4 py-3 shadow rounded-bl-md">
-                <div className="flex gap-1">
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+            <div className="flex justify-start mb-2.5">
+              <div className="w-7 h-7 rounded-full bg-[#7C8B6F] flex items-center justify-center text-sm flex-shrink-0 mr-2 mt-1 shadow-sm">👩‍⚕️</div>
+              <div className="bg-white rounded-2xl px-4 py-3 shadow-sm rounded-bl-sm border border-gray-100">
+                <div className="flex gap-1.5">
+                  <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                  <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                  <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
                 </div>
               </div>
             </div>
@@ -1169,26 +1133,29 @@ export default function ChatCoach() {
         </div>
       </main>
 
-      <div className="bg-white/50 px-4 py-2 overflow-x-auto">
-        <div className="max-w-2xl mx-auto flex gap-2">
-          {[
-            { texto: 'O que é o método Vitalis?', emoji: '🌱' },
-            { texto: 'Minhas porções', emoji: '🖐️' },
-            { texto: 'Como usar a app', emoji: '📱' },
-            { texto: 'Espaço de Retorno', emoji: '💜' },
-            { texto: 'Guia Ramadão', emoji: '🌙' },
-            { texto: 'Jejum intermitente', emoji: '⏰' },
-            { texto: 'Peso estagnado', emoji: '⚖️' },
-            { texto: 'Ajuda', emoji: '❓' },
-          ].map((quick, i) => (
-            <button key={i} onClick={() => setNovaMensagem(quick.texto)} className="flex items-center gap-1 px-3 py-1.5 bg-white rounded-full text-sm text-gray-600 hover:bg-gray-50 whitespace-nowrap shadow-sm">
-              <span>{quick.emoji}</span><span>{quick.texto}</span>
-            </button>
-          ))}
+      {/* Sugestões rápidas */}
+      <div className="bg-[#F5F1EB] border-t border-gray-200/60 px-3 py-2 flex-shrink-0">
+        <div className="max-w-2xl mx-auto overflow-x-auto scrollbar-hide">
+          <div className="flex gap-1.5 pb-0.5" style={{ WebkitOverflowScrolling: 'touch' }}>
+            {[
+              { texto: 'Porções', emoji: '🖐️' },
+              { texto: 'Refeições', emoji: '🍽️' },
+              { texto: 'Jejum', emoji: '⏰' },
+              { texto: 'Ramadão', emoji: '🌙' },
+              { texto: 'Treino', emoji: '💪' },
+              { texto: 'Peso', emoji: '⚖️' },
+              { texto: 'Ajuda', emoji: '❓' },
+            ].map((quick, i) => (
+              <button key={i} onClick={() => { setNovaMensagem(quick.texto); }} className="flex items-center gap-1 px-2.5 py-1 bg-white rounded-full text-xs text-[#6B5C4C] hover:bg-[#7C8B6F] hover:text-white whitespace-nowrap shadow-sm border border-gray-200/80 transition-colors flex-shrink-0">
+                <span>{quick.emoji}</span><span>{quick.texto}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="bg-white border-t border-gray-200 px-4 py-3 sticky bottom-0">
+      {/* Input */}
+      <div className="bg-white border-t border-gray-200 px-3 py-2.5 flex-shrink-0">
         <div className="max-w-2xl mx-auto flex items-center gap-2">
           <input
             type="text"
@@ -1196,9 +1163,11 @@ export default function ChatCoach() {
             onChange={(e) => setNovaMensagem(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && enviarMensagem()}
             placeholder="Pergunta à Vivianne..."
-            className="flex-1 px-4 py-3 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-[#7C8B6F]"
+            className="flex-1 px-4 py-2.5 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#7C8B6F]/50 focus:bg-white transition-colors"
           />
-          <button onClick={enviarMensagem} disabled={!novaMensagem.trim() || enviando} className="w-12 h-12 bg-[#7C8B6F] text-white rounded-full flex items-center justify-center hover:bg-[#6B7A5D] transition-colors disabled:opacity-50">➤</button>
+          <button onClick={enviarMensagem} disabled={!novaMensagem.trim() || enviando} className="w-10 h-10 bg-[#7C8B6F] text-white rounded-full flex items-center justify-center hover:bg-[#5D6B4F] transition-colors disabled:opacity-40 flex-shrink-0 shadow-sm">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>
+          </button>
         </div>
       </div>
     </div>

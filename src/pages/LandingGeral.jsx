@@ -652,7 +652,6 @@ const LandingGeral = () => {
                 <h3 className="font-bold text-amber-200">Sete Ecos</h3>
               </div>
               <p className="text-purple-300/70 text-sm">
-                Sistema de Transmutação Feminina.<br />
                 Sete caminhos. Uma transformação completa.
               </p>
             </div>

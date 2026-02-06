@@ -85,9 +85,23 @@ export default function Navigation({ variant = 'default' }) {
   }
 
   // Vitalis-specific navigation
+  const isChatPage = location.pathname === '/vitalis/chat'
+
   if (variant === 'vitalis' || isVitalisSection) {
     return (
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E8E2D9] shadow-lg z-50">
+      <>
+        {/* Floating Vivianne chat button */}
+        {!isChatPage && (
+          <button
+            onClick={() => navigate('/vitalis/chat')}
+            className="fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[#7C8B6F] to-[#5D6B4F] shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-2 border-white/30"
+            aria-label="Falar com Vivianne"
+          >
+            <span className="text-white font-bold text-lg">V</span>
+          </button>
+        )}
+
+        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E8E2D9] shadow-lg z-50">
         {/* Current Eco indicator */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
           <div className="bg-gradient-to-r from-[#7C8B6F] to-[#5D6B4F] px-4 py-1 rounded-t-lg shadow-md">
@@ -137,6 +151,7 @@ export default function Navigation({ variant = 'default' }) {
           )}
         </div>
       </nav>
+      </>
     )
   }
 
