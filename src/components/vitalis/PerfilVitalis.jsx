@@ -214,6 +214,15 @@ export default function PerfilVitalis() {
         }
       }
 
+      // Sincronizar genero com localStorage para g() funcionar em toda a app
+      if (genero === 'M') {
+        localStorage.setItem('vitalis-sexo', 'masculino');
+      } else if (genero === 'F') {
+        localStorage.setItem('vitalis-sexo', 'feminino');
+      } else {
+        localStorage.removeItem('vitalis-sexo');
+      }
+
       setMensagemSucesso('Perfil atualizado com sucesso!');
       setTimeout(() => setMensagemSucesso(''), 3000);
 

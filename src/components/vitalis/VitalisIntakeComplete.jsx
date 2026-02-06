@@ -66,7 +66,7 @@ export default function VitalisIntakeComplete() {
     email: { label: 'Email', type: 'email', required: true },
     whatsapp: { label: 'WhatsApp', type: 'tel', placeholder: '+258…', inputMode: 'tel' },
     idade: { label: 'Idade', type: 'number', required: true, inputMode: 'numeric' },
-    sexo: { label: 'Sexo', type: 'radio', options: ['feminino', 'masculino'], labels: ['Feminino', 'Masculino'], required: true },
+    sexo: { label: 'Sexo', type: 'radio', options: ['feminino', 'masculino', 'outro'], labels: ['Feminino', 'Masculino', 'Prefiro não especificar'], required: true },
     altura_cm: { label: 'Altura (cm)', type: 'number', required: true, inputMode: 'numeric' },
     peso_actual: { label: 'Peso actual (kg)', type: 'number', step: '0.1', required: true, inputMode: 'decimal' },
     peso_meta: { label: 'Peso desejado (kg)', type: 'number', step: '0.1', required: true, inputMode: 'decimal' },

@@ -131,7 +131,7 @@ export default function AureaOnboarding() {
           <p className="text-amber-200/80 leading-relaxed">
             Vamos trabalhar algo que ninguém fala:
             <br /><br />
-            <span className="text-amber-300">A relação da mulher com existir para si</span> — sem culpa.
+            <span className="text-amber-300">A relação contigo e o direito de existir para ti</span> — sem culpa.
             <br /><br />
             Dinheiro, roupa, prazer, mimo.
             <br />
