@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { isNearRamadan } from '../utils/ramadao';
 
 /**
  * VITALIS - Landing Page
@@ -241,13 +242,8 @@ const LandingVitalis = () => {
 
       {/* Banner Sazonal Ramadão */}
       {(() => {
-        const agora = new Date();
-        const inicioRamadao = new Date(2026, 1, 17);
-        const fimRamadao = new Date(2026, 2, 20);
-        const mostraPreRamadao = new Date(inicioRamadao);
-        mostraPreRamadao.setDate(mostraPreRamadao.getDate() - 10);
-        if (agora < mostraPreRamadao || agora > fimRamadao) return null;
-        const dentroRamadao = agora >= inicioRamadao && agora <= fimRamadao;
+        const { mostrar, dentroRamadan: dentroRamadao } = isNearRamadan(10);
+        if (!mostrar) return null;
         return (
           <section className="py-8 bg-gradient-to-r from-[#1a1a3e] via-[#2d2d5e] to-[#1a3a4e] relative overflow-hidden">
             <div className="absolute top-2 right-8 text-6xl opacity-10">🌙</div>

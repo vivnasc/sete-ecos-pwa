@@ -7,6 +7,7 @@ import { EmailTriggers } from '../../lib/emails';
 import WelcomeTutorial from '../WelcomeTutorial.jsx';
 import { isCoach } from '../../lib/coach';
 import { g, setSexo } from '../../utils/genero';
+import { isNearRamadan, setObservaRamadao, observaRamadao } from '../../utils/ramadao';
 
 // Função para solicitar permissão de notificações
 const solicitarPermissaoNotificacoes = async () => {
@@ -265,13 +266,14 @@ export default function DashboardVitalis() {
         setClient(clientData);
       }
 
-      // Buscar sexo do intake para adaptar género na UI
+      // Buscar sexo e preferências do intake para adaptar UI
       const { data: intakeData } = await supabase
         .from('vitalis_intake')
-        .select('sexo')
+        .select('sexo, observa_ramadao')
         .eq('user_id', userData.id)
         .maybeSingle();
       if (intakeData?.sexo) setSexo(intakeData.sexo);
+      if (intakeData?.observa_ramadao) setObservaRamadao(intakeData.observa_ramadao);
 
       // Buscar plano (pode não existir ainda)
       const { data: planoData } = await supabase
@@ -1604,17 +1606,10 @@ export default function DashboardVitalis() {
           </div>
         </div>
 
-        {/* Banner Ramadão - Visível durante o período */}
+        {/* Banner Ramadão - Visível durante o período, apenas para quem observa */}
         {(() => {
-          const agora = new Date();
-          // Ramadão 2026 aproximado: 17 Fev - 19 Mar (ajustar conforme necessário)
-          const inicioRamadao = new Date(2026, 1, 17); // 17 Fev
-          const fimRamadao = new Date(2026, 2, 20);    // 20 Mar (dia extra para Eid)
-          // Mostrar banner 5 dias antes e durante todo o Ramadão
-          const mostraPreRamadao = new Date(inicioRamadao);
-          mostraPreRamadao.setDate(mostraPreRamadao.getDate() - 5);
-          const mostrarBanner = agora >= mostraPreRamadao && agora <= fimRamadao;
-          const dentroRamadao = agora >= inicioRamadao && agora <= fimRamadao;
+          if (!observaRamadao()) return null;
+          const { mostrar: mostrarBanner, dentroRamadan: dentroRamadao } = isNearRamadan(5);
 
           if (!mostrarBanner) return null;
 

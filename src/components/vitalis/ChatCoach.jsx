@@ -368,126 +368,81 @@ export default function ChatCoach() {
         `${faseRestritiva ? 'Evita adicionar fruta! Usa cacau em pó ou canela.' : 'Podes adicionar fruta se quiseres.'}`;
     }
 
-    // ========== RAMADÃO - GUIA ESPECÍFICO ==========
-    if (texto.match(/ramad[aã]o|ramadan|suhoor|suhur|iftar|t[aâ]mara|jejum.*sagrado|mes.*sagrado/)) {
-      return `🌙 **Ramadão - Nutrição Durante o Mês Sagrado**\n\n` +
-        `Ramadan Mubarak${nome ? ', ' + nome : ''}!\n\n` +
-        `O método Vitalis adapta-se ao Ramadão. As tuas porções diárias mantêm-se (${palmas} palmas, ${maos} mãos, ${polegares} polegares), distribuídas em 2 refeições:\n\n` +
-        `🌅 **SUHOOR (antes do amanhecer) - ~40% das porções:**\n` +
-        `• ${Math.round(palmas * 0.4)} palmas de proteína (ovos, iogurte grego, queijo)\n` +
-        `• ${Math.round(maos * 0.4)} mãos concha de hidratos (aveia, pão integral, tâmaras)\n` +
-        `• ${Math.round(polegares * 0.4)} polegares de gordura (abacate, manteiga de amendoim)\n` +
-        `• Foco: energia lenta e sustentada!\n\n` +
-        `🌇 **IFTAR (ao pôr-do-sol) - ~60% das porções:**\n` +
-        `• Começa com 1-3 tâmaras + água (tradição do Profeta SAW)\n` +
-        `• Pausa 15-20 min (momento de oração)\n` +
-        `• Depois: ${Math.round(palmas * 0.6)} palmas proteína + ${Math.round(maos * 0.6)} mãos hidratos + legumes\n\n` +
-        `💧 **HIDRATAÇÃO (entre Iftar e Suhoor):**\n` +
-        `• Meta: 2-2.5L de água\n` +
-        `• Bebe aos poucos, não tudo de uma vez\n` +
-        `• Inclui alimentos ricos em água (melancia, pepino)\n\n` +
-        `**Pergunta-me sobre:** "suhoor", "iftar", "hidratação ramadão", "exercício ramadão", "tâmaras"\n\n` +
-        `📖 Visita o Guia Ramadão completo na app para mais detalhes!`;
+    // ========== RAMADÃO - COACHING CONVERSACIONAL ==========
+    if (texto.match(/ramad[aã]o|ramadan|jejum.*sagrado|mes.*sagrado/)) {
+      return `🌙 ${nome ? nome + ', R' : 'R'}amadan Mubarak!\n\n` +
+        `Que bom que estás aqui. O Ramadão é um período especial e o teu corpo merece atenção extra.\n\n` +
+        `Como te estás a sentir? Posso ajudar-te com:\n` +
+        `• Como estás a gerir a energia durante o dia?\n` +
+        `• Tens sentido mais fome ou cansaço do que o esperado?\n` +
+        `• Precisas de ideias práticas para o Suhoor ou Iftar?\n\n` +
+        `As tuas porções diárias mantêm-se (${palmas}P ${maos}H ${polegares}G), só distribuímos em 2 momentos.\n\n` +
+        `Diz-me o que precisas e eu adapto ao teu dia. Também tens o 📖 **Guia Ramadão** completo na app com tudo detalhado!`;
     }
 
     // ========== SUHOOR ESPECÍFICO ==========
     if (texto.match(/suhoor|suhur|antes.*amanhecer|refeicao.*madrugada/)) {
-      return `🌅 **Suhoor - A Tua Refeição Antes do Amanhecer**\n\n` +
-        `${nome ? nome + ', o' : 'O'} Suhoor é fundamental! Não o saltes.\n\n` +
-        `**As tuas porções (~40% do dia):**\n` +
-        `• 🥩 ${Math.round(palmas * 0.4)} palmas de proteína\n` +
-        `• 🍚 ${Math.round(maos * 0.4)} mãos concha de hidratos complexos\n` +
-        `• 🫒 ${Math.round(polegares * 0.4)} polegares de gordura\n\n` +
-        `**Ideias de Suhoor:**\n` +
-        `• 3 ovos + pão integral + abacate\n` +
-        `• Iogurte grego + aveia + tâmaras + nozes\n` +
-        `• Batido: whey + banana + manteiga amendoim + leite\n\n` +
-        `**Dicas essenciais:**\n` +
-        `• Prioriza proteína e gordura (saciedade prolongada)\n` +
-        `• Hidratos complexos (aveia, pão integral) - libertam energia devagar\n` +
-        `• Bebe pelo menos 500ml de água\n` +
-        `• Evita comida muito salgada (aumenta a sede)\n` +
-        `• Tâmaras são excelentes - ricas em fibra e energia natural`;
+      const protSuhoor = Math.round(palmas * 0.4);
+      const hidSuhoor = Math.round(maos * 0.4);
+      const gorSuhoor = Math.round(polegares * 0.4);
+      return `🌅 ${nome ? nome + ', o' : 'O'} Suhoor faz toda a diferença no teu dia!\n\n` +
+        `O segredo é: **energia lenta**. Queres aguentar até ao Iftar sem aquela quebra a meio da tarde.\n\n` +
+        `Para ti: ${protSuhoor} palmas proteína + ${hidSuhoor} mão hidratos complexos + ${gorSuhoor} polegares gordura.\n\n` +
+        `**3 combos rápidos que funcionam:**\n` +
+        `🥚 Ovos mexidos + pão integral + abacate\n` +
+        `🥣 Aveia com iogurte grego + tâmaras + nozes\n` +
+        `🥤 Batido de whey + banana + manteiga de amendoim\n\n` +
+        `Dica: bebe pelo menos 500ml de água e evita o muito salgado (aumenta a sede). Qual destes combos te atrai mais?`;
     }
 
     // ========== IFTAR ESPECÍFICO ==========
     if (texto.match(/iftar|quebr.*jejum|por.?do.?sol|abrir.*jejum/)) {
-      return `🌇 **Iftar - Quebra do Jejum ao Pôr-do-Sol**\n\n` +
-        `${nome ? nome + ', o' : 'O'} Iftar é momento de gratidão e nutrição.\n\n` +
-        `**A sequência ideal:**\n` +
-        `1️⃣ 1-3 tâmaras + 1 copo de água\n` +
-        `2️⃣ Pausa de 15-20 min (oração)\n` +
-        `3️⃣ Refeição principal equilibrada\n\n` +
-        `**As tuas porções (~60% do dia):**\n` +
-        `• 🥩 ${Math.round(palmas * 0.6)} palmas de proteína\n` +
-        `• 🍚 ${Math.round(maos * 0.6)} mãos concha de hidratos\n` +
-        `• 🫒 ${Math.round(polegares * 0.6)} polegares de gordura\n` +
-        `• 🥬 Legumes à vontade (sopa é óptima!)\n\n` +
-        `**Ideias de Iftar:**\n` +
-        `• Sopa de lentilhas + frango grelhado com arroz + salada\n` +
-        `• Hummus + peixe assado + cuscuz + legumes\n` +
-        `• Carne estufada + batata + legumes + iogurte\n\n` +
-        `**Evita:** Comer rápido demais, frituras em excesso, bebidas açucaradas`;
+      const protIftar = Math.round(palmas * 0.6);
+      const hidIftar = Math.round(maos * 0.6);
+      return `🌇 ${nome ? nome + ', ' : ''}O Iftar é o momento de nutrir o corpo com calma e gratidão.\n\n` +
+        `**O ritual que funciona:**\n` +
+        `1️⃣ Tâmaras + água (restaura a glicose suavemente)\n` +
+        `2️⃣ Pausa para oração\n` +
+        `3️⃣ Refeição equilibrada: ${protIftar} palmas proteína + ${hidIftar} mãos hidratos + legumes à vontade\n\n` +
+        `O erro mais comum? Comer tudo de uma vez, muito rápido. O estômago está mais sensível — come devagar, saboreia.\n\n` +
+        `**Uma ideia para hoje:** Sopa de lentilhas para começar + prato principal com proteína e legumes. Que achas?`;
     }
 
     // ========== TÂMARAS ==========
     if (texto.match(/t[aâ]mara|tamara|datil/)) {
-      return `🌴 **Tâmaras - O Alimento do Ramadão**\n\n` +
-        `As tâmaras são perfeitas para quebrar o jejum:\n\n` +
-        `**Nutrição (por 3 tâmaras ~75g):**\n` +
-        `• ~200 kcal de energia natural\n` +
-        `• Fibra (ajuda na digestão)\n` +
-        `• Potássio (repõe electrólitos)\n` +
-        `• Magnésio (reduz fadiga)\n` +
-        `• Açúcares naturais (restauram a glicose rapidamente)\n\n` +
-        `**Como usar no método Vitalis:**\n` +
-        `• 3 tâmaras = ~1 mão concha de hidratos\n` +
-        `• Ideais para quebrar o jejum no Iftar\n` +
-        `• No Suhoor: com iogurte grego e nozes = combo perfeito\n` +
-        `• Energia rápida e natural sem picos excessivos de insulina\n\n` +
-        `**Tradição e ciência:** O Profeta (SAW) quebrava o jejum com tâmaras e água. A ciência moderna confirma que é nutricionalmente ideal para restaurar a energia após o jejum.`;
+      return `🌴 As tâmaras são um alimento incrível!\n\n` +
+        `3 tâmaras (~75g) dão-te energia rápida, fibra e minerais como potássio e magnésio. No método Vitalis, contam como ~1 mão concha de hidratos.\n\n` +
+        `São ideais para:\n` +
+        `• Quebrar o jejum no Iftar (tradição com base científica!)\n` +
+        `• No Suhoor com iogurte e nozes\n` +
+        `• Como snack natural entre Iftar e Suhoor\n\n` +
+        `Queres que te sugira uma combinação com tâmaras para o teu próximo Suhoor ou Iftar?`;
     }
 
     // ========== HIDRATAÇÃO RAMADÃO ==========
     if (texto.match(/(hidrat|agua|beber).*ramad|(ramad).*(hidrat|agua|beber)|sede.*ramad/)) {
-      return `💧 **Hidratação Durante o Ramadão**\n\n` +
-        `${nome ? nome + ', a' : 'A'} hidratação é o maior desafio do Ramadão.\n\n` +
-        `**Plano de hidratação nocturna:**\n` +
-        `🌇 Iftar: 2-3 copos (500-750ml)\n` +
-        `🌙 Entre Iftar e Suhoor: 3-4 copos (750ml-1L)\n` +
-        `🌅 Suhoor: 2 copos (500ml)\n` +
-        `📊 **Meta total: 2-2.5L**\n\n` +
-        `**Dicas importantes:**\n` +
-        `• Bebe aos poucos ao longo da noite\n` +
-        `• Não tentes beber tudo de uma vez\n` +
-        `• Água de coco repõe electrólitos naturalmente\n` +
-        `• Sopas contam como hidratação\n` +
-        `• Limita a cafeína (é diurética)\n\n` +
-        `**Alimentos ricos em água:**\n` +
-        `🍉 Melancia (92% água)\n` +
-        `🥒 Pepino (96% água)\n` +
-        `🍅 Tomate (94% água)\n\n` +
-        `Inclui estes alimentos no Suhoor e Iftar para ajudar na hidratação!`;
+      return `💧 ${nome ? nome + ', a' : 'A'} hidratação é mesmo o maior desafio, não é?\n\n` +
+        `O truque é distribuir ao longo da noite, nunca tudo de uma vez:\n` +
+        `• 🌇 Iftar: 2-3 copos com calma\n` +
+        `• 🌙 Durante a noite: vai bebendo aos poucos\n` +
+        `• 🌅 Suhoor: mais 2 copos\n` +
+        `• Meta: 2-2.5L no total\n\n` +
+        `**Dica prática:** Sopas e alimentos ricos em água (melancia, pepino) ajudam muito! E cuidado com a cafeína — é diurética.\n\n` +
+        `Estás a conseguir beber o suficiente? Conta-me como está a correr.`;
     }
 
     // ========== EXERCÍCIO RAMADÃO ==========
     if (texto.match(/(exerc|treino|trein).*ramad|(ramad).*(exerc|treino|trein)/)) {
-      return `🏃‍♀️ **Exercício Durante o Ramadão**\n\n` +
-        `Podes e deves continuar a mexer-te, mas adaptado:\n\n` +
-        `**Melhor horário: 30-60 min antes do Iftar**\n` +
-        `• Treino leve a moderado\n` +
-        `• Vais poder hidratar e comer logo a seguir\n` +
-        `• A autofagia está no pico!\n\n` +
-        `**Alternativa: 1-2h após o Iftar**\n` +
-        `• Para treinos mais intensos\n` +
-        `• Corpo já hidratado e nutrido\n\n` +
-        `**Adaptações recomendadas:**\n` +
-        `• Reduz a intensidade em 30-40%\n` +
-        `• Treinos mais curtos (30-45 min)\n` +
-        `• Caminhadas são excelentes\n` +
-        `• Yoga e alongamentos são perfeitos\n` +
-        `• Se sentires tonturas, PARA imediatamente\n\n` +
-        `${diasTreino.length > 0 ? `Os teus dias de treino (${diasTreino.map(d => ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d-1]).join(', ')}) mantêm o +1 mão concha de hidratos.` : ''}`;
+      return `🏃‍♀️ Sim, podes e deves continuar a mexer-te!\n\n` +
+        `Mas adapta — o teu corpo está a trabalhar diferente durante o jejum.\n\n` +
+        `**Melhor horário:** 30-60 min antes do Iftar\n` +
+        `Porquê? Treino leve, e logo comes e hidrata a seguir. A autofagia está no pico!\n\n` +
+        `**Como adaptar:**\n` +
+        `• Intensidade: reduz 30-40% do habitual\n` +
+        `• Duração: 30-45 min é suficiente\n` +
+        `• Caminhadas e yoga são excelentes opções\n` +
+        `• Se sentires tonturas, PARA — ouve o teu corpo\n\n` +
+        `${diasTreino.length > 0 ? `Os teus dias de treino (${diasTreino.map(d => ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d-1]).join(', ')}) mantêm as porções extra. ` : ''}Como tem sido o teu treino durante o jejum?`;
     }
 
     // ========== JEJUM INTERMITENTE - EDUCATIVO ==========
@@ -1020,11 +975,9 @@ export default function ChatCoach() {
         `• "Alimentação e treino"\n` +
         `• "Alimentação emocional"\n\n` +
         `**🌙 Ramadão:**\n` +
-        `• "Ramadão" - guia completo\n` +
-        `• "Suhoor" - refeição antes do amanhecer\n` +
-        `• "Iftar" - quebra do jejum\n` +
-        `• "Hidratação ramadão"\n` +
-        `• "Tâmaras"\n\n` +
+        `• "Ramadão" - apoio durante o mês sagrado\n` +
+        `• "Suhoor" / "Iftar" - dicas práticas\n` +
+        `• "Hidratação ramadão" / "Exercício ramadão"\n\n` +
         `Pergunta o que quiseres!`;
     }
 
