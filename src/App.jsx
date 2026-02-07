@@ -12,6 +12,8 @@ import Navigation from './components/Navigation'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import ComingSoon from './pages/ComingSoon'
+import Auth from './components/Auth'
+import MarketingDashboard from './pages/MarketingDashboard'
 
 // ===== LOADING FALLBACK ACESSÍVEL =====
 function LoadingFallback() {
@@ -145,8 +147,8 @@ function AppRoutes() {
             <Route path="/conta" element={<AuthRoute from="/conta"><MinhaConta /></AuthRoute>} />
             <Route path="/perfil" element={<AuthRoute from="/perfil"><Perfil /></AuthRoute>} />
 
-            {/* ===== LUMINA - Diagnóstico Gratuito ===== */}
-            <Route path="/lumina" element={<AuthRoute from="/lumina"><Lumina /></AuthRoute>} />
+            {/* ===== LUMINA - Diagnóstico Gratuito (aberto a todos) ===== */}
+            <Route path="/lumina" element={<Lumina />} />
 
             {/* ===== ECO 1: VITALIS - Nutrição ===== */}
             <Route path="/vitalis" element={<LandingVitalis />} />
@@ -215,6 +217,12 @@ function AppRoutes() {
             <Route path="/coach" element={
               isSessionCoach(session)
                 ? <CoachDashboard />
+                : <Navigate to="/" />
+            } />
+
+            <Route path="/coach/marketing" element={
+              isSessionCoach(session)
+                ? <MarketingDashboard />
                 : <Navigate to="/" />
             } />
 

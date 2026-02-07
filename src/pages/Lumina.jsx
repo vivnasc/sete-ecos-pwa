@@ -27,6 +27,8 @@ import {
   mostrarCicloMenstrual
 } from '../lib/genero';
 import { setSexo } from '../utils/genero';
+import { useAuth } from '../contexts/AuthContext';
+import UpsellCard from '../components/UpsellCard';
 import './Lumina.css';
 
 // ============================================================
@@ -153,10 +155,14 @@ const PERGUNTAS = [
 // COMPONENTE PRINCIPAL
 // ============================================================
 export default function Lumina() {
+  // Acesso a subscricoes (para upsell contextual)
+  const { vitalisAccess, aureaAccess } = useAuth();
+  const [upsellDismissed, setUpsellDismissed] = useState(false);
+
   // Estados do fluxo
   const [screen, setScreen] = useState('splash');
   const [questionIndex, setQuestionIndex] = useState(0);
-  
+
   // Estados do utilizador
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -190,6 +196,11 @@ export default function Lumina() {
   // Estados do histórico
   const [historico, setHistorico] = useState([]);
   const [diasCount, setDiasCount] = useState(0);
+
+  // Email capture (funil para visitantes nao autenticadas)
+  const [captureEmail, setCaptureEmail] = useState('');
+  const [captureSubmitted, setCaptureSubmitted] = useState(false);
+  const [captureLoading, setCaptureLoading] = useState(false);
   
   // Estados do onboarding
   const [nome, setNome] = useState('');
@@ -486,8 +497,9 @@ export default function Lumina() {
 
     try {
       const { data: { user: authUser } } = await supabase.auth.getUser();
-      
+
       if (authUser) {
+        // Utilizadora autenticada - guardar em Supabase
         const profileData = {
           auth_id: authUser.id,
           nome: nome.trim(),
@@ -510,16 +522,32 @@ export default function Lumina() {
         if (data.ciclo_activo && data.ultimo_periodo) {
           calcularFaseCiclo(data);
         }
-
-        // Sincronizar genero com localStorage para g() funcionar em toda a app
-        if (genero === 'M') {
-          setSexo('masculino');
-        } else if (genero === 'F') {
-          setSexo('feminino');
+      } else {
+        // Visitante nao autenticada - perfil local temporario
+        const localProfile = {
+          id: null,
+          nome: nome.trim(),
+          genero: genero || null,
+          ciclo_activo: tracksCycle === 'sim',
+          duracao_ciclo: cycleLength,
+          ultimo_periodo: tracksCycle === 'sim' && lastPeriod ? lastPeriod : null
+        };
+        setProfile(localProfile);
+        if (localProfile.ciclo_activo && localProfile.ultimo_periodo) {
+          calcularFaseCiclo(localProfile);
         }
+      }
+
+      // Sincronizar genero com localStorage para g() funcionar em toda a app
+      if (genero === 'M') {
+        setSexo('masculino');
+      } else if (genero === 'F') {
+        setSexo('feminino');
       }
     } catch (error) {
       console.error('Erro ao guardar onboarding:', error);
+      // Mesmo com erro, criar perfil local para permitir check-in
+      setProfile({ id: null, nome: nome.trim(), genero: genero || null });
     }
 
     setScreen('intro');
@@ -1210,6 +1238,163 @@ export default function Lumina() {
             </div>
           )}
 
+          {/* Ponte Contextual: Lumina → Vitalis/Áurea */}
+          {(() => {
+            // Determinar se o check-in sugere necessidade de Vitalis
+            const vals = Object.values(respostas || {});
+            const media = vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : 5;
+            const corpo = respostas?.corpo || respostas?.energia || 5;
+            const espelho = respostas?.espelho || 5;
+            const needsVitalis = corpo <= 4 || media <= 4;
+            const needsAurea = espelho <= 3;
+            const eco = needsAurea ? 'aurea' : 'vitalis';
+            const ecoNome = needsAurea ? 'ÁUREA' : 'VITALIS';
+            const ecoMsg = needsAurea
+              ? 'Os teus padroes mostram que a tua relacao contigo pode precisar de atencao. A ÁUREA trabalha o valor proprio — sem culpa, sem pressao.'
+              : 'O teu corpo esta a pedir atencao. O VITALIS combina nutricao cientifica com apoio emocional para uma transformacao real e sustentavel.';
+            const ecoCor = needsAurea ? '#C9A227' : '#7C8B6F';
+            const ecoBg = needsAurea
+              ? 'linear-gradient(135deg, rgba(201, 162, 39, 0.12) 0%, rgba(212, 175, 55, 0.06) 100%)'
+              : 'linear-gradient(135deg, rgba(124, 139, 111, 0.12) 0%, rgba(156, 175, 136, 0.06) 100%)';
+
+            return (
+              <div style={{
+                marginTop: '24px',
+                padding: '20px',
+                background: ecoBg,
+                borderRadius: '16px',
+                border: `1px solid ${ecoCor}30`,
+                textAlign: 'center'
+              }}>
+                <div style={{ fontSize: '11px', letterSpacing: '2px', opacity: 0.6, marginBottom: '8px' }}>
+                  O PROXIMO PASSO
+                </div>
+                <div style={{ fontSize: '15px', fontWeight: 'bold', color: ecoCor, marginBottom: '8px' }}>
+                  {ecoNome} pode ajudar-te
+                </div>
+                <div style={{ fontSize: '13px', lineHeight: 1.6, opacity: 0.85, marginBottom: '16px' }}>
+                  {ecoMsg}
+                </div>
+                <a href={`/${eco}?utm_source=lumina&utm_medium=upsell&utm_campaign=pos-checkin`} style={{
+                  display: 'inline-block',
+                  padding: '12px 28px',
+                  background: ecoCor,
+                  color: 'white',
+                  borderRadius: '25px',
+                  textDecoration: 'none',
+                  fontSize: '13px',
+                  fontWeight: 'bold'
+                }}>
+                  Conhecer {ecoNome} →
+                </a>
+                <div style={{ fontSize: '11px', opacity: 0.5, marginTop: '10px' }}>
+                  {needsAurea ? 'Desde 975 MT/mes · 7 dias de garantia' : 'Desde 2.500 MT/mes · 7 dias de garantia'}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Captura de email - so para visitantes nao autenticadas */}
+          {!user && !captureSubmitted && (
+            <div style={{
+              marginTop: '24px',
+              padding: '24px 20px',
+              background: 'linear-gradient(135deg, rgba(107, 91, 149, 0.08) 0%, rgba(155, 89, 182, 0.04) 100%)',
+              borderRadius: '16px',
+              border: '1px solid rgba(107, 91, 149, 0.15)',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '24px', marginBottom: '8px' }}>✉️</div>
+              <div style={{ fontSize: '15px', fontWeight: 'bold', marginBottom: '6px' }}>
+                Queres receber os teus padroes por email?
+              </div>
+              <div style={{ fontSize: '13px', opacity: 0.7, marginBottom: '16px', lineHeight: 1.5 }}>
+                Recebe a tua leitura + dicas personalizadas baseadas nos teus resultados. Gratis.
+              </div>
+              <div style={{ display: 'flex', gap: '8px', maxWidth: '320px', margin: '0 auto' }}>
+                <input
+                  type="email"
+                  value={captureEmail}
+                  onChange={(e) => setCaptureEmail(e.target.value)}
+                  placeholder="O teu email"
+                  style={{
+                    flex: 1,
+                    padding: '12px 16px',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(107, 91, 149, 0.2)',
+                    background: 'white',
+                    fontSize: '14px',
+                    outline: 'none'
+                  }}
+                />
+                <button
+                  disabled={captureLoading || !captureEmail.includes('@')}
+                  onClick={async () => {
+                    if (!captureEmail.includes('@')) return;
+                    setCaptureLoading(true);
+                    try {
+                      await supabase.from('waitlist').insert({
+                        nome: profile?.nome || '',
+                        email: captureEmail.trim(),
+                        produto: 'lumina-checkin'
+                      });
+                    } catch (err) {
+                      // Duplicado ou erro, ignorar silenciosamente
+                    }
+                    setCaptureSubmitted(true);
+                    setCaptureLoading(false);
+                  }}
+                  style={{
+                    padding: '12px 20px',
+                    borderRadius: '12px',
+                    background: captureLoading ? '#999' : '#6B5B95',
+                    color: 'white',
+                    border: 'none',
+                    fontWeight: 'bold',
+                    fontSize: '14px',
+                    cursor: captureLoading ? 'wait' : 'pointer',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  {captureLoading ? '...' : 'Enviar'}
+                </button>
+              </div>
+              <div style={{ fontSize: '11px', opacity: 0.4, marginTop: '10px' }}>
+                Sem spam. Podes cancelar quando quiseres.
+              </div>
+            </div>
+          )}
+
+          {/* Confirmacao de captura */}
+          {!user && captureSubmitted && (
+            <div style={{
+              marginTop: '24px',
+              padding: '20px',
+              background: 'rgba(16, 185, 129, 0.08)',
+              borderRadius: '16px',
+              border: '1px solid rgba(16, 185, 129, 0.2)',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '24px', marginBottom: '6px' }}>✓</div>
+              <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#059669' }}>
+                Obrigada! Vais receber os teus resultados em breve.
+              </div>
+              <a href="/login" style={{
+                display: 'inline-block',
+                marginTop: '12px',
+                padding: '10px 24px',
+                background: '#6B5B95',
+                color: 'white',
+                borderRadius: '20px',
+                textDecoration: 'none',
+                fontSize: '13px',
+                fontWeight: 'bold'
+              }}>
+                Criar conta para guardar historico →
+              </a>
+            </div>
+          )}
+
           {/* Os 7 Ecos - LUMINA observa, não faz parte */}
           <div style={{ marginTop: '30px' }}>
             <div style={{ textAlign: 'center', marginBottom: '16px' }}>
@@ -1308,6 +1493,11 @@ export default function Lumina() {
               </a>
             </div>
           </div>
+
+          {/* Upsell contextual - so aparece para quem nao tem Vitalis/Aurea */}
+          {!upsellDismissed && !vitalisAccess && !aureaAccess && padrao && (
+            <UpsellCard padrao={padrao} onDismiss={() => setUpsellDismissed(true)} />
+          )}
 
           {/* Assinatura e botão dentro do container para evitar sobreposição */}
           <div style={{ marginTop: '40px', textAlign: 'center' }}>

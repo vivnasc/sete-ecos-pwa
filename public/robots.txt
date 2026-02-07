@@ -1,0 +1,44 @@
+# SETE ECOS PWA - robots.txt
+User-agent: *
+Allow: /
+Allow: /vitalis
+Allow: /aurea
+Allow: /lumina
+Allow: /landing
+
+# Bloquear rotas protegidas/internas
+Disallow: /vitalis/dashboard
+Disallow: /vitalis/checkin
+Disallow: /vitalis/plano
+Disallow: /vitalis/receitas
+Disallow: /vitalis/chat
+Disallow: /vitalis/relatorios
+Disallow: /vitalis/tendencias
+Disallow: /vitalis/perfil
+Disallow: /vitalis/fotos-progresso
+Disallow: /vitalis/meals
+Disallow: /vitalis/intake
+Disallow: /vitalis/notificacoes
+Disallow: /vitalis/lista-compras
+Disallow: /vitalis/sugestoes
+Disallow: /vitalis/desafios
+Disallow: /vitalis/calendario
+Disallow: /vitalis/guia
+Disallow: /vitalis/treinos
+Disallow: /aurea/dashboard
+Disallow: /aurea/praticas
+Disallow: /aurea/roupa
+Disallow: /aurea/carteira
+Disallow: /aurea/diario
+Disallow: /aurea/insights
+Disallow: /aurea/perfil
+Disallow: /aurea/chat
+Disallow: /aurea/padroes
+Disallow: /aurea/audios
+Disallow: /aurea/notificacoes
+Disallow: /comunidade
+Disallow: /coach
+Disallow: /conta
+Disallow: /perfil
+
+Sitemap: https://app.seteecos.com/sitemap.xml
