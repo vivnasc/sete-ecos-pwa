@@ -494,7 +494,8 @@ export default function ChatAurea() {
     rose: '#E8B4B8',
     roseDark: '#D4919A',
     text: '#4A3728',
-    textLight: '#8B7355',
+    textLight: '#7A6445',
+    goldDark: '#7A6200',
     accent: '#F5E6D3',
     userBubble: '#C9A227',
     assistantBubble: '#FFFFFF'
@@ -542,7 +543,7 @@ export default function ChatAurea() {
           {/* Padrões identificados badge */}
           {memory.identifiedPatterns.length > 0 && (
             <div className="ml-auto px-3 py-1 rounded-full" style={{ backgroundColor: CORES.accent }}>
-              <span className="text-xs" style={{ color: CORES.gold }}>{memory.identifiedPatterns.length} padrões</span>
+              <span className="text-xs" style={{ color: CORES.goldDark }}>{memory.identifiedPatterns.length} padrões</span>
             </div>
           )}
         </div>
@@ -568,7 +569,7 @@ export default function ChatAurea() {
               }
             >
               <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-              <p className="text-[10px] mt-2 text-right" style={{ opacity: 0.5 }}>
+              <p className="text-[10px] mt-2 text-right" style={{ color: msg.role === 'user' ? 'rgba(255,255,255,0.7)' : '#8B7355' }}>
                 {new Date(msg.timestamp).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
