@@ -27,6 +27,8 @@ import {
   mostrarCicloMenstrual
 } from '../lib/genero';
 import { setSexo } from '../utils/genero';
+import { useAuth } from '../contexts/AuthContext';
+import UpsellCard from '../components/UpsellCard';
 import './Lumina.css';
 
 // ============================================================
@@ -153,10 +155,14 @@ const PERGUNTAS = [
 // COMPONENTE PRINCIPAL
 // ============================================================
 export default function Lumina() {
+  // Acesso a subscricoes (para upsell contextual)
+  const { vitalisAccess, aureaAccess } = useAuth();
+  const [upsellDismissed, setUpsellDismissed] = useState(false);
+
   // Estados do fluxo
   const [screen, setScreen] = useState('splash');
   const [questionIndex, setQuestionIndex] = useState(0);
-  
+
   // Estados do utilizador
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -1308,6 +1314,11 @@ export default function Lumina() {
               </a>
             </div>
           </div>
+
+          {/* Upsell contextual - so aparece para quem nao tem Vitalis/Aurea */}
+          {!upsellDismissed && !vitalisAccess && !aureaAccess && padrao && (
+            <UpsellCard padrao={padrao} onDismiss={() => setUpsellDismissed(true)} />
+          )}
 
           {/* Assinatura e botão dentro do container para evitar sobreposição */}
           <div style={{ marginTop: '40px', textAlign: 'center' }}>
