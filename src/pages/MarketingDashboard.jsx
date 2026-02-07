@@ -349,22 +349,7 @@ export default function MarketingDashboard() {
 
         {/* ===== TAB: IMAGENS ===== */}
         {tab === 'imagens' && (
-          <>
-            <Card titulo="Gerar Imagem com Identidade Visual" badge="Descarrega PNG">
-              <p className="text-sm text-[#6B5C4C] mb-4">
-                Cria imagens prontas para publicar no Instagram, Stories e WhatsApp Status
-                com as cores e logo oficiais. Escolhe marca, formato e estilo.
-              </p>
-              <TemplateVisual
-                texto={conteudoHoje.dica}
-                subtitulo="VITALIS - Coaching Nutricional Personalizado"
-              />
-            </Card>
-
-            <Card titulo="Criar com Texto Personalizado">
-              <PersonalizedImageGenerator />
-            </Card>
-          </>
+          <ImagensTab conteudoHoje={conteudoHoje} />
         )}
 
         {/* ===== TAB: LINKS UTM ===== */}
@@ -465,35 +450,104 @@ function CopyBtn({ onClick, copiado, label, small }) {
   );
 }
 
-function PersonalizedImageGenerator() {
-  const [texto, setTexto] = useState('');
-  const [subtitulo, setSubtitulo] = useState('');
+function ImagensTab({ conteudoHoje }) {
+  const [modo, setModo] = useState('rapido');
+  const [selectedPreset, setSelectedPreset] = useState(null);
+  const [customTexto, setCustomTexto] = useState('');
+  const [customSub, setCustomSub] = useState('');
+
+  const presets = [
+    { tipo: 'Dica do Dia', texto: conteudoHoje.dica, sub: 'VITALIS - Coaching Nutricional' },
+    { tipo: 'Testemunho', texto: 'Perdi 8kg em 3 meses sem passar fome. O Vitalis mudou a minha relacao com a comida.', sub: '- Cliente Vitalis' },
+    { tipo: 'Motivacao', texto: 'A transformacao nao acontece da noite para o dia. Acontece em cada escolha, todos os dias.', sub: '' },
+    { tipo: 'Promo Vitalis', texto: 'Coaching Nutricional Personalizado desde 2.500 MT/mes', sub: 'Plano alimentar + Receitas + Coach IA 24h + Apoio emocional' },
+    { tipo: 'Lumina Gratuito', texto: 'Conhece-te melhor em 2 minutos. Diagnostico gratuito que revela padroes sobre energia, emocao e corpo.', sub: 'LUMINA - 7 perguntas, 23 padroes' },
+    { tipo: 'Estatistica', texto: '93%', sub: 'das mulheres que usam o Vitalis reportam melhor relacao com a comida em 30 dias' },
+    { tipo: 'Receita', texto: 'Xima com caril de amendoim e legumes - uma refeicao completa e deliciosa', sub: 'Comida local e super-comida' },
+    { tipo: 'Aurea', texto: 'O teu valor nao depende da opiniao dos outros. Depende do que tu decides acreditar sobre ti.', sub: 'AUREA - Programa de Autovalor' },
+  ];
+
+  const activeTexto = selectedPreset !== null ? presets[selectedPreset].texto : customTexto;
+  const activeSub = selectedPreset !== null ? presets[selectedPreset].sub : customSub;
 
   return (
-    <div className="space-y-3">
-      <div>
-        <label className="text-xs font-semibold text-[#6B5C4C] block mb-1">Texto principal</label>
-        <textarea
-          value={texto}
-          onChange={(e) => setTexto(e.target.value)}
-          placeholder="Ex: Comer bem nao e passar fome. E saber escolher."
-          className="w-full p-3 border-2 border-[#E8E2D9] rounded-xl text-sm focus:border-[#7C8B6F] focus:outline-none resize-none"
-          rows={3}
-        />
-      </div>
-      <div>
-        <label className="text-xs font-semibold text-[#6B5C4C] block mb-1">Subtitulo (opcional)</label>
-        <input
-          value={subtitulo}
-          onChange={(e) => setSubtitulo(e.target.value)}
-          placeholder="Ex: VITALIS - Coaching Nutricional"
-          className="w-full p-3 border-2 border-[#E8E2D9] rounded-xl text-sm focus:border-[#7C8B6F] focus:outline-none"
-        />
-      </div>
-      {texto.length > 5 && (
-        <TemplateVisual texto={texto} subtitulo={subtitulo || undefined} />
-      )}
-    </div>
+    <>
+      <Card titulo="Gerador de Imagens Profissionais" badge="5 templates">
+        <p className="text-sm text-[#6B5C4C] mb-4">
+          Escolhe um conteudo pronto ou escreve o teu. Depois seleciona o tipo de imagem, marca e formato.
+        </p>
+
+        {/* Mode toggle */}
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={() => { setModo('rapido'); setSelectedPreset(0); }}
+            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
+              modo === 'rapido' ? 'bg-[#7C8B6F] text-white' : 'bg-[#E8E2D9] text-[#4A4035]'
+            }`}
+          >
+            Conteudos Prontos
+          </button>
+          <button
+            onClick={() => { setModo('custom'); setSelectedPreset(null); }}
+            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
+              modo === 'custom' ? 'bg-[#7C8B6F] text-white' : 'bg-[#E8E2D9] text-[#4A4035]'
+            }`}
+          >
+            Texto Personalizado
+          </button>
+        </div>
+
+        {/* Preset selector */}
+        {modo === 'rapido' && (
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            {presets.map((p, i) => (
+              <button
+                key={i}
+                onClick={() => setSelectedPreset(i)}
+                className={`p-3 rounded-xl text-left transition-all border-2 ${
+                  selectedPreset === i
+                    ? 'border-[#7C8B6F] bg-[#7C8B6F]/5'
+                    : 'border-[#E8E2D9] bg-white hover:border-[#7C8B6F]/50'
+                }`}
+              >
+                <p className="text-xs font-bold text-[#7C8B6F] mb-1">{p.tipo}</p>
+                <p className="text-xs text-[#6B5C4C] line-clamp-2">{p.texto}</p>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Custom text */}
+        {modo === 'custom' && (
+          <div className="space-y-3 mb-4">
+            <div>
+              <label className="text-xs font-semibold text-[#6B5C4C] block mb-1">Texto principal</label>
+              <textarea
+                value={customTexto}
+                onChange={(e) => setCustomTexto(e.target.value)}
+                placeholder="Ex: Comer bem nao e passar fome. E saber escolher."
+                className="w-full p-3 border-2 border-[#E8E2D9] rounded-xl text-sm focus:border-[#7C8B6F] focus:outline-none resize-none"
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-[#6B5C4C] block mb-1">Subtitulo (opcional)</label>
+              <input
+                value={customSub}
+                onChange={(e) => setCustomSub(e.target.value)}
+                placeholder="Ex: VITALIS - Coaching Nutricional"
+                className="w-full p-3 border-2 border-[#E8E2D9] rounded-xl text-sm focus:border-[#7C8B6F] focus:outline-none"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Template Visual */}
+        {activeTexto && activeTexto.length > 3 && (
+          <TemplateVisual texto={activeTexto} subtitulo={activeSub || undefined} />
+        )}
+      </Card>
+    </>
   );
 }
 
