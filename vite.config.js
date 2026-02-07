@@ -9,15 +9,17 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'Vitalis - Adaptação Metabólica',
-        short_name: 'Vitalis',
-        description: 'A tua app de acompanhamento nutricional personalizado',
-        theme_color: '#7C8B6F',
-        background_color: '#ffffff',
+        name: 'SETE ECOS — Sistema de Transmutacao Feminina',
+        short_name: 'Sete Ecos',
+        description: 'Sete caminhos para despertar cada dimensao da tua essencia feminina. Plataforma holistica de bem-estar.',
+        lang: 'pt',
+        theme_color: '#4B0082',
+        background_color: '#FCFCFF',
         display: 'standalone',
         orientation: 'portrait',
         scope: '/',
-        start_url: '/vitalis/dashboard',
+        start_url: '/',
+        categories: ['health', 'lifestyle', 'wellness', 'fitness'],
         icons: [
           {
             src: 'logos/sete-ecos-192.png',
@@ -35,26 +37,40 @@ export default defineConfig({
             type: 'image/png',
             purpose: 'any maskable'
           }
+        ],
+        screenshots: [],
+        shortcuts: [
+          {
+            name: 'Lumina — Diagnostico',
+            short_name: 'Lumina',
+            url: '/lumina',
+            icons: [{ src: 'logos/lumina-logo_v2.png', sizes: '192x192' }]
+          },
+          {
+            name: 'Vitalis — Nutricao',
+            short_name: 'Vitalis',
+            url: '/vitalis/dashboard',
+            icons: [{ src: 'logos/VITALIS_LOGO_V3.png', sizes: '192x192' }]
+          }
         ]
       },
       workbox: {
-        // Cache de páginas e recursos
         globPatterns: ['**/*.{js,css,html,ico,svg,woff,woff2}'],
-        // Excluir logos grandes da pasta logos/
         globIgnores: ['logos/**/*'],
-        // Aumentar limite para ficheiros maiores
-        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB
-        // Runtime caching para API
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+        // Offline fallback
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
             // Cache de imagens
-            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/i,
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|avif)$/i,
             handler: 'CacheFirst',
             options: {
               cacheName: 'images-cache',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 dias
+                maxAgeSeconds: 60 * 60 * 24 * 30
               }
             }
           },
@@ -66,7 +82,30 @@ export default defineConfig({
               cacheName: 'fonts-cache',
               expiration: {
                 maxEntries: 20,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 ano
+                maxAgeSeconds: 60 * 60 * 24 * 365
+              }
+            }
+          },
+          {
+            // Google Fonts
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'google-fonts-stylesheets',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365
+              }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-webfonts',
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 60 * 24 * 365
               }
             }
           },
@@ -78,29 +117,28 @@ export default defineConfig({
               cacheName: 'supabase-cache',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 // 24 horas
+                maxAgeSeconds: 60 * 60 * 24
               },
               networkTimeoutSeconds: 10
-            }
-          },
-          {
-            // Cache first para CDNs
-            urlPattern: /^https:\/\/cdn\..*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'cdn-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 dias
-              }
             }
           }
         ]
       },
       devOptions: {
-        enabled: true // Permitir testar em desenvolvimento
+        enabled: true
       }
     })
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separar vendor pesados para melhor caching
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-supabase': ['@supabase/supabase-js'],
+        }
+      }
+    }
+  },
   server: { port: 3000 }
 })

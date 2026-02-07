@@ -8,6 +8,12 @@ import WelcomeTutorial from '../WelcomeTutorial.jsx';
 import { isCoach } from '../../lib/coach';
 import { g, setSexo } from '../../utils/genero';
 import { isNearRamadan, setObservaRamadao, observaRamadao } from '../../utils/ramadao';
+import { useTheme } from '../../contexts/ThemeContext';
+import QuickTrackers from './QuickTrackers';
+import FastingTimerCard from './FastingTimerCard';
+import MealsSection from './MealsSection';
+import MacrosDisplay from './MacrosDisplay';
+import AchievementsPanel from './AchievementsPanel';
 
 // Função para solicitar permissão de notificações
 const solicitarPermissaoNotificacoes = async () => {
@@ -76,13 +82,7 @@ export default function DashboardVitalis() {
     return '🌱';
   });
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
-  const [showConquistasModal, setShowConquistasModal] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('vitalis-theme') === 'dark';
-    }
-    return false;
-  });
+  const { isDark: isDarkMode, toggleTheme: toggleDarkMode } = useTheme();
 
   // Hook do onboarding
   const { mostrarOnboarding, completarOnboarding } = useOnboarding();
@@ -94,11 +94,7 @@ export default function DashboardVitalis() {
   // Ref para controlar conquistas já mostradas nesta sessão
   const conquistasMostradasRef = useRef(new Set());
 
-  // Estados para Sono interactivo
-  const [mostrarSonoForm, setMostrarSonoForm] = useState(false);
-  const [sonoHoras, setSonoHoras] = useState('');
-  const [sonoMinutos, setSonoMinutos] = useState('');
-  const [sonoQualidade, setSonoQualidade] = useState(0);
+  // Estados de sono interactivo movidos para QuickTrackers
 
   // Estados para PWA install e notificações
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -155,16 +151,7 @@ export default function DashboardVitalis() {
     };
   }, []);
 
-  // Dark mode effect
-  useEffect(() => {
-    const root = document.documentElement;
-    if (isDarkMode) {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-    localStorage.setItem('vitalis-theme', isDarkMode ? 'dark' : 'light');
-  }, [isDarkMode]);
+  // Dark mode agora gerido pelo ThemeContext
 
   // Fasting notification effect - monitora o timer e notifica quando a janela abre
   useEffect(() => {
@@ -218,8 +205,6 @@ export default function DashboardVitalis() {
       notificacaoJejumEnviada.current = false;
     }
   }, [jejumActual]);
-
-  const toggleDarkMode = () => setIsDarkMode(prev => !prev);
 
   const loadDashboard = async () => {
     try {
@@ -566,34 +551,29 @@ export default function DashboardVitalis() {
     }
   };
 
-  // FUNÇÃO SONO
-  const registarSono = async () => {
+  // FUNÇÃO SONO (recebe params do QuickTrackers)
+  const registarSono = async (horas, minutos, qualidade) => {
     if (!userId) {
       console.error('userId não disponível');
       return;
     }
 
-    const duracaoMin = (parseInt(sonoHoras) || 0) * 60 + (parseInt(sonoMinutos) || 0);
-
-    if (duracaoMin === 0) {
-      alert('Preenche as horas de sono');
-      return;
-    }
+    const duracaoMin = horas * 60 + minutos;
 
     // Auto-calcular qualidade baseado nas horas se não foi selecionada manualmente
-    let qualidadeFinal = sonoQualidade;
+    let qualidadeFinal = qualidade;
     if (qualidadeFinal === 0) {
-      const horas = duracaoMin / 60;
-      if (horas >= 7 && horas <= 9) {
-        qualidadeFinal = 5; // Sono ideal
-      } else if (horas >= 6 && horas < 7) {
-        qualidadeFinal = 4; // Bom
-      } else if ((horas >= 5 && horas < 6) || (horas > 9 && horas <= 10)) {
-        qualidadeFinal = 3; // Razoável
-      } else if ((horas >= 4 && horas < 5) || (horas > 10 && horas <= 11)) {
-        qualidadeFinal = 2; // Pouco
+      const h = duracaoMin / 60;
+      if (h >= 7 && h <= 9) {
+        qualidadeFinal = 5;
+      } else if (h >= 6 && h < 7) {
+        qualidadeFinal = 4;
+      } else if ((h >= 5 && h < 6) || (h > 9 && h <= 10)) {
+        qualidadeFinal = 3;
+      } else if ((h >= 4 && h < 5) || (h > 10 && h <= 11)) {
+        qualidadeFinal = 2;
       } else {
-        qualidadeFinal = 1; // Muito pouco ou demais
+        qualidadeFinal = 1;
       }
     }
 
@@ -615,10 +595,6 @@ export default function DashboardVitalis() {
       }
 
       setSonoHoje(data);
-      setMostrarSonoForm(false);
-      setSonoHoras('');
-      setSonoMinutos('');
-      setSonoQualidade(0);
     } catch (err) {
       console.error('Erro ao registar sono:', err.message);
     }
@@ -728,19 +704,7 @@ export default function DashboardVitalis() {
     gordura: plano?.porcoes_gordura || 8
   };
 
-  const macrosConsumidos = mealsHoje.reduce((acc, meal) => ({
-    proteina: acc.proteina + (parseFloat(meal.porcoes_proteina) || 0),
-    hidratos: acc.hidratos + (parseFloat(meal.porcoes_hidratos) || 0),
-    gordura: acc.gordura + (parseFloat(meal.porcoes_gordura) || 0)
-  }), { proteina: 0, hidratos: 0, gordura: 0 });
-
   const caloriasAlvo = plano?.calorias_diarias || 1250;
-  const caloriasConsumidas = Math.round(
-    (macrosConsumidos.proteina * 20 * 4) +
-    (macrosConsumidos.hidratos * 30 * 4) +
-    (macrosConsumidos.gordura * 7 * 9)
-  );
-  const progressoCalorias = (caloriasConsumidas / caloriasAlvo) * 100;
 
   // Calendário
   const ultimaSemana = [];
@@ -1106,324 +1070,36 @@ export default function DashboardVitalis() {
             </div>
 
             {/* Quick Trackers */}
-            <div className="bg-white rounded-2xl shadow-xl p-4">
-              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Quick Track</h3>
-              
-              {/* Água */}
-              <div className="p-3 bg-sky-50 rounded-xl mb-2">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">💧</span>
-                    <div>
-                      <p className="font-semibold text-gray-800 text-sm">{aguaHoje.toFixed(1)} / {metaAgua}L</p>
-                      <p className="text-xs text-gray-500">Água</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="h-2 bg-sky-100 rounded-full mb-3 overflow-hidden">
-                  <div 
-                    className="h-full bg-sky-500 rounded-full transition-all"
-                    style={{ width: `${Math.min(progressoAgua, 100)}%` }}
-                  ></div>
-                </div>
-                
-                <div className="grid grid-cols-4 gap-2">
-                  <button 
-                    onClick={() => adicionarAgua(150)}
-                    className="flex flex-col items-center p-2 bg-white hover:bg-sky-100 rounded-lg transition-colors shadow-sm"
-                  >
-                    <span className="text-lg">☕</span>
-                    <span className="text-xs text-gray-600">150ml</span>
-                  </button>
-                  <button 
-                    onClick={() => adicionarAgua(250)}
-                    className="flex flex-col items-center p-2 bg-white hover:bg-sky-100 rounded-lg transition-colors shadow-sm"
-                  >
-                    <span className="text-lg">🥤</span>
-                    <span className="text-xs text-gray-600">250ml</span>
-                  </button>
-                  <button 
-                    onClick={() => adicionarAgua(330)}
-                    className="flex flex-col items-center p-2 bg-white hover:bg-sky-100 rounded-lg transition-colors shadow-sm"
-                  >
-                    <span className="text-lg">🧃</span>
-                    <span className="text-xs text-gray-600">330ml</span>
-                  </button>
-                  <button 
-                    onClick={() => adicionarAgua(500)}
-                    className="flex flex-col items-center p-2 bg-white hover:bg-sky-100 rounded-lg transition-colors shadow-sm"
-                  >
-                    <span className="text-lg">🍶</span>
-                    <span className="text-xs text-gray-600">500ml</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Treino */}
-              <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-xl mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">🏃‍♀️</span>
-                  <div>
-                    <p className="font-semibold text-gray-800 text-sm">
-                      {ehDiaTreino ? 'Dia de Treino' : 'Dia de Descanso'}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {treinoHoje ? `Feito às ${treinoHoje.hora || treinoHoje.created_at?.substring(11, 16) || '—'}` : (ehDiaTreino ? 'Por fazer' : 'Recupera bem!')}
-                    </p>
-                  </div>
-                </div>
-                {ehDiaTreino && !treinoHoje && (
-                  <button 
-                    onClick={registarTreino}
-                    className="px-3 py-1.5 bg-emerald-500 text-white text-xs rounded-full font-medium hover:bg-emerald-600 transition-colors shadow-md"
-                  >
-                    ✓ Feito
-                  </button>
-                )}
-                {treinoHoje && (
-                  <span className="text-emerald-500 text-xl">✓</span>
-                )}
-              </div>
-
-              {/* Sono - INTERACTIVO */}
-              <div className="p-3 bg-indigo-50 rounded-xl">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">😴</span>
-                    <div>
-                      <p className="font-semibold text-gray-800 text-sm">
-                        {sonoHoje ? `${Math.floor(sonoHoje.duracao_min / 60)}h ${sonoHoje.duracao_min % 60}m` : 'Sono esta noite'}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {sonoHoje ? `Qualidade: ${sonoHoje.qualidade_1a5}/5 ★` : 'Por registar'}
-                      </p>
-                    </div>
-                  </div>
-                  {sonoHoje ? (
-                    <div className="flex items-center gap-0.5">
-                      {[1,2,3,4,5].map(i => (
-                        <span key={i} className={i <= sonoHoje.qualidade_1a5 ? 'text-yellow-500' : 'text-gray-300'}>★</span>
-                      ))}
-                    </div>
-                  ) : (
-                    <button 
-                      onClick={() => setMostrarSonoForm(!mostrarSonoForm)}
-                      className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
-                    >
-                      {mostrarSonoForm ? 'Fechar' : 'Registar →'}
-                    </button>
-                  )}
-                </div>
-                
-                {mostrarSonoForm && !sonoHoje && (
-                  <div className="mt-3 pt-3 border-t border-indigo-100 space-y-3">
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1">
-                        <label className="block text-xs text-gray-500 mb-1">Horas</label>
-                        <input
-                          type="number"
-                          min="0"
-                          max="12"
-                          value={sonoHoras}
-                          onChange={(e) => setSonoHoras(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-center text-lg font-bold focus:border-indigo-500 focus:outline-none"
-                          placeholder="7"
-                        />
-                      </div>
-                      <span className="text-xl text-gray-400 mt-5">:</span>
-                      <div className="flex-1">
-                        <label className="block text-xs text-gray-500 mb-1">Min</label>
-                        <input
-                          type="number"
-                          min="0"
-                          max="59"
-                          step="15"
-                          value={sonoMinutos}
-                          onChange={(e) => setSonoMinutos(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-center text-lg font-bold focus:border-indigo-500 focus:outline-none"
-                          placeholder="30"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-xs text-gray-500 mb-1">Qualidade</label>
-                      <div className="flex justify-between gap-1">
-                        {[1, 2, 3, 4, 5].map((valor) => (
-                          <button
-                            key={valor}
-                            onClick={() => setSonoQualidade(valor)}
-                            className={`flex-1 py-2 rounded-lg text-lg transition-all ${
-                              sonoQualidade >= valor
-                                ? 'bg-yellow-100 scale-105'
-                                : 'bg-gray-100 opacity-50'
-                            }`}
-                          >
-                            ⭐
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <button
-                      onClick={registarSono}
-                      className="w-full py-2 bg-indigo-500 text-white rounded-lg text-sm font-semibold hover:bg-indigo-600 transition-colors"
-                    >
-                      ✓ Guardar Sono
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+            <QuickTrackers
+              aguaHoje={aguaHoje}
+              metaAgua={metaAgua}
+              treinoHoje={treinoHoje}
+              ehDiaTreino={ehDiaTreino}
+              sonoHoje={sonoHoje}
+              humor={humor}
+              onAddWater={adicionarAgua}
+              onLogWorkout={registarTreino}
+              onLogSleep={registarSono}
+              onMoodSelect={registarHumor}
+            />
           </div>
 
           {/* Coluna Central */}
           <div className="col-span-12 md:col-span-5 space-y-4 flex flex-col">
             
             {/* Timer de Jejum */}
-            {(jejumActivo || jejumActual) && (
-              <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl p-4 text-white shadow-xl">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">⏱️</span>
-                    <span className="font-semibold">Jejum {protocoloJejum}</span>
-                  </div>
-                  <span className="px-2 py-1 bg-white/20 rounded-full text-xs">
-                    {jejumActual ? 'A decorrer' : 'Parado'}
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-4xl font-bold">
-                      {jejumActual ? (() => {
-                        const inicio = new Date(jejumActual.hora_inicio);
-                        const agora = new Date();
-                        const diffMin = Math.floor((agora - inicio) / (1000 * 60));
-                        const horas = Math.floor(diffMin / 60);
-                        const mins = diffMin % 60;
-                        return `${horas.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-                      })() : '--:--'}
-                    </p>
-                    <p className="text-purple-200 text-sm">de {horasJejum} horas</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-purple-200">Janela alimentar às</p>
-                    <p className="text-xl font-semibold">{janelaInicio}</p>
-                  </div>
-                </div>
-                
-                <div className="mt-3 h-2 bg-white/20 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-white rounded-full transition-all" 
-                    style={{ 
-                      width: jejumActual ? `${Math.min((() => {
-                        const inicio = new Date(jejumActual.hora_inicio);
-                        const agora = new Date();
-                        const diffMin = Math.floor((agora - inicio) / (1000 * 60));
-                        return (diffMin / (horasJejum * 60)) * 100;
-                      })(), 100)}%` : '0%' 
-                    }}
-                  ></div>
-                </div>
-                
-                <div className="flex gap-2 mt-3">
-                  {!jejumActual ? (
-                    <button 
-                      onClick={iniciarJejum}
-                      className="flex-1 px-4 py-2 bg-white text-purple-700 rounded-lg text-sm font-semibold hover:bg-purple-100 transition-colors"
-                    >
-                      Iniciar Jejum
-                    </button>
-                  ) : (
-                    <>
-                      <button className="flex-1 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm transition-colors">
-                        Pausar
-                      </button>
-                      <button 
-                        onClick={terminarJejum}
-                        className="flex-1 px-4 py-2 bg-white text-purple-700 rounded-lg text-sm font-semibold hover:bg-purple-100 transition-colors"
-                      >
-                        Terminar Jejum
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
+            <FastingTimerCard
+              jejumActual={jejumActual}
+              jejumActivo={jejumActivo}
+              protocoloJejum={protocoloJejum}
+              horasJejum={horasJejum}
+              janelaInicio={janelaInicio}
+              onStartFasting={iniciarJejum}
+              onEndFasting={terminarJejum}
+            />
 
             {/* Refeições do Dia */}
-            <div className="bg-white rounded-3xl shadow-xl p-5 flex-grow">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xs font-semibold text-[#6B5C4C] uppercase tracking-wider">Refeições Hoje</h3>
-                <Link to="/vitalis/refeicoes-config" className="text-xs text-[#7C8B6F] hover:text-[#6B7A5D] font-medium">
-                  Configurar →
-                </Link>
-              </div>
-              
-              {refeicoes.length === 0 ? (
-                <div className="text-center py-6">
-                  <p className="text-gray-500 text-sm mb-3">Ainda não configuraste as tuas refeições</p>
-                  <Link 
-                    to="/vitalis/refeicoes-config"
-                    className="inline-block px-4 py-2 bg-[#7C8B6F] text-white rounded-lg text-sm font-medium hover:bg-[#6B7A5D] transition-colors"
-                  >
-                    Configurar Agora
-                  </Link>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {refeicoes.map((ref) => {
-                    const meal = mealsHoje.find(m => m.refeicao === ref.nome);
-                    const status = meal?.seguiu_plano;
-                    
-                    return (
-                      <div 
-                        key={ref.id}
-                        className={`flex items-center gap-3 p-3 rounded-xl border ${
-                          status === 'sim' ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200' :
-                          status === 'parcial' ? 'bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-200' :
-                          status === 'nao' ? 'bg-gradient-to-r from-red-50 to-rose-50 border-red-200' :
-                          'bg-gray-50 border-2 border-dashed border-gray-200'
-                        }`}
-                      >
-                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-sm shadow-md ${
-                          status === 'sim' ? 'bg-green-500' :
-                          status === 'parcial' ? 'bg-yellow-500' :
-                          status === 'nao' ? 'bg-red-500' :
-                          'bg-gray-200 text-gray-400'
-                        }`}>
-                          {status === 'sim' ? '✓' : status === 'parcial' ? '~' : status === 'nao' ? '✕' : '○'}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className={`font-medium text-sm ${status ? 'text-gray-800' : 'text-gray-400'}`}>{ref.nome}</p>
-                          <p className="text-xs text-gray-500">
-                            {meal ? `${meal.hora || ref.hora_habitual || '--:--'} • ${status === 'sim' ? 'Seguiu o plano' : status === 'parcial' ? 'Parcialmente' : 'Não seguiu'}` : `~${ref.hora_habitual || '--:--'}`}
-                          </p>
-                        </div>
-                        {status ? (
-                          <span className={`px-2 py-0.5 rounded-full text-xs ${
-                            status === 'sim' ? 'bg-green-100 text-green-700' :
-                            status === 'parcial' ? 'bg-yellow-100 text-yellow-700' :
-                            'bg-red-100 text-red-700'
-                          }`}>
-                            {status === 'sim' ? '100%' : status === 'parcial' ? '70%' : '0%'}
-                          </span>
-                        ) : (
-                          <Link 
-                            to="/vitalis/meals"
-                            className="px-3 py-1.5 bg-[#7C8B6F] text-white text-xs rounded-full font-medium hover:bg-[#6B7A5D] transition-colors shadow-md"
-                          >
-                            Registar
-                          </Link>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+            <MealsSection refeicoes={refeicoes} mealsHoje={mealsHoje} />
           </div>
 
           {/* Coluna Direita */}
@@ -1460,34 +1136,7 @@ export default function DashboardVitalis() {
               </div>
             </div>
 
-            {/* Humor */}
-            <div className="bg-white rounded-2xl shadow-lg p-4">
-              <p className="text-xs text-gray-400 uppercase tracking-wider mb-3">Como te sentes?</p>
-              <div className="grid grid-cols-5 gap-1">
-                {[
-                  { emoji: '😫', valor: 1 },
-                  { emoji: '😕', valor: 2 },
-                  { emoji: '😐', valor: 3 },
-                  { emoji: '😊', valor: 4 },
-                  { emoji: '🤩', valor: 5 }
-                ].map(({ emoji, valor }) => (
-                  <button
-                    key={valor}
-                    onClick={() => registarHumor(valor)}
-                    className={`p-2 rounded-lg transition-all text-xl ${
-                      humor === valor 
-                        ? 'bg-green-100 ring-2 ring-green-400' 
-                        : 'hover:bg-gray-100 opacity-50 hover:opacity-100'
-                    }`}
-                  >
-                    {emoji}
-                  </button>
-                ))}
-              </div>
-              {humor && (
-                <p className="text-xs text-center text-gray-500 mt-2">Energia: {humor * 2}/10</p>
-              )}
-            </div>
+            {/* Humor movido para QuickTrackers */}
 
             {/* Mini Calendário */}
             <div className="bg-white rounded-2xl shadow-lg p-4">
@@ -1527,84 +1176,11 @@ export default function DashboardVitalis() {
         </div>
 
         {/* Macros */}
-        <div className="bg-white rounded-3xl shadow-xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Macros de Hoje</h3>
-            <p className="text-xs text-gray-500">Baseado nas refeições registadas</p>
-          </div>
-          
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-4 items-center">
-            <div className="text-center">
-              <div className="relative w-16 h-16 mx-auto mb-2">
-                <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                  <circle cx="18" cy="18" r="15" fill="none" stroke="#fee2e2" strokeWidth="3"/>
-                  <circle cx="18" cy="18" r="15" fill="none" stroke="#ef4444" strokeWidth="3" 
-                          strokeDasharray="94" strokeDashoffset={94 - (94 * Math.min(macrosConsumidos.proteina / macrosAlvo.proteina, 1))} strokeLinecap="round"/>
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg">🥩</span>
-                </div>
-              </div>
-              <p className="text-sm font-bold text-gray-800">{macrosConsumidos.proteina.toFixed(1)} / {macrosAlvo.proteina}</p>
-              <p className="text-xs text-gray-500">Proteína</p>
-            </div>
-
-            <div className="text-center">
-              <div className="relative w-16 h-16 mx-auto mb-2">
-                <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                  <circle cx="18" cy="18" r="15" fill="none" stroke="#fef3c7" strokeWidth="3"/>
-                  <circle cx="18" cy="18" r="15" fill="none" stroke="#f59e0b" strokeWidth="3" 
-                          strokeDasharray="94" strokeDashoffset={94 - (94 * Math.min(macrosConsumidos.hidratos / macrosAlvo.hidratos, 1))} strokeLinecap="round"/>
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg">🍚</span>
-                </div>
-              </div>
-              <p className="text-sm font-bold text-gray-800">{macrosConsumidos.hidratos.toFixed(1)} / {macrosAlvo.hidratos}</p>
-              <p className="text-xs text-gray-500">Hidratos</p>
-            </div>
-
-            <div className="text-center">
-              <div className="relative w-16 h-16 mx-auto mb-2">
-                <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                  <circle cx="18" cy="18" r="15" fill="none" stroke="#d1fae5" strokeWidth="3"/>
-                  <circle cx="18" cy="18" r="15" fill="none" stroke="#10b981" strokeWidth="3" 
-                          strokeDasharray="94" strokeDashoffset={94 - (94 * Math.min(macrosConsumidos.gordura / macrosAlvo.gordura, 1))} strokeLinecap="round"/>
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg">🥑</span>
-                </div>
-              </div>
-              <p className="text-sm font-bold text-gray-800">{macrosConsumidos.gordura.toFixed(1)} / {macrosAlvo.gordura}</p>
-              <p className="text-xs text-gray-500">Gordura</p>
-            </div>
-
-            <div className="col-span-3">
-              <div className="bg-gradient-to-r from-[#E8E4DC] via-[#F5F2ED] to-[#FAF7F2] rounded-2xl p-4 border border-[#E8E2D9]">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">🌿</span>
-                    <span className="text-sm font-medium text-[#4A4035]">Calorias</span>
-                  </div>
-                  <span className="text-xs text-[#6B5C4C]">Meta: {caloriasAlvo} kcal</span>
-                </div>
-                <div className="flex items-end gap-2 mb-2">
-                  <span className="text-3xl font-bold text-[#4A4035]">{caloriasConsumidas}</span>
-                  <span className="text-[#6B5C4C] mb-1">/ {caloriasAlvo} kcal</span>
-                </div>
-                <div className="h-3 bg-white rounded-full overflow-hidden shadow-inner">
-                  <div
-                    className="h-full bg-gradient-to-r from-[#9CAF88] via-[#7C8B6F] to-[#6B7A5D] rounded-full transition-all"
-                    style={{ width: `${Math.min(progressoCalorias, 100)}%` }}
-                  ></div>
-                </div>
-                <p className="text-xs text-[#6B5C4C] mt-2 text-center">
-                  Restam {Math.max(caloriasAlvo - caloriasConsumidas, 0)} kcal para hoje
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <MacrosDisplay
+          mealsHoje={mealsHoje}
+          macrosAlvo={macrosAlvo}
+          caloriasAlvo={caloriasAlvo}
+        />
 
         {/* Banner Ramadão - Visível durante o período, apenas para quem observa */}
         {(() => {
@@ -1719,72 +1295,10 @@ export default function DashboardVitalis() {
         </div>
 
         {/* Secção de Conquistas */}
-        <div id="conquistas-section" className="bg-white rounded-3xl shadow-xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                🏆 Minhas Conquistas
-              </h3>
-              <p className="text-sm text-gray-500">Nível {Math.floor(xpTotal / 500) + 1} • {xpTotal} XP total</p>
-            </div>
-            <button
-              onClick={() => setShowConquistasModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-[#7C8B6F] text-white rounded-xl text-sm font-medium hover:bg-[#6B7A5D] transition-colors"
-            >
-              <span>Ver todas</span>
-              <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs">{conquistasDesbloqueadas.length}</span>
-            </button>
-          </div>
-
-          {/* Explicação clara */}
-          <div className="mb-4 p-3 bg-blue-50 rounded-xl border border-blue-100">
-            <p className="text-sm text-blue-800">
-              <strong>🔥 Streak</strong> = dias consecutivos com qualquer registo (água, refeições, treino, sono)
-              <br/>
-              <strong>🏆 Conquistas</strong> = badges desbloqueados por marcos específicos (ex: 3 dias seguidos, primeiro treino, 50 copos de água...)
-            </p>
-          </div>
-
-          {/* Barra de progresso para próximo nível */}
-          <div className="mb-4 p-3 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl">
-            <div className="flex items-center justify-between text-sm mb-2">
-              <span className="text-gray-600">Próximo nível</span>
-              <span className="font-semibold text-amber-600">{500 - (xpTotal % 500)} XP restantes</span>
-            </div>
-            <div className="h-3 bg-amber-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full transition-all"
-                style={{ width: `${(xpTotal % 500) / 500 * 100}%` }}
-              ></div>
-            </div>
-          </div>
-
-          {/* Lista de conquistas */}
-          <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
-            {Object.entries(CONQUISTAS).slice(0, 8).map(([id, conquista]) => {
-              const desbloqueada = conquistasDesbloqueadas.includes(id);
-              return (
-                <div
-                  key={id}
-                  className={`relative p-3 rounded-xl text-center transition-all ${
-                    desbloqueada
-                      ? 'bg-gradient-to-br from-yellow-100 to-amber-100 shadow-md'
-                      : 'bg-gray-100 opacity-50'
-                  }`}
-                  title={conquista.nome}
-                >
-                  <span className={`text-2xl ${desbloqueada ? '' : 'grayscale'}`}>
-                    {conquista.icone}
-                  </span>
-                  <p className="text-xs mt-1 font-medium text-gray-700 truncate">{conquista.nome?.split(' ')[0]}</p>
-                  {desbloqueada && (
-                    <span className="absolute -top-1 -right-1 text-xs">✨</span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <AchievementsPanel
+          conquistasDesbloqueadas={conquistasDesbloqueadas}
+          xpTotal={xpTotal}
+        />
 
       </main>
 
@@ -1836,120 +1350,7 @@ export default function DashboardVitalis() {
         </div>
       )}
 
-      {/* Modal de Conquistas */}
-      {showConquistasModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowConquistasModal(false)} />
-          <div className="relative bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl animate-bounceIn max-h-[90vh] overflow-y-auto">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                  🏆 Todas as Conquistas
-                </h3>
-                <p className="text-sm text-gray-500">
-                  {conquistasDesbloqueadas.length} de {Object.keys(CONQUISTAS).length} desbloqueadas
-                </p>
-              </div>
-              <button
-                onClick={() => setShowConquistasModal(false)}
-                className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Nível e XP */}
-            <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-2xl p-4 mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center text-2xl font-bold text-white shadow-lg">
-                    {Math.floor(xpTotal / 500) + 1}
-                  </div>
-                  <div>
-                    <p className="font-bold text-gray-800">Nível {Math.floor(xpTotal / 500) + 1}</p>
-                    <p className="text-sm text-gray-600">{xpTotal} XP total</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold text-amber-600">{conquistasDesbloqueadas.length}</p>
-                  <p className="text-xs text-gray-500">conquistas</p>
-                </div>
-              </div>
-              <div className="h-3 bg-amber-100 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full transition-all"
-                  style={{ width: `${(xpTotal % 500) / 500 * 100}%` }}
-                ></div>
-              </div>
-              <p className="text-xs text-gray-500 mt-1 text-center">{500 - (xpTotal % 500)} XP para o próximo nível</p>
-            </div>
-
-            {/* Lista de todas as conquistas */}
-            <div className="space-y-3">
-              {Object.entries(CONQUISTAS).map(([id, conquista]) => {
-                const desbloqueada = conquistasDesbloqueadas.includes(id);
-                return (
-                  <div
-                    key={id}
-                    className={`flex items-center gap-4 p-4 rounded-xl transition-all ${
-                      desbloqueada
-                        ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200'
-                        : 'bg-gray-50 border-2 border-dashed border-gray-200 opacity-60'
-                    }`}
-                  >
-                    {/* Ícone */}
-                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-3xl ${
-                      desbloqueada
-                        ? `bg-gradient-to-br ${conquista.cor || 'from-yellow-400 to-amber-500'} shadow-md`
-                        : 'bg-gray-200 grayscale'
-                    }`}>
-                      {conquista.icone}
-                    </div>
-
-                    {/* Info */}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className={`font-bold ${desbloqueada ? 'text-gray-800' : 'text-gray-400'}`}>
-                          {conquista.nome}
-                        </p>
-                        {desbloqueada && <span className="text-yellow-500">✨</span>}
-                      </div>
-                      <p className={`text-sm ${desbloqueada ? 'text-gray-600' : 'text-gray-400'}`}>
-                        {conquista.descricao}
-                      </p>
-                    </div>
-
-                    {/* XP Badge */}
-                    <div className={`px-3 py-1.5 rounded-full text-sm font-bold ${
-                      desbloqueada
-                        ? 'bg-yellow-100 text-yellow-700'
-                        : 'bg-gray-100 text-gray-400'
-                    }`}>
-                      +{conquista.xp || conquista.pontos} XP
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Footer com dica */}
-            <div className="mt-4 p-3 bg-purple-50 rounded-xl text-center">
-              <p className="text-sm text-purple-700">
-                💡 Continua a registar o teu progresso diariamente para desbloquear mais conquistas!
-              </p>
-            </div>
-
-            {/* Botão fechar */}
-            <button
-              onClick={() => setShowConquistasModal(false)}
-              className="w-full mt-4 py-3 bg-[#7C8B6F] text-white rounded-xl font-semibold hover:bg-[#6B7A5D] transition-colors"
-            >
-              Fechar
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Modal de Conquistas agora está dentro de AchievementsPanel */}
 
       {/* Onboarding para novos utilizadores */}
       {mostrarOnboarding && (

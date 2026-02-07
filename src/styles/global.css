@@ -2,6 +2,9 @@
    SETE ECOS — CSS Global Oficial
    ============================================================ */
 
+/* Tailwind CSS v4 — Build-time compilation (não CDN) */
+@import "tailwindcss";
+
 /* Suporte a Light/Dark Mode */
 :root {
   color-scheme: light dark;
@@ -93,7 +96,6 @@ button {
   font-weight: 500;
   cursor: pointer;
   border: none;
-  outline: none;
   transition: all var(--transicao-media);
 }
 
@@ -224,6 +226,15 @@ input:focus, textarea:focus {
 
 .animate-shake {
   animation: shake 0.5s ease-in-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.25s ease-out;
 }
 
 /* ============================================================
@@ -384,6 +395,76 @@ input:focus, textarea:focus {
 /* Texto preto/cinza escuro */
 .dark .text-black {
   color: var(--dark-text-primary) !important;
+}
+
+/* ============================================================
+   ACESSIBILIDADE — Focus, Reduced Motion, Screen Reader
+   ============================================================ */
+
+/* Focus visible para navegação por teclado (WCAG 2.2 AA) */
+*:focus-visible {
+  outline: 2px solid var(--lumina-violeta);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Remover outline apenas para interacções de rato */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Respeitar preferência de movimento reduzido (WCAG 2.3.3) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Alto contraste — respeitar preferência do sistema */
+@media (prefers-contrast: high) {
+  :root {
+    --lumina-texto: #000000;
+    --lumina-fundo-1: #FFFFFF;
+    --lumina-fundo-2: #F5F5F5;
+    --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --sombra-media: 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  button, a, [role="button"] {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Print styles */
+@media print {
+  nav, .fixed, [role="navigation"] {
+    display: none !important;
+  }
+  .app {
+    padding-bottom: 0 !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
 }
 
 /* ============================================================

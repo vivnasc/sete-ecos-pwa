@@ -93,10 +93,39 @@
     <link rel="manifest" href="/manifest.json" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>SETE ECOS</title>
+    <title>SETE ECOS — Sistema de Transmutacao Feminina</title>
+
+    <!-- Structured Data / JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "SETE ECOS",
+      "alternateName": "Sistema de Transmutacao Feminina",
+      "description": "Sete caminhos para despertar cada dimensao da tua essencia feminina. Plataforma holistica de bem-estar com nutrição, meditação, comunidade e transformação pessoal.",
+      "url": "https://app.seteecos.com",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "AggregateOffer",
+        "lowPrice": "975",
+        "highPrice": "21000",
+        "priceCurrency": "MZN",
+        "offerCount": "6"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Vivianne dos Santos"
+      },
+      "inLanguage": "pt",
+      "keywords": "bem-estar feminino, nutrição holística, meditação, chakras, transformação pessoal, Moçambique, Portugal"
+    }
+    </script>
   </head>
   <body>
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[9999] focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:text-purple-700 focus:font-semibold">
+      Saltar para o conteudo principal
+    </a>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
