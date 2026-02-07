@@ -397,6 +397,17 @@ input:focus, textarea:focus {
   color: var(--dark-text-primary) !important;
 }
 
+/* Header Vitalis em dark mode — suavizar gradiente verde */
+.dark .from-\[\#7C8B6F\] {
+  --tw-gradient-from: #4a5740;
+}
+.dark .via-\[\#8B9A7A\] {
+  --tw-gradient-via: #5d6b4f;
+}
+.dark .to-\[\#6B7A5D\] {
+  --tw-gradient-to: #4a5740;
+}
+
 /* ============================================================
    ACESSIBILIDADE — Focus, Reduced Motion, Screen Reader
    ============================================================ */

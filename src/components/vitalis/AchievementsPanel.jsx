@@ -50,7 +50,7 @@ export default function AchievementsPanel({
         </div>
 
         {/* Lista de conquistas (preview) */}
-        <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
+        <div className="grid grid-cols-4 md:grid-cols-8 gap-2 md:gap-3">
           {Object.entries(CONQUISTAS).slice(0, 8).map(([id, conquista]) => {
             const desbloqueada = conquistasDesbloqueadas.includes(id)
             return (
