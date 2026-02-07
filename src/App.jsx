@@ -13,6 +13,7 @@ import ComingSoon from './pages/ComingSoon'
 import Auth from './components/Auth'
 import Navigation from './components/Navigation'
 import CoachDashboard from './pages/CoachDashboard'
+import MarketingDashboard from './pages/MarketingDashboard'
 // LandingGeral now rendered via Home.jsx for non-auth users
 
 // ===== ECO 1: VITALIS (Nutrição) =====
@@ -89,8 +90,8 @@ function AppRoutes() {
           <Route path="/conta" element={session ? <MinhaConta /> : <Navigate to="/login" state={{ from: '/conta' }} />} />
           <Route path="/perfil" element={session ? <Perfil /> : <Navigate to="/login" state={{ from: '/perfil' }} />} />
 
-          {/* ===== LUMINA - Diagnóstico Gratuito ===== */}
-          <Route path="/lumina" element={session ? <Lumina /> : <Navigate to="/login" state={{ from: '/lumina', eco: 'Lumina' }} />} />
+          {/* ===== LUMINA - Diagnóstico Gratuito (aberto a todos) ===== */}
+          <Route path="/lumina" element={<Lumina />} />
 
           {/* ===== ECO 1: VITALIS - Nutrição ===== */}
           <Route path="/vitalis" element={<LandingVitalis />} />
@@ -162,6 +163,11 @@ function AppRoutes() {
           <Route path="/coach" element={
             isSessionCoach(session)
               ? <CoachDashboard />
+              : <Navigate to="/" />
+          } />
+          <Route path="/coach/marketing" element={
+            isSessionCoach(session)
+              ? <MarketingDashboard />
               : <Navigate to="/" />
           } />
 

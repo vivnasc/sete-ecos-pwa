@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import SEOHead from '../components/SEOHead';
+import PartilharSocial from '../components/PartilharSocial';
 
 /**
  * ÁUREA - Landing Page
@@ -182,6 +184,24 @@ const LandingAurea = () => {
 
   return (
     <div className="min-h-screen" style={{ fontFamily: "'DM Sans', sans-serif", background: 'linear-gradient(to bottom, #2D2A24, #3D3830, #2D2A24)' }}>
+      <SEOHead
+        title="AUREA - Valor & Presenca | Sete Ecos"
+        description="Para mulheres que merecem mais. Micro-praticas diarias, Espelho de Roupa, Carteira de Merecimento e coaching personalizado. Desde 975 MZN/mes."
+        url="https://app.seteecos.com/aurea"
+        image="https://app.seteecos.com/og-image.png"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": "AUREA - Valor & Presenca",
+          "description": "Programa de autoestima e presenca para mulheres com micro-praticas diarias e coaching personalizado.",
+          "brand": { "@type": "Brand", "name": "Sete Ecos" },
+          "offers": [
+            { "@type": "Offer", "name": "Mensal", "price": "975", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Semestral", "price": "5265", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Anual", "price": "9945", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" }
+          ]
+        }}
+      />
       {/* Navegação */}
       <nav className="fixed top-0 w-full px-4 md:px-8 py-4 flex justify-between items-center bg-[#2D2A24]/95 backdrop-blur-sm z-50 border-b border-amber-500/20">
         <Link to="/landing" className="flex items-center gap-3">
@@ -583,8 +603,14 @@ const LandingAurea = () => {
             <a href="/termos.pdf" className="text-amber-200/50 hover:text-amber-200">Termos</a>
             <a href="/privacidade.pdf" className="text-amber-200/50 hover:text-amber-200">Privacidade</a>
           </div>
+          <PartilharSocial
+            compact
+            url="https://app.seteecos.com/aurea"
+            titulo="AUREA - Valor & Presenca"
+            texto="Descobre a AUREA, um programa para mulheres que merecem mais."
+          />
           <div className="text-amber-200/50 text-sm">
-            © 2025 Sete Ecos
+            © 2026 Sete Ecos
           </div>
         </div>
       </footer>
