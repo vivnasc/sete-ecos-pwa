@@ -1201,7 +1201,7 @@ export default function ChatCoach() {
             placeholder="Pergunta à Vivianne..."
             className="flex-1 px-4 py-2.5 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#7C8B6F]/50 focus:bg-white transition-colors"
           />
-          <button onClick={enviarMensagem} disabled={!novaMensagem.trim() || enviando} className="w-10 h-10 bg-[#7C8B6F] text-white rounded-full flex items-center justify-center hover:bg-[#5D6B4F] transition-colors disabled:opacity-40 flex-shrink-0 shadow-sm">
+          <button onClick={() => enviarMensagem()} disabled={!novaMensagem.trim() || enviando} className="w-10 h-10 bg-[#7C8B6F] text-white rounded-full flex items-center justify-center hover:bg-[#5D6B4F] transition-colors disabled:opacity-40 flex-shrink-0 shadow-sm">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>
           </button>
         </div>
