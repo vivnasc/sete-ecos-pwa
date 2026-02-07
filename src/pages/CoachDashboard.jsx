@@ -639,7 +639,13 @@ const CoachDashboard = () => {
                 to="/vitalis/dashboard"
                 className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-sm font-medium transition-all border border-white/10"
               >
-                ← Vitalis
+                Vitalis
+              </Link>
+              <Link
+                to="/coach/marketing"
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-pink-500/20 to-purple-500/20 hover:from-pink-500/30 hover:to-purple-500/30 text-pink-300 text-sm font-medium transition-all border border-pink-500/30"
+              >
+                Marketing
               </Link>
               <a
                 href={WHATSAPP_COMMUNITY_LINK}

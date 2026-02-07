@@ -170,7 +170,11 @@ export default async function handler(req, res) {
       .from('waitlist')
       .select('id, nome, email, created_at');
 
-    if (wlError) throw wlError;
+    if (wlError) {
+      // Tabela waitlist pode nao existir ainda
+      console.warn('Waitlist query error:', wlError.message);
+      return res.status(200).json({ message: 'Tabela waitlist nao disponivel: ' + wlError.message, ...resultados });
+    }
     if (!waitlist || waitlist.length === 0) {
       return res.status(200).json({ message: 'Waitlist vazia', ...resultados });
     }
@@ -187,14 +191,17 @@ export default async function handler(req, res) {
       if (!emailTemplate) continue;
 
       // Verificar se ja foi enviado (evitar duplicados)
-      const { data: jaEnviado } = await supabase
-        .from('waitlist_email_log')
-        .select('id')
-        .eq('email', lead.email)
-        .eq('sequencia_dia', emailTemplate.dia)
-        .maybeSingle();
-
-      if (jaEnviado) continue;
+      try {
+        const { data: jaEnviado } = await supabase
+          .from('waitlist_email_log')
+          .select('id')
+          .eq('email', lead.email)
+          .eq('sequencia_dia', emailTemplate.dia)
+          .maybeSingle();
+        if (jaEnviado) continue;
+      } catch {
+        // Tabela email_log pode nao existir - continuar sem de-duplicacao
+      }
 
       // Enviar email
       try {
