@@ -18,7 +18,8 @@ const CORES = {
   rose: '#E8B4B8',
   roseDark: '#D4919A',
   text: '#4A3728',
-  textLight: '#8B7355',
+  textLight: '#7A6445',
+  goldDark: '#7A6200',
   accent: '#F5E6D3',
 };
 
@@ -613,7 +614,7 @@ export default function AudioMeditacoes() {
                       <h3 className="font-semibold" style={{ color: CORES.text }}>{audio.titulo}</h3>
                       {jaOuviu && <span style={{ color: '#22C55E' }}>✓</span>}
                       {!acessivel && (
-                        <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: CORES.accent, color: CORES.gold }}>
+                        <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: CORES.accent, color: CORES.goldDark }}>
                           🔒 {audio.nivel}
                         </span>
                       )}
@@ -728,7 +729,7 @@ export default function AudioMeditacoes() {
                   <p className="text-sm" style={{ color: CORES.textLight }}>
                     Áudio em produção. Lê a transcrição enquanto meditas.
                   </p>
-                  <span className="inline-block mt-2 px-4 py-2 rounded-full text-sm" style={{ backgroundColor: `${CORES.gold}20`, color: CORES.gold }}>
+                  <span className="inline-block mt-2 px-4 py-2 rounded-full text-sm" style={{ backgroundColor: `${CORES.gold}20`, color: CORES.goldDark }}>
                     +1 jóia por ler/ouvir
                   </span>
                 </div>
@@ -766,7 +767,7 @@ export default function AudioMeditacoes() {
             <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: CORES.gold }}>
               <span className="text-white text-lg">🎧</span>
             </div>
-            <span className="text-[10px] mt-1 font-medium" style={{ color: CORES.gold }}>Áudios</span>
+            <span className="text-[10px] mt-1 font-medium" style={{ color: CORES.goldDark }}>Áudios</span>
           </Link>
           <Link to="/aurea/perfil" className="flex flex-col items-center">
             <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: CORES.accent }}>

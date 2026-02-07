@@ -15,11 +15,11 @@ const CORES = {
   bgCard: '#FFFFFF',       // Branco puro
   gold: '#C9A227',         // Dourado ÁUREA
   goldLight: '#E8D59E',    // Dourado claro
-  goldDark: '#9A7B1A',     // Dourado escuro
+  goldDark: '#7A6200',     // Dourado escuro (WCAG AA)
   rose: '#E8B4B8',         // Rosa suave
   roseDark: '#D4919A',     // Rosa médio
   text: '#4A3728',         // Castanho texto
-  textLight: '#8B7355',    // Castanho claro
+  textLight: '#7A6445',    // Castanho claro (WCAG AA)
   accent: '#F5E6D3',       // Bege accent
 };
 
@@ -240,7 +240,7 @@ export default function DashboardAurea() {
               </div>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold" style={{ color: CORES.gold }}>{formatarJoias(joias)}</div>
+              <div className="text-2xl font-bold" style={{ color: CORES.goldDark}}>{formatarJoias(joias)}</div>
               <div className="text-xs" style={{ color: CORES.textLight }}>jóias ✨</div>
             </div>
           </div>
@@ -286,15 +286,15 @@ export default function DashboardAurea() {
 
             <div className="grid grid-cols-3 gap-2 p-3 rounded-xl mb-4" style={{ backgroundColor: CORES.accent }}>
               <div className="text-center">
-                <div className="font-bold" style={{ color: CORES.gold }}>{client?.quota_tempo_horas || 3}h</div>
+                <div className="font-bold" style={{ color: CORES.goldDark}}>{client?.quota_tempo_horas || 3}h</div>
                 <div className="text-[10px]" style={{ color: CORES.textLight }}>tempo/semana</div>
               </div>
               <div className="text-center border-x" style={{ borderColor: CORES.goldLight }}>
-                <div className="font-bold" style={{ color: CORES.gold }}>{(client?.quota_dinheiro_mzn || 2000).toLocaleString()}</div>
+                <div className="font-bold" style={{ color: CORES.goldDark}}>{(client?.quota_dinheiro_mzn || 2000).toLocaleString()}</div>
                 <div className="text-[10px]" style={{ color: CORES.textLight }}>MT/mês</div>
               </div>
               <div className="text-center">
-                <div className="font-bold" style={{ color: CORES.gold }}>{client?.quota_energia_actividades || 2}</div>
+                <div className="font-bold" style={{ color: CORES.goldDark}}>{client?.quota_energia_actividades || 2}</div>
                 <div className="text-[10px]" style={{ color: CORES.textLight }}>actividades</div>
               </div>
             </div>
@@ -342,7 +342,7 @@ export default function DashboardAurea() {
               </div>
             </div>
             {quotaHoje.resposta === 'sim' && (
-              <div className="font-bold" style={{ color: CORES.gold }}>+1 ✨</div>
+              <div className="font-bold" style={{ color: CORES.goldDark}}>+1 ✨</div>
             )}
           </div>
         )}
@@ -376,24 +376,24 @@ export default function DashboardAurea() {
         >
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg">💎</span>
-            <span className="text-xs font-medium uppercase" style={{ color: CORES.gold }}>Prática do Dia</span>
-            <span className="ml-auto text-sm font-semibold" style={{ color: CORES.gold }}>+{praticaDoDia.joias} ✨</span>
+            <span className="text-xs font-medium uppercase" style={{ color: CORES.goldDark}}>Prática do Dia</span>
+            <span className="ml-auto text-sm font-semibold" style={{ color: CORES.goldDark}}>+{praticaDoDia.joias} ✨</span>
           </div>
           <p style={{ color: CORES.text }}>{praticaDoDia.texto}</p>
           <div className="mt-3 flex items-center justify-center gap-2 py-2 rounded-xl" style={{ backgroundColor: CORES.accent }}>
-            <span style={{ color: CORES.gold }}>Ver todas as práticas</span>
-            <span style={{ color: CORES.gold }}>→</span>
+            <span style={{ color: CORES.goldDark}}>Ver todas as práticas</span>
+            <span style={{ color: CORES.goldDark}}>→</span>
           </div>
         </Link>
 
         {/* Stats da Semana */}
         <div className="grid grid-cols-2 gap-3">
           <div className="p-4 rounded-2xl text-center" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-            <div className="text-3xl font-bold" style={{ color: CORES.gold }}>{semanaStats.diasCumpridos}</div>
+            <div className="text-3xl font-bold" style={{ color: CORES.goldDark}}>{semanaStats.diasCumpridos}</div>
             <div className="text-xs" style={{ color: CORES.textLight }}>dias com quota esta semana</div>
           </div>
           <div className="p-4 rounded-2xl text-center" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-            <div className="text-3xl font-bold" style={{ color: CORES.gold }}>{semanaStats.joiasGanhas}</div>
+            <div className="text-3xl font-bold" style={{ color: CORES.goldDark}}>{semanaStats.joiasGanhas}</div>
             <div className="text-xs" style={{ color: CORES.textLight }}>jóias ganhas esta semana</div>
           </div>
         </div>
@@ -473,7 +473,7 @@ export default function DashboardAurea() {
             <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: CORES.gold }}>
               <span className="text-white text-lg">🏠</span>
             </div>
-            <span className="text-[10px] mt-1 font-medium" style={{ color: CORES.gold }}>Início</span>
+            <span className="text-[10px] mt-1 font-medium" style={{ color: CORES.goldDark}}>Início</span>
           </Link>
           <Link to="/aurea/praticas" className="flex flex-col items-center">
             <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: CORES.accent }}>
