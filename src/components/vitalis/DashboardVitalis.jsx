@@ -977,7 +977,7 @@ export default function DashboardVitalis() {
         </div>
 
         {/* Quick Actions - Navegação Principal */}
-        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
           <Link to="/vitalis/plano" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
             <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">📋</div>
             <p className="font-medium text-[#4A4035] group-hover:text-white text-sm">Meu Plano</p>
@@ -1085,7 +1085,7 @@ export default function DashboardVitalis() {
           </div>
 
           {/* Coluna Central */}
-          <div className="col-span-12 md:col-span-4 space-y-4 flex flex-col">
+          <div className="col-span-12 md:col-span-5 space-y-4 flex flex-col">
             
             {/* Timer de Jejum */}
             <FastingTimerCard
@@ -1103,7 +1103,7 @@ export default function DashboardVitalis() {
           </div>
 
           {/* Coluna Direita */}
-          <div className="col-span-12 md:col-span-4 space-y-4">
+          <div className="col-span-12 md:col-span-3 space-y-4">
             
             {/* Peso */}
             <div className="bg-white rounded-2xl shadow-lg p-4">
