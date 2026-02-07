@@ -4,11 +4,15 @@ import { supabase } from '../../lib/supabase';
 import { g } from '../../utils/genero';
 import {
   SUBSCRIPTION_PLANS,
+  BUNDLE_PLANS,
   SUBSCRIPTION_STATUS,
   activateSubscription,
   useInviteCode,
-  checkVitalisAccess
+  checkVitalisAccess,
+  getRenewalIncentive,
+  applyRenewalDiscount
 } from '../../lib/subscriptions';
+import { useReferralCode, rewardReferrer } from '../../lib/referrals';
 
 import { EmailTriggers } from '../../lib/emails';
 import { isCoach } from '../../lib/coach';
@@ -55,6 +59,8 @@ const PagamentoVitalis = () => {
   const [showTestPlan, setShowTestPlan] = useState(false);
   const [promoDiscount, setPromoDiscount] = useState(0); // 0 a 100 (%)
   const [promoCode, setPromoCode] = useState('');
+  const [planType, setPlanType] = useState('individual'); // 'individual' | 'bundle'
+  const [referralCode, setReferralCode] = useState(''); // codigo de referral de quem indicou
 
   useEffect(() => {
     loadUserData();
@@ -66,13 +72,19 @@ const PagamentoVitalis = () => {
       setInviteCode(codeFromUrl);
       setShowInviteInput(true);
     }
+
+    // Check for referral code in URL (e.g., /vitalis/pagamento?ref=ECOS-A3F7XQ)
+    const refFromUrl = searchParams.get('ref');
+    if (refFromUrl) {
+      setReferralCode(refFromUrl.toUpperCase());
+    }
   }, [searchParams]);
 
   useEffect(() => {
     if (paypalLoaded && userId) {
       renderPayPalButtons();
     }
-  }, [selectedPlan, paypalLoaded, userId, promoDiscount]);
+  }, [selectedPlan, paypalLoaded, userId, promoDiscount, planType]);
 
   const loadUserData = async () => {
     try {
@@ -117,7 +129,6 @@ const PagamentoVitalis = () => {
           try {
             const result = await useInviteCode(userData.id, codeToApply);
             if (result.success) {
-              // Navegar directamente (como handleInviteCode) - evita problemas de timing
               const { data: intake } = await supabase
                 .from('vitalis_intake')
                 .select('id')
@@ -133,6 +144,30 @@ const PagamentoVitalis = () => {
             }
           } catch (e) {
             console.warn('Auto-apply code failed:', e);
+          }
+        }
+
+        // Auto-aplicar referral code se existe (inicia trial para a convidada)
+        const refCode = searchParams.get('ref') || referralCode;
+        if (refCode && refCode.trim()) {
+          try {
+            const refResult = await useReferralCode(userData.id, refCode);
+            if (refResult.success) {
+              setMessage({ type: 'success', text: `Trial de ${refResult.trialDays} dias activado! Bem-vinda ao Vitalis.` });
+              const { data: intake } = await supabase
+                .from('vitalis_intake')
+                .select('id')
+                .eq('user_id', userData.id)
+                .maybeSingle();
+              if (intake) {
+                navigate('/vitalis/dashboard');
+              } else {
+                navigate('/vitalis/intake');
+              }
+              return;
+            }
+          } catch (e) {
+            console.warn('Auto-apply referral failed:', e);
           }
         }
 
@@ -213,7 +248,7 @@ const PagamentoVitalis = () => {
     if (!paypalRef.current || !window.paypal) return;
     paypalRef.current.innerHTML = '';
 
-    const plan = SUBSCRIPTION_PLANS[selectedPlan];
+    const plan = getActivePlans()[selectedPlan] || SUBSCRIPTION_PLANS.SEMESTRAL;
 
     const discounted = getDiscountedPrice(plan);
 
@@ -246,6 +281,9 @@ const PagamentoVitalis = () => {
           }
 
           if (result.success) {
+            // Recompensar quem indicou (se aplicavel)
+            rewardReferrer(userId).catch(console.error);
+
             const validoAte = new Date();
             validoAte.setMonth(validoAte.getMonth() + plan.duration);
             EmailTriggers.onPagamentoSucesso({
@@ -256,7 +294,7 @@ const PagamentoVitalis = () => {
               validoAte: validoAte.toLocaleDateString('pt-PT')
             }).catch(console.error);
 
-            // Navegar directamente - evita problemas de timing com modal
+            // Navegar directamente
             const { data: intake } = await supabase
               .from('vitalis_intake')
               .select('id')
@@ -343,7 +381,8 @@ const PagamentoVitalis = () => {
     }
   };
 
-  const getCurrentPlan = () => SUBSCRIPTION_PLANS[selectedPlan];
+  const getActivePlans = () => planType === 'bundle' ? BUNDLE_PLANS : SUBSCRIPTION_PLANS;
+  const getCurrentPlan = () => getActivePlans()[selectedPlan];
 
   const getDiscountedPrice = (plan) => {
     if (!promoDiscount) return { usd: plan.price_usd, mzn: plan.price_mzn };
@@ -409,9 +448,39 @@ const PagamentoVitalis = () => {
           </div>
         )}
 
-        {/* PLANOS - SEMPRE VISÍVEIS */}
+        {/* Toggle Individual / Bundle */}
+        <div className="flex gap-2 mb-4 bg-white/10 rounded-xl p-1">
+          <button
+            onClick={() => { setPlanType('individual'); setSelectedPlan('SEMESTRAL'); }}
+            className={`flex-1 py-2.5 rounded-lg font-medium text-sm transition-all ${
+              planType === 'individual' ? 'bg-white/20 text-white shadow' : 'text-white/60 hover:text-white/80'
+            }`}
+          >
+            Vitalis
+          </button>
+          <button
+            onClick={() => { setPlanType('bundle'); setSelectedPlan('SEMESTRAL'); }}
+            className={`flex-1 py-2.5 rounded-lg font-medium text-sm transition-all relative ${
+              planType === 'bundle' ? 'bg-gradient-to-r from-[#7C8B6F]/40 to-[#C9A227]/40 text-white shadow' : 'text-white/60 hover:text-white/80'
+            }`}
+          >
+            Vitalis + Aurea
+            <span className="absolute -top-1.5 -right-1 bg-[#C9A227] text-[10px] text-black font-bold px-1.5 py-0.5 rounded-full">-25%</span>
+          </button>
+        </div>
+
+        {planType === 'bundle' && (
+          <div className="bg-gradient-to-r from-[#7C8B6F]/20 to-[#C9A227]/20 border border-[#C9A227]/30 rounded-xl px-4 py-3 mb-4">
+            <p className="text-white/90 text-xs text-center leading-relaxed">
+              Vitalis (Nutricao) + Aurea (Autocuidado) juntos com 25% de desconto.
+              Dois sistemas integrados para a tua transformacao completa.
+            </p>
+          </div>
+        )}
+
+        {/* PLANOS */}
         <div className="space-y-3 mb-6">
-          {Object.entries(SUBSCRIPTION_PLANS)
+          {Object.entries(getActivePlans())
             .filter(([key, plan]) => !plan.hidden || (showTestPlan && key === 'TEST'))
             .map(([key, plan]) => (
             <button
@@ -437,7 +506,6 @@ const PagamentoVitalis = () => {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  {/* Checkmark indicador de seleção */}
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
                     selectedPlan === key
                       ? 'bg-white'
@@ -469,7 +537,7 @@ const PagamentoVitalis = () => {
               </div>
 
               {plan.savings_usd > 0 && (
-                <p className="text-xs text-green-300 mt-2 ml-9">Poupas ${plan.savings_usd} vs mensal</p>
+                <p className="text-xs text-green-300 mt-2 ml-9">Poupas ${plan.savings_usd} vs {planType === 'bundle' ? 'individual' : 'mensal'}</p>
               )}
             </button>
           ))}
@@ -644,9 +712,24 @@ const PagamentoVitalis = () => {
         <div className="bg-white/10 rounded-2xl p-5 mb-6">
           <h3 className="font-bold text-white mb-3">O que inclui:</h3>
           <ul className="space-y-2 text-sm text-white/80">
-            {['Plano nutricional personalizado', 'Sistema de 3 fases', 'Receitas ilimitadas', 'Tracking de progresso', 'Relatórios semanais', 'Comunidade de suporte'].map((item, i) => (
-              <li key={i} className="flex items-center gap-2">
-                <span className="text-green-300">✓</span> {item}
+            {[
+              'Plano nutricional personalizado',
+              'Sistema de 3 fases',
+              'Receitas ilimitadas',
+              'Tracking de progresso',
+              'Relatorios semanais',
+              'Chat com a coach Vivianne',
+              ...(planType === 'bundle' ? [
+                '— AUREA incluido —',
+                '100+ micro-praticas de autocuidado',
+                'Espelho de Roupa & Estilo',
+                'Diario de Merecimento',
+                'Meditacoes guiadas'
+              ] : []),
+              'Comunidade de suporte'
+            ].map((item, i) => (
+              <li key={i} className={`flex items-center gap-2 ${item.startsWith('—') ? 'text-[#C9A227] font-semibold mt-2' : ''}`}>
+                {item.startsWith('—') ? <span className="text-[#C9A227]">+</span> : <span className="text-green-300">✓</span>} {item}
               </li>
             ))}
           </ul>

@@ -746,20 +746,45 @@ const CoachDashboard = () => {
 
             {/* Revenue Stats */}
             <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-2xl p-4">
-              <h3 className="text-xs font-semibold text-green-300/60 uppercase tracking-wider mb-3">💰 Receita</h3>
+              <h3 className="text-xs font-semibold text-green-300/60 uppercase tracking-wider mb-3">Receita</h3>
               <div className="space-y-2">
                 <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-black/20">
-                  <span className="text-green-200/60 text-sm">Este mês</span>
+                  <span className="text-green-200/60 text-sm">Este mes</span>
                   <span className="font-bold text-green-300">${revenueStats.thisMonth}</span>
                 </div>
                 <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-black/20">
-                  <span className="text-green-200/60 text-sm">Mês passado</span>
+                  <span className="text-green-200/60 text-sm">Mes passado</span>
                   <span className="font-bold text-green-300/70">${revenueStats.lastMonth}</span>
                 </div>
                 <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-black/20">
                   <span className="text-green-200/60 text-sm">Total</span>
                   <span className="font-bold text-green-200">${revenueStats.total}</span>
                 </div>
+              </div>
+            </div>
+
+            {/* Funil de Conversao */}
+            <div className="bg-gradient-to-br from-purple-500/20 to-indigo-500/20 border border-purple-500/30 rounded-2xl p-4">
+              <h3 className="text-xs font-semibold text-purple-300/60 uppercase tracking-wider mb-3">Funil de Conversao</h3>
+              <div className="space-y-2">
+                {(() => {
+                  const totalU = stats.totalUsers || 1;
+                  const lumina = stats.comLumina || 0;
+                  const vitalis = subscriptionStats?.active || 0;
+                  const trial = subscriptionStats?.trial || 0;
+                  const trialToActive = vitalis > 0 && trial + vitalis > 0 ? Math.round((vitalis / (trial + vitalis)) * 100) : 0;
+                  return [
+                    { label: 'Registo → Lumina', value: `${Math.round((lumina / totalU) * 100)}%`, color: 'text-indigo-300' },
+                    { label: 'Trial activos', value: trial, color: 'text-purple-300' },
+                    { label: 'Trial → Pago', value: `${trialToActive}%`, color: 'text-pink-300' },
+                    { label: 'ARPU', value: totalU > 0 ? `$${Math.round(revenueStats.total / Math.max(vitalis, 1))}` : '$0', color: 'text-green-300' },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center justify-between py-2 px-3 rounded-lg bg-black/20">
+                      <span className="text-purple-200/60 text-sm">{item.label}</span>
+                      <span className={`font-bold ${item.color}`}>{item.value}</span>
+                    </div>
+                  ));
+                })()}
               </div>
             </div>
           </div>
