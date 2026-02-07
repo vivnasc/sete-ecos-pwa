@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
  */
 export default function MealsSection({ refeicoes, mealsHoje }) {
   return (
-    <section className="bg-white rounded-3xl shadow-xl p-5" aria-label="Refeicoes de hoje">
+    <section className="bg-white rounded-3xl shadow-xl p-5 flex-grow" aria-label="Refeicoes de hoje">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xs font-semibold text-[#6B5C4C] uppercase tracking-wider">Refeicoes Hoje</h3>
         <Link to="/vitalis/refeicoes-config" className="text-xs text-[#7C8B6F] hover:text-[#6B7A5D] font-medium">

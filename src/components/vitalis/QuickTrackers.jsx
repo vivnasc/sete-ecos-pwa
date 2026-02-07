@@ -37,7 +37,7 @@ export default function QuickTrackers({
   }
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl p-5">
+    <div className="bg-white rounded-2xl shadow-xl p-4">
       <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Quick Track</h3>
 
       {/* Agua */}
@@ -153,7 +153,7 @@ export default function QuickTrackers({
                   placeholder="7"
                 />
               </div>
-              <span className="text-xl text-gray-400 mt-4" aria-hidden="true">:</span>
+              <span className="text-xl text-gray-400 mt-5" aria-hidden="true">:</span>
               <div className="flex-1">
                 <label htmlFor="sono-minutos" className="block text-xs text-gray-500 mb-1">Min</label>
                 <input

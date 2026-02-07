@@ -45,7 +45,7 @@ export default function FastingTimerCard({
 
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-3xl md:text-4xl font-bold" aria-live="polite">{display}</p>
+          <p className="text-4xl font-bold" aria-live="polite">{display}</p>
           <p className="text-purple-200 text-sm">de {horasJejum} horas</p>
         </div>
         <div className="text-right">

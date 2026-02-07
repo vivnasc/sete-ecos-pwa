@@ -816,7 +816,7 @@ export default function DashboardVitalis() {
             <div className="flex-1">
               <p className="text-white/70 text-sm">Olá,</p>
               <Link to="/vitalis/perfil" className="block hover:opacity-80 transition-opacity">
-                <h2 className="text-xl md:text-2xl font-bold text-white truncate">
+                <h2 className="text-xl md:text-2xl font-bold text-white">
                   {userName?.split(' ')[0] || client?.nome_completo?.split(' ')[0] || userEmail?.split('@')[0] || g('Guerreiro', 'Guerreira')}! 👋
                 </h2>
               </Link>
@@ -1024,7 +1024,7 @@ export default function DashboardVitalis() {
             <div className="bg-white rounded-3xl shadow-xl p-5">
               <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Progresso Hoje</h3>
               
-              <div className="relative w-36 md:w-40 lg:w-44 h-36 md:h-40 lg:h-44 mx-auto mb-4">
+              <div className="relative w-44 h-44 mx-auto mb-4">
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
                   <circle cx="50" cy="50" r="45" fill="none" stroke="#f3f4f6" strokeWidth="6"/>
                   <circle cx="50" cy="50" r="36" fill="none" stroke="#f3f4f6" strokeWidth="5"/>
@@ -1050,7 +1050,7 @@ export default function DashboardVitalis() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-1.5 md:gap-2 text-center text-xs">
+              <div className="grid grid-cols-3 gap-2 text-center text-xs">
                 <div className="p-2 bg-[#F5F2ED] rounded-lg">
                   <div className="w-2 h-2 rounded-full bg-gradient-to-r from-[#7C8B6F] to-[#9CAF88] mx-auto mb-1"></div>
                   <p className="font-semibold text-[#4A4035]">{refeicoesConcluidas}/{totalRefeicoes}</p>
@@ -1085,7 +1085,7 @@ export default function DashboardVitalis() {
           </div>
 
           {/* Coluna Central */}
-          <div className="col-span-12 md:col-span-4 space-y-4">
+          <div className="col-span-12 md:col-span-4 space-y-4 flex flex-col">
             
             {/* Timer de Jejum */}
             <FastingTimerCard
@@ -1106,7 +1106,7 @@ export default function DashboardVitalis() {
           <div className="col-span-12 md:col-span-4 space-y-4">
             
             {/* Peso */}
-            <div className="bg-white rounded-3xl shadow-xl p-5">
+            <div className="bg-white rounded-2xl shadow-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs text-gray-400 uppercase tracking-wider">Peso</p>
                 {pesoPerdido > 0 && (
@@ -1139,7 +1139,7 @@ export default function DashboardVitalis() {
             {/* Humor movido para QuickTrackers */}
 
             {/* Mini Calendário */}
-            <div className="bg-white rounded-3xl shadow-xl p-5">
+            <div className="bg-white rounded-2xl shadow-lg p-4">
               <p className="text-xs text-gray-400 uppercase tracking-wider mb-3">Esta Semana</p>
               
               <div className="grid grid-cols-7 gap-1 text-center mb-2">
@@ -1152,7 +1152,7 @@ export default function DashboardVitalis() {
                 {ultimaSemana.map((dia, i) => (
                   <div
                     key={i}
-                    className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs font-medium mx-auto ${
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium mx-auto ${
                       dia.status === 'verde' ? 'bg-[#7C8B6F] text-white' :
                       dia.status === 'amarelo' ? 'bg-[#9CAF88] text-white' :
                       dia.status === 'vermelho' ? 'bg-[#C4A484] text-white' :
