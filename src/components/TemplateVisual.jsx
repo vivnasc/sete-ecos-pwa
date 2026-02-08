@@ -543,13 +543,15 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-const RENDER_MAP = {
+export const RENDER_MAP = {
   dica: renderDica,
   carrossel: renderCarrossel,
   testemunho: renderTestemunho,
   cta: renderCTA,
   stats: renderStats,
 };
+
+export { CORES, FORMATOS, TEMPLATES };
 
 // ============================================================
 // REACT COMPONENT
