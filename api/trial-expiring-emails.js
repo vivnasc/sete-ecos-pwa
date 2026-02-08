@@ -1,7 +1,7 @@
 /**
  * TRIAL EXPIRING EMAILS - Emails automáticos para trials próximos de expirar
  *
- * Cron diário (9h AM GMT): envia emails baseados em dias restantes de trial
+ * Cron diário (8h AM GMT): envia emails baseados em dias restantes de trial
  * - Dia -3: "Faltam 3 dias - aproveita ao máximo!"
  * - Dia -1: "Última oportunidade - não percas o progresso"
  * - Dia 0: "O teu trial expirou - continua a jornada"
@@ -9,26 +9,12 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import nodemailer from 'nodemailer';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Configuração SMTP (usar serviço como SendGrid, Mailgun, ou Gmail SMTP)
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
-
-// Email base da Vivianne
-const FROM_EMAIL = process.env.SMTP_FROM || 'vivianne@seteecos.com';
-const FROM_NAME = 'Vivianne - Sete Ecos';
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
 // ============================================================
 // TEMPLATES HTML DOS EMAILS
@@ -232,17 +218,31 @@ const emailWinBack3Dias = (nome, eco = 'Vitalis') => ({
 });
 
 // ============================================================
-// LÓGICA DE ENVIO
+// FUNÇÃO PARA ENVIAR EMAIL VIA RESEND
 // ============================================================
 
-async function enviarEmail(to, nome, subject, html, tipo) {
+async function enviarEmailResend(to, subject, html, tipo) {
   try {
-    await transporter.sendMail({
-      from: `"${FROM_NAME}" <${FROM_EMAIL}>`,
-      to,
-      subject,
-      html,
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'Vivianne - Sete Ecos <feedback@seteecos.com>',
+        to,
+        subject,
+        html,
+      }),
     });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error(`❌ Erro Resend para ${to}:`, result);
+      return false;
+    }
 
     // Log do envio
     await supabase.from('email_log').insert({
@@ -259,6 +259,10 @@ async function enviarEmail(to, nome, subject, html, tipo) {
     return false;
   }
 }
+
+// ============================================================
+// PROCESSAR TRIALS EXPIRANDO
+// ============================================================
 
 async function processarTrialsExpirando() {
   const hoje = new Date();
@@ -313,22 +317,22 @@ async function processarTrialsExpirando() {
     if (endDateStr === formatDate(em3Dias)) {
       // Faltam 3 dias
       const { subject, html } = email3DiasAntes(nome, eco);
-      await enviarEmail(email, nome, subject, html, 'trial_expiring_3d');
+      await enviarEmailResend(email, subject, html, 'trial_expiring_3d');
       enviados.dia3++;
     } else if (endDateStr === formatDate(em1Dia)) {
       // Falta 1 dia
       const { subject, html } = email1DiaAntes(nome, eco);
-      await enviarEmail(email, nome, subject, html, 'trial_expiring_1d');
+      await enviarEmailResend(email, subject, html, 'trial_expiring_1d');
       enviados.dia1++;
     } else if (endDateStr === formatDate(hoje)) {
       // Expirou hoje
       const { subject, html } = emailTrialExpirado(nome, eco);
-      await enviarEmail(email, nome, subject, html, 'trial_expired');
+      await enviarEmailResend(email, subject, html, 'trial_expired');
       enviados.expirado++;
     } else if (endDateStr === formatDate(ha3Dias)) {
       // Expirou há 3 dias - Win-back
       const { subject, html } = emailWinBack3Dias(nome, eco);
-      await enviarEmail(email, nome, subject, html, 'trial_winback_3d');
+      await enviarEmailResend(email, subject, html, 'trial_winback_3d');
       enviados.winback++;
     }
   }
@@ -352,6 +356,13 @@ export default async function handler(req, res) {
 
   if (authHeader !== expectedAuth) {
     return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  if (!RESEND_API_KEY || !supabaseUrl || !supabaseKey) {
+    return res.status(500).json({
+      error: 'Configuração em falta',
+      details: 'RESEND_API_KEY, VITE_SUPABASE_URL ou VITE_SUPABASE_ANON_KEY não configurados'
+    });
   }
 
   try {
