@@ -405,6 +405,150 @@ export function getCampanhaLancamento() {
 }
 
 // ============================================================
+// CARROSSEIS PRONTOS - 5 slides cada, prontos para descarregar
+// ============================================================
+
+export function getCarrosseisProntos() {
+  return [
+    {
+      id: 'mitos-alimentacao',
+      titulo: '5 Mitos sobre Alimentacao',
+      marca: 'vitalis',
+      cor: '#7C8B6F',
+      slides: [
+        { titulo: '5 Mitos que Destroem a tua Saude', texto: 'Quantos destes ja acreditaste?' },
+        { titulo: 'Mito 1: Xima engorda', texto: 'Falso. O que importa e a porcao e o acompanhamento. Xima e energia pura e barata.' },
+        { titulo: 'Mito 2: Preciso de suplementos caros', texto: 'Feijao nhemba, ovo, amendoim. Proteina acessivel no mercado do bairro.' },
+        { titulo: 'Mito 3: Comer menos = emagrecer', texto: 'Quando comes de menos, o metabolismo abranda. Comer MELHOR e o segredo.' },
+        { titulo: 'Mito 4: Salada todos os dias', texto: 'Comida saudavel tem sabor. Caril de coco, piri-piri. Porcao certa = saude.' },
+        { titulo: 'Para de acreditar em mitos.', texto: 'VITALIS - Coaching Nutricional\napp.seteecos.com' },
+      ],
+      caption: '5 mitos que provavelmente ja acreditaste (eu tambem!) 🫣\n\nDesliza e descobre a verdade.\n\nSalva este post. Partilha com alguem que precisa.\n\n#seteecos #vitalis #nutricaomocambique #mitos #comidadereal #saudereal',
+    },
+    {
+      id: 'fome-emocional',
+      titulo: '4 Sinais de Fome Emocional',
+      marca: 'vitalis',
+      cor: '#7C8B6F',
+      slides: [
+        { titulo: 'Tens fome ou tens medo?', texto: '4 sinais de que comes por emocao, nao por necessidade.' },
+        { titulo: 'Sinal 1: Comes sem fome', texto: 'Quando a boca quer mas o estomago nao pede. E emocao disfarçada.' },
+        { titulo: 'Sinal 2: Comes escondida', texto: 'Se precisas de esconder o que comes, o problema nao e a comida.' },
+        { titulo: 'Sinal 3: Culpa depois de comer', texto: 'Comer nao e crime. Se sentes culpa, alguem te ensinou a ter medo.' },
+        { titulo: 'Sinal 4: Comer acalma a ansiedade', texto: 'A comida virou anestesia. O corpo encontrou uma forma de lidar com a dor.' },
+        { titulo: 'Ha uma saida. E nao e mais uma dieta.', texto: 'VITALIS - Espaco de Retorno Emocional\napp.seteecos.com' },
+      ],
+      caption: 'Tens fome... ou algo dentro de ti precisa de atencao? 🤍\n\nDesliza e descobre os 4 sinais de fome emocional.\n\nPartilha com alguem que precisa de ouvir isto.\n\n#seteecos #vitalis #fomeemocional #saudeemocional #mulherforte #comerconsciente',
+    },
+    {
+      id: 'porcoes-maos',
+      titulo: 'Guia de Porcoes com as Maos',
+      marca: 'vitalis',
+      cor: '#7C8B6F',
+      slides: [
+        { titulo: 'Esquece a balanca. Usa as maos.', texto: 'O guia mais simples para porcoes correctas.' },
+        { titulo: 'Palma aberta = Proteina', texto: 'Frango, peixe, carne, ovo. Uma palma por refeicao.' },
+        { titulo: 'Punho fechado = Hidratos', texto: 'Xima, arroz, batata. Um punho por refeicao. E suficiente.' },
+        { titulo: 'Polegar = Gorduras', texto: 'Oleo, amendoim, abacate. Um polegar. Pouco mas essencial.' },
+        { titulo: 'Duas maos = Legumes', texto: 'Quanto mais legumes, melhor. Sem limite. Enche o prato.' },
+        { titulo: 'Sem balanca. Sem apps. So as tuas maos.', texto: 'VITALIS - Coaching Nutricional\napp.seteecos.com' },
+      ],
+      caption: 'A forma mais simples de medir porcoes que ja vi 🤲\n\nNao precisa de balanca. Nao precisa de app de calorias. So as tuas maos.\n\nSalva e usa na tua proxima refeicao.\n\n#seteecos #vitalis #porcoes #nutricao #comidadereal #dicasdesaude',
+    },
+    {
+      id: 'lumina-como-funciona',
+      titulo: 'LUMINA: O Diagnostico que Ninguem te Fez',
+      marca: 'lumina',
+      cor: '#5C6BC0',
+      slides: [
+        { titulo: 'O diagnostico que ninguem te fez.', texto: '2 minutos. 7 perguntas. 23 padroes possiveis.' },
+        { titulo: '7 perguntas simples', texto: 'Energia, tensao, imagem, passado, futuro, clareza, conexao.' },
+        { titulo: '23 leituras possiveis', texto: 'Criticas, alertas, proteccao, transicao, equilibrio. O LUMINA encontra O TEU padrao.' },
+        { titulo: 'Uma leitura so tua', texto: 'Nao e horoscopo. E baseado nas tuas respostas reais de hoje.' },
+        { titulo: 'Gratuito. Sem registo. 2 minutos.', texto: 'LUMINA - app.seteecos.com/lumina' },
+      ],
+      caption: 'Quando foi a ultima vez que alguem te perguntou como te sentes REALMENTE? 🔮\n\nO LUMINA faz-te 7 perguntas e revela padroes que nao vias.\n\nGratuito. 2 minutos. Link na bio.\n\n#seteecos #lumina #autoconhecimento #diagnostico #saudeemocional #mulhermocambicana',
+    },
+    {
+      id: 'vitalis-o-que-inclui',
+      titulo: 'O que o VITALIS Inclui',
+      marca: 'vitalis',
+      cor: '#7C8B6F',
+      slides: [
+        { titulo: 'Nao e uma dieta. E o fim das dietas.', texto: 'VITALIS - Coaching Nutricional Personalizado' },
+        { titulo: 'Plano alimentar feito para TI', texto: 'Com comida local: matapa, xima, feijao. Sem listas impossíveis.' },
+        { titulo: 'Coach IA disponivel 24h', texto: 'Pergunta o que quiseres. A qualquer hora. Sem julgamento.' },
+        { titulo: 'Espaco emocional para dias dificeis', texto: 'Recaiste? Sem problema. Ha um espaco para isso. Sem culpa.' },
+        { titulo: 'Dashboard + Receitas + Desafios', texto: 'Tudo no teu telemovel. Progresso real que podes ver.' },
+        { titulo: 'Desde 2.500 MT/mes. 7 dias de garantia.', texto: 'app.seteecos.com/vitalis' },
+      ],
+      caption: 'O VITALIS nao e mais uma dieta. E o unico programa que cuida da tua COMIDA e da tua EMOCAO ao mesmo tempo. 🌿\n\nDesliza para ver tudo o que inclui.\n\nDesde 2.500 MT/mes. 7 dias de garantia.\n\nLink na bio.\n\n#seteecos #vitalis #coachingnutricional #saudereal #mulhermocambicana #transformacao',
+    },
+    {
+      id: 'ciclo-dieta',
+      titulo: 'O Ciclo Vicioso da Dieta',
+      marca: 'seteEcos',
+      cor: '#6B5B95',
+      slides: [
+        { titulo: '80% dos problemas com comida sao emocionais.', texto: 'Conhece o ciclo que te prende.' },
+        { titulo: 'STRESS → Comes demais', texto: 'O corpo procura conforto rapido. Acucar. Hidratos. Comida processada.' },
+        { titulo: 'CULPA → Restringes', texto: '"Amanha nao como nada." "Vou so beber agua." A punicao comeca.' },
+        { titulo: 'RESTRICAO → Compulsao', texto: 'O corpo nao aguenta. Comes tudo. A culpa volta. Repete.' },
+        { titulo: 'A saida nao e mais disciplina. E compreensao.', texto: 'SETE ECOS - Transmutacao Feminina\napp.seteecos.com' },
+      ],
+      caption: 'Ja estiveste presa neste ciclo? Eu tambem. 🔄\n\nStress → Comida → Culpa → Restricao → Compulsao → Mais culpa.\n\nA saida nao e mais forca de vontade. E entender PORQUE acontece.\n\nDesliza.\n\n#seteecos #ciclovicioso #saudeemocional #semdieta #mulherforte #realidade',
+    },
+    {
+      id: 'aurea-autovalor',
+      titulo: 'AUREA: O Programa de Autovalor',
+      marca: 'aurea',
+      cor: '#C9A227',
+      slides: [
+        { titulo: 'O teu valor nao cabe numa calca tamanho S.', texto: 'AUREA - Programa de Autovalor Feminino' },
+        { titulo: 'Foste ensinada a duvidar de ti.', texto: 'Pela escola. Pela TV. Pelas redes. Pelo espelho. Mas isso e uma mentira.' },
+        { titulo: '7 semanas de reconexao.', texto: 'Exercicios, reflexoes e ferramentas para reconstruir a relacao contigo mesma.' },
+        { titulo: 'O teu corpo e a tua casa. Nao um projecto.', texto: 'Para de tentar arranja-lo. Comeca a habita-lo.' },
+        { titulo: 'AUREA: desde 975 MT/mes.', texto: 'app.seteecos.com/aurea' },
+      ],
+      caption: 'O teu valor nao depende do que veste, pesas ou aparentas. 🤍\n\nO AUREA e um programa de 7 semanas para reconstruir a relacao contigo mesma.\n\nPorque antes de mudar o corpo, precisas de mudar o olhar.\n\nLink na bio.\n\n#seteecos #aurea #autovalor #autoestima #mulherreal #empoderamento #mocambique',
+    },
+    {
+      id: 'testemunhos-reais',
+      titulo: 'Transformacoes Reais',
+      marca: 'vitalis',
+      cor: '#7C8B6F',
+      slides: [
+        { titulo: 'O que acontece quando paras de fazer dieta.', texto: 'Historias reais de mulheres como tu.' },
+        { titulo: '"Perdi 8kg mas o melhor foi parar de chorar depois de comer."', texto: '- M.J., Maputo' },
+        { titulo: '"A minha filha disse que estou diferente. Nao mais magra. Mais feliz."', texto: '- A.B., Maputo' },
+        { titulo: '"Pela primeira vez nao desisti ao 3o dia."', texto: '- S.C., Maputo' },
+        { titulo: 'A proxima historia pode ser a tua.', texto: 'VITALIS - Comeca hoje\napp.seteecos.com/vitalis' },
+      ],
+      caption: 'Resultados reais. Sem filtro. Sem Photoshop. 🤍\n\nEstas mulheres decidiram parar de fazer dieta e comecar a VIVER.\n\nA proxima historia pode ser a tua.\n\nLink na bio.\n\n#seteecos #vitalis #transformacao #resultadosreais #semfiltro #mulhermocambicana',
+    },
+  ];
+}
+
+// ============================================================
+// CALENDARIO MENSAL - 30 dias de conteudo planeado
+// ============================================================
+
+export function gerarConteudoMensal(ano, mes) {
+  const diasNoMes = new Date(ano, mes + 1, 0).getDate();
+  const dias = [];
+  for (let dia = 1; dia <= diasNoMes; dia++) {
+    const date = new Date(ano, mes, dia);
+    const conteudo = gerarConteudoHoje(date);
+    dias.push({
+      ...conteudo,
+      dia,
+      dayOfWeek: date.getDay(),
+    });
+  }
+  return dias;
+}
+
+// ============================================================
 // EMAIL SEQUENCES & UTM LINKS (mantidos por compatibilidade)
 // ============================================================
 
