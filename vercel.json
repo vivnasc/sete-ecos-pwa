@@ -27,9 +27,16 @@
     },
     "api/email-sequencia.js": {
       "maxDuration": 30
+    },
+    "api/trial-expiring-emails.js": {
+      "maxDuration": 30
     }
   },
   "crons": [
+    {
+      "path": "/api/trial-expiring-emails",
+      "schedule": "0 8 * * *"
+    },
     {
       "path": "/api/tarefas-agendadas",
       "schedule": "0 9 * * *"
