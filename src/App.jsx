@@ -33,6 +33,7 @@ const Perfil = lazy(() => import('./pages/Perfil'))
 const RecuperarPassword = lazy(() => import('./pages/RecuperarPassword'))
 const Lumina = lazy(() => import('./pages/Lumina'))
 const CoachDashboard = lazy(() => import('./pages/CoachDashboard'))
+const AnalyticsDashboard = lazy(() => import('./pages/AnalyticsDashboard'))
 const LandingBundle = lazy(() => import('./pages/LandingBundle'))
 
 // ECO 1: VITALIS (Nutrição) — ~800KB separado
@@ -225,6 +226,12 @@ function AppRoutes() {
             <Route path="/coach/marketing" element={
               isSessionCoach(session)
                 ? <MarketingDashboard />
+                : <Navigate to="/" />
+            } />
+
+            <Route path="/coach/analytics" element={
+              isSessionCoach(session)
+                ? <AnalyticsDashboard />
                 : <Navigate to="/" />
             } />
 
