@@ -9,6 +9,8 @@ import {
   gerarMensagemWhatsApp,
   gerarStatusWhatsApp,
   gerarCaptionInstagram,
+  gerarScriptVoz,
+  getCampanhaLancamento,
   gerarLinksUTM,
   getSequenciaCompleta,
 } from '../lib/marketing-engine';
@@ -94,11 +96,13 @@ export default function MarketingDashboard() {
   }
 
   const tabs = [
-    { id: 'hoje', label: 'Hoje', icon: '📅' },
-    { id: 'semana', label: 'Semana', icon: '📋' },
+    { id: 'hoje', label: 'Hoje', icon: '🔥' },
+    { id: 'lancamento', label: 'Lancamento 7d', icon: '🚀' },
     { id: 'whatsapp', label: 'WhatsApp', icon: '💬' },
     { id: 'instagram', label: 'Instagram', icon: '📸' },
+    { id: 'scripts', label: 'Scripts Voz', icon: '🎙' },
     { id: 'imagens', label: 'Imagens', icon: '🎨' },
+    { id: 'semana', label: 'Semana', icon: '📋' },
     { id: 'links', label: 'Links UTM', icon: '🔗' },
     { id: 'emails', label: 'Email Seq.', icon: '📧' },
   ];
@@ -159,16 +163,34 @@ export default function MarketingDashboard() {
         {/* ===== TAB: HOJE ===== */}
         {tab === 'hoje' && (
           <>
-            <Card titulo={`${conteudoHoje.titulo} - ${conteudoHoje.diaSemana}`} badge={conteudoHoje.formato}>
-              <p className="text-[#4A4035] mb-4 leading-relaxed">{conteudoHoje.dica}</p>
+            {/* Hook do dia - O mais importante */}
+            <Card titulo={`${conteudoHoje.titulo} - ${conteudoHoje.diaSemana}`} badge={conteudoHoje.tipo}>
+              <div className="bg-gradient-to-r from-[#7C8B6F]/10 to-[#6B5B95]/10 p-4 rounded-xl mb-4 border-l-4 border-[#7C8B6F]">
+                <p className="text-xs font-bold text-[#7C8B6F] mb-2 uppercase tracking-wider">HOOK (para parar o scroll)</p>
+                <p className="text-lg font-semibold text-[#4A4035] leading-relaxed" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  {conteudoHoje.hook}
+                </p>
+              </div>
+
+              <div className="mb-4">
+                <p className="text-xs font-bold text-[#6B5C4C] mb-1 uppercase tracking-wider">Desenvolvimento</p>
+                <p className="text-sm text-[#4A4035] leading-relaxed">{conteudoHoje.corpo}</p>
+              </div>
+
+              <div className="bg-[#7C8B6F]/5 p-3 rounded-lg mb-4">
+                <p className="text-xs font-bold text-[#7C8B6F] mb-1 uppercase tracking-wider">CTA</p>
+                <p className="text-sm font-medium text-[#7C8B6F]">{conteudoHoje.cta}</p>
+              </div>
+
               <div className="flex flex-wrap gap-1 mb-4">
                 {conteudoHoje.hashtags.map(h => (
                   <span key={h} className="text-xs bg-[#7C8B6F]/10 text-[#7C8B6F] px-2 py-1 rounded-full">{h}</span>
                 ))}
               </div>
-              <div className="flex gap-2">
-                <CopyBtn onClick={() => copiar(conteudoHoje.dica, 'dica')} copiado={copiado === 'dica'} label="Copiar Dica" />
-                <CopyBtn onClick={() => copiar(conteudoHoje.hashtags.join(' '), 'hash')} copiado={copiado === 'hash'} label="Copiar Hashtags" />
+              <div className="flex flex-wrap gap-2">
+                <CopyBtn onClick={() => copiar(conteudoHoje.hook, 'hook')} copiado={copiado === 'hook'} label="Copiar Hook" />
+                <CopyBtn onClick={() => copiar(`${conteudoHoje.hook}\n\n${conteudoHoje.corpo}\n\n${conteudoHoje.cta}`, 'tudo')} copiado={copiado === 'tudo'} label="Copiar Tudo" />
+                <CopyBtn onClick={() => copiar(conteudoHoje.hashtags.join(' '), 'hash')} copiado={copiado === 'hash'} label="Hashtags" />
               </div>
             </Card>
 
@@ -222,20 +244,66 @@ export default function MarketingDashboard() {
           </Card>
         )}
 
+        {/* ===== TAB: LANCAMENTO 7 DIAS ===== */}
+        {tab === 'lancamento' && (
+          <Card titulo="Campanha de Lancamento - 7 Dias" badge="Estrategia completa">
+            <p className="text-sm text-[#6B5C4C] mb-4">
+              Campanha sequencial de 7 dias. Cada dia tem conteudo para WhatsApp, Instagram e Stories.
+              Executa na ordem. Nao saltes dias.
+            </p>
+            <div className="space-y-4">
+              {getCampanhaLancamento().map((dia, i) => (
+                <div key={dia.dia} className="rounded-xl border-2 border-[#E8E2D9] overflow-hidden">
+                  <div className="bg-gradient-to-r from-[#7C8B6F] to-[#6B5B95] px-4 py-2 flex items-center justify-between">
+                    <span className="text-white font-bold text-sm">DIA {dia.dia} - {dia.titulo}</span>
+                  </div>
+                  <div className="p-4 space-y-3">
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-xs font-bold text-[#25D366]">WHATSAPP</p>
+                        <CopyBtn onClick={() => copiar(dia.whatsapp, `lanc-wa-${i}`)} copiado={copiado === `lanc-wa-${i}`} label="Copiar" small />
+                      </div>
+                      <pre className="text-xs text-[#4A4035] whitespace-pre-wrap bg-[#25D366]/5 p-3 rounded-lg leading-relaxed">{dia.whatsapp}</pre>
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-xs font-bold text-purple-600">INSTAGRAM</p>
+                        <CopyBtn onClick={() => copiar(dia.instagram, `lanc-ig-${i}`)} copiado={copiado === `lanc-ig-${i}`} label="Copiar" small />
+                      </div>
+                      <pre className="text-xs text-[#4A4035] whitespace-pre-wrap bg-purple-50 p-3 rounded-lg leading-relaxed">{dia.instagram}</pre>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-pink-600 mb-1">STORIES</p>
+                      <p className="text-xs text-[#4A4035] bg-pink-50 p-3 rounded-lg">{dia.stories}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
+
         {/* ===== TAB: WHATSAPP ===== */}
         {tab === 'whatsapp' && (
           <>
-            <Card titulo="Gerador de Mensagens WhatsApp">
+            <Card titulo="Gerador de Mensagens WhatsApp" badge="12 tipos">
+              <p className="text-sm text-[#6B5C4C] mb-3">
+                Cada tipo tem tom e objectivo diferente. Varia para nao cansar a audiencia.
+              </p>
               <div className="flex flex-wrap gap-2 mb-4">
                 {[
-                  { id: 'dica', label: 'Dica do Dia' },
-                  { id: 'promo', label: 'Promocao' },
-                  { id: 'testemunho', label: 'Testemunho' },
-                  { id: 'lumina', label: 'Lumina Gratis' },
-                  { id: 'luminaDica', label: 'Lumina + Dica' },
-                  { id: 'luminaDirecto', label: 'Lumina Directo' },
-                  { id: 'luminaResultado', label: 'Lumina Resultados' },
-                  { id: 'status', label: 'Status' },
+                  { id: 'dica', label: 'Dica Crua', cor: '' },
+                  { id: 'provocacao', label: 'Provocacao', cor: '' },
+                  { id: 'pessoal', label: 'Voz Pessoal', cor: '' },
+                  { id: 'urgencia', label: 'Urgencia', cor: '' },
+                  { id: 'promo', label: 'Promo Directa', cor: '' },
+                  { id: 'testemunho', label: 'Testemunho', cor: '' },
+                  { id: 'lumina', label: 'Lumina Anzol', cor: '' },
+                  { id: 'dm', label: 'DM Pessoal', cor: '' },
+                  { id: 'grupo', label: 'Para Grupos', cor: '' },
+                  { id: 'storiesSeq', label: '5 Status Seq.', cor: '' },
+                  { id: 'audio', label: 'Script Audio', cor: '' },
+                  { id: 'status', label: 'Status Rapido', cor: '' },
                 ].map(t => (
                   <button
                     key={t.id}
@@ -267,42 +335,20 @@ export default function MarketingDashboard() {
                 </a>
               </div>
             </Card>
-
-            <Card titulo="Mensagens Pre-Escritas para Broadcast" badge="5 tipos">
-              <p className="text-sm text-[#6B5C4C] mb-3">
-                Cada mensagem inclui link UTM para rastrear conversoes.
-                Usa "Copiar" e cola directamente no WhatsApp.
-              </p>
-              <div className="space-y-2">
-                {['dica', 'promo', 'testemunho', 'lumina', 'status'].map(tipo => {
-                  const msg = gerarMensagemWhatsApp(tipo);
-                  return (
-                    <div key={tipo} className="flex items-center justify-between p-3 bg-white rounded-lg border border-[#E8E2D9]">
-                      <span className="text-sm font-medium text-[#4A4035] capitalize">{tipo}</span>
-                      <CopyBtn
-                        onClick={() => copiar(msg.mensagem, `wa-${tipo}`)}
-                        copiado={copiado === `wa-${tipo}`}
-                        label="Copiar"
-                        small
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            </Card>
           </>
         )}
 
         {/* ===== TAB: INSTAGRAM ===== */}
         {tab === 'instagram' && (
           <>
-            <Card titulo="Gerador de Captions Instagram">
+            <Card titulo="Gerador de Conteudo Instagram" badge="5 formatos">
               <div className="flex flex-wrap gap-2 mb-4">
                 {[
                   { id: 'post', label: 'Post' },
-                  { id: 'reel', label: 'Reel' },
-                  { id: 'carrossel', label: 'Carrossel' },
-                  { id: 'stories', label: 'Stories' },
+                  { id: 'reel', label: 'Reel Caption' },
+                  { id: 'reelScript', label: 'Script Reel' },
+                  { id: 'carrossel', label: 'Carrossel (slides)' },
+                  { id: 'stories', label: 'Seq. Stories' },
                 ].map(t => (
                   <button
                     key={t.id}
@@ -323,26 +369,48 @@ export default function MarketingDashboard() {
               </pre>
 
               <div className="flex gap-2">
-                <CopyBtn onClick={() => copiar(instaCaption.caption, 'insta')} copiado={copiado === 'insta'} label="Copiar Caption" />
+                <CopyBtn onClick={() => copiar(instaCaption.caption, 'insta')} copiado={copiado === 'insta'} label="Copiar Tudo" />
                 <CopyBtn onClick={() => copiar(instaCaption.hashtags, 'insta-hash')} copiado={copiado === 'insta-hash'} label="So Hashtags" />
               </div>
             </Card>
+          </>
+        )}
 
-            <Card titulo="Ideias de Conteudo por Formato">
-              <div className="space-y-3">
-                {[
-                  { formato: 'Reel (30-60s)', ideias: ['Dica rapida de nutricao', 'Antes vs depois de uma refeicao', 'Medir porcoes com a mao', 'Desmitificar um mito nutricional'] },
-                  { formato: 'Carrossel', ideias: ['5 erros comuns ao emagrecer', '3 receitas rapidas com ingredientes locais', 'O que comer num dia tipico', 'Sinais de que o corpo precisa de atencao'] },
-                  { formato: 'Stories', ideias: ['Poll: preferes xima ou arroz?', 'Caixa de perguntas sobre nutricao', 'O teu prato de hoje', 'Countdown para lancamento'] },
-                ].map(f => (
-                  <div key={f.formato} className="p-3 bg-white rounded-lg border border-[#E8E2D9]">
-                    <p className="text-sm font-semibold text-[#7C8B6F] mb-1">{f.formato}</p>
-                    <ul className="text-xs text-[#6B5C4C] space-y-1">
-                      {f.ideias.map(i => <li key={i} className="flex items-start gap-1"><span>•</span> {i}</li>)}
-                    </ul>
+        {/* ===== TAB: SCRIPTS VOZ ===== */}
+        {tab === 'scripts' && (
+          <>
+            <Card titulo="Scripts para Gravar" badge="Voz / Video">
+              <p className="text-sm text-[#6B5C4C] mb-4">
+                Scripts prontos para gravar Reels, Stories e notas de voz WhatsApp. Le o script, grava, publica.
+              </p>
+              {(() => {
+                const scripts = gerarScriptVoz();
+                return (
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-sm font-bold text-purple-600">Script Reel (30 seg)</p>
+                        <CopyBtn onClick={() => copiar(scripts.reel30s, 'reel-script')} copiado={copiado === 'reel-script'} label="Copiar" small />
+                      </div>
+                      <pre className="text-xs text-[#4A4035] whitespace-pre-wrap bg-purple-50 p-4 rounded-xl leading-relaxed">{scripts.reel30s}</pre>
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-sm font-bold text-pink-600">Script Stories (voz)</p>
+                        <CopyBtn onClick={() => copiar(scripts.storiesVoz, 'stories-script')} copiado={copiado === 'stories-script'} label="Copiar" small />
+                      </div>
+                      <pre className="text-xs text-[#4A4035] whitespace-pre-wrap bg-pink-50 p-4 rounded-xl leading-relaxed">{scripts.storiesVoz}</pre>
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-sm font-bold text-[#25D366]">Script Nota de Voz WhatsApp</p>
+                        <CopyBtn onClick={() => copiar(scripts.audioWhatsApp, 'audio-script')} copiado={copiado === 'audio-script'} label="Copiar" small />
+                      </div>
+                      <pre className="text-xs text-[#4A4035] whitespace-pre-wrap bg-[#25D366]/5 p-4 rounded-xl leading-relaxed">{scripts.audioWhatsApp}</pre>
+                    </div>
                   </div>
-                ))}
-              </div>
+                );
+              })()}
             </Card>
           </>
         )}
