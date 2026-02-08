@@ -209,102 +209,137 @@ async function renderCarrossel(canvas, config) {
   canvas.height = height;
   const ctx = canvas.getContext('2d');
   const isStories = formato === 'stories';
+  const isFirst = slideNum === 1;
+  const isLast = slideNum === totalSlides;
 
-  // Clean background
-  ctx.fillStyle = cores.bg;
-  ctx.fillRect(0, 0, width, height);
-
-  // Color bar at top
-  const barH = isStories ? 200 : 160;
-  const grad = ctx.createLinearGradient(0, 0, width, 0);
-  grad.addColorStop(0, cores.primary);
-  grad.addColorStop(1, cores.secondary);
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, width, barH);
-
-  // Logo on color bar
-  const logo = await loadImage(cores.logo);
-  if (logo) {
-    const logoSize = 50;
-    ctx.drawImage(logo, 60, (barH - logoSize) / 2, logoSize, logoSize);
+  // Background: cover/CTA = bold gradient, content = light
+  const isDark = isFirst || isLast;
+  if (isDark) {
+    const grad = ctx.createLinearGradient(0, 0, width * 0.4, height);
+    grad.addColorStop(0, cores.secondary);
+    grad.addColorStop(0.5, cores.primary);
+    grad.addColorStop(1, cores.secondary);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, width, height);
+  } else {
+    ctx.fillStyle = cores.bg;
+    ctx.fillRect(0, 0, width, height);
+    // Left accent stripe
+    ctx.fillStyle = cores.primary;
+    ctx.fillRect(0, 0, 8, height);
   }
 
-  // Brand name on bar
-  ctx.font = `700 28px 'Quicksand', sans-serif`;
-  ctx.fillStyle = '#FFFFFF';
-  ctx.textAlign = 'left';
-  ctx.fillText(cores.nome, 125, barH / 2 + 10);
+  const textColor = isDark ? '#FFFFFF' : cores.textDark;
+  const subColor = isDark ? 'rgba(255,255,255,0.7)' : (cores.textDark + 'AA');
 
-  // Slide indicator on bar
+  // Decorative circles
+  ctx.globalAlpha = isDark ? 0.06 : 0.03;
+  ctx.fillStyle = isDark ? '#FFFFFF' : cores.primary;
+  ctx.beginPath();
+  ctx.arc(width * 0.82, height * 0.18, isStories ? 260 : 200, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(width * 0.18, height * 0.82, isStories ? 200 : 160, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // Top: Logo centered
+  const logoY = isStories ? 70 : 50;
+  const logo = await loadImage(cores.logo);
+  if (logo) {
+    const logoSize = 44;
+    ctx.drawImage(logo, (width - logoSize) / 2, logoY, logoSize, logoSize);
+  }
+
+  // Slide dots centered below logo
   if (slideNum && totalSlides) {
-    ctx.font = `600 20px 'Quicksand', sans-serif`;
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.textAlign = 'right';
-    ctx.fillText(`${slideNum}/${totalSlides}`, width - 60, barH / 2 + 8);
-
-    // Dots
-    const dotY = barH / 2 + 30;
+    const dotY = logoY + 62;
+    const dotSpacing = 18;
+    const totalDotsW = (totalSlides - 1) * dotSpacing;
+    const dotStartX = (width - totalDotsW) / 2;
     for (let i = 1; i <= totalSlides; i++) {
       ctx.beginPath();
-      ctx.arc(width - 60 - (totalSlides - i) * 20, dotY, 5, 0, Math.PI * 2);
-      ctx.fillStyle = i === slideNum ? '#FFFFFF' : 'rgba(255,255,255,0.3)';
+      ctx.arc(dotStartX + (i - 1) * dotSpacing, dotY, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = i === slideNum
+        ? (isDark ? '#FFFFFF' : cores.primary)
+        : (isDark ? 'rgba(255,255,255,0.25)' : (cores.primary + '25'));
       ctx.fill();
     }
   }
 
-  // Content area
-  const contentY = barH + 60;
-  const padding = 80;
+  // ALL TEXT CENTERED
+  ctx.textAlign = 'center';
+  const padding = 90;
   const maxW = width - padding * 2;
-  ctx.textAlign = 'left';
 
-  // Title
-  const titleSize = texto.length > 60 ? 42 : 50;
+  // Calculate title
+  const titleSize = texto.length > 100 ? 36 : texto.length > 70 ? 42 : texto.length > 40 ? 50 : 58;
   ctx.font = `700 ${titleSize}px 'Cormorant Garamond', Georgia, serif`;
-  ctx.fillStyle = cores.textDark;
   const titleLines = wrapText(ctx, texto, maxW);
-  let y = contentY;
-  titleLines.forEach(line => {
-    ctx.fillText(line, padding, y + titleSize);
-    y += titleSize * 1.3;
-  });
+  const titleH = titleLines.length * (titleSize * 1.35);
 
-  // Accent bar under title
-  y += 15;
-  ctx.fillStyle = cores.primary;
-  ctx.fillRect(padding, y, 60, 4);
-  y += 35;
-
-  // Subtitle / body text
+  // Calculate subtitle
+  const subSize = 28;
+  let subLines = [];
+  let subH = 0;
   if (subtitulo) {
-    const bodySize = 30;
-    ctx.font = `400 ${bodySize}px 'Quicksand', sans-serif`;
-    ctx.fillStyle = cores.textDark + 'CC';
-    const bodyLines = wrapText(ctx, subtitulo, maxW);
-    bodyLines.forEach(line => {
-      ctx.fillText(line, padding, y + bodySize);
-      y += bodySize * 1.5;
-    });
+    ctx.font = `400 ${subSize}px 'Quicksand', sans-serif`;
+    subLines = wrapText(ctx, subtitulo, maxW);
+    subH = subLines.length * (subSize * 1.5) + 35;
   }
 
-  // Swipe indicator
-  ctx.textAlign = 'center';
-  ctx.font = `500 22px 'Quicksand', sans-serif`;
-  ctx.fillStyle = cores.primary;
-  const swipeY = height - (isStories ? 150 : 80);
-  ctx.fillText('Desliza para mais  >', width / 2, swipeY);
+  // Vertical centering
+  const totalTextH = titleH + subH;
+  const textStartY = (height - totalTextH) / 2 + titleSize * 0.3;
 
-  // Footer line
-  ctx.strokeStyle = cores.primary + '30';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(padding, height - (isStories ? 100 : 55));
-  ctx.lineTo(width - padding, height - (isStories ? 100 : 55));
-  ctx.stroke();
+  // Draw title
+  ctx.font = `700 ${titleSize}px 'Cormorant Garamond', Georgia, serif`;
+  ctx.fillStyle = textColor;
+  drawCenteredText(ctx, titleLines, width / 2, textStartY, titleSize * 1.35);
 
-  ctx.font = `400 18px 'Quicksand', sans-serif`;
-  ctx.fillStyle = cores.primary + '80';
-  ctx.fillText('app.seteecos.com', width / 2, height - (isStories ? 65 : 30));
+  // Accent line
+  const accentY = textStartY + titleH + 12;
+  ctx.fillStyle = isDark ? 'rgba(255,255,255,0.3)' : cores.primary;
+  ctx.fillRect(width / 2 - 28, accentY, 56, 3);
+
+  // Subtitle
+  if (subtitulo && subLines.length > 0) {
+    const subStartY = accentY + 28;
+    ctx.font = `400 ${subSize}px 'Quicksand', sans-serif`;
+    ctx.fillStyle = subColor;
+    drawCenteredText(ctx, subLines, width / 2, subStartY, subSize * 1.5);
+  }
+
+  // Bottom: CTA button on last slide, swipe prompt on others
+  if (isLast) {
+    const btnY = height - (isStories ? 280 : 200);
+    const btnW = 360;
+    const btnH = 64;
+    const btnX = (width - btnW) / 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    roundRect(ctx, btnX + 3, btnY + 3, btnW, btnH, 32);
+    ctx.fill();
+    ctx.fillStyle = '#FFFFFF';
+    roundRect(ctx, btnX, btnY, btnW, btnH, 32);
+    ctx.fill();
+    ctx.font = `700 24px 'Quicksand', sans-serif`;
+    ctx.fillStyle = cores.primary;
+    ctx.fillText('Comeca Agora', width / 2, btnY + 40);
+  } else if (!isFirst) {
+    ctx.font = `500 18px 'Quicksand', sans-serif`;
+    ctx.fillStyle = isDark ? 'rgba(255,255,255,0.4)' : (cores.primary + '50');
+    ctx.fillText('Desliza ▸', width / 2, height - (isStories ? 160 : 80));
+  } else {
+    // Cover slide - "Desliza para descobrir"
+    ctx.font = `500 20px 'Quicksand', sans-serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillText('Desliza para descobrir ▸', width / 2, height - (isStories ? 200 : 110));
+  }
+
+  // Footer
+  ctx.font = `400 16px 'Quicksand', sans-serif`;
+  ctx.fillStyle = isDark ? 'rgba(255,255,255,0.25)' : (cores.primary + '35');
+  ctx.fillText('app.seteecos.com', width / 2, height - (isStories ? 120 : 45));
 }
 
 async function renderTestemunho(canvas, config) {
