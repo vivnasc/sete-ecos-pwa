@@ -18,20 +18,29 @@ export async function gerarPlanoAutomatico(userId) {
 
     if (intakeError) throw intakeError;
 
-    // 2. Buscar dados básicos do user
-    const { data: user, error: userError } = await supabase
-      .from('users')
-      .select('altura_cm')
-      .eq('id', userId)
-      .single();
-
-    if (userError) throw userError;
+    // 2. Altura vem do intake (a tabela users pode não ter altura_cm)
+    let alturaFromUsers = null;
+    try {
+      const { data: user } = await supabase
+        .from('users')
+        .select('altura_cm')
+        .eq('id', userId)
+        .maybeSingle();
+      alturaFromUsers = user?.altura_cm;
+    } catch (e) {
+      // Coluna pode não existir na tabela users — não bloqueia
+      console.warn('users.altura_cm não disponível:', e.message);
+    }
 
     // 3. Calcular TMB (Taxa Metabólica Basal) - Fórmula Mifflin-St Jeor
-    const altura = intake.altura_cm || user.altura_cm;
+    const altura = intake.altura_cm || alturaFromUsers || 165; // fallback seguro
     const peso = intake.peso_actual;
     const idade = intake.idade;
     const sexo = intake.sexo;
+
+    if (!peso || !idade) {
+      throw new Error('Dados do intake incompletos (peso ou idade em falta)');
+    }
 
     let tmb;
     if (sexo === 'masculino') {
@@ -291,17 +300,21 @@ export async function recalcularPlano(userId, novaFase = null) {
 
     if (planoError) throw planoError;
 
-    // 4. Buscar altura do user
-    const { data: user, error: userError } = await supabase
-      .from('users')
-      .select('altura_cm')
-      .eq('id', userId)
-      .single();
-
-    if (userError) throw userError;
+    // 4. Altura vem do intake (tabela users pode não ter altura_cm)
+    let alturaFromUsers = null;
+    try {
+      const { data: user } = await supabase
+        .from('users')
+        .select('altura_cm')
+        .eq('id', userId)
+        .maybeSingle();
+      alturaFromUsers = user?.altura_cm;
+    } catch (e) {
+      console.warn('users.altura_cm não disponível:', e.message);
+    }
 
     // 5. Calcular TMB com peso actual (não o inicial)
-    const altura = intake.altura_cm || user.altura_cm;
+    const altura = intake.altura_cm || alturaFromUsers;
     const peso = client.peso_actual || intake.peso_actual;
     const idade = intake.idade;
     const sexo = intake.sexo;
