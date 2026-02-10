@@ -105,10 +105,44 @@ export default function CalendarioRefeicoes() {
       if (!user) return;
       setUserData(user);
 
-      // Load calendar from localStorage
-      const planoGuardado = localStorage.getItem(`vitalis-plano-refeicoes-${user.id}`);
-      if (planoGuardado) {
-        try { setPlanoSemanal(JSON.parse(planoGuardado)); } catch {}
+      // Load calendar: try Supabase first, fallback to localStorage
+      try {
+        const { data: calDB } = await supabase
+          .from('vitalis_calendario_refeicoes')
+          .select('*')
+          .eq('user_id', user.id);
+
+        if (calDB && calDB.length > 0) {
+          // Convert flat rows to nested planoSemanal format
+          const plano = {};
+          calDB.forEach(row => {
+            if (!plano[row.data]) plano[row.data] = {};
+            plano[row.data][row.tipo_refeicao] = {
+              id: row.receita_id ? `rec-${row.receita_id}` : row.id,
+              receitaId: row.receita_id,
+              nome: row.nome,
+              icone: row.icone || '🍽️',
+              proteina: parseFloat(row.proteina) || 0,
+              hidratos: parseFloat(row.hidratos) || 0,
+              gordura: parseFloat(row.gordura) || 0,
+              kcal: row.kcal || 0,
+              tempo: row.tempo || 0,
+            };
+          });
+          setPlanoSemanal(plano);
+        } else {
+          // Fallback: localStorage
+          const planoGuardado = localStorage.getItem(`vitalis-plano-refeicoes-${user.id}`);
+          if (planoGuardado) {
+            try { setPlanoSemanal(JSON.parse(planoGuardado)); } catch {}
+          }
+        }
+      } catch {
+        // Table might not exist yet — use localStorage
+        const planoGuardado = localStorage.getItem(`vitalis-plano-refeicoes-${user.id}`);
+        if (planoGuardado) {
+          try { setPlanoSemanal(JSON.parse(planoGuardado)); } catch {}
+        }
       }
 
       // Load user's meal config (custom meal types)
@@ -191,8 +225,57 @@ export default function CalendarioRefeicoes() {
 
   const guardarPlano = (novoPlano) => {
     setPlanoSemanal(novoPlano);
-    if (userData) {
-      localStorage.setItem(`vitalis-plano-refeicoes-${userData.id}`, JSON.stringify(novoPlano));
+    if (!userData) return;
+
+    // Always save to localStorage as immediate backup
+    localStorage.setItem(`vitalis-plano-refeicoes-${userData.id}`, JSON.stringify(novoPlano));
+
+    // Save to Supabase (async, non-blocking)
+    syncToSupabase(novoPlano);
+  };
+
+  const syncToSupabase = async (plano) => {
+    if (!userData) return;
+    try {
+      // Get all dates that are in the current view's range
+      const allDates = Object.keys(plano);
+      if (allDates.length === 0) return;
+
+      // Delete existing entries for these dates
+      await supabase
+        .from('vitalis_calendario_refeicoes')
+        .delete()
+        .eq('user_id', userData.id)
+        .in('data', allDates);
+
+      // Build rows to insert
+      const rows = [];
+      Object.entries(plano).forEach(([data, refeicoes]) => {
+        Object.entries(refeicoes).forEach(([tipo, ref]) => {
+          rows.push({
+            user_id: userData.id,
+            data,
+            tipo_refeicao: tipo,
+            receita_id: ref.receitaId || null,
+            nome: ref.nome,
+            icone: ref.icone || '🍽️',
+            proteina: ref.proteina || 0,
+            hidratos: ref.hidratos || 0,
+            gordura: ref.gordura || 0,
+            kcal: ref.kcal || 0,
+            tempo: ref.tempo || 0,
+          });
+        });
+      });
+
+      if (rows.length > 0) {
+        await supabase
+          .from('vitalis_calendario_refeicoes')
+          .upsert(rows, { onConflict: 'user_id,data,tipo_refeicao' });
+      }
+    } catch (err) {
+      // Supabase table might not exist yet — localStorage handles persistence
+      console.log('Calendar sync to cloud skipped:', err.message);
     }
   };
 
@@ -258,10 +341,21 @@ export default function CalendarioRefeicoes() {
     setTimeout(() => setTemplateGuardado(false), 2000);
   };
 
-  const limparSemana = () => {
+  const limparSemana = async () => {
     const novoPlano = { ...planoSemanal };
     chavesSemana.forEach(chave => delete novoPlano[chave]);
-    guardarPlano(novoPlano);
+    setPlanoSemanal(novoPlano);
+    if (userData) {
+      localStorage.setItem(`vitalis-plano-refeicoes-${userData.id}`, JSON.stringify(novoPlano));
+      // Also delete from Supabase
+      try {
+        await supabase
+          .from('vitalis_calendario_refeicoes')
+          .delete()
+          .eq('user_id', userData.id)
+          .in('data', chavesSemana);
+      } catch {}
+    }
     setConfirmarLimpar(false);
   };
 

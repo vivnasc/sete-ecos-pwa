@@ -166,12 +166,10 @@ export const ReceitasBrowse = () => {
     if (filtroAutoActivo && userIntake) {
       // Verificar restrições alimentares
       const restricoes = userIntake.restricoes_alimentares || [];
-      
-      // Se user é vegetariano, excluir receitas com carne
+
+      // Se user é vegetariano, excluir receitas sem tag vegetariano
       if (restricoes.includes('Vegetariana') && !receita.tags?.includes('vegetariano')) {
-        // Verificar se não tem proteína animal (simplificado)
-        const temCarneOuPeixe = receita.titulo?.toLowerCase().match(/frango|carne|porco|bife|peixe|salmão|atum|camarão|bacalhau|sardinha|peru/);
-        if (temCarneOuPeixe) return false;
+        return false;
       }
 
       // Se user tem restrição sem glúten
@@ -181,9 +179,7 @@ export const ReceitasBrowse = () => {
 
       // Se user tem restrição sem lactose
       if (restricoes.includes('Sem lactose') && !receita.tags?.includes('sem_lactose')) {
-        // Verificar se tem lactose (simplificado)
-        const temLactose = receita.titulo?.toLowerCase().match(/queijo|leite|iogurte|natas|manteiga/);
-        if (temLactose && !receita.tags?.includes('sem_lactose')) return false;
+        return false;
       }
 
       // Filtrar por fase do programa
