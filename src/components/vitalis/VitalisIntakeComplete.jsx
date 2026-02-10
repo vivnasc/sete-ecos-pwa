@@ -507,13 +507,21 @@ try {
       console.log('Intake complete - subscription_status:', currentClient?.subscription_status, 'temAcesso:', temAcesso);
 
       // 🎯 GERAR PLANO NUTRICIONAL AUTOMATICAMENTE
-      console.log('Gerando plano nutricional...');
+      console.log('=== INICIANDO GERAÇÃO DE PLANO ===');
+      console.log('User ID:', userData.id);
+
       const planoResult = await gerarPlanoAutomatico(userData.id);
+
+      console.log('=== RESULTADO DA GERAÇÃO ===');
+      console.log('Success:', planoResult.success);
+
       if (!planoResult.success) {
-        console.error('Erro ao gerar plano:', planoResult.error);
-        // Não bloquear o fluxo - plano pode ser gerado manualmente depois
+        console.error('❌ ERRO AO GERAR PLANO:', planoResult.error);
+        // Não bloquear - plano pode ser gerado depois
       } else {
-        console.log('Plano gerado com sucesso:', planoResult.plano);
+        console.log('✅ PLANO GERADO COM SUCESSO!');
+        console.log('Calorias:', planoResult.plano?.calorias);
+        console.log('Macros:', planoResult.plano?.macros);
       }
 
       // Guardar preferências para personalizar textos na app

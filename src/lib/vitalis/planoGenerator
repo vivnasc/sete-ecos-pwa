@@ -146,7 +146,14 @@ export async function gerarPlanoAutomatico(userId) {
       // Não lançar erro - continuar com criação do plano mesmo se client não atualizar
     }
 
-    // 13. Criar plano nutricional em vitalis_meal_plans
+    // 13. DESATIVAR planos antigos ANTES de criar novo (evita múltiplos ativos)
+    await supabase
+      .from('vitalis_meal_plans')
+      .update({ status: 'inactivo' })
+      .eq('user_id', userId)
+      .eq('status', 'activo');
+
+    // 14. Criar plano nutricional em vitalis_meal_plans
     const { data: plano, error: planoError } = await supabase
       .from('vitalis_meal_plans')
       .insert([{
