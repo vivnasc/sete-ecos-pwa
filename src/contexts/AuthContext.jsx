@@ -19,7 +19,7 @@ export function AuthProvider({ children }) {
         auth_id: user.id,
         email: user.email,
         created_at: new Date().toISOString()
-      }, { onConflict: 'auth_id' })
+      }).select()
 
       const { data: userData } = await supabase
         .from('users')

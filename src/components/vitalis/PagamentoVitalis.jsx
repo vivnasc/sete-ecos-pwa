@@ -111,7 +111,7 @@ const PagamentoVitalis = () => {
           auth_id: user.id,
           email: user.email,
           nome: user.user_metadata?.name || user.email.split('@')[0]
-        }, { onConflict: 'auth_id' })
+        }).select()
         .select('id, nome')
         .single();
 
@@ -216,7 +216,7 @@ const PagamentoVitalis = () => {
             auth_id: authData.user.id,
             email: authEmail,
             nome: authName || authEmail.split('@')[0]
-          }, { onConflict: 'auth_id' });
+          }).select();
         }
       }
 

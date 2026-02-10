@@ -101,7 +101,7 @@ export default function PagamentoAurea() {
             auth_id: data.user.id,
             email: data.user.email,
             created_at: new Date().toISOString()
-          }, { onConflict: 'auth_id' });
+          }).select();
         }
       }
       setShowAuthForm(false);
