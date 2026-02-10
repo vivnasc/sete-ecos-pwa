@@ -450,45 +450,46 @@ export default function MealsTracker() {
 }
 
 // Alimentos comuns com equivalências em porções-mão
+// dica = quantidade prática para quem não sabe medir "a olho"
 const ALIMENTOS_COMUNS = {
   proteina: [
-    { nome: 'Frango (1 palma)', porcao: 1, icon: '🍗' },
-    { nome: 'Peixe (1 palma)', porcao: 1, icon: '🐟' },
-    { nome: 'Bife/Carne (1 palma)', porcao: 1, icon: '🥩' },
-    { nome: 'Atum (1 lata)', porcao: 1, icon: '🐠' },
-    { nome: 'Ovos (2-3)', porcao: 1, icon: '🥚' },
-    { nome: 'Iogurte grego (170g)', porcao: 0.5, icon: '🥛' },
-    { nome: 'Queijo (2 fatias)', porcao: 0.5, icon: '🧀' },
-    { nome: 'Whey (1 scoop)', porcao: 1, icon: '🥤' },
-    { nome: 'Camarão/Marisco (1 palma)', porcao: 1, icon: '🦐' },
-    { nome: 'Tofu (1 palma)', porcao: 1, icon: '🫘' },
+    { nome: 'Frango (1 palma)', porcao: 1, icon: '🍗', dica: '~120g peito grelhado' },
+    { nome: 'Peixe (1 palma)', porcao: 1, icon: '🐟', dica: '~120g filete' },
+    { nome: 'Bife/Carne (1 palma)', porcao: 1, icon: '🥩', dica: '~120g, espessura do dedo mínimo' },
+    { nome: 'Atum (1 lata)', porcao: 1, icon: '🐠', dica: '~80-100g escorrido' },
+    { nome: 'Ovos (2-3)', porcao: 1, icon: '🥚', dica: '2 inteiros ou 3 claras + 1 gema' },
+    { nome: 'Iogurte grego (170g)', porcao: 0.5, icon: '🥛', dica: '1 copo individual' },
+    { nome: 'Queijo (2 fatias)', porcao: 0.5, icon: '🧀', dica: '~40g, tamanho do polegar' },
+    { nome: 'Whey (1 scoop)', porcao: 1, icon: '🥤', dica: '~30g pó com água/leite' },
+    { nome: 'Camarão/Marisco (1 palma)', porcao: 1, icon: '🦐', dica: '~8-10 camarões médios descascados' },
+    { nome: 'Tofu (1 palma)', porcao: 1, icon: '🫘', dica: '~120g, fatia de ~2cm' },
   ],
   hidratos: [
-    { nome: 'Arroz (1 mão concha)', porcao: 1, icon: '🍚' },
-    { nome: 'Massa (1 mão concha)', porcao: 1, icon: '🍝' },
-    { nome: 'Batata (1 punho)', porcao: 1, icon: '🥔' },
-    { nome: 'Batata doce (1 punho)', porcao: 1, icon: '🍠' },
-    { nome: 'Pão (1 fatia)', porcao: 1, icon: '🍞' },
-    { nome: 'Aveia (3 col. sopa)', porcao: 1, icon: '🥣' },
-    { nome: 'Fruta (1 peça média)', porcao: 1, icon: '🍎' },
-    { nome: 'Mandioca (1 punho)', porcao: 1, icon: '🫚' },
+    { nome: 'Arroz (1 mão concha)', porcao: 1, icon: '🍚', dica: '~4 col. sopa cozido' },
+    { nome: 'Massa (1 mão concha)', porcao: 1, icon: '🍝', dica: '~4 col. sopa cozida' },
+    { nome: 'Batata (1 punho)', porcao: 1, icon: '🥔', dica: '1 batata média cozida' },
+    { nome: 'Batata doce (1 punho)', porcao: 1, icon: '🍠', dica: '1 batata doce média' },
+    { nome: 'Pão (1 fatia)', porcao: 1, icon: '🍞', dica: '1 fatia normal ou ½ pão' },
+    { nome: 'Aveia (3 col. sopa)', porcao: 1, icon: '🥣', dica: '~30g seco' },
+    { nome: 'Fruta (1 peça média)', porcao: 1, icon: '🍎', dica: '1 maçã, banana ou laranja' },
+    { nome: 'Mandioca (1 punho)', porcao: 1, icon: '🫚', dica: '~150g cozida, 2-3 pedaços' },
   ],
   gordura: [
-    { nome: 'Azeite (1 col. sopa)', porcao: 1, icon: '🫒' },
-    { nome: '¼ abacate', porcao: 1, icon: '🥑' },
-    { nome: 'Amêndoas/Nozes (1 punhado)', porcao: 1, icon: '🥜' },
-    { nome: 'Manteiga (1 col. chá)', porcao: 1, icon: '🧈' },
-    { nome: 'Amendoim (1 col. sopa)', porcao: 1, icon: '🥜' },
-    { nome: 'Coco ralado (2 col. sopa)', porcao: 1, icon: '🥥' },
+    { nome: 'Azeite (1 col. sopa)', porcao: 1, icon: '🫒', dica: '~15ml, ponta do polegar' },
+    { nome: '¼ abacate', porcao: 1, icon: '🥑', dica: '~50g, tamanho do polegar' },
+    { nome: 'Amêndoas/Nozes (1 punhado)', porcao: 1, icon: '🥜', dica: '~15 amêndoas ou ~7 nozes' },
+    { nome: 'Manteiga (1 col. chá)', porcao: 1, icon: '🧈', dica: '~5g, ponta do polegar' },
+    { nome: 'Amendoim (1 col. sopa)', porcao: 1, icon: '🥜', dica: '~15g, ~12 amendoins' },
+    { nome: 'Coco ralado (2 col. sopa)', porcao: 1, icon: '🥥', dica: '~20g' },
   ],
   legumes: [
-    { nome: 'Salada mista (1 punho)', porcao: 1, icon: '🥗' },
-    { nome: 'Brócolos (1 punho)', porcao: 1, icon: '🥦' },
-    { nome: 'Espinafres (1 punho)', porcao: 1, icon: '🥬' },
-    { nome: 'Tomate (1 punho)', porcao: 1, icon: '🍅' },
-    { nome: 'Cenoura (1 punho)', porcao: 1, icon: '🥕' },
-    { nome: 'Couve (1 punho)', porcao: 1, icon: '🥬' },
-    { nome: 'Cogumelos (1 punho)', porcao: 1, icon: '🍄' },
+    { nome: 'Salada mista (1 punho)', porcao: 1, icon: '🥗', dica: '1 tigela pequena' },
+    { nome: 'Brócolos (1 punho)', porcao: 1, icon: '🥦', dica: '~5-6 ramalhetes' },
+    { nome: 'Espinafres (1 punho)', porcao: 1, icon: '🥬', dica: '2 mãos cheias cru, ½ cozido' },
+    { nome: 'Tomate (1 punho)', porcao: 1, icon: '🍅', dica: '1 tomate médio' },
+    { nome: 'Cenoura (1 punho)', porcao: 1, icon: '🥕', dica: '1 cenoura grande' },
+    { nome: 'Couve (1 punho)', porcao: 1, icon: '🥬', dica: '~3 folhas grandes' },
+    { nome: 'Cogumelos (1 punho)', porcao: 1, icon: '🍄', dica: '~5-6 cogumelos médios' },
   ]
 };
 
@@ -672,10 +673,16 @@ function DetalheRefeicao({ refeicao, registo, plano, numRefeicoes, onSave, savin
                   <button
                     key={i}
                     onClick={() => adicionarAlimento(categoriaAberta, alimento)}
-                    className={`flex items-center gap-1.5 px-3 py-2 bg-white hover:shadow-md border ${cat.corBorda.replace('-300', '-200')} hover:${cat.corBorda} rounded-full text-xs transition-all active:scale-95`}
+                    className={`flex items-center gap-1.5 px-3 py-2 bg-white hover:shadow-md border ${cat.corBorda.replace('-300', '-200')} hover:${cat.corBorda} rounded-2xl text-xs transition-all active:scale-95`}
+                    title={alimento.dica}
                   >
                     <span className="text-base">{alimento.icon}</span>
-                    <span className="text-gray-800 font-medium">{alimento.nome}</span>
+                    <div className="text-left">
+                      <span className="text-gray-800 font-medium">{alimento.nome}</span>
+                      {alimento.dica && (
+                        <span className="block text-[9px] text-gray-400 leading-tight">{alimento.dica}</span>
+                      )}
+                    </div>
                     <span className={`${cat.corTexto} font-bold text-[10px] bg-white rounded-full px-1.5 py-0.5 border ${cat.corBorda.replace('-300', '-200')}`}>
                       +{alimento.porcao}
                     </span>

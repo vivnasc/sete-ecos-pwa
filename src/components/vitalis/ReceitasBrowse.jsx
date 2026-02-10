@@ -145,14 +145,16 @@ export const ReceitasBrowse = () => {
     }
   };
 
-  // Mapear fase do plano para nome
+  // Mapear fase do plano para nome (suporta número ou string)
   const getFaseNome = (fase) => {
+    if (typeof fase === 'string') return fase;
     const fases = {
       1: 'inducao',
       2: 'transicao',
-      3: 'manutencao'
+      3: 'recomposicao',
+      4: 'manutencao'
     };
-    return fases[fase] || 'manutencao';
+    return fases[fase] || null;
   };
 
   // Filtrar receitas
@@ -167,33 +169,39 @@ export const ReceitasBrowse = () => {
       // Verificar restrições alimentares
       const restricoes = userIntake.restricoes_alimentares || [];
 
-      // Se user é vegetariano, excluir receitas sem tag vegetariano
+      // Se user é vegetariano, excluir receitas com carne/peixe (que não têm tag vegetariano)
       if (restricoes.includes('Vegetariana') && !receita.tags?.includes('vegetariano')) {
         return false;
       }
 
-      // Se user tem restrição sem glúten
-      if (restricoes.includes('Sem glúten') && !receita.tags?.includes('sem_gluten')) {
+      // Se user tem restrição sem glúten, só excluir se receita tem tag explícita 'com_gluten'
+      // Receitas sem tag de glúten são consideradas compatíveis por defeito
+      if (restricoes.includes('Sem glúten') && receita.tags?.includes('com_gluten')) {
         return false;
       }
 
-      // Se user tem restrição sem lactose
-      if (restricoes.includes('Sem lactose') && !receita.tags?.includes('sem_lactose')) {
+      // Se user tem restrição sem lactose, só excluir se receita tem tag explícita 'com_lactose'
+      if (restricoes.includes('Sem lactose') && receita.tags?.includes('com_lactose')) {
         return false;
       }
 
-      // Filtrar por fase do programa
+      // Filtrar por fase do programa — só se a receita tem fases definidas
       if (userPlano?.fase) {
         const faseActual = getFaseNome(userPlano.fase);
-        if (!receita.fases_recomendadas?.includes(faseActual)) {
-          return false;
+        // Só filtrar se a receita tem fases_recomendadas preenchidas E a fase actual existe
+        if (faseActual && receita.fases_recomendadas && receita.fases_recomendadas.length > 0) {
+          if (!receita.fases_recomendadas.includes(faseActual)) {
+            return false;
+          }
         }
+        // Se receita não tem fases_recomendadas, é considerada universal (mostrar sempre)
       }
 
       // Se abordagem é keto, priorizar receitas keto
       if (userIntake.abordagem_preferida === 'keto_if') {
-        // Não excluir, mas em fase de indução só mostrar keto
-        if (userPlano?.fase === 1 && !receita.tags?.includes('keto')) {
+        const faseActual = getFaseNome(userPlano?.fase);
+        // Em fase de indução, só mostrar keto
+        if (faseActual === 'inducao' && !receita.tags?.includes('keto')) {
           return false;
         }
       }
@@ -336,7 +344,12 @@ export const ReceitasBrowse = () => {
           <div className="flex items-center justify-between mb-5 p-3 bg-purple-50 rounded-xl">
             <div>
               <p className="font-semibold text-purple-900">🎯 Filtro Personalizado</p>
-              <p className="text-xs text-purple-600">Mostra apenas receitas compatíveis com o teu perfil</p>
+              <p className="text-xs text-purple-600">
+                {filtroAutoActivo
+                  ? `A mostrar ${receitasFiltradas.length} de ${receitas.length} receitas para o teu perfil`
+                  : 'Mostra apenas receitas compatíveis com o teu perfil'
+                }
+              </p>
             </div>
             <button
               onClick={() => setFiltroAutoActivo(!filtroAutoActivo)}
