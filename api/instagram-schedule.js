@@ -23,9 +23,12 @@
  * {
  *   "crons": [{
  *     "path": "/api/instagram-schedule",
- *     "schedule": "0,15,30,45 * * * *"  // A cada 15 minutos
+ *     "schedule": "0 7 * * *"  // Diariamente as 7h UTC (Vercel Hobby = 1x/dia)
  *   }]
  * }
+ *
+ * NOTA: Vercel Hobby so permite crons diarios.
+ * O scheduler publica TODOS os posts do dia de uma vez (ate 25).
  *
  * Variaveis de ambiente:
  * - SUPABASE_URL ou VITE_SUPABASE_URL
@@ -41,8 +44,8 @@ import { publishToInstagram } from './instagram-publish.js';
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
-// Limite de posts por execucao para evitar timeouts e rate limits
-const MAX_POSTS_PER_RUN = 5;
+// Limite de posts por execucao (Hobby cron = 1x/dia, processar todos)
+const MAX_POSTS_PER_RUN = 25;
 
 // Intervalo minimo entre publicacoes (ms) para respeitar rate limits da Meta
 const DELAY_BETWEEN_POSTS = 3000;

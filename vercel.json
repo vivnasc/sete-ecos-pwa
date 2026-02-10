@@ -53,7 +53,7 @@
     },
     {
       "path": "/api/instagram-schedule",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 7 * * *"
     }
   ]
 }
