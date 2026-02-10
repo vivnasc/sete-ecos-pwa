@@ -76,12 +76,29 @@ export default function MealsTracker() {
         .single();
 
       if (clientData) {
-        const { data: planoData } = await supabase
+        let planoData = null;
+        const { data: planoView } = await supabase
           .from('vitalis_plano')
           .select('porcoes_proteina, porcoes_hidratos, porcoes_gordura, porcoes_legumes')
           .eq('client_id', clientData.id)
-          .single();
+          .maybeSingle();
+        planoData = planoView;
 
+        // Fallback: vitalis_meal_plans
+        if (!planoData) {
+          const { data: mealPlan } = await supabase
+            .from('vitalis_meal_plans').select('proteina_g, carboidratos_g, gordura_g')
+            .eq('user_id', userData.id).eq('status', 'activo')
+            .order('created_at', { ascending: false }).limit(1).maybeSingle();
+          if (mealPlan) {
+            planoData = {
+              porcoes_proteina: Math.round(mealPlan.proteina_g / 25),
+              porcoes_hidratos: Math.round(mealPlan.carboidratos_g / 30),
+              porcoes_gordura: Math.round(mealPlan.gordura_g / 10),
+              porcoes_legumes: 4
+            };
+          }
+        }
         setPlano(planoData);
       }
 

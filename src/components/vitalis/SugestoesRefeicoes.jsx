@@ -96,11 +96,27 @@ export default function SugestoesRefeicoes() {
         .single();
 
       if (clientData) {
-        const { data: planoData } = await supabase
+        let planoData = null;
+        const { data: planoView } = await supabase
           .from('vitalis_plano')
           .select('*')
           .eq('client_id', clientData.id)
-          .single();
+          .maybeSingle();
+        planoData = planoView;
+
+        // Fallback: vitalis_meal_plans
+        if (!planoData) {
+          const { data: mealPlan } = await supabase
+            .from('vitalis_meal_plans').select('*')
+            .eq('user_id', userData.id).eq('status', 'activo')
+            .order('created_at', { ascending: false }).limit(1).maybeSingle();
+          if (mealPlan) {
+            planoData = {
+              ...mealPlan, client_id: clientData.id,
+              porcoes_hidratos: Math.round(mealPlan.carboidratos_g / 30)
+            };
+          }
+        }
 
         if (planoData) {
           setPlano(planoData);

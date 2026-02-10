@@ -264,6 +264,79 @@ export default function PlanoAlimentar() {
   const [usersId, setUsersId] = useState(null);
   const [showPDFModal, setShowPDFModal] = useState(false);
 
+  // Fallback: query vitalis_meal_plans directly when RPC/view fails
+  const carregarPlanoFallback = async (userId) => {
+    const { data: mealPlan } = await supabase
+      .from('vitalis_meal_plans')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('status', 'activo')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (!mealPlan) return null;
+
+    const { data: clientData } = await supabase
+      .from('vitalis_clients')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    let receitasConfig = {};
+    try {
+      receitasConfig = mealPlan.receitas_incluidas ? JSON.parse(mealPlan.receitas_incluidas) : {};
+    } catch (e) { /* ignore */ }
+
+    const porcoes = receitasConfig['porções_por_refeicao'] || receitasConfig.porcoes_por_refeicao || {};
+
+    return {
+      fase: {
+        nome: mealPlan.fase === 'inducao' ? 'Indução'
+            : mealPlan.fase === 'transicao' ? 'Transição'
+            : mealPlan.fase === 'recomposicao' ? 'Recomposição'
+            : mealPlan.fase === 'manutencao' ? 'Manutenção'
+            : mealPlan.fase || 'Fase Inicial',
+        semana: 1,
+        duracao_semanas: 4
+      },
+      porcoes: {
+        proteina: porcoes.proteina || Math.round(mealPlan.proteina_g / 25),
+        legumes: porcoes.legumes || 4,
+        hidratos_base: porcoes.hidratos || Math.round(mealPlan.carboidratos_g / 30),
+        gordura: porcoes.gordura || Math.round(mealPlan.gordura_g / 10),
+        carbs_extra_treino: 1
+      },
+      tamanhos: {
+        palma_g: 25,
+        mao_g: 30,
+        polegar_g: 10
+      },
+      calorias: mealPlan.calorias_alvo,
+      macros: {
+        proteina_g: mealPlan.proteina_g,
+        carboidratos_g: mealPlan.carboidratos_g,
+        gordura_g: mealPlan.gordura_g
+      },
+      dias_treino: mealPlan.dias_treino || [],
+      e_dia_treino: false,
+      regras: {
+        priorizar: ['Proteína em todas as refeições', 'Legumes variados', 'Água entre refeições'],
+        evitar: ['Açúcar adicionado', 'Alimentos processados', 'Bebidas calóricas'],
+        dicas: ['Come devagar e com atenção', 'Prepara as refeições com antecedência', 'Mantém um registo do que comes']
+      },
+      peso: clientData ? {
+        inicial: clientData.peso_inicial,
+        actual: clientData.peso_actual,
+        meta: clientData.peso_meta
+      } : null,
+      refeicao_livre: {
+        permitida: mealPlan.fase !== 'inducao',
+        por_semana: mealPlan.fase === 'inducao' ? 0 : mealPlan.fase === 'transicao' ? 1 : 2
+      }
+    };
+  };
+
   const carregarPlano = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -288,12 +361,31 @@ export default function PlanoAlimentar() {
       if (planoError) throw planoError;
 
       if (data?.erro) {
-        setError(data.erro);
+        // RPC returned error - try fallback to vitalis_meal_plans
+        console.warn('RPC vitalis_plano_do_dia:', data.erro, '- trying fallback...');
+        const fallbackData = await carregarPlanoFallback(userData.id);
+        if (fallbackData) {
+          setPlano(fallbackData);
+        } else {
+          setError(data.erro);
+        }
       } else {
         setPlano(data);
       }
     } catch (err) {
       console.error('Erro ao carregar plano:', err);
+      // Try fallback on any error
+      if (usersId) {
+        try {
+          const fallbackData = await carregarPlanoFallback(usersId);
+          if (fallbackData) {
+            setPlano(fallbackData);
+            return;
+          }
+        } catch (fbErr) {
+          console.error('Fallback failed:', fbErr);
+        }
+      }
       setError('Erro ao carregar o plano. Tenta novamente.');
     } finally {
       setLoading(false);

@@ -27,9 +27,26 @@ export default function PlanoHTML() {
 
   const carregarDados = async () => {
     try {
-      const { data: plano } = await supabase.from('vitalis_plano').select('*').eq('id', planoId).single();
-      const { data: cliente } = await supabase.from('vitalis_clients').select('*').eq('id', plano?.client_id).single();
-      const { data: intake } = await supabase.from('vitalis_intake').select('nome').eq('user_id', cliente?.user_id).order('created_at', { ascending: false }).limit(1).single();
+      // Try vitalis_plano view first, fallback to vitalis_meal_plans
+      let plano = null;
+      const { data: planoView } = await supabase.from('vitalis_plano').select('*').eq('id', planoId).maybeSingle();
+      plano = planoView;
+
+      if (!plano) {
+        const { data: mealPlan } = await supabase.from('vitalis_meal_plans').select('*').eq('id', planoId).maybeSingle();
+        if (mealPlan) plano = { ...mealPlan, calorias_diarias: mealPlan.calorias_alvo };
+      }
+
+      const clientQuery = plano?.client_id
+        ? supabase.from('vitalis_clients').select('*').eq('id', plano.client_id).maybeSingle()
+        : plano?.user_id
+          ? supabase.from('vitalis_clients').select('*').eq('user_id', plano.user_id).maybeSingle()
+          : { data: null };
+      const { data: cliente } = await clientQuery;
+      const userIdForIntake = cliente?.user_id || plano?.user_id;
+      const { data: intake } = userIdForIntake
+        ? await supabase.from('vitalis_intake').select('nome').eq('user_id', userIdForIntake).order('created_at', { ascending: false }).limit(1).maybeSingle()
+        : { data: null };
       
       setDados({
         nome: intake?.nome || 'Cliente',
