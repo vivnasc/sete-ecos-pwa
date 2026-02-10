@@ -200,7 +200,7 @@ const LandingVitalis = () => {
   ];
 
   const handleComecar = () => {
-    navigate(session ? '/vitalis/pagamento' : '/vitalis/login');
+    navigate('/vitalis/pagamento');
   };
 
   return (
