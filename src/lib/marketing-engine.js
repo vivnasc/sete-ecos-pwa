@@ -2044,3 +2044,133 @@ export function getCalendario6Dias() {
     },
   ];
 }
+
+// ============================================================
+// GUIA META DEVELOPER - Setup completo para auto-publicar
+// ============================================================
+
+export function getGuiaMetaDeveloper() {
+  return {
+    titulo: 'Configurar Publicacao Automatica no Instagram',
+    descricao: 'Guia passo-a-passo para ligar o Sete Ecos ao Instagram via Meta Graph API. Depois de configurar, os posts publicam-se sozinhos.',
+    tempoEstimado: '20-30 minutos',
+    requisitos: [
+      'Conta Instagram Business ou Creator (nao pessoal)',
+      'Pagina de Facebook ligada ao Instagram',
+      'Conta Meta Developer (gratis)',
+    ],
+    passos: [
+      {
+        numero: 1,
+        titulo: 'Converter conta Instagram para Business',
+        instrucoes: [
+          'Abrir Instagram → Definicoes → Conta',
+          'Tocar "Mudar para conta profissional"',
+          'Escolher "Business" (empresa) ou "Creator" (criador)',
+          'Seleccionar categoria "Saude/Beleza"',
+          'Ligar a uma Pagina de Facebook (criar uma se nao tiveres)',
+        ],
+        nota: 'A conta pessoal NAO funciona com a API. Tem de ser Business ou Creator.',
+      },
+      {
+        numero: 2,
+        titulo: 'Criar App no Meta Developer',
+        instrucoes: [
+          'Ir a developers.facebook.com e fazer login',
+          'Clicar "Criar App" → Tipo: "Business"',
+          'Nome da app: "Sete Ecos Publishing" (ou como quiseres)',
+          'Conta Business: seleccionar a tua (ou criar)',
+          'No painel da app, ir a "Adicionar Produto" → "Instagram Graph API" → Configurar',
+        ],
+        link: 'https://developers.facebook.com/apps/',
+      },
+      {
+        numero: 3,
+        titulo: 'Obter Token de Acesso',
+        instrucoes: [
+          'No painel da app, ir a "Ferramentas" → "Graph API Explorer"',
+          'Em "Meta App", seleccionar a app criada',
+          'Em "User or Page", seleccionar a tua Pagina de Facebook',
+          'Adicionar permissoes: instagram_basic, instagram_content_publish, pages_show_list, pages_read_engagement',
+          'Clicar "Generate Access Token" e autorizar',
+          'IMPORTANTE: Este token expira em 1 hora. Para token permanente, seguir passo 4.',
+        ],
+      },
+      {
+        numero: 4,
+        titulo: 'Converter para Token Permanente',
+        instrucoes: [
+          'Copiar o token do passo 3',
+          'Ir ao Graph API Explorer e fazer este pedido:',
+          'GET /me/accounts?access_token={TOKEN_CURTO}',
+          'Na resposta, encontrar a tua Pagina e copiar o "access_token" dela',
+          'Este Page Token ja NAO expira (Long-Lived Page Token)',
+          'Guardar este token - e o META_ACCESS_TOKEN',
+        ],
+        nota: 'O Page Token permanente e o que vais usar. Nunca partilhes este token.',
+      },
+      {
+        numero: 5,
+        titulo: 'Obter Instagram Account ID',
+        instrucoes: [
+          'No Graph API Explorer, fazer:',
+          'GET /me/accounts (com o token permanente)',
+          'Copiar o "id" da Pagina de Facebook',
+          'Depois fazer: GET /{PAGE_ID}?fields=instagram_business_account',
+          'O campo "instagram_business_account.id" e o teu INSTAGRAM_ACCOUNT_ID',
+        ],
+      },
+      {
+        numero: 6,
+        titulo: 'Configurar no Vercel',
+        instrucoes: [
+          'Ir ao painel Vercel → Projeto sete-ecos-pwa → Settings → Environment Variables',
+          'Adicionar:',
+          '  META_ACCESS_TOKEN = (token permanente do passo 4)',
+          '  INSTAGRAM_ACCOUNT_ID = (ID do passo 5)',
+          '  CRON_SECRET = (inventar uma password qualquer, ex: "minha-chave-secreta-123")',
+          'Clicar "Save" e fazer Redeploy',
+        ],
+        nota: 'Depois do redeploy, o botao "Publicar no Instagram" fica activo no dashboard.',
+      },
+      {
+        numero: 7,
+        titulo: 'Criar tabela no Supabase',
+        instrucoes: [
+          'Ir ao painel Supabase → SQL Editor',
+          'Colar e executar o script CREATE_SCHEDULED_POSTS.sql',
+          'Este script esta na pasta /scripts/ do projecto',
+          'A tabela scheduled_posts guarda as publicacoes agendadas',
+        ],
+        nota: 'Sem esta tabela, o agendamento nao funciona. A publicacao directa funciona sem ela.',
+      },
+    ],
+    verificacao: {
+      titulo: 'Como verificar se esta tudo a funcionar',
+      passos: [
+        'No Marketing Dashboard, secacao VITALIS, o indicador "Meta API" deve ficar verde',
+        'Se ficar vermelho, verifica os tokens no Vercel',
+        'Testa com "Publicar Agora" num post - deve aparecer no Instagram em 30 segundos',
+        'Para agendamento: agenda um post para daqui a 20 minutos e espera',
+      ],
+    },
+    problemas: [
+      {
+        problema: 'Token expirado / erro 190',
+        solucao: 'Gerar novo token seguindo passos 3 e 4. Os Page Tokens permanentes raramente expiram, mas podem ser revogados se mudares a password do Facebook.',
+      },
+      {
+        problema: 'Permissao negada / erro OAuthException',
+        solucao: 'Verificar se a app tem as permissoes instagram_content_publish e pages_show_list aprovadas.',
+      },
+      {
+        problema: 'Imagem nao encontrada',
+        solucao: 'As imagens precisam de estar num URL publico acessivel pela Meta. As imagens em /public/mockups/ sao servidas pelo Vercel e funcionam.',
+      },
+      {
+        problema: 'Rate limit / erro 4 ou 32',
+        solucao: 'A Meta limita a ~25 posts por dia. O sistema automaticamente espera quando atinge o limite.',
+      },
+    ],
+  };
+}

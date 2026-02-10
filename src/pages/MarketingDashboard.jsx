@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { isSessionCoach } from '../lib/coach';
 import { supabase } from '../lib/supabase';
+import { publicarAgora, agendarDiaCompleto, verificarMetaAPI } from '../lib/instagram-api';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 import {
   getGridInstagram,
   getAnunciosPagos,
@@ -16,6 +19,7 @@ import {
   getMensagensWhatsAppMockups,
   getSetupInstagram,
   getCalendario6Dias,
+  getGuiaMetaDeveloper,
 } from '../lib/marketing-engine';
 import { RENDER_MAP, CORES, FORMATOS } from '../components/TemplateVisual';
 
@@ -393,6 +397,11 @@ function VitalisTab({ copiar, copiado }) {
   const [expandido, setExpandido] = useState(null);
   const [secao, setSecao] = useState('calendario');
   const [diaAberto, setDiaAberto] = useState(0);
+  const [metaConfigurada, setMetaConfigurada] = useState(false);
+
+  useEffect(() => {
+    verificarMetaAPI().then(r => setMetaConfigurada(r.configurada)).catch(() => {});
+  }, []);
 
   const tipoLabel = (tipo) => {
     switch (tipo) {
@@ -422,6 +431,7 @@ function VitalisTab({ copiar, copiado }) {
         {[
           { id: 'calendario', label: 'Calendário 6 Dias', icon: '📅' },
           { id: 'setup', label: 'Setup Instagram', icon: '⚙️' },
+          { id: 'meta-api', label: 'Meta API', icon: '🔗' },
           { id: 'instagram', label: 'Posts (12)', icon: '📸' },
           { id: 'whatsapp', label: 'WhatsApp (7)', icon: '💬' },
         ].map(s => (
@@ -536,6 +546,11 @@ function VitalisTab({ copiar, copiado }) {
                   <div className="flex items-center gap-2 mt-2">
                     <span className="text-[10px] bg-[#1a1a2e]/10 px-2 py-0.5 rounded-full font-bold">{dia.tarefas.length} tarefas</span>
                     <span className="text-[10px] text-[#A09888]">{dia.tarefas.filter(t => t.tipo === 'post').length} posts + {dia.tarefas.filter(t => t.tipo === 'stories').length} stories + {dia.tarefas.filter(t => t.tipo === 'whatsapp').length} WA</span>
+                  </div>
+                  {/* Action buttons */}
+                  <div className="flex gap-2 mt-3">
+                    <DownloadDiaZip dia={dia} />
+                    <AgendarDiaBtn dia={dia} copiar={copiar} copiado={copiado} />
                   </div>
                 </div>
 
@@ -661,6 +676,11 @@ function VitalisTab({ copiar, copiado }) {
                           <p className="text-[10px] font-bold text-white/60 mb-1">O QUE FAZER:</p>
                           <p className="text-xs">{tarefa.accao}</p>
                         </div>
+
+                        {/* Publicar directo no Instagram */}
+                        {tarefa.post && tarefa.post.tipo !== 'reel' && (
+                          <PublicarBtn post={tarefa.post} />
+                        )}
                       </div>
                     </div>
                   );
@@ -670,6 +690,79 @@ function VitalisTab({ copiar, copiado }) {
           })()}
         </>
       )}
+
+      {/* =================== GUIA META API =================== */}
+      {secao === 'meta-api' && (() => {
+        const guia = getGuiaMetaDeveloper();
+        return (
+          <>
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-xl p-4">
+              <h3 className="font-bold text-lg flex items-center gap-2">🔗 {guia.titulo}</h3>
+              <p className="text-white/80 text-sm mt-1">{guia.descricao}</p>
+              <div className="flex gap-3 mt-2 text-xs">
+                <span className="bg-white/20 px-2 py-1 rounded">⏱ {guia.tempoEstimado}</span>
+                {metaConfigurada && <span className="bg-green-400/30 px-2 py-1 rounded">✅ API Activa</span>}
+                {!metaConfigurada && <span className="bg-red-400/30 px-2 py-1 rounded">⚠️ Nao configurada</span>}
+              </div>
+            </div>
+
+            <Card titulo="Requisitos" badge="ANTES DE COMECAR">
+              <ul className="space-y-1">
+                {guia.requisitos.map((r, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm">
+                    <span className="text-blue-500 mt-0.5">●</span> {r}
+                  </li>
+                ))}
+              </ul>
+            </Card>
+
+            {guia.passos.map(passo => (
+              <Card key={passo.numero} titulo={`Passo ${passo.numero}: ${passo.titulo}`} badge={`${passo.numero}/7`}>
+                <ol className="space-y-2">
+                  {passo.instrucoes.map((inst, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm">
+                      <span className="bg-blue-100 text-blue-700 rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">{i + 1}</span>
+                      <span>{inst}</span>
+                    </li>
+                  ))}
+                </ol>
+                {passo.nota && (
+                  <div className="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
+                    ⚠️ {passo.nota}
+                  </div>
+                )}
+                {passo.link && (
+                  <a href={passo.link} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-sm text-blue-600 hover:underline">
+                    🔗 Abrir {passo.link.replace('https://', '')}
+                  </a>
+                )}
+              </Card>
+            ))}
+
+            <Card titulo={guia.verificacao.titulo} badge="TESTE">
+              <ol className="space-y-2">
+                {guia.verificacao.passos.map((p, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm">
+                    <span className="bg-green-100 text-green-700 rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">{i + 1}</span>
+                    <span>{p}</span>
+                  </li>
+                ))}
+              </ol>
+            </Card>
+
+            <Card titulo="Problemas Comuns" badge="FAQ">
+              <div className="space-y-3">
+                {guia.problemas.map((p, i) => (
+                  <div key={i} className="bg-gray-50 rounded-lg p-3">
+                    <p className="font-bold text-sm text-red-600">❌ {p.problema}</p>
+                    <p className="text-sm text-gray-700 mt-1">✅ {p.solucao}</p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </>
+        );
+      })()}
 
       {/* =================== POSTS INSTAGRAM =================== */}
       {secao === 'instagram' && (
@@ -1457,6 +1550,208 @@ function CarrosselPreview({ carrossel, copiar, copiado }) {
 
 // ============================================================
 // SHARED COMPONENTS
+// ============================================================
+
+// ============================================================
+// PUBLICAR NO INSTAGRAM - Botão por post
+// ============================================================
+
+function PublicarBtn({ post }) {
+  const [estado, setEstado] = useState('idle'); // idle, loading, success, error
+  const [erro, setErro] = useState('');
+
+  const publicar = async () => {
+    setEstado('loading');
+    setErro('');
+    try {
+      const isCarousel = post.tipo === 'carrossel';
+      const imageUrl = isCarousel
+        ? post.imagens.map(img => `${window.location.origin}${img}`)
+        : `${window.location.origin}${post.imagens[0]}`;
+
+      await publicarAgora({
+        type: isCarousel ? 'carousel' : 'photo',
+        imageUrl,
+        caption: post.caption,
+      });
+      setEstado('success');
+    } catch (e) {
+      setEstado('error');
+      setErro(e.message);
+    }
+  };
+
+  if (estado === 'success') {
+    return (
+      <div className="flex items-center gap-2 mt-2 bg-green-50 border border-green-200 rounded-lg p-2">
+        <span className="text-green-600 text-xs font-bold">✅ Publicado no Instagram!</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-2">
+      <button
+        onClick={publicar}
+        disabled={estado === 'loading'}
+        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+          estado === 'loading'
+            ? 'bg-gray-200 text-gray-500 cursor-wait'
+            : 'bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 shadow-md'
+        }`}
+      >
+        {estado === 'loading' ? '⏳ A publicar...' : '📸 Publicar no Instagram'}
+      </button>
+      {estado === 'error' && (
+        <p className="text-[10px] text-red-500 mt-1">
+          {erro.includes('not configured') ? '⚙️ Meta API não configurada. Ver tab "Setup Instagram".' : `❌ ${erro}`}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
+// AGENDAR DIA COMPLETO
+// ============================================================
+
+function AgendarDiaBtn({ dia, copiar, copiado }) {
+  const [estado, setEstado] = useState('idle');
+  const [showPicker, setShowPicker] = useState(false);
+  const [dataInicio, setDataInicio] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().slice(0, 10);
+  });
+
+  const agendar = async () => {
+    setEstado('loading');
+    try {
+      const resultados = await agendarDiaCompleto(dia.dia, dia.tarefas, new Date(dataInicio));
+      const sucesso = resultados.filter(r => r.sucesso).length;
+      setEstado(sucesso > 0 ? 'success' : 'error');
+    } catch {
+      setEstado('error');
+    }
+  };
+
+  if (!showPicker) {
+    return (
+      <button
+        onClick={() => setShowPicker(true)}
+        className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-all"
+      >
+        🗓 Agendar Dia
+      </button>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <input
+        type="date"
+        value={dataInicio}
+        onChange={(e) => setDataInicio(e.target.value)}
+        className="text-xs border rounded-lg px-2 py-1.5"
+      />
+      <button
+        onClick={agendar}
+        disabled={estado === 'loading'}
+        className={`px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all ${
+          estado === 'loading' ? 'bg-gray-300 text-gray-500' :
+          estado === 'success' ? 'bg-green-500 text-white' :
+          'bg-indigo-600 text-white hover:bg-indigo-700'
+        }`}
+      >
+        {estado === 'loading' ? '⏳...' : estado === 'success' ? '✅ Agendado!' : '🗓 Confirmar'}
+      </button>
+    </div>
+  );
+}
+
+// ============================================================
+// DOWNLOAD ZIP - Todo o material de um dia
+// ============================================================
+
+function DownloadDiaZip({ dia }) {
+  const [loading, setLoading] = useState(false);
+
+  const download = async () => {
+    setLoading(true);
+    try {
+      const zip = new JSZip();
+      const folder = zip.folder(`dia-${dia.dia}-${dia.titulo.replace(/[^a-zA-Z0-9]/g, '-')}`);
+      let captionsText = `# ${dia.titulo}\n${dia.subtitulo}\n\n`;
+
+      for (const tarefa of dia.tarefas) {
+        if (tarefa.post) {
+          // Download images
+          for (let j = 0; j < tarefa.post.imagens.length; j++) {
+            try {
+              const res = await fetch(tarefa.post.imagens[j]);
+              const blob = await res.blob();
+              const ext = tarefa.post.imagens[j].split('.').pop() || 'jpg';
+              folder.file(`post-${tarefa.post.numero}-img-${j + 1}.${ext}`, blob);
+            } catch (e) {
+              console.error('Erro download imagem:', e);
+            }
+          }
+
+          // Add caption
+          captionsText += `---\n## ${tarefa.hora} — ${tarefa.titulo}\n\n`;
+          captionsText += `**Caption:**\n${tarefa.post.caption}\n\n`;
+          if (tarefa.post.roteiro) {
+            captionsText += `**Roteiro Reel:**\n${tarefa.post.roteiro}\n\n`;
+          }
+        }
+
+        if (tarefa.mensagemWA) {
+          captionsText += `---\n## ${tarefa.hora} — WhatsApp: ${tarefa.titulo}\n\n`;
+          captionsText += `${tarefa.mensagemWA.mensagem}\n\n`;
+
+          try {
+            const res = await fetch(tarefa.mensagemWA.imagem);
+            const blob = await res.blob();
+            folder.file(`whatsapp-${tarefa.titulo.replace(/[^a-zA-Z0-9]/g, '-')}.jpg`, blob);
+          } catch (e) {
+            console.error('Erro download imagem WA:', e);
+          }
+        }
+
+        if (tarefa.stories) {
+          captionsText += `---\n## ${tarefa.hora} — Stories\n\n`;
+          tarefa.stories.forEach((s, si) => {
+            captionsText += `${si + 1}. [${s.tipo}] ${s.texto}\n`;
+          });
+          captionsText += '\n';
+        }
+      }
+
+      folder.file('CAPTIONS-E-TEXTOS.md', captionsText);
+
+      const content = await zip.generateAsync({ type: 'blob' });
+      saveAs(content, `sete-ecos-dia-${dia.dia}.zip`);
+    } catch (e) {
+      console.error('Erro ao gerar ZIP:', e);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <button
+      onClick={download}
+      disabled={loading}
+      className={`flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all ${
+        loading ? 'bg-gray-200 text-gray-500 cursor-wait' : 'bg-[#1a1a2e] text-white hover:bg-[#2a2a4e]'
+      }`}
+    >
+      {loading ? '⏳ A preparar...' : '📦 Download ZIP do Dia'}
+    </button>
+  );
+}
+
+// ============================================================
+// CARD + COPYBTN helpers
 // ============================================================
 
 function Card({ titulo, badge, children }) {
