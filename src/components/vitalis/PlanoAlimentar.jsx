@@ -333,9 +333,11 @@ function ConfigurarDiasTreino({ userId, diasActuais = [], onSave }) {
 export default function PlanoAlimentar() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [errorType, setErrorType] = useState(null); // 'no_intake', 'no_plan', 'generic'
   const [plano, setPlano] = useState(null);
   const [usersId, setUsersId] = useState(null);
   const [showPDFModal, setShowPDFModal] = useState(false);
+  const [regenerando, setRegenerando] = useState(false);
 
   // Fallback: query vitalis_meal_plans directly when RPC/view fails
   const carregarPlanoFallback = async (userId) => {
@@ -411,12 +413,16 @@ export default function PlanoAlimentar() {
   };
 
   const carregarPlano = async () => {
+    let localUserId = null;
+    let localUserEmail = null;
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         setError('Utilizador não autenticado');
+        setErrorType('generic');
         return;
       }
+      localUserEmail = user.email;
 
       const { data: userData, error: userError } = await supabase
         .from('users')
@@ -425,6 +431,7 @@ export default function PlanoAlimentar() {
         .single();
 
       if (userError) throw userError;
+      localUserId = userData.id;
       setUsersId(userData.id);
 
       const { data, error: planoError } = await supabase.rpc('vitalis_plano_do_dia', {
@@ -440,17 +447,18 @@ export default function PlanoAlimentar() {
         if (fallbackData) {
           setPlano(fallbackData);
         } else {
-          setError(data.erro);
+          // Check if intake exists to show the right error
+          await detectarTipoErro(userData.id, data.erro);
         }
       } else {
         setPlano(data);
       }
     } catch (err) {
       console.error('Erro ao carregar plano:', err);
-      // Try fallback on any error
-      if (usersId) {
+      // Try fallback on any error (use local var, not state)
+      if (localUserId) {
         try {
-          const fallbackData = await carregarPlanoFallback(usersId);
+          const fallbackData = await carregarPlanoFallback(localUserId);
           if (fallbackData) {
             setPlano(fallbackData);
             return;
@@ -458,10 +466,66 @@ export default function PlanoAlimentar() {
         } catch (fbErr) {
           console.error('Fallback failed:', fbErr);
         }
+        // Check intake to show the right error
+        await detectarTipoErro(localUserId, 'Erro ao carregar o plano.');
+      } else {
+        setError('Erro ao carregar o plano. Tenta novamente.');
+        setErrorType('generic');
       }
-      setError('Erro ao carregar o plano. Tenta novamente.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Detect whether error is due to missing intake or missing plan
+  const detectarTipoErro = async (userId, mensagem) => {
+    try {
+      const { data: intake } = await supabase
+        .from('vitalis_intake')
+        .select('id')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (!intake) {
+        setError('Precisas de preencher o questionário inicial para gerar o teu plano.');
+        setErrorType('no_intake');
+      } else {
+        setError('O teu intake já está preenchido mas o plano ainda não foi gerado.');
+        setErrorType('no_plan');
+      }
+    } catch (e) {
+      setError(mensagem || 'Erro ao carregar o plano.');
+      setErrorType('generic');
+    }
+  };
+
+  // Regenerate plan from existing intake
+  const regenerarPlano = async () => {
+    if (!usersId) return;
+    setRegenerando(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.email) throw new Error('Sem email');
+
+      const response = await fetch(`/api/regenerar-plano-emergencia?email=${encodeURIComponent(user.email)}`);
+      const result = await response.json();
+
+      if (result.sucesso || result.success) {
+        // Reload the plan
+        setError(null);
+        setErrorType(null);
+        setLoading(true);
+        await carregarPlano();
+      } else {
+        setError(result.erro || result.error || 'Erro ao regenerar plano. Tenta mais tarde.');
+        setErrorType('generic');
+      }
+    } catch (err) {
+      console.error('Erro ao regenerar plano:', err);
+      setError('Erro ao regenerar plano. Tenta mais tarde.');
+      setErrorType('generic');
+    } finally {
+      setRegenerando(false);
     }
   };
 
@@ -484,14 +548,34 @@ export default function PlanoAlimentar() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] p-4">
         <div className="max-w-2xl mx-auto mt-20 bg-white rounded-2xl p-6 text-center shadow-lg">
-          <div className="text-5xl mb-4">🥗</div>
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Plano não disponível</h2>
+          <div className="text-5xl mb-4">{errorType === 'no_plan' ? '⚙️' : '🥗'}</div>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">
+            {errorType === 'no_plan' ? 'Plano em falta' : 'Plano não disponível'}
+          </h2>
           <p className="text-gray-600 mb-4">{error}</p>
-          <a 
-            href="/vitalis/intake"
-            className="inline-block px-6 py-3 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-full font-semibold"
+
+          {errorType === 'no_plan' ? (
+            <button
+              onClick={regenerarPlano}
+              disabled={regenerando}
+              className="inline-block px-6 py-3 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-full font-semibold disabled:opacity-50"
+            >
+              {regenerando ? 'A gerar plano...' : 'Gerar o Meu Plano'}
+            </button>
+          ) : (
+            <a
+              href="/vitalis/intake"
+              className="inline-block px-6 py-3 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-full font-semibold"
+            >
+              Completar Intake
+            </a>
+          )}
+
+          <a
+            href="/vitalis/dashboard"
+            className="block mt-3 text-[#7C8B6F] text-sm hover:underline"
           >
-            Completar Intake
+            Voltar ao dashboard
           </a>
         </div>
       </div>
