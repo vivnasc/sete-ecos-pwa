@@ -16,6 +16,20 @@ export default class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('[ErrorBoundary] Erro capturado:', error, errorInfo)
+
+    // Detect stale chunk loading errors (after deployment, old chunk files no longer exist)
+    const isChunkError = error?.message?.includes('Failed to fetch dynamically imported module') ||
+      error?.message?.includes('Loading chunk') ||
+      error?.message?.includes('Loading CSS chunk') ||
+      error?.message?.includes('Expected a JavaScript module script');
+
+    if (isChunkError && !sessionStorage.getItem('chunk_reload')) {
+      sessionStorage.setItem('chunk_reload', '1')
+      window.location.reload()
+      return
+    }
+    // Clear flag after a successful page load
+    sessionStorage.removeItem('chunk_reload')
   }
 
   handleRetry = () => {

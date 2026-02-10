@@ -261,11 +261,40 @@ export default function DashboardVitalis() {
       if (intakeData?.observa_ramadao) setObservaRamadao(intakeData.observa_ramadao);
 
       // Buscar plano (pode não existir ainda)
-      const { data: planoData } = await supabase
+      let planoData = null;
+      const { data: planoFromView } = await supabase
         .from('vitalis_plano')
         .select('*')
         .eq('client_id', clientData.id)
         .maybeSingle();
+      planoData = planoFromView;
+
+      // Fallback: se vitalis_plano (view) não tem dados, tentar vitalis_meal_plans
+      if (!planoData) {
+        const { data: mealPlan } = await supabase
+          .from('vitalis_meal_plans')
+          .select('*')
+          .eq('user_id', userData.id)
+          .eq('status', 'activo')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (mealPlan) {
+          planoData = {
+            ...mealPlan,
+            client_id: clientData.id,
+            calorias_diarias: mealPlan.calorias_alvo,
+            porcoes_proteina: Math.round(mealPlan.proteina_g / 25),
+            porcoes_hidratos: Math.round(mealPlan.carboidratos_g / 30),
+            porcoes_gordura: Math.round(mealPlan.gordura_g / 10),
+            horas_jejum: mealPlan.abordagem === 'keto_if' ? 16 : null,
+            aceita_jejum: mealPlan.abordagem === 'keto_if',
+            protocolo_jejum: mealPlan.abordagem === 'keto_if' ? '16_8' : null,
+            dias_treino: mealPlan.dias_treino || []
+          };
+        }
+      }
       setPlano(planoData || null);
 
       const { data: registosData } = await supabase

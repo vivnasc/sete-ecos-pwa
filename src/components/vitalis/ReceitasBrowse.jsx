@@ -78,12 +78,22 @@ export const ReceitasBrowse = () => {
       setUserIntake(intakeData);
 
       // Carregar plano do user (para fase actual)
-      const { data: planoData } = await supabase
+      let planoData = null;
+      const { data: planoView } = await supabase
         .from('vitalis_plano')
         .select('fase')
         .eq('user_id', userData.id)
-        .single();
-      
+        .maybeSingle();
+      planoData = planoView;
+
+      // Fallback: vitalis_meal_plans
+      if (!planoData) {
+        const { data: mealPlan } = await supabase
+          .from('vitalis_meal_plans').select('fase')
+          .eq('user_id', userData.id).eq('status', 'activo')
+          .order('created_at', { ascending: false }).limit(1).maybeSingle();
+        planoData = mealPlan;
+      }
       setUserPlano(planoData);
 
       // Carregar receitas ativas

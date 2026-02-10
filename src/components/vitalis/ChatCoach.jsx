@@ -56,8 +56,19 @@ export default function ChatCoach() {
 
       if (clientData) {
         setClient(clientData);
-        const { data: planoData } = await supabase
-          .from('vitalis_plano').select('*').eq('client_id', clientData.id).single();
+        // Try vitalis_plano view first, fallback to vitalis_meal_plans
+        let planoData = null;
+        const { data: planoView } = await supabase
+          .from('vitalis_plano').select('*').eq('client_id', clientData.id).maybeSingle();
+        planoData = planoView;
+
+        if (!planoData) {
+          const { data: mealPlan } = await supabase
+            .from('vitalis_meal_plans').select('*')
+            .eq('user_id', userData.id).eq('status', 'activo')
+            .order('created_at', { ascending: false }).limit(1).maybeSingle();
+          if (mealPlan) planoData = { ...mealPlan, client_id: clientData.id };
+        }
 
         if (planoData) {
           setPlano(planoData);

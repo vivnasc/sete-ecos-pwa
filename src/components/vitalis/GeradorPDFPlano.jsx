@@ -15,14 +15,41 @@ export default function GeradorPDFPlano({ userId, onClose }) {
   const carregarDados = async () => {
     try {
       const { data: cliente } = await supabase.from('vitalis_clients').select('*').eq('user_id', userId).single();
-      const { data: plano } = await supabase.from('vitalis_plano').select('*').eq('client_id', cliente?.id).single();
-      const { data: intake } = await supabase.from('vitalis_intake').select('nome').eq('user_id', userId).order('created_at', { ascending: false }).limit(1).single();
-      
+      let plano = null;
+
+      // Try vitalis_plano view first
+      if (cliente?.id) {
+        const { data: planoView } = await supabase.from('vitalis_plano').select('*').eq('client_id', cliente.id).maybeSingle();
+        plano = planoView;
+      }
+
+      // Fallback: query vitalis_meal_plans directly
+      if (!plano) {
+        const { data: mealPlan } = await supabase
+          .from('vitalis_meal_plans')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('status', 'activo')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (mealPlan) {
+          plano = {
+            ...mealPlan,
+            peso_actual: cliente?.peso_actual,
+            peso_meta: cliente?.peso_meta
+          };
+        }
+      }
+
+      const { data: intake } = await supabase.from('vitalis_intake').select('nome').eq('user_id', userId).order('created_at', { ascending: false }).limit(1).maybeSingle();
+
       setPlanoId(plano?.id);
       setDados({
         nome: intake?.nome || 'Cliente',
-        peso_actual: plano?.peso_actual || 70,
-        peso_meta: plano?.peso_meta || 60,
+        peso_actual: plano?.peso_actual || cliente?.peso_actual || 70,
+        peso_meta: plano?.peso_meta || cliente?.peso_meta || 60,
         fase: plano?.fase || 'inducao',
       });
     } catch (err) {

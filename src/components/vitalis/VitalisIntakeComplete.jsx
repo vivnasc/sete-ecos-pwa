@@ -451,12 +451,12 @@ try {
         peso_actual: parseFloat(formData.peso_actual),
         peso_meta: parseFloat(formData.peso_meta),
         emocao_dominante: formData.emocao_dominante,
-        prontidao_1a10: parseInt(formData.prontidao_1a10),
-        status: 'novo'
+        prontidao_1a10: parseInt(formData.prontidao_1a10)
       };
 
       if (existingClient) {
-        // Atualizar mas NÃO sobrescrever subscription_status
+        // Atualizar mas NÃO sobrescrever subscription_status NEM status
+        // (planoGenerator will set status: 'activo' when generating the plan)
         const { error: clientError } = await supabase
           .from('vitalis_clients')
           .update(clientData)
@@ -471,6 +471,7 @@ try {
           .from('vitalis_clients')
           .insert({
             ...clientData,
+            status: 'novo',
             subscription_status: 'none',
             created_at: new Date().toISOString()
           });
