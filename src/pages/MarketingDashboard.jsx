@@ -14,6 +14,8 @@ import {
   gerarCaptionInstagram,
   getConteudosMockupVitalis,
   getMensagensWhatsAppMockups,
+  getSetupInstagram,
+  getCalendario6Dias,
 } from '../lib/marketing-engine';
 import { RENDER_MAP, CORES, FORMATOS } from '../components/TemplateVisual';
 
@@ -380,14 +382,17 @@ export default function MarketingDashboard() {
 }
 
 // ============================================================
-// TAB: VITALIS - 12 Conteúdos com mockups reais
+// TAB: VITALIS - Kit completo: setup + calendário dia-a-dia
 // ============================================================
 
 function VitalisTab({ copiar, copiado }) {
   const conteudos = getConteudosMockupVitalis();
   const mensagensWA = getMensagensWhatsAppMockups();
+  const setup = getSetupInstagram();
+  const calendario = getCalendario6Dias();
   const [expandido, setExpandido] = useState(null);
-  const [secao, setSecao] = useState('instagram');
+  const [secao, setSecao] = useState('calendario');
+  const [diaAberto, setDiaAberto] = useState(0);
 
   const tipoLabel = (tipo) => {
     switch (tipo) {
@@ -398,43 +403,285 @@ function VitalisTab({ copiar, copiado }) {
     }
   };
 
+  const ticoTarefa = (tipo) => {
+    switch (tipo) {
+      case 'post': return { icon: '📸', cor: 'border-l-pink-400 bg-pink-50' };
+      case 'whatsapp': return { icon: '💬', cor: 'border-l-green-400 bg-green-50' };
+      case 'stories': return { icon: '📱', cor: 'border-l-purple-400 bg-purple-50' };
+      case 'setup': return { icon: '⚙️', cor: 'border-l-blue-400 bg-blue-50' };
+      case 'interaccao': return { icon: '💬', cor: 'border-l-amber-400 bg-amber-50' };
+      case 'analise': return { icon: '📊', cor: 'border-l-indigo-400 bg-indigo-50' };
+      default: return { icon: '📌', cor: 'border-l-gray-400 bg-gray-50' };
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Secção selector */}
-      <div className="flex gap-2">
-        <button
-          onClick={() => setSecao('instagram')}
-          className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
-            secao === 'instagram' ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-lg' : 'bg-white text-[#6B5C4C] border border-[#E8E2D9]'
-          }`}
-        >
-          📸 Instagram (12)
-        </button>
-        <button
-          onClick={() => setSecao('whatsapp')}
-          className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
-            secao === 'whatsapp' ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg' : 'bg-white text-[#6B5C4C] border border-[#E8E2D9]'
-          }`}
-        >
-          💬 WhatsApp (7)
-        </button>
+      <div className="flex gap-1.5 overflow-x-auto pb-1">
+        {[
+          { id: 'calendario', label: 'Calendário 6 Dias', icon: '📅' },
+          { id: 'setup', label: 'Setup Instagram', icon: '⚙️' },
+          { id: 'instagram', label: 'Posts (12)', icon: '📸' },
+          { id: 'whatsapp', label: 'WhatsApp (7)', icon: '💬' },
+        ].map(s => (
+          <button
+            key={s.id}
+            onClick={() => setSecao(s.id)}
+            className={`flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              secao === s.id ? 'bg-[#1a1a2e] text-white shadow-lg' : 'bg-white text-[#6B5C4C] border border-[#E8E2D9]'
+            }`}
+          >
+            {s.icon} {s.label}
+          </button>
+        ))}
       </div>
 
-      {/* Instagram Section */}
+      {/* =================== SETUP INSTAGRAM =================== */}
+      {secao === 'setup' && (
+        <>
+          <Card titulo="Configurar perfil @seteecos" badge="PASSO 1">
+            <div className="space-y-4">
+              {/* Bio */}
+              <div>
+                <p className="text-xs font-bold text-[#6B5C4C] mb-1">Bio (copiar exactamente):</p>
+                <div className="bg-[#FAFAF8] rounded-lg p-3 border">
+                  <p className="text-sm text-[#4A4035] whitespace-pre-wrap font-medium">{setup.bio}</p>
+                </div>
+                <CopyBtn onClick={() => copiar(setup.bio, 'bio')} copiado={copiado === 'bio' ? '✓' : ''} label="📋 Copiar Bio" small />
+              </div>
+
+              {/* Details */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-[#FAFAF8] rounded-lg p-3">
+                  <p className="text-[10px] text-[#A09888]">Nome do perfil</p>
+                  <p className="text-sm font-bold text-[#4A4035]">{setup.nome}</p>
+                </div>
+                <div className="bg-[#FAFAF8] rounded-lg p-3">
+                  <p className="text-[10px] text-[#A09888]">Categoria</p>
+                  <p className="text-sm font-bold text-[#4A4035]">{setup.categoria}</p>
+                </div>
+                <div className="bg-[#FAFAF8] rounded-lg p-3 col-span-2">
+                  <p className="text-[10px] text-[#A09888]">Link na bio</p>
+                  <p className="text-sm font-bold text-[#4A4035]">{setup.linkTexto}</p>
+                  <p className="text-[10px] text-green-600 mt-1">LUMINA primeiro (gratuito = mais cliques)</p>
+                </div>
+              </div>
+
+              {/* Foto */}
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                <p className="text-xs font-bold text-amber-800">📸 Foto de perfil:</p>
+                <p className="text-xs text-amber-700 mt-1">{setup.fotoPerfil}</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card titulo="Destaques (Highlights)" badge="PASSO 2">
+            <div className="space-y-2">
+              {setup.destaques.map((d, i) => (
+                <div key={i} className="flex items-start gap-3 bg-[#FAFAF8] rounded-lg p-3">
+                  <span className="text-lg">{d.nome.split(' ')[0]}</span>
+                  <div>
+                    <p className="text-sm font-bold text-[#4A4035]">{d.nome}</p>
+                    <p className="text-xs text-[#A09888]">{d.descricao}</p>
+                    <p className="text-[10px] text-[#A09888]">Cor: {d.cor}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card titulo="Primeiros passos" badge="PASSO 3">
+            <div className="space-y-2">
+              {setup.primeirosPassos.map((p, i) => (
+                <div key={i} className="flex items-start gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#1a1a2e] text-white text-xs flex items-center justify-center shrink-0 font-bold">{i + 1}</span>
+                  <p className="text-xs text-[#4A4035]">{p}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </>
+      )}
+
+      {/* =================== CALENDÁRIO 6 DIAS =================== */}
+      {secao === 'calendario' && (
+        <>
+          <div className="bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] text-white rounded-xl p-4">
+            <h3 className="font-bold text-lg">Calendário: 6 Dias para Popular o Instagram</h3>
+            <p className="text-white/70 text-sm mt-1">Segue cada passo. Tudo está pronto — só precisas de copiar e publicar.</p>
+            <div className="flex gap-2 mt-3 overflow-x-auto">
+              {calendario.map((d, i) => (
+                <button
+                  key={i}
+                  onClick={() => setDiaAberto(i)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
+                    diaAberto === i ? 'bg-white text-[#1a1a2e]' : 'bg-white/10 text-white/70 hover:bg-white/20'
+                  }`}
+                >
+                  Dia {d.dia}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Dia seleccionado */}
+          {calendario[diaAberto] && (() => {
+            const dia = calendario[diaAberto];
+            return (
+              <div className="space-y-3">
+                <div className="bg-white rounded-xl border border-[#E8E2D9] p-4">
+                  <h3 className="font-bold text-lg text-[#4A4035]">{dia.titulo}</h3>
+                  <p className="text-xs text-[#A09888] mt-1">{dia.subtitulo}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-[10px] bg-[#1a1a2e]/10 px-2 py-0.5 rounded-full font-bold">{dia.tarefas.length} tarefas</span>
+                    <span className="text-[10px] text-[#A09888]">{dia.tarefas.filter(t => t.tipo === 'post').length} posts + {dia.tarefas.filter(t => t.tipo === 'stories').length} stories + {dia.tarefas.filter(t => t.tipo === 'whatsapp').length} WA</span>
+                  </div>
+                </div>
+
+                {dia.tarefas.map((tarefa, ti) => {
+                  const tt = ticoTarefa(tarefa.tipo);
+                  return (
+                    <div key={ti} className={`bg-white rounded-xl border-l-4 ${tt.cor} overflow-hidden`}>
+                      <div className="p-4">
+                        {/* Header */}
+                        <div className="flex items-start gap-2 mb-2">
+                          <span className="text-xs bg-[#1a1a2e] text-white px-2 py-0.5 rounded-full font-bold">{tarefa.hora}</span>
+                          <span className="text-xs font-bold text-[#4A4035]">{tt.icon} {tarefa.titulo}</span>
+                        </div>
+                        <p className="text-xs text-[#A09888] mb-3">{tarefa.descricao}</p>
+
+                        {/* Post content inline */}
+                        {tarefa.post && (
+                          <div className="bg-[#FAFAF8] rounded-lg p-3 space-y-3 mb-3">
+                            {/* Image(s) */}
+                            <div className="flex gap-2 overflow-x-auto pb-1">
+                              {tarefa.post.tipo === 'carrossel' && tarefa.post.slides ? (
+                                tarefa.post.slides.map((s, j) => (
+                                  <MockupSlide
+                                    key={j}
+                                    mockupSrc={tarefa.post.imagens[j] || tarefa.post.imagens[j % tarefa.post.imagens.length]}
+                                    texto={s.texto}
+                                    subtitulo={s.subtitulo}
+                                    isCover={j === 0}
+                                    slideNum={j + 1}
+                                    totalSlides={tarefa.post.slides.length}
+                                    slideLabel={j === 0 ? 'Capa' : `Slide ${j}`}
+                                    filename={`dia${dia.dia}-${tarefa.post.titulo.replace(/\s+/g, '-').toLowerCase()}-slide${j + 1}.jpg`}
+                                  />
+                                ))
+                              ) : (
+                                tarefa.post.imagens.map((img, j) => (
+                                  <div key={j} className="relative group shrink-0">
+                                    <img src={img} alt="" className="h-44 rounded-lg object-cover shadow-md" />
+                                    <a href={img} download className="absolute bottom-1 right-1 bg-white/90 px-2 py-0.5 rounded text-[9px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">⬇</a>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+
+                            {/* Caption */}
+                            <div>
+                              <p className="text-[10px] font-bold text-[#6B5C4C] mb-1">Caption:</p>
+                              <p className="text-[11px] text-[#4A4035] whitespace-pre-wrap leading-relaxed max-h-32 overflow-y-auto">{tarefa.post.caption}</p>
+                            </div>
+                            <CopyBtn
+                              onClick={() => copiar(tarefa.post.caption, `cal-caption-${ti}`)}
+                              copiado={copiado === `cal-caption-${ti}` ? '✓' : ''}
+                              label="📋 Copiar Caption"
+                              small
+                            />
+
+                            {/* Reel script */}
+                            {tarefa.post.roteiro && (
+                              <div>
+                                <p className="text-[10px] font-bold text-[#6B5C4C] mb-1">Roteiro:</p>
+                                <pre className="text-[10px] text-[#4A4035] whitespace-pre-wrap font-sans leading-relaxed max-h-40 overflow-y-auto">{tarefa.post.roteiro}</pre>
+                                <CopyBtn
+                                  onClick={() => copiar(tarefa.post.roteiro, `cal-roteiro-${ti}`)}
+                                  copiado={copiado === `cal-roteiro-${ti}` ? '✓' : ''}
+                                  label="📋 Copiar Roteiro"
+                                  small
+                                />
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* WhatsApp message inline */}
+                        {tarefa.mensagemWA && (
+                          <div className="bg-green-50 rounded-lg p-3 border border-green-200 mb-3 space-y-2">
+                            <div className="flex items-start gap-2">
+                              <img src={tarefa.mensagemWA.imagem} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
+                              <div className="flex-1">
+                                <p className="text-[10px] font-bold text-green-700">Enviar com esta imagem:</p>
+                                <a href={tarefa.mensagemWA.imagem} download className="text-[10px] text-green-600 underline">⬇ Descarregar imagem</a>
+                              </div>
+                            </div>
+                            <p className="text-[11px] text-[#4A4035] whitespace-pre-wrap leading-relaxed max-h-32 overflow-y-auto">{tarefa.mensagemWA.mensagem}</p>
+                            <div className="flex gap-2">
+                              <CopyBtn
+                                onClick={() => copiar(tarefa.mensagemWA.mensagem, `cal-wa-${ti}`)}
+                                copiado={copiado === `cal-wa-${ti}` ? '✓' : ''}
+                                label="📋 Copiar"
+                                small
+                              />
+                              <a
+                                href={`https://wa.me/?text=${encodeURIComponent(tarefa.mensagemWA.mensagem)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-3 py-1.5 text-[11px] font-bold rounded-lg bg-[#25D366] text-white"
+                              >
+                                📲 Enviar
+                              </a>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Stories inline */}
+                        {tarefa.stories && (
+                          <div className="bg-purple-50 rounded-lg p-3 border border-purple-200 mb-3">
+                            <p className="text-[10px] font-bold text-purple-700 mb-2">Stories ({tarefa.stories.length}):</p>
+                            <div className="space-y-1.5">
+                              {tarefa.stories.map((s, si) => (
+                                <div key={si} className="flex items-start gap-2">
+                                  <span className="w-5 h-5 rounded-full bg-purple-200 text-purple-700 text-[10px] flex items-center justify-center shrink-0 font-bold">{si + 1}</span>
+                                  <div>
+                                    <p className="text-[11px] text-[#4A4035]">{s.texto}</p>
+                                    <span className="text-[9px] text-purple-500 uppercase font-bold">{s.tipo}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Action box */}
+                        <div className="bg-[#1a1a2e] text-white rounded-lg p-3">
+                          <p className="text-[10px] font-bold text-white/60 mb-1">O QUE FAZER:</p>
+                          <p className="text-xs">{tarefa.accao}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
+        </>
+      )}
+
+      {/* =================== POSTS INSTAGRAM =================== */}
       {secao === 'instagram' && (
         <>
           <div className="bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl p-4">
             <h3 className="font-bold text-lg">12 Conteúdos com Mockups Reais</h3>
             <p className="text-white/80 text-sm mt-1">6 Feed + 3 Carrosséis + 3 Reels — usa as imagens reais da app</p>
-            <div className="flex gap-3 mt-3">
-              <span className="text-xs bg-white/20 px-2 py-1 rounded-full">6 Feed</span>
-              <span className="text-xs bg-white/20 px-2 py-1 rounded-full">3 Carrosséis</span>
-              <span className="text-xs bg-white/20 px-2 py-1 rounded-full">3 Reels</span>
-            </div>
           </div>
 
           {conteudos.map((c, i) => {
-            const tipo = tipoLabel(c.tipo);
+            const tipoMap = { feed: { label: 'FEED', cor: 'bg-blue-100 text-blue-700' }, carrossel: { label: 'CARROSSEL', cor: 'bg-purple-100 text-purple-700' }, reel: { label: 'REEL', cor: 'bg-pink-100 text-pink-700' } };
+            const tipo = tipoMap[c.tipo] || { label: c.tipo, cor: 'bg-gray-100 text-gray-700' };
             const aberto = expandido === i;
             return (
               <div key={i} className="bg-white rounded-xl border border-[#E8E2D9] overflow-hidden">

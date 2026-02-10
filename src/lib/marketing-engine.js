@@ -1689,3 +1689,358 @@ Vê a plataforma: ${linkVitalis} 🌿`,
     },
   ];
 }
+
+// ============================================================
+// SETUP INSTAGRAM - Perfil pronto a copiar
+// ============================================================
+
+export function getSetupInstagram() {
+  return {
+    nome: 'Sete Ecos 🌿',
+    username: '@seteecos',
+    bio: `Sistema de Transmutação Feminina 🌿
+Comida · Emoção · Corpo · Mente
+🇲🇿 Feito em Moçambique, para nós
+🔮 LUMINA: diagnóstico gratuito ↓
+🌱 VITALIS: coaching nutricional ↓`,
+    link: 'https://app.seteecos.com/lumina',
+    linkTexto: 'app.seteecos.com/lumina',
+    categoria: 'Saúde/Beleza',
+    destaques: [
+      { nome: '🔮 LUMINA', descricao: 'Screenshots do LUMINA + resultados + reacções', cor: 'roxo/azul' },
+      { nome: '🌿 VITALIS', descricao: 'Tour pela app + funcionalidades + preço', cor: 'verde sage' },
+      { nome: '📖 RECEITAS', descricao: 'Screenshots de receitas + comida local', cor: 'verde' },
+      { nome: '💜 EMOÇÃO', descricao: 'Espaço de retorno + dicas emocionais', cor: 'roxo' },
+      { nome: '🗣 EU', descricao: 'Vivianne: quem sou, a minha história, bastidores', cor: 'dourado' },
+      { nome: '💬 OPINIÕES', descricao: 'Screenshots de feedbacks + testemunhos', cor: 'branco' },
+    ],
+    fotoPerfil: 'Foto da Vivianne com fundo claro/verde. Sorriso natural. Sem filtros excessivos.',
+    primeirosPassos: [
+      'Muda para conta Profissional (Criador de Conteúdo > Saúde/Beleza)',
+      'Coloca a bio exactamente como está acima',
+      'Link na bio: app.seteecos.com/lumina (LUMINA primeiro, porque é gratuito)',
+      'Publica os 3 primeiros posts antes de seguir qualquer pessoa',
+      'Segue 50-100 contas de Maputo (mulheres, saúde, comida, fitness)',
+      'Activa notificações das contas que segues para interagir cedo',
+    ],
+  };
+}
+
+// ============================================================
+// CALENDÁRIO 6 DIAS - Tudo pronto, dia a dia, hora a hora
+// Cada entrada tem TUDO: o que publicar, onde, quando, textos, imagens
+// ============================================================
+
+export function getCalendario6Dias() {
+  const conteudos = getConteudosMockupVitalis();
+  const mensagensWA = getMensagensWhatsAppMockups();
+
+  // Map posts by number for easy reference
+  const post = (n) => conteudos.find(c => c.numero === n);
+
+  return [
+    // =================== DIA 1 ===================
+    {
+      dia: 1,
+      titulo: 'DIA 1 — Lançamento do Perfil',
+      subtitulo: 'Hoje crias o perfil e publicas os primeiros posts. Impacto máximo.',
+      tarefas: [
+        {
+          hora: '08:00',
+          tipo: 'setup',
+          titulo: 'Configurar perfil Instagram',
+          descricao: 'Bio, foto, destaques, link. Tudo conforme o guia de Setup acima.',
+          accao: 'Copiar bio → Colar no Instagram → Meter foto → Link na bio',
+        },
+        {
+          hora: '09:00',
+          tipo: 'post',
+          titulo: 'Post #1 — Saúde real. Feita para nós.',
+          descricao: 'O post de apresentação. FIXA NO TOPO DO FEED.',
+          post: post(1),
+          accao: 'Descarregar imagem mozproud → Publicar → Copiar caption → Fixar post no perfil',
+        },
+        {
+          hora: '10:00',
+          tipo: 'whatsapp',
+          titulo: 'WhatsApp: Anunciar aos contactos',
+          descricao: 'Envia para TODOS os contactos e grupos relevantes.',
+          mensagemWA: mensagensWA[0],
+          accao: 'Copiar mensagem → Abrir WhatsApp → Enviar para listas de broadcast + grupos + contactos individuais',
+        },
+        {
+          hora: '12:00',
+          tipo: 'post',
+          titulo: 'Post #7 — Carrossel: 5 coisas que o VITALIS faz',
+          descricao: 'Carrossel = mais alcance no Instagram. Publica este como 2º post.',
+          post: post(7),
+          accao: 'Descarregar os 6 slides → Publicar como carrossel → Copiar caption',
+        },
+        {
+          hora: '14:00',
+          tipo: 'stories',
+          titulo: 'Stories: 5 slides de apresentação',
+          stories: [
+            { texto: 'Foto tua + texto: "Hoje começa algo novo 🌿"', tipo: 'foto' },
+            { texto: 'Screenshot do post #1 (mozproud) + "Segue @seteecos"', tipo: 'screenshot' },
+            { texto: 'Mockup do dashboard + "Isto é o VITALIS por dentro 📱"', tipo: 'imagem' },
+            { texto: 'Texto: "98 receitas com comida moçambicana 🇲🇿🍽"', tipo: 'texto' },
+            { texto: 'Sticker de Link para app.seteecos.com/lumina + "Experimenta grátis 🔮"', tipo: 'link' },
+          ],
+          accao: 'Publicar os 5 stories ao longo da tarde (1 a cada 30min para manter engagement)',
+        },
+        {
+          hora: '21:00',
+          tipo: 'whatsapp',
+          titulo: 'Status WhatsApp: Imagem mozproud',
+          descricao: 'Coloca a imagem mozproud-vitalis no teu status do WhatsApp.',
+          accao: 'Descarregar mozproud → Colocar como status → Adicionar texto "Segue @seteecos no Instagram 🌿"',
+        },
+      ],
+    },
+
+    // =================== DIA 2 ===================
+    {
+      dia: 2,
+      titulo: 'DIA 2 — Emoção + Viral',
+      subtitulo: 'Posts emocionais geram mais partilhas. Hoje é sobre conexão.',
+      tarefas: [
+        {
+          hora: '08:00',
+          tipo: 'post',
+          titulo: 'Reel #12 — Feito em Moçambique. Com orgulho.',
+          descricao: 'O reel mais emotivo. Orgulho moçambicano = partilhas garantidas.',
+          post: post(12),
+          accao: 'Gravar reel seguindo o roteiro → Publicar → Copiar caption',
+        },
+        {
+          hora: '10:00',
+          tipo: 'whatsapp',
+          titulo: 'WhatsApp: Enviar o reel',
+          mensagemWA: mensagensWA[1],
+          descricao: 'Envia o link do reel + mockup dashboard para contactos que não responderam ontem.',
+          accao: 'Copiar mensagem → Enviar com imagem do dashboard',
+        },
+        {
+          hora: '14:00',
+          tipo: 'post',
+          titulo: 'Post #5 — O que estás a sentir agora? 💜',
+          descricao: 'Post emocional com ecrã do Espaço de Retorno. As cores vibrantes chamam atenção.',
+          post: post(5),
+          accao: 'Descarregar imagem espaço retorno → Publicar → Copiar caption',
+        },
+        {
+          hora: '16:00',
+          tipo: 'stories',
+          titulo: 'Stories: Emoção + Bastidores',
+          stories: [
+            { texto: 'Selfie + "Sabias que 80% dos problemas com comida são emocionais?"', tipo: 'foto' },
+            { texto: 'Screenshot do Espaço de Retorno + "Isto existe dentro do VITALIS"', tipo: 'imagem' },
+            { texto: 'Enquete: "Já comeste por ansiedade?" SIM / QUEM NUNCA', tipo: 'enquete' },
+            { texto: 'Texto: "O VITALIS cuida da comida E da emoção ao mesmo tempo 🤍"', tipo: 'texto' },
+            { texto: 'Link sticker para LUMINA: "Começa por aqui — gratuito 🔮"', tipo: 'link' },
+          ],
+          accao: 'Publicar ao longo da tarde. A enquete gera interacção!',
+        },
+        {
+          hora: '21:00',
+          tipo: 'interaccao',
+          titulo: 'Interagir: comentar em 10 contas de Maputo',
+          descricao: 'Vai a contas de mulheres em Maputo e deixa comentários genuínos.',
+          accao: 'Procurar #maputo #mulhermocambicana → Comentar (não spam) → Seguir 20 contas relevantes',
+        },
+      ],
+    },
+
+    // =================== DIA 3 ===================
+    {
+      dia: 3,
+      titulo: 'DIA 3 — Polémico + Prático',
+      subtitulo: 'Conteúdo que desafia o status quo + valor prático concreto.',
+      tarefas: [
+        {
+          hora: '09:00',
+          tipo: 'post',
+          titulo: 'Post #8 — Carrossel: Dietas vs VITALIS',
+          descricao: 'Formato comparativo = comentários + partilhas. Polémico no bom sentido.',
+          post: post(8),
+          accao: 'Descarregar 5 slides → Publicar como carrossel → Copiar caption',
+        },
+        {
+          hora: '11:00',
+          tipo: 'whatsapp',
+          titulo: 'WhatsApp: Receitas',
+          mensagemWA: mensagensWA[3],
+          descricao: 'Foco nas receitas locais — argumento mais forte.',
+          accao: 'Copiar mensagem → Enviar com mockup receitas → Enviar para grupos de mães/cozinha',
+        },
+        {
+          hora: '14:00',
+          tipo: 'post',
+          titulo: 'Post #4 — 98 receitas. Todas do mercado.',
+          descricao: 'Post prático: mostra a biblioteca de receitas real.',
+          post: post(4),
+          accao: 'Descarregar imagem receitas → Publicar → Copiar caption',
+        },
+        {
+          hora: '17:00',
+          tipo: 'stories',
+          titulo: 'Stories: Receitas + Enquete',
+          stories: [
+            { texto: 'Mockup receitas + "98 receitas e NENHUMA pede quinoa 😂"', tipo: 'imagem' },
+            { texto: 'Enquete: "Qual comida preferes?" MATAPA / CARIL AMENDOIM', tipo: 'enquete' },
+            { texto: 'Quiz: "Quantas calorias tem a matapa?" (surpreender com resposta)', tipo: 'quiz' },
+            { texto: 'Mockup coach + "Dúvida sobre porções? Pergunta à coach 24h"', tipo: 'imagem' },
+            { texto: 'Sticker link LUMINA', tipo: 'link' },
+          ],
+          accao: 'Enquetes e quizzes aumentam o alcance dos stories',
+        },
+      ],
+    },
+
+    // =================== DIA 4 ===================
+    {
+      dia: 4,
+      titulo: 'DIA 4 — Trending + Diferencial',
+      subtitulo: 'Reel trending para alcance + post que mostra o diferencial único.',
+      tarefas: [
+        {
+          hora: '09:00',
+          tipo: 'post',
+          titulo: 'Reel #11 — POV: A tua amiga envia-te um link...',
+          descricao: 'Formato trending POV. Potencial viral. Pede para marcar amigas.',
+          post: post(11),
+          accao: 'Gravar reel seguindo o roteiro → Usar áudio trending → Publicar',
+        },
+        {
+          hora: '12:00',
+          tipo: 'whatsapp',
+          titulo: 'WhatsApp: Coach 24h',
+          mensagemWA: mensagensWA[2],
+          descricao: 'Destaque para a coach — diferencial único.',
+          accao: 'Copiar mensagem → Enviar com mockup coach',
+        },
+        {
+          hora: '15:00',
+          tipo: 'post',
+          titulo: 'Post #3 — Uma coach que nunca dorme.',
+          descricao: 'Mostra o coach IA como diferencial. Ninguém tem isto em Moçambique.',
+          post: post(3),
+          accao: 'Descarregar imagem coach → Publicar → Copiar caption',
+        },
+        {
+          hora: '19:00',
+          tipo: 'stories',
+          titulo: 'Stories: Demo da Coach',
+          stories: [
+            { texto: 'Gravação de ecrã: abrir a coach e fazer uma pergunta sobre porções', tipo: 'gravacao' },
+            { texto: 'Reacção tua à resposta da coach + "Impressionante, não?"', tipo: 'foto' },
+            { texto: 'Texto: "Disponível 24h. Sem julgamento. Sem espera."', tipo: 'texto' },
+            { texto: 'Enquete: "Já tiveste dúvidas de nutrição às 3 da manhã?" SIM / NÃO', tipo: 'enquete' },
+            { texto: 'Sticker link LUMINA', tipo: 'link' },
+          ],
+          accao: 'A gravação de ecrã real é OURO — mostra que é verdade',
+        },
+      ],
+    },
+
+    // =================== DIA 5 ===================
+    {
+      dia: 5,
+      titulo: 'DIA 5 — Educativo + Nicho',
+      subtitulo: 'Tour completo pela app + conteúdo especializado para mulheres.',
+      tarefas: [
+        {
+          hora: '09:00',
+          tipo: 'post',
+          titulo: 'Post #9 — Carrossel: Tour pela app em 7 ecrãs',
+          descricao: 'Tour visual completo. Prova que a app é REAL.',
+          post: post(9),
+          accao: 'Descarregar 7 slides → Publicar como carrossel → Copiar caption',
+        },
+        {
+          hora: '12:00',
+          tipo: 'whatsapp',
+          titulo: 'WhatsApp: Treinos por ciclo',
+          mensagemWA: mensagensWA[5],
+          descricao: 'Treinos adaptados ao ciclo menstrual — tema que gera conversa.',
+          accao: 'Copiar mensagem → Enviar com mockup treinos',
+        },
+        {
+          hora: '15:00',
+          tipo: 'post',
+          titulo: 'Post #6 — O teu treino adapta-se ao ciclo.',
+          descricao: 'Conteúdo de nicho: ciclo menstrual + treino. Muito partilhável.',
+          post: post(6),
+          accao: 'Descarregar imagem treinos → Publicar → Copiar caption',
+        },
+        {
+          hora: '18:00',
+          tipo: 'stories',
+          titulo: 'Stories: Ciclo Menstrual',
+          stories: [
+            { texto: 'Texto: "Sabias que treinar intenso na fase errada pode prejudicar-te?"', tipo: 'texto' },
+            { texto: 'Mockup treinos + mostrar as 4 fases', tipo: 'imagem' },
+            { texto: 'Slider: "Quanto sabes sobre o teu ciclo?" 🌙→☀️', tipo: 'slider' },
+            { texto: 'Texto: "O VITALIS adapta o treino à tua fase. Automaticamente."', tipo: 'texto' },
+            { texto: 'Sticker link VITALIS', tipo: 'link' },
+          ],
+          accao: 'Conteúdo educativo gera saves e partilhas',
+        },
+      ],
+    },
+
+    // =================== DIA 6 ===================
+    {
+      dia: 6,
+      titulo: 'DIA 6 — Relatable + Profissional',
+      subtitulo: 'Último dia da primeira vaga. Mostrar a app por dentro + reel relatable.',
+      tarefas: [
+        {
+          hora: '09:00',
+          tipo: 'post',
+          titulo: 'Reel #10 — Um dia com VITALIS',
+          descricao: 'Formato "day in my life" com a app. Relatable e aspiracional.',
+          post: post(10),
+          accao: 'Gravar reel mostrando o dia com gravação de ecrã → Publicar',
+        },
+        {
+          hora: '12:00',
+          tipo: 'whatsapp',
+          titulo: 'WhatsApp: Landing + urgência suave',
+          mensagemWA: mensagensWA[6],
+          descricao: 'Última mensagem da semana. Mostra a plataforma profissional.',
+          accao: 'Copiar mensagem → Enviar com mockup landing PC',
+        },
+        {
+          hora: '15:00',
+          tipo: 'post',
+          titulo: 'Post #2 — Isto é o VITALIS por dentro.',
+          descricao: 'Dashboard real da app. Profissionalismo. Prova social.',
+          post: post(2),
+          accao: 'Descarregar imagem dashboard → Publicar → Copiar caption',
+        },
+        {
+          hora: '18:00',
+          tipo: 'stories',
+          titulo: 'Stories: Resumo da semana',
+          stories: [
+            { texto: 'Selfie: "Esta semana foi especial. Obrigada por estarem aqui 🤍"', tipo: 'foto' },
+            { texto: 'Texto: "Em 6 dias: [X] seguidores, [X] mensagens, [X] LUMINAs feitos"', tipo: 'texto' },
+            { texto: 'Screenshot de uma mensagem/feedback recebido (com permissão)', tipo: 'screenshot' },
+            { texto: 'Countdown: "Próxima semana: NOVIDADES 🌿"', tipo: 'countdown' },
+            { texto: 'Sticker link LUMINA + "Ainda não experimentaste? É grátis 🔮"', tipo: 'link' },
+          ],
+          accao: 'Fechar a semana com gratidão e antecipação',
+        },
+        {
+          hora: '21:00',
+          tipo: 'analise',
+          titulo: 'Analisar resultados da semana',
+          descricao: 'Ver no Instagram Insights: alcance, seguidores, posts com melhor performance.',
+          accao: 'Instagram → Insights → Ver top posts → Anotar o que funcionou melhor → Repetir na semana 2',
+        },
+      ],
+    },
+  ];
+}
