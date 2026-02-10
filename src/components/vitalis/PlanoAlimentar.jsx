@@ -94,13 +94,14 @@ const HAND_CONFIG = {
     corTexto: 'text-rose-700',
     corFundo: 'bg-rose-100',
     corBorda: 'border-rose-200',
+    explicacao: 'Tamanho e espessura da tua palma (sem dedos) ≈ 100g',
     equivalencias: [
-      { icon: '🍗', texto: 'Frango grelhado' },
-      { icon: '🐟', texto: '1 lata de atum' },
-      { icon: '🥚', texto: '2-3 ovos' },
-      { icon: '🥩', texto: 'Bife/Carne' },
-      { icon: '🦐', texto: 'Camarão/Peixe' },
-      { icon: '🥛', texto: 'Iogurte grego = ½' },
+      { icon: '🍗', texto: '1 peito de frango (~100g)' },
+      { icon: '🐟', texto: '1 lata de atum escorrida' },
+      { icon: '🥚', texto: '2-3 ovos inteiros' },
+      { icon: '🥩', texto: '1 bife médio (~100g)' },
+      { icon: '🦐', texto: '6-8 camarões ou 1 posta de peixe' },
+      { icon: '🥛', texto: '½ palma = 1 iogurte grego' },
     ]
   },
   legumes: {
@@ -112,31 +113,33 @@ const HAND_CONFIG = {
     corTexto: 'text-green-700',
     corFundo: 'bg-green-100',
     corBorda: 'border-green-200',
+    explicacao: 'Tamanho do teu punho fechado ≈ 150g de legumes cozidos',
     equivalencias: [
-      { icon: '🥗', texto: 'Salada mista' },
-      { icon: '🥦', texto: 'Brócolos' },
-      { icon: '🥬', texto: 'Espinafres/Couve' },
-      { icon: '🍅', texto: 'Tomate' },
-      { icon: '🥕', texto: 'Cenoura' },
-      { icon: '🍄', texto: 'Cogumelos' },
+      { icon: '🥗', texto: '2 mãos cheias de salada crua' },
+      { icon: '🥦', texto: '1 chávena de brócolos' },
+      { icon: '🥬', texto: '1 chávena de espinafres/couve' },
+      { icon: '🍅', texto: '1 tomate médio + pepino' },
+      { icon: '🥕', texto: '1 cenoura grande' },
+      { icon: '🍄', texto: '1 chávena de cogumelos' },
     ]
   },
   hidratos: {
     gesto: '🤲',
     nome: 'Hidratos',
-    medida: 'mão',
-    medidaPlural: 'mãos',
+    medida: 'mão concha',
+    medidaPlural: 'mãos concha',
     cor: 'from-amber-50 to-orange-50',
     corTexto: 'text-amber-700',
     corFundo: 'bg-amber-100',
     corBorda: 'border-amber-200',
+    explicacao: 'O que cabe na tua mão em concha ≈ 30g de hidratos',
     equivalencias: [
-      { icon: '🍚', texto: 'Arroz' },
-      { icon: '🥔', texto: 'Batata/Batata doce' },
-      { icon: '🍝', texto: 'Massa' },
+      { icon: '🍚', texto: '3 col. sopa de arroz cozido' },
+      { icon: '🥔', texto: '1 batata pequena ou ½ batata doce' },
+      { icon: '🍝', texto: '½ chávena de massa cozida' },
       { icon: '🍞', texto: '1 fatia de pão' },
-      { icon: '🍎', texto: '1 fruta média' },
-      { icon: '🫚', texto: 'Mandioca' },
+      { icon: '🍎', texto: '1 fruta média (maçã, banana, laranja)' },
+      { icon: '🫚', texto: '½ chávena de mandioca cozida' },
     ]
   },
   gordura: {
@@ -148,13 +151,14 @@ const HAND_CONFIG = {
     corTexto: 'text-purple-700',
     corFundo: 'bg-purple-100',
     corBorda: 'border-purple-200',
+    explicacao: 'Tamanho da ponta do teu polegar ≈ 10g de gordura',
     equivalencias: [
-      { icon: '🫒', texto: '1 col. sopa azeite' },
-      { icon: '🥑', texto: '¼ abacate' },
-      { icon: '🥜', texto: '1 punhado de nozes' },
-      { icon: '🧈', texto: '1 col. chá manteiga' },
-      { icon: '🥥', texto: '2 col. sopa coco' },
-      { icon: '🥜', texto: '1 col. amendoim' },
+      { icon: '🫒', texto: '1 col. sopa de azeite' },
+      { icon: '🥑', texto: '¼ de abacate' },
+      { icon: '🥜', texto: '1 punhado pequeno de nozes (~15g)' },
+      { icon: '🧈', texto: '1 col. chá de manteiga' },
+      { icon: '🥥', texto: '2 col. sopa de coco ralado' },
+      { icon: '🥜', texto: '1 col. sopa de amendoim' },
     ]
   }
 };
@@ -197,12 +201,15 @@ function PorcaoCard({ tipo, quantidade, extra = 0 }) {
       {/* Equivalências expandidas */}
       {showEquiv && (
         <div className={`px-4 pb-3 border-t ${h.corBorda}`}>
-          <p className="text-xs font-semibold text-gray-600 mt-2 mb-1.5">
+          <p className="text-[11px] text-gray-500 mt-2 mb-2 italic bg-white/50 rounded-lg px-2 py-1.5">
+            {h.explicacao}
+          </p>
+          <p className="text-xs font-semibold text-gray-600 mb-1.5">
             1 {h.gesto} {h.medida} =
           </p>
           <div className="grid grid-cols-2 gap-1">
             {h.equivalencias.map((eq, i) => (
-              <div key={i} className="flex items-center gap-1.5 text-xs text-gray-700 bg-white/60 rounded-lg px-2 py-1">
+              <div key={i} className="flex items-center gap-1.5 text-xs text-gray-700 bg-white/60 rounded-lg px-2 py-1.5">
                 <span>{eq.icon}</span>
                 <span>{eq.texto}</span>
               </div>
@@ -586,21 +593,25 @@ export default function PlanoAlimentar() {
               <div className="text-2xl">🫲</div>
               <div className="text-[10px] font-semibold mt-0.5">PALMA</div>
               <div className="text-[10px] text-white/70">Proteína</div>
+              <div className="text-[9px] text-white/50">≈100g</div>
             </div>
             <div className="bg-white/15 backdrop-blur-sm rounded-xl p-2 text-center">
               <div className="text-2xl">✊</div>
               <div className="text-[10px] font-semibold mt-0.5">PUNHO</div>
               <div className="text-[10px] text-white/70">Legumes</div>
+              <div className="text-[9px] text-white/50">≈150g</div>
             </div>
             <div className="bg-white/15 backdrop-blur-sm rounded-xl p-2 text-center">
               <div className="text-2xl">🤲</div>
               <div className="text-[10px] font-semibold mt-0.5">MÃO CONCHA</div>
               <div className="text-[10px] text-white/70">Hidratos</div>
+              <div className="text-[9px] text-white/50">≈30g</div>
             </div>
             <div className="bg-white/15 backdrop-blur-sm rounded-xl p-2 text-center">
               <div className="text-2xl">👍</div>
               <div className="text-[10px] font-semibold mt-0.5">POLEGAR</div>
               <div className="text-[10px] text-white/70">Gordura</div>
+              <div className="text-[9px] text-white/50">≈10g</div>
             </div>
           </div>
         </div>
