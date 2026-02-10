@@ -872,7 +872,7 @@ const LandingVitalis = () => {
 
       {/* WhatsApp Float - bottom-24 para não ser cortado pela navegação */}
       <a
-        href="https://wa.me/258845243875"
+        href="https://wa.me/258851006473"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-24 right-6 w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform z-50"

@@ -8,10 +8,10 @@
  *    - TWILIO_ACCOUNT_SID
  *    - TWILIO_AUTH_TOKEN
  *    - TWILIO_WHATSAPP_NUMBER (ex: whatsapp:+14155238886)
- *    - COACH_WHATSAPP_NUMBER (ex: whatsapp:+258845243875)
+ *    - COACH_WHATSAPP_NUMBER (ex: whatsapp:+258851006473)
  */
 
-const COACH_PHONE = '+258845243875';
+const COACH_PHONE = '+258851006473';
 
 /**
  * Envia mensagem WhatsApp via Twilio

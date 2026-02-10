@@ -176,7 +176,7 @@ export default function PlanoHTML() {
         </div>
         <div style={{background:'#4A4035',padding:'28px 55px',display:'flex',justifyContent:'space-between'}}>
           <div style={{color:'rgba(255,255,255,0.95)',fontSize:'12px'}}><div style={{fontWeight:'600',marginBottom:'3px'}}>Vivianne Saraiva</div><div style={{opacity:0.85}}>Precision Nutrition Level 1 Coach</div></div>
-          <div style={{color:'rgba(255,255,255,0.95)',fontSize:'12px',textAlign:'right'}}><div style={{marginBottom:'3px'}}>vivianne.saraiva@outlook.com</div><div style={{opacity:0.85}}>WhatsApp: +258 84 524 3875</div></div>
+          <div style={{color:'rgba(255,255,255,0.95)',fontSize:'12px',textAlign:'right'}}><div style={{marginBottom:'3px'}}>vivianne.saraiva@outlook.com</div><div style={{opacity:0.85}}>WhatsApp: +258 85 100 6473</div></div>
         </div>
       </div>
 
@@ -310,7 +310,7 @@ export default function PlanoHTML() {
         </div>
         <div style={{background:'#4A4035',padding:'28px 55px',display:'flex',justifyContent:'space-between'}}>
           <div style={{color:'rgba(255,255,255,0.95)',fontSize:'12px'}}><div style={{fontWeight:'600',marginBottom:'3px'}}>Vivianne Saraiva</div><div style={{opacity:0.85}}>Precision Nutrition Level 1 Coach</div></div>
-          <div style={{color:'rgba(255,255,255,0.95)',fontSize:'12px',textAlign:'right'}}><div style={{marginBottom:'3px'}}>vivianne.saraiva@outlook.com</div><div style={{opacity:0.85}}>WhatsApp: +258 84 524 3875</div></div>
+          <div style={{color:'rgba(255,255,255,0.95)',fontSize:'12px',textAlign:'right'}}><div style={{marginBottom:'3px'}}>vivianne.saraiva@outlook.com</div><div style={{opacity:0.85}}>WhatsApp: +258 85 100 6473</div></div>
         </div>
       </div>
     </>

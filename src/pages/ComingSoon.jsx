@@ -200,7 +200,7 @@ export default function ComingSoon() {
           Queres ser notificada quando {info.nome} estiver disponível?
         </p>
         <a
-          href={`https://wa.me/258849305066?text=Olá! Quero ser notificada quando o eco ${info.nome} estiver disponível.`}
+          href={`https://wa.me/258851006473?text=Olá! Quero ser notificada quando o eco ${info.nome} estiver disponível.`}
           target="_blank"
           rel="noopener noreferrer"
           style={{

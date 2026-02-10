@@ -25,7 +25,7 @@ export default async function handler(req, res) {
   }
 
   const CALLMEBOT_API_KEY = process.env.CALLMEBOT_API_KEY;
-  const CALLMEBOT_PHONE = process.env.CALLMEBOT_PHONE || '258845243875';
+  const CALLMEBOT_PHONE = process.env.CALLMEBOT_PHONE || '258851006473';
 
   if (!CALLMEBOT_API_KEY) {
     console.warn('CALLMEBOT_API_KEY não configurada - WhatsApp desactivado');

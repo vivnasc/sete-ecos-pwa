@@ -583,7 +583,7 @@ const LandingGeral = () => {
               </p>
 
               <a
-                href="https://wa.me/258845243875?text=Olá%20Vivianne%2C%20vim%20do%20Sete%20Ecos%20e%20gostaria%20de%20saber%20mais."
+                href="https://wa.me/258851006473?text=Olá%20Vivianne%2C%20vim%20do%20Sete%20Ecos%20e%20gostaria%20de%20saber%20mais."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-[#25D366] text-white rounded-full font-semibold hover:bg-[#20BD5A] transition-all"
@@ -640,7 +640,7 @@ const LandingGeral = () => {
 
       {/* WhatsApp Flutuante */}
       <a
-        href="https://wa.me/258845243875?text=Olá%20Vivianne%2C%20vim%20do%20Sete%20Ecos%20e%20gostaria%20de%20saber%20mais."
+        href="https://wa.me/258851006473?text=Olá%20Vivianne%2C%20vim%20do%20Sete%20Ecos%20e%20gostaria%20de%20saber%20mais."
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center text-white text-2xl shadow-lg hover:scale-110 transition-transform z-50"
@@ -671,7 +671,7 @@ const LandingGeral = () => {
                 <a href="https://instagram.com/viv_saraiva" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-white transition-colors text-sm">
                   Instagram
                 </a>
-                <a href="https://wa.me/258845243875" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-white transition-colors text-sm">
+                <a href="https://wa.me/258851006473" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-white transition-colors text-sm">
                   WhatsApp
                 </a>
               </div>
