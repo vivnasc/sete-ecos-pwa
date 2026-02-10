@@ -94,25 +94,21 @@ export default async function handler(req, res) {
       return parseFloat((peso / (alturaM * alturaM)).toFixed(1));
     };
 
-    // 4. LIMPAR dados antigos
-    console.log('🧹 Limpando dados antigos...');
+    // 4. Desativar planos antigos (NÃO apagar — preservar histórico)
+    console.log('🧹 Desativando planos antigos...');
 
     await supabase
       .from('vitalis_meal_plans')
-      .delete()
-      .eq('user_id', userId);
+      .update({ status: 'inactivo' })
+      .eq('user_id', userId)
+      .eq('status', 'activo');
 
-    await supabase
-      .from('vitalis_clients')
-      .delete()
-      .eq('user_id', userId);
+    console.log('✅ Planos antigos desativados');
 
-    console.log('✅ Dados antigos removidos');
-
-    // 5. Criar vitalis_clients LIMPO
+    // 5. Atualizar vitalis_clients (UPSERT — preserva subscription_status)
     const { error: clientError } = await supabase
       .from('vitalis_clients')
-      .insert({
+      .upsert({
         user_id: userId,
         status: 'activo',
         pacote: 'essencial',
@@ -127,14 +123,14 @@ export default async function handler(req, res) {
         imc_actual: calcularIMC(peso, altura),
         emocao_dominante: intake.emocao_dominante || 'ansiedade',
         prontidao_1a10: parseInt(intake.prontidao_1a10) || 5
-      });
+      }, { onConflict: 'user_id' });
 
     if (clientError) {
-      console.error('❌ Erro ao criar cliente:', clientError);
+      console.error('❌ Erro ao criar/atualizar cliente:', clientError);
       throw clientError;
     }
 
-    console.log('✅ Cliente criado');
+    console.log('✅ Cliente criado/atualizado');
 
     // 6. Criar plano
     const { data: plano, error: planoError } = await supabase
