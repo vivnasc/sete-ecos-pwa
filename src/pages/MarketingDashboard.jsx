@@ -67,6 +67,219 @@ function AutoImage({ template, eco, formato, texto, subtitulo, slideNum, totalSl
 }
 
 // ============================================================
+// MOCKUP SLIDE - Imagem composta: mockup + texto sobreposto
+// Gera slides de carrossel PRONTOS a publicar no Instagram
+// ============================================================
+
+function MockupSlide({ mockupSrc, texto, subtitulo, slideLabel, isCover, slideNum, totalSlides, filename, size }) {
+  const [dataUrl, setDataUrl] = useState(null);
+  const canvasSize = size || 1080;
+
+  useEffect(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvasSize;
+    canvas.height = canvasSize;
+    const ctx = canvas.getContext('2d');
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      // Background gradient
+      const grad = ctx.createLinearGradient(0, 0, canvasSize, canvasSize);
+      if (isCover) {
+        grad.addColorStop(0, '#1a1a2e');
+        grad.addColorStop(0.5, '#16213e');
+        grad.addColorStop(1, '#0f3460');
+      } else {
+        grad.addColorStop(0, '#2d3436');
+        grad.addColorStop(1, '#1a1a2e');
+      }
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvasSize, canvasSize);
+
+      // Draw mockup image
+      const mockupW = canvasSize * 0.55;
+      const aspectRatio = img.height / img.width;
+      const mockupH = mockupW * aspectRatio;
+      const maxMockupH = canvasSize * 0.55;
+      const finalH = Math.min(mockupH, maxMockupH);
+      const finalW = finalH / aspectRatio;
+      const mockupX = canvasSize - finalW - 40;
+      const mockupY = canvasSize - finalH - 20;
+
+      // Mockup shadow
+      ctx.shadowColor = 'rgba(0,0,0,0.4)';
+      ctx.shadowBlur = 30;
+      ctx.shadowOffsetX = 10;
+      ctx.shadowOffsetY = 10;
+
+      // Rounded corners for mockup
+      const r = 16;
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(mockupX, mockupY, finalW, finalH, r);
+      ctx.clip();
+      ctx.drawImage(img, mockupX, mockupY, finalW, finalH);
+      ctx.restore();
+
+      // Reset shadow
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+
+      // Slide number badge
+      if (slideNum && totalSlides) {
+        ctx.fillStyle = 'rgba(255,255,255,0.15)';
+        ctx.beginPath();
+        ctx.roundRect(40, 40, 80, 36, 18);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 16px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${slideNum}/${totalSlides}`, 80, 64);
+      }
+
+      // Text area (left side, top)
+      const textX = 50;
+      const maxTextW = canvasSize * 0.58;
+      let textY = slideNum ? 110 : 80;
+
+      // Main text
+      ctx.textAlign = 'left';
+      if (isCover) {
+        // Cover: bigger text
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 52px -apple-system, BlinkMacSystemFont, sans-serif';
+        const lines = wrapText(ctx, texto, maxTextW);
+        lines.forEach(line => {
+          ctx.fillText(line, textX, textY);
+          textY += 64;
+        });
+      } else {
+        // Content slide
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 40px -apple-system, BlinkMacSystemFont, sans-serif';
+        const lines = wrapText(ctx, texto, maxTextW);
+        lines.forEach(line => {
+          ctx.fillText(line, textX, textY);
+          textY += 50;
+        });
+      }
+
+      // Subtitle
+      if (subtitulo) {
+        textY += 16;
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.font = '24px -apple-system, BlinkMacSystemFont, sans-serif';
+        const subLines = wrapText(ctx, subtitulo, maxTextW);
+        subLines.forEach(line => {
+          ctx.fillText(line, textX, textY);
+          textY += 32;
+        });
+      }
+
+      // Brand watermark
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('@seteecos', 50, canvasSize - 30);
+
+      // Swipe indicator on cover
+      if (isCover) {
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.font = '20px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText('Desliza →', canvasSize - 50, canvasSize - 30);
+      }
+
+      // VITALIS accent line
+      ctx.fillStyle = '#7C8B6F';
+      ctx.fillRect(textX, textY + 10, 60, 4);
+
+      setDataUrl(canvas.toDataURL('image/jpeg', 0.92));
+    };
+    img.onerror = () => {
+      // Fallback: text-only slide
+      const grad = ctx.createLinearGradient(0, 0, canvasSize, canvasSize);
+      grad.addColorStop(0, '#1a1a2e');
+      grad.addColorStop(1, '#0f3460');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvasSize, canvasSize);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 48px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.textAlign = 'center';
+      const lines = wrapText(ctx, texto, canvasSize * 0.8);
+      let y = canvasSize / 2 - (lines.length * 58) / 2;
+      lines.forEach(line => { ctx.fillText(line, canvasSize / 2, y); y += 58; });
+
+      if (subtitulo) {
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.font = '28px -apple-system, BlinkMacSystemFont, sans-serif';
+        const subLines = wrapText(ctx, subtitulo, canvasSize * 0.75);
+        y += 20;
+        subLines.forEach(line => { ctx.fillText(line, canvasSize / 2, y); y += 36; });
+      }
+
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.fillText('@seteecos', canvasSize / 2, canvasSize - 30);
+
+      setDataUrl(canvas.toDataURL('image/jpeg', 0.92));
+    };
+    img.src = mockupSrc;
+  }, [mockupSrc, texto, subtitulo, isCover, slideNum, totalSlides, canvasSize]);
+
+  const download = () => {
+    if (!dataUrl) return;
+    const a = document.createElement('a');
+    a.download = filename || `slide-${slideNum || 1}.jpg`;
+    a.href = dataUrl;
+    a.click();
+  };
+
+  const displayW = 280;
+  const displayH = 280;
+
+  if (!dataUrl) {
+    return <div style={{ width: displayW, height: displayH }} className="bg-gray-200 rounded-xl animate-pulse shrink-0" />;
+  }
+
+  return (
+    <div className="relative group shrink-0">
+      <img src={dataUrl} style={{ width: displayW, height: displayH }} className="rounded-xl shadow-md object-cover" alt={texto} />
+      <button onClick={download} className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-[10px] font-bold text-[#4A4035] shadow opacity-0 group-hover:opacity-100 transition-opacity">
+        ⬇ JPG
+      </button>
+      {slideLabel && (
+        <div className="absolute top-2 left-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full">
+          {slideLabel}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Utility: wrap text to fit canvas width
+function wrapText(ctx, text, maxWidth) {
+  const words = text.split(' ');
+  const lines = [];
+  let currentLine = '';
+  for (const word of words) {
+    const test = currentLine ? `${currentLine} ${word}` : word;
+    if (ctx.measureText(test).width > maxWidth && currentLine) {
+      lines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = test;
+    }
+  }
+  if (currentLine) lines.push(currentLine);
+  return lines;
+}
+
+// ============================================================
 // MAIN DASHBOARD
 // ============================================================
 
@@ -250,46 +463,49 @@ function VitalisTab({ copiar, copiado }) {
                 {/* Expanded content */}
                 {aberto && (
                   <div className="border-t border-[#E8E2D9] p-4 space-y-4">
-                    {/* Images */}
+                    {/* Images - compostas para carrosséis, simples para feed/reel */}
                     <div>
                       <p className="text-xs font-bold text-[#6B5C4C] mb-2">
-                        {c.tipo === 'carrossel' ? `📸 Imagens (${c.imagens.length} slides)` : '📸 Imagem'}
+                        {c.tipo === 'carrossel'
+                          ? `📸 Slides prontos a publicar (${c.slides.length})`
+                          : '📸 Imagem'}
                       </p>
-                      <div className="flex gap-2 overflow-x-auto pb-2">
-                        {c.imagens.map((img, j) => (
-                          <div key={j} className="relative group shrink-0">
-                            <img src={img} alt="" className="h-48 rounded-lg object-cover shadow-md" />
-                            <a
-                              href={img}
-                              download
-                              className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-[10px] font-bold text-[#4A4035] shadow opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                              ⬇ Descarregar
-                            </a>
-                            {c.slides && c.slides[j] && (
-                              <div className="absolute top-2 left-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full">
-                                {j === 0 ? 'Capa' : `Slide ${j}`}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
 
-                    {/* Carousel slides text */}
-                    {c.slides && (
-                      <div>
-                        <p className="text-xs font-bold text-[#6B5C4C] mb-2">📝 Texto dos slides</p>
-                        <div className="space-y-1">
+                      {c.tipo === 'carrossel' && c.slides ? (
+                        /* Carrossel: slides compostos com mockup + texto */
+                        <div className="flex gap-3 overflow-x-auto pb-2">
                           {c.slides.map((s, j) => (
-                            <div key={j} className="bg-[#FAFAF8] rounded-lg p-2">
-                              <p className="text-[11px] font-bold text-[#4A4035]">{j === 0 ? '🎯 Capa' : `Slide ${j}`}: {s.texto}</p>
-                              {s.subtitulo && <p className="text-[10px] text-[#A09888]">{s.subtitulo}</p>}
+                            <MockupSlide
+                              key={j}
+                              mockupSrc={c.imagens[j] || c.imagens[j % c.imagens.length]}
+                              texto={s.texto}
+                              subtitulo={s.subtitulo}
+                              isCover={j === 0}
+                              slideNum={j + 1}
+                              totalSlides={c.slides.length}
+                              slideLabel={j === 0 ? 'Capa' : `Slide ${j}`}
+                              filename={`${c.titulo.replace(/\s+/g, '-').toLowerCase()}-slide-${j + 1}.jpg`}
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        /* Feed/Reel: imagem mockup original */
+                        <div className="flex gap-2 overflow-x-auto pb-2">
+                          {c.imagens.map((img, j) => (
+                            <div key={j} className="relative group shrink-0">
+                              <img src={img} alt="" className="h-48 rounded-lg object-cover shadow-md" />
+                              <a
+                                href={img}
+                                download
+                                className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-[10px] font-bold text-[#4A4035] shadow opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                ⬇ Descarregar
+                              </a>
                             </div>
                           ))}
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
 
                     {/* Reel script */}
                     {c.roteiro && (
