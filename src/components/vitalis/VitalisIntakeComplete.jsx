@@ -3,7 +3,6 @@ import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { setSexo } from '../../utils/genero';
 import { setObservaRamadao } from '../../utils/ramadao';
-import { gerarPlanoAutomatico } from '../../lib/vitalis/planoGenerator';
 
 export default function VitalisIntakeComplete() {
   const navigate = useNavigate();
@@ -444,24 +443,6 @@ try {
         .eq('user_id', userData.id)
         .maybeSingle();
 
-      // Função auxiliar para calcular IMC
-      function calcularIMC(peso, altura) {
-        const alturaM = altura / 100;
-        return parseFloat((peso / (alturaM * alturaM)).toFixed(1));
-      }
-
-      // Função para converter prazo do formulário para formato do DB
-      function converterPrazoParaDB(prazo) {
-        const mapeamento = {
-          '3m': '3_meses',
-          '6m': '6_meses',
-          '9m': '9_meses',
-          '12m': '12_meses',
-          'sem_pressa': 'sem_pressa'
-        };
-        return mapeamento[prazo] || '6_meses'; // Default: 6 meses
-      }
-
       const clientData = {
         user_id: userData.id,
         objectivo_principal: formData.objectivo_principal,
@@ -470,14 +451,7 @@ try {
         peso_meta: parseFloat(formData.peso_meta),
         emocao_dominante: formData.emocao_dominante,
         prontidao_1a10: parseInt(formData.prontidao_1a10),
-        status: 'novo',
-        // Campos adicionais necessários para RPC vitalis_plano_do_dia
-        fase_actual: 'inducao',
-        data_inicio: new Date().toISOString().split('T')[0],
-        pacote: 'essencial',
-        duracao_programa: converterPrazoParaDB(formData.prazo || '6m'),
-        imc_inicial: calcularIMC(parseFloat(formData.peso_actual), parseInt(formData.altura_cm)),
-        imc_actual: calcularIMC(parseFloat(formData.peso_actual), parseInt(formData.altura_cm))
+        status: 'novo'
       };
 
       if (existingClient) {
@@ -517,24 +491,6 @@ try {
       const temAcesso = currentClient && statusComAcesso.includes(currentClient.subscription_status);
 
       console.log('Intake complete - subscription_status:', currentClient?.subscription_status, 'temAcesso:', temAcesso);
-
-      // 🎯 GERAR PLANO NUTRICIONAL AUTOMATICAMENTE
-      console.log('=== INICIANDO GERAÇÃO DE PLANO ===');
-      console.log('User ID:', userData.id);
-
-      const planoResult = await gerarPlanoAutomatico(userData.id);
-
-      console.log('=== RESULTADO DA GERAÇÃO ===');
-      console.log('Success:', planoResult.success);
-
-      if (!planoResult.success) {
-        console.error('❌ ERRO AO GERAR PLANO:', planoResult.error);
-        // Não bloquear - plano pode ser gerado depois
-      } else {
-        console.log('✅ PLANO GERADO COM SUCESSO!');
-        console.log('Calorias:', planoResult.plano?.calorias);
-        console.log('Macros:', planoResult.plano?.macros);
-      }
 
       // Guardar preferências para personalizar textos na app
       setSexo(formData.sexo);

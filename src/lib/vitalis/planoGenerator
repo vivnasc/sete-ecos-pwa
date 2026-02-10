@@ -131,27 +131,15 @@ export async function gerarPlanoAutomatico(userId) {
     // 11. Determinar fase inicial
     const faseInicial = 'inducao';
 
-    // 12. Função para converter prazo do formulário para formato do DB
-    function converterPrazoParaDB(prazo) {
-      const mapeamento = {
-        '3m': '3_meses',
-        '6m': '6_meses',
-        '9m': '9_meses',
-        '12m': '12_meses',
-        'sem_pressa': 'sem_pressa'
-      };
-      return mapeamento[prazo] || '6_meses'; // Default: 6 meses
-    }
-
-    // 13. Criar/Atualizar registo em vitalis_clients com UPSERT
+    // 12. Criar registo em vitalis_clients
     const { error: clientError } = await supabase
       .from('vitalis_clients')
-      .upsert({
+      .insert([{
         user_id: userId,
         status: 'activo',
         pacote: intake.pacote_escolhido || 'essencial',
         data_inicio: new Date().toISOString().split('T')[0],
-        duracao_programa: converterPrazoParaDB(intake.prazo || intake.duracao || '6m'),
+        duracao_programa: intake.duracao || '6_meses',
         fase_actual: faseInicial,
         objectivo_principal: intake.objectivo_principal,
         peso_inicial: intake.peso_actual,
@@ -161,19 +149,11 @@ export async function gerarPlanoAutomatico(userId) {
         imc_actual: calcularIMC(intake.peso_actual, altura),
         emocao_dominante: intake.emocao_dominante,
         prontidao_1a10: intake.prontidao_1a10
-      })
-      .select();
+      }]);
 
     if (clientError) throw clientError;
 
-    // 14. DESATIVAR planos antigos ANTES de criar novo (evita múltiplos ativos)
-    await supabase
-      .from('vitalis_meal_plans')
-      .update({ status: 'inactivo' })
-      .eq('user_id', userId)
-      .eq('status', 'activo');
-
-    // 15. Criar plano nutricional em vitalis_meal_plans
+    // 13. Criar plano nutricional em vitalis_meal_plans
     const { data: plano, error: planoError } = await supabase
       .from('vitalis_meal_plans')
       .insert([{
