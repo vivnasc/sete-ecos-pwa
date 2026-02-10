@@ -512,7 +512,7 @@ export default function Lumina() {
 
         const { data, error } = await supabase
           .from('users')
-          .upsert(profileData, { onConflict: 'auth_id' })
+          .upsert(profileData)
           .select()
           .single();
 

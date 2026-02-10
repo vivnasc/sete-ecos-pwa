@@ -25,7 +25,7 @@ export default function Auth() {
             auth_id: data.user.id,
             email: data.user.email,
             created_at: new Date().toISOString()
-          }, { onConflict: 'auth_id' })
+          }).select()
         }
       } else {
         const { data, error } = await supabase.auth.signUp({ email, password })
@@ -37,7 +37,7 @@ export default function Auth() {
             auth_id: data.user.id,
             email: data.user.email,
             created_at: new Date().toISOString()
-          }, { onConflict: 'auth_id' })
+          }).select()
         }
 
         setMessage('Conta criada! Podes entrar agora.')
