@@ -30,6 +30,12 @@
     },
     "api/trial-expiring-emails.js": {
       "maxDuration": 30
+    },
+    "api/instagram-publish.js": {
+      "maxDuration": 60
+    },
+    "api/instagram-schedule.js": {
+      "maxDuration": 60
     }
   },
   "crons": [
@@ -44,6 +50,10 @@
     {
       "path": "/api/email-sequencia",
       "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/instagram-schedule",
+      "schedule": "*/15 * * * *"
     }
   ]
 }
