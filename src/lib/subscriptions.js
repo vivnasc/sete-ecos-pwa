@@ -421,6 +421,7 @@ export const activateSubscription = async (userId, paymentDetails) => {
         .from('vitalis_clients')
         .insert({
           user_id: userId,
+          status: 'activo',
           ...subscriptionData,
           created_at: new Date().toISOString()
         });
@@ -492,6 +493,7 @@ export const registerPendingPayment = async (userId, paymentDetails) => {
         .from('vitalis_clients')
         .insert({
           user_id: userId,
+          status: 'activo',
           subscription_status: SUBSCRIPTION_STATUS.PENDING,
           subscription_plan: plan.id,
           payment_method: paymentDetails.method,
@@ -635,7 +637,7 @@ const activatePromo = async (userId, code, notes = '') => {
     } else {
       const { error } = await supabase
         .from('vitalis_clients')
-        .insert({ user_id: userId, ...promoData });
+        .insert({ user_id: userId, status: 'activo', ...promoData });
       if (error) throw error;
     }
 

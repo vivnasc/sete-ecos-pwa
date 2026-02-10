@@ -51,11 +51,12 @@ const VitalisAccessGuard = ({ children }) => {
         }
 
         if (coachUser) {
-          // Garantir que coach tem registo vitalis_clients com status tester
+          // Garantir que coach tem registo vitalis_clients com status activo + tester
           const { error: clientError } = await supabase
             .from('vitalis_clients')
             .upsert({
               user_id: coachUser.id,
+              status: 'activo',
               subscription_status: 'tester'
             }, { onConflict: 'user_id' });
 
