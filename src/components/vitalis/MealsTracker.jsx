@@ -419,14 +419,27 @@ export default function MealsTracker() {
           })}
         </div>
 
+        {/* Método da Mão - mini referência */}
+        <div className="mt-6 bg-gradient-to-r from-[#7C8B6F] to-[#5A6B4D] rounded-2xl p-4 text-white">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xl">🤚</span>
+            <span className="font-bold text-sm">A tua mão é a medida</span>
+          </div>
+          <div className="grid grid-cols-4 gap-2 text-center text-[10px]">
+            <div><span className="text-lg">🫲</span><br/><span className="font-semibold">Palma</span><br/>Proteína</div>
+            <div><span className="text-lg">✊</span><br/><span className="font-semibold">Punho</span><br/>Legumes</div>
+            <div><span className="text-lg">🤲</span><br/><span className="font-semibold">Concha</span><br/>Hidratos</div>
+            <div><span className="text-lg">👍</span><br/><span className="font-semibold">Polegar</span><br/>Gordura</div>
+          </div>
+        </div>
+
         {/* Dica */}
-        <div className="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+        <div className="mt-3 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
           <div className="flex gap-3">
             <span className="text-2xl">💡</span>
             <div>
-              <p className="font-semibold text-blue-900 mb-1">Dica:</p>
               <p className="text-blue-800 text-sm">
-                Clica nos botões ✓ ~ ✕ para registo rápido, ou expande (▼) para adicionar detalhes de porções.
+                Clica ✓ ~ ✕ para registo rápido, ou expande (▼) para selecionar alimentos e ver as porções.
               </p>
             </div>
           </div>
@@ -480,10 +493,10 @@ const ALIMENTOS_COMUNS = {
 };
 
 const CATEGORIAS = [
-  { key: 'proteina', label: 'Proteína', emoji: '🫲', medida: 'palmas', cor: 'rose' },
-  { key: 'hidratos', label: 'Hidratos', emoji: '🤲', medida: 'mãos', cor: 'amber' },
-  { key: 'gordura', label: 'Gordura', emoji: '👍', medida: 'polegares', cor: 'yellow' },
-  { key: 'legumes', label: 'Legumes', emoji: '✊', medida: 'punhos', cor: 'green' },
+  { key: 'proteina', label: 'Proteína', emoji: '🫲', medida: 'palma', medidaPlural: 'palmas', corFundo: 'bg-rose-50', corBorda: 'border-rose-300', corTexto: 'text-rose-700' },
+  { key: 'hidratos', label: 'Hidratos', emoji: '🤲', medida: 'mão', medidaPlural: 'mãos', corFundo: 'bg-amber-50', corBorda: 'border-amber-300', corTexto: 'text-amber-700' },
+  { key: 'gordura', label: 'Gordura', emoji: '👍', medida: 'polegar', medidaPlural: 'polegares', corFundo: 'bg-purple-50', corBorda: 'border-purple-300', corTexto: 'text-purple-700' },
+  { key: 'legumes', label: 'Legumes', emoji: '✊', medida: 'punho', medidaPlural: 'punhos', corFundo: 'bg-green-50', corBorda: 'border-green-300', corTexto: 'text-green-700' },
 ];
 
 // Componente de Detalhe
@@ -582,33 +595,44 @@ function DetalheRefeicao({ refeicao, registo, plano, numRefeicoes, onSave, savin
         </div>
       )}
 
-      {/* Seleção rápida de alimentos por categoria */}
+      {/* Seleção rápida de alimentos por categoria — hand-centric */}
       <div className="mb-4">
         <label className="block text-xs font-semibold text-gray-600 mb-2">
-          Adicionar alimentos:
+          O que comeste? Toca no gesto da mão:
         </label>
-        <div className="grid grid-cols-4 gap-1.5 mb-2">
+        <div className="grid grid-cols-4 gap-2 mb-2">
           {CATEGORIAS.map(cat => {
             const valor = parseFloat(detalhes[`porcoes_${cat.key}`] || 0);
             const excesso = verificarExcesso(cat.key);
+            const isActive = categoriaAberta === cat.key;
             return (
               <button
                 key={cat.key}
-                onClick={() => setCategoriaAberta(categoriaAberta === cat.key ? null : cat.key)}
-                className={`p-2 rounded-lg border-2 text-center transition-all ${
-                  categoriaAberta === cat.key
-                    ? 'border-[#7C8B6F] bg-[#7C8B6F]/10'
-                    : excesso ? 'border-orange-400 bg-orange-50' : 'border-gray-200 bg-white'
+                onClick={() => setCategoriaAberta(isActive ? null : cat.key)}
+                className={`relative rounded-xl border-2 text-center transition-all overflow-hidden ${
+                  isActive
+                    ? `${cat.corBorda} ${cat.corFundo} shadow-md scale-[1.03]`
+                    : excesso ? 'border-orange-400 bg-orange-50' : 'border-gray-200 bg-white hover:border-gray-300'
                 }`}
               >
-                <div className="text-lg">{cat.emoji}</div>
-                <div className="text-xs font-medium text-gray-700">{cat.label}</div>
-                <div className={`text-sm font-bold ${excesso ? 'text-orange-600' : 'text-gray-800'}`}>
-                  {valor}
-                  {alvoPorRefeicao && (
-                    <span className="text-gray-400 font-normal">/{alvoPorRefeicao[cat.key]}</span>
-                  )}
+                <div className="py-2 px-1">
+                  <div className="text-2xl leading-none">{cat.emoji}</div>
+                  <div className={`text-[10px] font-bold mt-1 ${isActive ? cat.corTexto : 'text-gray-600'}`}>
+                    {cat.label}
+                  </div>
+                  <div className={`text-lg font-bold ${excesso ? 'text-orange-600' : 'text-gray-800'}`}>
+                    {valor}
+                    {alvoPorRefeicao && (
+                      <span className="text-gray-400 font-normal text-xs">/{alvoPorRefeicao[cat.key]}</span>
+                    )}
+                  </div>
+                  <div className="text-[9px] text-gray-400">
+                    {valor === 1 ? cat.medida : cat.medidaPlural}
+                  </div>
                 </div>
+                {isActive && (
+                  <div className={`h-1 ${cat.corBorda.replace('border', 'bg')}`} />
+                )}
               </button>
             );
           })}
@@ -620,40 +644,47 @@ function DetalheRefeicao({ refeicao, registo, plano, numRefeicoes, onSave, savin
           if (!excesso) return null;
           return (
             <div key={`alerta-${cat.key}`} className="flex items-center gap-2 px-3 py-1.5 mb-1 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-700">
-              <span>⚠️</span>
-              <span><strong>{cat.label}</strong>: +{excesso.excesso} {cat.medida} acima do alvo ({excesso.alvo} por refeição)</span>
+              <span>{cat.emoji}</span>
+              <span><strong>{cat.label}</strong>: +{excesso.excesso} {excesso.excesso === 1 ? cat.medida : cat.medidaPlural} acima do alvo desta refeição ({excesso.alvo})</span>
             </div>
           );
         })}
 
         {/* Lista de alimentos da categoria aberta */}
-        {categoriaAberta && (
-          <div className="bg-white border-2 border-[#7C8B6F]/30 rounded-xl p-3 mt-2">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-gray-600">
-                {CATEGORIAS.find(c => c.key === categoriaAberta)?.emoji}{' '}
-                {CATEGORIAS.find(c => c.key === categoriaAberta)?.label} — toca para adicionar:
-              </span>
-              <button
-                onClick={() => setCategoriaAberta(null)}
-                className="text-gray-400 hover:text-gray-600 text-sm"
-              >✕</button>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {ALIMENTOS_COMUNS[categoriaAberta].map((alimento, i) => (
+        {categoriaAberta && (() => {
+          const cat = CATEGORIAS.find(c => c.key === categoriaAberta);
+          return (
+            <div className={`${cat.corFundo} border-2 ${cat.corBorda} rounded-xl p-3 mt-2`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">{cat.emoji}</span>
+                  <span className={`text-xs font-bold ${cat.corTexto}`}>
+                    Cada item = porções em {cat.medidaPlural}. Toca para adicionar:
+                  </span>
+                </div>
                 <button
-                  key={i}
-                  onClick={() => adicionarAlimento(categoriaAberta, alimento)}
-                  className="flex items-center gap-1 px-2.5 py-1.5 bg-gray-50 hover:bg-[#7C8B6F]/10 border border-gray-200 hover:border-[#7C8B6F]/40 rounded-full text-xs transition-all"
-                >
-                  <span>{alimento.icon}</span>
-                  <span className="text-gray-700">{alimento.nome}</span>
-                  <span className="text-gray-400 text-[10px]">+{alimento.porcao}</span>
-                </button>
-              ))}
+                  onClick={() => setCategoriaAberta(null)}
+                  className="text-gray-400 hover:text-gray-600 text-sm px-1"
+                >✕</button>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {ALIMENTOS_COMUNS[categoriaAberta].map((alimento, i) => (
+                  <button
+                    key={i}
+                    onClick={() => adicionarAlimento(categoriaAberta, alimento)}
+                    className={`flex items-center gap-1.5 px-3 py-2 bg-white hover:shadow-md border ${cat.corBorda.replace('-300', '-200')} hover:${cat.corBorda} rounded-full text-xs transition-all active:scale-95`}
+                  >
+                    <span className="text-base">{alimento.icon}</span>
+                    <span className="text-gray-800 font-medium">{alimento.nome}</span>
+                    <span className={`${cat.corTexto} font-bold text-[10px] bg-white rounded-full px-1.5 py-0.5 border ${cat.corBorda.replace('-300', '-200')}`}>
+                      +{alimento.porcao}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
 
       {/* Ajuste manual de porções */}
