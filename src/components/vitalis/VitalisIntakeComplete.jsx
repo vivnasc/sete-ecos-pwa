@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { setSexo } from '../../utils/genero';
 import { setObservaRamadao } from '../../utils/ramadao';
+import { gerarPlanoAutomatico } from '../../lib/vitalis/planoGenerator';
 
 export default function VitalisIntakeComplete() {
   const navigate = useNavigate();
@@ -497,7 +498,17 @@ try {
       setObservaRamadao(formData.observa_ramadao);
 
       if (temAcesso) {
-        // Já tem acesso - ir para dashboard
+        // GERAR PLANO AUTOMATICAMENTE
+        console.log('🔄 A gerar plano automático...');
+        try {
+          await gerarPlanoAutomatico(userData.id);
+          console.log('✅ PLANO GERADO COM SUCESSO!');
+        } catch (planoError) {
+          console.error('⚠️ Erro ao gerar plano:', planoError);
+          // Não bloquear - deixar utilizador continuar
+        }
+
+        // Ir para dashboard
         navigate('/vitalis/dashboard');
       } else {
         // Não tem acesso - ir para pagamento
