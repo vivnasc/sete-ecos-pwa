@@ -9,6 +9,7 @@ import { isCoach } from '../../lib/coach';
 import { g, setSexo } from '../../utils/genero';
 import { isNearRamadan, setObservaRamadao, observaRamadao } from '../../utils/ramadao';
 import { useTheme } from '../../contexts/ThemeContext';
+import { temPermissao, activarLembretes, pedirPermissao, contarLembretesHoje } from '../../utils/notifications';
 import QuickTrackers from './QuickTrackers';
 import FastingTimerCard from './FastingTimerCard';
 import MealsSection from './MealsSection';
@@ -124,17 +125,25 @@ export default function DashboardVitalis() {
 
     // Verificar se já fechou o banner antes (durante 7 dias)
     const bannerFechado = localStorage.getItem('vitalis-pwa-banner-fechado');
+    const notifOff = !('Notification' in window) || Notification.permission !== 'granted';
     if (bannerFechado) {
       const dataFecho = new Date(bannerFechado);
       const agora = new Date();
       const diasPassados = (agora - dataFecho) / (1000 * 60 * 60 * 24);
-      if (diasPassados < 7) {
+      if (diasPassados < 7 && !notifOff) {
         setMostrarBannerPWA(false);
       } else {
-        setMostrarBannerPWA(!isStandalone);
+        // Show banner if not installed OR notifications not enabled
+        setMostrarBannerPWA(!isStandalone || notifOff);
       }
     } else {
-      setMostrarBannerPWA(!isStandalone);
+      setMostrarBannerPWA(!isStandalone || notifOff);
+    }
+
+    // CRITICAL: Activate saved notification reminders on every app open
+    if (temPermissao()) {
+      const count = activarLembretes();
+      console.log('Dashboard: lembretes re-activados', count?.length || 0);
     }
 
     // Capturar evento de instalação PWA
@@ -934,11 +943,12 @@ export default function DashboardVitalis() {
                 {!notificacoesAtivas && (
                   <button
                     onClick={async () => {
-                      const resultado = await solicitarPermissaoNotificacoes();
+                      const resultado = await pedirPermissao();
                       setNotificacoesAtivas(resultado);
                       if (resultado) {
-                        enviarNotificacao('Notificações ativadas! 🔔', {
-                          body: 'Vais receber alertas quando a janela alimentar abrir.'
+                        const timeouts = activarLembretes();
+                        enviarNotificacao('Notificações activadas!', {
+                          body: `${timeouts?.length || 0} lembretes agendados. Vais receber alertas de água, refeições e check-in!`
                         });
                       }
                     }}
@@ -1194,11 +1204,25 @@ export default function DashboardVitalis() {
                 ))}
               </div>
 
-              <div className="mt-3 pt-3 border-t border-[#E8E2D9] flex items-center justify-between">
-                <span className="text-xs text-[#6B5C4C]">Aderência</span>
-                <span className="text-sm font-bold text-[#7C8B6F]">
-                  {Math.round((ultimaSemana.filter(d => d.status === 'verde' || d.status === 'amarelo').length / 7) * 100)}%
-                </span>
+              <div className="mt-3 pt-3 border-t border-[#E8E2D9]">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-[#6B5C4C]">Aderência</span>
+                  <span className="text-sm font-bold text-[#7C8B6F]">
+                    {Math.round((ultimaSemana.filter(d => d.status === 'verde' || d.status === 'amarelo').length / 7) * 100)}%
+                  </span>
+                </div>
+                {/* Pattern insight */}
+                {(() => {
+                  const vermelhos = ultimaSemana.filter(d => d.status === 'vermelho');
+                  const vazios = ultimaSemana.filter(d => d.status === 'vazio' && !d.ehHoje);
+                  if (vazios.length >= 3) return <p className="text-xs text-amber-600">Faltam registos em {vazios.length} dias</p>;
+                  if (vermelhos.length >= 2) return <p className="text-xs text-red-500">{vermelhos.length} dias abaixo do ideal</p>;
+                  if (ultimaSemana.filter(d => d.status === 'verde').length >= 5) return <p className="text-xs text-green-600">Semana excelente! Mantém assim</p>;
+                  return null;
+                })()}
+                <Link to="/vitalis/relatorio-semanal" className="text-xs text-[#7C8B6F] hover:underline mt-1 block">
+                  Ver relatório detalhado →
+                </Link>
               </div>
             </div>
           </div>

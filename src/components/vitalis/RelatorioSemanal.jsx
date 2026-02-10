@@ -336,6 +336,135 @@ export default function RelatorioSemanal() {
           </p>
         </div>
 
+        {/* Adesão Dia-a-Dia */}
+        {(() => {
+          const DIAS_NOME = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+          const { meals, agua, registos } = dadosSemana;
+
+          // Build day-by-day data
+          const segunda = new Date(inicio + 'T00:00:00');
+          const diasData = DIAS_NOME.map((nome, i) => {
+            const dia = new Date(segunda);
+            dia.setDate(segunda.getDate() + i);
+            const dataStr = dia.toISOString().split('T')[0];
+
+            const mealsDay = meals.filter(m => m.data === dataStr);
+            const aguaDay = agua.filter(a => a.data === dataStr).reduce((sum, a) => sum + (a.quantidade_ml || 0), 0);
+            const registoDay = registos.find(r => r.data === dataStr);
+
+            const totalMeals = mealsDay.length;
+            const simCount = mealsDay.filter(m => m.seguiu_plano === 'sim').length;
+            const parcialCount = mealsDay.filter(m => m.seguiu_plano === 'parcial').length;
+            const mealScore = totalMeals > 0 ? Math.round(((simCount + parcialCount * 0.5) / totalMeals) * 100) : -1; // -1 = no data
+
+            const isToday = dia.toDateString() === new Date().toDateString();
+            const isPast = dia < new Date();
+
+            return { nome, data: dataStr, mealsDay, aguaDay, registoDay, mealScore, totalMeals, simCount, parcialCount, isToday, isPast };
+          });
+
+          const diasComDados = diasData.filter(d => d.totalMeals > 0);
+          const melhorDia = diasComDados.length > 0 ? diasComDados.reduce((best, d) => d.mealScore > best.mealScore ? d : best, diasComDados[0]) : null;
+          const piorDia = diasComDados.length > 0 ? diasComDados.reduce((worst, d) => d.mealScore < worst.mealScore && d.mealScore >= 0 ? d : worst, diasComDados[0]) : null;
+
+          // Per-meal-type breakdown
+          const mealTypes = {};
+          meals.forEach(m => {
+            const tipo = m.tipo_refeicao || m.tipo || 'outro';
+            if (!mealTypes[tipo]) mealTypes[tipo] = { total: 0, sim: 0, parcial: 0 };
+            mealTypes[tipo].total++;
+            if (m.seguiu_plano === 'sim') mealTypes[tipo].sim++;
+            if (m.seguiu_plano === 'parcial') mealTypes[tipo].parcial++;
+          });
+
+          return (
+            <div className="bg-white rounded-2xl shadow-lg p-5">
+              <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Adesão Dia-a-Dia</h3>
+
+              {/* 7-day bar chart */}
+              <div className="flex items-end justify-between gap-1.5 h-32 mb-4">
+                {diasData.map((d, i) => {
+                  const height = d.mealScore >= 0 ? Math.max(d.mealScore, 5) : 0;
+                  const color = d.mealScore >= 80 ? 'bg-green-500' : d.mealScore >= 50 ? 'bg-yellow-500' : d.mealScore >= 0 ? 'bg-red-400' : 'bg-gray-200';
+                  return (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                      {d.mealScore >= 0 && (
+                        <span className="text-xs font-bold text-gray-700">{d.mealScore}%</span>
+                      )}
+                      <div className="w-full flex flex-col justify-end" style={{ height: '80px' }}>
+                        <div
+                          className={`w-full rounded-t-lg transition-all ${color} ${d.isToday ? 'ring-2 ring-[#7C8B6F]' : ''}`}
+                          style={{ height: `${height}%` }}
+                        />
+                      </div>
+                      <span className={`text-xs font-medium ${d.isToday ? 'text-[#7C8B6F] font-bold' : 'text-gray-500'}`}>{d.nome}</span>
+                      <div className="flex gap-0.5">
+                        {d.totalMeals > 0 ? (
+                          d.mealsDay.map((m, mi) => (
+                            <span key={mi} className={`w-1.5 h-1.5 rounded-full ${
+                              m.seguiu_plano === 'sim' ? 'bg-green-400' : m.seguiu_plano === 'parcial' ? 'bg-yellow-400' : 'bg-red-400'
+                            }`} />
+                          ))
+                        ) : d.isPast ? (
+                          <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
+                        ) : null}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Pattern insights */}
+              {diasComDados.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {melhorDia && melhorDia.mealScore > 0 && (
+                    <span className="text-xs bg-green-50 text-green-700 px-2.5 py-1 rounded-full border border-green-200">
+                      Melhor dia: {melhorDia.nome} ({melhorDia.mealScore}%)
+                    </span>
+                  )}
+                  {piorDia && piorDia.mealScore < 100 && piorDia.nome !== melhorDia?.nome && (
+                    <span className="text-xs bg-red-50 text-red-700 px-2.5 py-1 rounded-full border border-red-200">
+                      A melhorar: {piorDia.nome} ({piorDia.mealScore}%)
+                    </span>
+                  )}
+                  {diasData.filter(d => d.aguaDay >= 2000).length > 0 && (
+                    <span className="text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full border border-blue-200">
+                      💧 {diasData.filter(d => d.aguaDay >= 2000).length}/7 dias com 2L+ água
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Per-meal-type adherence */}
+              {Object.keys(mealTypes).length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-gray-500 uppercase">Por tipo de refeição</p>
+                  {Object.entries(mealTypes).map(([tipo, data]) => {
+                    const pct = data.total > 0 ? Math.round(((data.sim + data.parcial * 0.5) / data.total) * 100) : 0;
+                    return (
+                      <div key={tipo} className="flex items-center gap-3">
+                        <span className="text-xs text-gray-600 w-20 truncate capitalize">{tipo.replace(/_/g, ' ')}</span>
+                        <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div className={`h-full rounded-full ${pct >= 80 ? 'bg-green-500' : pct >= 50 ? 'bg-yellow-500' : 'bg-red-400'}`} style={{ width: `${pct}%` }} />
+                        </div>
+                        <span className="text-xs font-bold text-gray-700 w-10 text-right">{pct}%</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Legend */}
+              <div className="flex items-center gap-4 mt-3 pt-3 border-t text-xs text-gray-500">
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-400"></span> Seguiu plano</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-yellow-400"></span> Parcial</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400"></span> Não seguiu</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gray-300"></span> Sem registo</span>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Peso */}
         <div className="bg-white rounded-2xl shadow-lg p-5">
           <div className="flex items-center justify-between mb-4">
