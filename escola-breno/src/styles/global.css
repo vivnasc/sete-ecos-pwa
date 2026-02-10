@@ -1,0 +1,1252 @@
+/* ============================================================
+   A ESCOLA DO BRENO — Global Styles
+   Design: Calmo, tablet-first, tipografia grande, previsivel
+   Sem estimulos excessivos. Sem pressao de tempo.
+   ============================================================ */
+
+/* ===== RESET & BASE ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Quicksand', system-ui, -apple-system, sans-serif;
+  background: #FAFAFA;
+  color: #2D3436;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input {
+  font-family: inherit;
+}
+
+/* ===== APP CONTAINER ===== */
+.breno-app {
+  min-height: 100vh;
+  background: #FAFAFA;
+  padding-bottom: 2rem;
+  user-select: none;
+}
+
+.breno-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ===== HEADER ===== */
+.breno-header {
+  text-align: center;
+  padding: 2rem 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0 0 2rem 2rem;
+  position: relative;
+}
+
+.breno-titulo-principal {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2D3436;
+  margin: 0.5rem 0 0.25rem;
+  line-height: 1.2;
+}
+
+.breno-subtitulo {
+  font-size: 1.15rem;
+  color: #636E72;
+  margin: 0;
+  font-weight: 500;
+}
+
+.breno-mundo-icone {
+  font-size: 3rem;
+  margin-bottom: 0.25rem;
+}
+
+.breno-voltar {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: white;
+  border: none;
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #636E72;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.15s;
+}
+
+.breno-voltar:active {
+  transform: scale(0.95);
+}
+
+.breno-estrelas-total {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: white;
+  padding: 0.4rem 1rem;
+  border-radius: 2rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2D3436;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-top: 0.5rem;
+}
+
+.breno-estrela-icone {
+  font-size: 1.4rem;
+}
+
+/* ===== DOMINIOS GRID ===== */
+.breno-dominios-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 0 0.5rem;
+}
+
+@media (max-width: 500px) {
+  .breno-dominios-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.breno-dominio-card {
+  background: white;
+  border: 3px solid var(--dominio-cor-claro);
+  border-radius: 1.5rem;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 160px;
+  justify-content: center;
+}
+
+.breno-dominio-card:active {
+  transform: scale(0.97);
+}
+
+.breno-dominio-card:not(.breno-dominio-inactivo):hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border-color: var(--dominio-cor);
+}
+
+.breno-dominio-inactivo {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.breno-dominio-icone {
+  font-size: 3rem;
+}
+
+.breno-dominio-nome {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2D3436;
+}
+
+.breno-dominio-descricao {
+  font-size: 1rem;
+  color: #636E72;
+  font-weight: 500;
+}
+
+.breno-dominio-progresso {
+  width: 80%;
+  height: 8px;
+  background: #F0F0F0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.breno-dominio-progresso-barra {
+  height: 100%;
+  background: var(--dominio-cor);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.breno-dominio-breve {
+  font-size: 0.85rem;
+  color: #B2BEC3;
+  font-weight: 600;
+  margin-top: 0.3rem;
+}
+
+/* ===== CAMADAS ===== */
+.breno-camadas {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.breno-camada {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 1.25rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+.breno-camada-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.breno-camada-numero {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.breno-camada-nome {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2D3436;
+  margin: 0;
+}
+
+.breno-camada-descricao {
+  font-size: 0.95rem;
+  color: #636E72;
+  margin: 0;
+}
+
+/* ===== ACTIVIDADES ===== */
+.breno-actividades {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.breno-actividade-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--dominio-cor-claro);
+  border: 2px solid transparent;
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+  text-align: left;
+}
+
+.breno-actividade-card:active {
+  transform: scale(0.98);
+}
+
+.breno-actividade-card:hover {
+  border-color: var(--dominio-cor);
+}
+
+.breno-actividade-info {
+  flex: 1;
+}
+
+.breno-actividade-nome {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #2D3436;
+}
+
+.breno-actividade-descricao {
+  font-size: 0.9rem;
+  color: #636E72;
+}
+
+.breno-actividade-progresso-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.breno-actividade-progresso {
+  width: 60px;
+  height: 6px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.breno-actividade-progresso-barra {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.breno-actividade-perc {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #636E72;
+  min-width: 2.5rem;
+  text-align: right;
+}
+
+/* ===== MODO TOGGLE ===== */
+.breno-modo-toggle {
+  display: inline-flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.breno-modo-btn {
+  padding: 0.5rem 1.25rem;
+  border: 2px solid #DFE6E9;
+  border-radius: 2rem;
+  background: white;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #636E72;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.breno-modo-btn:active {
+  transform: scale(0.95);
+}
+
+/* ===== LETRAS GRID ===== */
+.breno-letras-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 0.75rem;
+  padding: 1rem 0;
+}
+
+.breno-letra-btn {
+  aspect-ratio: 1;
+  background: white;
+  border: 3px solid var(--dominio-cor-claro);
+  border-radius: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.breno-letra-btn:active {
+  transform: scale(0.93);
+}
+
+.breno-letra-btn-letra {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2D3436;
+}
+
+.breno-letra-btn-imagem {
+  font-size: 1.5rem;
+}
+
+.breno-letra-completada {
+  background: var(--dominio-cor-claro);
+  border-color: var(--dominio-cor);
+}
+
+.breno-letra-activa {
+  border-color: var(--dominio-cor);
+  box-shadow: 0 0 0 3px var(--dominio-cor-claro);
+  transform: scale(1.05);
+}
+
+/* ===== LETRA DESTAQUE ===== */
+.breno-letra-destaque {
+  background: white;
+  border: 3px solid;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  text-align: center;
+  margin: 1rem 0;
+  animation: breno-fadeIn 0.3s ease;
+}
+
+.breno-letra-grande {
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.breno-letra-imagem {
+  font-size: 3rem;
+  margin: 0.5rem 0;
+}
+
+.breno-letra-palavra {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #636E72;
+}
+
+/* ===== BOTOES ===== */
+.breno-btn-ouvir {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.75rem;
+  transition: transform 0.15s;
+}
+
+.breno-btn-ouvir:active {
+  transform: scale(0.95);
+}
+
+.breno-btn-ouvir-mini {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.breno-btn-ouvir-mini:active {
+  transform: scale(0.9);
+}
+
+.breno-btn-verificar, .breno-btn-repetir {
+  display: inline-block;
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  padding: 0.75rem 2rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: transform 0.15s;
+}
+
+.breno-btn-verificar:active, .breno-btn-repetir:active {
+  transform: scale(0.95);
+}
+
+.breno-btn-apagar {
+  display: inline-block;
+  background: #F5F5F5;
+  border: 2px solid #DFE6E9;
+  border-radius: 2rem;
+  padding: 0.5rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #636E72;
+  cursor: pointer;
+  margin-top: 0.75rem;
+}
+
+/* ===== JOGO ===== */
+.breno-jogo-container {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.breno-jogo-acertos {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.breno-jogo-pergunta {
+  margin-bottom: 2rem;
+}
+
+.breno-jogo-pergunta p {
+  font-size: 1.3rem;
+  color: #636E72;
+  font-weight: 500;
+  margin: 0 0 0.5rem;
+}
+
+.breno-jogo-alvo {
+  font-size: 5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.breno-jogo-imagem-grande {
+  font-size: 5rem;
+  margin-bottom: 0.5rem;
+}
+
+.breno-jogo-opcoes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 0 1rem;
+}
+
+.breno-jogo-opcao {
+  background: white;
+  border: 3px solid #DFE6E9;
+  border-radius: 1.5rem;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.breno-jogo-opcao:active {
+  transform: scale(0.95);
+}
+
+.breno-jogo-opcao-letra {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2D3436;
+}
+
+.breno-jogo-opcao-imagem {
+  font-size: 2rem;
+}
+
+.breno-jogo-certo {
+  border-color: #4CAF50;
+  background: #E8F5E9;
+  animation: breno-pulse 0.5s ease;
+}
+
+.breno-jogo-opcoes-palavras {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0 1rem;
+}
+
+.breno-jogo-opcao-palavra {
+  background: white;
+  border: 3px solid #DFE6E9;
+  border-radius: 1.25rem;
+  padding: 1rem 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2D3436;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.breno-jogo-opcao-palavra:active {
+  transform: scale(0.97);
+}
+
+.breno-jogo-secao {
+  margin-bottom: 1.5rem;
+}
+
+.breno-jogo-label {
+  font-size: 1.1rem;
+  color: #636E72;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.breno-jogo-letras-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.breno-jogo-letra-btn {
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 3px solid #DFE6E9;
+  border-radius: 1rem;
+  background: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2D3436;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.breno-jogo-letra-btn:active {
+  transform: scale(0.9);
+}
+
+.breno-jogo-letra-escolhida {
+  border-color: transparent;
+}
+
+/* ===== FEEDBACK ===== */
+.breno-feedback {
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 1rem;
+  border-radius: 1rem;
+  margin: 1rem 0;
+  animation: breno-fadeIn 0.3s ease;
+}
+
+.breno-feedback-positivo {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.breno-feedback-neutro {
+  background: #FFF3E0;
+  color: #E65100;
+}
+
+.breno-feedback-grande {
+  font-size: 2rem;
+  padding: 1.5rem;
+}
+
+/* ===== SILABAS ===== */
+.breno-silabas-consoantes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+  padding: 0 0.5rem;
+}
+
+.breno-silaba-consoante {
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 2px solid #DFE6E9;
+  border-radius: 0.75rem;
+  background: white;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2D3436;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.breno-silaba-consoante:active {
+  transform: scale(0.9);
+}
+
+.breno-silabas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.75rem;
+  padding: 1rem 0;
+}
+
+.breno-silaba-btn {
+  background: white;
+  border: 3px solid var(--dominio-cor-claro);
+  border-radius: 1.25rem;
+  padding: 1rem 0.75rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.breno-silaba-btn:active {
+  transform: scale(0.93);
+}
+
+.breno-silaba-completada {
+  background: var(--dominio-cor-claro);
+  border-color: var(--dominio-cor);
+}
+
+.breno-silaba-activa {
+  border-color: var(--dominio-cor);
+  box-shadow: 0 0 0 3px var(--dominio-cor-claro);
+}
+
+.breno-silaba-btn-texto {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #2D3436;
+}
+
+.breno-silaba-btn-exemplo {
+  display: block;
+  font-size: 0.85rem;
+  color: #636E72;
+  margin-top: 0.2rem;
+}
+
+.breno-silaba-destaque {
+  background: white;
+  border: 3px solid;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  text-align: center;
+  margin: 1rem 0;
+  animation: breno-fadeIn 0.3s ease;
+}
+
+.breno-silaba-grande {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.breno-silaba-parte1, .breno-silaba-parte2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.breno-silaba-mais, .breno-silaba-igual {
+  font-size: 1.5rem;
+  color: #B2BEC3;
+}
+
+.breno-silaba-resultado {
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.breno-silaba-exemplo {
+  font-size: 1.1rem;
+  color: #636E72;
+  margin-top: 0.5rem;
+}
+
+/* ===== PALAVRAS ===== */
+.breno-categorias {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.breno-categoria-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid #DFE6E9;
+  border-radius: 2rem;
+  background: white;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #636E72;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.breno-categoria-btn:active {
+  transform: scale(0.95);
+}
+
+.breno-palavras-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+  padding: 1rem 0;
+}
+
+.breno-palavra-card {
+  background: white;
+  border: 3px solid var(--dominio-cor-claro);
+  border-radius: 1.25rem;
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.breno-palavra-card:active {
+  transform: scale(0.93);
+}
+
+.breno-palavra-completada {
+  background: var(--dominio-cor-claro);
+  border-color: var(--dominio-cor);
+}
+
+.breno-palavra-activa {
+  border-color: var(--dominio-cor);
+  box-shadow: 0 0 0 3px var(--dominio-cor-claro);
+}
+
+.breno-palavra-card-imagem {
+  font-size: 2.5rem;
+}
+
+.breno-palavra-card-texto {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2D3436;
+}
+
+.breno-palavra-destaque {
+  background: white;
+  border: 3px solid;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  text-align: center;
+  margin: 1rem 0;
+  animation: breno-fadeIn 0.3s ease;
+}
+
+.breno-palavra-imagem-grande {
+  font-size: 4rem;
+}
+
+.breno-palavra-texto {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+}
+
+.breno-palavra-silabas {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.breno-palavra-silaba {
+  padding: 0.3rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* ===== NOME PROPRIO ===== */
+.breno-nome-ver {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.breno-nome-grande {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.breno-nome-letra {
+  width: 4rem;
+  height: 4.5rem;
+  border: 3px solid;
+  border-radius: 1rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.breno-nome-letra:active {
+  transform: scale(0.9);
+}
+
+.breno-dica {
+  font-size: 1rem;
+  color: #B2BEC3;
+  margin-top: 1rem;
+}
+
+.breno-nome-construir, .breno-nome-escrever {
+  text-align: center;
+  padding: 1.5rem 0;
+}
+
+.breno-nome-espacos {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.breno-nome-espaco {
+  width: 4rem;
+  height: 4.5rem;
+  border: 3px dashed;
+  border-radius: 1rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.breno-nome-espaco-preenchido {
+  border-style: solid;
+  animation: breno-popIn 0.3s ease;
+}
+
+.breno-nome-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.breno-nome-opcao-btn {
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 2px solid transparent;
+  border-radius: 1rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.breno-nome-opcao-btn:active {
+  transform: scale(0.9);
+}
+
+.breno-instrucao {
+  font-size: 1.3rem;
+  color: #636E72;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.breno-input-nome {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto 1rem;
+  padding: 1rem;
+  border: 3px solid;
+  border-radius: 1rem;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  outline: none;
+  transition: box-shadow 0.2s;
+}
+
+.breno-input-nome:focus {
+  box-shadow: 0 0 0 4px rgba(91,155,213,0.2);
+}
+
+/* ===== FRASES ===== */
+.breno-niveis {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.breno-nivel-btn {
+  padding: 0.5rem 1rem;
+  border: 2px solid #DFE6E9;
+  border-radius: 2rem;
+  background: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #636E72;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.breno-nivel-btn:active {
+  transform: scale(0.95);
+}
+
+.breno-frases-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 0;
+}
+
+.breno-frase-card {
+  background: white;
+  border: 3px solid var(--dominio-cor-claro);
+  border-radius: 1.25rem;
+  padding: 1rem 1.25rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.breno-frase-card:active {
+  transform: scale(0.98);
+}
+
+.breno-frase-completada {
+  background: var(--dominio-cor-claro);
+  border-color: var(--dominio-cor);
+}
+
+.breno-frase-activa {
+  border-color: var(--dominio-cor);
+}
+
+.breno-frase-card-texto {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2D3436;
+}
+
+.breno-check {
+  font-size: 1.3rem;
+  color: #4CAF50;
+  font-weight: 700;
+}
+
+.breno-frase-destaque {
+  background: white;
+  border: 3px solid;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  text-align: center;
+  margin: 1rem 0;
+  animation: breno-fadeIn 0.3s ease;
+}
+
+.breno-frase-texto {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.breno-frase-palavras {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.breno-frase-palavra {
+  padding: 0.4rem 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2D3436;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.breno-frase-palavra:active {
+  transform: scale(0.9);
+}
+
+/* Construcao de frases */
+.breno-construcao-area {
+  margin-bottom: 1.5rem;
+}
+
+.breno-construcao-frase {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 2px dashed;
+  border-radius: 1rem;
+  min-height: 4rem;
+  align-items: center;
+}
+
+.breno-construcao-espaco {
+  padding: 0.5rem 0.75rem;
+  border: 2px dashed;
+  border-radius: 0.75rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  min-width: 3rem;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.breno-construcao-preenchido {
+  border-style: solid;
+  animation: breno-popIn 0.3s ease;
+}
+
+.breno-construcao-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0 0.5rem;
+}
+
+.breno-construcao-palavra-btn {
+  padding: 0.75rem 1.25rem;
+  border: 2px solid transparent;
+  border-radius: 1rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.breno-construcao-palavra-btn:active {
+  transform: scale(0.93);
+}
+
+/* ===== EM BREVE ===== */
+.breno-em-breve {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.breno-em-breve-icone {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.breno-em-breve h2 {
+  font-size: 1.5rem;
+  color: #2D3436;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.breno-em-breve p {
+  font-size: 1.1rem;
+  color: #636E72;
+  margin: 0.25rem 0;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes breno-fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes breno-popIn {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes breno-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes breno-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* ===== TABLET-FIRST RESPONSIVE ===== */
+@media (min-width: 768px) {
+  .breno-container {
+    padding: 0 2rem;
+  }
+
+  .breno-titulo-principal {
+    font-size: 2.5rem;
+  }
+
+  .breno-letras-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  }
+
+  .breno-letra-btn-letra {
+    font-size: 2.5rem;
+  }
+
+  .breno-jogo-alvo {
+    font-size: 6rem;
+  }
+
+  .breno-nome-letra, .breno-nome-espaco {
+    width: 5rem;
+    height: 5.5rem;
+    font-size: 3rem;
+  }
+
+  .breno-input-nome {
+    font-size: 2.5rem;
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 380px) {
+  .breno-titulo-principal {
+    font-size: 1.6rem;
+  }
+
+  .breno-nome-letra, .breno-nome-espaco {
+    width: 3rem;
+    height: 3.5rem;
+    font-size: 2rem;
+  }
+
+  .breno-nome-grande {
+    gap: 0.4rem;
+  }
+
+  .breno-letras-grid {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 0.5rem;
+  }
+}

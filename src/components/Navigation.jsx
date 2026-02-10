@@ -38,7 +38,7 @@ export default function Navigation({ variant = 'default' }) {
   // Aurea-specific navigation
   if (isAureaSection) {
     return (
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E8D5A3] shadow-lg z-50">
+      <nav role="navigation" aria-label="Navegacao Aurea" className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E8D5A3] shadow-lg z-50">
         {/* Current Eco indicator */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
           <div className="bg-gradient-to-r from-[#C9A227] to-[#B8911E] px-4 py-1 rounded-t-lg shadow-md">
@@ -101,7 +101,7 @@ export default function Navigation({ variant = 'default' }) {
           </button>
         )}
 
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E8E2D9] shadow-lg z-50">
+        <nav role="navigation" aria-label="Navegacao Vitalis" className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E8E2D9] shadow-lg z-50">
         {/* Current Eco indicator */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
           <div className="bg-gradient-to-r from-[#7C8B6F] to-[#5D6B4F] px-4 py-1 rounded-t-lg shadow-md">
@@ -158,7 +158,7 @@ export default function Navigation({ variant = 'default' }) {
   // Lumina navigation
   if (isLuminaSection) {
     return (
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+      <nav role="navigation" aria-label="Navegacao Lumina" className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
         {/* Current Eco indicator */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
           <div className="bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] px-4 py-1 rounded-t-lg shadow-md">
@@ -219,7 +219,7 @@ export default function Navigation({ variant = 'default' }) {
     const isSussurros = location.pathname === '/comunidade/sussurros'
 
     return (
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-purple-100 shadow-lg z-50">
+      <nav role="navigation" aria-label="Navegacao Comunidade" className="fixed bottom-0 left-0 right-0 bg-white border-t border-purple-100 shadow-lg z-50">
         {/* Current section indicator — clickable to go to community hub */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
           <button onClick={() => navigate('/comunidade')} className="bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] px-4 py-1 rounded-t-lg shadow-md cursor-pointer hover:opacity-90 transition-opacity">
@@ -270,7 +270,7 @@ export default function Navigation({ variant = 'default' }) {
 
   // Default navigation (Home)
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+    <nav role="navigation" aria-label="Navegacao principal" className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
       <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
         <NavItem
           logo="/logos/CENTRO_7ECOS.png"
@@ -321,7 +321,7 @@ function NavItem({ icon, logo, label, active, onClick, color }) {
   const renderIcon = () => {
     if (icon === 'account') {
       return (
-        <svg className="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ opacity: active ? 1 : 0.5 }}>
+        <svg className="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" style={{ opacity: active ? 1 : 0.5 }}>
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
       )
@@ -356,6 +356,8 @@ function NavItem({ icon, logo, label, active, onClick, color }) {
   return (
     <button
       onClick={onClick}
+      aria-label={`Navegar para ${label}`}
+      aria-current={active ? 'page' : undefined}
       className={`flex flex-col items-center justify-center px-4 py-1 rounded-lg transition-all ${
         active
           ? 'bg-gray-100'
@@ -367,7 +369,7 @@ function NavItem({ icon, logo, label, active, onClick, color }) {
       }}
     >
       {logo ? (
-        <img src={logo} alt={label} className="w-6 h-6 mb-0.5 object-contain" style={{ opacity: active ? 1 : 0.5 }} />
+        <img src={logo} alt="" aria-hidden="true" className="w-6 h-6 mb-0.5 object-contain" style={{ opacity: active ? 1 : 0.5 }} />
       ) : (
         renderIcon()
       )}

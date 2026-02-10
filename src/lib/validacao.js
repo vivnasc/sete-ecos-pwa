@@ -239,6 +239,34 @@ export function useValidation() {
   };
 }
 
+/**
+ * ARIA-compliant inline error display component.
+ * Use alongside form inputs: aria-describedby={`${fieldName}-error`}
+ *
+ * @param {Object} props
+ * @param {string} props.id — Must match the input's aria-describedby target
+ * @param {string} props.message — Error message to display
+ */
+export function fieldErrorProps(fieldName) {
+  return {
+    id: `${fieldName}-error`,
+    role: 'alert',
+    'aria-live': 'assertive',
+  };
+}
+
+/**
+ * Returns ARIA props for an input with potential validation errors.
+ * @param {string} fieldName — Field identifier
+ * @param {string|null} error — Current error message (null if valid)
+ */
+export function inputAriaProps(fieldName, error) {
+  return {
+    'aria-invalid': error ? 'true' : undefined,
+    'aria-describedby': error ? `${fieldName}-error` : undefined,
+  };
+}
+
 export default {
   validarEmail,
   validarPassword,

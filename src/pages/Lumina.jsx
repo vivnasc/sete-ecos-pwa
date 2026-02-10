@@ -27,6 +27,8 @@ import {
   mostrarCicloMenstrual
 } from '../lib/genero';
 import { setSexo } from '../utils/genero';
+import { useAuth } from '../contexts/AuthContext';
+import UpsellCard from '../components/UpsellCard';
 import './Lumina.css';
 
 // ============================================================
@@ -153,10 +155,14 @@ const PERGUNTAS = [
 // COMPONENTE PRINCIPAL
 // ============================================================
 export default function Lumina() {
+  // Acesso a subscricoes (para upsell contextual)
+  const { vitalisAccess, aureaAccess } = useAuth();
+  const [upsellDismissed, setUpsellDismissed] = useState(false);
+
   // Estados do fluxo
   const [screen, setScreen] = useState('splash');
   const [questionIndex, setQuestionIndex] = useState(0);
-  
+
   // Estados do utilizador
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -506,7 +512,7 @@ export default function Lumina() {
 
         const { data, error } = await supabase
           .from('users')
-          .upsert(profileData, { onConflict: 'auth_id' })
+          .upsert(profileData)
           .select()
           .single();
 
@@ -693,7 +699,7 @@ export default function Lumina() {
         </div>
         <div style={{
           fontSize: '13px',
-          opacity: 0.6,
+          color: '#6B6B9D',
           marginTop: '20px',
           fontStyle: 'italic',
           maxWidth: '300px',
@@ -740,7 +746,7 @@ export default function Lumina() {
 
         <div className="form-group">
           <label className="form-label">Como te identificas?</label>
-          <p style={{ fontSize: '12px', opacity: 0.7, marginBottom: '12px', lineHeight: 1.4 }}>
+          <p style={{ fontSize: '12px', color: '#5A5A8F', marginBottom: '12px', lineHeight: 1.4 }}>
             Isto ajuda a LUMINA a personalizar a tua experiência.
           </p>
           <div className="radio-group">
@@ -765,7 +771,7 @@ export default function Lumina() {
         {showCycleSection && (
           <div className="form-group">
             <label className="form-label">Acompanhas o teu ciclo menstrual?</label>
-            <p style={{ fontSize: '12px', opacity: 0.7, marginBottom: '12px', lineHeight: 1.4 }}>
+            <p style={{ fontSize: '12px', color: '#5A5A8F', marginBottom: '12px', lineHeight: 1.4 }}>
               O ciclo menstrual influencia energia, emoções e clareza mental.
               Se acompanhares, a LUMINA ajusta a leitura à tua fase.
             </p>
@@ -795,7 +801,7 @@ export default function Lumina() {
         <div className={`cycle-section ${tracksCycle === 'sim' ? 'visible' : ''}`}>
           <div className="form-group">
             <label className="form-label">Quando começou a última menstruação?</label>
-            <p style={{ fontSize: '11px', opacity: 0.6, marginBottom: '8px' }}>
+            <p style={{ fontSize: '11px', color: '#6B6B9D', marginBottom: '8px' }}>
               O 1º dia em que veio sangue
             </p>
             <input
@@ -807,7 +813,7 @@ export default function Lumina() {
 
           <div className="form-group">
             <label className="form-label">Quantos dias dura o teu ciclo?</label>
-            <p style={{ fontSize: '11px', opacity: 0.6, marginBottom: '8px' }}>
+            <p style={{ fontSize: '11px', color: '#6B6B9D', marginBottom: '8px' }}>
               Do 1º dia de uma menstruação até ao 1º dia da seguinte (normalmente 21-35 dias)
             </p>
             <div className="slider-value">
@@ -860,7 +866,7 @@ export default function Lumina() {
         <div className="intro-text" style={{ fontSize: '18px', lineHeight: 1.6 }}>
           Antes de agires,<br />
           <em style={{ fontSize: '22px' }}>vê-te</em>.<br /><br />
-          <span style={{ opacity: 0.8, fontSize: '15px' }}>
+          <span style={{ color: '#3A3A6F', fontSize: '15px' }}>
             8 perguntas sobre o teu estado.<br />
             1 leitura que revela o que precisas saber.
           </span>
@@ -878,7 +884,7 @@ export default function Lumina() {
             <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
               Dia {faseCiclo.day} · {cycleDesc.nome}
             </div>
-            <div style={{ fontSize: '13px', opacity: 0.8 }}>{cycleDesc.desc}</div>
+            <div style={{ fontSize: '13px', color: '#3A3A6F' }}>{cycleDesc.desc}</div>
           </div>
         )}
 
@@ -1033,7 +1039,7 @@ export default function Lumina() {
                   <div style={{ fontWeight: 'bold', fontSize: '14px' }}>
                     Dia {faseCiclo.day} · {cicloInfo.fase}
                   </div>
-                  <div style={{ fontSize: '11px', opacity: 0.7 }}>
+                  <div style={{ fontSize: '11px', color: '#5A5A8F' }}>
                     Dias {cicloInfo.dias} · Energia {cicloInfo.energia}
                   </div>
                 </div>
@@ -1041,7 +1047,7 @@ export default function Lumina() {
               <div style={{ fontSize: '13px', lineHeight: 1.5, marginBottom: '10px' }}>
                 {cicloInfo.mensagem}
               </div>
-              <div style={{ fontSize: '11px', opacity: 0.6 }}>
+              <div style={{ fontSize: '11px', color: '#6B6B9D' }}>
                 Estados comuns: {cicloInfo.estadosComuns.join(', ')}
               </div>
             </div>
@@ -1056,7 +1062,7 @@ export default function Lumina() {
               marginTop: '16px',
               borderLeft: `4px solid ${INDIGO}`
             }}>
-              <div style={{ fontSize: '12px', letterSpacing: '1px', opacity: 0.7, marginBottom: '10px' }}>
+              <div style={{ fontSize: '12px', letterSpacing: '1px', color: '#5A5A8F', marginBottom: '10px' }}>
                 A LUMINA APRENDEU CONTIGO
               </div>
               {insightsPersonalizados.map((insight, i) => (
@@ -1099,7 +1105,7 @@ export default function Lumina() {
                 <span style={{
                   fontWeight: 'bold',
                   fontSize: '14px',
-                  color: recomendacaoCiclo.eco === 'Áurea' ? '#B8941F' : 'inherit'
+                  color: recomendacaoCiclo.eco === 'Áurea' ? '#7A6200' : 'inherit'
                 }}>
                   {recomendacaoCiclo.eco} para esta fase
                 </span>
@@ -1107,7 +1113,7 @@ export default function Lumina() {
               <div style={{ fontSize: '13px', lineHeight: 1.5, marginBottom: '8px' }}>
                 {recomendacaoCiclo.razao}
               </div>
-              <div style={{ fontSize: '12px', opacity: 0.8, fontStyle: 'italic' }}>
+              <div style={{ fontSize: '12px', color: '#3A3A6F', fontStyle: 'italic' }}>
                 {recomendacaoCiclo.contextoCiclo}
               </div>
               {recomendacaoCiclo.disponivel && recomendacaoCiclo.link && (
@@ -1163,7 +1169,7 @@ export default function Lumina() {
                 fontWeight: 'bold',
                 marginBottom: '8px',
                 fontSize: '14px',
-                color: ecoRecomendado.eco === 'Áurea' ? '#B8941F' : 'inherit',
+                color: ecoRecomendado.eco === 'Áurea' ? '#7A6200' : 'inherit',
                 textAlign: ecoRecomendado.eco === 'Áurea' ? 'center' : 'left'
               }}>
                 {ecoRecomendado.eco === 'Áurea' ? 'Parece que precisas de ÁUREA' : `Sugestão: ${ecoRecomendado.eco}`}
@@ -1197,7 +1203,7 @@ export default function Lumina() {
                   Explorar {ecoRecomendado.eco} →
                 </a>
               ) : (
-                <div style={{ marginTop: '8px', fontSize: '12px', opacity: 0.6, fontStyle: 'italic' }}>
+                <div style={{ marginTop: '8px', fontSize: '12px', color: '#6B6B9D', fontStyle: 'italic' }}>
                   Em breve disponível
                 </div>
               )}
@@ -1221,7 +1227,7 @@ export default function Lumina() {
               marginTop: '16px',
               borderLeft: `3px solid ${INDIGO}`
             }}>
-              <div style={{ fontSize: '12px', letterSpacing: '1px', opacity: 0.7, marginBottom: '8px' }}>
+              <div style={{ fontSize: '12px', letterSpacing: '1px', color: '#5A5A8F', marginBottom: '8px' }}>
                 TENDÊNCIA MENSAL
               </div>
               {tendenciasMensais.insights.map((insight, i) => (
@@ -1260,13 +1266,13 @@ export default function Lumina() {
                 border: `1px solid ${ecoCor}30`,
                 textAlign: 'center'
               }}>
-                <div style={{ fontSize: '11px', letterSpacing: '2px', opacity: 0.6, marginBottom: '8px' }}>
+                <div style={{ fontSize: '11px', letterSpacing: '2px', color: '#6B6B9D', marginBottom: '8px' }}>
                   O PROXIMO PASSO
                 </div>
                 <div style={{ fontSize: '15px', fontWeight: 'bold', color: ecoCor, marginBottom: '8px' }}>
                   {ecoNome} pode ajudar-te
                 </div>
-                <div style={{ fontSize: '13px', lineHeight: 1.6, opacity: 0.85, marginBottom: '16px' }}>
+                <div style={{ fontSize: '13px', lineHeight: 1.6, color: '#3A3A6F', marginBottom: '16px' }}>
                   {ecoMsg}
                 </div>
                 <a href={`/${eco}?utm_source=lumina&utm_medium=upsell&utm_campaign=pos-checkin`} style={{
@@ -1281,7 +1287,7 @@ export default function Lumina() {
                 }}>
                   Conhecer {ecoNome} →
                 </a>
-                <div style={{ fontSize: '11px', opacity: 0.5, marginTop: '10px' }}>
+                <div style={{ fontSize: '11px', color: '#6B6B9D', marginTop: '10px' }}>
                   {needsAurea ? 'Desde 975 MT/mes · 7 dias de garantia' : 'Desde 2.500 MT/mes · 7 dias de garantia'}
                 </div>
               </div>
@@ -1302,7 +1308,7 @@ export default function Lumina() {
               <div style={{ fontSize: '15px', fontWeight: 'bold', marginBottom: '6px' }}>
                 Queres receber os teus padroes por email?
               </div>
-              <div style={{ fontSize: '13px', opacity: 0.7, marginBottom: '16px', lineHeight: 1.5 }}>
+              <div style={{ fontSize: '13px', color: '#5A5A8F', marginBottom: '16px', lineHeight: 1.5 }}>
                 Recebe a tua leitura + dicas personalizadas baseadas nos teus resultados. Gratis.
               </div>
               <div style={{ display: 'flex', gap: '8px', maxWidth: '320px', margin: '0 auto' }}>
@@ -1330,6 +1336,7 @@ export default function Lumina() {
                       await supabase.from('waitlist').insert({
                         nome: profile?.nome || '',
                         email: captureEmail.trim(),
+                        whatsapp: null,
                         produto: 'lumina-checkin'
                       });
                     } catch (err) {
@@ -1353,7 +1360,7 @@ export default function Lumina() {
                   {captureLoading ? '...' : 'Enviar'}
                 </button>
               </div>
-              <div style={{ fontSize: '11px', opacity: 0.4, marginTop: '10px' }}>
+              <div style={{ fontSize: '11px', color: '#8888B0', marginTop: '10px' }}>
                 Sem spam. Podes cancelar quando quiseres.
               </div>
             </div>
@@ -1392,8 +1399,8 @@ export default function Lumina() {
           {/* Os 7 Ecos - LUMINA observa, não faz parte */}
           <div style={{ marginTop: '30px' }}>
             <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-              <div style={{ fontSize: '13px', letterSpacing: '2px', opacity: 0.6 }}>OS SETE ECOS</div>
-              <div style={{ fontSize: '11px', opacity: 0.5, marginTop: '4px' }}>
+              <div style={{ fontSize: '13px', letterSpacing: '2px', color: '#6B6B9D' }}>OS SETE ECOS</div>
+              <div style={{ fontSize: '11px', color: '#6B6B9D', marginTop: '4px' }}>
                 A LUMINA observa e guia-te para o Eco certo
               </div>
             </div>
@@ -1409,7 +1416,7 @@ export default function Lumina() {
                 }}>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: eco.cor, margin: '0 auto 6px' }} />
                   <div style={{ fontSize: '10px', fontWeight: 'bold' }}>{eco.nome}</div>
-                  <div style={{ fontSize: '8px', opacity: 0.6 }}>{eco.foco}</div>
+                  <div style={{ fontSize: '10px', color: '#6B6B9D' }}>{eco.foco}</div>
                 </div>
               ))}
             </div>
@@ -1424,7 +1431,7 @@ export default function Lumina() {
                 }}>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: eco.cor, margin: '0 auto 6px' }} />
                   <div style={{ fontSize: '10px', fontWeight: 'bold' }}>{eco.nome}</div>
-                  <div style={{ fontSize: '8px', opacity: 0.6 }}>{eco.foco}</div>
+                  <div style={{ fontSize: '10px', color: '#6B6B9D' }}>{eco.foco}</div>
                 </div>
               ))}
             </div>
@@ -1487,6 +1494,11 @@ export default function Lumina() {
               </a>
             </div>
           </div>
+
+          {/* Upsell contextual - so aparece para quem nao tem Vitalis/Aurea */}
+          {!upsellDismissed && !vitalisAccess && !aureaAccess && padrao && (
+            <UpsellCard padrao={padrao} onDismiss={() => setUpsellDismissed(true)} />
+          )}
 
           {/* Assinatura e botão dentro do container para evitar sobreposição */}
           <div style={{ marginTop: '40px', textAlign: 'center' }}>

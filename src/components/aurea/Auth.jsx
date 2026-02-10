@@ -113,7 +113,7 @@ export default function AureaAuth() {
             auth_id: data.user.id,
             email: data.user.email,
             created_at: new Date().toISOString()
-          }, { onConflict: 'auth_id' });
+          }).select();
         }
 
         setMessage('Conta criada! Verifica o teu email para confirmar o registo.');

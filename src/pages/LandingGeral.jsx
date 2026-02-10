@@ -119,6 +119,7 @@ const LandingGeral = () => {
       const { error } = await supabase.from('waitlist').insert({
         nome,
         email,
+        whatsapp: null,
         produto: 'sete-ecos-geral'
       });
 

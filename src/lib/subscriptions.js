@@ -62,9 +62,68 @@ export const SUBSCRIPTION_PLANS = {
   }
 };
 
+// === BUNDLE PLANS: Vitalis + Aurea com 25% desconto ===
+export const BUNDLE_PLANS = {
+  MONTHLY: {
+    id: 'bundle_monthly',
+    name: 'Bundle Mensal',
+    duration: 1,
+    price_mzn: 2600,
+    price_usd: 40,
+    discount: 25,
+    includes: ['vitalis', 'aurea'],
+    savings_mzn: 875,
+    savings_usd: 13
+  },
+  SEMESTRAL: {
+    id: 'bundle_semestral',
+    name: 'Bundle Semestral',
+    duration: 6,
+    price_mzn: 13300,
+    price_usd: 204,
+    discount: 25,
+    includes: ['vitalis', 'aurea'],
+    savings_mzn: 4465,
+    savings_usd: 67
+  },
+  ANNUAL: {
+    id: 'bundle_annual',
+    name: 'Bundle Anual',
+    duration: 12,
+    price_mzn: 23200,
+    price_usd: 355,
+    discount: 25,
+    includes: ['vitalis', 'aurea'],
+    savings_mzn: 7745,
+    savings_usd: 118
+  }
+};
+
+// === INCENTIVOS DE RENOVACAO ===
+export const RENEWAL_INCENTIVES = {
+  EARLY: { days_before: 14, discount_pct: 10, label: 'Renova cedo' },
+  STANDARD: { days_before: 7, discount_pct: 15, label: 'Ultima semana' },
+  LASTDAY: { days_before: 0, discount_pct: 15, label: 'Ultimo dia' },
+  WINBACK: { days_after: 7, discount_pct: 20, label: 'Volta para nos' }
+};
+
+// Rotas RESTRITAS durante trial (mostram teaser em vez de conteudo completo)
+// O trial da acesso ao dashboard, check-in, espaco retorno, desafios e receitas
+// Mas NAO da o plano alimentar completo, relatorios, lista compras, etc.
+export const TRIAL_RESTRICTED_ROUTES = [
+  '/vitalis/plano',           // Plano alimentar completo - o maior valor
+  '/vitalis/lista-compras',   // Depende do plano
+  '/vitalis/relatorios',      // Relatorios completos
+  '/vitalis/relatorio-semanal',
+  '/vitalis/tendencias',      // Graficos de tendencia
+  '/vitalis/fotos-progresso', // Fotos de progresso
+  '/vitalis/plano-pdf',       // Export PDF
+  '/vitalis/sugestoes',       // Sugestoes de refeicoes
+];
+
 // Configuracoes gerais
 export const SUBSCRIPTION_CONFIG = {
-  TRIAL_DAYS: 0,              // Sem trial - o plano personalizado JA e o valor
+  TRIAL_DAYS: 7,              // 7 dias de trial com acesso limitado
   DEFAULT_PLAN: 'monthly',
   CURRENCY_MZN: 'MZN',
   CURRENCY_USD: 'USD',
@@ -488,7 +547,7 @@ export const generateInviteCode = async (type = 'tester', maxUses = 1, notes = '
   try {
     const { error } = await supabase.from('vitalis_invite_codes').insert({
       code,
-      type, // 'tester', 'trial', 'discount'
+      type, // 'tester', 'trial', 'promo'
       max_uses: maxUses,
       uses_count: 0,
       notes,
@@ -501,6 +560,41 @@ export const generateInviteCode = async (type = 'tester', maxUses = 1, notes = '
     return { success: true, code };
   } catch (error) {
     console.error('Erro ao gerar codigo:', error);
+    return { success: false, error };
+  }
+};
+
+/**
+ * Gera codigo promo com percentagem de desconto específica
+ */
+export const generatePromoCode = async (discountPercent, codeName, maxUses = 100, expiresInDays = null) => {
+  const code = codeName || `PROMO${discountPercent}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+
+  try {
+    const insertData = {
+      code: code.toUpperCase(),
+      type: 'promo',
+      max_uses: maxUses,
+      uses_count: 0,
+      notes: `${discountPercent}`,  // Store discount percentage
+      active: true,
+      created_at: new Date().toISOString()
+    };
+
+    // Add expiration if specified
+    if (expiresInDays) {
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + expiresInDays);
+      insertData.expires_at = expiryDate.toISOString();
+    }
+
+    const { error } = await supabase.from('vitalis_invite_codes').insert(insertData);
+
+    if (error) throw error;
+
+    return { success: true, code: code.toUpperCase(), discount: discountPercent };
+  } catch (error) {
+    console.error('Erro ao gerar codigo promo:', error);
     return { success: false, error };
   }
 };
@@ -646,4 +740,55 @@ export const getSubscriptionStats = async () => {
     console.error('Erro ao obter stats:', error);
     return null;
   }
+};
+
+/**
+ * Verifica se uma rota esta restrita durante o trial
+ */
+export const isTrialRestrictedRoute = (pathname) => {
+  return TRIAL_RESTRICTED_ROUTES.some(route => pathname.startsWith(route));
+};
+
+/**
+ * Calcula incentivo de renovacao baseado nos dias restantes
+ * @returns {object|null} { discount_pct, label } ou null se nao houver incentivo
+ */
+export const getRenewalIncentive = (expiresAt) => {
+  if (!expiresAt) return null;
+  const now = new Date();
+  const expires = new Date(expiresAt);
+  const daysUntilExpiry = Math.ceil((expires - now) / (24 * 60 * 60 * 1000));
+
+  // Ja expirou - win-back
+  if (daysUntilExpiry < 0 && daysUntilExpiry >= -30) {
+    return RENEWAL_INCENTIVES.WINBACK;
+  }
+  // Ultimo dia
+  if (daysUntilExpiry <= 1) {
+    return RENEWAL_INCENTIVES.LASTDAY;
+  }
+  // Ultima semana
+  if (daysUntilExpiry <= 7) {
+    return RENEWAL_INCENTIVES.STANDARD;
+  }
+  // 2 semanas
+  if (daysUntilExpiry <= 14) {
+    return RENEWAL_INCENTIVES.EARLY;
+  }
+  return null;
+};
+
+/**
+ * Aplica desconto de renovacao ao preco de um plano
+ */
+export const applyRenewalDiscount = (plan, discountPct) => {
+  if (!plan || !discountPct) return plan;
+  return {
+    ...plan,
+    original_price_mzn: plan.price_mzn,
+    original_price_usd: plan.price_usd,
+    price_mzn: Math.round(plan.price_mzn * (1 - discountPct / 100)),
+    price_usd: Math.round(plan.price_usd * (1 - discountPct / 100)),
+    renewal_discount: discountPct
+  };
 };
