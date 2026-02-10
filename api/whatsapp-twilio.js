@@ -5,7 +5,7 @@
  * - TWILIO_ACCOUNT_SID: Account SID do Twilio
  * - TWILIO_AUTH_TOKEN: Auth Token do Twilio
  * - TWILIO_WHATSAPP_NUMBER: Número WhatsApp do Twilio (formato: whatsapp:+14155238886)
- * - COACH_WHATSAPP_NUMBER: Número da Vivianne (formato: whatsapp:+258845243875)
+ * - COACH_WHATSAPP_NUMBER: Número da Vivianne (formato: whatsapp:+258851006473)
  */
 
 export default async function handler(req, res) {
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
   const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
   const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
   const TWILIO_WHATSAPP_NUMBER = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886';
-  const COACH_WHATSAPP_NUMBER = process.env.COACH_WHATSAPP_NUMBER || 'whatsapp:+258845243875';
+  const COACH_WHATSAPP_NUMBER = process.env.COACH_WHATSAPP_NUMBER || 'whatsapp:+258851006473';
 
   if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN) {
     console.error('Twilio não configurado');

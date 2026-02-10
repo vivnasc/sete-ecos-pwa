@@ -131,7 +131,7 @@ function getEmailTemplate(tipo, dados = {}) {
             </div>
             <div class="footer">
               <p>Vitalis · Sete Ecos · Maputo, Moçambique</p>
-              <p><a href="https://wa.me/258845243875">WhatsApp</a> · <a href="https://app.seteecos.com">Website</a></p>
+              <p><a href="https://wa.me/258851006473">WhatsApp</a> · <a href="https://app.seteecos.com">Website</a></p>
             </div>
           </div>
         </body>
@@ -240,7 +240,7 @@ function getEmailTemplate(tipo, dados = {}) {
               <p>Com carinho,<br><strong>Vivianne</strong></p>
             </div>
             <div class="footer">
-              <p><a href="https://wa.me/258845243875" style="color: #7C8B6F;">Responder no WhatsApp</a></p>
+              <p><a href="https://wa.me/258851006473" style="color: #7C8B6F;">Responder no WhatsApp</a></p>
             </div>
           </div>
         </body>
@@ -332,7 +332,7 @@ function getEmailTemplate(tipo, dados = {}) {
               <p>Vivianne</p>
             </div>
             <div class="footer">
-              <p><a href="https://wa.me/258845243875" style="color: #7C8B6F;">Falar no WhatsApp</a></p>
+              <p><a href="https://wa.me/258851006473" style="color: #7C8B6F;">Falar no WhatsApp</a></p>
             </div>
           </div>
         </body>
