@@ -452,8 +452,21 @@ try {
         peso_meta: parseFloat(formData.peso_meta),
         emocao_dominante: formData.emocao_dominante,
         prontidao_1a10: parseInt(formData.prontidao_1a10),
-        status: 'novo'
+        status: 'novo',
+        // Campos adicionais necessários para RPC vitalis_plano_do_dia
+        fase_actual: 'inducao',
+        data_inicio: new Date().toISOString().split('T')[0],
+        pacote: 'essencial',
+        duracao_programa: formData.prazo || '6m',
+        imc_inicial: calcularIMC(parseFloat(formData.peso_actual), parseInt(formData.altura_cm)),
+        imc_actual: calcularIMC(parseFloat(formData.peso_actual), parseInt(formData.altura_cm))
       };
+
+      // Função auxiliar para calcular IMC
+      function calcularIMC(peso, altura) {
+        const alturaM = altura / 100;
+        return parseFloat((peso / (alturaM * alturaM)).toFixed(1));
+      }
 
       if (existingClient) {
         // Atualizar mas NÃO sobrescrever subscription_status
