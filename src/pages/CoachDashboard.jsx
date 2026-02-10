@@ -647,6 +647,12 @@ const CoachDashboard = () => {
               >
                 Marketing
               </Link>
+              <Link
+                to="/coach/analytics"
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30 text-blue-300 text-sm font-medium transition-all border border-blue-500/30"
+              >
+                Analytics
+              </Link>
               <a
                 href={WHATSAPP_COMMUNITY_LINK}
                 target="_blank"
