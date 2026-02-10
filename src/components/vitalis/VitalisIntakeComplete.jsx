@@ -501,14 +501,17 @@ try {
         // GERAR PLANO AUTOMATICAMENTE
         console.log('🔄 A gerar plano automático...');
         try {
-          await gerarPlanoAutomatico(userData.id);
-          console.log('✅ PLANO GERADO COM SUCESSO!');
+          const resultado = await gerarPlanoAutomatico(userData.id);
+          if (resultado?.success) {
+            console.log('✅ PLANO GERADO COM SUCESSO!');
+          } else {
+            console.error('⚠️ Plano não gerado:', resultado?.error);
+          }
         } catch (planoError) {
           console.error('⚠️ Erro ao gerar plano:', planoError);
-          // Não bloquear - deixar utilizador continuar
         }
 
-        // Ir para dashboard
+        // Ir para dashboard (mesmo que plano falhe — dashboard mostra opção de retry)
         navigate('/vitalis/dashboard');
       } else {
         // Não tem acesso - ir para pagamento

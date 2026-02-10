@@ -42,7 +42,7 @@ const VitalisAccessGuard = ({ children }) => {
             auth_id: user.id,
             email: user.email,
             nome: user.user_metadata?.name || user.email.split('@')[0]
-          }).select()
+          }, { onConflict: 'auth_id' })
           .select('id')
           .maybeSingle();
 
