@@ -243,6 +243,10 @@ export const updateSubscriptionStatus = async (userId, newStatus, options = {}) 
  * Inicia trial para um utilizador
  */
 export const startTrial = async (userId) => {
+  if (!userId) {
+    console.error('startTrial: userId is required');
+    return { success: false, error: 'userId em falta' };
+  }
   try {
     // Verificar se já existe registo
     const { data: existingClient } = await supabase
@@ -647,6 +651,10 @@ const activatePromo = async (userId, code, notes = '') => {
  * Usa codigo de convite
  */
 export const useInviteCode = async (userId, code) => {
+  if (!userId) {
+    console.error('useInviteCode: userId is required');
+    return { success: false, error: 'Cria conta primeiro para usar o código.' };
+  }
   try {
     // Buscar codigo
     const { data: invite, error: fetchError } = await supabase
