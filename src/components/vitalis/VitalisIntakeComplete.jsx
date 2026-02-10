@@ -494,41 +494,13 @@ try {
       console.log('Intake complete - subscription_status:', currentClient?.subscription_status, 'temAcesso:', temAcesso);
 
       // 🎯 GERAR PLANO NUTRICIONAL AUTOMATICAMENTE
-      console.log('=== INICIANDO GERAÇÃO DE PLANO ===');
-      console.log('User ID:', userData.id);
-
+      console.log('Gerando plano nutricional...');
       const planoResult = await gerarPlanoAutomatico(userData.id);
-
-      console.log('=== RESULTADO DA GERAÇÃO ===');
-      console.log('Success:', planoResult.success);
-
       if (!planoResult.success) {
-        console.error('❌ ERRO AO GERAR PLANO:', planoResult.error);
-        console.error('Detalhes completos:', planoResult);
-        setError(`Intake salvo mas plano não foi gerado: ${planoResult.error}. Contacta suporte.`);
-        setLoading(false);
-        return; // BLOQUEAR fluxo se plano falhar
+        console.error('Erro ao gerar plano:', planoResult.error);
+        // Não bloquear o fluxo - plano pode ser gerado manualmente depois
       } else {
-        console.log('✅ PLANO GERADO COM SUCESSO!');
-        console.log('Calorias:', planoResult.plano?.calorias);
-        console.log('Macros:', planoResult.plano?.macros);
-        console.log('Porções:', planoResult.plano?.porcoes);
-
-        // Verificar se plano foi realmente inserido no banco
-        const { data: verificacao, error: verifError } = await supabase
-          .from('vitalis_meal_plans')
-          .select('id, calorias_alvo, status')
-          .eq('user_id', userData.id)
-          .eq('status', 'activo')
-          .maybeSingle();
-
-        if (verifError) {
-          console.error('❌ ERRO AO VERIFICAR PLANO:', verifError);
-        } else if (verificacao) {
-          console.log('✅ PLANO CONFIRMADO NO BANCO:', verificacao);
-        } else {
-          console.error('⚠️ PLANO NÃO ENCONTRADO NO BANCO!');
-        }
+        console.log('Plano gerado com sucesso:', planoResult.plano);
       }
 
       // Guardar preferências para personalizar textos na app
