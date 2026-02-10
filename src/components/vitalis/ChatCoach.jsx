@@ -491,13 +491,13 @@ export default function ChatCoach() {
     // RAMADÃO GERAL (apanha o que não foi capturado acima)
     if (texto.match(/ramad[aã]o|ramadan|jejum.*sagrado|mes.*sagrado/)) {
       return `🌙 ${nome ? nome + ', R' : 'R'}amadan Mubarak!\n\n` +
-        `Que bom que estás aqui. O Ramadão é um período especial e o teu corpo merece atenção extra.\n\n` +
+        `Que bom que estás aqui. O Ramadan é um período especial e o teu corpo merece atenção extra.\n\n` +
         `Como te estás a sentir? Posso ajudar-te com:\n` +
         `• Como estás a gerir a energia durante o dia?\n` +
         `• Tens sentido mais fome ou cansaço do que o esperado?\n` +
         `• Precisas de ideias práticas para o Suhoor ou Iftar?\n\n` +
         `As tuas porções diárias mantêm-se (${palmas}P ${maos}H ${polegares}G), só distribuímos em 2 momentos.\n\n` +
-        `Diz-me o que precisas e eu adapto ao teu dia. Também tens o 📖 **Guia Ramadão** completo na app com tudo detalhado!`;
+        `Diz-me o que precisas e eu adapto ao teu dia. Também tens o 📖 **Guia Ramadan** completo na app com tudo detalhado!`;
     }
 
     // ========== JEJUM INTERMITENTE ==========
@@ -985,10 +985,10 @@ export default function ChatCoach() {
         `• "Peso estagnado"\n` +
         `• "Alimentação e treino"\n` +
         `• "Alimentação emocional"\n\n` +
-        `**🌙 Ramadão:**\n` +
-        `• "Ramadão" - apoio durante o mês sagrado\n` +
+        `**🌙 Ramadan:**\n` +
+        `• "Ramadan" - apoio durante o mês sagrado\n` +
         `• "Suhoor" / "Iftar" - dicas práticas\n` +
-        `• "Hidratação ramadão" / "Exercício ramadão"\n\n` +
+        `• "Hidratação ramadan" / "Exercício ramadan"\n\n` +
         `Pergunta o que quiseres!`;
     }
 
@@ -1177,7 +1177,7 @@ export default function ChatCoach() {
               { texto: 'Porções', emoji: '🖐️' },
               { texto: 'Refeições', emoji: '🍽️' },
               { texto: 'Jejum', emoji: '⏰' },
-              { texto: 'Ramadão', emoji: '🌙' },
+              { texto: 'Ramadan', emoji: '🌙' },
               { texto: 'Treino', emoji: '💪' },
               { texto: 'Peso', emoji: '⚖️' },
               { texto: 'Ajuda', emoji: '❓' },

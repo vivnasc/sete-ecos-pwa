@@ -1,12 +1,12 @@
 /**
- * Ramadão - Utilidade de datas dinâmicas
+ * Ramadan - Utilidade de datas dinâmicas
  *
- * Datas aproximadas do Ramadão por ano gregoriano.
+ * Datas aproximadas do Ramadan por ano gregoriano.
  * O calendário islâmico é lunar, recuando ~10-12 dias/ano.
  * Datas exactas dependem da observação da lua - estas são estimativas.
  */
 
-// Tabela de datas aproximadas do Ramadão (início e fim)
+// Tabela de datas aproximadas do Ramadan (início e fim)
 const RAMADAN_DATES = {
   2025: { inicio: [2, 28], fim: [3, 30] },   // 28 Fev - 30 Mar
   2026: { inicio: [2, 17], fim: [3, 19] },   // 17 Fev - 19 Mar
@@ -14,14 +14,14 @@ const RAMADAN_DATES = {
   2028: { inicio: [1, 27], fim: [2, 25] },   // 27 Jan - 25 Fev
   2029: { inicio: [1, 15], fim: [2, 13] },   // 15 Jan - 13 Fev
   2030: { inicio: [1, 5],  fim: [2, 3] },    // 5 Jan - 3 Fev
-  2030.5: { inicio: [12, 25], fim: [12, 31] }, // Dez 2030 (2º Ramadão no ano)
+  2030.5: { inicio: [12, 25], fim: [12, 31] }, // Dez 2030 (2º Ramadan no ano)
   2031: { inicio: [0, 1],  fim: [1, 23] },   // ~25 Dez 2030 - 23 Jan 2031
   2032: { inicio: [12, 14], fim: [12, 31] },  // ~14 Dez - Jan seguinte
 };
 
 /**
- * Retorna as datas de início e fim do Ramadão para o ano actual.
- * Procura o Ramadão mais próximo (pode ser do ano actual ou adjacente).
+ * Retorna as datas de início e fim do Ramadan para o ano actual.
+ * Procura o Ramadan mais próximo (pode ser do ano actual ou adjacente).
  */
 export function getRamadanDates(anoRef) {
   const ano = anoRef || new Date().getFullYear();
@@ -53,7 +53,7 @@ export function getRamadanDates(anoRef) {
 }
 
 /**
- * Verifica se estamos dentro do período do Ramadão.
+ * Verifica se estamos dentro do período do Ramadan.
  */
 export function isRamadan() {
   const agora = new Date();
@@ -62,7 +62,7 @@ export function isRamadan() {
 }
 
 /**
- * Verifica se estamos perto do Ramadão (X dias antes ou durante).
+ * Verifica se estamos perto do Ramadan (X dias antes ou durante).
  * Útil para mostrar banners sazonais.
  */
 export function isNearRamadan(diasAntes = 5) {
@@ -82,7 +82,7 @@ export function isNearRamadan(diasAntes = 5) {
 }
 
 /**
- * Verifica se o utilizador observa o Ramadão (via localStorage).
+ * Verifica se o utilizador observa o Ramadan (via localStorage).
  * Definido a partir do campo observa_ramadao do intake.
  */
 export function observaRamadao() {

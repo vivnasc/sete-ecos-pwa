@@ -1182,7 +1182,7 @@ export default function DashboardVitalis() {
           caloriasAlvo={caloriasAlvo}
         />
 
-        {/* Banner Ramadão - Visível durante o período, apenas para quem observa */}
+        {/* Banner Ramadan - Visível durante o período, apenas para quem observa */}
         {(() => {
           if (!observaRamadao()) return null;
           const { mostrar: mostrarBanner, dentroRamadan: dentroRamadao } = isNearRamadan(5);
@@ -1198,7 +1198,7 @@ export default function DashboardVitalis() {
                   <div className="text-4xl">🌙</div>
                   <div className="flex-1">
                     <h3 className="text-white font-bold text-lg">
-                      {dentroRamadao ? 'Ramadan Mubarak!' : 'O Ramadão está a chegar!'}
+                      {dentroRamadao ? 'Ramadan Mubarak!' : 'O Ramadan está a chegar!'}
                     </h3>
                     <p className="text-white/70 text-sm mt-1">
                       {dentroRamadao
