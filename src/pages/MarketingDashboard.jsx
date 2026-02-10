@@ -12,6 +12,8 @@ import {
   gerarConteudoHoje,
   gerarMensagemWhatsApp,
   gerarCaptionInstagram,
+  getConteudosMockupVitalis,
+  getMensagensWhatsAppMockups,
 } from '../lib/marketing-engine';
 import { RENDER_MAP, CORES, FORMATOS } from '../components/TemplateVisual';
 
@@ -70,7 +72,7 @@ function AutoImage({ template, eco, formato, texto, subtitulo, slideNum, totalSl
 
 export default function MarketingDashboard() {
   const { session } = useAuth();
-  const [tab, setTab] = useState('plano');
+  const [tab, setTab] = useState('vitalis');
   const [copiado, setCopied] = useState('');
 
   const copiar = async (texto, label) => {
@@ -97,6 +99,7 @@ export default function MarketingDashboard() {
   }
 
   const tabs = [
+    { id: 'vitalis', label: 'VITALIS (12)', icon: '📱' },
     { id: 'hoje', label: 'Hoje', icon: '⚡' },
     { id: 'plano', label: 'Plano Semanal', icon: '🗓' },
     { id: 'grid', label: 'Grid IG (12)', icon: '📸' },
@@ -117,10 +120,11 @@ export default function MarketingDashboard() {
             Plano de Lançamento
           </h1>
           <p className="text-white/50 text-sm mt-1">8-21 Fevereiro 2026 &middot; Semana 1: Aquecer &middot; Semana 2: Lançar</p>
-          <div className="grid grid-cols-4 gap-2 mt-4">
+          <div className="grid grid-cols-5 gap-2 mt-4">
             {[
+              { v: '12', l: 'Mockups' },
               { v: '12', l: 'Posts Grid' },
-              { v: '4', l: 'Anuncios' },
+              { v: '4', l: 'Anúncios' },
               { v: String(getCarrosseisProntos().length), l: 'Carrosséis' },
               { v: '14', l: 'Dias' },
             ].map(s => (
@@ -151,11 +155,275 @@ export default function MarketingDashboard() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 mt-4 space-y-4">
+        {tab === 'vitalis' && <VitalisTab copiar={copiar} copiado={copiado} />}
         {tab === 'hoje' && <HojeTab copiar={copiar} copiado={copiado} />}
         {tab === 'plano' && <PlanoTab copiar={copiar} copiado={copiado} />}
         {tab === 'grid' && <GridTab copiar={copiar} copiado={copiado} />}
         {tab === 'anuncios' && <AnunciosTab copiar={copiar} copiado={copiado} />}
         {tab === 'carrosseis' && <CarrosseisTab copiar={copiar} copiado={copiado} />}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// TAB: VITALIS - 12 Conteúdos com mockups reais
+// ============================================================
+
+function VitalisTab({ copiar, copiado }) {
+  const conteudos = getConteudosMockupVitalis();
+  const mensagensWA = getMensagensWhatsAppMockups();
+  const [expandido, setExpandido] = useState(null);
+  const [secao, setSecao] = useState('instagram');
+
+  const tipoLabel = (tipo) => {
+    switch (tipo) {
+      case 'feed': return { label: 'FEED', cor: 'bg-blue-100 text-blue-700' };
+      case 'carrossel': return { label: 'CARROSSEL', cor: 'bg-purple-100 text-purple-700' };
+      case 'reel': return { label: 'REEL', cor: 'bg-pink-100 text-pink-700' };
+      default: return { label: tipo, cor: 'bg-gray-100 text-gray-700' };
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Secção selector */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setSecao('instagram')}
+          className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
+            secao === 'instagram' ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-lg' : 'bg-white text-[#6B5C4C] border border-[#E8E2D9]'
+          }`}
+        >
+          📸 Instagram (12)
+        </button>
+        <button
+          onClick={() => setSecao('whatsapp')}
+          className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
+            secao === 'whatsapp' ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg' : 'bg-white text-[#6B5C4C] border border-[#E8E2D9]'
+          }`}
+        >
+          💬 WhatsApp (7)
+        </button>
+      </div>
+
+      {/* Instagram Section */}
+      {secao === 'instagram' && (
+        <>
+          <div className="bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl p-4">
+            <h3 className="font-bold text-lg">12 Conteúdos com Mockups Reais</h3>
+            <p className="text-white/80 text-sm mt-1">6 Feed + 3 Carrosséis + 3 Reels — usa as imagens reais da app</p>
+            <div className="flex gap-3 mt-3">
+              <span className="text-xs bg-white/20 px-2 py-1 rounded-full">6 Feed</span>
+              <span className="text-xs bg-white/20 px-2 py-1 rounded-full">3 Carrosséis</span>
+              <span className="text-xs bg-white/20 px-2 py-1 rounded-full">3 Reels</span>
+            </div>
+          </div>
+
+          {conteudos.map((c, i) => {
+            const tipo = tipoLabel(c.tipo);
+            const aberto = expandido === i;
+            return (
+              <div key={i} className="bg-white rounded-xl border border-[#E8E2D9] overflow-hidden">
+                {/* Header com imagem preview */}
+                <div
+                  className="flex items-start gap-3 p-4 cursor-pointer hover:bg-[#FAFAF8] transition-colors"
+                  onClick={() => setExpandido(aberto ? null : i)}
+                >
+                  <img
+                    src={c.imagens[0]}
+                    alt=""
+                    className="w-16 h-16 rounded-lg object-cover shrink-0 shadow-sm"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${tipo.cor}`}>{tipo.label}</span>
+                      <span className="text-[10px] text-[#A09888]">Post {c.numero}/12</span>
+                      {c.melhorHora && <span className="text-[10px] text-[#A09888]">🕐 {c.melhorHora}</span>}
+                    </div>
+                    <h4 className="font-bold text-sm text-[#4A4035] truncate">{c.titulo}</h4>
+                    <p className="text-xs text-[#A09888] mt-0.5">{c.descricao}</p>
+                  </div>
+                  <span className="text-[#A09888] text-lg">{aberto ? '▲' : '▼'}</span>
+                </div>
+
+                {/* Expanded content */}
+                {aberto && (
+                  <div className="border-t border-[#E8E2D9] p-4 space-y-4">
+                    {/* Images */}
+                    <div>
+                      <p className="text-xs font-bold text-[#6B5C4C] mb-2">
+                        {c.tipo === 'carrossel' ? `📸 Imagens (${c.imagens.length} slides)` : '📸 Imagem'}
+                      </p>
+                      <div className="flex gap-2 overflow-x-auto pb-2">
+                        {c.imagens.map((img, j) => (
+                          <div key={j} className="relative group shrink-0">
+                            <img src={img} alt="" className="h-48 rounded-lg object-cover shadow-md" />
+                            <a
+                              href={img}
+                              download
+                              className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-[10px] font-bold text-[#4A4035] shadow opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              ⬇ Descarregar
+                            </a>
+                            {c.slides && c.slides[j] && (
+                              <div className="absolute top-2 left-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full">
+                                {j === 0 ? 'Capa' : `Slide ${j}`}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Carousel slides text */}
+                    {c.slides && (
+                      <div>
+                        <p className="text-xs font-bold text-[#6B5C4C] mb-2">📝 Texto dos slides</p>
+                        <div className="space-y-1">
+                          {c.slides.map((s, j) => (
+                            <div key={j} className="bg-[#FAFAF8] rounded-lg p-2">
+                              <p className="text-[11px] font-bold text-[#4A4035]">{j === 0 ? '🎯 Capa' : `Slide ${j}`}: {s.texto}</p>
+                              {s.subtitulo && <p className="text-[10px] text-[#A09888]">{s.subtitulo}</p>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Reel script */}
+                    {c.roteiro && (
+                      <div>
+                        <p className="text-xs font-bold text-[#6B5C4C] mb-2">🎬 Roteiro do Reel</p>
+                        <div className="bg-[#FAFAF8] rounded-lg p-3">
+                          <pre className="text-[11px] text-[#4A4035] whitespace-pre-wrap font-sans leading-relaxed">{c.roteiro}</pre>
+                        </div>
+                        <CopyBtn
+                          onClick={() => copiar(c.roteiro, `roteiro-${i}`)}
+                          copiado={copiado === `roteiro-${i}` ? '✓' : ''}
+                          label="📋 Copiar Roteiro"
+                          small
+                        />
+                      </div>
+                    )}
+
+                    {/* Caption */}
+                    <div>
+                      <p className="text-xs font-bold text-[#6B5C4C] mb-2">✍️ Caption Instagram</p>
+                      <div className="bg-[#FAFAF8] rounded-lg p-3">
+                        <p className="text-[11px] text-[#4A4035] whitespace-pre-wrap leading-relaxed">{c.caption}</p>
+                      </div>
+                      <div className="flex gap-2 mt-2">
+                        <CopyBtn
+                          onClick={() => copiar(c.caption, `caption-v-${i}`)}
+                          copiado={copiado === `caption-v-${i}` ? '✓' : ''}
+                          label="📋 Copiar Caption"
+                          small
+                        />
+                      </div>
+                    </div>
+
+                    {/* WhatsApp version */}
+                    {c.whatsapp && (
+                      <div>
+                        <p className="text-xs font-bold text-[#6B5C4C] mb-2">💬 Versão WhatsApp</p>
+                        <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+                          <p className="text-[11px] text-[#4A4035] whitespace-pre-wrap leading-relaxed">{c.whatsapp}</p>
+                        </div>
+                        <CopyBtn
+                          onClick={() => copiar(c.whatsapp, `wa-v-${i}`)}
+                          copiado={copiado === `wa-v-${i}` ? '✓' : ''}
+                          label="💬 Copiar WA"
+                          small
+                        />
+                      </div>
+                    )}
+
+                    {/* Tips */}
+                    {c.dica && (
+                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                        <p className="text-[11px] text-amber-800">💡 <strong>Dica:</strong> {c.dica}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </>
+      )}
+
+      {/* WhatsApp Section */}
+      {secao === 'whatsapp' && (
+        <>
+          <div className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl p-4">
+            <h3 className="font-bold text-lg">7 Mensagens WhatsApp com Mockups</h3>
+            <p className="text-white/80 text-sm mt-1">Cada mensagem vem com a imagem mockup certa para enviar junto</p>
+          </div>
+
+          {mensagensWA.map((m, i) => (
+            <div key={i} className="bg-white rounded-xl border border-[#E8E2D9] overflow-hidden">
+              <div className="p-4">
+                <div className="flex items-start gap-3 mb-3">
+                  <img src={m.imagem} alt="" className="w-20 h-20 rounded-lg object-cover shadow-sm shrink-0" />
+                  <div>
+                    <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">WHATSAPP</span>
+                    <h4 className="font-bold text-sm text-[#4A4035] mt-1">{m.titulo}</h4>
+                    <p className="text-[10px] text-[#A09888] mt-1">Enviar com a imagem ao lado</p>
+                  </div>
+                </div>
+
+                <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+                  <p className="text-[11px] text-[#4A4035] whitespace-pre-wrap leading-relaxed">{m.mensagem}</p>
+                </div>
+
+                <div className="flex gap-2 mt-3">
+                  <CopyBtn
+                    onClick={() => copiar(m.mensagem, `wa-mock-${i}`)}
+                    copiado={copiado === `wa-mock-${i}` ? '✓' : ''}
+                    label="📋 Copiar Mensagem"
+                    small
+                  />
+                  <a
+                    href={m.imagem}
+                    download
+                    className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold rounded-lg bg-green-600 text-white hover:bg-green-700 transition-all"
+                  >
+                    ⬇ Imagem
+                  </a>
+                  <a
+                    href={`https://wa.me/?text=${encodeURIComponent(m.mensagem)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold rounded-lg bg-[#25D366] text-white hover:bg-[#128C7E] transition-all"
+                  >
+                    📲 Enviar
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+
+      {/* Ordem sugerida */}
+      <div className="bg-[#1a1a2e] text-white rounded-xl p-4">
+        <h4 className="font-bold text-sm mb-2">📅 Ordem sugerida de publicação</h4>
+        <div className="space-y-1 text-xs text-white/80">
+          <p>1️⃣ <strong>Dia 1:</strong> Post #1 (mozproud) — Fixar no topo do perfil</p>
+          <p>2️⃣ <strong>Dia 1:</strong> Post #7 (Carrossel 5 razões) — Maior alcance</p>
+          <p>3️⃣ <strong>Dia 2:</strong> Post #12 (Reel orgulho MZ) — Viral potencial</p>
+          <p>4️⃣ <strong>Dia 2:</strong> Post #5 (Espaço emocional) — Emocional</p>
+          <p>5️⃣ <strong>Dia 3:</strong> Post #8 (Carrossel Dietas vs VITALIS) — Polémico</p>
+          <p>6️⃣ <strong>Dia 3:</strong> Post #4 (Receitas) — Prático</p>
+          <p>7️⃣ <strong>Dia 4:</strong> Post #11 (Reel POV) — Trending</p>
+          <p>8️⃣ <strong>Dia 4:</strong> Post #3 (Coach 24h) — Diferencial</p>
+          <p>9️⃣ <strong>Dia 5:</strong> Post #9 (Carrossel Tour) — Educativo</p>
+          <p>🔟 <strong>Dia 5:</strong> Post #6 (Treinos ciclo) — Nicho</p>
+          <p>1️⃣1️⃣ <strong>Dia 6:</strong> Post #10 (Reel dia com VITALIS) — Relatable</p>
+          <p>1️⃣2️⃣ <strong>Dia 6:</strong> Post #2 (Dashboard) — Profissionalismo</p>
+        </div>
+        <p className="text-[10px] text-white/50 mt-3">💡 Publica 2 posts/dia. Alterna Feed ↔ Reel ↔ Carrossel para melhor alcance.</p>
       </div>
     </div>
   );

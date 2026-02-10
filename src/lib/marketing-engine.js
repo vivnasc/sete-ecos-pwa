@@ -907,3 +907,785 @@ export function gerarLinksUTM() {
     luminaWhatsapp: buildUTMUrl(`${BASE_URL}/lumina`, UTM_TEMPLATES.whatsappBroadcast('lumina')),
   };
 }
+
+// ============================================================
+// MOCKUPS VITALIS - 12 Conteúdos para popular o Instagram
+// Usa imagens reais da app (mockups telemóvel e PC)
+// ============================================================
+
+const MOCKUP_IMAGES = {
+  dashboard: '/mockups/Vitalis-dashboard_mb-mockup.jpeg',
+  coach: '/mockups/Vitalis-coach_mb-mockup.jpeg',
+  receitas: '/mockups/Vitalis-receitas_mb-mockup.jpeg',
+  treinos: '/mockups/Vitalis-treinos_mb-mockup.jpeg',
+  espacoRetorno: '/mockups/Vitalis-espaçoretorno_mb-mockup.jpeg',
+  landingPC: '/mockups/Vitalis-landing_PC-mockup.jpeg',
+  mozproud: '/mockups/mozproud-vitalis.jpeg',
+};
+
+export function getConteudosMockupVitalis() {
+  const linkVitalis = buildUTMUrl(`${BASE_URL}/vitalis`, UTM_TEMPLATES.instagramBio());
+  const linkLumina = buildUTMUrl(`${BASE_URL}/lumina`, UTM_TEMPLATES.instagramBio('lumina'));
+
+  return [
+    // ========== POST 1 - LANÇAMENTO ==========
+    {
+      numero: 1,
+      tipo: 'feed',
+      titulo: 'Saúde real. Feita para nós.',
+      descricao: 'Post de apresentação com orgulho moçambicano',
+      imagens: [MOCKUP_IMAGES.mozproud],
+      caption: `Saúde real. Feita para nós. 🇲🇿
+
+Não é mais um app de dieta gringa.
+Não é mais uma lista de "não comas isto".
+
+É uma plataforma inteira. Desenhada para mulheres moçambicanas. Com comida do nosso mercado. Com a nossa realidade.
+
+Chama-se VITALIS. E está dentro do @seteecos.
+
+98 receitas locais. Coach disponível 24h. Treinos adaptados ao teu ciclo. Espaço para quando a emoção pesa mais que a fome.
+
+Desenvolvido em Moçambique. Para nós. 🌿
+
+Link na bio.
+
+#vitalis #seteecos #saudereal #feitaparanós #moçambique #maputo #mulhermocambicana #nutricao #bemestar #orgulhomocambicano #saude #wellness`,
+      whatsapp: `🇲🇿 *VITALIS - Saúde real. Feita para nós.*
+
+Finalmente uma plataforma de saúde feita com a NOSSA realidade.
+
+98 receitas com comida do mercado moçambicano. Coach 24h. Treinos que respeitam o teu corpo.
+
+Não é dieta. É cuidado.
+
+👉 ${linkVitalis}
+
+Segue @seteecos no Instagram para acompanhar 🌿`,
+      melhorHora: '8h ou 18h',
+      dica: 'Primeiro post do perfil. Fixa-o no topo do feed.',
+    },
+
+    // ========== POST 2 - DASHBOARD TOUR ==========
+    {
+      numero: 2,
+      tipo: 'feed',
+      titulo: 'Isto é o VITALIS por dentro.',
+      descricao: 'Mostrar o dashboard real - prova social e profissionalismo',
+      imagens: [MOCKUP_IMAGES.dashboard],
+      caption: `Isto é o VITALIS por dentro. 📱
+
+Não é um PDF.
+Não é um grupo de WhatsApp.
+Não é uma lista genérica.
+
+É uma app completa no teu telemóvel:
+
+📋 Meu Plano - personalizado para ti
+✅ Check-in diário - água, sono, emoção
+🍽 Refeições - registo fácil
+📖 Receitas - 98, todas com comida local
+💜 Espaço Retorno - para quando precisas de parar
+📊 Relatórios - vê a tua evolução
+💪 Treinos - adaptados à tua fase
+
+Tudo num só lugar. Tudo feito para TI.
+
+Desde 2.500 MT/mês. Link na bio. 🌿
+
+#vitalis #seteecos #appsaude #dashboard #planoalimentar #coachingnutricional #maputo #mulhermocambicana #tecnologia #wellness`,
+      whatsapp: `📱 *Já viste o VITALIS por dentro?*
+
+Olha o que tens quando entras:
+📋 Plano personalizado
+✅ Check-in diário
+📖 98 receitas locais
+💜 Espaço emocional
+📊 Relatórios
+💪 Treinos
+
+Tudo no teu telemóvel. Desde 2.500 MT/mês.
+
+👉 ${linkVitalis}`,
+      melhorHora: '12h-14h (pausa do almoço)',
+      dica: 'Mostra que é real e profissional. O mockup impressiona.',
+    },
+
+    // ========== POST 3 - COACH 24h ==========
+    {
+      numero: 3,
+      tipo: 'feed',
+      titulo: 'Uma coach que nunca dorme.',
+      descricao: 'Destaque para a Coach IA - diferencial único',
+      imagens: [MOCKUP_IMAGES.coach],
+      caption: `3 da manhã. Não consegues dormir. A ansiedade aperta. Abres o frigorífico.
+
+E se em vez disso... abrires uma conversa com alguém que te entende?
+
+Conhece a Vivianne. A tua Coach Vitalis. 🤍
+
+Disponível 24 horas. Sem julgamento. Sem espera.
+
+Pergunta sobre porções. 🤲
+Monta o teu prato. 🍽
+Tira dúvidas sobre jejum. ⏰
+Adapta o treino ao teu dia. 💪
+Precisa de ajuda geral? Ela está lá. 💚
+
+Isto não é um chatbot genérico. É coaching nutricional REAL, sempre disponível.
+
+Link na bio. 🌿
+
+#vitalis #seteecos #coachnutricional #IA #coachingonline #disponivel24h #maputo #saudedigital #nutricao #apoioemocional`,
+      whatsapp: `🤖 *Imagina ter uma coach de nutrição disponível às 3 da manhã.*
+
+Sem julgamento. Sem espera. Sem marcação.
+
+A Coach Vivianne no VITALIS responde-te SEMPRE:
+🤲 Porções certas
+🍽 Como montar o prato
+⏰ Jejum
+💪 Treino
+💚 O que precisares
+
+👉 ${linkVitalis}
+
+Experimenta. Está lá para ti. 🌿`,
+      melhorHora: '21h-23h (quando a ansiedade nocturna aparece)',
+      dica: 'Este post toca na dor real da solidão nocturna com comida.',
+    },
+
+    // ========== POST 4 - RECEITAS LOCAIS ==========
+    {
+      numero: 4,
+      tipo: 'feed',
+      titulo: '98 receitas. Todas com comida do mercado.',
+      descricao: 'Biblioteca de receitas com filtros por origem',
+      imagens: [MOCKUP_IMAGES.receitas],
+      caption: `98 receitas. Nenhuma pede quinoa. 🇲🇿
+
+Matapa. Caril de amendoim. Feijão nhemba. Xima.
+
+A Biblioteca de Receitas do VITALIS tem:
+
+🇲🇿 Moçambicana
+🇿🇲 Zambeziana
+🇮🇳 Indiana
+🇵🇹 Portuguesa
+🌍 Mediterrânica
+
+Cada receita filtrada para o TEU perfil. Compatível com as tuas necessidades. Ingredientes que encontras no mercado do bairro.
+
+Chega de dietas com comida que não existe em Maputo.
+
+Link na bio. 🌿
+
+#vitalis #seteecos #receitasmocambicanas #comidalocal #matapa #xima #feijaonobanquete #cozinhamocambicana #saudavel #receitas #mercado #maputo`,
+      whatsapp: `🍽 *98 receitas e NENHUMA pede quinoa.*
+
+O VITALIS tem uma biblioteca inteira de receitas:
+🇲🇿 Moçambicanas
+🇿🇲 Zambezianas
+🇮🇳 Indianas
+🇵🇹 Portuguesas
+
+Filtradas para o teu perfil. Com comida do mercado.
+
+Matapa, caril de amendoim, feijão nhemba... comida REAL.
+
+👉 ${linkVitalis}`,
+      melhorHora: '11h-12h (antes do almoço)',
+      dica: 'O argumento "comida local" é o mais forte. As mulheres estão fartas de dietas gringas.',
+    },
+
+    // ========== POST 5 - ESPAÇO EMOCIONAL ==========
+    {
+      numero: 5,
+      tipo: 'feed',
+      titulo: 'O que estás a sentir agora?',
+      descricao: 'Espaço de Retorno Emocional - o grande diferencial',
+      imagens: [MOCKUP_IMAGES.espacoRetorno],
+      caption: `O que estás a sentir agora? 💜
+
+Cansaço. Ansiedade. Tristeza. Raiva. Vazio. Solidão.
+
+Não há resposta errada. Só observa.
+
+Isto é o Espaço de Retorno do VITALIS. O lugar dentro da app onde não se fala de comida. Fala-se de TI.
+
+Porque 80% dos problemas com alimentação são emocionais. E nenhuma dieta do mundo resolve isso.
+
+Antes de mudar o que comes, precisas de entender PORQUE comes.
+
+Este espaço existe para isso. 🤍
+
+Link na bio.
+
+#vitalis #seteecos #saudeemocional #espacoseguro #ansiedade #cansaco #emocoes #mulherreal #autocuidado #saudementalimporta #maputo #bemestar`,
+      whatsapp: `💜 *Antes de mudar o que comes, precisas de entender PORQUE comes.*
+
+O VITALIS tem um Espaço de Retorno Emocional.
+
+Cansaço? Ansiedade? Tristeza? Solidão?
+
+Não é terapia. É um espaço para parares e observares o que sentes. Sem julgamento.
+
+Porque 80% dos problemas com comida são emocionais.
+
+👉 ${linkVitalis}`,
+      melhorHora: '20h-22h (momento introspectivo)',
+      dica: 'Post mais emocional. As cores vibrantes do ecrã chamam muita atenção no feed.',
+    },
+
+    // ========== POST 6 - TREINO + CICLO ==========
+    {
+      numero: 6,
+      tipo: 'feed',
+      titulo: 'O teu treino adapta-se ao teu ciclo.',
+      descricao: 'Treinos por fase do ciclo menstrual - único no mercado',
+      imagens: [MOCKUP_IMAGES.treinos],
+      caption: `Sabias que treinar intenso na fase errada pode PREJUDICAR-TE? 🌙
+
+O VITALIS não te dá um plano de treino genérico. Adapta-se ao TEU ciclo:
+
+🌙 Menstrual (Dias 1-5) → Descanso e movimento suave
+🌸 Folicular (Dias 6-14) → Energia a subir, mais intensidade
+☀️ Ovulação (Dias 14-17) → Pico de energia, treino forte
+🍂 Lútea (Dias 18-28) → Abrandar, focar em recuperação
+
+Frequência. Duração. Intensidade. Tudo personalizado à tua fase.
+
+Isto não é um app de fitness. É um app que te ENTENDE. 🌿
+
+Link na bio.
+
+#vitalis #seteecos #ciclomenstrual #treinofeminino #fasemenstrual #ovulacao #fitness #saudefeminina #hormonal #maputo #mulhermocambicana #treino`,
+      whatsapp: `🌙 *O teu treino devia mudar conforme o teu ciclo menstrual.*
+
+No VITALIS, muda:
+
+🌙 Menstrual → Descanso
+🌸 Folicular → Mais energia
+☀️ Ovulação → Treino forte
+🍂 Lútea → Recuperação
+
+Frequência, duração, intensidade - tudo adaptado a TI.
+
+Nenhum outro app faz isto em Moçambique.
+
+👉 ${linkVitalis}`,
+      melhorHora: '7h-9h (motivação matinal)',
+      dica: 'Conteúdo educativo + produto. O ciclo menstrual é tema viral entre mulheres.',
+    },
+
+    // ========== CARROSSEL 7 - 5 RAZÕES ==========
+    {
+      numero: 7,
+      tipo: 'carrossel',
+      titulo: '5 coisas que o VITALIS faz por ti',
+      descricao: 'Carrossel mostrando cada funcionalidade com mockup real',
+      imagens: [
+        MOCKUP_IMAGES.mozproud,
+        MOCKUP_IMAGES.receitas,
+        MOCKUP_IMAGES.coach,
+        MOCKUP_IMAGES.treinos,
+        MOCKUP_IMAGES.espacoRetorno,
+        MOCKUP_IMAGES.dashboard,
+      ],
+      slides: [
+        { texto: '5 coisas que o VITALIS faz por ti', subtitulo: 'Desliza →' },
+        { texto: '1. 98 receitas com comida do mercado', subtitulo: 'Moçambicana, Zambeziana, Indiana, Portuguesa' },
+        { texto: '2. Coach disponível 24h', subtitulo: 'Sem espera. Sem julgamento. Sempre lá.' },
+        { texto: '3. Treinos adaptados ao ciclo', subtitulo: 'Menstrual, Folicular, Ovulação, Lútea' },
+        { texto: '4. Espaço emocional só teu', subtitulo: 'Porque 80% dos problemas com comida são emocionais' },
+        { texto: '5. Dashboard completo', subtitulo: 'Plano, check-in, refeições, relatórios. Tudo num sítio.' },
+      ],
+      caption: `5 coisas que o VITALIS faz por ti e que nenhuma dieta faz. 🌿
+
+Desliza para ver cada uma →
+
+1️⃣ 98 receitas com comida do NOSSO mercado
+2️⃣ Coach disponível 24 horas por dia
+3️⃣ Treinos que se adaptam ao teu ciclo menstrual
+4️⃣ Espaço emocional para os dias difíceis
+5️⃣ Dashboard completo - tudo no teu telemóvel
+
+Isto não é uma dieta. É um sistema inteiro de cuidado.
+
+Desde 2.500 MT/mês. 7 dias de garantia.
+
+Link na bio 🤍
+
+#vitalis #seteecos #coachingnutricional #5razoes #carrossel #saudavel #mulhermocambicana #maputo #planoalimentar #wellness`,
+      whatsapp: `🌿 *5 coisas que o VITALIS faz por ti:*
+
+1️⃣ 98 receitas com comida local
+2️⃣ Coach disponível 24h
+3️⃣ Treinos adaptados ao ciclo
+4️⃣ Espaço emocional
+5️⃣ Dashboard completo
+
+Desde 2.500 MT/mês. 7 dias de garantia.
+
+👉 ${linkVitalis}`,
+      melhorHora: '12h-14h',
+      dica: 'Carrosséis têm o MAIOR alcance no Instagram. Publica este nos primeiros 3 dias.',
+    },
+
+    // ========== CARROSSEL 8 - DIETAS vs VITALIS ==========
+    {
+      numero: 8,
+      tipo: 'carrossel',
+      titulo: 'Dietas vs VITALIS',
+      descricao: 'Comparação provocadora - formato viral',
+      imagens: [
+        MOCKUP_IMAGES.mozproud,
+        MOCKUP_IMAGES.receitas,
+        MOCKUP_IMAGES.espacoRetorno,
+        MOCKUP_IMAGES.coach,
+        MOCKUP_IMAGES.dashboard,
+      ],
+      slides: [
+        { texto: 'DIETAS vs VITALIS', subtitulo: 'Desliza para ver a diferença →' },
+        { texto: '❌ Dietas: "Não comas arroz"\n✅ VITALIS: 98 receitas com xima, matapa e feijão nhemba', subtitulo: '' },
+        { texto: '❌ Dietas: "Tens de ter força de vontade"\n✅ VITALIS: Espaço emocional para quando recaís', subtitulo: '' },
+        { texto: '❌ Dietas: "Segue este plano genérico"\n✅ VITALIS: Coach 24h que te responde a QUALQUER hora', subtitulo: '' },
+        { texto: '❌ Dietas: "Pesa-te todos os dias"\n✅ VITALIS: Dashboard que mede progresso REAL (não só peso)', subtitulo: '' },
+      ],
+      caption: `DIETAS vs VITALIS 🥊
+
+As dietas dizem-te para NÃO comer.
+O VITALIS ensina-te a CUIDAR de ti.
+
+Desliza para ver as 4 diferenças que mudam tudo →
+
+Se já estás farta do ciclo dieta-culpa-desistência, talvez estejas pronta para algo diferente.
+
+Link na bio. 🌿
+
+#vitalis #seteecos #dietasnao #semdieta #comidareal #comparacao #mudanca #saudavel #mulhermocambicana #maputo #antidieta #nutricaointuitiva`,
+      whatsapp: `🥊 *DIETAS vs VITALIS*
+
+❌ "Não comas arroz" → ✅ 98 receitas com xima e matapa
+❌ "Força de vontade" → ✅ Espaço emocional
+❌ "Plano genérico" → ✅ Coach 24h
+❌ "Pesa-te todos os dias" → ✅ Progresso real
+
+Farta de dietas? Experimenta algo diferente.
+
+👉 ${linkVitalis}`,
+      melhorHora: '10h-12h',
+      dica: 'Formato "vs" é altamente viral. Convida as pessoas a guardar e partilhar.',
+    },
+
+    // ========== CARROSSEL 9 - TOUR COMPLETO ==========
+    {
+      numero: 9,
+      tipo: 'carrossel',
+      titulo: 'Tour pela app em 7 ecrãs',
+      descricao: 'Mostrar TODOS os mockups em sequência - tour visual completo',
+      imagens: [
+        MOCKUP_IMAGES.landingPC,
+        MOCKUP_IMAGES.dashboard,
+        MOCKUP_IMAGES.receitas,
+        MOCKUP_IMAGES.coach,
+        MOCKUP_IMAGES.treinos,
+        MOCKUP_IMAGES.espacoRetorno,
+        MOCKUP_IMAGES.mozproud,
+      ],
+      slides: [
+        { texto: 'VITALIS - A raiz da transformação', subtitulo: 'Tour pela app. Desliza →' },
+        { texto: 'O teu Dashboard pessoal', subtitulo: 'Plano, check-in, progresso, tudo organizado' },
+        { texto: 'Biblioteca de 98 Receitas', subtitulo: 'Filtro por origem: 🇲🇿🇿🇲🇮🇳🇵🇹 e tipo de refeição' },
+        { texto: 'Coach Vivianne - 24h disponível', subtitulo: 'Porções, prato, jejum, treino. Pergunta o que quiseres.' },
+        { texto: 'Treinos por fase do ciclo', subtitulo: 'Menstrual → Folicular → Ovulação → Lútea' },
+        { texto: 'Espaço de Retorno Emocional', subtitulo: 'Para quando o problema não é a comida. É a emoção.' },
+        { texto: 'Saúde real. Feita para nós.', subtitulo: 'Desenvolvido em Moçambique 🇲🇿' },
+      ],
+      caption: `Tour pela app VITALIS 📱✨
+
+7 ecrãs. 7 razões para nunca mais fazeres dieta.
+
+Desliza para ver o que recebes →
+
+🖥 Landing profissional
+📱 Dashboard completo
+📖 98 receitas locais (moçambicanas, zambezianas, indianas, portuguesas)
+🤖 Coach Vivianne disponível 24h
+💪 Treinos adaptados ao ciclo menstrual
+💜 Espaço de retorno emocional
+🇲🇿 Feito com orgulho em Moçambique
+
+Isto é coaching nutricional de verdade. No teu telemóvel.
+
+Desde 2.500 MT/mês. Link na bio. 🌿
+
+#vitalis #seteecos #tourapp #plataforma #saudedigital #nutricao #coachingnutricional #maputo #mulhermocambicana #bemestar #tecnologia`,
+      whatsapp: `📱 *Queres ver o VITALIS por dentro?*
+
+Fiz um tour pela app:
+
+🖥 Landing profissional
+📱 Dashboard completo
+📖 98 receitas locais
+🤖 Coach 24h
+💪 Treinos por ciclo menstrual
+💜 Espaço emocional
+🇲🇿 Feito em Moçambique
+
+Vê tudo aqui: ${linkVitalis}`,
+      melhorHora: '15h-17h',
+      dica: 'Carrossel "tour" funciona como prova. Mostra que é REAL, não promessa vazia.',
+    },
+
+    // ========== REEL 10 - UM DIA COM VITALIS ==========
+    {
+      numero: 10,
+      tipo: 'reel',
+      titulo: 'Um dia com VITALIS',
+      descricao: 'Reel mostrando rotina diária com a app - formato "day in my life"',
+      imagens: [MOCKUP_IMAGES.dashboard, MOCKUP_IMAGES.coach, MOCKUP_IMAGES.receitas],
+      roteiro: `🎬 *REEL: "Um dia com VITALIS"*
+Duração: 30-45 segundos
+Música: trending calm/motivacional
+Formato: gravar ecrã do telemóvel + voz off
+
+---
+
+🕗 *MANHÃ (0-8s)*
+[Mostra ecrã do Dashboard - mockup dashboard]
+VOZ: "Acordo. Abro o VITALIS. Vejo a minha frase do dia."
+TEXTO NO ECRÃ: "7:30 — Check-in matinal ☀️"
+
+🕐 *ALMOÇO (8-18s)*
+[Mostra ecrã das Receitas - mockup receitas]
+VOZ: "Na hora do almoço, procuro uma receita rápida. Hoje: caril de coco com legumes."
+TEXTO NO ECRÃ: "12:30 — Receita do dia 🍽"
+
+🕓 *TARDE (18-28s)*
+[Mostra ecrã do Coach - mockup coach]
+VOZ: "Meio da tarde, bate a fome emocional. Falo com a minha coach."
+TEXTO NO ECRÃ: "16:00 — Momento difícil? A coach está lá 💚"
+
+🕘 *NOITE (28-35s)*
+[Mostra mozproud-vitalis]
+VOZ: "VITALIS. Saúde real. Feita para nós."
+TEXTO NO ECRÃ: "Link na bio 🌿"
+
+---
+CAPTION: Mostra abaixo.`,
+      caption: `Um dia com VITALIS. 🌿
+
+Não é mais uma app de dieta.
+É a tua companheira de todos os dias.
+
+De manhã: check-in e motivação ☀️
+Ao almoço: receita rápida do mercado 🍽
+À tarde: coach para os momentos difíceis 💚
+À noite: reflexão e progresso 📊
+
+Queres experimentar este dia?
+Link na bio. 🤍
+
+#vitalis #seteecos #reels #umdiacomvitalis #rotina #saudavel #dayinmylife #maputo #mulhermocambicana #wellness #nutricao`,
+      whatsapp: `🎬 *Viste o meu reel "Um dia com VITALIS"?*
+
+De manhã: check-in
+Ao almoço: receita local
+À tarde: coach para a ansiedade
+À noite: progresso
+
+É isto todos os dias. No telemóvel.
+
+👉 ${linkVitalis}`,
+      melhorHora: '18h-20h (pico de reels)',
+      dica: 'Grava o ecrã real do telemóvel. A autenticidade vende mais que perfeição.',
+    },
+
+    // ========== REEL 11 - POV TRENDING ==========
+    {
+      numero: 11,
+      tipo: 'reel',
+      titulo: 'POV: A tua amiga envia-te um link...',
+      descricao: 'Formato trending "POV" com reveal da app',
+      imagens: [MOCKUP_IMAGES.espacoRetorno, MOCKUP_IMAGES.dashboard, MOCKUP_IMAGES.mozproud],
+      roteiro: `🎬 *REEL: "POV: A tua amiga envia-te um link..."*
+Duração: 20-30 segundos
+Música: trending com "build-up" (suspense → reveal)
+Formato: face cam + ecrã telemóvel
+
+---
+
+*CENA 1 (0-5s)* - HOOK
+[Face cam - expressão curiosa a olhar para o telemóvel]
+TEXTO: "POV: A tua amiga envia-te um link e diz 'experimenta isto, confia em mim'"
+🎵 Música calma, suspense
+
+*CENA 2 (5-10s)* - ABERTURA
+[Gravar ecrã: abrir a app, mostrar a pergunta "O que estás a sentir agora?"]
+TEXTO: "Abres e... 👀"
+🎵 Build-up
+
+*CENA 3 (10-18s)* - REAÇÃO
+[Face cam - expressão de surpresa/emoção]
+[Corta para: ecrã do dashboard completo]
+TEXTO: "98 receitas. Coach 24h. Treinos por ciclo. Espaço emocional."
+🎵 Drop da música
+
+*CENA 4 (18-25s)* - CTA
+[Mostrar mozproud-vitalis]
+TEXTO: "VITALIS - Saúde real. Feita para nós. 🇲🇿"
+VOZ/TEXTO: "Agora envia TU este reel a essa amiga 🤍"
+
+---
+CAPTION: Mostra abaixo.`,
+      caption: `POV: A tua amiga envia-te um link e diz "confia em mim" 🤍
+
+E depois descobres uma app inteira feita para mulheres moçambicanas.
+
+Com receitas do nosso mercado. Coach que te ouve às 3 da manhã. Treinos que respeitam o teu ciclo.
+
+E um espaço para quando o problema não é a comida. É a emoção.
+
+Marca essa amiga nos comentários. Ela precisa de ver isto. 👇🏾
+
+Link na bio 🌿
+
+#vitalis #seteecos #pov #reels #trending #amiga #mulhermocambicana #maputo #surprise #saudavel #wellness`,
+      whatsapp: `👀 *Vi um reel que me fez lembrar de ti.*
+
+Uma app feita para mulheres moçambicanas com:
+🍽 Receitas do nosso mercado
+🤖 Coach 24h
+💪 Treinos por ciclo menstrual
+💜 Espaço emocional
+
+Abre e vê: ${linkVitalis}
+
+Depois diz-me o que achaste 🤍`,
+      melhorHora: '19h-21h',
+      dica: 'O formato POV é dos mais virais do Instagram. Pede para a audiência marcar amigas.',
+    },
+
+    // ========== REEL 12 - FEITO EM MOÇAMBIQUE ==========
+    {
+      numero: 12,
+      tipo: 'reel',
+      titulo: 'Feito em Moçambique. Com orgulho.',
+      descricao: 'Reel emotivo sobre orgulho moçambicano - storytelling pessoal',
+      imagens: [MOCKUP_IMAGES.mozproud, MOCKUP_IMAGES.landingPC, MOCKUP_IMAGES.dashboard],
+      roteiro: `🎬 *REEL: "Feito em Moçambique. Com orgulho."*
+Duração: 30-45 segundos
+Música: instrumental emotiva (afrobeat suave ou marrabenta instrumental)
+Formato: Vivianne a falar para a câmara + cuts para mockups
+
+---
+
+*CENA 1 (0-8s)* - HOOK PESSOAL
+[Vivianne a falar para a câmara, close-up]
+VOZ: "Quando comecei a procurar ajuda para a minha alimentação, tudo o que encontrava era de fora. Em inglês. Com comida que não existe aqui."
+TEXTO: 🇲🇿
+
+*CENA 2 (8-16s)* - O PROBLEMA
+[B-roll: mercado de Maputo / comida local]
+VOZ: "Nenhuma app tinha matapa. Nenhuma falava de xima. Nenhuma entendia a nossa realidade."
+TEXTO: "A nossa comida merece respeito."
+
+*CENA 3 (16-28s)* - A SOLUÇÃO
+[Mostrar mockups: landing PC → dashboard → receitas → coach]
+VOZ: "Então criei o VITALIS. 98 receitas com comida moçambicana. Coach disponível 24 horas. Treinos que respeitam o teu corpo. Espaço emocional para os dias difíceis."
+TEXTO: "VITALIS - A raiz da transformação 🌿"
+
+*CENA 4 (28-40s)* - ORGULHO
+[Mostrar mozproud-vitalis.jpeg]
+VOZ: "Desenvolvido em Moçambique. Para mulheres moçambicanas. Porque a nossa saúde merece tecnologia de primeiro mundo."
+TEXTO: "Saúde real. Feita para nós. 🇲🇿"
+
+---
+CAPTION: Mostra abaixo.`,
+      caption: `Quando procurei ajuda para a minha alimentação, só encontrei apps em inglês. Com quinoa e abacate orgânico.
+
+Nenhuma tinha matapa. Nenhuma falava de xima. Nenhuma entendia a realidade de uma mulher moçambicana.
+
+Então criei o VITALIS. 🇲🇿
+
+98 receitas com comida do nosso mercado.
+Coach disponível 24 horas.
+Treinos que respeitam o teu ciclo.
+Espaço para quando a emoção pesa mais que a fome.
+
+Desenvolvido em Moçambique. Com orgulho. Para nós. 🌿
+
+Se acreditas que as mulheres moçambicanas merecem saúde de qualidade, partilha este reel. 🤍
+
+Link na bio.
+
+#vitalis #seteecos #moçambique #maputo #orgulhomocambicano #feitoemmocambique #tecnologia #saude #mulhermocambicana #empreendedorismo #africa #inovacao`,
+      whatsapp: `🇲🇿 *Criei algo que gostava que existisse quando precisei.*
+
+Nenhuma app tinha matapa. Nenhuma falava de xima.
+
+Então criei o VITALIS:
+📖 98 receitas moçambicanas
+🤖 Coach 24h
+💪 Treinos por ciclo
+💜 Espaço emocional
+
+Feito em Moçambique. Para nós.
+
+👉 ${linkVitalis}
+
+Partilha com mulheres que precisam disto 🤍`,
+      melhorHora: '18h-20h',
+      dica: 'O mais emotivo de todos. Storytelling pessoal + orgulho nacional = viral garantido.',
+    },
+  ];
+}
+
+// ============================================================
+// MENSAGENS WHATSAPP COM MOCKUPS
+// Para enviar com as imagens reais da app
+// ============================================================
+
+export function getMensagensWhatsAppMockups() {
+  const linkVitalis = buildUTMUrl(`${BASE_URL}/vitalis`, UTM_TEMPLATES.whatsappBroadcast());
+  const linkLumina = buildUTMUrl(`${BASE_URL}/lumina`, UTM_TEMPLATES.whatsappBroadcast('lumina'));
+
+  return [
+    {
+      titulo: 'Lançamento com mockup mozproud',
+      imagem: MOCKUP_IMAGES.mozproud,
+      mensagem: `🇲🇿 *VITALIS - Saúde real. Feita para nós.*
+
+Criei uma plataforma inteira de nutrição e bem-estar para mulheres moçambicanas.
+
+Não é dieta. Não é restrição. É cuidado.
+
+📖 98 receitas com comida do nosso mercado
+🤖 Coach disponível 24 horas
+💪 Treinos adaptados ao teu ciclo
+💜 Espaço emocional para os dias difíceis
+
+Desde 2.500 MT/mês. 7 dias de garantia.
+
+👉 ${linkVitalis}
+
+Se te identificas, experimenta. Se conheces alguém que precisa, encaminha esta mensagem. 🌿`,
+    },
+    {
+      titulo: 'Dashboard - mostrar a app real',
+      imagem: MOCKUP_IMAGES.dashboard,
+      mensagem: `📱 *Olha o que recebes quando entras no VITALIS:*
+
+✨ Frase motivacional diária
+🔥 Contador de dias consecutivos
+📋 Meu Plano personalizado
+✅ Check-in (água, sono, emoção)
+🍽 Registo de refeições
+📖 98 receitas filtradas para ti
+💜 Espaço de retorno emocional
+📊 Relatórios de evolução
+💪 Treinos por fase do ciclo
+
+Tudo isto no teu telemóvel. Desde 2.500 MT/mês.
+
+Não é um PDF. Não é um grupo. É uma app COMPLETA.
+
+👉 ${linkVitalis}`,
+    },
+    {
+      titulo: 'Coach - apoio 24h',
+      imagem: MOCKUP_IMAGES.coach,
+      mensagem: `🤍 *Imagina ter alguém que te responde às 3 da manhã. Sem julgamento.*
+
+A Coach Vivianne no VITALIS ajuda-te com:
+
+🤲 Porções certas para ti
+🍽 Como montar o prato
+⏰ Dúvidas sobre jejum
+💪 Adaptar o treino
+❓ Qualquer pergunta sobre nutrição
+
+Sempre disponível. Sempre paciente.
+
+Se já te sentiste sozinha nesta jornada, isto é para ti.
+
+👉 ${linkVitalis}`,
+    },
+    {
+      titulo: 'Receitas - comida local',
+      imagem: MOCKUP_IMAGES.receitas,
+      mensagem: `🍽 *98 receitas. ZERO quinoa.*
+
+O VITALIS tem uma biblioteca inteira com:
+
+🇲🇿 Receitas moçambicanas (matapa, caril de amendoim, feijão nhemba)
+🇿🇲 Zambezianas
+🇮🇳 Indianas
+🇵🇹 Portuguesas
+🌍 Mediterrânicas
+
+Cada receita filtrada para o teu perfil e as tuas necessidades.
+
+Ingredientes que encontras no mercado do bairro. Não no supermercado gourmet.
+
+👉 ${linkVitalis}
+
+Experimenta. 7 dias de garantia. 🌿`,
+    },
+    {
+      titulo: 'Espaço emocional',
+      imagem: MOCKUP_IMAGES.espacoRetorno,
+      mensagem: `💜 *"O que estás a sentir agora?"*
+
+Esta é a primeira pergunta do Espaço de Retorno no VITALIS.
+
+Cansaço. Ansiedade. Tristeza. Raiva. Vazio. Solidão. Negação.
+
+Sem resposta errada. Só observação.
+
+Porque antes de mudar o que COMES, precisas de entender o que SENTES.
+
+80% dos problemas com comida são emocionais. E nenhuma dieta resolve isso.
+
+O VITALIS é o primeiro programa que cuida de AMBOS.
+
+👉 ${linkVitalis}`,
+    },
+    {
+      titulo: 'Treinos por ciclo',
+      imagem: MOCKUP_IMAGES.treinos,
+      mensagem: `🌙 *O teu corpo muda ao longo do mês. O teu treino devia mudar também.*
+
+No VITALIS, o treino adapta-se ao teu ciclo menstrual:
+
+🌙 Menstrual (Dias 1-5) → Repouso, movimento suave
+🌸 Folicular (Dias 6-14) → Energia a subir
+☀️ Ovulação (Dias 14-17) → Pico de força
+🍂 Lútea (Dias 18-28) → Recuperação
+
+Frequência, duração, intensidade - tudo muda conforme a TUA fase.
+
+Nenhuma app faz isto em Moçambique.
+
+👉 ${linkVitalis}
+
+7 dias de garantia. Experimenta. 🌿`,
+    },
+    {
+      titulo: 'Landing PC - credibilidade',
+      imagem: MOCKUP_IMAGES.landingPC,
+      mensagem: `🖥 *VITALIS - A raiz da transformação*
+
+Coaching nutricional personalizado. Dashboard completo. Receitas locais. Coach 24h. Treinos por ciclo. Apoio emocional.
+
+Plataforma profissional. Acessível. Moçambicana.
+
+Método Precision Nutrition adaptado à nossa realidade.
+
+Desde 2.500 MT/mês.
+
+Vê a plataforma: ${linkVitalis} 🌿`,
+    },
+  ];
+}
