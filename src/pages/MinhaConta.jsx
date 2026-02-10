@@ -147,7 +147,7 @@ export default function MinhaConta() {
         <div className="absolute top-0 right-0 w-72 h-72 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, #C9A227 0%, transparent 70%)', filter: 'blur(60px)' }} />
       </div>
 
-      <div className="max-w-lg mx-auto">
+      <div className="max-w-2xl mx-auto">
         {/* Header */}
         <header className="px-5 pt-8 pb-2">
           <div className="flex items-center justify-between">

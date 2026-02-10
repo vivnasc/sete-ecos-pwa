@@ -304,8 +304,8 @@ export default function RelatoriosHub() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50 pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-4 pt-8 pb-6">
-        <div className="max-w-md mx-auto">
+      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-4 sm:px-6 pt-8 pb-6">
+        <div className="max-w-2xl mx-auto">
           <Link to="/vitalis/dashboard" className="inline-flex items-center gap-1 text-orange-100 hover:text-white mb-4">
             <Icons.ArrowLeft />
             <span>Voltar</span>
@@ -318,14 +318,14 @@ export default function RelatoriosHub() {
               className="w-12 h-12 object-contain drop-shadow-lg"
             />
             <div>
-              <h1 className="text-2xl font-bold">Relatórios</h1>
+              <h1 className="text-2xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Relatórios</h1>
               <p className="text-orange-100 mt-1">Acompanha a tua evolução</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-4 -mt-4 space-y-4">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 -mt-4 space-y-4">
 
         {/* Relatório Semanal - Link para ecrã */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">

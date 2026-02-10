@@ -229,7 +229,7 @@ export default function SugestoesRefeicoes() {
               ←
             </Link>
             <div>
-              <h1 className="text-xl font-bold">Sugestões de Refeições</h1>
+              <h1 className="text-xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Sugestões de Refeições</h1>
               <p className="text-white/70 text-sm">
                 {planoCompleto?.fase?.nome || 'Personalizado'} • Baseado nos teus macros
               </p>

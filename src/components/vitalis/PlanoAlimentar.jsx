@@ -410,7 +410,7 @@ export default function PlanoAlimentar() {
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] p-4">
-        <div className="max-w-md mx-auto mt-20 bg-white rounded-2xl p-6 text-center shadow-lg">
+        <div className="max-w-2xl mx-auto mt-20 bg-white rounded-2xl p-6 text-center shadow-lg">
           <div className="text-5xl mb-4">🥗</div>
           <h2 className="text-xl font-bold text-gray-800 mb-2">Plano não disponível</h2>
           <p className="text-gray-600 mb-4">{error}</p>
@@ -432,8 +432,8 @@ export default function PlanoAlimentar() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-4 pt-8 pb-6">
-        <div className="max-w-md mx-auto">
+      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-4 sm:px-6 pt-8 pb-6">
+        <div className="max-w-2xl mx-auto">
           <Link to="/vitalis/dashboard" className="inline-flex items-center gap-1 text-white/80 hover:text-white mb-4">
             <Icons.ArrowLeft />
             <span>Voltar</span>
@@ -446,14 +446,14 @@ export default function PlanoAlimentar() {
               className="w-12 h-12 object-contain drop-shadow-lg"
             />
             <div>
-              <h1 className="text-2xl font-bold">O Meu Plano</h1>
+              <h1 className="text-2xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>O Meu Plano</h1>
               <p className="text-white/80 mt-1">Resumo do teu plano alimentar</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-4 -mt-4 space-y-4">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 -mt-4 space-y-4">
         
         {/* Card Fase Actual - DESTAQUE */}
         <div className="bg-white rounded-2xl p-5 shadow-lg border-2 border-orange-200">
