@@ -340,10 +340,18 @@ const PagamentoVitalis = () => {
         .maybeSingle();
 
       if (codeData?.type === 'promo') {
-        // Promo code: apply 50% discount to PayPal prices
-        setPromoDiscount(50);
+        // Promo code: read discount percentage from notes (default 50%)
+        let discountPercent = 50; // default
+        if (codeData.notes) {
+          // Try to parse discount from notes (e.g., "20" or "discount:20")
+          const match = codeData.notes.match(/(\d+)/);
+          if (match) {
+            discountPercent = parseInt(match[1]);
+          }
+        }
+        setPromoDiscount(discountPercent);
         setPromoCode(inviteCode.toUpperCase());
-        setMessage({ type: 'success', text: '50% de desconto aplicado! Escolhe o teu plano e paga com PayPal.' });
+        setMessage({ type: 'success', text: `${discountPercent}% de desconto aplicado! Escolhe o teu plano e paga com PayPal.` });
         setProcessing(false);
         return;
       }
@@ -447,6 +455,55 @@ const PagamentoVitalis = () => {
             {message.text}
           </div>
         )}
+
+        {/* FREE 7 DAY TRIAL BUTTON */}
+        <div className="mb-6 bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-2 border-green-400/40 rounded-2xl p-5">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 text-3xl">🎁</div>
+            <div className="flex-1">
+              <h3 className="text-white font-bold text-lg mb-1">Experimenta 7 Dias Grátis</h3>
+              <p className="text-white/80 text-sm mb-4">
+                Acesso completo ao dashboard, check-ins diários, espaço de retorno e receitas. Sem cartão de crédito.
+              </p>
+              <button
+                onClick={async () => {
+                  if (!isAuthenticated) {
+                    setMessage({ type: 'info', text: 'Cria conta primeiro para iniciar o trial gratuito.' });
+                    return;
+                  }
+                  setProcessing(true);
+                  try {
+                    const { startTrial } = await import('../../lib/subscriptions');
+                    const result = await startTrial(userId);
+                    if (result.success) {
+                      setMessage({ type: 'success', text: `🎉 Trial de ${result.trialDays} dias ativado! Redirecionando...` });
+                      setTimeout(() => navigate('/vitalis/dashboard'), 1500);
+                    } else {
+                      setMessage({ type: 'error', text: 'Erro ao ativar trial. Tenta novamente.' });
+                    }
+                  } catch (err) {
+                    setMessage({ type: 'error', text: 'Erro ao ativar trial: ' + err.message });
+                  } finally {
+                    setProcessing(false);
+                  }
+                }}
+                disabled={!isAuthenticated || processing}
+                className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 px-6 rounded-full font-bold text-sm hover:shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {processing ? 'A ativar...' : '🚀 Começar Trial Gratuito (7 Dias)'}
+              </button>
+              {!isAuthenticated && (
+                <p className="text-green-200 text-xs mt-2 text-center">
+                  ↓ Cria conta abaixo primeiro
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="text-center mb-4">
+          <p className="text-white/60 text-sm">ou escolhe um plano pago com desconto</p>
+        </div>
 
         {/* Toggle Individual / Bundle */}
         <div className="flex gap-2 mb-4 bg-white/10 rounded-xl p-1">
