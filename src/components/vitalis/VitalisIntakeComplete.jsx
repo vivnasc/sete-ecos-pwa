@@ -13,6 +13,9 @@ export default function VitalisIntakeComplete() {
   const [showTermos, setShowTermos] = useState(false);
   const [showPrivacidade, setShowPrivacidade] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
+  const [planoStatus, setPlanoStatus] = useState(null); // null | 'gerando' | 'sucesso' | 'erro'
+  const [planoErro, setPlanoErro] = useState('');
+  const [planoUserId, setPlanoUserId] = useState(null);
 
   const [formData, setFormData] = useState({
     nome: '', email: '', whatsapp: '', idade: '', sexo: '',
@@ -499,21 +502,28 @@ try {
       setObservaRamadao(formData.observa_ramadao);
 
       if (temAcesso) {
-        // GERAR PLANO AUTOMATICAMENTE
-        console.log('🔄 A gerar plano automático...');
+        // GERAR PLANO AUTOMATICAMENTE — com feedback visível
+        setPlanoUserId(userData.id);
+        setPlanoStatus('gerando');
+        console.log('🔄 A gerar plano automático para userId:', userData.id);
+
         try {
           const resultado = await gerarPlanoAutomatico(userData.id);
           if (resultado?.success) {
-            console.log('✅ PLANO GERADO COM SUCESSO!');
+            console.log('✅ PLANO GERADO COM SUCESSO!', resultado.plano);
+            setPlanoStatus('sucesso');
+            // Esperar 2s para a utilizadora ver a confirmação
+            setTimeout(() => navigate('/vitalis/dashboard'), 2000);
           } else {
             console.error('⚠️ Plano não gerado:', resultado?.error);
+            setPlanoStatus('erro');
+            setPlanoErro(resultado?.error || 'Erro desconhecido ao gerar plano');
           }
         } catch (planoError) {
           console.error('⚠️ Erro ao gerar plano:', planoError);
+          setPlanoStatus('erro');
+          setPlanoErro(planoError.message || 'Erro inesperado ao gerar plano');
         }
-
-        // Ir para dashboard (mesmo que plano falhe — dashboard mostra opção de retry)
-        navigate('/vitalis/dashboard');
       } else {
         // Não tem acesso - ir para pagamento
         navigate('/vitalis/pagamento');
@@ -736,6 +746,73 @@ try {
 
   const section = sections[currentSection];
   const progress = (currentSection / (sections.length - 1)) * 100;
+
+  // Ecrã de geração do plano (aparece depois do intake ser submetido)
+  if (planoStatus) {
+    const retryPlano = async () => {
+      if (!planoUserId) return;
+      setPlanoStatus('gerando');
+      setPlanoErro('');
+      try {
+        const resultado = await gerarPlanoAutomatico(planoUserId);
+        if (resultado?.success) {
+          setPlanoStatus('sucesso');
+          setTimeout(() => navigate('/vitalis/dashboard'), 2000);
+        } else {
+          setPlanoStatus('erro');
+          setPlanoErro(resultado?.error || 'Erro desconhecido');
+        }
+      } catch (e) {
+        setPlanoStatus('erro');
+        setPlanoErro(e.message);
+      }
+    };
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3] flex items-center justify-center p-4">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 text-center max-w-md w-full border border-[#D2B48C]/30">
+          <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-16 h-16 mx-auto mb-4" />
+
+          {planoStatus === 'gerando' && (
+            <>
+              <div className="w-12 h-12 border-4 border-[#7C8B6F] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <h2 className="text-xl font-bold text-[#4A4035] mb-2">A gerar o teu plano...</h2>
+              <p className="text-[#6B5344] text-sm">Isto demora apenas alguns segundos.</p>
+            </>
+          )}
+
+          {planoStatus === 'sucesso' && (
+            <>
+              <div className="text-5xl mb-4">🎉</div>
+              <h2 className="text-xl font-bold text-[#4A4035] mb-2">Plano gerado com sucesso!</h2>
+              <p className="text-[#6B5344] text-sm mb-4">A redirecionar para o teu dashboard...</p>
+              <div className="w-8 h-8 border-3 border-[#7C8B6F] border-t-transparent rounded-full animate-spin mx-auto"></div>
+            </>
+          )}
+
+          {planoStatus === 'erro' && (
+            <>
+              <div className="text-5xl mb-4">⚠️</div>
+              <h2 className="text-xl font-bold text-[#4A4035] mb-2">Erro ao gerar plano</h2>
+              <p className="text-red-600 text-sm mb-4 bg-red-50 rounded-lg p-3">{planoErro}</p>
+              <button
+                onClick={retryPlano}
+                className="w-full py-3 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-xl font-semibold mb-3"
+              >
+                Tentar novamente
+              </button>
+              <button
+                onClick={() => navigate('/vitalis/dashboard')}
+                className="w-full py-3 text-[#7C8B6F] text-sm hover:underline"
+              >
+                Ir para o dashboard sem plano
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3]">
