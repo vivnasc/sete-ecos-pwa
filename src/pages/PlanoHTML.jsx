@@ -214,34 +214,102 @@ export default function PlanoHTML() {
       {/* PÁGINA 3 - PORÇÕES */}
       <div className="page" style={{padding:'45px'}}>
         <PageHeader />
-        <div style={{fontSize:'24px',fontWeight:'600',color:'#4A4035',marginBottom:'20px'}}>🍽️ As Tuas Porções Diárias</div>
-        <p style={{fontSize:'14px',color:'#6B5C4C',marginBottom:'28px'}}>Usa o Método da Mão para medir — simples, prático e sempre contigo.</p>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'18px',marginBottom:'25px'}}>
-          <div style={{background:'linear-gradient(135deg, #FFEBEE, #FFCDD2)',border:'3px solid #E57373',borderRadius:'18px',padding:'28px 20px',textAlign:'center'}}><div style={{fontSize:'17px',fontWeight:'600',color:'#C62828',marginBottom:'12px'}}>Proteína</div><div style={{fontSize:'56px',fontWeight:'700',color:'#C62828',lineHeight:1}}>{dados.porcoes_proteina}</div><div style={{fontSize:'13px',color:'#6B5C4C',marginTop:'12px'}}>palmas/dia</div></div>
-          <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',border:'3px solid #64B5F6',borderRadius:'18px',padding:'28px 20px',textAlign:'center'}}><div style={{fontSize:'17px',fontWeight:'600',color:'#1565C0',marginBottom:'12px'}}>Hidratos</div><div style={{fontSize:'56px',fontWeight:'700',color:'#1565C0',lineHeight:1}}>{dados.porcoes_hidratos}</div><div style={{fontSize:'13px',color:'#6B5C4C',marginTop:'12px'}}>mãos/dia</div></div>
-          <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'3px solid #FFD54F',borderRadius:'18px',padding:'28px 20px',textAlign:'center'}}><div style={{fontSize:'17px',fontWeight:'600',color:'#F57F17',marginBottom:'12px'}}>Gordura</div><div style={{fontSize:'56px',fontWeight:'700',color:'#F57F17',lineHeight:1}}>{dados.porcoes_gordura}</div><div style={{fontSize:'13px',color:'#6B5C4C',marginTop:'12px'}}>polegares/dia</div></div>
+        <div style={{fontSize:'24px',fontWeight:'600',color:'#4A4035',marginBottom:'8px'}}>🤚 A Tua Mão É a Tua Medida</div>
+        <p style={{fontSize:'14px',color:'#6B5C4C',marginBottom:'22px'}}>Sem balança, sem stress. Proporcional ao TEU corpo — mãos maiores = corpo maior = porções maiores.</p>
+
+        {/* Banner do método */}
+        <div style={{background:'linear-gradient(135deg, #7C8B6F, #5A6B4D)',borderRadius:'16px',padding:'18px 24px',marginBottom:'22px',display:'flex',justifyContent:'space-around',alignItems:'center'}}>
+          <div style={{textAlign:'center',color:'white'}}><div style={{fontSize:'28px'}}>🫲</div><div style={{fontSize:'10px',fontWeight:'700',letterSpacing:'1px',marginTop:'2px'}}>PALMA</div><div style={{fontSize:'9px',opacity:0.8}}>Proteína</div></div>
+          <div style={{textAlign:'center',color:'white'}}><div style={{fontSize:'28px'}}>✊</div><div style={{fontSize:'10px',fontWeight:'700',letterSpacing:'1px',marginTop:'2px'}}>PUNHO</div><div style={{fontSize:'9px',opacity:0.8}}>Legumes</div></div>
+          <div style={{textAlign:'center',color:'white'}}><div style={{fontSize:'28px'}}>🤲</div><div style={{fontSize:'10px',fontWeight:'700',letterSpacing:'1px',marginTop:'2px'}}>MÃO CONCHA</div><div style={{fontSize:'9px',opacity:0.8}}>Hidratos</div></div>
+          <div style={{textAlign:'center',color:'white'}}><div style={{fontSize:'28px'}}>👍</div><div style={{fontSize:'10px',fontWeight:'700',letterSpacing:'1px',marginTop:'2px'}}>POLEGAR</div><div style={{fontSize:'9px',opacity:0.8}}>Gordura</div></div>
         </div>
-        <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',border:'3px solid #81C784',borderRadius:'18px',padding:'28px',textAlign:'center',marginBottom:'32px'}}><div style={{fontSize:'17px',fontWeight:'600',color:'#2E7D32',marginBottom:'10px'}}>🥬 Vegetais & Legumes</div><div style={{fontSize:'46px',fontWeight:'700',color:'#2E7D32'}}>À VONTADE</div><div style={{fontSize:'13px',color:'#2E7D32',marginTop:'12px'}}>Quanto mais cores, melhor!</div></div>
-        <div style={{fontSize:'20px',fontWeight:'600',color:'#4A4035',marginBottom:'20px'}}>📊 Os Teus Macros Diários</div>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:'15px'}}>
-          <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'14px',textAlign:'center',padding:'20px'}}><div style={{fontSize:'24px',marginBottom:'12px'}}>🔥</div><div style={{fontSize:'28px',fontWeight:'700',color:'#7C8B6F'}}>{dados.calorias}</div><div style={{fontSize:'12px',color:'#6B5C4C',marginTop:'8px'}}>Calorias</div></div>
-          <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'14px',textAlign:'center',padding:'20px'}}><div style={{fontSize:'24px',marginBottom:'12px'}}>🥩</div><div style={{fontSize:'28px',fontWeight:'700',color:'#C62828'}}>{dados.proteina_g}g</div><div style={{fontSize:'12px',color:'#6B5C4C',marginTop:'8px'}}>Proteína</div></div>
-          <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'14px',textAlign:'center',padding:'20px'}}><div style={{fontSize:'24px',marginBottom:'12px'}}>🍚</div><div style={{fontSize:'28px',fontWeight:'700',color:'#1565C0'}}>{dados.carboidratos_g}g</div><div style={{fontSize:'12px',color:'#6B5C4C',marginTop:'8px'}}>Hidratos</div></div>
-          <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'14px',textAlign:'center',padding:'20px'}}><div style={{fontSize:'24px',marginBottom:'12px'}}>🥑</div><div style={{fontSize:'28px',fontWeight:'700',color:'#F57F17'}}>{dados.gordura_g}g</div><div style={{fontSize:'12px',color:'#6B5C4C',marginTop:'8px'}}>Gordura</div></div>
+
+        {/* Porções com gestos */}
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'14px',marginBottom:'18px'}}>
+          <div style={{background:'linear-gradient(135deg, #FFEBEE, #FFCDD2)',border:'3px solid #E57373',borderRadius:'18px',padding:'22px 16px',textAlign:'center'}}><div style={{fontSize:'32px',marginBottom:'6px'}}>🫲</div><div style={{fontSize:'14px',fontWeight:'600',color:'#C62828',marginBottom:'6px'}}>Proteína</div><div style={{fontSize:'48px',fontWeight:'700',color:'#C62828',lineHeight:1}}>{dados.porcoes_proteina}</div><div style={{fontSize:'12px',color:'#6B5C4C',marginTop:'8px'}}>palmas/dia</div></div>
+          <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',border:'3px solid #64B5F6',borderRadius:'18px',padding:'22px 16px',textAlign:'center'}}><div style={{fontSize:'32px',marginBottom:'6px'}}>🤲</div><div style={{fontSize:'14px',fontWeight:'600',color:'#1565C0',marginBottom:'6px'}}>Hidratos</div><div style={{fontSize:'48px',fontWeight:'700',color:'#1565C0',lineHeight:1}}>{dados.porcoes_hidratos}</div><div style={{fontSize:'12px',color:'#6B5C4C',marginTop:'8px'}}>mãos/dia</div></div>
+          <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'3px solid #FFD54F',borderRadius:'18px',padding:'22px 16px',textAlign:'center'}}><div style={{fontSize:'32px',marginBottom:'6px'}}>👍</div><div style={{fontSize:'14px',fontWeight:'600',color:'#F57F17',marginBottom:'6px'}}>Gordura</div><div style={{fontSize:'48px',fontWeight:'700',color:'#F57F17',lineHeight:1}}>{dados.porcoes_gordura}</div><div style={{fontSize:'12px',color:'#6B5C4C',marginTop:'8px'}}>polegares/dia</div></div>
+        </div>
+        <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',border:'3px solid #81C784',borderRadius:'18px',padding:'20px',textAlign:'center',marginBottom:'22px'}}><div style={{fontSize:'28px',marginBottom:'4px'}}>✊</div><div style={{fontSize:'14px',fontWeight:'600',color:'#2E7D32',marginBottom:'6px'}}>Vegetais & Legumes</div><div style={{fontSize:'38px',fontWeight:'700',color:'#2E7D32'}}>À VONTADE</div><div style={{fontSize:'12px',color:'#2E7D32',marginTop:'6px'}}>Quanto mais cores, melhor!</div></div>
+
+        {/* Macros */}
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:'12px'}}>
+          <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'12px',textAlign:'center',padding:'14px'}}><div style={{fontSize:'20px',marginBottom:'6px'}}>🔥</div><div style={{fontSize:'24px',fontWeight:'700',color:'#7C8B6F'}}>{dados.calorias}</div><div style={{fontSize:'11px',color:'#6B5C4C',marginTop:'4px'}}>Calorias</div></div>
+          <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'12px',textAlign:'center',padding:'14px'}}><div style={{fontSize:'20px',marginBottom:'6px'}}>🥩</div><div style={{fontSize:'24px',fontWeight:'700',color:'#C62828'}}>{dados.proteina_g}g</div><div style={{fontSize:'11px',color:'#6B5C4C',marginTop:'4px'}}>Proteína</div></div>
+          <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'12px',textAlign:'center',padding:'14px'}}><div style={{fontSize:'20px',marginBottom:'6px'}}>🍚</div><div style={{fontSize:'24px',fontWeight:'700',color:'#1565C0'}}>{dados.carboidratos_g}g</div><div style={{fontSize:'11px',color:'#6B5C4C',marginTop:'4px'}}>Hidratos</div></div>
+          <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'12px',textAlign:'center',padding:'14px'}}><div style={{fontSize:'20px',marginBottom:'6px'}}>🥑</div><div style={{fontSize:'24px',fontWeight:'700',color:'#F57F17'}}>{dados.gordura_g}g</div><div style={{fontSize:'11px',color:'#6B5C4C',marginTop:'4px'}}>Gordura</div></div>
         </div>
         <PageFooter page={3} />
       </div>
 
-      {/* PÁGINA 4 - MÉTODO DA MÃO */}
+      {/* PÁGINA 4 - MÉTODO DA MÃO COM EQUIVALÊNCIAS */}
       <div className="page" style={{padding:'45px'}}>
         <PageHeader />
-        <div style={{fontSize:'24px',fontWeight:'600',color:'#4A4035',marginBottom:'20px'}}>✋ O Método da Mão</div>
-        <p style={{fontSize:'15px',color:'#6B5C4C',marginBottom:'35px',textAlign:'center',fontStyle:'italic'}}>A tua mão é proporcional ao teu corpo — mãos maiores = corpo maior = mais comida.</p>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'25px'}}>
-          <div style={{background:'linear-gradient(135deg, #FFEBEE, #FFCDD2)',border:'3px solid #E57373',borderRadius:'18px',padding:'32px'}}><div style={{fontWeight:'600',color:'#C62828',marginBottom:'15px',fontSize:'19px'}}>🖐️ A Palma — PROTEÍNA</div><div style={{color:'#C62828',fontWeight:'700',fontSize:'26px',marginBottom:'15px'}}>~{dados.tamanho_palma}g de proteína</div><p style={{fontSize:'14px',color:'#4A4035',marginBottom:'12px'}}>Tamanho e espessura da tua palma (sem dedos)</p><p style={{fontSize:'13px',color:'#6B5C4C',fontStyle:'italic'}}>Ex: 1 bife, 1 peito de frango</p></div>
-          <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',border:'3px solid #64B5F6',borderRadius:'18px',padding:'32px'}}><div style={{fontWeight:'600',color:'#1565C0',marginBottom:'15px',fontSize:'19px'}}>🤲 A Mão em Concha — HIDRATOS</div><div style={{color:'#1565C0',fontWeight:'700',fontSize:'26px',marginBottom:'15px'}}>~{dados.tamanho_mao}g de hidratos</div><p style={{fontSize:'14px',color:'#4A4035',marginBottom:'12px'}}>O que cabe na tua mão em concha</p><p style={{fontSize:'13px',color:'#6B5C4C',fontStyle:'italic'}}>Ex: punhado de arroz, batata-doce</p></div>
-          <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'3px solid #FFD54F',borderRadius:'18px',padding:'32px'}}><div style={{fontWeight:'600',color:'#F57F17',marginBottom:'15px',fontSize:'19px'}}>👍 O Polegar — GORDURA</div><div style={{color:'#F57F17',fontWeight:'700',fontSize:'26px',marginBottom:'15px'}}>~{dados.tamanho_polegar}g de gordura</div><p style={{fontSize:'14px',color:'#4A4035',marginBottom:'12px'}}>Tamanho do teu polegar inteiro</p><p style={{fontSize:'13px',color:'#6B5C4C',fontStyle:'italic'}}>Ex: 1 colher azeite, nozes</p></div>
-          <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',border:'3px solid #81C784',borderRadius:'18px',padding:'32px'}}><div style={{fontWeight:'600',color:'#2E7D32',marginBottom:'15px',fontSize:'19px'}}>✊ O Punho — VEGETAIS</div><div style={{color:'#2E7D32',fontWeight:'700',fontSize:'26px',marginBottom:'15px'}}>~100g de vegetais</div><p style={{fontSize:'14px',color:'#4A4035',marginBottom:'12px'}}>Tamanho do teu punho fechado</p><p style={{fontSize:'13px',color:'#2E7D32',fontWeight:'600'}}>Mas lembra-te: À VONTADE!</p></div>
+        <div style={{fontSize:'24px',fontWeight:'600',color:'#4A4035',marginBottom:'8px'}}>🫲 Guia Prático: Quanto É 1 Porção?</div>
+        <p style={{fontSize:'13px',color:'#6B5C4C',marginBottom:'20px',textAlign:'center',fontStyle:'italic'}}>Cada pessoa tem mãos diferentes — por isso a medida é sempre proporcional ao teu corpo.</p>
+
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'18px'}}>
+          {/* Proteína */}
+          <div style={{background:'linear-gradient(135deg, #FFEBEE, #FFCDD2)',border:'3px solid #E57373',borderRadius:'18px',padding:'22px'}}>
+            <div style={{fontWeight:'600',color:'#C62828',marginBottom:'8px',fontSize:'17px'}}>🫲 A Palma — PROTEÍNA</div>
+            <div style={{color:'#C62828',fontWeight:'700',fontSize:'20px',marginBottom:'12px'}}>~{dados.tamanho_palma}g por palma</div>
+            <div style={{fontSize:'13px',color:'#4A4035',lineHeight:'2'}}>
+              🍗 Frango grelhado (1 palma)<br/>
+              🐟 1 lata de atum = 1 palma<br/>
+              🥩 Bife/Carne (1 palma)<br/>
+              🥚 <strong>2-3 ovos = 1 palma</strong><br/>
+              🦐 Camarão/Peixe (1 palma)<br/>
+              🥛 Iogurte grego (170g) = ½ palma<br/>
+              🧀 2 fatias de queijo = ½ palma<br/>
+              🥤 Whey (1 scoop) = 1 palma
+            </div>
+          </div>
+
+          {/* Hidratos */}
+          <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',border:'3px solid #64B5F6',borderRadius:'18px',padding:'22px'}}>
+            <div style={{fontWeight:'600',color:'#1565C0',marginBottom:'8px',fontSize:'17px'}}>🤲 Mão Concha — HIDRATOS</div>
+            <div style={{color:'#1565C0',fontWeight:'700',fontSize:'20px',marginBottom:'12px'}}>~{dados.tamanho_mao}g carbs por mão</div>
+            <div style={{fontSize:'13px',color:'#4A4035',lineHeight:'2'}}>
+              🍚 Arroz (1 mão em concha)<br/>
+              🍝 Massa (1 mão em concha)<br/>
+              🥔 Batata (1 punho)<br/>
+              🍠 Batata doce (1 punho)<br/>
+              🍞 Pão (1 fatia)<br/>
+              🥣 Aveia (3 col. sopa)<br/>
+              🍎 Fruta (1 peça média)<br/>
+              🫚 Mandioca (1 punho)
+            </div>
+          </div>
+
+          {/* Gordura */}
+          <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'3px solid #FFD54F',borderRadius:'18px',padding:'22px'}}>
+            <div style={{fontWeight:'600',color:'#F57F17',marginBottom:'8px',fontSize:'17px'}}>👍 O Polegar — GORDURA</div>
+            <div style={{color:'#F57F17',fontWeight:'700',fontSize:'20px',marginBottom:'12px'}}>~{dados.tamanho_polegar}g por polegar</div>
+            <div style={{fontSize:'13px',color:'#4A4035',lineHeight:'2'}}>
+              🫒 Azeite (1 col. sopa)<br/>
+              🥑 ¼ de abacate<br/>
+              🥜 Amêndoas/Nozes (1 punhado)<br/>
+              🧈 Manteiga (1 col. chá)<br/>
+              🥜 Manteiga amendoim (1 col. sopa)<br/>
+              🥥 Coco ralado (2 col. sopa)
+            </div>
+          </div>
+
+          {/* Vegetais */}
+          <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',border:'3px solid #81C784',borderRadius:'18px',padding:'22px'}}>
+            <div style={{fontWeight:'600',color:'#2E7D32',marginBottom:'8px',fontSize:'17px'}}>✊ O Punho — LEGUMES</div>
+            <div style={{color:'#2E7D32',fontWeight:'700',fontSize:'20px',marginBottom:'12px'}}>~100g por punho</div>
+            <div style={{fontSize:'13px',color:'#4A4035',lineHeight:'2'}}>
+              🥗 Salada mista (1 punho)<br/>
+              🥦 Brócolos (1 punho)<br/>
+              🥬 Espinafres/Couve (1 punho)<br/>
+              🍅 Tomate (1 punho)<br/>
+              🥕 Cenoura (1 punho)<br/>
+              🍄 Cogumelos (1 punho)
+            </div>
+            <p style={{fontSize:'12px',color:'#2E7D32',fontWeight:'600',marginTop:'8px',fontStyle:'italic'}}>Legumes são livres — come à vontade!</p>
+          </div>
         </div>
         <PageFooter page={4} />
       </div>

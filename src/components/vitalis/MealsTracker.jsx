@@ -409,6 +409,7 @@ export default function MealsTracker() {
                     refeicao={ref.nome}
                     registo={registo}
                     plano={plano}
+                    numRefeicoes={refeicoes.length}
                     onSave={(detalhes) => registarRefeicao(ref.nome, detalhes.seguiu_plano || registo?.seguiu_plano || 'sim', detalhes)}
                     saving={saving}
                   />
@@ -418,14 +419,27 @@ export default function MealsTracker() {
           })}
         </div>
 
+        {/* Método da Mão - mini referência */}
+        <div className="mt-6 bg-gradient-to-r from-[#7C8B6F] to-[#5A6B4D] rounded-2xl p-4 text-white">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xl">🤚</span>
+            <span className="font-bold text-sm">A tua mão é a medida</span>
+          </div>
+          <div className="grid grid-cols-4 gap-2 text-center text-[10px]">
+            <div><span className="text-lg">🫲</span><br/><span className="font-semibold">Palma</span><br/>Proteína</div>
+            <div><span className="text-lg">✊</span><br/><span className="font-semibold">Punho</span><br/>Legumes</div>
+            <div><span className="text-lg">🤲</span><br/><span className="font-semibold">Concha</span><br/>Hidratos</div>
+            <div><span className="text-lg">👍</span><br/><span className="font-semibold">Polegar</span><br/>Gordura</div>
+          </div>
+        </div>
+
         {/* Dica */}
-        <div className="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+        <div className="mt-3 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
           <div className="flex gap-3">
             <span className="text-2xl">💡</span>
             <div>
-              <p className="font-semibold text-blue-900 mb-1">Dica:</p>
               <p className="text-blue-800 text-sm">
-                Clica nos botões ✓ ~ ✕ para registo rápido, ou expande (▼) para adicionar detalhes de porções.
+                Clica ✓ ~ ✕ para registo rápido, ou expande (▼) para selecionar alimentos e ver as porções.
               </p>
             </div>
           </div>
@@ -435,17 +449,101 @@ export default function MealsTracker() {
   );
 }
 
+// Alimentos comuns com equivalências em porções-mão
+const ALIMENTOS_COMUNS = {
+  proteina: [
+    { nome: 'Frango (1 palma)', porcao: 1, icon: '🍗' },
+    { nome: 'Peixe (1 palma)', porcao: 1, icon: '🐟' },
+    { nome: 'Bife/Carne (1 palma)', porcao: 1, icon: '🥩' },
+    { nome: 'Atum (1 lata)', porcao: 1, icon: '🐠' },
+    { nome: 'Ovos (2-3)', porcao: 1, icon: '🥚' },
+    { nome: 'Iogurte grego (170g)', porcao: 0.5, icon: '🥛' },
+    { nome: 'Queijo (2 fatias)', porcao: 0.5, icon: '🧀' },
+    { nome: 'Whey (1 scoop)', porcao: 1, icon: '🥤' },
+    { nome: 'Camarão/Marisco (1 palma)', porcao: 1, icon: '🦐' },
+    { nome: 'Tofu (1 palma)', porcao: 1, icon: '🫘' },
+  ],
+  hidratos: [
+    { nome: 'Arroz (1 mão concha)', porcao: 1, icon: '🍚' },
+    { nome: 'Massa (1 mão concha)', porcao: 1, icon: '🍝' },
+    { nome: 'Batata (1 punho)', porcao: 1, icon: '🥔' },
+    { nome: 'Batata doce (1 punho)', porcao: 1, icon: '🍠' },
+    { nome: 'Pão (1 fatia)', porcao: 1, icon: '🍞' },
+    { nome: 'Aveia (3 col. sopa)', porcao: 1, icon: '🥣' },
+    { nome: 'Fruta (1 peça média)', porcao: 1, icon: '🍎' },
+    { nome: 'Mandioca (1 punho)', porcao: 1, icon: '🫚' },
+  ],
+  gordura: [
+    { nome: 'Azeite (1 col. sopa)', porcao: 1, icon: '🫒' },
+    { nome: '¼ abacate', porcao: 1, icon: '🥑' },
+    { nome: 'Amêndoas/Nozes (1 punhado)', porcao: 1, icon: '🥜' },
+    { nome: 'Manteiga (1 col. chá)', porcao: 1, icon: '🧈' },
+    { nome: 'Amendoim (1 col. sopa)', porcao: 1, icon: '🥜' },
+    { nome: 'Coco ralado (2 col. sopa)', porcao: 1, icon: '🥥' },
+  ],
+  legumes: [
+    { nome: 'Salada mista (1 punho)', porcao: 1, icon: '🥗' },
+    { nome: 'Brócolos (1 punho)', porcao: 1, icon: '🥦' },
+    { nome: 'Espinafres (1 punho)', porcao: 1, icon: '🥬' },
+    { nome: 'Tomate (1 punho)', porcao: 1, icon: '🍅' },
+    { nome: 'Cenoura (1 punho)', porcao: 1, icon: '🥕' },
+    { nome: 'Couve (1 punho)', porcao: 1, icon: '🥬' },
+    { nome: 'Cogumelos (1 punho)', porcao: 1, icon: '🍄' },
+  ]
+};
+
+const CATEGORIAS = [
+  { key: 'proteina', label: 'Proteína', emoji: '🫲', medida: 'palma', medidaPlural: 'palmas', corFundo: 'bg-rose-50', corBorda: 'border-rose-300', corTexto: 'text-rose-700' },
+  { key: 'hidratos', label: 'Hidratos', emoji: '🤲', medida: 'mão', medidaPlural: 'mãos', corFundo: 'bg-amber-50', corBorda: 'border-amber-300', corTexto: 'text-amber-700' },
+  { key: 'gordura', label: 'Gordura', emoji: '👍', medida: 'polegar', medidaPlural: 'polegares', corFundo: 'bg-purple-50', corBorda: 'border-purple-300', corTexto: 'text-purple-700' },
+  { key: 'legumes', label: 'Legumes', emoji: '✊', medida: 'punho', medidaPlural: 'punhos', corFundo: 'bg-green-50', corBorda: 'border-green-300', corTexto: 'text-green-700' },
+];
+
 // Componente de Detalhe
-function DetalheRefeicao({ refeicao, registo, plano, onSave, saving }) {
+function DetalheRefeicao({ refeicao, registo, plano, numRefeicoes, onSave, saving }) {
   const [detalhes, setDetalhes] = useState({
     seguiu_plano: registo?.seguiu_plano || 'sim',
     hora: registo?.hora || '',
-    porcoes_proteina: registo?.porcoes_proteina || '',
-    porcoes_hidratos: registo?.porcoes_hidratos || '',
-    porcoes_gordura: registo?.porcoes_gordura || '',
-    porcoes_legumes: registo?.porcoes_legumes || '',
+    porcoes_proteina: registo?.porcoes_proteina || 0,
+    porcoes_hidratos: registo?.porcoes_hidratos || 0,
+    porcoes_gordura: registo?.porcoes_gordura || 0,
+    porcoes_legumes: registo?.porcoes_legumes || 0,
     notas: registo?.notas || ''
   });
+  const [categoriaAberta, setCategoriaAberta] = useState(null);
+  const [alimentosSelecionados, setAlimentosSelecionados] = useState([]);
+
+  // Calcular alvo por refeição (total do dia / nº refeições)
+  const nRef = numRefeicoes || 3;
+  const alvoPorRefeicao = plano ? {
+    proteina: Math.ceil(plano.porcoes_proteina / nRef),
+    hidratos: Math.ceil(plano.porcoes_hidratos / nRef),
+    gordura: Math.ceil(plano.porcoes_gordura / nRef),
+    legumes: Math.ceil(plano.porcoes_legumes / nRef),
+  } : null;
+
+  const adicionarAlimento = (categoria, alimento) => {
+    const campo = `porcoes_${categoria}`;
+    const novoValor = parseFloat(detalhes[campo] || 0) + alimento.porcao;
+    setDetalhes({ ...detalhes, [campo]: novoValor });
+    setAlimentosSelecionados([...alimentosSelecionados, { ...alimento, categoria }]);
+  };
+
+  const removerAlimento = (index) => {
+    const item = alimentosSelecionados[index];
+    const campo = `porcoes_${item.categoria}`;
+    const novoValor = Math.max(0, parseFloat(detalhes[campo] || 0) - item.porcao);
+    setDetalhes({ ...detalhes, [campo]: novoValor });
+    setAlimentosSelecionados(alimentosSelecionados.filter((_, i) => i !== index));
+  };
+
+  const verificarExcesso = (categoria) => {
+    if (!alvoPorRefeicao) return null;
+    const actual = parseFloat(detalhes[`porcoes_${categoria}`] || 0);
+    const alvo = alvoPorRefeicao[categoria];
+    if (actual > alvo) return { excesso: actual - alvo, alvo };
+    return null;
+  };
 
   return (
     <div className="border-t border-gray-200 p-4 bg-gray-50">
@@ -458,9 +556,9 @@ function DetalheRefeicao({ refeicao, registo, plano, onSave, saving }) {
             onChange={(e) => setDetalhes({ ...detalhes, seguiu_plano: e.target.value })}
             className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none"
           >
-            <option value="sim">✅ Seguiu o plano</option>
-            <option value="parcial">⚠️ Parcialmente</option>
-            <option value="nao">❌ Não seguiu</option>
+            <option value="sim">Seguiu o plano</option>
+            <option value="parcial">Parcialmente</option>
+            <option value="nao">Não seguiu</option>
           </select>
         </div>
 
@@ -476,70 +574,142 @@ function DetalheRefeicao({ refeicao, registo, plano, onSave, saving }) {
         </div>
       </div>
 
-      {/* Porções */}
-      <div className="mb-4">
-        <label className="block text-xs font-semibold text-gray-600 mb-2">
-          Porções {plano && <span className="text-gray-400">(alvo do dia)</span>}
-        </label>
-        <div className="grid grid-cols-4 gap-2">
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">
-              🥩 Proteína {plano && <span className="text-[#C1634A]">({plano.porcoes_proteina})</span>}
-            </label>
-            <input
-              type="number"
-              step="0.5"
-              min="0"
-              value={detalhes.porcoes_proteina}
-              onChange={(e) => setDetalhes({ ...detalhes, porcoes_proteina: e.target.value })}
-              placeholder="0"
-              className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none text-center"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">
-              🍚 Hidratos {plano && <span className="text-[#C1634A]">({plano.porcoes_hidratos})</span>}
-            </label>
-            <input
-              type="number"
-              step="0.5"
-              min="0"
-              value={detalhes.porcoes_hidratos}
-              onChange={(e) => setDetalhes({ ...detalhes, porcoes_hidratos: e.target.value })}
-              placeholder="0"
-              className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none text-center"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">
-              🥑 Gordura {plano && <span className="text-[#C1634A]">({plano.porcoes_gordura})</span>}
-            </label>
-            <input
-              type="number"
-              step="0.5"
-              min="0"
-              value={detalhes.porcoes_gordura}
-              onChange={(e) => setDetalhes({ ...detalhes, porcoes_gordura: e.target.value })}
-              placeholder="0"
-              className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none text-center"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">
-              🥬 Legumes {plano && <span className="text-[#C1634A]">({plano.porcoes_legumes})</span>}
-            </label>
-            <input
-              type="number"
-              step="0.5"
-              min="0"
-              value={detalhes.porcoes_legumes}
-              onChange={(e) => setDetalhes({ ...detalhes, porcoes_legumes: e.target.value })}
-              placeholder="0"
-              className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none text-center"
-            />
+      {/* Alimentos selecionados */}
+      {alimentosSelecionados.length > 0 && (
+        <div className="mb-3">
+          <label className="block text-xs font-semibold text-gray-600 mb-1">O que comeste:</label>
+          <div className="flex flex-wrap gap-1.5">
+            {alimentosSelecionados.map((item, i) => (
+              <button
+                key={i}
+                onClick={() => removerAlimento(i)}
+                className="flex items-center gap-1 px-2 py-1 bg-white border border-gray-300 rounded-full text-xs hover:bg-red-50 hover:border-red-300 transition-all"
+                title="Clica para remover"
+              >
+                <span>{item.icon}</span>
+                <span className="text-gray-700">{item.nome}</span>
+                <span className="text-gray-400 ml-0.5">×</span>
+              </button>
+            ))}
           </div>
         </div>
+      )}
+
+      {/* Seleção rápida de alimentos por categoria — hand-centric */}
+      <div className="mb-4">
+        <label className="block text-xs font-semibold text-gray-600 mb-2">
+          O que comeste? Toca no gesto da mão:
+        </label>
+        <div className="grid grid-cols-4 gap-2 mb-2">
+          {CATEGORIAS.map(cat => {
+            const valor = parseFloat(detalhes[`porcoes_${cat.key}`] || 0);
+            const excesso = verificarExcesso(cat.key);
+            const isActive = categoriaAberta === cat.key;
+            return (
+              <button
+                key={cat.key}
+                onClick={() => setCategoriaAberta(isActive ? null : cat.key)}
+                className={`relative rounded-xl border-2 text-center transition-all overflow-hidden ${
+                  isActive
+                    ? `${cat.corBorda} ${cat.corFundo} shadow-md scale-[1.03]`
+                    : excesso ? 'border-orange-400 bg-orange-50' : 'border-gray-200 bg-white hover:border-gray-300'
+                }`}
+              >
+                <div className="py-2 px-1">
+                  <div className="text-2xl leading-none">{cat.emoji}</div>
+                  <div className={`text-[10px] font-bold mt-1 ${isActive ? cat.corTexto : 'text-gray-600'}`}>
+                    {cat.label}
+                  </div>
+                  <div className={`text-lg font-bold ${excesso ? 'text-orange-600' : 'text-gray-800'}`}>
+                    {valor}
+                    {alvoPorRefeicao && (
+                      <span className="text-gray-400 font-normal text-xs">/{alvoPorRefeicao[cat.key]}</span>
+                    )}
+                  </div>
+                  <div className="text-[9px] text-gray-400">
+                    {valor === 1 ? cat.medida : cat.medidaPlural}
+                  </div>
+                </div>
+                {isActive && (
+                  <div className={`h-1 ${cat.corBorda.replace('border', 'bg')}`} />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Alertas de excesso */}
+        {CATEGORIAS.map(cat => {
+          const excesso = verificarExcesso(cat.key);
+          if (!excesso) return null;
+          return (
+            <div key={`alerta-${cat.key}`} className="flex items-center gap-2 px-3 py-1.5 mb-1 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-700">
+              <span>{cat.emoji}</span>
+              <span><strong>{cat.label}</strong>: +{excesso.excesso} {excesso.excesso === 1 ? cat.medida : cat.medidaPlural} acima do alvo desta refeição ({excesso.alvo})</span>
+            </div>
+          );
+        })}
+
+        {/* Lista de alimentos da categoria aberta */}
+        {categoriaAberta && (() => {
+          const cat = CATEGORIAS.find(c => c.key === categoriaAberta);
+          return (
+            <div className={`${cat.corFundo} border-2 ${cat.corBorda} rounded-xl p-3 mt-2`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">{cat.emoji}</span>
+                  <span className={`text-xs font-bold ${cat.corTexto}`}>
+                    Cada item = porções em {cat.medidaPlural}. Toca para adicionar:
+                  </span>
+                </div>
+                <button
+                  onClick={() => setCategoriaAberta(null)}
+                  className="text-gray-400 hover:text-gray-600 text-sm px-1"
+                >✕</button>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {ALIMENTOS_COMUNS[categoriaAberta].map((alimento, i) => (
+                  <button
+                    key={i}
+                    onClick={() => adicionarAlimento(categoriaAberta, alimento)}
+                    className={`flex items-center gap-1.5 px-3 py-2 bg-white hover:shadow-md border ${cat.corBorda.replace('-300', '-200')} hover:${cat.corBorda} rounded-full text-xs transition-all active:scale-95`}
+                  >
+                    <span className="text-base">{alimento.icon}</span>
+                    <span className="text-gray-800 font-medium">{alimento.nome}</span>
+                    <span className={`${cat.corTexto} font-bold text-[10px] bg-white rounded-full px-1.5 py-0.5 border ${cat.corBorda.replace('-300', '-200')}`}>
+                      +{alimento.porcao}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
       </div>
+
+      {/* Ajuste manual de porções */}
+      <details className="mb-4">
+        <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
+          Ajustar porções manualmente
+        </summary>
+        <div className="grid grid-cols-4 gap-2 mt-2">
+          {CATEGORIAS.map(cat => (
+            <div key={cat.key}>
+              <label className="block text-xs text-gray-500 mb-1">
+                {cat.emoji} {cat.label}
+              </label>
+              <input
+                type="number"
+                step="0.5"
+                min="0"
+                value={detalhes[`porcoes_${cat.key}`]}
+                onChange={(e) => setDetalhes({ ...detalhes, [`porcoes_${cat.key}`]: parseFloat(e.target.value) || 0 })}
+                className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none text-center"
+              />
+            </div>
+          ))}
+        </div>
+      </details>
 
       {/* Notas */}
       <div className="mb-4">

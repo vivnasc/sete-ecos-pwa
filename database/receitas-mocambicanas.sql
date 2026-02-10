@@ -853,3 +853,445 @@ INSERT INTO vitalis_receitas (
 7. Finalize com salsa picada e rodelas de limão.',
   true
 );
+
+-- ===== NOVAS RECEITAS: CASTANHA DE CAJU (Moçambique é grande produtor mundial) =====
+
+INSERT INTO vitalis_receitas (
+  titulo, descricao, origem, tipo_refeicao, tempo_preparo_min, porcoes, dificuldade,
+  calorias, proteina_g, carboidratos_g, gordura_g,
+  porcoes_proteina, porcoes_legumes, porcoes_hidratos, porcoes_gordura,
+  tags, fases_recomendadas, ingredientes, modo_preparo, ativo
+) VALUES (
+  'Frango com Molho de Castanha de Caju',
+  'Prato que celebra a castanha de caju moçambicana. O molho cremoso transforma um simples frango grelhado numa experiência gastronómica.',
+  'mocambicana',
+  'almoco',
+  40,
+  4,
+  'medio',
+  420,
+  38,
+  12,
+  26,
+  1.5,
+  1,
+  0,
+  1.5,
+  ARRAY['proteico', 'sem_gluten', 'sem_lactose', 'tradicional'],
+  ARRAY['inducao', 'transicao', 'manutencao'],
+  '[
+    {"item": "Peitos de frango", "quantidade": "600g", "porcao_mao": "1.5 palmas"},
+    {"item": "Castanha de caju crua", "quantidade": "100g", "porcao_mao": "1 polegar grande"},
+    {"item": "Leite de coco", "quantidade": "200ml"},
+    {"item": "Cebola", "quantidade": "1 média"},
+    {"item": "Alho", "quantidade": "3 dentes"},
+    {"item": "Gengibre fresco", "quantidade": "2cm"},
+    {"item": "Piripiri", "quantidade": "1 pequeno"},
+    {"item": "Coentros frescos", "quantidade": "1 molho"},
+    {"item": "Azeite", "quantidade": "2 colheres de sopa"},
+    {"item": "Sal e pimenta", "quantidade": "a gosto"}
+  ]'::jsonb,
+  '1. Tempere o frango com sal, pimenta, alho e gengibre ralado. Reserve 15 minutos.
+2. Toste ligeiramente as castanhas de caju numa frigideira seca por 3-4 minutos.
+3. Triture metade das castanhas com o leite de coco até obter um molho cremoso.
+4. Grelhe o frango em azeite até dourar (6-7 min por lado).
+5. Na mesma frigideira, refogue a cebola e o piripiri picado.
+6. Adicione o molho de castanha e cozinhe por 5 minutos em lume brando.
+7. Corte o frango em fatias e cubra com o molho.
+8. Decore com as castanhas restantes e coentros frescos.',
+  true
+);
+
+INSERT INTO vitalis_receitas (
+  titulo, descricao, origem, tipo_refeicao, tempo_preparo_min, porcoes, dificuldade,
+  calorias, proteina_g, carboidratos_g, gordura_g,
+  porcoes_proteina, porcoes_legumes, porcoes_hidratos, porcoes_gordura,
+  tags, fases_recomendadas, ingredientes, modo_preparo, ativo
+) VALUES (
+  'Salada Tropical de Castanha de Caju',
+  'Salada fresca e crocante com castanha de caju, manga e abacate. Perfeita para dias quentes em Maputo.',
+  'mocambicana',
+  'almoco',
+  15,
+  2,
+  'facil',
+  280,
+  8,
+  22,
+  20,
+  0,
+  2,
+  0.5,
+  1.5,
+  ARRAY['vegetariano', 'sem_gluten', 'sem_lactose', 'rapido', 'tropical'],
+  ARRAY['transicao', 'manutencao'],
+  '[
+    {"item": "Folhas verdes mistas", "quantidade": "200g", "porcao_mao": "2 punhos"},
+    {"item": "Castanha de caju torrada", "quantidade": "60g", "porcao_mao": "1 polegar"},
+    {"item": "Manga madura", "quantidade": "1 pequena"},
+    {"item": "Abacate", "quantidade": "1/2 unidade", "porcao_mao": "1 polegar"},
+    {"item": "Tomate cereja", "quantidade": "100g"},
+    {"item": "Sumo de limão", "quantidade": "2 colheres de sopa"},
+    {"item": "Azeite", "quantidade": "1 colher de sopa"},
+    {"item": "Sal e piripiri", "quantidade": "a gosto"}
+  ]'::jsonb,
+  '1. Lave e seque bem as folhas verdes.
+2. Corte a manga e o abacate em cubos.
+3. Corte os tomates ao meio.
+4. Numa saladeira, misture as folhas, manga, abacate e tomates.
+5. Prepare o molho: sumo de limão, azeite, sal e um toque de piripiri.
+6. Regue a salada e misture delicadamente.
+7. Polvilhe com as castanhas de caju por cima para manter crocante.',
+  true
+);
+
+-- ===== NOVAS RECEITAS: ARROZ (staple moçambicano) =====
+
+INSERT INTO vitalis_receitas (
+  titulo, descricao, origem, tipo_refeicao, tempo_preparo_min, porcoes, dificuldade,
+  calorias, proteina_g, carboidratos_g, gordura_g,
+  porcoes_proteina, porcoes_legumes, porcoes_hidratos, porcoes_gordura,
+  tags, fases_recomendadas, ingredientes, modo_preparo, ativo
+) VALUES (
+  'Arroz de Coco Moçambicano',
+  'Arroz aromático cozido em leite de coco, um acompanhamento clássico da costa moçambicana que eleva qualquer prato de peixe ou frango.',
+  'mocambicana',
+  'almoco',
+  30,
+  4,
+  'facil',
+  280,
+  5,
+  42,
+  10,
+  0,
+  0,
+  1.5,
+  0.5,
+  ARRAY['vegetariano', 'sem_gluten', 'sem_lactose', 'economico', 'tradicional'],
+  ARRAY['manutencao'],
+  '[
+    {"item": "Arroz de grão longo", "quantidade": "300g", "porcao_mao": "1.5 mãos concha"},
+    {"item": "Leite de coco", "quantidade": "400ml"},
+    {"item": "Água", "quantidade": "200ml"},
+    {"item": "Cebola", "quantidade": "1 pequena"},
+    {"item": "Sal", "quantidade": "1 colher de chá"},
+    {"item": "Folha de louro", "quantidade": "1 folha"}
+  ]'::jsonb,
+  '1. Lave o arroz em água corrente até a água sair limpa.
+2. Refogue a cebola picada finamente em lume médio.
+3. Adicione o arroz e mexa por 1 minuto para envolver.
+4. Junte o leite de coco, a água, o sal e a folha de louro.
+5. Quando ferver, reduza para lume brando e tape.
+6. Cozinhe 18-20 minutos sem destampar.
+7. Desligue o lume e deixe repousar 5 minutos com a tampa.
+8. Solte com um garfo antes de servir.',
+  true
+);
+
+INSERT INTO vitalis_receitas (
+  titulo, descricao, origem, tipo_refeicao, tempo_preparo_min, porcoes, dificuldade,
+  calorias, proteina_g, carboidratos_g, gordura_g,
+  porcoes_proteina, porcoes_legumes, porcoes_hidratos, porcoes_gordura,
+  tags, fases_recomendadas, ingredientes, modo_preparo, ativo
+) VALUES (
+  'Arroz com Feijão-Nhemba',
+  'Combinação clássica moçambicana de arroz com feijão-nhemba (feijão frade). Proteína completa e económica, perfeita para o dia-a-dia.',
+  'mocambicana',
+  'almoco',
+  50,
+  4,
+  'facil',
+  350,
+  14,
+  55,
+  6,
+  0.5,
+  0,
+  2,
+  0.5,
+  ARRAY['vegetariano', 'sem_gluten', 'sem_lactose', 'economico', 'tradicional', 'alta_proteina'],
+  ARRAY['manutencao'],
+  '[
+    {"item": "Arroz", "quantidade": "200g", "porcao_mao": "1 mão concha"},
+    {"item": "Feijão-nhemba cozido", "quantidade": "200g", "porcao_mao": "1 mão concha"},
+    {"item": "Cebola", "quantidade": "1 média"},
+    {"item": "Tomate", "quantidade": "2 unidades"},
+    {"item": "Alho", "quantidade": "2 dentes"},
+    {"item": "Azeite", "quantidade": "2 colheres de sopa"},
+    {"item": "Sal e pimenta", "quantidade": "a gosto"},
+    {"item": "Coentros frescos", "quantidade": "1 molho"}
+  ]'::jsonb,
+  '1. Se usar feijão seco, demolhe durante a noite e cozinhe até ficar macio (1h).
+2. Refogue a cebola e o alho no azeite até dourar.
+3. Adicione o tomate picado e cozinhe 5 minutos.
+4. Junte o arroz lavado e mexa 1 minuto.
+5. Adicione água (2x o volume do arroz), sal e pimenta.
+6. Quando ferver, adicione o feijão-nhemba cozido.
+7. Tape e cozinhe em lume brando 20 minutos.
+8. Finalize com coentros frescos picados.',
+  true
+);
+
+-- ===== NOVAS RECEITAS: MAIS MARISCO (costa moçambicana) =====
+
+INSERT INTO vitalis_receitas (
+  titulo, descricao, origem, tipo_refeicao, tempo_preparo_min, porcoes, dificuldade,
+  calorias, proteina_g, carboidratos_g, gordura_g,
+  porcoes_proteina, porcoes_legumes, porcoes_hidratos, porcoes_gordura,
+  tags, fases_recomendadas, ingredientes, modo_preparo, ativo
+) VALUES (
+  'Lulas Grelhadas à Moçambicana',
+  'Lulas frescas da costa grelhadas com molho piripiri e limão. Simples, rápido e delicioso — como se come nas barracas de praia em Tofo.',
+  'mocambicana',
+  'jantar',
+  25,
+  2,
+  'facil',
+  220,
+  28,
+  4,
+  10,
+  1,
+  1,
+  0,
+  0.5,
+  ARRAY['marisco', 'proteico', 'sem_gluten', 'sem_lactose', 'rapido', 'omega3'],
+  ARRAY['inducao', 'transicao', 'manutencao'],
+  '[
+    {"item": "Lulas limpas", "quantidade": "400g", "porcao_mao": "1 palma"},
+    {"item": "Piripiri fresco", "quantidade": "2 unidades"},
+    {"item": "Limão", "quantidade": "2 unidades"},
+    {"item": "Alho", "quantidade": "3 dentes"},
+    {"item": "Azeite", "quantidade": "2 colheres de sopa"},
+    {"item": "Salsa fresca", "quantidade": "1 molho"},
+    {"item": "Sal marinho", "quantidade": "a gosto"},
+    {"item": "Salada verde", "quantidade": "200g", "porcao_mao": "1 punho"}
+  ]'::jsonb,
+  '1. Limpe as lulas e faça cortes em losango na superfície (para não enrolar).
+2. Prepare a marinada: azeite, alho picado, piripiri, sumo de 1 limão e sal.
+3. Marine as lulas por 15 minutos.
+4. Aqueça a grelha ou frigideira em lume alto.
+5. Grelhe 2-3 minutos de cada lado (não cozinhe demais para não ficar borrachudo).
+6. Sirva imediatamente com limão cortado e salada verde.
+7. Regue com o resto da marinada por cima.',
+  true
+);
+
+INSERT INTO vitalis_receitas (
+  titulo, descricao, origem, tipo_refeicao, tempo_preparo_min, porcoes, dificuldade,
+  calorias, proteina_g, carboidratos_g, gordura_g,
+  porcoes_proteina, porcoes_legumes, porcoes_hidratos, porcoes_gordura,
+  tags, fases_recomendadas, ingredientes, modo_preparo, ativo
+) VALUES (
+  'Caldeirada de Peixe e Marisco',
+  'Guisado rico de peixe com camarão e lulas, cozinhado em molho de tomate e coco. Prato de celebração da costa moçambicana.',
+  'mocambicana',
+  'jantar',
+  45,
+  4,
+  'medio',
+  340,
+  35,
+  15,
+  16,
+  1.5,
+  1,
+  0,
+  1,
+  ARRAY['marisco', 'proteico', 'sem_gluten', 'sem_lactose', 'omega3', 'tradicional'],
+  ARRAY['inducao', 'transicao', 'manutencao'],
+  '[
+    {"item": "Filetes de peixe (robalo ou corvina)", "quantidade": "300g", "porcao_mao": "1 palma"},
+    {"item": "Camarão médio", "quantidade": "200g"},
+    {"item": "Lulas cortadas", "quantidade": "100g"},
+    {"item": "Tomate maduro", "quantidade": "3 unidades", "porcao_mao": "1 punho"},
+    {"item": "Leite de coco", "quantidade": "200ml"},
+    {"item": "Cebola", "quantidade": "1 grande"},
+    {"item": "Pimento verde", "quantidade": "1 unidade"},
+    {"item": "Alho", "quantidade": "4 dentes"},
+    {"item": "Piripiri", "quantidade": "1 unidade"},
+    {"item": "Coentros", "quantidade": "1 molho"},
+    {"item": "Azeite", "quantidade": "3 colheres de sopa"}
+  ]'::jsonb,
+  '1. Tempere o peixe e o camarão com sal, limão e alho. Reserve.
+2. Refogue a cebola e o pimento no azeite até amolecer.
+3. Adicione o tomate picado e cozinhe 10 minutos.
+4. Junte o leite de coco e o piripiri, mexa bem.
+5. Coloque o peixe no molho e cozinhe 8 minutos em lume brando.
+6. Adicione as lulas e o camarão nos últimos 4 minutos.
+7. Não mexa para não desfazer o peixe.
+8. Finalize com coentros frescos. Sirva com arroz de coco ou salada.',
+  true
+);
+
+-- ===== NOVAS RECEITAS: LEGUMES E ACOMPANHAMENTOS =====
+
+INSERT INTO vitalis_receitas (
+  titulo, descricao, origem, tipo_refeicao, tempo_preparo_min, porcoes, dificuldade,
+  calorias, proteina_g, carboidratos_g, gordura_g,
+  porcoes_proteina, porcoes_legumes, porcoes_hidratos, porcoes_gordura,
+  tags, fases_recomendadas, ingredientes, modo_preparo, ativo
+) VALUES (
+  'Couve Refogada com Coco e Amendoim',
+  'Acompanhamento tradicional moçambicano que transforma uma simples couve numa explosão de sabor com coco ralado e amendoim pilado.',
+  'mocambicana',
+  'jantar',
+  20,
+  4,
+  'facil',
+  130,
+  6,
+  10,
+  8,
+  0,
+  2,
+  0,
+  0.5,
+  ARRAY['vegetariano', 'sem_gluten', 'sem_lactose', 'economico', 'tradicional', 'rapido'],
+  ARRAY['inducao', 'transicao', 'manutencao'],
+  '[
+    {"item": "Couve portuguesa ou couve galega", "quantidade": "500g", "porcao_mao": "2 punhos"},
+    {"item": "Coco ralado fresco", "quantidade": "30g"},
+    {"item": "Amendoim pilado", "quantidade": "30g"},
+    {"item": "Cebola", "quantidade": "1 pequena"},
+    {"item": "Tomate", "quantidade": "1 médio"},
+    {"item": "Alho", "quantidade": "2 dentes"},
+    {"item": "Sal", "quantidade": "a gosto"}
+  ]'::jsonb,
+  '1. Lave e corte a couve em tiras finas.
+2. Refogue a cebola e o alho até dourar.
+3. Adicione o tomate picado e cozinhe 3 minutos.
+4. Junte a couve e mexa bem.
+5. Tape e cozinhe 8-10 minutos até murchar.
+6. Adicione o coco ralado e o amendoim pilado.
+7. Mexa e sirva quente como acompanhamento.',
+  true
+);
+
+INSERT INTO vitalis_receitas (
+  titulo, descricao, origem, tipo_refeicao, tempo_preparo_min, porcoes, dificuldade,
+  calorias, proteina_g, carboidratos_g, gordura_g,
+  porcoes_proteina, porcoes_legumes, porcoes_hidratos, porcoes_gordura,
+  tags, fases_recomendadas, ingredientes, modo_preparo, ativo
+) VALUES (
+  'Caril de Legumes da Zambézia',
+  'Caril rico e aromático de legumes da região da Zambézia. Perfeito como prato principal vegetariano ou acompanhamento.',
+  'zambeziana',
+  'jantar',
+  35,
+  4,
+  'facil',
+  180,
+  6,
+  22,
+  8,
+  0,
+  2,
+  0.5,
+  0.5,
+  ARRAY['vegetariano', 'sem_gluten', 'sem_lactose', 'economico', 'tradicional'],
+  ARRAY['transicao', 'manutencao'],
+  '[
+    {"item": "Abóbora cortada em cubos", "quantidade": "200g", "porcao_mao": "1 punho"},
+    {"item": "Mandioca descascada", "quantidade": "150g"},
+    {"item": "Feijão-verde", "quantidade": "100g", "porcao_mao": "1 punho"},
+    {"item": "Tomate", "quantidade": "2 unidades"},
+    {"item": "Cebola", "quantidade": "1 grande"},
+    {"item": "Leite de coco", "quantidade": "200ml"},
+    {"item": "Caril em pó", "quantidade": "1 colher de sopa"},
+    {"item": "Açafrão", "quantidade": "1/2 colher de chá"},
+    {"item": "Sal e piripiri", "quantidade": "a gosto"}
+  ]'::jsonb,
+  '1. Cozinhe a mandioca em água com sal por 15 minutos até amolecer.
+2. Refogue a cebola até translúcida.
+3. Adicione o caril e o açafrão, mexa 1 minuto para libertar aromas.
+4. Junte o tomate picado e cozinhe 5 minutos.
+5. Adicione a abóbora e o leite de coco.
+6. Cozinhe 10 minutos até a abóbora amolecer.
+7. Junte a mandioca cozida e o feijão-verde.
+8. Cozinhe mais 5 minutos. Ajuste sal e piripiri a gosto.',
+  true
+);
+
+-- ===== NOVAS RECEITAS: SNACKS E BEBIDAS MOÇAMBICANAS =====
+
+INSERT INTO vitalis_receitas (
+  titulo, descricao, origem, tipo_refeicao, tempo_preparo_min, porcoes, dificuldade,
+  calorias, proteina_g, carboidratos_g, gordura_g,
+  porcoes_proteina, porcoes_legumes, porcoes_hidratos, porcoes_gordura,
+  tags, fases_recomendadas, ingredientes, modo_preparo, ativo
+) VALUES (
+  'Castanha de Caju Torrada com Especiarias',
+  'Snack premium moçambicano. As castanhas de caju frescas torradas com piripiri, sal marinho e um toque de limão são irresistíveis.',
+  'mocambicana',
+  'snack',
+  15,
+  4,
+  'facil',
+  190,
+  6,
+  10,
+  15,
+  0,
+  0,
+  0,
+  1,
+  ARRAY['vegetariano', 'sem_gluten', 'sem_lactose', 'keto', 'rapido', 'economico'],
+  ARRAY['inducao', 'transicao', 'manutencao'],
+  '[
+    {"item": "Castanha de caju crua", "quantidade": "200g", "porcao_mao": "1 polegar por porção"},
+    {"item": "Piripiri em pó", "quantidade": "1/4 colher de chá"},
+    {"item": "Sal marinho", "quantidade": "1 colher de chá"},
+    {"item": "Raspa de limão", "quantidade": "1 limão"},
+    {"item": "Azeite", "quantidade": "1 colher de chá"}
+  ]'::jsonb,
+  '1. Pré-aqueça o forno a 170°C.
+2. Misture as castanhas com azeite, sal, piripiri e raspa de limão.
+3. Espalhe numa bandeja de forno em camada única.
+4. Torre por 10-12 minutos, mexendo a meio.
+5. Retire quando douradas (atenção: continuam a tostar fora do forno).
+6. Deixe arrefecer completamente — ficam mais crocantes ao arrefecer.
+7. Guarde em recipiente hermético até 1 semana.',
+  true
+);
+
+INSERT INTO vitalis_receitas (
+  titulo, descricao, origem, tipo_refeicao, tempo_preparo_min, porcoes, dificuldade,
+  calorias, proteina_g, carboidratos_g, gordura_g,
+  porcoes_proteina, porcoes_legumes, porcoes_hidratos, porcoes_gordura,
+  tags, fases_recomendadas, ingredientes, modo_preparo, ativo
+) VALUES (
+  'Batido de Caju e Banana',
+  'Smoothie cremoso e natural feito com leite de castanha de caju caseiro. Rico em gorduras boas e energia — perfeito para pós-treino.',
+  'mocambicana',
+  'snack',
+  10,
+  1,
+  'facil',
+  280,
+  8,
+  28,
+  16,
+  0,
+  0,
+  1,
+  1,
+  ARRAY['vegetariano', 'sem_gluten', 'sem_lactose', 'rapido', 'pos_treino', 'energetico'],
+  ARRAY['transicao', 'manutencao'],
+  '[
+    {"item": "Castanha de caju", "quantidade": "50g", "porcao_mao": "1 polegar"},
+    {"item": "Banana madura", "quantidade": "1 média"},
+    {"item": "Água de coco ou água", "quantidade": "250ml"},
+    {"item": "Mel ou tâmaras", "quantidade": "1 colher de chá"},
+    {"item": "Canela", "quantidade": "pitada"},
+    {"item": "Gelo", "quantidade": "a gosto"}
+  ]'::jsonb,
+  '1. Demolhe as castanhas de caju em água quente por 10 minutos (ou 2h em água fria).
+2. Escorra e coloque no liquidificador com a água de coco.
+3. Bata até ficar liso (leite de caju caseiro).
+4. Adicione a banana, mel e canela.
+5. Adicione gelo e bata novamente.
+6. Sirva imediatamente.',
+  true
+);

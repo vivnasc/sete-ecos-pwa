@@ -82,68 +82,134 @@ const Icons = {
 };
 
 // ============================================================
-// COMPONENTE: CARTÃO DE PORÇÃO
+// COMPONENTE: CARTÃO DE PORÇÃO (HAND-CENTRIC)
 // ============================================================
-function PorcaoCard({ tipo, quantidade, tamanho, extra = 0, cor }) {
-  const config = {
-    proteina: { 
-      icon: Icons.Meat, 
-      nome: 'Proteína', 
-      unidade: 'palmas',
-      descricao: `~${tamanho}g por palma`,
-      exemplos: 'Frango, peixe, ovos, carne'
-    },
-    legumes: { 
-      icon: Icons.Salad, 
-      nome: 'Legumes', 
-      unidade: 'punhos',
-      descricao: '~100g por punho',
-      exemplos: 'Brócolos, espinafres, tomate'
-    },
-    hidratos: { 
-      icon: Icons.Bread, 
-      nome: 'Hidratos', 
-      unidade: 'mãos',
-      descricao: `~${tamanho}g carbs por mão`,
-      exemplos: 'Arroz, batata, fruta'
-    },
-    gordura: { 
-      icon: Icons.Oil, 
-      nome: 'Gordura', 
-      unidade: 'polegares',
-      descricao: `~${tamanho}g por polegar`,
-      exemplos: 'Azeite, abacate, nozes'
-    }
-  };
+const HAND_CONFIG = {
+  proteina: {
+    gesto: '🫲',
+    nome: 'Proteína',
+    medida: 'palma',
+    medidaPlural: 'palmas',
+    cor: 'from-rose-50 to-red-50',
+    corTexto: 'text-rose-700',
+    corFundo: 'bg-rose-100',
+    corBorda: 'border-rose-200',
+    equivalencias: [
+      { icon: '🍗', texto: 'Frango grelhado' },
+      { icon: '🐟', texto: '1 lata de atum' },
+      { icon: '🥚', texto: '2-3 ovos' },
+      { icon: '🥩', texto: 'Bife/Carne' },
+      { icon: '🦐', texto: 'Camarão/Peixe' },
+      { icon: '🥛', texto: 'Iogurte grego = ½' },
+    ]
+  },
+  legumes: {
+    gesto: '✊',
+    nome: 'Legumes',
+    medida: 'punho',
+    medidaPlural: 'punhos',
+    cor: 'from-green-50 to-emerald-50',
+    corTexto: 'text-green-700',
+    corFundo: 'bg-green-100',
+    corBorda: 'border-green-200',
+    equivalencias: [
+      { icon: '🥗', texto: 'Salada mista' },
+      { icon: '🥦', texto: 'Brócolos' },
+      { icon: '🥬', texto: 'Espinafres/Couve' },
+      { icon: '🍅', texto: 'Tomate' },
+      { icon: '🥕', texto: 'Cenoura' },
+      { icon: '🍄', texto: 'Cogumelos' },
+    ]
+  },
+  hidratos: {
+    gesto: '🤲',
+    nome: 'Hidratos',
+    medida: 'mão',
+    medidaPlural: 'mãos',
+    cor: 'from-amber-50 to-orange-50',
+    corTexto: 'text-amber-700',
+    corFundo: 'bg-amber-100',
+    corBorda: 'border-amber-200',
+    equivalencias: [
+      { icon: '🍚', texto: 'Arroz' },
+      { icon: '🥔', texto: 'Batata/Batata doce' },
+      { icon: '🍝', texto: 'Massa' },
+      { icon: '🍞', texto: '1 fatia de pão' },
+      { icon: '🍎', texto: '1 fruta média' },
+      { icon: '🫚', texto: 'Mandioca' },
+    ]
+  },
+  gordura: {
+    gesto: '👍',
+    nome: 'Gordura',
+    medida: 'polegar',
+    medidaPlural: 'polegares',
+    cor: 'from-purple-50 to-violet-50',
+    corTexto: 'text-purple-700',
+    corFundo: 'bg-purple-100',
+    corBorda: 'border-purple-200',
+    equivalencias: [
+      { icon: '🫒', texto: '1 col. sopa azeite' },
+      { icon: '🥑', texto: '¼ abacate' },
+      { icon: '🥜', texto: '1 punhado de nozes' },
+      { icon: '🧈', texto: '1 col. chá manteiga' },
+      { icon: '🥥', texto: '2 col. sopa coco' },
+      { icon: '🥜', texto: '1 col. amendoim' },
+    ]
+  }
+};
 
-  const item = config[tipo];
-  const Icon = item.icon;
+function PorcaoCard({ tipo, quantidade, extra = 0 }) {
+  const [showEquiv, setShowEquiv] = useState(false);
+  const h = HAND_CONFIG[tipo];
   const total = quantidade + extra;
 
   return (
-    <div className={`bg-gradient-to-br ${cor} rounded-2xl p-4 shadow-sm`}>
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-white bg-opacity-50 rounded-xl">
-            <Icon />
+    <div className={`bg-gradient-to-br ${h.cor} rounded-2xl overflow-hidden shadow-sm border ${h.corBorda}`}>
+      {/* Main card */}
+      <button
+        onClick={() => setShowEquiv(!showEquiv)}
+        className="w-full p-4 text-left"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <span className="text-3xl">{h.gesto}</span>
+            <div>
+              <h3 className="font-bold text-gray-800 text-sm">{h.nome}</h3>
+              <p className="text-xs text-gray-500">{total} {total === 1 ? h.medida : h.medidaPlural}/dia</p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-bold text-gray-800">{item.nome}</h3>
-            <p className="text-xs text-gray-600">{item.descricao}</p>
+          <div className="text-right">
+            <span className="text-3xl font-bold text-gray-800">{total}</span>
           </div>
         </div>
-        <div className="text-right">
-          <span className="text-3xl font-bold text-gray-800">{total}</span>
-          <p className="text-xs text-gray-600">{item.unidade}</p>
-        </div>
-      </div>
-      {extra > 0 && (
-        <div className="mt-2 flex items-center gap-1 text-xs text-green-700 bg-green-100 px-2 py-1 rounded-full w-fit">
-          <Icons.Dumbbell />
-          <span>+{extra} dia de treino</span>
+        {extra > 0 && (
+          <div className="mt-2 flex items-center gap-1 text-xs text-green-700 bg-green-100 px-2 py-1 rounded-full w-fit">
+            <Icons.Dumbbell />
+            <span>+{extra} treino</span>
+          </div>
+        )}
+        <p className={`text-xs mt-1.5 ${h.corTexto} opacity-70`}>
+          {showEquiv ? '▲ fechar' : '▼ o que conta como 1 ' + h.medida + '?'}
+        </p>
+      </button>
+
+      {/* Equivalências expandidas */}
+      {showEquiv && (
+        <div className={`px-4 pb-3 border-t ${h.corBorda}`}>
+          <p className="text-xs font-semibold text-gray-600 mt-2 mb-1.5">
+            1 {h.gesto} {h.medida} =
+          </p>
+          <div className="grid grid-cols-2 gap-1">
+            {h.equivalencias.map((eq, i) => (
+              <div key={i} className="flex items-center gap-1.5 text-xs text-gray-700 bg-white/60 rounded-lg px-2 py-1">
+                <span>{eq.icon}</span>
+                <span>{eq.texto}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
-      <p className="mt-2 text-xs text-gray-500 italic">{item.exemplos}</p>
     </div>
   );
 }
@@ -506,55 +572,81 @@ export default function PlanoAlimentar() {
           <span className="text-2xl">📄</span>
         </button>
 
-        {/* Porções do dia */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <h2 className="font-bold text-gray-800 mb-4">Porções diárias</h2>
-          
-          <div className="grid grid-cols-2 gap-3">
-            <PorcaoCard 
-              tipo="proteina"
-              quantidade={plano.porcoes?.proteina || 0}
-              tamanho={plano.tamanhos?.palma_g || 20}
-              cor="from-red-50 to-rose-100"
-            />
-            <PorcaoCard 
-              tipo="legumes"
-              quantidade={plano.porcoes?.legumes || 0}
-              tamanho={100}
-              cor="from-green-50 to-emerald-100"
-            />
-            <PorcaoCard 
-              tipo="hidratos"
-              quantidade={plano.porcoes?.hidratos_base || 0}
-              tamanho={plano.tamanhos?.mao_g || 20}
-              extra={plano.e_dia_treino ? (plano.porcoes?.carbs_extra_treino || 0) : 0}
-              cor="from-[#E8E4DC] to-[#F5F2ED]"
-            />
-            <PorcaoCard 
-              tipo="gordura"
-              quantidade={plano.porcoes?.gordura || 0}
-              tamanho={plano.tamanhos?.polegar_g || 7}
-              cor="from-purple-50 to-violet-100"
-            />
-          </div>
-
-          {/* Macros */}
-          <div className="mt-4 pt-4 border-t border-gray-100">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-500">Calorias diárias</span>
-              <span className="font-bold text-gray-800">~{plano.calorias} kcal</span>
+        {/* Método da Mão - Hero Banner */}
+        <div className="bg-gradient-to-br from-[#7C8B6F] to-[#5A6B4D] rounded-2xl p-5 shadow-lg text-white">
+          <div className="flex items-center gap-4 mb-3">
+            <div className="text-5xl">🤚</div>
+            <div>
+              <h2 className="font-bold text-lg leading-tight">A tua mão é a tua medida</h2>
+              <p className="text-white/70 text-sm">Sem balança, sem stress. Proporcional ao TEU corpo.</p>
             </div>
-            <div className="flex justify-between items-center mt-1">
-              <span className="text-sm text-gray-500">Macros</span>
-              <span className="text-sm text-gray-600">
-                P:{plano.macros?.proteina_g}g · C:{plano.macros?.carboidratos_g}g · G:{plano.macros?.gordura_g}g
-              </span>
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-2 text-center">
+              <div className="text-2xl">🫲</div>
+              <div className="text-[10px] font-semibold mt-0.5">PALMA</div>
+              <div className="text-[10px] text-white/70">Proteína</div>
+            </div>
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-2 text-center">
+              <div className="text-2xl">✊</div>
+              <div className="text-[10px] font-semibold mt-0.5">PUNHO</div>
+              <div className="text-[10px] text-white/70">Legumes</div>
+            </div>
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-2 text-center">
+              <div className="text-2xl">🤲</div>
+              <div className="text-[10px] font-semibold mt-0.5">MÃO CONCHA</div>
+              <div className="text-[10px] text-white/70">Hidratos</div>
+            </div>
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-2 text-center">
+              <div className="text-2xl">👍</div>
+              <div className="text-[10px] font-semibold mt-0.5">POLEGAR</div>
+              <div className="text-[10px] text-white/70">Gordura</div>
             </div>
           </div>
         </div>
 
+        {/* Porções do dia - cards com equivalências integradas */}
+        <div className="space-y-3">
+          <h2 className="font-bold text-gray-800 px-1">As tuas porções diárias</h2>
+          <p className="text-xs text-gray-500 px-1 -mt-2">Toca num cartão para ver o que conta como 1 porção</p>
+
+          <div className="grid grid-cols-2 gap-3">
+            <PorcaoCard
+              tipo="proteina"
+              quantidade={plano.porcoes?.proteina || 0}
+            />
+            <PorcaoCard
+              tipo="legumes"
+              quantidade={plano.porcoes?.legumes || 0}
+            />
+            <PorcaoCard
+              tipo="hidratos"
+              quantidade={plano.porcoes?.hidratos_base || 0}
+              extra={plano.e_dia_treino ? (plano.porcoes?.carbs_extra_treino || 0) : 0}
+            />
+            <PorcaoCard
+              tipo="gordura"
+              quantidade={plano.porcoes?.gordura || 0}
+            />
+          </div>
+        </div>
+
+        {/* Macros - compacto */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm">
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-gray-500">Calorias diárias</span>
+            <span className="font-bold text-gray-800">~{plano.calorias} kcal</span>
+          </div>
+          <div className="flex justify-between items-center mt-1">
+            <span className="text-sm text-gray-500">Macros</span>
+            <span className="text-sm text-gray-600">
+              P:{plano.macros?.proteina_g}g · C:{plano.macros?.carboidratos_g}g · G:{plano.macros?.gordura_g}g
+            </span>
+          </div>
+        </div>
+
         {/* Dias de treino */}
-        <ConfigurarDiasTreino 
+        <ConfigurarDiasTreino
           userId={usersId}
           diasActuais={plano.dias_treino || []}
           onSave={() => carregarPlano()}

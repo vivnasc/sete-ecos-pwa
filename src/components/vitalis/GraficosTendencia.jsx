@@ -509,6 +509,24 @@ export default function GraficosTendencia() {
             height={140}
             meta={7}
           />
+          {/* Sleep Quality Stars */}
+          {dadosSono.some(d => d.qualidade > 0) && (
+            <div className="mt-3 pt-3 border-t">
+              <p className="text-xs text-gray-500 mb-2">Qualidade do sono</p>
+              <div className="flex items-end justify-between gap-1">
+                {dadosSono.slice(-7).map((d, i) => (
+                  <div key={i} className="flex-1 text-center">
+                    <div className="flex justify-center gap-px mb-1">
+                      {[1,2,3,4,5].map(star => (
+                        <span key={star} className={`text-xs ${(d.qualidade || 0) >= star ? 'text-yellow-400' : 'text-gray-200'}`}>★</span>
+                      ))}
+                    </div>
+                    <span className="text-xs text-gray-400">{d.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Gráfico de Aderência */}
