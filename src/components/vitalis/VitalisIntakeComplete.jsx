@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { setSexo } from '../../utils/genero';
 import { setObservaRamadao } from '../../utils/ramadao';
+import { gerarPlanoAutomatico } from '../../lib/vitalis/planoGenerator';
 
 export default function VitalisIntakeComplete() {
   const navigate = useNavigate();
@@ -491,6 +492,16 @@ try {
       const temAcesso = currentClient && statusComAcesso.includes(currentClient.subscription_status);
 
       console.log('Intake complete - subscription_status:', currentClient?.subscription_status, 'temAcesso:', temAcesso);
+
+      // 🎯 GERAR PLANO NUTRICIONAL AUTOMATICAMENTE
+      console.log('Gerando plano nutricional...');
+      const planoResult = await gerarPlanoAutomatico(userData.id);
+      if (!planoResult.success) {
+        console.error('Erro ao gerar plano:', planoResult.error);
+        // Não bloquear o fluxo - plano pode ser gerado manualmente depois
+      } else {
+        console.log('Plano gerado com sucesso:', planoResult.plano);
+      }
 
       // Guardar preferências para personalizar textos na app
       setSexo(formData.sexo);

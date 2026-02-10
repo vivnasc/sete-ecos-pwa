@@ -1336,6 +1336,7 @@ export default function Lumina() {
                       await supabase.from('waitlist').insert({
                         nome: profile?.nome || '',
                         email: captureEmail.trim(),
+                        whatsapp: null,
                         produto: 'lumina-checkin'
                       });
                     } catch (err) {

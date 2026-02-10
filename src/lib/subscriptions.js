@@ -547,7 +547,7 @@ export const generateInviteCode = async (type = 'tester', maxUses = 1, notes = '
   try {
     const { error } = await supabase.from('vitalis_invite_codes').insert({
       code,
-      type, // 'tester', 'trial', 'discount'
+      type, // 'tester', 'trial', 'promo'
       max_uses: maxUses,
       uses_count: 0,
       notes,
@@ -560,6 +560,41 @@ export const generateInviteCode = async (type = 'tester', maxUses = 1, notes = '
     return { success: true, code };
   } catch (error) {
     console.error('Erro ao gerar codigo:', error);
+    return { success: false, error };
+  }
+};
+
+/**
+ * Gera codigo promo com percentagem de desconto específica
+ */
+export const generatePromoCode = async (discountPercent, codeName, maxUses = 100, expiresInDays = null) => {
+  const code = codeName || `PROMO${discountPercent}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+
+  try {
+    const insertData = {
+      code: code.toUpperCase(),
+      type: 'promo',
+      max_uses: maxUses,
+      uses_count: 0,
+      notes: `${discountPercent}`,  // Store discount percentage
+      active: true,
+      created_at: new Date().toISOString()
+    };
+
+    // Add expiration if specified
+    if (expiresInDays) {
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + expiresInDays);
+      insertData.expires_at = expiryDate.toISOString();
+    }
+
+    const { error } = await supabase.from('vitalis_invite_codes').insert(insertData);
+
+    if (error) throw error;
+
+    return { success: true, code: code.toUpperCase(), discount: discountPercent };
+  } catch (error) {
+    console.error('Erro ao gerar codigo promo:', error);
     return { success: false, error };
   }
 };

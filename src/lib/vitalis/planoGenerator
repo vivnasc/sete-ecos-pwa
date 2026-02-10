@@ -131,27 +131,20 @@ export async function gerarPlanoAutomatico(userId) {
     // 11. Determinar fase inicial
     const faseInicial = 'inducao';
 
-    // 12. Criar registo em vitalis_clients
+    // 12. Atualizar dados calculados no registo de vitalis_clients (assume que já existe)
     const { error: clientError } = await supabase
       .from('vitalis_clients')
-      .insert([{
-        user_id: userId,
-        status: 'activo',
-        pacote: intake.pacote_escolhido || 'essencial',
-        data_inicio: new Date().toISOString().split('T')[0],
-        duracao_programa: intake.duracao || '6_meses',
+      .update({
         fase_actual: faseInicial,
-        objectivo_principal: intake.objectivo_principal,
-        peso_inicial: intake.peso_actual,
-        peso_actual: intake.peso_actual,
-        peso_meta: intake.peso_meta,
         imc_inicial: calcularIMC(intake.peso_actual, altura),
-        imc_actual: calcularIMC(intake.peso_actual, altura),
-        emocao_dominante: intake.emocao_dominante,
-        prontidao_1a10: intake.prontidao_1a10
-      }]);
+        imc_actual: calcularIMC(intake.peso_actual, altura)
+      })
+      .eq('user_id', userId);
 
-    if (clientError) throw clientError;
+    if (clientError) {
+      console.error('Aviso: Não foi possível atualizar vitalis_clients:', clientError);
+      // Não lançar erro - continuar com criação do plano mesmo se client não atualizar
+    }
 
     // 13. Criar plano nutricional em vitalis_meal_plans
     const { data: plano, error: planoError } = await supabase

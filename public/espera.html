@@ -887,10 +887,28 @@
             submitBtn.textContent = 'A registar...';
             errorDiv.classList.remove('show');
             
+            // Validar e formatar WhatsApp
+            let whatsappValue = document.getElementById('whatsapp').value.trim();
+
+            // Se preenchido, validar formato (apenas números, pode começar com +)
+            if (whatsappValue) {
+                // Remover espaços e caracteres especiais exceto + no início
+                whatsappValue = whatsappValue.replace(/[\s\-\(\)]/g, '');
+
+                // Validar que tem apenas dígitos (e opcionalmente + no início)
+                if (!/^\+?\d{9,15}$/.test(whatsappValue)) {
+                    errorDiv.textContent = 'Formato de WhatsApp inválido. Use: +258 84 XXX XXXX';
+                    errorDiv.classList.add('show');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Quero Ser Avisada';
+                    return;
+                }
+            }
+
             const data = {
                 nome: document.getElementById('nome').value.trim(),
                 email: document.getElementById('email').value.trim().toLowerCase(),
-                whatsapp: document.getElementById('whatsapp').value.trim() || null,
+                whatsapp: whatsappValue || null,
                 produto: 'vitalis'
             };
             
@@ -903,8 +921,16 @@
                     // Email duplicado
                     if (error.code === '23505') {
                         errorDiv.textContent = 'Este email já está na lista de espera! 💚';
+                    } else if (error.code === '23502') {
+                        // Campo obrigatório faltando
+                        errorDiv.textContent = 'Por favor preenche todos os campos obrigatórios';
+                        console.error('Missing required field:', error);
+                    } else if (error.message && error.message.includes('whatsapp')) {
+                        // Erro relacionado ao whatsapp
+                        errorDiv.textContent = 'Formato de WhatsApp inválido. Use: +258 84 XXX XXXX';
+                        console.error('WhatsApp validation error:', error);
                     } else {
-                        errorDiv.textContent = 'Erro ao registar. Tenta novamente.';
+                        errorDiv.textContent = 'Erro ao registar: ' + (error.message || 'Tenta novamente');
                         console.error('Supabase error:', error);
                     }
                     errorDiv.classList.add('show');
