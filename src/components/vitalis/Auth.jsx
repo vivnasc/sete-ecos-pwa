@@ -176,7 +176,7 @@ export default function VitalisAuth() {
             auth_id: data.user.id,
             email: emailResult.valor,
             created_at: new Date().toISOString()
-          }).select();
+          }, { onConflict: 'auth_id' }).select('id');
         }
 
         // Se tem sessão, email confirmation está desactivado - ir directo para pagamento

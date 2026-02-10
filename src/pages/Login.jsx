@@ -73,7 +73,7 @@ export default function Login() {
             auth_id: data.user.id,
             email: data.user.email,
             created_at: new Date().toISOString()
-          }).select();
+          }, { onConflict: 'auth_id' }).select('id');
         }
 
         navigate(from, { replace: true });
@@ -101,7 +101,7 @@ export default function Login() {
             email: email.trim(),
             nome: nome || email.split('@')[0],
             created_at: new Date().toISOString()
-          }).select();
+          }, { onConflict: 'auth_id' }).select('id');
         }
 
         // Se tem sessão, email confirmation está desactivado
