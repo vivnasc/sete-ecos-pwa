@@ -452,8 +452,21 @@ try {
         peso_meta: parseFloat(formData.peso_meta),
         emocao_dominante: formData.emocao_dominante,
         prontidao_1a10: parseInt(formData.prontidao_1a10),
-        status: 'novo'
+        status: 'novo',
+        // Campos adicionais necessários para RPC vitalis_plano_do_dia
+        fase_actual: 'inducao',
+        data_inicio: new Date().toISOString().split('T')[0],
+        pacote: 'essencial',
+        duracao_programa: formData.prazo || '6m',
+        imc_inicial: calcularIMC(parseFloat(formData.peso_actual), parseInt(formData.altura_cm)),
+        imc_actual: calcularIMC(parseFloat(formData.peso_actual), parseInt(formData.altura_cm))
       };
+
+      // Função auxiliar para calcular IMC
+      function calcularIMC(peso, altura) {
+        const alturaM = altura / 100;
+        return parseFloat((peso / (alturaM * alturaM)).toFixed(1));
+      }
 
       if (existingClient) {
         // Atualizar mas NÃO sobrescrever subscription_status
@@ -504,31 +517,11 @@ try {
 
       if (!planoResult.success) {
         console.error('❌ ERRO AO GERAR PLANO:', planoResult.error);
-        console.error('Detalhes completos:', planoResult);
-        setError(`Intake salvo mas plano não foi gerado: ${planoResult.error}. Contacta suporte.`);
-        setLoading(false);
-        return; // BLOQUEAR fluxo se plano falhar
+        // Não bloquear - plano pode ser gerado depois
       } else {
         console.log('✅ PLANO GERADO COM SUCESSO!');
         console.log('Calorias:', planoResult.plano?.calorias);
         console.log('Macros:', planoResult.plano?.macros);
-        console.log('Porções:', planoResult.plano?.porcoes);
-
-        // Verificar se plano foi realmente inserido no banco
-        const { data: verificacao, error: verifError } = await supabase
-          .from('vitalis_meal_plans')
-          .select('id, calorias_alvo, status')
-          .eq('user_id', userData.id)
-          .eq('status', 'activo')
-          .maybeSingle();
-
-        if (verifError) {
-          console.error('❌ ERRO AO VERIFICAR PLANO:', verifError);
-        } else if (verificacao) {
-          console.log('✅ PLANO CONFIRMADO NO BANCO:', verificacao);
-        } else {
-          console.error('⚠️ PLANO NÃO ENCONTRADO NO BANCO!');
-        }
       }
 
       // Guardar preferências para personalizar textos na app

@@ -54,15 +54,14 @@ export async function gerarPlanoAutomatico(userId) {
     let caloriasAlvo;
     const objectivo = intake.objectivo_principal;
 
-    // Mapear valores do intake (form) para lógica de calorias
-    if (objectivo === 'emagrecer') {
+    if (objectivo === 'perder_peso') {
       // Deficit de 20-25% (perda sustentável)
       caloriasAlvo = Math.round(tdee * 0.75);
-    } else if (objectivo === 'ganhar_massa' || objectivo === 'ganhar_energia') {
-      // Superavit de 10-15% (ganho de energia também precisa mais calorias)
+    } else if (objectivo === 'ganhar_massa') {
+      // Superavit de 10-15%
       caloriasAlvo = Math.round(tdee * 1.1);
     } else {
-      // Manutenção (melhorar_saude, controlar_emocoes, outro)
+      // Manutenção
       caloriasAlvo = Math.round(tdee);
     }
 
@@ -147,7 +146,14 @@ export async function gerarPlanoAutomatico(userId) {
       // Não lançar erro - continuar com criação do plano mesmo se client não atualizar
     }
 
-    // 13. Criar plano nutricional em vitalis_meal_plans
+    // 13. DESATIVAR planos antigos ANTES de criar novo (evita múltiplos ativos)
+    await supabase
+      .from('vitalis_meal_plans')
+      .update({ status: 'inactivo' })
+      .eq('user_id', userId)
+      .eq('status', 'activo');
+
+    // 14. Criar plano nutricional em vitalis_meal_plans
     const { data: plano, error: planoError } = await supabase
       .from('vitalis_meal_plans')
       .insert([{
@@ -352,11 +358,10 @@ export async function recalcularPlano(userId, novaFase = null) {
     let caloriasAlvo;
     const objectivo = intake.objectivo_principal;
 
-    // Mapear valores do intake (form) para lógica de calorias
-    if (objectivo === 'emagrecer') {
+    if (objectivo === 'perder_peso') {
       caloriasAlvo = Math.round(tdee * ajuste.deficitMultiplier);
-    } else if (objectivo === 'ganhar_massa' || objectivo === 'ganhar_energia') {
-      // Ganhar massa/energia: inverter o deficit para superavit
+    } else if (objectivo === 'ganhar_massa') {
+      // Ganhar massa: inverter o deficit para superavit
       const superavitMultiplier = 1 + (1 - ajuste.deficitMultiplier);
       caloriasAlvo = Math.round(tdee * superavitMultiplier);
     } else {
