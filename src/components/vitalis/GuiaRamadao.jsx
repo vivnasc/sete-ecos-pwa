@@ -38,7 +38,7 @@ export default function GuiaRamadao() {
             </Link>
             <div>
               <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
-                Guia Ramadão
+                Guia Ramadan
               </h1>
               <p className="text-white/70 text-sm">Nutrição consciente durante o mês sagrado</p>
             </div>
@@ -47,7 +47,7 @@ export default function GuiaRamadao() {
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
             <p className="text-white/90 text-sm leading-relaxed">
               Ramadan Mubarak! Este guia foi criado com respeito e carinho para te ajudar a manter
-              a tua saúde e energia durante o Ramadão, adaptando o método Vitalis ao jejum sagrado.
+              a tua saúde e energia durante o Ramadan, adaptando o método Vitalis ao jejum sagrado.
             </p>
           </div>
         </div>
@@ -83,10 +83,10 @@ export default function GuiaRamadao() {
           <div className="space-y-4">
             <div className="bg-white rounded-2xl shadow-lg p-5">
               <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2 mb-3">
-                🌙 O Ramadão e a Tua Nutrição
+                🌙 O Ramadan e a Tua Nutrição
               </h2>
               <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                Durante o Ramadão, o jejum do amanhecer ao pôr-do-sol é um pilar espiritual. O método Vitalis
+                Durante o Ramadan, o jejum do amanhecer ao pôr-do-sol é um pilar espiritual. O método Vitalis
                 adapta-se naturalmente a este período, ajudando-te a nutrir o corpo com sabedoria nas horas
                 de alimentação.
               </p>
@@ -120,7 +120,7 @@ export default function GuiaRamadao() {
 
             <div className="bg-gradient-to-r from-[#1a1a3e] to-[#2d2d5e] rounded-2xl p-5 text-white">
               <h3 className="font-bold mb-3 flex items-center gap-2">
-                ⭐ Princípios Vitalis para o Ramadão
+                ⭐ Princípios Vitalis para o Ramadan
               </h3>
               <ul className="space-y-2 text-sm text-white/90">
                 <li className="flex items-start gap-2">
@@ -312,10 +312,10 @@ export default function GuiaRamadao() {
           <div className="space-y-4">
             <div className="bg-white rounded-2xl shadow-lg p-5">
               <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2 mb-3">
-                💧 Hidratação Durante o Ramadão
+                💧 Hidratação Durante o Ramadan
               </h2>
               <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                A hidratação é o maior desafio durante o Ramadão. Como não bebes água durante o dia,
+                A hidratação é o maior desafio durante o Ramadan. Como não bebes água durante o dia,
                 é essencial maximizar a ingestão entre o Iftar e o Suhoor.
               </p>
 
@@ -389,10 +389,10 @@ export default function GuiaRamadao() {
           <div className="space-y-4">
             <div className="bg-white rounded-2xl shadow-lg p-5">
               <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2 mb-3">
-                🏃‍♀️ Exercício Durante o Ramadão
+                🏃‍♀️ Exercício Durante o Ramadan
               </h2>
               <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                O exercício pode e deve continuar durante o Ramadão, mas adaptado à tua energia
+                O exercício pode e deve continuar durante o Ramadan, mas adaptado à tua energia
                 e ao horário de jejum.
               </p>
 
@@ -433,10 +433,10 @@ export default function GuiaRamadao() {
           <div className="space-y-4">
             <div className="bg-white rounded-2xl shadow-lg p-5">
               <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2 mb-3">
-                💚 Bem-Estar Durante o Ramadão
+                💚 Bem-Estar Durante o Ramadan
               </h2>
               <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                O Ramadão é um período de renovação espiritual, mental e física.
+                O Ramadan é um período de renovação espiritual, mental e física.
                 Cuida de ti com compaixão e paciência.
               </p>
 
@@ -501,7 +501,7 @@ export default function GuiaRamadao() {
               💬
             </div>
             <div className="flex-1">
-              <p className="font-semibold text-gray-800 text-sm">Dúvidas sobre o Ramadão?</p>
+              <p className="font-semibold text-gray-800 text-sm">Dúvidas sobre o Ramadan?</p>
               <p className="text-xs text-gray-500">A Vivianne tem respostas específicas para este período</p>
             </div>
             <Link

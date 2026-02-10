@@ -83,7 +83,7 @@ export default function VitalisIntakeComplete() {
     porque_importante: { label: 'Porquê é importante para ti?', type: 'textarea', placeholder: 'O que vai mudar na tua vida?', rows: 3 },
     abordagem_preferida: { label: 'Que abordagem preferes?', type: 'radio', options: ['keto_if', 'low_carb', 'equilibrado', 'nao_sei'], labels: ['Keto + Jejum Intermitente', 'Low Carb', 'Equilibrado', 'Não sei'], required: true },
     restricoes_alimentares: { label: 'Restrições alimentares', type: 'checkbox', options: ['Vegetariano/a', 'Vegano/a', 'Sem glúten', 'Sem lactose', 'Halal', 'Nenhuma'] },
-    observa_ramadao: { label: '🌙 Observas o jejum do Ramadão?', type: 'radio', options: ['sim', 'nao', 'as_vezes'], labels: ['Sim, todos os anos', 'Não', 'Às vezes / parcialmente'] },
+    observa_ramadao: { label: '🌙 Observas o jejum do Ramadan?', type: 'radio', options: ['sim', 'nao', 'as_vezes'], labels: ['Sim, todos os anos', 'Não', 'Às vezes / parcialmente'] },
     condicoes_saude: { label: 'Condições de saúde', type: 'checkbox', options: ['Diabetes', 'Hipertensão', 'Colesterol alto', 'Problemas de tiroide', 'SOP (Síndrome do Ovário Policístico)', 'Problemas de próstata', 'Nenhuma'] },
     medicacao: { label: 'Medicação e suplementos actuais', type: 'textarea', placeholder: 'Lista medicamentos e suplementos (ou "Nenhum")', rows: 2 },
     

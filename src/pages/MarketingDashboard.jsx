@@ -9,6 +9,9 @@ import {
   getSemana1,
   getSemana2,
   getCarrosseisProntos,
+  gerarConteudoHoje,
+  gerarMensagemWhatsApp,
+  gerarCaptionInstagram,
 } from '../lib/marketing-engine';
 import { RENDER_MAP, CORES, FORMATOS } from '../components/TemplateVisual';
 
@@ -94,10 +97,11 @@ export default function MarketingDashboard() {
   }
 
   const tabs = [
+    { id: 'hoje', label: 'Hoje', icon: '⚡' },
     { id: 'plano', label: 'Plano Semanal', icon: '🗓' },
     { id: 'grid', label: 'Grid IG (12)', icon: '📸' },
-    { id: 'anuncios', label: 'Anuncios', icon: '📣' },
-    { id: 'carrosseis', label: 'Carrosseis', icon: '📑' },
+    { id: 'anuncios', label: 'Anúncios', icon: '📣' },
+    { id: 'carrosseis', label: 'Carrosséis', icon: '📑' },
   ];
 
   return (
@@ -107,17 +111,17 @@ export default function MarketingDashboard() {
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-2">
             <Link to="/coach" className="text-white/60 hover:text-white text-sm">&larr; Coach</Link>
-            <span className="text-[10px] bg-white/10 px-3 py-1 rounded-full border border-white/20">LANCAMENTO</span>
+            <span className="text-[10px] bg-white/10 px-3 py-1 rounded-full border border-white/20">LANÇAMENTO</span>
           </div>
           <h1 className="text-2xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-            Plano de Lancamento
+            Plano de Lançamento
           </h1>
-          <p className="text-white/50 text-sm mt-1">8-21 Fevereiro 2026 &middot; Semana 1: Aquecer &middot; Semana 2: Lancar</p>
+          <p className="text-white/50 text-sm mt-1">8-21 Fevereiro 2026 &middot; Semana 1: Aquecer &middot; Semana 2: Lançar</p>
           <div className="grid grid-cols-4 gap-2 mt-4">
             {[
               { v: '12', l: 'Posts Grid' },
               { v: '4', l: 'Anuncios' },
-              { v: String(getCarrosseisProntos().length), l: 'Carrosseis' },
+              { v: String(getCarrosseisProntos().length), l: 'Carrosséis' },
               { v: '14', l: 'Dias' },
             ].map(s => (
               <div key={s.l} className="bg-white/5 border border-white/10 rounded-xl p-2 text-center">
@@ -147,12 +151,141 @@ export default function MarketingDashboard() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 mt-4 space-y-4">
+        {tab === 'hoje' && <HojeTab copiar={copiar} copiado={copiado} />}
         {tab === 'plano' && <PlanoTab copiar={copiar} copiado={copiado} />}
         {tab === 'grid' && <GridTab copiar={copiar} copiado={copiado} />}
         {tab === 'anuncios' && <AnunciosTab copiar={copiar} copiado={copiado} />}
         {tab === 'carrosseis' && <CarrosseisTab copiar={copiar} copiado={copiado} />}
       </div>
     </div>
+  );
+}
+
+// ============================================================
+// TAB: HOJE - Conteúdo automático pronto para hoje
+// ============================================================
+
+function HojeTab({ copiar, copiado }) {
+  const hoje = gerarConteudoHoje();
+  const captionPost = gerarCaptionInstagram('post');
+  const captionReel = gerarCaptionInstagram('reelScript');
+  const captionStories = gerarCaptionInstagram('stories');
+  const waTypes = ['dica', 'provocacao', 'pessoal', 'urgencia', 'lumina'];
+  const [waTipo, setWaTipo] = useState('dica');
+  const wa = gerarMensagemWhatsApp(waTipo);
+
+  const dataHoje = new Date().toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  return (
+    <>
+      {/* Header do dia */}
+      <Card titulo={`Conteúdo de Hoje`} badge={dataHoje}>
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          <div className="p-2 bg-purple-50 rounded-lg text-center">
+            <p className="text-[10px] font-bold text-purple-600">TEMA</p>
+            <p className="text-xs font-bold text-[#4A4035]">{hoje.titulo}</p>
+          </div>
+          <div className="p-2 bg-orange-50 rounded-lg text-center">
+            <p className="text-[10px] font-bold text-orange-600">FORMATO</p>
+            <p className="text-xs font-bold text-[#4A4035]">{hoje.formato}</p>
+          </div>
+          <div className="p-2 bg-green-50 rounded-lg text-center">
+            <p className="text-[10px] font-bold text-green-600">TIPO</p>
+            <p className="text-xs font-bold text-[#4A4035]">{hoje.tipo}</p>
+          </div>
+        </div>
+        <div className="p-3 bg-gradient-to-r from-[#1a1a2e] to-[#16213e] rounded-xl text-white">
+          <p className="text-[10px] font-bold text-white/50 mb-1">HOOK DO DIA</p>
+          <p className="text-sm font-bold leading-relaxed">{hoje.hook}</p>
+        </div>
+      </Card>
+
+      {/* Instagram - Post pronto */}
+      <Card titulo="📸 Instagram - Post" badge="Pronto">
+        <div className="flex gap-3 mb-3">
+          <AutoImage
+            template="dica" eco="vitalis" formato="post"
+            texto={hoje.hook} subtitulo="@seteecos"
+            scale={0.25} filename={`ig-post-${hoje.data}.png`}
+          />
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-bold text-purple-600 mb-1">CAPTION</p>
+            <pre className="text-[11px] text-[#4A4035] whitespace-pre-wrap leading-relaxed max-h-32 overflow-y-auto">{captionPost.caption.slice(0, 300)}...</pre>
+          </div>
+        </div>
+        <div className="flex gap-1.5">
+          <CopyBtn onClick={() => copiar(captionPost.caption, 'ig-post')} copiado={copiado === 'ig-post'} label="Copiar Caption" small />
+          <CopyBtn onClick={() => copiar(captionPost.hashtags, 'ig-hash')} copiado={copiado === 'ig-hash'} label="Hashtags" small />
+        </div>
+      </Card>
+
+      {/* Instagram - Stories */}
+      <Card titulo="📱 Stories (5 sequência)" badge="Pronto">
+        <pre className="text-[11px] text-[#4A4035] whitespace-pre-wrap leading-relaxed bg-pink-50 p-3 rounded-xl max-h-48 overflow-y-auto">{captionStories.caption}</pre>
+        <div className="mt-2">
+          <CopyBtn onClick={() => copiar(captionStories.caption, 'ig-stories')} copiado={copiado === 'ig-stories'} label="Copiar Sequência" small />
+        </div>
+      </Card>
+
+      {/* Instagram - Reel Script */}
+      <Card titulo="🎬 Script para Reel" badge="Pronto">
+        <pre className="text-[11px] text-[#4A4035] whitespace-pre-wrap leading-relaxed bg-purple-50 p-3 rounded-xl max-h-48 overflow-y-auto">{captionReel.caption}</pre>
+        <div className="mt-2">
+          <CopyBtn onClick={() => copiar(captionReel.caption, 'ig-reel')} copiado={copiado === 'ig-reel'} label="Copiar Script" small />
+        </div>
+      </Card>
+
+      {/* WhatsApp */}
+      <Card titulo="💬 WhatsApp Broadcast" badge="Escolhe o tom">
+        <div className="flex gap-1.5 flex-wrap mb-3">
+          {waTypes.map(t => (
+            <button
+              key={t}
+              onClick={() => setWaTipo(t)}
+              className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all ${
+                waTipo === t ? 'bg-[#25D366] text-white' : 'bg-gray-100 text-[#6B5C4C]'
+              }`}
+            >
+              {t === 'dica' ? '💡 Dica' : t === 'provocacao' ? '🔥 Provocação' : t === 'pessoal' ? '🤍 Pessoal' : t === 'urgencia' ? '⚡ Urgência' : '🔮 Lumina'}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-3">
+          <AutoImage
+            template={waTipo === 'lumina' ? 'cta' : 'dica'}
+            eco={waTipo === 'lumina' ? 'lumina' : 'vitalis'}
+            formato="stories"
+            texto={hoje.hook}
+            subtitulo="@seteecos"
+            scale={0.12}
+            filename={`wa-${waTipo}-${hoje.data}.png`}
+          />
+          <div className="flex-1 min-w-0">
+            <pre className="text-[11px] text-[#4A4035] whitespace-pre-wrap bg-[#25D366]/5 p-3 rounded-xl leading-relaxed max-h-40 overflow-y-auto">{wa.mensagem}</pre>
+          </div>
+        </div>
+        <div className="flex gap-1.5 mt-2">
+          <CopyBtn onClick={() => copiar(wa.mensagem, `wa-${waTipo}`)} copiado={copiado === `wa-${waTipo}`} label="Copiar" small />
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(wa.mensagem)}`}
+            target="_blank" rel="noopener noreferrer"
+            className="px-3 py-1.5 bg-[#25D366] text-white rounded-lg text-[11px] font-bold"
+          >
+            Enviar WhatsApp
+          </a>
+        </div>
+      </Card>
+
+      {/* Nota */}
+      <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
+        <p className="text-[11px] font-bold text-amber-700">💡 CONTEÚDO AUTOMÁTICO</p>
+        <p className="text-xs text-amber-800 mt-1">
+          Este conteúdo é gerado automaticamente todos os dias com base no calendário de temas.
+          Cada dia tem um tema diferente (reflexão, provocação, educação, valor, etc.) para manter variedade.
+          Volta amanhã para conteúdo novo!
+        </p>
+      </div>
+    </>
   );
 }
 
@@ -184,7 +317,7 @@ function PlanoTab({ copiar, copiado }) {
             semana === 2 ? 'bg-[#1a1a2e] text-white' : 'bg-white text-[#6B5C4C] border border-[#E8E2D9]'
           }`}
         >
-          Semana 2: LANCAR<br /><span className="text-[10px] font-normal opacity-60">15-21 Fev &middot; Vitalis LIVE</span>
+          Semana 2: LANÇAR<br /><span className="text-[10px] font-normal opacity-60">15-21 Fev &middot; Vitalis LIVE</span>
         </button>
       </div>
 
@@ -381,7 +514,7 @@ function GridTab({ copiar, copiado }) {
               )}
               {isCarousel && (
                 <div className="p-4 bg-gray-50 rounded-xl text-center">
-                  <p className="text-sm text-[#6B5C4C]">📑 Este e um carrossel. Vai ao tab <strong>Carrosseis</strong> para descarregar os slides de <strong>{post.titulo}</strong>.</p>
+                  <p className="text-sm text-[#6B5C4C]">📑 Este é um carrossel. Vai ao tab <strong>Carrosseis</strong> para descarregar os slides de <strong>{post.titulo}</strong>.</p>
                 </div>
               )}
               <div>
@@ -406,7 +539,7 @@ function AnunciosTab({ copiar, copiado }) {
 
   return (
     <>
-      <Card titulo="Como Configurar Ads" badge="Guia rapido">
+      <Card titulo="Como Configurar Ads" badge="Guia rápido">
         <div className="space-y-2 text-xs text-[#4A4035]">
           <p><strong>1.</strong> Vai a <strong>Meta Business Suite</strong> (business.facebook.com)</p>
           <p><strong>2.</strong> Cria uma campanha com o objectivo indicado em cada anuncio</p>
@@ -492,7 +625,7 @@ function CarrosseisTab({ copiar, copiado }) {
 
   return (
     <>
-      <Card titulo="Carrosseis Prontos" badge={`${carrosseis.length} sets`}>
+      <Card titulo="Carrosséis Prontos" badge={`${carrosseis.length} sets`}>
         <p className="text-xs text-[#6B5C4C] mb-3">Cada carrossel tem 5-6 slides. Seleciona, descarrega, publica.</p>
         <div className="grid grid-cols-2 gap-2">
           {carrosseis.map((c, i) => (

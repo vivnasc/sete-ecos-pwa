@@ -381,6 +381,103 @@ input:focus, textarea:focus {
   background-color: rgba(31, 41, 55, 0.5) !important;
 }
 
+/* Texto colorido em dark mode - garante contraste */
+.dark .text-purple-700,
+.dark .text-purple-600 {
+  color: #c4b5fd !important;
+}
+.dark .text-orange-700,
+.dark .text-orange-600 {
+  color: #fdba74 !important;
+}
+.dark .text-pink-700,
+.dark .text-pink-600 {
+  color: #f9a8d4 !important;
+}
+.dark .text-amber-700,
+.dark .text-amber-800 {
+  color: #fcd34d !important;
+}
+.dark .text-blue-700,
+.dark .text-blue-500 {
+  color: #93c5fd !important;
+}
+.dark .text-green-700,
+.dark .text-green-600,
+.dark .text-emerald-700,
+.dark .text-emerald-600 {
+  color: #86efac !important;
+}
+.dark .text-red-700,
+.dark .text-red-600 {
+  color: #fca5a5 !important;
+}
+.dark .text-indigo-700,
+.dark .text-indigo-600 {
+  color: #a5b4fc !important;
+}
+
+/* Fundos coloridos com opacidade em dark mode */
+.dark .bg-purple-100 {
+  background-color: rgba(139, 92, 246, 0.15) !important;
+}
+.dark .bg-orange-100 {
+  background-color: rgba(251, 146, 60, 0.15) !important;
+}
+.dark .bg-pink-100,
+.dark .bg-pink-50 {
+  background-color: rgba(236, 72, 153, 0.1) !important;
+}
+.dark .bg-green-100 {
+  background-color: rgba(34, 197, 94, 0.15) !important;
+}
+.dark .bg-blue-100 {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+.dark .bg-amber-100 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+}
+
+/* Bordas coloridas em dark mode */
+.dark .border-amber-200 {
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+.dark .border-purple-200 {
+  border-color: rgba(139, 92, 246, 0.3) !important;
+}
+.dark .border-pink-200 {
+  border-color: rgba(236, 72, 153, 0.3) !important;
+}
+.dark .border-green-200 {
+  border-color: rgba(34, 197, 94, 0.3) !important;
+}
+.dark .border-orange-200 {
+  border-color: rgba(251, 146, 60, 0.3) !important;
+}
+.dark .border-blue-200 {
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+.dark .border-red-200 {
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+/* WhatsApp green em dark mode */
+.dark .text-\[\#25D366\] {
+  color: #4ade80 !important;
+}
+
+/* Garantir textos sobre fundos escuros */
+.dark .text-\[\#7C8B6F\] {
+  color: #9CAF88 !important;
+}
+
+/* Card backgrounds específicos */
+.dark .bg-\[\#FAFAF8\] {
+  background-color: var(--dark-bg-elevated) !important;
+}
+
+/* Gradients de header escuro - já visíveis, manter */
+
 /* Texto preto/cinza escuro */
 .dark .text-black {
   color: var(--dark-text-primary) !important;

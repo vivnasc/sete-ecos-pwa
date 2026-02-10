@@ -194,8 +194,8 @@ const LandingVitalis = () => {
       resposta: 'Não! Zero suplementos obrigatórios, zero shakes, zero produtos vendidos. Só comida real que encontras no mercado ou supermercado. O programa é completo como está.'
     },
     {
-      pergunta: 'O Vitalis funciona durante o Ramadão?',
-      resposta: 'Perfeitamente! O método adapta-se ao jejum do Ramadão. As porções mantêm-se, distribuídas entre Suhoor e Iftar. Tens guia nutricional específico, dicas de hidratação nocturna, receitas adaptadas e a coach Vivianne preparada para te apoiar durante o mês sagrado. O Vitalis é inclusivo e respeita as tuas práticas.'
+      pergunta: 'O Vitalis funciona durante o Ramadan?',
+      resposta: 'Perfeitamente! O método adapta-se ao jejum do Ramadan. As porções mantêm-se, distribuídas entre Suhoor e Iftar. Tens guia nutricional específico, dicas de hidratação nocturna, receitas adaptadas e a coach Vivianne preparada para te apoiar durante o mês sagrado. O Vitalis é inclusivo e respeita as tuas práticas.'
     }
   ];
 
@@ -293,7 +293,7 @@ const LandingVitalis = () => {
         </div>
       </header>
 
-      {/* Banner Sazonal Ramadão */}
+      {/* Banner Sazonal Ramadan */}
       {(() => {
         const { mostrar, dentroRamadan: dentroRamadao } = isNearRamadan(10);
         if (!mostrar) return null;
@@ -303,20 +303,20 @@ const LandingVitalis = () => {
             <div className="absolute top-6 right-28 text-2xl opacity-10">⭐</div>
             <div className="max-w-4xl mx-auto px-4 text-center">
               <p className="text-yellow-300 text-sm font-semibold tracking-widest uppercase mb-2">
-                {dentroRamadao ? 'Ramadan Mubarak' : 'O Ramadão está a chegar'}
+                {dentroRamadao ? 'Ramadan Mubarak' : 'O Ramadan está a chegar'}
               </p>
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                 Nutrição consciente durante o mês sagrado
               </h2>
               <p className="text-white/70 text-sm max-w-xl mx-auto mb-4">
-                O Vitalis adapta-se ao Ramadão com guia nutricional para Suhoor e Iftar,
+                O Vitalis adapta-se ao Ramadan com guia nutricional para Suhoor e Iftar,
                 plano de hidratação nocturna e apoio da coach Vivianne. Porque inclusão é cuidado.
               </p>
               <button
                 onClick={handleComecar}
                 className="px-8 py-3 bg-white text-[#1a1a3e] rounded-full font-semibold hover:translate-y-[-2px] hover:shadow-lg transition-all"
               >
-                Começar com apoio Ramadão →
+                Começar com apoio Ramadan →
               </button>
             </div>
           </section>
