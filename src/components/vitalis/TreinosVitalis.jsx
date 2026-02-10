@@ -1158,18 +1158,18 @@ export default function TreinosVitalis() {
     <div className="min-h-screen bg-[#F5F1EB] pb-24">
       {/* Header */}
       <header className="sticky top-0 z-10 bg-[#4A4035] shadow-lg">
-        <div className="max-w-lg mx-auto px-4 py-4">
+        <div className="max-w-2xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/vitalis/dashboard" className="text-white/70 hover:text-white">
               ← Voltar
             </Link>
-            <h1 className="text-xl font-bold text-white">💪 Treinos</h1>
+            <h1 className="text-xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>💪 Treinos</h1>
             <div className="w-16"></div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 py-6 space-y-6">
+      <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
 
         {/* Card Fase Actual + Integração Nutricional */}
         <div className={`p-5 rounded-2xl ${faseInfo.cor} shadow-lg`}>
@@ -1473,7 +1473,7 @@ export default function TreinosVitalis() {
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-[#E8E2D9] shadow-lg">
-        <div className="max-w-lg mx-auto flex justify-around py-3">
+        <div className="max-w-2xl mx-auto flex justify-around py-3">
           <Link to="/vitalis/dashboard" className="flex flex-col items-center text-[#4A4035]/40">
             <span className="text-xl">🏠</span>
             <span className="text-xs mt-1">Início</span>
