@@ -553,8 +553,78 @@ export default function PlanoAlimentar() {
           </div>
         </div>
 
+        {/* Guia de Equivalências - Método da Mão */}
+        <details className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <summary className="p-5 cursor-pointer hover:bg-gray-50 transition-colors">
+            <span className="font-bold text-gray-800">🫲 Guia Prático: Quanto é 1 porção?</span>
+            <p className="text-xs text-gray-500 mt-1 ml-0.5">Usa a tua mão — sem balança, sem stress</p>
+          </summary>
+          <div className="px-5 pb-5 space-y-4">
+            {/* Proteína */}
+            <div className="bg-rose-50 rounded-xl p-3">
+              <h4 className="font-bold text-rose-800 text-sm mb-2">🫲 1 Palma = 1 porção de Proteína (~25g)</h4>
+              <div className="grid grid-cols-2 gap-1.5 text-xs text-rose-700">
+                <div className="flex items-center gap-1.5">🍗 Frango grelhado (1 palma)</div>
+                <div className="flex items-center gap-1.5">🐟 Peixe/Atum (1 lata = 1 palma)</div>
+                <div className="flex items-center gap-1.5">🥩 Bife/Carne (1 palma)</div>
+                <div className="flex items-center gap-1.5">🥚 2-3 ovos = 1 palma</div>
+                <div className="flex items-center gap-1.5">🥛 Iogurte grego (170g) = ½ palma</div>
+                <div className="flex items-center gap-1.5">🧀 2 fatias queijo = ½ palma</div>
+                <div className="flex items-center gap-1.5">🦐 Camarão (1 palma)</div>
+                <div className="flex items-center gap-1.5">🥤 Whey (1 scoop) = 1 palma</div>
+              </div>
+            </div>
+
+            {/* Hidratos */}
+            <div className="bg-amber-50 rounded-xl p-3">
+              <h4 className="font-bold text-amber-800 text-sm mb-2">🤲 1 Mão Concha = 1 porção de Hidratos (~30g carbs)</h4>
+              <div className="grid grid-cols-2 gap-1.5 text-xs text-amber-700">
+                <div className="flex items-center gap-1.5">🍚 Arroz (1 mão concha)</div>
+                <div className="flex items-center gap-1.5">🍝 Massa (1 mão concha)</div>
+                <div className="flex items-center gap-1.5">🥔 Batata (1 punho)</div>
+                <div className="flex items-center gap-1.5">🍠 Batata doce (1 punho)</div>
+                <div className="flex items-center gap-1.5">🍞 Pão (1 fatia)</div>
+                <div className="flex items-center gap-1.5">🥣 Aveia (3 col. sopa)</div>
+                <div className="flex items-center gap-1.5">🍎 Fruta (1 peça média)</div>
+                <div className="flex items-center gap-1.5">🫚 Mandioca (1 punho)</div>
+              </div>
+            </div>
+
+            {/* Gordura */}
+            <div className="bg-purple-50 rounded-xl p-3">
+              <h4 className="font-bold text-purple-800 text-sm mb-2">👍 1 Polegar = 1 porção de Gordura (~10g)</h4>
+              <div className="grid grid-cols-2 gap-1.5 text-xs text-purple-700">
+                <div className="flex items-center gap-1.5">🫒 Azeite (1 col. sopa)</div>
+                <div className="flex items-center gap-1.5">🥑 ¼ de abacate</div>
+                <div className="flex items-center gap-1.5">🥜 Amêndoas/Nozes (1 punhado)</div>
+                <div className="flex items-center gap-1.5">🧈 Manteiga (1 col. chá)</div>
+                <div className="flex items-center gap-1.5">🥥 Coco ralado (2 col. sopa)</div>
+                <div className="flex items-center gap-1.5">🥜 Manteiga amendoim (1 col. sopa)</div>
+              </div>
+            </div>
+
+            {/* Legumes */}
+            <div className="bg-green-50 rounded-xl p-3">
+              <h4 className="font-bold text-green-800 text-sm mb-2">✊ 1 Punho = 1 porção de Legumes (~100g)</h4>
+              <div className="grid grid-cols-2 gap-1.5 text-xs text-green-700">
+                <div className="flex items-center gap-1.5">🥗 Salada mista (1 punho)</div>
+                <div className="flex items-center gap-1.5">🥦 Brócolos (1 punho)</div>
+                <div className="flex items-center gap-1.5">🥬 Espinafres (1 punho)</div>
+                <div className="flex items-center gap-1.5">🍅 Tomate (1 punho)</div>
+                <div className="flex items-center gap-1.5">🥕 Cenoura (1 punho)</div>
+                <div className="flex items-center gap-1.5">🍄 Cogumelos (1 punho)</div>
+              </div>
+              <p className="text-xs text-green-600 mt-2 italic">Legumes são livres — come à vontade!</p>
+            </div>
+
+            <p className="text-xs text-gray-500 text-center italic">
+              Cada pessoa tem mãos diferentes — por isso a medida é sempre proporcional ao teu corpo.
+            </p>
+          </div>
+        </details>
+
         {/* Dias de treino */}
-        <ConfigurarDiasTreino 
+        <ConfigurarDiasTreino
           userId={usersId}
           diasActuais={plano.dias_treino || []}
           onSave={() => carregarPlano()}

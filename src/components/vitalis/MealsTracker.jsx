@@ -409,6 +409,7 @@ export default function MealsTracker() {
                     refeicao={ref.nome}
                     registo={registo}
                     plano={plano}
+                    numRefeicoes={refeicoes.length}
                     onSave={(detalhes) => registarRefeicao(ref.nome, detalhes.seguiu_plano || registo?.seguiu_plano || 'sim', detalhes)}
                     saving={saving}
                   />
@@ -435,17 +436,101 @@ export default function MealsTracker() {
   );
 }
 
+// Alimentos comuns com equivalências em porções-mão
+const ALIMENTOS_COMUNS = {
+  proteina: [
+    { nome: 'Frango (1 palma)', porcao: 1, icon: '🍗' },
+    { nome: 'Peixe (1 palma)', porcao: 1, icon: '🐟' },
+    { nome: 'Bife/Carne (1 palma)', porcao: 1, icon: '🥩' },
+    { nome: 'Atum (1 lata)', porcao: 1, icon: '🐠' },
+    { nome: 'Ovos (2-3)', porcao: 1, icon: '🥚' },
+    { nome: 'Iogurte grego (170g)', porcao: 0.5, icon: '🥛' },
+    { nome: 'Queijo (2 fatias)', porcao: 0.5, icon: '🧀' },
+    { nome: 'Whey (1 scoop)', porcao: 1, icon: '🥤' },
+    { nome: 'Camarão/Marisco (1 palma)', porcao: 1, icon: '🦐' },
+    { nome: 'Tofu (1 palma)', porcao: 1, icon: '🫘' },
+  ],
+  hidratos: [
+    { nome: 'Arroz (1 mão concha)', porcao: 1, icon: '🍚' },
+    { nome: 'Massa (1 mão concha)', porcao: 1, icon: '🍝' },
+    { nome: 'Batata (1 punho)', porcao: 1, icon: '🥔' },
+    { nome: 'Batata doce (1 punho)', porcao: 1, icon: '🍠' },
+    { nome: 'Pão (1 fatia)', porcao: 1, icon: '🍞' },
+    { nome: 'Aveia (3 col. sopa)', porcao: 1, icon: '🥣' },
+    { nome: 'Fruta (1 peça média)', porcao: 1, icon: '🍎' },
+    { nome: 'Mandioca (1 punho)', porcao: 1, icon: '🫚' },
+  ],
+  gordura: [
+    { nome: 'Azeite (1 col. sopa)', porcao: 1, icon: '🫒' },
+    { nome: '¼ abacate', porcao: 1, icon: '🥑' },
+    { nome: 'Amêndoas/Nozes (1 punhado)', porcao: 1, icon: '🥜' },
+    { nome: 'Manteiga (1 col. chá)', porcao: 1, icon: '🧈' },
+    { nome: 'Amendoim (1 col. sopa)', porcao: 1, icon: '🥜' },
+    { nome: 'Coco ralado (2 col. sopa)', porcao: 1, icon: '🥥' },
+  ],
+  legumes: [
+    { nome: 'Salada mista (1 punho)', porcao: 1, icon: '🥗' },
+    { nome: 'Brócolos (1 punho)', porcao: 1, icon: '🥦' },
+    { nome: 'Espinafres (1 punho)', porcao: 1, icon: '🥬' },
+    { nome: 'Tomate (1 punho)', porcao: 1, icon: '🍅' },
+    { nome: 'Cenoura (1 punho)', porcao: 1, icon: '🥕' },
+    { nome: 'Couve (1 punho)', porcao: 1, icon: '🥬' },
+    { nome: 'Cogumelos (1 punho)', porcao: 1, icon: '🍄' },
+  ]
+};
+
+const CATEGORIAS = [
+  { key: 'proteina', label: 'Proteína', emoji: '🫲', medida: 'palmas', cor: 'rose' },
+  { key: 'hidratos', label: 'Hidratos', emoji: '🤲', medida: 'mãos', cor: 'amber' },
+  { key: 'gordura', label: 'Gordura', emoji: '👍', medida: 'polegares', cor: 'yellow' },
+  { key: 'legumes', label: 'Legumes', emoji: '✊', medida: 'punhos', cor: 'green' },
+];
+
 // Componente de Detalhe
-function DetalheRefeicao({ refeicao, registo, plano, onSave, saving }) {
+function DetalheRefeicao({ refeicao, registo, plano, numRefeicoes, onSave, saving }) {
   const [detalhes, setDetalhes] = useState({
     seguiu_plano: registo?.seguiu_plano || 'sim',
     hora: registo?.hora || '',
-    porcoes_proteina: registo?.porcoes_proteina || '',
-    porcoes_hidratos: registo?.porcoes_hidratos || '',
-    porcoes_gordura: registo?.porcoes_gordura || '',
-    porcoes_legumes: registo?.porcoes_legumes || '',
+    porcoes_proteina: registo?.porcoes_proteina || 0,
+    porcoes_hidratos: registo?.porcoes_hidratos || 0,
+    porcoes_gordura: registo?.porcoes_gordura || 0,
+    porcoes_legumes: registo?.porcoes_legumes || 0,
     notas: registo?.notas || ''
   });
+  const [categoriaAberta, setCategoriaAberta] = useState(null);
+  const [alimentosSelecionados, setAlimentosSelecionados] = useState([]);
+
+  // Calcular alvo por refeição (total do dia / nº refeições)
+  const nRef = numRefeicoes || 3;
+  const alvoPorRefeicao = plano ? {
+    proteina: Math.ceil(plano.porcoes_proteina / nRef),
+    hidratos: Math.ceil(plano.porcoes_hidratos / nRef),
+    gordura: Math.ceil(plano.porcoes_gordura / nRef),
+    legumes: Math.ceil(plano.porcoes_legumes / nRef),
+  } : null;
+
+  const adicionarAlimento = (categoria, alimento) => {
+    const campo = `porcoes_${categoria}`;
+    const novoValor = parseFloat(detalhes[campo] || 0) + alimento.porcao;
+    setDetalhes({ ...detalhes, [campo]: novoValor });
+    setAlimentosSelecionados([...alimentosSelecionados, { ...alimento, categoria }]);
+  };
+
+  const removerAlimento = (index) => {
+    const item = alimentosSelecionados[index];
+    const campo = `porcoes_${item.categoria}`;
+    const novoValor = Math.max(0, parseFloat(detalhes[campo] || 0) - item.porcao);
+    setDetalhes({ ...detalhes, [campo]: novoValor });
+    setAlimentosSelecionados(alimentosSelecionados.filter((_, i) => i !== index));
+  };
+
+  const verificarExcesso = (categoria) => {
+    if (!alvoPorRefeicao) return null;
+    const actual = parseFloat(detalhes[`porcoes_${categoria}`] || 0);
+    const alvo = alvoPorRefeicao[categoria];
+    if (actual > alvo) return { excesso: actual - alvo, alvo };
+    return null;
+  };
 
   return (
     <div className="border-t border-gray-200 p-4 bg-gray-50">
@@ -458,9 +543,9 @@ function DetalheRefeicao({ refeicao, registo, plano, onSave, saving }) {
             onChange={(e) => setDetalhes({ ...detalhes, seguiu_plano: e.target.value })}
             className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none"
           >
-            <option value="sim">✅ Seguiu o plano</option>
-            <option value="parcial">⚠️ Parcialmente</option>
-            <option value="nao">❌ Não seguiu</option>
+            <option value="sim">Seguiu o plano</option>
+            <option value="parcial">Parcialmente</option>
+            <option value="nao">Não seguiu</option>
           </select>
         </div>
 
@@ -476,70 +561,124 @@ function DetalheRefeicao({ refeicao, registo, plano, onSave, saving }) {
         </div>
       </div>
 
-      {/* Porções */}
-      <div className="mb-4">
-        <label className="block text-xs font-semibold text-gray-600 mb-2">
-          Porções {plano && <span className="text-gray-400">(alvo do dia)</span>}
-        </label>
-        <div className="grid grid-cols-4 gap-2">
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">
-              🥩 Proteína {plano && <span className="text-[#C1634A]">({plano.porcoes_proteina})</span>}
-            </label>
-            <input
-              type="number"
-              step="0.5"
-              min="0"
-              value={detalhes.porcoes_proteina}
-              onChange={(e) => setDetalhes({ ...detalhes, porcoes_proteina: e.target.value })}
-              placeholder="0"
-              className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none text-center"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">
-              🍚 Hidratos {plano && <span className="text-[#C1634A]">({plano.porcoes_hidratos})</span>}
-            </label>
-            <input
-              type="number"
-              step="0.5"
-              min="0"
-              value={detalhes.porcoes_hidratos}
-              onChange={(e) => setDetalhes({ ...detalhes, porcoes_hidratos: e.target.value })}
-              placeholder="0"
-              className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none text-center"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">
-              🥑 Gordura {plano && <span className="text-[#C1634A]">({plano.porcoes_gordura})</span>}
-            </label>
-            <input
-              type="number"
-              step="0.5"
-              min="0"
-              value={detalhes.porcoes_gordura}
-              onChange={(e) => setDetalhes({ ...detalhes, porcoes_gordura: e.target.value })}
-              placeholder="0"
-              className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none text-center"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">
-              🥬 Legumes {plano && <span className="text-[#C1634A]">({plano.porcoes_legumes})</span>}
-            </label>
-            <input
-              type="number"
-              step="0.5"
-              min="0"
-              value={detalhes.porcoes_legumes}
-              onChange={(e) => setDetalhes({ ...detalhes, porcoes_legumes: e.target.value })}
-              placeholder="0"
-              className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none text-center"
-            />
+      {/* Alimentos selecionados */}
+      {alimentosSelecionados.length > 0 && (
+        <div className="mb-3">
+          <label className="block text-xs font-semibold text-gray-600 mb-1">O que comeste:</label>
+          <div className="flex flex-wrap gap-1.5">
+            {alimentosSelecionados.map((item, i) => (
+              <button
+                key={i}
+                onClick={() => removerAlimento(i)}
+                className="flex items-center gap-1 px-2 py-1 bg-white border border-gray-300 rounded-full text-xs hover:bg-red-50 hover:border-red-300 transition-all"
+                title="Clica para remover"
+              >
+                <span>{item.icon}</span>
+                <span className="text-gray-700">{item.nome}</span>
+                <span className="text-gray-400 ml-0.5">×</span>
+              </button>
+            ))}
           </div>
         </div>
+      )}
+
+      {/* Seleção rápida de alimentos por categoria */}
+      <div className="mb-4">
+        <label className="block text-xs font-semibold text-gray-600 mb-2">
+          Adicionar alimentos:
+        </label>
+        <div className="grid grid-cols-4 gap-1.5 mb-2">
+          {CATEGORIAS.map(cat => {
+            const valor = parseFloat(detalhes[`porcoes_${cat.key}`] || 0);
+            const excesso = verificarExcesso(cat.key);
+            return (
+              <button
+                key={cat.key}
+                onClick={() => setCategoriaAberta(categoriaAberta === cat.key ? null : cat.key)}
+                className={`p-2 rounded-lg border-2 text-center transition-all ${
+                  categoriaAberta === cat.key
+                    ? 'border-[#7C8B6F] bg-[#7C8B6F]/10'
+                    : excesso ? 'border-orange-400 bg-orange-50' : 'border-gray-200 bg-white'
+                }`}
+              >
+                <div className="text-lg">{cat.emoji}</div>
+                <div className="text-xs font-medium text-gray-700">{cat.label}</div>
+                <div className={`text-sm font-bold ${excesso ? 'text-orange-600' : 'text-gray-800'}`}>
+                  {valor}
+                  {alvoPorRefeicao && (
+                    <span className="text-gray-400 font-normal">/{alvoPorRefeicao[cat.key]}</span>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Alertas de excesso */}
+        {CATEGORIAS.map(cat => {
+          const excesso = verificarExcesso(cat.key);
+          if (!excesso) return null;
+          return (
+            <div key={`alerta-${cat.key}`} className="flex items-center gap-2 px-3 py-1.5 mb-1 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-700">
+              <span>⚠️</span>
+              <span><strong>{cat.label}</strong>: +{excesso.excesso} {cat.medida} acima do alvo ({excesso.alvo} por refeição)</span>
+            </div>
+          );
+        })}
+
+        {/* Lista de alimentos da categoria aberta */}
+        {categoriaAberta && (
+          <div className="bg-white border-2 border-[#7C8B6F]/30 rounded-xl p-3 mt-2">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-gray-600">
+                {CATEGORIAS.find(c => c.key === categoriaAberta)?.emoji}{' '}
+                {CATEGORIAS.find(c => c.key === categoriaAberta)?.label} — toca para adicionar:
+              </span>
+              <button
+                onClick={() => setCategoriaAberta(null)}
+                className="text-gray-400 hover:text-gray-600 text-sm"
+              >✕</button>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {ALIMENTOS_COMUNS[categoriaAberta].map((alimento, i) => (
+                <button
+                  key={i}
+                  onClick={() => adicionarAlimento(categoriaAberta, alimento)}
+                  className="flex items-center gap-1 px-2.5 py-1.5 bg-gray-50 hover:bg-[#7C8B6F]/10 border border-gray-200 hover:border-[#7C8B6F]/40 rounded-full text-xs transition-all"
+                >
+                  <span>{alimento.icon}</span>
+                  <span className="text-gray-700">{alimento.nome}</span>
+                  <span className="text-gray-400 text-[10px]">+{alimento.porcao}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Ajuste manual de porções */}
+      <details className="mb-4">
+        <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
+          Ajustar porções manualmente
+        </summary>
+        <div className="grid grid-cols-4 gap-2 mt-2">
+          {CATEGORIAS.map(cat => (
+            <div key={cat.key}>
+              <label className="block text-xs text-gray-500 mb-1">
+                {cat.emoji} {cat.label}
+              </label>
+              <input
+                type="number"
+                step="0.5"
+                min="0"
+                value={detalhes[`porcoes_${cat.key}`]}
+                onChange={(e) => setDetalhes({ ...detalhes, [`porcoes_${cat.key}`]: parseFloat(e.target.value) || 0 })}
+                className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none text-center"
+              />
+            </div>
+          ))}
+        </div>
+      </details>
 
       {/* Notas */}
       <div className="mb-4">
