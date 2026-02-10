@@ -164,6 +164,8 @@ export default function DashboardVitalis() {
       root.classList.remove('dark');
     }
     localStorage.setItem('vitalis-theme', isDarkMode ? 'dark' : 'light');
+    // Cleanup: remove dark class when leaving dashboard
+    return () => root.classList.remove('dark');
   }, [isDarkMode]);
 
   // Fasting notification effect - monitora o timer e notifica quando a janela abre

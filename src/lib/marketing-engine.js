@@ -164,7 +164,7 @@ const HASHTAGS_BASE = [
 const HASHTAGS_TEMATICOS = {
   corpo: ['#nutricao', '#comidadereal', '#comidamocambicana', '#porcoes', '#receitas'],
   emocional: ['#saudeemocional', '#autoconhecimento', '#mulherforte', '#comerconsciente'],
-  provocação: ['#verdadeincomoda', '#semfiltro', '#realidade', '#mudanca', '#chega'],
+  provocacao: ['#verdadeincomoda', '#semfiltro', '#realidade', '#mudanca', '#chega'],
   lumina: ['#lumina', '#diagnostico', '#autoconhecimento', '#energia', '#checkin'],
   aurea: ['#aurea', '#autovalor', '#autoestima', '#mulherreal', '#empoderamento'],
 };
@@ -218,10 +218,10 @@ export function gerarConteudoHoje(date = new Date()) {
     titulo,
     formato,
     tipo,
-    hook: conteúdo.hook,
-    dica: conteúdo.hook, // backwards compat
-    corpo: conteúdo.corpo,
-    cta: conteúdo.cta,
+    hook: conteudo.hook,
+    dica: conteudo.hook, // backwards compat
+    corpo: conteudo.corpo,
+    cta: conteudo.cta,
     hashtags: [...hashBase, ...hashTema],
   };
 }
@@ -251,13 +251,13 @@ export function gerarMensagemWhatsApp(tipo = 'dica', campanha = '') {
     dica: `${hoje.hook}\n\n${hoje.corpo}\n\n${hoje.cta}\n\n👉 ${linkVitalis}`,
 
     // Provocacao pura
-    provocação: `*${hoje.hook}*\n\nVou dizer uma coisa que talvez ninguém te disse:\n\n${hoje.corpo}\n\nSe isto te tocou, não ignores.\n\n👉 ${linkLumina}\n\nE gratuito. 2 minutos. Começa por ti.`,
+    provocacao: `*${hoje.hook}*\n\nVou dizer uma coisa que talvez ninguém te disse:\n\n${hoje.corpo}\n\nSe isto te tocou, não ignores.\n\n👉 ${linkLumina}\n\nE gratuito. 2 minutos. Começa por ti.`,
 
     // Voz pessoal (como se a Viv estivesse a falar)
     pessoal: `Ola querida 🤍\n\nHoje quero partilhar algo que me incomoda:\n\n_${hoje.hook}_\n\n${hoje.corpo}\n\nSe te identificas, responde a esta mensagem. Quero saber como te sentes.\n\nOu experimenta o diagnóstico gratuito:\n${linkLumina}`,
 
     // Urgencia real
-    urgência: `⚡ Pergunta honesta:\n\nHá quanto tempo dizes "vou começar na segunda"?\n\nSemanas? Meses? Anos?\n\nEnquanto esperas pelo "momento certo", o teu corpo continua a pedir ajuda.\n\nDeixa de esperar.\n\n2 minutos. Gratuito. Agora:\n${linkLumina}`,
+    urgencia: `⚡ Pergunta honesta:\n\nHá quanto tempo dizes "vou começar na segunda"?\n\nSemanas? Meses? Anos?\n\nEnquanto esperas pelo "momento certo", o teu corpo continua a pedir ajuda.\n\nDeixa de esperar.\n\n2 minutos. Gratuito. Agora:\n${linkLumina}`,
 
     // Promo directa
     promo: `*Isto não é uma dieta. É o fim das dietas.* 💥\n\nO VITALIS é coaching nutricional REAL:\n\n🍽 Plano feito para TI (nao copiado da internet)\n📱 Coach IA que te responde as 3 da manhã\n💚 Espaço emocional para os dias difíceis\n📊 Dashboard que mostra o teu progresso real\n🇲🇿 Receitas com comida que encontras no mercado\n\nDesde 2.500 MT/mês\n7 dias de garantia (nao gostas = reembolso)\n\n👉 ${linkVitalis}`,
@@ -350,7 +350,7 @@ export function gerarScriptVoz() {
 // CAMPANHAS LANCAMENTO - Sequencias de 7 dias
 // ============================================================
 
-export function getCampanhaLançamento() {
+export function getCampanhaLancamento() {
   return [
     {
       dia: 1,
@@ -534,11 +534,11 @@ export function getCarrosseisProntos() {
 // ============================================================
 
 export function gerarConteudoMensal(ano, mes) {
-  const diasNoMes = new Date(ano, mês + 1, 0).getDate();
+  const diasNoMes = new Date(ano, mes + 1, 0).getDate();
   const dias = [];
   for (let dia = 1; dia <= diasNoMes; dia++) {
     const date = new Date(ano, mes, dia);
-    const conteúdo = gerarConteudoHoje(date);
+    const conteudo = gerarConteudoHoje(date);
     dias.push({
       ...conteudo,
       dia,
@@ -657,7 +657,7 @@ export function getAnunciosPagos() {
       cta_botao: 'Experimenta Agora',
       link: `${BASE_URL}/lumina?utm_source=facebook&utm_medium=ad&utm_campaign=lumina-launch-s1`,
       targeting: 'Mulheres 25-55 | Maputo, Moçambique | Interesses: Saude, Bem-estar, Nutricao, Alimentacao saudável, Yoga, Meditação',
-      orçamento: '300-500 MT/dia (~$5-8 USD)',
+      orcamento: '300-500 MT/dia (~$5-8 USD)',
     },
     {
       id: 'hook-emocional',
@@ -672,7 +672,7 @@ export function getAnunciosPagos() {
       cta_botao: 'Saber Mais',
       link: 'https://www.instagram.com/seteecos/',
       targeting: 'Mulheres 25-55 | Maputo | Interesses: Dieta, Perda de peso, Saude mental, Corpo positivo',
-      orçamento: '200-400 MT/dia (~$3-6 USD)',
+      orcamento: '200-400 MT/dia (~$3-6 USD)',
     },
     {
       id: 'dor-dietas',
@@ -687,7 +687,7 @@ export function getAnunciosPagos() {
       cta_botao: 'Descobre Agora',
       link: `${BASE_URL}/lumina?utm_source=facebook&utm_medium=ad&utm_campaign=dor-dietas-s1`,
       targeting: 'Mulheres 25-55 | Maputo | Interesses: Dieta, Emagrecimento, Receitas saudaveis, Fitness',
-      orçamento: '300-500 MT/dia (~$5-8 USD)',
+      orcamento: '300-500 MT/dia (~$5-8 USD)',
     },
     {
       id: 'testemunho-ad',
@@ -702,7 +702,7 @@ export function getAnunciosPagos() {
       cta_botao: 'Experimenta Grátis',
       link: `${BASE_URL}/lumina?utm_source=facebook&utm_medium=ad&utm_campaign=testemunho-s1`,
       targeting: 'Mulheres 25-55 | Maputo | Interesses: Transformacao pessoal, Saude, Bem-estar',
-      orçamento: '300-500 MT/dia (~$5-8 USD)',
+      orcamento: '300-500 MT/dia (~$5-8 USD)',
     },
   ];
 }
