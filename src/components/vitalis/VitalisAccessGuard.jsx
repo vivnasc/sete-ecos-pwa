@@ -113,6 +113,43 @@ const VitalisAccessGuard = ({ children }) => {
     );
   }
 
+  // Pagamento PENDENTE - mostrar página de espera
+  if (!hasAccess && accessInfo?.status === SUBSCRIPTION_STATUS.PENDING) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#7C8B6F] to-[#5A6B4D] flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-2xl">
+          <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="text-4xl">⏳</span>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">Pagamento em Análise</h2>
+          <p className="text-gray-600 mb-6 leading-relaxed">
+            Recebemos o teu registo de pagamento! A Coach Vivianne vai confirmar em até 24 horas.
+          </p>
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+            <p className="text-amber-800 text-sm font-medium mb-2">📧 Próximos Passos</p>
+            <p className="text-amber-700 text-xs leading-relaxed">
+              Vais receber um email assim que o pagamento for aprovado. Depois disso, terás acesso completo ao Dashboard Vitalis.
+            </p>
+          </div>
+          <Link
+            to="/vitalis"
+            className="block w-full py-3 px-6 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-xl font-semibold hover:shadow-lg transition-all mb-3"
+          >
+            ← Voltar à Página Inicial
+          </Link>
+          <a
+            href="https://wa.me/258851006473?text=Olá! Fiz um pagamento para o Vitalis e estou a aguardar aprovação."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full py-3 px-6 bg-[#25D366] text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+          >
+            💬 Contactar Coach via WhatsApp
+          </a>
+        </div>
+      </div>
+    );
+  }
+
   // Sem acesso - redirecionar para pagamento
   if (!hasAccess) {
     return <Navigate to="/vitalis/pagamento" state={{ from: location }} replace />;

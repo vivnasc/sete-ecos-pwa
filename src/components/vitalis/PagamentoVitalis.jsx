@@ -775,14 +775,18 @@ const PagamentoVitalis = () => {
                   <p className="mb-2"><strong>Valor:</strong> {parseFloat(manualAmount).toLocaleString()} {manualCurrency}</p>
                   <p><strong>Plano:</strong> {getCurrentPlan()?.name}</p>
                 </div>
-                <p className="text-white/60 text-xs mb-4">
-                  Vais receber um email de confirmação quando o pagamento for aprovado.
-                </p>
+                <div className="bg-amber-500/20 border border-amber-500/40 rounded-xl p-4 mb-4">
+                  <p className="text-amber-200 text-sm font-medium mb-2">⏳ Aguarda Aprovação</p>
+                  <p className="text-amber-100/90 text-xs leading-relaxed">
+                    O teu pagamento está em análise. Vais receber um email de confirmação quando a Coach Vivianne aprovar (até 24h).
+                    Depois disso, poderás aceder ao Dashboard Vitalis.
+                  </p>
+                </div>
                 <button
-                  onClick={() => navigate('/vitalis/dashboard')}
-                  className="w-full py-3 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-xl font-semibold"
+                  onClick={() => navigate('/vitalis')}
+                  className="w-full py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-semibold transition-all"
                 >
-                  Ir para o Dashboard
+                  ← Voltar à Página Inicial
                 </button>
               </div>
             ) : (
@@ -890,12 +894,12 @@ const PagamentoVitalis = () => {
                             required
                             step="0.01"
                             min="0"
-                            className="flex-1 px-4 py-3 rounded-xl bg-white/95 border border-gray-200 focus:border-[#7C8B6F] focus:outline-none"
+                            className="flex-1 px-4 py-4 rounded-xl bg-white/95 border-2 border-gray-300 focus:border-[#7C8B6F] focus:outline-none text-lg font-semibold text-gray-900"
                           />
                           <select
                             value={manualCurrency}
                             onChange={(e) => setManualCurrency(e.target.value)}
-                            className="px-4 py-3 rounded-xl bg-white/95 border border-gray-200 focus:border-[#7C8B6F] focus:outline-none font-medium"
+                            className="px-4 py-4 rounded-xl bg-white/95 border-2 border-gray-300 focus:border-[#7C8B6F] focus:outline-none text-lg font-bold text-gray-900"
                           >
                             <option value="MZN">MZN</option>
                             <option value="USD">USD</option>
