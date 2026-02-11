@@ -885,21 +885,21 @@ const PagamentoVitalis = () => {
                       {/* Amount Input */}
                       <div className="mb-4">
                         <label className="text-white/80 text-sm mb-2 block">Valor Pago *</label>
-                        <div className="flex gap-2 items-stretch">
+                        <div className="flex gap-2 items-center">
                           <input
                             type="number"
-                            value={manualAmount}
+                            value={manualAmount || getDiscountedPrice(getCurrentPlan()).mzn}
                             onChange={(e) => setManualAmount(e.target.value)}
                             placeholder={getDiscountedPrice(getCurrentPlan()).mzn.toString()}
                             required
                             step="0.01"
                             min="0"
-                            className="flex-1 px-6 py-5 rounded-xl bg-white/95 border-2 border-gray-300 focus:border-[#7C8B6F] focus:outline-none text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 text-center"
+                            className="flex-[3] px-4 py-3 rounded-xl bg-white/95 border-2 border-gray-300 focus:border-[#7C8B6F] focus:outline-none text-xl font-bold text-gray-900"
                           />
                           <select
                             value={manualCurrency}
                             onChange={(e) => setManualCurrency(e.target.value)}
-                            className="px-5 py-5 rounded-xl bg-white/95 border-2 border-gray-300 focus:border-[#7C8B6F] focus:outline-none text-xl font-bold text-gray-900 min-w-[100px]"
+                            className="w-28 px-3 py-3 rounded-xl bg-white/95 border-2 border-gray-300 focus:border-[#7C8B6F] focus:outline-none text-base font-semibold text-gray-900"
                           >
                             <option value="MZN">MZN</option>
                             <option value="USD">USD</option>
