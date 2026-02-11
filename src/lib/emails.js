@@ -106,19 +106,35 @@ export async function enviarResumoDiario(dados) {
   return enviarEmail('coach-resumo-diario', getCoachEmail(), dados);
 }
 
-// ===== WHATSAPP NOTIFICATIONS =====
+// ===== WHATSAPP NOTIFICATIONS (via Twilio) =====
 
 /**
- * Envia notificação WhatsApp para coach
+ * Envia notificação WhatsApp para coach via Twilio
+ * Usa /api/whatsapp-twilio como endpoint principal.
+ * Fallback para /api/whatsapp-notify (CallMeBot) se Twilio falhar.
  */
 async function enviarWhatsAppCoach(mensagem) {
   try {
-    const response = await fetch('/api/whatsapp-notify', {
+    // Tentar Twilio primeiro
+    const response = await fetch('/api/whatsapp-twilio', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mensagem })
     });
-    return response.ok;
+
+    if (response.ok) {
+      const result = await response.json();
+      if (result.success) return true;
+    }
+
+    // Fallback para CallMeBot se Twilio falhar
+    console.warn('Twilio falhou, a tentar CallMeBot...');
+    const fallback = await fetch('/api/whatsapp-notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mensagem })
+    });
+    return fallback.ok;
   } catch (error) {
     console.error('Erro WhatsApp:', error);
     return false;
