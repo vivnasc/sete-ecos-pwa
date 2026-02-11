@@ -79,13 +79,24 @@ async function notificarVivianne(clienteNumero, clienteNome, contexto) {
 // ===== HANDLER PRINCIPAL =====
 
 export default async function handler(req, res) {
+  // GET = teste rápido no browser para verificar se o endpoint existe
+  if (req.method === 'GET') {
+    return res.status(200).json({
+      status: 'ok',
+      endpoint: 'whatsapp-chatbot',
+      method: 'Configure Twilio webhook como POST',
+      timestamp: new Date().toISOString()
+    });
+  }
+
   // Twilio envia POST com form-urlencoded
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método não permitido. Configura o webhook Twilio como POST.' });
+    return res.status(405).json({ error: 'Método não permitido' });
   }
 
   try {
     const body = req.body;
+    console.log('WhatsApp chatbot recebeu:', JSON.stringify({ From: body.From, Body: body.Body, NumMedia: body.NumMedia }));
 
     // Campos Twilio standard
     const from = body.From || '';
