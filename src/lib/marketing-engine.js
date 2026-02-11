@@ -2174,3 +2174,108 @@ export function getGuiaMetaDeveloper() {
     ],
   };
 }
+
+// ============================================================
+// WHATSAPP BUSINESS - Setup completo profissional
+// ============================================================
+
+export function getSetupWhatsAppBusiness() {
+  return {
+    perfil: {
+      nome: 'Sete Ecos',
+      categoria: 'Saude e bem-estar',
+      descricao: 'Coaching nutricional e bem-estar feminino 🌿 Feito em Moçambique 🇲🇿',
+      sobre: 'Coaching nutricional e bem-estar feminino 🌿 Feito em Moçambique 🇲🇿',
+      horario: 'Seg-Sex: 8h-18h',
+      email: 'viv.saraiva@gmail.com',
+      website: 'https://app.seteecos.com',
+      endereco: 'Maputo, Moçambique',
+    },
+    saudacao: `Olá! 🌿 Bem-vinda ao Sete Ecos.\n\nSou a Vivianne, coach de nutrição e bem-estar feminino.\n\nComo te posso ajudar?\n\n1️⃣ Quero saber mais sobre o VITALIS (coaching nutricional)\n2️⃣ Quero fazer o diagnóstico gratuito LUMINA\n3️⃣ Tenho dúvidas sobre preços\n4️⃣ Preciso de suporte técnico\n\nResponde com o número ou escreve à vontade 💚`,
+    ausencia: `Olá! 🌿 Obrigada pela tua mensagem.\n\nNeste momento estou fora do horário de atendimento (Seg-Sex, 8h-18h).\n\nEnquanto isso, podes:\n🔮 Fazer o diagnóstico gratuito: app.seteecos.com/lumina\n🌱 Ver o programa VITALIS: app.seteecos.com/vitalis\n\nRespondo-te assim que possível! 💚`,
+    respostasRapidas: [
+      {
+        atalho: '/precos',
+        titulo: 'Preços VITALIS',
+        mensagem: `Os nossos planos VITALIS (coaching nutricional):\n\n💚 Mensal: 2.500 MZN/mês\n💚 Semestral: 12.500 MZN (poupas 2.500!)\n💚 Anual: 21.000 MZN (poupas 9.000!)\n\nTodos incluem:\n✅ Plano alimentar personalizado\n✅ Receitas moçambicanas adaptadas\n✅ Chat directo comigo\n✅ Treinos guiados\n✅ Acompanhamento semanal\n\nQueres experimentar? Posso activar-te um período de teste 🌱`,
+      },
+      {
+        atalho: '/lumina',
+        titulo: 'Diagnóstico LUMINA',
+        mensagem: `O LUMINA é o nosso diagnóstico gratuito 🔮\n\nEm 5 minutos, descobres:\n• Como está a tua relação com a comida\n• Os teus padrões emocionais\n• O que o teu corpo está a pedir\n\nÉ 100% grátis, sem compromisso.\n\nFaz aqui: app.seteecos.com/lumina 💜`,
+      },
+      {
+        atalho: '/vitalis',
+        titulo: 'Programa VITALIS',
+        mensagem: `O VITALIS é o nosso programa de coaching nutricional 🌱\n\nNão é dieta. É transformação.\n\nO que inclui:\n🍽 Plano alimentar com comida moçambicana (xima, matapa, caril...)\n📊 Dashboard com o teu progresso\n💬 Chat directo comigo\n🏋️ Treinos adaptados ao teu nível\n📋 Lista de compras automática\n🔄 Espaço de retorno (sem culpa, sem julgamento)\n\nFeito para a mulher moçambicana. Por uma moçambicana.\n\nQueres começar? 💚`,
+      },
+      {
+        atalho: '/pagamento',
+        titulo: 'Dados de pagamento',
+        mensagem: `Para efectuar o pagamento:\n\n📱 M-Pesa: 85 100 6473 (Vivianne Santos)\n\nDepois de pagar:\n1. Envia-me o comprovativo aqui\n2. Eu activo o teu acesso em menos de 1 hora\n3. Recebes email com as instruções\n\nQual plano escolheste? 💚`,
+      },
+      {
+        atalho: '/obrigada',
+        titulo: 'Agradecimento',
+        mensagem: `Obrigada pela confiança! 💚\n\nQualquer dúvida, estou aqui. Este número é exclusivo para o Sete Ecos, por isso não hesites em escrever.\n\nLembra-te: isto é uma jornada, não uma corrida. Um dia de cada vez. 🌿`,
+      },
+      {
+        atalho: '/teste',
+        titulo: 'Activar teste',
+        mensagem: `Óptimo! Vou activar-te um período de teste do VITALIS 🌱\n\nPreciso só de:\n1. O teu nome completo\n2. O teu email (para criares conta)\n\nAssim que enviares, activo em minutos! 💚`,
+      },
+      {
+        atalho: '/suporte',
+        titulo: 'Suporte técnico',
+        mensagem: `Lamento que estejas com dificuldades 😔\n\nDiz-me:\n1. Qual é o problema exactamente?\n2. Que ecrã estás a ver?\n3. Se possível, envia screenshot\n\nVou resolver o mais rápido possível! 🛠`,
+      },
+    ],
+    etiquetas: [
+      { nome: 'Cliente Activa', cor: 'verde', descricao: 'Tem subscrição activa' },
+      { nome: 'Interessada', cor: 'amarelo', descricao: 'Perguntou mas ainda não comprou' },
+      { nome: 'Teste', cor: 'azul', descricao: 'Em período de teste' },
+      { nome: 'Expirada', cor: 'vermelho', descricao: 'Subscrição expirou' },
+      { nome: 'Lumina', cor: 'roxo', descricao: 'Fez o diagnóstico gratuito' },
+      { nome: 'Suporte', cor: 'cinza', descricao: 'Precisa de ajuda técnica' },
+    ],
+    catalogo: [
+      {
+        nome: 'LUMINA — Diagnóstico Gratuito',
+        preco: 'Grátis',
+        descricao: 'Descobre como está a tua relação com a comida, os teus padrões emocionais e o que o teu corpo precisa. 5 minutos, 100% gratuito, sem compromisso. Resultados imediatos com leitura personalizada.',
+        link: 'https://app.seteecos.com/lumina',
+        imagem: '/mockups/Vitalis-landing_PC-mockup.jpeg',
+      },
+      {
+        nome: 'VITALIS Mensal',
+        preco: '2.500 MZN/mês',
+        descricao: 'Coaching nutricional completo: plano alimentar personalizado com comida moçambicana, receitas, treinos guiados, chat directo com a coach, lista de compras automática e acompanhamento semanal.',
+        link: 'https://app.seteecos.com/vitalis',
+        imagem: '/mockups/Vitalis-dashboard_mb-mockup.jpeg',
+      },
+      {
+        nome: 'VITALIS Semestral (Poupa 2.500 MZN)',
+        preco: '12.500 MZN',
+        descricao: '6 meses de transformação com todos os benefícios do plano mensal. Poupas o equivalente a 1 mês inteiro. Ideal para quem quer compromisso real com a mudança.',
+        link: 'https://app.seteecos.com/vitalis',
+        imagem: '/mockups/Vitalis-receitas_mb-mockup.jpeg',
+      },
+      {
+        nome: 'VITALIS Anual (Poupa 9.000 MZN)',
+        preco: '21.000 MZN',
+        descricao: '12 meses de acompanhamento completo. A maior poupança e o compromisso total com a tua transformação. Prioridade no suporte e acesso a todas as novidades.',
+        link: 'https://app.seteecos.com/vitalis',
+        imagem: '/mockups/Vitalis-coach_mb-mockup.jpeg',
+      },
+    ],
+    statusSemanal: [
+      { dia: 'Segunda', conteudo: 'Dica de nutrição', exemplo: '🍽 Sabias que a matapa tem mais ferro que muitos suplementos importados? A tua avó já sabia. 🌿' },
+      { dia: 'Terça', conteudo: 'Frase motivacional + link LUMINA', exemplo: 'O teu corpo não precisa de castigo. Precisa de compreensão. 🔮 Descobre o que ele te pede: app.seteecos.com/lumina' },
+      { dia: 'Quarta', conteudo: 'Testemunho ou resultado', exemplo: '"Deixei de contar calorias e perdi 4kg em 2 meses. O segredo? Comer a MINHA comida, sem culpa." — Cliente VITALIS 🌱' },
+      { dia: 'Quinta', conteudo: 'Bastidores', exemplo: 'Por trás do Sete Ecos: a preparar novos conteúdos para vocês. Isto é mais que trabalho, é missão. 💚' },
+      { dia: 'Sexta', conteudo: 'Promoção directa VITALIS', exemplo: '🌱 VITALIS: coaching nutricional feito para a mulher moçambicana. Sem dietas importadas. Sem culpa. Com resultados. Fala comigo 💚' },
+      { dia: 'Sábado', conteudo: 'Receita rápida', exemplo: '🥣 Papas de aveia com banana e canela. 5 min. Sem açúcar. Energia para o dia todo. Receita completa no VITALIS 🌱' },
+      { dia: 'Domingo', conteudo: 'Reflexão pessoal', exemplo: 'Domingo é dia de olhar para dentro. O que fizeste por ti esta semana? 🌿' },
+    ],
+  };
+}
