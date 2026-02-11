@@ -14,6 +14,7 @@ import Login from './pages/Login'
 import ComingSoon from './pages/ComingSoon'
 import Auth from './components/Auth'
 import MarketingDashboard from './pages/MarketingDashboard'
+const CatalogoPDF = lazy(() => import('./pages/CatalogoPDF'))
 
 // ===== LOADING FALLBACK ACESSÍVEL =====
 function LoadingFallback() {
@@ -226,6 +227,12 @@ function AppRoutes() {
             <Route path="/coach/marketing" element={
               isSessionCoach(session)
                 ? <MarketingDashboard />
+                : <Navigate to="/" />
+            } />
+
+            <Route path="/catalogo" element={
+              isSessionCoach(session)
+                ? <CatalogoPDF />
                 : <Navigate to="/" />
             } />
 

@@ -335,7 +335,10 @@ export default function MarketingDashboard() {
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-2">
             <Link to="/coach" className="text-white/60 hover:text-white text-sm">&larr; Coach</Link>
-            <span className="text-[10px] bg-white/10 px-3 py-1 rounded-full border border-white/20">LANÇAMENTO</span>
+            <div className="flex gap-2">
+              <Link to="/catalogo" className="text-[10px] bg-green-500/20 text-green-300 px-3 py-1 rounded-full border border-green-400/30 hover:bg-green-500/30 transition-colors">📄 Catálogo PDF</Link>
+              <span className="text-[10px] bg-white/10 px-3 py-1 rounded-full border border-white/20">LANÇAMENTO</span>
+            </div>
           </div>
           <h1 className="text-2xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
             Plano de Lançamento
