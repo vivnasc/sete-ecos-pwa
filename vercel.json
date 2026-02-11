@@ -36,6 +36,9 @@
     },
     "api/instagram-schedule.js": {
       "maxDuration": 60
+    },
+    "api/whatsapp-webhook.js": {
+      "maxDuration": 30
     }
   },
   "crons": [
