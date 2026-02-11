@@ -4,18 +4,22 @@
  * Webhook para Twilio WhatsApp Sandbox/Business.
  * Recebe mensagens e responde automaticamente com TwiML.
  *
- * Cobre todos os módulos reais do projecto:
- * - LUMINA (diagnóstico gratuito, 23 padrões)
- * - VITALIS (coaching nutricional, 3 fases)
- * - ÁUREA (auto-valor, jóias de ouro)
+ * INVENTÁRIO COMPLETO de features cobertas:
+ * - LUMINA (diagnóstico gratuito, 23 padrões, sem registo)
+ * - VITALIS (coaching nutricional, 3 fases, 28 conquistas, 8 níveis)
+ * - ÁUREA (auto-valor, jóias de ouro, 27 badges, 4 níveis)
  * - BUNDLE (Vitalis + Áurea, 25% desconto)
- * - COMUNIDADE (Rio, Círculos, Fogueira, Sussurros)
- * - Pagamentos: PayPal/cartão, M-Pesa, transferência Standard Bank
- * - Trial 7 dias, referral ECOS-XXXXXX
+ * - COMUNIDADE (Rio 75 prompts, Círculos 12 max, Fogueira 24h, Sussurros, 5 ressonâncias)
+ * - Pagamentos: PayPal/cartão, M-Pesa (85 100 6473), Standard Bank (NIB 0003 0108 0669 8041 0086 5)
+ * - Trial 7 dias (Vitalis e Áurea), referral ECOS-XXXXXX (+7 dias)
+ * - Promos: VEMVITALIS20 (20%), VOLTEI15 (15% win-back)
+ * - Garantia 7 dias (reembolso total)
+ * - Gamificação: XP, streaks, 8 níveis Vitalis, 4 níveis Áurea
  *
  * Configuração Twilio:
- * 1. Sandbox: Messaging → Try it Out → WhatsApp Sandbox → Paste webhook URL
- * 2. Production: Configure WhatsApp Sender → Webhook URL
+ * 1. Console → Messaging → Try it Out → Send a WhatsApp message
+ * 2. Sandbox: cola o webhook URL no campo "When a message comes in"
+ * 3. Production: Configure WhatsApp Sender → Webhook URL
  * URL: https://app.seteecos.com/api/whatsapp-webhook
  *
  * Variáveis de ambiente (Vercel):
@@ -40,6 +44,8 @@ const MENU = `Como te posso ajudar?
 5️⃣ Como pagar (M-Pesa, PayPal)
 6️⃣ Experimentar grátis (7 dias)
 7️⃣ Falar com a Vivianne
+
+Ou escreve: *desconto*, *bundle*, *comunidade*, *faq*
 
 Responde com o número ou escreve à vontade 💛`;
 
@@ -73,7 +79,7 @@ Programa de transformação nutricional para a mulher moçambicana. Não é uma 
 🏋️ Treinos adaptados (sem ginásio)
 📋 Lista de compras automática
 🔄 Espaço de Retorno (sem culpa se recaíres)
-🎯 XP, 8 níveis e 40+ conquistas
+🎯 28 conquistas, 8 níveis, streaks e XP
 👥 Comunidade incluída
 
 *3 fases:*
@@ -85,6 +91,9 @@ Programa de transformação nutricional para a mulher moçambicana. Não é uma 
 • Mensal: 2.500 MZN ($38)
 • Semestral: 12.500 MZN ($190) — poupas 2.500!
 • Anual: 21.000 MZN ($320) — poupas 9.000!
+
+🎁 Código *VEMVITALIS20* = 20% desconto!
+🛡 Garantia: 7 dias reembolso total, sem perguntas.
 
 👉 app.seteecos.com/vitalis
 📋 Catálogo: app.seteecos.com/catalogo
@@ -134,10 +143,14 @@ Trabalha a tua relação contigo mesma. Não é sobre aparência — é sobre *m
 🥇 Ouro (151-300) — Valor
 💎 Diamante (301+) — Integração
 
+*27 badges para desbloquear:* semana dourada, voz constante, escuta profunda, prioridade própria, e mais.
+
 *Preços:*
 • Mensal: 975 MZN ($15)
 • Semestral: 5.265 MZN ($81) — 10% desc.
 • Anual: 9.945 MZN ($153) — 15% desc.
+
+🛡 Garantia: 7 dias reembolso total, sem perguntas.
 
 👉 app.seteecos.com/aurea
 
@@ -170,7 +183,10 @@ R['4'] = `💰 *Planos e Preços*
 🔮 *LUMINA* — *GRÁTIS* sempre
 ━━━━━━━━━━━━━━━━━━
 
+🎁 Código *VEMVITALIS20* = 20% extra!
+🛡 Todos com garantia 7 dias reembolso total.
 Todos incluem Comunidade.
+
 Responde *5* para saber como pagar 💛`;
 
 R['5'] = `💳 *Como Pagar*
@@ -190,17 +206,22 @@ Envia o comprovativo aqui nesta conversa.
 👤 Titular: Vivianne Saraiva
 Envia o comprovativo aqui nesta conversa.
 
+🎁 Tens código de desconto? Usa na app ao pagar.
+Código *VEMVITALIS20* = 20% de desconto!
+
 ⏱ *Activação:*
 • PayPal/cartão → imediato (automático)
 • M-Pesa/transferência → menos de 1h após comprovativo
+
+🛡 *Garantia:* 7 dias reembolso total, sem perguntas.
 
 Já pagaste? Envia o comprovativo aqui! 💛`;
 
 R['6'] = `🎁 *Trial Grátis — 7 Dias*
 
-Experimenta o VITALIS durante *7 dias* sem pagar.
+Experimenta o VITALIS ou ÁUREA durante *7 dias* sem pagar.
 
-*Acesso no trial:*
+*VITALIS — acesso no trial:*
 ✅ Dashboard com progresso
 ✅ Check-in diário
 ✅ Receitas moçambicanas
@@ -216,7 +237,12 @@ Experimenta o VITALIS durante *7 dias* sem pagar.
 ❌ Exportar plano PDF
 ❌ Sugestões de refeições
 
+*ÁUREA — trial dá acesso completo* durante 7 dias.
+
 👉 Regista-te: app.seteecos.com/vitalis/pagamento
+
+Após o trial, se gostares, usa *VEMVITALIS20* para 20% de desconto!
+🛡 Garantia adicional: 7 dias reembolso total após pagamento.
 
 Ou responde *7* para a Vivianne te activar 🌿`;
 
@@ -234,17 +260,21 @@ Obrigada pela paciência 🌿`;
 
 R['bundle'] = `🎁 *BUNDLE — Vitalis + Áurea (25% desconto)*
 
-Nutrição + Auto-valor juntos.
+Nutrição + Auto-valor juntos. O caminho completo.
 
 *Inclui tudo de:*
-🌱 VITALIS — plano alimentar, receitas, check-in, treinos, relatórios, chat
-✨ ÁUREA — 100+ práticas, meditações, diário, espelho de roupa
-👥 Comunidade
+🌱 VITALIS — plano alimentar, receitas, check-in, treinos, relatórios, chat, 28 conquistas
+✨ ÁUREA — 100+ práticas, meditações, diário, espelho de roupa, 27 badges, 4 níveis jóias
+👥 Comunidade (Rio, Círculos, Fogueira, Sussurros)
 
 *Preços (25% desconto sobre individual):*
 📋 Mensal — *2.600 MZN* ($40) — poupas 875 MZN
 📋 Semestral — *13.300 MZN* ($204) — poupas 4.465 MZN
 📋 Anual — *23.200 MZN* ($355) — poupas 7.745 MZN
+
+🎁 Código *VEMVITALIS20* = 20% extra sobre Bundle!
+🛡 Garantia: 7 dias reembolso total, sem perguntas.
+🎁 Trial 7 dias grátis disponível (responde *6*).
 
 👉 app.seteecos.com/bundle
 
@@ -254,30 +284,39 @@ R['comunidade'] = `👥 *Comunidade Sete Ecos*
 
 Espaço seguro de transformação colectiva. Incluída em todos os planos pagos.
 
-🌊 *O Rio* — Reflexões guiadas por prompts diários. 40+ prompts sobre gratidão, desafios, descoberta, intenção, transformação.
+🌊 *O Rio* — Reflexões guiadas por *75 prompts* sobre gratidão, desafios, descoberta, intenção e transformação. Partilha pública ou privada.
 
-👥 *Círculos de Eco* — Grupos de até 12 mulheres por tema, com guardiã.
+👥 *Círculos de Eco* — Grupos de até *12 mulheres* por tema (Eco), com guardiã. Intimidade e apoio.
 
-🔥 *Fogueira* — Espaço de 24h. Tema do dia, conversas honestas que desaparecem.
+🔥 *Fogueira* — Espaço de *24h*. Tema do dia, conversas honestas que desaparecem ao amanhecer.
 
-💜 *Sussurros* — Mensagens privadas de apoio entre mulheres.
+💜 *Sussurros* — Mensagens *privadas* de apoio entre mulheres. Modelos prontos disponíveis.
 
-Também inclui: perfis, sistema de seguidores, hashtags, 5 tipos de ressonância.
+📖 *Stories* — Testemunhos de transformação de outras mulheres.
+
+🪞 *Jornada* — O teu perfil pessoal e história de progresso.
+
+*5 tipos de Ressonância (em vez de "likes"):*
+🫧 Ressoo contigo · ✨ Enviar Luz · 🌿 Dar Força · 🪞 Espelhar · 🌱 Enraizar
+
+Inclui sistema de seguidores e hashtags.
 
 Vem com VITALIS, ÁUREA ou Bundle 🌿`;
 
-R['referral'] = `🎁 *Convida Amigas*
+R['referral'] = `🎁 *Convida Amigas — Programa de Referência*
 
 Código formato: *ECOS-XXXXXX*
 
 *Como funciona:*
 1. Recebes o teu código no teu perfil da app
-2. Partilhas com amigas
-3. Ela ganha *7 dias de trial*
+2. Partilhas com amigas (WhatsApp, link directo)
+3. Ela ganha *7 dias de trial grátis*
 4. Quando ela paga, tu ganhas *+7 dias* na tua subscrição
 
-Máximo: 10 convites activos.
-Link: app.seteecos.com/vitalis/pagamento?ref=TEU-CODIGO
+📊 Máximo: 10 convites activos por utilizadora.
+🔗 Link: app.seteecos.com/vitalis/pagamento?ref=TEU-CODIGO
+
+A app sugere partilhar automaticamente após conquistas e streaks.
 
 Responde *7* para a Vivianne enviar o teu código 💛`;
 
@@ -285,38 +324,128 @@ R['catalogo'] = `📋 *Catálogo Sete Ecos 2026*
 
 👉 app.seteecos.com/catalogo
 
-Tudo num só lugar: módulos, preços e como começar.
+Tudo num só lugar: módulos, preços, funcionalidades e como começar.
 
 1️⃣ VITALIS  2️⃣ LUMINA  3️⃣ ÁUREA  4️⃣ Preços  5️⃣ Pagamento  7️⃣ Vivianne`;
+
+R['desconto'] = `🎁 *Descontos Disponíveis*
+
+━━━━━━━━━━━━━━━━━━
+*Códigos Promocionais:*
+━━━━━━━━━━━━━━━━━━
+
+🏷 *VEMVITALIS20* — *20% desconto* em qualquer plano Vitalis
+Usa na app em: app.seteecos.com/vitalis/pagamento
+
+━━━━━━━━━━━━━━━━━━
+*Descontos por Plano:*
+━━━━━━━━━━━━━━━━━━
+
+📋 Semestral — poupa *17%* vs mensal
+📋 Anual — poupa *30%* vs mensal
+📋 Bundle (Vitalis + Áurea) — *25%* desconto
+
+━━━━━━━━━━━━━━━━━━
+*Descontos de Renovação:*
+━━━━━━━━━━━━━━━━━━
+
+📋 Renovação antecipada (14 dias antes) — *10%* desc.
+📋 Última semana — *15%* desc.
+📋 Win-back (volta após expirar) — *20%* desc. com código *VOLTEI15*
+
+━━━━━━━━━━━━━━━━━━
+*Referência:*
+━━━━━━━━━━━━━━━━━━
+
+🎁 Convida amigas → ela ganha 7 dias grátis, tu ganhas +7 dias (escreve *referral*)
+
+Os descontos *acumulam* com o VEMVITALIS20!
+
+Responde *5* para saber como pagar 💛`;
+
+R['gamificacao'] = `🎮 *Gamificação — Conquistas e Níveis*
+
+━━━━━━━━━━━━━━━━━━
+🌱 *VITALIS — 28 conquistas + 8 níveis*
+━━━━━━━━━━━━━━━━━━
+
+*Níveis (por XP):*
+🌰 Semente (0) → 🌱 Broto (50) → 🌿 Planta (150) → 🌳 Árvore (300) → 🌲 Floresta (500) → 🌸 Jardim (750) → 🏝 Paraíso (1000) → 👑 Lenda (1500)
+
+*Conquistas incluem:*
+🔥 Streaks — 3, 7, 14, 30, 60 dias consecutivos
+💧 Água — registos de hidratação
+🏃‍♀️ Treinos — 1, 10 treinos
+🍽 Refeições — 10, 50 registos
+⚖️ Peso — -1kg, -5kg, -10kg, meta atingida
+📝 Check-ins — 7, 30 check-ins
+🎓 Fases — completar Indução, Estabilização, Reeducação
+😴 Sono perfeito — 7 noites com 7h+
+
+━━━━━━━━━━━━━━━━━━
+✨ *ÁUREA — 27 badges + Jóias de Ouro*
+━━━━━━━━━━━━━━━━━━
+
+*4 Níveis de Jóias:*
+🥉 Bronze (0-50) → 🥈 Prata (51-150) → 🥇 Ouro (151-300) → 💎 Diamante (301+)
+
+*Badges incluem:*
+✨ Semana de Valor · 🌟 Mês de Ouro · 👗 Semana Dourada · 📝 Voz Constante · 🎧 Escuta Profunda · 💰 Prioridade Própria · 👸 A Que Merece · 💎 Jornada Completa
+
+Cada prática, meditação e registo = jóias ganhas! 💛`;
+
+R['garantia'] = `🛡 *Garantia de 7 Dias — Reembolso Total*
+
+Experimentas sem risco. Se não gostares, devolvemos *tudo*.
+
+*Como funciona:*
+1. Subscreves qualquer plano (Vitalis, Áurea ou Bundle)
+2. Tens 7 dias completos para experimentar
+3. Se não for para ti → reembolso total, sem perguntas
+4. Contacta a Vivianne (responde *7*) e recebe de volta
+
+Sem letras miúdas. Sem complicações.
+
+Também podes começar com trial grátis de 7 dias antes de pagar (responde *6*) 💛`;
 
 R['faq'] = `❓ *Perguntas Frequentes*
 
 *É uma dieta?*
-Não. Transformação nutricional com comida moçambicana.
+Não. Transformação nutricional com comida moçambicana real.
 
 *Preciso de ginásio?*
-Não. Treinos para fazer em casa.
+Não. Treinos para fazer em casa, sem equipamento.
 
 *Funciona sem internet?*
-Sim, a app funciona offline.
+Sim, a app funciona offline (é uma PWA).
 
 *Posso cancelar?*
-Sim, a qualquer momento.
+Sim, a qualquer momento. Garantia 7 dias reembolso total.
 
 *Que comida usam?*
-Xima, matapa, caril, feijão nhemba.
+Xima, matapa, caril, feijão nhemba — comida nossa.
 
 *A coach é real?*
-Sim, a Vivianne responde pessoalmente.
+Sim, a Vivianne Saraiva responde pessoalmente.
 
 *LUMINA é mesmo grátis?*
 Sim. Sem registo, sem compromisso, 5 minutos.
 
 *Como pago?*
-PayPal/cartão (imediato), M-Pesa ou transferência Standard Bank.
+PayPal/cartão (imediato), M-Pesa (85 100 6473) ou transferência Standard Bank.
 
 *Há desconto?*
-Sim! Semestral poupa 17%, anual poupa 30%. Bundle poupa 25%.
+Sim! Código *VEMVITALIS20* = 20% desconto.
+Semestral poupa 17%, anual poupa 30%. Bundle poupa 25%.
+
+*O trial é mesmo grátis?*
+Sim. 7 dias, sem cartão, sem compromisso.
+
+*Posso usar Vitalis e Áurea juntos?*
+Sim! O Bundle dá 25% de desconto nos dois.
+
+*Como funciona a comunidade?*
+Rio (reflexões), Círculos (grupos), Fogueira (24h), Sussurros (privado).
 
 Responde *7* para falar com a Vivianne 💛`;
 
@@ -324,6 +453,7 @@ const OBRIGADA = `De nada! 💛 Estou aqui para o que precisares.
 
 🔮 Diagnóstico gratuito: app.seteecos.com/lumina
 📋 Catálogo: app.seteecos.com/catalogo
+🎁 Código desconto: VEMVITALIS20 (20%)
 
 Boa transformação! 🌿`;
 
@@ -339,7 +469,7 @@ Posso ajudar com:
 6️⃣ Experimentar grátis
 7️⃣ Falar com Vivianne
 
-Ou escreve: *bundle*, *comunidade*, *catalogo*, *faq*
+Ou escreve: *desconto*, *bundle*, *comunidade*, *gamificação*, *garantia*, *referral*, *catalogo*, *faq*
 
 Responde com o número ou palavra 💛`;
 
@@ -354,20 +484,36 @@ function detectar(texto) {
     return { chave: limpo, notificar: limpo === '7' };
   }
 
-  // Palavras específicas
+  // Códigos promo directos (detectar se alguém escreve o código)
+  if (t.includes('vemvitalis') || t.includes('voltei15'))
+    return { chave: 'desconto' };
+
+  // Desconto / promoção
+  if (t.includes('desconto') || t.includes('promocao') || t.includes('promo') || t.includes('cupao') || t.includes('cupom') || t.includes('codigo promocional') || t.includes('oferta'))
+    return { chave: 'desconto' };
+
+  // Garantia
+  if (t.includes('garantia') || t.includes('reembolso') || t.includes('devolver') || t.includes('devolucao') || t.includes('cancelar') || t.includes('arrependimento'))
+    return { chave: 'garantia' };
+
+  // Gamificação
+  if (t.includes('gamifica') || t.includes('conquista') || t.includes('nivel') || t.includes('niveis') || t.includes('badge') || t.includes('xp') || t.includes('streak') || t.includes('joia'))
+    return { chave: 'gamificacao' };
+
+  // Palavras específicas — módulos compostos
   if (t.includes('bundle') || t.includes('pacote') || (t.includes('vitalis') && t.includes('aurea')))
     return { chave: 'bundle' };
 
   if (t.includes('catalogo') || t.includes('brochura'))
     return { chave: 'catalogo' };
 
-  if (t.includes('comunidade') || t.includes('circulo') || t.includes('fogueira') || t.includes('sussurro'))
+  if (t.includes('comunidade') || t.includes('circulo') || t.includes('fogueira') || t.includes('sussurro') || t.includes('ressonancia'))
     return { chave: 'comunidade' };
 
-  if (t.includes('referral') || t.includes('referencia') || t.includes('convidar') || t.includes('indicar') || t.includes('codigo'))
+  if (t.includes('referral') || t.includes('referencia') || t.includes('convidar') || t.includes('indicar') || t.includes('convite'))
     return { chave: 'referral' };
 
-  if (t.includes('faq') || t.includes('pergunta frequente'))
+  if (t.includes('faq') || t.includes('pergunta frequente') || t.includes('duvida'))
     return { chave: 'faq' };
 
   // Pagamento
@@ -387,7 +533,7 @@ function detectar(texto) {
     return { chave: '2' };
 
   // Áurea
-  if (t.includes('aurea') || t.includes('auto-valor') || t.includes('merecimento') || t.includes('presenca') || t.includes('meditac') || t.includes('joias'))
+  if (t.includes('aurea') || t.includes('auto-valor') || t.includes('merecimento') || t.includes('presenca') || t.includes('meditac'))
     return { chave: '3' };
 
   // Vitalis
@@ -395,7 +541,7 @@ function detectar(texto) {
     return { chave: '1' };
 
   // Saudações
-  if (/^(ola|oi|bom dia|boa tarde|boa noite|hello|hi|hey|boa$|epa)/.test(t))
+  if (/^(ola|oi|bom dia|boa tarde|boa noite|hello|hi|hey|boa$|epa|menu)/.test(t))
     return { chave: 'saudacao' };
 
   // Ajuda humana
@@ -447,7 +593,7 @@ export default async function handler(req, res) {
       resposta = GENERICA;
     }
 
-    // Notificar coach se necessário (assíncrono)
+    // Notificar coach se necessário (assíncrono, não bloqueia resposta)
     if (notificar && TWILIO_SID && TWILIO_TOKEN && TWILIO_NUMBER) {
       const contexto = chave === '7'
         ? 'Pediu para falar com a Vivianne'
@@ -455,7 +601,7 @@ export default async function handler(req, res) {
       notificarCoach(from, nome, contexto).catch(() => {});
     }
 
-    // Responder via TwiML (Twilio responde directamente)
+    // Responder via TwiML (Twilio responde directamente ao utilizador)
     const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Message>${escapeXml(resposta)}</Message>
