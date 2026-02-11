@@ -68,6 +68,7 @@ const PagamentoVitalis = () => {
   const [manualPaymentType, setManualPaymentType] = useState('mpesa'); // 'mpesa' | 'transfer' | 'whatsapp'
   const [manualReference, setManualReference] = useState('');
   const [manualAmount, setManualAmount] = useState('');
+  const [manualCurrency, setManualCurrency] = useState('MZN'); // 'MZN' | 'USD' | 'EUR'
   const [showManualSuccess, setShowManualSuccess] = useState(false);
 
   useEffect(() => {
@@ -410,8 +411,13 @@ const PagamentoVitalis = () => {
       return;
     }
 
+    if (!manualAmount || parseFloat(manualAmount) <= 0) {
+      setMessage({ type: 'error', text: 'Insere o valor pago.' });
+      return;
+    }
+
     const plan = getActivePlans()[selectedPlan] || SUBSCRIPTION_PLANS.SEMESTRAL;
-    const amount = manualAmount || plan.price_mzn;
+    const amount = parseFloat(manualAmount);
 
     setProcessing(true);
     try {
@@ -420,6 +426,7 @@ const PagamentoVitalis = () => {
         method: manualPaymentType,
         reference: manualReference,
         amount,
+        currency: manualCurrency,
         planId: selectedPlan
       });
 
@@ -428,8 +435,8 @@ const PagamentoVitalis = () => {
                 manualPaymentType === 'transfer' ? 'Transferência Bancária' :
                 'WhatsApp',
         reference: manualReference,
-        amount: parseFloat(amount),
-        currency: 'MZN',
+        amount: amount,
+        currency: manualCurrency,
         planId: selectedPlan.toLowerCase()
       });
 
@@ -447,7 +454,7 @@ const PagamentoVitalis = () => {
           nome: userName || userEmail.split('@')[0],
           email: userEmail,
           plano: plan.name,
-          valor: `${amount} MZN`,
+          valor: `${amount.toLocaleString()} ${manualCurrency}`,
           metodo: manualPaymentType === 'mpesa' ? 'M-Pesa' :
                   manualPaymentType === 'transfer' ? 'Transferência Bancária' :
                   'WhatsApp',
@@ -697,11 +704,12 @@ const PagamentoVitalis = () => {
             <span className="text-white/80">Total a pagar:</span>
             <div className="text-right">
               {promoDiscount > 0 && (
-                <span className="text-white/40 text-sm line-through mr-2">${getCurrentPlan().price_usd}</span>
+                <span className="text-white/40 text-sm line-through mr-2">{getCurrentPlan().price_mzn.toLocaleString()} MZN</span>
               )}
               <span className={`font-bold text-2xl ${promoDiscount > 0 ? 'text-green-300' : 'text-white'}`}>
-                ${getDiscountedPrice(getCurrentPlan()).usd}
+                {getDiscountedPrice(getCurrentPlan()).mzn.toLocaleString()} MZN
               </span>
+              <p className="text-xs text-white/50 mt-1">~${getDiscountedPrice(getCurrentPlan()).usd} USD</p>
             </div>
           </div>
         </div>
@@ -764,6 +772,7 @@ const PagamentoVitalis = () => {
                 <div className="bg-white/10 rounded-xl p-4 mb-4 text-left text-sm text-white/80">
                   <p className="mb-2"><strong>Método:</strong> {manualPaymentType === 'mpesa' ? 'M-Pesa' : manualPaymentType === 'transfer' ? 'Transferência Bancária' : 'WhatsApp'}</p>
                   <p className="mb-2"><strong>Referência:</strong> {manualReference}</p>
+                  <p className="mb-2"><strong>Valor:</strong> {parseFloat(manualAmount).toLocaleString()} {manualCurrency}</p>
                   <p><strong>Plano:</strong> {getCurrentPlan()?.name}</p>
                 </div>
                 <p className="text-white/60 text-xs mb-4">
@@ -869,14 +878,32 @@ const PagamentoVitalis = () => {
                         </p>
                       </div>
 
-                      {/* Amount Display */}
+                      {/* Amount Input */}
                       <div className="mb-4">
-                        <label className="text-white/80 text-sm mb-2 block">Valor Pago</label>
-                        <div className="px-4 py-3 rounded-xl bg-white/95 text-gray-700 font-medium">
-                          {getDiscountedPrice(getCurrentPlan()).mzn.toLocaleString()} MZN
+                        <label className="text-white/80 text-sm mb-2 block">Valor Pago *</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="number"
+                            value={manualAmount}
+                            onChange={(e) => setManualAmount(e.target.value)}
+                            placeholder={getDiscountedPrice(getCurrentPlan()).mzn.toString()}
+                            required
+                            step="0.01"
+                            min="0"
+                            className="flex-1 px-4 py-3 rounded-xl bg-white/95 border border-gray-200 focus:border-[#7C8B6F] focus:outline-none"
+                          />
+                          <select
+                            value={manualCurrency}
+                            onChange={(e) => setManualCurrency(e.target.value)}
+                            className="px-4 py-3 rounded-xl bg-white/95 border border-gray-200 focus:border-[#7C8B6F] focus:outline-none font-medium"
+                          >
+                            <option value="MZN">MZN</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                          </select>
                         </div>
                         <p className="text-white/50 text-xs mt-1">
-                          Plano {getCurrentPlan()?.name} • {getCurrentPlan()?.duration} {getCurrentPlan()?.duration === 1 ? 'mês' : 'meses'}
+                          Plano {getCurrentPlan()?.name}: {getDiscountedPrice(getCurrentPlan()).mzn.toLocaleString()} MZN (~${getDiscountedPrice(getCurrentPlan()).usd})
                         </p>
                       </div>
 
