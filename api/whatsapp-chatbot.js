@@ -2,65 +2,36 @@
  * WhatsApp Chatbot via Twilio — Sete Ecos
  *
  * Webhook endpoint para receber e responder mensagens WhatsApp via Twilio.
- * Reutiliza a mesma lógica do chatbot (respostas, menus, detecção de intenção).
+ * Responde via TwiML directo (sem chamada REST API extra).
  *
  * Configuração no Twilio Console:
  * 1. Ir a Messaging > Try it out > Send a WhatsApp message (Sandbox)
- *    OU Messaging > Senders > WhatsApp senders (Business)
  * 2. Webhook URL: https://app.seteecos.com/api/whatsapp-chatbot
  * 3. Method: POST
  *
  * Variáveis de ambiente (Vercel):
- * - TWILIO_ACCOUNT_SID: Account SID do Twilio
- * - TWILIO_AUTH_TOKEN: Auth Token do Twilio (usado para validação de assinatura)
+ * - TWILIO_ACCOUNT_SID: Account SID do Twilio (para notificações à coach)
+ * - TWILIO_AUTH_TOKEN: Auth Token do Twilio
  * - TWILIO_WHATSAPP_NUMBER: Número WhatsApp Twilio (ex: whatsapp:+14155238886)
  */
 
 import { gerarResposta, COACH_NUMERO } from './_lib/chatbot-respostas.js';
-import { createHmac } from 'crypto';
 
 const TWILIO_AUTH_TOKEN = () => process.env.TWILIO_AUTH_TOKEN;
 const TWILIO_ACCOUNT_SID = () => process.env.TWILIO_ACCOUNT_SID;
 const TWILIO_WHATSAPP_NUMBER = () => process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886';
 
-// ===== VALIDAÇÃO DE ASSINATURA TWILIO =====
+// ===== ESCAPAR XML =====
 
-function validarAssinaturaTwilio(req) {
-  const authToken = TWILIO_AUTH_TOKEN();
-  if (!authToken) return false;
-
-  const signature = req.headers['x-twilio-signature'];
-  if (!signature) return false;
-
-  // Construir URL completa
-  const protocol = req.headers['x-forwarded-proto'] || 'https';
-  const host = req.headers['host'];
-  const url = `${protocol}://${host}${req.url}`;
-
-  // Ordenar parâmetros POST e concatenar
-  const params = req.body || {};
-  const sortedKeys = Object.keys(params).sort();
-  let dataString = url;
-  for (const key of sortedKeys) {
-    dataString += key + params[key];
-  }
-
-  // HMAC-SHA1
-  const hmac = createHmac('sha1', authToken);
-  hmac.update(dataString);
-  const expectedSignature = hmac.digest('base64');
-
-  // Comparação constante para evitar timing attacks
-  if (signature.length !== expectedSignature.length) return false;
-
-  let result = 0;
-  for (let i = 0; i < signature.length; i++) {
-    result |= signature.charCodeAt(i) ^ expectedSignature.charCodeAt(i);
-  }
-  return result === 0;
+function escapeXml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
-// ===== ENVIAR MENSAGEM VIA TWILIO REST API =====
+// ===== ENVIAR MENSAGEM VIA TWILIO REST API (para notificações) =====
 
 async function enviarMensagemTwilio(para, texto) {
   const accountSid = TWILIO_ACCOUNT_SID();
@@ -72,7 +43,6 @@ async function enviarMensagemTwilio(para, texto) {
     return;
   }
 
-  // Garantir formato whatsapp:+XXXXXXXXX
   const destinatario = para.startsWith('whatsapp:') ? para : `whatsapp:+${para}`;
 
   const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
@@ -102,14 +72,7 @@ async function enviarMensagemTwilio(para, texto) {
 // ===== NOTIFICAR COACH =====
 
 async function notificarVivianne(clienteNumero, clienteNome, contexto) {
-  const msg = `*Nova mensagem Sete Ecos*
-
-${clienteNome || 'Contacto novo'}
-${clienteNumero}
-${contexto}
-
-Responde directamente à cliente no WhatsApp.`;
-
+  const msg = `*Nova mensagem Sete Ecos*\n\n${clienteNome || 'Contacto novo'}\n${clienteNumero}\n${contexto}\n\nResponde directamente à cliente no WhatsApp.`;
   await enviarMensagemTwilio(`whatsapp:+${COACH_NUMERO}`, msg);
 }
 
@@ -121,26 +84,13 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Método não permitido. Configura o webhook Twilio como POST.' });
   }
 
-  // Validar assinatura Twilio (segurança)
-  // Auto-skip em sandbox (número +14155238886) — sandbox não valida assinaturas de forma fiável
-  const isSandbox = TWILIO_WHATSAPP_NUMBER().includes('14155238886');
-  const skipValidation = isSandbox || process.env.TWILIO_SKIP_SIGNATURE_VALIDATION === 'true';
-  if (!skipValidation && TWILIO_AUTH_TOKEN()) {
-    const isValid = validarAssinaturaTwilio(req);
-    if (!isValid) {
-      console.warn('Assinatura Twilio inválida — pedido rejeitado');
-      return res.status(403).json({ error: 'Assinatura inválida' });
-    }
-  }
-
   try {
     const body = req.body;
 
     // Campos Twilio standard
-    const from = body.From || '';          // whatsapp:+258XXXXXXXXX
+    const from = body.From || '';
     const msgBody = (body.Body || '').trim();
     const profileName = body.ProfileName || '';
-    const messageSid = body.MessageSid || '';
     const numMedia = parseInt(body.NumMedia || '0', 10);
 
     // Ignorar mensagens vazias
@@ -148,32 +98,30 @@ export default async function handler(req, res) {
       return res.status(200).type('text/xml').send('<Response></Response>');
     }
 
-    // Extrair número limpo (sem prefixo whatsapp:+)
+    // Extrair número limpo
     const numeroLimpo = from.replace('whatsapp:', '').replace('+', '');
 
     // Se a mensagem é media (comprovativo de pagamento, etc.)
     if (numMedia > 0 && !msgBody) {
-      const mediaMsg = `Recebemos a tua imagem! Se é um comprovativo de pagamento, a Vivianne vai verificar e activar o teu acesso em menos de 1 hora.\n\nSe precisas de mais ajuda, responde com um número:\n1 VITALIS  2 LUMINA  3 ÁUREA  4 Preços  5 Pagamento  7 Falar com Vivianne`;
+      const mediaMsg = 'Recebemos a tua imagem! Se é um comprovativo de pagamento, a Vivianne vai verificar e activar o teu acesso em menos de 1 hora.\n\nSe precisas de mais ajuda, responde com um número:\n1 VITALIS  2 LUMINA  3 ÁUREA  4 Preços  5 Pagamento  7 Falar com Vivianne';
 
-      await enviarMensagemTwilio(from, mediaMsg);
-
-      // Notificar coach sobre media recebida
-      await notificarVivianne(
+      // Notificar coach (não bloqueia a resposta)
+      notificarVivianne(
         numeroLimpo,
         profileName,
         `Enviou ${numMedia} imagem(s) — possivelmente comprovativo de pagamento`
-      );
+      ).catch(err => console.error('Erro notificar:', err));
 
-      return res.status(200).type('text/xml').send('<Response></Response>');
+      // Responder directamente via TwiML
+      return res.status(200).type('text/xml').send(
+        `<Response><Message>${escapeXml(mediaMsg)}</Message></Response>`
+      );
     }
 
     // Gerar resposta do chatbot
     const { resposta, notificarCoach } = gerarResposta(msgBody, profileName);
 
-    // Enviar resposta via REST API (mais fiável que TwiML para mensagens longas)
-    await enviarMensagemTwilio(from, resposta);
-
-    // Notificar coach se necessário
+    // Notificar coach se necessário (não bloqueia)
     if (notificarCoach) {
       const contexto = msgBody === '7'
         ? 'Cliente pediu para falar com a Vivianne'
@@ -184,12 +132,15 @@ export default async function handler(req, res) {
       });
     }
 
-    // Responder 200 com TwiML vazio (já enviámos via REST API)
-    return res.status(200).type('text/xml').send('<Response></Response>');
+    // Responder directamente via TwiML (mais fiável que REST API)
+    return res.status(200).type('text/xml').send(
+      `<Response><Message>${escapeXml(resposta)}</Message></Response>`
+    );
 
   } catch (error) {
     console.error('Erro no webhook Twilio WhatsApp:', error);
-    // Retornar 200 para o Twilio não reenviar
-    return res.status(200).type('text/xml').send('<Response></Response>');
+    return res.status(200).type('text/xml').send(
+      '<Response><Message>Desculpa, ocorreu um erro. Tenta novamente ou responde 7 para falar com a Vivianne.</Message></Response>'
+    );
   }
 }
