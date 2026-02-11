@@ -10,7 +10,8 @@ import {
   useInviteCode,
   checkVitalisAccess,
   getRenewalIncentive,
-  applyRenewalDiscount
+  applyRenewalDiscount,
+  registerPendingPayment
 } from '../../lib/subscriptions';
 import { useReferralCode, rewardReferrer } from '../../lib/referrals';
 
@@ -61,6 +62,13 @@ const PagamentoVitalis = () => {
   const [promoCode, setPromoCode] = useState('');
   const [planType, setPlanType] = useState('individual'); // 'individual' | 'bundle'
   const [referralCode, setReferralCode] = useState(''); // codigo de referral de quem indicou
+
+  // Manual payment states
+  const [paymentMethod, setPaymentMethod] = useState('paypal'); // 'paypal' | 'manual'
+  const [manualPaymentType, setManualPaymentType] = useState('mpesa'); // 'mpesa' | 'transfer' | 'whatsapp'
+  const [manualReference, setManualReference] = useState('');
+  const [manualAmount, setManualAmount] = useState('');
+  const [showManualSuccess, setShowManualSuccess] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -389,6 +397,64 @@ const PagamentoVitalis = () => {
     }
   };
 
+  const handleManualPayment = async (e) => {
+    e.preventDefault();
+
+    if (!userId) {
+      setMessage({ type: 'error', text: 'Precisas de criar conta primeiro.' });
+      return;
+    }
+
+    if (!manualReference.trim()) {
+      setMessage({ type: 'error', text: 'Insere a referência do pagamento.' });
+      return;
+    }
+
+    const plan = getActivePlans()[selectedPlan] || SUBSCRIPTION_PLANS.SEMESTRAL;
+    const amount = manualAmount || plan.price_mzn;
+
+    setProcessing(true);
+    try {
+      const result = await registerPendingPayment(userId, {
+        method: manualPaymentType === 'mpesa' ? 'M-Pesa' :
+                manualPaymentType === 'transfer' ? 'Transferência Bancária' :
+                'WhatsApp',
+        reference: manualReference,
+        amount: parseFloat(amount),
+        currency: 'MZN',
+        planId: selectedPlan.toLowerCase()
+      });
+
+      if (result.success) {
+        setShowManualSuccess(true);
+        setMessage({
+          type: 'success',
+          text: 'Pagamento registado! Aguarda confirmação da coach (até 24h).'
+        });
+
+        // Send email notification
+        EmailTriggers.onPagamentoPendente({
+          nome: userName || userEmail.split('@')[0],
+          email: userEmail,
+          plano: plan.name,
+          valor: `${amount} MZN`,
+          metodo: manualPaymentType === 'mpesa' ? 'M-Pesa' :
+                  manualPaymentType === 'transfer' ? 'Transferência Bancária' :
+                  'WhatsApp',
+          referencia: manualReference
+        }).catch(console.error);
+
+      } else {
+        setMessage({ type: 'error', text: 'Erro ao registar pagamento. Tenta novamente.' });
+      }
+    } catch (error) {
+      console.error('Erro ao processar pagamento manual:', error);
+      setMessage({ type: 'error', text: 'Erro ao processar. Contacta o suporte.' });
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   const getActivePlans = () => planType === 'bundle' ? BUNDLE_PLANS : SUBSCRIPTION_PLANS;
   const getCurrentPlan = () => getActivePlans()[selectedPlan];
 
@@ -669,19 +735,173 @@ const PagamentoVitalis = () => {
                 <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
                 <p className="text-white/60 text-sm">A preparar pagamento...</p>
               </div>
+            ) : showManualSuccess ? (
+              <div className="bg-green-500/20 border-2 border-green-500 rounded-2xl p-6 text-center">
+                <div className="text-5xl mb-4">✅</div>
+                <h3 className="text-xl font-bold text-white mb-3">Pagamento Registado!</h3>
+                <p className="text-green-100 mb-4">
+                  Recebemos o teu registo de pagamento. A Coach Vivianne vai confirmar em até 24 horas.
+                </p>
+                <div className="bg-white/10 rounded-xl p-4 mb-4 text-left text-sm text-white/80">
+                  <p className="mb-2"><strong>Método:</strong> {manualPaymentType === 'mpesa' ? 'M-Pesa' : manualPaymentType === 'transfer' ? 'Transferência Bancária' : 'WhatsApp'}</p>
+                  <p className="mb-2"><strong>Referência:</strong> {manualReference}</p>
+                  <p><strong>Plano:</strong> {getCurrentPlan()?.name}</p>
+                </div>
+                <p className="text-white/60 text-xs mb-4">
+                  Vais receber um email de confirmação quando o pagamento for aprovado.
+                </p>
+                <button
+                  onClick={() => navigate('/vitalis/dashboard')}
+                  className="w-full py-3 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-xl font-semibold"
+                >
+                  Ir para o Dashboard
+                </button>
+              </div>
             ) : (
               <>
-                <div ref={paypalRef} className="min-h-[60px] bg-white rounded-xl p-3">
-                  {!paypalLoaded && (
-                    <div className="text-center py-2">
-                      <div className="w-6 h-6 border-2 border-[#7C8B6F] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                      <p className="text-gray-500 text-sm">A carregar PayPal...</p>
-                    </div>
-                  )}
+                {/* Payment Method Selector */}
+                <div className="flex gap-3 mb-4">
+                  <button
+                    onClick={() => setPaymentMethod('paypal')}
+                    className={`flex-1 py-3 rounded-xl font-medium transition-all ${
+                      paymentMethod === 'paypal'
+                        ? 'bg-gradient-to-r from-[#0070BA] to-[#003087] text-white shadow-lg'
+                        : 'bg-white/10 text-white/60 hover:bg-white/20'
+                    }`}
+                  >
+                    💳 PayPal
+                  </button>
+                  <button
+                    onClick={() => setPaymentMethod('manual')}
+                    className={`flex-1 py-3 rounded-xl font-medium transition-all ${
+                      paymentMethod === 'manual'
+                        ? 'bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white shadow-lg'
+                        : 'bg-white/10 text-white/60 hover:bg-white/20'
+                    }`}
+                  >
+                    🇲🇿 M-Pesa / Transferência
+                  </button>
                 </div>
-                <p className="text-white/60 text-xs text-center mt-2">
-                  Paga com cartão de crédito/débito ou conta PayPal
-                </p>
+
+                {paymentMethod === 'paypal' ? (
+                  <>
+                    <div ref={paypalRef} className="min-h-[60px] bg-white rounded-xl p-3">
+                      {!paypalLoaded && (
+                        <div className="text-center py-2">
+                          <div className="w-6 h-6 border-2 border-[#7C8B6F] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                          <p className="text-gray-500 text-sm">A carregar PayPal...</p>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-white/60 text-xs text-center mt-2">
+                      Paga com cartão de crédito/débito ou conta PayPal
+                    </p>
+                  </>
+                ) : (
+                  <form onSubmit={handleManualPayment} className="space-y-4">
+                    {/* Manual Payment Form */}
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 border border-white/20">
+                      <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                        📱 Dados do Pagamento
+                      </h4>
+
+                      {/* Payment Type Selection */}
+                      <div className="mb-4">
+                        <label className="text-white/80 text-sm mb-2 block">Método de Pagamento</label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {[
+                            { value: 'mpesa', label: 'M-Pesa', icon: '📱' },
+                            { value: 'transfer', label: 'Transferência', icon: '🏦' },
+                            { value: 'whatsapp', label: 'WhatsApp', icon: '💬' }
+                          ].map((method) => (
+                            <button
+                              key={method.value}
+                              type="button"
+                              onClick={() => setManualPaymentType(method.value)}
+                              className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                                manualPaymentType === method.value
+                                  ? 'bg-[#7C8B6F] text-white'
+                                  : 'bg-white/10 text-white/60 hover:bg-white/20'
+                              }`}
+                            >
+                              {method.icon} {method.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Reference Input */}
+                      <div className="mb-4">
+                        <label className="text-white/80 text-sm mb-2 block">
+                          Referência / ID da Transação *
+                        </label>
+                        <input
+                          type="text"
+                          value={manualReference}
+                          onChange={(e) => setManualReference(e.target.value)}
+                          placeholder="Ex: TXN123456789"
+                          required
+                          className="w-full px-4 py-3 rounded-xl bg-white/95 border border-gray-200 focus:border-[#7C8B6F] focus:outline-none"
+                        />
+                        <p className="text-white/50 text-xs mt-1">
+                          {manualPaymentType === 'mpesa' ? 'Código de confirmação M-Pesa' :
+                           manualPaymentType === 'transfer' ? 'Referência bancária' :
+                           'Número do comprovativo enviado via WhatsApp'}
+                        </p>
+                      </div>
+
+                      {/* Amount Display */}
+                      <div className="mb-4">
+                        <label className="text-white/80 text-sm mb-2 block">Valor Pago</label>
+                        <div className="px-4 py-3 rounded-xl bg-white/95 text-gray-700 font-medium">
+                          {getDiscountedPrice(getCurrentPlan()).mzn.toLocaleString()} MZN
+                        </div>
+                        <p className="text-white/50 text-xs mt-1">
+                          Plano {getCurrentPlan()?.name} • {getCurrentPlan()?.duration} {getCurrentPlan()?.duration === 1 ? 'mês' : 'meses'}
+                        </p>
+                      </div>
+
+                      {/* Payment Instructions */}
+                      <div className="bg-amber-500/20 border border-amber-500/40 rounded-xl p-4 mb-4">
+                        <p className="text-amber-200 text-sm font-medium mb-2">📝 Instruções:</p>
+                        <ul className="text-amber-100/80 text-xs space-y-1">
+                          {manualPaymentType === 'mpesa' ? (
+                            <>
+                              <li>1. Faz o pagamento via M-Pesa para <strong>+258 85 100 6473</strong></li>
+                              <li>2. Copia o código de confirmação</li>
+                              <li>3. Cola aqui em cima e submete</li>
+                            </>
+                          ) : manualPaymentType === 'transfer' ? (
+                            <>
+                              <li>1. Transfere para a conta bancária fornecida</li>
+                              <li>2. Guarda a referência da transferência</li>
+                              <li>3. Insere a referência aqui e submete</li>
+                            </>
+                          ) : (
+                            <>
+                              <li>1. Envia comprovativo via WhatsApp <strong>+258 85 100 6473</strong></li>
+                              <li>2. Anota o número/ID da mensagem</li>
+                              <li>3. Insere aqui e submete</li>
+                            </>
+                          )}
+                        </ul>
+                      </div>
+
+                      {/* Submit Button */}
+                      <button
+                        type="submit"
+                        disabled={processing || !manualReference.trim()}
+                        className="w-full py-3 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg transition-all"
+                      >
+                        {processing ? 'A registar...' : '✓ Confirmar Pagamento'}
+                      </button>
+                    </div>
+
+                    <p className="text-white/50 text-xs text-center">
+                      O teu pagamento será verificado e aprovado em até 24 horas.
+                    </p>
+                  </form>
+                )}
               </>
             )}
           </div>
