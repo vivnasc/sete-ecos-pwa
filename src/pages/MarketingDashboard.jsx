@@ -20,6 +20,7 @@ import {
   getSetupInstagram,
   getCalendario6Dias,
   getGuiaMetaDeveloper,
+  getSetupWhatsAppBusiness,
 } from '../lib/marketing-engine';
 import { RENDER_MAP, CORES, FORMATOS } from '../components/TemplateVisual';
 
@@ -319,6 +320,7 @@ export default function MarketingDashboard() {
 
   const tabs = [
     { id: 'vitalis', label: 'VITALIS (12)', icon: '📱' },
+    { id: 'wabusiness', label: 'WA Business', icon: '💼' },
     { id: 'hoje', label: 'Hoje', icon: '⚡' },
     { id: 'plano', label: 'Plano Semanal', icon: '🗓' },
     { id: 'grid', label: 'Grid IG (12)', icon: '📸' },
@@ -333,7 +335,10 @@ export default function MarketingDashboard() {
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-2">
             <Link to="/coach" className="text-white/60 hover:text-white text-sm">&larr; Coach</Link>
-            <span className="text-[10px] bg-white/10 px-3 py-1 rounded-full border border-white/20">LANÇAMENTO</span>
+            <div className="flex gap-2">
+              <Link to="/catalogo" className="text-[10px] bg-green-500/20 text-green-300 px-3 py-1 rounded-full border border-green-400/30 hover:bg-green-500/30 transition-colors">📄 Catálogo PDF</Link>
+              <span className="text-[10px] bg-white/10 px-3 py-1 rounded-full border border-white/20">LANÇAMENTO</span>
+            </div>
           </div>
           <h1 className="text-2xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
             Plano de Lançamento
@@ -375,6 +380,7 @@ export default function MarketingDashboard() {
 
       <div className="max-w-4xl mx-auto px-4 mt-4 space-y-4">
         {tab === 'vitalis' && <VitalisTab copiar={copiar} copiado={copiado} />}
+        {tab === 'wabusiness' && <WABusinessTab copiar={copiar} copiado={copiado} />}
         {tab === 'hoje' && <HojeTab copiar={copiar} copiado={copiado} />}
         {tab === 'plano' && <PlanoTab copiar={copiar} copiado={copiado} />}
         {tab === 'grid' && <GridTab copiar={copiar} copiado={copiado} />}
@@ -1762,6 +1768,183 @@ function Card({ titulo, badge, children }) {
         {badge && <span className="text-[10px] bg-[#1a1a2e]/10 text-[#1a1a2e] px-2 py-0.5 rounded-full font-semibold">{badge}</span>}
       </div>
       <div className="p-4">{children}</div>
+    </div>
+  );
+}
+
+// ============================================================
+// WA BUSINESS TAB - Setup completo WhatsApp Business
+// ============================================================
+
+function WABusinessTab({ copiar, copiado }) {
+  const wa = getSetupWhatsAppBusiness();
+  const [secao, setSecao] = useState('perfil');
+
+  const corEtiqueta = (cor) => {
+    const map = { verde: 'bg-green-500', amarelo: 'bg-yellow-400', azul: 'bg-blue-500', vermelho: 'bg-red-500', roxo: 'bg-purple-500', cinza: 'bg-gray-400' };
+    return map[cor] || 'bg-gray-400';
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl p-4">
+        <h3 className="font-bold text-lg">💼 WhatsApp Business — Setup Profissional</h3>
+        <p className="text-white/80 text-sm mt-1">Tudo pronto para copiar e colar. Configura o teu WhatsApp Business em 25 minutos.</p>
+      </div>
+
+      {/* Sub-secções */}
+      <div className="flex gap-1.5 overflow-x-auto pb-1">
+        {[
+          { id: 'perfil', label: 'Perfil', icon: '👤' },
+          { id: 'mensagens', label: 'Mensagens Auto', icon: '💬' },
+          { id: 'rapidas', label: 'Respostas Rápidas', icon: '⚡' },
+          { id: 'catalogo', label: 'Catálogo', icon: '🛒' },
+          { id: 'etiquetas', label: 'Etiquetas', icon: '🏷' },
+          { id: 'status', label: 'Status Semanal', icon: '📱' },
+        ].map(s => (
+          <button
+            key={s.id}
+            onClick={() => setSecao(s.id)}
+            className={`flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              secao === s.id ? 'bg-green-700 text-white shadow-lg' : 'bg-white text-[#6B5C4C] border border-[#E8E2D9]'
+            }`}
+          >
+            {s.icon} {s.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ===== PERFIL ===== */}
+      {secao === 'perfil' && (
+        <Card titulo="Perfil da Empresa" badge="COPIAR E COLAR">
+          <div className="space-y-3">
+            {Object.entries(wa.perfil).map(([campo, valor]) => (
+              <div key={campo} className="bg-gray-50 rounded-lg p-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] uppercase font-bold text-gray-400">{campo}</span>
+                  <CopyBtn onClick={() => copiar(valor)} copiado={copiado === valor} label="Copiar" small />
+                </div>
+                <p className="text-sm mt-1 font-medium">{valor}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3 text-xs text-green-800">
+            📍 Caminho: Definições → Ferramentas comerciais → Perfil da empresa
+          </div>
+        </Card>
+      )}
+
+      {/* ===== MENSAGENS AUTOMÁTICAS ===== */}
+      {secao === 'mensagens' && (
+        <>
+          <Card titulo="Mensagem de Saudação" badge="AUTOMÁTICA">
+            <div className="bg-green-50 rounded-lg p-3 text-sm whitespace-pre-line border-l-4 border-green-400">{wa.saudacao}</div>
+            <div className="mt-3 flex items-center justify-between">
+              <span className="text-[10px] text-gray-400">Enviada a todos que escrevem pela 1ª vez</span>
+              <CopyBtn onClick={() => copiar(wa.saudacao)} copiado={copiado === wa.saudacao} label="📋 Copiar" small />
+            </div>
+            <div className="mt-2 bg-blue-50 border border-blue-200 rounded-lg p-2 text-[10px] text-blue-800">
+              📍 Definições → Ferramentas comerciais → Mensagem de saudação → ON
+            </div>
+          </Card>
+
+          <Card titulo="Mensagem de Ausência" badge="AUTOMÁTICA">
+            <div className="bg-amber-50 rounded-lg p-3 text-sm whitespace-pre-line border-l-4 border-amber-400">{wa.ausencia}</div>
+            <div className="mt-3 flex items-center justify-between">
+              <span className="text-[10px] text-gray-400">Enviada fora do horário (Seg-Sex, 8h-18h)</span>
+              <CopyBtn onClick={() => copiar(wa.ausencia)} copiado={copiado === wa.ausencia} label="📋 Copiar" small />
+            </div>
+            <div className="mt-2 bg-blue-50 border border-blue-200 rounded-lg p-2 text-[10px] text-blue-800">
+              📍 Definições → Ferramentas comerciais → Mensagem de ausência → ON → Fora do horário
+            </div>
+          </Card>
+        </>
+      )}
+
+      {/* ===== RESPOSTAS RÁPIDAS ===== */}
+      {secao === 'rapidas' && (
+        <>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-800">
+            📍 Definições → Ferramentas comerciais → Respostas rápidas → ➕ Adicionar<br/>
+            <strong>Como usar:</strong> Numa conversa, escreve <code>/</code> e aparece a lista. Ex: escreve <code>/precos</code> e a mensagem toda aparece.
+          </div>
+          {wa.respostasRapidas.map((r, i) => (
+            <Card key={i} titulo={r.titulo} badge={r.atalho}>
+              <div className="bg-gray-50 rounded-lg p-3 text-sm whitespace-pre-line">{r.mensagem}</div>
+              <div className="mt-3 flex items-center justify-between">
+                <span className="text-xs font-mono bg-green-100 text-green-700 px-2 py-1 rounded">{r.atalho}</span>
+                <CopyBtn onClick={() => copiar(r.mensagem)} copiado={copiado === r.mensagem} label="📋 Copiar" small />
+              </div>
+            </Card>
+          ))}
+        </>
+      )}
+
+      {/* ===== CATÁLOGO ===== */}
+      {secao === 'catalogo' && (
+        <>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-800">
+            📍 Definições → Ferramentas comerciais → Catálogo → ➕ Adicionar produto<br/>
+            Para cada produto: preencher nome, preço, descrição, link e imagem.
+          </div>
+          {wa.catalogo.map((prod, i) => (
+            <Card key={i} titulo={prod.nome} badge={prod.preco}>
+              <div className="flex gap-3">
+                <img src={prod.imagem} alt={prod.nome} className="w-20 h-20 rounded-lg object-cover shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm">{prod.descricao}</p>
+                  <p className="text-xs text-blue-600 mt-1">{prod.link}</p>
+                </div>
+              </div>
+              <div className="mt-3 flex gap-2">
+                <CopyBtn onClick={() => copiar(prod.nome)} copiado={copiado === prod.nome} label="Nome" small />
+                <CopyBtn onClick={() => copiar(prod.descricao)} copiado={copiado === prod.descricao} label="Descrição" small />
+                <CopyBtn onClick={() => copiar(prod.link)} copiado={copiado === prod.link} label="Link" small />
+              </div>
+            </Card>
+          ))}
+        </>
+      )}
+
+      {/* ===== ETIQUETAS ===== */}
+      {secao === 'etiquetas' && (
+        <Card titulo="Etiquetas para Organizar Contactos" badge="6 ETIQUETAS">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-800 mb-3">
+            📍 <strong>Onde criar:</strong> Abrir qualquer conversa → Tocar no nome em cima → Etiqueta → Criar nova<br/>
+            Ou: Ecrã principal → ⋮ → Etiquetas
+          </div>
+          <div className="space-y-2">
+            {wa.etiquetas.map((et, i) => (
+              <div key={i} className="flex items-center gap-3 bg-gray-50 rounded-lg p-3">
+                <div className={`w-4 h-4 rounded-full shrink-0 ${corEtiqueta(et.cor)}`} />
+                <div className="flex-1">
+                  <span className="font-bold text-sm">{et.nome}</span>
+                  <p className="text-xs text-gray-500">{et.descricao}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* ===== STATUS SEMANAL ===== */}
+      {secao === 'status' && (
+        <>
+          <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-xs text-green-800">
+            📍 WhatsApp → Status → Escrever texto ou adicionar foto<br/>
+            Publicar 1 estado por dia seguindo este calendário. Cada estado dura 24h.
+          </div>
+          {wa.statusSemanal.map((dia, i) => (
+            <Card key={i} titulo={dia.dia} badge={dia.conteudo}>
+              <div className="bg-gray-50 rounded-lg p-3 text-sm whitespace-pre-line">{dia.exemplo}</div>
+              <div className="mt-2 flex justify-end">
+                <CopyBtn onClick={() => copiar(dia.exemplo)} copiado={copiado === dia.exemplo} label="📋 Copiar" small />
+              </div>
+            </Card>
+          ))}
+        </>
+      )}
     </div>
   );
 }
