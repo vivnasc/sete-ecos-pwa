@@ -248,14 +248,18 @@ export const startTrial = async (userId) => {
     return { success: false, error: 'userId em falta' };
   }
   try {
+    const now = new Date();
+    const trialEnd = new Date(now.getTime() + SUBSCRIPTION_CONFIG.TRIAL_DAYS * 24 * 60 * 60 * 1000);
+
     // Usar UPSERT para evitar race conditions
     const trialData = {
       user_id: userId,
       subscription_status: SUBSCRIPTION_STATUS.TRIAL,
-      trial_started: new Date().toISOString(),
-      subscription_updated: new Date().toISOString(),
+      trial_started: now.toISOString(),
+      subscription_end: trialEnd.toISOString(), // NOVO: Para sistema de emails funcionar
+      subscription_updated: now.toISOString(),
       status: 'novo',
-      created_at: new Date().toISOString()
+      created_at: now.toISOString()
     };
 
     const { error } = await supabase
@@ -729,4 +733,141 @@ export const applyRenewalDiscount = (plan, discountPct) => {
     price_usd: Math.round(plan.price_usd * (1 - discountPct / 100)),
     renewal_discount: discountPct
   };
+};
+
+/**
+ * Verifica trials próximos de expirar e retorna lista de utilizadores
+ * @param {number} daysBeforeExpiry - Quantos dias antes de expirar (ex: 3, 1, 0)
+ * @returns {Promise<Array>} Lista de utilizadores com trial a expirar
+ */
+export const getTrialsExpiringIn = async (daysBeforeExpiry = 3) => {
+  try {
+    const now = new Date();
+    const targetDate = new Date(now);
+    targetDate.setDate(targetDate.getDate() + daysBeforeExpiry);
+
+    // Buscar trials que expiram na data alvo
+    const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+
+    const { data: clients, error } = await supabase
+      .from('vitalis_clients')
+      .select('user_id, trial_started, subscription_status')
+      .eq('subscription_status', 'trial')
+      .not('trial_started', 'is', null);
+
+    if (error) throw error;
+
+    // Filtrar clientes cujo trial expira no dia alvo
+    const expiringTrials = clients.filter(client => {
+      if (!client.trial_started) return false;
+
+      const trialStart = new Date(client.trial_started);
+      const trialEnd = new Date(trialStart.getTime() + SUBSCRIPTION_CONFIG.TRIAL_DAYS * 24 * 60 * 60 * 1000);
+
+      return trialEnd >= startOfDay && trialEnd <= endOfDay;
+    });
+
+    // Buscar dados dos utilizadores
+    if (expiringTrials.length === 0) return [];
+
+    const userIds = expiringTrials.map(t => t.user_id);
+    const { data: users } = await supabase
+      .from('users')
+      .select('id, nome, email, auth_id')
+      .in('id', userIds);
+
+    return users || [];
+  } catch (error) {
+    console.error('Erro ao buscar trials a expirar:', error);
+    return [];
+  }
+};
+
+/**
+ * Verifica e envia notificações para trials próximos de expirar
+ * Deve ser chamado diariamente (via cron job ou tarefas agendadas)
+ */
+export const checkAndNotifyExpiringTrials = async () => {
+  try {
+    // Verificar 3 dias antes
+    const trials3Days = await getTrialsExpiringIn(3);
+    console.log(`[Trial Check] ${trials3Days.length} trials expiram em 3 dias`);
+
+    // Verificar 1 dia antes
+    const trials1Day = await getTrialsExpiringIn(1);
+    console.log(`[Trial Check] ${trials1Day.length} trials expiram em 1 dia`);
+
+    // Verificar hoje (expirando)
+    const trialsToday = await getTrialsExpiringIn(0);
+    console.log(`[Trial Check] ${trialsToday.length} trials expiram hoje`);
+
+    return {
+      success: true,
+      notifications: {
+        threeDays: trials3Days.length,
+        oneDay: trials1Day.length,
+        today: trialsToday.length
+      },
+      users: {
+        threeDays: trials3Days,
+        oneDay: trials1Day,
+        today: trialsToday
+      }
+    };
+  } catch (error) {
+    console.error('Erro ao verificar trials:', error);
+    return { success: false, error };
+  }
+};
+
+/**
+ * Marca trial como expirado se já passou da data
+ */
+export const expireOldTrials = async () => {
+  try {
+    const now = new Date();
+
+    // Buscar todos os trials ativos
+    const { data: trials } = await supabase
+      .from('vitalis_clients')
+      .select('user_id, trial_started')
+      .eq('subscription_status', 'trial')
+      .not('trial_started', 'is', null);
+
+    if (!trials || trials.length === 0) {
+      return { success: true, expired: 0 };
+    }
+
+    // Filtrar trials expirados
+    const expiredUserIds = trials
+      .filter(trial => {
+        const trialStart = new Date(trial.trial_started);
+        const trialEnd = new Date(trialStart.getTime() + SUBSCRIPTION_CONFIG.TRIAL_DAYS * 24 * 60 * 60 * 1000);
+        return now > trialEnd;
+      })
+      .map(t => t.user_id);
+
+    if (expiredUserIds.length === 0) {
+      return { success: true, expired: 0 };
+    }
+
+    // Atualizar status para expired
+    const { error } = await supabase
+      .from('vitalis_clients')
+      .update({
+        subscription_status: SUBSCRIPTION_STATUS.EXPIRED,
+        subscription_updated: now.toISOString()
+      })
+      .in('user_id', expiredUserIds);
+
+    if (error) throw error;
+
+    console.log(`[Trial Expiry] ${expiredUserIds.length} trials marcados como expirados`);
+
+    return { success: true, expired: expiredUserIds.length, userIds: expiredUserIds };
+  } catch (error) {
+    console.error('Erro ao expirar trials:', error);
+    return { success: false, error };
+  }
 };

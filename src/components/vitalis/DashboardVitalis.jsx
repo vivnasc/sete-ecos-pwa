@@ -10,6 +10,7 @@ import { g, setSexo } from '../../utils/genero';
 import { isNearRamadan, setObservaRamadao, observaRamadao } from '../../utils/ramadao';
 import { useTheme } from '../../contexts/ThemeContext';
 import { temPermissao, activarLembretes, pedirPermissao, contarLembretesHoje } from '../../utils/notifications';
+import { checkVitalisAccess } from '../../lib/subscriptions';
 import QuickTrackers from './QuickTrackers';
 import FastingTimerCard from './FastingTimerCard';
 import MealsSection from './MealsSection';
@@ -102,6 +103,12 @@ export default function DashboardVitalis() {
   const [isPWAInstalled, setIsPWAInstalled] = useState(false);
   const [notificacoesAtivas, setNotificacoesAtivas] = useState(false);
   const [mostrarBannerPWA, setMostrarBannerPWA] = useState(false);
+
+  // Estados para Trial e Intake
+  const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+  const [trialDaysLeft, setTrialDaysLeft] = useState(null);
+  const [trialExpiresAt, setTrialExpiresAt] = useState(null);
+  const [hasIntake, setHasIntake] = useState(false);
 
   const hoje = new Date().toISOString().split('T')[0];
   const diaSemana = new Date().toLocaleDateString('pt-PT', { weekday: 'long' });
@@ -262,12 +269,23 @@ export default function DashboardVitalis() {
         setClient(clientData);
       }
 
+      // Verificar status de subscrição e trial
+      const accessInfo = await checkVitalisAccess(userData.id);
+      setSubscriptionStatus(accessInfo.status);
+      if (accessInfo.status === 'trial' && accessInfo.daysLeft) {
+        setTrialDaysLeft(accessInfo.daysLeft);
+        setTrialExpiresAt(accessInfo.expiresAt);
+      }
+
       // Buscar sexo e preferências do intake para adaptar UI
       const { data: intakeData } = await supabase
         .from('vitalis_intake')
         .select('sexo, observa_ramadao')
         .eq('user_id', userData.id)
         .maybeSingle();
+
+      setHasIntake(!!intakeData); // Define se tem intake
+
       if (intakeData?.sexo) setSexo(intakeData.sexo);
       if (intakeData?.observa_ramadao) setObservaRamadao(intakeData.observa_ramadao);
 
@@ -994,6 +1012,106 @@ export default function DashboardVitalis() {
                   <span className="text-white/80">{notificacoesAtivas ? 'Notificações ativas' : 'Notificações off'}</span>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Banner Trial - Contador de Dias */}
+        {subscriptionStatus === 'trial' && trialDaysLeft !== null && (
+          <div className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 rounded-2xl p-4 shadow-xl relative overflow-hidden">
+            <div className="absolute inset-0 opacity-10">
+              <svg viewBox="0 0 100 100" className="w-full h-full">
+                <circle cx="20" cy="80" r="40" fill="white"/>
+                <circle cx="80" cy="20" r="30" fill="white"/>
+              </svg>
+            </div>
+
+            <div className="relative z-10 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-white/30 rounded-2xl flex items-center justify-center">
+                  <span className="text-4xl">🎁</span>
+                </div>
+                <div>
+                  <h3 className="text-white font-bold text-lg">Trial Gratuito Ativo</h3>
+                  <p className="text-white/90 text-sm mt-1">
+                    {trialDaysLeft === 1 ? (
+                      <span className="font-bold">⏰ Último dia! Subscreve para continuar</span>
+                    ) : trialDaysLeft <= 3 ? (
+                      <span>Faltam <strong>{trialDaysLeft} dias</strong> • Depois perde acesso</span>
+                    ) : (
+                      <span>Faltam <strong>{trialDaysLeft} dias</strong> de acesso completo</span>
+                    )}
+                  </p>
+                </div>
+              </div>
+              <Link
+                to="/vitalis/pagamento"
+                className="px-5 py-2.5 bg-white text-green-600 rounded-xl font-bold text-sm hover:bg-green-50 transition-colors shadow-lg whitespace-nowrap"
+              >
+                Ver Planos →
+              </Link>
+            </div>
+
+            {/* Barra de progresso */}
+            <div className="mt-3 bg-white/20 rounded-full h-2 overflow-hidden">
+              <div
+                className="h-full bg-white rounded-full transition-all duration-500"
+                style={{ width: `${(trialDaysLeft / 7) * 100}%` }}
+              />
+            </div>
+
+            {trialExpiresAt && (
+              <p className="text-white/70 text-xs mt-2 text-center">
+                Expira em {new Date(trialExpiresAt).toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Banner Intake - Sugerir completar */}
+        {subscriptionStatus === 'trial' && !hasIntake && (
+          <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 rounded-2xl p-4 shadow-xl relative overflow-hidden">
+            <div className="absolute inset-0 opacity-10">
+              <svg viewBox="0 0 100 100" className="w-full h-full">
+                <circle cx="30" cy="70" r="35" fill="white"/>
+                <circle cx="70" cy="30" r="25" fill="white"/>
+              </svg>
+            </div>
+
+            <div className="relative z-10">
+              <div className="flex items-start gap-3 mb-3">
+                <div className="w-12 h-12 bg-white/30 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <span className="text-2xl">💡</span>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-white font-bold text-lg mb-1">Personaliza a Tua Experiência</h3>
+                  <p className="text-white/90 text-sm mb-3">
+                    Completa o questionário inicial (5 min) para receberes:
+                  </p>
+                  <ul className="space-y-1 text-white/90 text-sm">
+                    <li className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+                      <span>Plano alimentar personalizado para o teu objetivo</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+                      <span>Treinos adaptados à tua fase e condição</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+                      <span>Calorias e macros calculados para ti</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <Link
+                to="/vitalis/intake"
+                className="w-full flex items-center justify-center gap-2 py-3 bg-white text-orange-600 rounded-xl font-bold hover:bg-orange-50 transition-colors shadow-lg"
+              >
+                <span>📋</span>
+                <span>Começar Questionário (5 min)</span>
+              </Link>
             </div>
           </div>
         )}

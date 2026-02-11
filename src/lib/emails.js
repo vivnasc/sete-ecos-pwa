@@ -253,6 +253,47 @@ Boas-vindas à comunidade! 🌱`);
 🕐 ${new Date().toLocaleTimeString('pt-PT')}
 
 A cliente pode precisar de apoio. 💚`);
+  },
+
+  /**
+   * Chamar 3 dias antes do trial expirar
+   */
+  async onTrialExpiring3Days(cliente) {
+    await enviarEmail('trial-expirando-3-dias', cliente.email, {
+      nome: cliente.nome,
+      diasRestantes: 3,
+      urlPlanos: 'https://seteecos.com/vitalis/pagamento'
+    });
+  },
+
+  /**
+   * Chamar 1 dia antes do trial expirar
+   */
+  async onTrialExpiring1Day(cliente) {
+    await enviarEmail('trial-expirando-1-dia', cliente.email, {
+      nome: cliente.nome,
+      diasRestantes: 1,
+      urlPlanos: 'https://seteecos.com/vitalis/pagamento'
+    });
+
+    // WhatsApp para coach (para dar follow-up pessoal se necessário)
+    await enviarWhatsAppCoach(`⏰ *TRIAL EXPIRA AMANHÃ*
+
+👤 ${cliente.nome}
+📧 ${cliente.email}
+⏱️ Último dia de trial amanhã
+
+Considera fazer follow-up se for uma cliente engajada! 💪`);
+  },
+
+  /**
+   * Chamar quando trial expirar
+   */
+  async onTrialExpired(cliente) {
+    await enviarEmail('trial-expirado', cliente.email, {
+      nome: cliente.nome,
+      urlPlanos: 'https://seteecos.com/vitalis/pagamento'
+    });
   }
 };
 
