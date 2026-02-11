@@ -319,14 +319,18 @@ export default function PlanoHTML() {
             </div>
           </div>
 
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px'}}>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'16px'}}>
             <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 12px rgba(0,0,0,0.05)'}}>
-              <div style={{fontSize:'12px',color:'#7C8B6F',letterSpacing:'3px',marginBottom:'14px',fontFamily:'Lato,sans-serif',fontWeight:'600'}}>ABORDAGEM NUTRICIONAL</div>
-              <div style={{fontSize:'22px',fontWeight:'600',color:'#6B7A5D',textTransform:'capitalize',fontFamily:'Cormorant Garamond,serif'}}>{dados.abordagem?.replace('_', ' ')}</div>
+              <div style={{fontSize:'11px',color:'#7C8B6F',letterSpacing:'2px',marginBottom:'12px',fontFamily:'Lato,sans-serif',fontWeight:'600'}}>ABORDAGEM</div>
+              <div style={{fontSize:'19px',fontWeight:'600',color:'#6B7A5D',textTransform:'capitalize',fontFamily:'Cormorant Garamond,serif'}}>{dados.abordagem?.replace('_', ' ')}</div>
             </div>
             <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 12px rgba(0,0,0,0.05)'}}>
-              <div style={{fontSize:'12px',color:'#7C8B6F',letterSpacing:'3px',marginBottom:'14px',fontFamily:'Lato,sans-serif',fontWeight:'600'}}>META SEMANAL</div>
-              <div style={{fontSize:'22px',fontWeight:'600',color:'#6B8E23',fontFamily:'Cormorant Garamond,serif'}}>-0.5 a -1.0 kg</div>
+              <div style={{fontSize:'11px',color:'#7C8B6F',letterSpacing:'2px',marginBottom:'12px',fontFamily:'Lato,sans-serif',fontWeight:'600'}}>A PERDER</div>
+              <div style={{fontSize:'28px',fontWeight:'700',color:'#E65100',fontFamily:'Cormorant Garamond,serif'}}>{(dados.peso_actual - dados.peso_meta).toFixed(1)} kg</div>
+            </div>
+            <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 12px rgba(0,0,0,0.05)'}}>
+              <div style={{fontSize:'11px',color:'#7C8B6F',letterSpacing:'2px',marginBottom:'12px',fontFamily:'Lato,sans-serif',fontWeight:'600'}}>ESTIMATIVA</div>
+              <div style={{fontSize:'19px',fontWeight:'600',color:'#6B8E23',fontFamily:'Cormorant Garamond,serif'}}>{Math.ceil((dados.peso_actual - dados.peso_meta) / 0.75)} semanas</div>
             </div>
           </div>
 
@@ -786,67 +790,102 @@ export default function PlanoHTML() {
             Imprime esta página e leva ao supermercado! <strong>Compra fresco</strong> sempre que possível. Quanto menos embalagens, melhor.
           </p>
 
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'14px'}}>
-            <div style={{background:'linear-gradient(135deg, #FFFFFF, #FFF5F5)',border:'2px solid #E57373',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'13px'}}>
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #FFF5F5)',border:'2px solid #E57373',borderRadius:'14px',padding:'12px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
               <div style={{fontWeight:'700',color:'#C62828',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #E57373',paddingBottom:'8px',fontFamily:'Cormorant Garamond,serif'}}>
                 🥩 Proteínas
               </div>
-              <div style={{fontSize:'13px',lineHeight:'1.9',fontFamily:'Georgia,serif'}}>
+              <div style={{fontSize:'12px',lineHeight:'1.7',fontFamily:'Georgia,serif'}}>
                 ☐ Peito de frango (1kg)<br/>
-                ☐ Ovos (2 dúzias)<br/>
-                ☐ Peixe fresco (500g)<br/>
-                ☐ Carne moída magra<br/>
-                ☐ Atum lata (3 unid.)<br/>
-                ☐ Iogurte grego natural
+                ☐ Ovos frescos (2 dúzias)<br/>
+                ☐ Peixe fresco (500-700g)<br/>
+                ☐ Carne moída magra (500g)<br/>
+                ☐ Atum em lata (3-4 latas)<br/>
+                ☐ Iogurte grego natural (4 unid.)<br/>
+                ☐ Queijo fresco magro (200g)
               </div>
             </div>
 
-            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F1F8E9)',border:'2px solid #81C784',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F1F8E9)',border:'2px solid #81C784',borderRadius:'14px',padding:'12px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
               <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #81C784',paddingBottom:'8px',fontFamily:'Cormorant Garamond,serif'}}>
-                🥬 Vegetais (mix cores)
+                🥬 Vegetais (cores variadas!)
               </div>
-              <div style={{fontSize:'13px',lineHeight:'1.9',fontFamily:'Georgia,serif'}}>
-                ☐ Espinafre/Couve<br/>
-                ☐ Brócolos<br/>
+              <div style={{fontSize:'12px',lineHeight:'1.7',fontFamily:'Georgia,serif'}}>
+                ☐ Espinafre/Couve fresca<br/>
+                ☐ Brócolos (2 cabeças)<br/>
                 ☐ Tomate (1kg)<br/>
-                ☐ Pepino<br/>
-                ☐ Pimentos<br/>
+                ☐ Pepino (3-4 unid.)<br/>
+                ☐ Pimentos (mix de cores)<br/>
                 ☐ Cebola e Alho<br/>
-                ☐ Cenoura
+                ☐ Cenoura (500g)<br/>
+                ☐ Alface/Rúcula
               </div>
             </div>
 
-            <div style={{background:'linear-gradient(135deg, #FFFFFF, #E3F2FD)',border:'2px solid #64B5F6',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #E3F2FD)',border:'2px solid #64B5F6',borderRadius:'14px',padding:'12px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
               <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #64B5F6',paddingBottom:'8px',fontFamily:'Cormorant Garamond,serif'}}>
-                🍚 Hidratos
+                🍚 Hidratos (conforme fase)
               </div>
-              <div style={{fontSize:'13px',lineHeight:'1.9',fontFamily:'Georgia,serif'}}>
+              <div style={{fontSize:'12px',lineHeight:'1.7',fontFamily:'Georgia,serif'}}>
                 ☐ Batata-doce (1kg)<br/>
-                ☐ Arroz integral<br/>
+                ☐ Arroz integral (500g)<br/>
                 ☐ Aveia (500g)<br/>
-                ☐ Pão integral<br/>
-                ☐ Frutas da época
+                ☐ Pão integral verdadeiro<br/>
+                ☐ Quinoa (opcional)<br/>
+                ☐ Frutas frescas da época<br/>
+                ☐ Frutos vermelhos congelados
               </div>
             </div>
 
-            <div style={{background:'linear-gradient(135deg, #FFFFFF, #FFF8E1)',border:'2px solid #FFD54F',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #FFF8E1)',border:'2px solid #FFD54F',borderRadius:'14px',padding:'12px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
               <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #FFD54F',paddingBottom:'8px',fontFamily:'Cormorant Garamond,serif'}}>
-                🥑 Gorduras
+                🥑 Gorduras Saudáveis
               </div>
-              <div style={{fontSize:'13px',lineHeight:'1.9',fontFamily:'Georgia,serif'}}>
-                ☐ Azeite extra-virgem<br/>
-                ☐ Abacate (3 unid.)<br/>
-                ☐ Manteiga<br/>
-                ☐ Nozes/Amêndoas<br/>
-                ☐ Manteiga amendoim
+              <div style={{fontSize:'12px',lineHeight:'1.7',fontFamily:'Georgia,serif'}}>
+                ☐ Azeite extra-virgem (500ml)<br/>
+                ☐ Abacate (3-4 unid.)<br/>
+                ☐ Manteiga de vaca<br/>
+                ☐ Amêndoas/Nozes (200g)<br/>
+                ☐ Manteiga amendoim 100%<br/>
+                ☐ Azeitonas<br/>
+                ☐ Óleo de coco (opcional)
+              </div>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'14px',padding:'12px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
+              <div style={{fontWeight:'700',color:'#6B5C4C',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #C5D1BC',paddingBottom:'8px',fontFamily:'Cormorant Garamond,serif'}}>
+                🧂 Despensa & Temperos
+              </div>
+              <div style={{fontSize:'12px',lineHeight:'1.7',fontFamily:'Georgia,serif'}}>
+                ☐ Sal marinho grosso<br/>
+                ☐ Pimenta do reino<br/>
+                ☐ Ervas frescas (coentros, salsa)<br/>
+                ☐ Especiarias (curcuma, paprika)<br/>
+                ☐ Limões (6 unid.)<br/>
+                ☐ Vinagre (maçã ou balsâmico)<br/>
+                ☐ Chá verde/Café
+              </div>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #E8F5E9)',border:'2px solid #66BB6A',borderRadius:'14px',padding:'12px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
+              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #66BB6A',paddingBottom:'8px',fontFamily:'Cormorant Garamond,serif'}}>
+                💧 Hidratação & Extras
+              </div>
+              <div style={{fontSize:'12px',lineHeight:'1.7',fontFamily:'Georgia,serif'}}>
+                ☐ Água mineral (garrafões)<br/>
+                ☐ Água com gás (opcional)<br/>
+                ☐ Chá de ervas<br/>
+                ☐ Café (se bebes)<br/>
+                ☐ Limões para água<br/>
+                ☐ Gengibre fresco
               </div>
             </div>
           </div>
 
-          <div style={{background:'linear-gradient(135deg, #F5F0E8, #E8DCC8)',borderRadius:'12px',padding:'14px',marginTop:'14px',border:'2px solid #C5D1BC'}}>
-            <p style={{fontSize:'12px',fontWeight:'600',color:'#6B5C4C',marginBottom:'6px',fontFamily:'Lato,sans-serif'}}>🧂 Temperos: Sal, pimenta, limões, ervas, especiarias • 💧 Água mineral</p>
-            <p style={{fontSize:'12px',color:'#3A3025',lineHeight:'1.6',fontFamily:'Georgia,serif',marginTop:'8px'}}>
-              <strong>Dica:</strong> Compra 1x/semana. Prepara proteínas e vegetais no domingo. Durante a semana, só montas!
+          <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',borderRadius:'12px',padding:'14px',marginTop:'14px',border:'2px solid #FFA726'}}>
+            <p style={{fontSize:'12px',fontWeight:'600',color:'#E65100',marginBottom:'6px',fontFamily:'Lato,sans-serif'}}>💡 DICA DE OURO</p>
+            <p style={{fontSize:'12px',color:'#3A3025',lineHeight:'1.6',fontFamily:'Georgia,serif'}}>
+              Compra <strong>1x por semana</strong> aos domingos. Dedica 2h a preparar proteínas e vegetais. Guarda em recipientes de vidro. Durante a semana, só montas o prato!
             </p>
           </div>
 
@@ -859,43 +898,55 @@ export default function PlanoHTML() {
         <div className="page-content">
           <PageHeader />
 
-          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'12px',fontFamily:'Cormorant Garamond,serif'}}>📋 Regras da {faseConfig.nome}</h2>
-          <p style={{fontSize:'14px',color:'#6B5C4C',marginBottom:'12px',textAlign:'center',fontFamily:'Georgia,serif',lineHeight:'1.9'}}>
+          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'10px',fontFamily:'Cormorant Garamond,serif'}}>📋 Regras da {faseConfig.nome}</h2>
+          <p style={{fontSize:'13px',color:'#6B5C4C',marginBottom:'10px',textAlign:'center',fontFamily:'Georgia,serif',lineHeight:'1.6'}}>
             Estas regras foram desenhadas para <strong>maximizar os teus resultados</strong> nesta fase. Segue-as com <em>consistência</em>, não perfeição.
           </p>
 
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px',marginBottom:'12px'}}>
-            <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',border:'3px solid #66BB6A',borderRadius:'18px',padding:'14px',boxShadow:'0 4px 18px rgba(102,187,106,0.25)'}}>
-              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'14px',fontSize:'20px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
-                <span style={{fontSize:'22px'}}>✓</span> PRIORIZAR
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px',marginBottom:'10px'}}>
+            <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',border:'2px solid #66BB6A',borderRadius:'14px',padding:'11px',boxShadow:'0 3px 14px rgba(102,187,106,0.2)'}}>
+              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'10px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'8px'}}>
+                <span style={{fontSize:'19px'}}>✓</span> PRIORIZAR
               </div>
-              <div style={{fontSize:'14px',lineHeight:'2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+              <div style={{fontSize:'13px',lineHeight:'1.6',color:'#3A3025',fontFamily:'Georgia,serif'}}>
                 {faseConfig.priorizar.map((item, i) => (
-                  <div key={i} style={{marginBottom:'8px'}}>✓ {item}</div>
+                  <div key={i} style={{marginBottom:'5px'}}>✓ {item}</div>
                 ))}
               </div>
             </div>
 
-            <div style={{background:'linear-gradient(135deg, #FFEBEE, #FFCDD2)',border:'3px solid #E57373',borderRadius:'18px',padding:'14px',boxShadow:'0 4px 18px rgba(229,115,115,0.25)'}}>
-              <div style={{fontWeight:'700',color:'#C62828',marginBottom:'14px',fontSize:'20px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
-                <span style={{fontSize:'22px'}}>✗</span> EVITAR
+            <div style={{background:'linear-gradient(135deg, #FFEBEE, #FFCDD2)',border:'2px solid #E57373',borderRadius:'14px',padding:'11px',boxShadow:'0 3px 14px rgba(229,115,115,0.2)'}}>
+              <div style={{fontWeight:'700',color:'#C62828',marginBottom:'10px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'8px'}}>
+                <span style={{fontSize:'19px'}}>✗</span> EVITAR
               </div>
-              <div style={{fontSize:'14px',lineHeight:'2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+              <div style={{fontSize:'13px',lineHeight:'1.6',color:'#3A3025',fontFamily:'Georgia,serif'}}>
                 {faseConfig.evitar.map((item, i) => (
-                  <div key={i} style={{marginBottom:'8px'}}>✗ {item}</div>
+                  <div key={i} style={{marginBottom:'5px'}}>✗ {item}</div>
                 ))}
               </div>
             </div>
           </div>
 
-          <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'3px solid #FFD54F',borderRadius:'18px',padding:'14px',marginBottom:'16px',boxShadow:'0 4px 18px rgba(255,213,79,0.25)'}}>
-            <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'14px',fontSize:'20px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
-              <span style={{fontSize:'22px'}}>💡</span> DICAS PARA O SUCESSO
+          <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'2px solid #FFD54F',borderRadius:'14px',padding:'11px',marginBottom:'12px',boxShadow:'0 3px 14px rgba(255,213,79,0.2)'}}>
+            <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'10px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'8px'}}>
+              <span style={{fontSize:'19px'}}>💡</span> DICAS PARA O SUCESSO
             </div>
-            <div style={{fontSize:'14px',lineHeight:'2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+            <div style={{fontSize:'13px',lineHeight:'1.6',color:'#3A3025',fontFamily:'Georgia,serif'}}>
               {faseConfig.dicas.map((item, i) => (
-                <div key={i} style={{marginBottom:'8px'}}>• {item}</div>
+                <div key={i} style={{marginBottom:'5px'}}>• {item}</div>
               ))}
+            </div>
+          </div>
+
+          <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',borderRadius:'14px',padding:'13px',border:'2px solid #42A5F5',boxShadow:'0 2px 12px rgba(66,165,245,0.18)'}}>
+            <h3 style={{fontSize:'16px',fontWeight:'700',color:'#1565C0',marginBottom:'10px',fontFamily:'Cormorant Garamond,serif'}}>⏰ Estrutura Diária Recomendada</h3>
+            <div style={{fontSize:'12px',lineHeight:'1.6',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+              <strong>7h-8h:</strong> Pequeno-almoço com proteína (ovos, iogurte grego)<br/>
+              <strong>10h-11h:</strong> Snack (se necessário): frutos secos ou fruta<br/>
+              <strong>12h30-13h30:</strong> Almoço completo (proteína + legumes + hidrato)<br/>
+              <strong>16h-17h:</strong> Snack da tarde (iogurte, queijo, nozes)<br/>
+              <strong>19h-20h:</strong> Jantar (proteína + legumes + gordura boa)<br/>
+              <strong>Antes de dormir:</strong> Chá de camomila ou casca de abacaxi
             </div>
           </div>
 
@@ -908,53 +959,71 @@ export default function PlanoHTML() {
         <div className="page-content">
           <PageHeader />
 
-          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'12px',fontFamily:'Cormorant Garamond,serif'}}>📱 Como Usar a Plataforma VITALIS</h2>
-          <p style={{fontSize:'15px',color:'#6B5C4C',marginBottom:'12px',fontFamily:'Georgia,serif',lineHeight:'1.9',textAlign:'center'}}>
+          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'10px',fontFamily:'Cormorant Garamond,serif'}}>📱 Como Usar a Plataforma VITALIS</h2>
+          <p style={{fontSize:'13px',color:'#6B5C4C',marginBottom:'10px',fontFamily:'Georgia,serif',lineHeight:'1.6',textAlign:'center'}}>
             O teu plano em papel é o <strong>guia base</strong>. A plataforma digital é o <strong>acompanhamento vivo</strong> — regista progressos, pede ajuda e ajusta conforme necessário.
           </p>
 
-          <div style={{display:'grid',gridTemplateColumns:'1fr',gap:'18px',marginBottom:'14px'}}>
-            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'16px',padding:'18px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
-              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'14px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'12px'}}>
-                <span style={{fontSize:'26px'}}>📊</span> 1. Regista Peso Semanal
+          <div style={{display:'grid',gridTemplateColumns:'1fr',gap:'13px',marginBottom:'12px'}}>
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                <span style={{fontSize:'24px'}}>📊</span> 1. Regista Peso Semanal
               </div>
-              <p style={{fontSize:'14px',lineHeight:'1.7',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+              <p style={{fontSize:'13px',lineHeight:'1.5',color:'#3A3025',fontFamily:'Georgia,serif'}}>
                 Todas as <strong>sextas-feiras de manhã</strong>, em jejum e depois da casa de banho. Regista na app. Não te peses diariamente — o corpo flutua naturalmente.
               </p>
             </div>
 
-            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'16px',padding:'18px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
-              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'14px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'12px'}}>
-                <span style={{fontSize:'26px'}}>📸</span> 2. Tira Fotos de Progresso
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                <span style={{fontSize:'24px'}}>📸</span> 2. Tira Fotos de Progresso
               </div>
-              <p style={{fontSize:'14px',lineHeight:'1.7',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+              <p style={{fontSize:'13px',lineHeight:'1.5',color:'#3A3025',fontFamily:'Georgia,serif'}}>
                 <strong>1x por mês</strong>, de frente, lado e costas. Mesma roupa, mesma luz, mesma hora. A app guarda e compara automaticamente. A transformação é VISUAL!
               </p>
             </div>
 
-            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'16px',padding:'18px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
-              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'14px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'12px'}}>
-                <span style={{fontSize:'26px'}}>📏</span> 3. Mede Circunferências Mensais
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                <span style={{fontSize:'24px'}}>📏</span> 3. Mede Circunferências Mensais
               </div>
-              <p style={{fontSize:'14px',lineHeight:'1.7',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+              <p style={{fontSize:'13px',lineHeight:'1.5',color:'#3A3025',fontFamily:'Georgia,serif'}}>
                 <strong>Cintura, quadris, coxa, braço.</strong> Às vezes o peso não mexe mas perdeste 5cm de cintura! Regista tudo na app — ela gera gráficos automáticos.
               </p>
             </div>
 
-            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'16px',padding:'18px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
-              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'14px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'12px'}}>
-                <span style={{fontSize:'26px'}}>💬</span> 4. Usa o Chat para Dúvidas
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                <span style={{fontSize:'24px'}}>💬</span> 4. Usa o Chat para Dúvidas
               </div>
-              <p style={{fontSize:'14px',lineHeight:'1.7',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+              <p style={{fontSize:'13px',lineHeight:'1.5',color:'#3A3025',fontFamily:'Georgia,serif'}}>
                 Dúvida sobre um alimento? Não sabes se podes substituir? <strong>Pergunta no chat!</strong> Respondo em até 24h. És acompanhada, não estás sozinha.
+              </p>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                <span style={{fontSize:'24px'}}>📝</span> 5. Diário Alimentar (Opcional mas Poderoso)
+              </div>
+              <p style={{fontSize:'13px',lineHeight:'1.5',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Nas primeiras 2-3 semanas, regista o que comes. Não precisa ser perfeito — anota porções da mão. Ajuda-te a <strong>calibrar o olho</strong> e identificar padrões.
+              </p>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                <span style={{fontSize:'24px'}}>🔔</span> 6. Activa Notificações de Água
+              </div>
+              <p style={{fontSize:'13px',lineHeight:'1.5',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                A app lembra-te de beber água a cada 2h. Pequeno detalhe, <strong>grande impacto</strong> — hidratação acelera resultados.
               </p>
             </div>
           </div>
 
           <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',borderRadius:'14px',padding:'16px',border:'2px solid #66BB6A',textAlign:'center'}}>
             <p style={{fontSize:'14px',fontWeight:'600',color:'#2E7D32',marginBottom:'6px',fontFamily:'Cormorant Garamond,serif'}}>💚 Lembra-te</p>
-            <p style={{fontSize:'13px',color:'#3A3025',lineHeight:'1.7',fontFamily:'Georgia,serif'}}>
-              A plataforma é uma <strong>ferramenta</strong>, não uma prisão. Usa-a para te <em>apoiar</em>. Consistência > Perfeição.
+            <p style={{fontSize:'13px',color:'#3A3025',lineHeight:'1.6',fontFamily:'Georgia,serif'}}>
+              A plataforma é uma <strong>ferramenta</strong>, não uma prisão. Usa-a para te <em>apoiar</em>, não para te <em>stressar</em>. Consistência > Perfeição.
             </p>
           </div>
 
@@ -967,60 +1036,75 @@ export default function PlanoHTML() {
         <div className="page-content">
           <PageHeader />
 
-          <h2 style={{fontSize:'26px',fontWeight:'600',color:'#3A3025',marginBottom:'10px',textAlign:'center',fontFamily:'Cormorant Garamond,serif'}}>💪 A Tua Jornada Começa Aqui</h2>
-          <p style={{fontSize:'14px',color:'#6B5C4C',marginBottom:'16px',textAlign:'center',fontFamily:'Georgia,serif',lineHeight:'1.6',fontStyle:'italic'}}>
+          <h2 style={{fontSize:'28px',fontWeight:'600',color:'#3A3025',marginBottom:'10px',textAlign:'center',fontFamily:'Cormorant Garamond,serif'}}>💪 A Tua Jornada Começa Aqui</h2>
+          <p style={{fontSize:'13px',color:'#6B5C4C',marginBottom:'18px',textAlign:'center',fontFamily:'Georgia,serif',lineHeight:'1.5',fontStyle:'italic'}}>
             Este plano não é sobre <strong>perfeição</strong>. É sobre <strong>progresso</strong>. Não é sobre <strong>restrição</strong>. É sobre <strong>transformação</strong>.
           </p>
 
-          <div style={{background:'linear-gradient(135deg, #FFFFFF, #FDF8F3)',border:'2px solid #C5D1BC',borderRadius:'16px',padding:'22px',marginBottom:'14px',boxShadow:'0 4px 16px rgba(0,0,0,0.06)'}}>
-            <div style={{fontSize:'60px',color:'#C5D1BC',textAlign:'center',lineHeight:'0.5',marginBottom:'12px',fontFamily:'Georgia,serif'}}>"</div>
-            <p style={{fontSize:'17px',color:'#3A3025',fontStyle:'italic',lineHeight:'1.6',textAlign:'center',fontFamily:'Georgia,serif',marginBottom:'10px'}}>
+          <div style={{background:'linear-gradient(135deg, #FFFFFF, #FDF8F3)',border:'2px solid #C5D1BC',borderRadius:'16px',padding:'18px',marginBottom:'10px',boxShadow:'0 4px 18px rgba(0,0,0,0.06)'}}>
+            <div style={{fontSize:'50px',color:'#C5D1BC',textAlign:'center',lineHeight:'0.5',marginBottom:'10px',fontFamily:'Georgia,serif'}}>"</div>
+            <p style={{fontSize:'17px',color:'#3A3025',fontStyle:'italic',lineHeight:'1.5',textAlign:'center',fontFamily:'Georgia,serif',marginBottom:'10px'}}>
               Quando o excesso cai, o corpo responde.<br/>
-              Quando o corpo responde, a vida muda.
+              Quando o corpo responde, a mente transforma.<br/>
+              Quando a mente transforma, a vida muda.
             </p>
-            <div style={{textAlign:'center',marginTop:'12px'}}>
-              <span style={{fontSize:'12px',color:'#7C8B6F',fontWeight:'600',letterSpacing:'2px',fontFamily:'Lato,sans-serif'}}>— Vivianne Saraiva</span>
+            <div style={{textAlign:'center',marginTop:'14px'}}>
+              <span style={{fontSize:'13px',color:'#7C8B6F',fontWeight:'600',letterSpacing:'2px',fontFamily:'Lato,sans-serif'}}>— Vivianne Saraiva</span>
             </div>
           </div>
 
           <h3 style={{fontSize:'19px',fontWeight:'600',color:'#3A3025',marginBottom:'12px',fontFamily:'Cormorant Garamond,serif'}}>🎯 Os Teus Princípios de Sucesso</h3>
 
-          <div style={{display:'grid',gridTemplateColumns:'1fr',gap:'10px'}}>
-            <div style={{background:'#F5F0E8',borderLeft:'4px solid #7C8B6F',borderRadius:'10px',padding:'14px'}}>
-              <p style={{fontSize:'14px',fontWeight:'600',color:'#3A3025',marginBottom:'4px',fontFamily:'Lato,sans-serif'}}>1. Progresso, não perfeição</p>
-              <p style={{fontSize:'12px',color:'#6B5C4C',lineHeight:'1.6',fontFamily:'Georgia,serif'}}>
+          <div style={{display:'grid',gridTemplateColumns:'1fr',gap:'11px'}}>
+            <div style={{background:'#F5F0E8',borderLeft:'4px solid #7C8B6F',borderRadius:'10px',padding:'13px'}}>
+              <p style={{fontSize:'14px',fontWeight:'600',color:'#3A3025',marginBottom:'5px',fontFamily:'Lato,sans-serif'}}>1. Progresso, não perfeição</p>
+              <p style={{fontSize:'12px',color:'#6B5C4C',lineHeight:'1.5',fontFamily:'Georgia,serif'}}>
                 Um dia fora do plano não destrói 6 dias de consistência. Volta ao plano na refeição seguinte.
               </p>
             </div>
 
-            <div style={{background:'#F5F0E8',borderLeft:'4px solid #7C8B6F',borderRadius:'10px',padding:'14px'}}>
-              <p style={{fontSize:'14px',fontWeight:'600',color:'#3A3025',marginBottom:'4px',fontFamily:'Lato,sans-serif'}}>2. O teu corpo é único</p>
-              <p style={{fontSize:'12px',color:'#6B5C4C',lineHeight:'1.6',fontFamily:'Georgia,serif'}}>
+            <div style={{background:'#F5F0E8',borderLeft:'4px solid #7C8B6F',borderRadius:'10px',padding:'13px'}}>
+              <p style={{fontSize:'14px',fontWeight:'600',color:'#3A3025',marginBottom:'5px',fontFamily:'Lato,sans-serif'}}>2. O teu corpo é único</p>
+              <p style={{fontSize:'12px',color:'#6B5C4C',lineHeight:'1.5',fontFamily:'Georgia,serif'}}>
                 Este plano foi feito para TI. Não te compares com outras. A tua jornada é tua.
               </p>
             </div>
 
-            <div style={{background:'#F5F0E8',borderLeft:'4px solid #7C8B6F',borderRadius:'10px',padding:'14px'}}>
-              <p style={{fontSize:'14px',fontWeight:'600',color:'#3A3025',marginBottom:'4px',fontFamily:'Lato,sans-serif'}}>3. Consistência > Intensidade</p>
-              <p style={{fontSize:'12px',color:'#6B5C4C',lineHeight:'1.6',fontFamily:'Georgia,serif'}}>
+            <div style={{background:'#F5F0E8',borderLeft:'4px solid #7C8B6F',borderRadius:'10px',padding:'13px'}}>
+              <p style={{fontSize:'14px',fontWeight:'600',color:'#3A3025',marginBottom:'5px',fontFamily:'Lato,sans-serif'}}>3. Consistência > Intensidade</p>
+              <p style={{fontSize:'12px',color:'#6B5C4C',lineHeight:'1.5',fontFamily:'Georgia,serif'}}>
                 Melhor seguir 80% do plano durante 12 semanas do que 100% durante 2 semanas e desistir.
               </p>
             </div>
 
-            <div style={{background:'#F5F0E8',borderLeft:'4px solid #7C8B6F',borderRadius:'10px',padding:'14px'}}>
-              <p style={{fontSize:'14px',fontWeight:'600',color:'#3A3025',marginBottom:'4px',fontFamily:'Lato,sans-serif'}}>4. Celebra vitórias não-balança</p>
-              <p style={{fontSize:'12px',color:'#6B5C4C',lineHeight:'1.6',fontFamily:'Georgia,serif'}}>
+            <div style={{background:'#F5F0E8',borderLeft:'4px solid #7C8B6F',borderRadius:'10px',padding:'13px'}}>
+              <p style={{fontSize:'14px',fontWeight:'600',color:'#3A3025',marginBottom:'5px',fontFamily:'Lato,sans-serif'}}>4. Fome não é falha</p>
+              <p style={{fontSize:'12px',color:'#6B5C4C',lineHeight:'1.5',fontFamily:'Georgia,serif'}}>
+                Se tens fome verdadeira, come mais proteína e legumes. Não passes fome — isso desacelera o metabolismo.
+              </p>
+            </div>
+
+            <div style={{background:'#F5F0E8',borderLeft:'4px solid #7C8B6F',borderRadius:'10px',padding:'13px'}}>
+              <p style={{fontSize:'14px',fontWeight:'600',color:'#3A3025',marginBottom:'5px',fontFamily:'Lato,sans-serif'}}>5. Celebra vitórias não-balança</p>
+              <p style={{fontSize:'12px',color:'#6B5C4C',lineHeight:'1.5',fontFamily:'Georgia,serif'}}>
                 Dormes melhor? Mais energia? Roupas mais folgadas? Pele mais bonita? ISSO é transformação!
+              </p>
+            </div>
+
+            <div style={{background:'#F5F0E8',borderLeft:'4px solid #7C8B6F',borderRadius:'10px',padding:'13px'}}>
+              <p style={{fontSize:'14px',fontWeight:'600',color:'#3A3025',marginBottom:'5px',fontFamily:'Lato,sans-serif'}}>6. Não estás sozinha</p>
+              <p style={{fontSize:'12px',color:'#6B5C4C',lineHeight:'1.5',fontFamily:'Georgia,serif'}}>
+                Usa o chat. Pede ajuda. Partilha dúvidas. Coaching é parceria, não monólogo.
               </p>
             </div>
           </div>
 
-          <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',borderRadius:'12px',padding:'14px',marginTop:'14px',textAlign:'center',border:'2px solid #66BB6A'}}>
-            <p style={{fontSize:'16px',fontWeight:'700',color:'#2E7D32',marginBottom:'6px',fontFamily:'Cormorant Garamond,serif'}}>
+          <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',borderRadius:'14px',padding:'14px',marginTop:'16px',textAlign:'center',border:'2px solid #66BB6A'}}>
+            <p style={{fontSize:'16px',fontWeight:'700',color:'#2E7D32',marginBottom:'8px',fontFamily:'Cormorant Garamond,serif'}}>
               🌱 És Capaz. Eu Acredito. Agora Acredita Tu.
             </p>
             <p style={{fontSize:'13px',color:'#3A3025',lineHeight:'1.6',fontFamily:'Georgia,serif'}}>
-              Cada refeição é uma oportunidade nova. Vamos juntas. 💚
+              Cada refeição é uma oportunidade nova. Cada dia é um recomeço. Vamos juntas. 💚
             </p>
           </div>
 
