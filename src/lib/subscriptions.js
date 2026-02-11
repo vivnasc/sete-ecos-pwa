@@ -186,9 +186,9 @@ export const checkVitalisAccess = async (userId) => {
       }
     }
 
-    // Pagamento pendente - permitir acesso temporario
+    // Pagamento pendente - BLOQUEAR acesso até aprovação
     if (status === SUBSCRIPTION_STATUS.PENDING) {
-      return { hasAccess: true, status, reason: 'pending_payment' };
+      return { hasAccess: false, status, reason: 'pending_payment' };
     }
 
     // Sem acesso
