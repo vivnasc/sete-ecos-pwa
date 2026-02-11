@@ -22,37 +22,28 @@
       "memory": 1024,
       "maxDuration": 60
     },
-    "api/tarefas-agendadas.js": {
-      "maxDuration": 30
-    },
-    "api/email-sequencia.js": {
-      "maxDuration": 30
-    },
-    "api/trial-expiring-emails.js": {
-      "maxDuration": 30
-    },
-    "api/instagram-publish.js": {
+    "api/cron.js": {
       "maxDuration": 60
     },
-    "api/instagram-schedule.js": {
+    "api/instagram-publish.js": {
       "maxDuration": 60
     }
   },
   "crons": [
     {
-      "path": "/api/trial-expiring-emails",
+      "path": "/api/cron?task=trial-emails",
       "schedule": "0 8 * * *"
     },
     {
-      "path": "/api/tarefas-agendadas",
+      "path": "/api/cron?task=tarefas",
       "schedule": "0 9 * * *"
     },
     {
-      "path": "/api/email-sequencia",
+      "path": "/api/cron?task=email-sequencia",
       "schedule": "0 10 * * *"
     },
     {
-      "path": "/api/instagram-schedule",
+      "path": "/api/cron?task=instagram",
       "schedule": "0 7 * * *"
     }
   ]
