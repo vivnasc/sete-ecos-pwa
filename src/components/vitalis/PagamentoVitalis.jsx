@@ -415,6 +415,14 @@ const PagamentoVitalis = () => {
 
     setProcessing(true);
     try {
+      console.log('🔄 Enviando pagamento manual:', {
+        userId,
+        method: manualPaymentType,
+        reference: manualReference,
+        amount,
+        planId: selectedPlan
+      });
+
       const result = await registerPendingPayment(userId, {
         method: manualPaymentType === 'mpesa' ? 'M-Pesa' :
                 manualPaymentType === 'transfer' ? 'Transferência Bancária' :
@@ -424,6 +432,8 @@ const PagamentoVitalis = () => {
         currency: 'MZN',
         planId: selectedPlan.toLowerCase()
       });
+
+      console.log('📊 Resultado do registerPendingPayment:', result);
 
       if (result.success) {
         setShowManualSuccess(true);
@@ -445,11 +455,20 @@ const PagamentoVitalis = () => {
         }).catch(console.error);
 
       } else {
-        setMessage({ type: 'error', text: 'Erro ao registar pagamento. Tenta novamente.' });
+        // 🛡️ Mostrar erro detalhado
+        const errorMsg = result.error?.message || result.error || 'Erro desconhecido';
+        console.error('❌ Erro ao registar pagamento:', errorMsg);
+        setMessage({
+          type: 'error',
+          text: `Erro: ${errorMsg}`
+        });
       }
     } catch (error) {
-      console.error('Erro ao processar pagamento manual:', error);
-      setMessage({ type: 'error', text: 'Erro ao processar. Contacta o suporte.' });
+      console.error('❌ Erro ao processar pagamento manual:', error);
+      setMessage({
+        type: 'error',
+        text: `Erro: ${error.message || 'Erro inesperado'}`
+      });
     } finally {
       setProcessing(false);
     }
