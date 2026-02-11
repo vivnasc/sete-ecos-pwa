@@ -75,6 +75,10 @@ export default function PlanoHTML() {
         porcoes_legumes: plano?.porcoes_legumes || porcoesFromPlan.legumes || 4,
         porcoes_hidratos: plano?.porcoes_hidratos || porcoesFromPlan.hidratos || Math.round(carboidratosG / 30),
         porcoes_gordura: plano?.porcoes_gordura || porcoesFromPlan.gordura || Math.round(gorduraG / 10),
+        // Tamanhos personalizados das mãos
+        tamanho_palma: plano?.tamanho_palma_g || 20,
+        tamanho_mao: plano?.tamanho_mao_g || 25,
+        tamanho_polegar: plano?.tamanho_polegar_g || 7,
         data_inicio: plano?.data_inicio_fase || plano?.created_at || new Date().toISOString(),
         abordagem: plano?.abordagem || 'equilibrado'
       });
@@ -289,8 +293,8 @@ export default function PlanoHTML() {
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'14px'}}>
           {/* Proteína */}
           <div style={{background:'linear-gradient(135deg, #FFEBEE, #FFCDD2)',border:'3px solid #E57373',borderRadius:'18px',padding:'18px'}}>
-            <div style={{fontWeight:'700',color:'#C62828',marginBottom:'4px',fontSize:'16px'}}>🫲 PALMA = Proteína</div>
-            <div style={{fontSize:'11px',color:'#C62828',marginBottom:'10px',fontStyle:'italic'}}>Tamanho e espessura da tua palma (sem dedos) ≈ 100g</div>
+            <div style={{fontWeight:'700',color:'#C62828',marginBottom:'4px',fontSize:'16px'}}>🫲 A Palma — PROTEÍNA</div>
+            <div style={{color:'#C62828',fontWeight:'700',fontSize:'18px',marginBottom:'10px'}}>~{dados.tamanho_palma}g por palma</div>
             <div style={{fontSize:'12px',color:'#4A4035',lineHeight:'2'}}>
               🍗 1 peito de frango (~100g)<br/>
               🐟 1 lata de atum escorrida<br/>
@@ -320,8 +324,8 @@ export default function PlanoHTML() {
 
           {/* Hidratos */}
           <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',border:'3px solid #64B5F6',borderRadius:'18px',padding:'18px'}}>
-            <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'4px',fontSize:'16px'}}>🤲 MÃO CONCHA = Hidratos</div>
-            <div style={{fontSize:'11px',color:'#1565C0',marginBottom:'10px',fontStyle:'italic'}}>O que cabe na tua mão em concha ≈ 30g de hidratos</div>
+            <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'4px',fontSize:'16px'}}>🤲 Mão Concha — HIDRATOS</div>
+            <div style={{color:'#1565C0',fontWeight:'700',fontSize:'18px',marginBottom:'10px'}}>~{dados.tamanho_mao}g carbs por mão</div>
             <div style={{fontSize:'12px',color:'#4A4035',lineHeight:'2'}}>
               🍚 3 col. sopa de arroz cozido<br/>
               🥔 1 batata pequena ou ½ batata doce<br/>
@@ -335,8 +339,8 @@ export default function PlanoHTML() {
 
           {/* Gordura */}
           <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'3px solid #FFD54F',borderRadius:'18px',padding:'18px'}}>
-            <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'4px',fontSize:'16px'}}>👍 POLEGAR = Gordura</div>
-            <div style={{fontSize:'11px',color:'#F57F17',marginBottom:'10px',fontStyle:'italic'}}>Tamanho da ponta do teu polegar ≈ 10g de gordura</div>
+            <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'4px',fontSize:'16px'}}>👍 O Polegar — GORDURA</div>
+            <div style={{color:'#F57F17',fontWeight:'700',fontSize:'18px',marginBottom:'10px'}}>~{dados.tamanho_polegar}g por polegar</div>
             <div style={{fontSize:'12px',color:'#4A4035',lineHeight:'2'}}>
               🫒 1 col. sopa de azeite<br/>
               🥑 ¼ de abacate<br/>
@@ -434,6 +438,9 @@ export default function PlanoHTML() {
           <div style={{color:'rgba(255,255,255,0.95)',fontSize:'12px',textAlign:'right'}}><div style={{marginBottom:'3px'}}>vivianne.saraiva@outlook.com</div><div style={{opacity:0.85}}>WhatsApp: +258 85 100 6473</div></div>
         </div>
       </div>
+
+      {/* Indicador para Puppeteer */}
+      <div id="pdf-ready" style={{display:'none'}} aria-hidden="true"></div>
     </>
   );
 }
