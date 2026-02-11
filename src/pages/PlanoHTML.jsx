@@ -108,28 +108,63 @@ export default function PlanoHTML() {
         porcoesFromPlan = receitasConfig['porções_por_refeicao'] || receitasConfig.porcoes_por_refeicao || {};
       } catch (e) { /* ignore */ }
 
-      const proteinaG = plano?.proteina_g || 120;
-      const carboidratosG = plano?.carboidratos_g || 100;
-      const gorduraG = plano?.gordura_g || 60;
+      const abordagem = plano?.abordagem || 'equilibrado';
+      const caloriasAlvo = plano?.calorias_diarias || plano?.calorias_alvo || 1500;
+
+      // LÓGICA CORRETA: Se o plano tem macros calculados (do planoGenerator), usa-os!
+      // Caso contrário, calcula baseado nas calorias e abordagem
+      let proteinaG, carboidratosG, gorduraG;
+
+      if (plano?.proteina_g && plano?.carboidratos_g && plano?.gordura_g) {
+        // Plano tem macros já calculados (do planoGenerator) - USAR ESSES!
+        proteinaG = plano.proteina_g;
+        carboidratosG = plano.carboidratos_g;
+        gorduraG = plano.gordura_g;
+      } else {
+        // Fallback: Calcular macros baseado nas calorias e abordagem
+        if (abordagem === 'keto_if') {
+          // Keto: 70% gordura, 25% proteína, 5% carbs
+          proteinaG = Math.round((caloriasAlvo * 0.25) / 4);
+          carboidratosG = Math.round((caloriasAlvo * 0.05) / 4);
+          gorduraG = Math.round((caloriasAlvo * 0.70) / 9);
+        } else if (abordagem === 'low_carb') {
+          // Low-carb: 40% proteína, 30% carbs, 30% gordura
+          proteinaG = Math.round((caloriasAlvo * 0.40) / 4);
+          carboidratosG = Math.round((caloriasAlvo * 0.30) / 4);
+          gorduraG = Math.round((caloriasAlvo * 0.30) / 9);
+        } else {
+          // Equilibrado: 30% proteína, 40% carbs, 30% gordura
+          proteinaG = Math.round((caloriasAlvo * 0.30) / 4);
+          carboidratosG = Math.round((caloriasAlvo * 0.40) / 4);
+          gorduraG = Math.round((caloriasAlvo * 0.30) / 9);
+        }
+      }
+
+      // Calcular porções visuais baseado nos macros
+      // 1 palma = 25g proteína, 1 mão = 30g hidratos, 1 polegar = 10g gordura
+      const porcoesProteina = plano?.porcoes_proteina || Math.round(proteinaG / 25);
+      const porcoesHidratos = plano?.porcoes_hidratos || Math.round(carboidratosG / 30);
+      const porcoesGordura = plano?.porcoes_gordura || Math.round(gorduraG / 10);
+      const porcoesLegumes = plano?.porcoes_legumes || porcoesFromPlan.legumes || 4;
 
       setDados({
         nome: intake?.nome || 'Cliente',
         peso_actual: plano?.peso_actual || cliente?.peso_actual || 70,
         peso_meta: plano?.peso_meta || cliente?.peso_meta || 60,
         fase: plano?.fase || 'inducao',
-        calorias: plano?.calorias_diarias || plano?.calorias_alvo || 1500,
+        calorias: caloriasAlvo,
         proteina_g: proteinaG,
         carboidratos_g: carboidratosG,
         gordura_g: gorduraG,
-        porcoes_proteina: plano?.porcoes_proteina || porcoesFromPlan.proteina || Math.round(proteinaG / 25),
-        porcoes_legumes: plano?.porcoes_legumes || porcoesFromPlan.legumes || 4,
-        porcoes_hidratos: plano?.porcoes_hidratos || porcoesFromPlan.hidratos || Math.round(carboidratosG / 30),
-        porcoes_gordura: plano?.porcoes_gordura || porcoesFromPlan.gordura || Math.round(gorduraG / 10),
+        porcoes_proteina: porcoesProteina,
+        porcoes_legumes: porcoesLegumes,
+        porcoes_hidratos: porcoesHidratos,
+        porcoes_gordura: porcoesGordura,
         tamanho_palma: plano?.tamanho_palma_g || 20,
         tamanho_mao: plano?.tamanho_mao_g || 25,
         tamanho_polegar: plano?.tamanho_polegar_g || 7,
         data_inicio: plano?.data_inicio_fase || plano?.created_at || new Date().toISOString(),
-        abordagem: plano?.abordagem || 'equilibrado'
+        abordagem: abordagem
       });
     } catch (err) {
       console.error(err);
