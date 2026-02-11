@@ -248,38 +248,21 @@ export const startTrial = async (userId) => {
     return { success: false, error: 'userId em falta' };
   }
   try {
-    // Verificar se já existe registo
-    const { data: existingClient } = await supabase
-      .from('vitalis_clients')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
-
+    // Usar UPSERT para evitar race conditions
     const trialData = {
+      user_id: userId,
       subscription_status: SUBSCRIPTION_STATUS.TRIAL,
       trial_started: new Date().toISOString(),
-      subscription_updated: new Date().toISOString()
+      subscription_updated: new Date().toISOString(),
+      status: 'novo',
+      created_at: new Date().toISOString()
     };
 
-    if (existingClient) {
-      // Atualizar registo existente
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .update(trialData)
-        .eq('user_id', userId);
-      if (error) throw error;
-    } else {
-      // Criar novo registo
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .insert({
-          user_id: userId,
-          ...trialData,
-          status: 'novo',
-          created_at: new Date().toISOString()
-        });
-      if (error) throw error;
-    }
+    const { error } = await supabase
+      .from('vitalis_clients')
+      .upsert(trialData, { onConflict: 'user_id' });
+
+    if (error) throw error;
 
     await logSubscriptionChange(userId, SUBSCRIPTION_STATUS.TRIAL, { action: 'trial_started' });
 
@@ -295,37 +278,20 @@ export const startTrial = async (userId) => {
  */
 export const setAsTester = async (userId, notes = '') => {
   try {
-    // Verificar se já existe registo
-    const { data: existingClient } = await supabase
-      .from('vitalis_clients')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
-
+    // Usar UPSERT (igual aos coaches) para evitar race conditions
     const testerData = {
+      user_id: userId,
       subscription_status: SUBSCRIPTION_STATUS.TESTER,
-      subscription_updated: new Date().toISOString()
+      subscription_updated: new Date().toISOString(),
+      status: 'novo',
+      created_at: new Date().toISOString()
     };
 
-    if (existingClient) {
-      // Atualizar registo existente
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .update(testerData)
-        .eq('user_id', userId);
-      if (error) throw error;
-    } else {
-      // Criar novo registo
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .insert({
-          user_id: userId,
-          ...testerData,
-          status: 'novo',
-          created_at: new Date().toISOString()
-        });
-      if (error) throw error;
-    }
+    const { error } = await supabase
+      .from('vitalis_clients')
+      .upsert(testerData, { onConflict: 'user_id' });
+
+    if (error) throw error;
 
     await logSubscriptionChange(userId, SUBSCRIPTION_STATUS.TESTER, { action: 'set_as_tester', notes });
 
@@ -391,14 +357,10 @@ export const activateSubscription = async (userId, paymentDetails) => {
     const expiresAt = new Date();
     expiresAt.setMonth(expiresAt.getMonth() + plan.duration);
 
-    // Verificar se ja existe um registo vitalis_clients
-    const { data: existingClient } = await supabase
-      .from('vitalis_clients')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
-
+    // Usar UPSERT para evitar race conditions
     const subscriptionData = {
+      user_id: userId,
+      status: 'activo',
       subscription_status: SUBSCRIPTION_STATUS.ACTIVE,
       subscription_expires: expiresAt.toISOString(),
       subscription_plan: plan.id,
@@ -407,26 +369,15 @@ export const activateSubscription = async (userId, paymentDetails) => {
       payment_amount: paymentDetails.amount,
       payment_currency: paymentDetails.currency || 'USD',
       payer_email: paymentDetails.payerEmail,
-      subscription_updated: new Date().toISOString()
+      subscription_updated: new Date().toISOString(),
+      created_at: new Date().toISOString()
     };
 
-    if (existingClient) {
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .update(subscriptionData)
-        .eq('user_id', userId);
-      if (error) throw error;
-    } else {
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .insert({
-          user_id: userId,
-          status: 'activo',
-          ...subscriptionData,
-          created_at: new Date().toISOString()
-        });
-      if (error) throw error;
-    }
+    const { error } = await supabase
+      .from('vitalis_clients')
+      .upsert(subscriptionData, { onConflict: 'user_id' });
+
+    if (error) throw error;
 
     await logSubscriptionChange(userId, SUBSCRIPTION_STATUS.ACTIVE, {
       action: 'payment_automatic',
@@ -464,48 +415,25 @@ export const registerPendingPayment = async (userId, paymentDetails) => {
   try {
     const plan = SUBSCRIPTION_PLANS[paymentDetails.planId?.toUpperCase()] || SUBSCRIPTION_PLANS.MONTHLY;
 
-    // Primeiro, verificar se ja existe um registo vitalis_clients
-    const { data: existingClient } = await supabase
+    // Usar UPSERT para evitar race conditions
+    const pendingData = {
+      user_id: userId,
+      status: 'activo',
+      subscription_status: SUBSCRIPTION_STATUS.PENDING,
+      subscription_plan: plan.id,
+      payment_method: paymentDetails.method,
+      payment_reference: paymentDetails.reference,
+      payment_amount: paymentDetails.amount,
+      payment_currency: paymentDetails.currency || 'MZN',
+      subscription_updated: new Date().toISOString(),
+      created_at: new Date().toISOString()
+    };
+
+    const { error } = await supabase
       .from('vitalis_clients')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
+      .upsert(pendingData, { onConflict: 'user_id' });
 
-    if (existingClient) {
-      // Atualizar registo existente
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .update({
-          subscription_status: SUBSCRIPTION_STATUS.PENDING,
-          subscription_plan: plan.id,
-          payment_method: paymentDetails.method,
-          payment_reference: paymentDetails.reference,
-          payment_amount: paymentDetails.amount,
-          payment_currency: paymentDetails.currency || 'MZN',
-          subscription_updated: new Date().toISOString()
-        })
-        .eq('user_id', userId);
-
-      if (error) throw error;
-    } else {
-      // Criar novo registo com pagamento pendente
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .insert({
-          user_id: userId,
-          status: 'activo',
-          subscription_status: SUBSCRIPTION_STATUS.PENDING,
-          subscription_plan: plan.id,
-          payment_method: paymentDetails.method,
-          payment_reference: paymentDetails.reference,
-          payment_amount: paymentDetails.amount,
-          payment_currency: paymentDetails.currency || 'MZN',
-          subscription_updated: new Date().toISOString(),
-          created_at: new Date().toISOString()
-        });
-
-      if (error) throw error;
-    }
+    if (error) throw error;
 
     // Criar alerta para a coach (ignore errors - constraint may not allow this tipo_alerta)
     try {
