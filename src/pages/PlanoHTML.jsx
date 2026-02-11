@@ -524,6 +524,643 @@ export default function PlanoHTML() {
         </div>
       </div>
 
+      {/* PÁGINA 5 - PROTEÍNAS */}
+      <div className="page">
+        <div className="page-content">
+          <PageHeader />
+
+          <h2 style={{fontSize:'30px',fontWeight:'600',color:'#3A3025',marginBottom:'16px',fontFamily:'Cormorant Garamond,serif'}}>🥩 Proteínas — O Pilar da Transformação</h2>
+          <p style={{fontSize:'15px',color:'#6B5C4C',marginBottom:'24px',fontFamily:'Georgia,serif',lineHeight:'1.8'}}>
+            A proteína constrói músculo, acelera o metabolismo, sacia a fome e mantém-te forte. <strong>É o macronutriente mais importante</strong> na tua jornada. Prioriza sempre!
+          </p>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'18px',marginBottom:'18px'}}>
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #FFF5F5)',border:'1px solid #FFCDD2',borderLeft:'5px solid #C62828',borderRadius:'16px',padding:'26px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#C62828',marginBottom:'18px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                <span style={{fontSize:'24px'}}>🥩</span> Carnes Vermelhas (magras)
+              </div>
+              <p style={{fontSize:'14px',lineHeight:'2.4',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Bife de vaca • Carne moída magra (5% gordura) • Lombo de porco • Cabrito • Borrego • Fígado de boi (rico em ferro) • Rins • Coração
+              </p>
+              <div style={{background:'#FFF0F0',padding:'12px',borderRadius:'10px',marginTop:'14px',fontSize:'12px',color:'#6B5C4C',fontFamily:'Georgia,serif'}}>
+                💡 Prefere cortes magros. Retira gordura visível antes de cozinhar.
+              </div>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #FFFEF5)',border:'1px solid #FFE0B2',borderLeft:'5px solid #F57C00',borderRadius:'16px',padding:'26px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#F57C00',marginBottom:'18px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                <span style={{fontSize:'24px'}}>🍗</span> Aves
+              </div>
+              <p style={{fontSize:'14px',lineHeight:'2.4',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Peito de frango • Coxa de frango (sem pele) • Peito de peru • Asa de frango • Pato (sem pele) • Codorniz • Peru moído
+              </p>
+              <div style={{background:'#FFF8F0',padding:'12px',borderRadius:'10px',marginTop:'14px',fontSize:'12px',color:'#6B5C4C',fontFamily:'Georgia,serif'}}>
+                💡 Retira sempre a pele — tem muita gordura saturada.
+              </div>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F0F8FF)',border:'1px solid #BBDEFB',borderLeft:'5px solid #1976D2',borderRadius:'16px',padding:'26px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#1976D2',marginBottom:'18px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                <span style={{fontSize:'24px'}}>🐟</span> Peixes & Mariscos
+              </div>
+              <p style={{fontSize:'14px',lineHeight:'2.4',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Salmão (Ómega-3) • Atum fresco/lata • Sardinha • Carapau • Pescada • Tilápia • Camarão • Lulas • Polvo • Mexilhão • Bacalhau
+              </p>
+              <div style={{background:'#F0F8FF',padding:'12px',borderRadius:'10px',marginTop:'14px',fontSize:'12px',color:'#6B5C4C',fontFamily:'Georgia,serif'}}>
+                💡 Peixes gordos (salmão, sardinha) 2-3x/semana para Ómega-3.
+              </div>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #FFFBF0)',border:'1px solid #FFF9C4',borderLeft:'5px solid #F9A825',borderRadius:'16px',padding:'26px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#F9A825',marginBottom:'18px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                <span style={{fontSize:'24px'}}>🥚</span> Ovos & Lacticínios
+              </div>
+              <p style={{fontSize:'14px',lineHeight:'2.4',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Ovos inteiros (não temas a gema!) • Claras de ovo • Queijo fresco magro • Iogurte grego natural • Requeijão • Queijo cottage • Leite magro
+              </p>
+              <div style={{background:'#FFFEF5',padding:'12px',borderRadius:'10px',marginTop:'14px',fontSize:'12px',color:'#6B5C4C',fontFamily:'Georgia,serif'}}>
+                💡 Ovos inteiros SIM — a gema tem vitaminas essenciais!
+              </div>
+            </div>
+          </div>
+
+          <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',borderRadius:'16px',padding:'24px',marginTop:'18px',border:'2px solid #66BB6A'}}>
+            <h3 style={{fontSize:'18px',fontWeight:'700',color:'#2E7D32',marginBottom:'14px',fontFamily:'Cormorant Garamond,serif'}}>✨ Proteínas Vegetais (para variar)</h3>
+            <p style={{fontSize:'14px',lineHeight:'2.2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+              Tofu • Tempeh • Edamame • Grão-de-bico • Lentilhas • Feijão preto • Quinoa • Sementes de cânhamo • Proteína de ervilha
+            </p>
+            <p style={{fontSize:'12px',marginTop:'10px',color:'#2E7D32',fontStyle:'italic',fontFamily:'Georgia,serif'}}>
+              Nota: Combina com cereais para proteína completa (ex: arroz + feijão)
+            </p>
+          </div>
+
+          <PageFooter page={5} />
+        </div>
+      </div>
+
+      {/* PÁGINA 6 - HIDRATOS & GORDURAS */}
+      <div className="page">
+        <div className="page-content">
+          <PageHeader />
+
+          <h2 style={{fontSize:'30px',fontWeight:'600',color:'#3A3025',marginBottom:'10px',fontFamily:'Cormorant Garamond,serif'}}>🍚 Hidratos Inteligentes</h2>
+          <p style={{fontSize:'14px',color:'#6B5C4C',marginBottom:'20px',fontFamily:'Georgia,serif',lineHeight:'1.8'}}>
+            Hidratos não são inimigos — são <strong>combustível</strong>. A questão é <em>quando</em> e <em>quais</em>. Prioriza hidratos complexos e come-os perto do treino.
+          </p>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px',marginBottom:'20px'}}>
+            <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',border:'2px solid #64B5F6',borderRadius:'16px',padding:'22px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'14px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🥔 Tubérculos & Raízes</div>
+              <p style={{fontSize:'14px',lineHeight:'2.2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Batata-doce (favorita!) • Mandioca/Macaxeira • Inhame • Batata inglesa • Cenoura cozida
+              </p>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',border:'2px solid #64B5F6',borderRadius:'16px',padding:'22px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'14px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🌾 Grãos Integrais</div>
+              <p style={{fontSize:'14px',lineHeight:'2.2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Arroz integral • Quinoa • Aveia • Cuscuz integral • Massa integral • Pão integral de verdade
+              </p>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',border:'2px solid #64B5F6',borderRadius:'16px',padding:'22px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'14px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🍎 Frutas (baixo índice glicémico)</div>
+              <p style={{fontSize:'14px',lineHeight:'2.2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Frutos vermelhos • Maçã verde • Pera • Laranja • Toranja • Kiwi • Morango • Framboesa
+              </p>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',border:'2px solid #64B5F6',borderRadius:'16px',padding:'22px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'14px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🫘 Leguminosas</div>
+              <p style={{fontSize:'14px',lineHeight:'2.2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Grão-de-bico • Lentilhas • Feijão preto • Feijão vermelho • Ervilhas
+              </p>
+            </div>
+          </div>
+
+          <h2 style={{fontSize:'28px',fontWeight:'600',color:'#3A3025',marginTop:'24px',marginBottom:'10px',fontFamily:'Cormorant Garamond,serif'}}>🥑 Gorduras Saudáveis</h2>
+          <p style={{fontSize:'14px',color:'#6B5C4C',marginBottom:'18px',fontFamily:'Georgia,serif',lineHeight:'1.8'}}>
+            Gorduras boas <strong>saciam, nutrem o cérebro, regulam hormonas e absorvem vitaminas</strong>. Essenciais para saúde!
+          </p>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+            <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'2px solid #FFD54F',borderRadius:'16px',padding:'22px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'14px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🫒 Óleos & Manteigas</div>
+              <p style={{fontSize:'14px',lineHeight:'2.2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Azeite extra-virgem (o melhor!) • Óleo de coco • Óleo de abacate • Manteiga de vaca • Ghee (manteiga clarificada)
+              </p>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'2px solid #FFD54F',borderRadius:'16px',padding:'22px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'14px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🥜 Frutos Secos & Sementes</div>
+              <p style={{fontSize:'14px',lineHeight:'2.2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Amêndoas • Nozes (Ómega-3) • Cajus • Amendoins • Sementes de chia • Linhaça • Sementes de abóbora
+              </p>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'2px solid #FFD54F',borderRadius:'16px',padding:'22px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'14px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🥑 Outras Fontes</div>
+              <p style={{fontSize:'14px',lineHeight:'2.2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Abacate • Azeitonas • Coco • Chocolate negro (+75%) • Gema de ovo • Peixes gordos (salmão, sardinha)
+              </p>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'2px solid #FFD54F',borderRadius:'16px',padding:'22px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'14px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🥜 Manteigas de Frutos Secos</div>
+              <p style={{fontSize:'14px',lineHeight:'2.2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Manteiga de amendoim (100% amendoim) • Manteiga de amêndoa • Manteiga de caju • Tahini (pasta de sésamo)
+              </p>
+            </div>
+          </div>
+
+          <PageFooter page={6} />
+        </div>
+      </div>
+
+      {/* PÁGINA 7 - VEGETAIS */}
+      <div className="page">
+        <div className="page-content">
+          <PageHeader />
+
+          <h2 style={{fontSize:'30px',fontWeight:'600',color:'#3A3025',marginBottom:'12px',fontFamily:'Cormorant Garamond,serif'}}>🥬 Vegetais — Come o Arco-Íris!</h2>
+          <p style={{fontSize:'15px',color:'#6B5C4C',marginBottom:'24px',textAlign:'center',fontFamily:'Georgia,serif',lineHeight:'1.9'}}>
+            Cada cor representa diferentes <strong>fitonutrientes, antioxidantes e vitaminas</strong>. Inclui <strong>pelo menos 3 cores por refeição</strong> e maximiza a nutrição!
+          </p>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px',marginBottom:'16px'}}>
+            <div style={{background:'linear-gradient(135deg, #F1F8E9, #DCEDC8)',border:'1px solid #C5D1BC',borderLeft:'6px solid #4CAF50',borderRadius:'16px',padding:'24px',boxShadow:'0 3px 14px rgba(76,175,80,0.15)'}}>
+              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'16px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                🟢 Verdes — Os Super-Heróis
+              </div>
+              <p style={{fontSize:'14px',lineHeight:'2.2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Espinafre • Couve • Brócolos • Alface • Rúcula • Pepino • Abobrinha/Courgette • Vagem • Ervilhas • Agrião
+              </p>
+              <div style={{background:'#F1F8E9',padding:'10px',borderRadius:'8px',marginTop:'12px',fontSize:'12px',color:'#2E7D32',fontFamily:'Georgia,serif'}}>
+                💚 Ricos em ferro, magnésio, vitamina K e fibra. Come SEM LIMITES!
+              </div>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFEBEE, #FFCDD2)',border:'1px solid #C5D1BC',borderLeft:'6px solid #F44336',borderRadius:'16px',padding:'24px',boxShadow:'0 3px 14px rgba(244,67,54,0.15)'}}>
+              <div style={{fontWeight:'700',color:'#C62828',marginBottom:'16px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                🔴 Vermelhos — Antioxidantes
+              </div>
+              <p style={{fontSize:'14px',lineHeight:'2.2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Tomate • Pimento vermelho • Beterraba • Rabanete • Cebola roxa • Repolho roxo
+              </p>
+              <div style={{background:'#FFEBEE',padding:'10px',borderRadius:'8px',marginTop:'12px',fontSize:'12px',color:'#C62828',fontFamily:'Georgia,serif'}}>
+                ❤️ Licopeno (tomate) protege o coração. Betalaínas (beterraba) desintoxicam.
+              </div>
+            </div>
+          </div>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px',marginBottom:'16px'}}>
+            <div style={{background:'linear-gradient(135deg, #FFF3E0, #FFE0B2)',border:'1px solid #C5D1BC',borderLeft:'6px solid #FF9800',borderRadius:'16px',padding:'24px',boxShadow:'0 3px 14px rgba(255,152,0,0.15)'}}>
+              <div style={{fontWeight:'700',color:'#E65100',marginBottom:'16px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                🟠 Laranjas — Vitamina A
+              </div>
+              <p style={{fontSize:'14px',lineHeight:'2.2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Cenoura • Abóbora • Pimento laranja • Batata-doce (também hidrato!)
+              </p>
+              <div style={{background:'#FFF3E0',padding:'10px',borderRadius:'8px',marginTop:'12px',fontSize:'12px',color:'#E65100',fontFamily:'Georgia,serif'}}>
+                🧡 Beta-caroteno para visão, pele e imunidade.
+              </div>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #F3E5F5, #E1BEE7)',border:'1px solid #C5D1BC',borderLeft:'6px solid #9C27B0',borderRadius:'16px',padding:'24px',boxShadow:'0 3px 14px rgba(156,39,176,0.15)'}}>
+              <div style={{fontWeight:'700',color:'#6A1B9A',marginBottom:'16px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                🟣 Roxos — Anti-inflamatórios
+              </div>
+              <p style={{fontSize:'14px',lineHeight:'2.2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Beringela • Couve roxa • Cebola roxa • Beterraba
+              </p>
+              <div style={{background:'#F3E5F5',padding:'10px',borderRadius:'8px',marginTop:'12px',fontSize:'12px',color:'#6A1B9A',fontFamily:'Georgia,serif'}}>
+                💜 Antocianinas combatem inflamação e envelhecimento.
+              </div>
+            </div>
+          </div>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+            <div style={{background:'linear-gradient(135deg, #FAFAFA, #F5F5F5)',border:'1px solid #C5D1BC',borderLeft:'6px solid #9E9E9E',borderRadius:'16px',padding:'24px',boxShadow:'0 3px 14px rgba(158,158,158,0.15)'}}>
+              <div style={{fontWeight:'700',color:'#616161',marginBottom:'16px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                ⚪ Brancos — Imunidade
+              </div>
+              <p style={{fontSize:'14px',lineHeight:'2.2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Couve-flor • Cogumelos • Alho • Cebola • Nabo • Alho-francês
+              </p>
+              <div style={{background:'#FAFAFA',padding:'10px',borderRadius:'8px',marginTop:'12px',fontSize:'12px',color:'#616161',fontFamily:'Georgia,serif'}}>
+                🤍 Alicina (alho/cebola) reforça sistema imunitário.
+              </div>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFF9C4, #FFF59D)',border:'1px solid #C5D1BC',borderLeft:'6px solid #FBC02D',borderRadius:'16px',padding:'24px',boxShadow:'0 3px 14px rgba(251,192,45,0.15)'}}>
+              <div style={{fontWeight:'700',color:'#F57F00',marginBottom:'16px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                🟡 Amarelos — Vitamina C
+              </div>
+              <p style={{fontSize:'14px',lineHeight:'2.2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Pimento amarelo • Abóbora amarela • Milho (com moderação)
+              </p>
+              <div style={{background:'#FFF9C4',padding:'10px',borderRadius:'8px',marginTop:'12px',fontSize:'12px',color:'#F57F00',fontFamily:'Georgia,serif'}}>
+                💛 Vitamina C para colagénio e sistema imunitário.
+              </div>
+            </div>
+          </div>
+
+          <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',borderRadius:'16px',padding:'20px',marginTop:'18px',textAlign:'center',border:'2px solid #66BB6A'}}>
+            <p style={{fontSize:'15px',fontWeight:'600',color:'#2E7D32',fontFamily:'Cormorant Garamond,serif',marginBottom:'8px'}}>🎯 META DIÁRIA</p>
+            <p style={{fontSize:'14px',color:'#3A3025',lineHeight:'1.9',fontFamily:'Georgia,serif'}}>
+              Mínimo <strong>{dados.porcoes_legumes} punhos</strong> por dia. <strong>Máximo? Não há!</strong> Come vegetais à vontade em TODAS as refeições.
+            </p>
+          </div>
+
+          <PageFooter page={7} />
+        </div>
+      </div>
+
+      {/* PÁGINA 8 - LISTA DE COMPRAS */}
+      <div className="page">
+        <div className="page-content">
+          <PageHeader />
+
+          <h2 style={{fontSize:'30px',fontWeight:'600',color:'#3A3025',marginBottom:'12px',fontFamily:'Cormorant Garamond,serif'}}>🛒 Lista de Compras Semanal</h2>
+          <p style={{fontSize:'14px',color:'#6B5C4C',marginBottom:'22px',fontFamily:'Georgia,serif',lineHeight:'1.8'}}>
+            Imprime esta página e leva ao supermercado! <strong>Compra fresco</strong> sempre que possível. Quanto menos embalagens, melhor.
+          </p>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'18px'}}>
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #FFF5F5)',border:'2px solid #E57373',borderRadius:'16px',padding:'24px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#C62828',marginBottom:'20px',fontSize:'18px',borderBottom:'3px solid #E57373',paddingBottom:'12px',fontFamily:'Cormorant Garamond,serif'}}>
+                🥩 Proteínas
+              </div>
+              <div style={{fontSize:'14px',lineHeight:'2.8',fontFamily:'Georgia,serif'}}>
+                ☐ Peito de frango (1kg)<br/>
+                ☐ Ovos frescos (2 dúzias)<br/>
+                ☐ Peixe fresco (500-700g)<br/>
+                ☐ Carne moída magra (500g)<br/>
+                ☐ Atum em lata (3-4 latas)<br/>
+                ☐ Iogurte grego natural (4 unid.)<br/>
+                ☐ Queijo fresco magro (200g)
+              </div>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F1F8E9)',border:'2px solid #81C784',borderRadius:'16px',padding:'24px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'20px',fontSize:'18px',borderBottom:'3px solid #81C784',paddingBottom:'12px',fontFamily:'Cormorant Garamond,serif'}}>
+                🥬 Vegetais (cores variadas!)
+              </div>
+              <div style={{fontSize:'14px',lineHeight:'2.8',fontFamily:'Georgia,serif'}}>
+                ☐ Espinafre/Couve fresca<br/>
+                ☐ Brócolos (2 cabeças)<br/>
+                ☐ Tomate (1kg)<br/>
+                ☐ Pepino (3-4 unid.)<br/>
+                ☐ Pimentos (mix de cores)<br/>
+                ☐ Cebola e Alho<br/>
+                ☐ Cenoura (500g)<br/>
+                ☐ Alface/Rúcula
+              </div>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #E3F2FD)',border:'2px solid #64B5F6',borderRadius:'16px',padding:'24px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'20px',fontSize:'18px',borderBottom:'3px solid #64B5F6',paddingBottom:'12px',fontFamily:'Cormorant Garamond,serif'}}>
+                🍚 Hidratos (conforme fase)
+              </div>
+              <div style={{fontSize:'14px',lineHeight:'2.8',fontFamily:'Georgia,serif'}}>
+                ☐ Batata-doce (1kg)<br/>
+                ☐ Arroz integral (500g)<br/>
+                ☐ Aveia (500g)<br/>
+                ☐ Pão integral verdadeiro<br/>
+                ☐ Quinoa (opcional)<br/>
+                ☐ Frutas frescas da época<br/>
+                ☐ Frutos vermelhos congelados
+              </div>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #FFF8E1)',border:'2px solid #FFD54F',borderRadius:'16px',padding:'24px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'20px',fontSize:'18px',borderBottom:'3px solid #FFD54F',paddingBottom:'12px',fontFamily:'Cormorant Garamond,serif'}}>
+                🥑 Gorduras Saudáveis
+              </div>
+              <div style={{fontSize:'14px',lineHeight:'2.8',fontFamily:'Georgia,serif'}}>
+                ☐ Azeite extra-virgem (500ml)<br/>
+                ☐ Abacate (3-4 unid.)<br/>
+                ☐ Manteiga de vaca<br/>
+                ☐ Amêndoas/Nozes (200g)<br/>
+                ☐ Manteiga amendoim 100%<br/>
+                ☐ Azeitonas<br/>
+                ☐ Óleo de coco (opcional)
+              </div>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'16px',padding:'24px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#6B5C4C',marginBottom:'20px',fontSize:'18px',borderBottom:'3px solid #C5D1BC',paddingBottom:'12px',fontFamily:'Cormorant Garamond,serif'}}>
+                🧂 Despensa & Temperos
+              </div>
+              <div style={{fontSize:'14px',lineHeight:'2.8',fontFamily:'Georgia,serif'}}>
+                ☐ Sal marinho grosso<br/>
+                ☐ Pimenta do reino<br/>
+                ☐ Ervas frescas (coentros, salsa)<br/>
+                ☐ Especiarias (curcuma, paprika)<br/>
+                ☐ Limões (6 unid.)<br/>
+                ☐ Vinagre (maçã ou balsâmico)<br/>
+                ☐ Chá verde/Café
+              </div>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #E8F5E9)',border:'2px solid #66BB6A',borderRadius:'16px',padding:'24px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'20px',fontSize:'18px',borderBottom:'3px solid #66BB6A',paddingBottom:'12px',fontFamily:'Cormorant Garamond,serif'}}>
+                💧 Hidratação & Extras
+              </div>
+              <div style={{fontSize:'14px',lineHeight:'2.8',fontFamily:'Georgia,serif'}}>
+                ☐ Água mineral (garrafões)<br/>
+                ☐ Água com gás (opcional)<br/>
+                ☐ Chá de ervas<br/>
+                ☐ Café (se bebes)<br/>
+                ☐ Limões para água<br/>
+                ☐ Gengibre fresco
+              </div>
+            </div>
+          </div>
+
+          <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',borderRadius:'14px',padding:'18px',marginTop:'18px',border:'2px solid #FFA726'}}>
+            <p style={{fontSize:'13px',fontWeight:'600',color:'#E65100',marginBottom:'8px',fontFamily:'Lato,sans-serif'}}>💡 DICA DE OURO</p>
+            <p style={{fontSize:'13px',color:'#3A3025',lineHeight:'1.8',fontFamily:'Georgia,serif'}}>
+              Compra <strong>1x por semana</strong> aos domingos. Dedica 2h a preparar proteínas e vegetais. Guarda em recipientes de vidro. Durante a semana, só montas o prato!
+            </p>
+          </div>
+
+          <PageFooter page={8} />
+        </div>
+      </div>
+
+      {/* PÁGINA 9 - REGRAS DA FASE */}
+      <div className="page">
+        <div className="page-content">
+          <PageHeader />
+
+          <h2 style={{fontSize:'30px',fontWeight:'600',color:'#3A3025',marginBottom:'18px',fontFamily:'Cormorant Garamond,serif'}}>📋 Regras da {faseConfig.nome}</h2>
+          <p style={{fontSize:'14px',color:'#6B5C4C',marginBottom:'24px',textAlign:'center',fontFamily:'Georgia,serif',lineHeight:'1.9'}}>
+            Estas regras foram desenhadas para <strong>maximizar os teus resultados</strong> nesta fase. Segue-as com <em>consistência</em>, não perfeição.
+          </p>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px',marginBottom:'24px'}}>
+            <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',border:'3px solid #66BB6A',borderRadius:'18px',padding:'28px',boxShadow:'0 4px 18px rgba(102,187,106,0.25)'}}>
+              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'20px',fontSize:'20px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                <span style={{fontSize:'28px'}}>✓</span> PRIORIZAR
+              </div>
+              <div style={{fontSize:'14px',lineHeight:'2.6',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                {faseConfig.priorizar.map((item, i) => (
+                  <div key={i} style={{marginBottom:'8px'}}>✓ {item}</div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFEBEE, #FFCDD2)',border:'3px solid #E57373',borderRadius:'18px',padding:'28px',boxShadow:'0 4px 18px rgba(229,115,115,0.25)'}}>
+              <div style={{fontWeight:'700',color:'#C62828',marginBottom:'20px',fontSize:'20px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+                <span style={{fontSize:'28px'}}>✗</span> EVITAR
+              </div>
+              <div style={{fontSize:'14px',lineHeight:'2.6',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                {faseConfig.evitar.map((item, i) => (
+                  <div key={i} style={{marginBottom:'8px'}}>✗ {item}</div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'3px solid #FFD54F',borderRadius:'18px',padding:'28px',marginBottom:'22px',boxShadow:'0 4px 18px rgba(255,213,79,0.25)'}}>
+            <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'20px',fontSize:'20px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <span style={{fontSize:'28px'}}>💡</span> DICAS PARA O SUCESSO
+            </div>
+            <div style={{fontSize:'14px',lineHeight:'2.6',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+              {faseConfig.dicas.map((item, i) => (
+                <div key={i} style={{marginBottom:'8px'}}>• {item}</div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',borderRadius:'16px',padding:'24px',border:'2px solid #42A5F5',boxShadow:'0 3px 14px rgba(66,165,245,0.2)'}}>
+            <h3 style={{fontSize:'18px',fontWeight:'700',color:'#1565C0',marginBottom:'14px',fontFamily:'Cormorant Garamond,serif'}}>⏰ Estrutura Diária Recomendada</h3>
+            <div style={{fontSize:'14px',lineHeight:'2.2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+              <strong>7h-8h:</strong> Pequeno-almoço com proteína (ovos, iogurte grego)<br/>
+              <strong>10h-11h:</strong> Snack (se necessário): frutos secos ou fruta<br/>
+              <strong>12h30-13h30:</strong> Almoço completo (proteína + legumes + hidrato)<br/>
+              <strong>16h-17h:</strong> Snack da tarde (iogurte, queijo, nozes)<br/>
+              <strong>19h-20h:</strong> Jantar (proteína + legumes + gordura boa)<br/>
+              <strong>Antes de dormir:</strong> Chá de camomila ou casca de abacaxi
+            </div>
+          </div>
+
+          <PageFooter page={9} />
+        </div>
+      </div>
+
+      {/* PÁGINA 10 - COMO USAR A APP */}
+      <div className="page">
+        <div className="page-content">
+          <PageHeader />
+
+          <h2 style={{fontSize:'30px',fontWeight:'600',color:'#3A3025',marginBottom:'18px',fontFamily:'Cormorant Garamond,serif'}}>📱 Como Usar a Plataforma VITALIS</h2>
+          <p style={{fontSize:'15px',color:'#6B5C4C',marginBottom:'26px',fontFamily:'Georgia,serif',lineHeight:'1.9',textAlign:'center'}}>
+            O teu plano em papel é o <strong>guia base</strong>. A plataforma digital é o <strong>acompanhamento vivo</strong> — regista progressos, pede ajuda e ajusta conforme necessário.
+          </p>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr',gap:'18px',marginBottom:'20px'}}>
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'16px',padding:'26px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'14px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'12px'}}>
+                <span style={{fontSize:'26px'}}>📊</span> 1. Regista Peso Semanal
+              </div>
+              <p style={{fontSize:'14px',lineHeight:'2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Todas as <strong>sextas-feiras de manhã</strong>, em jejum e depois da casa de banho. Regista na app. Não te peses diariamente — o corpo flutua naturalmente.
+              </p>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'16px',padding:'26px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'14px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'12px'}}>
+                <span style={{fontSize:'26px'}}>📸</span> 2. Tira Fotos de Progresso
+              </div>
+              <p style={{fontSize:'14px',lineHeight:'2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                <strong>1x por mês</strong>, de frente, lado e costas. Mesma roupa, mesma luz, mesma hora. A app guarda e compara automaticamente. A transformação é VISUAL!
+              </p>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'16px',padding:'26px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'14px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'12px'}}>
+                <span style={{fontSize:'26px'}}>📏</span> 3. Mede Circunferências Mensais
+              </div>
+              <p style={{fontSize:'14px',lineHeight:'2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                <strong>Cintura, quadris, coxa, braço.</strong> Às vezes o peso não mexe mas perdeste 5cm de cintura! Regista tudo na app — ela gera gráficos automáticos.
+              </p>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'16px',padding:'26px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'14px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'12px'}}>
+                <span style={{fontSize:'26px'}}>💬</span> 4. Usa o Chat para Dúvidas
+              </div>
+              <p style={{fontSize:'14px',lineHeight:'2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Dúvida sobre um alimento? Não sabes se podes substituir? <strong>Pergunta no chat!</strong> Respondo em até 24h. És acompanhada, não estás sozinha.
+              </p>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'16px',padding:'26px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'14px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'12px'}}>
+                <span style={{fontSize:'26px'}}>📝</span> 5. Diário Alimentar (Opcional mas Poderoso)
+              </div>
+              <p style={{fontSize:'14px',lineHeight:'2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                Nas primeiras 2-3 semanas, regista o que comes. Não precisa ser perfeito — anota porções da mão. Ajuda-te a <strong>calibrar o olho</strong> e identificar padrões.
+              </p>
+            </div>
+
+            <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'16px',padding:'26px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'14px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'12px'}}>
+                <span style={{fontSize:'26px'}}>🔔</span> 6. Activa Notificações de Água
+              </div>
+              <p style={{fontSize:'14px',lineHeight:'2',color:'#3A3025',fontFamily:'Georgia,serif'}}>
+                A app lembra-te de beber água a cada 2h. Pequeno detalhe, <strong>grande impacto</strong> — hidratação acelera resultados.
+              </p>
+            </div>
+          </div>
+
+          <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',borderRadius:'16px',padding:'22px',border:'2px solid #66BB6A',textAlign:'center'}}>
+            <p style={{fontSize:'15px',fontWeight:'600',color:'#2E7D32',marginBottom:'8px',fontFamily:'Cormorant Garamond,serif'}}>💚 Lembra-te</p>
+            <p style={{fontSize:'14px',color:'#3A3025',lineHeight:'1.9',fontFamily:'Georgia,serif'}}>
+              A plataforma é uma <strong>ferramenta</strong>, não uma prisão. Usa-a para te <em>apoiar</em>, não para te <em>stressar</em>. Consistência > Perfeição.
+            </p>
+          </div>
+
+          <PageFooter page={10} />
+        </div>
+      </div>
+
+      {/* PÁGINA 11 - MENTALIDADE & MOTIVAÇÃO */}
+      <div className="page">
+        <div className="page-content">
+          <PageHeader />
+
+          <h2 style={{fontSize:'32px',fontWeight:'600',color:'#3A3025',marginBottom:'18px',textAlign:'center',fontFamily:'Cormorant Garamond,serif'}}>💪 A Tua Jornada Começa Aqui</h2>
+          <p style={{fontSize:'15px',color:'#6B5C4C',marginBottom:'32px',textAlign:'center',fontFamily:'Georgia,serif',lineHeight:'2',fontStyle:'italic'}}>
+            Este plano não é sobre <strong>perfeição</strong>. É sobre <strong>progresso</strong>. Não é sobre <strong>restrição</strong>. É sobre <strong>transformação</strong>.
+          </p>
+
+          <div style={{background:'linear-gradient(135deg, #FFFFFF, #FDF8F3)',border:'2px solid #C5D1BC',borderRadius:'20px',padding:'32px',marginBottom:'26px',boxShadow:'0 6px 24px rgba(0,0,0,0.08)'}}>
+            <div style={{fontSize:'80px',color:'#C5D1BC',textAlign:'center',lineHeight:'0.5',marginBottom:'20px',fontFamily:'Georgia,serif'}}>"</div>
+            <p style={{fontSize:'20px',color:'#3A3025',fontStyle:'italic',lineHeight:'2',textAlign:'center',fontFamily:'Georgia,serif',marginBottom:'20px'}}>
+              Quando o excesso cai, o corpo responde.<br/>
+              Quando o corpo responde, a mente transforma.<br/>
+              Quando a mente transforma, a vida muda.
+            </p>
+            <div style={{textAlign:'center',marginTop:'20px'}}>
+              <span style={{fontSize:'14px',color:'#7C8B6F',fontWeight:'600',letterSpacing:'2px',fontFamily:'Lato,sans-serif'}}>— Vivianne Saraiva</span>
+            </div>
+          </div>
+
+          <h3 style={{fontSize:'22px',fontWeight:'600',color:'#3A3025',marginBottom:'16px',fontFamily:'Cormorant Garamond,serif'}}>🎯 Os Teus Princípios de Sucesso</h3>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr',gap:'14px'}}>
+            <div style={{background:'#F5F0E8',borderLeft:'5px solid #7C8B6F',borderRadius:'12px',padding:'18px'}}>
+              <p style={{fontSize:'15px',fontWeight:'600',color:'#3A3025',marginBottom:'6px',fontFamily:'Lato,sans-serif'}}>1. Progresso, não perfeição</p>
+              <p style={{fontSize:'13px',color:'#6B5C4C',lineHeight:'1.8',fontFamily:'Georgia,serif'}}>
+                Um dia fora do plano não destrói 6 dias de consistência. Volta ao plano na refeição seguinte.
+              </p>
+            </div>
+
+            <div style={{background:'#F5F0E8',borderLeft:'5px solid #7C8B6F',borderRadius:'12px',padding:'18px'}}>
+              <p style={{fontSize:'15px',fontWeight:'600',color:'#3A3025',marginBottom:'6px',fontFamily:'Lato,sans-serif'}}>2. O teu corpo é único</p>
+              <p style={{fontSize:'13px',color:'#6B5C4C',lineHeight:'1.8',fontFamily:'Georgia,serif'}}>
+                Este plano foi feito para TI. Não te compares com outras. A tua jornada é tua.
+              </p>
+            </div>
+
+            <div style={{background:'#F5F0E8',borderLeft:'5px solid #7C8B6F',borderRadius:'12px',padding:'18px'}}>
+              <p style={{fontSize:'15px',fontWeight:'600',color:'#3A3025',marginBottom:'6px',fontFamily:'Lato,sans-serif'}}>3. Consistência > Intensidade</p>
+              <p style={{fontSize:'13px',color:'#6B5C4C',lineHeight:'1.8',fontFamily:'Georgia,serif'}}>
+                Melhor seguir 80% do plano durante 12 semanas do que 100% durante 2 semanas e desistir.
+              </p>
+            </div>
+
+            <div style={{background:'#F5F0E8',borderLeft:'5px solid #7C8B6F',borderRadius:'12px',padding:'18px'}}>
+              <p style={{fontSize:'15px',fontWeight:'600',color:'#3A3025',marginBottom:'6px',fontFamily:'Lato,sans-serif'}}>4. Fome não é falha</p>
+              <p style={{fontSize:'13px',color:'#6B5C4C',lineHeight:'1.8',fontFamily:'Georgia,serif'}}>
+                Se tens fome verdadeira, come mais proteína e legumes. Não passes fome — isso desacelera o metabolismo.
+              </p>
+            </div>
+
+            <div style={{background:'#F5F0E8',borderLeft:'5px solid #7C8B6F',borderRadius:'12px',padding:'18px'}}>
+              <p style={{fontSize:'15px',fontWeight:'600',color:'#3A3025',marginBottom:'6px',fontFamily:'Lato,sans-serif'}}>5. Celebra vitórias não-balança</p>
+              <p style={{fontSize:'13px',color:'#6B5C4C',lineHeight:'1.8',fontFamily:'Georgia,serif'}}>
+                Dormes melhor? Mais energia? Roupas mais folgadas? Pele mais bonita? ISSO é transformação!
+              </p>
+            </div>
+
+            <div style={{background:'#F5F0E8',borderLeft:'5px solid #7C8B6F',borderRadius:'12px',padding:'18px'}}>
+              <p style={{fontSize:'15px',fontWeight:'600',color:'#3A3025',marginBottom:'6px',fontFamily:'Lato,sans-serif'}}>6. Não estás sozinha</p>
+              <p style={{fontSize:'13px',color:'#6B5C4C',lineHeight:'1.8',fontFamily:'Georgia,serif'}}>
+                Usa o chat. Pede ajuda. Partilha dúvidas. Coaching é parceria, não monólogo.
+              </p>
+            </div>
+          </div>
+
+          <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',borderRadius:'16px',padding:'24px',marginTop:'24px',textAlign:'center',border:'2px solid #66BB6A'}}>
+            <p style={{fontSize:'18px',fontWeight:'700',color:'#2E7D32',marginBottom:'10px',fontFamily:'Cormorant Garamond,serif'}}>
+              🌱 És Capaz. Eu Acredito. Agora Acredita Tu.
+            </p>
+            <p style={{fontSize:'14px',color:'#3A3025',lineHeight:'1.9',fontFamily:'Georgia,serif'}}>
+              Cada refeição é uma oportunidade nova. Cada dia é um recomeço. Vamos juntas. 💚
+            </p>
+          </div>
+
+          <PageFooter page={11} />
+        </div>
+      </div>
+
+      {/* PÁGINA 12 - FINAL */}
+      <div className="page" style={{display:'flex',flexDirection:'column'}}>
+        <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'60px 50px'}}>
+          <Logo size={160} />
+          <div style={{fontSize:'15px',color:'#6B5C4C',letterSpacing:'7px',marginTop:'18px',marginBottom:'70px',fontFamily:'Lato,sans-serif',fontWeight:'300'}}>A RAIZ DA TRANSFORMAÇÃO</div>
+
+          <div style={{maxWidth:'500px',textAlign:'center',padding:'55px 45px',background:'linear-gradient(135deg, #FFFFFF, #FDF8F3)',borderRadius:'30px',boxShadow:'0 20px 60px rgba(0,0,0,0.12)',marginBottom:'70px',border:'1px solid #C5D1BC'}}>
+            <div style={{fontSize:'75px',color:'#C5D1BC',marginBottom:'20px',lineHeight:'0.5',fontFamily:'Georgia,serif'}}>"</div>
+            <p style={{fontSize:'26px',color:'#3A3025',fontStyle:'italic',lineHeight:'1.8',fontFamily:'Georgia,serif',marginBottom:'14px'}}>
+              O teu corpo já sabe o caminho.<br/>
+              Este plano só o guia.
+            </p>
+            <div style={{fontSize:'70px',color:'#C5D1BC',marginTop:'10px',lineHeight:'0.5',transform:'rotate(180deg)',fontFamily:'Georgia,serif'}}>"</div>
+          </div>
+
+          <div style={{textAlign:'center',marginBottom:'40px'}}>
+            <div style={{fontSize:'12px',color:'#6B5C4C',letterSpacing:'5px',marginBottom:'18px',fontFamily:'Lato,sans-serif',fontWeight:'300'}}>CRIADO EXCLUSIVAMENTE PARA</div>
+            <div style={{fontSize:'44px',fontWeight:'600',color:'#3A3025',fontFamily:'Cormorant Garamond,serif',marginBottom:'12px'}}>{dados.nome}</div>
+            <div style={{fontSize:'15px',color:'#7C8B6F',fontFamily:'Georgia,serif'}}>{formatarData(dados.data_inicio)}</div>
+          </div>
+
+          <div style={{display:'grid',gridTemplateColumns:'repeat(4, 1fr)',gap:'20px',maxWidth:'550px',marginTop:'30px'}}>
+            <div style={{textAlign:'center'}}>
+              <div style={{fontSize:'28px',fontWeight:'700',color:'#7C8B6F',fontFamily:'Cormorant Garamond,serif'}}>{dados.porcoes_proteina}</div>
+              <div style={{fontSize:'11px',color:'#6B5C4C',marginTop:'4px',fontFamily:'Lato,sans-serif'}}>Proteína<br/>(palmas/dia)</div>
+            </div>
+            <div style={{textAlign:'center'}}>
+              <div style={{fontSize:'28px',fontWeight:'700',color:'#6B8E23',fontFamily:'Cormorant Garamond,serif'}}>{dados.porcoes_legumes}+</div>
+              <div style={{fontSize:'11px',color:'#6B5C4C',marginTop:'4px',fontFamily:'Lato,sans-serif'}}>Legumes<br/>(punhos/dia)</div>
+            </div>
+            <div style={{textAlign:'center'}}>
+              <div style={{fontSize:'28px',fontWeight:'700',color:'#1976D2',fontFamily:'Cormorant Garamond,serif'}}>{dados.porcoes_hidratos}</div>
+              <div style={{fontSize:'11px',color:'#6B5C4C',marginTop:'4px',fontFamily:'Lato,sans-serif'}}>Hidratos<br/>(mãos/dia)</div>
+            </div>
+            <div style={{textAlign:'center'}}>
+              <div style={{fontSize:'28px',fontWeight:'700',color:'#F57F17',fontFamily:'Cormorant Garamond,serif'}}>{dados.porcoes_gordura}</div>
+              <div style={{fontSize:'11px',color:'#6B5C4C',marginTop:'4px',fontFamily:'Lato,sans-serif'}}>Gordura<br/>(polegares/dia)</div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{background:'linear-gradient(135deg, #3A3025, #4A4035)',padding:'32px 60px',display:'flex',justifyContent:'space-between'}}>
+          <div style={{color:'rgba(255,255,255,0.95)',fontSize:'13px',fontFamily:'Lato,sans-serif'}}>
+            <div style={{fontWeight:'600',marginBottom:'4px'}}>Vivianne Saraiva</div>
+            <div style={{opacity:0.85}}>Precision Nutrition Level 1 Coach</div>
+          </div>
+          <div style={{color:'rgba(255,255,255,0.95)',fontSize:'13px',textAlign:'right',fontFamily:'Lato,sans-serif'}}>
+            <div style={{marginBottom:'4px'}}>vivianne.saraiva@outlook.com</div>
+            <div style={{opacity:0.85}}>WhatsApp: +258 85 100 6473</div>
+          </div>
+        </div>
+      </div>
+
       {/* Indicador para Puppeteer */}
       <div id="pdf-ready" style={{display:'none'}} aria-hidden="true"></div>
     </>
