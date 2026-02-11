@@ -165,6 +165,59 @@ Boas-vindas à comunidade! 🌱`);
   },
 
   /**
+   * Chamar quando cliente registra pagamento manual pendente
+   */
+  async onPagamentoPendente(cliente) {
+    // Email para cliente (confirmação de recebimento)
+    await enviarEmail({
+      to: cliente.email,
+      subject: '⏳ Pagamento Recebido - Aguarda Confirmação | Vitalis',
+      html: `
+        <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #7C8B6F; font-size: 28px; margin: 0;">✅ Pagamento Registado!</h1>
+          </div>
+
+          <p style="font-size: 16px; line-height: 1.6; color: #333;">
+            Olá <strong>${cliente.nome}</strong>,
+          </p>
+
+          <p style="font-size: 16px; line-height: 1.6; color: #333;">
+            Recebemos o registo do teu pagamento! A Coach Vivianne vai confirmar em até 24 horas.
+          </p>
+
+          <div style="background: #F5F0E8; border-left: 4px solid #7C8B6F; padding: 20px; margin: 20px 0;">
+            <p style="margin: 0 0 10px 0; color: #6B5C4C;"><strong>Plano:</strong> ${cliente.plano}</p>
+            <p style="margin: 0 0 10px 0; color: #6B5C4C;"><strong>Valor:</strong> ${cliente.valor}</p>
+            <p style="margin: 0 0 10px 0; color: #6B5C4C;"><strong>Método:</strong> ${cliente.metodo}</p>
+            <p style="margin: 0; color: #6B5C4C;"><strong>Referência:</strong> ${cliente.referencia}</p>
+          </div>
+
+          <p style="font-size: 16px; line-height: 1.6; color: #333;">
+            Vais receber outro email assim que o pagamento for confirmado e o teu acesso for ativado.
+          </p>
+
+          <p style="font-size: 14px; color: #666; margin-top: 30px;">
+            Qualquer dúvida, estamos aqui!<br>
+            WhatsApp: +258 85 100 6473
+          </p>
+        </div>
+      `
+    });
+
+    // WhatsApp para coach (alerta imediato)
+    await enviarWhatsAppCoach(`💰 *PAGAMENTO PENDENTE - VITALIS*
+
+👤 ${cliente.nome}
+📧 ${cliente.email}
+💵 ${cliente.plano} - ${cliente.valor}
+📱 Método: ${cliente.metodo}
+🔖 Ref: ${cliente.referencia}
+
+⚠️ Verificar e aprovar no Coach Dashboard!`);
+  },
+
+  /**
    * Chamar quando cliente atinge conquista
    */
   async onConquista(cliente, conquista) {
