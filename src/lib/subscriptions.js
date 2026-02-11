@@ -248,38 +248,25 @@ export const startTrial = async (userId) => {
     return { success: false, error: 'userId em falta' };
   }
   try {
-    // Verificar se já existe registo
-    const { data: existingClient } = await supabase
-      .from('vitalis_clients')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
+    const now = new Date();
+    const trialEnd = new Date(now.getTime() + SUBSCRIPTION_CONFIG.TRIAL_DAYS * 24 * 60 * 60 * 1000);
 
+    // Usar UPSERT para evitar race conditions
     const trialData = {
+      user_id: userId,
       subscription_status: SUBSCRIPTION_STATUS.TRIAL,
-      trial_started: new Date().toISOString(),
-      subscription_updated: new Date().toISOString()
+      trial_started: now.toISOString(),
+      subscription_end: trialEnd.toISOString(), // NOVO: Para sistema de emails funcionar
+      subscription_updated: now.toISOString(),
+      status: 'novo',
+      created_at: now.toISOString()
     };
 
-    if (existingClient) {
-      // Atualizar registo existente
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .update(trialData)
-        .eq('user_id', userId);
-      if (error) throw error;
-    } else {
-      // Criar novo registo
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .insert({
-          user_id: userId,
-          ...trialData,
-          status: 'novo',
-          created_at: new Date().toISOString()
-        });
-      if (error) throw error;
-    }
+    const { error } = await supabase
+      .from('vitalis_clients')
+      .upsert(trialData, { onConflict: 'user_id' });
+
+    if (error) throw error;
 
     await logSubscriptionChange(userId, SUBSCRIPTION_STATUS.TRIAL, { action: 'trial_started' });
 
@@ -295,37 +282,20 @@ export const startTrial = async (userId) => {
  */
 export const setAsTester = async (userId, notes = '') => {
   try {
-    // Verificar se já existe registo
-    const { data: existingClient } = await supabase
-      .from('vitalis_clients')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
-
+    // Usar UPSERT (igual aos coaches) para evitar race conditions
     const testerData = {
+      user_id: userId,
       subscription_status: SUBSCRIPTION_STATUS.TESTER,
-      subscription_updated: new Date().toISOString()
+      subscription_updated: new Date().toISOString(),
+      status: 'novo',
+      created_at: new Date().toISOString()
     };
 
-    if (existingClient) {
-      // Atualizar registo existente
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .update(testerData)
-        .eq('user_id', userId);
-      if (error) throw error;
-    } else {
-      // Criar novo registo
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .insert({
-          user_id: userId,
-          ...testerData,
-          status: 'novo',
-          created_at: new Date().toISOString()
-        });
-      if (error) throw error;
-    }
+    const { error } = await supabase
+      .from('vitalis_clients')
+      .upsert(testerData, { onConflict: 'user_id' });
+
+    if (error) throw error;
 
     await logSubscriptionChange(userId, SUBSCRIPTION_STATUS.TESTER, { action: 'set_as_tester', notes });
 
@@ -391,14 +361,10 @@ export const activateSubscription = async (userId, paymentDetails) => {
     const expiresAt = new Date();
     expiresAt.setMonth(expiresAt.getMonth() + plan.duration);
 
-    // Verificar se ja existe um registo vitalis_clients
-    const { data: existingClient } = await supabase
-      .from('vitalis_clients')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
-
+    // Usar UPSERT para evitar race conditions
     const subscriptionData = {
+      user_id: userId,
+      status: 'activo',
       subscription_status: SUBSCRIPTION_STATUS.ACTIVE,
       subscription_expires: expiresAt.toISOString(),
       subscription_plan: plan.id,
@@ -407,26 +373,15 @@ export const activateSubscription = async (userId, paymentDetails) => {
       payment_amount: paymentDetails.amount,
       payment_currency: paymentDetails.currency || 'USD',
       payer_email: paymentDetails.payerEmail,
-      subscription_updated: new Date().toISOString()
+      subscription_updated: new Date().toISOString(),
+      created_at: new Date().toISOString()
     };
 
-    if (existingClient) {
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .update(subscriptionData)
-        .eq('user_id', userId);
-      if (error) throw error;
-    } else {
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .insert({
-          user_id: userId,
-          status: 'activo',
-          ...subscriptionData,
-          created_at: new Date().toISOString()
-        });
-      if (error) throw error;
-    }
+    const { error } = await supabase
+      .from('vitalis_clients')
+      .upsert(subscriptionData, { onConflict: 'user_id' });
+
+    if (error) throw error;
 
     await logSubscriptionChange(userId, SUBSCRIPTION_STATUS.ACTIVE, {
       action: 'payment_automatic',
@@ -464,48 +419,25 @@ export const registerPendingPayment = async (userId, paymentDetails) => {
   try {
     const plan = SUBSCRIPTION_PLANS[paymentDetails.planId?.toUpperCase()] || SUBSCRIPTION_PLANS.MONTHLY;
 
-    // Primeiro, verificar se ja existe um registo vitalis_clients
-    const { data: existingClient } = await supabase
+    // Usar UPSERT para evitar race conditions
+    const pendingData = {
+      user_id: userId,
+      status: 'activo',
+      subscription_status: SUBSCRIPTION_STATUS.PENDING,
+      subscription_plan: plan.id,
+      payment_method: paymentDetails.method,
+      payment_reference: paymentDetails.reference,
+      payment_amount: paymentDetails.amount,
+      payment_currency: paymentDetails.currency || 'MZN',
+      subscription_updated: new Date().toISOString(),
+      created_at: new Date().toISOString()
+    };
+
+    const { error } = await supabase
       .from('vitalis_clients')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
+      .upsert(pendingData, { onConflict: 'user_id' });
 
-    if (existingClient) {
-      // Atualizar registo existente
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .update({
-          subscription_status: SUBSCRIPTION_STATUS.PENDING,
-          subscription_plan: plan.id,
-          payment_method: paymentDetails.method,
-          payment_reference: paymentDetails.reference,
-          payment_amount: paymentDetails.amount,
-          payment_currency: paymentDetails.currency || 'MZN',
-          subscription_updated: new Date().toISOString()
-        })
-        .eq('user_id', userId);
-
-      if (error) throw error;
-    } else {
-      // Criar novo registo com pagamento pendente
-      const { error } = await supabase
-        .from('vitalis_clients')
-        .insert({
-          user_id: userId,
-          status: 'activo',
-          subscription_status: SUBSCRIPTION_STATUS.PENDING,
-          subscription_plan: plan.id,
-          payment_method: paymentDetails.method,
-          payment_reference: paymentDetails.reference,
-          payment_amount: paymentDetails.amount,
-          payment_currency: paymentDetails.currency || 'MZN',
-          subscription_updated: new Date().toISOString(),
-          created_at: new Date().toISOString()
-        });
-
-      if (error) throw error;
-    }
+    if (error) throw error;
 
     // Criar alerta para a coach (ignore errors - constraint may not allow this tipo_alerta)
     try {
@@ -801,4 +733,141 @@ export const applyRenewalDiscount = (plan, discountPct) => {
     price_usd: Math.round(plan.price_usd * (1 - discountPct / 100)),
     renewal_discount: discountPct
   };
+};
+
+/**
+ * Verifica trials próximos de expirar e retorna lista de utilizadores
+ * @param {number} daysBeforeExpiry - Quantos dias antes de expirar (ex: 3, 1, 0)
+ * @returns {Promise<Array>} Lista de utilizadores com trial a expirar
+ */
+export const getTrialsExpiringIn = async (daysBeforeExpiry = 3) => {
+  try {
+    const now = new Date();
+    const targetDate = new Date(now);
+    targetDate.setDate(targetDate.getDate() + daysBeforeExpiry);
+
+    // Buscar trials que expiram na data alvo
+    const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+
+    const { data: clients, error } = await supabase
+      .from('vitalis_clients')
+      .select('user_id, trial_started, subscription_status')
+      .eq('subscription_status', 'trial')
+      .not('trial_started', 'is', null);
+
+    if (error) throw error;
+
+    // Filtrar clientes cujo trial expira no dia alvo
+    const expiringTrials = clients.filter(client => {
+      if (!client.trial_started) return false;
+
+      const trialStart = new Date(client.trial_started);
+      const trialEnd = new Date(trialStart.getTime() + SUBSCRIPTION_CONFIG.TRIAL_DAYS * 24 * 60 * 60 * 1000);
+
+      return trialEnd >= startOfDay && trialEnd <= endOfDay;
+    });
+
+    // Buscar dados dos utilizadores
+    if (expiringTrials.length === 0) return [];
+
+    const userIds = expiringTrials.map(t => t.user_id);
+    const { data: users } = await supabase
+      .from('users')
+      .select('id, nome, email, auth_id')
+      .in('id', userIds);
+
+    return users || [];
+  } catch (error) {
+    console.error('Erro ao buscar trials a expirar:', error);
+    return [];
+  }
+};
+
+/**
+ * Verifica e envia notificações para trials próximos de expirar
+ * Deve ser chamado diariamente (via cron job ou tarefas agendadas)
+ */
+export const checkAndNotifyExpiringTrials = async () => {
+  try {
+    // Verificar 3 dias antes
+    const trials3Days = await getTrialsExpiringIn(3);
+    console.log(`[Trial Check] ${trials3Days.length} trials expiram em 3 dias`);
+
+    // Verificar 1 dia antes
+    const trials1Day = await getTrialsExpiringIn(1);
+    console.log(`[Trial Check] ${trials1Day.length} trials expiram em 1 dia`);
+
+    // Verificar hoje (expirando)
+    const trialsToday = await getTrialsExpiringIn(0);
+    console.log(`[Trial Check] ${trialsToday.length} trials expiram hoje`);
+
+    return {
+      success: true,
+      notifications: {
+        threeDays: trials3Days.length,
+        oneDay: trials1Day.length,
+        today: trialsToday.length
+      },
+      users: {
+        threeDays: trials3Days,
+        oneDay: trials1Day,
+        today: trialsToday
+      }
+    };
+  } catch (error) {
+    console.error('Erro ao verificar trials:', error);
+    return { success: false, error };
+  }
+};
+
+/**
+ * Marca trial como expirado se já passou da data
+ */
+export const expireOldTrials = async () => {
+  try {
+    const now = new Date();
+
+    // Buscar todos os trials ativos
+    const { data: trials } = await supabase
+      .from('vitalis_clients')
+      .select('user_id, trial_started')
+      .eq('subscription_status', 'trial')
+      .not('trial_started', 'is', null);
+
+    if (!trials || trials.length === 0) {
+      return { success: true, expired: 0 };
+    }
+
+    // Filtrar trials expirados
+    const expiredUserIds = trials
+      .filter(trial => {
+        const trialStart = new Date(trial.trial_started);
+        const trialEnd = new Date(trialStart.getTime() + SUBSCRIPTION_CONFIG.TRIAL_DAYS * 24 * 60 * 60 * 1000);
+        return now > trialEnd;
+      })
+      .map(t => t.user_id);
+
+    if (expiredUserIds.length === 0) {
+      return { success: true, expired: 0 };
+    }
+
+    // Atualizar status para expired
+    const { error } = await supabase
+      .from('vitalis_clients')
+      .update({
+        subscription_status: SUBSCRIPTION_STATUS.EXPIRED,
+        subscription_updated: now.toISOString()
+      })
+      .in('user_id', expiredUserIds);
+
+    if (error) throw error;
+
+    console.log(`[Trial Expiry] ${expiredUserIds.length} trials marcados como expirados`);
+
+    return { success: true, expired: expiredUserIds.length, userIds: expiredUserIds };
+  } catch (error) {
+    console.error('Erro ao expirar trials:', error);
+    return { success: false, error };
+  }
 };
