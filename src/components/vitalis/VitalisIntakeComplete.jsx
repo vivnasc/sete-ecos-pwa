@@ -441,11 +441,26 @@ try {
       }
 
     // Verificar se já existe registo com subscription_status
-      const { data: existingClient } = await supabase
+      console.log('🔍 [INTAKE] Buscando existingClient para user_id:', userData.id);
+      const { data: existingClient, error: selectError } = await supabase
         .from('vitalis_clients')
-        .select('id, subscription_status')
+        .select('id, subscription_status, status, created_at')
         .eq('user_id', userData.id)
         .maybeSingle();
+
+      if (selectError) {
+        console.error('❌ [INTAKE] Erro ao buscar existingClient:', selectError);
+      }
+
+      console.log('📊 [INTAKE] existingClient encontrado?', existingClient ? 'SIM' : 'NÃO');
+      if (existingClient) {
+        console.log('✅ [INTAKE] Dados do existingClient:', {
+          id: existingClient.id,
+          subscription_status: existingClient.subscription_status,
+          status: existingClient.status,
+          created_at: existingClient.created_at
+        });
+      }
 
       const clientData = {
         user_id: userData.id,
@@ -460,16 +475,20 @@ try {
       if (existingClient) {
         // Atualizar mas NÃO sobrescrever subscription_status NEM status
         // (planoGenerator will set status: 'activo' when generating the plan)
+        console.log('🔄 [INTAKE] Atualizando existingClient - preservando subscription_status:', existingClient.subscription_status);
         const { error: clientError } = await supabase
           .from('vitalis_clients')
           .update(clientData)
           .eq('user_id', userData.id);
         if (clientError) {
-          console.error('Erro no client:', clientError);
+          console.error('❌ [INTAKE] Erro ao atualizar client:', clientError);
           throw clientError;
         }
+        console.log('✅ [INTAKE] Client atualizado com sucesso');
       } else {
-        // Criar novo (subscription_status será 'none' por defeito)
+        // ❌ NÃO DEVERIA CHEGAR AQUI se user já pagou/usou código!
+        console.warn('⚠️ [INTAKE] AVISO: Criando NOVO vitalis_clients com subscription_status=none para user_id:', userData.id);
+        console.warn('⚠️ [INTAKE] Isto NÃO deveria acontecer se o user já usou código ou pagou!');
         const { error: clientError } = await supabase
           .from('vitalis_clients')
           .insert({
@@ -479,17 +498,29 @@ try {
             created_at: new Date().toISOString()
           });
         if (clientError) {
-          console.error('Erro no client:', clientError);
+          console.error('❌ [INTAKE] Erro ao inserir client:', clientError);
           throw clientError;
         }
+        console.log('⚠️ [INTAKE] Novo client criado com subscription_status=none');
       }
 
       // IMPORTANTE: Re-buscar o cliente para obter o status ACTUAL após insert/update
-      const { data: currentClient } = await supabase
+      console.log('🔄 [INTAKE] Re-buscando currentClient após insert/update...');
+      const { data: currentClient, error: currentError } = await supabase
         .from('vitalis_clients')
-        .select('subscription_status')
+        .select('subscription_status, status')
         .eq('user_id', userData.id)
         .maybeSingle();
+
+      if (currentError) {
+        console.error('❌ [INTAKE] Erro ao re-buscar currentClient:', currentError);
+      }
+
+      console.log('📊 [INTAKE] currentClient FINAL:', {
+        subscription_status: currentClient?.subscription_status,
+        status: currentClient?.status,
+        user_id: userData.id
+      });
 
       // 🛡️ TRIAL NÃO GERA PLANO - apenas acesso básico (dashboard, check-in, receitas)
       // Apenas utilizadores com subscrição ACTIVA geram plano automático
@@ -500,7 +531,13 @@ try {
       const statusComAcessoBasico = ['trial'];
       const temAcessoBasico = currentClient && statusComAcessoBasico.includes(currentClient.subscription_status);
 
-      console.log('Intake complete - subscription_status:', currentClient?.subscription_status, 'temPlano:', temPlano, 'temAcessoBasico:', temAcessoBasico);
+      console.log('🎯 [INTAKE] DECISÃO DE GERAÇÃO DE PLANO:');
+      console.log('  → subscription_status:', currentClient?.subscription_status);
+      console.log('  → statusComPlano:', statusComPlano);
+      console.log('  → temPlano:', temPlano);
+      console.log('  → statusComAcessoBasico:', statusComAcessoBasico);
+      console.log('  → temAcessoBasico:', temAcessoBasico);
+      console.log('  → Ação:', temPlano ? '✅ GERAR PLANO' : temAcessoBasico ? '📋 ACESSO BÁSICO (sem plano)' : '💳 REDIRECIONAR PARA PAGAMENTO');
 
       // Guardar preferências para personalizar textos na app
       setSexo(formData.sexo);
