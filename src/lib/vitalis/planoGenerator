@@ -9,6 +9,8 @@ import { supabase } from '../supabase';
  */
 export async function gerarPlanoAutomatico(userId) {
   try {
+    console.log('🔄 Iniciando geração de plano para userId:', userId);
+
     // 1. Buscar dados do intake
     const { data: intake, error: intakeError } = await supabase
       .from('vitalis_intake')
@@ -16,7 +18,24 @@ export async function gerarPlanoAutomatico(userId) {
       .eq('user_id', userId)
       .single();
 
-    if (intakeError) throw intakeError;
+    if (intakeError) {
+      console.error('❌ Erro ao buscar intake:', intakeError);
+      throw intakeError;
+    }
+
+    if (!intake) {
+      throw new Error('Intake não encontrado. Por favor, preenche o questionário primeiro.');
+    }
+
+    console.log('✅ Intake encontrado:', {
+      idade: intake.idade,
+      sexo: intake.sexo,
+      peso: intake.peso_actual,
+      altura: intake.altura_cm,
+      objectivo: intake.objectivo_principal,
+      nivel_actividade: intake.nivel_actividade,
+      abordagem: intake.abordagem_preferida
+    });
 
     // 2. Altura vem do intake (a tabela users pode não ter altura_cm)
     let alturaFromUsers = null;
@@ -38,8 +57,21 @@ export async function gerarPlanoAutomatico(userId) {
     const idade = intake.idade;
     const sexo = intake.sexo;
 
-    if (!peso || !idade) {
-      throw new Error('Dados do intake incompletos (peso ou idade em falta)');
+    // 🛡️ VALIDAÇÃO: Verificar campos obrigatórios
+    if (!peso || !idade || !sexo) {
+      const camposFaltando = [];
+      if (!peso) camposFaltando.push('peso');
+      if (!idade) camposFaltando.push('idade');
+      if (!sexo) camposFaltando.push('sexo');
+      throw new Error(`Dados do intake incompletos. Campos em falta: ${camposFaltando.join(', ')}`);
+    }
+
+    if (!intake.nivel_actividade) {
+      throw new Error('Nível de actividade não foi especificado no intake.');
+    }
+
+    if (!intake.objectivo_principal) {
+      throw new Error('Objectivo principal não foi especificado no intake.');
     }
 
     // 🛡️ VALIDAÇÃO: Prevenir numeric overflow
@@ -61,6 +93,8 @@ export async function gerarPlanoAutomatico(userId) {
       tmb = (10 * peso) + (6.25 * altura) - (5 * idade) - 161;
     }
 
+    console.log('📊 TMB calculado:', Math.round(tmb), 'kcal');
+
     // 4. Ajustar por nível de actividade
     const factoresActividade = {
       'sedentaria': 1.2,
@@ -71,18 +105,23 @@ export async function gerarPlanoAutomatico(userId) {
     const factor = factoresActividade[intake.nivel_actividade] || 1.2;
     const tdee = tmb * factor; // Total Daily Energy Expenditure
 
+    console.log('📊 TDEE calculado:', Math.round(tdee), 'kcal (factor:', factor, ')');
+
     // 5. Aplicar deficit/superavit baseado no objectivo
     let caloriasAlvo;
     const objectivo = intake.objectivo_principal;
 
-    if (objectivo === 'perder_peso') {
+    // Mapear objectivos do intake para lógica de calorias
+    // Intake: 'emagrecer', 'ganhar_energia', 'melhorar_saude', 'controlar_emocoes', 'outro'
+    if (objectivo === 'perder_peso' || objectivo === 'emagrecer') {
       // Deficit de 20-25% (perda sustentável)
       caloriasAlvo = Math.round(tdee * 0.75);
     } else if (objectivo === 'ganhar_massa') {
       // Superavit de 10-15%
       caloriasAlvo = Math.round(tdee * 1.1);
     } else {
-      // Manutenção
+      // Manutenção (ganhar_energia, melhorar_saude, controlar_emocoes, outro)
+      // Usa TDEE sem ajuste - foco em composição corporal, não peso
       caloriasAlvo = Math.round(tdee);
     }
 
@@ -199,28 +238,44 @@ export async function gerarPlanoAutomatico(userId) {
       .eq('status', 'activo');
 
     // 13. Criar plano nutricional em vitalis_meal_plans
+    const planoData = {
+      user_id: userId,
+      versao: 1,
+      fase: faseInicial,
+      abordagem: abordagem,
+      calorias_alvo: caloriasAlvo,
+      proteina_g: proteinaG,
+      carboidratos_g: carboidratosG,
+      gordura_g: gorduraG,
+      status: 'activo',
+      receitas_incluidas: JSON.stringify({
+        porções_por_refeicao: porcoesPorRefeicao,
+        num_refeicoes: numRefeicoes,
+        horarios: horariosRefeicoes
+      })
+    };
+
+    console.log('📝 Criando plano com dados:', {
+      calorias: caloriasAlvo,
+      proteina: proteinaG + 'g',
+      carbs: carboidratosG + 'g',
+      gordura: gorduraG + 'g',
+      fase: faseInicial,
+      abordagem: abordagem
+    });
+
     const { data: plano, error: planoError } = await supabase
       .from('vitalis_meal_plans')
-      .insert([{
-        user_id: userId,
-        versao: 1,
-        fase: faseInicial,
-        abordagem: abordagem,
-        calorias_alvo: caloriasAlvo,
-        proteina_g: proteinaG,
-        carboidratos_g: carboidratosG,
-        gordura_g: gorduraG,
-        status: 'activo',
-        receitas_incluidas: JSON.stringify({
-          porções_por_refeicao: porcoesPorRefeicao,
-          num_refeicoes: numRefeicoes,
-          horarios: horariosRefeicoes
-        })
-      }])
+      .insert([planoData])
       .select()
       .single();
 
-    if (planoError) throw planoError;
+    if (planoError) {
+      console.error('❌ Erro ao inserir plano:', planoError);
+      throw planoError;
+    }
+
+    console.log('✅ Plano criado com sucesso! ID:', plano.id);
 
     // 14. Criar hábitos iniciais da fase de indução
     const habitosInducao = [
@@ -283,10 +338,23 @@ export async function gerarPlanoAutomatico(userId) {
     };
 
   } catch (error) {
-    console.error('Erro ao gerar plano:', error);
+    console.error('❌ ERRO ao gerar plano:', error);
+
+    // Fornecer mensagem de erro mais útil
+    let errorMessage = error.message;
+
+    if (error.code === '23505') {
+      errorMessage = 'Já existe um plano activo. Por favor, contacta o suporte.';
+    } else if (error.code === '23503') {
+      errorMessage = 'Erro de referência na base de dados. Contacta o suporte.';
+    } else if (error.message && error.message.includes('numeric')) {
+      errorMessage = 'Erro nos cálculos nutricionais. Verifica os dados do intake (peso, altura, idade).';
+    }
+
     return {
       success: false,
-      error: error.message
+      error: errorMessage,
+      details: error.code ? `Código: ${error.code}` : undefined
     };
   }
 }
