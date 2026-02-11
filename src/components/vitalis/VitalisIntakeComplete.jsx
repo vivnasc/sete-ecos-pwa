@@ -260,7 +260,7 @@ export default function VitalisIntakeComplete() {
       }
 
       const value = formData[fieldId];
-      
+
       if (config.type === 'checkbox') {
         if (!value || value.length === 0) {
           errors[fieldId] = 'Selecciona pelo menos uma opção';
@@ -271,6 +271,12 @@ export default function VitalisIntakeComplete() {
         }
       } else if (!value || value === '') {
         errors[fieldId] = 'Campo obrigatório';
+      } else if (config.type === 'number') {
+        // 🛡️ Validação numérica: verificar se é número válido e positivo
+        const num = parseFloat(value);
+        if (isNaN(num) || num <= 0) {
+          errors[fieldId] = 'Deve ser um número válido maior que zero';
+        }
       }
     });
 
