@@ -148,14 +148,7 @@ const SEQUENCIA = [
 ];
 
 export default async function handler(req, res) {
-  // Auth
-  const authHeader = req.headers.authorization;
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    if (!req.headers['x-vercel-cron']) {
-      return res.status(401).json({ error: 'Nao autorizado' });
-    }
-  }
+  // Auth centralizada no api/cron.js dispatcher
 
   if (!RESEND_API_KEY || !SUPABASE_URL || !SUPABASE_KEY) {
     return res.status(500).json({ error: 'Configuracao em falta' });

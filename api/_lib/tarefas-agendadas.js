@@ -24,17 +24,7 @@ const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABA
 const COACH_EMAIL = process.env.COACH_EMAIL || 'viv.saraiva@gmail.com';
 
 export default async function handler(req, res) {
-  // Verificar autorização (cron jobs do Vercel enviam header específico)
-  const authHeader = req.headers.authorization;
-  const cronSecret = process.env.CRON_SECRET;
-
-  // Aceitar chamadas do Vercel Cron ou com secret válido
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    // Também aceitar se vier do Vercel (sem auth mas com header específico)
-    if (!req.headers['x-vercel-cron']) {
-      return res.status(401).json({ error: 'Não autorizado' });
-    }
-  }
+  // Auth centralizada no api/cron.js dispatcher
 
   if (!RESEND_API_KEY || !SUPABASE_URL || !SUPABASE_KEY) {
     console.error('Configuração em falta');

@@ -39,7 +39,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { publishToInstagram } from './instagram-publish.js';
+import { publishToInstagram } from '../instagram-publish.js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
@@ -51,15 +51,7 @@ const MAX_POSTS_PER_RUN = 25;
 const DELAY_BETWEEN_POSTS = 3000;
 
 export default async function handler(req, res) {
-  // Verificar autorizacao (cron jobs do Vercel enviam header especifico)
-  const authHeader = req.headers.authorization;
-  const cronSecret = process.env.CRON_SECRET;
-
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    if (!req.headers['x-vercel-cron']) {
-      return res.status(401).json({ error: 'Nao autorizado' });
-    }
-  }
+  // Auth centralizada no api/cron.js dispatcher
 
   if (!SUPABASE_URL || !SUPABASE_KEY) {
     console.error('SUPABASE_URL ou SUPABASE_SERVICE_KEY nao configurados');

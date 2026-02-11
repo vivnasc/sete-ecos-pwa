@@ -345,18 +345,7 @@ async function processarTrialsExpirando() {
 // ============================================================
 
 export default async function handler(req, res) {
-  // Apenas POST (chamado por Vercel Cron)
-  if (req.method !== 'POST' && req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  // Verificar autenticação básica (segurança)
-  const authHeader = req.headers.authorization;
-  const expectedAuth = `Bearer ${process.env.CRON_SECRET || 'secret'}`;
-
-  if (authHeader !== expectedAuth) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  // Auth centralizada no api/cron.js dispatcher
 
   if (!RESEND_API_KEY || !supabaseUrl || !supabaseKey) {
     return res.status(500).json({
