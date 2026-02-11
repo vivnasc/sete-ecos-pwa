@@ -28,10 +28,18 @@ import { isCoach } from '../../lib/coach';
 const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || 'sb';
 const WHATSAPP_COMMUNITY = 'https://chat.whatsapp.com/FbHbQuDPGAZ3myiu29CmHO';
 
+// Exchange rates (Mozambican Metical as base)
+const EXCHANGE_RATES = {
+  MZN: 1,
+  USD: 65.79,  // 1 USD = 65.79 MZN
+  EUR: 71.43   // 1 EUR = 71.43 MZN
+};
+
 const PagamentoVitalis = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const paypalRef = useRef(null);
+  const previousCurrencyRef = useRef('MZN');
 
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
@@ -94,6 +102,20 @@ const PagamentoVitalis = () => {
       renderPayPalButtons();
     }
   }, [selectedPlan, paypalLoaded, userId, promoDiscount, planType]);
+
+  // Auto-convert amount when currency changes
+  useEffect(() => {
+    const previousCurrency = previousCurrencyRef.current;
+
+    if (manualAmount && previousCurrency !== manualCurrency) {
+      // Convert: amount in previous currency → MZN → new currency
+      const amountInMZN = parseFloat(manualAmount) * EXCHANGE_RATES[previousCurrency];
+      const convertedAmount = amountInMZN / EXCHANGE_RATES[manualCurrency];
+
+      setManualAmount(convertedAmount.toFixed(2));
+      previousCurrencyRef.current = manualCurrency;
+    }
+  }, [manualCurrency]);
 
   const loadUserData = async () => {
     try {
