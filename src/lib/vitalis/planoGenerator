@@ -52,16 +52,17 @@ export async function gerarPlanoAutomatico(userId) {
     }
 
     // 3. Calcular TMB (Taxa Metabólica Basal) - Fórmula Mifflin-St Jeor
-    const altura = intake.altura_cm || alturaFromUsers || 165; // fallback seguro
-    const peso = intake.peso_actual;
-    const idade = intake.idade;
+    // 🛡️ Converter para número com segurança (protege contra strings, null, undefined)
+    const altura = parseFloat(intake.altura_cm) || parseFloat(alturaFromUsers) || 165;
+    const peso = parseFloat(intake.peso_actual);
+    const idade = parseInt(intake.idade, 10);
     const sexo = intake.sexo;
 
-    // 🛡️ VALIDAÇÃO: Verificar campos obrigatórios
-    if (!peso || !idade || !sexo) {
+    // 🛡️ VALIDAÇÃO: Verificar campos obrigatórios e se são números válidos
+    if (!peso || isNaN(peso) || !idade || isNaN(idade) || !sexo) {
       const camposFaltando = [];
-      if (!peso) camposFaltando.push('peso');
-      if (!idade) camposFaltando.push('idade');
+      if (!peso || isNaN(peso)) camposFaltando.push('peso (inválido ou em falta)');
+      if (!idade || isNaN(idade)) camposFaltando.push('idade (inválido ou em falta)');
       if (!sexo) camposFaltando.push('sexo');
       throw new Error(`Dados do intake incompletos. Campos em falta: ${camposFaltando.join(', ')}`);
     }
@@ -178,7 +179,8 @@ export async function gerarPlanoAutomatico(userId) {
     if (intake.aceita_jejum && abordagem === 'keto_if') {
       numRefeicoes = 2; // Jejum intermitente: 2 refeições
     } else if (intake.num_refeicoes_dia) {
-      numRefeicoes = parseInt(intake.num_refeicoes_dia.split('-')[0]);
+      const parsed = parseInt(intake.num_refeicoes_dia.toString().split('-')[0], 10);
+      numRefeicoes = (parsed && !isNaN(parsed) && parsed > 0) ? parsed : 3;
     } else {
       numRefeicoes = 3; // Padrão
     }
@@ -361,6 +363,11 @@ export async function gerarPlanoAutomatico(userId) {
 
 // Função auxiliar para calcular IMC
 function calcularIMC(peso, altura) {
+  // 🛡️ Validar para evitar divisão por zero
+  if (!altura || altura <= 0 || !peso || peso <= 0) {
+    console.warn('⚠️ calcularIMC: valores inválidos', { peso, altura });
+    return 0;
+  }
   const alturaM = altura / 100;
   return parseFloat((peso / (alturaM * alturaM)).toFixed(1));
 }
@@ -410,10 +417,16 @@ export async function recalcularPlano(userId, novaFase = null) {
     }
 
     // 5. Calcular TMB com peso actual (não o inicial)
-    const altura = intake.altura_cm || alturaFromUsers;
-    const peso = client.peso_actual || intake.peso_actual;
-    const idade = intake.idade;
+    // 🛡️ Converter para número com segurança
+    const altura = parseFloat(intake.altura_cm) || parseFloat(alturaFromUsers) || 165;
+    const peso = parseFloat(client.peso_actual) || parseFloat(intake.peso_actual);
+    const idade = parseInt(intake.idade, 10);
     const sexo = intake.sexo;
+
+    // 🛡️ Validar antes de calcular
+    if (!peso || isNaN(peso) || !idade || isNaN(idade)) {
+      throw new Error('Dados inválidos para recalcular plano (peso ou idade em falta)');
+    }
 
     let tmb;
     if (sexo === 'masculino') {
