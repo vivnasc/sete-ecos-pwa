@@ -108,23 +108,34 @@ export default function PlanoHTML() {
         porcoesFromPlan = receitasConfig['porções_por_refeicao'] || receitasConfig.porcoes_por_refeicao || {};
       } catch (e) { /* ignore */ }
 
-      const proteinaG = plano?.proteina_g || 120;
-      const carboidratosG = plano?.carboidratos_g || 100;
-      const gorduraG = plano?.gordura_g || 60;
+      // CALCULAR PORÇÕES PRIMEIRO (fonte de verdade)
+      const porcoesProteina = plano?.porcoes_proteina || porcoesFromPlan.proteina || 3;
+      const porcoesHidratos = plano?.porcoes_hidratos || porcoesFromPlan.hidratos || 2;
+      const porcoesGordura = plano?.porcoes_gordura || porcoesFromPlan.gordura || 6;
+      const porcoesLegumes = plano?.porcoes_legumes || porcoesFromPlan.legumes || 4;
+
+      // CALCULAR MACROS BASEADO NAS PORÇÕES (1 palma = ~25g proteína, 1 mão = ~30g carbs, 1 polegar = ~10g gordura)
+      const proteinaG = porcoesProteina * 25;
+      const carboidratosG = porcoesHidratos * 30;
+      const gorduraG = porcoesGordura * 10;
+
+      // Calorias: proteína e carbs = 4 kcal/g, gordura = 9 kcal/g
+      const caloriasPorMacros = (proteinaG * 4) + (carboidratosG * 4) + (gorduraG * 9);
+      const calorias = plano?.calorias_diarias || plano?.calorias_alvo || caloriasPorMacros;
 
       setDados({
         nome: intake?.nome || 'Cliente',
         peso_actual: plano?.peso_actual || cliente?.peso_actual || 70,
         peso_meta: plano?.peso_meta || cliente?.peso_meta || 60,
         fase: plano?.fase || 'inducao',
-        calorias: plano?.calorias_diarias || plano?.calorias_alvo || 1500,
+        calorias: calorias,
         proteina_g: proteinaG,
         carboidratos_g: carboidratosG,
         gordura_g: gorduraG,
-        porcoes_proteina: plano?.porcoes_proteina || porcoesFromPlan.proteina || Math.round(proteinaG / 25),
-        porcoes_legumes: plano?.porcoes_legumes || porcoesFromPlan.legumes || 4,
-        porcoes_hidratos: plano?.porcoes_hidratos || porcoesFromPlan.hidratos || Math.round(carboidratosG / 30),
-        porcoes_gordura: plano?.porcoes_gordura || porcoesFromPlan.gordura || Math.round(gorduraG / 10),
+        porcoes_proteina: porcoesProteina,
+        porcoes_legumes: porcoesLegumes,
+        porcoes_hidratos: porcoesHidratos,
+        porcoes_gordura: porcoesGordura,
         tamanho_palma: plano?.tamanho_palma_g || 20,
         tamanho_mao: plano?.tamanho_mao_g || 25,
         tamanho_polegar: plano?.tamanho_polegar_g || 7,
