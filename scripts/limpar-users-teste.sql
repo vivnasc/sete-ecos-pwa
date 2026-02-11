@@ -24,11 +24,12 @@ BEGIN
         RAISE NOTICE 'Limpando dados de: vivianne.saraiva@bancomoc.mz (ID: %)', v_user_id;
 
         -- Apagar dados relacionados (ordem: filhos primeiro, pais depois)
-        DELETE FROM vitalis_meal_plan WHERE user_id = v_user_id;
+        DELETE FROM vitalis_meal_plans WHERE user_id = v_user_id;
+        DELETE FROM vitalis_habitos WHERE user_id = v_user_id;
         DELETE FROM vitalis_intake WHERE user_id = v_user_id;
         DELETE FROM vitalis_checkins WHERE user_id = v_user_id;
         DELETE FROM vitalis_alerts WHERE user_id = v_user_id;
-        DELETE FROM vitalis_subscription_log WHERE user_id = v_user_id;
+        DELETE FROM vitalis_pdfs_gerados WHERE user_id = v_user_id;
         DELETE FROM vitalis_clients WHERE user_id = v_user_id;
 
         RAISE NOTICE '✅ Limpeza completa para vivianne.saraiva@bancomoc.mz';
@@ -53,11 +54,12 @@ BEGIN
         RAISE NOTICE 'Limpando dados de: vivianne-nascimento@outlook.com (ID: %)', v_user_id;
 
         -- Apagar dados relacionados (ordem: filhos primeiro, pais depois)
-        DELETE FROM vitalis_meal_plan WHERE user_id = v_user_id;
+        DELETE FROM vitalis_meal_plans WHERE user_id = v_user_id;
+        DELETE FROM vitalis_habitos WHERE user_id = v_user_id;
         DELETE FROM vitalis_intake WHERE user_id = v_user_id;
         DELETE FROM vitalis_checkins WHERE user_id = v_user_id;
         DELETE FROM vitalis_alerts WHERE user_id = v_user_id;
-        DELETE FROM vitalis_subscription_log WHERE user_id = v_user_id;
+        DELETE FROM vitalis_pdfs_gerados WHERE user_id = v_user_id;
         DELETE FROM vitalis_clients WHERE user_id = v_user_id;
 
         RAISE NOTICE '✅ Limpeza completa para vivianne-nascimento@outlook.com';
