@@ -491,18 +491,23 @@ try {
         .eq('user_id', userData.id)
         .maybeSingle();
 
-      // Verificar se já tem acesso (tester, active, pending, trial)
-      const statusComAcesso = ['tester', 'active', 'pending', 'trial'];
-      const temAcesso = currentClient && statusComAcesso.includes(currentClient.subscription_status);
+      // 🛡️ TRIAL NÃO GERA PLANO - apenas acesso básico (dashboard, check-in, receitas)
+      // Apenas utilizadores com subscrição ACTIVA geram plano automático
+      const statusComPlano = ['tester', 'active', 'pending'];
+      const temPlano = currentClient && statusComPlano.includes(currentClient.subscription_status);
 
-      console.log('Intake complete - subscription_status:', currentClient?.subscription_status, 'temAcesso:', temAcesso);
+      // Trial tem acesso limitado ao dashboard, mas SEM plano personalizado
+      const statusComAcessoBasico = ['trial'];
+      const temAcessoBasico = currentClient && statusComAcessoBasico.includes(currentClient.subscription_status);
+
+      console.log('Intake complete - subscription_status:', currentClient?.subscription_status, 'temPlano:', temPlano, 'temAcessoBasico:', temAcessoBasico);
 
       // Guardar preferências para personalizar textos na app
       setSexo(formData.sexo);
       setObservaRamadao(formData.observa_ramadao);
 
-      if (temAcesso) {
-        // GERAR PLANO AUTOMATICAMENTE — com feedback visível
+      if (temPlano) {
+        // GERAR PLANO AUTOMATICAMENTE para utilizadores com subscrição activa
         setPlanoUserId(userData.id);
         setPlanoStatus('gerando');
         console.log('🔄 A gerar plano automático para userId:', userData.id);
@@ -524,6 +529,10 @@ try {
           setPlanoStatus('erro');
           setPlanoErro(planoError.message || 'Erro inesperado ao gerar plano');
         }
+      } else if (temAcessoBasico) {
+        // Trial: acesso básico sem plano personalizado
+        console.log('✅ Trial iniciado - acesso básico concedido (dashboard, receitas, check-in)');
+        navigate('/vitalis/dashboard');
       } else {
         // Não tem acesso - ir para pagamento
         navigate('/vitalis/pagamento');
