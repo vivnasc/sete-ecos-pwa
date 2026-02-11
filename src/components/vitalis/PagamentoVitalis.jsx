@@ -39,7 +39,6 @@ const PagamentoVitalis = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const paypalRef = useRef(null);
-  const previousCurrencyRef = useRef('MZN');
 
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
@@ -102,20 +101,6 @@ const PagamentoVitalis = () => {
       renderPayPalButtons();
     }
   }, [selectedPlan, paypalLoaded, userId, promoDiscount, planType]);
-
-  // Auto-convert amount when currency changes
-  useEffect(() => {
-    const previousCurrency = previousCurrencyRef.current;
-
-    if (manualAmount && previousCurrency !== manualCurrency) {
-      // Convert: amount in previous currency → MZN → new currency
-      const amountInMZN = parseFloat(manualAmount) * EXCHANGE_RATES[previousCurrency];
-      const convertedAmount = amountInMZN / EXCHANGE_RATES[manualCurrency];
-
-      setManualAmount(convertedAmount.toFixed(2));
-      previousCurrencyRef.current = manualCurrency;
-    }
-  }, [manualCurrency]);
 
   const loadUserData = async () => {
     try {
