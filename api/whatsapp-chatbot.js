@@ -122,7 +122,9 @@ export default async function handler(req, res) {
   }
 
   // Validar assinatura Twilio (segurança)
-  const skipValidation = process.env.TWILIO_SKIP_SIGNATURE_VALIDATION === 'true';
+  // Auto-skip em sandbox (número +14155238886) — sandbox não valida assinaturas de forma fiável
+  const isSandbox = TWILIO_WHATSAPP_NUMBER().includes('14155238886');
+  const skipValidation = isSandbox || process.env.TWILIO_SKIP_SIGNATURE_VALIDATION === 'true';
   if (!skipValidation && TWILIO_AUTH_TOKEN()) {
     const isValid = validarAssinaturaTwilio(req);
     if (!isValid) {
