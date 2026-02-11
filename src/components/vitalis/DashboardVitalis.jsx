@@ -241,16 +241,18 @@ export default function DashboardVitalis() {
         .maybeSingle();
 
       // Se não tem cliente, verificar se é coach
+      let activeClientData = clientData;
       if (!clientData) {
         if (isCoach(user.email)) {
           // Coach sem registo - criar registo mínimo ou usar dummy
           console.log('Coach sem registo vitalis_clients - permitindo acesso');
-          setClient({
+          activeClientData = {
             id: 'coach-temp',
             user_id: userData.id,
             subscription_status: 'tester',
             fase_actual: 'aprendizagem'
-          });
+          };
+          setClient(activeClientData);
         } else {
           console.log('Utilizador sem registo vitalis_clients');
           navigate('/vitalis/pagamento');
@@ -271,12 +273,16 @@ export default function DashboardVitalis() {
 
       // Buscar plano (pode não existir ainda)
       let planoData = null;
-      const { data: planoFromView } = await supabase
-        .from('vitalis_plano')
-        .select('*')
-        .eq('client_id', clientData.id)
-        .maybeSingle();
-      planoData = planoFromView;
+
+      // Só consultar vitalis_plano view se temos um client_id real (não 'coach-temp')
+      if (activeClientData.id && activeClientData.id !== 'coach-temp') {
+        const { data: planoFromView } = await supabase
+          .from('vitalis_plano')
+          .select('*')
+          .eq('client_id', activeClientData.id)
+          .maybeSingle();
+        planoData = planoFromView;
+      }
 
       // Fallback: se vitalis_plano (view) não tem dados, tentar vitalis_meal_plans
       if (!planoData) {
@@ -292,7 +298,7 @@ export default function DashboardVitalis() {
         if (mealPlan) {
           planoData = {
             ...mealPlan,
-            client_id: clientData.id,
+            client_id: activeClientData.id,
             calorias_diarias: mealPlan.calorias_alvo,
             porcoes_proteina: Math.round(mealPlan.proteina_g / 25),
             porcoes_hidratos: Math.round(mealPlan.carboidratos_g / 30),
