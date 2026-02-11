@@ -230,11 +230,7 @@ function AppRoutes() {
                 : <Navigate to="/" />
             } />
 
-            <Route path="/catalogo" element={
-              isSessionCoach(session)
-                ? <CatalogoPDF />
-                : <Navigate to="/" />
-            } />
+            <Route path="/catalogo" element={<CatalogoPDF />} />
 
             <Route path="/coach/analytics" element={
               isSessionCoach(session)
