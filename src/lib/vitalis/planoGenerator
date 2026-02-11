@@ -42,6 +42,18 @@ export async function gerarPlanoAutomatico(userId) {
       throw new Error('Dados do intake incompletos (peso ou idade em falta)');
     }
 
+    // 🛡️ VALIDAÇÃO: Prevenir numeric overflow
+    // Validar limites razoáveis para evitar cálculos absurdos
+    if (peso < 30 || peso > 300) {
+      throw new Error(`Peso inválido (${peso}kg). Deve estar entre 30kg e 300kg.`);
+    }
+    if (idade < 15 || idade > 100) {
+      throw new Error(`Idade inválida (${idade} anos). Deve estar entre 15 e 100 anos.`);
+    }
+    if (altura < 120 || altura > 250) {
+      throw new Error(`Altura inválida (${altura}cm). Deve estar entre 120cm e 250cm.`);
+    }
+
     let tmb;
     if (sexo === 'masculino') {
       tmb = (10 * peso) + (6.25 * altura) - (5 * idade) + 5;
@@ -74,6 +86,17 @@ export async function gerarPlanoAutomatico(userId) {
       caloriasAlvo = Math.round(tdee);
     }
 
+    // 🛡️ VALIDAÇÃO: Cap nas calorias para prevenir overflow
+    // Limites razoáveis: 1000-5000 kcal/dia
+    if (caloriasAlvo < 1000) {
+      console.warn(`Calorias muito baixas (${caloriasAlvo}), ajustando para 1200`);
+      caloriasAlvo = 1200;
+    }
+    if (caloriasAlvo > 5000) {
+      console.warn(`Calorias muito altas (${caloriasAlvo}), ajustando para 4000`);
+      caloriasAlvo = 4000;
+    }
+
     // 6. Calcular macros baseado na abordagem escolhida
     let proteinaG, carboidratosG, gorduraG;
     const abordagem = intake.abordagem_preferida || 'equilibrado';
@@ -94,6 +117,11 @@ export async function gerarPlanoAutomatico(userId) {
       carboidratosG = Math.round((caloriasAlvo * 0.40) / 4);
       gorduraG = Math.round((caloriasAlvo * 0.30) / 9);
     }
+
+    // 🛡️ VALIDAÇÃO: Cap nos macros para prevenir overflow (limites máximos razoáveis)
+    proteinaG = Math.min(proteinaG, 400);      // Max 400g proteína/dia
+    carboidratosG = Math.min(carboidratosG, 600); // Max 600g carbs/dia
+    gorduraG = Math.min(gorduraG, 250);        // Max 250g gordura/dia
 
     // 7. Converter para porções Precision Nutrition (método da mão)
     // 1 palma de proteína ≈ 25g proteína
