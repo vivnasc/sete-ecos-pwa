@@ -2272,37 +2272,37 @@ export function getSetupWhatsAppBusiness() {
       {
         dia: 'Segunda', conteudo: 'Dica de nutrição',
         exemplo: '🍽 Sabias que a matapa tem mais ferro que muitos suplementos importados? A tua avó já sabia. 🌿',
-        imagem: { template: 'dica', eco: 'vitalis', texto: 'A matapa tem mais ferro que muitos suplementos importados.', subtitulo: 'A tua avó já sabia. 🌿' },
+        imagem: { template: 'statusWA', eco: 'vitalis', texto: 'A matapa tem mais ferro que muitos suplementos importados.', subtitulo: 'A tua avó já sabia.', bgIndex: 1 },
       },
       {
         dia: 'Terça', conteudo: 'Frase motivacional + link LUMINA',
         exemplo: 'O teu corpo não precisa de castigo. Precisa de compreensão. 🔮 Descobre o que ele te pede: app.seteecos.com/lumina',
-        imagem: { template: 'dica', eco: 'lumina', texto: 'O teu corpo não precisa de castigo.', subtitulo: 'Precisa de compreensão. 🔮' },
+        imagem: { template: 'statusWA', eco: 'lumina', texto: 'O teu corpo não precisa de castigo.', subtitulo: 'Precisa de compreensão.', bgIndex: 7 },
       },
       {
         dia: 'Quarta', conteudo: 'Testemunho ou resultado',
         exemplo: '"Deixei de contar calorias e perdi 4kg em 2 meses. O segredo? Comer a MINHA comida, sem culpa." — Cliente VITALIS 🌱',
-        imagem: { template: 'testemunho', eco: 'vitalis', texto: 'Deixei de contar calorias e perdi 4kg em 2 meses.', subtitulo: 'O segredo? Comer a MINHA comida, sem culpa.' },
+        imagem: { template: 'statusWA', eco: 'vitalis', texto: 'Deixei de contar calorias e perdi 4kg em 2 meses.', subtitulo: 'Comer a MINHA comida, sem culpa.', bgIndex: 4 },
       },
       {
         dia: 'Quinta', conteudo: 'Bastidores',
         exemplo: 'Por trás do Sete Ecos: a preparar novos conteúdos para vocês. Isto é mais que trabalho, é missão. 💚',
-        imagem: { template: 'dica', eco: 'seteecos', texto: 'Isto é mais que trabalho.', subtitulo: 'É missão. 💚' },
+        imagem: { template: 'statusWA', eco: 'vitalis', texto: 'Isto é mais que trabalho. É missão.', subtitulo: 'Sete Ecos — Transmutação Feminina', bgIndex: 0 },
       },
       {
         dia: 'Sexta', conteudo: 'Promoção directa VITALIS',
         exemplo: '🌱 VITALIS: coaching nutricional feito para a mulher moçambicana. Sem dietas importadas. Sem culpa. Com resultados. Fala comigo 💚',
-        imagem: { template: 'cta', eco: 'vitalis', texto: 'Coaching nutricional feito para a mulher moçambicana.', subtitulo: 'Sem dietas importadas. Sem culpa. Com resultados.' },
+        imagem: { template: 'statusWA', eco: 'vitalis', texto: 'Coaching nutricional feito para ti.', subtitulo: 'Sem dietas importadas. Sem culpa. Com resultados.', bgIndex: 5 },
       },
       {
         dia: 'Sábado', conteudo: 'Receita rápida',
         exemplo: '🥣 Papas de aveia com banana e canela. 5 min. Sem açúcar. Energia para o dia todo. Receita completa no VITALIS 🌱',
-        imagem: { template: 'dica', eco: 'vitalis', texto: 'Papas de aveia com banana e canela.', subtitulo: '5 min. Sem açúcar. Energia para o dia todo. 🥣' },
+        imagem: { template: 'statusWA', eco: 'vitalis', texto: 'Papas de aveia com banana e canela.', subtitulo: '5 min. Sem açúcar. Energia para o dia todo.', bgIndex: 6 },
       },
       {
         dia: 'Domingo', conteudo: 'Reflexão pessoal',
         exemplo: 'Domingo é dia de olhar para dentro. O que fizeste por ti esta semana? 🌿',
-        imagem: { template: 'dica', eco: 'seteecos', texto: 'O que fizeste por ti esta semana?', subtitulo: 'Domingo é dia de olhar para dentro. 🌿' },
+        imagem: { template: 'statusWA', eco: 'vitalis', texto: 'O que fizeste por ti esta semana?', subtitulo: 'Domingo é dia de olhar para dentro.', bgIndex: 9 },
       },
     ],
   };

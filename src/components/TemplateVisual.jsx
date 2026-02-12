@@ -74,6 +74,7 @@ const TEMPLATES = {
   testemunho: { label: 'Testemunho', icon: '💬', desc: 'Citacao com aspas' },
   cta: { label: 'Promocao / CTA', icon: '🎯', desc: 'Chamada para accao' },
   stats: { label: 'Estatistica', icon: '📊', desc: 'Numero grande + contexto' },
+  statusWA: { label: 'WA Status', icon: '📱', desc: 'WhatsApp Status com foto' },
 };
 
 async function loadImage(src) {
@@ -564,6 +565,144 @@ async function renderStats(canvas, config) {
   ctx.fillText('app.seteecos.com', width / 2, height - (isStories ? 100 : 42));
 }
 
+// ============================================================
+// STATUS WHATSAPP - Template com foto de fundo real
+// ============================================================
+
+const STATUS_BACKGROUNDS = [
+  '/mockups/Vitalis-dashboard_mb-mockup.jpeg',
+  '/mockups/Vitalis-receitas_mb-mockup.jpeg',
+  '/mockups/Vitalis-coach_mb-mockup.jpeg',
+  '/catalogo/Vitalis_plano.jpeg',
+  '/mockups/mozproud-vitalis.jpeg',
+  '/mockups/Vitalis-treinos_mb-mockup.jpeg',
+  '/catalogo/Vitalis_receitas.jpeg',
+  '/catalogo/Lumina_leitura.jpeg',
+  '/mockups/Vitalis-espa%C3%A7oretorno_mb-mockup.jpeg',
+  '/catalogo/comunidade.jpeg',
+];
+
+async function renderStatusWA(canvas, config) {
+  const { formato, eco, texto, subtitulo, bgIndex } = config;
+  const { width, height } = FORMATOS[formato || 'stories'];
+  const cores = CORES[eco] || CORES.vitalis;
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+
+  // 1) Photo background
+  const bgSrc = STATUS_BACKGROUNDS[(bgIndex || 0) % STATUS_BACKGROUNDS.length];
+  const bgImg = await loadImage(bgSrc);
+  if (bgImg) {
+    // Cover-fill the canvas
+    const imgRatio = bgImg.width / bgImg.height;
+    const canvasRatio = width / height;
+    let sx = 0, sy = 0, sw = bgImg.width, sh = bgImg.height;
+    if (imgRatio > canvasRatio) {
+      sw = bgImg.height * canvasRatio;
+      sx = (bgImg.width - sw) / 2;
+    } else {
+      sh = bgImg.width / canvasRatio;
+      sy = (bgImg.height - sh) / 2;
+    }
+    ctx.drawImage(bgImg, sx, sy, sw, sh, 0, 0, width, height);
+  } else {
+    // Fallback: bold gradient
+    const grad = ctx.createLinearGradient(0, 0, width, height);
+    grad.addColorStop(0, cores.secondary);
+    grad.addColorStop(1, cores.primary);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, width, height);
+  }
+
+  // 2) Dark overlay gradient — stronger at top and bottom for text readability
+  const overlay = ctx.createLinearGradient(0, 0, 0, height);
+  overlay.addColorStop(0, 'rgba(0,0,0,0.75)');
+  overlay.addColorStop(0.25, 'rgba(0,0,0,0.3)');
+  overlay.addColorStop(0.5, 'rgba(0,0,0,0.15)');
+  overlay.addColorStop(0.75, 'rgba(0,0,0,0.3)');
+  overlay.addColorStop(1, 'rgba(0,0,0,0.8)');
+  ctx.fillStyle = overlay;
+  ctx.fillRect(0, 0, width, height);
+
+  // 3) Color accent overlay (brand tint)
+  ctx.fillStyle = cores.primary + '25';
+  ctx.fillRect(0, 0, width, height);
+
+  // 4) Top section — logo + brand
+  const logo = await loadImage(cores.logo);
+  if (logo) {
+    const logoSize = 80;
+    ctx.drawImage(logo, (width - logoSize) / 2, 100, logoSize, logoSize);
+  }
+  ctx.textAlign = 'center';
+  ctx.font = `700 28px 'Quicksand', sans-serif`;
+  ctx.fillStyle = cores.accent || '#FFFFFF';
+  ctx.fillText(cores.nome, width / 2, 210);
+
+  // 5) Decorative accent line
+  ctx.fillStyle = cores.accent || '#FFFFFF';
+  ctx.fillRect(width / 2 - 40, 235, 80, 3);
+
+  // 6) Main text — large, bold, centered
+  const padding = 80;
+  const maxW = width - padding * 2;
+  const fontSize = texto.length > 100 ? 48 : texto.length > 60 ? 56 : texto.length > 35 ? 64 : 72;
+  ctx.font = `800 ${fontSize}px 'Cormorant Garamond', Georgia, serif`;
+  ctx.fillStyle = '#FFFFFF';
+
+  // Text shadow for readability
+  ctx.shadowColor = 'rgba(0,0,0,0.6)';
+  ctx.shadowBlur = 12;
+  ctx.shadowOffsetX = 2;
+  ctx.shadowOffsetY = 2;
+
+  const lines = wrapText(ctx, texto, maxW);
+  const lineHeight = fontSize * 1.3;
+  const totalH = lines.length * lineHeight;
+  const startY = (height - totalH) / 2 + fontSize * 0.3;
+  drawCenteredText(ctx, lines, width / 2, startY, lineHeight);
+
+  // Reset shadow
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+
+  // 7) Subtitle
+  if (subtitulo) {
+    const subY = startY + totalH + 30;
+    const subSize = Math.round(fontSize * 0.42);
+    ctx.font = `500 ${subSize}px 'Quicksand', sans-serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.shadowColor = 'rgba(0,0,0,0.4)';
+    ctx.shadowBlur = 6;
+    const subLines = wrapText(ctx, subtitulo, maxW);
+    drawCenteredText(ctx, subLines, width / 2, subY, subSize * 1.5);
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+  }
+
+  // 8) Bottom — CTA strip
+  const stripH = 180;
+  const stripY = height - stripH;
+  const stripGrad = ctx.createLinearGradient(0, stripY, 0, height);
+  stripGrad.addColorStop(0, 'rgba(0,0,0,0)');
+  stripGrad.addColorStop(0.3, cores.primary + 'CC');
+  stripGrad.addColorStop(1, cores.secondary + 'EE');
+  ctx.fillStyle = stripGrad;
+  ctx.fillRect(0, stripY, width, stripH);
+
+  // CTA text
+  ctx.font = `700 26px 'Quicksand', sans-serif`;
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillText('app.seteecos.com', width / 2, height - 90);
+
+  ctx.font = `500 22px 'Quicksand', sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.fillText(cores.subtitulo || '@seteecos', width / 2, height - 55);
+}
+
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -584,6 +723,7 @@ export const RENDER_MAP = {
   testemunho: renderTestemunho,
   cta: renderCTA,
   stats: renderStats,
+  statusWA: renderStatusWA,
 };
 
 export { CORES, FORMATOS, TEMPLATES };
