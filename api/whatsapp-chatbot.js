@@ -94,9 +94,20 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Método não permitido' });
   }
 
+  // Helper para enviar TwiML
+  function sendTwiML(message) {
+    const twiml = message
+      ? `<?xml version="1.0" encoding="UTF-8"?><Response><Message>${escapeXml(message)}</Message></Response>`
+      : '<?xml version="1.0" encoding="UTF-8"?><Response></Response>';
+    console.log('TwiML resposta (primeiros 200 chars):', twiml.substring(0, 200));
+    res.setHeader('Content-Type', 'text/xml; charset=utf-8');
+    res.status(200);
+    res.end(twiml);
+  }
+
   try {
-    const body = req.body;
-    console.log('WhatsApp chatbot recebeu:', JSON.stringify({ From: body.From, Body: body.Body, NumMedia: body.NumMedia }));
+    const body = req.body || {};
+    console.log('WhatsApp chatbot recebeu:', JSON.stringify({ From: body.From, Body: body.Body, NumMedia: body.NumMedia, ProfileName: body.ProfileName }));
 
     // Campos Twilio standard
     const from = body.From || '';
@@ -106,8 +117,7 @@ export default async function handler(req, res) {
 
     // Ignorar mensagens vazias
     if (!msgBody && numMedia === 0) {
-      res.setHeader('Content-Type', 'text/xml');
-      return res.status(200).send('<Response></Response>');
+      return sendTwiML('');
     }
 
     // Extrair número limpo
@@ -124,11 +134,7 @@ export default async function handler(req, res) {
         `Enviou ${numMedia} imagem(s) — possivelmente comprovativo de pagamento`
       ).catch(err => console.error('Erro notificar:', err));
 
-      // Responder directamente via TwiML
-      res.setHeader('Content-Type', 'text/xml');
-      return res.status(200).send(
-        `<Response><Message>${escapeXml(mediaMsg)}</Message></Response>`
-      );
+      return sendTwiML(mediaMsg);
     }
 
     // Gerar resposta do chatbot
@@ -145,17 +151,11 @@ export default async function handler(req, res) {
       });
     }
 
-    // Responder directamente via TwiML (mais fiável que REST API)
-    res.setHeader('Content-Type', 'text/xml');
-    return res.status(200).send(
-      `<Response><Message>${escapeXml(resposta)}</Message></Response>`
-    );
+    console.log('Resposta gerada para:', msgBody, '-> chave detectada, tamanho:', resposta.length);
+    return sendTwiML(resposta);
 
   } catch (error) {
     console.error('Erro no webhook Twilio WhatsApp:', error);
-    res.setHeader('Content-Type', 'text/xml');
-    return res.status(200).send(
-      '<Response><Message>Desculpa, ocorreu um erro. Tenta novamente ou responde 7 para falar com a Vivianne.</Message></Response>'
-    );
+    return sendTwiML('Desculpa, ocorreu um erro. Tenta novamente ou responde 7 para falar com a Vivianne.');
   }
 }
