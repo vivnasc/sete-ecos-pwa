@@ -2176,6 +2176,81 @@ export function getGuiaMetaDeveloper() {
 }
 
 // ============================================================
+// STATUS SEMANAL DINÂMICO — roda automaticamente a cada semana
+// ============================================================
+
+function getWeekNumber() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 1);
+  return Math.floor((now - start) / (7 * 24 * 60 * 60 * 1000));
+}
+
+const STATUS_PLAN = [
+  // [dia, tipo, fonte de conteúdo, template visual, eco, bgIndex]
+  { dia: 'Segunda', tipo: 'dica',       fonte: 'corpo',      tpl: 'statusWA',      eco: 'vitalis', bgIdx: [1, 3, 6, 0] },
+  { dia: 'Terça',   tipo: 'motivação',  fonte: 'hooks',      tpl: 'statusMinimal', eco: 'lumina',  bgIdx: null },
+  { dia: 'Quarta',  tipo: 'testemunho', fonte: 'emocional',  tpl: 'statusWA',      eco: 'vitalis', bgIdx: [4, 2, 8, 5] },
+  { dia: 'Quinta',  tipo: 'bastidores', fonte: 'hooks',      tpl: 'statusMinimal', eco: 'vitalis', bgIdx: null },
+  { dia: 'Sexta',   tipo: 'promoção',   fonte: 'provocacao', tpl: 'statusWA',      eco: 'vitalis', bgIdx: [5, 0, 1, 7] },
+  { dia: 'Sábado',  tipo: 'receita',    fonte: 'corpo',      tpl: 'statusWA',      eco: 'vitalis', bgIdx: [6, 3, 1, 9] },
+  { dia: 'Domingo', tipo: 'reflexão',   fonte: 'emocional',  tpl: 'statusMinimal', eco: 'vitalis', bgIdx: null },
+];
+
+const STATUS_CTAS = {
+  dica:       '🌱 Experimenta grátis 7 dias: app.seteecos.com/vitalis\n💬 Fala comigo: wa.me/258851006473',
+  motivação:  '✨ Faz o diagnóstico grátis: app.seteecos.com/lumina\n💬 Fala comigo: wa.me/258851006473',
+  testemunho: '🔮 Faz o LUMINA: app.seteecos.com/lumina\n🌱 Conhece o VITALIS: app.seteecos.com/vitalis\n💬 Fala comigo: wa.me/258851006473',
+  bastidores: '🌱 Conhece o projecto: app.seteecos.com\n💬 Fala comigo: wa.me/258851006473',
+  promoção:   '✅ Experimenta grátis 7 dias: app.seteecos.com/vitalis\n💬 Fala comigo para começar: wa.me/258851006473',
+  receita:    '🌱 Receitas e mais: app.seteecos.com/vitalis\n💬 Fala comigo: wa.me/258851006473',
+  reflexão:   '🔮 LUMINA grátis: app.seteecos.com/lumina\n💬 Fala comigo: wa.me/258851006473',
+};
+
+function gerarStatusSemanal() {
+  const week = getWeekNumber();
+
+  return STATUS_PLAN.map((plan) => {
+    let conteudo;
+    if (plan.fonte === 'corpo') {
+      conteudo = pickFromArray(CONTEUDO_CORPO, week + STATUS_PLAN.indexOf(plan));
+    } else if (plan.fonte === 'emocional') {
+      conteudo = pickFromArray(CONTEUDO_EMOCIONAL, week + STATUS_PLAN.indexOf(plan));
+    } else if (plan.fonte === 'provocacao') {
+      conteudo = pickFromArray(CONTEUDO_PROVOCACAO, week + STATUS_PLAN.indexOf(plan));
+    } else {
+      // hooks — frase curta motivacional
+      const hook = pickFromArray(HOOKS_PROVOCADORES, week + STATUS_PLAN.indexOf(plan));
+      conteudo = { hook, corpo: '', cta: '' };
+    }
+
+    const hookText = conteudo.hook;
+    const bodyText = conteudo.corpo ? `\n\n${conteudo.corpo}` : '';
+    const ctaText = conteudo.cta ? `\n\n${conteudo.cta}` : '';
+
+    // Legenda completa com link + WA + CTA
+    const exemplo = `${hookText}${bodyText}${ctaText}\n\n${STATUS_CTAS[plan.tipo]}`;
+
+    // Imagem — texto curto para a imagem (só hook + subtítulo)
+    const imgTexto = hookText.length > 70 ? hookText.split('.').slice(0, 2).join('.') + '.' : hookText;
+    const imgSub = conteudo.cta || (conteudo.corpo ? conteudo.corpo.split('.')[0] + '.' : '');
+    const bgIndex = plan.bgIdx ? plan.bgIdx[week % plan.bgIdx.length] : 0;
+
+    return {
+      dia: plan.dia,
+      conteudo: plan.tipo.charAt(0).toUpperCase() + plan.tipo.slice(1),
+      exemplo,
+      imagem: {
+        template: plan.tpl,
+        eco: plan.eco,
+        texto: imgTexto,
+        subtitulo: imgSub.length > 80 ? imgSub.substring(0, 77) + '...' : imgSub,
+        bgIndex,
+      },
+    };
+  });
+}
+
+// ============================================================
 // WHATSAPP BUSINESS - Setup completo profissional
 // ============================================================
 
@@ -2268,79 +2343,6 @@ export function getSetupWhatsAppBusiness() {
         imagem: '/mockups/Vitalis-coach_mb-mockup.jpeg',
       },
     ],
-    statusSemanal: [
-      {
-        dia: 'Segunda', conteudo: 'Dica de nutrição',
-        exemplo: `🍽 Sabias que a matapa tem mais ferro que muitos suplementos importados? A tua avó já sabia. 🌿
-
-O VITALIS ensina-te a usar o que já tens — comida real, local, sem gastar fortunas.
-
-🌱 Experimenta grátis 7 dias: app.seteecos.com/vitalis
-💬 Dúvidas? Fala comigo: wa.me/258851006473`,
-        imagem: { template: 'statusWA', eco: 'vitalis', texto: 'A matapa tem mais ferro que muitos suplementos importados.', subtitulo: 'A tua avó já sabia.', bgIndex: 1 },
-      },
-      {
-        dia: 'Terça', conteudo: 'Frase motivacional + link LUMINA',
-        exemplo: `O teu corpo não precisa de castigo. Precisa de compreensão. 🔮
-
-Descobre o que o teu corpo te pede com o LUMINA — diagnóstico gratuito em 5 minutos.
-
-✨ Faz o teu: app.seteecos.com/lumina
-💬 Fala comigo: wa.me/258851006473`,
-        imagem: { template: 'statusMinimal', eco: 'lumina', texto: 'O teu corpo não precisa de castigo.', subtitulo: 'Precisa de compreensão.' },
-      },
-      {
-        dia: 'Quarta', conteudo: 'Testemunho ou resultado',
-        exemplo: `"Deixei de contar calorias e perdi 4kg em 2 meses. O segredo? Comer a MINHA comida, sem culpa." — Cliente VITALIS 🌱
-
-Tu também podes. O primeiro passo é o diagnóstico gratuito.
-
-🔮 Faz o LUMINA: app.seteecos.com/lumina
-🌱 Conhece o VITALIS: app.seteecos.com/vitalis
-💬 Fala comigo: wa.me/258851006473`,
-        imagem: { template: 'statusWA', eco: 'vitalis', texto: 'Deixei de contar calorias e perdi 4kg em 2 meses.', subtitulo: 'Comer a MINHA comida, sem culpa.', bgIndex: 4 },
-      },
-      {
-        dia: 'Quinta', conteudo: 'Bastidores',
-        exemplo: `Por trás do Sete Ecos: a preparar novos conteúdos para vocês. Isto é mais que trabalho, é missão. 💚
-
-Cada mulher que se transforma inspira outra. Queres fazer parte?
-
-🌱 Conhece o projecto: app.seteecos.com
-💬 Fala comigo: wa.me/258851006473`,
-        imagem: { template: 'statusMinimal', eco: 'vitalis', texto: 'Isto é mais que trabalho. É missão.', subtitulo: 'Sete Ecos — Transmutação Feminina' },
-      },
-      {
-        dia: 'Sexta', conteudo: 'Promoção directa VITALIS',
-        exemplo: `🌱 VITALIS: coaching nutricional feito para a mulher moçambicana.
-
-Sem dietas importadas. Sem culpa. Com resultados.
-Plano alimentar personalizado + acompanhamento + receitas locais.
-
-✅ Experimenta grátis 7 dias: app.seteecos.com/vitalis
-💬 Fala comigo para começar: wa.me/258851006473`,
-        imagem: { template: 'statusWA', eco: 'vitalis', texto: 'Coaching nutricional feito para ti.', subtitulo: 'Sem dietas importadas. Sem culpa. Com resultados.', bgIndex: 5 },
-      },
-      {
-        dia: 'Sábado', conteudo: 'Receita rápida',
-        exemplo: `🥣 Papas de aveia com banana e canela. 5 min. Sem açúcar. Energia para o dia todo.
-
-Receita completa + dezenas de outras no VITALIS — tudo com ingredientes locais.
-
-🌱 Receitas e mais: app.seteecos.com/vitalis
-💬 Fala comigo: wa.me/258851006473`,
-        imagem: { template: 'statusWA', eco: 'vitalis', texto: 'Papas de aveia com banana e canela.', subtitulo: '5 min. Sem açúcar. Energia para o dia todo.', bgIndex: 6 },
-      },
-      {
-        dia: 'Domingo', conteudo: 'Reflexão pessoal',
-        exemplo: `Domingo é dia de olhar para dentro. O que fizeste por ti esta semana? 🌿
-
-Se a resposta é "nada"… esta semana pode ser diferente. Começa pelo diagnóstico.
-
-🔮 LUMINA grátis: app.seteecos.com/lumina
-💬 Fala comigo: wa.me/258851006473`,
-        imagem: { template: 'statusMinimal', eco: 'vitalis', texto: 'O que fizeste por ti esta semana?', subtitulo: 'Domingo é dia de olhar para dentro.' },
-      },
-    ],
+    statusSemanal: gerarStatusSemanal(),
   };
 }
