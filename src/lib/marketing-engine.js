@@ -2271,37 +2271,74 @@ export function getSetupWhatsAppBusiness() {
     statusSemanal: [
       {
         dia: 'Segunda', conteudo: 'Dica de nutrição',
-        exemplo: '🍽 Sabias que a matapa tem mais ferro que muitos suplementos importados? A tua avó já sabia. 🌿',
+        exemplo: `🍽 Sabias que a matapa tem mais ferro que muitos suplementos importados? A tua avó já sabia. 🌿
+
+O VITALIS ensina-te a usar o que já tens — comida real, local, sem gastar fortunas.
+
+🌱 Experimenta grátis 7 dias: app.seteecos.com/vitalis
+💬 Dúvidas? Fala comigo: wa.me/258851006473`,
         imagem: { template: 'statusWA', eco: 'vitalis', texto: 'A matapa tem mais ferro que muitos suplementos importados.', subtitulo: 'A tua avó já sabia.', bgIndex: 1 },
       },
       {
         dia: 'Terça', conteudo: 'Frase motivacional + link LUMINA',
-        exemplo: 'O teu corpo não precisa de castigo. Precisa de compreensão. 🔮 Descobre o que ele te pede: app.seteecos.com/lumina',
+        exemplo: `O teu corpo não precisa de castigo. Precisa de compreensão. 🔮
+
+Descobre o que o teu corpo te pede com o LUMINA — diagnóstico gratuito em 5 minutos.
+
+✨ Faz o teu: app.seteecos.com/lumina
+💬 Fala comigo: wa.me/258851006473`,
         imagem: { template: 'statusMinimal', eco: 'lumina', texto: 'O teu corpo não precisa de castigo.', subtitulo: 'Precisa de compreensão.' },
       },
       {
         dia: 'Quarta', conteudo: 'Testemunho ou resultado',
-        exemplo: '"Deixei de contar calorias e perdi 4kg em 2 meses. O segredo? Comer a MINHA comida, sem culpa." — Cliente VITALIS 🌱',
+        exemplo: `"Deixei de contar calorias e perdi 4kg em 2 meses. O segredo? Comer a MINHA comida, sem culpa." — Cliente VITALIS 🌱
+
+Tu também podes. O primeiro passo é o diagnóstico gratuito.
+
+🔮 Faz o LUMINA: app.seteecos.com/lumina
+🌱 Conhece o VITALIS: app.seteecos.com/vitalis
+💬 Fala comigo: wa.me/258851006473`,
         imagem: { template: 'statusWA', eco: 'vitalis', texto: 'Deixei de contar calorias e perdi 4kg em 2 meses.', subtitulo: 'Comer a MINHA comida, sem culpa.', bgIndex: 4 },
       },
       {
         dia: 'Quinta', conteudo: 'Bastidores',
-        exemplo: 'Por trás do Sete Ecos: a preparar novos conteúdos para vocês. Isto é mais que trabalho, é missão. 💚',
+        exemplo: `Por trás do Sete Ecos: a preparar novos conteúdos para vocês. Isto é mais que trabalho, é missão. 💚
+
+Cada mulher que se transforma inspira outra. Queres fazer parte?
+
+🌱 Conhece o projecto: app.seteecos.com
+💬 Fala comigo: wa.me/258851006473`,
         imagem: { template: 'statusMinimal', eco: 'vitalis', texto: 'Isto é mais que trabalho. É missão.', subtitulo: 'Sete Ecos — Transmutação Feminina' },
       },
       {
         dia: 'Sexta', conteudo: 'Promoção directa VITALIS',
-        exemplo: '🌱 VITALIS: coaching nutricional feito para a mulher moçambicana. Sem dietas importadas. Sem culpa. Com resultados. Fala comigo 💚',
+        exemplo: `🌱 VITALIS: coaching nutricional feito para a mulher moçambicana.
+
+Sem dietas importadas. Sem culpa. Com resultados.
+Plano alimentar personalizado + acompanhamento + receitas locais.
+
+✅ Experimenta grátis 7 dias: app.seteecos.com/vitalis
+💬 Fala comigo para começar: wa.me/258851006473`,
         imagem: { template: 'statusWA', eco: 'vitalis', texto: 'Coaching nutricional feito para ti.', subtitulo: 'Sem dietas importadas. Sem culpa. Com resultados.', bgIndex: 5 },
       },
       {
         dia: 'Sábado', conteudo: 'Receita rápida',
-        exemplo: '🥣 Papas de aveia com banana e canela. 5 min. Sem açúcar. Energia para o dia todo. Receita completa no VITALIS 🌱',
+        exemplo: `🥣 Papas de aveia com banana e canela. 5 min. Sem açúcar. Energia para o dia todo.
+
+Receita completa + dezenas de outras no VITALIS — tudo com ingredientes locais.
+
+🌱 Receitas e mais: app.seteecos.com/vitalis
+💬 Fala comigo: wa.me/258851006473`,
         imagem: { template: 'statusWA', eco: 'vitalis', texto: 'Papas de aveia com banana e canela.', subtitulo: '5 min. Sem açúcar. Energia para o dia todo.', bgIndex: 6 },
       },
       {
         dia: 'Domingo', conteudo: 'Reflexão pessoal',
-        exemplo: 'Domingo é dia de olhar para dentro. O que fizeste por ti esta semana? 🌿',
+        exemplo: `Domingo é dia de olhar para dentro. O que fizeste por ti esta semana? 🌿
+
+Se a resposta é "nada"… esta semana pode ser diferente. Começa pelo diagnóstico.
+
+🔮 LUMINA grátis: app.seteecos.com/lumina
+💬 Fala comigo: wa.me/258851006473`,
         imagem: { template: 'statusMinimal', eco: 'vitalis', texto: 'O que fizeste por ti esta semana?', subtitulo: 'Domingo é dia de olhar para dentro.' },
       },
     ],
