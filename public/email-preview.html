@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview Emails — Sete Ecos Marketing</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #1a1a2e; font-family: system-ui; color: white; padding: 20px; }
+    h1 { text-align: center; margin: 20px 0; font-size: 24px; }
+    .nav { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 20px 0 30px; }
+    .nav button { padding: 10px 20px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; border-radius: 20px; cursor: pointer; font-size: 13px; }
+    .nav button:hover, .nav button.active { background: rgba(124,139,111,0.4); border-color: #7C8B6F; }
+    .email-frame { max-width: 650px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .email-meta { max-width: 650px; margin: 0 auto 8px; padding: 12px 16px; background: rgba(255,255,255,0.05); border-radius: 12px; font-size: 13px; }
+    .email-meta span { color: #9CAF88; }
+    .section { display: none; }
+    .section.active { display: block; }
+    .label { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 11px; margin-left: 8px; }
+    .label-waitlist { background: #6B5B95; }
+    .label-inativo { background: #C1634A; }
+    .label-curiosidade { background: #FF6B6B; }
+    .label-broadcast { background: #25D366; }
+    .label-trial { background: #E67E22; }
+  </style>
+</head>
+<body>
+  <h1>Preview Emails — Sete Ecos</h1>
+  <div class="nav">
+    <button onclick="show('dia0')" class="active">Dia 0 — Boas-vindas</button>
+    <button onclick="show('dia3')">Dia 3 — Lumina</button>
+    <button onclick="show('dia7')">Dia 7 — 3 Sinais</button>
+    <button onclick="show('dia10')">Dia 10 — Segredo</button>
+    <button onclick="show('dia14')">Dia 14 — VEMVITALIS20</button>
+    <button onclick="show('dia21')">Dia 21 — Testemunho</button>
+    <button onclick="show('dia30')">Dia 30 — Ultima Chance</button>
+    <button onclick="show('lembrete')">Lembrete Suave</button>
+    <button onclick="show('motivacao')">Motivacao Intensa</button>
+    <button onclick="show('curiosidade')">Curiosidade Insana</button>
+    <button onclick="show('catalogo')">Broadcast Catalogo</button>
+    <button onclick="show('promo')">Broadcast Promo</button>
+    <button onclick="show('whatsapp')">Convite WhatsApp</button>
+  </div>
+
+  <!-- DIA 0 -->
+  <div id="dia0" class="section active">
+    <div class="email-meta"><span>Assunto:</span> Bem-vinda ao Sete Ecos! <span class="label label-waitlist">Waitlist Dia 0</span></div>
+    <div class="email-frame">
+      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 28px;">Bem-vinda, Vivianne!</h1>
+        </div>
+        <p style="color: #6B5C4C; line-height: 1.8;">Obrigada por te juntares ao Sete Ecos.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">O Sete Ecos e um ecossistema de transformacao feminina - sete caminhos que se complementam para te guiar numa jornada de autodescoberta, equilibrio e plenitude.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">Nos proximos dias, vou partilhar contigo ferramentas que podem mudar a tua relacao contigo mesma.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">A comecar pelo <strong>Lumina</strong> - um diagnostico gratuito que revela padroes sobre a tua energia, emocao e corpo.</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="#" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6B5B95, #9B59B6); color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Experimentar Lumina (Gratuito)</a>
+        </div>
+        <div style="background: #25D366; border-radius: 12px; padding: 16px; margin: 30px 0; text-align: center;">
+          <p style="color: white; font-weight: bold; margin: 0 0 8px; font-size: 15px;">Tens duvidas? Fala comigo no WhatsApp!</p>
+          <a href="#" style="display: inline-block; padding: 10px 24px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 14px;">Abrir WhatsApp</a>
+          <p style="color: rgba(255,255,255,0.8); font-size: 11px; margin: 8px 0 0;">Respondo em menos de 1 hora | Seg-Sex 9h-18h</p>
+        </div>
+        <p style="color: #6B5C4C; font-size: 14px; text-align: center; margin-top: 30px;">Com carinho,<br><strong>Vivianne Saraiva</strong><br>Criadora do Sete Ecos</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIA 3 -->
+  <div id="dia3" class="section">
+    <div class="email-meta"><span>Assunto:</span> Ja experimentaste o Lumina? <span class="label label-waitlist">Waitlist Dia 3</span></div>
+    <div class="email-frame">
+      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">Vivianne, 2 minutos podem mudar o teu dia.</h1>
+        <p style="color: #6B5C4C; line-height: 1.8;">O <strong>Lumina</strong> e um ritual diario de auto-observacao. 7 perguntas simples que revelam padroes sobre como te sentes - corpo, mente e emocao.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">Mulheres que usam o Lumina reportam:</p>
+        <ul style="color: #6B5C4C; line-height: 2;">
+          <li>Mais consciencia sobre os seus padroes emocionais</li>
+          <li>Melhor capacidade de prever dias dificeis</li>
+          <li>Correlacao entre ciclo menstrual e estados emocionais</li>
+        </ul>
+        <p style="color: #6B5C4C; line-height: 1.8;">E <strong>completamente gratuito</strong>. Demora menos de 2 minutos.</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="#" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6B5B95, #9B59B6); color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Fazer o Meu Diagnostico</a>
+        </div>
+        <div style="background: #25D366; border-radius: 12px; padding: 16px; margin: 30px 0; text-align: center;">
+          <p style="color: white; font-weight: bold; margin: 0 0 8px; font-size: 15px;">Tens duvidas? Fala comigo no WhatsApp!</p>
+          <a href="#" style="display: inline-block; padding: 10px 24px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 14px;">Abrir WhatsApp</a>
+        </div>
+        <p style="color: #6B5C4C; font-size: 14px; text-align: center;">Vivianne</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIA 7 -->
+  <div id="dia7" class="section">
+    <div class="email-meta"><span>Assunto:</span> 3 sinais de que o teu corpo precisa de atencao <span class="label label-waitlist">Waitlist Dia 7</span></div>
+    <div class="email-frame">
+      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">Vivianne, o teu corpo fala. Estas a ouvir?</h1>
+        <p style="color: #6B5C4C; line-height: 1.8;">Ha 3 sinais que muitas mulheres ignoram:</p>
+        <div style="background: white; padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #7C8B6F;">
+          <p style="color: #4A4035; margin: 0 0 12px;"><strong>1. Cansaco cronico</strong> - Se dormes e acordas cansada, pode ser o que comes (ou nao comes).</p>
+          <p style="color: #4A4035; margin: 0 0 12px;"><strong>2. Comer por emocao</strong> - Se comes quando estas triste, ansiosa ou aborrecida, o problema nao e fome.</p>
+          <p style="color: #4A4035; margin: 0;"><strong>3. Efeito ioio</strong> - Se perdes peso e ganhas de volta, as dietas restritivas estao a sabotar o teu metabolismo.</p>
+        </div>
+        <p style="color: #6B5C4C; line-height: 1.8;">Se te identificas com pelo menos 1 destes sinais, o <strong>VITALIS</strong> foi criado exactamente para ti.</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="#" style="display: inline-block; padding: 14px 32px; background: #7C8B6F; color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Conhecer o VITALIS</a>
+        </div>
+        <div style="background: #25D366; border-radius: 12px; padding: 16px; margin: 30px 0; text-align: center;">
+          <p style="color: white; font-weight: bold; margin: 0 0 8px;">Tens duvidas? Fala comigo no WhatsApp!</p>
+          <a href="#" style="display: inline-block; padding: 10px 24px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 14px;">Abrir WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIA 10 - CURIOSIDADE -->
+  <div id="dia10" class="section">
+    <div class="email-meta"><span>Assunto:</span> O segredo que ninguem te conta sobre perder peso <span class="label label-curiosidade">Curiosidade Dia 10</span></div>
+    <div class="email-frame">
+      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">Vivianne, preciso de te contar uma coisa.</h1>
+        <p style="color: #6B5C4C; line-height: 1.8;">Tenho trabalhado com mulheres mocambicanas ha anos. E ha um padrao que vejo repetir-se:</p>
+        <div style="background: #2C2C2C; color: white; padding: 24px; border-radius: 12px; margin: 20px 0;">
+          <p style="font-size: 18px; font-style: italic; line-height: 1.6; margin: 0;">"A maioria das mulheres que me procura nao tem um problema de comida. Tem um problema de emocao disfarçado de fome."</p>
+        </div>
+        <p style="color: #6B5C4C; line-height: 1.8;">Leste isto e sentiste algo? Entao preciso de te explicar o que descobri.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">Quando comes por ansiedade, por solidao, por tedio — o teu corpo nao precisa de comida. Precisa de <strong>presenca</strong>. E nenhuma dieta do mundo resolve isso.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">Foi por isso que criei o <strong>Espaco de Retorno</strong> dentro do VITALIS — um lugar onde podes ir quando sentes vontade de comer por emocao. Sem culpa. Sem julgamento.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;"><strong>Isto nao existe em mais nenhum programa em Mocambique.</strong></p>
+        <div style="background: white; padding: 20px; border-radius: 12px; margin: 20px 0; text-align: center;">
+          <p style="color: #4A4035; font-size: 16px; margin: 0 0 8px;">Queres saber se isto e para ti?</p>
+          <p style="color: #6B5C4C; font-size: 14px; margin: 0;">Envia-me "quero saber mais" no WhatsApp.</p>
+        </div>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="#" style="display: inline-block; padding: 14px 32px; background: #25D366; color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Enviar Mensagem no WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIA 14 - CODIGO PROMO -->
+  <div id="dia14" class="section">
+    <div class="email-meta"><span>Assunto:</span> Vivianne, tenho um presente para ti (20% desconto) <span class="label label-waitlist">Waitlist Dia 14</span></div>
+    <div class="email-frame">
+      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">Vivianne, imagina isto:</h1>
+        <p style="color: #6B5C4C; line-height: 1.8;">Daqui a 3 meses, acordas com mais energia. A roupa cabe melhor. Comes sem culpa porque sabes o que o teu corpo precisa.</p>
+        <div style="background: white; padding: 20px; border-radius: 12px; margin: 20px 0;">
+          <p style="color: #4A4035; font-weight: bold; margin: 0 0 10px;">O que inclui o VITALIS:</p>
+          <p style="color: #6B5C4C; margin: 4px 0;">Plano alimentar personalizado com comida mocambicana</p>
+          <p style="color: #6B5C4C; margin: 4px 0;">Receitas com ingredientes que ja tens em casa</p>
+          <p style="color: #6B5C4C; margin: 4px 0;">Check-in diario em 30 segundos</p>
+          <p style="color: #6B5C4C; margin: 4px 0;">Espaco de Retorno (apoio emocional unico)</p>
+          <p style="color: #6B5C4C; margin: 4px 0;">Dashboard com progresso e conquistas</p>
+          <p style="color: #6B5C4C; margin: 4px 0;">Chat directo com a Vivianne</p>
+          <p style="color: #6B5C4C; margin: 4px 0;">7 dias de garantia total</p>
+        </div>
+        <div style="background: linear-gradient(135deg, #FF6B6B, #EE5A24); border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center;">
+          <p style="color: white; font-size: 12px; margin: 0; letter-spacing: 2px;">CODIGO EXCLUSIVO</p>
+          <p style="color: white; font-size: 32px; font-weight: bold; margin: 8px 0; letter-spacing: 4px;">VEMVITALIS20</p>
+          <p style="color: rgba(255,255,255,0.9); font-size: 16px; margin: 0;">20% de desconto no VITALIS</p>
+          <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 4px 0 0;">Usa na app ou envia por WhatsApp</p>
+        </div>
+        <p style="color: #7C8B6F; font-weight: bold; text-align: center; font-size: 16px;">De <s>2.500 MZN</s> por <strong>2.000 MZN/mes</strong> com o codigo</p>
+        <div style="text-align: center; margin: 20px 0;">
+          <a href="#" style="display: inline-block; padding: 14px 32px; background: #7C8B6F; color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Comecar com 20% Desconto</a>
+        </div>
+        <div style="background: #25D366; border-radius: 12px; padding: 16px; margin: 30px 0; text-align: center;">
+          <p style="color: white; font-weight: bold; margin: 0 0 8px;">Tens duvidas? Fala comigo no WhatsApp!</p>
+          <a href="#" style="display: inline-block; padding: 10px 24px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 14px;">Abrir WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIA 21 -->
+  <div id="dia21" class="section">
+    <div class="email-meta"><span>Assunto:</span> "Perdi 8kg sem passar fome" - historia real <span class="label label-waitlist">Waitlist Dia 21</span></div>
+    <div class="email-frame">
+      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">Vivianne, isto e possivel para ti tambem.</h1>
+        <div style="background: white; padding: 24px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #7C8B6F;">
+          <p style="color: #4A4035; font-style: italic; font-size: 16px; line-height: 1.6;">"Finalmente um metodo que nao me faz sentir em dieta. Perdi 8kg em 3 meses e aprendi a comer sem culpa. O Espaco de Retorno mudou tudo - percebi que comia por ansiedade, nao por fome."</p>
+          <p style="color: #7C8B6F; font-weight: bold; margin-top: 12px;">- M.J., Maputo</p>
+        </div>
+        <div style="background: white; padding: 24px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #7C8B6F;">
+          <p style="color: #4A4035; font-style: italic; font-size: 16px; line-height: 1.6;">"A app e tao facil de usar. Uso a comida que ja tenho em casa - xima, matapa, feijao nhemba. Nao preciso de comprar nada especial."</p>
+          <p style="color: #7C8B6F; font-weight: bold; margin-top: 12px;">- A.B., Beira</p>
+        </div>
+        <div style="background: #FFF3E0; padding: 16px; border-radius: 12px; margin: 20px 0; text-align: center;">
+          <p style="color: #E65100; font-weight: bold; margin: 0 0 4px;">O teu codigo ainda esta activo!</p>
+          <p style="color: #4A4035; font-size: 24px; font-weight: bold; letter-spacing: 3px; margin: 0;">VEMVITALIS20</p>
+          <p style="color: #6B5C4C; font-size: 13px; margin: 4px 0 0;">20% de desconto - usa antes que expire</p>
+        </div>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="#" style="display: inline-block; padding: 14px 32px; background: #7C8B6F; color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Quero o Mesmo Resultado</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIA 30 -->
+  <div id="dia30" class="section">
+    <div class="email-meta"><span>Assunto:</span> Ultima chance: 20% desconto + garantia total <span class="label label-curiosidade">Waitlist Dia 30 FINAL</span></div>
+    <div class="email-frame">
+      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">Vivianne, ja passou um mes.</h1>
+        <p style="color: #6B5C4C; line-height: 1.8;">Ha 30 dias juntaste-te a lista de espera. Nesse tempo, mulheres que comecaram o VITALIS ja:</p>
+        <ul style="color: #6B5C4C; line-height: 2;">
+          <li>Perderam 2-4kg na primeira semana</li>
+          <li>Aprenderam a medir porcoes sem balanca (metodo da mao)</li>
+          <li>Descobriram o Espaco de Retorno para momentos dificeis</li>
+          <li>Construiram habitos que duram - com comida mocambicana</li>
+        </ul>
+        <p style="color: #6B5C4C; line-height: 1.8;">A unica diferenca entre elas e tu? <strong>Elas comecaram.</strong></p>
+        <div style="background: linear-gradient(135deg, #2C2C2C, #1a1a1a); color: white; padding: 24px; border-radius: 12px; margin: 20px 0; text-align: center;">
+          <p style="font-size: 12px; letter-spacing: 2px; margin: 0 0 8px; color: #FF6B6B;">ULTIMA OPORTUNIDADE</p>
+          <p style="font-size: 36px; font-weight: bold; letter-spacing: 4px; margin: 0;">VEMVITALIS20</p>
+          <p style="font-size: 18px; margin: 8px 0 0; color: #FFD700;">20% de desconto</p>
+          <p style="font-size: 14px; margin: 4px 0 0; color: rgba(255,255,255,0.6);">De 2.500 por 2.000 MZN/mes</p>
+        </div>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="#" style="display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #7C8B6F, #5a6b4f); color: white; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px;">Comecar Agora - 20% Off</a>
+        </div>
+        <div style="background: #25D366; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center;">
+          <p style="color: white; font-weight: bold; margin: 0 0 4px; font-size: 16px;">Preferes falar comigo primeiro?</p>
+          <p style="color: rgba(255,255,255,0.9); font-size: 13px; margin: 0 0 12px;">Tiro todas as tuas duvidas pessoalmente</p>
+          <a href="#" style="display: inline-block; padding: 12px 28px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold;">Falar com a Vivianne no WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEMBRETE SUAVE -->
+  <div id="lembrete" class="section">
+    <div class="email-meta"><span>Assunto:</span> Vivianne, sentimos a tua falta no Vitalis <span class="label label-inativo">Inativo 2-4 dias</span></div>
+    <div class="email-frame">
+      <div style="font-family: 'Quicksand', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <img src="https://app.seteecos.com/logos/VITALIS_LOGO_V3.png" alt="Vitalis" style="height: 60px;" onerror="this.style.display='none'">
+        </div>
+        <h1 style="color: #7C8B6F; font-size: 24px; text-align: center;">Ola Vivianne</h1>
+        <p style="color: #4A4035; font-size: 16px; line-height: 1.6; text-align: center;">
+          Ja la vao <strong>3 dias</strong> desde o teu ultimo registo no Vitalis.
+        </p>
+        <p style="color: #6B5C4C; font-size: 14px; text-align: center; margin: 20px 0;">
+          Sabemos que a vida acontece, mas cada pequeno passo conta.<br>
+          Que tal registares algo hoje? Mesmo que seja so a agua.
+        </p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="#" style="background: #7C8B6F; color: white; padding: 14px 32px; border-radius: 25px; text-decoration: none; font-weight: 600;">Voltar ao Vitalis</a>
+        </div>
+        <div style="background: #25D366; border-radius: 12px; padding: 16px; margin: 20px 0; text-align: center;">
+          <p style="color: white; font-weight: bold; margin: 0 0 8px;">Precisas de apoio? Fala comigo!</p>
+          <a href="#" style="display: inline-block; padding: 10px 24px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 14px;">Abrir WhatsApp</a>
+        </div>
+        <p style="color: #9CAF88; font-size: 12px; text-align: center; margin-top: 40px;">Estou aqui contigo<br>- Vivianne</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOTIVACAO INTENSA -->
+  <div id="motivacao" class="section">
+    <div class="email-meta"><span>Assunto:</span> Vivianne, preciso de te dizer uma coisa importante <span class="label label-inativo">Inativo 5+ dias</span></div>
+    <div class="email-frame">
+      <div style="font-family: 'Quicksand', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background: #FAF6F0;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <img src="https://app.seteecos.com/logos/VITALIS_LOGO_V3.png" alt="Vitalis" style="height: 50px;" onerror="this.style.display='none'">
+        </div>
+        <h1 style="color: #4A4035; font-size: 22px; text-align: center; line-height: 1.4;">Vivianne, sei que estes 7 dias nao foram faceis.</h1>
+        <div style="background: #2C2C2C; color: white; padding: 24px; border-radius: 12px; margin: 20px 0;">
+          <p style="font-size: 18px; font-style: italic; line-height: 1.6; margin: 0; text-align: center;">"A diferenca entre quem transforma o corpo e quem desiste nao e forca de vontade. E ter alguem que nao desiste de ti."</p>
+        </div>
+        <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8; text-align: center;">Eu nao desisti de ti. E nao vou desistir.</p>
+        <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8;">Sabes o que acontece quando paras?</p>
+        <ul style="color: #6B5C4C; font-size: 14px; line-height: 2;">
+          <li>O teu metabolismo comeca a desacelerar de novo</li>
+          <li>Os padroes emocionais voltam silenciosamente</li>
+          <li>A culpa aumenta - e a culpa engorda mais que a comida</li>
+        </ul>
+        <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8;">Mas sabes o que acontece quando <strong>voltas hoje</strong>?</p>
+        <div style="background: white; padding: 16px; border-radius: 12px; margin: 16px 0; border-left: 4px solid #7C8B6F;">
+          <p style="color: #4A4035; margin: 4px 0;">Todo o teu progresso anterior esta guardado</p>
+          <p style="color: #4A4035; margin: 4px 0;">Retomas exactamente onde paraste</p>
+          <p style="color: #4A4035; margin: 4px 0;">Um check-in de 30 segundos ja e uma vitoria</p>
+        </div>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="#" style="display: inline-block; background: linear-gradient(135deg, #7C8B6F, #5a6b4f); color: white; padding: 16px 36px; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px;">Fazer o Meu Check-in Agora</a>
+        </div>
+        <div style="background: #25D366; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center;">
+          <p style="color: white; font-weight: bold; margin: 0 0 4px; font-size: 16px;">Queres falar sobre o que te esta a travar?</p>
+          <p style="color: rgba(255,255,255,0.9); font-size: 13px; margin: 0 0 12px;">Estou aqui para ouvir, sem julgamento</p>
+          <a href="#" style="display: inline-block; padding: 12px 28px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold;">Falar com a Vivianne no WhatsApp</a>
+        </div>
+        <p style="color: #6B5C4C; font-size: 14px; text-align: center; margin-top: 20px;">Com todo o carinho,<br><strong>Vivianne</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CURIOSIDADE INSANA -->
+  <div id="curiosidade" class="section">
+    <div class="email-meta"><span>Assunto:</span> Comes por fome ou por emocao? (faz este teste mental) <span class="label label-curiosidade">Curiosidade Semanal</span></div>
+    <div class="email-frame">
+      <div style="font-family: 'Quicksand', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background: #FAF6F0;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <img src="https://app.seteecos.com/logos/VITALIS_LOGO_V3.png" alt="Vitalis" style="height: 50px;" onerror="this.style.display='none'">
+        </div>
+        <h1 style="color: #4A4035; font-size: 22px; line-height: 1.4;">Vivianne,</h1>
+        <div style="background: #2C2C2C; color: white; padding: 24px; border-radius: 12px; margin: 20px 0;">
+          <p style="font-size: 17px; line-height: 1.7; margin: 0;">Faz este exercicio: antes de comeres algo, poe a mao no peito e pergunta "estou mesmo com fome ou estou a sentir algo?"</p>
+        </div>
+        <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8;">Se a resposta for "estou a sentir algo" - parabens, acabaste de descobrir o padrao que 87% das mulheres mocambicanas ignoram. E este padrao que faz o efeito ioio. Nao e a comida. E a emocao.</p>
+        <div style="background: white; padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #7C8B6F;">
+          <p style="color: #4A4035; font-size: 15px; line-height: 1.7; margin: 0;">O VITALIS tem uma ferramenta unica chamada Espaco de Retorno — feita exactamente para estes momentos. Nenhum outro programa em Mocambique tem isto.</p>
+        </div>
+        <div style="background: linear-gradient(135deg, #FF6B6B, #EE5A24); border-radius: 12px; padding: 16px; margin: 20px 0; text-align: center;">
+          <p style="color: white; font-size: 11px; letter-spacing: 2px; margin: 0;">CODIGO EXCLUSIVO</p>
+          <p style="color: white; font-size: 28px; font-weight: bold; letter-spacing: 3px; margin: 4px 0;">VEMVITALIS20</p>
+          <p style="color: rgba(255,255,255,0.9); font-size: 14px; margin: 0;">20% de desconto</p>
+        </div>
+        <div style="text-align: center; margin: 24px 0;">
+          <a href="#" style="display: inline-block; background: #7C8B6F; color: white; padding: 14px 32px; border-radius: 25px; text-decoration: none; font-weight: bold;">Comecar com 20% Off</a>
+        </div>
+        <div style="background: #25D366; border-radius: 12px; padding: 16px; margin: 20px 0; text-align: center;">
+          <p style="color: white; font-weight: bold; margin: 0 0 8px;">Tens duvidas? Fala comigo!</p>
+          <a href="#" style="display: inline-block; padding: 10px 24px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 14px;">Abrir WhatsApp</a>
+        </div>
+        <p style="color: #6B5C4C; font-size: 13px; text-align: center;">Vivianne Saraiva<br>Criadora do Sete Ecos</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BROADCAST CATALOGO -->
+  <div id="catalogo" class="section">
+    <div class="email-meta"><span>Assunto:</span> Vivianne, conhece o catalogo completo Sete Ecos <span class="label label-broadcast">Broadcast</span></div>
+    <div class="email-frame">
+      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 26px;">Catalogo Sete Ecos 2026</h1>
+          <p style="color: #6B5C4C;">Ola Vivianne, aqui esta tudo sobre o nosso ecossistema</p>
+        </div>
+        <div style="background: linear-gradient(135deg, #6B5B95, #9B59B6); border-radius: 12px; padding: 20px; margin: 16px 0; color: white;">
+          <h2 style="margin: 0 0 8px; font-size: 20px;">LUMINA — Diagnostico Gratuito</h2>
+          <p style="margin: 0; opacity: 0.9; font-size: 14px;">5 minutos. 23 padroes possiveis. 100% gratuito.</p>
+          <div style="margin-top: 12px;"><a href="#" style="display: inline-block; padding: 8px 20px; background: white; color: #6B5B95; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 13px;">Comecar Lumina</a></div>
+        </div>
+        <div style="background: linear-gradient(135deg, #7C8B6F, #5a6b4f); border-radius: 12px; padding: 20px; margin: 16px 0; color: white;">
+          <h2 style="margin: 0 0 8px; font-size: 20px;">VITALIS — Coaching Nutricional</h2>
+          <p style="margin: 0; opacity: 0.9; font-size: 14px;">O programa de transformacao feito para a mulher mocambicana.</p>
+          <ul style="margin: 8px 0; padding-left: 20px; font-size: 13px; line-height: 1.8; opacity: 0.9;">
+            <li>Plano alimentar personalizado (xima, matapa, caril)</li>
+            <li>Check-in diario + Dashboard de progresso</li>
+            <li>Espaco de Retorno (apoio emocional unico)</li>
+            <li>Receitas mocambicanas + Lista de compras</li>
+          </ul>
+          <p style="margin: 8px 0 0; font-size: 16px; font-weight: bold;">Desde 2.500 MZN/mes | 7 dias gratis</p>
+          <div style="margin-top: 12px;"><a href="#" style="display: inline-block; padding: 8px 20px; background: white; color: #7C8B6F; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 13px;">Ver VITALIS</a></div>
+        </div>
+        <div style="background: linear-gradient(135deg, #C9A96E, #8B6914); border-radius: 12px; padding: 20px; margin: 16px 0; color: white;">
+          <h2 style="margin: 0 0 8px; font-size: 20px;">AUREA — Auto-Valor e Presenca</h2>
+          <p style="margin: 0; opacity: 0.9; font-size: 14px;">100+ micro-praticas de auto-cuidado. Meditacoes. Diario de merecimento.</p>
+          <p style="margin: 8px 0 0; font-size: 16px; font-weight: bold;">Desde 975 MZN/mes</p>
+        </div>
+        <div style="background: linear-gradient(135deg, #FF6B6B, #EE5A24); border-radius: 12px; padding: 20px; margin: 16px 0; color: white; text-align: center;">
+          <h2 style="margin: 0 0 8px; font-size: 20px;">BUNDLE — Vitalis + Aurea</h2>
+          <p style="margin: 0; font-size: 24px; font-weight: bold;">25% DESCONTO</p>
+          <p style="margin: 4px 0; font-size: 14px; opacity: 0.9;">Desde 2.600 MZN/mes (poupas 875 MZN!)</p>
+        </div>
+        <div style="background: #2C2C2C; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center; color: white;">
+          <p style="font-size: 11px; letter-spacing: 2px; margin: 0;">CODIGO EXCLUSIVO PARA TI</p>
+          <p style="font-size: 32px; font-weight: bold; letter-spacing: 4px; margin: 8px 0;">VEMVITALIS20</p>
+          <p style="font-size: 16px; margin: 0;">20% de desconto no VITALIS</p>
+        </div>
+        <div style="text-align: center; margin: 24px 0;">
+          <a href="#" style="display: inline-block; padding: 16px 36px; background: #7C8B6F; color: white; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px;">Comecar com 20% Desconto</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BROADCAST PROMO -->
+  <div id="promo" class="section">
+    <div class="email-meta"><span>Assunto:</span> Vivianne, 20% de desconto no VITALIS — codigo exclusivo <span class="label label-curiosidade">Promo</span></div>
+    <div class="email-frame">
+      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 26px; text-align: center;">Vivianne, tenho um presente para ti</h1>
+        <div style="background: linear-gradient(135deg, #2C2C2C, #1a1a1a); color: white; padding: 30px; border-radius: 16px; margin: 24px 0; text-align: center;">
+          <p style="font-size: 12px; letter-spacing: 3px; margin: 0; color: #FF6B6B;">OFERTA EXCLUSIVA</p>
+          <p style="font-size: 42px; font-weight: bold; letter-spacing: 4px; margin: 12px 0;">VEMVITALIS20</p>
+          <p style="font-size: 20px; margin: 0; color: #FFD700;">20% de desconto no VITALIS</p>
+          <p style="font-size: 14px; margin: 8px 0 0; color: rgba(255,255,255,0.6);">De 2.500 por 2.000 MZN/mes</p>
+        </div>
+        <div style="background: white; padding: 20px; border-radius: 12px; margin: 16px 0;">
+          <p style="color: #4A4035; margin: 6px 0; font-size: 14px;">Plano alimentar com comida mocambicana</p>
+          <p style="color: #4A4035; margin: 6px 0; font-size: 14px;">Apoio emocional (Espaco de Retorno)</p>
+          <p style="color: #4A4035; margin: 6px 0; font-size: 14px;">Acompanhamento real com a Vivianne</p>
+          <p style="color: #4A4035; margin: 6px 0; font-size: 14px;">7 dias de garantia total</p>
+        </div>
+        <div style="text-align: center; margin: 24px 0;">
+          <a href="#" style="display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #7C8B6F, #5a6b4f); color: white; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px;">Usar Codigo — 20% Off</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONVITE WHATSAPP -->
+  <div id="whatsapp" class="section">
+    <div class="email-meta"><span>Assunto:</span> Vivianne, agora podes falar comigo no WhatsApp! <span class="label label-broadcast">WhatsApp</span></div>
+    <div class="email-frame">
+      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 26px; text-align: center;">Novidade, Vivianne!</h1>
+        <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8; text-align: center;">Agora podes falar comigo directamente no WhatsApp!</p>
+        <div style="background: #25D366; border-radius: 16px; padding: 30px; margin: 24px 0; text-align: center; color: white;">
+          <p style="font-size: 40px; margin: 0 0 8px;">💬</p>
+          <h2 style="margin: 0 0 8px; font-size: 22px;">WhatsApp Sete Ecos</h2>
+          <p style="margin: 0 0 16px; font-size: 14px; opacity: 0.9;">Tira duvidas, ve precos, conhece os servicos ou fala directamente comigo — tudo pelo WhatsApp.</p>
+          <a href="#" style="display: inline-block; padding: 14px 32px; background: white; color: #25D366; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px;">Enviar Mensagem</a>
+        </div>
+        <div style="background: white; padding: 20px; border-radius: 12px; margin: 16px 0;">
+          <p style="color: #6B5C4C; font-size: 14px; line-height: 1.8; text-align: center; margin: 0 0 12px;">O que podes fazer no WhatsApp:</p>
+          <p style="color: #4A4035; margin: 6px 0; font-size: 14px;">Tirar duvidas sobre o VITALIS, LUMINA ou AUREA</p>
+          <p style="color: #4A4035; margin: 6px 0; font-size: 14px;">Ver precos e formas de pagamento</p>
+          <p style="color: #4A4035; margin: 6px 0; font-size: 14px;">Activar o trial gratuito de 7 dias</p>
+          <p style="color: #4A4035; margin: 6px 0; font-size: 14px;">Enviar comprovativo de pagamento</p>
+          <p style="color: #4A4035; margin: 6px 0; font-size: 14px;">Falar directamente com a Vivianne</p>
+        </div>
+        <p style="color: #6B5C4C; font-size: 14px; text-align: center; margin-top: 24px;">Respondo pessoalmente. Sem bots. Sem espera.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function show(id) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      event.target.classList.add('active');
+    }
+  </script>
+</body>
+</html>
