@@ -5,16 +5,18 @@
  * serverless functions do plano Hobby do Vercel.
  *
  * Uso via vercel.json crons:
- *   /api/cron?task=tarefas         → Lembretes + expiracao + resumo coach
+ *   /api/cron?task=tarefas         → Lembretes + curiosidade + expiracao + resumo coach
  *   /api/cron?task=trial-emails    → Emails de trial expirando
- *   /api/cron?task=email-sequencia → Sequencia de nurturing (waitlist)
+ *   /api/cron?task=email-sequencia → Sequencia de nurturing (waitlist) c/ VEMVITALIS20
  *   /api/cron?task=instagram       → Publicacoes agendadas Instagram
+ *   /api/cron?task=broadcast       → Broadcast para interessados (catalogo, promo, whatsapp)
  */
 
 import tarefasAgendadas from './_lib/tarefas-agendadas.js';
 import trialExpiringEmails from './_lib/trial-expiring-emails.js';
 import emailSequencia from './_lib/email-sequencia.js';
 import instagramSchedule from './_lib/instagram-schedule.js';
+import broadcastInteressados from './_lib/broadcast-interessados.js';
 
 export default async function handler(req, res) {
   // Verificar autorizacao (cron jobs do Vercel)
@@ -32,7 +34,7 @@ export default async function handler(req, res) {
   if (!task) {
     return res.status(400).json({
       error: 'Parametro task obrigatorio',
-      opcoes: ['tarefas', 'trial-emails', 'email-sequencia', 'instagram']
+      opcoes: ['tarefas', 'trial-emails', 'email-sequencia', 'instagram', 'broadcast']
     });
   }
 
@@ -46,10 +48,12 @@ export default async function handler(req, res) {
         return await emailSequencia(req, res);
       case 'instagram':
         return await instagramSchedule(req, res);
+      case 'broadcast':
+        return await broadcastInteressados(req, res);
       default:
         return res.status(400).json({
           error: `Task desconhecida: ${task}`,
-          opcoes: ['tarefas', 'trial-emails', 'email-sequencia', 'instagram']
+          opcoes: ['tarefas', 'trial-emails', 'email-sequencia', 'instagram', 'broadcast']
         });
     }
   } catch (error) {

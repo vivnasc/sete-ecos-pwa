@@ -1344,38 +1344,83 @@ const CoachDashboard = () => {
               {/* AUTOMATION */}
               {activeView === 'automation' && (
                 <div className="p-6">
-                  <h2 className="text-xl font-bold text-white mb-2">Automação</h2>
-                  <p className="text-white/50 mb-6">Configure mensagens automáticas para os seus clientes</p>
+                  <h2 className="text-xl font-bold text-white mb-2">Automacoes Ativas</h2>
+                  <p className="text-white/50 mb-6">Todos os sistemas automaticos a funcionar para ti</p>
+
+                  {/* WhatsApp Chatbot Status */}
+                  <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 rounded-xl bg-green-500/30 flex items-center justify-center">
+                        <span className="text-3xl">💬</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-white font-bold text-lg">Chatbot WhatsApp</p>
+                        <p className="text-green-200/70 text-sm">Responde automaticamente a clientes e interessadas 24/7</p>
+                        <p className="text-green-300 text-xs mt-1 font-mono">wa.me/258851006473</p>
+                      </div>
+                      <div className="px-3 py-1.5 rounded-full text-xs font-bold bg-green-500/30 text-green-200 border border-green-500/40 animate-pulse">
+                        ATIVO 24/7
+                      </div>
+                    </div>
+                  </div>
 
                   <div className="space-y-4">
                     {[
                       {
-                        icon: '⏰',
-                        title: 'Lembrete de Inatividade',
-                        description: 'Envia mensagem automática após X dias sem atividade',
-                        setting: '3 dias',
-                        enabled: true
+                        icon: '📧',
+                        title: 'Sequencia Waitlist (30 dias)',
+                        description: '6 emails automaticos: Boas-vindas, Lumina, Valor, Vitalis, Testemunho, Oferta Final com codigo VEMVITALIS20',
+                        setting: 'Dia 0-30',
+                        enabled: true,
+                        cron: '10h UTC'
                       },
                       {
-                        icon: '📅',
-                        title: 'Motivação Semanal',
-                        description: 'Envia mensagem motivacional toda segunda-feira',
-                        setting: 'Segunda-feira',
-                        enabled: true
+                        icon: '⏰',
+                        title: 'Lembrete de Inatividade',
+                        description: 'Email motivacional + link WhatsApp apos 2+ dias sem check-in',
+                        setting: '2+ dias',
+                        enabled: true,
+                        cron: '9h UTC'
+                      },
+                      {
+                        icon: '📊',
+                        title: 'Resumo Diario (Coach)',
+                        description: 'Metricas do dia anterior: clientes activas, check-ins, alertas, novas',
+                        setting: 'Diario',
+                        enabled: true,
+                        cron: '9h UTC'
+                      },
+                      {
+                        icon: '🔔',
+                        title: 'Avisos de Expiracao',
+                        description: 'Email automatico 7 dias antes da subscricao expirar',
+                        setting: '7 dias antes',
+                        enabled: true,
+                        cron: '9h UTC'
+                      },
+                      {
+                        icon: '🎯',
+                        title: 'Trial Expiring Lifecycle',
+                        description: 'Emails em -3d, -1d, dia 0 e +3d (win-back com 15% desconto)',
+                        setting: '4 emails',
+                        enabled: true,
+                        cron: '8h UTC'
                       },
                       {
                         icon: '🔥',
-                        title: 'Celebração de Streak',
-                        description: 'Celebra automaticamente streaks de 7+ dias',
-                        setting: '7 dias',
-                        enabled: true
+                        title: 'Email Inativos com Motivacao',
+                        description: 'Email provocador + curiosidade + WhatsApp directo para clientes inactivas 5+ dias',
+                        setting: '5+ dias',
+                        enabled: true,
+                        cron: '9h UTC'
                       },
                       {
-                        icon: '👋',
-                        title: 'Boas-vindas Automáticas',
-                        description: 'Envia mensagem de boas-vindas a novos clientes',
-                        setting: 'Imediato',
-                        enabled: false
+                        icon: '📢',
+                        title: 'Broadcast Interessados',
+                        description: 'Envia catalogo, novidades e curiosidades a toda a lista de interessados',
+                        setting: 'Manual',
+                        enabled: true,
+                        cron: 'Sob demanda'
                       },
                     ].map((auto, i) => (
                       <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
@@ -1385,6 +1430,7 @@ const CoachDashboard = () => {
                         <div className="flex-1">
                           <p className="text-white font-semibold">{auto.title}</p>
                           <p className="text-white/50 text-sm">{auto.description}</p>
+                          {auto.cron && <p className="text-purple-300/50 text-xs mt-1">Cron: {auto.cron}</p>}
                         </div>
                         <div className="text-right">
                           <p className="text-purple-300 text-sm font-medium">{auto.setting}</p>
@@ -1400,10 +1446,27 @@ const CoachDashboard = () => {
                     ))}
                   </div>
 
-                  <div className="mt-6 p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                    <p className="text-purple-200 text-sm">
-                      <span className="font-semibold">Nota:</span> A configuração de automação será disponibilizada em breve. Por agora, as interações são manuais através do painel.
-                    </p>
+                  {/* Marketing Summary */}
+                  <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/20">
+                    <h4 className="text-pink-200 font-semibold mb-2">Resumo do Marketing Intenso</h4>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="p-2 rounded-lg bg-black/20">
+                        <p className="text-white/40">Codigo Promo</p>
+                        <p className="text-pink-300 font-mono font-bold">VEMVITALIS20</p>
+                      </div>
+                      <div className="p-2 rounded-lg bg-black/20">
+                        <p className="text-white/40">Desconto</p>
+                        <p className="text-green-300 font-bold">20%</p>
+                      </div>
+                      <div className="p-2 rounded-lg bg-black/20">
+                        <p className="text-white/40">WhatsApp Chatbot</p>
+                        <p className="text-green-300 font-bold">24/7</p>
+                      </div>
+                      <div className="p-2 rounded-lg bg-black/20">
+                        <p className="text-white/40">Emails Auto</p>
+                        <p className="text-purple-300 font-bold">7 fluxos</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
