@@ -264,7 +264,7 @@ async function enviarCuriosidadeInsana(supabase, resultados) {
       assunto: 'Comes por fome ou por emoção? (faz este teste mental)',
       hook: 'Faz este exercício: antes de comeres algo, põe a mão no peito e pergunta "estou mesmo com fome ou estou a sentir algo?"',
       corpo: 'Se a resposta for "estou a sentir algo" - parabéns, acabaste de descobrir o padrão que 87% das mulheres moçambicanas ignoram. É este padrão que faz o efeito ioiô. Não é a comida. É a emoção.',
-      cta: 'O VITALIS tem uma ferramenta única chamada Espaço de Retorno — feita exatamente para estes momentos. Nenhum outro programa em Moçambique tem isto.'
+      cta: 'O VITALIS tem uma ferramenta única chamada Espaço de Retorno — feita exatamente para estes momentos. Nenhum outro programa no mundo tem isto.'
     },
     {
       assunto: 'A verdade sobre a xima que ninguém te diz',

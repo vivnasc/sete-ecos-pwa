@@ -340,7 +340,7 @@ const LandingVitalis = () => {
             </div>
           </div>
           <span className="inline-block px-6 py-3 bg-gradient-to-r from-[#7C8B6F] to-[#9CAF88] text-white rounded-full font-semibold">
-            🏆 Único programa com Espaço de Retorno em Moçambique
+            🏆 Único programa no mundo com Espaço de Retorno
           </span>
         </div>
       </section>
@@ -759,7 +759,7 @@ const LandingVitalis = () => {
               <div className="bg-[#F5F2ED] p-5 rounded-xl border-l-4 border-[#7C8B6F] italic">
                 <p className="text-[#4A4035]">
                   "Juntei ciência internacional (Precision Nutrition), sabedoria dos 7 Véus, e tecnologia,
-                  para criar algo único em Moçambique: um programa que trata a pessoa inteira, não apenas o corpo."
+                  para criar algo que não existe em mais nenhum programa no mundo: um sistema que trata a pessoa inteira, não apenas o corpo."
                 </p>
                 <cite className="block text-right font-semibold text-[#7C8B6F] mt-2 not-italic">- Vivianne Saraiva</cite>
               </div>

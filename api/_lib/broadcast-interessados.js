@@ -126,7 +126,7 @@ const BROADCAST_TEMPLATES = {
           <p style="font-size: 14px; margin: 8px 0 0; color: rgba(255,255,255,0.6);">De 2.500 por 2.000 MZN/mês</p>
         </div>
 
-        <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8; text-align: center;">O VITALIS é o único programa em Moçambique que combina:</p>
+        <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8; text-align: center;">O VITALIS é o único programa no mundo que combina:</p>
         <div style="background: white; padding: 20px; border-radius: 12px; margin: 16px 0;">
           <p style="color: #4A4035; margin: 6px 0; font-size: 14px;">Plano alimentar com comida moçambicana</p>
           <p style="color: #4A4035; margin: 6px 0; font-size: 14px;">Apoio emocional (ESPAÇO de Retorno)</p>
