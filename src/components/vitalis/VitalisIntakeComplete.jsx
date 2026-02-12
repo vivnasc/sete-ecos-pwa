@@ -277,6 +277,31 @@ export default function VitalisIntakeComplete() {
         if (isNaN(num) || num <= 0) {
           errors[fieldId] = 'Deve ser um número válido maior que zero';
         }
+
+        // ✅ VALIDAÇÃO DE RANGES REALISTAS
+        if (fieldId === 'altura_cm' && num > 0) {
+          if (num < 140 || num > 220) {
+            errors[fieldId] = 'Altura deve estar entre 140-220cm';
+          }
+        }
+
+        if (fieldId === 'peso_actual' && num > 0) {
+          if (num < 30 || num > 300) {
+            errors[fieldId] = 'Peso deve estar entre 30-300kg';
+          }
+        }
+
+        if (fieldId === 'peso_meta' && num > 0) {
+          if (num < 30 || num > 300) {
+            errors[fieldId] = 'Peso desejado deve estar entre 30-300kg';
+          }
+        }
+
+        if (fieldId === 'idade' && num > 0) {
+          if (num < 18 || num > 100) {
+            errors[fieldId] = 'Idade deve estar entre 18-100 anos';
+          }
+        }
       }
     });
 

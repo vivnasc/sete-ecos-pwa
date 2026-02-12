@@ -1,0 +1,46 @@
+════════════════════════════════════════════════════════════
+🚨 SOLUÇÃO URGENTE - NAZIRA
+════════════════════════════════════════════════════════════
+
+📋 PASSO 1: Obter chave Supabase (30 segundos)
+──────────────────────────────────────────────────────────
+1. Abrir: https://supabase.com/dashboard/project/vvvdtogvlutrybultffx/settings/api
+2. Copiar a chave "anon public" (começa com eyJ...)
+
+
+⚡ PASSO 2: Ver dados da Nazira (1 comando)
+──────────────────────────────────────────────────────────
+node ver-nazira.js COLAR_CHAVE_AQUI
+
+
+📊 PASSO 3: Analisar resultado
+──────────────────────────────────────────────────────────
+O script mostra:
+✅ O que está preenchido
+❌ O que está faltando
+🎯 Diagnóstico do problema
+
+
+═══════════════════════════════════════════════════════════
+ALTERNATIVA: SQL DIRETO no Supabase
+═══════════════════════════════════════════════════════════
+
+1. Abrir: https://supabase.com/dashboard/project/vvvdtogvlutrybultffx/editor
+2. Colar e executar:
+
+-- Buscar Nazira
+SELECT
+  u.id,
+  u.nome,
+  u.email,
+  vi.altura_cm,
+  vi.peso_actual,
+  vi.idade,
+  vc.subscription_status,
+  (SELECT COUNT(*) FROM vitalis_meal_plans WHERE user_id = u.id) as tem_plano
+FROM users u
+LEFT JOIN vitalis_intake vi ON vi.user_id = u.id
+LEFT JOIN vitalis_clients vc ON vc.user_id = u.id
+WHERE u.nome ILIKE '%nazira%';
+
+═══════════════════════════════════════════════════════════
