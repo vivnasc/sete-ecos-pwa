@@ -39,7 +39,6 @@ const PagamentoVitalis = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const paypalRef = useRef(null);
-  const previousCurrencyRef = useRef('MZN');
 
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
@@ -102,20 +101,6 @@ const PagamentoVitalis = () => {
       renderPayPalButtons();
     }
   }, [selectedPlan, paypalLoaded, userId, promoDiscount, planType]);
-
-  // Auto-convert amount when currency changes
-  useEffect(() => {
-    const previousCurrency = previousCurrencyRef.current;
-
-    if (manualAmount && previousCurrency !== manualCurrency) {
-      // Convert: amount in previous currency → MZN → new currency
-      const amountInMZN = parseFloat(manualAmount) * EXCHANGE_RATES[previousCurrency];
-      const convertedAmount = amountInMZN / EXCHANGE_RATES[manualCurrency];
-
-      setManualAmount(convertedAmount.toFixed(2));
-      previousCurrencyRef.current = manualCurrency;
-    }
-  }, [manualCurrency]);
 
   const loadUserData = async () => {
     try {
@@ -433,13 +418,20 @@ const PagamentoVitalis = () => {
       return;
     }
 
-    if (!manualAmount || parseFloat(manualAmount) <= 0) {
-      setMessage({ type: 'error', text: 'Insere o valor pago.' });
-      return;
-    }
-
     const plan = getActivePlans()[selectedPlan] || SUBSCRIPTION_PLANS.SEMESTRAL;
-    const amount = parseFloat(manualAmount);
+
+    // Calculate amount based on plan and selected currency
+    const planPrice = getDiscountedPrice(plan);
+    const mznValue = planPrice.mzn;
+    let amount;
+
+    if (manualCurrency === 'USD') {
+      amount = parseFloat((mznValue / EXCHANGE_RATES.USD).toFixed(2));
+    } else if (manualCurrency === 'EUR') {
+      amount = parseFloat((mznValue / EXCHANGE_RATES.EUR).toFixed(2));
+    } else {
+      amount = parseFloat(mznValue.toFixed(2));
+    }
 
     setProcessing(true);
     try {
@@ -904,19 +896,24 @@ const PagamentoVitalis = () => {
                         </p>
                       </div>
 
-                      {/* Amount Input */}
+                      {/* Amount Input - READONLY (valor fixo do plano) */}
                       <div className="mb-4">
-                        <label className="text-white/80 text-sm mb-2 block">Valor Pago *</label>
+                        <label className="text-white/80 text-sm mb-2 block">Valor a Pagar *</label>
                         <div className="flex gap-2 items-center">
                           <input
-                            type="number"
-                            value={manualAmount || getDiscountedPrice(getCurrentPlan()).mzn}
-                            onChange={(e) => setManualAmount(e.target.value)}
-                            placeholder={getDiscountedPrice(getCurrentPlan()).mzn.toString()}
-                            required
-                            step="0.01"
-                            min="0"
-                            className="flex-[3] px-4 py-3 rounded-xl bg-white/95 border-2 border-gray-300 focus:border-[#7C8B6F] focus:outline-none text-xl font-bold text-gray-900"
+                            type="text"
+                            value={(() => {
+                              const planPrice = getDiscountedPrice(getCurrentPlan());
+                              const mznValue = planPrice.mzn;
+                              if (manualCurrency === 'USD') {
+                                return (mznValue / EXCHANGE_RATES.USD).toFixed(2);
+                              } else if (manualCurrency === 'EUR') {
+                                return (mznValue / EXCHANGE_RATES.EUR).toFixed(2);
+                              }
+                              return mznValue.toFixed(2);
+                            })()}
+                            readOnly
+                            className="flex-[3] px-4 py-3 rounded-xl bg-gray-100 border-2 border-gray-300 text-xl font-bold text-gray-700 cursor-not-allowed"
                           />
                           <select
                             value={manualCurrency}
@@ -929,7 +926,7 @@ const PagamentoVitalis = () => {
                           </select>
                         </div>
                         <p className="text-white/50 text-xs mt-1">
-                          Plano {getCurrentPlan()?.name}: {getDiscountedPrice(getCurrentPlan()).mzn.toLocaleString()} MZN (~${getDiscountedPrice(getCurrentPlan()).usd})
+                          Plano {getCurrentPlan()?.name} - Valor fixo conforme plano escolhido
                         </p>
                       </div>
 

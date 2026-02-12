@@ -280,11 +280,17 @@ export default function DashboardVitalis() {
       // Buscar sexo e preferências do intake para adaptar UI
       const { data: intakeData } = await supabase
         .from('vitalis_intake')
-        .select('sexo, observa_ramadao')
+        .select('sexo, observa_ramadao, altura_cm, peso_actual, idade')
         .eq('user_id', userData.id)
         .maybeSingle();
 
-      setHasIntake(!!intakeData); // Define se tem intake
+      // ✅ INTAKE COMPLETO = tem campos obrigatórios preenchidos
+      const intakeCompleto = intakeData &&
+        intakeData.altura_cm &&
+        intakeData.peso_actual &&
+        intakeData.idade;
+
+      setHasIntake(intakeCompleto); // Define se tem intake COMPLETO
 
       if (intakeData?.sexo) setSexo(intakeData.sexo);
       if (intakeData?.observa_ramadao) setObservaRamadao(intakeData.observa_ramadao);
