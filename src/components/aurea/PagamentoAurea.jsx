@@ -261,9 +261,7 @@ export default function PagamentoAurea() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
               { id: 'mpesa', nome: 'M-Pesa', icone: '📱' },
-              { id: 'emola', nome: 'e-Mola', icone: '💳' },
-              { id: 'transfer', nome: 'Transferência', icone: '🏦' },
-              { id: 'paypal', nome: 'PayPal', icone: '💰' }
+              { id: 'paypal', nome: 'PayPal / Cartão', icone: '💳' }
             ].map((method) => (
               <button
                 key={method.id}
@@ -289,30 +287,12 @@ export default function PagamentoAurea() {
               <div className="text-amber-200/80 space-y-2">
                 <p>1. Abre a app M-Pesa</p>
                 <p>2. Selecciona "Transferir"</p>
-                <p>3. Envia para: <span className="text-amber-300 font-bold">84 XXX XXXX</span></p>
+                <p>3. Envia para: <span className="text-amber-300 font-bold">85 100 6473</span></p>
                 <p>4. Valor: <span className="text-amber-300 font-bold">{AUREA_PLANS[selectedPlan.toUpperCase()].price_mzn.toLocaleString()} MZN</span></p>
                 <p>5. Copia o código de transacção abaixo</p>
               </div>
             )}
 
-            {paymentMethod === 'emola' && (
-              <div className="text-amber-200/80 space-y-2">
-                <p>1. Abre a app e-Mola</p>
-                <p>2. Selecciona "Enviar Dinheiro"</p>
-                <p>3. Envia para: <span className="text-amber-300 font-bold">86 XXX XXXX</span></p>
-                <p>4. Valor: <span className="text-amber-300 font-bold">{AUREA_PLANS[selectedPlan.toUpperCase()].price_mzn.toLocaleString()} MZN</span></p>
-                <p>5. Copia o código de transacção abaixo</p>
-              </div>
-            )}
-
-            {paymentMethod === 'transfer' && (
-              <div className="text-amber-200/80 space-y-2">
-                <p>Banco: <span className="text-amber-300 font-bold">BCI</span></p>
-                <p>NIB: <span className="text-amber-300 font-bold">0008 XXXX XXXX XXXX XXXX X</span></p>
-                <p>Titular: <span className="text-amber-300 font-bold">Vivianne Nascimento</span></p>
-                <p>Valor: <span className="text-amber-300 font-bold">{AUREA_PLANS[selectedPlan.toUpperCase()].price_mzn.toLocaleString()} MZN</span></p>
-              </div>
-            )}
 
             <div className="mt-6">
               <label className="block text-amber-200/80 text-sm mb-2">
