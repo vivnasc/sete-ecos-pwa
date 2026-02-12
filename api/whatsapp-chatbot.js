@@ -106,7 +106,8 @@ export default async function handler(req, res) {
 
     // Ignorar mensagens vazias
     if (!msgBody && numMedia === 0) {
-      return res.status(200).type('text/xml').send('<Response></Response>');
+      res.setHeader('Content-Type', 'text/xml');
+      return res.status(200).send('<Response></Response>');
     }
 
     // Extrair número limpo
@@ -124,7 +125,8 @@ export default async function handler(req, res) {
       ).catch(err => console.error('Erro notificar:', err));
 
       // Responder directamente via TwiML
-      return res.status(200).type('text/xml').send(
+      res.setHeader('Content-Type', 'text/xml');
+      return res.status(200).send(
         `<Response><Message>${escapeXml(mediaMsg)}</Message></Response>`
       );
     }
@@ -144,13 +146,15 @@ export default async function handler(req, res) {
     }
 
     // Responder directamente via TwiML (mais fiável que REST API)
-    return res.status(200).type('text/xml').send(
+    res.setHeader('Content-Type', 'text/xml');
+    return res.status(200).send(
       `<Response><Message>${escapeXml(resposta)}</Message></Response>`
     );
 
   } catch (error) {
     console.error('Erro no webhook Twilio WhatsApp:', error);
-    return res.status(200).type('text/xml').send(
+    res.setHeader('Content-Type', 'text/xml');
+    return res.status(200).send(
       '<Response><Message>Desculpa, ocorreu um erro. Tenta novamente ou responde 7 para falar com a Vivianne.</Message></Response>'
     );
   }
