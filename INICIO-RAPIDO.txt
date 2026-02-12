@@ -1,0 +1,216 @@
+╔════════════════════════════════════════════════════════════════════╗
+║                                                                    ║
+║   🚨 DIAGNÓSTICO URGENTE - CLIENTE NAZIRA - INÍCIO RÁPIDO 🚨       ║
+║                                                                    ║
+╚════════════════════════════════════════════════════════════════════╝
+
+SITUAÇÃO:
+---------
+• Cliente PAGOU pela subscrição Vitalis
+• Preencheu intake mas deu erro de validação
+• Dados salvos PARCIALMENTE
+• Plano alimentar NÃO foi gerado
+• Sistema pede intake de novo = DESMORALIZANTE
+• URGENTE: Cliente pagante sem acesso ao serviço!
+
+
+SOLUÇÃO EM 3 PASSOS:
+--------------------
+
+┌──────────────────────────────────────────────────────────────────┐
+│ PASSO 1: OBTER CHAVE SUPABASE (1 minuto)                        │
+└──────────────────────────────────────────────────────────────────┘
+
+1. Acesse: https://supabase.com/dashboard
+2. Projeto: vvvdtogvlutrybultffx
+3. Clique: Settings → API
+4. Copie: "anon public" key (começa com eyJhbGc...)
+
+
+┌──────────────────────────────────────────────────────────────────┐
+│ PASSO 2: TESTAR CONEXÃO (30 segundos)                           │
+└──────────────────────────────────────────────────────────────────┘
+
+cd /home/user/sete-ecos-pwa
+node testar-conexao.js SUA_CHAVE_AQUI
+
+Deve mostrar:
+  ✅ Conexão OK
+  ✅ Acesso à tabela users OK
+  ✅ TODOS OS TESTES PASSARAM!
+
+
+┌──────────────────────────────────────────────────────────────────┐
+│ PASSO 3: EXECUTAR DIAGNÓSTICO (1 minuto)                        │
+└──────────────────────────────────────────────────────────────────┘
+
+node diagnostico-nazira-fetch.js SUA_CHAVE_AQUI
+
+Vai mostrar:
+  • Dados da usuária Nazira
+  • Status do intake (completo/incompleto)
+  • Status da subscrição (ativa/inativa)
+  • Se tem plano gerado (sim/não)
+  • RESUMO com diagnóstico do problema
+
+
+FERRAMENTAS DISPONÍVEIS:
+------------------------
+
+[RECOMENDADO] diagnostico-nazira-fetch.js
+  → Diagnóstico completo via fetch puro
+  → Mais rápido, sem dependências extras
+
+[ALTERNATIVA] diagnostico-nazira.js
+  → Diagnóstico via SDK Supabase oficial
+  → Mais completo, requer @supabase/supabase-js
+
+[CORREÇÃO] corrigir-intake.js
+  → Se diagnóstico mostrar campos faltando
+  → Completa idade/altura diretamente no banco
+
+[AJUDA] ajuda.js
+  → Mostra instruções completas com exemplos
+  → Explicação de todos os scripts
+
+[TESTE] testar-conexao.js
+  → Verifica se chave Supabase funciona
+  → Execute ANTES do diagnóstico
+
+
+EXEMPLO DE USO:
+--------------
+
+# 1. Testar conexão
+$ node testar-conexao.js eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+✅ TODOS OS TESTES PASSARAM!
+
+# 2. Diagnosticar
+$ node diagnostico-nazira-fetch.js eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+🔍 DIAGNÓSTICO COMPLETO - CLIENTE NAZIRA
+================================================================================
+✅ Encontrada 1 usuária
+👤 Nazira (nazira@email.com)
+⚠️  INTAKE INCOMPLETO (faltam: idade, altura_cm)
+✅ SUBSCRIÇÃO ATIVA
+❌ NENHUM PLANO GERADO
+
+📊 RESUMO:
+   🚨 Cliente TEM subscrição mas intake está INCOMPLETO
+   🚨 Cliente PAGOU mas NÃO TEM PLANO!
+   ✅ Dados suficientes para corrigir
+
+# 3. Corrigir (se necessário)
+$ node corrigir-intake.js CHAVE abc-123-def-456 30 165
+✅ INTAKE ATUALIZADO COM SUCESSO!
+
+
+O QUE PROCURAR NO OUTPUT:
+--------------------------
+
+[BOM]
+  ✅ Intake completo
+  ✅ Subscrição ativa
+  ✅ Plano gerado
+  → Tudo OK!
+
+[PROBLEMA COMUM]
+  ⚠️  Intake INCOMPLETO (falta idade/altura)
+  ✅ Subscrição ATIVA
+  ❌ Plano NÃO gerado
+  → Usar corrigir-intake.js
+
+[PROBLEMA CRÍTICO]
+  ✅ Intake COMPLETO
+  ✅ Subscrição ATIVA
+  ❌ Plano NÃO gerado
+  → Bug na geração, gerar manualmente
+
+[SEM SUBSCRIÇÃO]
+  ❌ Nenhuma subscrição encontrada
+  → Verificar pagamento, criar subscrição
+
+
+ARQUIVOS CRIADOS (11 no total):
+--------------------------------
+
+Scripts (executáveis):
+  • testar-conexao.js              (2.5KB)
+  • diagnostico-nazira-fetch.js    (6.5KB) ⭐
+  • diagnostico-nazira.js          (11KB)
+  • corrigir-intake.js             (3.2KB)
+  • ajuda.js                       (3.7KB)
+
+Documentação (completa):
+  • README-DIAGNOSTICO.md          (12KB) - Índice completo
+  • INICIO-RAPIDO.txt              (este) - Referência rápida
+  • URGENTE-NAZIRA.md              (5.3KB) - Resumo executivo
+  • COMO-EXECUTAR.md               (5.2KB) - Guia passo a passo
+  • DIAGNOSTICO-README.md          (2.9KB) - Doc técnica
+  • ARQUIVOS-CRIADOS.txt           (2.9KB) - Lista de arquivos
+
+
+COMANDOS ÚTEIS:
+--------------
+
+# Ver ajuda completa com exemplos
+node ajuda.js
+
+# Listar todos os arquivos criados
+ls -lh diagnostico* corrigir* ajuda* testar* *.md *.txt
+
+# Ler documentação principal
+cat README-DIAGNOSTICO.md
+
+# Ler este arquivo novamente
+cat INICIO-RAPIDO.txt
+
+
+DOCUMENTAÇÃO DETALHADA:
+-----------------------
+
+Para mais informações, leia (nesta ordem):
+
+  1. INICIO-RAPIDO.txt       ← Você está aqui (referência rápida)
+  2. README-DIAGNOSTICO.md   ← Índice completo com todos os detalhes
+  3. URGENTE-NAZIRA.md       ← Resumo executivo + SQL de emergência
+  4. COMO-EXECUTAR.md        ← Guia passo a passo com troubleshooting
+
+
+TEMPO ESTIMADO:
+--------------
+
+  Obter chave:      1 min
+  Testar conexão:   0.5 min
+  Diagnóstico:      1 min
+  Análise:          2 min
+  Correção:         3 min
+  Gerar plano:      1 min
+  Teste final:      1.5 min
+  ─────────────────────────
+  TOTAL:           ~10 min
+
+
+PRÓXIMA AÇÃO:
+-------------
+
+▶ Execute AGORA:
+
+    node ajuda.js
+
+Para ver instruções completas e exemplos!
+
+
+PRIORIDADE: 🔴 URGENTE
+STATUS: ⏳ Aguardando execução
+IMPACTO: Cliente pagante sem acesso ao serviço
+
+════════════════════════════════════════════════════════════════════
+
+Criado em: 2026-02-12
+Localização: /home/user/sete-ecos-pwa/
+Owner: Vivianne dos Santos
+Plataforma: SETE ECOS - Vitalis
+
+════════════════════════════════════════════════════════════════════
