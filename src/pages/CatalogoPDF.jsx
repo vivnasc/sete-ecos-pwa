@@ -178,7 +178,7 @@ export default function CatalogoPDF() {
             <h3 className="font-bold text-sm" style={{ color: B.castanho }}>O que descobres:</h3>
             {[
               'O teu padrão emocional dominante',
-              'Como a alimentação afecta o teu humor',
+              'Como a alimentação afeta o teu humor',
               'O que o teu corpo realmente precisa',
               'Leitura personalizada com orientações',
               '23 padrões possíveis, cada um único',
@@ -341,7 +341,7 @@ export default function CatalogoPDF() {
 
             <div className="bg-purple-50 rounded-xl p-5">
               <p className="font-bold text-base text-purple-700 mb-2">Inclui COMUNIDADE</p>
-              <p className="text-sm text-gray-600">Espaço colectivo com Rio (reflexões), Círculos, Fogueira e Sussurros — mulheres a apoiarem-se mutuamente.</p>
+              <p className="text-sm text-gray-600">Espaço coletivo com Rio (reflexões), Círculos, Fogueira e Sussurros — mulheres a apoiarem-se mutuamente.</p>
             </div>
           </div>
         </div>
@@ -354,7 +354,7 @@ export default function CatalogoPDF() {
           <div className="w-14 h-14 rounded-full flex items-center justify-center text-white text-2xl" style={{ background: `linear-gradient(to bottom right, #9b59b6, ${B.terracota})` }}>⚡</div>
           <div className="flex-1">
             <h2 className="text-3xl font-bold" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: B.castanho }}>Comunidade</h2>
-            <p className="text-sm text-gray-400">Espaço colectivo de transformação</p>
+            <p className="text-sm text-gray-400">Espaço coletivo de transformação</p>
           </div>
         </div>
 
@@ -388,7 +388,7 @@ export default function CatalogoPDF() {
 
         <div className="rounded-xl p-6 text-center" style={{ background: `linear-gradient(to right, rgba(155,89,182,0.08), rgba(193,99,74,0.06), rgba(155,89,182,0.08))` }}>
           <p className="text-base text-gray-700 font-medium">A Comunidade está incluída em todos os planos VITALIS.</p>
-          <p className="text-sm text-gray-400 mt-1">Não é uma rede social. É um espaço de cura colectiva.</p>
+          <p className="text-sm text-gray-400 mt-1">Não é uma rede social. É um espaço de cura coletiva.</p>
         </div>
         <Footer n={6} />
       </div>
@@ -407,7 +407,7 @@ export default function CatalogoPDF() {
           {[
             {
               nome: 'Mensal', preco: '2.500', periodo: 'MZN/mês', destaque: false,
-              features: ['Plano alimentar personalizado', 'Receitas moçambicanas', 'Chat directo com coach', 'Treinos guiados', 'Dashboard de progresso', 'Lista de compras automática', 'Check-in diário', 'Comunidade'],
+              features: ['Plano alimentar personalizado', 'Receitas moçambicanas', 'Chat direto com coach', 'Treinos guiados', 'Dashboard de progresso', 'Lista de compras automática', 'Check-in diário', 'Comunidade'],
             },
             {
               nome: 'Semestral', preco: '12.500', periodo: 'MZN / 6 meses', destaque: true,
@@ -460,7 +460,7 @@ export default function CatalogoPDF() {
               <div>
                 <p className="font-bold text-sm">PayPal / Cartão</p>
                 <p className="text-xs text-gray-400">Visa, Mastercard, PayPal</p>
-                <p className="text-xs text-gray-400">Pagamento directo na app</p>
+                <p className="text-xs text-gray-400">Pagamento direto na app</p>
               </div>
             </div>
             <div className="flex items-start gap-3">

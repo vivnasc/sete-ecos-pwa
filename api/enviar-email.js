@@ -5,7 +5,7 @@
  * - boas-vindas: Quando cliente se regista
  * - pagamento-confirmado: Após pagamento bem-sucedido
  * - inicio-programa: Onboarding do Vitalis
- * - lembrete-checkin: Cliente inactiva 2+ dias
+ * - lembrete-checkin: Cliente inativa 2+ dias
  * - conquista: Celebração de streaks/metas
  * - expiracao-aviso: 7 dias antes de expirar
  * - coach-nova-cliente: Notificar Vivianne
@@ -172,7 +172,7 @@ function getEmailTemplate(tipo, dados = {}) {
               <div class="success-box">
                 <div class="icon">✅</div>
                 <h2 style="color: #7C8B6F; margin: 10px 0;">Pagamento Confirmado!</h2>
-                <p>A tua subscrição está activa.</p>
+                <p>A tua subscrição está ativa.</p>
               </div>
 
               <div class="details">
@@ -401,7 +401,7 @@ function getEmailTemplate(tipo, dados = {}) {
             <div class="info">
               <p><strong>Cliente:</strong> ${dados.nome || '-'}</p>
               <p><strong>Email:</strong> ${dados.email || '-'}</p>
-              <p><strong>Última actividade:</strong> ${dados.ultimaActividade || '-'}</p>
+              <p><strong>Última atividade:</strong> ${dados.ultimaAtividade || dados.ultimaActividade || '-'}</p>
             </div>
             <p>
               <a href="https://app.seteecos.com/coach" class="btn">Ver Dashboard</a>
@@ -440,8 +440,8 @@ function getEmailTemplate(tipo, dados = {}) {
 
             <div class="stats">
               <div class="stat">
-                <div class="number">${dados.clientesActivas || 0}</div>
-                <div class="label">Clientes Activas</div>
+                <div class="number">${dados.clientesAtivas || dados.clientesActivas || 0}</div>
+                <div class="label">Clientes Ativas</div>
               </div>
               <div class="stat">
                 <div class="number">${dados.checkinsHoje || 0}</div>

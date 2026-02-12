@@ -145,15 +145,15 @@ const LandingGeral = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f0f23]">
       <SEOHead
-        title="SETE ECOS - Sistema de Transmutacao Feminina"
-        description="Um ecossistema de transformacao integral para a mulher moderna. Sete caminhos que se complementam: nutricao, emocao, foco, energia, expressao, visao e identidade."
+        title="SETE ECOS - Sistema de Transmutação Feminina"
+        description="Um ecossistema de transformação integral para a mulher moderna. Sete caminhos que se complementam: nutrição, emoção, foco, energia, expressão, visão e identidade."
         url="https://app.seteecos.com/"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "WebSite",
           "name": "Sete Ecos",
           "url": "https://app.seteecos.com",
-          "description": "Sistema de Transmutacao Feminina - Sete caminhos para despertar cada dimensao da tua essencia feminina.",
+          "description": "Sistema de Transmutação Feminina - Sete caminhos para despertar cada dimensão da tua essência feminina.",
           "inLanguage": "pt",
           "potentialAction": {
             "@type": "SearchAction",
@@ -603,10 +603,10 @@ const LandingGeral = () => {
               <img src="/logos/lumina-eye.png" alt="Lumina" className="w-12 h-12" onError={(e) => { e.target.style.display='none'; }} />
             </div>
             <h2 className="text-3xl font-bold text-white mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-              Comeca por te Conhecer
+              Começa por te Conhecer
             </h2>
             <p className="text-purple-200 mb-2 text-lg">
-              O <strong>LUMINA</strong> e um diagnostico gratuito que revela padroes sobre a tua energia, emocao e corpo.
+              O <strong>LUMINA</strong> é um diagnóstico gratuito que revela padrões sobre a tua energia, emoção e corpo.
             </p>
             <p className="text-purple-300/80 mb-6 text-sm">
               7 perguntas. 2 minutos. Uma leitura que pode mudar o teu dia.
@@ -617,16 +617,16 @@ const LandingGeral = () => {
                 to="/lumina"
                 className="w-full max-w-xs py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all text-center block"
               >
-                Fazer o Meu Diagnostico Gratuito
+                Fazer o Meu Diagnóstico Gratuito
               </Link>
-              <span className="text-purple-400/60 text-xs">Sem registo obrigatorio · 100% gratuito</span>
+              <span className="text-purple-400/60 text-xs">Sem registo obrigatório · 100% gratuito</span>
             </div>
 
             <div className="mt-8 grid grid-cols-3 gap-4">
               {[
                 { num: '7', label: 'Perguntas' },
-                { num: '2 min', label: 'Duracao' },
-                { num: '23', label: 'Padroes' },
+                { num: '2 min', label: 'Duração' },
+                { num: '23', label: 'Padrões' },
               ].map(s => (
                 <div key={s.label} className="text-center">
                   <div className="text-2xl font-bold text-white">{s.num}</div>
@@ -664,7 +664,7 @@ const LandingGeral = () => {
             </div>
             <div>
               <h3 className="font-bold text-amber-200 mb-3">Contacto</h3>
-              <p className="text-purple-300/70 text-sm">📱 +258 84 524 3875</p>
+              <p className="text-purple-300/70 text-sm">📱 +258 85 100 6473</p>
               <p className="text-purple-300/70 text-sm">📧 feedback@seteecos.com</p>
               <p className="text-purple-300/70 text-sm">📍 Maputo, Moçambique</p>
               <div className="flex gap-4 mt-3">
@@ -689,8 +689,8 @@ const LandingGeral = () => {
             <PartilharSocial
               compact
               url="https://app.seteecos.com/"
-              titulo="Sete Ecos - Sistema de Transmutacao Feminina"
-              texto="Descobre os Sete Ecos, uma jornada de transformacao feminina integral."
+              titulo="Sete Ecos - Sistema de Transmutação Feminina"
+              texto="Descobre os Sete Ecos, uma jornada de transformação feminina integral."
             />
           </div>
           <div className="border-t border-white/10 pt-6 text-center text-purple-400/50 text-sm">

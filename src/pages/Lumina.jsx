@@ -32,7 +32,7 @@ import UpsellCard from '../components/UpsellCard';
 import './Lumina.css';
 
 // ============================================================
-// CONSTANTES - 7 PERGUNTAS NA ORDEM CORRECTA
+// CONSTANTES - 7 PERGUNTAS NA ORDEM CORRETA
 // ============================================================
 const PERGUNTAS = [
   {
@@ -1267,7 +1267,7 @@ export default function Lumina() {
                 textAlign: 'center'
               }}>
                 <div style={{ fontSize: '11px', letterSpacing: '2px', color: '#6B6B9D', marginBottom: '8px' }}>
-                  O PROXIMO PASSO
+                  O PRÓXIMO PASSO
                 </div>
                 <div style={{ fontSize: '15px', fontWeight: 'bold', color: ecoCor, marginBottom: '8px' }}>
                   {ecoNome} pode ajudar-te
@@ -1288,7 +1288,7 @@ export default function Lumina() {
                   Conhecer {ecoNome} →
                 </a>
                 <div style={{ fontSize: '11px', color: '#6B6B9D', marginTop: '10px' }}>
-                  {needsAurea ? 'Desde 975 MT/mes · 7 dias de garantia' : 'Desde 2.500 MT/mes · 7 dias de garantia'}
+                  {needsAurea ? 'Desde 975 MT/mês · 7 dias de garantia' : 'Desde 2.500 MT/mês · 7 dias de garantia'}
                 </div>
               </div>
             );
@@ -1306,10 +1306,10 @@ export default function Lumina() {
             }}>
               <div style={{ fontSize: '24px', marginBottom: '8px' }}>✉️</div>
               <div style={{ fontSize: '15px', fontWeight: 'bold', marginBottom: '6px' }}>
-                Queres receber os teus padroes por email?
+                Queres receber os teus padrões por email?
               </div>
               <div style={{ fontSize: '13px', color: '#5A5A8F', marginBottom: '16px', lineHeight: 1.5 }}>
-                Recebe a tua leitura + dicas personalizadas baseadas nos teus resultados. Gratis.
+                Recebe a tua leitura + dicas personalizadas baseadas nos teus resultados. Grátis.
               </div>
               <div style={{ display: 'flex', gap: '8px', maxWidth: '320px', margin: '0 auto' }}>
                 <input

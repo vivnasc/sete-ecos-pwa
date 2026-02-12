@@ -1,21 +1,21 @@
 /**
- * API Endpoint: Publicacao Agendada no Instagram
+ * API Endpoint: Publicação Agendada no Instagram
  *
- * Este endpoint e chamado por um cron job para:
+ * Este endpoint é chamado por um cron job para:
  * 1. Buscar posts agendados na tabela 'scheduled_posts' (scheduled_at <= agora, status = 'pending')
  * 2. Publicar cada post via Meta Graph API
- * 3. Actualizar o estado para 'published' ou 'failed'
+ * 3. Atualizar o estado para 'published' ou 'failed'
  *
  * Tabela Supabase 'scheduled_posts':
  * - id: uuid (PK)
  * - type: text ('photo' | 'carousel' | 'story')
- * - image_url: text ou jsonb (URL unica ou array de URLs)
+ * - image_url: text ou jsonb (URL única ou array de URLs)
  * - caption: text
  * - scheduled_at: timestamptz
  * - status: text ('pending' | 'published' | 'failed')
  * - error_message: text (null se sucesso)
- * - published_at: timestamptz (null ate publicar)
- * - media_id: text (ID do Instagram apos publicacao)
+ * - published_at: timestamptz (null até publicar)
+ * - media_id: text (ID do Instagram após publicação)
  * - created_by: uuid (user_id de quem agendou)
  * - created_at: timestamptz
  *
@@ -23,19 +23,19 @@
  * {
  *   "crons": [{
  *     "path": "/api/instagram-schedule",
- *     "schedule": "0 7 * * *"  // Diariamente as 7h UTC (Vercel Hobby = 1x/dia)
+ *     "schedule": "0 7 * * *"  // Diariamente às 7h UTC (Vercel Hobby = 1x/dia)
  *   }]
  * }
  *
- * NOTA: Vercel Hobby so permite crons diarios.
- * O scheduler publica TODOS os posts do dia de uma vez (ate 25).
+ * NOTA: Vercel Hobby só permite crons diários.
+ * O scheduler publica TODOS os posts do dia de uma vez (até 25).
  *
- * Variaveis de ambiente:
+ * Variáveis de ambiente:
  * - SUPABASE_URL ou VITE_SUPABASE_URL
  * - SUPABASE_SERVICE_KEY ou VITE_SUPABASE_ANON_KEY
  * - META_ACCESS_TOKEN
  * - INSTAGRAM_ACCOUNT_ID
- * - CRON_SECRET (opcional, para autorizacao)
+ * - CRON_SECRET (opcional, para autorização)
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -44,23 +44,23 @@ import { publishToInstagram } from '../instagram-publish.js';
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
-// Limite de posts por execucao (Hobby cron = 1x/dia, processar todos)
+// Limite de posts por execução (Hobby cron = 1x/dia, processar todos)
 const MAX_POSTS_PER_RUN = 25;
 
-// Intervalo minimo entre publicacoes (ms) para respeitar rate limits da Meta
+// Intervalo mínimo entre publicações (ms) para respeitar rate limits da Meta
 const DELAY_BETWEEN_POSTS = 3000;
 
 export default async function handler(req, res) {
   // Auth centralizada no api/cron.js dispatcher
 
   if (!SUPABASE_URL || !SUPABASE_KEY) {
-    console.error('SUPABASE_URL ou SUPABASE_SERVICE_KEY nao configurados');
-    return res.status(500).json({ error: 'Configuracao do Supabase em falta' });
+    console.error('SUPABASE_URL ou SUPABASE_SERVICE_KEY não configurados');
+    return res.status(500).json({ error: 'Configuração do Supabase em falta' });
   }
 
   if (!process.env.META_ACCESS_TOKEN || !process.env.INSTAGRAM_ACCOUNT_ID) {
-    console.error('META_ACCESS_TOKEN ou INSTAGRAM_ACCOUNT_ID nao configurados');
-    return res.status(500).json({ error: 'Configuracao do Instagram em falta' });
+    console.error('META_ACCESS_TOKEN ou INSTAGRAM_ACCOUNT_ID não configurados');
+    return res.status(500).json({ error: 'Configuração do Instagram em falta' });
   }
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);

@@ -68,7 +68,7 @@ async function enviarMensagemTwilio(para, texto) {
 // ===== NOTIFICAR COACH =====
 
 async function notificarVivianne(clienteNumero, clienteNome, contexto) {
-  const msg = `*Nova mensagem Sete Ecos*\n\n${clienteNome || 'Contacto novo'}\n${clienteNumero}\n${contexto}\n\nResponde directamente à cliente no WhatsApp.`;
+  const msg = `*Nova mensagem Sete Ecos*\n\n${clienteNome || 'Contacto novo'}\n${clienteNumero}\n${contexto}\n\nResponde diretamente à cliente no WhatsApp.`;
   await enviarMensagemTwilio(`whatsapp:+${COACH_NUMERO}`, msg);
 }
 
@@ -120,7 +120,7 @@ export default async function handler(req, res) {
 
     // Media (comprovativo de pagamento, etc.)
     if (numMedia > 0 && !msgBody) {
-      const mediaMsg = 'Recebemos a tua imagem! Se é um comprovativo de pagamento, a Vivianne vai verificar e activar o teu acesso em menos de 1 hora.\n\nSe precisas de mais ajuda, responde com um número:\n1 VITALIS  2 LUMINA  3 ÁUREA  4 Preços  5 Pagamento  7 Falar com Vivianne';
+      const mediaMsg = 'Recebemos a tua imagem! Se é um comprovativo de pagamento, a Vivianne vai verificar e ativar o teu acesso em menos de 1 hora.\n\nSe precisas de mais ajuda, responde com um número:\n1 VITALIS  2 LUMINA  3 ÁUREA  4 Preços  5 Pagamento  7 Falar com Vivianne';
 
       // Enviar resposta via REST API e notificar coach em paralelo
       await Promise.all([

@@ -86,10 +86,10 @@ A cliente pode precisar de apoio. 💚`;
   },
 
   /**
-   * Cliente inactiva há vários dias
+   * Cliente inativa há vários dias
    */
   async clienteInactiva(cliente, dias) {
-    const msg = `📱 *CLIENTE INACTIVA*
+    const msg = `📱 *CLIENTE INATIVA*
 
 👤 ${cliente.nome}
 📅 ${dias} dias sem registo
@@ -121,7 +121,7 @@ Considera enviar uma mensagem de apoio. 🌱`;
   async resumoDiario(dados) {
     const msg = `📊 *RESUMO VITALIS* - ${dados.data}
 
-👥 Clientes activas: ${dados.totalClientes}
+👥 Clientes ativas: ${dados.totalClientes}
 ✅ Check-ins ontem: ${dados.checkinsOntem}
 ⚠️ Alertas: ${dados.alertasOntem}
 🆕 Novas: ${dados.novasClientes}

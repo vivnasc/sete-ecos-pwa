@@ -44,26 +44,26 @@ export default async function handler(req, res) {
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Metodo nao permitido' });
+    return res.status(405).json({ error: 'Método não permitido' });
   }
 
   const META_ACCESS_TOKEN = process.env.META_ACCESS_TOKEN;
   const INSTAGRAM_ACCOUNT_ID = process.env.INSTAGRAM_ACCOUNT_ID;
 
   if (!META_ACCESS_TOKEN || !INSTAGRAM_ACCOUNT_ID) {
-    console.error('META_ACCESS_TOKEN ou INSTAGRAM_ACCOUNT_ID nao configurados');
-    return res.status(500).json({ error: 'Configuracao do Instagram em falta' });
+    console.error('META_ACCESS_TOKEN ou INSTAGRAM_ACCOUNT_ID não configurados');
+    return res.status(500).json({ error: 'Configuração do Instagram em falta' });
   }
 
   try {
     const { type, imageUrl, caption } = req.body;
 
     if (!type || !imageUrl) {
-      return res.status(400).json({ error: 'Campos type e imageUrl sao obrigatorios' });
+      return res.status(400).json({ error: 'Campos type e imageUrl são obrigatórios' });
     }
 
     if (!['photo', 'carousel', 'story'].includes(type)) {
-      return res.status(400).json({ error: 'Tipo invalido. Use: photo, carousel ou story' });
+      return res.status(400).json({ error: 'Tipo inválido. Use: photo, carousel ou story' });
     }
 
     let result;
@@ -309,7 +309,7 @@ async function publishMedia(accountId, token, containerId) {
   const data = await response.json();
 
   if (!response.ok || data.error) {
-    // Verificar se e rate limit (codigo 4 ou 32)
+    // Verificar se é rate limit (código 4 ou 32)
     if (data.error && (data.error.code === 4 || data.error.code === 32)) {
       const retryAfter = extractRetryAfter(response);
       throw Object.assign(
@@ -329,7 +329,7 @@ async function publishMedia(accountId, token, containerId) {
 }
 
 /**
- * Criar e lancar erro estruturado da Graph API
+ * Criar e lançar erro estruturado da Graph API
  */
 function throwGraphError(message, statusCode, graphError) {
   const errorMessage = graphError?.message
@@ -350,7 +350,7 @@ function extractRetryAfter(response) {
   if (retryHeader) {
     return parseInt(retryHeader, 10);
   }
-  // Fallback: 5 minutos (recomendacao da Meta)
+  // Fallback: 5 minutos (recomendação da Meta)
   return 300;
 }
 
@@ -362,7 +362,7 @@ function sleep(ms) {
 }
 
 /**
- * Funcao exportada para uso interno (pelo instagram-schedule.js)
+ * Função exportada para uso interno (pelo instagram-schedule.js)
  * Permite publicar sem passar por HTTP
  */
 export async function publishToInstagram({ type, imageUrl, caption }) {
@@ -370,7 +370,7 @@ export async function publishToInstagram({ type, imageUrl, caption }) {
   const INSTAGRAM_ACCOUNT_ID = process.env.INSTAGRAM_ACCOUNT_ID;
 
   if (!META_ACCESS_TOKEN || !INSTAGRAM_ACCOUNT_ID) {
-    throw new Error('META_ACCESS_TOKEN ou INSTAGRAM_ACCOUNT_ID nao configurados');
+    throw new Error('META_ACCESS_TOKEN ou INSTAGRAM_ACCOUNT_ID não configurados');
   }
 
   switch (type) {
@@ -381,6 +381,6 @@ export async function publishToInstagram({ type, imageUrl, caption }) {
     case 'story':
       return publishStory(INSTAGRAM_ACCOUNT_ID, META_ACCESS_TOKEN, imageUrl);
     default:
-      throw new Error(`Tipo invalido: ${type}`);
+      throw new Error(`Tipo inválido: ${type}`);
   }
 }

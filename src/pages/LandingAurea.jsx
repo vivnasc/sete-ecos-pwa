@@ -8,7 +8,7 @@ import PartilharSocial from '../components/PartilharSocial';
 /**
  * ÁUREA - Landing Page
  * "Valor & Presença" - A que merece
- * Redireciona utilizadores com acesso activo para o dashboard
+ * Redireciona utilizadores com acesso ativo para o dashboard
  */
 
 const LandingAurea = () => {
@@ -17,13 +17,13 @@ const LandingAurea = () => {
   const { session, aureaAccess } = useAuth();
 
   useEffect(() => {
-    // Se já tem acesso, vai directo para o dashboard
+    // Se já tem acesso, vai direto para o dashboard
     if (aureaAccess) {
       navigate('/aurea/dashboard', { replace: true });
       return;
     }
 
-    // Se tem sessão mas ainda não sabemos o acesso, verificar directamente
+    // Se tem sessão mas ainda não sabemos o acesso, verificar diretamente
     if (session && !aureaAccess) {
       const checkAccess = async () => {
         try {
@@ -62,11 +62,11 @@ const LandingAurea = () => {
     anual: { id: 'annual', nome: 'Anual', meses: 12, preco: 9945, precoUSD: 153, desconto: 15 }
   };
 
-  // Pilares agrupados - actualizado com novas features
+  // Pilares agrupados - atualizado com novas features
   const pilares = [
     {
       nome: 'PRÁTICA',
-      subtitulo: 'Acções diárias de auto-valor',
+      subtitulo: 'Ações diárias de auto-valor',
       icone: '✨',
       cor: 'from-amber-500/30 to-amber-600/30',
       features: [
@@ -95,7 +95,7 @@ const LandingAurea = () => {
       cor: 'from-amber-600/30 to-amber-700/30',
       features: [
         { icone: '💬', titulo: 'Chat Esmeralda', desc: 'Coach virtual gentil que ajuda a quebrar padrões de culpa e auto-abandono.' },
-        { icone: '💎', titulo: 'Sistema de Jóias', desc: 'Cada acção = 1 jóia. Evolui de Bronze a Diamante.' },
+        { icone: '💎', titulo: 'Sistema de Jóias', desc: 'Cada ação = 1 jóia. Evolui de Bronze a Diamante.' },
         { icone: '📈', titulo: 'Insights Semanais', desc: 'Relatório automático com padrões detectados e celebrações.' },
         { icone: '🔔', titulo: 'Notificações Gentis', desc: 'Lembretes que convidam, nunca culpabilizam.' }
       ]
@@ -185,15 +185,15 @@ const LandingAurea = () => {
   return (
     <div className="min-h-screen" style={{ fontFamily: "'DM Sans', sans-serif", background: 'linear-gradient(to bottom, #2D2A24, #3D3830, #2D2A24)' }}>
       <SEOHead
-        title="AUREA - Valor & Presenca | Sete Ecos"
-        description="Para mulheres que merecem mais. Micro-praticas diarias, Espelho de Roupa, Carteira de Merecimento e coaching personalizado. Desde 975 MZN/mes."
+        title="ÁUREA - Valor & Presença | Sete Ecos"
+        description="Para mulheres que merecem mais. Micro-práticas diárias, Espelho de Roupa, Carteira de Merecimento e coaching personalizado. Desde 975 MZN/mês."
         url="https://app.seteecos.com/aurea"
         image="https://app.seteecos.com/og-image.png"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Product",
-          "name": "AUREA - Valor & Presenca",
-          "description": "Programa de autoestima e presenca para mulheres com micro-praticas diarias e coaching personalizado.",
+          "name": "ÁUREA - Valor & Presença",
+          "description": "Programa de autoestima e presença para mulheres com micro-práticas diárias e coaching personalizado.",
           "brand": { "@type": "Brand", "name": "Sete Ecos" },
           "offers": [
             { "@type": "Offer", "name": "Mensal", "price": "975", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
@@ -606,7 +606,7 @@ const LandingAurea = () => {
           <PartilharSocial
             compact
             url="https://app.seteecos.com/aurea"
-            titulo="AUREA - Valor & Presenca"
+            titulo="ÁUREA - Valor & Presença"
             texto="Descobre a AUREA, um programa para mulheres que merecem mais."
           />
           <div className="text-amber-200/50 text-sm">

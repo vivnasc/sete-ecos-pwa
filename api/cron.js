@@ -1,15 +1,15 @@
 /**
- * Cron Dispatcher — Endpoint unico para todas as tarefas agendadas
+ * Cron Dispatcher — Endpoint único para todas as tarefas agendadas
  *
- * Consolida cron jobs num unico endpoint para respeitar o limite de
+ * Consolida cron jobs num único endpoint para respeitar o limite de
  * serverless functions do plano Hobby do Vercel.
  *
  * Uso via vercel.json crons:
- *   /api/cron?task=tarefas         → Lembretes + curiosidade + expiracao + resumo coach
+ *   /api/cron?task=tarefas         → Lembretes + curiosidade + expiração + resumo coach
  *   /api/cron?task=trial-emails    → Emails de trial expirando
- *   /api/cron?task=email-sequencia → Sequencia de nurturing (waitlist) c/ VEMVITALIS20
- *   /api/cron?task=instagram       → Publicacoes agendadas Instagram
- *   /api/cron?task=broadcast       → Broadcast para interessados (catalogo, promo, whatsapp)
+ *   /api/cron?task=email-sequencia → Sequência de nurturing (waitlist) c/ VEMVITALIS20
+ *   /api/cron?task=instagram       → Publicações agendadas Instagram
+ *   /api/cron?task=broadcast       → Broadcast para interessados (catálogo, promo, whatsapp)
  */
 
 import tarefasAgendadas from './_lib/tarefas-agendadas.js';
@@ -19,13 +19,13 @@ import instagramSchedule from './_lib/instagram-schedule.js';
 import broadcastInteressados from './_lib/broadcast-interessados.js';
 
 export default async function handler(req, res) {
-  // Verificar autorizacao (cron jobs do Vercel)
+  // Verificar autorização (cron jobs do Vercel)
   const authHeader = req.headers.authorization;
   const cronSecret = process.env.CRON_SECRET;
 
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
     if (!req.headers['x-vercel-cron']) {
-      return res.status(401).json({ error: 'Nao autorizado' });
+      return res.status(401).json({ error: 'Não autorizado' });
     }
   }
 
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
 
   if (!task) {
     return res.status(400).json({
-      error: 'Parametro task obrigatorio',
+      error: 'Parâmetro task obrigatório',
       opcoes: ['tarefas', 'trial-emails', 'email-sequencia', 'instagram', 'broadcast']
     });
   }
