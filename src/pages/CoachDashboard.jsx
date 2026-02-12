@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   setAsTester,
   getSubscriptionStats,
@@ -11,6 +11,7 @@ import {
 } from '../lib/subscriptions';
 import { pedirPermissao } from '../utils/notifications';
 import { enviarEmail } from '../lib/emails';
+import { gerarPlanoAutomatico } from '../lib/vitalis/planoGenerator';
 
 /**
  * SETE ECOS - COACH DASHBOARD v4
@@ -97,6 +98,7 @@ const AUTOMATION_SETTINGS = {
 };
 
 const CoachDashboard = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState('overview');
   const [selectedClient, setSelectedClient] = useState(null);
@@ -106,6 +108,7 @@ const CoachDashboard = () => {
   const [sendingMessage, setSendingMessage] = useState(false);
   const [customMessage, setCustomMessage] = useState('');
   const [showAutomation, setShowAutomation] = useState(false);
+  const [gerandoPlano, setGerandoPlano] = useState(null); // user_id do cliente
 
   // Data
   const [stats, setStats] = useState({
@@ -210,7 +213,42 @@ const CoachDashboard = () => {
         .from('vitalis_clients')
         .select('*, users(id, nome, email, created_at), telefone, whatsapp')
         .order('created_at', { ascending: false });
-      setVitalisClients(data || []);
+
+      // Enriquecer com info de intake e plano
+      if (data) {
+        const enrichedData = await Promise.all(
+          data.map(async (client) => {
+            const userId = client.user_id;
+
+            // Verificar intake
+            const { data: intake } = await supabase
+              .from('vitalis_intake')
+              .select('altura_cm, peso_actual, idade')
+              .eq('user_id', userId)
+              .maybeSingle();
+
+            const has_intake = intake && intake.altura_cm && intake.peso_actual && intake.idade;
+
+            // Verificar plano
+            const { data: plano } = await supabase
+              .from('vitalis_meal_plans')
+              .select('id')
+              .eq('user_id', userId)
+              .maybeSingle();
+
+            const has_plan = !!plano;
+
+            return {
+              ...client,
+              has_intake,
+              has_plan
+            };
+          })
+        );
+        setVitalisClients(enrichedData);
+      } else {
+        setVitalisClients([]);
+      }
     } catch (error) {
       console.error('Erro vitalis clients:', error);
     }
@@ -479,6 +517,38 @@ const CoachDashboard = () => {
       alert(`✅ Lembrete enviado para ${clientName}`);
     } catch (error) {
       alert('Erro ao enviar lembrete');
+    }
+  };
+
+  const handleGerarPlano = async (client) => {
+    const userId = client.user_id || client.users?.id;
+    const clientName = client.users?.nome || 'Cliente';
+
+    if (!userId) {
+      alert('❌ Cliente sem user_id');
+      return;
+    }
+
+    if (!confirm(`Gerar plano para ${clientName}?`)) {
+      return;
+    }
+
+    setGerandoPlano(userId);
+    try {
+      console.log('🔄 Gerando plano para userId:', userId);
+      const resultado = await gerarPlanoAutomatico(userId);
+
+      if (resultado?.success) {
+        alert(`✅ Plano gerado com sucesso para ${clientName}!`);
+        loadAllData(); // Recarregar dados
+      } else {
+        alert(`❌ Erro ao gerar plano: ${resultado?.error || 'Erro desconhecido'}`);
+      }
+    } catch (error) {
+      console.error('Erro ao gerar plano:', error);
+      alert(`❌ Erro: ${error.message}`);
+    } finally {
+      setGerandoPlano(null);
     }
   };
 
@@ -1127,44 +1197,76 @@ const CoachDashboard = () => {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {vitalisClients.map((client) => (
-                        <div
-                          key={client.id}
-                          className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
-                        >
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-bold text-lg">
-                            {client.users?.nome?.[0]?.toUpperCase() || '🌿'}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-white font-semibold">{client.users?.nome || client.nome_completo || 'Sem nome'}</p>
-                            <p className="text-white/40 text-sm truncate">{client.users?.email}</p>
-                          </div>
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(client.subscription_status)}`}>
-                            {client.subscription_status || 'sem status'}
-                          </span>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => { setSelectedClient(client); setShowInteractionPanel(true); }}
-                              className="px-3 py-2 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-sm font-medium transition-all border border-purple-500/30"
-                              title="Enviar por Email"
-                            >
-                              📧
-                            </button>
-                            {(client.telefone || client.whatsapp) && (
+                      {vitalisClients.map((client) => {
+                        const userId = client.user_id || client.users?.id;
+                        const temIntake = client.has_intake || false;
+                        const temPlano = client.has_plan || false;
+
+                        return (
+                          <div
+                            key={client.id}
+                            className="flex flex-col gap-3 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
+                          >
+                            {/* Header do cliente */}
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-bold text-lg">
+                                {client.users?.nome?.[0]?.toUpperCase() || '🌿'}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-white font-semibold">{client.users?.nome || client.nome_completo || 'Sem nome'}</p>
+                                <p className="text-white/40 text-sm truncate">{client.users?.email}</p>
+                              </div>
+                              <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(client.subscription_status)}`}>
+                                {client.subscription_status || 'sem status'}
+                              </span>
+                            </div>
+
+                            {/* Indicadores de status */}
+                            <div className="flex gap-2 text-xs">
+                              <span className={`px-2 py-1 rounded ${temIntake ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
+                                {temIntake ? '✅' : '❌'} Intake
+                              </span>
+                              <span className={`px-2 py-1 rounded ${temPlano ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
+                                {temPlano ? '✅' : '❌'} Plano
+                              </span>
+                            </div>
+
+                            {/* Ações */}
+                            <div className="flex gap-2 flex-wrap">
                               <button
-                                onClick={() => {
-                                  const phone = (client.telefone || client.whatsapp || '').replace(/\D/g, '');
-                                  window.open(`https://wa.me/${phone}`, '_blank');
-                                }}
-                                className="px-3 py-2 rounded-xl bg-green-500/20 hover:bg-green-500/30 text-green-300 text-sm font-medium transition-all border border-green-500/30"
-                                title="Abrir WhatsApp"
+                                onClick={() => { setSelectedClient(client); setShowInteractionPanel(true); }}
+                                className="px-3 py-2 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-sm font-medium transition-all border border-purple-500/30"
+                                title="Enviar por Email"
                               >
-                                💬
+                                📧 Email
                               </button>
-                            )}
+                              {(client.telefone || client.whatsapp) && (
+                                <button
+                                  onClick={() => {
+                                    const phone = (client.telefone || client.whatsapp || '').replace(/\D/g, '');
+                                    window.open(`https://wa.me/${phone}`, '_blank');
+                                  }}
+                                  className="px-3 py-2 rounded-xl bg-green-500/20 hover:bg-green-500/30 text-green-300 text-sm font-medium transition-all border border-green-500/30"
+                                  title="Abrir WhatsApp"
+                                >
+                                  💬 WhatsApp
+                                </button>
+                              )}
+                              {/* Botão Gerar Plano */}
+                              {temIntake && !temPlano && userId && (
+                                <button
+                                  onClick={() => handleGerarPlano(client)}
+                                  disabled={gerandoPlano === userId}
+                                  className="px-3 py-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 text-sm font-medium transition-all border border-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  title="Gerar Plano Alimentar"
+                                >
+                                  {gerandoPlano === userId ? '⏳ Gerando...' : '🍽️ Gerar Plano'}
+                                </button>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>
