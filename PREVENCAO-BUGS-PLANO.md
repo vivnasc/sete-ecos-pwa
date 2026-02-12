@@ -60,7 +60,7 @@ const intakeCompleto = intakeData &&
 
 ## 🎯 **FERRAMENTAS DE MONITORIZAÇÃO**
 
-### **1. Coach Dashboard (/vitalis/coach)**
+### **1. Coach Dashboard (/coach)**
 
 **Indicadores Visuais:**
 - ✅/❌ **Intake** - mostra se está completo
@@ -72,7 +72,7 @@ const intakeCompleto = intakeData &&
 - 💬 **WhatsApp** - suporte instantâneo
 
 **Como Usar:**
-1. Aceder `/vitalis/coach`
+1. Aceder `/coach`
 2. Ver lista de clientes
 3. Verificar status num relance
 4. Gerar plano se necessário
