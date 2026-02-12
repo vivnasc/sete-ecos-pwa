@@ -106,7 +106,7 @@ const BROADCAST_TEMPLATES = {
         <!-- Métodos de pagamento -->
         <div style="background: white; padding: 16px; border-radius: 12px; margin: 16px 0;">
           <p style="color: #4A4035; font-weight: bold; margin: 0 0 8px; text-align: center;">Formas de Pagamento</p>
-          <p style="color: #6B5C4C; font-size: 13px; margin: 2px 0; text-align: center;">M-Pesa | e-Mola | PayPal | Cartão Visa/Mastercard | Transferência BCI</p>
+          <p style="color: #6B5C4C; font-size: 13px; margin: 2px 0; text-align: center;">M-Pesa | PayPal | Cartão Visa/Mastercard</p>
         </div>
 
         ${RODAPE}

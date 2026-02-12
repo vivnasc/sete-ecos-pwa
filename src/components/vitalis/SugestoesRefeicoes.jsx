@@ -25,7 +25,7 @@ const REFEICOES_BASE = {
     { nome: 'Crepes de coco com creme de queijo', proteina: 1, hidratos: 0.5, gordura: 2, calorias: 250, tempo: 10, icone: '🥞', tags: ['keto'] },
   ],
   almoco: [
-    // Moçambicanas
+    // Moçambicanas — fase normal (com hidratos)
     { nome: 'Xima com caril de frango e matapa', proteina: 2.5, hidratos: 2, gordura: 1.5, calorias: 450, tempo: 30, icone: '🍛', tags: ['normal'] },
     { nome: 'Xima com caril de amendoim e couve', proteina: 1.5, hidratos: 2, gordura: 2, calorias: 420, tempo: 25, icone: '🥜', tags: ['normal'] },
     { nome: 'Matapa com camarão e arroz', proteina: 2.5, hidratos: 1.5, gordura: 1.5, calorias: 400, tempo: 35, icone: '🥬', tags: ['normal'] },
@@ -33,6 +33,9 @@ const REFEICOES_BASE = {
     { nome: 'Frango à Zambeziana com arroz de coco', proteina: 3, hidratos: 2, gordura: 2, calorias: 500, tempo: 40, icone: '🍗', tags: ['normal'] },
     { nome: 'Caril de peixe com xima', proteina: 2.5, hidratos: 1.5, gordura: 1, calorias: 380, tempo: 30, icone: '🐟', tags: ['normal'] },
     { nome: 'Cacana com amendoim e xima', proteina: 1.5, hidratos: 2, gordura: 1.5, calorias: 360, tempo: 25, icone: '🥬', tags: ['normal'] },
+    // Moçambicanas — keto/lowcarb (sem xima, sem arroz)
+    { nome: 'Matapa com camarão (sem xima)', proteina: 2.5, hidratos: 0.5, gordura: 2.5, calorias: 380, tempo: 35, icone: '🥬', tags: ['lowcarb', 'keto'], nota: 'Folha de mandioca + coco + camarão' },
+    { nome: 'Caril de frango com salada (sem xima)', proteina: 3, hidratos: 0.5, gordura: 2, calorias: 400, tempo: 25, icone: '🍗', tags: ['lowcarb', 'keto'] },
     // Internacionais
     { nome: 'Salada de frango grelhado com azeite e abacate', proteina: 3, hidratos: 0.5, gordura: 2.5, calorias: 420, tempo: 20, icone: '🥗', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Bife de vaca com manteiga de ervas e legumes', proteina: 3, hidratos: 0.5, gordura: 3, calorias: 450, tempo: 20, icone: '🥩', tags: ['lowcarb', 'keto', 'normal'] },
@@ -45,12 +48,15 @@ const REFEICOES_BASE = {
     { nome: 'Costeletas de porco com salada e azeite', proteina: 3, hidratos: 0.5, gordura: 2.5, calorias: 420, tempo: 25, icone: '🍖', tags: ['lowcarb', 'keto', 'normal'] },
   ],
   jantar: [
-    // Moçambicanas
+    // Moçambicanas — fase normal (com hidratos)
     { nome: 'Matapa com xima (porção leve)', proteina: 1.5, hidratos: 1.5, gordura: 1.5, calorias: 320, tempo: 30, icone: '🥬', tags: ['normal'] },
     { nome: 'Caril de camarão com arroz', proteina: 2.5, hidratos: 1.5, gordura: 1.5, calorias: 380, tempo: 30, icone: '🦐', tags: ['normal'] },
-    { nome: 'Galinha à Cafreal com salada', proteina: 3, hidratos: 0.5, gordura: 2, calorias: 400, tempo: 35, icone: '🍗', tags: ['lowcarb', 'normal'] },
     { nome: 'Peixe grelhado à moçambicana com mandioca', proteina: 2.5, hidratos: 1.5, gordura: 1, calorias: 350, tempo: 25, icone: '🐟', tags: ['normal'] },
     { nome: 'Sopa de feijão nhemba com couve', proteina: 2, hidratos: 1, gordura: 0.5, calorias: 260, tempo: 25, icone: '🫘', tags: ['normal'] },
+    // Moçambicanas — keto/lowcarb (sem xima, sem arroz, sem mandioca)
+    { nome: 'Galinha à Cafreal com salada', proteina: 3, hidratos: 0.5, gordura: 2, calorias: 400, tempo: 35, icone: '🍗', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Caril de camarão com legumes (sem arroz)', proteina: 2.5, hidratos: 0.5, gordura: 2, calorias: 350, tempo: 30, icone: '🦐', tags: ['lowcarb', 'keto'], nota: 'Camarão em leite de coco com legumes' },
+    { nome: 'Matapa (sem xima, só folha com camarão)', proteina: 2, hidratos: 0.5, gordura: 2.5, calorias: 320, tempo: 30, icone: '🥬', tags: ['lowcarb', 'keto'], nota: 'Folha de mandioca + coco, rica em gordura boa' },
     // Internacionais
     { nome: 'Peixe grelhado com salada e azeite', proteina: 2.5, hidratos: 0.5, gordura: 2, calorias: 350, tempo: 20, icone: '🐟', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Sopa cremosa de legumes com frango desfiado', proteina: 2, hidratos: 0.5, gordura: 1.5, calorias: 280, tempo: 20, icone: '🍜', tags: ['lowcarb', 'keto', 'normal'] },
@@ -203,7 +209,11 @@ export default function SugestoesRefeicoes() {
     let sugestoes = REFEICOES_BASE[refeicaoSelecionada] || [];
 
     // Filtrar por fase (tag)
-    sugestoes = sugestoes.filter(s => s.tags.includes(faseTag) || s.tags.includes('normal'));
+    // Normal: mostra tudo (incluindo opções keto/lowcarb)
+    // Keto/Lowcarb: mostra APENAS itens com a tag da fase (nunca xima em indução!)
+    sugestoes = faseTag === 'normal'
+      ? sugestoes
+      : sugestoes.filter(s => s.tags.includes(faseTag));
 
     // Filtrar por tempo
     if (filtroTempo === 'rapido') {

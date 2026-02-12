@@ -148,28 +148,18 @@ Responde *5* para saber como pagar ou *6* para experimentar grátis 7 dias`;
 // --- 5: PAGAMENTO ---
 R['5'] = `*Como Pagar — Sete Ecos*
 
-*1. PayPal / Cartão (acesso imediato)*
+*1. M-Pesa*
+Envia para: *85 100 6473*
+Nome: Vivianne Santos
+Depois envia o comprovativo aqui — ativo em menos de 1 hora!
+
+*2. PayPal / Cartão (acesso imediato)*
 Visa, Mastercard ou PayPal direto na app.
 app.seteecos.com/vitalis/pagamento
 
-*2. M-Pesa*
-Envia para: *85 100 6473*
-Nome: Vivianne Santos
-Depois envia o comprovativo aqui.
-
-*3. e-Mola*
-Contacta-nos para dados e-Mola.
-Depois envia o comprovativo aqui.
-
-*4. Transferência Bancária*
-Banco BCI
-Titular: Vivianne Nascimento
-Contacta-nos para NIB completo.
-Depois envia o comprovativo aqui.
-
 *Prazos de ativação:*
 - PayPal/cartão: acesso imediato
-- M-Pesa/e-Mola/transferência: ativação em menos de 1 hora após comprovativo
+- M-Pesa: ativação em menos de 1 hora após comprovativo
 
 Já pagaste? Envia o comprovativo aqui que ativo o teu acesso!`;
 
@@ -301,7 +291,7 @@ Sim! A Vivianne responde pessoalmente, não é um bot.
 Sim, 100% gratuito, sem registo, em 5 minutos.
 
 *Posso pagar por M-Pesa?*
-Sim! M-Pesa, e-Mola, PayPal, cartão e transferência.
+Sim! M-Pesa e PayPal/cartão.
 
 Mais dúvidas? Responde *7* para falar com a Vivianne`;
 
@@ -349,7 +339,7 @@ function detectarResposta(texto) {
     return { chave: 'faq' };
 
   // Pagamento
-  if (t.includes('pagar') || t.includes('pagamento') || t.includes('mpesa') || t.includes('m-pesa') || t.includes('emola') || t.includes('e-mola') || t.includes('paypal') || t.includes('transferencia') || t.includes('comprovativo') || t.includes('cartao'))
+  if (t.includes('pagar') || t.includes('pagamento') || t.includes('mpesa') || t.includes('m-pesa') || t.includes('paypal') || t.includes('comprovativo') || t.includes('cartao'))
     return { chave: '5' };
 
   // Preços
