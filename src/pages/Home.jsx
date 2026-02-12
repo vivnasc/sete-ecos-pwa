@@ -6,7 +6,7 @@ import LandingGeral from './LandingGeral'
 
 /**
  * HOME PRINCIPAL - app.seteecos.com
- * Sistema de Transmutacao Integral
+ * Sistema de Transmutação Integral
  */
 
 export default function Home() {
@@ -98,7 +98,7 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="text-white font-bold tracking-wide">LUMINA</h3>
-                  <p className="text-white/60 text-xs mt-0.5">Diagnostico diario</p>
+                  <p className="text-white/60 text-xs mt-0.5">Diagnóstico diário</p>
                   <span className="inline-block mt-2 text-[10px] text-white/40 bg-white/10 px-2 py-0.5 rounded-full">Gratuito</span>
                 </div>
               </div>
@@ -117,9 +117,9 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="text-white font-bold tracking-wide">VITALIS</h3>
-                  <p className="text-white/60 text-xs mt-0.5">Corpo & Nutricao</p>
+                  <p className="text-white/60 text-xs mt-0.5">Corpo & Nutrição</p>
                   <span className="inline-block mt-2 text-[10px] text-white/40 bg-white/10 px-2 py-0.5 rounded-full">
-                    {vitalisAccess ? 'Activo' : 'Comecar'}
+                    {vitalisAccess ? 'Activo' : 'Começar'}
                   </span>
                 </div>
               </div>
@@ -140,7 +140,7 @@ export default function Home() {
                   <h3 className="text-white font-bold tracking-wide">AUREA</h3>
                   <p className="text-white/60 text-xs mt-0.5">Autocuidado & Beleza</p>
                   <span className="inline-block mt-2 text-[10px] text-white/40 bg-white/10 px-2 py-0.5 rounded-full">
-                    {aureaAccess ? 'Activo' : 'Comecar'}
+                    {aureaAccess ? 'Activo' : 'Começar'}
                   </span>
                 </div>
               </div>
@@ -161,7 +161,7 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="text-white font-bold tracking-wide">COMUNIDADE</h3>
-                  <p className="text-white/60 text-xs mt-0.5">Reflexao & Partilha</p>
+                  <p className="text-white/60 text-xs mt-0.5">Reflexão & Partilha</p>
                   <span className="inline-block mt-2 text-[10px] text-white/40 bg-white/10 px-2 py-0.5 rounded-full">Aberto</span>
                 </div>
               </div>
@@ -174,7 +174,7 @@ export default function Home() {
           <section className="px-5 mb-8">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-1 h-5 bg-gradient-to-b from-[#7C8B6F] to-[#7C8B6F]/30 rounded-full" />
-              <h2 className="text-sm font-semibold text-[#4A3728] tracking-widest uppercase">Acesso Rapido</h2>
+              <h2 className="text-sm font-semibold text-[#4A3728] tracking-widest uppercase">Acesso Rápido</h2>
             </div>
             <div className="bg-white/50 backdrop-blur-md rounded-3xl border border-white/60 shadow-lg overflow-hidden">
               <Link to="/vitalis/checkin" className="flex items-center gap-4 p-4 hover:bg-white/50 transition-colors border-b border-[#E8D5A3]/20">
@@ -184,7 +184,7 @@ export default function Home() {
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-[#4A3728] text-sm">Check-in Diario</p>
+                  <p className="font-semibold text-[#4A3728] text-sm">Check-in Diário</p>
                   <p className="text-xs text-[#6B5344]/60">Registar o teu dia</p>
                 </div>
                 <svg className="w-4 h-4 text-[#6B5344]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,7 +199,7 @@ export default function Home() {
                 </div>
                 <div className="flex-1">
                   <p className="font-semibold text-[#4A3728] text-sm">Receitas</p>
-                  <p className="text-xs text-[#6B5344]/60">Explorar receitas saudaveis</p>
+                  <p className="text-xs text-[#6B5344]/60">Explorar receitas saudáveis</p>
                 </div>
                 <svg className="w-4 h-4 text-[#6B5344]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -230,7 +230,7 @@ export default function Home() {
             <div className="relative p-6">
               <p className="text-[#C9A227] text-xs font-semibold tracking-widest uppercase mb-2">Descobrir</p>
               <p className="text-white/80 text-sm mb-4 leading-relaxed">
-                Explora os 7 Ecos e descobre todo o sistema de transformacao integral.
+                Explora os 7 Ecos e descobre todo o sistema de transformação integral.
               </p>
               <button
                 onClick={() => navigate('/landing')}

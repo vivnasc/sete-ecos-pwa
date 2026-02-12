@@ -41,7 +41,7 @@ O VITALIS é um programa de transformação nutricional feito para a mulher moç
 - Plano alimentar personalizado (xima, matapa, caril, feijão nhemba)
 - Receitas moçambicanas saudáveis
 - Check-in diário (30 segundos)
-- Chat directo com a coach Vivianne
+- Chat direto com a coach Vivianne
 - Relatórios semanais de progresso
 - Treinos adaptados (sem ginásio)
 - Lista de compras automática
@@ -65,7 +65,7 @@ R['2'] = `*LUMINA — Diagnóstico Gratuito*
 O LUMINA é o teu primeiro passo. Em *5 minutos* descobres:
 
 - O teu padrão emocional dominante
-- Como a alimentação afecta o teu humor
+- Como a alimentação afeta o teu humor
 - O que o teu corpo realmente precisa
 - Leitura personalizada com orientações
 
@@ -149,7 +149,7 @@ Responde *5* para saber como pagar ou *6* para experimentar grátis 7 dias`;
 R['5'] = `*Como Pagar — Sete Ecos*
 
 *1. PayPal / Cartão (acesso imediato)*
-Visa, Mastercard ou PayPal directo na app.
+Visa, Mastercard ou PayPal direto na app.
 app.seteecos.com/vitalis/pagamento
 
 *2. M-Pesa*
@@ -167,11 +167,11 @@ Titular: Vivianne Nascimento
 Contacta-nos para NIB completo.
 Depois envia o comprovativo aqui.
 
-*Prazos de activação:*
+*Prazos de ativação:*
 - PayPal/cartão: acesso imediato
-- M-Pesa/e-Mola/transferência: activação em menos de 1 hora após comprovativo
+- M-Pesa/e-Mola/transferência: ativação em menos de 1 hora após comprovativo
 
-Já pagaste? Envia o comprovativo aqui que activo o teu acesso!`;
+Já pagaste? Envia o comprovativo aqui que ativo o teu acesso!`;
 
 // --- 6: TRIAL ---
 R['6'] = `*Experimenta Grátis — 7 Dias*
@@ -192,9 +192,9 @@ Podes experimentar o VITALIS durante *7 dias grátis* antes de decidir.
 - Relatórios detalhados
 - Fotos de progresso
 
-Para activar o trial gratuito:
+Para ativar o trial gratuito:
 Regista-te em app.seteecos.com/vitalis/pagamento
-Ou responde *7* e peço à Vivianne para te activar`;
+Ou responde *7* e peço à Vivianne para te ativar`;
 
 // --- 7: FALAR COM VIVIANNE ---
 R['7'] = `*Falar com a Vivianne*
@@ -231,7 +231,7 @@ Responde *5* para saber como pagar`;
 // --- COMUNIDADE ---
 R['comunidade'] = `*Comunidade Sete Ecos*
 
-Um espaço seguro de transformação colectiva. Incluída em todos os planos pagos.
+Um espaço seguro de transformação coletiva. Incluída em todos os planos pagos.
 
 *4 espaços:*
 
@@ -243,7 +243,7 @@ Um espaço seguro de transformação colectiva. Incluída em todos os planos pag
 
 *Sussurros* — Mensagens privadas de apoio e encorajamento entre mulheres.
 
-Não é uma rede social. É um espaço de cura colectiva.
+Não é uma rede social. É um espaço de cura coletiva.
 
 A Comunidade vem incluída no VITALIS, ÁUREA e Bundle`;
 
@@ -327,7 +327,7 @@ Responde com o número ou palavra`;
 function detectarResposta(texto) {
   const t = texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-  // Números directos
+  // Números diretos
   if (['1', '2', '3', '4', '5', '6', '7'].includes(texto.trim())) {
     return { chave: texto.trim(), notificarCoach: texto.trim() === '7' };
   }

@@ -14,7 +14,7 @@
 const translations = {
   'pt': {
     // Navegação
-    'nav.home': 'Inicio',
+    'nav.home': 'Início',
     'nav.account': 'Conta',
     'nav.profile': 'Perfil',
     'nav.community': 'Comunidade',
@@ -60,7 +60,7 @@ const translations = {
     'eco.aurora.desc': 'Integração Final',
 
     // Acessibilidade
-    'a11y.skip_to_content': 'Saltar para o conteudo principal',
+    'a11y.skip_to_content': 'Saltar para o conteúdo principal',
     'a11y.open_menu': 'Abrir menu',
     'a11y.close_menu': 'Fechar menu',
     'a11y.dark_mode': 'Alternar modo escuro',
@@ -70,7 +70,7 @@ const translations = {
     'error.title': 'Algo correu mal',
     'error.description': 'Ocorreu um erro inesperado. Podes tentar recarregar esta secção ou voltar ao início.',
     'error.retry': 'Tentar novamente',
-    'error.go_home': 'Voltar ao inicio',
+    'error.go_home': 'Voltar ao início',
 
     // Sustentabilidade
     'sustainability.title': 'Plataforma Eco-Digital',
@@ -86,7 +86,7 @@ const translations = {
     // Subscrições
     'subscription.active': 'Subscrição ativa',
     'subscription.expired': 'Subscrição expirada',
-    'subscription.trial': 'Periodo de teste',
+    'subscription.trial': 'Período de teste',
     'subscription.monthly': 'Mensal',
     'subscription.semestral': 'Semestral',
     'subscription.annual': 'Anual',
@@ -168,26 +168,26 @@ const translations = {
     'nav.home': 'Accueil',
     'nav.account': 'Compte',
     'nav.profile': 'Profil',
-    'nav.community': 'Communaute',
-    'nav.logout': 'Deconnexion',
+    'nav.community': 'Communauté',
+    'nav.logout': 'Déconnexion',
     'nav.login': 'Connexion',
-    'nav.register': 'Creer un compte',
+    'nav.register': 'Créer un compte',
 
     'common.loading': 'Chargement...',
     'common.error': 'Une erreur est survenue',
-    'common.retry': 'Reessayer',
+    'common.retry': 'Réessayer',
     'common.back': 'Retour',
     'common.save': 'Enregistrer',
     'common.cancel': 'Annuler',
     'common.confirm': 'Confirmer',
     'common.free': 'Gratuit',
-    'common.coming_soon': 'Bientot disponible',
+    'common.coming_soon': 'Bientôt disponible',
     'common.subscribe': 'S\'abonner',
 
     'error.title': 'Une erreur est survenue',
-    'error.description': 'Une erreur inattendue s\'est produite. Vous pouvez recharger cette section ou revenir a la page d\'accueil.',
-    'error.retry': 'Reessayer',
-    'error.go_home': 'Retour a l\'accueil',
+    'error.description': 'Une erreur inattendue s\'est produite. Vous pouvez recharger cette section ou revenir à la page d\'accueil.',
+    'error.retry': 'Réessayer',
+    'error.go_home': 'Retour à l\'accueil',
   }
 }
 
@@ -197,9 +197,9 @@ translations['pt-BR'] = translations['pt']
 translations['pt-MZ'] = translations['pt']
 
 export const AVAILABLE_LOCALES = [
-  { code: 'pt', label: 'Portugues', flag: '🇵🇹' },
+  { code: 'pt', label: 'Português', flag: '🇵🇹' },
   { code: 'en', label: 'English', flag: '🇬🇧' },
-  { code: 'fr', label: 'Francais', flag: '🇫🇷' },
+  { code: 'fr', label: 'Français', flag: '🇫🇷' },
 ]
 
 export const DEFAULT_LOCALE = 'pt'

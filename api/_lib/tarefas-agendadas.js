@@ -2,7 +2,7 @@
  * API Endpoint: Tarefas Agendadas
  *
  * Este endpoint é chamado por um cron job para:
- * 1. Enviar lembretes a clientes inactivas (2+ dias sem check-in)
+ * 1. Enviar lembretes a clientes inativas (2+ dias sem check-in)
  * 2. Enviar avisos de expiração (7 dias antes)
  * 3. Enviar resumo diário à coach
  *
@@ -47,7 +47,7 @@ export default async function handler(req, res) {
     // 2. AVISOS DE EXPIRAÇÃO
     await enviarAvisosExpiracao(supabase, resultados);
 
-    // 3. CURIOSIDADE INSANA - users registados sem subscricao
+    // 3. CURIOSIDADE INSANA - users registados sem subscrição
     await enviarCuriosidadeInsana(supabase, resultados);
 
     // 4. RESUMO DIÁRIO PARA COACH
@@ -70,7 +70,7 @@ export default async function handler(req, res) {
 /**
  * Enviar lembretes motivacionais a clientes inactivas
  * - 2-4 dias: lembrete suave
- * - 5+ dias: email provocador com curiosidade + WhatsApp directo
+ * - 5+ dias: email provocador com curiosidade + WhatsApp direto
  */
 async function enviarLembretes(supabase, resultados) {
   const doisDiasAtras = new Date();
@@ -245,12 +245,12 @@ async function enviarResumoDiario(supabase, resultados) {
 }
 
 /**
- * Enviar email de curiosidade insana a utilizadoras registadas sem subscricao
+ * Enviar email de curiosidade insana a utilizadoras registadas sem subscrição
  * Targeteia users que fizeram Lumina mas nunca subscreveram Vitalis
  * Envia 1x por semana (quartas-feiras)
  */
 async function enviarCuriosidadeInsana(supabase, resultados) {
-  // So executa as quartas-feiras
+  // Só executa às quartas-feiras
   const hoje = new Date();
   if (hoje.getDay() !== 3) return; // 3 = quarta-feira
 
@@ -261,42 +261,42 @@ async function enviarCuriosidadeInsana(supabase, resultados) {
   const semanaDoAno = Math.ceil((hoje - new Date(hoje.getFullYear(), 0, 1)) / (7 * 24 * 60 * 60 * 1000));
   const CURIOSIDADES = [
     {
-      assunto: 'Comes por fome ou por emocao? (faz este teste mental)',
-      hook: 'Faz este exercicio: antes de comeres algo, poe a mao no peito e pergunta "estou mesmo com fome ou estou a sentir algo?"',
-      corpo: 'Se a resposta for "estou a sentir algo" - parabens, acabaste de descobrir o padrao que 87% das mulheres mocambicanas ignoram. E este padrao que faz o efeito ioio. Nao e a comida. E a emocao.',
-      cta: 'O VITALIS tem uma ferramenta unica chamada Espaco de Retorno — feita exactamente para estes momentos. Nenhum outro programa em Mocambique tem isto.'
+      assunto: 'Comes por fome ou por emoção? (faz este teste mental)',
+      hook: 'Faz este exercício: antes de comeres algo, põe a mão no peito e pergunta "estou mesmo com fome ou estou a sentir algo?"',
+      corpo: 'Se a resposta for "estou a sentir algo" - parabéns, acabaste de descobrir o padrão que 87% das mulheres moçambicanas ignoram. É este padrão que faz o efeito ioiô. Não é a comida. É a emoção.',
+      cta: 'O VITALIS tem uma ferramenta única chamada Espaço de Retorno — feita exatamente para estes momentos. Nenhum outro programa em Moçambique tem isto.'
     },
     {
-      assunto: 'A verdade sobre a xima que ninguem te diz',
-      hook: 'Disseram-te a vida inteira que a xima engorda. E mentira. O que engorda e o desequilibrio no prato — e a maioria das mulheres nao sabe como equilibrar.',
-      corpo: 'Uma mao fechada de xima + uma palma de caril de peixe + um punho de matapa = a refeicao perfeita. Sem contar calorias. Sem apps complicadas. So as tuas maos.',
-      cta: 'No VITALIS ensinamos-te o Metodo da Mao — medir porcoes com o que ja tens. Simples, cientifico e feito para a comida mocambicana.'
+      assunto: 'A verdade sobre a xima que ninguém te diz',
+      hook: 'Disseram-te a vida inteira que a xima engorda. É mentira. O que engorda é o desequilíbrio no prato — e a maioria das mulheres não sabe como equilibrar.',
+      corpo: 'Uma mão fechada de xima + uma palma de caril de peixe + um punho de matapa = a refeição perfeita. Sem contar calorias. Sem apps complicadas. Só as tuas mãos.',
+      cta: 'No VITALIS ensinamos-te o Método da Mão — medir porções com o que já tens. Simples, científico e feito para a comida moçambicana.'
     },
     {
-      assunto: 'Porque e que perdes peso e ganhas tudo de volta?',
-      hook: 'Ja reparaste que quanto mais restritiva e a dieta, mais peso ganhas depois? Nao e falta de disciplina. E biologia.',
-      corpo: 'Quando cortas calorias drasticamente, o teu metabolismo desacelera. O corpo entra em modo de sobrevivencia. Quando voltas a comer normal, ele armazena TUDO como gordura. E o teu corpo a proteger-te.',
-      cta: 'O VITALIS nao e uma dieta. E uma reeducacao alimentar em 3 fases que respeita o teu metabolismo. Resultado: perda sustentavel, sem efeito ioio.'
+      assunto: 'Porque é que perdes peso e ganhas tudo de volta?',
+      hook: 'Já reparaste que quanto mais restritiva é a dieta, mais peso ganhas depois? Não é falta de disciplina. É biologia.',
+      corpo: 'Quando cortas calorias drasticamente, o teu metabolismo desacelera. O corpo entra em modo de sobrevivência. Quando voltas a comer normal, ele armazena TUDO como gordura. É o teu corpo a proteger-te.',
+      cta: 'O VITALIS não é uma dieta. É uma reeducação alimentar em 3 fases que respeita o teu metabolismo. Resultado: perda sustentável, sem efeito ioiô.'
     },
     {
       assunto: 'O que acontece no teu corpo quando comes por culpa',
       hook: 'Comeste algo "proibido" e sentiste culpa? Essa culpa dispara cortisol. O cortisol aumenta o apetite e armazena gordura abdominal. Ou seja: a culpa engorda mais que a comida.',
-      corpo: 'Isto nao e opiniao. E ciencia (Precision Nutrition). A relacao emocional com a comida afecta directamente o teu peso. E nenhuma dieta resolve isso.',
-      cta: 'No VITALIS trabalhamos corpo E emocao. Plano alimentar + Espaco de Retorno. Porque nao basta mudar o prato — e preciso mudar a relacao.'
+      corpo: 'Isto não é opinião. É ciência (Precision Nutrition). A relação emocional com a comida afeta diretamente o teu peso. E nenhuma dieta resolve isso.',
+      cta: 'No VITALIS trabalhamos corpo E emoção. Plano alimentar + Espaço de Retorno. Porque não basta mudar o prato — é preciso mudar a relação.'
     },
   ];
 
   const curiosidade = CURIOSIDADES[semanaDoAno % CURIOSIDADES.length];
 
   try {
-    // Buscar users que fizeram Lumina mas NAO tem subscricao Vitalis
+    // Buscar users que fizeram Lumina mas NAO tem subscrição Vitalis
     const { data: users } = await supabase
       .from('users')
       .select('id, nome, email');
 
     if (!users || users.length === 0) return;
 
-    // Filtrar: tem Lumina mas nao tem Vitalis activo
+    // Filtrar: tem Lumina mas não tem Vitalis ativo
     for (const user of users) {
       try {
         const { data: vitalisClient } = await supabase
@@ -305,7 +305,7 @@ async function enviarCuriosidadeInsana(supabase, resultados) {
           .eq('user_id', user.id)
           .maybeSingle();
 
-        // Se ja tem subscricao activa, skip
+        // Se já tem subscrição ativa, skip
         if (vitalisClient && ['active', 'trial', 'tester'].includes(vitalisClient.subscription_status)) continue;
 
         // Verificar se tem Lumina
@@ -359,7 +359,7 @@ async function enviarCuriosidadeInsana(supabase, resultados) {
  * Funcao auxiliar para enviar email via Resend
  */
 async function enviarEmail(tipo, destinatario, dados) {
-  const WHATSAPP_LINK = 'https://wa.me/258851006473?text=Ola%20Vivianne%2C%20preciso%20de%20motivacao';
+  const WHATSAPP_LINK = 'https://wa.me/258851006473?text=Ola%20Vivianne%2C%20preciso%20de%20motivação';
 
   const templates = {
     'lembrete-checkin': {
@@ -369,13 +369,13 @@ async function enviarEmail(tipo, destinatario, dados) {
           <div style="text-align: center; margin-bottom: 30px;">
             <img src="https://app.seteecos.com/logos/VITALIS_LOGO_V3.png" alt="Vitalis" style="height: 60px;">
           </div>
-          <h1 style="color: #7C8B6F; font-size: 24px; text-align: center;">Ola ${dados.nome}</h1>
+          <h1 style="color: #7C8B6F; font-size: 24px; text-align: center;">Olá ${dados.nome}</h1>
           <p style="color: #4A4035; font-size: 16px; line-height: 1.6; text-align: center;">
-            Ja la vao <strong>${dados.dias} dias</strong> desde o teu ultimo registo no Vitalis.
+            Já lá vão <strong>${dados.dias} dias</strong> desde o teu último registo no Vitalis.
           </p>
           <p style="color: #6B5C4C; font-size: 14px; text-align: center; margin: 20px 0;">
             Sabemos que a vida acontece, mas cada pequeno passo conta.<br>
-            Que tal registares algo hoje? Mesmo que seja so a agua.
+            Que tal registares algo hoje? Mesmo que seja só a água.
           </p>
           <div style="text-align: center; margin: 30px 0;">
             <a href="https://app.seteecos.com/vitalis/dashboard"
@@ -402,26 +402,26 @@ async function enviarEmail(tipo, destinatario, dados) {
             <img src="https://app.seteecos.com/logos/VITALIS_LOGO_V3.png" alt="Vitalis" style="height: 50px;">
           </div>
 
-          <h1 style="color: #4A4035; font-size: 22px; text-align: center; line-height: 1.4;">${dados.nome}, sei que estes ${dados.dias} dias nao foram faceis.</h1>
+          <h1 style="color: #4A4035; font-size: 22px; text-align: center; line-height: 1.4;">${dados.nome}, sei que estes ${dados.dias} dias não foram fáceis.</h1>
 
           <div style="background: #2C2C2C; color: white; padding: 24px; border-radius: 12px; margin: 20px 0;">
-            <p style="font-size: 18px; font-style: italic; line-height: 1.6; margin: 0; text-align: center;">"A diferenca entre quem transforma o corpo e quem desiste nao e forca de vontade. E ter alguem que nao desiste de ti."</p>
+            <p style="font-size: 18px; font-style: italic; line-height: 1.6; margin: 0; text-align: center;">"A diferença entre quem transforma o corpo e quem desiste não é força de vontade. É ter alguém que não desiste de ti."</p>
           </div>
 
-          <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8; text-align: center;">Eu nao desisti de ti. E nao vou desistir.</p>
+          <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8; text-align: center;">Eu não desisti de ti. E não vou desistir.</p>
 
           <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8;">Sabes o que acontece quando paras?</p>
           <ul style="color: #6B5C4C; font-size: 14px; line-height: 2;">
             <li>O teu metabolismo começa a desacelerar de novo</li>
-            <li>Os padroes emocionais voltam silenciosamente</li>
+            <li>Os padrões emocionais voltam silenciosamente</li>
             <li>A culpa aumenta - e a culpa engorda mais que a comida</li>
           </ul>
 
           <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8;">Mas sabes o que acontece quando <strong>voltas hoje</strong>?</p>
           <div style="background: white; padding: 16px; border-radius: 12px; margin: 16px 0; border-left: 4px solid #7C8B6F;">
-            <p style="color: #4A4035; margin: 4px 0;">Todo o teu progresso anterior esta guardado</p>
-            <p style="color: #4A4035; margin: 4px 0;">Retomas exactamente onde paraste</p>
-            <p style="color: #4A4035; margin: 4px 0;">Um check-in de 30 segundos ja e uma vitoria</p>
+            <p style="color: #4A4035; margin: 4px 0;">Todo o teu progresso anterior está guardado</p>
+            <p style="color: #4A4035; margin: 4px 0;">Retomas exatamente onde paraste</p>
+            <p style="color: #4A4035; margin: 4px 0;">Um check-in de 30 segundos já é uma vitória</p>
           </div>
 
           <div style="text-align: center; margin: 30px 0;">
@@ -432,7 +432,7 @@ async function enviarEmail(tipo, destinatario, dados) {
           </div>
 
           <div style="background: #25D366; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center;">
-            <p style="color: white; font-weight: bold; margin: 0 0 4px; font-size: 16px;">Queres falar sobre o que te esta a travar?</p>
+            <p style="color: white; font-weight: bold; margin: 0 0 4px; font-size: 16px;">Queres falar sobre o que te está a travar?</p>
             <p style="color: rgba(255,255,255,0.9); font-size: 13px; margin: 0 0 12px;">Estou aqui para ouvir, sem julgamento</p>
             <a href="${WHATSAPP_LINK}" style="display: inline-block; padding: 12px 28px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold;">Falar com a Vivianne no WhatsApp</a>
           </div>
@@ -459,18 +459,18 @@ async function enviarEmail(tipo, destinatario, dados) {
             <p style="color: #4A4035; font-size: 15px; line-height: 1.7; margin: 0;">${dados.curiosidade?.cta || ''}</p>
           </div>
           <div style="background: linear-gradient(135deg, #FF6B6B, #EE5A24); border-radius: 12px; padding: 16px; margin: 20px 0; text-align: center;">
-            <p style="color: white; font-size: 11px; letter-spacing: 2px; margin: 0;">CODIGO EXCLUSIVO</p>
+            <p style="color: white; font-size: 11px; letter-spacing: 2px; margin: 0;">CÓDIGO EXCLUSIVO</p>
             <p style="color: white; font-size: 28px; font-weight: bold; letter-spacing: 3px; margin: 4px 0;">VEMVITALIS20</p>
             <p style="color: rgba(255,255,255,0.9); font-size: 14px; margin: 0;">20% de desconto</p>
           </div>
           <div style="text-align: center; margin: 24px 0;">
             <a href="https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20&utm_source=email&utm_medium=curiosidade&utm_campaign=semanal"
                style="display: inline-block; background: #7C8B6F; color: white; padding: 14px 32px; border-radius: 25px; text-decoration: none; font-weight: bold;">
-              Comecar com 20% Off
+              Começar com 20% Off
             </a>
           </div>
           <div style="background: #25D366; border-radius: 12px; padding: 16px; margin: 20px 0; text-align: center;">
-            <p style="color: white; font-weight: bold; margin: 0 0 8px;">Tens duvidas? Fala comigo!</p>
+            <p style="color: white; font-weight: bold; margin: 0 0 8px;">Tens dúvidas? Fala comigo!</p>
             <a href="https://wa.me/258851006473" style="display: inline-block; padding: 10px 24px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 14px;">Abrir WhatsApp</a>
           </div>
           <p style="color: #6B5C4C; font-size: 13px; text-align: center;">Vivianne Saraiva<br>Criadora do Sete Ecos</p>
@@ -516,7 +516,7 @@ async function enviarEmail(tipo, destinatario, dados) {
             <h3 style="color: #4A4035; margin-bottom: 15px;">Métricas</h3>
             <table style="width: 100%; font-size: 14px;">
               <tr>
-                <td style="padding: 8px 0; color: #6B5C4C;">👥 Clientes activas</td>
+                <td style="padding: 8px 0; color: #6B5C4C;">👥 Clientes ativas</td>
                 <td style="padding: 8px 0; color: #7C8B6F; font-weight: bold; text-align: right;">${dados.totalClientes}</td>
               </tr>
               <tr>

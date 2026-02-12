@@ -1,17 +1,17 @@
 /**
- * API Endpoint: Sequencia Automatica de Emails (Lead Nurturing + Marketing Intenso)
+ * API Endpoint: Sequência Automática de Emails (Lead Nurturing + Marketing Intenso)
  *
- * Envia emails automaticos para leads da waitlist baseado nos dias desde registo.
- * Inclui codigo VEMVITALIS20 (20% desconto) e redireciona ao WhatsApp Business.
+ * Envia emails automáticos para leads da waitlist baseado nos dias desde registo.
+ * Inclui código VEMVITALIS20 (20% desconto) e redireciona ao WhatsApp Business.
  *
- * Sequencia:
- *   Dia 0  - Boas-vindas + apresentacao Sete Ecos + WhatsApp
+ * Sequência:
+ *   Dia 0  - Boas-vindas + apresentação Sete Ecos + WhatsApp
  *   Dia 3  - Convite para Lumina (gratuito) + curiosidade
- *   Dia 7  - Conteudo de valor (3 sinais) + provocacao
- *   Dia 10 - CURIOSIDADE INSANA (novo!) - "O segredo que ninguem te conta"
- *   Dia 14 - Convite para Vitalis + codigo VEMVITALIS20
- *   Dia 21 - Testemunho + prova social + codigo
- *   Dia 30 - Oferta final / urgencia + codigo + WhatsApp directo
+ *   Dia 7  - Conteúdo de valor (3 sinais) + provocação
+ *   Dia 10 - CURIOSIDADE INSANA (novo!) - "O segredo que ninguém te conta"
+ *   Dia 14 - Convite para Vitalis + código VEMVITALIS20
+ *   Dia 21 - Testemunho + prova social + código
+ *   Dia 30 - Oferta final / urgencia + código + WhatsApp direto
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -25,10 +25,10 @@ const WHATSAPP_LINK = 'https://wa.me/258851006473?text=Ola%20Vivianne%2C%20vim%2
 const WHATSAPP_CHATBOT = 'https://wa.me/258851006473';
 const CODIGO_PROMO = 'VEMVITALIS20';
 
-// Rodape padrao com WhatsApp
+// Rodape padrão com WhatsApp
 const RODAPE_WHATSAPP = `
   <div style="background: #25D366; border-radius: 12px; padding: 16px; margin: 30px 0; text-align: center;">
-    <p style="color: white; font-weight: bold; margin: 0 0 8px; font-size: 15px;">Tens duvidas? Fala comigo no WhatsApp!</p>
+    <p style="color: white; font-weight: bold; margin: 0 0 8px; font-size: 15px;">Tens dúvidas? Fala comigo no WhatsApp!</p>
     <a href="${WHATSAPP_CHATBOT}" style="display: inline-block; padding: 10px 24px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 14px;">Abrir WhatsApp</a>
     <p style="color: rgba(255,255,255,0.8); font-size: 11px; margin: 8px 0 0;">Respondo em menos de 1 hora | Seg-Sex 9h-18h</p>
   </div>`;
@@ -36,7 +36,7 @@ const RODAPE_WHATSAPP = `
 // Badge de desconto
 const BADGE_DESCONTO = `
   <div style="background: linear-gradient(135deg, #FF6B6B, #EE5A24); border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center;">
-    <p style="color: white; font-size: 12px; margin: 0; letter-spacing: 2px;">CODIGO EXCLUSIVO</p>
+    <p style="color: white; font-size: 12px; margin: 0; letter-spacing: 2px;">CÓDIGO EXCLUSIVO</p>
     <p style="color: white; font-size: 32px; font-weight: bold; margin: 8px 0; letter-spacing: 4px;">${CODIGO_PROMO}</p>
     <p style="color: rgba(255,255,255,0.9); font-size: 16px; margin: 0;">20% de desconto no VITALIS</p>
     <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 4px 0 0;">Usa na app ou envia por WhatsApp</p>
@@ -52,9 +52,9 @@ const SEQUENCIA = [
           <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 28px;">Bem-vinda, ${nome}!</h1>
         </div>
         <p style="color: #6B5C4C; line-height: 1.8;">Obrigada por te juntares ao Sete Ecos.</p>
-        <p style="color: #6B5C4C; line-height: 1.8;">O Sete Ecos e um ecossistema de transformacao feminina - sete caminhos que se complementam para te guiar numa jornada de autodescoberta, equilibrio e plenitude.</p>
-        <p style="color: #6B5C4C; line-height: 1.8;">Nos proximos dias, vou partilhar contigo ferramentas que podem mudar a tua relacao contigo mesma.</p>
-        <p style="color: #6B5C4C; line-height: 1.8;">A comecar pelo <strong>Lumina</strong> - um diagnostico gratuito que revela padroes sobre a tua energia, emocao e corpo.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">O Sete Ecos é um ecossistema de transformação feminina - sete caminhos que se complementam para te guiar numa jornada de autodescoberta, equilibrio e plenitude.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">Nos próximos dias, vou partilhar contigo ferramentas que podem mudar a tua relação contigo mesma.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">A comecar pelo <strong>Lumina</strong> - um diagnóstico gratuito que revela padrões sobre a tua energia, emoção e corpo.</p>
         <div style="text-align: center; margin: 30px 0;">
           <a href="${BASE_URL}/lumina?utm_source=email&utm_medium=sequencia&utm_campaign=dia0" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6B5B95, #9B59B6); color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Experimentar Lumina (Gratuito)</a>
         </div>
@@ -64,20 +64,20 @@ const SEQUENCIA = [
   },
   {
     dia: 3,
-    assunto: 'Ja experimentaste o Lumina?',
+    assunto: 'Já experimentaste o Lumina?',
     template: (nome) => `
       <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
         <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, 2 minutos podem mudar o teu dia.</h1>
-        <p style="color: #6B5C4C; line-height: 1.8;">O <strong>Lumina</strong> e um ritual diario de auto-observacao. 7 perguntas simples que revelam padroes sobre como te sentes - corpo, mente e emocao.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">O <strong>Lumina</strong> é um ritual diário de auto-observação. 7 perguntas simples que revelam padrões sobre como te sentes - corpo, mente e emoção.</p>
         <p style="color: #6B5C4C; line-height: 1.8;">Mulheres que usam o Lumina reportam:</p>
         <ul style="color: #6B5C4C; line-height: 2;">
-          <li>Mais consciencia sobre os seus padroes emocionais</li>
-          <li>Melhor capacidade de prever dias dificeis</li>
-          <li>Correlacao entre ciclo menstrual e estados emocionais</li>
+          <li>Mais consciência sobre os seus padrões emocionais</li>
+          <li>Melhor capacidade de prever dias difíceis</li>
+          <li>Correlação entre ciclo menstrual e estados emocionais</li>
         </ul>
-        <p style="color: #6B5C4C; line-height: 1.8;">E <strong>completamente gratuito</strong>. Demora menos de 2 minutos.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">É <strong>completamente gratuito</strong>. Demora menos de 2 minutos.</p>
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${BASE_URL}/lumina?utm_source=email&utm_medium=sequencia&utm_campaign=dia3" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6B5B95, #9B59B6); color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Fazer o Meu Diagnostico</a>
+          <a href="${BASE_URL}/lumina?utm_source=email&utm_medium=sequencia&utm_campaign=dia3" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6B5B95, #9B59B6); color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Fazer o Meu Diagnóstico</a>
         </div>
         ${RODAPE_WHATSAPP}
         <p style="color: #6B5C4C; font-size: 14px; text-align: center;">Vivianne</p>
@@ -85,18 +85,18 @@ const SEQUENCIA = [
   },
   {
     dia: 7,
-    assunto: '3 sinais de que o teu corpo precisa de atencao',
+    assunto: '3 sinais de que o teu corpo precisa de atenção',
     template: (nome) => `
       <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
         <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, o teu corpo fala. Estas a ouvir?</h1>
-        <p style="color: #6B5C4C; line-height: 1.8;">Ha 3 sinais que muitas mulheres ignoram:</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">Há 3 sinais que muitas mulheres ignoram:</p>
         <div style="background: white; padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #7C8B6F;">
-          <p style="color: #4A4035; margin: 0 0 12px;"><strong>1. Cansaco cronico</strong> - Se dormes e acordas cansada, pode ser o que comes (ou nao comes).</p>
-          <p style="color: #4A4035; margin: 0 0 12px;"><strong>2. Comer por emocao</strong> - Se comes quando estas triste, ansiosa ou aborrecida, o problema nao e fome.</p>
-          <p style="color: #4A4035; margin: 0;"><strong>3. Efeito ioio</strong> - Se perdes peso e ganhas de volta, as dietas restritivas estao a sabotar o teu metabolismo.</p>
+          <p style="color: #4A4035; margin: 0 0 12px;"><strong>1. Cansaço crónico</strong> - Se dormes e acordas cansada, pode ser o que comes (ou não comes).</p>
+          <p style="color: #4A4035; margin: 0 0 12px;"><strong>2. Comer por emoção</strong> - Se comes quando estás triste, ansiosa ou aborrecida, o problema não é fome.</p>
+          <p style="color: #4A4035; margin: 0;"><strong>3. Efeito ioiô</strong> - Se perdes peso e ganhas de volta, as dietas restritivas estão a sabotar o teu metabolismo.</p>
         </div>
         <p style="color: #6B5C4C; line-height: 1.8;">Se te identificas com pelo menos 1 destes sinais, o <strong>VITALIS</strong> foi criado exactamente para ti.</p>
-        <p style="color: #6B5C4C; line-height: 1.8;">E o unico programa em Mocambique que combina nutricao cientifica com apoio emocional.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">É o único programa em Moçambique que combina nutrição cientifica com apoio emocional.</p>
         <div style="text-align: center; margin: 30px 0;">
           <a href="${BASE_URL}/vitalis?utm_source=email&utm_medium=sequencia&utm_campaign=dia7" style="display: inline-block; padding: 14px 32px; background: #7C8B6F; color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Conhecer o VITALIS</a>
         </div>
@@ -106,20 +106,20 @@ const SEQUENCIA = [
   },
   {
     dia: 10,
-    assunto: 'O segredo que ninguem te conta sobre perder peso',
+    assunto: 'O segredo que ninguém te conta sobre perder peso',
     template: (nome) => `
       <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
         <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, preciso de te contar uma coisa.</h1>
-        <p style="color: #6B5C4C; line-height: 1.8;">Tenho trabalhado com mulheres mocambicanas ha anos. E ha um padrao que vejo repetir-se:</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">Tenho trabalhado com mulheres moçambicanas há anos. E há um padrão que vejo repetir-se:</p>
         <div style="background: #2C2C2C; color: white; padding: 24px; border-radius: 12px; margin: 20px 0;">
-          <p style="font-size: 18px; font-style: italic; line-height: 1.6; margin: 0;">"A maioria das mulheres que me procura nao tem um problema de comida. Tem um problema de emocao disfarçado de fome."</p>
+          <p style="font-size: 18px; font-style: italic; line-height: 1.6; margin: 0;">"A maioria das mulheres que me procura não tem um problema de comida. Tem um problema de emoção disfarçado de fome."</p>
         </div>
-        <p style="color: #6B5C4C; line-height: 1.8;">Leste isto e sentiste algo? Entao preciso de te explicar o que descobri.</p>
-        <p style="color: #6B5C4C; line-height: 1.8;">Quando comes por ansiedade, por solidao, por tedio — o teu corpo nao precisa de comida. Precisa de <strong>presenca</strong>. E nenhuma dieta do mundo resolve isso.</p>
-        <p style="color: #6B5C4C; line-height: 1.8;">Foi por isso que criei o <strong>Espaco de Retorno</strong> dentro do VITALIS — um lugar onde podes ir quando sentes vontade de comer por emocao. Sem culpa. Sem julgamento.</p>
-        <p style="color: #6B5C4C; line-height: 1.8;"><strong>Isto nao existe em mais nenhum programa em Mocambique.</strong></p>
+        <p style="color: #6B5C4C; line-height: 1.8;">Leste isto e sentiste algo? Então preciso de te explicar o que descobri.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">Quando comes por ansiedade, por solidão, por tédio — o teu corpo não precisa de comida. Precisa de <strong>presença</strong>. E nenhuma dieta do mundo resolve isso.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">Foi por isso que criei o <strong>Espaço de Retorno</strong> dentro do VITALIS — um lugar onde podes ir quando sentes vontade de comer por emoção. Sem culpa. Sem julgamento.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;"><strong>Isto não existe em mais nenhum programa em Moçambique.</strong></p>
         <div style="background: white; padding: 20px; border-radius: 12px; margin: 20px 0; text-align: center;">
-          <p style="color: #4A4035; font-size: 16px; margin: 0 0 8px;">Queres saber se isto e para ti?</p>
+          <p style="color: #4A4035; font-size: 16px; margin: 0 0 8px;">Queres saber se isto é para ti?</p>
           <p style="color: #6B5C4C; font-size: 14px; margin: 0;">Envia-me "quero saber mais" no WhatsApp.</p>
           <p style="color: #6B5C4C; font-size: 14px; margin: 0;">Respondo pessoalmente.</p>
         </div>
@@ -136,21 +136,21 @@ const SEQUENCIA = [
       <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
         <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, imagina isto:</h1>
         <p style="color: #6B5C4C; line-height: 1.8;">Daqui a 3 meses, acordas com mais energia. A roupa cabe melhor. Comes sem culpa porque sabes o que o teu corpo precisa.</p>
-        <p style="color: #6B5C4C; line-height: 1.8;">Nao e fantasia. E o que acontece quando tens o metodo certo + acompanhamento real.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">Não é fantasia. É o que acontece quando tens o método certo + acompanhamento real.</p>
         <div style="background: white; padding: 20px; border-radius: 12px; margin: 20px 0;">
           <p style="color: #4A4035; font-weight: bold; margin: 0 0 10px;">O que inclui o VITALIS:</p>
-          <p style="color: #6B5C4C; margin: 4px 0;">Plano alimentar personalizado com comida mocambicana</p>
-          <p style="color: #6B5C4C; margin: 4px 0;">Receitas com ingredientes que ja tens em casa</p>
-          <p style="color: #6B5C4C; margin: 4px 0;">Check-in diario em 30 segundos</p>
-          <p style="color: #6B5C4C; margin: 4px 0;">Espaco de Retorno (apoio emocional unico)</p>
+          <p style="color: #6B5C4C; margin: 4px 0;">Plano alimentar personalizado com comida moçambicana</p>
+          <p style="color: #6B5C4C; margin: 4px 0;">Receitas com ingredientes que já tens em casa</p>
+          <p style="color: #6B5C4C; margin: 4px 0;">Check-in diário em 30 segundos</p>
+          <p style="color: #6B5C4C; margin: 4px 0;">Espaço de Retorno (apoio emocional único)</p>
           <p style="color: #6B5C4C; margin: 4px 0;">Dashboard com progresso e conquistas</p>
-          <p style="color: #6B5C4C; margin: 4px 0;">Chat directo com a Vivianne</p>
+          <p style="color: #6B5C4C; margin: 4px 0;">Chat direto com a Vivianne</p>
           <p style="color: #6B5C4C; margin: 4px 0;">7 dias de garantia total</p>
         </div>
         ${BADGE_DESCONTO}
-        <p style="color: #7C8B6F; font-weight: bold; text-align: center; font-size: 16px;">De <s>2.500 MZN</s> por <strong>2.000 MZN/mes</strong> com o codigo</p>
+        <p style="color: #7C8B6F; font-weight: bold; text-align: center; font-size: 16px;">De <s>2.500 MZN</s> por <strong>2.000 MZN/mês</strong> com o código</p>
         <div style="text-align: center; margin: 20px 0;">
-          <a href="${BASE_URL}/vitalis/pagamento?code=${CODIGO_PROMO}&utm_source=email&utm_medium=sequencia&utm_campaign=dia14" style="display: inline-block; padding: 14px 32px; background: #7C8B6F; color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Comecar com 20% Desconto</a>
+          <a href="${BASE_URL}/vitalis/pagamento?code=${CODIGO_PROMO}&utm_source=email&utm_medium=sequencia&utm_campaign=dia14" style="display: inline-block; padding: 14px 32px; background: #7C8B6F; color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Começar com 20% Desconto</a>
         </div>
         ${RODAPE_WHATSAPP}
         <p style="color: #6B5C4C; font-size: 14px; text-align: center;">Vivianne</p>
@@ -158,20 +158,20 @@ const SEQUENCIA = [
   },
   {
     dia: 21,
-    assunto: '"Perdi 8kg sem passar fome" - historia real',
+    assunto: '"Perdi 8kg sem passar fome" - história real',
     template: (nome) => `
       <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
-        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, isto e possivel para ti tambem.</h1>
+        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, isto é possível para ti também.</h1>
         <div style="background: white; padding: 24px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #7C8B6F;">
-          <p style="color: #4A4035; font-style: italic; font-size: 16px; line-height: 1.6;">"Finalmente um metodo que nao me faz sentir em dieta. Perdi 8kg em 3 meses e aprendi a comer sem culpa. O Espaco de Retorno mudou tudo - percebi que comia por ansiedade, nao por fome."</p>
+          <p style="color: #4A4035; font-style: italic; font-size: 16px; line-height: 1.6;">"Finalmente um método que não me faz sentir em dieta. Perdi 8kg em 3 meses e aprendi a comer sem culpa. O Espaço de Retorno mudou tudo - percebi que comia por ansiedade, não por fome."</p>
           <p style="color: #7C8B6F; font-weight: bold; margin-top: 12px;">- M.J., Maputo</p>
         </div>
         <div style="background: white; padding: 24px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #7C8B6F;">
-          <p style="color: #4A4035; font-style: italic; font-size: 16px; line-height: 1.6;">"A app e tao facil de usar. Uso a comida que ja tenho em casa - xima, matapa, feijao nhemba. Nao preciso de comprar nada especial."</p>
+          <p style="color: #4A4035; font-style: italic; font-size: 16px; line-height: 1.6;">"A app é tão fácil de usar. Uso a comida que já tenho em casa - xima, matapa, feijão nhemba. Não preciso de comprar nada especial."</p>
           <p style="color: #7C8B6F; font-weight: bold; margin-top: 12px;">- A.B., Beira</p>
         </div>
         <div style="background: #FFF3E0; padding: 16px; border-radius: 12px; margin: 20px 0; text-align: center;">
-          <p style="color: #E65100; font-weight: bold; margin: 0 0 4px;">O teu codigo ainda esta activo!</p>
+          <p style="color: #E65100; font-weight: bold; margin: 0 0 4px;">O teu código ainda está ativo!</p>
           <p style="color: #4A4035; font-size: 24px; font-weight: bold; letter-spacing: 3px; margin: 0;">${CODIGO_PROMO}</p>
           <p style="color: #6B5C4C; font-size: 13px; margin: 4px 0 0;">20% de desconto - usa antes que expire</p>
         </div>
@@ -184,35 +184,35 @@ const SEQUENCIA = [
   },
   {
     dia: 30,
-    assunto: 'Ultima chance: 20% desconto + garantia total',
+    assunto: 'Última chance: 20% desconto + garantia total',
     template: (nome) => `
       <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
-        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, ja passou um mes.</h1>
-        <p style="color: #6B5C4C; line-height: 1.8;">Ha 30 dias juntaste-te a lista de espera do Sete Ecos. Nesse tempo, mulheres que comecaram o VITALIS ja:</p>
+        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, já passou um mês.</h1>
+        <p style="color: #6B5C4C; line-height: 1.8;">Há 30 dias juntaste-te a lista de espera do Sete Ecos. Nesse tempo, mulheres que começaram o VITALIS já:</p>
         <ul style="color: #6B5C4C; line-height: 2;">
           <li>Perderam 2-4kg na primeira semana</li>
-          <li>Aprenderam a medir porcoes sem balanca (metodo da mao)</li>
-          <li>Descobriram o Espaco de Retorno para momentos dificeis</li>
-          <li>Construiram habitos que duram - com comida mocambicana</li>
+          <li>Aprenderam a medir porções sem balança (método da mão)</li>
+          <li>Descobriram o Espaço de Retorno para momentos difíceis</li>
+          <li>Construíram hábitos que duram - com comida moçambicana</li>
         </ul>
-        <p style="color: #6B5C4C; line-height: 1.8;">A unica diferenca entre elas e tu? <strong>Elas comecaram.</strong></p>
+        <p style="color: #6B5C4C; line-height: 1.8;">A única diferença entre elas e tu? <strong>Elas começaram.</strong></p>
 
         <div style="background: linear-gradient(135deg, #2C2C2C, #1a1a1a); color: white; padding: 24px; border-radius: 12px; margin: 20px 0; text-align: center;">
-          <p style="font-size: 12px; letter-spacing: 2px; margin: 0 0 8px; color: #FF6B6B;">ULTIMA OPORTUNIDADE</p>
+          <p style="font-size: 12px; letter-spacing: 2px; margin: 0 0 8px; color: #FF6B6B;">ÚLTIMA OPORTUNIDADE</p>
           <p style="font-size: 36px; font-weight: bold; letter-spacing: 4px; margin: 0;">${CODIGO_PROMO}</p>
           <p style="font-size: 18px; margin: 8px 0 0; color: #FFD700;">20% de desconto</p>
-          <p style="font-size: 14px; margin: 4px 0 0; color: rgba(255,255,255,0.6);">De 2.500 por 2.000 MZN/mes</p>
+          <p style="font-size: 14px; margin: 4px 0 0; color: rgba(255,255,255,0.6);">De 2.500 por 2.000 MZN/mês</p>
         </div>
 
-        <p style="color: #6B5C4C; line-height: 1.8; text-align: center;">Tens <strong>7 dias de garantia</strong>. Se nao gostares, reembolso total. Zero risco.</p>
+        <p style="color: #6B5C4C; line-height: 1.8; text-align: center;">Tens <strong>7 dias de garantia</strong>. Se não gostares, reembolso total. Zero risco.</p>
 
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${BASE_URL}/vitalis/pagamento?code=${CODIGO_PROMO}&utm_source=email&utm_medium=sequencia&utm_campaign=dia30" style="display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #7C8B6F, #5a6b4f); color: white; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px;">Comecar Agora - 20% Off</a>
+          <a href="${BASE_URL}/vitalis/pagamento?code=${CODIGO_PROMO}&utm_source=email&utm_medium=sequencia&utm_campaign=dia30" style="display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #7C8B6F, #5a6b4f); color: white; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px;">Começar Agora - 20% Off</a>
         </div>
 
         <div style="background: #25D366; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center;">
           <p style="color: white; font-weight: bold; margin: 0 0 4px; font-size: 16px;">Preferes falar comigo primeiro?</p>
-          <p style="color: rgba(255,255,255,0.9); font-size: 13px; margin: 0 0 12px;">Tiro todas as tuas duvidas pessoalmente</p>
+          <p style="color: rgba(255,255,255,0.9); font-size: 13px; margin: 0 0 12px;">Tiro todas as tuas dúvidas pessoalmente</p>
           <a href="${WHATSAPP_LINK}" style="display: inline-block; padding: 12px 28px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold;">Falar com a Vivianne no WhatsApp</a>
         </div>
 
@@ -223,7 +223,7 @@ const SEQUENCIA = [
 
 export default async function handler(req, res) {
   if (!RESEND_API_KEY || !SUPABASE_URL || !SUPABASE_KEY) {
-    return res.status(500).json({ error: 'Configuracao em falta' });
+    return res.status(500).json({ error: 'Configuração em falta' });
   }
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -236,7 +236,7 @@ export default async function handler(req, res) {
 
     if (wlError) {
       console.warn('Waitlist query error:', wlError.message);
-      return res.status(200).json({ message: 'Tabela waitlist nao disponivel: ' + wlError.message, ...resultados });
+      return res.status(200).json({ message: 'Tabela waitlist não disponível: ' + wlError.message, ...resultados });
     }
     if (!waitlist || waitlist.length === 0) {
       return res.status(200).json({ message: 'Waitlist vazia', ...resultados });
@@ -262,7 +262,7 @@ export default async function handler(req, res) {
           .maybeSingle();
         if (jaEnviado) continue;
       } catch {
-        // Continuar sem de-duplicacao se tabela nao existir
+        // Continuar sem de-duplicação se tabela não existir
       }
 
       // Enviar email
@@ -303,11 +303,11 @@ export default async function handler(req, res) {
     }
 
     return res.status(200).json({
-      message: `Sequencia processada: ${resultados.enviados} emails enviados`,
+      message: `Sequência processada: ${resultados.enviados} emails enviados`,
       ...resultados
     });
   } catch (error) {
-    console.error('Erro na sequencia de emails:', error);
+    console.error('Erro na sequência de emails:', error);
     return res.status(500).json({ error: error.message, ...resultados });
   }
 }
