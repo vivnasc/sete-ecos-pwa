@@ -28,7 +28,7 @@ import { RENDER_MAP, CORES, FORMATOS } from '../components/TemplateVisual';
 // AUTO IMAGE - Gera imagem automaticamente
 // ============================================================
 
-function AutoImage({ template, eco, formato, texto, subtitulo, slideNum, totalSlides, scale, filename, className }) {
+function AutoImage({ template, eco, formato, texto, subtitulo, slideNum, totalSlides, bgIndex, scale, filename, className }) {
   const [dataUrl, setDataUrl] = useState(null);
 
   useEffect(() => {
@@ -37,14 +37,14 @@ function AutoImage({ template, eco, formato, texto, subtitulo, slideNum, totalSl
       try {
         const renderFn = RENDER_MAP[template];
         if (!renderFn) return;
-        await renderFn(canvas, { formato: formato || 'post', eco: eco || 'vitalis', texto, subtitulo, slideNum, totalSlides });
+        await renderFn(canvas, { formato: formato || 'post', eco: eco || 'vitalis', texto, subtitulo, slideNum, totalSlides, bgIndex });
         setDataUrl(canvas.toDataURL('image/png'));
       } catch (e) {
         console.error('Erro ao gerar imagem:', e);
       }
     };
     if (texto) render();
-  }, [template, eco, formato, texto, subtitulo, slideNum, totalSlides]);
+  }, [template, eco, formato, texto, subtitulo, slideNum, totalSlides, bgIndex]);
 
   const download = () => {
     if (!dataUrl) return;
@@ -1945,6 +1945,7 @@ function WABusinessTab({ copiar, copiado }) {
                     formato="stories"
                     texto={dia.imagem.texto}
                     subtitulo={dia.imagem.subtitulo}
+                    bgIndex={dia.imagem.bgIndex}
                     scale={0.12}
                     filename={`wa-status-${dia.dia.toLowerCase()}.png`}
                   />
