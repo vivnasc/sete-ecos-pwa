@@ -460,7 +460,7 @@ export default function Explorar() {
                 <div className="text-center py-10 bg-white rounded-2xl border border-gray-100">
                   <span className="text-4xl block mb-3">✨</span>
                   <p className="text-sm text-gray-500" style={{ fontFamily: 'var(--font-corpo)' }}>
-                    Ainda nao ha publicacoes em destaque esta semana
+                    Ainda não há publicações em destaque esta semana
                   </p>
                   <p className="text-xs text-gray-400 mt-1">Partilha algo para aparecer aqui!</p>
                 </div>

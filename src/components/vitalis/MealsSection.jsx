@@ -16,7 +16,7 @@ export default function MealsSection({ refeicoes, mealsHoje }) {
 
       {refeicoes.length === 0 ? (
         <div className="text-center py-6">
-          <p className="text-gray-500 text-sm mb-3">Ainda nao configuraste as tuas refeicoes</p>
+          <p className="text-gray-500 text-sm mb-3">Ainda não configuraste as tuas refeições</p>
           <Link
             to="/vitalis/refeicoes-config"
             className="inline-block px-4 py-2 bg-[#7C8B6F] text-white rounded-lg text-sm font-medium hover:bg-[#6B7A5D] transition-colors"

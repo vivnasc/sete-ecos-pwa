@@ -7,8 +7,8 @@
  * - Clientes expirados/cancelados (win-back)
  *
  * Tipos de broadcast:
- * - catálogo: Catálogo completo com todos os servicos
- * - novidade: Anuncio de nova funcionalidade
+ * - catálogo: Catálogo completo com todos os serviços
+ * - novidade: Anúncio de nova funcionalidade
  * - promo: Promoção especial com código
  * - curiosidade: Conteúdo provocador de marketing
  * - convite-whatsapp: Convida a juntar-se ao WhatsApp Business
@@ -153,7 +153,7 @@ const BROADCAST_TEMPLATES = {
         <div style="background: #25D366; border-radius: 16px; padding: 30px; margin: 24px 0; text-align: center; color: white;">
           <p style="font-size: 40px; margin: 0 0 8px;">💬</p>
           <h2 style="margin: 0 0 8px; font-size: 22px;">WhatsApp Sete Ecos</h2>
-          <p style="margin: 0 0 16px; font-size: 14px; opacity: 0.9;">Tira dúvidas, vê preços, conhece os servicos ou fala diretamente comigo — tudo pelo WhatsApp.</p>
+          <p style="margin: 0 0 16px; font-size: 14px; opacity: 0.9;">Tira dúvidas, vê preços, conhece os serviços ou fala diretamente comigo — tudo pelo WhatsApp.</p>
           <a href="${WHATSAPP_LINK}?text=Ola%20Vivianne!" style="display: inline-block; padding: 14px 32px; background: white; color: #25D366; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px;">Enviar Mensagem</a>
         </div>
 
@@ -191,7 +191,7 @@ export default async function handler(req, res) {
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // Parametros
+  // Parâmetros
   const tipo = req.query?.tipo || req.body?.tipo || 'catalogo';
   const audiencia = req.query?.audiencia || req.body?.audiencia || 'todos'; // waitlist, registados, expirados, todos
 

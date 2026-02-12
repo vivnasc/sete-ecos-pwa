@@ -235,7 +235,7 @@ export default function CarteiraMerecimento() {
           <div className="p-4 bg-white/5 rounded-2xl border border-amber-500/20">
             <h3 className="text-amber-100 font-medium mb-4">Regista os gastos desta semana</h3>
             <p className="text-amber-200/60 text-sm mb-4">
-              Não precisa ser exacto. Uma estimativa serve.
+              Não precisa ser exato. Uma estimativa serve.
             </p>
 
             <div className="space-y-4">

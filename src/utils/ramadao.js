@@ -26,7 +26,7 @@ const RAMADAN_DATES = {
 export function getRamadanDates(anoRef) {
   const ano = anoRef || new Date().getFullYear();
 
-  // Tenta o ano exacto
+  // Tenta o ano exato
   if (RAMADAN_DATES[ano]) {
     const d = RAMADAN_DATES[ano];
     return {

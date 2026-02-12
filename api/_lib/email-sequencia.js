@@ -11,7 +11,7 @@
  *   Dia 10 - CURIOSIDADE INSANA (novo!) - "O segredo que ninguém te conta"
  *   Dia 14 - Convite para Vitalis + código VEMVITALIS20
  *   Dia 21 - Testemunho + prova social + código
- *   Dia 30 - Oferta final / urgencia + código + WhatsApp direto
+ *   Dia 30 - Oferta final / urgência + código + WhatsApp direto
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -25,7 +25,7 @@ const WHATSAPP_LINK = 'https://wa.me/258851006473?text=Ola%20Vivianne%2C%20vim%2
 const WHATSAPP_CHATBOT = 'https://wa.me/258851006473';
 const CODIGO_PROMO = 'VEMVITALIS20';
 
-// Rodape padrão com WhatsApp
+// Rodapé padrão com WhatsApp
 const RODAPE_WHATSAPP = `
   <div style="background: #25D366; border-radius: 12px; padding: 16px; margin: 30px 0; text-align: center;">
     <p style="color: white; font-weight: bold; margin: 0 0 8px; font-size: 15px;">Tens dúvidas? Fala comigo no WhatsApp!</p>
@@ -52,9 +52,9 @@ const SEQUENCIA = [
           <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 28px;">Bem-vinda, ${nome}!</h1>
         </div>
         <p style="color: #6B5C4C; line-height: 1.8;">Obrigada por te juntares ao Sete Ecos.</p>
-        <p style="color: #6B5C4C; line-height: 1.8;">O Sete Ecos é um ecossistema de transformação feminina - sete caminhos que se complementam para te guiar numa jornada de autodescoberta, equilibrio e plenitude.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">O Sete Ecos é um ecossistema de transformação feminina - sete caminhos que se complementam para te guiar numa jornada de autodescoberta, equilíbrio e plenitude.</p>
         <p style="color: #6B5C4C; line-height: 1.8;">Nos próximos dias, vou partilhar contigo ferramentas que podem mudar a tua relação contigo mesma.</p>
-        <p style="color: #6B5C4C; line-height: 1.8;">A comecar pelo <strong>Lumina</strong> - um diagnóstico gratuito que revela padrões sobre a tua energia, emoção e corpo.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">A começar pelo <strong>Lumina</strong> - um diagnóstico gratuito que revela padrões sobre a tua energia, emoção e corpo.</p>
         <div style="text-align: center; margin: 30px 0;">
           <a href="${BASE_URL}/lumina?utm_source=email&utm_medium=sequencia&utm_campaign=dia0" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6B5B95, #9B59B6); color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Experimentar Lumina (Gratuito)</a>
         </div>
@@ -88,15 +88,15 @@ const SEQUENCIA = [
     assunto: '3 sinais de que o teu corpo precisa de atenção',
     template: (nome) => `
       <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
-        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, o teu corpo fala. Estas a ouvir?</h1>
+        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, o teu corpo fala. Estás a ouvir?</h1>
         <p style="color: #6B5C4C; line-height: 1.8;">Há 3 sinais que muitas mulheres ignoram:</p>
         <div style="background: white; padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #7C8B6F;">
           <p style="color: #4A4035; margin: 0 0 12px;"><strong>1. Cansaço crónico</strong> - Se dormes e acordas cansada, pode ser o que comes (ou não comes).</p>
           <p style="color: #4A4035; margin: 0 0 12px;"><strong>2. Comer por emoção</strong> - Se comes quando estás triste, ansiosa ou aborrecida, o problema não é fome.</p>
           <p style="color: #4A4035; margin: 0;"><strong>3. Efeito ioiô</strong> - Se perdes peso e ganhas de volta, as dietas restritivas estão a sabotar o teu metabolismo.</p>
         </div>
-        <p style="color: #6B5C4C; line-height: 1.8;">Se te identificas com pelo menos 1 destes sinais, o <strong>VITALIS</strong> foi criado exactamente para ti.</p>
-        <p style="color: #6B5C4C; line-height: 1.8;">É o único programa em Moçambique que combina nutrição cientifica com apoio emocional.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">Se te identificas com pelo menos 1 destes sinais, o <strong>VITALIS</strong> foi criado exatamente para ti.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">É o único programa em Moçambique que combina nutrição científica com apoio emocional.</p>
         <div style="text-align: center; margin: 30px 0;">
           <a href="${BASE_URL}/vitalis?utm_source=email&utm_medium=sequencia&utm_campaign=dia7" style="display: inline-block; padding: 14px 32px; background: #7C8B6F; color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Conhecer o VITALIS</a>
         </div>
@@ -188,7 +188,7 @@ const SEQUENCIA = [
     template: (nome) => `
       <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
         <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, já passou um mês.</h1>
-        <p style="color: #6B5C4C; line-height: 1.8;">Há 30 dias juntaste-te a lista de espera do Sete Ecos. Nesse tempo, mulheres que começaram o VITALIS já:</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">Há 30 dias juntaste-te à lista de espera do Sete Ecos. Nesse tempo, mulheres que começaram o VITALIS já:</p>
         <ul style="color: #6B5C4C; line-height: 2;">
           <li>Perderam 2-4kg na primeira semana</li>
           <li>Aprenderam a medir porções sem balança (método da mão)</li>
