@@ -615,92 +615,220 @@ async function renderStatusWA(canvas, config) {
     ctx.fillRect(0, 0, width, height);
   }
 
-  // 2) Dark overlay gradient — stronger at top and bottom for text readability
+  // 2) Overlay escuro uniforme
   const overlay = ctx.createLinearGradient(0, 0, 0, height);
-  overlay.addColorStop(0, 'rgba(0,0,0,0.75)');
-  overlay.addColorStop(0.25, 'rgba(0,0,0,0.3)');
-  overlay.addColorStop(0.5, 'rgba(0,0,0,0.15)');
-  overlay.addColorStop(0.75, 'rgba(0,0,0,0.3)');
-  overlay.addColorStop(1, 'rgba(0,0,0,0.8)');
+  overlay.addColorStop(0, 'rgba(0,0,0,0.7)');
+  overlay.addColorStop(0.35, 'rgba(0,0,0,0.45)');
+  overlay.addColorStop(0.65, 'rgba(0,0,0,0.45)');
+  overlay.addColorStop(1, 'rgba(0,0,0,0.75)');
   ctx.fillStyle = overlay;
   ctx.fillRect(0, 0, width, height);
 
-  // 3) Color accent overlay (brand tint)
-  ctx.fillStyle = cores.primary + '25';
+  // 3) Tinta da marca
+  ctx.fillStyle = cores.primary + '20';
   ctx.fillRect(0, 0, width, height);
 
-  // 4) Top section — logo + brand
+  // Layout zones — texto centrado na zona útil
+  const topZone = 280;
+  const bottomZone = 200;
+  const textZoneTop = topZone;
+  const textZoneBottom = height - bottomZone;
+  const textZoneH = textZoneBottom - textZoneTop;
+
+  // 4) Logo + marca no topo
   const logo = await loadImage(cores.logo);
   if (logo) {
-    const logoSize = 80;
-    ctx.drawImage(logo, (width - logoSize) / 2, 100, logoSize, logoSize);
+    const logoSize = 72;
+    ctx.drawImage(logo, (width - logoSize) / 2, 80, logoSize, logoSize);
   }
   ctx.textAlign = 'center';
-  ctx.font = `700 28px 'Quicksand', sans-serif`;
+  ctx.font = `600 26px 'Quicksand', sans-serif`;
   ctx.fillStyle = cores.accent || '#FFFFFF';
-  ctx.fillText(cores.nome, width / 2, 210);
-
-  // 5) Decorative accent line
+  ctx.fillText(cores.nome, width / 2, 185);
   ctx.fillStyle = cores.accent || '#FFFFFF';
-  ctx.fillRect(width / 2 - 40, 235, 80, 3);
+  ctx.globalAlpha = 0.5;
+  ctx.fillRect(width / 2 - 30, 205, 60, 2);
+  ctx.globalAlpha = 1;
 
-  // 6) Main text — large, bold, centered
-  const padding = 80;
+  // 5) Calcular todo o texto para centrar na zona útil
+  const padding = 90;
   const maxW = width - padding * 2;
-  const fontSize = texto.length > 100 ? 48 : texto.length > 60 ? 56 : texto.length > 35 ? 64 : 72;
+  const fontSize = texto.length > 100 ? 46 : texto.length > 60 ? 54 : texto.length > 35 ? 62 : 70;
+  ctx.font = `800 ${fontSize}px 'Cormorant Garamond', Georgia, serif`;
+  const mainLines = wrapText(ctx, texto, maxW);
+  const mainH = mainLines.length * (fontSize * 1.3);
+
+  let subLines = [];
+  const subSize = Math.round(fontSize * 0.45);
+  let subH = 0;
+  if (subtitulo) {
+    ctx.font = `500 ${subSize}px 'Quicksand', sans-serif`;
+    subLines = wrapText(ctx, subtitulo, maxW);
+    subH = subLines.length * (subSize * 1.5) + 35;
+  }
+
+  const totalTextH = mainH + subH;
+  const textStartY = textZoneTop + (textZoneH - totalTextH) / 2 + fontSize * 0.3;
+
+  // 6) Texto principal com sombra
   ctx.font = `800 ${fontSize}px 'Cormorant Garamond', Georgia, serif`;
   ctx.fillStyle = '#FFFFFF';
-
-  // Text shadow for readability
-  ctx.shadowColor = 'rgba(0,0,0,0.6)';
-  ctx.shadowBlur = 12;
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 10;
   ctx.shadowOffsetX = 2;
   ctx.shadowOffsetY = 2;
-
-  const lines = wrapText(ctx, texto, maxW);
-  const lineHeight = fontSize * 1.3;
-  const totalH = lines.length * lineHeight;
-  const startY = (height - totalH) / 2 + fontSize * 0.3;
-  drawCenteredText(ctx, lines, width / 2, startY, lineHeight);
-
-  // Reset shadow
+  drawCenteredText(ctx, mainLines, width / 2, textStartY, fontSize * 1.3);
   ctx.shadowColor = 'transparent';
   ctx.shadowBlur = 0;
   ctx.shadowOffsetX = 0;
   ctx.shadowOffsetY = 0;
 
-  // 7) Subtitle
-  if (subtitulo) {
-    const subY = startY + totalH + 30;
-    const subSize = Math.round(fontSize * 0.42);
+  // 7) Subtítulo
+  if (subtitulo && subLines.length > 0) {
+    const subY = textStartY + mainH + 35;
     ctx.font = `500 ${subSize}px 'Quicksand', sans-serif`;
     ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.shadowColor = 'rgba(0,0,0,0.4)';
+    ctx.shadowColor = 'rgba(0,0,0,0.3)';
     ctx.shadowBlur = 6;
-    const subLines = wrapText(ctx, subtitulo, maxW);
     drawCenteredText(ctx, subLines, width / 2, subY, subSize * 1.5);
     ctx.shadowColor = 'transparent';
     ctx.shadowBlur = 0;
   }
 
-  // 8) Bottom — CTA strip
+  // 8) Barra CTA no fundo
   const stripH = 180;
   const stripY = height - stripH;
   const stripGrad = ctx.createLinearGradient(0, stripY, 0, height);
   stripGrad.addColorStop(0, 'rgba(0,0,0,0)');
-  stripGrad.addColorStop(0.3, cores.primary + 'CC');
+  stripGrad.addColorStop(0.35, cores.primary + 'BB');
   stripGrad.addColorStop(1, cores.secondary + 'EE');
   ctx.fillStyle = stripGrad;
   ctx.fillRect(0, stripY, width, stripH);
 
-  // CTA text
   ctx.font = `700 26px 'Quicksand', sans-serif`;
   ctx.fillStyle = '#FFFFFF';
-  ctx.fillText('app.seteecos.com', width / 2, height - 90);
+  ctx.fillText('app.seteecos.com', width / 2, height - 85);
+  ctx.font = `500 20px 'Quicksand', sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.65)';
+  ctx.fillText(cores.subtitulo || '@seteecos', width / 2, height - 50);
+}
 
-  ctx.font = `500 22px 'Quicksand', sans-serif`;
+// ============================================================
+// STATUS MINIMALISTA - Design limpo e elegante sem foto
+// ============================================================
+
+async function renderStatusMinimal(canvas, config) {
+  const { formato, eco, texto, subtitulo } = config;
+  const { width, height } = FORMATOS[formato || 'stories'];
+  const cores = CORES[eco] || CORES.vitalis;
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+
+  // 1) Fundo gradiente rico (diagonal)
+  const grad = ctx.createLinearGradient(0, 0, width * 0.6, height);
+  grad.addColorStop(0, cores.bgDark);
+  grad.addColorStop(0.4, cores.secondary);
+  grad.addColorStop(0.7, cores.primary);
+  grad.addColorStop(1, cores.secondary);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, width, height);
+
+  // 2) Padrão decorativo — linhas diagonais finas
+  ctx.globalAlpha = 0.04;
+  ctx.strokeStyle = '#FFFFFF';
+  ctx.lineWidth = 1;
+  for (let i = -height; i < width + height; i += 60) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i + height, height);
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+
+  // 3) Glow central suave
+  const radGrad = ctx.createRadialGradient(width / 2, height * 0.45, 0, width / 2, height * 0.45, width * 0.7);
+  radGrad.addColorStop(0, cores.accent + '18');
+  radGrad.addColorStop(1, 'transparent');
+  ctx.fillStyle = radGrad;
+  ctx.fillRect(0, 0, width, height);
+
+  // Layout zones
+  const topZone = 280;
+  const bottomZone = 200;
+  const textZoneTop = topZone;
+  const textZoneBottom = height - bottomZone;
+  const textZoneH = textZoneBottom - textZoneTop;
+
+  // 4) Logo + marca
+  const logo = await loadImage(cores.logo);
+  if (logo) {
+    const logoSize = 72;
+    ctx.drawImage(logo, (width - logoSize) / 2, 80, logoSize, logoSize);
+  }
+  ctx.textAlign = 'center';
+  ctx.font = `600 26px 'Quicksand', sans-serif`;
+  ctx.fillStyle = cores.accent || '#FFFFFF';
+  ctx.fillText(cores.nome, width / 2, 185);
+
+  // Linhas decorativas duplas
+  ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  ctx.fillRect(width * 0.15, 210, width * 0.7, 1);
+  ctx.fillStyle = cores.accent || '#FFFFFF';
+  ctx.globalAlpha = 0.6;
+  ctx.fillRect(width / 2 - 25, 205, 50, 2);
+  ctx.globalAlpha = 1;
+
+  // 5) Calcular texto para centrar na zona útil
+  const padding = 90;
+  const maxW = width - padding * 2;
+  const fontSize = texto.length > 100 ? 46 : texto.length > 60 ? 54 : texto.length > 35 ? 62 : 70;
+  ctx.font = `700 ${fontSize}px 'Cormorant Garamond', Georgia, serif`;
+  const mainLines = wrapText(ctx, texto, maxW);
+  const mainH = mainLines.length * (fontSize * 1.35);
+
+  let subLines = [];
+  const subSize = Math.round(fontSize * 0.45);
+  let subH = 0;
+  if (subtitulo) {
+    ctx.font = `400 ${subSize}px 'Quicksand', sans-serif`;
+    subLines = wrapText(ctx, subtitulo, maxW);
+    subH = subLines.length * (subSize * 1.5) + 35;
+  }
+
+  const totalTextH = mainH + subH;
+  const textStartY = textZoneTop + (textZoneH - totalTextH) / 2 + fontSize * 0.3;
+
+  // 6) Texto principal
+  ctx.font = `700 ${fontSize}px 'Cormorant Garamond', Georgia, serif`;
+  ctx.fillStyle = '#FFFFFF';
+  drawCenteredText(ctx, mainLines, width / 2, textStartY, fontSize * 1.35);
+
+  // Linha de acento sob o texto
+  const accentY = textStartY + mainH + 10;
+  ctx.fillStyle = cores.accent || '#FFFFFF';
+  ctx.globalAlpha = 0.4;
+  ctx.fillRect(width / 2 - 30, accentY, 60, 2);
+  ctx.globalAlpha = 1;
+
+  // 7) Subtítulo
+  if (subtitulo && subLines.length > 0) {
+    const subY = accentY + 25;
+    ctx.font = `400 ${subSize}px 'Quicksand', sans-serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    drawCenteredText(ctx, subLines, width / 2, subY, subSize * 1.5);
+  }
+
+  // 8) Rodapé elegante
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.fillRect(width * 0.15, height - 170, width * 0.7, 1);
+
+  ctx.font = `600 24px 'Quicksand', sans-serif`;
   ctx.fillStyle = 'rgba(255,255,255,0.7)';
-  ctx.fillText(cores.subtitulo || '@seteecos', width / 2, height - 55);
+  ctx.fillText('app.seteecos.com', width / 2, height - 110);
+  ctx.font = `400 18px 'Quicksand', sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.fillText(`${cores.nome} • ${cores.subtitulo}`, width / 2, height - 78);
 }
 
 function roundRect(ctx, x, y, w, h, r) {
@@ -724,6 +852,7 @@ export const RENDER_MAP = {
   cta: renderCTA,
   stats: renderStats,
   statusWA: renderStatusWA,
+  statusMinimal: renderStatusMinimal,
 };
 
 export { CORES, FORMATOS, TEMPLATES };

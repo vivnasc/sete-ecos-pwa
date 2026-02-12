@@ -2277,7 +2277,7 @@ export function getSetupWhatsAppBusiness() {
       {
         dia: 'Terça', conteudo: 'Frase motivacional + link LUMINA',
         exemplo: 'O teu corpo não precisa de castigo. Precisa de compreensão. 🔮 Descobre o que ele te pede: app.seteecos.com/lumina',
-        imagem: { template: 'statusWA', eco: 'lumina', texto: 'O teu corpo não precisa de castigo.', subtitulo: 'Precisa de compreensão.', bgIndex: 7 },
+        imagem: { template: 'statusMinimal', eco: 'lumina', texto: 'O teu corpo não precisa de castigo.', subtitulo: 'Precisa de compreensão.' },
       },
       {
         dia: 'Quarta', conteudo: 'Testemunho ou resultado',
@@ -2287,7 +2287,7 @@ export function getSetupWhatsAppBusiness() {
       {
         dia: 'Quinta', conteudo: 'Bastidores',
         exemplo: 'Por trás do Sete Ecos: a preparar novos conteúdos para vocês. Isto é mais que trabalho, é missão. 💚',
-        imagem: { template: 'statusWA', eco: 'vitalis', texto: 'Isto é mais que trabalho. É missão.', subtitulo: 'Sete Ecos — Transmutação Feminina', bgIndex: 0 },
+        imagem: { template: 'statusMinimal', eco: 'vitalis', texto: 'Isto é mais que trabalho. É missão.', subtitulo: 'Sete Ecos — Transmutação Feminina' },
       },
       {
         dia: 'Sexta', conteudo: 'Promoção directa VITALIS',
@@ -2302,7 +2302,7 @@ export function getSetupWhatsAppBusiness() {
       {
         dia: 'Domingo', conteudo: 'Reflexão pessoal',
         exemplo: 'Domingo é dia de olhar para dentro. O que fizeste por ti esta semana? 🌿',
-        imagem: { template: 'statusWA', eco: 'vitalis', texto: 'O que fizeste por ti esta semana?', subtitulo: 'Domingo é dia de olhar para dentro.', bgIndex: 9 },
+        imagem: { template: 'statusMinimal', eco: 'vitalis', texto: 'O que fizeste por ti esta semana?', subtitulo: 'Domingo é dia de olhar para dentro.' },
       },
     ],
   };
