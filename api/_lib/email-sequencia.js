@@ -96,7 +96,7 @@ const SEQUENCIA = [
           <p style="color: #4A4035; margin: 0;"><strong>3. Efeito ioiô</strong> - Se perdes peso e ganhas de volta, as dietas restritivas estão a sabotar o teu metabolismo.</p>
         </div>
         <p style="color: #6B5C4C; line-height: 1.8;">Se te identificas com pelo menos 1 destes sinais, o <strong>VITALIS</strong> foi criado exatamente para ti.</p>
-        <p style="color: #6B5C4C; line-height: 1.8;">É o único programa em Moçambique que combina nutrição científica com apoio emocional.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">É o único programa no mundo que combina nutrição científica com apoio emocional.</p>
         <div style="text-align: center; margin: 30px 0;">
           <a href="${BASE_URL}/vitalis?utm_source=email&utm_medium=sequencia&utm_campaign=dia7" style="display: inline-block; padding: 14px 32px; background: #7C8B6F; color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Conhecer o VITALIS</a>
         </div>
@@ -117,7 +117,7 @@ const SEQUENCIA = [
         <p style="color: #6B5C4C; line-height: 1.8;">Leste isto e sentiste algo? Então preciso de te explicar o que descobri.</p>
         <p style="color: #6B5C4C; line-height: 1.8;">Quando comes por ansiedade, por solidão, por tédio — o teu corpo não precisa de comida. Precisa de <strong>presença</strong>. E nenhuma dieta do mundo resolve isso.</p>
         <p style="color: #6B5C4C; line-height: 1.8;">Foi por isso que criei o <strong>Espaço de Retorno</strong> dentro do VITALIS — um lugar onde podes ir quando sentes vontade de comer por emoção. Sem culpa. Sem julgamento.</p>
-        <p style="color: #6B5C4C; line-height: 1.8;"><strong>Isto não existe em mais nenhum programa em Moçambique.</strong></p>
+        <p style="color: #6B5C4C; line-height: 1.8;"><strong>Isto não existe em mais nenhum programa — em lado nenhum do mundo.</strong></p>
         <div style="background: white; padding: 20px; border-radius: 12px; margin: 20px 0; text-align: center;">
           <p style="color: #4A4035; font-size: 16px; margin: 0 0 8px;">Queres saber se isto é para ti?</p>
           <p style="color: #6B5C4C; font-size: 14px; margin: 0;">Envia-me "quero saber mais" no WhatsApp.</p>

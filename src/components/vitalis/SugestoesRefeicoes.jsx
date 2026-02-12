@@ -6,6 +6,12 @@ import { Link } from 'react-router-dom';
 // Porções em: P = palmas proteína, H = mãos hidratos, G = polegares gordura
 const REFEICOES_BASE = {
   pequeno_almoco: [
+    // Moçambicanas
+    { nome: 'Papa de mapira com leite de coco e amendoim', proteina: 1, hidratos: 2, gordura: 1.5, calorias: 300, tempo: 15, icone: '🥣', tags: ['normal'] },
+    { nome: 'Mandioca cozida com ovo estrelado', proteina: 1.5, hidratos: 2, gordura: 1, calorias: 320, tempo: 15, icone: '🍳', tags: ['normal'] },
+    { nome: 'Papa de farinha de milho com leite', proteina: 1, hidratos: 2.5, gordura: 0.5, calorias: 280, tempo: 10, icone: '🥣', tags: ['normal'] },
+    { nome: 'Batata-doce cozida com chá e amendoim', proteina: 0.5, hidratos: 2, gordura: 1.5, calorias: 260, tempo: 10, icone: '🍠', tags: ['normal'] },
+    // Internacionais
     { nome: 'Ovos mexidos com espinafres e queijo', proteina: 2, hidratos: 0, gordura: 1.5, calorias: 280, tempo: 10, icone: '🥚', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Omelete de cogumelos, bacon e queijo', proteina: 2, hidratos: 0, gordura: 2, calorias: 320, tempo: 10, icone: '🍳', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Café Keto (café + óleo coco + manteiga)', proteina: 0, hidratos: 0, gordura: 3, calorias: 200, tempo: 5, icone: '☕', tags: ['keto'], nota: 'Energia matinal sem hidratos' },
@@ -19,41 +25,56 @@ const REFEICOES_BASE = {
     { nome: 'Crepes de coco com creme de queijo', proteina: 1, hidratos: 0.5, gordura: 2, calorias: 250, tempo: 10, icone: '🥞', tags: ['keto'] },
   ],
   almoco: [
+    // Moçambicanas
+    { nome: 'Xima com caril de frango e matapa', proteina: 2.5, hidratos: 2, gordura: 1.5, calorias: 450, tempo: 30, icone: '🍛', tags: ['normal'] },
+    { nome: 'Xima com caril de amendoim e couve', proteina: 1.5, hidratos: 2, gordura: 2, calorias: 420, tempo: 25, icone: '🥜', tags: ['normal'] },
+    { nome: 'Matapa com camarão e arroz', proteina: 2.5, hidratos: 1.5, gordura: 1.5, calorias: 400, tempo: 35, icone: '🥬', tags: ['normal'] },
+    { nome: 'Feijão nhemba com xima e salada', proteina: 2, hidratos: 2, gordura: 0.5, calorias: 380, tempo: 30, icone: '🫘', tags: ['normal'] },
+    { nome: 'Frango à Zambeziana com arroz de coco', proteina: 3, hidratos: 2, gordura: 2, calorias: 500, tempo: 40, icone: '🍗', tags: ['normal'] },
+    { nome: 'Caril de peixe com xima', proteina: 2.5, hidratos: 1.5, gordura: 1, calorias: 380, tempo: 30, icone: '🐟', tags: ['normal'] },
+    { nome: 'Cacana com amendoim e xima', proteina: 1.5, hidratos: 2, gordura: 1.5, calorias: 360, tempo: 25, icone: '🥬', tags: ['normal'] },
+    // Internacionais
     { nome: 'Salada de frango grelhado com azeite e abacate', proteina: 3, hidratos: 0.5, gordura: 2.5, calorias: 420, tempo: 20, icone: '🥗', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Bife de vaca com manteiga de ervas e legumes', proteina: 3, hidratos: 0.5, gordura: 3, calorias: 450, tempo: 20, icone: '🥩', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Salmão ao forno com azeite e espargos', proteina: 2.5, hidratos: 0.5, gordura: 2.5, calorias: 420, tempo: 25, icone: '🐟', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Frango com arroz integral e brócolos', proteina: 3, hidratos: 2, gordura: 1, calorias: 420, tempo: 30, icone: '🍛', tags: ['normal'] },
-    { nome: 'Bowl de quinoa com salmão e abacate', proteina: 2.5, hidratos: 2, gordura: 2.5, calorias: 480, tempo: 25, icone: '🍱', tags: ['normal'] },
     { nome: 'Picanha grelhada com salada e azeite', proteina: 3.5, hidratos: 0.5, gordura: 3, calorias: 480, tempo: 25, icone: '🥩', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Carne moída salteada com legumes e ghee', proteina: 3, hidratos: 0.5, gordura: 2.5, calorias: 400, tempo: 15, icone: '🥩', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Omelete recheada com queijo e bacon', proteina: 2.5, hidratos: 0, gordura: 2.5, calorias: 350, tempo: 15, icone: '🍳', tags: ['lowcarb', 'keto', 'normal'] },
-    { nome: 'Wrap integral de peru com vegetais', proteina: 2, hidratos: 1.5, gordura: 1, calorias: 350, tempo: 10, icone: '🌯', tags: ['normal'] },
     { nome: 'Peixe branco com puré de couve-flor e manteiga', proteina: 2.5, hidratos: 0.5, gordura: 2, calorias: 320, tempo: 25, icone: '🐟', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Costeletas de porco com salada e azeite', proteina: 3, hidratos: 0.5, gordura: 2.5, calorias: 420, tempo: 25, icone: '🍖', tags: ['lowcarb', 'keto', 'normal'] },
   ],
   jantar: [
+    // Moçambicanas
+    { nome: 'Matapa com xima (porção leve)', proteina: 1.5, hidratos: 1.5, gordura: 1.5, calorias: 320, tempo: 30, icone: '🥬', tags: ['normal'] },
+    { nome: 'Caril de camarão com arroz', proteina: 2.5, hidratos: 1.5, gordura: 1.5, calorias: 380, tempo: 30, icone: '🦐', tags: ['normal'] },
+    { nome: 'Galinha à Cafreal com salada', proteina: 3, hidratos: 0.5, gordura: 2, calorias: 400, tempo: 35, icone: '🍗', tags: ['lowcarb', 'normal'] },
+    { nome: 'Peixe grelhado à moçambicana com mandioca', proteina: 2.5, hidratos: 1.5, gordura: 1, calorias: 350, tempo: 25, icone: '🐟', tags: ['normal'] },
+    { nome: 'Sopa de feijão nhemba com couve', proteina: 2, hidratos: 1, gordura: 0.5, calorias: 260, tempo: 25, icone: '🫘', tags: ['normal'] },
+    // Internacionais
     { nome: 'Peixe grelhado com salada e azeite', proteina: 2.5, hidratos: 0.5, gordura: 2, calorias: 350, tempo: 20, icone: '🐟', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Sopa cremosa de legumes com frango desfiado', proteina: 2, hidratos: 0.5, gordura: 1.5, calorias: 280, tempo: 20, icone: '🍜', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Bife de vaca com cogumelos salteados em manteiga', proteina: 3, hidratos: 0.5, gordura: 2.5, calorias: 400, tempo: 20, icone: '🥩', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Frango ao forno com legumes e azeite', proteina: 2.5, hidratos: 0.5, gordura: 1.5, calorias: 350, tempo: 30, icone: '🍗', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Salada mediterrânea com atum e azeitonas', proteina: 2, hidratos: 0.5, gordura: 2.5, calorias: 320, tempo: 10, icone: '🥗', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Hambúrguer caseiro (sem pão) com queijo e salada', proteina: 2.5, hidratos: 0.5, gordura: 2.5, calorias: 380, tempo: 15, icone: '🍔', tags: ['lowcarb', 'keto', 'normal'] },
-    { nome: 'Lombo de porco grelhado com espinafres', proteina: 2.5, hidratos: 0.5, gordura: 2, calorias: 340, tempo: 20, icone: '🥩', tags: ['lowcarb', 'keto', 'normal'] },
-    { nome: 'Omelete de queijo com bacon e salada', proteina: 2, hidratos: 0, gordura: 2, calorias: 300, tempo: 10, icone: '🍳', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Carne estufada com legumes', proteina: 2.5, hidratos: 0.5, gordura: 2, calorias: 360, tempo: 40, icone: '🥩', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Tofu salteado com legumes e óleo de coco', proteina: 2, hidratos: 0.5, gordura: 2, calorias: 280, tempo: 20, icone: '🥡', tags: ['lowcarb', 'keto', 'normal', 'vegetariano'] },
   ],
   snack: [
-    { nome: 'Iogurte grego com nozes e canela', proteina: 1, hidratos: 0.5, gordura: 1.5, calorias: 180, tempo: 2, icone: '🥜', tags: ['lowcarb', 'keto', 'normal'] },
+    // Moçambicanos
+    { nome: 'Amendoim torrado', proteina: 1, hidratos: 0.5, gordura: 2, calorias: 180, tempo: 1, icone: '🥜', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Cajus torrados', proteina: 0.5, hidratos: 0.5, gordura: 2, calorias: 170, tempo: 1, icone: '🥜', tags: ['lowcarb', 'keto', 'normal'] },
+    { nome: 'Banana com amendoim', proteina: 0.5, hidratos: 1.5, gordura: 1.5, calorias: 200, tempo: 2, icone: '🍌', tags: ['normal'] },
+    { nome: 'Mandioca frita (porção pequena)', proteina: 0, hidratos: 1.5, gordura: 1, calorias: 180, tempo: 10, icone: '🍠', tags: ['normal'] },
+    // Internacionais
+    { nome: 'Iogurte grego com nozes e canela', proteina: 1, hidratos: 0.5, gordura: 1.5, calorias: 180, tempo: 2, icone: '🥛', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Queijo curado com azeitonas', proteina: 1, hidratos: 0, gordura: 2, calorias: 180, tempo: 1, icone: '🧀', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Ovos cozidos com sal e pimenta', proteina: 1.5, hidratos: 0, gordura: 1, calorias: 140, tempo: 10, icone: '🥚', tags: ['lowcarb', 'keto', 'normal'] },
-    { nome: 'Punhado de amêndoas ou nozes', proteina: 0.5, hidratos: 0.5, gordura: 2, calorias: 180, tempo: 1, icone: '🌰', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Abacate com sal e azeite', proteina: 0.5, hidratos: 0.5, gordura: 3, calorias: 220, tempo: 2, icone: '🥑', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Batido proteico (whey + leite amêndoa)', proteina: 1.5, hidratos: 0.5, gordura: 0.5, calorias: 130, tempo: 3, icone: '🥤', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Fat bomb de chocolate (cacau + coco)', proteina: 0.5, hidratos: 0.5, gordura: 3, calorias: 200, tempo: 5, icone: '🍫', tags: ['keto'], nota: 'Energia em gordura pura' },
-    { nome: 'Palitos de pepino com creme de queijo', proteina: 0.5, hidratos: 0.5, gordura: 1.5, calorias: 120, tempo: 2, icone: '🥒', tags: ['lowcarb', 'keto', 'normal'] },
     { nome: 'Maçã com manteiga de amendoim', proteina: 0.5, hidratos: 1, gordura: 1.5, calorias: 200, tempo: 2, icone: '🍎', tags: ['normal'] },
-    { nome: 'Bacon crocante', proteina: 1, hidratos: 0, gordura: 2, calorias: 160, tempo: 8, icone: '🥓', tags: ['keto'] },
   ]
 };
 
