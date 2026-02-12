@@ -212,7 +212,7 @@ const CoachDashboard = () => {
       console.log('🔍 Coach Check: A carregar clientes Vitalis...');
       const { data, error } = await supabase
         .from('vitalis_clients')
-        .select('*, users(id, nome, email, created_at), telefone, whatsapp')
+        .select('*, users!inner(id, nome, email, created_at)')
         .order('created_at', { ascending: false });
 
       console.log('🔍 Coach Check: Query resultado:', { data, error, count: data?.length || 0 });
@@ -580,7 +580,7 @@ const CoachDashboard = () => {
 
       // Se for WhatsApp, abrir link directo
       if (viaWhatsApp) {
-        const phone = client.telefone || client.whatsapp || '';
+        const phone = client.users?.telefone || client.users?.whatsapp || client.telefone || client.whatsapp || '';
         if (!phone) {
           alert('Cliente sem número de telefone registado');
           setSendingMessage(false);
@@ -1252,10 +1252,10 @@ const CoachDashboard = () => {
                               >
                                 📧 Email
                               </button>
-                              {(client.telefone || client.whatsapp) && (
+                              {(client.users?.telefone || client.users?.whatsapp || client.telefone || client.whatsapp) && (
                                 <button
                                   onClick={() => {
-                                    const phone = (client.telefone || client.whatsapp || '').replace(/\D/g, '');
+                                    const phone = (client.users?.telefone || client.users?.whatsapp || client.telefone || client.whatsapp || '').replace(/\D/g, '');
                                     window.open(`https://wa.me/${phone}`, '_blank');
                                   }}
                                   className="px-3 py-2 rounded-xl bg-green-500/20 hover:bg-green-500/30 text-green-300 text-sm font-medium transition-all border border-green-500/30"
@@ -1336,10 +1336,10 @@ const CoachDashboard = () => {
                               >
                                 📧 Email
                               </button>
-                              {(client.telefone || client.whatsapp) && (
+                              {(client.users?.telefone || client.users?.whatsapp || client.telefone || client.whatsapp) && (
                                 <button
                                   onClick={() => {
-                                    const phone = (client.telefone || client.whatsapp || '').replace(/\D/g, '');
+                                    const phone = (client.users?.telefone || client.users?.whatsapp || client.telefone || client.whatsapp || '').replace(/\D/g, '');
                                     const msg = encodeURIComponent(`Olá ${client.nome}! `);
                                     window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
                                   }}
