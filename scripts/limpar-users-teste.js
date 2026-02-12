@@ -1,24 +1,55 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Hardcoded for quick cleanup (from Vercel env vars)
 const SUPABASE_URL = 'https://vvvdtogvlutrybultffx.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2dmR0b2d2bHV0cnlidWx0ZmZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg2MDAzNTksImV4cCI6MjA1NDE3NjM1OX0.bZPLSLkJ0IgwCOuPWS3zz51rJNJYbWMJB4QI9fW1Ilk';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Emails de teste para limpar TODOS os dados
 const EMAILS_PARA_LIMPAR = [
   'vivianne.saraiva@bancomoc.mz',
   'vivianne-nascimento@outlook.com'
 ];
 
-async function limparDadosVitalis() {
-  console.log('🧹 Limpando dados de teste do Vitalis...\n');
+// Todas as tabelas associadas ao Vitalis (ordem importa - FK dependencies)
+const TABELAS_VITALIS = [
+  'vitalis_meal_plan',
+  'vitalis_intake',
+  'vitalis_checkins',
+  'vitalis_registos',
+  'vitalis_alerts',
+  'vitalis_agua_log',
+  'vitalis_espaco_retorno',
+  'vitalis_subscription_log',
+  'vitalis_email_log',
+  'vitalis_fotos_progresso',
+  'vitalis_conquistas',
+];
+
+// Tabelas Aurea
+const TABELAS_AUREA = [
+  'aurea_clients',
+];
+
+// Tabelas gerais
+const TABELAS_GERAIS = [
+  'lumina_checkins',
+  'email_log',
+];
+
+async function limparDadosTeste() {
+  console.log('='.repeat(60));
+  console.log('  LIMPEZA COMPLETA DE CONTAS DE TESTE');
+  console.log('  Sete Ecos PWA');
+  console.log('='.repeat(60));
+
+  let totalApagados = 0;
 
   for (const email of EMAILS_PARA_LIMPAR) {
-    console.log(`\n📧 Processando: ${email}`);
-    console.log('='.repeat(60));
+    console.log(`\n  Processando: ${email}`);
+    console.log('-'.repeat(60));
 
-    // 1. Buscar user_id pelo email
+    // Buscar user_id
     const { data: user, error: userError } = await supabase
       .from('users')
       .select('id, nome, email')
@@ -26,104 +57,119 @@ async function limparDadosVitalis() {
       .maybeSingle();
 
     if (userError) {
-      console.error(`❌ Erro ao buscar user:`, userError);
+      console.error(`  ERRO ao buscar user: ${userError.message}`);
       continue;
     }
 
     if (!user) {
-      console.log(`⚠️  User não encontrado na base de dados`);
+      console.log(`  User nao encontrado`);
       continue;
     }
 
-    console.log(`✅ User encontrado: ${user.nome} (ID: ${user.id})`);
+    console.log(`  User: ${user.nome} (ID: ${user.id})`);
     const userId = user.id;
 
-    // 2. Apagar vitalis_meal_plan
-    const { data: planos, error: planosDeleteError } = await supabase
-      .from('vitalis_meal_plan')
-      .delete()
-      .eq('user_id', userId)
-      .select('id');
+    // Limpar todas as tabelas Vitalis
+    for (const tabela of TABELAS_VITALIS) {
+      try {
+        const { data, error } = await supabase
+          .from(tabela)
+          .delete()
+          .eq('user_id', userId)
+          .select('id');
 
-    if (planosDeleteError) {
-      console.error(`❌ Erro ao apagar planos:`, planosDeleteError);
-    } else {
-      console.log(`  ✓ Apagados ${planos?.length || 0} planos alimentares`);
+        if (error) {
+          // Tabela pode nao existir - ignorar
+          if (!error.message.includes('does not exist')) {
+            console.log(`  ${tabela}: ERRO - ${error.message}`);
+          }
+        } else {
+          const count = data?.length || 0;
+          if (count > 0) {
+            console.log(`  ${tabela}: ${count} registos apagados`);
+            totalApagados += count;
+          }
+        }
+      } catch {
+        // Ignorar tabelas que nao existem
+      }
     }
 
-    // 3. Apagar vitalis_intake
-    const { data: intakes, error: intakeDeleteError } = await supabase
-      .from('vitalis_intake')
-      .delete()
-      .eq('user_id', userId)
-      .select('id');
+    // Limpar tabelas Aurea
+    for (const tabela of TABELAS_AUREA) {
+      try {
+        const { data, error } = await supabase
+          .from(tabela)
+          .delete()
+          .eq('user_id', userId)
+          .select('id');
 
-    if (intakeDeleteError) {
-      console.error(`❌ Erro ao apagar intake:`, intakeDeleteError);
-    } else {
-      console.log(`  ✓ Apagados ${intakes?.length || 0} registos de intake`);
+        if (!error && data?.length > 0) {
+          console.log(`  ${tabela}: ${data.length} registos apagados`);
+          totalApagados += data.length;
+        }
+      } catch {
+        // Ignorar
+      }
     }
 
-    // 4. Apagar vitalis_checkins
-    const { data: checkins, error: checkinsDeleteError } = await supabase
-      .from('vitalis_checkins')
-      .delete()
-      .eq('user_id', userId)
-      .select('id');
+    // Limpar tabelas gerais
+    for (const tabela of TABELAS_GERAIS) {
+      try {
+        const { data, error } = await supabase
+          .from(tabela)
+          .delete()
+          .eq('user_id', userId)
+          .select('id');
 
-    if (checkinsDeleteError) {
-      console.error(`❌ Erro ao apagar checkins:`, checkinsDeleteError);
-    } else {
-      console.log(`  ✓ Apagados ${checkins?.length || 0} checkins`);
+        if (!error && data?.length > 0) {
+          console.log(`  ${tabela}: ${data.length} registos apagados`);
+          totalApagados += data.length;
+        }
+      } catch {
+        // Ignorar
+      }
     }
 
-    // 5. Apagar vitalis_alerts
-    const { data: alerts, error: alertsDeleteError } = await supabase
-      .from('vitalis_alerts')
-      .delete()
-      .eq('user_id', userId)
-      .select('id');
+    // Limpar email logs por email (nao por user_id)
+    try {
+      const { data } = await supabase
+        .from('waitlist_email_log')
+        .delete()
+        .eq('email', email)
+        .select('id');
 
-    if (alertsDeleteError) {
-      console.error(`❌ Erro ao apagar alertas:`, alertsDeleteError);
-    } else {
-      console.log(`  ✓ Apagados ${alerts?.length || 0} alertas`);
+      if (data?.length > 0) {
+        console.log(`  waitlist_email_log: ${data.length} registos apagados`);
+        totalApagados += data.length;
+      }
+    } catch {
+      // Ignorar
     }
 
-    // 6. Apagar vitalis_subscription_log
-    const { data: logs, error: logsDeleteError } = await supabase
-      .from('vitalis_subscription_log')
-      .delete()
-      .eq('user_id', userId)
-      .select('id');
+    // ULTIMO: Apagar vitalis_clients (tem FK)
+    try {
+      const { data, error } = await supabase
+        .from('vitalis_clients')
+        .delete()
+        .eq('user_id', userId)
+        .select('subscription_status');
 
-    if (logsDeleteError) {
-      console.error(`❌ Erro ao apagar logs:`, logsDeleteError);
-    } else {
-      console.log(`  ✓ Apagados ${logs?.length || 0} logs de subscription`);
+      if (!error && data?.length > 0) {
+        console.log(`  vitalis_clients: Apagado (status: ${data[0]?.subscription_status})`);
+        totalApagados += data.length;
+      }
+    } catch {
+      // Ignorar
     }
 
-    // 7. Apagar vitalis_clients (ÚLTIMO - tem foreign keys)
-    const { data: client, error: clientDeleteError } = await supabase
-      .from('vitalis_clients')
-      .delete()
-      .eq('user_id', userId)
-      .select('subscription_status');
-
-    if (clientDeleteError) {
-      console.error(`❌ Erro ao apagar vitalis_clients:`, clientDeleteError);
-    } else {
-      console.log(`  ✓ Apagado vitalis_clients (status: ${client?.[0]?.subscription_status || 'N/A'})`);
-    }
-
-    console.log(`\n✅ Limpeza completa para ${email}!`);
+    console.log(`  Limpeza completa para ${email}`);
   }
 
   console.log('\n' + '='.repeat(60));
-  console.log('🎉 Todos os users foram limpos!');
-  console.log('💡 Os users ainda podem fazer login (auth não foi apagado)');
-  console.log('💡 Podem agora testar como novos users do Vitalis\n');
+  console.log(`  TOTAL: ${totalApagados} registos apagados`);
+  console.log('  Auth accounts mantidos (podem re-testar)');
+  console.log('='.repeat(60) + '\n');
 }
 
-// Executar
-limparDadosVitalis().catch(console.error);
+limparDadosTeste().catch(console.error);
