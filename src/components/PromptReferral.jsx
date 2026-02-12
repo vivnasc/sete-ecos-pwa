@@ -46,9 +46,9 @@ export default function PromptReferral({ eco = 'vitalis', trigger = 'streak', on
   };
 
   const triggerMessages = {
-    streak: 'O teu progresso esta a inspirar! Partilha com uma amiga.',
-    conquista: 'Parabens pela conquista! Convida uma amiga a comecar tambem.',
-    checkin: 'Mais um dia de consistencia! Conheces alguem que precisava disto?',
+    streak: 'O teu progresso está a inspirar! Partilha com uma amiga.',
+    conquista: 'Parabéns pela conquista! Convida uma amiga a começar também.',
+    checkin: 'Mais um dia de consistência! Conheces alguém que precisava disto?',
   };
 
   return (

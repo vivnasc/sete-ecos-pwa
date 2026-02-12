@@ -2055,22 +2055,22 @@ export function getGuiaMetaDeveloper() {
     descricao: 'Guia passo-a-passo para ligar o Sete Ecos ao Instagram via Meta Graph API. Depois de configurar, os posts publicam-se sozinhos.',
     tempoEstimado: '20-30 minutos',
     requisitos: [
-      'Conta Instagram Business ou Creator (nao pessoal)',
-      'Pagina de Facebook ligada ao Instagram',
-      'Conta Meta Developer (gratis)',
+      'Conta Instagram Business ou Creator (não pessoal)',
+      'Página de Facebook ligada ao Instagram',
+      'Conta Meta Developer (grátis)',
     ],
     passos: [
       {
         numero: 1,
         titulo: 'Converter conta Instagram para Business',
         instrucoes: [
-          'Abrir Instagram → Definicoes → Conta',
+          'Abrir Instagram → Definições → Conta',
           'Tocar "Mudar para conta profissional"',
           'Escolher "Business" (empresa) ou "Creator" (criador)',
-          'Seleccionar categoria "Saude/Beleza"',
-          'Ligar a uma Pagina de Facebook (criar uma se nao tiveres)',
+          'Selecionar categoria "Saúde/Beleza"',
+          'Ligar a uma Página de Facebook (criar uma se não tiveres)',
         ],
-        nota: 'A conta pessoal NAO funciona com a API. Tem de ser Business ou Creator.',
+        nota: 'A conta pessoal NÃO funciona com a API. Tem de ser Business ou Creator.',
       },
       {
         numero: 2,
@@ -2079,7 +2079,7 @@ export function getGuiaMetaDeveloper() {
           'Ir a developers.facebook.com e fazer login',
           'Clicar "Criar App" → Tipo: "Business"',
           'Nome da app: "Sete Ecos Publishing" (ou como quiseres)',
-          'Conta Business: seleccionar a tua (ou criar)',
+          'Conta Business: selecionar a tua (ou criar)',
           'No painel da app, ir a "Adicionar Produto" → "Instagram Graph API" → Configurar',
         ],
         link: 'https://developers.facebook.com/apps/',
@@ -2139,16 +2139,16 @@ export function getGuiaMetaDeveloper() {
         instrucoes: [
           'Ir ao painel Supabase → SQL Editor',
           'Colar e executar o script CREATE_SCHEDULED_POSTS.sql',
-          'Este script esta na pasta /scripts/ do projecto',
-          'A tabela scheduled_posts guarda as publicacoes agendadas',
+          'Este script está na pasta /scripts/ do projeto',
+          'A tabela scheduled_posts guarda as publicações agendadas',
         ],
-        nota: 'Sem esta tabela, o agendamento nao funciona. A publicacao directa funciona sem ela.',
+        nota: 'Sem esta tabela, o agendamento não funciona. A publicação direta funciona sem ela.',
       },
     ],
     verificacao: {
-      titulo: 'Como verificar se esta tudo a funcionar',
+      titulo: 'Como verificar se está tudo a funcionar',
       passos: [
-        'No Marketing Dashboard, secacao VITALIS, o indicador "Meta API" deve ficar verde',
+        'No Marketing Dashboard, secção VITALIS, o indicador "Meta API" deve ficar verde',
         'Se ficar vermelho, verifica os tokens no Vercel',
         'Testa com "Publicar Agora" num post - deve aparecer no Instagram em 30 segundos',
         'Para agendamento: agenda um post para daqui a 20 minutos e espera',
@@ -2160,12 +2160,12 @@ export function getGuiaMetaDeveloper() {
         solucao: 'Gerar novo token seguindo passos 3 e 4. Os Page Tokens permanentes raramente expiram, mas podem ser revogados se mudares a password do Facebook.',
       },
       {
-        problema: 'Permissao negada / erro OAuthException',
-        solucao: 'Verificar se a app tem as permissoes instagram_content_publish e pages_show_list aprovadas.',
+        problema: 'Permissão negada / erro OAuthException',
+        solucao: 'Verificar se a app tem as permissões instagram_content_publish e pages_show_list aprovadas.',
       },
       {
-        problema: 'Imagem nao encontrada',
-        solucao: 'As imagens precisam de estar num URL publico acessivel pela Meta. As imagens em /public/mockups/ sao servidas pelo Vercel e funcionam.',
+        problema: 'Imagem não encontrada',
+        solucao: 'As imagens precisam de estar num URL público acessível pela Meta. As imagens em /public/mockups/ são servidas pelo Vercel e funcionam.',
       },
       {
         problema: 'Rate limit / erro 4 ou 32',

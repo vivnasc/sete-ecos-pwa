@@ -71,8 +71,8 @@ export function getShareMessages(userId, eco = 'vitalis') {
 
   return {
     whatsapp: {
-      text: `Estou a usar o ${nome} e esta a mudar a minha vida! Experimenta tambem: ${link}`,
-      url: `https://wa.me/?text=${encodeURIComponent(`Estou a usar o ${nome} e esta a mudar a minha vida! Experimenta tambem: ${link}`)}`
+      text: `Estou a usar o ${nome} e está a mudar a minha vida! Experimenta também: ${link}`,
+      url: `https://wa.me/?text=${encodeURIComponent(`Estou a usar o ${nome} e está a mudar a minha vida! Experimenta também: ${link}`)}`
     },
     facebook: {
       url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`

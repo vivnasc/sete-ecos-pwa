@@ -197,7 +197,7 @@ export default function Lumina() {
   const [historico, setHistorico] = useState([]);
   const [diasCount, setDiasCount] = useState(0);
 
-  // Email capture (funil para visitantes nao autenticadas)
+  // Email capture (funil para visitantes não autenticadas)
   const [captureEmail, setCaptureEmail] = useState('');
   const [captureSubmitted, setCaptureSubmitted] = useState(false);
   const [captureLoading, setCaptureLoading] = useState(false);
@@ -523,7 +523,7 @@ export default function Lumina() {
           calcularFaseCiclo(data);
         }
       } else {
-        // Visitante nao autenticada - perfil local temporario
+        // Visitante não autenticada - perfil local temporário
         const localProfile = {
           id: null,
           nome: nome.trim(),
@@ -1294,7 +1294,7 @@ export default function Lumina() {
             );
           })()}
 
-          {/* Captura de email - so para visitantes nao autenticadas */}
+          {/* Captura de email - só para visitantes não autenticadas */}
           {!user && !captureSubmitted && (
             <div style={{
               marginTop: '24px',
@@ -1495,7 +1495,7 @@ export default function Lumina() {
             </div>
           </div>
 
-          {/* Upsell contextual - so aparece para quem nao tem Vitalis/Aurea */}
+          {/* Upsell contextual - só aparece para quem não tem Vitalis/Aurea */}
           {!upsellDismissed && !vitalisAccess && !aureaAccess && padrao && (
             <UpsellCard padrao={padrao} onDismiss={() => setUpsellDismissed(true)} />
           )}

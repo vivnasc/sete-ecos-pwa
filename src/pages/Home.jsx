@@ -119,7 +119,7 @@ export default function Home() {
                   <h3 className="text-white font-bold tracking-wide">VITALIS</h3>
                   <p className="text-white/60 text-xs mt-0.5">Corpo & Nutrição</p>
                   <span className="inline-block mt-2 text-[10px] text-white/40 bg-white/10 px-2 py-0.5 rounded-full">
-                    {vitalisAccess ? 'Activo' : 'Começar'}
+                    {vitalisAccess ? 'Ativo' : 'Começar'}
                   </span>
                 </div>
               </div>
@@ -140,7 +140,7 @@ export default function Home() {
                   <h3 className="text-white font-bold tracking-wide">AUREA</h3>
                   <p className="text-white/60 text-xs mt-0.5">Autocuidado & Beleza</p>
                   <span className="inline-block mt-2 text-[10px] text-white/40 bg-white/10 px-2 py-0.5 rounded-full">
-                    {aureaAccess ? 'Activo' : 'Começar'}
+                    {aureaAccess ? 'Ativo' : 'Começar'}
                   </span>
                 </div>
               </div>

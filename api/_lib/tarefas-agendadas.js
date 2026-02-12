@@ -41,7 +41,7 @@ export default async function handler(req, res) {
   };
 
   try {
-    // 1. LEMBRETES PARA CLIENTES INACTIVAS
+    // 1. LEMBRETES PARA CLIENTES INATIVAS
     await enviarLembretes(supabase, resultados);
 
     // 2. AVISOS DE EXPIRAÇÃO
@@ -68,7 +68,7 @@ export default async function handler(req, res) {
 }
 
 /**
- * Enviar lembretes motivacionais a clientes inactivas
+ * Enviar lembretes motivacionais a clientes inativas
  * - 2-4 dias: lembrete suave
  * - 5+ dias: email provocador com curiosidade + WhatsApp direto
  */
@@ -165,7 +165,7 @@ async function enviarAvisosExpiracao(supabase, resultados) {
     .lte('subscription_expires', seteDias.toISOString());
 
   if (error) {
-    resultados.erros.push('Erro ao buscar expiracoes: ' + error.message);
+    resultados.erros.push('Erro ao buscar expirações: ' + error.message);
     return;
   }
 
@@ -289,7 +289,7 @@ async function enviarCuriosidadeInsana(supabase, resultados) {
   const curiosidade = CURIOSIDADES[semanaDoAno % CURIOSIDADES.length];
 
   try {
-    // Buscar users que fizeram Lumina mas NAO tem subscrição Vitalis
+    // Buscar users que fizeram Lumina mas NÃO tem subscrição Vitalis
     const { data: users } = await supabase
       .from('users')
       .select('id, nome, email');
@@ -316,7 +316,7 @@ async function enviarCuriosidadeInsana(supabase, resultados) {
 
         if (!luminaCount || luminaCount === 0) continue;
 
-        // Verificar se ja enviamos esta semana
+        // Verificar se já enviámos esta semana
         const inicioSemana = new Date();
         inicioSemana.setDate(inicioSemana.getDate() - 7);
 
@@ -356,7 +356,7 @@ async function enviarCuriosidadeInsana(supabase, resultados) {
 }
 
 /**
- * Funcao auxiliar para enviar email via Resend
+ * Função auxiliar para enviar email via Resend
  */
 async function enviarEmail(tipo, destinatario, dados) {
   const WHATSAPP_LINK = 'https://wa.me/258851006473?text=Ola%20Vivianne%2C%20preciso%20de%20motivação';
