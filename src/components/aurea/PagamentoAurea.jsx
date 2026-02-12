@@ -261,6 +261,7 @@ export default function PagamentoAurea() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
               { id: 'mpesa', nome: 'M-Pesa', icone: '📱' },
+              { id: 'transfer', nome: 'Transferência', icone: '🏦' },
               { id: 'paypal', nome: 'PayPal / Cartão', icone: '💳' }
             ].map((method) => (
               <button
@@ -293,6 +294,14 @@ export default function PagamentoAurea() {
               </div>
             )}
 
+            {paymentMethod === 'transfer' && (
+              <div className="text-amber-200/80 space-y-2">
+                <p>1. Transfere para a conta bancária fornecida</p>
+                <p>2. Valor: <span className="text-amber-300 font-bold">{AUREA_PLANS[selectedPlan.toUpperCase()].price_mzn.toLocaleString()} MZN</span></p>
+                <p>3. Guarda a referência da transferência</p>
+                <p>4. Cola a referência abaixo</p>
+              </div>
+            )}
 
             <div className="mt-6">
               <label className="block text-amber-200/80 text-sm mb-2">
