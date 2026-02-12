@@ -26,14 +26,15 @@ const TWILIO_WHATSAPP_NUMBER = () => process.env.TWILIO_WHATSAPP_NUMBER || 'what
 async function enviarMensagemTwilio(para, texto) {
   const accountSid = TWILIO_ACCOUNT_SID();
   const authToken = TWILIO_AUTH_TOKEN();
-  const fromNumber = TWILIO_WHATSAPP_NUMBER();
+  const rawFrom = TWILIO_WHATSAPP_NUMBER();
+  const fromNumber = rawFrom.startsWith('whatsapp:') ? rawFrom : `whatsapp:${rawFrom}`;
 
   if (!accountSid || !authToken) {
     console.error('Twilio não configurado — TWILIO_ACCOUNT_SID ou TWILIO_AUTH_TOKEN em falta');
     return false;
   }
 
-  const destinatario = para.startsWith('whatsapp:') ? para : `whatsapp:+${para}`;
+  const destinatario = para.startsWith('whatsapp:') ? para : `whatsapp:${para}`;
 
   console.log('Twilio REST API: enviando para', destinatario, '| tamanho:', texto.length);
 
