@@ -24,10 +24,12 @@ export async function gerarPlanoAutomatico(userId) {
     }
 
     if (!intake) {
+      console.error('❌ Intake NULL - userId:', userId);
       throw new Error('Intake não encontrado. Por favor, preenche o questionário primeiro.');
     }
 
-    console.log('✅ Intake encontrado:', {
+    console.log('✅ Intake encontrado (COMPLETO):', intake);
+    console.log('✅ Intake encontrado (RESUMO):', {
       idade: intake.idade,
       sexo: intake.sexo,
       peso: intake.peso_actual,
@@ -59,19 +61,35 @@ export async function gerarPlanoAutomatico(userId) {
     const sexo = intake.sexo;
 
     // 🛡️ VALIDAÇÃO: Verificar campos obrigatórios e se são números válidos
+    console.log('🔍 Validando campos:', {
+      peso_raw: intake.peso_actual,
+      peso_parsed: peso,
+      peso_valid: !isNaN(peso) && peso > 0,
+      idade_raw: intake.idade,
+      idade_parsed: idade,
+      idade_valid: !isNaN(idade) && idade > 0,
+      sexo: sexo,
+      sexo_valid: !!sexo,
+      nivel_actividade: intake.nivel_actividade,
+      objectivo_principal: intake.objectivo_principal
+    });
+
     if (!peso || isNaN(peso) || !idade || isNaN(idade) || !sexo) {
       const camposFaltando = [];
-      if (!peso || isNaN(peso)) camposFaltando.push('peso (inválido ou em falta)');
-      if (!idade || isNaN(idade)) camposFaltando.push('idade (inválido ou em falta)');
+      if (!peso || isNaN(peso)) camposFaltando.push(`peso (raw: ${intake.peso_actual}, parsed: ${peso})`);
+      if (!idade || isNaN(idade)) camposFaltando.push(`idade (raw: ${intake.idade}, parsed: ${idade})`);
       if (!sexo) camposFaltando.push('sexo');
+      console.error('❌ VALIDAÇÃO FALHOU:', camposFaltando);
       throw new Error(`Dados do intake incompletos. Campos em falta: ${camposFaltando.join(', ')}`);
     }
 
     if (!intake.nivel_actividade) {
+      console.error('❌ nivel_actividade está NULL/undefined');
       throw new Error('Nível de actividade não foi especificado no intake.');
     }
 
     if (!intake.objectivo_principal) {
+      console.error('❌ objectivo_principal está NULL/undefined');
       throw new Error('Objectivo principal não foi especificado no intake.');
     }
 

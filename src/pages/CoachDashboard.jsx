@@ -209,10 +209,19 @@ const CoachDashboard = () => {
 
   const loadVitalisClients = async () => {
     try {
-      const { data } = await supabase
+      console.log('🔍 Coach Check: A carregar clientes Vitalis...');
+      const { data, error } = await supabase
         .from('vitalis_clients')
         .select('*, users(id, nome, email, created_at), telefone, whatsapp')
         .order('created_at', { ascending: false });
+
+      console.log('🔍 Coach Check: Query resultado:', { data, error, count: data?.length || 0 });
+
+      if (error) {
+        console.error('❌ Erro ao carregar clientes:', error);
+        setVitalisClients([]);
+        return;
+      }
 
       // Enriquecer com info de intake e plano
       if (data) {
@@ -245,8 +254,10 @@ const CoachDashboard = () => {
             };
           })
         );
+        console.log('✅ Clientes enriquecidos:', enrichedData.length, enrichedData);
         setVitalisClients(enrichedData);
       } else {
+        console.log('⚠️ Nenhum cliente retornado da query');
         setVitalisClients([]);
       }
     } catch (error) {
@@ -1189,6 +1200,7 @@ const CoachDashboard = () => {
               {activeView === 'clients' && (
                 <div className="p-6">
                   <h2 className="text-xl font-bold text-white mb-6">Clientes Vitalis ({vitalisClients.length})</h2>
+                  {console.log('🎨 Render: vitalisClients =', vitalisClients)}
 
                   {vitalisClients.length === 0 ? (
                     <div className="text-center py-16">
