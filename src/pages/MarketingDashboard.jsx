@@ -1937,9 +1937,24 @@ function WABusinessTab({ copiar, copiado }) {
           </div>
           {wa.statusSemanal.map((dia, i) => (
             <Card key={i} titulo={dia.dia} badge={dia.conteudo}>
-              <div className="bg-gray-50 rounded-lg p-3 text-sm whitespace-pre-line">{dia.exemplo}</div>
-              <div className="mt-2 flex justify-end">
-                <CopyBtn onClick={() => copiar(dia.exemplo)} copiado={copiado === dia.exemplo} label="📋 Copiar" small />
+              <div className="flex gap-3">
+                {dia.imagem && (
+                  <AutoImage
+                    template={dia.imagem.template}
+                    eco={dia.imagem.eco}
+                    formato="stories"
+                    texto={dia.imagem.texto}
+                    subtitulo={dia.imagem.subtitulo}
+                    scale={0.12}
+                    filename={`wa-status-${dia.dia.toLowerCase()}.png`}
+                  />
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="bg-gray-50 rounded-lg p-3 text-sm whitespace-pre-line">{dia.exemplo}</div>
+                  <div className="mt-2 flex justify-end">
+                    <CopyBtn onClick={() => copiar(dia.exemplo, `status-${i}`)} copiado={copiado === `status-${i}`} label="📋 Copiar" small />
+                  </div>
+                </div>
               </div>
             </Card>
           ))}
