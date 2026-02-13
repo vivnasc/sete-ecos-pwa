@@ -333,7 +333,7 @@ function ConfigurarDiasTreino({ userId, diasActuais = [], onSave }) {
 export default function PlanoAlimentar() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [errorType, setErrorType] = useState(null); // 'no_intake', 'no_plan', 'generic'
+  const [errorType, setErrorType] = useState(null); // 'no_intake', 'no_plan', 'pending_review', 'generic'
   const [plano, setPlano] = useState(null);
   const [usersId, setUsersId] = useState(null);
   const [showPDFModal, setShowPDFModal] = useState(false);
@@ -350,7 +350,22 @@ export default function PlanoAlimentar() {
       .limit(1)
       .maybeSingle();
 
-    if (!mealPlan) return null;
+    if (!mealPlan) {
+      // Check if there's a plan pending coach review
+      const { data: pendingPlan } = await supabase
+        .from('vitalis_meal_plans')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('status', 'pendente_revisao')
+        .limit(1)
+        .maybeSingle();
+
+      if (pendingPlan) {
+        // Signal that plan exists but is pending review
+        return { _pendente_revisao: true };
+      }
+      return null;
+    }
 
     const { data: clientData } = await supabase
       .from('vitalis_clients')
@@ -444,7 +459,10 @@ export default function PlanoAlimentar() {
         // RPC returned error - try fallback to vitalis_meal_plans
         console.warn('RPC vitalis_plano_do_dia:', data.erro, '- trying fallback...');
         const fallbackData = await carregarPlanoFallback(userData.id);
-        if (fallbackData) {
+        if (fallbackData && fallbackData._pendente_revisao) {
+          setError('O teu plano foi gerado e esta a ser revisto pela tua coach. Vais receber acesso em breve!');
+          setErrorType('pending_review');
+        } else if (fallbackData) {
           setPlano(fallbackData);
         } else {
           // Check if intake exists to show the right error
@@ -459,6 +477,11 @@ export default function PlanoAlimentar() {
       if (localUserId) {
         try {
           const fallbackData = await carregarPlanoFallback(localUserId);
+          if (fallbackData && fallbackData._pendente_revisao) {
+            setError('O teu plano foi gerado e esta a ser revisto pela tua coach. Vais receber acesso em breve!');
+            setErrorType('pending_review');
+            return;
+          }
           if (fallbackData) {
             setPlano(fallbackData);
             return;
@@ -477,7 +500,7 @@ export default function PlanoAlimentar() {
     }
   };
 
-  // Detect whether error is due to missing intake or missing plan
+  // Detect whether error is due to missing intake, missing plan, or pending review
   const detectarTipoErro = async (userId, mensagem) => {
     try {
       const { data: intake } = await supabase
@@ -489,6 +512,21 @@ export default function PlanoAlimentar() {
       if (!intake) {
         setError('Precisas de preencher o questionário inicial para gerar o teu plano.');
         setErrorType('no_intake');
+        return;
+      }
+
+      // Check if there's a plan pending review
+      const { data: pendingPlan } = await supabase
+        .from('vitalis_meal_plans')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('status', 'pendente_revisao')
+        .limit(1)
+        .maybeSingle();
+
+      if (pendingPlan) {
+        setError('O teu plano foi gerado e esta a ser revisto pela tua coach. Vais receber acesso em breve!');
+        setErrorType('pending_review');
       } else {
         setError('O teu intake já está preenchido mas o plano ainda não foi gerado.');
         setErrorType('no_plan');
@@ -548,13 +586,25 @@ export default function PlanoAlimentar() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] p-4">
         <div className="max-w-2xl mx-auto mt-20 bg-white rounded-2xl p-6 text-center shadow-lg">
-          <div className="text-5xl mb-4">{errorType === 'no_plan' ? '⚙️' : '🥗'}</div>
+          <div className="text-5xl mb-4">{
+            errorType === 'pending_review' ? '👩‍⚕️' :
+            errorType === 'no_plan' ? '⚙️' : '🥗'
+          }</div>
           <h2 className="text-xl font-bold text-gray-800 mb-2">
-            {errorType === 'no_plan' ? 'Plano em falta' : 'Plano não disponível'}
+            {errorType === 'pending_review' ? 'Plano em revisao'
+              : errorType === 'no_plan' ? 'Plano em falta'
+              : 'Plano não disponível'}
           </h2>
           <p className="text-gray-600 mb-4">{error}</p>
 
-          {errorType === 'no_plan' ? (
+          {errorType === 'pending_review' ? (
+            <a
+              href="/vitalis/dashboard"
+              className="inline-block px-6 py-3 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-full font-semibold"
+            >
+              Voltar ao Dashboard
+            </a>
+          ) : errorType === 'no_plan' ? (
             <button
               onClick={regenerarPlano}
               disabled={regenerando}
