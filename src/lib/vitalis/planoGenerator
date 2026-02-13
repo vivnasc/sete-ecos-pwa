@@ -270,6 +270,12 @@ export async function gerarPlanoAutomatico(userId) {
       gordura_g: gorduraG,
       status: 'pendente_revisao',
       receitas_incluidas: JSON.stringify({
+        porcoes_diarias: {
+          proteina: porcoesProteina,
+          legumes: porcoesLegumes,
+          hidratos: porcoesHidratos,
+          gordura: porcoesGordura
+        },
         porções_por_refeicao: porcoesPorRefeicao,
         num_refeicoes: numRefeicoes,
         horarios: horariosRefeicoes
@@ -579,6 +585,12 @@ export async function recalcularPlano(userId, novaFase = null) {
         gordura_g: gorduraG,
         status: 'pendente_revisao',
         receitas_incluidas: JSON.stringify({
+          porcoes_diarias: {
+            proteina: porcoesProteina,
+            legumes: porcoesLegumes,
+            hidratos: porcoesHidratos,
+            gordura: porcoesGordura
+          },
           porções_por_refeicao: porcoesPorRefeicao,
           num_refeicoes: numRefeicoes,
           horarios: horariosRefeicoes

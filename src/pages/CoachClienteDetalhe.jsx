@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { coachApi } from '../lib/coachApi';
 import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
+import { calcularPorcoesDiarias, extrairConfigPlano } from '../lib/vitalis/calcularPorcoes.js';
 
 /**
  * Coach - Vista detalhada de um cliente
@@ -176,22 +177,13 @@ export default function CoachClienteDetalhe() {
   };
   const planErroMsg = parseErro(errorPlan);
 
-  // Parse plan config
-  const parsePlanConfig = (p) => {
-    if (!p?.receitas_incluidas) return {};
-    try { return JSON.parse(p.receitas_incluidas); } catch { return {}; }
-  };
-
-  const planConfig = parsePlanConfig(activePlan);
-
-  // Calculate daily portions from macros (same formula as PDF/PlanoHTML)
-  // Note: planConfig.porções_por_refeicao contains PER-MEAL values, not daily totals
-  const porcoesProteina = activePlan ? Math.round(activePlan.proteina_g / 25) : 0;
-  const porcoesLegumes = 4; // Sempre 4 punhos por dia (fixo)
-  const porcoesHidratos = activePlan ? Math.round(activePlan.carboidratos_g / 30) : 0;
-  const porcoesGordura = activePlan ? Math.round(activePlan.gordura_g / 10) : 0;
-  const numRefeicoes = planConfig.num_refeicoes || 3;
-  const horarios = planConfig.horarios || [];
+  // Porções diárias — função partilhada (PDF + dashboard + cliente)
+  const porcoes = calcularPorcoesDiarias(activePlan);
+  const porcoesProteina = porcoes.proteina;
+  const porcoesLegumes = porcoes.legumes;
+  const porcoesHidratos = porcoes.hidratos;
+  const porcoesGordura = porcoes.gordura;
+  const { numRefeicoes, horarios } = extrairConfigPlano(activePlan);
 
   // Generate plan
   const handleGerarPlano = async () => {

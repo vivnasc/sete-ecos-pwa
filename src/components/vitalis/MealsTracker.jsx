@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
+import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
 
 export default function MealsTracker() {
   const navigate = useNavigate();
@@ -91,11 +92,12 @@ export default function MealsTracker() {
             .eq('user_id', userData.id).eq('status', 'activo')
             .order('created_at', { ascending: false }).limit(1).maybeSingle();
           if (mealPlan) {
+            const porcoesDiarias = calcularPorcoesDiarias(mealPlan);
             planoData = {
-              porcoes_proteina: Math.round(mealPlan.proteina_g / 25),
-              porcoes_hidratos: Math.round(mealPlan.carboidratos_g / 30),
-              porcoes_gordura: Math.round(mealPlan.gordura_g / 10),
-              porcoes_legumes: 4
+              porcoes_proteina: porcoesDiarias.proteina,
+              porcoes_hidratos: porcoesDiarias.hidratos,
+              porcoes_gordura: porcoesDiarias.gordura,
+              porcoes_legumes: porcoesDiarias.legumes
             };
           }
         }
