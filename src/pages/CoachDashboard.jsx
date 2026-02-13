@@ -653,6 +653,12 @@ const CoachDashboard = () => {
               >
                 Analytics
               </Link>
+              <Link
+                to="/coach/chatbot-teste"
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500/20 to-green-500/20 hover:from-emerald-500/30 hover:to-green-500/30 text-emerald-300 text-sm font-medium transition-all border border-emerald-500/30"
+              >
+                Chatbot
+              </Link>
               <a
                 href={WHATSAPP_COMMUNITY_LINK}
                 target="_blank"
