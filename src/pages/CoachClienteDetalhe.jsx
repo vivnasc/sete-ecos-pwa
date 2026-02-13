@@ -260,6 +260,17 @@ export default function CoachClienteDetalhe() {
               <div className="bg-white rounded-xl border border-gray-100 p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-semibold text-gray-900">Plano actual</h3>
+                  {activePlan.id && (
+                    <button
+                      onClick={() => window.open(`/vitalis/plano-pdf?id=${activePlan.id}`, '_blank')}
+                      className="px-4 py-1.5 text-sm font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-1"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                      </svg>
+                      Ver PDF
+                    </button>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
                   <div className="bg-gray-50 rounded-lg p-3">
@@ -462,6 +473,14 @@ export default function CoachClienteDetalhe() {
                         <PlanStatusBadge status={p.status} />
                       </div>
                       <div className="flex items-center gap-2">
+                        {p.status === 'activo' && p.id && (
+                          <button
+                            onClick={() => window.open(`/vitalis/plano-pdf?id=${p.id}`, '_blank')}
+                            className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200"
+                          >
+                            PDF
+                          </button>
+                        )}
                         <span className="text-xs text-gray-400">
                           {p.created_at ? new Date(p.created_at).toLocaleDateString('pt-PT') : ''}
                         </span>
