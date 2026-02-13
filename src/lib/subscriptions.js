@@ -186,9 +186,10 @@ export const checkVitalisAccess = async (userId) => {
       }
     }
 
-    // Pagamento pendente - BLOQUEAR acesso até aprovação
+    // Pagamento pendente - DAR ACESSO (cliente já pagou, aguarda confirmação)
+    // Coach pode revogar se pagamento não confirmar
     if (status === SUBSCRIPTION_STATUS.PENDING) {
-      return { hasAccess: false, status, reason: 'pending_payment' };
+      return { hasAccess: true, status, reason: 'pending_approval' };
     }
 
     // Sem acesso
