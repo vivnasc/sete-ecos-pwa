@@ -1,4 +1,10 @@
-# 🚀 COMANDOS PARA EXECUTAR MANUALMENTE
+# 🚀 COMANDOS PARA EXECUTAR NO AMBIENTE WEB
+
+> **IMPORTANTE:** Você está no Claude Code Web, então precisa usar:
+> - 🌐 **Navegador** para APIs (não cURL)
+> - 💾 **Supabase SQL Editor** para queries SQL
+
+---
 
 ## 📊 **CONTEXTO:**
 
@@ -19,15 +25,16 @@
 
 ## 1️⃣ **GERAR PLANO PARA SHIRLEY**
 
-### **Opção A: Via API (se firewall permitir)**
+### **🌐 Via NAVEGADOR (Ambiente Web):**
 
-```bash
-curl "https://app.seteecos.com/api/gerar-plano-manual?secret=vivnasc2026&email=ntbshirley@gmail.com"
+Abra no navegador:
+```
+https://app.seteecos.com/api/regenerar-plano-emergencia?email=ntbshirley@gmail.com
 ```
 
-**OU via regeneração:**
-```bash
-curl "https://app.seteecos.com/api/regenerar-plano-emergencia?email=ntbshirley@gmail.com"
+**OU via gerar-plano-manual:**
+```
+https://app.seteecos.com/api/gerar-plano-manual?secret=vivnasc2026&email=ntbshirley@gmail.com
 ```
 
 ---
@@ -48,26 +55,91 @@ SELECT id, nome, email FROM users WHERE email = 'ntbshirley@gmail.com';
 
 ---
 
-## 2️⃣ **TESTAR PDF DA NAZIRTA**
+## 2️⃣ **DIAGNOSTICAR E CORRIGIR PDF DA NAZIRTA**
 
-### **Testar endpoint correto (POST):**
+### **🔍 PROBLEMA:**
+Nazirta tem 3 planos, mas PDF não funciona. Possível causa: **View `vitalis_plano` não existe ou está vazia**.
 
-```bash
-curl -X POST https://app.seteecos.com/api/gerar-pdf \
-  -H "Content-Type: application/json" \
-  -d '{
-    "planoId": "08071c48-235b-4033-aaef-8e6e65c8f053",
-    "baseUrl": "https://app.seteecos.com"
-  }' \
-  -o nazirta-teste.pdf
+---
+
+### **🛠️ PASSO 1: Executar diagnóstico completo**
+
+Ir para **Supabase → SQL Editor** e executar:
+
+```sql
+-- Ver arquivo: diagnostico-nazirta-completo.sql
+-- (Colar TODO o conteúdo do arquivo e executar)
 ```
 
-**Se funcionar:** Arquivo `nazirta-teste.pdf` será criado! ✅
+**OU copiar queries individuais:**
 
-**Se falhar:** Verificar logs do Vercel:
-```bash
-# Dashboard Vercel > sete-ecos-pwa > Functions > gerar-pdf > Logs
+#### **A. Ver plano ativo:**
+```sql
+SELECT
+  vmp.id as plano_id,
+  vmp.fase,
+  vmp.calorias_alvo,
+  vmp.status,
+  vi.nome,
+  vi.email
+FROM vitalis_meal_plans vmp
+JOIN vitalis_intake vi ON vi.user_id = vmp.user_id
+WHERE vi.email = 'nazirasaide@gmail.com'
+  AND vmp.status = 'activo';
 ```
+
+#### **B. Verificar se view existe:**
+```sql
+SELECT EXISTS (
+  SELECT FROM information_schema.tables
+  WHERE table_schema = 'public'
+  AND table_name = 'vitalis_plano'
+) as view_existe;
+```
+
+---
+
+### **🛠️ PASSO 2: Criar view vitalis_plano (SE NÃO EXISTIR)**
+
+```sql
+CREATE OR REPLACE VIEW vitalis_plano AS
+SELECT
+  vmp.id,
+  vmp.user_id,
+  vmp.versao,
+  vmp.fase,
+  vmp.abordagem,
+  vmp.calorias_alvo as calorias_diarias,
+  vmp.proteina_g,
+  vmp.carboidratos_g,
+  vmp.gordura_g,
+  vmp.status,
+  vmp.receitas_incluidas,
+  vmp.created_at,
+  vmp.updated_at,
+  vc.id as client_id,
+  vc.peso_actual,
+  vc.peso_meta,
+  vc.objectivo_principal,
+  vi.nome,
+  vi.email
+FROM vitalis_meal_plans vmp
+LEFT JOIN vitalis_clients vc ON vc.user_id = vmp.user_id
+LEFT JOIN vitalis_intake vi ON vi.user_id = vmp.user_id
+WHERE vmp.status = 'activo';
+```
+
+---
+
+### **🛠️ PASSO 3: Testar PDF no navegador**
+
+Abrir URL:
+```
+https://app.seteecos.com/vitalis/plano-pdf?id=08071c48-235b-4033-aaef-8e6e65c8f053
+```
+
+**Se funcionar:** Ctrl+P → Guardar como PDF ✅
+**Se falhar:** Copiar erro do console (F12) e investigar
 
 ---
 
