@@ -261,9 +261,16 @@ export default async function handler(req, res) {
         .single();
 
       if (clienteError || !cliente) {
+        // Listar todas as clientes disponíveis para ajudar no debug
+        const { data: todasClientes } = await supabase
+          .from('vitalis_clients')
+          .select('user_id, subscription_status')
+          .limit(10);
+
         return res.status(404).json({
-          error: 'Nenhuma cliente encontrada. Passe user_id ou email como parâmetro.',
-          details: clienteError?.message
+          error: 'Nenhuma cliente ativa encontrada. Passe user_id ou email como parâmetro.',
+          details: clienteError?.message,
+          clientes_disponiveis: todasClientes || []
         });
       }
 
