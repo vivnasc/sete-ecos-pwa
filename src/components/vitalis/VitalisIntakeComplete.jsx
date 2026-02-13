@@ -71,9 +71,9 @@ export default function VitalisIntakeComplete() {
     whatsapp: { label: 'WhatsApp', type: 'tel', placeholder: '+258…', inputMode: 'tel' },
     idade: { label: 'Idade', type: 'number', required: true, inputMode: 'numeric' },
     sexo: { label: 'Sexo', type: 'radio', options: ['feminino', 'masculino', 'outro'], labels: ['Feminino', 'Masculino', 'Prefiro não especificar'], required: true },
-    altura_cm: { label: 'Altura (cm)', type: 'number', required: true, inputMode: 'numeric' },
-    peso_actual: { label: 'Peso actual (kg)', type: 'number', step: '0.1', required: true, inputMode: 'decimal' },
-    peso_meta: { label: 'Peso desejado (kg)', type: 'number', step: '0.1', required: true, inputMode: 'decimal' },
+    altura_cm: { label: 'Altura (cm)', type: 'number', required: true, inputMode: 'numeric', min: '100', max: '250' },
+    peso_actual: { label: 'Peso actual (kg)', type: 'number', step: '0.1', required: true, inputMode: 'decimal', min: '20', max: '300' },
+    peso_meta: { label: 'Peso desejado (kg)', type: 'number', step: '0.1', required: true, inputMode: 'decimal', min: '20', max: '300' },
     cintura_cm: { label: 'Cintura (cm)', type: 'number', step: '0.1', inputMode: 'decimal' },
     anca_cm: { label: 'Anca (cm)', type: 'number', step: '0.1', inputMode: 'decimal' },
     objectivo_principal: { 
@@ -342,15 +342,41 @@ export default function VitalisIntakeComplete() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateSection()) {
       setError('Por favor preenche todos os campos obrigatórios');
       return;
     }
-    
+
+    // 🛡️ VALIDAÇÃO DEFENSIVA - Evitar overflow numérico
+    const altura = parseInt(formData.altura_cm);
+    const pesoActual = parseFloat(formData.peso_actual);
+    const pesoMeta = parseFloat(formData.peso_meta);
+
+    if (altura < 100 || altura > 250) {
+      setError('⚠️ Altura inválida. Por favor verifica o valor (deve estar entre 100cm e 250cm).');
+      setCurrentSection(1); // Voltar para secção de medidas
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    if (pesoActual < 20 || pesoActual > 300) {
+      setError('⚠️ Peso actual inválido. Por favor verifica o valor (deve estar entre 20kg e 300kg).');
+      setCurrentSection(1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    if (pesoMeta < 20 || pesoMeta > 300) {
+      setError('⚠️ Peso meta inválido. Por favor verifica o valor (deve estar entre 20kg e 300kg).');
+      setCurrentSection(1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
     setLoading(true);
     setError('');
-    
+
 try {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Não autenticado');
@@ -372,7 +398,7 @@ try {
   }
 
   const aceita_jejum = formData.abordagem_preferida === 'keto_if';
-  
+
   // Converter arrays para strings onde necessário
   const intakeData = {
     user_id: userData.id,  // 🎯 MUDANÇA AQUI!
@@ -381,9 +407,9 @@ try {
         whatsapp: formData.whatsapp,
         idade: parseInt(formData.idade),
         sexo: formData.sexo,
-        altura_cm: parseInt(formData.altura_cm),
-        peso_actual: parseFloat(formData.peso_actual),
-        peso_meta: parseFloat(formData.peso_meta),
+        altura_cm: altura,
+        peso_actual: pesoActual,
+        peso_meta: pesoMeta,
         cintura_cm: formData.cintura_cm ? parseFloat(formData.cintura_cm) : null,
         anca_cm: formData.anca_cm ? parseFloat(formData.anca_cm) : null,
         objectivo_principal: formData.objectivo_principal,
