@@ -240,7 +240,7 @@ async function gerarPlano(userId, res) {
     .from('vitalis_meal_plans')
     .update({ status: 'inactivo' })
     .eq('user_id', userId)
-    .in('status', ['activo', 'pendente_revisao']);
+    .eq('status', 'activo');
 
   // 13. Insert new plan
   const planoData = {
@@ -252,7 +252,7 @@ async function gerarPlano(userId, res) {
     proteina_g: proteinaG,
     carboidratos_g: carboidratosG,
     gordura_g: gorduraG,
-    status: 'pendente_revisao',
+    status: 'activo',
     receitas_incluidas: JSON.stringify({
       'porções_por_refeicao': porcoesPorRefeicao,
       num_refeicoes: numRefeicoes,
@@ -308,7 +308,7 @@ async function aprovarPlano(userId, planId, res) {
     .update({ status: 'inactivo' })
     .eq('user_id', userId)
     .neq('id', planId)
-    .in('status', ['activo', 'pendente_revisao']);
+    .eq('status', 'activo');
 
   // Approve this plan
   const { error } = await supabase
