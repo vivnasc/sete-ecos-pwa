@@ -50,6 +50,8 @@ export default async function handler(req, res) {
 
   try {
     switch (action) {
+      case 'buscar-dados-cliente':
+        return await buscarDadosCliente(params.userId, res);
       case 'gerar-plano':
         return await gerarPlano(params.userId, res);
       case 'aprovar-plano':
@@ -425,4 +427,35 @@ async function setTester(userId, res) {
   }).then(() => {}).catch(() => {});
 
   return res.status(200).json({ success: true });
+}
+
+// ==========================================
+// BUSCAR DADOS CLIENTE (server-side, bypasses RLS)
+// ==========================================
+async function buscarDadosCliente(userId, res) {
+  if (!userId) return res.status(400).json({ error: 'userId obrigatorio' });
+
+  const [userRes, clientRes, intakeRes, planoRes, registosRes, aguaRes, mealsRes, habitosRes] = await Promise.all([
+    supabase.from('users').select('*').eq('id', userId).single(),
+    supabase.from('vitalis_clients').select('*').eq('user_id', userId).maybeSingle(),
+    supabase.from('vitalis_intake').select('*').eq('user_id', userId).maybeSingle(),
+    supabase.from('vitalis_meal_plans').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(5),
+    supabase.from('vitalis_registos').select('*').eq('user_id', userId).order('data', { ascending: false }).limit(30),
+    supabase.from('vitalis_agua_log').select('*').eq('user_id', userId).order('data', { ascending: false }).limit(30),
+    supabase.from('vitalis_meals_log').select('*').eq('user_id', userId).order('data', { ascending: false }).limit(30),
+    supabase.from('vitalis_habitos').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(10),
+  ]);
+
+  if (userRes.error) return res.status(404).json({ error: 'Cliente nao encontrado' });
+
+  return res.status(200).json({
+    user: userRes.data,
+    client: clientRes.data,
+    intake: intakeRes.data,
+    planos: planoRes.data || [],
+    registos: registosRes.data || [],
+    aguaLogs: aguaRes.data || [],
+    mealsLogs: mealsRes.data || [],
+    habitos: habitosRes.data || [],
+  });
 }

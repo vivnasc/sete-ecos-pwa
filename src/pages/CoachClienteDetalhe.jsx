@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { coachApi } from '../lib/coachApi';
 import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
 
 /**
  * Coach - Vista detalhada de um cliente
- * Mostra intake, plano, progresso e gestao
+ * Carrega dados via coach API (server-side, bypasses RLS)
+ * Mostra plano completo com porcoes, equivalencias, dicas de fase
  */
 
 const ABORDAGEM_LABELS = {
@@ -31,6 +31,95 @@ const FASE_LABELS = {
   manutencao: 'Manutencao'
 };
 
+// ==========================================
+// HAND METHOD CONFIG (same as PlanoAlimentar)
+// ==========================================
+const HAND_CONFIG = {
+  proteina: {
+    gesto: '\u{1FAF2}', nome: 'Proteina', medida: 'palma', medidaPlural: 'palmas',
+    cor: 'from-rose-50 to-red-50', corTexto: 'text-rose-700', corBorda: 'border-rose-200',
+    explicacao: 'Tamanho e espessura da palma (sem dedos) \u2248 100g',
+    equivalencias: [
+      { icon: '\u{1F357}', texto: '1 peito de frango (~100g)' },
+      { icon: '\u{1F41F}', texto: '1 lata de atum escorrida' },
+      { icon: '\u{1F95A}', texto: '2-3 ovos inteiros' },
+      { icon: '\u{1F969}', texto: '1 bife medio (~100g)' },
+      { icon: '\u{1F990}', texto: '6-8 camaroes ou 1 posta de peixe' },
+      { icon: '\u{1F95B}', texto: '\u00BD palma = 1 iogurte grego' },
+    ]
+  },
+  legumes: {
+    gesto: '\u270A', nome: 'Legumes', medida: 'punho', medidaPlural: 'punhos',
+    cor: 'from-green-50 to-emerald-50', corTexto: 'text-green-700', corBorda: 'border-green-200',
+    explicacao: 'Tamanho do punho fechado \u2248 150g de legumes cozidos',
+    equivalencias: [
+      { icon: '\u{1F957}', texto: '2 maos cheias de salada crua' },
+      { icon: '\u{1F966}', texto: '1 chavena de brocolos' },
+      { icon: '\u{1F96C}', texto: '1 chavena de espinafres/couve' },
+      { icon: '\u{1F345}', texto: '1 tomate medio + pepino' },
+      { icon: '\u{1F955}', texto: '1 cenoura grande' },
+      { icon: '\u{1F344}', texto: '1 chavena de cogumelos' },
+    ]
+  },
+  hidratos: {
+    gesto: '\u{1F932}', nome: 'Hidratos', medida: 'mao concha', medidaPlural: 'maos concha',
+    cor: 'from-amber-50 to-orange-50', corTexto: 'text-amber-700', corBorda: 'border-amber-200',
+    explicacao: 'O que cabe na mao em concha \u2248 30g de hidratos',
+    equivalencias: [
+      { icon: '\u{1F35A}', texto: '3 col. sopa de arroz cozido' },
+      { icon: '\u{1F954}', texto: '1 batata pequena ou \u00BD batata doce' },
+      { icon: '\u{1F35D}', texto: '\u00BD chavena de massa cozida' },
+      { icon: '\u{1F35E}', texto: '1 fatia de pao' },
+      { icon: '\u{1F34E}', texto: '1 fruta media (maca, banana, laranja)' },
+      { icon: '\u{1FAD0}', texto: '\u00BD chavena de mandioca cozida' },
+    ]
+  },
+  gordura: {
+    gesto: '\u{1F44D}', nome: 'Gordura', medida: 'polegar', medidaPlural: 'polegares',
+    cor: 'from-purple-50 to-violet-50', corTexto: 'text-purple-700', corBorda: 'border-purple-200',
+    explicacao: 'Tamanho da ponta do polegar \u2248 10g de gordura',
+    equivalencias: [
+      { icon: '\u{1FAD2}', texto: '1 col. sopa de azeite' },
+      { icon: '\u{1F951}', texto: '\u00BC de abacate' },
+      { icon: '\u{1F95C}', texto: '1 punhado pequeno de nozes (~15g)' },
+      { icon: '\u{1F9C8}', texto: '1 col. cha de manteiga' },
+      { icon: '\u{1F965}', texto: '2 col. sopa de coco ralado' },
+      { icon: '\u{1F95C}', texto: '1 col. sopa de amendoim' },
+    ]
+  }
+};
+
+const FASES_DICAS = {
+  inducao: {
+    nome: 'Fase 1: Inducao', duracao: '3-4 semanas',
+    descricao: 'Fase de arranque. Foco em proteina, gorduras saudaveis e vegetais.',
+    priorizar: ['Proteina em todas as refeicoes', 'Vegetais verdes em abundancia (4+ punhos/dia)', 'Gorduras saudaveis (azeite, abacate, nozes)', 'Agua minimo 2.5L/dia', 'Sono 7-9 horas', 'Electrolitos (sal marinho, magnesio)'],
+    evitar: ['Acucar e adocantes', 'Graos e cereais (pao, massa, arroz)', 'Frutas doces (banana, manga, uvas)', 'Leguminosas (feijao, grao)', 'Alcool', 'Alimentos processados'],
+    dicas: ['Prepara refeicoes ao domingo', 'Tem snacks keto a mao (ovos cozidos, queijo, nozes)', 'Podes sentir "keto flu" dias 2-4 \u2014 e temporario', 'Adiciona 1 colher de sal na agua 2x/dia', 'Pesa-te as sextas em jejum']
+  },
+  transicao: {
+    nome: 'Fase 2: Transicao', duracao: '4-6 semanas',
+    descricao: 'Reintroducao gradual de hidratos complexos mantendo perda de gordura.',
+    priorizar: ['Manter proteina elevada', 'Hidratos complexos pos-treino (batata-doce, arroz integral)', 'Fruta de baixo indice glicemico', 'Leguminosas em moderacao', 'Agua minimo 2L/dia'],
+    evitar: ['Acucar refinado', 'Farinhas brancas e pao branco', 'Ultra-processados', 'Bebidas acucaradas', 'Refeicoes sem proteina'],
+    dicas: ['Introduz UM hidrato novo por semana', 'Observa como o corpo reage nas 48h', 'Mantem o diario alimentar', 'Hidratos funcionam melhor perto do treino']
+  },
+  recomposicao: {
+    nome: 'Fase 3: Recomposicao', duracao: '6-8 semanas',
+    descricao: 'Ganho de massa muscular com manutencao de gordura baixa.',
+    priorizar: ['Proteina alta (2g/kg)', 'Hidratos em volta do treino', 'Treino de forca 3-4x/semana', 'Sono reparador'],
+    evitar: ['Deficit calorico excessivo', 'Cardio em excesso', 'Saltar refeicoes pos-treino'],
+    dicas: ['Come mais nos dias de treino', 'Menos hidratos nos dias de descanso', 'Prioriza alimentos inteiros']
+  },
+  manutencao: {
+    nome: 'Fase 4: Manutencao', duracao: 'Continua',
+    descricao: 'Manutencao dos resultados com habitos sustentaveis.',
+    priorizar: ['Manter proteina elevada', 'Variedade alimentar', 'Rotina de refeicoes consistente', 'Movimento regular'],
+    evitar: ['Voltar aos velhos padroes', 'Dietas extremas', 'Saltar refeicoes'],
+    dicas: ['1-2 refeicoes livres por semana', 'Celebra vitorias nao-balanca', 'O processo e individual']
+  }
+};
+
 export default function CoachClienteDetalhe() {
   const { userId } = useParams();
   const navigate = useNavigate();
@@ -48,7 +137,6 @@ export default function CoachClienteDetalhe() {
 
   // Actions
   const [gerandoPlano, setGerandoPlano] = useState(false);
-  const [approvingPlan, setApprovingPlan] = useState(false);
 
   useEffect(() => {
     if (userId) loadClientData();
@@ -57,32 +145,15 @@ export default function CoachClienteDetalhe() {
   const loadClientData = async () => {
     setLoading(true);
     try {
-      // Fetch all data in parallel
-      const [
-        userRes,
-        clientRes,
-        intakeRes,
-        planoRes,
-        registosRes,
-        aguaRes,
-        mealsRes
-      ] = await Promise.all([
-        supabase.from('users').select('*').eq('id', userId).single(),
-        supabase.from('vitalis_clients').select('*').eq('user_id', userId).maybeSingle(),
-        supabase.from('vitalis_intake').select('*').eq('user_id', userId).maybeSingle(),
-        supabase.from('vitalis_meal_plans').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(5),
-        supabase.from('vitalis_registos').select('*').eq('user_id', userId).order('data', { ascending: false }).limit(30),
-        supabase.from('vitalis_agua_log').select('*').eq('user_id', userId).order('data', { ascending: false }).limit(30),
-        supabase.from('vitalis_meals_log').select('*').eq('user_id', userId).order('data', { ascending: false }).limit(30),
-      ]);
-
-      setUser(userRes.data);
-      setClient(clientRes.data);
-      setIntake(intakeRes.data);
-      setPlano(planoRes.data || []);
-      setRegistos(registosRes.data || []);
-      setAguaLogs(aguaRes.data || []);
-      setMealsLogs(mealsRes.data || []);
+      // Server-side fetch via coach API (bypasses RLS)
+      const data = await coachApi.buscarDadosCliente(userId);
+      setUser(data.user);
+      setClient(data.client);
+      setIntake(data.intake);
+      setPlano(data.planos || []);
+      setRegistos(data.registos || []);
+      setAguaLogs(data.aguaLogs || []);
+      setMealsLogs(data.mealsLogs || []);
     } catch (err) {
       console.error('Erro ao carregar dados do cliente:', err);
     } finally {
@@ -94,13 +165,29 @@ export default function CoachClienteDetalhe() {
   const activePlan = plano.find(p => p.status === 'activo') || plano[0];
   const hasIntake = !!(intake && intake.altura_cm && intake.peso_actual && intake.idade);
 
+  // Parse plan config
+  const parsePlanConfig = (p) => {
+    if (!p?.receitas_incluidas) return {};
+    try { return JSON.parse(p.receitas_incluidas); } catch { return {}; }
+  };
+
+  const planConfig = parsePlanConfig(activePlan);
+  const porcoes = planConfig['por\u00e7\u00f5es_por_refeicao'] || planConfig.porcoes_por_refeicao || {};
+
+  // Calculate daily portions from macros as fallback
+  const porcoesProteina = porcoes.proteina || (activePlan ? Math.round(activePlan.proteina_g / 25) : 0);
+  const porcoesLegumes = porcoes.legumes || 4;
+  const porcoesHidratos = porcoes.hidratos || (activePlan ? Math.round(activePlan.carboidratos_g / 30) : 0);
+  const porcoesGordura = porcoes.gordura || (activePlan ? Math.round(activePlan.gordura_g / 10) : 0);
+  const numRefeicoes = planConfig.num_refeicoes || 3;
+  const horarios = planConfig.horarios || [];
+
   // Generate plan
   const handleGerarPlano = async () => {
     if (!confirm('Gerar plano nutricional para este cliente?')) return;
     setGerandoPlano(true);
     try {
-      const result = await coachApi.gerarPlano(userId);
-      alert(`Plano gerado e activo: ${result.plano.calorias} kcal\nP:${result.plano.macros.proteina}g C:${result.plano.macros.carboidratos}g G:${result.plano.macros.gordura}g`);
+      await coachApi.gerarPlano(userId);
       loadClientData();
     } catch (err) {
       alert('Erro ao gerar plano: ' + err.message);
@@ -109,27 +196,11 @@ export default function CoachClienteDetalhe() {
     }
   };
 
-  // Approve plan
-  const handleApprovePlan = async (planId) => {
-    if (!confirm('Aprovar e disponibilizar este plano a cliente?')) return;
-    setApprovingPlan(true);
-    try {
-      await coachApi.aprovarPlano(userId, planId);
-      alert('Plano aprovado e disponivel para a cliente!');
-      loadClientData();
-    } catch (err) {
-      alert('Erro: ' + err.message);
-    } finally {
-      setApprovingPlan(false);
-    }
-  };
-
   // Delete client
   const handleDeleteClient = async () => {
     const nome = user?.nome || user?.email || 'este cliente';
     if (!confirm(`APAGAR "${nome}" e TODOS os seus dados?\n\nIsto e irreversivel!`)) return;
     if (!confirm('Ultima chance. Confirmas?')) return;
-
     try {
       await coachApi.apagarCliente(userId);
       alert('Cliente apagado.');
@@ -173,12 +244,7 @@ export default function CoachClienteDetalhe() {
     );
   }
 
-  // Parse plan config
-  const planConfig = activePlan?.receitas_incluidas ? (() => {
-    try { return JSON.parse(activePlan.receitas_incluidas); } catch { return {}; }
-  })() : {};
-
-  const porcoesPorRefeicao = planConfig['porções_por_refeicao'] || planConfig.porcoes_por_refeicao || {};
+  const faseDicas = FASES_DICAS[activePlan?.fase] || null;
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
@@ -191,7 +257,6 @@ export default function CoachClienteDetalhe() {
             </svg>
             Voltar
           </Link>
-
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-xl font-bold text-gray-900">{user.nome || 'Sem nome'}</h1>
@@ -205,6 +270,15 @@ export default function CoachClienteDetalhe() {
                 )}
               </div>
             </div>
+            {hasIntake && (
+              <button
+                onClick={handleGerarPlano}
+                disabled={gerandoPlano}
+                className="px-4 py-2 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+              >
+                {gerandoPlano ? 'A gerar...' : (activePlan ? 'Regenerar' : 'Gerar plano')}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -214,8 +288,8 @@ export default function CoachClienteDetalhe() {
         <div className="max-w-4xl mx-auto flex gap-1 overflow-x-auto">
           {[
             { key: 'resumo', label: 'Resumo' },
+            { key: 'plano', label: 'Plano completo' },
             { key: 'intake', label: 'Intake' },
-            { key: 'plano', label: 'Plano' },
             { key: 'progresso', label: 'Progresso' },
             { key: 'gestao', label: 'Gestao' },
           ].map(t => (
@@ -240,72 +314,61 @@ export default function CoachClienteDetalhe() {
         {/* === RESUMO === */}
         {tab === 'resumo' && (
           <>
-            {/* Status cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <InfoCard label="Subscricao" value={STATUS_LABELS_TEXT[client?.subscription_status] || 'N/A'} />
               <InfoCard label="Intake" value={hasIntake ? 'Completo' : 'Em falta'} color={hasIntake ? 'green' : 'red'} />
               <InfoCard label="Plano" value={
                 activePlan?.status === 'activo' ? 'Activo' :
-                activePlan ? 'Inactivo' :
-                'Sem plano'
+                activePlan ? 'Inactivo' : 'Sem plano'
               } color={
                 activePlan?.status === 'activo' ? 'green' :
                 activePlan ? 'gray' : 'red'
               } />
-              <InfoCard label="Check-ins" value={`${registos.length} (ultimos 30d)`} />
+              <InfoCard label="Check-ins" value={`${registos.length} (30d)`} />
             </div>
 
-            {/* Plan overview if exists */}
+            {/* Plan overview */}
             {activePlan && (
-              <div className="bg-white rounded-xl border border-gray-100 p-4">
+              <div className="bg-white rounded-xl border border-green-200 p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-semibold text-gray-900">Plano actual</h3>
-                  {activePlan.id && (
-                    <button
-                      onClick={() => window.open(`/vitalis/plano-pdf?id=${activePlan.id}`, '_blank')}
-                      className="px-4 py-1.5 text-sm font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-1"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                      </svg>
-                      Ver PDF
-                    </button>
-                  )}
+                  <button
+                    onClick={() => setTab('plano')}
+                    className="px-3 py-1.5 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700"
+                  >
+                    Ver plano completo
+                  </button>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-2xl font-bold text-gray-800">{activePlan.calorias_alvo}</p>
-                    <p className="text-xs text-gray-500">kcal/dia</p>
+                <div className="grid grid-cols-5 gap-2 text-center">
+                  <div className="bg-gray-50 rounded-lg p-2">
+                    <p className="text-lg font-bold text-gray-800">{activePlan.calorias_alvo}</p>
+                    <p className="text-[10px] text-gray-500">kcal/dia</p>
                   </div>
-                  <div className="bg-rose-50 rounded-lg p-3">
-                    <p className="text-2xl font-bold text-rose-700">{activePlan.proteina_g}g</p>
-                    <p className="text-xs text-gray-500">Proteina</p>
+                  <div className="bg-rose-50 rounded-lg p-2">
+                    <p className="text-lg font-bold text-rose-700">{activePlan.proteina_g}g</p>
+                    <p className="text-[10px] text-gray-500">Proteina</p>
                   </div>
-                  <div className="bg-amber-50 rounded-lg p-3">
-                    <p className="text-2xl font-bold text-amber-700">{activePlan.carboidratos_g}g</p>
-                    <p className="text-xs text-gray-500">Carbs</p>
+                  <div className="bg-amber-50 rounded-lg p-2">
+                    <p className="text-lg font-bold text-amber-700">{activePlan.carboidratos_g}g</p>
+                    <p className="text-[10px] text-gray-500">Carbs</p>
                   </div>
-                  <div className="bg-purple-50 rounded-lg p-3">
-                    <p className="text-2xl font-bold text-purple-700">{activePlan.gordura_g}g</p>
-                    <p className="text-xs text-gray-500">Gordura</p>
+                  <div className="bg-purple-50 rounded-lg p-2">
+                    <p className="text-lg font-bold text-purple-700">{activePlan.gordura_g}g</p>
+                    <p className="text-[10px] text-gray-500">Gordura</p>
                   </div>
-                  <div className="bg-blue-50 rounded-lg p-3">
-                    <p className="text-2xl font-bold text-blue-700">{FASE_LABELS[activePlan.fase] || activePlan.fase}</p>
-                    <p className="text-xs text-gray-500">Fase</p>
+                  <div className="bg-blue-50 rounded-lg p-2">
+                    <p className="text-lg font-bold text-blue-700">{FASE_LABELS[activePlan.fase] || activePlan.fase}</p>
+                    <p className="text-[10px] text-gray-500">Fase</p>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* No plan warning */}
             {!activePlan && hasIntake && (
               <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
                 <p className="text-sm text-orange-800 font-medium mb-2">Intake preenchido mas sem plano gerado!</p>
-                <button
-                  onClick={handleGerarPlano}
-                  disabled={gerandoPlano}
-                  className="px-4 py-2 text-sm font-medium bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50"
-                >
+                <button onClick={handleGerarPlano} disabled={gerandoPlano}
+                  className="px-4 py-2 text-sm font-medium bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50">
                   {gerandoPlano ? 'A gerar...' : 'Gerar plano agora'}
                 </button>
               </div>
@@ -313,11 +376,11 @@ export default function CoachClienteDetalhe() {
 
             {!hasIntake && (
               <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-                <p className="text-sm text-red-800 font-medium">Cliente ainda nao preencheu o intake. Sem intake, nao e possivel gerar plano.</p>
+                <p className="text-sm text-red-800 font-medium">Cliente ainda nao preencheu o intake.</p>
               </div>
             )}
 
-            {/* Client weight info */}
+            {/* Weight */}
             {client && (client.peso_inicial || client.peso_actual || client.peso_meta) && (
               <div className="bg-white rounded-xl border border-gray-100 p-4">
                 <h3 className="font-semibold text-gray-900 mb-3">Peso</h3>
@@ -361,14 +424,14 @@ export default function CoachClienteDetalhe() {
                   ))}
                   {aguaLogs.length > 0 && (
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Agua (ultimo registo)</span>
+                      <span className="text-gray-600">Agua (ultimo)</span>
                       <span className="text-gray-400">{aguaLogs[0].data}</span>
                       <span className="font-medium text-blue-600">{aguaLogs[0].quantidade_ml}ml</span>
                     </div>
                   )}
                   {mealsLogs.length > 0 && (
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Refeicao (ultimo registo)</span>
+                      <span className="text-gray-600">Refeicao (ultimo)</span>
                       <span className="text-gray-400">{mealsLogs[0].data}</span>
                       <span className={`font-medium ${mealsLogs[0].seguiu_plano === 'sim' ? 'text-green-600' : 'text-amber-600'}`}>
                         {mealsLogs[0].seguiu_plano}
@@ -378,6 +441,242 @@ export default function CoachClienteDetalhe() {
                 </div>
               )}
             </div>
+          </>
+        )}
+
+        {/* === PLANO COMPLETO === */}
+        {tab === 'plano' && (
+          <>
+            {!activePlan ? (
+              <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
+                <p className="text-2xl mb-3">{hasIntake ? '\u2699\uFE0F' : '\u{1F4CB}'}</p>
+                <p className="text-gray-500 mb-3">{hasIntake ? 'Intake preenchido mas sem plano.' : 'Sem intake nem plano.'}</p>
+                {hasIntake && (
+                  <button onClick={handleGerarPlano} disabled={gerandoPlano}
+                    className="px-6 py-2 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50">
+                    {gerandoPlano ? 'A gerar...' : 'Gerar plano'}
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* Fase + Abordagem header */}
+                <div className="bg-gradient-to-r from-[#7C8B6F] to-[#5A6B4D] rounded-xl p-5 text-white">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <h2 className="text-xl font-bold">{faseDicas?.nome || FASE_LABELS[activePlan.fase] || activePlan.fase}</h2>
+                      <p className="text-white/70 text-sm">{ABORDAGEM_LABELS[activePlan.abordagem] || activePlan.abordagem} | {faseDicas?.duracao || ''}</p>
+                    </div>
+                    <button
+                      onClick={() => window.open(`/vitalis/plano-pdf?id=${activePlan.id}`, '_blank')}
+                      className="px-3 py-1.5 text-sm font-medium bg-white/20 rounded-lg hover:bg-white/30"
+                    >
+                      Ver PDF
+                    </button>
+                  </div>
+                  {faseDicas?.descricao && (
+                    <p className="text-white/80 text-sm">{faseDicas.descricao}</p>
+                  )}
+                </div>
+
+                {/* Macros bar */}
+                <div className="bg-white rounded-xl border border-gray-100 p-4">
+                  <div className="grid grid-cols-5 gap-2 text-center">
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <p className="text-2xl font-bold text-gray-800">{activePlan.calorias_alvo}</p>
+                      <p className="text-xs text-gray-500">kcal/dia</p>
+                    </div>
+                    <div className="bg-rose-50 rounded-lg p-3">
+                      <p className="text-2xl font-bold text-rose-700">{activePlan.proteina_g}g</p>
+                      <p className="text-xs text-gray-500">Proteina</p>
+                    </div>
+                    <div className="bg-amber-50 rounded-lg p-3">
+                      <p className="text-2xl font-bold text-amber-700">{activePlan.carboidratos_g}g</p>
+                      <p className="text-xs text-gray-500">Carbs</p>
+                    </div>
+                    <div className="bg-purple-50 rounded-lg p-3">
+                      <p className="text-2xl font-bold text-purple-700">{activePlan.gordura_g}g</p>
+                      <p className="text-xs text-gray-500">Gordura</p>
+                    </div>
+                    <div className="bg-blue-50 rounded-lg p-3">
+                      <p className="text-2xl font-bold text-blue-700">{numRefeicoes}</p>
+                      <p className="text-xs text-gray-500">Refeicoes</p>
+                    </div>
+                  </div>
+                  {horarios.length > 0 && (
+                    <p className="text-center text-sm text-gray-500 mt-2">Horarios: {horarios.join(' | ')}</p>
+                  )}
+                </div>
+
+                {/* Hand method hero */}
+                <div className="bg-gradient-to-br from-[#7C8B6F] to-[#5A6B4D] rounded-xl p-4 text-white">
+                  <h3 className="font-bold mb-2">Metodo da Mao — Porcoes diarias</h3>
+                  <p className="text-white/70 text-sm mb-3">Sem balanca, proporcional ao corpo da cliente</p>
+                  <div className="grid grid-cols-4 gap-2">
+                    <div className="bg-white/15 rounded-lg p-2 text-center">
+                      <div className="text-2xl">{HAND_CONFIG.proteina.gesto}</div>
+                      <div className="text-xs font-bold">{porcoesProteina}</div>
+                      <div className="text-[10px] text-white/70">palmas</div>
+                    </div>
+                    <div className="bg-white/15 rounded-lg p-2 text-center">
+                      <div className="text-2xl">{HAND_CONFIG.legumes.gesto}</div>
+                      <div className="text-xs font-bold">{porcoesLegumes}</div>
+                      <div className="text-[10px] text-white/70">punhos</div>
+                    </div>
+                    <div className="bg-white/15 rounded-lg p-2 text-center">
+                      <div className="text-2xl">{HAND_CONFIG.hidratos.gesto}</div>
+                      <div className="text-xs font-bold">{porcoesHidratos}</div>
+                      <div className="text-[10px] text-white/70">maos</div>
+                    </div>
+                    <div className="bg-white/15 rounded-lg p-2 text-center">
+                      <div className="text-2xl">{HAND_CONFIG.gordura.gesto}</div>
+                      <div className="text-xs font-bold">{porcoesGordura}</div>
+                      <div className="text-[10px] text-white/70">polegares</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Portion cards with food equivalences */}
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-gray-900">O que conta como 1 porcao</h3>
+                  {['proteina', 'legumes', 'hidratos', 'gordura'].map(tipo => {
+                    const h = HAND_CONFIG[tipo];
+                    const qtd = tipo === 'proteina' ? porcoesProteina
+                      : tipo === 'legumes' ? porcoesLegumes
+                      : tipo === 'hidratos' ? porcoesHidratos
+                      : porcoesGordura;
+                    return (
+                      <div key={tipo} className={`bg-gradient-to-br ${h.cor} rounded-xl border ${h.corBorda} p-4`}>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-2xl">{h.gesto}</span>
+                            <div>
+                              <h4 className="font-bold text-gray-800 text-sm">{h.nome}</h4>
+                              <p className="text-xs text-gray-500">{qtd} {qtd === 1 ? h.medida : h.medidaPlural}/dia</p>
+                            </div>
+                          </div>
+                          <span className="text-2xl font-bold text-gray-800">{qtd}</span>
+                        </div>
+                        <p className="text-xs text-gray-500 italic mb-2">{h.explicacao}</p>
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {h.equivalencias.map((eq, i) => (
+                            <div key={i} className="flex items-center gap-1.5 text-xs text-gray-700 bg-white/60 rounded-lg px-2 py-1.5">
+                              <span>{eq.icon}</span>
+                              <span>{eq.texto}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Phase tips */}
+                {faseDicas && (
+                  <div className="bg-white rounded-xl border border-gray-100 p-4 space-y-4">
+                    <h3 className="font-semibold text-gray-900">Regras da fase: {faseDicas.nome}</h3>
+
+                    {faseDicas.priorizar?.length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold text-green-600 uppercase mb-2">PRIORIZAR</p>
+                        <ul className="text-sm text-gray-700 bg-green-50 p-3 rounded-lg space-y-1">
+                          {faseDicas.priorizar.map((item, i) => <li key={i}>+ {item}</li>)}
+                        </ul>
+                      </div>
+                    )}
+
+                    {faseDicas.evitar?.length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold text-red-600 uppercase mb-2">EVITAR</p>
+                        <ul className="text-sm text-gray-700 bg-red-50 p-3 rounded-lg space-y-1">
+                          {faseDicas.evitar.map((item, i) => <li key={i}>- {item}</li>)}
+                        </ul>
+                      </div>
+                    )}
+
+                    {faseDicas.dicas?.length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold text-blue-600 uppercase mb-2">DICAS</p>
+                        <ul className="text-sm text-gray-700 bg-blue-50 p-3 rounded-lg space-y-1">
+                          {faseDicas.dicas.map((item, i) => <li key={i}>{item}</li>)}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Weight progress */}
+                {client && client.peso_inicial && client.peso_meta && (
+                  <div className="bg-white rounded-xl border border-gray-100 p-4">
+                    <h3 className="font-semibold text-gray-900 mb-3">Progresso de peso</h3>
+                    <div className="grid grid-cols-3 gap-3 text-center mb-3">
+                      <div>
+                        <p className="text-xs text-gray-500">Inicio</p>
+                        <p className="text-lg font-bold text-gray-400">{client.peso_inicial} kg</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Actual</p>
+                        <p className="text-xl font-bold text-gray-800">{client.peso_actual} kg</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Meta</p>
+                        <p className="text-lg font-bold text-green-600">{client.peso_meta} kg</p>
+                      </div>
+                    </div>
+                    <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-[#9CAF88] to-[#7C8B6F] rounded-full"
+                        style={{
+                          width: `${Math.min(100, Math.max(0,
+                            ((client.peso_inicial - client.peso_actual) / (client.peso_inicial - client.peso_meta)) * 100
+                          ))}%`
+                        }}
+                      />
+                    </div>
+                    {client.peso_inicial > client.peso_actual && (
+                      <p className="text-center text-sm text-green-600 mt-2">
+                        Ja perdeu {(client.peso_inicial - client.peso_actual).toFixed(1)} kg
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Free meal */}
+                {activePlan.fase !== 'inducao' && (
+                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{'\u{1F355}'}</span>
+                      <div>
+                        <p className="font-semibold text-gray-800">Refeicao livre</p>
+                        <p className="text-sm text-gray-600">
+                          {activePlan.fase === 'transicao' ? '1x' : '2x'} por semana nesta fase
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Plan history */}
+                {plano.length > 1 && (
+                  <div className="bg-white rounded-xl border border-gray-100 p-4">
+                    <h3 className="font-semibold text-gray-900 mb-3">Historico de planos ({plano.length})</h3>
+                    <div className="space-y-2">
+                      {plano.map((p, index) => (
+                        <div key={p.id} className="flex items-center justify-between text-sm py-2 border-b border-gray-50 last:border-0">
+                          <div className="flex items-center gap-2">
+                            <PlanStatusBadge status={p.status} />
+                            <span className="text-gray-600">v{p.versao || index + 1} | {p.calorias_alvo}kcal | P:{p.proteina_g}g C:{p.carboidratos_g}g G:{p.gordura_g}g</span>
+                          </div>
+                          <span className="text-xs text-gray-400">
+                            {p.created_at ? new Date(p.created_at).toLocaleDateString('pt-PT') : ''}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </>
         )}
 
@@ -423,131 +722,11 @@ export default function CoachClienteDetalhe() {
                 </p>
               </div>
             )}
-
-            {/* Generate plan button */}
             {hasIntake && (
-              <button
-                onClick={handleGerarPlano}
-                disabled={gerandoPlano}
-                className="w-full py-3 text-sm font-medium bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:opacity-50 transition-colors"
-              >
+              <button onClick={handleGerarPlano} disabled={gerandoPlano}
+                className="w-full py-3 text-sm font-medium bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:opacity-50 transition-colors">
                 {gerandoPlano ? 'A gerar plano...' : (activePlan ? 'Regenerar plano' : 'Gerar plano')}
               </button>
-            )}
-          </>
-        )}
-
-        {/* === PLANO === */}
-        {tab === 'plano' && (
-          <>
-            {plano.length === 0 ? (
-              <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
-                <p className="text-gray-500 mb-3">Nenhum plano gerado.</p>
-                {hasIntake ? (
-                  <button
-                    onClick={handleGerarPlano}
-                    disabled={gerandoPlano}
-                    className="px-6 py-2 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-                  >
-                    {gerandoPlano ? 'A gerar...' : 'Gerar plano'}
-                  </button>
-                ) : (
-                  <p className="text-xs text-red-500">Intake em falta - nao e possivel gerar plano.</p>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {/* Show all plans (history) */}
-                {plano.map((p, index) => (
-                  <div
-                    key={p.id}
-                    className={`bg-white rounded-xl border p-4 ${
-                      p.status === 'activo' ? 'border-green-300' : 'border-gray-100'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-gray-900">
-                          Plano v{p.versao || index + 1}
-                        </h3>
-                        <PlanStatusBadge status={p.status} />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {p.status === 'activo' && p.id && (
-                          <button
-                            onClick={() => window.open(`/vitalis/plano-pdf?id=${p.id}`, '_blank')}
-                            className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200"
-                          >
-                            PDF
-                          </button>
-                        )}
-                        <span className="text-xs text-gray-400">
-                          {p.created_at ? new Date(p.created_at).toLocaleDateString('pt-PT') : ''}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Plan details */}
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-center text-sm">
-                      <div className="bg-gray-50 rounded-lg p-2">
-                        <p className="font-bold text-gray-800">{p.calorias_alvo}</p>
-                        <p className="text-xs text-gray-500">kcal</p>
-                      </div>
-                      <div className="bg-rose-50 rounded-lg p-2">
-                        <p className="font-bold text-rose-700">{p.proteina_g}g</p>
-                        <p className="text-xs text-gray-500">Proteina</p>
-                      </div>
-                      <div className="bg-amber-50 rounded-lg p-2">
-                        <p className="font-bold text-amber-700">{p.carboidratos_g}g</p>
-                        <p className="text-xs text-gray-500">Carbs</p>
-                      </div>
-                      <div className="bg-purple-50 rounded-lg p-2">
-                        <p className="font-bold text-purple-700">{p.gordura_g}g</p>
-                        <p className="text-xs text-gray-500">Gordura</p>
-                      </div>
-                      <div className="bg-blue-50 rounded-lg p-2">
-                        <p className="font-bold text-blue-700">{FASE_LABELS[p.fase] || p.fase}</p>
-                        <p className="text-xs text-gray-500">Fase</p>
-                      </div>
-                    </div>
-
-                    {/* Portions detail */}
-                    {(() => {
-                      let config = {};
-                      try { config = p.receitas_incluidas ? JSON.parse(p.receitas_incluidas) : {}; } catch { /* */ }
-                      const porcoes = config['porções_por_refeicao'] || config.porcoes_por_refeicao || {};
-                      const numRef = config.num_refeicoes;
-                      const horarios = config.horarios;
-
-                      return (porcoes.proteina || numRef) ? (
-                        <div className="mt-3 p-3 bg-gray-50 rounded-lg text-sm">
-                          <p className="font-medium text-gray-700 mb-1">Porcoes por refeicao:</p>
-                          <div className="flex flex-wrap gap-3 text-xs">
-                            {porcoes.proteina && <span>Proteina: {porcoes.proteina} palmas</span>}
-                            {porcoes.legumes && <span>Legumes: {porcoes.legumes} punhos</span>}
-                            {porcoes.hidratos && <span>Hidratos: {porcoes.hidratos} maos</span>}
-                            {porcoes.gordura && <span>Gordura: {porcoes.gordura} polegares</span>}
-                          </div>
-                          {numRef && <p className="mt-1 text-xs text-gray-500">{numRef} refeicoes/dia</p>}
-                          {horarios && <p className="text-xs text-gray-500">Horarios: {horarios.join(', ')}</p>}
-                          {p.abordagem && <p className="text-xs text-gray-500">Abordagem: {ABORDAGEM_LABELS[p.abordagem] || p.abordagem}</p>}
-                        </div>
-                      ) : null;
-                    })()}
-                  </div>
-                ))}
-
-                {/* Regenerate button */}
-                {hasIntake && (
-                  <button
-                    onClick={handleGerarPlano}
-                    disabled={gerandoPlano}
-                    className="w-full py-3 text-sm font-medium bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 disabled:opacity-50 transition-colors"
-                  >
-                    {gerandoPlano ? 'A gerar...' : 'Regenerar plano'}
-                  </button>
-                )}
-              </div>
             )}
           </>
         )}
@@ -555,7 +734,6 @@ export default function CoachClienteDetalhe() {
         {/* === PROGRESSO === */}
         {tab === 'progresso' && (
           <>
-            {/* Check-ins */}
             <div className="bg-white rounded-xl border border-gray-100 p-4">
               <h3 className="font-semibold text-gray-900 mb-3">Check-ins ({registos.length})</h3>
               {registos.length === 0 ? (
@@ -571,9 +749,7 @@ export default function CoachClienteDetalhe() {
                           r.aderencia_1a10 >= 7 ? 'bg-green-100 text-green-700' :
                           r.aderencia_1a10 >= 4 ? 'bg-amber-100 text-amber-700' :
                           'bg-red-100 text-red-700'
-                        }`}>
-                          {r.aderencia_1a10}/10
-                        </span>
+                        }`}>{r.aderencia_1a10}/10</span>
                       </div>
                     </div>
                   ))}
@@ -581,19 +757,14 @@ export default function CoachClienteDetalhe() {
               )}
             </div>
 
-            {/* Water */}
             <div className="bg-white rounded-xl border border-gray-100 p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Agua (ultimos 30 dias)</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">Agua (30 dias)</h3>
               {aguaLogs.length === 0 ? (
-                <p className="text-sm text-gray-500">Sem registos de agua.</p>
+                <p className="text-sm text-gray-500">Sem registos.</p>
               ) : (
                 <div className="space-y-1 max-h-40 overflow-y-auto">
-                  {/* Group by date */}
                   {Object.entries(
-                    aguaLogs.reduce((acc, l) => {
-                      acc[l.data] = (acc[l.data] || 0) + l.quantidade_ml;
-                      return acc;
-                    }, {})
+                    aguaLogs.reduce((acc, l) => { acc[l.data] = (acc[l.data] || 0) + l.quantidade_ml; return acc; }, {})
                   ).map(([data, total]) => (
                     <div key={data} className="flex items-center justify-between text-sm py-1 border-b border-gray-50">
                       <span className="text-gray-600">{data}</span>
@@ -606,11 +777,10 @@ export default function CoachClienteDetalhe() {
               )}
             </div>
 
-            {/* Meals */}
             <div className="bg-white rounded-xl border border-gray-100 p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Refeicoes (ultimos 30 dias)</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">Refeicoes (30 dias)</h3>
               {mealsLogs.length === 0 ? (
-                <p className="text-sm text-gray-500">Sem registos de refeicoes.</p>
+                <p className="text-sm text-gray-500">Sem registos.</p>
               ) : (
                 <div className="space-y-1 max-h-40 overflow-y-auto">
                   {mealsLogs.slice(0, 20).map((m, i) => (
@@ -620,9 +790,7 @@ export default function CoachClienteDetalhe() {
                         m.seguiu_plano === 'sim' ? 'bg-green-100 text-green-700' :
                         m.seguiu_plano === 'parcial' ? 'bg-amber-100 text-amber-700' :
                         'bg-red-100 text-red-700'
-                      }`}>
-                        {m.seguiu_plano}
-                      </span>
+                      }`}>{m.seguiu_plano}</span>
                     </div>
                   ))}
                 </div>
@@ -634,95 +802,52 @@ export default function CoachClienteDetalhe() {
         {/* === GESTAO === */}
         {tab === 'gestao' && (
           <div className="space-y-4">
-            {/* Subscription management */}
             <div className="bg-white rounded-xl border border-gray-100 p-4">
               <h3 className="font-semibold text-gray-900 mb-3">Subscricao</h3>
               <div className="grid grid-cols-2 gap-2 text-sm mb-4">
-                <div>
-                  <p className="text-gray-500">Estado</p>
-                  <p className="font-medium">{STATUS_LABELS_TEXT[client?.subscription_status] || 'N/A'}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500">Plano</p>
-                  <p className="font-medium">{client?.subscription_plan || 'N/A'}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500">Expira</p>
-                  <p className="font-medium">{client?.subscription_expires ? new Date(client.subscription_expires).toLocaleDateString('pt-PT') : 'N/A'}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500">Metodo pagamento</p>
-                  <p className="font-medium">{client?.payment_method || 'N/A'}</p>
-                </div>
+                <div><p className="text-gray-500">Estado</p><p className="font-medium">{STATUS_LABELS_TEXT[client?.subscription_status] || 'N/A'}</p></div>
+                <div><p className="text-gray-500">Plano</p><p className="font-medium">{client?.subscription_plan || 'N/A'}</p></div>
+                <div><p className="text-gray-500">Expira</p><p className="font-medium">{client?.subscription_expires ? new Date(client.subscription_expires).toLocaleDateString('pt-PT') : 'N/A'}</p></div>
+                <div><p className="text-gray-500">Pagamento</p><p className="font-medium">{client?.payment_method || 'N/A'}</p></div>
               </div>
-
               <p className="text-xs text-gray-500 mb-2">Activar subscricao:</p>
               <div className="grid grid-cols-3 gap-2">
-                <button
-                  onClick={() => handleActivate('MONTHLY')}
-                  className="py-2 text-xs font-medium bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
-                >
-                  Mensal (${SUBSCRIPTION_PLANS.MONTHLY.price_usd})
-                </button>
-                <button
-                  onClick={() => handleActivate('SEMESTRAL')}
-                  className="py-2 text-xs font-medium bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
-                >
-                  Semestral (${SUBSCRIPTION_PLANS.SEMESTRAL.price_usd})
-                </button>
-                <button
-                  onClick={() => handleActivate('ANNUAL')}
-                  className="py-2 text-xs font-medium bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
-                >
-                  Anual (${SUBSCRIPTION_PLANS.ANNUAL.price_usd})
-                </button>
+                {['MONTHLY', 'SEMESTRAL', 'ANNUAL'].map(key => (
+                  <button key={key} onClick={() => handleActivate(key)}
+                    className="py-2 text-xs font-medium bg-green-100 text-green-700 rounded-lg hover:bg-green-200">
+                    {SUBSCRIPTION_PLANS[key].name} (${SUBSCRIPTION_PLANS[key].price_usd})
+                  </button>
+                ))}
               </div>
-
               <button
                 onClick={async () => {
                   if (!confirm('Definir como tester?')) return;
-                  try {
-                    await coachApi.setTester(userId);
-                    alert('Tester definido.');
-                    loadClientData();
-                  } catch (err) {
-                    alert('Erro: ' + err.message);
-                  }
+                  try { await coachApi.setTester(userId); loadClientData(); } catch (err) { alert('Erro: ' + err.message); }
                 }}
-                className="w-full mt-2 py-2 text-xs font-medium bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200"
-              >
+                className="w-full mt-2 py-2 text-xs font-medium bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200">
                 Definir como tester (acesso gratuito)
               </button>
             </div>
 
-            {/* Plan management */}
             <div className="bg-white rounded-xl border border-gray-100 p-4">
               <h3 className="font-semibold text-gray-900 mb-3">Plano nutricional</h3>
               {hasIntake ? (
-                <div className="space-y-2">
-                  <button
-                    onClick={handleGerarPlano}
-                    disabled={gerandoPlano}
-                    className="w-full py-2 text-sm font-medium bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 disabled:opacity-50"
-                  >
-                    {gerandoPlano ? 'A gerar...' : (activePlan ? 'Regenerar plano' : 'Gerar plano')}
-                  </button>
-                </div>
+                <button onClick={handleGerarPlano} disabled={gerandoPlano}
+                  className="w-full py-2 text-sm font-medium bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 disabled:opacity-50">
+                  {gerandoPlano ? 'A gerar...' : (activePlan ? 'Regenerar plano' : 'Gerar plano')}
+                </button>
               ) : (
-                <p className="text-sm text-red-500">Intake em falta. A cliente precisa preencher o questionario primeiro.</p>
+                <p className="text-sm text-red-500">Intake em falta.</p>
               )}
             </div>
 
-            {/* Danger zone */}
             <div className="bg-white rounded-xl border border-red-200 p-4">
               <h3 className="font-semibold text-red-600 mb-3">Zona perigosa</h3>
-              <button
-                onClick={handleDeleteClient}
-                className="w-full py-2 text-sm font-medium bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
-              >
+              <button onClick={handleDeleteClient}
+                className="w-full py-2 text-sm font-medium bg-red-100 text-red-700 rounded-lg hover:bg-red-200">
                 Apagar cliente e todos os dados
               </button>
-              <p className="text-xs text-red-400 mt-2">Esta accao e irreversivel. Remove todos os dados da cliente incluindo planos, registos, e historico.</p>
+              <p className="text-xs text-red-400 mt-2">Irreversivel. Remove todos os dados.</p>
             </div>
           </div>
         )}
@@ -733,22 +858,15 @@ export default function CoachClienteDetalhe() {
 
 // Helper components
 const STATUS_LABELS_TEXT = {
-  tester: 'Tester',
-  trial: 'Trial',
-  active: 'Activo',
-  pending: 'Pendente',
-  expired: 'Expirado',
-  cancelled: 'Cancelado',
+  tester: 'Tester', trial: 'Trial', active: 'Activo',
+  pending: 'Pendente', expired: 'Expirado', cancelled: 'Cancelado',
 };
 
 function StatusBadge({ status }) {
   const colors = {
-    tester: 'bg-purple-100 text-purple-700',
-    trial: 'bg-blue-100 text-blue-700',
-    active: 'bg-green-100 text-green-700',
-    pending: 'bg-yellow-100 text-yellow-700',
-    expired: 'bg-red-100 text-red-700',
-    cancelled: 'bg-gray-100 text-gray-700',
+    tester: 'bg-purple-100 text-purple-700', trial: 'bg-blue-100 text-blue-700',
+    active: 'bg-green-100 text-green-700', pending: 'bg-yellow-100 text-yellow-700',
+    expired: 'bg-red-100 text-red-700', cancelled: 'bg-gray-100 text-gray-700',
   };
   return (
     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors[status] || 'bg-gray-100 text-gray-500'}`}>
@@ -764,13 +882,7 @@ function PlanStatusBadge({ status }) {
 }
 
 function InfoCard({ label, value, color = 'gray' }) {
-  const colors = {
-    green: 'bg-green-50 text-green-700',
-    red: 'bg-red-50 text-red-700',
-    amber: 'bg-amber-50 text-amber-700',
-    blue: 'bg-blue-50 text-blue-700',
-    gray: 'bg-gray-50 text-gray-700',
-  };
+  const colors = { green: 'bg-green-50 text-green-700', red: 'bg-red-50 text-red-700', amber: 'bg-amber-50 text-amber-700', blue: 'bg-blue-50 text-blue-700', gray: 'bg-gray-50 text-gray-700' };
   return (
     <div className={`rounded-xl p-3 ${colors[color]}`}>
       <p className="text-xs opacity-70">{label}</p>
