@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import SEOHead from '../components/SEOHead';
 import PartilharSocial from '../components/PartilharSocial';
+import WhatsAppMockup from '../components/WhatsAppMockup';
 
 /**
  * ÁUREA - Landing Page
@@ -162,19 +163,28 @@ const LandingAurea = () => {
 
   const testemunhos = [
     {
-      iniciais: 'MF',
-      texto: 'Finalmente percebi porque é que tinha roupas lindas no armário que "nunca usava". Hoje uso-as. São para mim.',
-      resultado: 'Nível Ouro em 3 meses'
+      contacto: 'MF',
+      resultado: 'Nível Ouro em 3 meses',
+      mensagens: [
+        { texto: 'Finalmente percebi porque é que tinha roupas lindas no armário que "nunca usava"', hora: '10:22', tipo: 'recebida' },
+        { texto: 'Hoje uso-as. São para mim.', hora: '10:22', tipo: 'recebida' },
+      ]
     },
     {
-      iniciais: 'AS',
-      texto: 'O Detector de Culpa abriu-me os olhos. Dizia "os outros precisam mais" 12 vezes por semana. Agora são 2.',
-      resultado: 'Padrão de culpa reduzido 80%'
+      contacto: 'AS',
+      resultado: 'Padrão de culpa reduzido 80%',
+      mensagens: [
+        { texto: 'O Detector de Culpa abriu-me os olhos', hora: '19:45', tipo: 'recebida' },
+        { texto: 'Dizia "os outros precisam mais" 12 vezes por semana. Agora são 2.', hora: '19:46', tipo: 'recebida' },
+      ]
     },
     {
-      iniciais: 'RC',
-      texto: 'Gastava 3% do meu dinheiro comigo. Hoje são 12%. Não sou egoísta. Sou prioridade também.',
-      resultado: 'De 3% para 12% em 4 meses'
+      contacto: 'RC',
+      resultado: 'De 3% para 12% em 4 meses',
+      mensagens: [
+        { texto: 'Gastava 3% do meu dinheiro comigo. Hoje são 12%', hora: '08:10', tipo: 'recebida' },
+        { texto: 'Não sou egoísta. Sou prioridade também. 💛', hora: '08:11', tipo: 'recebida' },
+      ]
     }
   ];
 
@@ -413,14 +423,15 @@ const LandingAurea = () => {
 
           <div className="grid md:grid-cols-3 gap-6">
             {testemunhos.map((t, i) => (
-              <div key={i} className="p-6 bg-white/5 rounded-2xl border border-amber-500/20">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-white font-bold">
-                    {t.iniciais}
-                  </div>
-                  <div className="text-amber-300 text-sm">{t.resultado}</div>
-                </div>
-                <p className="text-amber-200/80 italic">"{t.texto}"</p>
+              <div key={i} className="flex flex-col items-center gap-3">
+                <WhatsAppMockup
+                  mensagens={t.mensagens}
+                  contacto={t.contacto}
+                  corTema="dourado"
+                />
+                <span className="inline-block px-4 py-1.5 bg-amber-500/10 text-amber-300 rounded-full text-sm font-semibold border border-amber-500/20">
+                  {t.resultado}
+                </span>
               </div>
             ))}
           </div>
