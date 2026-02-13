@@ -91,7 +91,7 @@ export default function CoachClienteDetalhe() {
   };
 
   // Current active plan (or most recent)
-  const activePlan = plano.find(p => p.status === 'activo') || plano.find(p => p.status === 'pendente_revisao') || plano[0];
+  const activePlan = plano.find(p => p.status === 'activo') || plano[0];
   const hasIntake = !!(intake && intake.altura_cm && intake.peso_actual && intake.idade);
 
   // Generate plan
@@ -100,7 +100,7 @@ export default function CoachClienteDetalhe() {
     setGerandoPlano(true);
     try {
       const result = await coachApi.gerarPlano(userId);
-      alert(`Plano gerado: ${result.plano.calorias} kcal\nP:${result.plano.macros.proteina}g C:${result.plano.macros.carboidratos}g G:${result.plano.macros.gordura}g\n\nAguarda tua aprovacao.`);
+      alert(`Plano gerado e activo: ${result.plano.calorias} kcal\nP:${result.plano.macros.proteina}g C:${result.plano.macros.carboidratos}g G:${result.plano.macros.gordura}g`);
       loadClientData();
     } catch (err) {
       alert('Erro ao gerar plano: ' + err.message);
@@ -246,11 +246,11 @@ export default function CoachClienteDetalhe() {
               <InfoCard label="Intake" value={hasIntake ? 'Completo' : 'Em falta'} color={hasIntake ? 'green' : 'red'} />
               <InfoCard label="Plano" value={
                 activePlan?.status === 'activo' ? 'Activo' :
-                activePlan?.status === 'pendente_revisao' ? 'Aguarda revisao' :
+                activePlan ? 'Inactivo' :
                 'Sem plano'
               } color={
                 activePlan?.status === 'activo' ? 'green' :
-                activePlan?.status === 'pendente_revisao' ? 'amber' : 'red'
+                activePlan ? 'gray' : 'red'
               } />
               <InfoCard label="Check-ins" value={`${registos.length} (ultimos 30d)`} />
             </div>
@@ -260,15 +260,6 @@ export default function CoachClienteDetalhe() {
               <div className="bg-white rounded-xl border border-gray-100 p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-semibold text-gray-900">Plano actual</h3>
-                  {activePlan.status === 'pendente_revisao' && (
-                    <button
-                      onClick={() => handleApprovePlan(activePlan.id)}
-                      disabled={approvingPlan}
-                      className="px-4 py-1.5 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-                    >
-                      {approvingPlan ? 'A aprovar...' : 'Aprovar plano'}
-                    </button>
-                  )}
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
                   <div className="bg-gray-50 rounded-lg p-3">
@@ -292,11 +283,6 @@ export default function CoachClienteDetalhe() {
                     <p className="text-xs text-gray-500">Fase</p>
                   </div>
                 </div>
-                {activePlan.status === 'pendente_revisao' && (
-                  <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                    <p className="text-sm text-amber-800 font-medium">Este plano aguarda a tua aprovacao. A cliente nao o ve ainda.</p>
-                  </div>
-                )}
               </div>
             )}
 
@@ -465,7 +451,6 @@ export default function CoachClienteDetalhe() {
                   <div
                     key={p.id}
                     className={`bg-white rounded-xl border p-4 ${
-                      p.status === 'pendente_revisao' ? 'border-amber-300' :
                       p.status === 'activo' ? 'border-green-300' : 'border-gray-100'
                     }`}
                   >
@@ -477,15 +462,6 @@ export default function CoachClienteDetalhe() {
                         <PlanStatusBadge status={p.status} />
                       </div>
                       <div className="flex items-center gap-2">
-                        {p.status === 'pendente_revisao' && (
-                          <button
-                            onClick={() => handleApprovePlan(p.id)}
-                            disabled={approvingPlan}
-                            className="px-3 py-1 text-xs font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-                          >
-                            Aprovar
-                          </button>
-                        )}
                         <span className="text-xs text-gray-400">
                           {p.created_at ? new Date(p.created_at).toLocaleDateString('pt-PT') : ''}
                         </span>
@@ -712,15 +688,6 @@ export default function CoachClienteDetalhe() {
                   >
                     {gerandoPlano ? 'A gerar...' : (activePlan ? 'Regenerar plano' : 'Gerar plano')}
                   </button>
-                  {activePlan?.status === 'pendente_revisao' && (
-                    <button
-                      onClick={() => handleApprovePlan(activePlan.id)}
-                      disabled={approvingPlan}
-                      className="w-full py-2 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-                    >
-                      Aprovar plano actual
-                    </button>
-                  )}
                 </div>
               ) : (
                 <p className="text-sm text-red-500">Intake em falta. A cliente precisa preencher o questionario primeiro.</p>
@@ -773,7 +740,6 @@ function StatusBadge({ status }) {
 
 function PlanStatusBadge({ status }) {
   if (status === 'activo') return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Activo</span>;
-  if (status === 'pendente_revisao') return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">Aguarda revisao</span>;
   if (status === 'inactivo') return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Inactivo</span>;
   return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">{status || 'N/A'}</span>;
 }
