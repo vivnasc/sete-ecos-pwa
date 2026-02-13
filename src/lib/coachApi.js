@@ -29,6 +29,7 @@ async function coachRequest(action, params = {}) {
 }
 
 export const coachApi = {
+  listarClientes: () => coachRequest('listar-clientes'),
   buscarDadosCliente: (userId) => coachRequest('buscar-dados-cliente', { userId }),
   gerarPlano: (userId) => coachRequest('gerar-plano', { userId }),
   aprovarPlano: (userId, planId) => coachRequest('aprovar-plano', { userId, planId }),
