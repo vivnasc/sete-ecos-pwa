@@ -35,6 +35,7 @@ const RecuperarPassword = lazy(() => import('./pages/RecuperarPassword'))
 const Lumina = lazy(() => import('./pages/Lumina'))
 const CoachDashboard = lazy(() => import('./pages/CoachDashboard'))
 const CoachClienteDetalhe = lazy(() => import('./pages/CoachClienteDetalhe'))
+const ChatbotTeste = lazy(() => import('./pages/ChatbotTeste'))
 const AnalyticsDashboard = lazy(() => import('./pages/AnalyticsDashboard'))
 const LandingBundle = lazy(() => import('./pages/LandingBundle'))
 
@@ -242,6 +243,12 @@ function AppRoutes() {
             <Route path="/coach/analytics" element={
               isSessionCoach(session)
                 ? <AnalyticsDashboard />
+                : <Navigate to="/" />
+            } />
+
+            <Route path="/coach/chatbot-teste" element={
+              isSessionCoach(session)
+                ? <ChatbotTeste />
                 : <Navigate to="/" />
             } />
 

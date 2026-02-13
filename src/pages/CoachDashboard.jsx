@@ -299,6 +299,12 @@ export default function CoachDashboard() {
                 Analytics
               </Link>
               <Link
+                to="/coach/chatbot-teste"
+                className="px-3 py-1.5 text-sm bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors"
+              >
+                Chatbot
+              </Link>
+              <Link
                 to="/vitalis/dashboard"
                 className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
               >

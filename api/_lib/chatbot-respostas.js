@@ -381,24 +381,94 @@ function detectarResposta(texto) {
   return { chave: null, notificarCoach: true };
 }
 
+// ===== MEMÓRIA DE CONTEXTO =====
+// Guarda últimas interações por telefone (in-memory, 30 min TTL)
+
+const sessoes = new Map();
+const SESSAO_TTL = 30 * 60 * 1000; // 30 minutos
+const MAX_HISTORICO = 5;
+
+function getSessao(telefone) {
+  if (!telefone) return null;
+  const s = sessoes.get(telefone);
+  if (s && Date.now() - s.ultimaAtividade < SESSAO_TTL) return s;
+  sessoes.delete(telefone);
+  return null;
+}
+
+function atualizarSessao(telefone, chaveIn, chaveOut) {
+  if (!telefone) return;
+  const existente = getSessao(telefone) || { historico: [], ultimaAtividade: 0 };
+  existente.historico.push({ in: chaveIn, out: chaveOut, ts: Date.now() });
+  if (existente.historico.length > MAX_HISTORICO) existente.historico.shift();
+  existente.ultimaAtividade = Date.now();
+  existente.ultimaChave = chaveOut;
+  sessoes.set(telefone, existente);
+
+  // Limpar sessões expiradas (max 500 em memória)
+  if (sessoes.size > 500) {
+    const agora = Date.now();
+    for (const [k, v] of sessoes) {
+      if (agora - v.ultimaAtividade > SESSAO_TTL) sessoes.delete(k);
+    }
+  }
+}
+
+// Follow-ups contextuais baseados na última interação
+const FOLLOW_UPS = {
+  '1': '\n\n💡 _Já viste os preços? Responde *4*. Ou experimenta grátis: *6*_',
+  '2': '\n\n💡 _O LUMINA é gratuito! Depois experimenta o VITALIS: *1*_',
+  '3': '\n\n💡 _Queres o BUNDLE Vitalis+Áurea com 25% desc? Responde *bundle*_',
+  '4': '\n\n💡 _Para saber como pagar responde *5*. Ou experimenta grátis: *6*_',
+  '5': '\n\n💡 _Já tens comprovativo? Envia a foto aqui!_',
+  '6': '\n\n💡 _Para ativar o trial vai a app.seteecos.com/vitalis/pagamento_',
+};
+
 // ===== GERAR RESPOSTA =====
 
-function gerarResposta(msgBody, nome) {
+function gerarResposta(msgBody, nome, telefone) {
   const { chave, notificarCoach } = detectarResposta(msgBody);
+  const sessao = getSessao(telefone);
 
   let resposta;
 
   if (chave === 'saudacao') {
-    resposta = nome
-      ? `Olá ${nome.split(' ')[0]}! Bem-vinda ao *Sete Ecos*.\n\nSou a Vivianne, coach de nutrição e bem-estar feminino.\n\n${MENU_PRINCIPAL}`
-      : SAUDACAO;
+    if (sessao && sessao.historico.length > 0) {
+      // Utilizadora já falou antes — saudação mais curta
+      const primeiroNome = nome ? nome.split(' ')[0] : '';
+      resposta = `Olá de novo${primeiroNome ? `, ${primeiroNome}` : ''}! Em que posso ajudar?\n\n${MENU_PRINCIPAL}`;
+    } else {
+      resposta = nome
+        ? `Olá ${nome.split(' ')[0]}! Bem-vinda ao *Sete Ecos*.\n\nSou a Vivianne, coach de nutrição e bem-estar feminino.\n\n${MENU_PRINCIPAL}`
+        : SAUDACAO;
+    }
   } else if (chave === 'obrigada') {
     resposta = `De nada! Estou aqui para o que precisares.\n\nDiagnóstico gratuito: app.seteecos.com/lumina\nCatálogo: app.seteecos.com/catalogo\n\nBoa transformação!`;
   } else if (R[chave]) {
     resposta = R[chave];
+    // Adicionar follow-up contextual se não é repetição da mesma chave
+    if (FOLLOW_UPS[chave] && (!sessao || sessao.ultimaChave !== chave)) {
+      resposta += FOLLOW_UPS[chave];
+    }
   } else {
-    resposta = GENERICA;
+    // Mensagem não reconhecida — se tem contexto, sugerir com base no último tema
+    if (sessao && sessao.ultimaChave && R[sessao.ultimaChave]) {
+      resposta = `Não percebi essa mensagem, mas vi que estavas a ver sobre *${
+        sessao.ultimaChave === '1' ? 'Vitalis' :
+        sessao.ultimaChave === '2' ? 'Lumina' :
+        sessao.ultimaChave === '3' ? 'Áurea' :
+        sessao.ultimaChave === '4' ? 'Preços' :
+        sessao.ultimaChave === '5' ? 'Pagamento' :
+        sessao.ultimaChave === '6' ? 'Trial' :
+        'os nossos serviços'
+      }*. Precisas de mais informação?\n\nOu responde com um número:\n${MENU_PRINCIPAL}`;
+    } else {
+      resposta = GENERICA;
+    }
   }
+
+  // Atualizar sessão
+  atualizarSessao(telefone, msgBody, chave);
 
   return { resposta, chave, notificarCoach };
 }
