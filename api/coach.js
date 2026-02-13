@@ -54,6 +54,8 @@ export default async function handler(req, res) {
         return await listarClientes(res);
       case 'buscar-dados-cliente':
         return await buscarDadosCliente(params.userId, res);
+      case 'buscar-plano-pdf':
+        return await buscarPlanoPdf(params.planId, params.userId, res);
       case 'gerar-plano':
         return await gerarPlano(params.userId, res);
       case 'aprovar-plano':
@@ -79,6 +81,27 @@ export default async function handler(req, res) {
 async function gerarPlano(userId, res) {
   if (!userId) return res.status(400).json({ error: 'userId obrigatorio' });
 
+  // Helper: save error as a plan record so coach dashboard can see it
+  const saveError = async (errorMsg) => {
+    try {
+      // Deactivate old error plans
+      await supabase.from('vitalis_meal_plans')
+        .delete()
+        .eq('user_id', userId)
+        .eq('status', 'erro');
+      // Insert error plan
+      await supabase.from('vitalis_meal_plans').insert([{
+        user_id: userId,
+        status: 'erro',
+        calorias_alvo: 0,
+        proteina_g: 0,
+        carboidratos_g: 0,
+        gordura_g: 0,
+        receitas_incluidas: JSON.stringify({ erro: errorMsg, data: new Date().toISOString() })
+      }]);
+    } catch (e) { /* best effort */ }
+  };
+
   // 1. Fetch intake
   const { data: intake, error: intakeError } = await supabase
     .from('vitalis_intake')
@@ -87,6 +110,7 @@ async function gerarPlano(userId, res) {
     .single();
 
   if (intakeError || !intake) {
+    await saveError('Intake nao encontrado. Cliente precisa preencher o questionario.');
     return res.status(400).json({ error: 'Intake nao encontrado. Cliente precisa preencher o questionario.' });
   }
 
@@ -112,12 +136,14 @@ async function gerarPlano(userId, res) {
     if (!peso || isNaN(peso)) campos.push('peso');
     if (!idade || isNaN(idade)) campos.push('idade');
     if (!sexo) campos.push('sexo');
-    return res.status(400).json({ error: `Dados do intake incompletos: ${campos.join(', ')}` });
+    const erroMsg = `Dados do intake incompletos: ${campos.join(', ')}`;
+    await saveError(erroMsg);
+    return res.status(400).json({ error: erroMsg });
   }
 
-  if (peso < 30 || peso > 300) return res.status(400).json({ error: `Peso invalido (${peso}kg)` });
-  if (idade < 15 || idade > 100) return res.status(400).json({ error: `Idade invalida (${idade})` });
-  if (altura < 120 || altura > 250) return res.status(400).json({ error: `Altura invalida (${altura}cm)` });
+  if (peso < 30 || peso > 300) { await saveError(`Peso invalido (${peso}kg)`); return res.status(400).json({ error: `Peso invalido (${peso}kg)` }); }
+  if (idade < 15 || idade > 100) { await saveError(`Idade invalida (${idade})`); return res.status(400).json({ error: `Idade invalida (${idade})` }); }
+  if (altura < 120 || altura > 250) { await saveError(`Altura invalida (${altura}cm)`); return res.status(400).json({ error: `Altura invalida (${altura}cm)` }); }
 
   let tmb;
   if (sexo === 'masculino') {
@@ -239,12 +265,11 @@ async function gerarPlano(userId, res) {
 
   if (clientError) throw clientError;
 
-  // 12a. Deactivate old plans
-  await supabase
-    .from('vitalis_meal_plans')
-    .update({ status: 'inactivo' })
-    .eq('user_id', userId)
-    .eq('status', 'activo');
+  // 12a. Deactivate old plans + remove error records
+  await Promise.all([
+    supabase.from('vitalis_meal_plans').update({ status: 'inactivo' }).eq('user_id', userId).eq('status', 'activo'),
+    supabase.from('vitalis_meal_plans').delete().eq('user_id', userId).eq('status', 'erro'),
+  ]);
 
   // 13. Insert new plan
   const planoData = {
@@ -449,7 +474,7 @@ async function listarClientes(res) {
   // Batch fetch intakes, plans, last activity — all server-side
   const [intakesRes, plansRes, registosRes] = await Promise.all([
     supabase.from('vitalis_intake').select('user_id, altura_cm, peso_actual, idade').in('user_id', userIds),
-    supabase.from('vitalis_meal_plans').select('user_id, id, status, calorias_alvo, created_at').in('user_id', userIds).order('created_at', { ascending: false }),
+    supabase.from('vitalis_meal_plans').select('user_id, id, status, calorias_alvo, receitas_incluidas, created_at').in('user_id', userIds).order('created_at', { ascending: false }),
     supabase.from('vitalis_registos').select('user_id, created_at').in('user_id', userIds).order('created_at', { ascending: false }),
   ]);
 
@@ -457,9 +482,15 @@ async function listarClientes(res) {
   const intakeMap = {};
   (intakesRes.data || []).forEach(i => { intakeMap[i.user_id] = i; });
 
+  // Build plan map — prefer active/pendente_revisao over error plans
   const planMap = {};
+  const errorPlanMap = {};
   (plansRes.data || []).forEach(p => {
-    if (!planMap[p.user_id]) planMap[p.user_id] = p;
+    if (p.status === 'erro') {
+      if (!errorPlanMap[p.user_id]) errorPlanMap[p.user_id] = p;
+    } else {
+      if (!planMap[p.user_id]) planMap[p.user_id] = p;
+    }
   });
 
   const lastActivityMap = {};
@@ -471,8 +502,20 @@ async function listarClientes(res) {
   const clients = clientsData.map(client => {
     const intake = intakeMap[client.user_id];
     const plan = planMap[client.user_id];
+    const errorPlan = errorPlanMap[client.user_id];
     const hasIntake = !!(intake && intake.altura_cm && intake.peso_actual && intake.idade);
     const hasPlan = !!plan;
+
+    // Extract error message if there's an error plan
+    let planErro = null;
+    if (errorPlan?.receitas_incluidas) {
+      try {
+        const parsed = typeof errorPlan.receitas_incluidas === 'string'
+          ? JSON.parse(errorPlan.receitas_incluidas)
+          : errorPlan.receitas_incluidas;
+        planErro = parsed.erro || null;
+      } catch (e) { /* ignore */ }
+    }
 
     return {
       ...client,
@@ -481,13 +524,50 @@ async function listarClientes(res) {
       userCreatedAt: client.users?.created_at,
       hasIntake,
       hasPlan,
-      planStatus: plan?.status || null,
+      planStatus: plan?.status || (errorPlan ? 'erro' : null),
       planCalorias: plan?.calorias_alvo || null,
+      planErro,
       lastActivity: lastActivityMap[client.user_id] || null,
     };
   });
 
   return res.status(200).json({ clients });
+}
+
+// ==========================================
+// BUSCAR PLANO PDF (server-side, all data for PDF render)
+// ==========================================
+async function buscarPlanoPdf(planId, userId, res) {
+  if (!planId) return res.status(400).json({ error: 'planId obrigatorio' });
+
+  // Fetch plan
+  let plano = null;
+  const { data: planoView } = await supabase.from('vitalis_meal_plans').select('*').eq('id', planId).maybeSingle();
+  plano = planoView;
+
+  if (!plano) return res.status(404).json({ error: 'Plano nao encontrado' });
+
+  const planoUserId = plano.user_id || userId;
+
+  // Fetch client, intake, user name — all in parallel
+  const [clienteRes, intakeRes, userRes] = await Promise.all([
+    planoUserId
+      ? supabase.from('vitalis_clients').select('*').eq('user_id', planoUserId).maybeSingle()
+      : { data: null },
+    planoUserId
+      ? supabase.from('vitalis_intake').select('*').eq('user_id', planoUserId).order('created_at', { ascending: false }).limit(1).maybeSingle()
+      : { data: null },
+    planoUserId
+      ? supabase.from('users').select('nome').eq('id', planoUserId).maybeSingle()
+      : { data: null },
+  ]);
+
+  return res.status(200).json({
+    plano,
+    cliente: clienteRes.data,
+    intake: intakeRes.data,
+    userName: userRes.data?.nome || null,
+  });
 }
 
 // ==========================================

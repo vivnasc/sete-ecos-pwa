@@ -161,9 +161,20 @@ export default function CoachClienteDetalhe() {
     }
   };
 
-  // Current active plan (or most recent)
-  const activePlan = plano.find(p => p.status === 'activo') || plano[0];
+  // Current active plan (or most recent non-error)
+  const activePlan = plano.find(p => p.status === 'activo') || plano.find(p => p.status !== 'erro') || null;
+  const errorPlan = plano.find(p => p.status === 'erro');
   const hasIntake = !!(intake && intake.altura_cm && intake.peso_actual && intake.idade);
+
+  // Parse error message from error plan
+  const parseErro = (p) => {
+    if (!p?.receitas_incluidas) return null;
+    try {
+      const parsed = typeof p.receitas_incluidas === 'string' ? JSON.parse(p.receitas_incluidas) : p.receitas_incluidas;
+      return parsed.erro || null;
+    } catch { return null; }
+  };
+  const planErroMsg = parseErro(errorPlan);
 
   // Parse plan config
   const parsePlanConfig = (p) => {
@@ -319,9 +330,11 @@ export default function CoachClienteDetalhe() {
               <InfoCard label="Intake" value={hasIntake ? 'Completo' : 'Em falta'} color={hasIntake ? 'green' : 'red'} />
               <InfoCard label="Plano" value={
                 activePlan?.status === 'activo' ? 'Activo' :
-                activePlan ? 'Inactivo' : 'Sem plano'
+                activePlan ? 'Inactivo' :
+                errorPlan ? 'Erro' : 'Sem plano'
               } color={
                 activePlan?.status === 'activo' ? 'green' :
+                errorPlan ? 'red' :
                 activePlan ? 'gray' : 'red'
               } />
               <InfoCard label="Check-ins" value={`${registos.length} (30d)`} />
@@ -364,7 +377,27 @@ export default function CoachClienteDetalhe() {
               </div>
             )}
 
-            {!activePlan && hasIntake && (
+            {/* Error plan alert */}
+            {errorPlan && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <span className="text-xl mt-0.5">&#x26A0;&#xFE0F;</span>
+                  <div className="flex-1">
+                    <p className="text-sm text-red-800 font-semibold mb-1">Erro na geracao do plano</p>
+                    <p className="text-sm text-red-700">{planErroMsg || 'Erro desconhecido'}</p>
+                    <p className="text-xs text-red-400 mt-1">
+                      {errorPlan.created_at ? new Date(errorPlan.created_at).toLocaleString('pt-PT') : ''}
+                    </p>
+                    <button onClick={handleGerarPlano} disabled={gerandoPlano}
+                      className="mt-2 px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50">
+                      {gerandoPlano ? 'A gerar...' : 'Tentar novamente'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {!activePlan && !errorPlan && hasIntake && (
               <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
                 <p className="text-sm text-orange-800 font-medium mb-2">Intake preenchido mas sem plano gerado!</p>
                 <button onClick={handleGerarPlano} disabled={gerandoPlano}
@@ -468,7 +501,7 @@ export default function CoachClienteDetalhe() {
                       <p className="text-white/70 text-sm">{ABORDAGEM_LABELS[activePlan.abordagem] || activePlan.abordagem} | {faseDicas?.duracao || ''}</p>
                     </div>
                     <button
-                      onClick={() => window.open(`/vitalis/plano-pdf?id=${activePlan.id}`, '_blank')}
+                      onClick={() => window.open(`/vitalis/plano-pdf?id=${activePlan.id}&userId=${userId}&nome=${encodeURIComponent(user?.nome || '')}`, '_blank')}
                       className="px-3 py-1.5 text-sm font-medium bg-white/20 rounded-lg hover:bg-white/30"
                     >
                       Ver PDF
@@ -877,6 +910,7 @@ function StatusBadge({ status }) {
 
 function PlanStatusBadge({ status }) {
   if (status === 'activo') return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Activo</span>;
+  if (status === 'erro') return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">Erro</span>;
   if (status === 'inactivo') return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Inactivo</span>;
   return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">{status || 'N/A'}</span>;
 }

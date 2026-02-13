@@ -26,9 +26,16 @@ function StatusBadge({ status }) {
   );
 }
 
-function PlanBadge({ hasIntake, hasPlan, planStatus }) {
+function PlanBadge({ hasIntake, hasPlan, planStatus, planErro }) {
   if (!hasIntake) {
     return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Sem intake</span>;
+  }
+  if (planStatus === 'erro') {
+    return (
+      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700" title={planErro || 'Erro na geracao'}>
+        Erro no plano
+      </span>
+    );
   }
   if (!hasPlan) {
     return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700">Sem plano</span>;
@@ -50,7 +57,7 @@ export default function CoachDashboard() {
   const [deletingClient, setDeletingClient] = useState(null);
 
   // Quick stats
-  const [stats, setStats] = useState({ total: 0, active: 0, trial: 0, pending: 0, semPlano: 0, aguardaRevisao: 0 });
+  const [stats, setStats] = useState({ total: 0, active: 0, trial: 0, pending: 0, semPlano: 0, aguardaRevisao: 0, erros: 0 });
 
   useEffect(() => {
     loadClients();
@@ -68,8 +75,9 @@ export default function CoachDashboard() {
         active: enriched.filter(c => c.subscription_status === 'active').length,
         trial: enriched.filter(c => c.subscription_status === 'trial').length,
         pending: enriched.filter(c => c.subscription_status === 'pending').length,
-        semPlano: enriched.filter(c => c.hasIntake && !c.hasPlan).length,
+        semPlano: enriched.filter(c => c.hasIntake && !c.hasPlan && c.planStatus !== 'erro').length,
         aguardaRevisao: enriched.filter(c => c.planStatus === 'pendente_revisao').length,
+        erros: enriched.filter(c => c.planStatus === 'erro').length,
       };
 
       setClients(enriched);
@@ -103,11 +111,13 @@ export default function CoachDashboard() {
     if (filterPlan === 'sem_intake') {
       result = result.filter(c => !c.hasIntake);
     } else if (filterPlan === 'sem_plano') {
-      result = result.filter(c => c.hasIntake && !c.hasPlan);
+      result = result.filter(c => c.hasIntake && !c.hasPlan && c.planStatus !== 'erro');
     } else if (filterPlan === 'aguarda_revisao') {
       result = result.filter(c => c.planStatus === 'pendente_revisao');
     } else if (filterPlan === 'plano_activo') {
       result = result.filter(c => c.planStatus === 'activo');
+    } else if (filterPlan === 'erro') {
+      result = result.filter(c => c.planStatus === 'erro');
     }
 
     return result;
@@ -284,6 +294,15 @@ export default function CoachDashboard() {
             <p className="text-2xl font-bold">{stats.aguardaRevisao}</p>
             <p className="text-xs">Revisao</p>
           </button>
+          {stats.erros > 0 && (
+            <button
+              onClick={() => { setFilterStatus('all'); setFilterPlan('erro'); }}
+              className={`p-3 rounded-xl text-center transition-all ${filterPlan === 'erro' ? 'bg-red-600 text-white' : 'bg-white text-gray-700 hover:bg-red-50'}`}
+            >
+              <p className="text-2xl font-bold">{stats.erros}</p>
+              <p className="text-xs">Erros</p>
+            </button>
+          )}
         </div>
 
         {/* Search and Filters */}
@@ -322,6 +341,7 @@ export default function CoachDashboard() {
             <option value="sem_plano">Sem plano</option>
             <option value="aguarda_revisao">Aguarda revisao</option>
             <option value="plano_activo">Plano activo</option>
+            <option value="erro">Erro no plano</option>
           </select>
         </div>
 
@@ -361,7 +381,7 @@ export default function CoachDashboard() {
                             {client.nome}
                           </Link>
                           <StatusBadge status={client.subscription_status} />
-                          <PlanBadge hasIntake={client.hasIntake} hasPlan={client.hasPlan} planStatus={client.planStatus} />
+                          <PlanBadge hasIntake={client.hasIntake} hasPlan={client.hasPlan} planStatus={client.planStatus} planErro={client.planErro} />
                           {isInactive && (
                             <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
                               {inactivityDays}d inactivo
@@ -369,6 +389,9 @@ export default function CoachDashboard() {
                           )}
                         </div>
                         <p className="text-sm text-gray-500 truncate mt-0.5">{client.email}</p>
+                        {client.planErro && (
+                          <p className="text-xs text-red-500 mt-0.5 truncate">{client.planErro}</p>
+                        )}
                         <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
                           {client.planCalorias && (
                             <span>{client.planCalorias} kcal</span>
@@ -389,13 +412,17 @@ export default function CoachDashboard() {
                           Ver
                         </Link>
 
-                        {client.hasIntake && !client.hasPlan && (
+                        {client.hasIntake && (!client.hasPlan || client.planStatus === 'erro') && (
                           <button
                             onClick={() => handleGerarPlano(client)}
                             disabled={gerandoPlano === client.user_id}
-                            className="px-3 py-1.5 text-xs font-medium bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors disabled:opacity-50"
+                            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors disabled:opacity-50 ${
+                              client.planStatus === 'erro'
+                                ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                                : 'bg-green-100 text-green-700 hover:bg-green-200'
+                            }`}
                           >
-                            {gerandoPlano === client.user_id ? 'A gerar...' : 'Gerar plano'}
+                            {gerandoPlano === client.user_id ? 'A gerar...' : (client.planStatus === 'erro' ? 'Tentar novamente' : 'Gerar plano')}
                           </button>
                         )}
 
