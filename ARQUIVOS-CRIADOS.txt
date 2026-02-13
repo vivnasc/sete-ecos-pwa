@@ -1,0 +1,121 @@
+ARQUIVOS CRIADOS PARA DIAGNÓSTICO DA NAZIRA
+============================================
+
+Data: 2026-02-12
+Situação: Cliente pagante com problema de acesso
+Tempo estimado de resolução: 10 minutos
+
+SCRIPTS EXECUTÁVEIS (4 arquivos)
+---------------------------------
+
+1. diagnostico-nazira-fetch.js (6.5KB) ⭐ RECOMENDADO
+   - Diagnóstico completo via fetch puro
+   - Sem dependências extras
+   - Mais rápido de executar
+   - USO: node diagnostico-nazira-fetch.js <CHAVE>
+
+2. diagnostico-nazira.js (11KB)
+   - Diagnóstico via SDK Supabase
+   - Mais completo
+   - Requer @supabase/supabase-js
+   - USO: node diagnostico-nazira.js <CHAVE>
+
+3. corrigir-intake.js (3.2KB)
+   - Completa campos faltando no intake
+   - Atualiza diretamente no banco
+   - USO: node corrigir-intake.js <CHAVE> <USER_ID> <idade> <altura>
+
+4. ajuda.js (2.3KB)
+   - Mostra instruções interativas
+   - Exemplos de uso
+   - USO: node ajuda.js
+
+DOCUMENTAÇÃO (4 arquivos)
+--------------------------
+
+1. URGENTE-NAZIRA.md (5.4KB)
+   - Resumo executivo da situação
+   - Checklist de ação
+   - Scripts SQL de emergência
+   - Contatos importantes
+
+2. COMO-EXECUTAR.md (5.2KB)
+   - Guia passo a passo detalhado
+   - Exemplos de output esperado
+   - Troubleshooting
+   - Explicação de segurança
+
+3. DIAGNOSTICO-README.md (2.9KB)
+   - Documentação técnica
+   - Objetivo e funcionalidades
+   - Problemas identificados automaticamente
+   - Próximos passos
+
+4. ARQUIVOS-CRIADOS.txt (este arquivo)
+   - Índice de todos os arquivos
+   - Propósito de cada um
+   - Ordem de execução
+
+INÍCIO RÁPIDO
+-------------
+
+1. Leia primeiro: URGENTE-NAZIRA.md
+2. Execute: node ajuda.js (para ver instruções)
+3. Obtenha chave Supabase (supabase.com/dashboard)
+4. Execute: node diagnostico-nazira-fetch.js <CHAVE>
+5. Analise o output
+6. Se necessário, execute: node corrigir-intake.js
+
+LOCALIZAÇÃO DOS ARQUIVOS
+-------------------------
+
+Todos os arquivos estão em:
+/home/user/sete-ecos-pwa/
+
+Scripts:
+  ├── diagnostico-nazira-fetch.js  ⭐
+  ├── diagnostico-nazira.js
+  ├── corrigir-intake.js
+  └── ajuda.js
+
+Documentação:
+  ├── URGENTE-NAZIRA.md
+  ├── COMO-EXECUTAR.md
+  ├── DIAGNOSTICO-README.md
+  └── ARQUIVOS-CRIADOS.txt
+
+COMANDOS ÚTEIS
+--------------
+
+# Ver ajuda interativa
+node ajuda.js
+
+# Diagnóstico (método recomendado)
+node diagnostico-nazira-fetch.js eyJhbGc...
+
+# Diagnóstico (método alternativo)
+node diagnostico-nazira.js eyJhbGc...
+
+# Correção de dados
+node corrigir-intake.js CHAVE USER_ID 30 165
+
+# Ver lista de arquivos criados
+cat ARQUIVOS-CRIADOS.txt
+
+PRIORIDADE
+----------
+
+🚨 URGENTE - Cliente pagante sem acesso ao serviço!
+
+Execute o diagnóstico IMEDIATAMENTE e compartilhe o output
+para decidir o próximo passo.
+
+CONTATO
+-------
+
+Owner: Vivianne dos Santos
+Cliente: Nazira
+Plataforma: SETE ECOS - Vitalis
+
+FIM
+---

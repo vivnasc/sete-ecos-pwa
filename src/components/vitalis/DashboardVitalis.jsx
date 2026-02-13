@@ -63,6 +63,7 @@ export default function DashboardVitalis() {
   const [userName, setUserName] = useState('');
   const [client, setClient] = useState(null);
   const [plano, setPlano] = useState(null);
+  const [planoPendenteRevisao, setPlanoPendenteRevisao] = useState(false);
   const [registos, setRegistos] = useState([]);
   const [refeicoes, setRefeicoes] = useState([]);
   const [mealsHoje, setMealsHoje] = useState([]);
@@ -280,11 +281,17 @@ export default function DashboardVitalis() {
       // Buscar sexo e preferências do intake para adaptar UI
       const { data: intakeData } = await supabase
         .from('vitalis_intake')
-        .select('sexo, observa_ramadao')
+        .select('sexo, observa_ramadao, altura_cm, peso_actual, idade')
         .eq('user_id', userData.id)
         .maybeSingle();
 
-      setHasIntake(!!intakeData); // Define se tem intake
+      // ✅ INTAKE COMPLETO = tem campos obrigatórios preenchidos
+      const intakeCompleto = intakeData &&
+        intakeData.altura_cm &&
+        intakeData.peso_actual &&
+        intakeData.idade;
+
+      setHasIntake(intakeCompleto); // Define se tem intake COMPLETO
 
       if (intakeData?.sexo) setSexo(intakeData.sexo);
       if (intakeData?.observa_ramadao) setObservaRamadao(intakeData.observa_ramadao);
@@ -326,6 +333,19 @@ export default function DashboardVitalis() {
             protocolo_jejum: mealPlan.abordagem === 'keto_if' ? '16_8' : null,
             dias_treino: mealPlan.dias_treino || []
           };
+        } else {
+          // Check if plan exists but is pending coach review
+          const { data: pendingPlan } = await supabase
+            .from('vitalis_meal_plans')
+            .select('id')
+            .eq('user_id', userData.id)
+            .eq('status', 'pendente_revisao')
+            .limit(1)
+            .maybeSingle();
+
+          if (pendingPlan) {
+            setPlanoPendenteRevisao(true);
+          }
         }
       }
       setPlano(planoData || null);
@@ -1112,6 +1132,24 @@ export default function DashboardVitalis() {
                 <span>📋</span>
                 <span>Começar Questionário (5 min)</span>
               </Link>
+            </div>
+          </div>
+        )}
+
+        {/* Banner Plano Pendente Revisao */}
+        {planoPendenteRevisao && !plano && (
+          <div className="bg-gradient-to-r from-amber-500 to-orange-400 rounded-2xl p-4 shadow-xl">
+            <div className="flex items-start gap-3">
+              <div className="w-12 h-12 bg-white/30 rounded-xl flex items-center justify-center flex-shrink-0">
+                <span className="text-2xl">👩‍⚕️</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-white font-bold text-lg mb-1">Plano em revisao</h3>
+                <p className="text-white/90 text-sm">
+                  O teu plano nutricional foi gerado e esta a ser revisto pela tua coach.
+                  Vais ter acesso assim que for aprovado!
+                </p>
+              </div>
             </div>
           </div>
         )}
