@@ -97,6 +97,18 @@ function ackTwilio(res) {
 // ===== HANDLER PRINCIPAL =====
 
 export default async function handler(req, res) {
+  // OPTIONS = preflight CORS (para modo teste do simulador)
+  if (req.method === 'OPTIONS') {
+    const allowedOrigins = ['https://app.seteecos.com', 'https://seteecos.com', 'http://localhost:3000'];
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    return res.status(200).end();
+  }
+
   // GET = teste rápido / diagnóstico no browser
   if (req.method === 'GET') {
     const fromNum = TWILIO_WHATSAPP_NUMBER();
@@ -117,6 +129,42 @@ export default async function handler(req, res) {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' });
+  }
+
+  // ===== MODO TESTE (simulador sem Twilio) =====
+  // POST com ?mode=test ou body.mode === 'test'
+  const isTest = req.query?.mode === 'test' || req.body?.mode === 'test';
+  if (isTest) {
+    // CORS para o simulador
+    const allowedOrigins = ['https://app.seteecos.com', 'https://seteecos.com', 'http://localhost:3000'];
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    try {
+      const { mensagem, nome } = req.body || {};
+      if (!mensagem) return res.status(400).json({ error: 'mensagem é obrigatória' });
+
+      const { resposta, chave, notificarCoach } = gerarResposta(mensagem, nome || 'Teste');
+
+      logMensagem({
+        telefone: 'teste-simulador',
+        nome: nome || 'Teste',
+        mensagemIn: mensagem,
+        mensagemOut: resposta,
+        chave,
+        notificouCoach: notificarCoach,
+        canal: 'simulador',
+      }).catch(() => {});
+
+      return res.status(200).json({ resposta, chave, notificarCoach, input: mensagem, timestamp: new Date().toISOString() });
+    } catch (error) {
+      console.error('Erro no teste chatbot:', error);
+      return res.status(500).json({ error: 'Erro interno' });
+    }
   }
 
   try {
