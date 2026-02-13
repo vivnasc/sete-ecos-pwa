@@ -70,48 +70,6 @@ export default function GeradorPDFPlano({ userId, onClose }) {
     onClose();
   };
 
-  const gerarPDFAutomatico = async () => {
-    if (!planoId) {
-      setErro('Plano não encontrado');
-      return;
-    }
-
-    setLoading(true);
-    setErro(null);
-
-    try {
-      const baseUrl = window.location.origin;
-      const response = await fetch('/api/gerar-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planoId, baseUrl })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erro ao gerar PDF');
-      }
-
-      // Baixar o PDF
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Vitalis_Plano_${dados?.nome || 'Cliente'}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-
-      onClose();
-    } catch (err) {
-      console.error('Erro:', err);
-      setErro(err.message || 'Erro ao gerar PDF. Tente novamente.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   if (loading) {
     return (
       <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.6)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999}}>
@@ -158,12 +116,13 @@ export default function GeradorPDFPlano({ userId, onClose }) {
 
           {/* Instruções */}
           <div style={{background:'#E8F5E9',border:'1px solid #A5D6A7',borderRadius:'12px',padding:'18px',marginBottom:'25px'}}>
-            <div style={{fontWeight:'600',color:'#2E7D32',marginBottom:'10px',fontSize:'14px'}}>💡 Duas formas de obter o PDF:</div>
-            <div style={{fontSize:'13px',lineHeight:'1.8',color:'#1B5E20'}}>
-              <strong>⚡ Download Automático:</strong> Clica em "Baixar PDF" e o ficheiro é gerado instantaneamente!
-              <br/><br/>
-              <strong>👁️ Visualizar Primeiro:</strong> Clica em "Visualizar" para ver e depois Ctrl+P para guardar.
-            </div>
+            <div style={{fontWeight:'600',color:'#2E7D32',marginBottom:'10px',fontSize:'14px'}}>💡 Como guardar o PDF:</div>
+            <ol style={{margin:0,paddingLeft:'20px',color:'#1B5E20',fontSize:'13px',lineHeight:'1.8'}}>
+              <li>Clica em "Abrir Plano"</li>
+              <li>Prima <strong>Ctrl+P</strong> (ou ⌘+P no Mac)</li>
+              <li>Escolhe "Guardar como PDF"</li>
+              <li>Clica em Guardar</li>
+            </ol>
           </div>
 
           {erro && (
@@ -172,28 +131,20 @@ export default function GeradorPDFPlano({ userId, onClose }) {
             </div>
           )}
 
-          <div style={{display:'flex',gap:'10px',marginBottom:'12px'}}>
-            <button
-              onClick={gerarPDFAutomatico}
-              disabled={loading}
-              style={{flex:1,padding:'16px',background:'linear-gradient(135deg, #7C8B6F, #6B7A5D)',color:'white',border:'none',borderRadius:'14px',fontSize:'15px',fontWeight:'600',cursor: loading ? 'not-allowed' : 'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',transition:'all 0.2s',boxShadow:'0 4px 15px rgba(124,139,111,0.4)',opacity: loading ? 0.6 : 1}}
+          <div style={{display:'flex',gap:'15px'}}>
+            <button 
+              onClick={onClose} 
+              style={{flex:1,padding:'16px',background:'#f5f5f5',color:'#666',border:'none',borderRadius:'14px',fontSize:'15px',fontWeight:'500',cursor:'pointer',transition:'all 0.2s'}}
             >
-              ⚡ Baixar PDF
+              Cancelar
             </button>
             <button
               onClick={abrirParaImprimir}
-              disabled={loading}
-              style={{flex:1,padding:'16px',background:'#fff',color:'#7C8B6F',border:'2px solid #7C8B6F',borderRadius:'14px',fontSize:'15px',fontWeight:'600',cursor: loading ? 'not-allowed' : 'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',transition:'all 0.2s',opacity: loading ? 0.6 : 1}}
+              style={{flex:2,padding:'16px',background:'linear-gradient(135deg, #7C8B6F, #6B7A5D)',color:'white',border:'none',borderRadius:'14px',fontSize:'15px',fontWeight:'600',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'10px',transition:'all 0.2s',boxShadow:'0 4px 15px rgba(124,139,111,0.4)'}}
             >
-              👁️ Visualizar
+              📄 Abrir Plano
             </button>
           </div>
-          <button
-            onClick={onClose}
-            style={{width:'100%',padding:'14px',background:'#f5f5f5',color:'#666',border:'none',borderRadius:'14px',fontSize:'14px',fontWeight:'500',cursor:'pointer',transition:'all 0.2s'}}
-          >
-            Cancelar
-          </button>
         </div>
       </div>
     </div>
