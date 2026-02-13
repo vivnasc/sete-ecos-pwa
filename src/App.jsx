@@ -34,6 +34,7 @@ const Perfil = lazy(() => import('./pages/Perfil'))
 const RecuperarPassword = lazy(() => import('./pages/RecuperarPassword'))
 const Lumina = lazy(() => import('./pages/Lumina'))
 const CoachDashboard = lazy(() => import('./pages/CoachDashboard'))
+const CoachClienteDetalhe = lazy(() => import('./pages/CoachClienteDetalhe'))
 const AnalyticsDashboard = lazy(() => import('./pages/AnalyticsDashboard'))
 const LandingBundle = lazy(() => import('./pages/LandingBundle'))
 
@@ -221,6 +222,12 @@ function AppRoutes() {
             <Route path="/coach" element={
               isSessionCoach(session)
                 ? <CoachDashboard />
+                : <Navigate to="/" />
+            } />
+
+            <Route path="/coach/cliente/:userId" element={
+              isSessionCoach(session)
+                ? <CoachClienteDetalhe />
                 : <Navigate to="/" />
             } />
 

@@ -255,9 +255,10 @@ export async function gerarPlanoAutomatico(userId) {
       .from('vitalis_meal_plans')
       .update({ status: 'inactivo' })
       .eq('user_id', userId)
-      .eq('status', 'activo');
+      .in('status', ['activo', 'pendente_revisao']);
 
     // 13. Criar plano nutricional em vitalis_meal_plans
+    // Status pendente_revisao - coach aprova antes da cliente ver
     const planoData = {
       user_id: userId,
       versao: 1,
@@ -267,7 +268,7 @@ export async function gerarPlanoAutomatico(userId) {
       proteina_g: proteinaG,
       carboidratos_g: carboidratosG,
       gordura_g: gorduraG,
-      status: 'activo',
+      status: 'pendente_revisao',
       receitas_incluidas: JSON.stringify({
         porções_por_refeicao: porcoesPorRefeicao,
         num_refeicoes: numRefeicoes,
@@ -411,12 +412,14 @@ export async function recalcularPlano(userId, novaFase = null) {
 
     if (intakeError) throw intakeError;
 
-    // 3. Buscar plano actual
+    // 3. Buscar plano actual (activo ou pendente revisao)
     const { data: planoActual, error: planoError } = await supabase
       .from('vitalis_meal_plans')
       .select('*')
       .eq('user_id', userId)
-      .eq('status', 'activo')
+      .in('status', ['activo', 'pendente_revisao'])
+      .order('created_at', { ascending: false })
+      .limit(1)
       .single();
 
     if (planoError) throw planoError;
@@ -562,7 +565,7 @@ export async function recalcularPlano(userId, novaFase = null) {
       .update({ status: 'inactivo' })
       .eq('id', planoActual.id);
 
-    // 14. Criar novo plano com versão incrementada
+    // 14. Criar novo plano com versão incrementada (pendente revisao da coach)
     const { data: novoPlano, error: novoPlanoError } = await supabase
       .from('vitalis_meal_plans')
       .insert([{
@@ -574,7 +577,7 @@ export async function recalcularPlano(userId, novaFase = null) {
         proteina_g: proteinaG,
         carboidratos_g: carboidratosG,
         gordura_g: gorduraG,
-        status: 'activo',
+        status: 'pendente_revisao',
         receitas_incluidas: JSON.stringify({
           porções_por_refeicao: porcoesPorRefeicao,
           num_refeicoes: numRefeicoes,
