@@ -94,7 +94,7 @@ export default function PerfilVitalis() {
       if (clientData) {
         setClient(clientData);
         setNomeCompleto(clientData.nome_completo || nomeDoUser);
-        setTelefone(clientData.telefone || '');
+        setTelefone(''); // Telefone não existe na tabela vitalis_clients
         setDataNascimento(clientData.data_nascimento || '');
         setGenero(clientData.genero || '');
         setAvatarSelecionado(clientData.avatar || '');
@@ -209,7 +209,7 @@ export default function PerfilVitalis() {
       if (client?.id) {
         const updateData = {
           nome_completo: nomeCompleto.trim(),
-          telefone: telefone.trim(),
+          // telefone removido - campo não existe na tabela
           data_nascimento: dataNascimento || null,
           genero: genero || null,
           avatar: avatarSelecionado || null,
@@ -235,7 +235,7 @@ export default function PerfilVitalis() {
           .insert({
             user_id: userId,
             nome_completo: nomeCompleto.trim(),
-            telefone: telefone.trim(),
+            // telefone removido - campo não existe na tabela
             data_nascimento: dataNascimento || null,
             genero: genero || null,
             avatar: avatarSelecionado || null,
