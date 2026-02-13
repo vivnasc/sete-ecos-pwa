@@ -378,7 +378,8 @@ export default function PlanoAlimentar() {
       receitasConfig = mealPlan.receitas_incluidas ? JSON.parse(mealPlan.receitas_incluidas) : {};
     } catch (e) { /* ignore */ }
 
-    const porcoes = receitasConfig['porções_por_refeicao'] || receitasConfig.porcoes_por_refeicao || {};
+    // Calculate daily portions from macros (same formula as PDF/PlanoHTML)
+    // Note: receitasConfig.porções_por_refeicao contains PER-MEAL values, not daily totals
 
     return {
       fase: {
@@ -391,10 +392,10 @@ export default function PlanoAlimentar() {
         duracao_semanas: 4
       },
       porcoes: {
-        proteina: porcoes.proteina || Math.round(mealPlan.proteina_g / 25),
-        legumes: porcoes.legumes || 4,
-        hidratos_base: porcoes.hidratos || Math.round(mealPlan.carboidratos_g / 30),
-        gordura: porcoes.gordura || Math.round(mealPlan.gordura_g / 10),
+        proteina: Math.round(mealPlan.proteina_g / 25),
+        legumes: 4, // Sempre 4 punhos por dia (fixo)
+        hidratos_base: Math.round(mealPlan.carboidratos_g / 30),
+        gordura: Math.round(mealPlan.gordura_g / 10),
         carbs_extra_treino: 1
       },
       tamanhos: {
