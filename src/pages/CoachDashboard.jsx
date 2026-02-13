@@ -318,6 +318,18 @@ export default function CoachDashboard() {
                 </svg>
               </button>
               <Link
+                to="/coach/marketing"
+                className="px-3 py-1.5 text-sm bg-pink-50 text-pink-700 rounded-lg hover:bg-pink-100 transition-colors"
+              >
+                Marketing
+              </Link>
+              <Link
+                to="/coach/analytics"
+                className="px-3 py-1.5 text-sm bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors"
+              >
+                Analytics
+              </Link>
+              <Link
                 to="/vitalis/dashboard"
                 className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
               >
