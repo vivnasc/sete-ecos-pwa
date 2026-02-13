@@ -209,8 +209,15 @@ export default async function handler(req, res) {
   try {
     // Segurança básica
     const { secret, user_id, email } = req.query;
+
+    // Debug logging
+    console.log('🔍 gerar-plano-manual query:', { secret, user_id, email });
+
     if (secret !== 'vivnasc2026') {
-      return res.status(403).json({ error: 'Acesso negado' });
+      return res.status(403).json({
+        error: 'Acesso negado',
+        debug: { receivedSecret: secret, expected: 'vivnasc2026', matched: secret === 'vivnasc2026' }
+      });
     }
 
     if (!supabaseKey) {
