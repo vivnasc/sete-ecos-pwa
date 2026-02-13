@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { gerarPlanoAutomatico } from '../lib/vitalis/planoGenerator';
-import {
-  confirmManualPayment,
-  setAsTester,
-  SUBSCRIPTION_PLANS
-} from '../lib/subscriptions';
+import { coachApi } from '../lib/coachApi';
+import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
 
 /**
  * Coach - Vista detalhada de um cliente
@@ -45,7 +41,7 @@ export default function CoachClienteDetalhe() {
   const [user, setUser] = useState(null);
   const [client, setClient] = useState(null);
   const [intake, setIntake] = useState(null);
-  const [plano, setPlano] = useState(null);
+  const [plano, setPlano] = useState([]);
   const [registos, setRegistos] = useState([]);
   const [aguaLogs, setAguaLogs] = useState([]);
   const [mealsLogs, setMealsLogs] = useState([]);
@@ -103,15 +99,11 @@ export default function CoachClienteDetalhe() {
     if (!confirm('Gerar plano nutricional para este cliente?')) return;
     setGerandoPlano(true);
     try {
-      const result = await gerarPlanoAutomatico(userId);
-      if (result.success) {
-        alert(`Plano gerado: ${result.plano.calorias} kcal\nP:${result.plano.macros.proteina}g C:${result.plano.macros.carboidratos}g G:${result.plano.macros.gordura}g\n\nAguarda tua aprovacao.`);
-        loadClientData();
-      } else {
-        alert('Erro: ' + result.error);
-      }
+      const result = await coachApi.gerarPlano(userId);
+      alert(`Plano gerado: ${result.plano.calorias} kcal\nP:${result.plano.macros.proteina}g C:${result.plano.macros.carboidratos}g G:${result.plano.macros.gordura}g\n\nAguarda tua aprovacao.`);
+      loadClientData();
     } catch (err) {
-      alert('Erro: ' + err.message);
+      alert('Erro ao gerar plano: ' + err.message);
     } finally {
       setGerandoPlano(false);
     }
@@ -122,21 +114,7 @@ export default function CoachClienteDetalhe() {
     if (!confirm('Aprovar e disponibilizar este plano a cliente?')) return;
     setApprovingPlan(true);
     try {
-      // Deactivate any other active plans
-      await supabase
-        .from('vitalis_meal_plans')
-        .update({ status: 'inactivo' })
-        .eq('user_id', userId)
-        .neq('id', planId)
-        .in('status', ['activo', 'pendente_revisao']);
-
-      // Approve this plan
-      const { error } = await supabase
-        .from('vitalis_meal_plans')
-        .update({ status: 'activo' })
-        .eq('id', planId);
-
-      if (error) throw error;
+      await coachApi.aprovarPlano(userId, planId);
       alert('Plano aprovado e disponivel para a cliente!');
       loadClientData();
     } catch (err) {
@@ -153,20 +131,7 @@ export default function CoachClienteDetalhe() {
     if (!confirm('Ultima chance. Confirmas?')) return;
 
     try {
-      const uid = userId;
-      await supabase.from('vitalis_habitos').delete().eq('user_id', uid);
-      await supabase.from('vitalis_meal_plans').delete().eq('user_id', uid);
-      await supabase.from('vitalis_intake').delete().eq('user_id', uid);
-      await supabase.from('vitalis_registos').delete().eq('user_id', uid);
-      await supabase.from('vitalis_agua_log').delete().eq('user_id', uid);
-      await supabase.from('vitalis_workouts_log').delete().eq('user_id', uid);
-      await supabase.from('vitalis_sono_log').delete().eq('user_id', uid);
-      await supabase.from('vitalis_fasting_log').delete().eq('user_id', uid);
-      await supabase.from('vitalis_meals_log').delete().eq('user_id', uid);
-      await supabase.from('vitalis_alerts').delete().eq('user_id', uid);
-      await supabase.from('vitalis_subscription_log').delete().eq('user_id', uid);
-      await supabase.from('vitalis_clients').delete().eq('user_id', uid);
-
+      await coachApi.apagarCliente(userId);
       alert('Cliente apagado.');
       navigate('/coach');
     } catch (err) {
@@ -178,17 +143,9 @@ export default function CoachClienteDetalhe() {
   const handleActivate = async (planKey) => {
     if (!confirm(`Activar ${SUBSCRIPTION_PLANS[planKey].name}?`)) return;
     try {
-      const result = await confirmManualPayment(userId, {
-        method: 'manual',
-        reference: `Coach-${Date.now()}`,
-        amount: SUBSCRIPTION_PLANS[planKey].price_usd,
-        currency: 'USD',
-        planId: planKey
-      });
-      if (result.success) {
-        alert(`Activado ate ${result.expiresAt.toLocaleDateString('pt-PT')}`);
-        loadClientData();
-      }
+      const result = await coachApi.activarSubscricao(userId, planKey);
+      alert(`Activado ate ${new Date(result.expiresAt).toLocaleDateString('pt-PT')}`);
+      loadClientData();
     } catch (err) {
       alert('Erro: ' + err.message);
     }
@@ -729,9 +686,13 @@ export default function CoachClienteDetalhe() {
               <button
                 onClick={async () => {
                   if (!confirm('Definir como tester?')) return;
-                  await setAsTester(userId, 'Coach manual');
-                  alert('Tester definido.');
-                  loadClientData();
+                  try {
+                    await coachApi.setTester(userId);
+                    alert('Tester definido.');
+                    loadClientData();
+                  } catch (err) {
+                    alert('Erro: ' + err.message);
+                  }
                 }}
                 className="w-full mt-2 py-2 text-xs font-medium bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200"
               >
