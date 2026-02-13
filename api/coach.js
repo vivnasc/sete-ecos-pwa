@@ -54,6 +54,8 @@ export default async function handler(req, res) {
         return await listarClientes(res);
       case 'buscar-dados-cliente':
         return await buscarDadosCliente(params.userId, res);
+      case 'buscar-plano-pdf':
+        return await buscarPlanoPdf(params.planId, params.userId, res);
       case 'gerar-plano':
         return await gerarPlano(params.userId, res);
       case 'aprovar-plano':
@@ -488,6 +490,42 @@ async function listarClientes(res) {
   });
 
   return res.status(200).json({ clients });
+}
+
+// ==========================================
+// BUSCAR PLANO PDF (server-side, all data for PDF render)
+// ==========================================
+async function buscarPlanoPdf(planId, userId, res) {
+  if (!planId) return res.status(400).json({ error: 'planId obrigatorio' });
+
+  // Fetch plan
+  let plano = null;
+  const { data: planoView } = await supabase.from('vitalis_meal_plans').select('*').eq('id', planId).maybeSingle();
+  plano = planoView;
+
+  if (!plano) return res.status(404).json({ error: 'Plano nao encontrado' });
+
+  const planoUserId = plano.user_id || userId;
+
+  // Fetch client, intake, user name — all in parallel
+  const [clienteRes, intakeRes, userRes] = await Promise.all([
+    planoUserId
+      ? supabase.from('vitalis_clients').select('*').eq('user_id', planoUserId).maybeSingle()
+      : { data: null },
+    planoUserId
+      ? supabase.from('vitalis_intake').select('*').eq('user_id', planoUserId).order('created_at', { ascending: false }).limit(1).maybeSingle()
+      : { data: null },
+    planoUserId
+      ? supabase.from('users').select('nome').eq('id', planoUserId).maybeSingle()
+      : { data: null },
+  ]);
+
+  return res.status(200).json({
+    plano,
+    cliente: clienteRes.data,
+    intake: intakeRes.data,
+    userName: userRes.data?.nome || null,
+  });
 }
 
 // ==========================================

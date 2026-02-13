@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase.js';
+import { coachApi } from '../lib/coachApi.js';
 
 const FASES_CONFIG = {
   inducao: {
@@ -74,6 +75,7 @@ export default function PlanoHTML() {
   const [searchParams] = useSearchParams();
   const planoId = searchParams.get('id');
   const nomeParam = searchParams.get('nome');
+  const userIdParam = searchParams.get('userId');
   const [dados, setDados] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -81,8 +83,83 @@ export default function PlanoHTML() {
     if (planoId) carregarDados();
   }, [planoId]);
 
+  // Build dados object from plan + client + username
+  const buildDados = (plano, cliente, userName) => {
+    let porcoesFromPlan = {};
+    try {
+      const receitasConfig = plano?.receitas_incluidas ? JSON.parse(plano.receitas_incluidas) : {};
+      porcoesFromPlan = receitasConfig['porções_por_refeicao'] || receitasConfig.porcoes_por_refeicao || {};
+    } catch (e) { /* ignore */ }
+
+    const abordagem = plano?.abordagem || 'equilibrado';
+    const caloriasAlvo = plano?.calorias_diarias || plano?.calorias_alvo || 1500;
+
+    let proteinaG, carboidratosG, gorduraG;
+    if (plano?.proteina_g && plano?.carboidratos_g && plano?.gordura_g) {
+      proteinaG = plano.proteina_g;
+      carboidratosG = plano.carboidratos_g;
+      gorduraG = plano.gordura_g;
+    } else {
+      if (abordagem === 'keto_if') {
+        proteinaG = Math.round((caloriasAlvo * 0.25) / 4);
+        carboidratosG = Math.round((caloriasAlvo * 0.05) / 4);
+        gorduraG = Math.round((caloriasAlvo * 0.70) / 9);
+      } else if (abordagem === 'low_carb') {
+        proteinaG = Math.round((caloriasAlvo * 0.40) / 4);
+        carboidratosG = Math.round((caloriasAlvo * 0.30) / 4);
+        gorduraG = Math.round((caloriasAlvo * 0.30) / 9);
+      } else {
+        proteinaG = Math.round((caloriasAlvo * 0.30) / 4);
+        carboidratosG = Math.round((caloriasAlvo * 0.40) / 4);
+        gorduraG = Math.round((caloriasAlvo * 0.30) / 9);
+      }
+    }
+
+    const porcoesProteina = plano?.porcoes_proteina || Math.round(proteinaG / 25);
+    const porcoesHidratos = plano?.porcoes_hidratos || Math.round(carboidratosG / 30);
+    const porcoesGordura = plano?.porcoes_gordura || Math.round(gorduraG / 10);
+    const porcoesLegumes = plano?.porcoes_legumes || porcoesFromPlan.legumes || 4;
+
+    return {
+      nome: userName || nomeParam || 'Cliente',
+      peso_actual: plano?.peso_actual || cliente?.peso_actual || 70,
+      peso_meta: plano?.peso_meta || cliente?.peso_meta || 60,
+      fase: plano?.fase || 'inducao',
+      calorias: caloriasAlvo,
+      proteina_g: proteinaG,
+      carboidratos_g: carboidratosG,
+      gordura_g: gorduraG,
+      porcoes_proteina: porcoesProteina,
+      porcoes_legumes: porcoesLegumes,
+      porcoes_hidratos: porcoesHidratos,
+      porcoes_gordura: porcoesGordura,
+      tamanho_palma: plano?.tamanho_palma_g || 20,
+      tamanho_mao: plano?.tamanho_mao_g || 25,
+      tamanho_polegar: plano?.tamanho_polegar_g || 7,
+      data_inicio: plano?.data_inicio_fase || plano?.created_at || new Date().toISOString(),
+      abordagem: abordagem
+    };
+  };
+
   const carregarDados = async () => {
     try {
+      // Try coach API first (server-side, bypasses RLS)
+      // This works when coach opens the PDF or when userId param is present
+      let loaded = false;
+      try {
+        const pdfData = await coachApi.buscarPlanoPdf(planoId, userIdParam);
+        if (pdfData?.plano) {
+          const plano = { ...pdfData.plano, calorias_diarias: pdfData.plano.calorias_alvo };
+          setDados(buildDados(plano, pdfData.cliente, pdfData.userName));
+          loaded = true;
+        }
+      } catch (e) {
+        // Coach API failed (not a coach, or network error) — fall through to direct queries
+      }
+
+      if (loaded) return;
+
+      // Fallback: direct supabase queries (works for client viewing own plan)
       let plano = null;
       const { data: planoView } = await supabase.from('vitalis_plano').select('*').eq('id', planoId).maybeSingle();
       plano = planoView;
@@ -98,82 +175,12 @@ export default function PlanoHTML() {
           ? supabase.from('vitalis_clients').select('*').eq('user_id', plano.user_id).maybeSingle()
           : { data: null };
       const { data: cliente } = await clientQuery;
-      const userIdForIntake = cliente?.user_id || plano?.user_id;
-      const [intakeRes, userRes] = await Promise.all([
-        userIdForIntake
-          ? supabase.from('vitalis_intake').select('nome').eq('user_id', userIdForIntake).order('created_at', { ascending: false }).limit(1).maybeSingle()
-          : { data: null },
-        userIdForIntake
-          ? supabase.from('users').select('nome').eq('id', userIdForIntake).maybeSingle()
-          : { data: null },
-      ]);
-      const intake = intakeRes?.data;
-      const userName = userRes?.data?.nome;
+      const userIdForName = cliente?.user_id || plano?.user_id;
+      const { data: userData } = userIdForName
+        ? await supabase.from('users').select('nome').eq('id', userIdForName).maybeSingle()
+        : { data: null };
 
-      let porcoesFromPlan = {};
-      try {
-        const receitasConfig = plano?.receitas_incluidas ? JSON.parse(plano.receitas_incluidas) : {};
-        porcoesFromPlan = receitasConfig['porções_por_refeicao'] || receitasConfig.porcoes_por_refeicao || {};
-      } catch (e) { /* ignore */ }
-
-      const abordagem = plano?.abordagem || 'equilibrado';
-      const caloriasAlvo = plano?.calorias_diarias || plano?.calorias_alvo || 1500;
-
-      // LÓGICA CORRETA: Se o plano tem macros calculados (do planoGenerator), usa-os!
-      // Caso contrário, calcula baseado nas calorias e abordagem
-      let proteinaG, carboidratosG, gorduraG;
-
-      if (plano?.proteina_g && plano?.carboidratos_g && plano?.gordura_g) {
-        // Plano tem macros já calculados (do planoGenerator) - USAR ESSES!
-        proteinaG = plano.proteina_g;
-        carboidratosG = plano.carboidratos_g;
-        gorduraG = plano.gordura_g;
-      } else {
-        // Fallback: Calcular macros baseado nas calorias e abordagem
-        if (abordagem === 'keto_if') {
-          // Keto: 70% gordura, 25% proteína, 5% carbs
-          proteinaG = Math.round((caloriasAlvo * 0.25) / 4);
-          carboidratosG = Math.round((caloriasAlvo * 0.05) / 4);
-          gorduraG = Math.round((caloriasAlvo * 0.70) / 9);
-        } else if (abordagem === 'low_carb') {
-          // Low-carb: 40% proteína, 30% carbs, 30% gordura
-          proteinaG = Math.round((caloriasAlvo * 0.40) / 4);
-          carboidratosG = Math.round((caloriasAlvo * 0.30) / 4);
-          gorduraG = Math.round((caloriasAlvo * 0.30) / 9);
-        } else {
-          // Equilibrado: 30% proteína, 40% carbs, 30% gordura
-          proteinaG = Math.round((caloriasAlvo * 0.30) / 4);
-          carboidratosG = Math.round((caloriasAlvo * 0.40) / 4);
-          gorduraG = Math.round((caloriasAlvo * 0.30) / 9);
-        }
-      }
-
-      // Calcular porções visuais baseado nos macros
-      // 1 palma = 25g proteína, 1 mão = 30g hidratos, 1 polegar = 10g gordura
-      const porcoesProteina = plano?.porcoes_proteina || Math.round(proteinaG / 25);
-      const porcoesHidratos = plano?.porcoes_hidratos || Math.round(carboidratosG / 30);
-      const porcoesGordura = plano?.porcoes_gordura || Math.round(gorduraG / 10);
-      const porcoesLegumes = plano?.porcoes_legumes || porcoesFromPlan.legumes || 4;
-
-      setDados({
-        nome: userName || intake?.nome || nomeParam || 'Cliente',
-        peso_actual: plano?.peso_actual || cliente?.peso_actual || 70,
-        peso_meta: plano?.peso_meta || cliente?.peso_meta || 60,
-        fase: plano?.fase || 'inducao',
-        calorias: caloriasAlvo,
-        proteina_g: proteinaG,
-        carboidratos_g: carboidratosG,
-        gordura_g: gorduraG,
-        porcoes_proteina: porcoesProteina,
-        porcoes_legumes: porcoesLegumes,
-        porcoes_hidratos: porcoesHidratos,
-        porcoes_gordura: porcoesGordura,
-        tamanho_palma: plano?.tamanho_palma_g || 20,
-        tamanho_mao: plano?.tamanho_mao_g || 25,
-        tamanho_polegar: plano?.tamanho_polegar_g || 7,
-        data_inicio: plano?.data_inicio_fase || plano?.created_at || new Date().toISOString(),
-        abordagem: abordagem
-      });
+      setDados(buildDados(plano, cliente, userData?.nome));
     } catch (err) {
       console.error(err);
     } finally {
