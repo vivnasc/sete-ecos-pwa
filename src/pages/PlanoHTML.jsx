@@ -73,6 +73,7 @@ const LOGO_PATH = '/logos/VITALIS_LOGO_V3.png';
 export default function PlanoHTML() {
   const [searchParams] = useSearchParams();
   const planoId = searchParams.get('id');
+  const nomeParam = searchParams.get('nome');
   const [dados, setDados] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -98,9 +99,16 @@ export default function PlanoHTML() {
           : { data: null };
       const { data: cliente } = await clientQuery;
       const userIdForIntake = cliente?.user_id || plano?.user_id;
-      const { data: intake } = userIdForIntake
-        ? await supabase.from('vitalis_intake').select('nome').eq('user_id', userIdForIntake).order('created_at', { ascending: false }).limit(1).maybeSingle()
-        : { data: null };
+      const [intakeRes, userRes] = await Promise.all([
+        userIdForIntake
+          ? supabase.from('vitalis_intake').select('nome').eq('user_id', userIdForIntake).order('created_at', { ascending: false }).limit(1).maybeSingle()
+          : { data: null },
+        userIdForIntake
+          ? supabase.from('users').select('nome').eq('id', userIdForIntake).maybeSingle()
+          : { data: null },
+      ]);
+      const intake = intakeRes?.data;
+      const userName = userRes?.data?.nome;
 
       let porcoesFromPlan = {};
       try {
@@ -148,7 +156,7 @@ export default function PlanoHTML() {
       const porcoesLegumes = plano?.porcoes_legumes || porcoesFromPlan.legumes || 4;
 
       setDados({
-        nome: intake?.nome || 'Cliente',
+        nome: userName || intake?.nome || nomeParam || 'Cliente',
         peso_actual: plano?.peso_actual || cliente?.peso_actual || 70,
         peso_meta: plano?.peso_meta || cliente?.peso_meta || 60,
         fase: plano?.fase || 'inducao',

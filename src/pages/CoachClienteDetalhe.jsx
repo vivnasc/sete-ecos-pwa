@@ -468,7 +468,7 @@ export default function CoachClienteDetalhe() {
                       <p className="text-white/70 text-sm">{ABORDAGEM_LABELS[activePlan.abordagem] || activePlan.abordagem} | {faseDicas?.duracao || ''}</p>
                     </div>
                     <button
-                      onClick={() => window.open(`/vitalis/plano-pdf?id=${activePlan.id}`, '_blank')}
+                      onClick={() => window.open(`/vitalis/plano-pdf?id=${activePlan.id}&nome=${encodeURIComponent(user?.nome || '')}`, '_blank')}
                       className="px-3 py-1.5 text-sm font-medium bg-white/20 rounded-lg hover:bg-white/30"
                     >
                       Ver PDF
