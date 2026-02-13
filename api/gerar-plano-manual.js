@@ -6,11 +6,23 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://vvvdtogvlutrybultffx.supabase.co';
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 
-// Função auxiliar
+// Função auxiliar com validação defensiva
 function calcularIMC(peso, altura) {
-  if (!altura || altura <= 0 || !peso || peso <= 0) return 0;
+  // Validar inputs
+  if (!altura || !peso) return null;
+  if (altura <= 0 || peso <= 0) return null;
+
+  // Validar ranges realistas (evitar overflow)
+  if (altura < 100 || altura > 250) return null; // 1.00m - 2.50m
+  if (peso < 20 || peso > 300) return null;      // 20kg - 300kg
+
   const alturaM = altura / 100;
-  return parseFloat((peso / (alturaM * alturaM)).toFixed(1));
+  const imc = peso / (alturaM * alturaM);
+
+  // Validar resultado (IMC normal: 10-60)
+  if (imc < 10 || imc > 100) return null;
+
+  return parseFloat(imc.toFixed(1));
 }
 
 async function gerarPlano(userId, supabase) {
