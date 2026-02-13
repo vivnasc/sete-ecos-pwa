@@ -208,7 +208,7 @@ async function gerarPlano(userId, supabase) {
 export default async function handler(req, res) {
   try {
     // Segurança básica
-    const { secret } = req.query;
+    const { secret, user_id, email } = req.query;
     if (secret !== 'vivnasc2026') {
       return res.status(403).json({ error: 'Acesso negado' });
     }
@@ -219,28 +219,58 @@ export default async function handler(req, res) {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Buscar a única cliente ativa
-    const { data: cliente, error: clienteError } = await supabase
-      .from('vitalis_clients')
-      .select('user_id, subscription_status')
-      .eq('subscription_status', 'active')
-      .single();
+    let targetUserId = user_id;
 
-    if (clienteError || !cliente) {
-      return res.status(404).json({
-        error: 'Cliente ativa não encontrada',
-        details: clienteError?.message
-      });
+    // Se passou email, buscar user_id
+    if (!targetUserId && email) {
+      const { data: authUser, error: authError } = await supabase.auth.admin.listUsers();
+      if (!authError && authUser?.users) {
+        const user = authUser.users.find(u => u.email === email);
+        if (user) {
+          targetUserId = user.id;
+        }
+      }
+
+      // Fallback: buscar em vitalis_clients via perfil
+      if (!targetUserId) {
+        const { data: userData } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', email)
+          .single();
+
+        if (userData) {
+          targetUserId = userData.id;
+        }
+      }
     }
 
-    console.log('🎯 Gerando plano para userId:', cliente.user_id);
+    // Se ainda não tem user_id, buscar a única cliente ativa (fallback)
+    if (!targetUserId) {
+      const { data: cliente, error: clienteError } = await supabase
+        .from('vitalis_clients')
+        .select('user_id, subscription_status')
+        .eq('subscription_status', 'active')
+        .single();
 
-    const resultado = await gerarPlano(cliente.user_id, supabase);
+      if (clienteError || !cliente) {
+        return res.status(404).json({
+          error: 'Nenhuma cliente encontrada. Passe user_id ou email como parâmetro.',
+          details: clienteError?.message
+        });
+      }
+
+      targetUserId = cliente.user_id;
+    }
+
+    console.log('🎯 Gerando plano para userId:', targetUserId);
+
+    const resultado = await gerarPlano(targetUserId, supabase);
 
     return res.status(200).json({
       success: true,
       message: 'Plano gerado com sucesso!',
-      user_id: cliente.user_id,
+      user_id: targetUserId,
       plano: resultado
     });
 
