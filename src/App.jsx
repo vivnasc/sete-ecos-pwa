@@ -133,7 +133,7 @@ function AuthRoute({ children, from }) {
 
 // ===== ROTAS =====
 function AppRoutes() {
-  const { session, loading } = useAuth()
+  const { session, loading, isCoachUser } = useAuth()
 
   if (loading) return <LoadingFallback />
 
@@ -143,7 +143,7 @@ function AppRoutes() {
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             {/* ===== ROTAS PÚBLICAS ===== */}
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={isCoachUser ? <Navigate to="/coach" replace /> : <Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/landing" element={<Navigate to="/" />} />
             <Route path="/recuperar-password" element={<RecuperarPassword />} />

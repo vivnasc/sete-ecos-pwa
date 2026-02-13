@@ -50,6 +50,10 @@ export default async function handler(req, res) {
 
   try {
     switch (action) {
+      case 'listar-clientes':
+        return await listarClientes(res);
+      case 'buscar-dados-cliente':
+        return await buscarDadosCliente(params.userId, res);
       case 'gerar-plano':
         return await gerarPlano(params.userId, res);
       case 'aprovar-plano':
@@ -425,4 +429,94 @@ async function setTester(userId, res) {
   }).then(() => {}).catch(() => {});
 
   return res.status(200).json({ success: true });
+}
+
+// ==========================================
+// LISTAR CLIENTES (server-side, bypasses RLS)
+// ==========================================
+async function listarClientes(res) {
+  // Fetch all vitalis clients with user info
+  const { data: clientsData, error } = await supabase
+    .from('vitalis_clients')
+    .select('*, users!inner(id, nome, email, created_at)')
+    .order('created_at', { ascending: false });
+
+  if (error) return res.status(500).json({ error: 'Erro ao carregar clientes: ' + error.message });
+  if (!clientsData || clientsData.length === 0) return res.status(200).json({ clients: [] });
+
+  const userIds = clientsData.map(c => c.user_id);
+
+  // Batch fetch intakes, plans, last activity — all server-side
+  const [intakesRes, plansRes, registosRes] = await Promise.all([
+    supabase.from('vitalis_intake').select('user_id, altura_cm, peso_actual, idade').in('user_id', userIds),
+    supabase.from('vitalis_meal_plans').select('user_id, id, status, calorias_alvo, created_at').in('user_id', userIds).order('created_at', { ascending: false }),
+    supabase.from('vitalis_registos').select('user_id, created_at').in('user_id', userIds).order('created_at', { ascending: false }),
+  ]);
+
+  // Build lookup maps
+  const intakeMap = {};
+  (intakesRes.data || []).forEach(i => { intakeMap[i.user_id] = i; });
+
+  const planMap = {};
+  (plansRes.data || []).forEach(p => {
+    if (!planMap[p.user_id]) planMap[p.user_id] = p;
+  });
+
+  const lastActivityMap = {};
+  (registosRes.data || []).forEach(r => {
+    if (!lastActivityMap[r.user_id]) lastActivityMap[r.user_id] = r.created_at;
+  });
+
+  // Enrich clients
+  const clients = clientsData.map(client => {
+    const intake = intakeMap[client.user_id];
+    const plan = planMap[client.user_id];
+    const hasIntake = !!(intake && intake.altura_cm && intake.peso_actual && intake.idade);
+    const hasPlan = !!plan;
+
+    return {
+      ...client,
+      nome: client.users?.nome || 'Sem nome',
+      email: client.users?.email || '',
+      userCreatedAt: client.users?.created_at,
+      hasIntake,
+      hasPlan,
+      planStatus: plan?.status || null,
+      planCalorias: plan?.calorias_alvo || null,
+      lastActivity: lastActivityMap[client.user_id] || null,
+    };
+  });
+
+  return res.status(200).json({ clients });
+}
+
+// ==========================================
+// BUSCAR DADOS CLIENTE (server-side, bypasses RLS)
+// ==========================================
+async function buscarDadosCliente(userId, res) {
+  if (!userId) return res.status(400).json({ error: 'userId obrigatorio' });
+
+  const [userRes, clientRes, intakeRes, planoRes, registosRes, aguaRes, mealsRes, habitosRes] = await Promise.all([
+    supabase.from('users').select('*').eq('id', userId).single(),
+    supabase.from('vitalis_clients').select('*').eq('user_id', userId).maybeSingle(),
+    supabase.from('vitalis_intake').select('*').eq('user_id', userId).maybeSingle(),
+    supabase.from('vitalis_meal_plans').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(5),
+    supabase.from('vitalis_registos').select('*').eq('user_id', userId).order('data', { ascending: false }).limit(30),
+    supabase.from('vitalis_agua_log').select('*').eq('user_id', userId).order('data', { ascending: false }).limit(30),
+    supabase.from('vitalis_meals_log').select('*').eq('user_id', userId).order('data', { ascending: false }).limit(30),
+    supabase.from('vitalis_habitos').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(10),
+  ]);
+
+  if (userRes.error) return res.status(404).json({ error: 'Cliente nao encontrado' });
+
+  return res.status(200).json({
+    user: userRes.data,
+    client: clientRes.data,
+    intake: intakeRes.data,
+    planos: planoRes.data || [],
+    registos: registosRes.data || [],
+    aguaLogs: aguaRes.data || [],
+    mealsLogs: mealsRes.data || [],
+    habitos: habitosRes.data || [],
+  });
 }

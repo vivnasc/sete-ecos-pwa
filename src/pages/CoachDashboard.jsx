@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { supabase } from '../lib/supabase';
 import { Link, useNavigate } from 'react-router-dom';
 import { coachApi } from '../lib/coachApi';
 import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
@@ -59,84 +58,9 @@ export default function CoachDashboard() {
 
   const loadClients = async () => {
     try {
-      // Fetch all vitalis clients with user info
-      const { data: clientsData, error } = await supabase
-        .from('vitalis_clients')
-        .select('*, users!inner(id, nome, email, created_at)')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Erro ao carregar clientes:', error);
-        setClients([]);
-        setLoading(false);
-        return;
-      }
-
-      if (!clientsData || clientsData.length === 0) {
-        setClients([]);
-        setStats({ total: 0, active: 0, trial: 0, pending: 0, semPlano: 0, aguardaRevisao: 0 });
-        setLoading(false);
-        return;
-      }
-
-      // Enrich with intake and plan info
-      const userIds = clientsData.map(c => c.user_id);
-
-      // Batch fetch intakes
-      const { data: intakes } = await supabase
-        .from('vitalis_intake')
-        .select('user_id, altura_cm, peso_actual, idade')
-        .in('user_id', userIds);
-
-      // Batch fetch plans (most recent per user)
-      const { data: plans } = await supabase
-        .from('vitalis_meal_plans')
-        .select('user_id, id, status, calorias_alvo, created_at')
-        .in('user_id', userIds)
-        .order('created_at', { ascending: false });
-
-      // Batch fetch last activity (registos)
-      const { data: lastRegistos } = await supabase
-        .from('vitalis_registos')
-        .select('user_id, created_at')
-        .in('user_id', userIds)
-        .order('created_at', { ascending: false });
-
-      // Create lookup maps
-      const intakeMap = {};
-      (intakes || []).forEach(i => { intakeMap[i.user_id] = i; });
-
-      const planMap = {};
-      (plans || []).forEach(p => {
-        // Keep the most recent plan per user
-        if (!planMap[p.user_id]) planMap[p.user_id] = p;
-      });
-
-      const lastActivityMap = {};
-      (lastRegistos || []).forEach(r => {
-        if (!lastActivityMap[r.user_id]) lastActivityMap[r.user_id] = r.created_at;
-      });
-
-      // Enrich clients
-      const enriched = clientsData.map(client => {
-        const intake = intakeMap[client.user_id];
-        const plan = planMap[client.user_id];
-        const hasIntake = !!(intake && intake.altura_cm && intake.peso_actual && intake.idade);
-        const hasPlan = !!plan;
-        const planStatus = plan?.status || null;
-
-        return {
-          ...client,
-          nome: client.users?.nome || 'Sem nome',
-          email: client.users?.email || '',
-          userCreatedAt: client.users?.created_at,
-          hasIntake,
-          hasPlan,
-          planStatus,
-          planCalorias: plan?.calorias_alvo,
-          lastActivity: lastActivityMap[client.user_id] || null,
-        };
-      });
+      // Server-side fetch via coach API (bypasses RLS)
+      const data = await coachApi.listarClientes();
+      const enriched = data.clients || [];
 
       // Calculate stats
       const statsCalc = {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { isCoach } from '../lib/coach';
 import { g } from '../utils/genero';
 
 // Traduzir erros do Supabase para português
@@ -45,7 +46,9 @@ export default function Login() {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate(from, { replace: true });
+        // Coach vai sempre para /coach
+        const dest = isCoach(session.user?.email) ? '/coach' : from;
+        navigate(dest, { replace: true });
       }
       setCheckingSession(false);
     };
@@ -76,7 +79,9 @@ export default function Login() {
           }, { onConflict: 'auth_id' }).select('id');
         }
 
-        navigate(from, { replace: true });
+        // Coach vai sempre para /coach
+        const dest = isCoach(data.user?.email) ? '/coach' : from;
+        navigate(dest, { replace: true });
 
       } else {
         // SIGNUP

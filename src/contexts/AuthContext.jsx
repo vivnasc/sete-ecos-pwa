@@ -130,6 +130,7 @@ export function AuthProvider({ children }) {
       userRecord,
       vitalisAccess,
       aureaAccess,
+      isCoachUser: isCoach(session?.user?.email),
       refreshAccess
     }}>
       {children}
