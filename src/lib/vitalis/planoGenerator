@@ -196,8 +196,8 @@ export async function gerarPlanoAutomatico(userId) {
     let numRefeicoes;
     if (intake.aceita_jejum && abordagem === 'keto_if') {
       numRefeicoes = 2; // Jejum intermitente: 2 refeições
-    } else if (intake.num_refeicoes_dia) {
-      const parsed = parseInt(intake.num_refeicoes_dia.toString().split('-')[0], 10);
+    } else if (intake.refeicoes_dia) {
+      const parsed = parseInt(intake.refeicoes_dia, 10);
       numRefeicoes = (parsed && !isNaN(parsed) && parsed > 0) ? parsed : 3;
     } else {
       numRefeicoes = 3; // Padrão
@@ -216,7 +216,7 @@ export async function gerarPlanoAutomatico(userId) {
     if (intake.aceita_jejum) {
       // Jejum 16:8 - ex: 12h, 16h, 20h
       horariosRefeicoes = ['12:00', '16:00', '20:00'].slice(0, numRefeicoes);
-    } else if (intake.pequeno_almoco === 'nunca') {
+    } else if (intake.pequeno_almoco === 'Não faz') {
       // Não come pequeno-almoço
       horariosRefeicoes = ['13:00', '17:00', '20:00'].slice(0, numRefeicoes);
     } else {
@@ -234,9 +234,7 @@ export async function gerarPlanoAutomatico(userId) {
       .upsert({
         user_id: userId,
         status: 'activo',
-        pacote: intake.pacote_escolhido || 'essencial',
         data_inicio: new Date().toISOString().split('T')[0],
-        duracao_programa: intake.duracao || '6_meses',
         fase_actual: faseInicial,
         objectivo_principal: intake.objectivo_principal,
         peso_inicial: intake.peso_actual,

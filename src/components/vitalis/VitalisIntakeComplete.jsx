@@ -553,13 +553,15 @@ try {
         user_id: userData.id
       });
 
-      // 🛡️ TRIAL NÃO GERA PLANO - apenas acesso básico (dashboard, check-in, receitas)
-      // Apenas utilizadores com subscrição ACTIVA geram plano automático
-      const statusComPlano = ['tester', 'active', 'pending'];
+      // 🛡️ REGRAS DE GERAÇÃO DE PLANO AUTOMÁTICO
+      // APENAS testers e utilizadores com subscrição ACTIVE geram plano
+      // pending aguarda verificação de pagamento (não gera ainda)
+      // trial tem acesso básico (dashboard, receitas, check-in) mas SEM plano personalizado
+      const statusComPlano = ['tester', 'active'];
       const temPlano = currentClient && statusComPlano.includes(currentClient.subscription_status);
 
-      // Trial tem acesso limitado ao dashboard, mas SEM plano personalizado
-      const statusComAcessoBasico = ['trial'];
+      // Trial e pending têm acesso limitado ao dashboard, mas SEM plano personalizado
+      const statusComAcessoBasico = ['trial', 'pending'];
       const temAcessoBasico = currentClient && statusComAcessoBasico.includes(currentClient.subscription_status);
 
       console.log('🎯 [INTAKE] DECISÃO DE GERAÇÃO DE PLANO:');
