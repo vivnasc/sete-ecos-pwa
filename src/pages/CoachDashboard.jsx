@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import { Link, useNavigate } from 'react-router-dom';
-import { gerarPlanoAutomatico } from '../lib/vitalis/planoGenerator';
-import {
-  confirmManualPayment,
-  setAsTester,
-  SUBSCRIPTION_PLANS
-} from '../lib/subscriptions';
+import { coachApi } from '../lib/coachApi';
+import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
 
 /**
  * SETE ECOS - COACH DASHBOARD v5
@@ -199,15 +195,11 @@ export default function CoachDashboard() {
     setGerandoPlano(client.user_id);
 
     try {
-      const result = await gerarPlanoAutomatico(client.user_id);
-      if (result.success) {
-        alert(`Plano gerado com sucesso!\n${result.plano.calorias} kcal | P:${result.plano.macros.proteina}g C:${result.plano.macros.carboidratos}g G:${result.plano.macros.gordura}g\n\nPlano fica em revisao ate aprovares.`);
-        loadClients();
-      } else {
-        alert(`Erro ao gerar plano: ${result.error}`);
-      }
+      const result = await coachApi.gerarPlano(client.user_id);
+      alert(`Plano gerado com sucesso!\n${result.plano.calorias} kcal | P:${result.plano.macros.proteina}g C:${result.plano.macros.carboidratos}g G:${result.plano.macros.gordura}g\n\nPlano fica em revisao ate aprovares.`);
+      loadClients();
     } catch (err) {
-      alert('Erro: ' + err.message);
+      alert('Erro ao gerar plano: ' + err.message);
     } finally {
       setGerandoPlano(null);
     }
@@ -221,22 +213,7 @@ export default function CoachDashboard() {
 
     setDeletingClient(client.user_id);
     try {
-      const uid = client.user_id;
-
-      // Delete in order (dependencies first)
-      await supabase.from('vitalis_habitos').delete().eq('user_id', uid);
-      await supabase.from('vitalis_meal_plans').delete().eq('user_id', uid);
-      await supabase.from('vitalis_intake').delete().eq('user_id', uid);
-      await supabase.from('vitalis_registos').delete().eq('user_id', uid);
-      await supabase.from('vitalis_agua_log').delete().eq('user_id', uid);
-      await supabase.from('vitalis_workouts_log').delete().eq('user_id', uid);
-      await supabase.from('vitalis_sono_log').delete().eq('user_id', uid);
-      await supabase.from('vitalis_fasting_log').delete().eq('user_id', uid);
-      await supabase.from('vitalis_meals_log').delete().eq('user_id', uid);
-      await supabase.from('vitalis_alerts').delete().eq('user_id', uid);
-      await supabase.from('vitalis_subscription_log').delete().eq('user_id', uid);
-      await supabase.from('vitalis_clients').delete().eq('user_id', uid);
-
+      await coachApi.apagarCliente(client.user_id);
       alert(`Cliente "${nome}" apagado com sucesso.`);
       loadClients();
     } catch (err) {
@@ -250,17 +227,9 @@ export default function CoachDashboard() {
   const handleActivate = async (client, planKey = 'MONTHLY') => {
     if (!confirm(`Activar subscricao ${SUBSCRIPTION_PLANS[planKey].name} para ${client.nome}?`)) return;
     try {
-      const result = await confirmManualPayment(client.user_id, {
-        method: 'manual',
-        reference: `Coach-${Date.now()}`,
-        amount: SUBSCRIPTION_PLANS[planKey].price_usd,
-        currency: 'USD',
-        planId: planKey
-      });
-      if (result.success) {
-        alert(`Subscricao activada ate ${result.expiresAt.toLocaleDateString('pt-PT')}`);
-        loadClients();
-      }
+      const result = await coachApi.activarSubscricao(client.user_id, planKey);
+      alert(`Subscricao activada ate ${new Date(result.expiresAt).toLocaleDateString('pt-PT')}`);
+      loadClients();
     } catch (err) {
       alert('Erro: ' + err.message);
     }
@@ -269,7 +238,7 @@ export default function CoachDashboard() {
   const handleSetTester = async (client) => {
     if (!confirm(`Definir "${client.nome}" como tester (acesso gratuito)?`)) return;
     try {
-      await setAsTester(client.user_id, 'Definido pela coach');
+      await coachApi.setTester(client.user_id);
       alert('Cliente definido como tester.');
       loadClients();
     } catch (err) {
