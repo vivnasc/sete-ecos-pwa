@@ -183,13 +183,13 @@ export default function CoachClienteDetalhe() {
   };
 
   const planConfig = parsePlanConfig(activePlan);
-  const porcoes = planConfig['por\u00e7\u00f5es_por_refeicao'] || planConfig.porcoes_por_refeicao || {};
 
-  // Calculate daily portions from macros as fallback
-  const porcoesProteina = porcoes.proteina || (activePlan ? Math.round(activePlan.proteina_g / 25) : 0);
-  const porcoesLegumes = porcoes.legumes || 4;
-  const porcoesHidratos = porcoes.hidratos || (activePlan ? Math.round(activePlan.carboidratos_g / 30) : 0);
-  const porcoesGordura = porcoes.gordura || (activePlan ? Math.round(activePlan.gordura_g / 10) : 0);
+  // Calculate daily portions from macros (same formula as PDF/PlanoHTML)
+  // Note: planConfig.porções_por_refeicao contains PER-MEAL values, not daily totals
+  const porcoesProteina = activePlan ? Math.round(activePlan.proteina_g / 25) : 0;
+  const porcoesLegumes = 4; // Sempre 4 punhos por dia (fixo)
+  const porcoesHidratos = activePlan ? Math.round(activePlan.carboidratos_g / 30) : 0;
+  const porcoesGordura = activePlan ? Math.round(activePlan.gordura_g / 10) : 0;
   const numRefeicoes = planConfig.num_refeicoes || 3;
   const horarios = planConfig.horarios || [];
 
