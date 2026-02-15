@@ -26,6 +26,7 @@ import { isCoach } from '../../lib/coach';
  */
 
 const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || 'sb';
+const PAYPAL_SDK_TIMEOUT = 15000; // 15s timeout para carregar SDK
 const WHATSAPP_COMMUNITY = 'https://chat.whatsapp.com/FbHbQuDPGAZ3myiu29CmHO';
 
 // Exchange rates (Mozambican Metical as base)
@@ -252,16 +253,45 @@ const PagamentoVitalis = () => {
       return;
     }
 
+    if (!PAYPAL_CLIENT_ID || PAYPAL_CLIENT_ID === 'sb') {
+      console.warn('PayPal: usando modo sandbox (client ID não configurado)');
+    }
+
     const script = document.createElement('script');
     script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD`;
     script.async = true;
-    script.onload = () => setPaypalLoaded(true);
-    script.onerror = () => setPaypalError('Erro ao carregar PayPal.');
+
+    // Timeout para não ficar eternamente "A carregar..."
+    const timeout = setTimeout(() => {
+      if (!window.paypal) {
+        setPaypalError('PayPal demorou muito a carregar. Verifica a tua ligação à internet ou tenta o pagamento manual.');
+        console.error('PayPal SDK timeout após', PAYPAL_SDK_TIMEOUT, 'ms');
+      }
+    }, PAYPAL_SDK_TIMEOUT);
+
+    script.onload = () => {
+      clearTimeout(timeout);
+      if (window.paypal) {
+        setPaypalLoaded(true);
+      } else {
+        setPaypalError('PayPal carregou mas não inicializou correctamente. Tenta recarregar a página.');
+      }
+    };
+    script.onerror = (e) => {
+      clearTimeout(timeout);
+      console.error('PayPal SDK load error:', e);
+      setPaypalError('Erro ao carregar PayPal. Verifica a tua ligação à internet ou usa o pagamento manual (M-Pesa/Transferência).');
+    };
     document.body.appendChild(script);
   };
 
   const renderPayPalButtons = () => {
-    if (!paypalRef.current || !window.paypal) return;
+    if (!paypalRef.current) return;
+    if (!window.paypal) {
+      console.warn('PayPal SDK não disponível, a tentar carregar novamente...');
+      loadPayPalScript();
+      return;
+    }
     paypalRef.current.innerHTML = '';
 
     const plan = getActivePlans()[selectedPlan] || SUBSCRIPTION_PLANS.SEMESTRAL;
@@ -324,13 +354,17 @@ const PagamentoVitalis = () => {
             }
           }
         } catch (error) {
-          setMessage({ type: 'error', text: 'Erro ao processar pagamento.' });
+          console.error('PayPal onApprove error:', error);
+          setMessage({ type: 'error', text: `Erro ao processar pagamento: ${error.message || 'erro desconhecido'}. Contacta-nos via WhatsApp se o valor foi cobrado.` });
         } finally {
           setProcessing(false);
         }
       },
-      onError: () => setMessage({ type: 'error', text: 'Erro no PayPal.' }),
-      onCancel: () => setMessage({ type: 'info', text: 'Pagamento cancelado.' })
+      onError: (err) => {
+        console.error('PayPal button error:', err);
+        setMessage({ type: 'error', text: 'Erro no PayPal. Tenta novamente ou usa o pagamento manual (M-Pesa/Transferência).' });
+      },
+      onCancel: () => setMessage({ type: 'info', text: 'Pagamento cancelado. Podes tentar novamente quando quiseres.' })
     }).render(paypalRef.current);
   };
 
@@ -832,12 +866,33 @@ const PagamentoVitalis = () => {
                 {paymentMethod === 'paypal' ? (
                   <>
                     <div ref={paypalRef} className="min-h-[60px] bg-white rounded-xl p-3">
-                      {!paypalLoaded && (
+                      {paypalError ? (
+                        <div className="text-center py-3">
+                          <p className="text-red-600 text-sm mb-3">{paypalError}</p>
+                          <div className="flex gap-2 justify-center">
+                            <button
+                              onClick={() => {
+                                setPaypalError(null);
+                                loadPayPalScript();
+                              }}
+                              className="px-4 py-2 bg-[#0070BA] text-white rounded-lg text-sm font-medium hover:bg-[#005EA6] transition-all"
+                            >
+                              Tentar novamente
+                            </button>
+                            <button
+                              onClick={() => setPaymentMethod('manual')}
+                              className="px-4 py-2 bg-[#7C8B6F] text-white rounded-lg text-sm font-medium hover:bg-[#6B7A5D] transition-all"
+                            >
+                              Pagar via M-Pesa
+                            </button>
+                          </div>
+                        </div>
+                      ) : !paypalLoaded ? (
                         <div className="text-center py-2">
                           <div className="w-6 h-6 border-2 border-[#7C8B6F] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
                           <p className="text-gray-500 text-sm">A carregar PayPal...</p>
                         </div>
-                      )}
+                      ) : null}
                     </div>
                     <p className="text-white/60 text-xs text-center mt-2">
                       Paga com cartão de crédito/débito ou conta PayPal
