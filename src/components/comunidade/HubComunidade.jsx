@@ -97,16 +97,31 @@ export default function HubComunidade() {
 
       if (userData) {
         setUserId(userData.id)
-        const [perfilData, fogueiraData, reflexoesCount, ressonanciaCount, circulosData] = await Promise.all([
-          getPerfilPublico(userData.id),
-          getFogueiraAtiva(),
-          contarReflexoes(userData.id),
-          contarRessonanciaRecebida(userData.id),
-          getMeusCirculos(userData.id)
-        ])
+
+        // Ghost stats are always applied, even if Supabase queries fail
+        const ghostStats = getGhostCommunityStats()
+
+        let perfilData = null, fogueiraData = null
+        let reflexoesCount = 0, ressonanciaCount = 0, circulosData = null
+        try {
+          const results = await Promise.all([
+            getPerfilPublico(userData.id),
+            getFogueiraAtiva(),
+            contarReflexoes(userData.id),
+            contarRessonanciaRecebida(userData.id),
+            getMeusCirculos(userData.id)
+          ])
+          perfilData = results[0]
+          fogueiraData = results[1]
+          reflexoesCount = results[2]
+          ressonanciaCount = results[3]
+          circulosData = results[4]
+        } catch (e) {
+          console.warn('Supabase queries failed, showing ghost stats only:', e)
+        }
+
         setPerfil(perfilData)
         setFogueira(fogueiraData)
-        const ghostStats = getGhostCommunityStats()
         setStats({
           reflexoes: (reflexoesCount || 0) + ghostStats.totalReflexoes,
           ressonancia: (ressonanciaCount || 0) + ghostStats.totalRessonancia,
