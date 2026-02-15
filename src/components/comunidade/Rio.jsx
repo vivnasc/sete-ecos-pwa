@@ -12,6 +12,11 @@ import {
   ECOS_INFO,
   TEMAS_REFLEXAO
 } from '../../lib/comunidade'
+import {
+  getGhostPostsForRange,
+  mergeGhostPosts,
+  getGhostRessonanciaBatch
+} from '../../lib/ghost-users'
 import ReflexaoCard from './ReflexaoCard'
 import CriarReflexao from './CriarReflexao'
 import EditarJornada from './EditarJornada'
@@ -111,18 +116,35 @@ export default function Rio() {
         data = data.filter(p => p.tipo === filtroTema)
       }
 
-      if (data.length < PAGE_SIZE) setHasMore(false)
+      // Misturar ghost posts na primeira página
+      if (pageNum === 0) {
+        let ghostPosts = getGhostPostsForRange(14)
+        if (filtroEco) {
+          ghostPosts = ghostPosts.filter(p => p.eco === filtroEco || p.eco === 'geral')
+        }
+        if (filtroTema) {
+          ghostPosts = ghostPosts.filter(p => p.tipo === filtroTema)
+        }
+        data = mergeGhostPosts(data, ghostPosts)
+      }
 
-      // Verificar ressonâncias em batch
-      const postIds = data.map(p => p.id)
-      const ressonancias = await verificarRessonanciaBatch(postIds, uid)
+      if (data.length < PAGE_SIZE && pageNum > 0) setHasMore(false)
+
+      // Verificar ressonâncias em batch (reais + ghost)
+      const realPostIds = data.filter(p => !p._ghost).map(p => p.id)
+      const ghostPostIds = data.filter(p => p._ghost).map(p => p.id)
+      const ressonancias = realPostIds.length > 0
+        ? await verificarRessonanciaBatch(realPostIds, uid)
+        : {}
+      const ghostRessonancias = getGhostRessonanciaBatch(ghostPostIds)
+      const allRessonancias = { ...ressonancias, ...ghostRessonancias }
 
       if (reset) {
         setPosts(data)
-        setRessonanciaMap(ressonancias)
+        setRessonanciaMap(allRessonancias)
       } else {
         setPosts(prev => [...prev, ...data])
-        setRessonanciaMap(prev => ({ ...prev, ...ressonancias }))
+        setRessonanciaMap(prev => ({ ...prev, ...allRessonancias }))
       }
       setPage(pageNum)
     } catch (error) {

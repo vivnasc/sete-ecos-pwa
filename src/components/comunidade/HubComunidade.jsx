@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { getFogueiraAtiva, getPromptDoDia, getPerfilPublico, contarReflexoes, contarRessonanciaRecebida, getMeusCirculos } from '../../lib/comunidade'
+import { getGhostCommunityStats } from '../../lib/ghost-users'
 
 const ESPACOS = [
   {
@@ -105,10 +106,11 @@ export default function HubComunidade() {
         ])
         setPerfil(perfilData)
         setFogueira(fogueiraData)
+        const ghostStats = getGhostCommunityStats()
         setStats({
-          reflexoes: reflexoesCount || 0,
-          ressonancia: ressonanciaCount || 0,
-          circulos: circulosData ? circulosData.length : 0
+          reflexoes: (reflexoesCount || 0) + ghostStats.totalReflexoes,
+          ressonancia: (ressonanciaCount || 0) + ghostStats.totalRessonancia,
+          circulos: (circulosData ? circulosData.length : 0) + ghostStats.circulosActivos
         })
       }
     } catch (error) {
@@ -126,7 +128,7 @@ export default function HubComunidade() {
     return h > 0 ? `${h}h ${m}min` : `${m}min`
   }
 
-  const temDados = stats.reflexoes > 0 || stats.ressonancia > 0 || stats.circulos > 0
+  const temDados = true // Ghost stats garantem que há sempre dados visíveis
 
   if (loading) {
     return (

@@ -8,6 +8,7 @@ import {
   ECOS_INFO
 } from '../../lib/comunidade'
 import { supabase } from '../../lib/supabase'
+import { getGhostChamas } from '../../lib/ghost-users'
 
 // ============================================================
 // Fogueira — Espaco efemero comunal de partilha
@@ -42,6 +43,13 @@ export default function Fogueira({ userId }) {
   // Carregar fogueira ativa
   // ----------------------------------------------------------
 
+  const mergeChamas = (realChamas, fogueiraId) => {
+    const ghostChamas = getGhostChamas(fogueiraId)
+    const all = [...ghostChamas, ...realChamas]
+    all.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+    return all
+  }
+
   const carregarFogueira = useCallback(async () => {
     try {
       const ativa = await getFogueiraAtiva()
@@ -49,7 +57,7 @@ export default function Fogueira({ userId }) {
 
       if (ativa) {
         const chamasData = await getChamas(ativa.id)
-        setChamas(chamasData)
+        setChamas(mergeChamas(chamasData, ativa.id))
       }
     } catch (error) {
       console.error('Erro ao carregar fogueira:', error)
@@ -113,7 +121,7 @@ export default function Fogueira({ userId }) {
         async () => {
           try {
             const chamasData = await getChamas(fogueira.id)
-            setChamas(chamasData)
+            setChamas(mergeChamas(chamasData, fogueira.id))
           } catch (err) {
             console.error('Erro ao recarregar chamas:', err)
           }
@@ -148,7 +156,7 @@ export default function Fogueira({ userId }) {
       await adicionarChama(fogueira.id, userId, novaChama.trim())
       setNovaChama('')
       const chamasData = await getChamas(fogueira.id)
-      setChamas(chamasData)
+      setChamas(mergeChamas(chamasData, fogueira.id))
     } catch (error) {
       console.error('Erro ao adicionar chama:', error)
     }
