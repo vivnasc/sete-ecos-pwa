@@ -827,13 +827,58 @@ export default function CoachClienteDetalhe() {
         {/* === GESTAO === */}
         {tab === 'gestao' && (
           <div className="space-y-4">
+            {/* Payment verification alert */}
+            {client?.subscription_status === 'pending' && client?.payment_reference && (
+              <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4">
+                <h3 className="font-bold text-yellow-800 mb-3 flex items-center gap-2">
+                  <span className="text-lg">💰</span>
+                  Pagamento pendente de verificacao
+                </h3>
+                <div className="grid grid-cols-2 gap-3 text-sm mb-4">
+                  <div>
+                    <p className="text-yellow-700 text-xs">Metodo</p>
+                    <p className="font-semibold text-gray-900">📱 {client.payment_method || 'M-Pesa'}</p>
+                  </div>
+                  <div>
+                    <p className="text-yellow-700 text-xs">Referencia / Codigo</p>
+                    <p className="font-mono font-bold text-gray-900 bg-white px-2 py-1 rounded border border-yellow-200">{client.payment_reference}</p>
+                  </div>
+                  <div>
+                    <p className="text-yellow-700 text-xs">Valor</p>
+                    <p className="font-semibold text-green-700 text-lg">
+                      {client.payment_amount ? `${Number(client.payment_amount).toLocaleString('pt-MZ')} ${client.payment_currency || 'MZN'}` : 'N/A'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-yellow-700 text-xs">Plano escolhido</p>
+                    <p className="font-semibold text-gray-900">{client.subscription_plan || 'N/A'}</p>
+                  </div>
+                </div>
+                <p className="text-xs text-yellow-700 mb-3">Verifica a transaccao no M-Pesa e depois activa:</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {['MONTHLY', 'SEMESTRAL', 'ANNUAL'].map(key => (
+                    <button key={key} onClick={() => handleActivate(key)}
+                      className="py-2.5 text-sm font-bold bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                      Activar {SUBSCRIPTION_PLANS[key].name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="bg-white rounded-xl border border-gray-100 p-4">
               <h3 className="font-semibold text-gray-900 mb-3">Subscricao</h3>
               <div className="grid grid-cols-2 gap-2 text-sm mb-4">
                 <div><p className="text-gray-500">Estado</p><p className="font-medium">{STATUS_LABELS_TEXT[client?.subscription_status] || 'N/A'}</p></div>
                 <div><p className="text-gray-500">Plano</p><p className="font-medium">{client?.subscription_plan || 'N/A'}</p></div>
                 <div><p className="text-gray-500">Expira</p><p className="font-medium">{client?.subscription_expires ? new Date(client.subscription_expires).toLocaleDateString('pt-PT') : 'N/A'}</p></div>
-                <div><p className="text-gray-500">Pagamento</p><p className="font-medium">{client?.payment_method || 'N/A'}</p></div>
+                <div><p className="text-gray-500">Metodo pagamento</p><p className="font-medium">{client?.payment_method || 'N/A'}</p></div>
+                {client?.payment_reference && (
+                  <div><p className="text-gray-500">Referencia</p><p className="font-mono font-medium text-sm">{client.payment_reference}</p></div>
+                )}
+                {client?.payment_amount && (
+                  <div><p className="text-gray-500">Valor pago</p><p className="font-medium">{Number(client.payment_amount).toLocaleString('pt-MZ')} {client.payment_currency || 'MZN'}</p></div>
+                )}
               </div>
               <p className="text-xs text-gray-500 mb-2">Activar subscricao:</p>
               <div className="grid grid-cols-3 gap-2">
