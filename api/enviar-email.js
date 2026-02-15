@@ -206,6 +206,57 @@ function getEmailTemplate(tipo, dados = {}) {
       `
     },
 
+    'pagamento-pendente': {
+      assunto: '⏳ Pagamento Recebido - Aguarda Confirmação | Vitalis',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: 'Segoe UI', sans-serif; background: #FAF6F0; margin: 0; padding: 20px; }
+            .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; }
+            .header { background: linear-gradient(135deg, #7C8B6F 0%, #6B7A5D 100%); padding: 40px 30px; text-align: center; }
+            .header h1 { color: white; margin: 0; font-size: 28px; }
+            .content { padding: 40px 30px; color: #4A4035; }
+            .pending-box { background: #FEF9E7; border: 2px solid #F59E0B; border-radius: 12px; padding: 20px; text-align: center; margin: 20px 0; }
+            .details { background: #F5F2ED; border-left: 4px solid #7C8B6F; border-radius: 0 12px 12px 0; padding: 20px; margin: 20px 0; }
+            .details p { margin: 8px 0; color: #6B5C4C; }
+            .footer { background: #F5F2ED; padding: 30px; text-align: center; color: #6B5C4C; font-size: 14px; }
+            .footer a { color: #7C8B6F; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>VITALIS</h1>
+            </div>
+            <div class="content">
+              <div class="pending-box">
+                <p style="font-size: 48px; margin: 0;">⏳</p>
+                <h2 style="color: #92400E; margin: 10px 0;">Pagamento Registado!</h2>
+                <p style="color: #92400E;">A Coach Vivianne vai confirmar em ate 24 horas.</p>
+              </div>
+              <p>Ola <strong>${dados.nome || 'querida'}</strong>,</p>
+              <p>Recebemos o registo do teu pagamento! Vais receber outro email assim que for confirmado.</p>
+              <div class="details">
+                <p><strong>Plano:</strong> ${dados.plano || '-'}</p>
+                <p><strong>Valor:</strong> ${dados.valor || '-'}</p>
+                <p><strong>Metodo:</strong> ${dados.metodo || 'M-Pesa'}</p>
+                <p><strong>Referencia:</strong> ${dados.referencia || '-'}</p>
+              </div>
+              <p>Qualquer duvida, estamos aqui!</p>
+              <p>WhatsApp: <a href="https://wa.me/258851006473" style="color: #7C8B6F;">+258 85 100 6473</a></p>
+            </div>
+            <div class="footer">
+              <p>Vitalis · Sete Ecos · Maputo, Mocambique</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+    },
+
     'lembrete-checkin': {
       assunto: '💚 Sentimos a tua falta - Vitalis',
       html: `

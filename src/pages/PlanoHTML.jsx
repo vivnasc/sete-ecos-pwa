@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase.js';
 import { coachApi } from '../lib/coachApi.js';
+import { calcularPorcoesDiarias } from '../lib/vitalis/calcularPorcoes.js';
 
 const FASES_CONFIG = {
   inducao: {
@@ -85,12 +86,6 @@ export default function PlanoHTML() {
 
   // Build dados object from plan + client + username
   const buildDados = (plano, cliente, userName) => {
-    let porcoesFromPlan = {};
-    try {
-      const receitasConfig = plano?.receitas_incluidas ? JSON.parse(plano.receitas_incluidas) : {};
-      porcoesFromPlan = receitasConfig['porções_por_refeicao'] || receitasConfig.porcoes_por_refeicao || {};
-    } catch (e) { /* ignore */ }
-
     const abordagem = plano?.abordagem || 'equilibrado';
     const caloriasAlvo = plano?.calorias_diarias || plano?.calorias_alvo || 1500;
 
@@ -115,10 +110,13 @@ export default function PlanoHTML() {
       }
     }
 
-    const porcoesProteina = plano?.porcoes_proteina || Math.round(proteinaG / 25);
-    const porcoesHidratos = plano?.porcoes_hidratos || Math.round(carboidratosG / 30);
-    const porcoesGordura = plano?.porcoes_gordura || Math.round(gorduraG / 10);
-    const porcoesLegumes = plano?.porcoes_legumes || porcoesFromPlan.legumes || 4;
+    // Porções diárias — função partilhada (PDF + dashboard + cliente)
+    const porcoesPlan = { ...plano, proteina_g: proteinaG, carboidratos_g: carboidratosG, gordura_g: gorduraG };
+    const porcoes = calcularPorcoesDiarias(porcoesPlan);
+    const porcoesProteina = porcoes.proteina;
+    const porcoesHidratos = porcoes.hidratos;
+    const porcoesGordura = porcoes.gordura;
+    const porcoesLegumes = porcoes.legumes;
 
     return {
       nome: userName || nomeParam || 'Cliente',

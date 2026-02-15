@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link } from 'react-router-dom';
 import GeradorPDFPlano from './GeradorPDFPlano';
+import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
 
 // ============================================================
 // ÍCONES
@@ -373,13 +374,8 @@ export default function PlanoAlimentar() {
       .eq('user_id', userId)
       .maybeSingle();
 
-    let receitasConfig = {};
-    try {
-      receitasConfig = mealPlan.receitas_incluidas ? JSON.parse(mealPlan.receitas_incluidas) : {};
-    } catch (e) { /* ignore */ }
-
-    // Calculate daily portions from macros (same formula as PDF/PlanoHTML)
-    // Note: receitasConfig.porções_por_refeicao contains PER-MEAL values, not daily totals
+    // Porções diárias — função partilhada (PDF + dashboard + cliente)
+    const porcoesDiarias = calcularPorcoesDiarias(mealPlan);
 
     return {
       fase: {
@@ -392,10 +388,10 @@ export default function PlanoAlimentar() {
         duracao_semanas: 4
       },
       porcoes: {
-        proteina: Math.round(mealPlan.proteina_g / 25),
-        legumes: 4, // Sempre 4 punhos por dia (fixo)
-        hidratos_base: Math.round(mealPlan.carboidratos_g / 30),
-        gordura: Math.round(mealPlan.gordura_g / 10),
+        proteina: porcoesDiarias.proteina,
+        legumes: porcoesDiarias.legumes,
+        hidratos_base: porcoesDiarias.hidratos,
+        gordura: porcoesDiarias.gordura,
         carbs_extra_treino: 1
       },
       tamanhos: {

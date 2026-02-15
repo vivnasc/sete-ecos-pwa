@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { coachApi } from '../lib/coachApi';
 import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
+import { enviarBoasVindas, enviarConfirmacaoPagamento } from '../lib/emails';
+import { calcularPorcoesDiarias, extrairConfigPlano } from '../lib/vitalis/calcularPorcoes.js';
 
 /**
  * Coach - Vista detalhada de um cliente
@@ -137,6 +139,7 @@ export default function CoachClienteDetalhe() {
 
   // Actions
   const [gerandoPlano, setGerandoPlano] = useState(false);
+  const [copiedMsg, setCopiedMsg] = useState(null);
 
   useEffect(() => {
     if (userId) loadClientData();
@@ -176,22 +179,13 @@ export default function CoachClienteDetalhe() {
   };
   const planErroMsg = parseErro(errorPlan);
 
-  // Parse plan config
-  const parsePlanConfig = (p) => {
-    if (!p?.receitas_incluidas) return {};
-    try { return JSON.parse(p.receitas_incluidas); } catch { return {}; }
-  };
-
-  const planConfig = parsePlanConfig(activePlan);
-
-  // Calculate daily portions from macros (same formula as PDF/PlanoHTML)
-  // Note: planConfig.porções_por_refeicao contains PER-MEAL values, not daily totals
-  const porcoesProteina = activePlan ? Math.round(activePlan.proteina_g / 25) : 0;
-  const porcoesLegumes = 4; // Sempre 4 punhos por dia (fixo)
-  const porcoesHidratos = activePlan ? Math.round(activePlan.carboidratos_g / 30) : 0;
-  const porcoesGordura = activePlan ? Math.round(activePlan.gordura_g / 10) : 0;
-  const numRefeicoes = planConfig.num_refeicoes || 3;
-  const horarios = planConfig.horarios || [];
+  // Porções diárias — função partilhada (PDF + dashboard + cliente)
+  const porcoes = calcularPorcoesDiarias(activePlan);
+  const porcoesProteina = porcoes.proteina;
+  const porcoesLegumes = porcoes.legumes;
+  const porcoesHidratos = porcoes.hidratos;
+  const porcoesGordura = porcoes.gordura;
+  const { numRefeicoes, horarios } = extrairConfigPlano(activePlan);
 
   // Generate plan
   const handleGerarPlano = async () => {
@@ -226,7 +220,22 @@ export default function CoachClienteDetalhe() {
     if (!confirm(`Activar ${SUBSCRIPTION_PLANS[planKey].name}?`)) return;
     try {
       const result = await coachApi.activarSubscricao(userId, planKey);
-      alert(`Activado ate ${new Date(result.expiresAt).toLocaleDateString('pt-PT')}`);
+      const validoAte = new Date(result.expiresAt).toLocaleDateString('pt-PT');
+      alert(`Activado ate ${validoAte}`);
+
+      // Enviar emails de boas-vindas e confirmacao a cliente
+      if (user?.email) {
+        const plan = SUBSCRIPTION_PLANS[planKey];
+        enviarBoasVindas(user.email, user.nome).catch(() => {});
+        enviarConfirmacaoPagamento(user.email, {
+          nome: user.nome,
+          plano: plan.name,
+          valor: `${plan.price_mzn?.toLocaleString('pt-MZ') || plan.price_usd} ${plan.price_mzn ? 'MZN' : 'USD'}`,
+          data: new Date().toLocaleDateString('pt-PT'),
+          validoAte
+        }).catch(() => {});
+      }
+
       loadClientData();
     } catch (err) {
       alert('Erro: ' + err.message);
@@ -835,13 +844,58 @@ export default function CoachClienteDetalhe() {
         {/* === GESTAO === */}
         {tab === 'gestao' && (
           <div className="space-y-4">
+            {/* Payment verification alert */}
+            {client?.subscription_status === 'pending' && client?.payment_reference && (
+              <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4">
+                <h3 className="font-bold text-yellow-800 mb-3 flex items-center gap-2">
+                  <span className="text-lg">💰</span>
+                  Pagamento pendente de verificacao
+                </h3>
+                <div className="grid grid-cols-2 gap-3 text-sm mb-4">
+                  <div>
+                    <p className="text-yellow-700 text-xs">Metodo</p>
+                    <p className="font-semibold text-gray-900">📱 {client.payment_method || 'M-Pesa'}</p>
+                  </div>
+                  <div>
+                    <p className="text-yellow-700 text-xs">Referencia / Codigo</p>
+                    <p className="font-mono font-bold text-gray-900 bg-white px-2 py-1 rounded border border-yellow-200">{client.payment_reference}</p>
+                  </div>
+                  <div>
+                    <p className="text-yellow-700 text-xs">Valor</p>
+                    <p className="font-semibold text-green-700 text-lg">
+                      {client.payment_amount ? `${Number(client.payment_amount).toLocaleString('pt-MZ')} ${client.payment_currency || 'MZN'}` : 'N/A'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-yellow-700 text-xs">Plano escolhido</p>
+                    <p className="font-semibold text-gray-900">{client.subscription_plan || 'N/A'}</p>
+                  </div>
+                </div>
+                <p className="text-xs text-yellow-700 mb-3">Verifica a transaccao no M-Pesa e depois activa:</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {['MONTHLY', 'SEMESTRAL', 'ANNUAL'].map(key => (
+                    <button key={key} onClick={() => handleActivate(key)}
+                      className="py-2.5 text-sm font-bold bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                      Activar {SUBSCRIPTION_PLANS[key].name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="bg-white rounded-xl border border-gray-100 p-4">
               <h3 className="font-semibold text-gray-900 mb-3">Subscricao</h3>
               <div className="grid grid-cols-2 gap-2 text-sm mb-4">
                 <div><p className="text-gray-500">Estado</p><p className="font-medium">{STATUS_LABELS_TEXT[client?.subscription_status] || 'N/A'}</p></div>
                 <div><p className="text-gray-500">Plano</p><p className="font-medium">{client?.subscription_plan || 'N/A'}</p></div>
                 <div><p className="text-gray-500">Expira</p><p className="font-medium">{client?.subscription_expires ? new Date(client.subscription_expires).toLocaleDateString('pt-PT') : 'N/A'}</p></div>
-                <div><p className="text-gray-500">Pagamento</p><p className="font-medium">{client?.payment_method || 'N/A'}</p></div>
+                <div><p className="text-gray-500">Metodo pagamento</p><p className="font-medium">{client?.payment_method || 'N/A'}</p></div>
+                {client?.payment_reference && (
+                  <div><p className="text-gray-500">Referencia</p><p className="font-mono font-medium text-sm">{client.payment_reference}</p></div>
+                )}
+                {client?.payment_amount && (
+                  <div><p className="text-gray-500">Valor pago</p><p className="font-medium">{Number(client.payment_amount).toLocaleString('pt-MZ')} {client.payment_currency || 'MZN'}</p></div>
+                )}
               </div>
               <p className="text-xs text-gray-500 mb-2">Activar subscricao:</p>
               <div className="grid grid-cols-3 gap-2">
@@ -860,6 +914,98 @@ export default function CoachClienteDetalhe() {
                 className="w-full mt-2 py-2 text-xs font-medium bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200">
                 Definir como tester (acesso gratuito)
               </button>
+            </div>
+
+            {/* WhatsApp messages */}
+            <div className="bg-white rounded-xl border border-green-200 p-4">
+              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+                Mensagens WhatsApp
+              </h3>
+              <div className="space-y-3">
+                {/* Boas-vindas */}
+                {(() => {
+                  const nome = user?.nome?.split(' ')[0] || 'querida';
+                  const msgBoasVindas = `Ola ${nome}! 🌿\n\nBem-vinda ao Vitalis! O teu acesso esta activo.\n\nProximos passos:\n1. Abre a app: app.seteecos.com\n2. Preenche o questionario inicial\n3. Vou criar o teu plano personalizado\n\nQualquer duvida estou aqui para ti! 💚`;
+                  const msgLembrete = `Ola ${nome}! 💚\n\nSo a verificar como estas. Ja conseguiste preencher o questionario inicial?\n\nSe tiveres alguma duvida, diz-me! Estou aqui para te ajudar.\n\napp.seteecos.com/vitalis/intake`;
+                  const msgReactivar = `Ola ${nome}! 🌱\n\nSentimos a tua falta no Vitalis!\n\nLembra-te: cada dia e uma nova oportunidade. Nao precisas ser perfeita, so precisas de aparecer.\n\nO teu plano esta a tua espera: app.seteecos.com\n\nEstou aqui se precisares de conversar. 💚`;
+
+                  const handleCopy = async (msg, id) => {
+                    try {
+                      await navigator.clipboard.writeText(msg);
+                      setCopiedMsg(id);
+                      setTimeout(() => setCopiedMsg(null), 2000);
+                    } catch {
+                      // Fallback para browsers sem clipboard API
+                      const ta = document.createElement('textarea');
+                      ta.value = msg;
+                      document.body.appendChild(ta);
+                      ta.select();
+                      document.execCommand('copy');
+                      document.body.removeChild(ta);
+                      setCopiedMsg(id);
+                      setTimeout(() => setCopiedMsg(null), 2000);
+                    }
+                  };
+
+                  return (
+                    <>
+                      <div className="bg-green-50 rounded-lg p-3 border border-green-100">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-semibold text-green-700">BEM-VINDA (apos activar)</span>
+                          <button
+                            onClick={() => handleCopy(msgBoasVindas, 'bv')}
+                            className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${
+                              copiedMsg === 'bv'
+                                ? 'bg-green-600 text-white'
+                                : 'bg-green-200 text-green-800 hover:bg-green-300'
+                            }`}
+                          >
+                            {copiedMsg === 'bv' ? 'Copiado!' : 'Copiar'}
+                          </button>
+                        </div>
+                        <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">{msgBoasVindas}</p>
+                      </div>
+
+                      <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-semibold text-blue-700">FOLLOW-UP (se nao fez intake)</span>
+                          <button
+                            onClick={() => handleCopy(msgLembrete, 'fu')}
+                            className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${
+                              copiedMsg === 'fu'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-blue-200 text-blue-800 hover:bg-blue-300'
+                            }`}
+                          >
+                            {copiedMsg === 'fu' ? 'Copiado!' : 'Copiar'}
+                          </button>
+                        </div>
+                        <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">{msgLembrete}</p>
+                      </div>
+
+                      <div className="bg-amber-50 rounded-lg p-3 border border-amber-100">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-semibold text-amber-700">REACTIVAR (cliente inactiva)</span>
+                          <button
+                            onClick={() => handleCopy(msgReactivar, 'ra')}
+                            className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${
+                              copiedMsg === 'ra'
+                                ? 'bg-amber-600 text-white'
+                                : 'bg-amber-200 text-amber-800 hover:bg-amber-300'
+                            }`}
+                          >
+                            {copiedMsg === 'ra' ? 'Copiado!' : 'Copiar'}
+                          </button>
+                        </div>
+                        <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">{msgReactivar}</p>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
             </div>
 
             <div className="bg-white rounded-xl border border-gray-100 p-4">

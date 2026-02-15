@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { isNearRamadan } from '../utils/ramadao';
 import SEOHead from '../components/SEOHead';
 import PartilharSocial from '../components/PartilharSocial';
+import WhatsAppMockup from '../components/WhatsAppMockup';
 
 /**
  * VITALIS - Landing Page
@@ -156,19 +157,29 @@ const LandingVitalis = () => {
 
   const testemunhos = [
     {
-      iniciais: 'MJ',
+      contacto: 'MJ',
       resultado: '-8kg em 3 meses',
-      texto: 'Finalmente um método que não me faz sentir em dieta. Perdi 8kg em 3 meses e aprendi a comer sem culpa.'
+      mensagens: [
+        { texto: 'Li o relatório e nem parecia que era sobre mim... foi interessante ler como foi o processo e ver a confirmação de que fui mesmo capaz de perder cerca de 8 kg em 3 meses', hora: '09:42', tipo: 'recebida' },
+        { texto: 'até parece mentira... agora percebo o porquê de todo mundo comentar o quão diminuí e estou diferente...!', hora: '09:43', tipo: 'recebida' },
+      ]
     },
     {
-      iniciais: 'CM',
+      contacto: 'CM',
       resultado: '-6kg em 2 meses',
-      texto: 'O Espaço de Retorno mudou tudo. Percebi que comia por ansiedade, não por fome. Agora sei a diferença.'
+      mensagens: [
+        { texto: 'Coach aquele exercício do Espaço de Retorno mudou tudo para mim', hora: '21:15', tipo: 'recebida' },
+        { texto: 'Percebi que comia por ansiedade, não por fome. Agora sei a diferença', hora: '21:15', tipo: 'recebida' },
+        { texto: 'Já perdi 6kg em 2 meses e nem sinto que estou em dieta 🙏', hora: '21:16', tipo: 'recebida' },
+      ]
     },
     {
-      iniciais: 'AB',
+      contacto: 'AB',
       resultado: '-12kg em 6 meses',
-      texto: 'A app é tão fácil de usar. Os gráficos mostram exactamente o meu progresso e isso motiva imenso.'
+      mensagens: [
+        { texto: 'Vivianne obrigada por tudo!!! 12kg em 6 meses', hora: '14:30', tipo: 'recebida' },
+        { texto: 'A app é tão fácil de usar os gráficos mostram exactamente o meu progresso e isso motiva imenso', hora: '14:31', tipo: 'recebida' },
+      ]
     }
   ];
 
@@ -698,20 +709,15 @@ const LandingVitalis = () => {
 
           <div className="grid md:grid-cols-3 gap-6">
             {testemunhos.map((t, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl border-2 border-[#E8E2D9] relative">
-                <span className="absolute top-3 left-5 text-5xl text-[#7C8B6F] opacity-30" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                  "
+              <div key={i} className="flex flex-col items-center gap-3">
+                <WhatsAppMockup
+                  mensagens={t.mensagens}
+                  contacto={t.contacto}
+                  corTema="verde"
+                />
+                <span className="inline-block px-4 py-1.5 bg-[#7C8B6F]/10 text-[#7C8B6F] rounded-full text-sm font-semibold border border-[#7C8B6F]/20">
+                  {t.resultado}
                 </span>
-                <p className="text-[#6B5C4C] italic mb-6 relative z-10">"{t.texto}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-[#7C8B6F] rounded-full flex items-center justify-center text-white font-semibold">
-                    {t.iniciais}
-                  </div>
-                  <div>
-                    <p className="font-bold text-[#4A4035]">{t.iniciais}.</p>
-                    <p className="text-sm text-[#7C8B6F]">{t.resultado}</p>
-                  </div>
-                </div>
               </div>
             ))}
           </div>

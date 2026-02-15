@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { coachApi } from '../lib/coachApi';
 import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
+import { enviarBoasVindas, enviarConfirmacaoPagamento } from '../lib/emails';
 
 /**
  * SETE ECOS - COACH DASHBOARD v5
@@ -162,7 +163,20 @@ export default function CoachDashboard() {
     if (!confirm(`Activar subscricao ${SUBSCRIPTION_PLANS[planKey].name} para ${client.nome}?`)) return;
     try {
       const result = await coachApi.activarSubscricao(client.user_id, planKey);
-      alert(`Subscricao activada ate ${new Date(result.expiresAt).toLocaleDateString('pt-PT')}`);
+      const validoAte = new Date(result.expiresAt).toLocaleDateString('pt-PT');
+      alert(`Subscricao activada ate ${validoAte}`);
+
+      // Enviar emails de boas-vindas e confirmacao a cliente
+      const plan = SUBSCRIPTION_PLANS[planKey];
+      enviarBoasVindas(client.email, client.nome).catch(() => {});
+      enviarConfirmacaoPagamento(client.email, {
+        nome: client.nome,
+        plano: plan.name,
+        valor: `${plan.price_mzn?.toLocaleString('pt-MZ') || plan.price_usd} ${plan.price_mzn ? 'MZN' : 'USD'}`,
+        data: new Date().toLocaleDateString('pt-PT'),
+        validoAte
+      }).catch(() => {});
+
       loadClients();
     } catch (err) {
       alert('Erro: ' + err.message);
@@ -345,6 +359,62 @@ export default function CoachDashboard() {
           </select>
         </div>
 
+        {/* Pending payments alert */}
+        {(() => {
+          const pendentes = clients.filter(c => c.subscription_status === 'pending' && c.payment_reference);
+          if (pendentes.length === 0) return null;
+          return (
+            <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4">
+              <h3 className="font-bold text-yellow-800 mb-3 flex items-center gap-2">
+                <span className="text-lg">💰</span>
+                {pendentes.length} pagamento{pendentes.length !== 1 ? 's' : ''} pendente{pendentes.length !== 1 ? 's' : ''} de verificação
+              </h3>
+              <div className="space-y-2">
+                {pendentes.map(c => (
+                  <div key={c.user_id} className="flex items-center justify-between bg-white rounded-lg p-3 border border-yellow-200">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-gray-900">{c.nome}</p>
+                      <div className="flex items-center gap-3 mt-1 text-sm">
+                        <span className="text-yellow-700 font-medium">
+                          📱 {c.payment_method || 'M-Pesa'}
+                        </span>
+                        <span className="text-gray-600 font-mono bg-gray-100 px-2 py-0.5 rounded text-xs">
+                          Ref: {c.payment_reference}
+                        </span>
+                        {c.payment_amount && (
+                          <span className="text-green-700 font-semibold">
+                            {Number(c.payment_amount).toLocaleString('pt-MZ')} {c.payment_currency || 'MZN'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                      <button
+                        onClick={() => handleActivate(c, 'MONTHLY')}
+                        className="px-3 py-1.5 text-xs font-medium bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
+                      >
+                        Mensal
+                      </button>
+                      <button
+                        onClick={() => handleActivate(c, 'SEMESTRAL')}
+                        className="px-3 py-1.5 text-xs font-medium bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
+                      >
+                        Semestral
+                      </button>
+                      <button
+                        onClick={() => handleActivate(c, 'ANNUAL')}
+                        className="px-3 py-1.5 text-xs font-medium bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
+                      >
+                        Anual
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Results count */}
         <p className="text-sm text-gray-500">
           {filteredClients.length} cliente{filteredClients.length !== 1 ? 's' : ''}
@@ -391,6 +461,19 @@ export default function CoachDashboard() {
                         <p className="text-sm text-gray-500 truncate mt-0.5">{client.email}</p>
                         {client.planErro && (
                           <p className="text-xs text-red-500 mt-0.5 truncate">{client.planErro}</p>
+                        )}
+                        {client.subscription_status === 'pending' && client.payment_reference && (
+                          <div className="flex items-center gap-2 mt-1 text-xs">
+                            <span className="text-yellow-700 font-medium">📱 {client.payment_method || 'M-Pesa'}</span>
+                            <span className="font-mono bg-yellow-50 text-yellow-800 px-1.5 py-0.5 rounded border border-yellow-200">
+                              {client.payment_reference}
+                            </span>
+                            {client.payment_amount && (
+                              <span className="text-green-700 font-semibold">
+                                {Number(client.payment_amount).toLocaleString('pt-MZ')} {client.payment_currency || 'MZN'}
+                              </span>
+                            )}
+                          </div>
                         )}
                         <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
                           {client.planCalorias && (

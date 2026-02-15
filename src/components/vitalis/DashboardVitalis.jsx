@@ -11,6 +11,7 @@ import { isNearRamadan, setObservaRamadao, observaRamadao } from '../../utils/ra
 import { useTheme } from '../../contexts/ThemeContext';
 import { temPermissao, activarLembretes, pedirPermissao, contarLembretesHoje } from '../../utils/notifications';
 import { checkVitalisAccess } from '../../lib/subscriptions';
+import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
 import QuickTrackers from './QuickTrackers';
 import FastingTimerCard from './FastingTimerCard';
 import MealsSection from './MealsSection';
@@ -321,13 +322,15 @@ export default function DashboardVitalis() {
           .maybeSingle();
 
         if (mealPlan) {
+          const porcoesDiarias = calcularPorcoesDiarias(mealPlan);
           planoData = {
             ...mealPlan,
             client_id: activeClientData.id,
             calorias_diarias: mealPlan.calorias_alvo,
-            porcoes_proteina: Math.round(mealPlan.proteina_g / 25),
-            porcoes_hidratos: Math.round(mealPlan.carboidratos_g / 30),
-            porcoes_gordura: Math.round(mealPlan.gordura_g / 10),
+            porcoes_proteina: porcoesDiarias.proteina,
+            porcoes_hidratos: porcoesDiarias.hidratos,
+            porcoes_gordura: porcoesDiarias.gordura,
+            porcoes_legumes: porcoesDiarias.legumes,
             horas_jejum: mealPlan.abordagem === 'keto_if' ? 16 : null,
             aceita_jejum: mealPlan.abordagem === 'keto_if',
             protocolo_jejum: mealPlan.abordagem === 'keto_if' ? '16_8' : null,

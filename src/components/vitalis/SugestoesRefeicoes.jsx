@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link } from 'react-router-dom';
+import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
 
 // Base de dados de refeições com tags para filtragem
 // Porções em: P = palmas proteína, H = mãos hidratos, G = polegares gordura
@@ -138,9 +139,13 @@ export default function SugestoesRefeicoes() {
             .eq('user_id', userData.id).eq('status', 'activo')
             .order('created_at', { ascending: false }).limit(1).maybeSingle();
           if (mealPlan) {
+            const porcoesDiarias = calcularPorcoesDiarias(mealPlan);
             planoData = {
               ...mealPlan, client_id: clientData.id,
-              porcoes_hidratos: Math.round(mealPlan.carboidratos_g / 30)
+              porcoes_proteina: porcoesDiarias.proteina,
+              porcoes_hidratos: porcoesDiarias.hidratos,
+              porcoes_gordura: porcoesDiarias.gordura,
+              porcoes_legumes: porcoesDiarias.legumes
             };
           }
         }
