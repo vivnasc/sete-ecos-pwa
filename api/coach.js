@@ -473,7 +473,7 @@ async function listarClientes(res) {
 
   // Batch fetch intakes, plans, last activity — all server-side
   const [intakesRes, plansRes, registosRes] = await Promise.all([
-    supabase.from('vitalis_intake').select('user_id, altura_cm, peso_actual, idade').in('user_id', userIds),
+    supabase.from('vitalis_intake').select('user_id, altura_cm, peso_actual, idade, sexo').in('user_id', userIds),
     supabase.from('vitalis_meal_plans').select('user_id, id, status, calorias_alvo, receitas_incluidas, created_at').in('user_id', userIds).order('created_at', { ascending: false }),
     supabase.from('vitalis_registos').select('user_id, created_at').in('user_id', userIds).order('created_at', { ascending: false }),
   ]);
@@ -524,6 +524,7 @@ async function listarClientes(res) {
       userCreatedAt: client.users?.created_at,
       hasIntake,
       hasPlan,
+      sexo: intake?.sexo || null,
       planStatus: plan?.status || (errorPlan ? 'erro' : null),
       planCalorias: plan?.calorias_alvo || null,
       planErro,

@@ -226,13 +226,15 @@ export default function CoachClienteDetalhe() {
       // Enviar emails de boas-vindas e confirmacao a cliente
       if (user?.email) {
         const plan = SUBSCRIPTION_PLANS[planKey];
-        enviarBoasVindas(user.email, user.nome).catch(() => {});
+        const sexo = intake?.sexo;
+        enviarBoasVindas(user.email, user.nome, sexo).catch(() => {});
         enviarConfirmacaoPagamento(user.email, {
           nome: user.nome,
           plano: plan.name,
           valor: `${plan.price_mzn?.toLocaleString('pt-MZ') || plan.price_usd} ${plan.price_mzn ? 'MZN' : 'USD'}`,
           data: new Date().toLocaleDateString('pt-PT'),
-          validoAte
+          validoAte,
+          sexo
         }).catch(() => {});
       }
 
@@ -553,7 +555,7 @@ export default function CoachClienteDetalhe() {
                 {/* Hand method hero */}
                 <div className="bg-gradient-to-br from-[#7C8B6F] to-[#5A6B4D] rounded-xl p-4 text-white">
                   <h3 className="font-bold mb-2">Metodo da Mao — Porcoes diarias</h3>
-                  <p className="text-white/70 text-sm mb-3">Sem balanca, proporcional ao corpo da cliente</p>
+                  <p className="text-white/70 text-sm mb-3">Sem balanca, proporcional ao corpo {intake?.sexo === 'masculino' ? 'do cliente' : 'da cliente'}</p>
                   <div className="grid grid-cols-4 gap-2">
                     <div className="bg-white/15 rounded-lg p-2 text-center">
                       <div className="text-2xl">{HAND_CONFIG.proteina.gesto}</div>
@@ -927,10 +929,14 @@ export default function CoachClienteDetalhe() {
               <div className="space-y-3">
                 {/* Boas-vindas */}
                 {(() => {
-                  const nome = user?.nome?.split(' ')[0] || 'querida';
-                  const msgBoasVindas = `Ola ${nome}! 🌿\n\nBem-vinda ao Vitalis! O teu acesso esta activo.\n\nProximos passos:\n1. Abre a app: app.seteecos.com\n2. Preenche o questionario inicial\n3. Vou criar o teu plano personalizado\n\nQualquer duvida estou aqui para ti! 💚`;
-                  const msgLembrete = `Ola ${nome}! 💚\n\nSo a verificar como estas. Ja conseguiste preencher o questionario inicial?\n\nSe tiveres alguma duvida, diz-me! Estou aqui para te ajudar.\n\napp.seteecos.com/vitalis/intake`;
-                  const msgReactivar = `Ola ${nome}! 🌱\n\nSentimos a tua falta no Vitalis!\n\nLembra-te: cada dia e uma nova oportunidade. Nao precisas ser perfeita, so precisas de aparecer.\n\nO teu plano esta a tua espera: app.seteecos.com\n\nEstou aqui se precisares de conversar. 💚`;
+                  const nome = user?.nome?.split(' ')[0] || '';
+                  const isMasc = intake?.sexo === 'masculino';
+                  const bemVindo = isMasc ? 'Bem-vindo' : 'Bem-vinda';
+                  const querido = isMasc ? 'querido' : 'querida';
+                  const perfeito = isMasc ? 'perfeito' : 'perfeita';
+                  const msgBoasVindas = `Ola ${nome || querido}! 🌿\n\n${bemVindo} ao Vitalis! O teu acesso esta activo.\n\nProximos passos:\n1. Abre a app: app.seteecos.com\n2. Preenche o questionario inicial\n3. Vou criar o teu plano personalizado\n\nQualquer duvida estou aqui para ti! 💚`;
+                  const msgLembrete = `Ola ${nome || querido}! 💚\n\nSo a verificar como estas. Ja conseguiste preencher o questionario inicial?\n\nSe tiveres alguma duvida, diz-me! Estou aqui para te ajudar.\n\napp.seteecos.com/vitalis/intake`;
+                  const msgReactivar = `Ola ${nome || querido}! 🌱\n\nSentimos a tua falta no Vitalis!\n\nLembra-te: cada dia e uma nova oportunidade. Nao precisas ser ${perfeito}, so precisas de aparecer.\n\nO teu plano esta a tua espera: app.seteecos.com\n\nEstou aqui se precisares de conversar. 💚`;
 
                   const handleCopy = async (msg, id) => {
                     try {
@@ -954,7 +960,7 @@ export default function CoachClienteDetalhe() {
                     <>
                       <div className="bg-green-50 rounded-lg p-3 border border-green-100">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-semibold text-green-700">BEM-VINDA (apos activar)</span>
+                          <span className="text-xs font-semibold text-green-700">{isMasc ? 'BEM-VINDO' : 'BEM-VINDA'} (apos activar)</span>
                           <button
                             onClick={() => handleCopy(msgBoasVindas, 'bv')}
                             className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${
@@ -988,7 +994,7 @@ export default function CoachClienteDetalhe() {
 
                       <div className="bg-amber-50 rounded-lg p-3 border border-amber-100">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-semibold text-amber-700">REACTIVAR (cliente inactiva)</span>
+                          <span className="text-xs font-semibold text-amber-700">REACTIVAR (cliente {isMasc ? 'inactivo' : 'inactiva'})</span>
                           <button
                             onClick={() => handleCopy(msgReactivar, 'ra')}
                             className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${
