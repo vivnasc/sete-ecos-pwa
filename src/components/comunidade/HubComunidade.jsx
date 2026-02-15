@@ -192,21 +192,25 @@ export default function HubComunidade() {
             )}
           </div>
 
-          {/* Quick stats inline */}
+          {/* Quick stats inline — clickable */}
           {temDados && (
             <div className="flex gap-2">
               {[
-                { n: stats.reflexoes, label: 'Reflexões', icon: '🌊' },
-                { n: stats.ressonancia, label: 'Ressonância', icon: '✨' },
-                { n: stats.circulos, label: 'Círculos', icon: '👥' }
+                { n: stats.reflexoes, label: 'Reflexões', icon: '🌊', rota: '/comunidade/rio' },
+                { n: stats.ressonancia, label: 'Ressonância', icon: '✨', rota: userId ? `/comunidade/jornada/${userId}` : '/comunidade/rio' },
+                { n: stats.circulos, label: 'Círculos', icon: '👥', rota: '/comunidade/circulos' }
               ].map(s => (
-                <div key={s.label} className="flex-1 bg-white/70 backdrop-blur-sm rounded-2xl px-3 py-2.5 border border-white/80 shadow-sm">
+                <button
+                  key={s.label}
+                  onClick={() => navigate(s.rota)}
+                  className="flex-1 bg-white/70 backdrop-blur-sm rounded-2xl px-3 py-2.5 border border-white/80 shadow-sm text-left transition-all active:scale-95 hover:shadow-md hover:bg-white/90"
+                >
                   <div className="flex items-center gap-1.5">
                     <span className="text-sm">{s.icon}</span>
                     <span className="text-lg font-bold" style={{ color: '#8B5CF6', fontFamily: 'var(--font-titulos)' }}>{s.n}</span>
                   </div>
-                  <p className="text-[10px] text-gray-400 mt-0.5 font-medium" style={{ fontFamily: 'var(--font-corpo)' }}>{s.label}</p>
-                </div>
+                  <p className="text-[10px] text-gray-400 mt-0.5 font-medium" style={{ fontFamily: 'var(--font-corpo)' }}>{s.label} →</p>
+                </button>
               ))}
             </div>
           )}
