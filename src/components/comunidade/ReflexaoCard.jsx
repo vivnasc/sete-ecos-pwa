@@ -11,6 +11,11 @@ import {
   criarEspelho,
   criarNotificacao
 } from '../../lib/comunidade'
+import {
+  isGhostPost,
+  toggleGhostRessonancia,
+  getGhostEspelhos
+} from '../../lib/ghost-users'
 
 const RESSONANCIA_KEYS = Object.keys(RESSONANCIA_TIPOS)
 
@@ -38,7 +43,7 @@ export default function ReflexaoCard({
   const perfil = post.community_profiles
   const temaInfo = TEMAS_REFLEXAO[post.tipo] || TEMAS_REFLEXAO.livre
   const ecoInfo = post.eco ? ECOS_INFO[post.eco] : null
-  const isOwner = post.user_id === userId
+  const isOwner = !isGhost && post.user_id === userId
   const isAnonymous = post.is_anonymous
 
   // Find the prompt that inspired this reflexao
@@ -48,8 +53,25 @@ export default function ReflexaoCard({
 
   // ───── Ressonancia ─────
 
+  const isGhost = isGhostPost(post)
+
   const handleRessonancia = async (tipo) => {
     try {
+      if (isGhost) {
+        // Ghost post — simular localmente
+        const resultado = toggleGhostRessonancia(post.id, tipo)
+        if (resultado) {
+          setRessoou(true)
+          setRessonanciaActiva(tipo)
+          setRessonanciaCount(prev => prev + 1)
+        } else {
+          setRessoou(false)
+          setRessonanciaActiva(null)
+          setRessonanciaCount(prev => Math.max(0, prev - 1))
+        }
+        return
+      }
+
       const resultado = await darRessonancia(post.id, userId, tipo)
       if (resultado) {
         // Gave resonance
@@ -83,8 +105,16 @@ export default function ReflexaoCard({
     if (!showEspelhos) {
       setLoadingEspelhos(true)
       try {
-        const data = await getEspelhos(post.id)
-        setEspelhos(data)
+        if (isGhost) {
+          // Ghost post — gerar espelhos fictícios
+          const ghostEsp = getGhostEspelhos(post.id)
+          setEspelhos(ghostEsp)
+        } else {
+          const data = await getEspelhos(post.id)
+          // Adicionar ghost espelhos a posts reais também
+          const ghostEsp = getGhostEspelhos(post.id)
+          setEspelhos([...ghostEsp, ...data])
+        }
       } catch (error) {
         console.error('Erro ao carregar espelhos:', error)
       }
@@ -98,25 +128,43 @@ export default function ReflexaoCard({
     if (!novoEspelho.trim() || enviandoEspelho) return
     setEnviandoEspelho(true)
     try {
-      const espelho = await criarEspelho(post.id, userId, novoEspelho.trim())
-      setEspelhos(prev => [...prev, {
-        ...espelho,
-        community_profiles: {
+      if (isGhost) {
+        // Ghost post — simular envio localmente
+        setEspelhos(prev => [...prev, {
+          id: `user_espelho_${Date.now()}`,
+          post_id: post.id,
           user_id: userId,
-          display_name: 'Tu',
-          avatar_emoji: '🌸'
+          conteudo: novoEspelho.trim(),
+          created_at: new Date().toISOString(),
+          community_profiles: {
+            user_id: userId,
+            display_name: 'Tu',
+            avatar_emoji: '🌸'
+          }
+        }])
+        setEspelhosCount(prev => prev + 1)
+        setNovoEspelho('')
+      } else {
+        const espelho = await criarEspelho(post.id, userId, novoEspelho.trim())
+        setEspelhos(prev => [...prev, {
+          ...espelho,
+          community_profiles: {
+            user_id: userId,
+            display_name: 'Tu',
+            avatar_emoji: '🌸'
+          }
+        }])
+        setEspelhosCount(prev => prev + 1)
+        setNovoEspelho('')
+        if (post.user_id !== userId) {
+          criarNotificacao(
+            post.user_id,
+            userId,
+            'espelho',
+            post.id,
+            novoEspelho.trim().slice(0, 50)
+          )
         }
-      }])
-      setEspelhosCount(prev => prev + 1)
-      setNovoEspelho('')
-      if (post.user_id !== userId) {
-        criarNotificacao(
-          post.user_id,
-          userId,
-          'espelho',
-          post.id,
-          novoEspelho.trim().slice(0, 50)
-        )
       }
     } catch (error) {
       console.error('Erro ao enviar espelho:', error)
@@ -169,9 +217,9 @@ export default function ReflexaoCard({
       {/* ───── Header ───── */}
       <div className="flex items-center justify-between p-4 pb-2">
         <button
-          onClick={() => !isAnonymous && onPerfilClick?.(post.user_id)}
-          className={`flex items-center gap-3 ${isAnonymous ? 'cursor-default' : 'hover:opacity-80'} transition-opacity`}
-          disabled={isAnonymous}
+          onClick={() => !isAnonymous && !isGhost && onPerfilClick?.(post.user_id)}
+          className={`flex items-center gap-3 ${(isAnonymous || isGhost) ? 'cursor-default' : 'hover:opacity-80'} transition-opacity`}
+          disabled={isAnonymous || isGhost}
         >
           {renderAvatar(perfil)}
           <div className="text-left">
