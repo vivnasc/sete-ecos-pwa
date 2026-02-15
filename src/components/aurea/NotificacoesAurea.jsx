@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { g } from '../../utils/genero';
 
 /**
  * ÁUREA - Notificações e Lembretes WhatsApp
@@ -39,7 +40,7 @@ const LEMBRETES_AUREA = [
 
 const MENSAGENS_GENTIS = {
   quota: [
-    'Olá querida. Já reservaste o teu tempo hoje?',
+    `Olá ${g('querido', 'querida')}. Já reservaste o teu tempo hoje?`,
     'Um lembrete gentil: a tua quota de presença espera por ti.',
     'Hoje já dedicaste algo a ti mesma?',
     'A tua quota é um acto de amor próprio. Já a cumpriste?'

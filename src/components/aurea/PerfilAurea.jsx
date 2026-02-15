@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { calcularNivel, calcularProgressoNivel, NIVEIS, BADGES } from '../../lib/aurea/gamificacao';
 import { checkAureaAccess } from '../../lib/aurea/subscriptions';
+import { g } from '../../utils/genero';
 
 /**
  * ÁUREA - Perfil
@@ -171,8 +172,8 @@ export default function PerfilAurea() {
             <div>
               <div className="text-amber-200">
                 {accessInfo?.status === 'trial' ? '✨ Trial' :
-                  accessInfo?.status === 'active' ? '✓ Activa' :
-                    accessInfo?.status === 'tester' ? '🎁 Tester' : 'Inactiva'}
+                  accessInfo?.status === 'active' ? `✓ ${g('Activo', 'Activa')}` :
+                    accessInfo?.status === 'tester' ? '🎁 Tester' : g('Inactivo', 'Inactiva')}
               </div>
               {accessInfo?.expiresAt && (
                 <div className="text-amber-200/60 text-sm">

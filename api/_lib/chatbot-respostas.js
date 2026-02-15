@@ -22,9 +22,9 @@ const MENU_PRINCIPAL = `Como te posso ajudar?
 
 Responde com o número ou escreve à vontade`;
 
-const SAUDACAO = `Olá! Bem-vinda ao *Sete Ecos*.
+const SAUDACAO = `Olá! Bem-vindo/a ao *Sete Ecos*.
 
-Sou a Vivianne, coach de nutrição e bem-estar feminino. Este é um sistema de transformação feito para a mulher moçambicana.
+Sou a Vivianne, coach de nutrição e bem-estar. Este é um sistema de transformação holística.
 
 ${MENU_PRINCIPAL}`;
 
@@ -434,12 +434,12 @@ function gerarResposta(msgBody, nome, telefone) {
 
   if (chave === 'saudacao') {
     if (sessao && sessao.historico.length > 0) {
-      // Utilizadora já falou antes — saudação mais curta
+      // Utilizador/a já falou antes — saudação mais curta
       const primeiroNome = nome ? nome.split(' ')[0] : '';
       resposta = `Olá de novo${primeiroNome ? `, ${primeiroNome}` : ''}! Em que posso ajudar?\n\n${MENU_PRINCIPAL}`;
     } else {
       resposta = nome
-        ? `Olá ${nome.split(' ')[0]}! Bem-vinda ao *Sete Ecos*.\n\nSou a Vivianne, coach de nutrição e bem-estar feminino.\n\n${MENU_PRINCIPAL}`
+        ? `Olá ${nome.split(' ')[0]}! Bem-vindo/a ao *Sete Ecos*.\n\nSou a Vivianne, coach de nutrição e bem-estar.\n\n${MENU_PRINCIPAL}`
         : SAUDACAO;
     }
   } else if (chave === 'obrigada') {

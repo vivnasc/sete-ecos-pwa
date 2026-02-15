@@ -154,11 +154,11 @@ const EspacoRetorno = () => {
       "Este momento também tem valor."
     ],
     solidao: [
-      "Neste momento, estás conectada comigo.",
+      g("Neste momento, estás conectado comigo.", "Neste momento, estás conectada comigo."),
       "A solidão é uma sensação, não uma verdade.",
       g("Podes estar sozinho sem estar abandonado.", "Podes estar sozinha sem estar abandonada."),
       "Vieste aqui. Isso é cuidar de ti.",
-      "Mereces companhia. Começa por ti mesma."
+      g("Mereces companhia. Começa por ti mesmo.", "Mereces companhia. Começa por ti mesma.")
     ],
     negacao: [
       "Vieste aqui. Isso já é consciência.",
