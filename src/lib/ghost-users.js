@@ -42,6 +42,7 @@ function shuffle(arr, rng) {
 // ---------- GHOST PROFILES ----------
 
 export const GHOST_PROFILES = [
+  // --- Nomes portugueses ---
   {
     id: 'ghost_ana_sofia',
     display_name: 'Ana Sofia',
@@ -63,7 +64,7 @@ export const GHOST_PROFILES = [
     display_name: 'Fátima Rosa',
     bio: 'Em Maputo, a transformar-me um dia de cada vez.',
     avatar_emoji: '🌺',
-    ecos_activos: ['vitalis', 'serena'],
+    ecos_activos: ['vitalis'],
     personalidade: 'poetica'
   },
   {
@@ -79,7 +80,7 @@ export const GHOST_PROFILES = [
     display_name: 'Carolina M.',
     bio: 'Yoga, meditação e autoconhecimento. Este é o meu jardim.',
     avatar_emoji: '🧘',
-    ecos_activos: ['vitalis', 'serena', 'lumina'],
+    ecos_activos: ['vitalis', 'lumina'],
     personalidade: 'espiritual'
   },
   {
@@ -87,7 +88,7 @@ export const GHOST_PROFILES = [
     display_name: 'Amélia',
     bio: 'Avó aos 52. Nunca é tarde para recomeçar.',
     avatar_emoji: '🌸',
-    ecos_activos: ['vitalis', 'aurea'],
+    ecos_activos: ['vitalis'],
     personalidade: 'sabia'
   },
   {
@@ -103,7 +104,7 @@ export const GHOST_PROFILES = [
     display_name: 'Inês',
     bio: 'Artista plástica. Encontro nos Ecos cores que não sabia que tinha.',
     avatar_emoji: '🎨',
-    ecos_activos: ['aurea', 'lumina'],
+    ecos_activos: ['vitalis', 'lumina'],
     personalidade: 'criativa'
   },
   {
@@ -111,7 +112,7 @@ export const GHOST_PROFILES = [
     display_name: 'Raquel S.',
     bio: 'Professora primária. A ensinar-me a mim mesma.',
     avatar_emoji: '📚',
-    ecos_activos: ['vitalis', 'aurea'],
+    ecos_activos: ['vitalis'],
     personalidade: 'reflexiva'
   },
   {
@@ -119,7 +120,7 @@ export const GHOST_PROFILES = [
     display_name: 'Sara Luz',
     bio: 'Estudante de psicologia. Fascinada pelo autoconhecimento.',
     avatar_emoji: '🔮',
-    ecos_activos: ['lumina', 'serena'],
+    ecos_activos: ['lumina'],
     personalidade: 'curiosa'
   },
   {
@@ -127,7 +128,7 @@ export const GHOST_PROFILES = [
     display_name: 'Tânia',
     bio: 'Empreendedora em Maputo. A equilibrar trabalho e alma.',
     avatar_emoji: '✨',
-    ecos_activos: ['vitalis', 'aurea', 'ignis'],
+    ecos_activos: ['vitalis'],
     personalidade: 'determinada'
   },
   {
@@ -135,7 +136,7 @@ export const GHOST_PROFILES = [
     display_name: 'Joana P.',
     bio: 'Depois de uma fase difícil, estou a renascer.',
     avatar_emoji: '🌱',
-    ecos_activos: ['vitalis', 'serena'],
+    ecos_activos: ['vitalis'],
     personalidade: 'vulneravel'
   },
   {
@@ -151,7 +152,7 @@ export const GHOST_PROFILES = [
     display_name: 'Marta C.',
     bio: 'Lisboa. Runner e amante de chás. A descobrir o meu ritmo.',
     avatar_emoji: '🍵',
-    ecos_activos: ['vitalis', 'ventis'],
+    ecos_activos: ['vitalis'],
     personalidade: 'energetica'
   },
   {
@@ -159,8 +160,49 @@ export const GHOST_PROFILES = [
     display_name: 'Cláudia',
     bio: 'Jornalista freelancer. As palavras curam quando são verdadeiras.',
     avatar_emoji: '🖊️',
-    ecos_activos: ['ecoa', 'lumina'],
+    ecos_activos: ['vitalis', 'lumina'],
     personalidade: 'articulada'
+  },
+  // --- Nomes muçulmanos (Moçambique) ---
+  {
+    id: 'ghost_amina',
+    display_name: 'Amina',
+    bio: 'De Nampula. O Vitalis ensinou-me a alimentar o corpo com intenção e gratidão.',
+    avatar_emoji: '🌙',
+    ecos_activos: ['vitalis'],
+    personalidade: 'sabia'
+  },
+  {
+    id: 'ghost_halima',
+    display_name: 'Halima J.',
+    bio: 'Mãe e comerciante na Ilha de Moçambique. A cuidar de mim para cuidar dos meus.',
+    avatar_emoji: '🕊️',
+    ecos_activos: ['vitalis'],
+    personalidade: 'calorosa'
+  },
+  {
+    id: 'ghost_aisha',
+    display_name: 'Aisha',
+    bio: 'Farmacêutica em Maputo. Descobri no Lumina padrões que não via há anos.',
+    avatar_emoji: '🌟',
+    ecos_activos: ['vitalis', 'lumina'],
+    personalidade: 'curiosa'
+  },
+  {
+    id: 'ghost_zainab',
+    display_name: 'Zainab M.',
+    bio: 'Professora em Pemba. A transformação começa no prato e no coração.',
+    avatar_emoji: '💫',
+    ecos_activos: ['vitalis'],
+    personalidade: 'determinada'
+  },
+  {
+    id: 'ghost_mariamo',
+    display_name: 'Mariamo',
+    bio: 'Nascida em Angoche. O caminho do autoconhecimento não tem pressa.',
+    avatar_emoji: '🌷',
+    ecos_activos: ['vitalis', 'lumina'],
+    personalidade: 'poetica'
   }
 ]
 
@@ -199,10 +241,17 @@ const GHOST_REFLEXOES = [
   },
   {
     tema: 'gratidao',
-    eco: 'aurea',
+    eco: 'geral',
     conteudo: 'Hoje disse "não" a um compromisso que não me servia. É a primeira vez que não sinto culpa. Grata por esta nova versão de mim.',
     prompt_id: 'grat_4',
     personalidades: ['determinada', 'corajosa']
+  },
+  {
+    tema: 'gratidao',
+    eco: 'vitalis',
+    conteudo: 'Alhamdulillah pelo corpo que tenho. Hoje cozinhei matapa com tanto amor. Alimentar a família é alimentar a alma.',
+    prompt_id: 'grat_1',
+    personalidades: ['calorosa', 'sabia']
   },
 
   // === DESAFIO ===
@@ -227,6 +276,13 @@ const GHOST_REFLEXOES = [
     prompt_id: 'des_3',
     personalidades: ['reflexiva', 'articulada']
   },
+  {
+    tema: 'desafio',
+    eco: 'vitalis',
+    conteudo: 'O desafio de mudar a alimentação da família inteira. Quando comecei no Vitalis era só para mim, agora os filhos já pedem fruta em vez de bolachas.',
+    prompt_id: 'des_2',
+    personalidades: ['determinada', 'calorosa']
+  },
 
   // === DESCOBERTA ===
   {
@@ -249,6 +305,13 @@ const GHOST_REFLEXOES = [
     conteudo: 'Se pudesse ouvir a minha intuição agora, diria: "pára de ter pressa". Sempre a correr para o próximo objectivo sem apreciar onde estou.',
     prompt_id: 'desc_2',
     personalidades: ['sabia', 'espiritual']
+  },
+  {
+    tema: 'descoberta',
+    eco: 'lumina',
+    conteudo: 'O Lumina revelou-me que carrego a expectativa dos outros como se fosse minha. Descoberta dolorosa mas libertadora.',
+    prompt_id: 'desc_3',
+    personalidades: ['curiosa', 'poetica']
   },
 
   // === INTENÇÃO ===
@@ -273,6 +336,13 @@ const GHOST_REFLEXOES = [
     prompt_id: 'int_3',
     personalidades: ['vulneravel', 'pratica']
   },
+  {
+    tema: 'intencao',
+    eco: 'vitalis',
+    conteudo: 'Esta semana vou preparar as refeições ao domingo. O Vitalis mostrou-me que organização é autocuidado.',
+    prompt_id: 'int_3',
+    personalidades: ['pratica', 'determinada']
+  },
 
   // === TRANSFORMAÇÃO ===
   {
@@ -291,10 +361,17 @@ const GHOST_REFLEXOES = [
   },
   {
     tema: 'transformacao',
-    eco: 'aurea',
+    eco: 'geral',
     conteudo: 'A crença de que "não mereço coisas boas" já não me serve. Ouço-a ainda, mas já não a obedeço.',
     prompt_id: 'trans_3',
     personalidades: ['reflexiva', 'vulneravel']
+  },
+  {
+    tema: 'transformacao',
+    eco: 'vitalis',
+    conteudo: 'Três meses no Vitalis. O peso na balança mudou pouco, mas a forma como me vejo mudou tudo. A transformação é interna primeiro.',
+    prompt_id: 'trans_2',
+    personalidades: ['reflexiva', 'corajosa']
   },
 
   // === CONEXÃO ===
@@ -313,7 +390,7 @@ const GHOST_REFLEXOES = [
     personalidades: ['corajosa', 'empática']
   },
 
-  // === ECO-ESPECÍFICOS ===
+  // === VITALIS (corpo/nutrição) ===
   {
     tema: 'corpo',
     eco: 'vitalis',
@@ -336,19 +413,21 @@ const GHOST_REFLEXOES = [
     personalidades: ['pratica', 'criativa']
   },
   {
-    tema: 'valor',
-    eco: 'aurea',
-    conteudo: 'Hoje recusei fazer trabalho extra não remunerado. O meu tempo tem valor. EU tenho valor. Ponto.',
-    prompt_id: 'aur_1',
-    personalidades: ['determinada', 'articulada']
+    tema: 'corpo',
+    eco: 'vitalis',
+    conteudo: 'Descobri no Vitalis que o meu corpo precisa de mais proteína. Comecei a incluir feijão e lentilhas em todas as refeições. Sinto-me com mais energia.',
+    prompt_id: 'vit_1',
+    personalidades: ['pratica', 'energetica']
   },
   {
-    tema: 'valor',
-    eco: 'aurea',
-    conteudo: 'Na reunião, diminuí a minha ideia antes de a apresentar. "É só uma sugestão, provavelmente não serve..." Porquê? Da próxima vez, vou dizer com convicção.',
-    prompt_id: 'aur_2',
-    personalidades: ['reflexiva', 'corajosa']
+    tema: 'corpo',
+    eco: 'vitalis',
+    conteudo: 'Hoje fiz xima com caril de amendoim e legumes frescos. O Vitalis ensinou-me que a nossa comida tradicional pode ser muito nutritiva.',
+    prompt_id: 'vit_3',
+    personalidades: ['calorosa', 'pratica']
   },
+
+  // === LUMINA (visão/diagnóstico) ===
   {
     tema: 'visao',
     eco: 'lumina',
@@ -357,18 +436,11 @@ const GHOST_REFLEXOES = [
     personalidades: ['curiosa', 'articulada']
   },
   {
-    tema: 'emocao',
-    eco: 'serena',
-    conteudo: 'A emoção que pede para ser sentida é a raiva. Sempre a reprimi por ser "feia". Mas a raiva saudável protege. Estou a aprender a deixá-la existir.',
-    prompt_id: 'ser_1',
-    personalidades: ['vulneravel', 'espiritual']
-  },
-  {
-    tema: 'vontade',
-    eco: 'ignis',
-    conteudo: 'O que acende a minha chama é ajudar outras mulheres. Quando partilho aqui e alguém ressoa, sinto que vale a pena.',
-    prompt_id: 'ign_1',
-    personalidades: ['empática', 'calorosa']
+    tema: 'visao',
+    eco: 'lumina',
+    conteudo: 'O Lumina mostrou-me que tenho tendência a carregar o peso dos outros. Preciso de aprender onde eu acabo e os outros começam.',
+    prompt_id: 'lum_1',
+    personalidades: ['empática', 'reflexiva']
   },
 
   // === LIVRE (sem prompt) ===
@@ -404,9 +476,33 @@ const GHOST_REFLEXOES = [
   },
   {
     tema: 'livre',
-    eco: 'aurea',
+    eco: 'geral',
     conteudo: 'Olhei-me ao espelho e não critiquei. Simplesmente olhei. Com curiosidade em vez de julgamento. Progresso.',
     personalidades: ['vulneravel', 'criativa']
+  },
+  {
+    tema: 'livre',
+    eco: 'vitalis',
+    conteudo: 'O plano alimentar do Vitalis mudou a minha relação com o açúcar. Não é proibir — é entender o que o corpo realmente pede.',
+    personalidades: ['pratica', 'determinada']
+  },
+  {
+    tema: 'livre',
+    eco: 'vitalis',
+    conteudo: 'Ensinei a minha filha a preparar um batido de fruta. Ela disse "mãe, somos chefs!". A alimentação saudável pode ser diversão em família.',
+    personalidades: ['calorosa', 'energetica']
+  },
+  {
+    tema: 'livre',
+    eco: 'geral',
+    conteudo: 'Este espaço ensinou-me que cuidar de mim não é egoísmo. É a fundação para cuidar de tudo o resto. Obrigada a todas.',
+    personalidades: ['empática', 'vulneravel']
+  },
+  {
+    tema: 'livre',
+    eco: 'lumina',
+    conteudo: 'Voltei a fazer a leitura do Lumina depois de 2 meses. Os resultados mudaram. Eu mudei. É bonito ter essa prova.',
+    personalidades: ['curiosa', 'reflexiva']
   }
 ]
 
