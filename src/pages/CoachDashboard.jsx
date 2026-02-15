@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { coachApi } from '../lib/coachApi';
 import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
+import { enviarBoasVindas, enviarConfirmacaoPagamento } from '../lib/emails';
 
 /**
  * SETE ECOS - COACH DASHBOARD v5
@@ -162,7 +163,20 @@ export default function CoachDashboard() {
     if (!confirm(`Activar subscricao ${SUBSCRIPTION_PLANS[planKey].name} para ${client.nome}?`)) return;
     try {
       const result = await coachApi.activarSubscricao(client.user_id, planKey);
-      alert(`Subscricao activada ate ${new Date(result.expiresAt).toLocaleDateString('pt-PT')}`);
+      const validoAte = new Date(result.expiresAt).toLocaleDateString('pt-PT');
+      alert(`Subscricao activada ate ${validoAte}`);
+
+      // Enviar emails de boas-vindas e confirmacao a cliente
+      const plan = SUBSCRIPTION_PLANS[planKey];
+      enviarBoasVindas(client.email, client.nome).catch(() => {});
+      enviarConfirmacaoPagamento(client.email, {
+        nome: client.nome,
+        plano: plan.name,
+        valor: `${plan.price_mzn?.toLocaleString('pt-MZ') || plan.price_usd} ${plan.price_mzn ? 'MZN' : 'USD'}`,
+        data: new Date().toLocaleDateString('pt-PT'),
+        validoAte
+      }).catch(() => {});
+
       loadClients();
     } catch (err) {
       alert('Erro: ' + err.message);

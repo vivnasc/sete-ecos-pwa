@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { coachApi } from '../lib/coachApi';
 import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
+import { enviarBoasVindas, enviarConfirmacaoPagamento } from '../lib/emails';
 import { calcularPorcoesDiarias, extrairConfigPlano } from '../lib/vitalis/calcularPorcoes.js';
 
 /**
@@ -218,7 +219,22 @@ export default function CoachClienteDetalhe() {
     if (!confirm(`Activar ${SUBSCRIPTION_PLANS[planKey].name}?`)) return;
     try {
       const result = await coachApi.activarSubscricao(userId, planKey);
-      alert(`Activado ate ${new Date(result.expiresAt).toLocaleDateString('pt-PT')}`);
+      const validoAte = new Date(result.expiresAt).toLocaleDateString('pt-PT');
+      alert(`Activado ate ${validoAte}`);
+
+      // Enviar emails de boas-vindas e confirmacao a cliente
+      if (user?.email) {
+        const plan = SUBSCRIPTION_PLANS[planKey];
+        enviarBoasVindas(user.email, user.nome).catch(() => {});
+        enviarConfirmacaoPagamento(user.email, {
+          nome: user.nome,
+          plano: plan.name,
+          valor: `${plan.price_mzn?.toLocaleString('pt-MZ') || plan.price_usd} ${plan.price_mzn ? 'MZN' : 'USD'}`,
+          data: new Date().toLocaleDateString('pt-PT'),
+          validoAte
+        }).catch(() => {});
+      }
+
       loadClientData();
     } catch (err) {
       alert('Erro: ' + err.message);
