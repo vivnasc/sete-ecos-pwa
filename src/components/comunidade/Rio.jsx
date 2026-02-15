@@ -104,11 +104,16 @@ export default function Rio() {
     if (!uid) return
     setLoadingMore(true)
     try {
-      let data
-      if (filtroEco) {
-        data = await getRioPorEco(filtroEco, pageNum, PAGE_SIZE)
-      } else {
-        data = await getRio(pageNum, PAGE_SIZE)
+      let data = []
+      try {
+        if (filtroEco) {
+          data = await getRioPorEco(filtroEco, pageNum, PAGE_SIZE)
+        } else {
+          data = await getRio(pageNum, PAGE_SIZE)
+        }
+      } catch (e) {
+        console.warn('Supabase rio query failed, showing ghost posts only:', e)
+        data = []
       }
 
       // Filtrar por tema localmente se necessário
@@ -133,9 +138,14 @@ export default function Rio() {
       // Verificar ressonâncias em batch (reais + ghost)
       const realPostIds = data.filter(p => !p._ghost).map(p => p.id)
       const ghostPostIds = data.filter(p => p._ghost).map(p => p.id)
-      const ressonancias = realPostIds.length > 0
-        ? await verificarRessonanciaBatch(realPostIds, uid)
-        : {}
+      let ressonancias = {}
+      try {
+        ressonancias = realPostIds.length > 0
+          ? await verificarRessonanciaBatch(realPostIds, uid)
+          : {}
+      } catch (e) {
+        console.warn('Ressonancia batch check failed:', e)
+      }
       const ghostRessonancias = getGhostRessonanciaBatch(ghostPostIds)
       const allRessonancias = { ...ressonancias, ...ghostRessonancias }
 
