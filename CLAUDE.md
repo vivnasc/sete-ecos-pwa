@@ -231,3 +231,50 @@ Coach dashboard at `/coach` restricted to emails in `src/lib/coach.js`
 - Coach emails in `src/lib/coach.js` with env var fallback
 - PayPal integration supports sandbox/live modes
 - Error boundaries prevent crash information leakage
+
+## Gender Sensitivity (MANDATORY)
+
+**All user-facing Portuguese text MUST be gender-adaptive.** The platform serves both men and women. Never hardcode feminine-only text like "Bem-vinda", "querida", "perfeita", etc.
+
+### Utility: `src/utils/genero.js`
+
+Two functions depending on context:
+
+```jsx
+// 1. Client-side components (reads sexo from localStorage)
+import { g } from '../utils/genero'
+g('Bem-vindo', 'Bem-vinda')     // auto-adapts
+g('querido', 'querida')
+g('perfeito', 'perfeita')
+
+// 2. Coach dashboard, emails, API (explicit sexo parameter)
+import { gx } from '../utils/genero'
+gx(intake?.sexo, 'Bem-vindo', 'Bem-vinda')
+gx(client.sexo, 'activo', 'activa')
+```
+
+### Rules
+
+1. **NEVER** write hardcoded gendered Portuguese words in user-facing text. Always use `g()` or `gx()`.
+2. **Client-side components** (DashboardVitalis, EspacoRetorno, etc.): use `g(masc, fem)` — reads from localStorage.
+3. **Coach dashboard** (CoachClienteDetalhe, CoachDashboard): use `gx(sexo, masc, fem)` with `intake?.sexo` or `client.sexo`.
+4. **Email templates** (`api/enviar-email.js`): use `dados.sexo` to build gender helpers at template level.
+5. **API endpoints**: pass `sexo` in data payloads when sending emails or messages.
+6. **Default is feminine** (majority of users), but code must support both.
+
+### Common gendered words reference
+
+| Masculino | Feminino | Usage |
+|-----------|----------|-------|
+| Bem-vindo | Bem-vinda | Greetings |
+| querido | querida | Terms of endearment |
+| obrigado | obrigada | Thanks |
+| perfeito | perfeita | Motivational |
+| cansado | cansada | State descriptions |
+| motivado | motivada | State descriptions |
+| activo | activa | Status labels |
+| inactivo | inactiva | Status labels |
+| conectado | conectada | State descriptions |
+| sozinho | sozinha | State descriptions |
+| inscrito | inscrita | Registration |
+| preparado | preparada | Readiness |

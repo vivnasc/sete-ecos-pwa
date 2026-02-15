@@ -169,7 +169,7 @@ const PagamentoVitalis = () => {
           try {
             const refResult = await useReferralCode(userData.id, refCode);
             if (refResult.success) {
-              setMessage({ type: 'success', text: `Trial de ${refResult.trialDays} dias activado! Bem-vinda ao Vitalis.` });
+              setMessage({ type: 'success', text: `Trial de ${refResult.trialDays} dias activado! ${g('Bem-vindo', 'Bem-vinda')} ao Vitalis.` });
               const { data: intake } = await supabase
                 .from('vitalis_intake')
                 .select('id')

@@ -29,7 +29,7 @@ const HOOKS_PROVOCADORES = [
   'Estou farta de ver mulheres a pedir desculpa por comer.',
   'A balança não mede o teu valor. Nem a tua saúde.',
   'A culpa que sentes depois de comer engorda mais que a refeição.',
-  'Acordas cansada? Não é preguiça. É o teu corpo a gritar.',
+  'Acordas cansado/a? Não é preguiça. É o teu corpo a gritar.',
   'Comer em segredo. Já fizeste isso? Eu também.',
   'Quantas dietas já começaste numa Segunda-feira?',
   'O teu corpo não precisa de castigo. Precisa de compreensão.',
@@ -89,7 +89,7 @@ const CONTEUDO_EMOCIONAL = [
     cta: 'O Espaço de Retorno do VITALIS foi criado para esses momentos.',
   },
   {
-    hook: 'Recaíste? Bem-vinda ao clube de quem é humana.',
+    hook: 'Recaíste? Bem-vindo/a ao clube de quem é humano/a.',
     corpo: 'A diferença entre quem transforma o corpo e quem desiste não é nunca falhar. É levantar-se na terça em vez de esperar pela próxima segunda.',
     cta: 'No VITALIS, não há "estragar a dieta". Há dias. E cada dia é novo.',
   },
@@ -254,7 +254,7 @@ export function gerarMensagemWhatsApp(tipo = 'dica', campanha = '') {
     provocacao: `*${hoje.hook}*\n\nVou dizer uma coisa que talvez ninguém te disse:\n\n${hoje.corpo}\n\nSe isto te tocou, não ignores.\n\n👉 ${linkLumina}\n\nÉ gratuito. 2 minutos. Começa por ti.`,
 
     // Voz pessoal (como se a Viv estivesse a falar)
-    pessoal: `Olá querida 🤍\n\nHoje quero partilhar algo que me incomoda:\n\n_${hoje.hook}_\n\n${hoje.corpo}\n\nSe te identificas, responde a esta mensagem. Quero saber como te sentes.\n\nOu experimenta o diagnóstico gratuito:\n${linkLumina}`,
+    pessoal: `Olá 🤍\n\nHoje quero partilhar algo que me incomoda:\n\n_${hoje.hook}_\n\n${hoje.corpo}\n\nSe te identificas, responde a esta mensagem. Quero saber como te sentes.\n\nOu experimenta o diagnóstico gratuito:\n${linkLumina}`,
 
     // Urgencia real
     urgencia: `⚡ Pergunta honesta:\n\nHá quanto tempo dizes "vou começar na segunda"?\n\nSemanas? Meses? Anos?\n\nEnquanto esperas pelo "momento certo", o teu corpo continua a pedir ajuda.\n\nDeixa de esperar.\n\n2 minutos. Gratuito. Agora:\n${linkLumina}`,
@@ -278,7 +278,7 @@ export function gerarMensagemWhatsApp(tipo = 'dica', campanha = '') {
     storiesSeq: `📱 *SEQUENCIA DE 5 STATUS* (publica um de cada vez, de hora em hora):\n\n*Status 1 (9h):*\n_${hoje.hook}_\n\n*Status 2 (11h):*\n_${hoje.corpo}_\n\n*Status 3 (13h):*\n_Sabias que 80% das mulheres em Moçambique nunca receberam orientação nutricional personalizada?_\n\n*Status 4 (16h):*\n_${hoje.cta}\nExperimenta grátis: ${linkLumina}_\n\n*Status 5 (19h):*\n_Hoje já cuidaste de ti? Mesmo 2 minutos contam.\n${linkLumina}_`,
 
     // Audio script (para gravar nota de voz)
-    audio: `🎙 *SCRIPT PARA NOTA DE VOZ* (grava e envia para contactos):\n\n"Olá querida, tudo bem contigo? Olha, queria partilhar uma coisa contigo.\n\nEu descobri uma ferramenta gratuita que faz um diagnóstico de como tu estás - energia, emoção, corpo - em 2 minutinhos. Chama-se Lumina.\n\nEu experimentei e fiquei impressionada com a leitura. Parecia que me conhecia.\n\nVou mandar-te o link, experimenta e depois diz-me o que achaste, tá?\n\n[envia o link logo a seguir]\n\n${linkLumina}"`,
+    audio: `🎙 *SCRIPT PARA NOTA DE VOZ* (grava e envia para contactos):\n\n"Olá, tudo bem contigo? Olha, queria partilhar uma coisa contigo.\n\nEu descobri uma ferramenta gratuita que faz um diagnóstico de como tu estás - energia, emoção, corpo - em 2 minutinhos. Chama-se Lumina.\n\nEu experimentei e fiquei impressionada com a leitura. Parecia que me conhecia.\n\nVou mandar-te o link, experimenta e depois diz-me o que achaste, tá?\n\n[envia o link logo a seguir]\n\n${linkLumina}"`,
 
     // Para grupos de mulheres
     grupo: `*Para todas as mulheres neste grupo* 💜\n\nVou ser directa: a maioria de nós nunca aprendeu a comer.\n\nAprendemos a fazer dieta. A contar calorias. A sentir culpa.\n\nMas ninguém nos ensinou a OUVIR o corpo.\n\nHoje quero partilhar algo que me mudou: um diagnóstico gratuito que analisa a tua energia, emoção e corpo em 2 minutos.\n\nNão vende nada. Não pede cartão. É só... um espelho.\n\n${linkLumina}\n\nExperimenta e partilha aqui o que achaste 🤍`,
@@ -342,7 +342,7 @@ export function gerarScriptVoz() {
 
     storiesVoz: `[Fundo simples, face visivel]\n\n"Vou dizer uma coisa que talvez ninguém te disse..."\n\n[Pausa]\n\n"${hoje.hook}"\n\n[Proximo story]\n\n"Se isto te tocou, há uma ferramenta gratuita que te pode ajudar. Chama-se LUMINA. Link em cima."`,
 
-    audioWhatsApp: `"Olá querida. Hoje quero partilhar algo importante contigo.\n\n${hoje.hook}\n\nPorque digo isto? Porque ${hoje.corpo.toLowerCase()}\n\nSe te identificas, experimenta o LUMINA - é gratuito e demora 2 minutinhos. Vou mandar-te o link."`,
+    audioWhatsApp: `"Olá! Hoje quero partilhar algo importante contigo.\n\n${hoje.hook}\n\nPorque digo isto? Porque ${hoje.corpo.toLowerCase()}\n\nSe te identificas, experimenta o LUMINA - é gratuito e demora 2 minutinhos. Vou mandar-te o link."`,
   };
 }
 
@@ -719,7 +719,7 @@ export function getSemana1() {
       gridPosts: [1, 2, 3],
       stories: 'Vídeo/foto pessoal: "Olá, sou a Vivianne e criei algo para nós mulheres."',
       whatsapp: {
-        mensagem: `Olá querida 🤍\n\nQuero partilhar uma coisa contigo.\n\nCriei um projecto para mulheres que, como eu, já estiveram em guerra com o próprio corpo.\n\nNão é uma dieta. Não é um ginásio. É algo diferente.\n\nNos próximos dias vou contar-te mais.\n\nSe tens curiosidade, segue @seteecos no Instagram. Acabou de nascer. 🌿`,
+        mensagem: `Olá 🤍\n\nQuero partilhar uma coisa contigo.\n\nCriei um projecto para pessoas que, como eu, já estiveram em guerra com o próprio corpo.\n\nNão é uma dieta. Não é um ginásio. É algo diferente.\n\nNos próximos dias vou contar-te mais.\n\nSe tens curiosidade, segue @seteecos no Instagram. Acabou de nascer. 🌿`,
         imagem: { template: 'cta', eco: 'seteEcos', formato: 'stories', texto: 'Algo especial para mulheres acaba de nascer.', subtitulo: 'SETE ECOS - Segue @seteecos' },
       },
       ads: null,
@@ -881,7 +881,7 @@ export function getSemana2() {
 
 export function getEmailSequencia(diasDesdeRegisto) {
   const sequencia = [
-    { dia: 0, assunto: 'Bem-vinda — A tua jornada começa aqui', tipo: 'boas-vindas', preview: 'Não é mais uma newsletter. É um espelho.' },
+    { dia: 0, assunto: 'Bem-vindo/a — A tua jornada começa aqui', tipo: 'boas-vindas', preview: 'Não é mais uma newsletter. É um espelho.' },
     { dia: 3, assunto: '2 minutos que te podem surpreender', tipo: 'convite-lumina', preview: 'O diagnóstico que ninguém te fez.' },
     { dia: 7, assunto: 'Porque falhas nas dietas (não é o que pensas)', tipo: 'valor-provocação', preview: 'A indústria ganhou. Tu perdeste. Até agora.' },
     { dia: 14, assunto: 'Resultado: -8kg sem passar fome', tipo: 'testemunho-vitalis', preview: 'História real de uma mulher como tu.' },
@@ -2266,7 +2266,7 @@ export function getSetupWhatsAppBusiness() {
       website: 'https://app.seteecos.com',
       endereco: 'Maputo, Moçambique',
     },
-    saudacao: `Olá! 🌿 Bem-vinda ao Sete Ecos.\n\nSou a Vivianne, coach de nutrição e bem-estar feminino.\n\nComo te posso ajudar?\n\n1️⃣ Quero saber mais sobre o VITALIS (coaching nutricional)\n2️⃣ Quero fazer o diagnóstico gratuito LUMINA\n3️⃣ Tenho dúvidas sobre preços\n4️⃣ Preciso de suporte técnico\n\nResponde com o número ou escreve à vontade 💚`,
+    saudacao: `Olá! 🌿 Bem-vindo/a ao Sete Ecos.\n\nSou a Vivianne, coach de nutrição e bem-estar.\n\nComo te posso ajudar?\n\n1️⃣ Quero saber mais sobre o VITALIS (coaching nutricional)\n2️⃣ Quero fazer o diagnóstico gratuito LUMINA\n3️⃣ Tenho dúvidas sobre preços\n4️⃣ Preciso de suporte técnico\n\nResponde com o número ou escreve à vontade 💚`,
     ausencia: `Olá! 🌿 Obrigada pela tua mensagem.\n\nNeste momento estou fora do horário de atendimento (Seg-Sex, 8h-18h).\n\nEnquanto isso, podes:\n🔮 Fazer o diagnóstico gratuito: app.seteecos.com/lumina\n🌱 Ver o programa VITALIS: app.seteecos.com/vitalis\n\nRespondo-te assim que possível! 💚`,
     respostasRapidas: [
       {
@@ -2306,10 +2306,10 @@ export function getSetupWhatsAppBusiness() {
       },
     ],
     etiquetas: [
-      { nome: 'Cliente Activa', cor: 'verde', descricao: 'Tem subscrição activa' },
-      { nome: 'Interessada', cor: 'amarelo', descricao: 'Perguntou mas ainda não comprou' },
+      { nome: 'Cliente Activo/a', cor: 'verde', descricao: 'Tem subscrição activa' },
+      { nome: 'Interessado/a', cor: 'amarelo', descricao: 'Perguntou mas ainda não comprou' },
       { nome: 'Teste', cor: 'azul', descricao: 'Em período de teste' },
-      { nome: 'Expirada', cor: 'vermelho', descricao: 'Subscrição expirou' },
+      { nome: 'Expirado/a', cor: 'vermelho', descricao: 'Subscrição expirou' },
       { nome: 'Lumina', cor: 'roxo', descricao: 'Fez o diagnóstico gratuito' },
       { nome: 'Suporte', cor: 'cinza', descricao: 'Precisa de ajuda técnica' },
     ],

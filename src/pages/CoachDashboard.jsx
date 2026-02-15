@@ -168,13 +168,14 @@ export default function CoachDashboard() {
 
       // Enviar emails de boas-vindas e confirmacao a cliente
       const plan = SUBSCRIPTION_PLANS[planKey];
-      enviarBoasVindas(client.email, client.nome).catch(() => {});
+      enviarBoasVindas(client.email, client.nome, client.sexo).catch(() => {});
       enviarConfirmacaoPagamento(client.email, {
         nome: client.nome,
         plano: plan.name,
         valor: `${plan.price_mzn?.toLocaleString('pt-MZ') || plan.price_usd} ${plan.price_mzn ? 'MZN' : 'USD'}`,
         data: new Date().toLocaleDateString('pt-PT'),
-        validoAte
+        validoAte,
+        sexo: client.sexo
       }).catch(() => {});
 
       loadClients();

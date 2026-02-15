@@ -45,13 +45,13 @@ const BADGE_DESCONTO = `
 const SEQUENCIA = [
   {
     dia: 0,
-    assunto: 'Bem-vinda ao Sete Ecos!',
+    assunto: 'Bem-vindo/a ao Sete Ecos!',
     template: (nome) => `
       <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
         <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 28px;">Bem-vinda, ${nome}!</h1>
+          <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 28px;">Bem-vindo/a, ${nome}!</h1>
         </div>
-        <p style="color: #6B5C4C; line-height: 1.8;">Obrigada por te juntares ao Sete Ecos.</p>
+        <p style="color: #6B5C4C; line-height: 1.8;">Obrigado/a por te juntares ao Sete Ecos.</p>
         <p style="color: #6B5C4C; line-height: 1.8;">O Sete Ecos é um ecossistema de transformação feminina - sete caminhos que se complementam para te guiar numa jornada de autodescoberta, equilíbrio e plenitude.</p>
         <p style="color: #6B5C4C; line-height: 1.8;">Nos próximos dias, vou partilhar contigo ferramentas que podem mudar a tua relação contigo mesma.</p>
         <p style="color: #6B5C4C; line-height: 1.8;">A começar pelo <strong>Lumina</strong> - um diagnóstico gratuito que revela padrões sobre a tua energia, emoção e corpo.</p>
@@ -267,7 +267,7 @@ export default async function handler(req, res) {
 
       // Enviar email
       try {
-        const nome = lead.nome || 'amiga';
+        const nome = lead.nome || 'amigo/a';
         // Substituir ${nome} no assunto
         const assunto = emailTemplate.assunto.replace('${nome}', nome);
 

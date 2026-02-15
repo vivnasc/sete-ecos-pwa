@@ -84,11 +84,17 @@ export default async function handler(req, res) {
 }
 
 function getEmailTemplate(tipo, dados = {}) {
+  // Gender-sensitive helpers
+  const isMasc = dados.sexo === 'masculino';
+  const bemVindo = isMasc ? 'Bem-vindo' : 'Bem-vinda';
+  const querido = isMasc ? 'querido' : 'querida';
+  const perfeito = isMasc ? 'perfeito' : 'perfeita';
+
   const templates = {
     // ===== EMAILS PARA CLIENTES =====
 
     'boas-vindas': {
-      assunto: '🌿 Bem-vinda ao Vitalis!',
+      assunto: `🌿 ${bemVindo} ao Vitalis!`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -114,7 +120,7 @@ function getEmailTemplate(tipo, dados = {}) {
               <p>A raiz da transformação</p>
             </div>
             <div class="content">
-              <h2>Bem-vinda, ${dados.nome || 'querida'}! 🌿</h2>
+              <h2>${bemVindo}, ${dados.nome || querido}! 🌿</h2>
               <p>É uma alegria ter-te connosco no Vitalis.</p>
               <p>Estás prestes a começar uma jornada de transformação que vai muito além da perda de peso. Vamos trabalhar o teu corpo, mente e emoções.</p>
               <p><strong>Próximos passos:</strong></p>
@@ -237,7 +243,7 @@ function getEmailTemplate(tipo, dados = {}) {
                 <h2 style="color: #92400E; margin: 10px 0;">Pagamento Registado!</h2>
                 <p style="color: #92400E;">A Coach Vivianne vai confirmar em ate 24 horas.</p>
               </div>
-              <p>Ola <strong>${dados.nome || 'querida'}</strong>,</p>
+              <p>Ola <strong>${dados.nome || querido}</strong>,</p>
               <p>Recebemos o registo do teu pagamento! Vais receber outro email assim que for confirmado.</p>
               <div class="details">
                 <p><strong>Plano:</strong> ${dados.plano || '-'}</p>
@@ -280,9 +286,9 @@ function getEmailTemplate(tipo, dados = {}) {
               <h1>VITALIS</h1>
             </div>
             <div class="content">
-              <h2>Olá ${dados.nome || 'querida'} 💚</h2>
+              <h2>Olá ${dados.nome || querido} 💚</h2>
               <p>Reparei que não tens feito check-in há ${dados.dias || 'alguns'} dias.</p>
-              <p>Está tudo bem? Lembra-te: cada dia é uma nova oportunidade. Não precisas ser perfeita, só precisas de aparecer.</p>
+              <p>Está tudo bem? Lembra-te: cada dia é uma nova oportunidade. Não precisas ser ${perfeito}, só precisas de aparecer.</p>
               <p>Se estás a passar por um momento difícil, o <strong>Espaço de Retorno</strong> está lá para ti. Às vezes, precisamos de pausar antes de continuar.</p>
               <p style="text-align: center;">
                 <a href="https://app.seteecos.com/vitalis/checkin" class="btn">Fazer Check-in →</a>
@@ -371,7 +377,7 @@ function getEmailTemplate(tipo, dados = {}) {
                 <p style="margin: 10px 0 0; font-weight: 600;">A tua subscrição expira em ${dados.dias || 7} dias</p>
               </div>
 
-              <p>Olá ${dados.nome || 'querida'},</p>
+              <p>Olá ${dados.nome || querido},</p>
               <p>Não queremos que percas o acesso às tuas ferramentas de transformação!</p>
               <p>Renova agora e continua a tua jornada sem interrupções.</p>
 

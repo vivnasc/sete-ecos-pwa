@@ -45,9 +45,10 @@ export async function enviarEmail(tipo, destinatario, dados = {}) {
 
 /**
  * Email de boas-vindas após registo
+ * @param {string} sexo - 'masculino' ou 'feminino' (opcional)
  */
-export async function enviarBoasVindas(email, nome) {
-  return enviarEmail('boas-vindas', email, { nome });
+export async function enviarBoasVindas(email, nome, sexo) {
+  return enviarEmail('boas-vindas', email, { nome, sexo });
 }
 
 /**
@@ -58,10 +59,10 @@ export async function enviarConfirmacaoPagamento(email, dados) {
 }
 
 /**
- * Email de lembrete para cliente inactiva
+ * Email de lembrete para cliente inactivo/a
  */
-export async function enviarLembreteCheckin(email, nome, dias) {
-  return enviarEmail('lembrete-checkin', email, { nome, dias });
+export async function enviarLembreteCheckin(email, nome, dias, sexo) {
+  return enviarEmail('lembrete-checkin', email, { nome, dias, sexo });
 }
 
 /**
@@ -74,8 +75,8 @@ export async function enviarConquista(email, dados) {
 /**
  * Email de aviso de expiração
  */
-export async function enviarAvisoExpiracao(email, nome, dias) {
-  return enviarEmail('expiracao-aviso', email, { nome, dias });
+export async function enviarAvisoExpiracao(email, nome, dias, sexo) {
+  return enviarEmail('expiracao-aviso', email, { nome, dias, sexo });
 }
 
 // ===== EMAILS PARA COACH =====
