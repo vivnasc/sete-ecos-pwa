@@ -79,6 +79,13 @@ export default function Navigation({ variant = 'default' }) {
             color="#7C8B6F"
           />
           <NavItem
+            icon="community"
+            label="Comunidade"
+            active={isCommunitySection}
+            onClick={() => navigate('/comunidade')}
+            color="#8B5CF6"
+          />
+          <NavItem
             icon="account"
             label="Conta"
             active={isAccountSection}
