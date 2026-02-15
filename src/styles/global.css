@@ -569,8 +569,159 @@
 }
 
 /* ============================================================
-   COMUNIDADE — Social Feed Styles
+   COMUNIDADE — O Rio — Experiência Imersiva Original
    ============================================================ */
+
+/* Fluid scroll river */
+.rio-flow {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+}
+.rio-flow::-webkit-scrollbar { display: none; }
+
+/* Hide scrollbar utility */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Ripple — ondas concêntricas no toque */
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 0.5; border-width: 3px; }
+  50% { opacity: 0.3; }
+  100% { transform: scale(6); opacity: 0; border-width: 1px; }
+}
+@keyframes ripple-delay {
+  0% { transform: scale(0); opacity: 0.3; border-width: 2px; }
+  100% { transform: scale(5); opacity: 0; border-width: 1px; }
+}
+.ripple-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 3px solid currentColor;
+  width: 40px; height: 40px;
+  margin: -20px 0 0 -20px;
+  pointer-events: none;
+  animation: ripple 0.8s ease-out forwards;
+}
+.ripple-ring-delay {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  width: 40px; height: 40px;
+  margin: -20px 0 0 -20px;
+  pointer-events: none;
+  animation: ripple-delay 1s ease-out 0.15s forwards;
+  opacity: 0;
+}
+
+/* Bioluminescência — glow proporcional à ressonância */
+.bioluminescent-1 { box-shadow: 0 0 15px rgba(139,92,246,0.06); }
+.bioluminescent-2 { box-shadow: 0 0 20px rgba(139,92,246,0.1); }
+.bioluminescent-3 { box-shadow: 0 0 30px rgba(139,92,246,0.15), 0 0 60px rgba(139,92,246,0.05); }
+.bioluminescent-4 { box-shadow: 0 0 40px rgba(139,92,246,0.2), 0 0 80px rgba(139,92,246,0.08); }
+
+/* Card float — cada card flutua ligeiramente */
+@keyframes cardFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Breathing pause between post groups */
+@keyframes breatheIn {
+  0% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.08); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 0.3; }
+}
+.animate-breathe-in {
+  animation: breatheIn 4s ease-in-out infinite;
+}
+
+/* Immerse — card expands to full screen */
+@keyframes immerseIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes immerseOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.95); }
+}
+.animate-immerse-in {
+  animation: immerseIn 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+.animate-immerse-out {
+  animation: immerseOut 0.25s ease-in forwards;
+}
+
+/* Bokeh decorative circles */
+@keyframes bokehDrift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(10px, -15px) scale(1.05); }
+  50% { transform: translate(-5px, -25px) scale(0.95); }
+  75% { transform: translate(-15px, -10px) scale(1.02); }
+}
+.animate-bokeh {
+  animation: bokehDrift 12s ease-in-out infinite;
+}
+.animate-bokeh-slow {
+  animation: bokehDrift 18s ease-in-out infinite reverse;
+}
+.animate-bokeh-fast {
+  animation: bokehDrift 8s ease-in-out infinite;
+}
+
+/* Water surface — subtle animated gradient */
+@keyframes waterSurface {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Action button pulse on tap */
+@keyframes tapPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+.animate-tap-pulse {
+  animation: tapPulse 0.3s ease-out;
+}
+
+/* Slide up for bottom sheets */
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.animate-sheet-up {
+  animation: sheetUp 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+/* Breathing glow */
+@keyframes breathe {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+/* Scroll indicator */
+@keyframes scrollHint {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(8px); opacity: 1; }
+}
+.animate-scroll-hint {
+  animation: scrollHint 2s ease-in-out infinite;
+}
+
+/* Card entrance stagger */
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-card-reveal {
+  animation: cardReveal 0.4s ease-out forwards;
+}
 
 /* Community section dark mode */
 .dark .border-purple-100 {
