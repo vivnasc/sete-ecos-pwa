@@ -258,7 +258,7 @@ const PagamentoVitalis = () => {
     }
 
     const script = document.createElement('script');
-    script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD`;
+    script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD&intent=capture`;
     script.async = true;
 
     // Timeout para não ficar eternamente "A carregar..."
@@ -295,77 +295,103 @@ const PagamentoVitalis = () => {
     paypalRef.current.innerHTML = '';
 
     const plan = getActivePlans()[selectedPlan] || SUBSCRIPTION_PLANS.SEMESTRAL;
-
     const discounted = getDiscountedPrice(plan);
 
-    window.paypal.Buttons({
-      style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay', height: 50 },
-      createOrder: (data, actions) => {
-        return actions.order.create({
-          purchase_units: [{
-            description: `Vitalis ${plan.name}${promoDiscount ? ` (${promoDiscount}% off)` : ''} - ${userName || userEmail}`,
-            amount: { currency_code: 'USD', value: discounted.usd.toString() }
-          }]
-        });
-      },
-      onApprove: async (data, actions) => {
-        setProcessing(true);
-        try {
-          const details = await actions.order.capture();
-          const result = await activateSubscription(userId, {
-            method: 'paypal',
-            transactionId: details.id,
-            amount: discounted.usd,
-            currency: 'USD',
-            planId: plan.id,
-            payerEmail: details.payer?.email_address
-          });
+    // Validar valor antes de criar botões
+    const amountValue = parseFloat(discounted.usd).toFixed(2);
+    if (isNaN(parseFloat(amountValue)) || parseFloat(amountValue) <= 0) {
+      console.error('PayPal: valor inválido', discounted.usd);
+      setPaypalError('Erro: valor do plano inválido. Tenta seleccionar outro plano.');
+      return;
+    }
 
-          // Mark promo code as used if applicable
-          if (promoCode) {
-            await useInviteCode(userId, promoCode).catch(console.error);
-          }
-
-          if (result.success) {
-            // Recompensar quem indicou (se aplicavel)
-            rewardReferrer(userId).catch(console.error);
-
-            const validoAte = new Date();
-            validoAte.setMonth(validoAte.getMonth() + plan.duration);
-            EmailTriggers.onPagamentoSucesso({
-              nome: userName || userEmail.split('@')[0],
-              email: userEmail,
-              plano: plan.name,
-              valor: `$${plan.price_usd}`,
-              validoAte: validoAte.toLocaleDateString('pt-PT')
-            }).catch(console.error);
-
-            // Navegar directamente
-            const { data: intake } = await supabase
-              .from('vitalis_intake')
-              .select('id')
-              .eq('user_id', userId)
-              .maybeSingle();
-
-            if (intake) {
-              navigate('/vitalis/dashboard');
-            } else {
-              navigate('/vitalis/intake');
+    try {
+      window.paypal.Buttons({
+        style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay', height: 50 },
+        createOrder: (data, actions) => {
+          return actions.order.create({
+            intent: 'CAPTURE',
+            purchase_units: [{
+              description: `Vitalis ${plan.name}${promoDiscount ? ` (${promoDiscount}% off)` : ''} - ${userName || userEmail}`,
+              amount: { currency_code: 'USD', value: amountValue }
+            }],
+            application_context: {
+              brand_name: 'Sete Ecos - Vitalis',
+              shipping_preference: 'NO_SHIPPING'
             }
+          });
+        },
+        onApprove: async (data, actions) => {
+          setProcessing(true);
+          try {
+            const details = await actions.order.capture();
+
+            // Verificar se captura foi bem sucedida
+            if (details.status !== 'COMPLETED') {
+              throw new Error(`Pagamento não completado (status: ${details.status})`);
+            }
+
+            const result = await activateSubscription(userId, {
+              method: 'paypal',
+              transactionId: details.id,
+              amount: discounted.usd,
+              currency: 'USD',
+              planId: plan.id,
+              payerEmail: details.payer?.email_address
+            });
+
+            // Mark promo code as used if applicable
+            if (promoCode) {
+              await useInviteCode(userId, promoCode).catch(console.error);
+            }
+
+            if (result.success) {
+              // Recompensar quem indicou (se aplicavel)
+              rewardReferrer(userId).catch(console.error);
+
+              const validoAte = new Date();
+              validoAte.setMonth(validoAte.getMonth() + plan.duration);
+              EmailTriggers.onPagamentoSucesso({
+                nome: userName || userEmail.split('@')[0],
+                email: userEmail,
+                plano: plan.name,
+                valor: `$${plan.price_usd}`,
+                validoAte: validoAte.toLocaleDateString('pt-PT')
+              }).catch(console.error);
+
+              // Navegar directamente
+              const { data: intake } = await supabase
+                .from('vitalis_intake')
+                .select('id')
+                .eq('user_id', userId)
+                .maybeSingle();
+
+              if (intake) {
+                navigate('/vitalis/dashboard');
+              } else {
+                navigate('/vitalis/intake');
+              }
+            }
+          } catch (error) {
+            console.error('PayPal onApprove error:', error);
+            setMessage({ type: 'error', text: `Erro ao processar pagamento: ${error.message || 'erro desconhecido'}. Contacta-nos via WhatsApp se o valor foi cobrado.` });
+          } finally {
+            setProcessing(false);
           }
-        } catch (error) {
-          console.error('PayPal onApprove error:', error);
-          setMessage({ type: 'error', text: `Erro ao processar pagamento: ${error.message || 'erro desconhecido'}. Contacta-nos via WhatsApp se o valor foi cobrado.` });
-        } finally {
-          setProcessing(false);
-        }
-      },
-      onError: (err) => {
-        console.error('PayPal button error:', err);
-        setMessage({ type: 'error', text: 'Erro no PayPal. Tenta novamente ou usa o pagamento manual (M-Pesa/Transferência).' });
-      },
-      onCancel: () => setMessage({ type: 'info', text: 'Pagamento cancelado. Podes tentar novamente quando quiseres.' })
-    }).render(paypalRef.current);
+        },
+        onError: (err) => {
+          console.error('PayPal button error:', err);
+          setMessage({ type: 'error', text: 'Erro no PayPal. Tenta novamente ou usa o pagamento manual (M-Pesa/Transferência).' });
+        },
+        onCancel: () => setMessage({ type: 'info', text: 'Pagamento cancelado. Podes tentar novamente quando quiseres.' })
+      }).render(paypalRef.current).catch((renderErr) => {
+        console.error('PayPal render error:', renderErr);
+        setPaypalError('Erro ao inicializar PayPal. Tenta recarregar a página ou usa M-Pesa.');
+      });
+    } catch (err) {
+      console.error('PayPal Buttons() error:', err);
+      setPaypalError('Erro ao criar botões PayPal. Tenta recarregar a página ou usa M-Pesa.');
+    }
   };
 
   const handleInviteCode = async () => {
