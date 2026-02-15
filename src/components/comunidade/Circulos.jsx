@@ -9,11 +9,13 @@ import {
   criarCirculo,
   ECOS_INFO
 } from '../../lib/comunidade'
+import { getGhostCirculos } from '../../lib/ghost-users'
 
-export default function Circulos({ userId }) {
+export default function Circulos() {
   const navigate = useNavigate()
 
   const [loading, setLoading] = useState(true)
+  const [userId, setUserId] = useState(null)
   const [tab, setTab] = useState('meus') // 'meus' | 'explorar'
   const [meusCirculos, setMeusCirculos] = useState([])
   const [circulosEco, setCirculosEco] = useState([])
@@ -40,6 +42,29 @@ export default function Circulos({ userId }) {
   // ---------- Initialisation ----------
 
   useEffect(() => {
+    const init = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) { setLoading(false); return }
+        const { data: userData } = await supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', user.id)
+          .single()
+        if (userData) {
+          setUserId(userData.id)
+        } else {
+          setLoading(false)
+        }
+      } catch (e) {
+        console.error('Erro ao obter userId:', e)
+        setLoading(false)
+      }
+    }
+    init()
+  }, [])
+
+  useEffect(() => {
     if (userId) {
       carregarMeusCirculos()
     }
@@ -55,21 +80,27 @@ export default function Circulos({ userId }) {
     setLoading(true)
     try {
       const data = await getMeusCirculos(userId)
-      setMeusCirculos(data)
+      setMeusCirculos(data || [])
     } catch (error) {
       console.error('Erro ao carregar circulos:', error)
+      setMeusCirculos([])
     }
     setLoading(false)
   }
 
   const carregarCirculosDoEco = async (eco) => {
     setLoadingEco(true)
+    let data = []
     try {
-      const data = await getCirculosDoEco(eco)
-      setCirculosEco(data)
+      data = await getCirculosDoEco(eco) || []
     } catch (error) {
       console.error('Erro ao carregar circulos do eco:', error)
     }
+    // Merge ghost circles filtered by eco
+    const ghostCirculos = getGhostCirculos().filter(c => c.eco === eco)
+    const realIds = new Set(data.map(c => c.id))
+    const merged = [...data, ...ghostCirculos.filter(c => !realIds.has(c.id))]
+    setCirculosEco(merged)
     setLoadingEco(false)
   }
 

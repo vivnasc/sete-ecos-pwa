@@ -777,6 +777,70 @@ export function getGhostCommunityStats() {
 }
 
 /**
+ * Gera círculos ghost para preencher a página de Círculos.
+ */
+export function getGhostCirculos() {
+  const rng = seededRandom(dateSeed())
+  const profiles = shuffle(GHOST_PROFILES.filter(p => p.ecos_activos.includes('vitalis')), rng)
+
+  const circulos = [
+    {
+      id: 'ghost_circulo_raizes',
+      eco: 'vitalis',
+      nome: 'Raízes de Vitalis',
+      intencao: 'Apoiar-nos mutuamente na jornada de nutrição consciente e amor ao corpo.',
+      descricao: 'Um espaço seguro para partilhar conquistas e desafios na alimentação e bem-estar.',
+      max_membros: 10,
+      _ghost: true,
+      community_circulo_membros: profiles.slice(0, 5 + Math.floor(rng() * 3)).map((p, i) => ({
+        user_id: p.id,
+        role: i === 0 ? 'guardia' : 'membro',
+        community_profiles: {
+          display_name: p.display_name,
+          avatar_emoji: p.avatar_emoji
+        }
+      }))
+    },
+    {
+      id: 'ghost_circulo_despertar',
+      eco: 'lumina',
+      nome: 'Despertar Interior',
+      intencao: 'Explorar juntas o autoconhecimento através da reflexão diária.',
+      descricao: 'Círculo para quem quer aprofundar a prática de Lumina em grupo.',
+      max_membros: 8,
+      _ghost: true,
+      community_circulo_membros: profiles.slice(3, 6 + Math.floor(rng() * 2)).map((p, i) => ({
+        user_id: p.id,
+        role: i === 0 ? 'guardia' : 'membro',
+        community_profiles: {
+          display_name: p.display_name,
+          avatar_emoji: p.avatar_emoji
+        }
+      }))
+    },
+    {
+      id: 'ghost_circulo_forca',
+      eco: 'vitalis',
+      nome: 'Força Feminina',
+      intencao: 'Celebrar a força do corpo feminino e encontrar equilíbrio.',
+      descricao: null,
+      max_membros: 12,
+      _ghost: true,
+      community_circulo_membros: profiles.slice(1, 4 + Math.floor(rng() * 3)).map((p, i) => ({
+        user_id: p.id,
+        role: i === 0 ? 'guardia' : 'membro',
+        community_profiles: {
+          display_name: p.display_name,
+          avatar_emoji: p.avatar_emoji
+        }
+      }))
+    }
+  ]
+
+  return circulos
+}
+
+/**
  * Verifica se um user_id é ghost
  */
 export function isGhostUser(userId) {
