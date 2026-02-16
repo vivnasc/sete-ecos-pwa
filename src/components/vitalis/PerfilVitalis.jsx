@@ -35,13 +35,13 @@ export default function PerfilVitalis() {
   // Estados do formulário
   const [nomeCompleto, setNomeCompleto] = useState('');
   const [email, setEmail] = useState('');
-  const [telefone, setTelefone] = useState('');
-  const [dataNascimento, setDataNascimento] = useState('');
   const [genero, setGenero] = useState('');
   const [avatarSelecionado, setAvatarSelecionado] = useState('');
   const [altura, setAltura] = useState('');
   const [pesoAtual, setPesoAtual] = useState('');
   const [pesoMeta, setPesoMeta] = useState('');
+  const [cintura, setCintura] = useState('');
+  const [anca, setAnca] = useState('');
   const [mensagemSucesso, setMensagemSucesso] = useState('');
   const [erro, setErro] = useState('');
 
@@ -85,26 +85,41 @@ export default function PerfilVitalis() {
       // Usar nome da tabela users como fallback
       const nomeDoUser = userData.nome || user.user_metadata?.name || user.email.split('@')[0];
 
+      // Carregar dados do cliente (peso, programa)
       const { data: clientData } = await supabase
         .from('vitalis_clients')
         .select('*')
         .eq('user_id', userData.id)
-        .single();
+        .maybeSingle();
+
+      // Carregar dados do intake (medidas pessoais, restricoes)
+      const { data: intakeData } = await supabase
+        .from('vitalis_intake')
+        .select('altura_cm, cintura_cm, anca_cm, sexo, data_nascimento')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
       if (clientData) {
         setClient(clientData);
-        setNomeCompleto(clientData.nome_completo || nomeDoUser);
-        setTelefone(''); // Telefone não existe na tabela vitalis_clients
-        setDataNascimento(clientData.data_nascimento || '');
-        setGenero(clientData.genero || '');
-        setAvatarSelecionado(clientData.avatar || '');
-        setAltura(clientData.altura?.toString() || '');
         setPesoAtual(clientData.peso_actual?.toString() || '');
         setPesoMeta(clientData.peso_meta?.toString() || '');
-      } else {
-        // Bypass user sem vitalis_clients - usar dados básicos
-        setNomeCompleto(nomeDoUser);
       }
+
+      setNomeCompleto(nomeDoUser);
+
+      // Dados pessoais vêm do intake (onde as colunas existem)
+      if (intakeData) {
+        setAltura(intakeData.altura_cm?.toString() || '');
+        setCintura(intakeData.cintura_cm?.toString() || '');
+        setAnca(intakeData.anca_cm?.toString() || '');
+        // Mapear sexo do intake para genero do perfil
+        if (intakeData.sexo === 'masculino') setGenero('M');
+        else if (intakeData.sexo === 'feminino') setGenero('F');
+      }
+
+      // Avatar e genero podem estar em localStorage
+      const savedAvatar = localStorage.getItem('vitalis-avatar-id') || '';
+      if (savedAvatar) setAvatarSelecionado(savedAvatar);
 
       // Carregar estatísticas
       const xp = parseInt(localStorage.getItem('vitalis-xp') || '0');
@@ -195,63 +210,54 @@ export default function PerfilVitalis() {
       // 1. Atualizar nome na tabela users (sempre)
       const { error: userError } = await supabase
         .from('users')
-        .update({
-          nome: nomeCompleto.trim(),
-          updated_at: new Date().toISOString()
-        })
+        .update({ nome: nomeCompleto.trim() })
         .eq('id', userId);
 
       if (userError) {
         console.error('Erro ao atualizar users:', userError);
       }
 
-      // 2. Atualizar vitalis_clients se existir
+      // 2. Atualizar vitalis_clients (apenas peso — colunas que existem na tabela)
       if (client?.id) {
-        const updateData = {
-          nome_completo: nomeCompleto.trim(),
-          // telefone removido - campo não existe na tabela
-          data_nascimento: dataNascimento || null,
-          genero: genero || null,
-          avatar: avatarSelecionado || null,
-          altura: altura ? parseFloat(altura) : null,
-          peso_actual: pesoAtual ? parseFloat(pesoAtual) : null,
-          peso_meta: pesoMeta ? parseFloat(pesoMeta) : null,
-          updated_at: new Date().toISOString()
-        };
+        const clientUpdate = {};
+        if (pesoAtual) clientUpdate.peso_actual = parseFloat(pesoAtual);
+        if (pesoMeta) clientUpdate.peso_meta = parseFloat(pesoMeta);
 
-        const { error: clientError } = await supabase
-          .from('vitalis_clients')
-          .update(updateData)
-          .eq('id', client.id);
+        if (Object.keys(clientUpdate).length > 0) {
+          const { error: clientError } = await supabase
+            .from('vitalis_clients')
+            .update(clientUpdate)
+            .eq('id', client.id);
 
-        if (clientError) {
-          console.error('Erro ao atualizar vitalis_clients:', clientError);
-          throw clientError;
-        }
-      } else {
-        // Se não tem vitalis_clients, criar um registo básico
-        const { error: insertError } = await supabase
-          .from('vitalis_clients')
-          .insert({
-            user_id: userId,
-            nome_completo: nomeCompleto.trim(),
-            // telefone removido - campo não existe na tabela
-            data_nascimento: dataNascimento || null,
-            genero: genero || null,
-            avatar: avatarSelecionado || null,
-            altura: altura ? parseFloat(altura) : null,
-            peso_actual: pesoAtual ? parseFloat(pesoAtual) : null,
-            peso_meta: pesoMeta ? parseFloat(pesoMeta) : null
-          });
-
-        if (insertError) {
-          console.error('Erro ao criar vitalis_clients:', insertError);
-          // Não falhar se não conseguir criar - o nome já foi guardado em users
+          if (clientError) {
+            console.error('Erro ao atualizar vitalis_clients:', clientError);
+            // Não bloquear — peso pode ser actualizado mais tarde
+          }
         }
       }
 
-      // Atualizar também o avatar no localStorage para refletir imediatamente
+      // 3. Atualizar vitalis_intake (medidas pessoais — cintura, anca)
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser) {
+        const intakeUpdate = {};
+        if (cintura) intakeUpdate.cintura_cm = parseFloat(cintura);
+        else intakeUpdate.cintura_cm = null;
+        if (anca) intakeUpdate.anca_cm = parseFloat(anca);
+        else intakeUpdate.anca_cm = null;
+
+        const { error: intakeError } = await supabase
+          .from('vitalis_intake')
+          .update(intakeUpdate)
+          .eq('user_id', currentUser.id);
+
+        if (intakeError) {
+          console.error('Erro ao atualizar vitalis_intake:', intakeError);
+        }
+      }
+
+      // Guardar avatar e genero em localStorage (sem coluna na DB)
       if (avatarSelecionado) {
+        localStorage.setItem('vitalis-avatar-id', avatarSelecionado);
         const avatarEmoji = AVATARES.find(a => a.id === avatarSelecionado)?.emoji;
         if (avatarEmoji) {
           localStorage.setItem('vitalis-avatar', avatarEmoji);
@@ -418,39 +424,16 @@ export default function PerfilVitalis() {
             </div>
 
             <div>
-              <label className="block text-sm text-gray-600 mb-1">Telefone</label>
-              <input
-                type="tel"
-                value={telefone}
-                onChange={(e) => setTelefone(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-[#7C8B6F] focus:outline-none transition-colors"
-                placeholder="912 345 678"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">Data de Nascimento</label>
-                <input
-                  type="date"
-                  value={dataNascimento}
-                  onChange={(e) => setDataNascimento(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-[#7C8B6F] focus:outline-none transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">Género</label>
-                <select
-                  value={genero}
-                  onChange={(e) => setGenero(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-[#7C8B6F] focus:outline-none transition-colors bg-white"
-                >
-                  <option value="">Selecionar</option>
-                  <option value="F">Feminino</option>
-                  <option value="M">Masculino</option>
-                  <option value="O">Outro</option>
-                </select>
-              </div>
+              <label className="block text-sm text-gray-600 mb-1">Género</label>
+              <select
+                value={genero}
+                onChange={(e) => setGenero(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-[#7C8B6F] focus:outline-none transition-colors bg-white"
+              >
+                <option value="">Selecionar</option>
+                <option value="F">Feminino</option>
+                <option value="M">Masculino</option>
+              </select>
             </div>
           </div>
         </div>
@@ -465,9 +448,9 @@ export default function PerfilVitalis() {
               <input
                 type="number"
                 value={altura}
-                onChange={(e) => setAltura(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-[#7C8B6F] focus:outline-none transition-colors text-center"
-                placeholder="165"
+                disabled
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-500 text-center"
+                placeholder="—"
               />
             </div>
             <div>
@@ -493,6 +476,34 @@ export default function PerfilVitalis() {
               />
             </div>
           </div>
+
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Cintura (cm)</label>
+              <input
+                type="number"
+                step="0.1"
+                value={cintura}
+                onChange={(e) => setCintura(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-[#7C8B6F] focus:outline-none transition-colors text-center"
+                placeholder="80"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Anca (cm)</label>
+              <input
+                type="number"
+                step="0.1"
+                value={anca}
+                onChange={(e) => setAnca(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-[#7C8B6F] focus:outline-none transition-colors text-center"
+                placeholder="95"
+              />
+            </div>
+          </div>
+          <p className="text-xs text-gray-400 mt-2">
+            Cintura e anca ajudam a calcular a tua composicao corporal nos graficos de tendencia.
+          </p>
 
           {pesoAtual && pesoMeta && (
             <div className="mt-4 p-4 bg-[#F5F2ED] rounded-xl">

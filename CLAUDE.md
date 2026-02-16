@@ -1,5 +1,21 @@
 # CLAUDE.md - AI Assistant Guide for SETE ECOS PWA
 
+## Session Instructions (MANDATORY)
+
+**The owner (Vivianne) works exclusively via Claude Code on the web.** Every session must follow these rules:
+
+1. **Language**: Communicate in Portuguese (informal). Vivianne writes informally — interpret typos and abbreviations naturally.
+2. **Never break existing functionality.** Before changing any file, understand what it does. Don't touch layout, PDF generation, or plan generation logic unless explicitly asked.
+3. **Always build-check** (`npm run build`) after code changes before committing.
+4. **Database schema matters.** The Supabase tables have specific columns defined in `supabase/vitalis_tables.sql` and migration files. **Never** try to write to columns that don't exist. Check the schema first.
+5. **Key table column reference:**
+   - `vitalis_clients`: id, user_id, status, subscription_status, data_inicio, data_fim, fase_actual, duracao_programa, pacote, objectivo_principal, peso_inicial, peso_actual, peso_meta, imc_inicial, imc_actual, emocao_dominante, prontidao_1a10, payment_*, trial_started, subscription_updated, created_at, updated_at
+   - `vitalis_intake`: All personal data (nome, email, idade, sexo, altura_cm, peso_actual, peso_meta, cintura_cm, anca_cm, restricoes_alimentares, abordagem_preferida, etc.)
+   - `users`: id, auth_id, email, nome, created_at
+6. **Dietary restrictions** are in `vitalis_intake.restricoes_alimentares` and filtered by `src/lib/vitalis/restricoesAlimentares.js`.
+7. **Plan generation** lives in `src/lib/vitalis/planoGenerator.js` — changes here affect all new plans. Existing plans in DB are NOT affected by display-level changes.
+8. **Gender-adaptive text** is mandatory — see Gender Sensitivity section below.
+
 ## Project Overview
 
 **SETE ECOS** is a Portuguese feminine transformation system (Sistema de Transmutacao Feminina) built as a Progressive Web Application. The platform consists of 7 "Ecos" (Echoes), each addressing different aspects of feminine wellness based on chakra principles.
