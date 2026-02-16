@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { setSexo } from '../../utils/genero';
 import { setObservaRamadao } from '../../utils/ramadao';
+import { EmailTriggers } from '../../lib/emails';
 import { gerarPlanoAutomatico } from '../../lib/vitalis/planoGenerator';
 
 export default function VitalisIntakeComplete() {
@@ -671,6 +672,14 @@ try {
       console.log('  → statusComAcessoBasico:', statusComAcessoBasico);
       console.log('  → temAcessoBasico:', temAcessoBasico);
       console.log('  → Ação:', temPlano ? '✅ GERAR PLANO' : temAcessoBasico ? '📋 ACESSO BÁSICO (sem plano)' : '💳 REDIRECIONAR PARA PAGAMENTO');
+
+      // Notificar coach que intake foi completo
+      EmailTriggers.onIntakeCompleto({
+        nome: formData.nome || user.email.split('@')[0],
+        email: user.email,
+        objectivo: formData.objectivo_principal,
+        status: currentClient?.subscription_status || 'none',
+      }).catch(() => {});
 
       // Guardar preferências para personalizar textos na app
       setSexo(formData.sexo);

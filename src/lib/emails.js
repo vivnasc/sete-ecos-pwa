@@ -328,7 +328,54 @@ Considera fazer follow-up se for uma cliente engajada! 💪`);
       nome: cliente.nome,
       urlPlanos: 'https://seteecos.com/vitalis/pagamento'
     });
-  }
+  },
+
+  /**
+   * Chamar quando cliente completa o questionário de intake
+   */
+  async onIntakeCompleto(cliente) {
+    await notificarAlertaCliente({
+      tipo: 'Intake completo',
+      descricao: `${cliente.nome} completou o questionário (objectivo: ${cliente.objectivo || 'N/A'})`,
+      nome: cliente.nome,
+      email: cliente.email,
+      ultimaActividade: new Date().toLocaleDateString('pt-PT'),
+    });
+
+    await pushCoach({
+      title: '📋 Intake Completo!',
+      body: `${cliente.nome} — ${cliente.status === 'active' || cliente.status === 'tester' ? 'Plano a ser gerado' : 'Aguarda pagamento/trial'}`,
+      url: '/coach',
+      tag: 'intake-completo',
+      requireInteraction: false,
+    });
+  },
+
+  /**
+   * Chamar quando cliente inicia trial gratuito
+   */
+  async onTrialIniciado(cliente) {
+    await pushCoach({
+      title: '🚀 Trial Iniciado!',
+      body: `${cliente.nome} (${cliente.email}) começou 7 dias de trial`,
+      url: '/coach',
+      tag: 'trial-iniciado',
+      requireInteraction: false,
+    });
+  },
+
+  /**
+   * Chamar no primeiro check-in de uma cliente
+   */
+  async onPrimeiroCheckin(cliente) {
+    await pushCoach({
+      title: '🎉 Primeiro Check-in!',
+      body: `${cliente.nome} fez o primeiro registo (${cliente.peso}kg)`,
+      url: '/coach',
+      tag: 'primeiro-checkin',
+      requireInteraction: false,
+    });
+  },
 };
 
 export default {
