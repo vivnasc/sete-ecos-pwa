@@ -141,10 +141,10 @@ export default function CoachDashboard() {
 
       if (!subscription) {
         // Fetch VAPID public key
-        const vapidRes = await fetch('/api/push-coach', {
+        const vapidRes = await fetch('/api/coach', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'vapid-public' })
+          body: JSON.stringify({ action: 'push-vapid-public' })
         });
         const { key } = await vapidRes.json();
         if (!key) { setPushStatus('unsupported'); return; }
@@ -165,14 +165,14 @@ export default function CoachDashboard() {
       // Send subscription to server
       const { data: { session } } = await (await import('../lib/supabase')).supabase.auth.getSession();
       if (session?.access_token) {
-        await fetch('/api/push-coach', {
+        await fetch('/api/coach', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
-            action: 'subscribe',
+            action: 'push-subscribe',
             subscription: subscription.toJSON(),
           }),
         });

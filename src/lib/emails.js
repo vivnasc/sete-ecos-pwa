@@ -150,10 +150,10 @@ async function enviarWhatsAppCoach(mensagem) {
  */
 async function pushCoach({ title, body, url, tag, requireInteraction }) {
   try {
-    await fetch('/api/push-coach', {
+    await fetch('/api/coach', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'notify', title, body, url, tag, requireInteraction })
+      body: JSON.stringify({ action: 'push-notify', title, body, url, tag, requireInteraction })
     });
   } catch (err) {
     console.error('Push coach falhou:', err);
