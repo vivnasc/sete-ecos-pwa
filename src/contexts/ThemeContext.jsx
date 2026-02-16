@@ -7,7 +7,6 @@ export function ThemeProvider({ children }) {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('sete-ecos-theme')
       if (saved) return saved === 'dark'
-      return window.matchMedia('(prefers-color-scheme: dark)').matches
     }
     return false
   })

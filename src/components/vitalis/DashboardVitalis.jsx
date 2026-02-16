@@ -132,21 +132,12 @@ export default function DashboardVitalis() {
       setNotificacoesAtivas(Notification.permission === 'granted');
     }
 
-    // Verificar se já fechou o banner antes (durante 7 dias)
+    // Banner PWA: uma vez fechado, não volta a aparecer
     const bannerFechado = localStorage.getItem('vitalis-pwa-banner-fechado');
-    const notifOff = !('Notification' in window) || Notification.permission !== 'granted';
     if (bannerFechado) {
-      const dataFecho = new Date(bannerFechado);
-      const agora = new Date();
-      const diasPassados = (agora - dataFecho) / (1000 * 60 * 60 * 24);
-      if (diasPassados < 7 && !notifOff) {
-        setMostrarBannerPWA(false);
-      } else {
-        // Show banner if not installed OR notifications not enabled
-        setMostrarBannerPWA(!isStandalone || notifOff);
-      }
+      setMostrarBannerPWA(false);
     } else {
-      setMostrarBannerPWA(!isStandalone || notifOff);
+      setMostrarBannerPWA(!isStandalone);
     }
 
     // CRITICAL: Activate saved notification reminders on every app open
