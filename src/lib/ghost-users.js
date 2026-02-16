@@ -1100,6 +1100,152 @@ export function getGhostProfile(ghostId) {
   }
 }
 
+// ============================================================
+// GHOST REACTIONS ON REAL POSTS
+// Ghosts "respond" to real user posts after a realistic delay.
+// Everything is deterministic and client-side.
+// ============================================================
+
+const RESSONANCIA_KEYS = ['ressoo', 'luz', 'forca', 'espelho', 'raiz']
+
+/**
+ * Gera reacções ghost para um post REAL baseado na sua idade.
+ * Posts com <1.5h não recebem nada. Posts com >3h podem receber espelhos.
+ * Retorna { ressonanciaBonus, espelhos[] }
+ */
+export function getGhostReactionsForRealPost(postId, postCreatedAt) {
+  const seed = hashStr(postId + '_ghost_react')
+  const rng = seededRandom(seed)
+
+  const hoursOld = (Date.now() - new Date(postCreatedAt).getTime()) / 3600000
+
+  // Nenhuma reacção se o post é muito recente
+  if (hoursOld < 1.5) return { ressonanciaBonus: 0, espelhos: [] }
+
+  // 1-3 ressonâncias dependendo da idade do post
+  const maxR = hoursOld > 12 ? 3 : hoursOld > 4 ? 2 : 1
+  const ressonanciaBonus = 1 + Math.floor(rng() * maxR)
+
+  // Espelhos: 30% chance se post >3h, 50% se >8h
+  const espelhos = []
+  const espelhoChance = hoursOld > 8 ? 0.5 : hoursOld > 3 ? 0.3 : 0
+  if (rng() < espelhoChance) {
+    const profiles = shuffle(GHOST_PROFILES, rng)
+    const espelhoPerfil = profiles[0]
+    const shuffledTexts = shuffle(GHOST_ESPELHOS, rng)
+    const delayHoras = 2 + rng() * 6 // 2-8h depois do post
+
+    espelhos.push({
+      id: `ghost_real_esp_${postId}_0`,
+      post_id: postId,
+      user_id: espelhoPerfil.id,
+      conteudo: shuffledTexts[0],
+      created_at: new Date(new Date(postCreatedAt).getTime() + delayHoras * 3600000).toISOString(),
+      _ghost: true,
+      community_profiles: {
+        user_id: espelhoPerfil.id,
+        display_name: espelhoPerfil.display_name,
+        avatar_emoji: espelhoPerfil.avatar_emoji,
+        avatar_color: espelhoPerfil.avatar_color,
+        iniciais: espelhoPerfil.iniciais,
+        avatar_url: null
+      }
+    })
+  }
+
+  return { ressonanciaBonus, espelhos }
+}
+
+/**
+ * Gera notificações ghost para os posts reais de um utilizador.
+ * Chamado pela página de Notificações.
+ */
+export function getGhostNotificationsForPosts(myPosts) {
+  const notifications = []
+
+  for (const post of myPosts) {
+    const seed = hashStr(post.id + '_ghost_notif')
+    const rng = seededRandom(seed)
+    const hoursOld = (Date.now() - new Date(post.created_at).getTime()) / 3600000
+
+    if (hoursOld < 1.5) continue
+
+    // Ressonância notification (1-2 ghosts)
+    const profiles = shuffle(GHOST_PROFILES, rng)
+    const numReactors = hoursOld > 6 ? 2 : 1
+
+    for (let i = 0; i < numReactors; i++) {
+      const perfil = profiles[i]
+      const tipo = RESSONANCIA_KEYS[Math.floor(rng() * RESSONANCIA_KEYS.length)]
+      const delayHoras = 1.5 + rng() * 5
+      if (hoursOld < delayHoras) continue
+
+      notifications.push({
+        id: `ghost_notif_res_${post.id}_${i}`,
+        user_id: post.user_id,
+        actor_id: perfil.id,
+        tipo: 'ressonancia',
+        post_id: post.id,
+        conteudo: tipo,
+        lida: false,
+        created_at: new Date(new Date(post.created_at).getTime() + delayHoras * 3600000).toISOString(),
+        _ghost: true,
+        actor_profile: {
+          display_name: perfil.display_name,
+          avatar_emoji: perfil.avatar_emoji,
+          avatar_url: null,
+          avatar_color: perfil.avatar_color,
+          iniciais: perfil.iniciais
+        }
+      })
+    }
+
+    // Espelho notification (30% chance se >3h)
+    if (hoursOld > 3 && rng() < 0.35) {
+      const espelhoPerfil = profiles[numReactors]
+      const shuffledTexts = shuffle(GHOST_ESPELHOS, rng)
+      const delayHoras = 2.5 + rng() * 6
+      if (hoursOld >= delayHoras) {
+        notifications.push({
+          id: `ghost_notif_esp_${post.id}`,
+          user_id: post.user_id,
+          actor_id: espelhoPerfil.id,
+          tipo: 'espelho',
+          post_id: post.id,
+          conteudo: shuffledTexts[0].slice(0, 50),
+          lida: false,
+          created_at: new Date(new Date(post.created_at).getTime() + delayHoras * 3600000).toISOString(),
+          _ghost: true,
+          actor_profile: {
+            display_name: espelhoPerfil.display_name,
+            avatar_emoji: espelhoPerfil.avatar_emoji,
+            avatar_url: null,
+            avatar_color: espelhoPerfil.avatar_color,
+            iniciais: espelhoPerfil.iniciais
+          }
+        })
+      }
+    }
+  }
+
+  notifications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+  return notifications
+}
+
+/**
+ * Marca notificações ghost como lidas no localStorage
+ */
+export function marcarGhostNotifsLidas(notifIds) {
+  const key = 'ghost_notifs_read'
+  const read = JSON.parse(localStorage.getItem(key) || '[]')
+  const updated = [...new Set([...read, ...notifIds])]
+  localStorage.setItem(key, JSON.stringify(updated))
+}
+
+export function getGhostNotifsLidas() {
+  return JSON.parse(localStorage.getItem('ghost_notifs_read') || '[]')
+}
+
 export function toggleGhostRessonancia(postId, tipo) {
   const key = 'ghost_ressonancia'
   const stored = JSON.parse(localStorage.getItem(key) || '{}')

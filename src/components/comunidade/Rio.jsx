@@ -25,7 +25,8 @@ import {
   getGhostRessonanciaBatch,
   isGhostPost,
   getGhostEspelhos,
-  toggleGhostRessonancia
+  toggleGhostRessonancia,
+  getGhostReactionsForRealPost
 } from '../../lib/ghost-users'
 import ReflexaoImersiva from './ReflexaoImersiva'
 import CriarReflexao from './CriarReflexao'
@@ -153,9 +154,16 @@ export default function Rio() {
       const ghostRessonancias = getGhostRessonanciaBatch(ghostPostIds)
       const allRessonancias = { ...ressonancias, ...ghostRessonancias }
 
-      // Build count map
+      // Build count map — add ghost reaction bonus for real posts
       const countMap = {}
-      data.forEach(p => { countMap[p.id] = p.ressonancia_count || p.likes_count || 0 })
+      data.forEach(p => {
+        let base = p.ressonancia_count || p.likes_count || 0
+        if (!p._ghost && p.created_at) {
+          const { ressonanciaBonus } = getGhostReactionsForRealPost(p.id, p.created_at)
+          base += ressonanciaBonus
+        }
+        countMap[p.id] = base
+      })
 
       if (reset) {
         setPosts(data)
@@ -206,7 +214,10 @@ export default function Rio() {
         setEspelhos(getGhostEspelhos(post.id))
       } else {
         const data = await getEspelhos(post.id)
-        setEspelhos([...getGhostEspelhos(post.id), ...data])
+        // Add ghost espelhos to real posts too (from the ghost-on-post system)
+        const ghostEsp = getGhostEspelhos(post.id)
+        const { espelhos: ghostReactEsp } = getGhostReactionsForRealPost(post.id, post.created_at)
+        setEspelhos([...ghostEsp, ...ghostReactEsp, ...data])
       }
     } catch (e) { setEspelhos(getGhostEspelhos(post.id)) }
     setLoadingEspelhos(false)
