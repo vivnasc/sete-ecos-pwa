@@ -91,6 +91,23 @@ const BibliotecaEmocoes = lazy(() => import('./components/serena/BibliotecaEmoco
 const PerfilSerena = lazy(() => import('./components/serena/PerfilSerena'))
 const NotificacoesSerena = lazy(() => import('./components/serena/NotificacoesSerena'))
 
+// ECO 4: IGNIS (Vontade & Direccao Consciente)
+const LandingIgnis = lazy(() => import('./pages/LandingIgnis'))
+const IgnisAccessGuard = lazy(() => import('./components/ignis/IgnisAccessGuard'))
+const DashboardIgnis = lazy(() => import('./components/ignis/DashboardIgnis'))
+const EscolhasConscientes = lazy(() => import('./components/ignis/EscolhasConscientes'))
+const FocoConsciente = lazy(() => import('./components/ignis/FocoConsciente'))
+const RastreadorDispersao = lazy(() => import('./components/ignis/RastreadorDispersao'))
+const ExercicioCorte = lazy(() => import('./components/ignis/ExercicioCorte'))
+const BussolaValores = lazy(() => import('./components/ignis/BussolaValores'))
+const DiarioConquistas = lazy(() => import('./components/ignis/DiarioConquistas'))
+const DesafiosFogo = lazy(() => import('./components/ignis/DesafiosFogo'))
+const PlanoAccao = lazy(() => import('./components/ignis/PlanoAccao'))
+const ChatIgnis = lazy(() => import('./components/ignis/ChatIgnis'))
+const InsightsIgnis = lazy(() => import('./components/ignis/InsightsIgnis'))
+const PerfilIgnis = lazy(() => import('./components/ignis/PerfilIgnis'))
+const NotificacoesIgnis = lazy(() => import('./components/ignis/NotificacoesIgnis'))
+
 // ECO 2: ÁUREA (Valor & Presença)
 const LandingAurea = lazy(() => import('./pages/LandingAurea'))
 const PagamentoAurea = lazy(() => import('./components/aurea/PagamentoAurea'))
@@ -143,6 +160,14 @@ function AureaRoute({ children }) {
 function SerenaRoute({ children }) {
   return (
     <ProtectedRoute guard={SerenaAccessGuard} eco="Serena">
+      <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
+    </ProtectedRoute>
+  )
+}
+
+function IgnisRoute({ children }) {
+  return (
+    <ProtectedRoute guard={IgnisAccessGuard} eco="Ignis">
       <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
     </ProtectedRoute>
   )
@@ -248,8 +273,23 @@ function AppRoutes() {
             <Route path="/serena/perfil" element={<SerenaRoute><PerfilSerena /></SerenaRoute>} />
             <Route path="/serena/notificacoes" element={<SerenaRoute><NotificacoesSerena /></SerenaRoute>} />
 
-            {/* ===== ECOS 4-7: Em Breve ===== */}
-            <Route path="/ignis" element={<ComingSoon />} />
+            {/* ===== ECO 4: IGNIS - Vontade & Direccao Consciente ===== */}
+            <Route path="/ignis" element={<LandingIgnis />} />
+            <Route path="/ignis/dashboard" element={<IgnisRoute><DashboardIgnis /></IgnisRoute>} />
+            <Route path="/ignis/escolhas" element={<IgnisRoute><EscolhasConscientes /></IgnisRoute>} />
+            <Route path="/ignis/foco" element={<IgnisRoute><FocoConsciente /></IgnisRoute>} />
+            <Route path="/ignis/dispersao" element={<IgnisRoute><RastreadorDispersao /></IgnisRoute>} />
+            <Route path="/ignis/corte" element={<IgnisRoute><ExercicioCorte /></IgnisRoute>} />
+            <Route path="/ignis/bussola" element={<IgnisRoute><BussolaValores /></IgnisRoute>} />
+            <Route path="/ignis/conquistas" element={<IgnisRoute><DiarioConquistas /></IgnisRoute>} />
+            <Route path="/ignis/desafios" element={<IgnisRoute><DesafiosFogo /></IgnisRoute>} />
+            <Route path="/ignis/plano" element={<IgnisRoute><PlanoAccao /></IgnisRoute>} />
+            <Route path="/ignis/chat" element={<IgnisRoute><ChatIgnis /></IgnisRoute>} />
+            <Route path="/ignis/insights" element={<IgnisRoute><InsightsIgnis /></IgnisRoute>} />
+            <Route path="/ignis/perfil" element={<IgnisRoute><PerfilIgnis /></IgnisRoute>} />
+            <Route path="/ignis/notificacoes" element={<IgnisRoute><NotificacoesIgnis /></IgnisRoute>} />
+
+            {/* ===== ECOS 5-7: Em Breve ===== */}
             <Route path="/ventis" element={<ComingSoon />} />
             <Route path="/ecoa" element={<ComingSoon />} />
             <Route path="/imago" element={<ComingSoon />} />
