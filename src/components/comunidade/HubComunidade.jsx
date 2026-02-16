@@ -107,8 +107,8 @@ export default function HubComunidade() {
     return h > 0 ? `${h}h ${m}min` : `${m}min`
   }
 
-  // Pick active ghost profiles for the "quem está aqui" section
-  const activeMembers = GHOST_PROFILES.slice(0, 8)
+  // Pick a few ghost profiles for subtle social proof (not overwhelming)
+  const activeMembers = GHOST_PROFILES.slice(0, 3)
 
   if (loading) {
     return (
@@ -162,31 +162,23 @@ export default function HubComunidade() {
             )}
           </div>
 
-          {/* Quem está aqui — stacked avatars com nomes */}
+          {/* Quem está aqui — subtle social proof */}
           <div className="mb-5">
             <div className="flex items-center gap-3">
               <div className="flex items-center">
-                {activeMembers.slice(0, 5).map((ghost, i) => (
-                  <button
+                {activeMembers.map((ghost, i) => (
+                  <div
                     key={ghost.id}
-                    onClick={() => navigate(`/comunidade/jornada/${ghost.id}`)}
-                    className="transition-all active:scale-110 hover:z-20"
-                    style={{ marginLeft: i > 0 ? '-0.5rem' : '0', zIndex: 6 - i }}
+                    style={{ marginLeft: i > 0 ? '-0.4rem' : '0', zIndex: 4 - i }}
                   >
-                    <Avatar perfil={ghost} size={32} className="border-2 border-white shadow-sm" />
-                  </button>
+                    <Avatar perfil={ghost} size={28} className="border-2 border-white shadow-sm" />
+                  </div>
                 ))}
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white shadow-sm"
-                  style={{ marginLeft: '-0.5rem', zIndex: 0, background: '#F5F0EB', color: '#A8A29E' }}
-                >
-                  +{stats.membros}
-                </div>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 <span className="text-xs" style={{ color: '#A8A29E', fontFamily: 'var(--font-corpo)' }}>
-                  {stats.membros} activas agora
+                  Comunidade activa
                 </span>
               </div>
             </div>
@@ -306,54 +298,30 @@ export default function HubComunidade() {
         </div>
       )}
 
-      {/* ══════ TRENDING REFLEXÕES ══════ */}
+      {/* ══════ REFLEXÃO EM DESTAQUE — uma só, mais orgânica ══════ */}
       {trendingPosts.length > 0 && (
-        <div className="mb-4">
-          <div className="flex items-center justify-between px-5 mb-3">
-            <h2 className="text-base font-semibold" style={{ fontFamily: 'var(--font-titulos)', color: '#292524' }}>
-              Em Destaque
-            </h2>
-            <button onClick={() => navigate('/comunidade/rio')}
-              className="text-xs font-medium" style={{ color: '#D97706' }}>
-              Ver todas
-            </button>
-          </div>
-          <div className="flex gap-3 overflow-x-auto px-5 pb-2 no-scrollbar">
-            {trendingPosts.map((post) => {
-              const p = post.community_profiles
-              const ecoInfo = post.eco ? ECOS_INFO[post.eco] : null
-              return (
-                <button
-                  key={post.id}
-                  onClick={() => navigate('/comunidade/rio')}
-                  className="flex-shrink-0 w-64 rounded-2xl p-4 text-left transition-all active:scale-[0.97]"
-                  style={{ background: 'rgba(255,255,255,0.8)', border: '1px solid rgba(0,0,0,0.04)' }}
-                >
-                  <div className="flex items-center gap-2 mb-3">
-                    <Avatar perfil={p} size={28} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-gray-800 truncate" style={{ fontFamily: 'var(--font-corpo)' }}>
-                        {post.is_anonymous ? 'Alma Anónima' : p?.display_name}
-                      </p>
-                    </div>
-                    {ecoInfo && (
-                      <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: `${ecoInfo.cor}15`, color: ecoInfo.cor }}>
-                        {ecoInfo.emoji}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-600 leading-relaxed line-clamp-3 mb-3"
-                    style={{ fontFamily: 'var(--font-titulos)', fontWeight: 400 }}>
-                    {post.conteudo}
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs text-gray-400">🫧 {post.ressonancia_count}</span>
-                    <span className="text-xs text-gray-400">🪞 {post.comments_count}</span>
-                  </div>
-                </button>
-              )
-            })}
-          </div>
+        <div className="px-5 mb-4">
+          <button
+            onClick={() => navigate('/comunidade/rio')}
+            className="w-full rounded-2xl p-4 text-left transition-all active:scale-[0.98]"
+            style={{ background: 'rgba(255,255,255,0.8)', border: '1px solid rgba(0,0,0,0.04)' }}
+          >
+            <p className="text-sm text-gray-600 leading-relaxed line-clamp-3 mb-3"
+              style={{ fontFamily: 'var(--font-titulos)', fontWeight: 400, fontStyle: 'italic' }}>
+              "{trendingPosts[0].conteudo}"
+            </p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Avatar perfil={trendingPosts[0].community_profiles} size={24} />
+                <span className="text-xs text-gray-400" style={{ fontFamily: 'var(--font-corpo)' }}>
+                  {trendingPosts[0].is_anonymous ? 'Alma Anónima' : trendingPosts[0].community_profiles?.display_name}
+                </span>
+              </div>
+              <span className="text-xs font-medium" style={{ color: '#D97706' }}>
+                Ver mais no Rio
+              </span>
+            </div>
+          </button>
         </div>
       )}
 
@@ -384,32 +352,6 @@ export default function HubComunidade() {
               </h3>
               <p className="text-[10px]" style={{ color: '#A8A29E', fontFamily: 'var(--font-corpo)' }}>
                 {esp.desc}
-              </p>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ══════ COMUNIDADE MEMBERS SPOTLIGHT ══════ */}
-      <div className="px-5 mb-6">
-        <h2 className="text-base font-semibold mb-3" style={{ fontFamily: 'var(--font-titulos)', color: '#292524' }}>
-          Membros Activos
-        </h2>
-        <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-          {activeMembers.map(ghost => (
-            <button
-              key={ghost.id}
-              onClick={() => navigate(`/comunidade/jornada/${ghost.id}`)}
-              className="flex-shrink-0 flex flex-col items-center gap-2 transition-all active:scale-95"
-              style={{ width: 72 }}
-            >
-              <div className="relative">
-                <Avatar perfil={ghost} size={56} className="shadow-md" />
-                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-white" />
-              </div>
-              <p className="text-[10px] font-medium text-center text-gray-600 truncate w-full"
-                style={{ fontFamily: 'var(--font-corpo)' }}>
-                {ghost.display_name.split(' ')[0]}
               </p>
             </button>
           ))}

@@ -41,6 +41,8 @@ export default function ReflexaoCard({
   const [showMenu, setShowMenu] = useState(false)
   const [imagemExpandida, setImagemExpandida] = useState(false)
 
+  const isGhost = isGhostPost(post)
+
   const perfil = post.community_profiles
   const temaInfo = TEMAS_REFLEXAO[post.tipo] || TEMAS_REFLEXAO.livre
   const ecoInfo = post.eco ? ECOS_INFO[post.eco] : null
@@ -51,10 +53,6 @@ export default function ReflexaoCard({
   const promptOrigem = post.prompt_id
     ? PROMPTS_REFLEXAO.find(p => p.id === post.prompt_id)
     : null
-
-  // ───── Ressonancia ─────
-
-  const isGhost = isGhostPost(post)
 
   const handleRessonancia = async (tipo) => {
     try {
