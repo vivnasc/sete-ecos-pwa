@@ -120,7 +120,7 @@ export default function CriarReflexao({ userId, onReflexaoCriada, onFechar, prom
   const getPlaceholder = () => {
     if (reflexaoLivre) return 'Escreve livremente o que sentes, pensas ou descobriste...'
     if (promptAtual) return `Reflecte sobre: \u201C${promptAtual.texto}\u201D...`
-    return 'Partilha a tua reflex\u00E3o...'
+    return 'Partilha a tua reflexão...'
   }
 
   return (
@@ -140,7 +140,7 @@ export default function CriarReflexao({ userId, onReflexaoCriada, onFechar, prom
             className="font-semibold text-gray-800"
             style={{ fontFamily: 'var(--font-titulos)' }}
           >
-            Nova Reflex&#xe3;o
+            Nova Reflexão
           </h3>
           <button
             onClick={handleSubmit}
@@ -175,7 +175,7 @@ export default function CriarReflexao({ userId, onReflexaoCriada, onFechar, prom
                   className="flex-shrink-0 w-9 h-9 rounded-full bg-white/80 flex items-center justify-center text-purple-500 hover:bg-white hover:scale-110 transition-all shadow-sm"
                   title="Novo prompt"
                 >
-                  <span className="text-lg">{'\uD83D\uDD04'}</span>
+                  <span className="text-lg">🔄</span>
                 </button>
               </div>
             </div>
@@ -185,7 +185,7 @@ export default function CriarReflexao({ userId, onReflexaoCriada, onFechar, prom
                 className="text-gray-600 text-sm italic text-center"
                 style={{ fontFamily: 'var(--font-titulos)' }}
               >
-                {'\uD83C\uDF38'} Reflex&#xe3;o livre &#x2014; sem prompt, s&#xf3; tu e os teus pensamentos
+                🌸 Reflexão livre — sem prompt, só tu e os teus pensamentos
               </p>
             </div>
           )}
@@ -200,7 +200,7 @@ export default function CriarReflexao({ userId, onReflexaoCriada, onFechar, prom
             }`}
             style={{ fontFamily: 'var(--font-corpo)' }}
           >
-            {reflexaoLivre ? '\u2728 Voltar ao prompt' : '\uD83C\uDF38 Reflex\u00E3o livre'}
+            {reflexaoLivre ? '✨ Voltar ao prompt' : '🌸 Reflexão livre'}
           </button>
         </div>
 
@@ -224,7 +224,7 @@ export default function CriarReflexao({ userId, onReflexaoCriada, onFechar, prom
           {/* Hashtag hint */}
           {conteudo.includes('#') && (
             <p className="text-xs text-purple-400 mb-1" style={{ fontFamily: 'var(--font-corpo)' }}>
-              Hashtags detectadas &#x2014; ser&#xe3;o pesquis&#xe1;veis!
+              Hashtags detectadas — serão pesquisáveis!
             </p>
           )}
         </div>
@@ -238,7 +238,7 @@ export default function CriarReflexao({ userId, onReflexaoCriada, onFechar, prom
                 onClick={removerImagem}
                 className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center text-sm hover:bg-black/80 transition-colors"
               >
-                &#x2715;
+                ✕
               </button>
             </div>
           </div>
@@ -249,7 +249,7 @@ export default function CriarReflexao({ userId, onReflexaoCriada, onFechar, prom
           <p className="text-[10px] uppercase tracking-wider text-gray-300 font-semibold mb-2.5"
             style={{ fontFamily: 'var(--font-corpo)' }}
           >
-            Configura&#xe7;&#xe3;o
+            Configuração
           </p>
 
           {/* Eco selector */}
@@ -317,7 +317,7 @@ export default function CriarReflexao({ userId, onReflexaoCriada, onFechar, prom
               className={`text-sm font-medium ${isAnonymous ? 'text-purple-700' : 'text-gray-500'}`}
               style={{ fontFamily: 'var(--font-corpo)' }}
             >
-              Partilhar como Alma An&#xf3;nima {'\uD83C\uDF19'}
+              Partilhar como Alma Anónima 🌙
             </span>
           </button>
         </div>
@@ -350,7 +350,7 @@ export default function CriarReflexao({ userId, onReflexaoCriada, onFechar, prom
                 onClick={shufflePrompt}
                 className="flex items-center gap-1.5 text-gray-400 hover:text-purple-500 transition-colors"
               >
-                <span className="text-base">{'\uD83D\uDD04'}</span>
+                <span className="text-base">🔄</span>
                 <span className="text-xs" style={{ fontFamily: 'var(--font-corpo)' }}>Prompt</span>
               </button>
             )}

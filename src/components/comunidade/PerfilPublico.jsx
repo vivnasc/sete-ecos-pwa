@@ -10,6 +10,7 @@ import {
   deixarDeSeguir,
   ECOS_INFO
 } from '../../lib/comunidade'
+import { isGhostUser, getGhostProfile, getGhostPostsForRange } from '../../lib/ghost-users'
 import PostCard from './PostCard'
 
 export default function PerfilPublico() {
@@ -46,18 +47,30 @@ export default function PerfilPublico() {
       if (userData) {
         setMeusId(userData.id)
 
-        // Carregar dados em paralelo
-        const [perfilData, postsData, contadoresData, seguindoData] = await Promise.all([
-          getPerfilPublico(perfilUserId),
-          getPostsDoUtilizador(perfilUserId),
-          contarSeguidoresESeguindo(perfilUserId),
-          verificarSeguindo(userData.id, perfilUserId)
-        ])
+        // Check if this is a ghost user
+        if (isGhostUser(perfilUserId)) {
+          const ghostPerfil = getGhostProfile(perfilUserId)
+          setPerfil(ghostPerfil)
+          // Get ghost posts that belong to this user
+          const allGhostPosts = getGhostPostsForRange(30)
+          const ghostUserPosts = allGhostPosts.filter(p => p.user_id === perfilUserId)
+          setPosts(ghostUserPosts)
+          setContadores({ seguidores: Math.floor(Math.random() * 8) + 3, seguindo: Math.floor(Math.random() * 5) + 1 })
+          setEstouSeguindo(false)
+        } else {
+          // Carregar dados em paralelo
+          const [perfilData, postsData, contadoresData, seguindoData] = await Promise.all([
+            getPerfilPublico(perfilUserId),
+            getPostsDoUtilizador(perfilUserId),
+            contarSeguidoresESeguindo(perfilUserId),
+            verificarSeguindo(userData.id, perfilUserId)
+          ])
 
-        setPerfil(perfilData)
-        setPosts(postsData)
-        setContadores(contadoresData)
-        setEstouSeguindo(seguindoData)
+          setPerfil(perfilData)
+          setPosts(postsData)
+          setContadores(contadoresData)
+          setEstouSeguindo(seguindoData)
+        }
       }
     } catch (error) {
       console.error('Erro ao carregar perfil:', error)
@@ -65,8 +78,10 @@ export default function PerfilPublico() {
     setLoading(false)
   }
 
+  const isGhost = isGhostUser(perfilUserId)
+
   const handleToggleSeguir = async () => {
-    if (acaoEmCurso || isOwnProfile) return
+    if (acaoEmCurso || isOwnProfile || isGhost) return
     setAcaoEmCurso(true)
     try {
       if (estouSeguindo) {

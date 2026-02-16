@@ -35,11 +35,6 @@ const PAGE_SIZE = 20
 const ECOS_FILTRO = ['vitalis', 'aurea', 'lumina', 'serena']
 const BREATHING_INTERVAL = 6 // Show breath break every N posts
 
-// Depth color — background darkens as you scroll deeper
-const DEPTH_COLORS = [
-  '#151025', '#130e22', '#110c20', '#0f0a1e', '#0d081c', '#0b061a', '#090518', '#070416'
-]
-
 const RESSONANCIA_KEYS = Object.keys(RESSONANCIA_TIPOS)
 
 export default function Rio() {
@@ -61,7 +56,6 @@ export default function Rio() {
   const [filtroTema, setFiltroTema] = useState(null)
   const [promptPreenchido, setPromptPreenchido] = useState(null)
   const [showFilters, setShowFilters] = useState(false)
-  const [depthLevel, setDepthLevel] = useState(0)
 
   // Immersive full-screen view
   const [immersedPost, setImmersedPost] = useState(null)
@@ -72,9 +66,6 @@ export default function Rio() {
   const [loadingEspelhos, setLoadingEspelhos] = useState(false)
   const [novoEspelho, setNovoEspelho] = useState('')
   const [enviandoEspelho, setEnviandoEspelho] = useState(false)
-
-  // Ripple state
-  const [ripples, setRipples] = useState([])
 
   const scrollRef = useRef(null)
   const sentinelRef = useRef(null)
@@ -101,25 +92,6 @@ export default function Rio() {
     observer.observe(sentinelRef.current)
     return () => observer.disconnect()
   }, [page, hasMore, loadingMore, posts.length])
-
-  // Depth tracking — background darkens as you scroll
-  useEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
-    let ticking = false
-    const onScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          const pct = el.scrollTop / (el.scrollHeight - el.clientHeight || 1)
-          setDepthLevel(Math.min(Math.floor(pct * DEPTH_COLORS.length), DEPTH_COLORS.length - 1))
-          ticking = false
-        })
-        ticking = true
-      }
-    }
-    el.addEventListener('scroll', onScroll, { passive: true })
-    return () => el.removeEventListener('scroll', onScroll)
-  }, [posts.length])
 
   // ───── Data loading ─────
 
@@ -198,22 +170,10 @@ export default function Rio() {
     setLoadingMore(false)
   }
 
-  // ───── Ripple effect ─────
-
-  const spawnRipple = (e, color = 'rgba(139,92,246,0.4)') => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    const id = Date.now()
-    setRipples(prev => [...prev, { id, x, y, color }])
-    setTimeout(() => setRipples(prev => prev.filter(r => r.id !== id)), 1200)
-  }
-
   // ───── Ressonancia on card (without immersing) ─────
 
   const handleQuickRessonancia = async (e, post, tipo = 'ressoo') => {
     e.stopPropagation()
-    spawnRipple(e, RESSONANCIA_TIPOS[tipo]?.emoji === '🫧' ? 'rgba(139,92,246,0.4)' : 'rgba(236,72,153,0.3)')
 
     // Haptic feedback
     if (navigator.vibrate) navigator.vibrate(30)
@@ -303,12 +263,12 @@ export default function Rio() {
   if (loading) {
     return (
       <div className="h-screen flex flex-col items-center justify-center gap-4"
-        style={{ background: 'linear-gradient(160deg, #151020 0%, #201838 50%, #0a0815 100%)' }}>
+        style={{ background: 'linear-gradient(180deg, #FCFCFF 0%, #F5F3FF 100%)' }}>
         <div className="w-16 h-16 rounded-full flex items-center justify-center text-3xl animate-pulse"
-          style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 70%)' }}>
+          style={{ background: 'linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%)' }}>
           🌊
         </div>
-        <p className="text-white/40 text-sm" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
+        <p className="text-gray-400 text-sm" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
           A fluir para o rio...
         </p>
       </div>
@@ -317,38 +277,35 @@ export default function Rio() {
 
   return (
     <div className="h-[100dvh] relative overflow-hidden"
-      style={{ background: DEPTH_COLORS[depthLevel] || DEPTH_COLORS[0], transition: 'background 1.5s ease' }}>
+      style={{ background: 'linear-gradient(180deg, #FCFCFF 0%, #F5F3FF 100%)' }}>
 
       {/* ═══════ FLUID SCROLL RIVER ═══════ */}
       <div ref={scrollRef} className="rio-flow h-full w-full px-4 pt-20 pb-28">
 
-        {/* ───── Prompt do Dia — first stone in the river ───── */}
+        {/* ───── Prompt do Dia ───── */}
         {promptDoDia && (
           <div className="mb-6 animate-card-reveal">
             <button
               onClick={() => { setPromptPreenchido(promptDoDia); setShowCriarReflexao(true) }}
-              className="w-full rounded-3xl p-6 text-left relative overflow-hidden transition-all active:scale-[0.98]"
-              style={{
-                background: 'linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(99,102,241,0.08) 100%)',
-                border: '1px solid rgba(139,92,246,0.15)'
-              }}
+              className="w-full rounded-3xl p-6 text-left relative overflow-hidden transition-all active:scale-[0.98] bg-white shadow-sm"
+              style={{ border: '1px solid rgba(139,92,246,0.1)' }}
             >
-              <div className="absolute top-0 right-0 w-32 h-32 rounded-full animate-bokeh"
-                style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%)' }} />
+              <div className="absolute inset-0 rounded-3xl opacity-30"
+                style={{ background: 'linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%)' }} />
               <div className="relative">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-lg">{promptDoDia.emoji}</span>
-                  <span className="text-[10px] font-semibold tracking-[0.15em] uppercase"
-                    style={{ color: 'rgba(139,92,246,0.6)', fontFamily: 'var(--font-corpo)' }}>
+                  <span className="text-[10px] font-semibold tracking-[0.15em] uppercase text-purple-400"
+                    style={{ fontFamily: 'var(--font-corpo)' }}>
                     Prompt do Dia
                   </span>
                 </div>
-                <p className="text-lg text-white/80 leading-relaxed mb-3"
+                <p className="text-lg text-gray-700 leading-relaxed mb-3"
                   style={{ fontFamily: 'var(--font-titulos)', fontWeight: 400 }}>
                   "{promptDoDia.texto}"
                 </p>
-                <span className="text-xs font-semibold px-4 py-2 rounded-full text-white/80 inline-block"
-                  style={{ background: 'rgba(139,92,246,0.2)' }}>
+                <span className="text-xs font-semibold px-4 py-2 rounded-full text-white inline-block"
+                  style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)' }}>
                   Reflectir
                 </span>
               </div>
@@ -356,12 +313,11 @@ export default function Rio() {
           </div>
         )}
 
-        {/* ───── Reflexão cards — stones in the river ───── */}
+        {/* ───── Reflexão cards ───── */}
         {posts.map((post, i) => {
-          const perfil = post.community_profiles
+          const perfilPost = post.community_profiles
           const ecoInfo = post.eco ? ECOS_INFO[post.eco] : null
           const temaInfo = TEMAS_REFLEXAO[post.tipo] || TEMAS_REFLEXAO.livre
-          const isGhost = isGhostPost(post)
           const ressoou = ressonanciaMap[post.id] || false
           const count = ressonanciaCountMap[post.id] || 0
           const bio = bioLevel(post.id)
@@ -375,8 +331,8 @@ export default function Rio() {
               {showBreath && (
                 <div className="flex flex-col items-center py-8 my-2">
                   <div className="w-10 h-10 rounded-full animate-breathe-in mb-3"
-                    style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)' }} />
-                  <p className="text-xs text-white/20" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
+                    style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%)' }} />
+                  <p className="text-xs text-gray-300" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
                     Respira. O rio continua.
                   </p>
                 </div>
@@ -385,11 +341,13 @@ export default function Rio() {
               {/* ───── Card ───── */}
               <div
                 className={`relative mb-4 rounded-2xl overflow-hidden transition-all active:scale-[0.98]
-                  animate-card-reveal bioluminescent-${bio}`}
+                  animate-card-reveal bg-white shadow-sm`}
                 style={{
                   animationDelay: `${(i % 5) * 0.08}s`,
-                  background: `linear-gradient(160deg, ${ecoInfo?.cor || '#8B5CF6'}10 0%, rgba(255,255,255,0.03) 100%)`,
-                  border: `1px solid ${ecoInfo?.cor || '#8B5CF6'}${bio >= 2 ? '25' : '12'}`
+                  borderLeft: `3px solid ${ecoInfo?.cor || '#8B5CF6'}`,
+                  border: `1px solid ${ecoInfo?.cor || '#8B5CF6'}${bio >= 2 ? '20' : '10'}`,
+                  borderLeftWidth: '3px',
+                  borderLeftColor: ecoInfo?.cor || '#8B5CF6'
                 }}
               >
                 {/* Tap to immerse */}
@@ -401,38 +359,38 @@ export default function Rio() {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2.5">
                       <div className="w-9 h-9 rounded-full flex items-center justify-center text-base"
-                        style={{ background: `${ecoInfo?.cor || '#8B5CF6'}15`, border: `1px solid ${ecoInfo?.cor || '#8B5CF6'}20` }}>
-                        {post.is_anonymous ? '🌙' : (perfil?.avatar_emoji || '🌸')}
+                        style={{ background: 'linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%)' }}>
+                        {post.is_anonymous ? '🌙' : (perfilPost?.avatar_emoji || '🌸')}
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-white/80" style={{ fontFamily: 'var(--font-corpo)' }}>
-                          {post.is_anonymous ? 'Alma Anónima' : (perfil?.display_name || 'Utilizadora')}
+                        <p className="text-sm font-medium text-gray-700" style={{ fontFamily: 'var(--font-corpo)' }}>
+                          {post.is_anonymous ? 'Alma Anónima' : (perfilPost?.display_name || 'Utilizadora')}
                         </p>
-                        <p className="text-[10px] text-white/25">{tempoRelativo(post.created_at)}</p>
+                        <p className="text-[10px] text-gray-300">{tempoRelativo(post.created_at)}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5">
                       {ecoInfo && (
                         <span className="text-[10px] px-2 py-0.5 rounded-full"
-                          style={{ background: `${ecoInfo.cor}20`, color: `${ecoInfo.cor}aa` }}>
+                          style={{ background: `${ecoInfo.cor}15`, color: ecoInfo.cor }}>
                           {ecoInfo.emoji}
                         </span>
                       )}
                       <span className="text-[10px] px-2 py-0.5 rounded-full"
-                        style={{ background: `${temaInfo.cor}15`, color: `${temaInfo.cor}99` }}>
+                        style={{ background: `${temaInfo.cor}10`, color: temaInfo.cor }}>
                         {temaInfo.emoji}
                       </span>
                     </div>
                   </div>
 
                   {/* Content */}
-                  <p className={`text-white/70 leading-relaxed ${isShort ? 'text-base' : 'text-sm'} ${
+                  <p className={`text-gray-600 leading-relaxed ${isShort ? 'text-base' : 'text-sm'} ${
                     conteudo.length > 200 ? 'line-clamp-4' : ''
                   }`} style={{ fontFamily: 'var(--font-titulos)', fontWeight: 400 }}>
                     {conteudo}
                   </p>
                   {conteudo.length > 200 && (
-                    <p className="text-xs text-white/20 mt-1" style={{ fontFamily: 'var(--font-corpo)' }}>
+                    <p className="text-xs text-gray-300 mt-1" style={{ fontFamily: 'var(--font-corpo)' }}>
                       toca para ler tudo
                     </p>
                   )}
@@ -440,39 +398,31 @@ export default function Rio() {
 
                 {/* Bottom actions bar */}
                 <div className="relative flex items-center justify-between px-5 pb-4 pt-1">
-                  {/* Ressonância button with ripple */}
+                  {/* Ressonância button */}
                   <button
                     onClick={(e) => handleQuickRessonancia(e, post)}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full transition-all active:scale-110 relative overflow-hidden"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full transition-all active:scale-110"
                     style={{
-                      background: ressoou ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.04)',
-                      border: ressoou ? '1px solid rgba(139,92,246,0.3)' : '1px solid rgba(255,255,255,0.06)'
+                      background: ressoou ? 'rgba(139,92,246,0.1)' : 'rgba(0,0,0,0.02)',
+                      border: ressoou ? '1px solid rgba(139,92,246,0.2)' : '1px solid rgba(0,0,0,0.05)'
                     }}
                   >
                     <span className="text-sm">🫧</span>
-                    {count > 0 && <span className="text-xs text-white/40 font-medium">{count}</span>}
-
-                    {/* Ripple rings rendered here */}
-                    {ripples.filter(r => true).map(r => (
-                      <React.Fragment key={r.id}>
-                        <div className="ripple-ring" style={{ left: r.x, top: r.y, borderColor: r.color }} />
-                        <div className="ripple-ring-delay" style={{ left: r.x, top: r.y, borderColor: r.color }} />
-                      </React.Fragment>
-                    ))}
+                    {count > 0 && <span className="text-xs text-gray-400 font-medium">{count}</span>}
                   </button>
 
                   {/* Espelhos */}
                   <button
                     onClick={(e) => { e.stopPropagation(); handleAbrirEspelhos(post) }}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all"
-                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+                    style={{ background: 'rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.05)' }}
                   >
                     <span className="text-sm">🪞</span>
-                    <span className="text-xs text-white/30">Espelhos</span>
+                    <span className="text-xs text-gray-400">Espelhos</span>
                   </button>
 
                   {/* Immerse hint */}
-                  <span className="text-[10px] text-white/15" style={{ fontFamily: 'var(--font-corpo)' }}>
+                  <span className="text-[10px] text-gray-300" style={{ fontFamily: 'var(--font-corpo)' }}>
                     toca para imergir
                   </span>
                 </div>
@@ -485,7 +435,7 @@ export default function Rio() {
         {hasMore && posts.length > 0 && (
           <div ref={sentinelRef} className="flex justify-center py-8">
             {loadingMore && (
-              <div className="w-6 h-6 border-2 border-purple-400/20 border-t-purple-400/50 rounded-full animate-spin" />
+              <div className="w-6 h-6 border-2 border-purple-300 border-t-transparent rounded-full animate-spin" />
             )}
           </div>
         )}
@@ -494,7 +444,7 @@ export default function Rio() {
         {!hasMore && posts.length > 0 && (
           <div className="text-center py-12">
             <span className="text-3xl block mb-3 animate-breathe">🌊</span>
-            <p className="text-xs text-white/20" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
+            <p className="text-xs text-gray-300" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
               Chegaste ao remanso do rio
             </p>
           </div>
@@ -504,7 +454,7 @@ export default function Rio() {
         {posts.length === 0 && !loadingMore && !promptDoDia && (
           <div className="text-center py-20">
             <span className="text-4xl block mb-4">🌱</span>
-            <p className="text-sm text-white/30 mb-6" style={{ fontFamily: 'var(--font-titulos)' }}>
+            <p className="text-sm text-gray-400 mb-6" style={{ fontFamily: 'var(--font-titulos)' }}>
               O rio está quieto... Sê a primeira a reflectir.
             </p>
             <button onClick={() => setShowCriarReflexao(true)}
@@ -518,25 +468,28 @@ export default function Rio() {
 
       {/* ═══════ OVERLAY: Top bar ═══════ */}
       <div className="absolute top-0 left-0 right-0 z-30 pointer-events-none"
-        style={{ background: `linear-gradient(180deg, ${DEPTH_COLORS[depthLevel]}ee 0%, transparent 100%)`, transition: 'background 1.5s ease' }}>
+        style={{ background: 'linear-gradient(180deg, rgba(252,252,255,0.95) 0%, transparent 100%)' }}>
         <div className="flex items-center justify-between px-4 pt-4 pb-6 pointer-events-auto">
           <button onClick={() => navigate('/comunidade')}
-            className="w-9 h-9 rounded-full flex items-center justify-center active:scale-90"
-            style={{ background: 'rgba(255,255,255,0.08)' }}>
-            <svg className="w-4 h-4 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            className="w-9 h-9 rounded-full flex items-center justify-center active:scale-90 bg-white shadow-sm"
+            style={{ border: '1px solid rgba(0,0,0,0.06)' }}>
+            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
 
           <button onClick={() => setShowFilters(!showFilters)}
-            className="px-3 py-1.5 rounded-full text-xs font-medium text-white/50 active:scale-95"
-            style={{ background: showFilters ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            className="px-3 py-1.5 rounded-full text-xs font-medium active:scale-95 bg-white shadow-sm"
+            style={{
+              color: filtroEco ? ECOS_INFO[filtroEco]?.cor : '#6B7280',
+              border: showFilters ? '1px solid rgba(139,92,246,0.2)' : '1px solid rgba(0,0,0,0.06)'
+            }}>
             {filtroEco ? `${ECOS_INFO[filtroEco]?.emoji} ${ECOS_INFO[filtroEco]?.label}` : 'O Rio'}
           </button>
 
           <button onClick={() => navigate(`/comunidade/jornada/${userId}`)}
-            className="w-9 h-9 rounded-full flex items-center justify-center text-base active:scale-90"
-            style={{ background: 'rgba(255,255,255,0.08)' }}>
+            className="w-9 h-9 rounded-full flex items-center justify-center text-base active:scale-90 shadow-sm"
+            style={{ background: 'linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%)', border: '2px solid white' }}>
             {perfil?.avatar_emoji || '🌸'}
           </button>
         </div>
@@ -547,12 +500,12 @@ export default function Rio() {
         <>
           <div className="absolute inset-0 z-20" onClick={() => setShowFilters(false)} />
           <div className="absolute top-16 left-4 right-4 z-30 animate-card-reveal">
-            <div className="rounded-2xl p-4 space-y-3"
-              style={{ background: 'rgba(15,10,30,0.95)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="rounded-2xl p-4 space-y-3 bg-white shadow-lg"
+              style={{ border: '1px solid rgba(0,0,0,0.06)' }}>
               <div className="flex flex-wrap gap-2">
                 <button onClick={() => { setFiltroEco(null); setFiltroTema(null); setShowFilters(false) }}
-                  className={`text-xs px-3 py-1.5 rounded-full font-medium ${!filtroEco ? 'text-white' : 'text-white/40'}`}
-                  style={!filtroEco ? { backgroundColor: '#8B5CF6' } : { backgroundColor: 'rgba(255,255,255,0.06)' }}>
+                  className={`text-xs px-3 py-1.5 rounded-full font-medium ${!filtroEco ? 'text-white' : 'text-gray-500'}`}
+                  style={!filtroEco ? { backgroundColor: '#8B5CF6' } : { backgroundColor: '#F3F4F6' }}>
                   Todas
                 </button>
                 {ECOS_FILTRO.map(eco => {
@@ -560,8 +513,8 @@ export default function Rio() {
                   return info ? (
                     <button key={eco}
                       onClick={() => { setFiltroEco(filtroEco === eco ? null : eco); setShowFilters(false) }}
-                      className={`text-xs px-3 py-1.5 rounded-full font-medium flex items-center gap-1 ${filtroEco === eco ? 'text-white' : 'text-white/40'}`}
-                      style={filtroEco === eco ? { backgroundColor: info.cor } : { backgroundColor: 'rgba(255,255,255,0.06)' }}>
+                      className={`text-xs px-3 py-1.5 rounded-full font-medium flex items-center gap-1 ${filtroEco === eco ? 'text-white' : 'text-gray-500'}`}
+                      style={filtroEco === eco ? { backgroundColor: info.cor } : { backgroundColor: '#F3F4F6' }}>
                       {info.emoji} {info.label}
                     </button>
                   ) : null
@@ -571,8 +524,8 @@ export default function Rio() {
                 {Object.entries(TEMAS_REFLEXAO).map(([key, tema]) => (
                   <button key={key}
                     onClick={() => { setFiltroTema(filtroTema === key ? null : key); setShowFilters(false) }}
-                    className={`text-xs px-2.5 py-1 rounded-full ${filtroTema === key ? 'text-white' : 'text-white/30'}`}
-                    style={filtroTema === key ? { backgroundColor: tema.cor } : { backgroundColor: 'rgba(255,255,255,0.04)' }}>
+                    className={`text-xs px-2.5 py-1 rounded-full ${filtroTema === key ? 'text-white' : 'text-gray-400'}`}
+                    style={filtroTema === key ? { backgroundColor: tema.cor } : { backgroundColor: '#F9FAFB' }}>
                     {tema.emoji} {tema.label}
                   </button>
                 ))}
@@ -607,9 +560,9 @@ export default function Rio() {
           {/* Close button */}
           <button
             onClick={() => setImmersedPost(null)}
-            className="absolute top-4 left-4 z-50 w-10 h-10 rounded-full flex items-center justify-center active:scale-90"
-            style={{ background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(8px)' }}>
-            <svg className="w-5 h-5 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            className="absolute top-4 left-4 z-50 w-10 h-10 rounded-full flex items-center justify-center active:scale-90 bg-white/80 shadow-sm"
+            style={{ backdropFilter: 'blur(8px)' }}>
+            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -619,12 +572,12 @@ export default function Rio() {
       {/* ═══════ ESPELHOS BOTTOM SHEET ═══════ */}
       {espelhosPost && (
         <div className="absolute inset-0 z-40">
-          <div className="absolute inset-0 bg-black/50" onClick={() => { setEspelhosPost(null); setNovoEspelho('') }} />
+          <div className="absolute inset-0 bg-black/30" onClick={() => { setEspelhosPost(null); setNovoEspelho('') }} />
           <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[65vh] flex flex-col animate-sheet-up">
             <div className="flex-shrink-0 p-4 pb-2 border-b border-gray-100">
               <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-3" />
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-semibold" style={{ fontFamily: 'var(--font-titulos)', color: '#1A1A4E' }}>Espelhos</h3>
+                <h3 className="text-base font-semibold" style={{ fontFamily: 'var(--font-titulos)', color: '#1E1B4B' }}>Espelhos</h3>
                 <button onClick={() => { setEspelhosPost(null); setNovoEspelho('') }} className="text-gray-400 p-1">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />

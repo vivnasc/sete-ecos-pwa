@@ -11,14 +11,9 @@ import { supabase } from '../../lib/supabase'
 import { getGhostChamas } from '../../lib/ghost-users'
 
 // ============================================================
-// Fogueira — Espaco efemero comunal de partilha
-// "Onde nos sentamos em circulo"
+// Fogueira — Espaço efémero comunal de partilha
+// "Onde nos sentamos em círculo"
 // ============================================================
-
-const FIRE = '\uD83D\uDD25'
-const CANDLE = '\uD83D\uDD6F\uFE0F'
-const FLOWER = '\uD83C\uDF38'
-const CLOCK = '\u23F0'
 
 export default function Fogueira({ userId }) {
   // --- Fogueira state ---
@@ -200,11 +195,11 @@ export default function Fogueira({ userId }) {
 
   const getFireEmojis = () => {
     const count = chamas.length
-    if (count > 15) return FIRE.repeat(5)
-    if (count > 10) return FIRE.repeat(4)
-    if (count > 5) return FIRE.repeat(3)
-    if (count > 2) return FIRE.repeat(2)
-    return FIRE
+    if (count > 15) return '🔥🔥🔥🔥🔥'
+    if (count > 10) return '🔥🔥🔥🔥'
+    if (count > 5) return '🔥🔥🔥'
+    if (count > 2) return '🔥🔥'
+    return '🔥'
   }
 
   const fireSize = getFireSize()
@@ -242,10 +237,10 @@ export default function Fogueira({ userId }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#1A1A2E] to-[#2D1B42]">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #FFFBF5 0%, #FFF7ED 100%)' }}>
         <div className="text-center">
-          <div className="text-4xl animate-pulse-subtle mb-3">{FIRE}</div>
-          <p className="text-white/50 text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>
+          <div className="text-4xl animate-pulse mb-3">🔥</div>
+          <p className="text-amber-600/50 text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>
             A procurar a fogueira...
           </p>
         </div>
@@ -259,21 +254,21 @@ export default function Fogueira({ userId }) {
 
   if (!fogueira) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#1A1A2E] to-[#2D1B42] flex flex-col">
+      <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(180deg, #FFFBF5 0%, #FFF7ED 100%)' }}>
         {/* Header */}
         <div className="text-center pt-12 pb-6 px-4">
-          <p className="text-3xl mb-2">{CANDLE}</p>
+          <p className="text-3xl mb-2">🕯️</p>
           <h2
-            className="text-white text-xl font-bold mb-1"
-            style={{ fontFamily: 'var(--font-titulos)' }}
+            className="text-xl font-bold mb-1"
+            style={{ fontFamily: 'var(--font-titulos)', color: '#92400E' }}
           >
             A Fogueira
           </h2>
           <p
-            className="text-white/40 text-sm italic"
+            className="text-amber-600/50 text-sm italic"
             style={{ fontFamily: 'var(--font-corpo)' }}
           >
-            Onde nos sentamos em c&#xed;rculo
+            Onde nos sentamos em círculo
           </p>
         </div>
 
@@ -285,21 +280,21 @@ export default function Fogueira({ userId }) {
               <div
                 className="mx-auto w-24 h-24 rounded-full flex items-center justify-center"
                 style={{
-                  background: 'radial-gradient(circle, rgba(249,115,22,0.15) 0%, rgba(249,115,22,0.05) 50%, transparent 70%)'
+                  background: 'radial-gradient(circle, rgba(249,115,22,0.1) 0%, rgba(249,115,22,0.03) 50%, transparent 70%)'
                 }}
               >
-                <span className="text-4xl opacity-50">{CANDLE}</span>
+                <span className="text-4xl opacity-50">🕯️</span>
               </div>
             </div>
 
             <p
-              className="text-white/60 text-base mb-2"
+              className="text-amber-800/70 text-base mb-2"
               style={{ fontFamily: 'var(--font-titulos)' }}
             >
-              As brasas est&#xe3;o frias...
+              As brasas estão frias...
             </p>
             <p
-              className="text-white/30 text-sm mb-8"
+              className="text-amber-600/40 text-sm mb-8"
               style={{ fontFamily: 'var(--font-corpo)' }}
             >
               Queres acender uma nova fogueira para a comunidade?
@@ -311,12 +306,9 @@ export default function Fogueira({ userId }) {
                 type="text"
                 value={novaTema}
                 onChange={(e) => setNovaTema(e.target.value)}
-                placeholder="Tema da fogueira (ex: Gratid\u00E3o pelo caminho)"
-                className="w-full px-4 py-3 rounded-xl text-sm text-white placeholder-white/40 border border-white/20 focus:border-orange-400/60 focus:outline-none transition-colors"
-                style={{
-                  backgroundColor: 'rgba(255,255,255,0.08)',
-                  fontFamily: 'var(--font-corpo)'
-                }}
+                placeholder="Tema da fogueira (ex: Gratidão pelo caminho)"
+                className="w-full px-4 py-3 rounded-xl text-sm text-gray-700 placeholder-gray-400 border border-amber-200 focus:border-amber-400 focus:outline-none transition-colors bg-white"
+                style={{ fontFamily: 'var(--font-corpo)' }}
                 maxLength={100}
               />
               <input
@@ -324,11 +316,8 @@ export default function Fogueira({ userId }) {
                 value={novoPrompt}
                 onChange={(e) => setNovoPrompt(e.target.value)}
                 placeholder="Prompt para os participantes (opcional)"
-                className="w-full px-4 py-3 rounded-xl text-sm text-white placeholder-white/40 border border-white/20 focus:border-orange-400/60 focus:outline-none transition-colors"
-                style={{
-                  backgroundColor: 'rgba(255,255,255,0.08)',
-                  fontFamily: 'var(--font-corpo)'
-                }}
+                className="w-full px-4 py-3 rounded-xl text-sm text-gray-700 placeholder-gray-400 border border-amber-200 focus:border-amber-400 focus:outline-none transition-colors bg-white"
+                style={{ fontFamily: 'var(--font-corpo)' }}
                 maxLength={200}
               />
               <button
@@ -340,7 +329,7 @@ export default function Fogueira({ userId }) {
                   fontFamily: 'var(--font-titulos)'
                 }}
               >
-                {criando ? 'A acender...' : `${FIRE} Acender Fogueira`}
+                {criando ? 'A acender...' : '🔥 Acender Fogueira'}
               </button>
             </div>
           </div>
@@ -354,21 +343,21 @@ export default function Fogueira({ userId }) {
   // ----------------------------------------------------------
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#1A1A2E] to-[#2D1B42] flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(180deg, #FFFBF5 0%, #FFF7ED 100%)' }}>
 
       {/* ===== Header ===== */}
       <div className="text-center pt-8 pb-2 px-4">
         <h2
-          className="text-white text-lg font-bold"
-          style={{ fontFamily: 'var(--font-titulos)' }}
+          className="text-lg font-bold"
+          style={{ fontFamily: 'var(--font-titulos)', color: '#92400E' }}
         >
-          {FIRE} A Fogueira {FIRE}
+          🔥 A Fogueira 🔥
         </h2>
         <p
-          className="text-white/30 text-xs italic"
+          className="text-amber-600/40 text-xs italic"
           style={{ fontFamily: 'var(--font-corpo)' }}
         >
-          Onde nos sentamos em c&#xed;rculo
+          Onde nos sentamos em círculo
         </p>
       </div>
 
@@ -385,19 +374,18 @@ export default function Fogueira({ userId }) {
           >
             {/* Glow behind the fire */}
             <div
-              className="absolute inset-0 rounded-full animate-pulse-subtle"
+              className="absolute inset-0 rounded-full animate-pulse"
               style={{
-                background: `radial-gradient(circle, rgba(249,115,22,${0.2 + chamas.length * 0.01}) 0%, rgba(239,68,68,0.1) 50%, transparent 70%)`,
+                background: `radial-gradient(circle, rgba(249,115,22,${0.12 + chamas.length * 0.005}) 0%, rgba(239,68,68,0.05) 50%, transparent 70%)`,
                 transform: `scale(${1.5 + chamas.length * 0.03})`
               }}
             />
             {/* Fire emojis */}
             <div
-              className="relative animate-pulse-subtle"
+              className="relative"
               style={{
                 fontSize: `${2 + fireSize.scale * 0.8}rem`,
-                filter: `brightness(${1 + chamas.length * 0.02})`,
-                textShadow: '0 0 20px rgba(249,115,22,0.6), 0 0 40px rgba(239,68,68,0.3)'
+                filter: `brightness(${1 + chamas.length * 0.01})`
               }}
             >
               {getFireEmojis()}
@@ -407,14 +395,14 @@ export default function Fogueira({ userId }) {
 
         {/* Tema and prompt */}
         <p
-          className="text-orange-300/90 text-sm font-semibold mb-1"
+          className="text-amber-700 text-sm font-semibold mb-1"
           style={{ fontFamily: 'var(--font-titulos)' }}
         >
           {fogueira.tema}
         </p>
         {fogueira.prompt && (
           <p
-            className="text-white/50 text-xs italic mb-3 px-4"
+            className="text-amber-600/50 text-xs italic mb-3 px-4"
             style={{ fontFamily: 'var(--font-corpo)' }}
           >
             &ldquo;{fogueira.prompt}&rdquo;
@@ -423,9 +411,9 @@ export default function Fogueira({ userId }) {
 
         {/* Time remaining */}
         <div className="flex items-center justify-center gap-1.5 mb-4">
-          <span className="text-white/30 text-xs">{CLOCK}</span>
+          <span className="text-amber-500/40 text-xs">⏰</span>
           <span
-            className="text-white/40 text-xs"
+            className="text-amber-600/50 text-xs"
             style={{ fontFamily: 'var(--font-corpo)' }}
           >
             Extingue-se em {tempoRestante}
@@ -439,33 +427,33 @@ export default function Fogueira({ userId }) {
               {contribuidores.slice(0, 8).map((c, i) => (
                 <div
                   key={c.user_id}
-                  className="w-8 h-8 rounded-full border-2 border-[#1A1A2E] flex items-center justify-center text-sm overflow-hidden"
+                  className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-sm overflow-hidden shadow-sm"
                   style={{
-                    backgroundColor: 'rgba(255,255,255,0.1)',
+                    background: 'linear-gradient(135deg, #FEF3C7 0%, #FED7AA 100%)',
                     zIndex: contribuidores.length - i
                   }}
                 >
                   {c.perfil?.avatar_url ? (
                     <img src={c.perfil.avatar_url} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    <span>{c.perfil?.avatar_emoji || FLOWER}</span>
+                    <span>{c.perfil?.avatar_emoji || '🌸'}</span>
                   )}
                 </div>
               ))}
               {contribuidores.length > 8 && (
                 <div
-                  className="w-8 h-8 rounded-full border-2 border-[#1A1A2E] flex items-center justify-center text-[10px] text-white/60 font-medium"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+                  className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-[10px] text-amber-600 font-medium shadow-sm"
+                  style={{ background: 'linear-gradient(135deg, #FEF3C7 0%, #FED7AA 100%)' }}
                 >
                   +{contribuidores.length - 8}
                 </div>
               )}
             </div>
             <p
-              className="text-white/30 text-xs"
+              className="text-amber-600/40 text-xs"
               style={{ fontFamily: 'var(--font-corpo)' }}
             >
-              {contribuidores.length} {contribuidores.length === 1 ? 'alma' : 'almas'} &#xe0; volta da fogueira
+              {contribuidores.length} {contribuidores.length === 1 ? 'alma' : 'almas'} à volta da fogueira
             </p>
           </div>
         )}
@@ -473,57 +461,58 @@ export default function Fogueira({ userId }) {
 
       {/* ===== Divider ===== */}
       <div className="px-6">
-        <div className="border-t border-white/10" />
+        <div className="border-t border-amber-200/40" />
       </div>
 
       {/* ===== Chamas list ===== */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3" style={{ maxHeight: '40vh' }}>
         {chamas.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-white/20 text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>
+            <p className="text-amber-600/30 text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>
               A fogueira espera a primeira chama...
             </p>
-            <p className="text-white/10 text-xs mt-1" style={{ fontFamily: 'var(--font-corpo)' }}>
-              S&#xea; a primeira a partilhar
+            <p className="text-amber-500/20 text-xs mt-1" style={{ fontFamily: 'var(--font-corpo)' }}>
+              Sê a primeira a partilhar
             </p>
           </div>
         )}
 
         {chamas.map((chama) => {
-          const perfil = chama.community_profiles
+          const perfilChama = chama.community_profiles
           const isOwn = chama.user_id === userId
           return (
             <div
               key={chama.id}
-              className="rounded-xl px-4 py-3 transition-all"
+              className="rounded-xl px-4 py-3 transition-all bg-white shadow-sm"
               style={{
-                backgroundColor: 'rgba(255,255,255,0.07)',
-                backdropFilter: 'blur(8px)',
-                borderLeft: isOwn ? '3px solid rgba(249,115,22,0.5)' : '3px solid transparent'
+                borderLeft: isOwn ? '3px solid #F97316' : '3px solid transparent',
+                border: '1px solid rgba(245,158,11,0.08)',
+                borderLeftWidth: '3px',
+                borderLeftColor: isOwn ? '#F97316' : 'transparent'
               }}
             >
               <div className="flex items-center gap-2 mb-1.5">
                 <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs overflow-hidden"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+                  style={{ background: 'linear-gradient(135deg, #FEF3C7 0%, #FED7AA 100%)' }}
                 >
-                  {perfil?.avatar_url ? (
-                    <img src={perfil.avatar_url} alt="" className="w-full h-full object-cover" />
+                  {perfilChama?.avatar_url ? (
+                    <img src={perfilChama.avatar_url} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    <span>{perfil?.avatar_emoji || FLOWER}</span>
+                    <span>{perfilChama?.avatar_emoji || '🌸'}</span>
                   )}
                 </div>
                 <span
-                  className="text-white/60 text-xs font-medium"
+                  className="text-amber-800/70 text-xs font-medium"
                   style={{ fontFamily: 'var(--font-corpo)' }}
                 >
-                  {perfil?.display_name || 'Alma An\u00F3nima'}
+                  {perfilChama?.display_name || 'Alma Anónima'}
                 </span>
-                <span className="text-white/20 text-[10px] ml-auto">
+                <span className="text-amber-400/40 text-[10px] ml-auto">
                   {tempoRelativoChama(chama.created_at)}
                 </span>
               </div>
               <p
-                className="text-white/80 text-sm leading-relaxed"
+                className="text-gray-700 text-sm leading-relaxed"
                 style={{ fontFamily: 'var(--font-corpo)' }}
               >
                 {chama.conteudo}
@@ -535,8 +524,8 @@ export default function Fogueira({ userId }) {
       </div>
 
       {/* ===== Input area ===== */}
-      <div className="sticky bottom-0 px-4 py-4 border-t border-white/10"
-        style={{ backgroundColor: 'rgba(26,26,46,0.95)', backdropFilter: 'blur(12px)' }}
+      <div className="sticky bottom-0 px-4 py-4 border-t border-amber-200/30 bg-white/90"
+        style={{ backdropFilter: 'blur(12px)' }}
       >
         <div className="flex items-end gap-2">
           <div className="flex-1 relative">
@@ -546,9 +535,8 @@ export default function Fogueira({ userId }) {
               onKeyDown={handleKeyDown}
               placeholder="Adiciona a tua chama..."
               rows={1}
-              className="w-full px-4 py-3 pr-12 rounded-xl text-sm text-white placeholder-white/40 border border-white/20 focus:border-orange-400/50 focus:outline-none resize-none"
+              className="w-full px-4 py-3 pr-12 rounded-xl text-sm text-gray-700 placeholder-gray-400 border border-amber-200 focus:border-amber-400 focus:outline-none resize-none bg-white"
               style={{
-                backgroundColor: 'rgba(255,255,255,0.08)',
                 fontFamily: 'var(--font-corpo)',
                 minHeight: '44px',
                 maxHeight: '88px'
@@ -557,7 +545,7 @@ export default function Fogueira({ userId }) {
             {novaChama.length > 0 && (
               <span
                 className={`absolute bottom-2 right-3 text-[10px] ${
-                  novaChama.length > 270 ? 'text-red-400/60' : 'text-white/20'
+                  novaChama.length > 270 ? 'text-red-400' : 'text-gray-300'
                 }`}
               >
                 {novaChama.length}/300
@@ -571,13 +559,13 @@ export default function Fogueira({ userId }) {
             style={{
               background: novaChama.trim()
                 ? 'linear-gradient(135deg, #F97316, #EF4444)'
-                : 'rgba(255,255,255,0.08)'
+                : '#E5E7EB'
             }}
           >
             {enviando ? (
               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
-              <span className="text-lg">{FIRE}</span>
+              <span className="text-lg">🔥</span>
             )}
           </button>
         </div>
