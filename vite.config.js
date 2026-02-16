@@ -58,6 +58,8 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,svg,woff,woff2}'],
         globIgnores: ['logos/**/*'],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+        // Push notification handler
+        importScripts: ['/push-sw.js'],
         // Offline fallback
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],

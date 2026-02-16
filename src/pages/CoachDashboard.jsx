@@ -110,12 +110,80 @@ export default function CoachDashboard() {
   const lastPollTime = useRef(null);
   const pollRef = useRef(null);
 
-  // ─── Browser Notification permission ───
+  // ─── Push Notification subscription ───
+  const [pushStatus, setPushStatus] = useState(null); // null | 'subscribed' | 'denied' | 'unsupported'
+
   useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
+    registerPushSubscription();
   }, []);
+
+  const registerPushSubscription = async () => {
+    // Check support
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      setPushStatus('unsupported');
+      return;
+    }
+
+    // Request notification permission
+    if (Notification.permission === 'default') {
+      const result = await Notification.requestPermission();
+      if (result !== 'granted') { setPushStatus('denied'); return; }
+    } else if (Notification.permission !== 'granted') {
+      setPushStatus('denied');
+      return;
+    }
+
+    try {
+      const reg = await navigator.serviceWorker.ready;
+
+      // Check existing subscription
+      let subscription = await reg.pushManager.getSubscription();
+
+      if (!subscription) {
+        // Fetch VAPID public key
+        const vapidRes = await fetch('/api/push-coach', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'vapid-public' })
+        });
+        const { key } = await vapidRes.json();
+        if (!key) { setPushStatus('unsupported'); return; }
+
+        // Convert VAPID key to Uint8Array
+        const padding = '='.repeat((4 - key.length % 4) % 4);
+        const base64 = (key + padding).replace(/-/g, '+').replace(/_/g, '/');
+        const rawData = atob(base64);
+        const applicationServerKey = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; i++) applicationServerKey[i] = rawData.charCodeAt(i);
+
+        subscription = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey,
+        });
+      }
+
+      // Send subscription to server
+      const { data: { session } } = await (await import('../lib/supabase')).supabase.auth.getSession();
+      if (session?.access_token) {
+        await fetch('/api/push-coach', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            action: 'subscribe',
+            subscription: subscription.toJSON(),
+          }),
+        });
+      }
+
+      setPushStatus('subscribed');
+    } catch (err) {
+      console.error('[Push] Erro ao registar:', err);
+      setPushStatus('unsupported');
+    }
+  };
 
   const showBrowserNotification = useCallback((alerta) => {
     if ('Notification' in window && Notification.permission === 'granted') {
@@ -367,7 +435,11 @@ export default function CoachDashboard() {
               <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-8 h-8 object-contain" />
               <div>
                 <h1 className="text-xl font-bold text-gray-900">Painel Coach</h1>
-                <p className="text-xs text-gray-500">Gestao de clientes Vitalis</p>
+                <p className="text-xs text-gray-500 flex items-center gap-1.5">
+                  Gestao de clientes Vitalis
+                  {pushStatus === 'subscribed' && <span title="Push activo" className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />}
+                  {pushStatus === 'denied' && <span title="Push bloqueado" className="text-[10px] text-red-400">(push off)</span>}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">

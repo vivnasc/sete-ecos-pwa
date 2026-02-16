@@ -6,6 +6,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import webpush from 'web-push';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://vvvdtogvlutrybultffx.supabase.co';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
@@ -17,6 +18,33 @@ const COACH_EMAILS = [
   'vivnasc@gmail.com',
   'vivianne.saraiva@outlook.com'
 ];
+
+// ─── Push notification helper (server-side) ───
+const VAPID_PUBLIC = process.env.VAPID_PUBLIC_KEY || 'BNTM9kj9OsZ_KBBsO-zVG3pX6WHFwyqPtBMQyW6_Woy89rjXFJe9yE3UJw2E8c-TQx8dkQ-6cSLOFkleuQi_qPs';
+const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY || 'd89K6ckTanOlUwJ-6xEaNna5pL1e6yKPQhqu6Hq0L6A';
+const VAPID_EMAIL = process.env.VAPID_EMAIL || 'mailto:viv.saraiva@gmail.com';
+
+try { webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE); } catch (e) { /* ok */ }
+
+async function pushCoachNotification({ title, body, url, tag }) {
+  try {
+    const { data: subs } = await supabase
+      .from('push_subscriptions')
+      .select('endpoint, keys_p256dh, keys_auth')
+      .in('user_email', COACH_EMAILS.map(e => e.toLowerCase()));
+    if (!subs || subs.length === 0) return;
+    const payload = JSON.stringify({ title, body, url: url || '/coach', tag: tag || 'coach', requireInteraction: true, vibrate: [200, 100, 200] });
+    for (const sub of subs) {
+      try {
+        await webpush.sendNotification({ endpoint: sub.endpoint, keys: { p256dh: sub.keys_p256dh, auth: sub.keys_auth } }, payload);
+      } catch (err) {
+        if (err.statusCode === 410 || err.statusCode === 404) {
+          await supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
+        }
+      }
+    }
+  } catch (e) { console.error('[Push] Erro:', e.message); }
+}
 
 // Env override for coach emails
 if (process.env.VITE_COACH_EMAILS) {
@@ -91,6 +119,14 @@ async function gerarPlano(userId, res) {
   // Instead, log the error for debugging.
   const saveError = async (errorMsg) => {
     console.error(`[Coach API] Erro ao gerar plano para ${userId}: ${errorMsg}`);
+    // Push notification para coach
+    const { data: userData } = await supabase.from('users').select('nome').eq('id', userId).maybeSingle();
+    pushCoachNotification({
+      title: '❌ Erro ao gerar plano',
+      body: `${userData?.nome || 'Cliente'}: ${errorMsg.slice(0, 80)}`,
+      url: `/coach/cliente/${userId}`,
+      tag: 'plano-erro',
+    }).catch(() => {});
   };
 
   // 1. Fetch intake

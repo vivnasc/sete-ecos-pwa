@@ -142,11 +142,29 @@ async function enviarWhatsAppCoach(mensagem) {
   }
 }
 
+// ===== PUSH NOTIFICATIONS (Web Push para coach) =====
+
+/**
+ * Envia push notification para o telemóvel/browser da coach.
+ * Funciona mesmo com app fechada (via Service Worker).
+ */
+async function pushCoach({ title, body, url, tag, requireInteraction }) {
+  try {
+    await fetch('/api/push-coach', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'notify', title, body, url, tag, requireInteraction })
+    });
+  } catch (err) {
+    console.error('Push coach falhou:', err);
+  }
+}
+
 // ===== TRIGGERS AUTOMÁTICOS =====
 
 /**
  * Triggers que podem ser chamados em diferentes pontos da aplicação
- * Enviam email E WhatsApp para alertas críticos
+ * Enviam email, WhatsApp E push para alertas críticos
  */
 export const EmailTriggers = {
 
@@ -179,6 +197,15 @@ export const EmailTriggers = {
 💰 ${cliente.plano} - ${cliente.valor}
 
 Boas-vindas à comunidade! 🌱`);
+
+    // Push para telemóvel
+    await pushCoach({
+      title: '🎉 Nova Cliente Vitalis!',
+      body: `${cliente.nome} — ${cliente.plano} (${cliente.valor})`,
+      url: '/coach',
+      tag: 'pagamento-sucesso',
+      requireInteraction: true,
+    });
   },
 
   /**
@@ -204,6 +231,15 @@ Boas-vindas à comunidade! 🌱`);
 🔖 Ref: ${cliente.referencia}
 
 ⚠️ Verificar e aprovar no Coach Dashboard!`);
+
+    // Push para telemóvel
+    await pushCoach({
+      title: '💰 Pagamento Pendente!',
+      body: `${cliente.nome} — ${cliente.metodo} Ref: ${cliente.referencia}`,
+      url: '/coach',
+      tag: 'pagamento-pendente',
+      requireInteraction: true,
+    });
   },
 
   /**
@@ -242,6 +278,15 @@ Boas-vindas à comunidade! 🌱`);
 🕐 ${new Date().toLocaleTimeString('pt-PT')}
 
 A cliente pode precisar de apoio. 💚`);
+
+    // Push para telemóvel (CRÍTICO)
+    await pushCoach({
+      title: '🆘 Espaço de Retorno Activado',
+      body: `${cliente.nome} — Estado: ${estado}`,
+      url: '/coach',
+      tag: 'espaco-retorno',
+      requireInteraction: true,
+    });
   },
 
   /**
