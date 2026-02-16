@@ -7,6 +7,32 @@ import { supabase } from '../lib/supabase.js';
 import { coachApi } from '../lib/coachApi.js';
 import { calcularPorcoesDiarias } from '../lib/vitalis/calcularPorcoes.js';
 
+// Overrides de texto por abordagem (sem alterar layout)
+// Quando abordagem != keto_if, substituir referências a cetose
+const FASES_OVERRIDES_EQUILIBRADO = {
+  inducao: {
+    nome: 'Fase 1: Arranque',
+    descricao: 'A fase de arranque onde criamos novos hábitos alimentares e o corpo começa a ajustar-se. Foco em proteína, vegetais e porções equilibradas. Esta fase é desafiante mas transformadora — vais aprender a comer de forma consciente e sustentável.',
+    objetivo: 'Criar hábitos alimentares sólidos e começar a perder peso de forma consistente.',
+    expectativa: 'Perda de 1-2 kg nas primeiras 2 semanas, depois 0.5-1kg por semana de forma sustentável.',
+    priorizar: ['Proteína em todas as refeições (palma da mão)', 'Vegetais verdes em abundância (pelo menos 4 punhos/dia)', 'Hidratos complexos nas porções certas (batata-doce, arroz integral)', 'Água cristalina (mínimo 2L por dia)', 'Sono reparador (7-9 horas por noite)', 'Refeições a horas regulares'],
+    evitar: ['Açúcar refinado e adoçantes artificiais', 'Alimentos ultra-processados', 'Bebidas açucaradas e sumos de pacote', 'Farinhas brancas e pão branco', 'Álcool (calorias vazias)', 'Refeições sem proteína'],
+    dicas: ['Prepara as refeições ao domingo — facilita a semana', 'Tem snacks saudáveis à mão (ovos cozidos, fruta, nozes)', 'Nos primeiros dias podes sentir fome — é o corpo a ajustar-se', 'Bebe água entre refeições', 'Pesa-te às sextas-feiras, em jejum', 'Tira fotos semanais — a balança não conta tudo']
+  }
+};
+
+const FASES_OVERRIDES_LOW_CARB = {
+  inducao: {
+    nome: 'Fase 1: Redução',
+    descricao: 'A fase de arranque onde reduzimos hidratos gradualmente para o corpo começar a usar gordura como energia. Foco em proteína elevada, vegetais e gorduras saudáveis. Esta fase é desafiante mas transformadora.',
+    objetivo: 'Reduzir hidratos, estabilizar açúcar no sangue e começar a perder peso de forma consistente.',
+    expectativa: 'Perda de 2-3 kg nas primeiras 2 semanas, depois 0.5-1kg por semana.',
+    priorizar: ['Proteína em todas as refeições (palma da mão)', 'Vegetais verdes em abundância (pelo menos 4 punhos/dia)', 'Gorduras saudáveis (azeite, abacate, nozes)', 'Água cristalina (mínimo 2.5L por dia)', 'Sono reparador (7-9 horas por noite)', 'Electrólitos (sal marinho, magnésio)'],
+    evitar: ['Açúcar e adoçantes artificiais', 'Farinhas brancas e pão branco', 'Bebidas açucaradas e sumos de pacote', 'Alimentos ultra-processados', 'Álcool', 'Frutas muito doces em excesso (banana, manga, uvas)'],
+    dicas: ['Prepara as refeições ao domingo — facilita a semana', 'Tem snacks proteicos à mão (ovos cozidos, nozes, queijo)', 'Nos primeiros dias podes ter mais fome — é temporário', 'Adiciona 1 colher de sal na água 2x/dia', 'Pesa-te às sextas-feiras, em jejum', 'Tira fotos semanais — a balança não conta tudo']
+  }
+};
+
 const FASES_CONFIG = {
   inducao: {
     nome: 'Fase 1: Indução',
@@ -211,7 +237,14 @@ export default function PlanoHTML() {
     </div>
   );
 
-  const faseConfig = FASES_CONFIG[dados.fase] || FASES_CONFIG.inducao;
+  // Seleccionar config da fase com overrides por abordagem
+  const baseFaseConfig = FASES_CONFIG[dados.fase] || FASES_CONFIG.inducao;
+  const overrides = dados.abordagem === 'equilibrado'
+    ? (FASES_OVERRIDES_EQUILIBRADO[dados.fase] || {})
+    : dados.abordagem === 'low_carb'
+      ? (FASES_OVERRIDES_LOW_CARB[dados.fase] || {})
+      : {};
+  const faseConfig = { ...baseFaseConfig, ...overrides };
   const formatarData = (d) => d ? new Date(d).toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
 
   const Logo = ({ size = 80 }) => (
