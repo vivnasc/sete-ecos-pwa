@@ -79,12 +79,12 @@ export default function HubComunidade() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: 'linear-gradient(160deg, #0a0815 0%, #151020 50%, #1f1550 100%)' }}>
+      <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: 'linear-gradient(180deg, #FCFCFF 0%, #F5F3FF 100%)' }}>
         <div className="w-16 h-16 rounded-full flex items-center justify-center text-3xl animate-pulse"
-          style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 70%)' }}>
+          style={{ background: 'linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%)' }}>
           🌸
         </div>
-        <p className="mt-4 text-white/30 text-sm" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
+        <p className="mt-4 text-gray-400 text-sm" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
           A preparar o espaço...
         </p>
       </div>
@@ -92,16 +92,16 @@ export default function HubComunidade() {
   }
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: 'linear-gradient(160deg, #0a0815 0%, #151020 30%, #1a1040 60%, #0a0815 100%)' }}>
+    <div className="min-h-screen pb-24" style={{ background: 'linear-gradient(180deg, #FCFCFF 0%, #F5F3FF 100%)' }}>
 
-      {/* ══════ HERO — Immersive dark header ══════ */}
+      {/* ══════ HERO ══════ */}
       <div className="relative overflow-hidden pt-8 pb-6 px-5">
-        {/* Bokeh decorations */}
+        {/* Soft decorative circles */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute rounded-full animate-bokeh"
-            style={{ width: 200, height: 200, top: '-10%', right: '-10%', background: 'radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)' }} />
-          <div className="absolute rounded-full animate-bokeh-slow"
-            style={{ width: 150, height: 150, bottom: '0%', left: '-5%', background: 'radial-gradient(circle, rgba(236,72,153,0.08) 0%, transparent 70%)' }} />
+          <div className="absolute rounded-full"
+            style={{ width: 200, height: 200, top: '-10%', right: '-10%', background: 'radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%)' }} />
+          <div className="absolute rounded-full"
+            style={{ width: 150, height: 150, bottom: '0%', left: '-5%', background: 'radial-gradient(circle, rgba(236,72,153,0.04) 0%, transparent 70%)' }} />
         </div>
 
         <div className="relative z-10">
@@ -109,11 +109,11 @@ export default function HubComunidade() {
           <div className="flex items-start justify-between mb-6">
             <div>
               <p className="text-xs font-semibold tracking-[0.2em] uppercase mb-2"
-                style={{ color: 'rgba(139,92,246,0.6)', fontFamily: 'var(--font-corpo)' }}>
+                style={{ color: '#A78BFA', fontFamily: 'var(--font-corpo)' }}>
                 Espaço Colectivo
               </p>
-              <h1 className="text-3xl font-semibold tracking-tight text-white"
-                style={{ fontFamily: 'var(--font-titulos)' }}>
+              <h1 className="text-3xl font-semibold tracking-tight"
+                style={{ fontFamily: 'var(--font-titulos)', color: '#1E1B4B' }}>
                 Comunidade
               </h1>
             </div>
@@ -121,8 +121,8 @@ export default function HubComunidade() {
             {perfil && (
               <button
                 onClick={() => navigate(`/comunidade/jornada/${userId}`)}
-                className="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all active:scale-90"
-                style={{ background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.12)' }}
+                className="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all active:scale-90 shadow-sm"
+                style={{ background: 'linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%)', border: '2px solid white' }}
               >
                 {perfil.avatar_emoji || '🌸'}
               </button>
@@ -135,10 +135,9 @@ export default function HubComunidade() {
               {activeAvatars.map((emoji, i) => (
                 <div
                   key={i}
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-sm border-2 flex-shrink-0"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-sm border-2 border-white flex-shrink-0 shadow-sm"
                   style={{
-                    borderColor: '#151020',
-                    background: 'linear-gradient(135deg, rgba(139,92,246,0.2) 0%, rgba(236,72,153,0.15) 100%)',
+                    background: 'linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%)',
                     marginLeft: i > 0 ? '-0.4rem' : '0',
                     zIndex: 6 - i
                   }}
@@ -149,13 +148,13 @@ export default function HubComunidade() {
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-xs text-white/40" style={{ fontFamily: 'var(--font-corpo)' }}>
+              <span className="text-xs text-gray-400" style={{ fontFamily: 'var(--font-corpo)' }}>
                 {stats.membros} activas agora
               </span>
             </div>
           </div>
 
-          {/* Stats row — glassmorphic */}
+          {/* Stats row */}
           <div className="flex gap-2">
             {[
               { n: stats.reflexoes, label: 'Reflexões', icon: '🌊', rota: '/comunidade/rio' },
@@ -165,14 +164,14 @@ export default function HubComunidade() {
               <button
                 key={s.label}
                 onClick={() => navigate(s.rota)}
-                className="flex-1 rounded-2xl px-3 py-3 text-left transition-all active:scale-95 hover:bg-white/10"
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
+                className="flex-1 rounded-2xl px-3 py-3 text-left transition-all active:scale-95 bg-white shadow-sm hover:shadow-md"
+                style={{ border: '1px solid rgba(139,92,246,0.08)' }}
               >
                 <div className="flex items-center gap-1.5">
                   <span className="text-sm">{s.icon}</span>
-                  <span className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>{s.n}</span>
+                  <span className="text-xl font-bold" style={{ fontFamily: 'var(--font-titulos)', color: '#1E1B4B' }}>{s.n}</span>
                 </div>
-                <p className="text-[10px] text-white/30 mt-0.5 font-medium" style={{ fontFamily: 'var(--font-corpo)' }}>
+                <p className="text-[10px] text-gray-400 mt-0.5 font-medium" style={{ fontFamily: 'var(--font-corpo)' }}>
                   {s.label}
                 </p>
               </button>
@@ -185,31 +184,24 @@ export default function HubComunidade() {
       <div className="px-5 mb-5">
         <button
           onClick={() => navigate('/comunidade/rio')}
-          className="w-full relative overflow-hidden rounded-3xl p-6 text-left transition-all active:scale-[0.98] hover:shadow-2xl group"
-          style={{
-            background: 'linear-gradient(160deg, #1f1550 0%, #2d1f6e 40%, #1a1040 100%)',
-            border: '1px solid rgba(139,92,246,0.2)',
-            boxShadow: '0 8px 40px rgba(139,92,246,0.15)'
-          }}
+          className="w-full relative overflow-hidden rounded-3xl p-6 text-left transition-all active:scale-[0.98] hover:shadow-lg group bg-white shadow-sm"
+          style={{ border: '1px solid rgba(139,92,246,0.12)' }}
         >
-          {/* Animated shimmer */}
-          <div className="absolute inset-0 animate-shimmer opacity-30" style={{ backgroundSize: '200% 100%' }} />
-
-          {/* Bokeh inside */}
-          <div className="absolute top-0 right-0 w-32 h-32 rounded-full animate-bokeh-fast"
-            style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)' }} />
+          {/* Subtle gradient overlay */}
+          <div className="absolute inset-0 rounded-3xl opacity-40"
+            style={{ background: 'linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 50%, #FEF3C7 100%)' }} />
 
           <div className="relative">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl"
-                style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.2)' }}>
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-sm"
+                style={{ background: 'linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)' }}>
                 🌊
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
+                <h2 className="text-xl font-semibold" style={{ fontFamily: 'var(--font-titulos)', color: '#1E1B4B' }}>
                   O Rio
                 </h2>
-                <p className="text-xs text-white/40" style={{ fontFamily: 'var(--font-corpo)' }}>
+                <p className="text-xs text-gray-400" style={{ fontFamily: 'var(--font-corpo)' }}>
                   Reflexões que fluem entre nós
                 </p>
               </div>
@@ -217,23 +209,23 @@ export default function HubComunidade() {
 
             {/* Prompt preview */}
             {promptDoDia && (
-              <div className="rounded-2xl p-4 mb-4"
-                style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.1)' }}>
-                <p className="text-xs text-white/40 mb-1.5" style={{ fontFamily: 'var(--font-corpo)' }}>
+              <div className="rounded-2xl p-4 mb-4 bg-white/80"
+                style={{ border: '1px solid rgba(139,92,246,0.08)' }}>
+                <p className="text-xs text-purple-400 mb-1.5" style={{ fontFamily: 'var(--font-corpo)' }}>
                   {promptDoDia.emoji} Prompt do Dia
                 </p>
-                <p className="text-sm text-white/80 leading-relaxed" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
+                <p className="text-sm text-gray-600 leading-relaxed" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
                   "{promptDoDia.texto}"
                 </p>
               </div>
             )}
 
             <div className="flex items-center justify-between">
-              <span className="text-xs text-white/30" style={{ fontFamily: 'var(--font-corpo)' }}>
+              <span className="text-xs text-gray-400" style={{ fontFamily: 'var(--font-corpo)' }}>
                 {stats.reflexoes} reflexões a fluir
               </span>
               <span className="text-sm font-semibold px-5 py-2 rounded-full text-white transition-all group-hover:shadow-lg"
-                style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)', boxShadow: '0 4px 16px rgba(139,92,246,0.3)' }}>
+                style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)', boxShadow: '0 4px 16px rgba(139,92,246,0.25)' }}>
                 Mergulhar
               </span>
             </div>
@@ -246,25 +238,23 @@ export default function HubComunidade() {
         <div className="px-5 mb-5">
           <button
             onClick={() => navigate('/comunidade/fogueira')}
-            className="w-full relative overflow-hidden rounded-2xl p-4 text-left transition-all active:scale-[0.98]"
-            style={{
-              background: 'linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(239,68,68,0.08) 100%)',
-              border: '1px solid rgba(245,158,11,0.2)'
-            }}
+            className="w-full relative overflow-hidden rounded-2xl p-4 text-left transition-all active:scale-[0.98] bg-white shadow-sm"
+            style={{ border: '1px solid rgba(245,158,11,0.15)' }}
           >
-            <div className="absolute inset-0 animate-shimmer opacity-20" style={{ backgroundSize: '200% 100%' }} />
+            <div className="absolute inset-0 rounded-2xl opacity-30"
+              style={{ background: 'linear-gradient(135deg, #FEF3C7 0%, #FED7AA 100%)' }} />
             <div className="relative flex items-center gap-3">
               <span className="text-2xl animate-pulse">🔥</span>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-amber-300 truncate" style={{ fontFamily: 'var(--font-corpo)' }}>
+                <p className="text-sm font-bold text-amber-700 truncate" style={{ fontFamily: 'var(--font-corpo)' }}>
                   Fogueira Acesa — {fogueira.tema}
                 </p>
-                <p className="text-xs text-amber-400/50 mt-0.5" style={{ fontFamily: 'var(--font-corpo)' }}>
+                <p className="text-xs text-amber-500/70 mt-0.5" style={{ fontFamily: 'var(--font-corpo)' }}>
                   {tempoRestante()} restantes
                 </p>
               </div>
-              <span className="text-xs font-bold text-amber-300/80 px-3 py-1.5 rounded-full"
-                style={{ background: 'rgba(245,158,11,0.15)' }}>
+              <span className="text-xs font-bold text-amber-700 px-3 py-1.5 rounded-full"
+                style={{ background: 'rgba(245,158,11,0.12)' }}>
                 Entrar
               </span>
             </div>
@@ -274,7 +264,7 @@ export default function HubComunidade() {
 
       {/* ══════ ESPAÇOS — Horizontal scroll cards ══════ */}
       <div className="mb-6">
-        <h2 className="text-base font-semibold mb-3 px-5 text-white/80" style={{ fontFamily: 'var(--font-titulos)' }}>
+        <h2 className="text-base font-semibold mb-3 px-5" style={{ fontFamily: 'var(--font-titulos)', color: '#1E1B4B' }}>
           Explorar
         </h2>
         <div className="flex gap-3 overflow-x-auto px-5 pb-2 no-scrollbar">
@@ -307,17 +297,17 @@ export default function HubComunidade() {
             <button
               key={esp.id}
               onClick={() => navigate(esp.rota)}
-              className="flex-shrink-0 w-36 rounded-2xl p-4 text-left transition-all active:scale-95 hover:bg-white/8"
-              style={{
-                background: `linear-gradient(160deg, ${esp.cor}15 0%, ${esp.cor}08 100%)`,
-                border: `1px solid ${esp.cor}20`
-              }}
+              className="flex-shrink-0 w-36 rounded-2xl p-4 text-left transition-all active:scale-95 bg-white shadow-sm hover:shadow-md"
+              style={{ border: `1px solid ${esp.cor}15` }}
             >
-              <span className="text-2xl block mb-2">{esp.emoji}</span>
-              <h3 className="text-sm font-semibold text-white/90 mb-1" style={{ fontFamily: 'var(--font-titulos)' }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-3"
+                style={{ background: `${esp.cor}10` }}>
+                {esp.emoji}
+              </div>
+              <h3 className="text-sm font-semibold mb-1" style={{ fontFamily: 'var(--font-titulos)', color: '#1E1B4B' }}>
                 {esp.titulo}
               </h3>
-              <p className="text-[10px] text-white/30 leading-relaxed" style={{ fontFamily: 'var(--font-corpo)' }}>
+              <p className="text-[10px] text-gray-400 leading-relaxed" style={{ fontFamily: 'var(--font-corpo)' }}>
                 {esp.desc}
               </p>
             </button>
@@ -327,7 +317,7 @@ export default function HubComunidade() {
 
       {/* ══════ COMO FUNCIONA — Compact ══════ */}
       <div className="px-5 mb-6">
-        <h2 className="text-base font-semibold mb-3 text-white/80" style={{ fontFamily: 'var(--font-titulos)' }}>
+        <h2 className="text-base font-semibold mb-3" style={{ fontFamily: 'var(--font-titulos)', color: '#1E1B4B' }}>
           Como Funciona
         </h2>
         <div className="space-y-2">
@@ -338,15 +328,15 @@ export default function HubComunidade() {
           ].map(c => (
             <div
               key={c.titulo}
-              className="rounded-xl p-3 flex items-center gap-3"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}
+              className="rounded-xl p-3 flex items-center gap-3 bg-white shadow-sm"
+              style={{ border: '1px solid rgba(139,92,246,0.06)' }}
             >
               <span className="text-lg flex-shrink-0">{c.emoji}</span>
               <div className="flex-1 min-w-0">
-                <span className="text-xs font-semibold text-white/70" style={{ fontFamily: 'var(--font-titulos)' }}>
+                <span className="text-xs font-semibold" style={{ fontFamily: 'var(--font-titulos)', color: '#1E1B4B' }}>
                   {c.titulo}
                 </span>
-                <span className="text-xs text-white/30 ml-2" style={{ fontFamily: 'var(--font-corpo)' }}>
+                <span className="text-xs text-gray-400 ml-2" style={{ fontFamily: 'var(--font-corpo)' }}>
                   {c.desc}
                 </span>
               </div>

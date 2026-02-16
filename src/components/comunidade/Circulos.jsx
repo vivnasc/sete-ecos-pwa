@@ -80,7 +80,25 @@ export default function Circulos() {
     setLoading(true)
     try {
       const data = await getMeusCirculos(userId)
-      setMeusCirculos(data || [])
+      const realCirculos = data || []
+      // Include ghost circles the user has joined
+      const ghostJoinKey = 'ghost_circulos_joined'
+      const joinedGhostIds = JSON.parse(localStorage.getItem(ghostJoinKey) || '[]')
+      if (joinedGhostIds.length > 0) {
+        const allGhostCirculos = getGhostCirculos()
+        const joinedGhosts = allGhostCirculos
+          .filter(c => joinedGhostIds.includes(c.id))
+          .map(c => ({
+            ...c,
+            community_circulo_membros: [
+              ...(c.community_circulo_membros || []),
+              { user_id: userId, role: 'membro', community_profiles: { display_name: 'Tu', avatar_emoji: '🌸' } }
+            ]
+          }))
+        setMeusCirculos([...realCirculos, ...joinedGhosts])
+      } else {
+        setMeusCirculos(realCirculos)
+      }
     } catch (error) {
       console.error('Erro ao carregar circulos:', error)
       setMeusCirculos([])
@@ -113,10 +131,36 @@ export default function Circulos() {
 
     setAcaoEmCurso(prev => ({ ...prev, [circulo.id]: true }))
     try {
-      await entrarCirculo(circulo.id, userId)
-      await carregarMeusCirculos()
-      if (tab === 'explorar') {
-        await carregarCirculosDoEco(ecoSelecionado)
+      if (circulo._ghost) {
+        // Ghost circle — add user locally to the member list
+        const ghostJoinKey = 'ghost_circulos_joined'
+        const joined = JSON.parse(localStorage.getItem(ghostJoinKey) || '[]')
+        if (!joined.includes(circulo.id)) {
+          joined.push(circulo.id)
+          localStorage.setItem(ghostJoinKey, JSON.stringify(joined))
+        }
+        // Add to meusCirculos state
+        setMeusCirculos(prev => [...prev, {
+          ...circulo,
+          community_circulo_membros: [
+            ...membros,
+            { user_id: userId, role: 'membro', community_profiles: { display_name: 'Tu', avatar_emoji: '🌸' } }
+          ]
+        }])
+        // Also update the explore view
+        if (tab === 'explorar') {
+          setCirculosEco(prev => prev.map(c =>
+            c.id === circulo.id
+              ? { ...c, community_circulo_membros: [...membros, { user_id: userId, role: 'membro', community_profiles: { display_name: 'Tu', avatar_emoji: '🌸' } }] }
+              : c
+          ))
+        }
+      } else {
+        await entrarCirculo(circulo.id, userId)
+        await carregarMeusCirculos()
+        if (tab === 'explorar') {
+          await carregarCirculosDoEco(ecoSelecionado)
+        }
       }
     } catch (error) {
       console.error('Erro ao entrar no circulo:', error)

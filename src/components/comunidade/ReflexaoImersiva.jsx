@@ -19,16 +19,16 @@ import {
 
 const RESSONANCIA_KEYS = Object.keys(RESSONANCIA_TIPOS)
 
-// Dark gradient backgrounds per eco
+// Soft gradient backgrounds per eco
 const ECO_GRADIENTS = {
-  vitalis: 'linear-gradient(160deg, #0a1f0a 0%, #1a3520 40%, #0d2810 100%)',
-  aurea: 'linear-gradient(160deg, #1f1a08 0%, #352d12 40%, #1a1508 100%)',
-  lumina: 'linear-gradient(160deg, #100a2e 0%, #1f1550 40%, #0a0820 100%)',
-  serena: 'linear-gradient(160deg, #081a2e 0%, #123050 40%, #050d1a 100%)',
-  ignis: 'linear-gradient(160deg, #2e1408 0%, #4a2010 40%, #1a0a05 100%)',
-  ventis: 'linear-gradient(160deg, #0a2e1a 0%, #1a4a2d 40%, #051a0a 100%)',
-  ecoa: 'linear-gradient(160deg, #0a1a3e 0%, #1a2d5e 40%, #05101a 100%)',
-  geral: 'linear-gradient(160deg, #151020 0%, #201838 40%, #0a0815 100%)'
+  vitalis: 'linear-gradient(160deg, #F0FDF4 0%, #DCFCE7 40%, #F0FDF4 100%)',
+  aurea: 'linear-gradient(160deg, #FFFBEB 0%, #FEF3C7 40%, #FFFBEB 100%)',
+  lumina: 'linear-gradient(160deg, #F5F3FF 0%, #EDE9FE 40%, #F5F3FF 100%)',
+  serena: 'linear-gradient(160deg, #EFF6FF 0%, #DBEAFE 40%, #EFF6FF 100%)',
+  ignis: 'linear-gradient(160deg, #FFF7ED 0%, #FED7AA 40%, #FFF7ED 100%)',
+  ventis: 'linear-gradient(160deg, #ECFDF5 0%, #D1FAE5 40%, #ECFDF5 100%)',
+  ecoa: 'linear-gradient(160deg, #EFF6FF 0%, #C7D2FE 40%, #EFF6FF 100%)',
+  geral: 'linear-gradient(160deg, #FCFCFF 0%, #F5F3FF 40%, #FCFCFF 100%)'
 }
 
 // Accent glow color per tema
@@ -209,14 +209,14 @@ export default function ReflexaoImersiva({
           {promptOrigem && (
             <p
               className="text-sm italic mb-4 leading-relaxed max-w-[85%]"
-              style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-titulos)' }}
+              style={{ color: 'rgba(0,0,0,0.35)', fontFamily: 'var(--font-titulos)' }}
             >
               "{promptOrigem.texto}"
             </p>
           )}
           <p
-            className={`text-white ${textClass} max-w-[90%]`}
-            style={{ fontFamily: 'var(--font-titulos)', fontWeight: 400, textShadow: '0 2px 12px rgba(0,0,0,0.3)' }}
+            className={`text-gray-800 ${textClass} max-w-[90%]`}
+            style={{ fontFamily: 'var(--font-titulos)', fontWeight: 400 }}
           >
             {conteudo}
           </p>
@@ -232,20 +232,20 @@ export default function ReflexaoImersiva({
             className="flex items-center gap-3 group"
             disabled={isAnonymous || isGhost}
           >
-            <div className="w-11 h-11 rounded-full flex items-center justify-center text-xl border-2 border-white/20"
-              style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)' }}>
+            <div className="w-11 h-11 rounded-full flex items-center justify-center text-xl shadow-sm"
+              style={{ background: 'linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%)', border: '2px solid white' }}>
               {isAnonymous ? '🌙' : (perfil?.avatar_emoji || '🌸')}
             </div>
             <div>
-              <p className="text-sm font-semibold text-white/90" style={{ fontFamily: 'var(--font-corpo)' }}>
+              <p className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'var(--font-corpo)' }}>
                 {isAnonymous ? 'Alma Anónima' : (perfil?.display_name || 'Utilizadora')}
               </p>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-white/40">{tempoRelativo(post.created_at)}</span>
+                <span className="text-xs text-gray-400">{tempoRelativo(post.created_at)}</span>
                 {ressonanciaCount > 0 && (
                   <>
-                    <span className="text-white/20">·</span>
-                    <span className="text-xs text-white/40">
+                    <span className="text-gray-300">·</span>
+                    <span className="text-xs text-gray-400">
                       {ressonanciaCount} {ressonanciaCount === 1 ? 'ressonância' : 'ressonâncias'}
                     </span>
                   </>
@@ -266,16 +266,17 @@ export default function ReflexaoImersiva({
           }`}
           style={{
             background: ressoou
-              ? 'linear-gradient(135deg, rgba(139,92,246,0.4) 0%, rgba(168,85,247,0.3) 100%)'
-              : 'rgba(255,255,255,0.1)',
+              ? 'linear-gradient(135deg, rgba(139,92,246,0.15) 0%, rgba(168,85,247,0.1) 100%)'
+              : 'rgba(255,255,255,0.8)',
             backdropFilter: 'blur(8px)',
-            border: ressoou ? '1.5px solid rgba(139,92,246,0.5)' : '1px solid rgba(255,255,255,0.15)'
+            border: ressoou ? '1.5px solid rgba(139,92,246,0.3)' : '1px solid rgba(0,0,0,0.06)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
           }}
         >
           <span className={`text-xl ${tapPulseId ? 'animate-tap-pulse' : ''}`}>🫧</span>
         </button>
         {ressonanciaCount > 0 && (
-          <span className="text-xs font-semibold text-white/60 -mt-1">{ressonanciaCount}</span>
+          <span className="text-xs font-semibold text-gray-500 -mt-1">{ressonanciaCount}</span>
         )}
 
         {/* More ressonancia types toggle */}
@@ -283,9 +284,10 @@ export default function ReflexaoImersiva({
           onClick={(e) => { e.stopPropagation(); setShowTipos(!showTipos) }}
           className="w-10 h-10 rounded-full flex items-center justify-center transition-all"
           style={{
-            background: 'rgba(255,255,255,0.08)',
+            background: 'rgba(255,255,255,0.8)',
             backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(255,255,255,0.12)'
+            border: '1px solid rgba(0,0,0,0.06)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
           }}
         >
           <span className="text-sm">✨</span>
@@ -302,12 +304,13 @@ export default function ReflexaoImersiva({
                   key={tipo}
                   onClick={(e) => { e.stopPropagation(); handleRessonancia(tipo) }}
                   className={`w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-125 ${
-                    isActive ? 'ring-2 ring-purple-400/50 scale-110' : ''
+                    isActive ? 'ring-2 ring-purple-400/30 scale-110' : ''
                   }`}
                   style={{
-                    background: isActive ? 'rgba(139,92,246,0.3)' : 'rgba(255,255,255,0.08)',
+                    background: isActive ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.8)',
                     backdropFilter: 'blur(8px)',
-                    border: '1px solid rgba(255,255,255,0.12)'
+                    border: '1px solid rgba(0,0,0,0.06)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
                   }}
                   title={info.label}
                 >
@@ -323,15 +326,16 @@ export default function ReflexaoImersiva({
           onClick={(e) => { e.stopPropagation(); handleEspelhosClick() }}
           className="w-12 h-12 rounded-full flex flex-col items-center justify-center transition-all active:scale-110"
           style={{
-            background: 'rgba(255,255,255,0.08)',
+            background: 'rgba(255,255,255,0.8)',
             backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(255,255,255,0.12)'
+            border: '1px solid rgba(0,0,0,0.06)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
           }}
         >
           <span className="text-lg">🪞</span>
         </button>
         {espelhosCount > 0 && (
-          <span className="text-xs font-semibold text-white/60 -mt-1">{espelhosCount}</span>
+          <span className="text-xs font-semibold text-gray-500 -mt-1">{espelhosCount}</span>
         )}
       </div>
 
