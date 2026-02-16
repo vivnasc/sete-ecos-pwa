@@ -142,11 +142,29 @@ async function enviarWhatsAppCoach(mensagem) {
   }
 }
 
+// ===== PUSH NOTIFICATIONS (Web Push para coach) =====
+
+/**
+ * Envia push notification para o telemóvel/browser da coach.
+ * Funciona mesmo com app fechada (via Service Worker).
+ */
+async function pushCoach({ title, body, url, tag, requireInteraction }) {
+  try {
+    await fetch('/api/push-coach', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'notify', title, body, url, tag, requireInteraction })
+    });
+  } catch (err) {
+    console.error('Push coach falhou:', err);
+  }
+}
+
 // ===== TRIGGERS AUTOMÁTICOS =====
 
 /**
  * Triggers que podem ser chamados em diferentes pontos da aplicação
- * Enviam email E WhatsApp para alertas críticos
+ * Enviam email, WhatsApp E push para alertas críticos
  */
 export const EmailTriggers = {
 
@@ -179,6 +197,15 @@ export const EmailTriggers = {
 💰 ${cliente.plano} - ${cliente.valor}
 
 Boas-vindas à comunidade! 🌱`);
+
+    // Push para telemóvel
+    await pushCoach({
+      title: '🎉 Nova Cliente Vitalis!',
+      body: `${cliente.nome} — ${cliente.plano} (${cliente.valor})`,
+      url: '/coach',
+      tag: 'pagamento-sucesso',
+      requireInteraction: true,
+    });
   },
 
   /**
@@ -204,6 +231,15 @@ Boas-vindas à comunidade! 🌱`);
 🔖 Ref: ${cliente.referencia}
 
 ⚠️ Verificar e aprovar no Coach Dashboard!`);
+
+    // Push para telemóvel
+    await pushCoach({
+      title: '💰 Pagamento Pendente!',
+      body: `${cliente.nome} — ${cliente.metodo} Ref: ${cliente.referencia}`,
+      url: '/coach',
+      tag: 'pagamento-pendente',
+      requireInteraction: true,
+    });
   },
 
   /**
@@ -242,6 +278,15 @@ Boas-vindas à comunidade! 🌱`);
 🕐 ${new Date().toLocaleTimeString('pt-PT')}
 
 A cliente pode precisar de apoio. 💚`);
+
+    // Push para telemóvel (CRÍTICO)
+    await pushCoach({
+      title: '🆘 Espaço de Retorno Activado',
+      body: `${cliente.nome} — Estado: ${estado}`,
+      url: '/coach',
+      tag: 'espaco-retorno',
+      requireInteraction: true,
+    });
   },
 
   /**
@@ -283,7 +328,54 @@ Considera fazer follow-up se for uma cliente engajada! 💪`);
       nome: cliente.nome,
       urlPlanos: 'https://seteecos.com/vitalis/pagamento'
     });
-  }
+  },
+
+  /**
+   * Chamar quando cliente completa o questionário de intake
+   */
+  async onIntakeCompleto(cliente) {
+    await notificarAlertaCliente({
+      tipo: 'Intake completo',
+      descricao: `${cliente.nome} completou o questionário (objectivo: ${cliente.objectivo || 'N/A'})`,
+      nome: cliente.nome,
+      email: cliente.email,
+      ultimaActividade: new Date().toLocaleDateString('pt-PT'),
+    });
+
+    await pushCoach({
+      title: '📋 Intake Completo!',
+      body: `${cliente.nome} — ${cliente.status === 'active' || cliente.status === 'tester' ? 'Plano a ser gerado' : 'Aguarda pagamento/trial'}`,
+      url: '/coach',
+      tag: 'intake-completo',
+      requireInteraction: false,
+    });
+  },
+
+  /**
+   * Chamar quando cliente inicia trial gratuito
+   */
+  async onTrialIniciado(cliente) {
+    await pushCoach({
+      title: '🚀 Trial Iniciado!',
+      body: `${cliente.nome} (${cliente.email}) começou 7 dias de trial`,
+      url: '/coach',
+      tag: 'trial-iniciado',
+      requireInteraction: false,
+    });
+  },
+
+  /**
+   * Chamar no primeiro check-in de uma cliente
+   */
+  async onPrimeiroCheckin(cliente) {
+    await pushCoach({
+      title: '🎉 Primeiro Check-in!',
+      body: `${cliente.nome} fez o primeiro registo (${cliente.peso}kg)`,
+      url: '/coach',
+      tag: 'primeiro-checkin',
+      requireInteraction: false,
+    });
+  },
 };
 
 export default {
