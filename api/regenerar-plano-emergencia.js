@@ -76,7 +76,10 @@ export default async function handler(req, res) {
     const tdee = tmb * factor;
     const caloriasAlvo = Math.round(tdee * 0.75); // deficit 25%
 
-    const abordagem = intake.abordagem_preferida || 'keto_if';
+    // Normalizar abordagem: 'nao_sei' e valores inesperados → 'equilibrado'
+    const ABORDAGENS_VALIDAS = ['keto_if', 'low_carb', 'equilibrado'];
+    const abordagemRaw = intake.abordagem_preferida || 'equilibrado';
+    const abordagem = ABORDAGENS_VALIDAS.includes(abordagemRaw) ? abordagemRaw : 'equilibrado';
     let proteinaG, carboidratosG, gorduraG;
 
     if (abordagem === 'keto_if') {

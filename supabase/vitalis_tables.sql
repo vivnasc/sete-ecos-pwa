@@ -183,7 +183,7 @@ CREATE TABLE IF NOT EXISTS vitalis_meal_plans (
 
   -- FASE E ABORDAGEM
   fase TEXT NOT NULL CHECK (fase IN ('inducao', 'transicao', 'estabilizacao', 'recomposicao', 'intuitivo', 'manutencao')),
-  abordagem TEXT CHECK (abordagem IN ('keto_if', 'low_carb', 'equilibrado', 'nao_sei')),
+  abordagem TEXT CHECK (abordagem IN ('keto_if', 'low_carb', 'equilibrado')),
 
   -- MACROS
   calorias_alvo INTEGER CHECK (calorias_alvo >= 1200 AND calorias_alvo <= 4000),

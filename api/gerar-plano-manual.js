@@ -82,7 +82,10 @@ async function gerarPlano(userId, supabase) {
 
   // 6. Macros
   let proteinaG, carboidratosG, gorduraG;
-  const abordagem = intake.abordagem_preferida || 'equilibrado';
+  // Normalizar abordagem: 'nao_sei' e valores inesperados → 'equilibrado'
+  const ABORDAGENS_VALIDAS = ['keto_if', 'low_carb', 'equilibrado'];
+  const abordagemRaw = intake.abordagem_preferida || 'equilibrado';
+  const abordagem = ABORDAGENS_VALIDAS.includes(abordagemRaw) ? abordagemRaw : 'equilibrado';
 
   if (abordagem === 'keto_if') {
     proteinaG = Math.round((caloriasAlvo * 0.25) / 4);
