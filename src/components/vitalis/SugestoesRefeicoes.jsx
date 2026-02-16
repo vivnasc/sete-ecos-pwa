@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link } from 'react-router-dom';
 import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
+import { buscarRestricoesUtilizador, filtrarPorRestricoes } from '../../lib/vitalis/restricoesAlimentares.js';
 
 // Base de dados de refeições com tags para filtragem
 // Porções em: P = palmas proteína, H = mãos hidratos, G = polegares gordura
@@ -95,16 +96,18 @@ export default function SugestoesRefeicoes() {
   const [sugestoesFiltradas, setSugestoesFiltradas] = useState([]);
   const [filtroTempo, setFiltroTempo] = useState('todos');
   const [faseTag, setFaseTag] = useState('normal');
+  const [restricoes, setRestricoes] = useState([]);
 
   const hoje = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
     loadDados();
+    buscarRestricoesUtilizador().then(setRestricoes);
   }, []);
 
   useEffect(() => {
     filtrarSugestoes();
-  }, [refeicaoSelecionada, macrosRestantes, filtroTempo, faseTag]);
+  }, [refeicaoSelecionada, macrosRestantes, filtroTempo, faseTag, restricoes]);
 
   const loadDados = async () => {
     try {
@@ -220,6 +223,9 @@ export default function SugestoesRefeicoes() {
       ? sugestoes
       : sugestoes.filter(s => s.tags.includes(faseTag));
 
+    // Filtrar por restrições alimentares (halal, sem glúten, sem lactose, etc.)
+    sugestoes = filtrarPorRestricoes(sugestoes, restricoes);
+
     // Filtrar por tempo
     if (filtroTempo === 'rapido') {
       sugestoes = sugestoes.filter(s => s.tempo <= 10);
@@ -300,6 +306,15 @@ export default function SugestoesRefeicoes() {
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
             <p className="text-amber-800 text-sm">
               ⚠️ Sugestões filtradas para a tua fase ({faseTag === 'keto' ? 'Cetogénica' : 'Low Carb'})
+            </p>
+          </div>
+        )}
+
+        {/* Aviso de restrições alimentares */}
+        {restricoes.length > 0 && !restricoes.includes('Nenhuma') && !restricoes.includes('Sem restrições') && (
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
+            <p className="text-blue-800 text-sm">
+              🍽️ Sugestões adaptadas às tuas restrições: {restricoes.filter(r => r !== 'Nenhuma' && r !== 'Sem restrições').join(', ')}
             </p>
           </div>
         )}

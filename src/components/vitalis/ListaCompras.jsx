@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link } from 'react-router-dom';
 import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
+import { buscarRestricoesUtilizador, deveExcluirAlimento } from '../../lib/vitalis/restricoesAlimentares.js';
 
 // Categorias de alimentos
 const CATEGORIAS = {
@@ -22,12 +23,24 @@ export default function ListaCompras() {
   const [itens, setItens] = useState([]);
   const [itensComprados, setItensComprados] = useState({});
   const [faseRestritiva, setFaseRestritiva] = useState(false);
+  const [restricoesAlimentares, setRestricoesAlimentares] = useState([]);
+  const [planoCache, setPlanoCache] = useState(null);
+  const [planoDiaCache, setPlanoDiaCache] = useState(null);
+  const [faseRestritivaCache, setFaseRestritivaCache] = useState(false);
 
   useEffect(() => {
     loadListaCompras();
+    buscarRestricoesUtilizador().then(setRestricoesAlimentares);
     const comprados = JSON.parse(localStorage.getItem('vitalis-lista-comprados') || '{}');
     setItensComprados(comprados);
   }, []);
+
+  // Re-gerar lista quando as restrições ficam disponíveis
+  useEffect(() => {
+    if (restricoesAlimentares.length > 0 && planoCache) {
+      gerarListaCompras(planoCache, planoDiaCache, faseRestritivaCache);
+    }
+  }, [restricoesAlimentares]);
 
   const loadListaCompras = async () => {
     try {
@@ -90,8 +103,16 @@ export default function ListaCompras() {
             const isRestritiva = fase.includes('ceto') || fase.includes('low') || porcoesHidratos <= 2;
             setFaseRestritiva(isRestritiva);
 
+            // Cache para re-gerar quando restrições ficam disponíveis
+            setPlanoCache(planoData);
+            setPlanoDiaCache(planoDia);
+            setFaseRestritivaCache(isRestritiva);
+
             gerarListaCompras(planoData, planoDia, isRestritiva);
           } else {
+            setPlanoCache(planoData);
+            setPlanoDiaCache(null);
+            setFaseRestritivaCache(false);
             gerarListaCompras(planoData, null, false);
           }
         }
@@ -238,8 +259,13 @@ export default function ListaCompras() {
       );
     }
 
-    // Filtrar itens que devem ser evitados
-    const itensFiltrados = ingredientes.filter(item => !deveEvitar(item.nome));
+    // Filtrar itens que devem ser evitados pela fase
+    let itensFiltrados = ingredientes.filter(item => !deveEvitar(item.nome));
+
+    // Filtrar itens que devem ser excluídos pelas restrições alimentares (halal, glúten, lactose, etc.)
+    if (restricoesAlimentares.length > 0) {
+      itensFiltrados = itensFiltrados.filter(item => !deveExcluirAlimento(item.nome, restricoesAlimentares));
+    }
 
     setItens(itensFiltrados);
   };
@@ -480,6 +506,18 @@ export default function ListaCompras() {
             </p>
             <p className="text-amber-700 text-xs mt-1">
               Hidratos e frutas reduzidos conforme o teu plano.
+            </p>
+          </div>
+        )}
+
+        {/* Aviso de restrições alimentares */}
+        {restricoesAlimentares.length > 0 && !restricoesAlimentares.includes('Nenhuma') && !restricoesAlimentares.includes('Sem restrições') && (
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <p className="text-blue-800 text-sm font-medium">
+              🍽️ Lista adaptada às tuas restrições
+            </p>
+            <p className="text-blue-700 text-xs mt-1">
+              {restricoesAlimentares.filter(r => r !== 'Nenhuma' && r !== 'Sem restrições').join(', ')}
             </p>
           </div>
         )}
