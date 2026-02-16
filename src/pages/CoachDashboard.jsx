@@ -1,8 +1,47 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { coachApi } from '../lib/coachApi';
 import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
 import { enviarBoasVindas, enviarConfirmacaoPagamento } from '../lib/emails';
+
+// ─── Real-time toast notifications ───
+const POLL_INTERVAL = 30_000; // 30 seconds
+
+function CoachToast({ alerta, onDismiss, onNavigate }) {
+  const [exiting, setExiting] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => { setExiting(true); setTimeout(onDismiss, 300); }, 10000);
+    return () => clearTimeout(timer);
+  }, [onDismiss]);
+
+  const bgColor = alerta.prioridade === 'critica'
+    ? 'bg-red-600' : alerta.prioridade === 'alta'
+    ? 'bg-amber-500' : 'bg-gray-700';
+
+  return (
+    <div
+      className={`${bgColor} text-white rounded-xl px-4 py-3 shadow-2xl flex items-start gap-3 cursor-pointer
+        transition-all duration-300 ${exiting ? 'opacity-0 translate-x-full' : 'opacity-100 translate-x-0'}`}
+      style={{ maxWidth: 380, animation: exiting ? undefined : 'slideInRight 0.3s ease-out' }}
+      onClick={() => { onNavigate(alerta.user_id); onDismiss(); }}
+    >
+      <span className="text-xl flex-shrink-0">{alerta.emoji}</span>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold leading-tight">{alerta.titulo}</p>
+        {alerta.detalhe && <p className="text-xs opacity-80 mt-0.5 truncate">{alerta.detalhe}</p>}
+      </div>
+      <button
+        onClick={(e) => { e.stopPropagation(); setExiting(true); setTimeout(onDismiss, 300); }}
+        className="text-white/60 hover:text-white flex-shrink-0 mt-0.5"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  );
+}
 
 /**
  * SETE ECOS - COACH DASHBOARD v5
@@ -60,15 +99,76 @@ export default function CoachDashboard() {
   // Quick stats
   const [stats, setStats] = useState({ total: 0, active: 0, trial: 0, pending: 0, semPlano: 0, aguardaRevisao: 0, erros: 0 });
 
-  // Coach notifications
+  // Coach notifications (static feed)
   const [notificacoes, setNotificacoes] = useState([]);
   const [loadingNotifs, setLoadingNotifs] = useState(true);
   const [showNotifs, setShowNotifs] = useState(false);
 
+  // Real-time alerts (polling)
+  const [toasts, setToasts] = useState([]);
+  const seenAlertIds = useRef(new Set());
+  const lastPollTime = useRef(null);
+  const pollRef = useRef(null);
+
+  // ─── Browser Notification permission ───
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  const showBrowserNotification = useCallback((alerta) => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      const notif = new Notification(alerta.titulo, {
+        body: alerta.detalhe || '',
+        icon: '/logos/VITALIS_LOGO_V3.png',
+        tag: alerta.id,
+        requireInteraction: alerta.prioridade === 'critica',
+      });
+      notif.onclick = () => { window.focus(); navigate(`/coach/cliente/${alerta.user_id}`); notif.close(); };
+    }
+  }, [navigate]);
+
+  // ─── Real-time polling ───
+  const pollAlertas = useCallback(async () => {
+    try {
+      const desde = lastPollTime.current || new Date(Date.now() - 2 * 60 * 1000).toISOString();
+      const data = await coachApi.buscarAlertasRT(desde);
+      lastPollTime.current = new Date().toISOString();
+
+      const newAlertas = (data.alertas || []).filter(a => !seenAlertIds.current.has(a.id));
+      if (newAlertas.length > 0) {
+        for (const a of newAlertas) {
+          seenAlertIds.current.add(a.id);
+        }
+        // Add toasts
+        setToasts(prev => [...newAlertas.map(a => ({ ...a, _key: a.id + '_' + Date.now() })), ...prev].slice(0, 5));
+        // Browser notifications for critical
+        for (const a of newAlertas) {
+          if (a.som || a.prioridade === 'critica') {
+            showBrowserNotification(a);
+          }
+        }
+        // Also refresh the static feed
+        loadNotificacoes();
+      }
+    } catch (err) {
+      // Silent fail — polling shouldn't break the dashboard
+    }
+  }, [showBrowserNotification]);
+
   useEffect(() => {
     loadClients();
     loadNotificacoes();
-  }, []);
+
+    // Start polling after initial load
+    const startPolling = () => {
+      lastPollTime.current = new Date().toISOString();
+      pollRef.current = setInterval(pollAlertas, POLL_INTERVAL);
+    };
+    const timer = setTimeout(startPolling, 3000); // Wait 3s before first poll
+    return () => { clearTimeout(timer); if (pollRef.current) clearInterval(pollRef.current); };
+  }, [pollAlertas]);
 
   const loadClients = async () => {
     try {
@@ -245,6 +345,20 @@ export default function CoachDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
+      {/* ═══════ REAL-TIME TOAST NOTIFICATIONS ═══════ */}
+      {toasts.length > 0 && (
+        <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2" style={{ maxWidth: 380 }}>
+          {toasts.map(t => (
+            <CoachToast
+              key={t._key}
+              alerta={t}
+              onDismiss={() => setToasts(prev => prev.filter(x => x._key !== t._key))}
+              onNavigate={(uid) => navigate(`/coach/cliente/${uid}`)}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-4">
         <div className="max-w-6xl mx-auto">

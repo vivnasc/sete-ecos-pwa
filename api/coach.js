@@ -54,6 +54,8 @@ export default async function handler(req, res) {
         return await listarClientes(res);
       case 'coach-notificacoes':
         return await coachNotificacoes(res);
+      case 'coach-alertas-rt':
+        return await coachAlertasRT(params.desde, res);
       case 'buscar-dados-cliente':
         return await buscarDadosCliente(params.userId, res);
       case 'buscar-plano-pdf':
@@ -779,4 +781,146 @@ async function coachNotificacoes(res) {
   });
 
   return res.status(200).json({ notificacoes: notificacoes.slice(0, 100) });
+}
+
+// ==========================================
+// COACH ALERTAS REAL-TIME (lightweight polling)
+// Só tabelas críticas, últimos N minutos. Chamado a cada 30s.
+// ==========================================
+async function coachAlertasRT(desde, res) {
+  // Default: últimos 2 minutos
+  const desdeISO = desde || new Date(Date.now() - 2 * 60 * 1000).toISOString();
+
+  // Nome lookup — cached per request, only fetched if needed
+  const nomeCache = {};
+  const getNome = async (userId) => {
+    if (nomeCache[userId]) return nomeCache[userId];
+    const { data } = await supabase.from('users').select('nome').eq('id', userId).maybeSingle();
+    nomeCache[userId] = data?.nome || 'Cliente';
+    return nomeCache[userId];
+  };
+
+  // Parallel: query only critical tables for very recent events
+  const [newClientsRes, paymentsRes, espacoRes, planoErrosRes, registosRes] = await Promise.all([
+    // New registrations
+    supabase.from('vitalis_clients')
+      .select('user_id, created_at, subscription_status')
+      .gte('created_at', desdeISO)
+      .order('created_at', { ascending: false })
+      .limit(10),
+    // Payment submissions (pending status set recently)
+    supabase.from('vitalis_clients')
+      .select('user_id, payment_reference, payment_amount, payment_currency, payment_method, updated_at')
+      .eq('subscription_status', 'pending')
+      .not('payment_reference', 'is', null)
+      .gte('updated_at', desdeISO)
+      .limit(10),
+    // Espaco de Retorno (emotional crisis)
+    supabase.from('vitalis_espaco_retorno')
+      .select('user_id, emocao, created_at')
+      .gte('created_at', desdeISO)
+      .order('created_at', { ascending: false })
+      .limit(10),
+    // Plan generation errors
+    supabase.from('vitalis_meal_plans')
+      .select('user_id, status, created_at')
+      .eq('status', 'erro')
+      .gte('created_at', desdeISO)
+      .limit(10),
+    // New check-ins (less critical but coaches want to see)
+    supabase.from('vitalis_registos')
+      .select('user_id, peso, energia_1a5, aderencia_1a10, created_at')
+      .gte('created_at', desdeISO)
+      .order('created_at', { ascending: false })
+      .limit(10),
+  ]);
+
+  const alertas = [];
+
+  // New registrations
+  for (const c of (newClientsRes.data || [])) {
+    const nome = await getNome(c.user_id);
+    alertas.push({
+      id: `rt_novo_${c.user_id}_${c.created_at}`,
+      tipo: 'nova_cliente',
+      emoji: '🌟',
+      titulo: `Nova cliente: ${nome}`,
+      detalhe: c.subscription_status === 'pending' ? 'Pagamento pendente' : null,
+      user_id: c.user_id,
+      created_at: c.created_at,
+      prioridade: 'critica',
+      som: true,
+    });
+  }
+
+  // Payments pending
+  for (const p of (paymentsRes.data || [])) {
+    const nome = await getNome(p.user_id);
+    alertas.push({
+      id: `rt_pag_${p.user_id}_${p.updated_at}`,
+      tipo: 'pagamento',
+      emoji: '💰',
+      titulo: `${nome} submeteu pagamento`,
+      detalhe: `${p.payment_method || 'M-Pesa'} · Ref: ${p.payment_reference}${p.payment_amount ? ` · ${Number(p.payment_amount).toLocaleString('pt-MZ')} ${p.payment_currency || 'MZN'}` : ''}`,
+      user_id: p.user_id,
+      created_at: p.updated_at,
+      prioridade: 'critica',
+      som: true,
+    });
+  }
+
+  // Espaco de Retorno
+  for (const e of (espacoRes.data || [])) {
+    const nome = await getNome(e.user_id);
+    alertas.push({
+      id: `rt_espaco_${e.user_id}_${e.created_at}`,
+      tipo: 'espaco_retorno',
+      emoji: '🆘',
+      titulo: `${nome} activou Espaco de Retorno`,
+      detalhe: e.emocao ? `Emocao: ${e.emocao}` : 'Precisa de atencao',
+      user_id: e.user_id,
+      created_at: e.created_at,
+      prioridade: 'critica',
+      som: true,
+    });
+  }
+
+  // Plan errors
+  for (const p of (planoErrosRes.data || [])) {
+    const nome = await getNome(p.user_id);
+    alertas.push({
+      id: `rt_planerro_${p.user_id}_${p.created_at}`,
+      tipo: 'plano_erro',
+      emoji: '❌',
+      titulo: `Erro ao gerar plano de ${nome}`,
+      detalhe: 'Verificar e tentar novamente',
+      user_id: p.user_id,
+      created_at: p.created_at,
+      prioridade: 'critica',
+      som: true,
+    });
+  }
+
+  // Check-ins (important but not critical)
+  for (const r of (registosRes.data || [])) {
+    const nome = await getNome(r.user_id);
+    let detalhe = '';
+    if (r.peso) detalhe += `${r.peso}kg`;
+    if (r.aderencia_1a10) detalhe += `${detalhe ? ' · ' : ''}aderencia ${r.aderencia_1a10}/10`;
+    const isCritical = r.aderencia_1a10 && r.aderencia_1a10 <= 3;
+    alertas.push({
+      id: `rt_checkin_${r.user_id}_${r.created_at}`,
+      tipo: 'checkin',
+      emoji: isCritical ? '⚠️' : '📊',
+      titulo: `${nome} fez check-in`,
+      detalhe: detalhe || null,
+      user_id: r.user_id,
+      created_at: r.created_at,
+      prioridade: isCritical ? 'alta' : 'normal',
+      som: isCritical,
+    });
+  }
+
+  alertas.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  return res.status(200).json({ alertas });
 }
