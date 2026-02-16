@@ -240,9 +240,10 @@ export default function VitalisIntakeComplete() {
     }
   };
 
-  const validateSection = () => {
-    const section = sections[currentSection];
-    if (!section.fields) return true;
+  // Valida uma secção específica (por índice). Se não receber índice, valida a secção actual.
+  const validateSection = (sectionIndex = currentSection) => {
+    const section = sections[sectionIndex];
+    if (!section.fields) return {};
 
     const errors = {};
     section.fields.forEach(fieldId => {
@@ -305,8 +306,14 @@ export default function VitalisIntakeComplete() {
       }
     });
 
+    return errors;
+  };
+
+  // Valida a secção actual e mostra erros no UI
+  const validateCurrentSection = () => {
+    const errors = validateSection(currentSection);
     setValidationErrors(errors);
-    
+
     if (Object.keys(errors).length > 0) {
       const firstErrorField = Object.keys(errors)[0];
       const element = document.getElementById(`field-${firstErrorField}`);
@@ -314,16 +321,39 @@ export default function VitalisIntakeComplete() {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
-    
+
     return Object.keys(errors).length === 0;
   };
 
+  // 🛡️ Valida TODAS as secções do formulário antes de submeter
+  // Retorna { valid, firstErrorSection, allErrors }
+  const validateAllSections = () => {
+    let allErrors = {};
+    let firstErrorSection = null;
+
+    for (let i = 0; i < sections.length; i++) {
+      const sectionErrors = validateSection(i);
+      if (Object.keys(sectionErrors).length > 0) {
+        allErrors = { ...allErrors, ...sectionErrors };
+        if (firstErrorSection === null) {
+          firstErrorSection = i;
+        }
+      }
+    }
+
+    return {
+      valid: Object.keys(allErrors).length === 0,
+      firstErrorSection,
+      allErrors
+    };
+  };
+
   const handleNext = () => {
-    if (!validateSection()) {
+    if (!validateCurrentSection()) {
       setError('Por favor preenche todos os campos obrigatórios');
       return;
     }
-    
+
     setError('');
     if (currentSection < sections.length - 1) {
       setCurrentSection(currentSection + 1);
@@ -343,33 +373,77 @@ export default function VitalisIntakeComplete() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateSection()) {
-      setError('Por favor preenche todos os campos obrigatórios');
+    // 🛡️ VALIDAÇÃO COMPLETA - Validar TODAS as secções antes de submeter
+    const { valid, firstErrorSection, allErrors } = validateAllSections();
+    if (!valid) {
+      const numErros = Object.keys(allErrors).length;
+      setValidationErrors(allErrors);
+      setCurrentSection(firstErrorSection);
+      setError(`⚠️ Existem ${numErros} campo(s) obrigatório(s) por preencher na secção "${sections[firstErrorSection].title}". Por favor completa antes de submeter.`);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
-    // 🛡️ VALIDAÇÃO DEFENSIVA - Evitar overflow numérico
+    // 🛡️ VALIDAÇÃO DEFENSIVA - Campos críticos para geração do plano
+    const idade = parseInt(formData.idade);
     const altura = parseInt(formData.altura_cm);
     const pesoActual = parseFloat(formData.peso_actual);
     const pesoMeta = parseFloat(formData.peso_meta);
 
-    if (altura < 100 || altura > 250) {
+    // Verificar que todos os campos numéricos críticos são válidos
+    if (isNaN(idade) || idade < 18 || idade > 100) {
+      setError('⚠️ Idade inválida. Por favor verifica o valor (deve estar entre 18 e 100 anos).');
+      setCurrentSection(1); // Voltar para secção de dados pessoais
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    if (isNaN(altura) || altura < 100 || altura > 250) {
       setError('⚠️ Altura inválida. Por favor verifica o valor (deve estar entre 100cm e 250cm).');
-      setCurrentSection(1); // Voltar para secção de medidas
+      setCurrentSection(2); // Voltar para secção de medidas
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
-    if (pesoActual < 20 || pesoActual > 300) {
+    if (isNaN(pesoActual) || pesoActual < 20 || pesoActual > 300) {
       setError('⚠️ Peso actual inválido. Por favor verifica o valor (deve estar entre 20kg e 300kg).');
+      setCurrentSection(2);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    if (isNaN(pesoMeta) || pesoMeta < 20 || pesoMeta > 300) {
+      setError('⚠️ Peso meta inválido. Por favor verifica o valor (deve estar entre 20kg e 300kg).');
+      setCurrentSection(2);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    // Verificar campos de texto/radio críticos para o plano
+    if (!formData.sexo) {
+      setError('⚠️ Por favor selecciona o teu sexo na secção Dados Pessoais.');
       setCurrentSection(1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
-    if (pesoMeta < 20 || pesoMeta > 300) {
-      setError('⚠️ Peso meta inválido. Por favor verifica o valor (deve estar entre 20kg e 300kg).');
-      setCurrentSection(1);
+    if (!formData.objectivo_principal) {
+      setError('⚠️ Por favor selecciona o teu objectivo principal.');
+      setCurrentSection(3);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    if (!formData.nivel_actividade) {
+      setError('⚠️ Por favor selecciona o teu nível de actividade física.');
+      setCurrentSection(9);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    if (!formData.abordagem_preferida) {
+      setError('⚠️ Por favor selecciona a tua abordagem alimentar preferida.');
+      setCurrentSection(4);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
