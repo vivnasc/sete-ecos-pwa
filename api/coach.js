@@ -81,25 +81,12 @@ export default async function handler(req, res) {
 async function gerarPlano(userId, res) {
   if (!userId) return res.status(400).json({ error: 'userId obrigatorio' });
 
-  // Helper: save error as a plan record so coach dashboard can see it
+  // Helper: log error for coach dashboard visibility
+  // NOTE: We no longer insert an error row into vitalis_meal_plans because it violates
+  // constraints (missing fase NOT NULL, calorias_alvo < 1200, invalid status 'erro').
+  // Instead, log the error for debugging.
   const saveError = async (errorMsg) => {
-    try {
-      // Deactivate old error plans
-      await supabase.from('vitalis_meal_plans')
-        .delete()
-        .eq('user_id', userId)
-        .eq('status', 'erro');
-      // Insert error plan
-      await supabase.from('vitalis_meal_plans').insert([{
-        user_id: userId,
-        status: 'erro',
-        calorias_alvo: 0,
-        proteina_g: 0,
-        carboidratos_g: 0,
-        gordura_g: 0,
-        receitas_incluidas: JSON.stringify({ erro: errorMsg, data: new Date().toISOString() })
-      }]);
-    } catch (e) { /* best effort */ }
+    console.error(`[Coach API] Erro ao gerar plano para ${userId}: ${errorMsg}`);
   };
 
   // 1. Fetch intake
@@ -179,7 +166,10 @@ async function gerarPlano(userId, res) {
 
   // 6. Macros based on approach
   let proteinaG, carboidratosG, gorduraG;
-  const abordagem = intake.abordagem_preferida || 'equilibrado';
+  // Normalizar abordagem: 'nao_sei' e valores inesperados → 'equilibrado'
+  const ABORDAGENS_VALIDAS = ['keto_if', 'low_carb', 'equilibrado'];
+  const abordagemRaw = intake.abordagem_preferida || 'equilibrado';
+  const abordagem = ABORDAGENS_VALIDAS.includes(abordagemRaw) ? abordagemRaw : 'equilibrado';
 
   if (abordagem === 'keto_if') {
     proteinaG = Math.round((caloriasAlvo * 0.25) / 4);
@@ -265,11 +255,8 @@ async function gerarPlano(userId, res) {
 
   if (clientError) throw clientError;
 
-  // 12a. Deactivate old plans + remove error records
-  await Promise.all([
-    supabase.from('vitalis_meal_plans').update({ status: 'inactivo' }).eq('user_id', userId).eq('status', 'activo'),
-    supabase.from('vitalis_meal_plans').delete().eq('user_id', userId).eq('status', 'erro'),
-  ]);
+  // 12a. Deactivate old plans
+  await supabase.from('vitalis_meal_plans').update({ status: 'inactivo' }).eq('user_id', userId).eq('status', 'activo');
 
   // 13. Insert new plan
   const planoData = {

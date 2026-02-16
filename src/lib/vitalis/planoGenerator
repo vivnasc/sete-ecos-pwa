@@ -157,7 +157,10 @@ export async function gerarPlanoAutomatico(userId) {
 
     // 6. Calcular macros baseado na abordagem escolhida
     let proteinaG, carboidratosG, gorduraG;
-    const abordagem = intake.abordagem_preferida || 'equilibrado';
+    // Normalizar abordagem: 'nao_sei' e valores inesperados → 'equilibrado'
+    const ABORDAGENS_VALIDAS = ['keto_if', 'low_carb', 'equilibrado'];
+    const abordagemRaw = intake.abordagem_preferida || 'equilibrado';
+    const abordagem = ABORDAGENS_VALIDAS.includes(abordagemRaw) ? abordagemRaw : 'equilibrado';
 
     if (abordagem === 'keto_if') {
       // Keto: 70% gordura, 25% proteína, 5% carbs
@@ -253,10 +256,10 @@ export async function gerarPlanoAutomatico(userId) {
       .from('vitalis_meal_plans')
       .update({ status: 'inactivo' })
       .eq('user_id', userId)
-      .in('status', ['activo', 'pendente_revisao']);
+      .eq('status', 'activo');
 
     // 13. Criar plano nutricional em vitalis_meal_plans
-    // Status pendente_revisao - coach aprova antes da cliente ver
+    // Status activo - plano fica imediatamente disponível para a cliente
     const planoData = {
       user_id: userId,
       versao: 1,
@@ -266,7 +269,7 @@ export async function gerarPlanoAutomatico(userId) {
       proteina_g: proteinaG,
       carboidratos_g: carboidratosG,
       gordura_g: gorduraG,
-      status: 'pendente_revisao',
+      status: 'activo',
       receitas_incluidas: JSON.stringify({
         porcoes_diarias: {
           proteina: porcoesProteina,
@@ -416,12 +419,12 @@ export async function recalcularPlano(userId, novaFase = null) {
 
     if (intakeError) throw intakeError;
 
-    // 3. Buscar plano actual (activo ou pendente revisao)
+    // 3. Buscar plano actual
     const { data: planoActual, error: planoError } = await supabase
       .from('vitalis_meal_plans')
       .select('*')
       .eq('user_id', userId)
-      .in('status', ['activo', 'pendente_revisao'])
+      .eq('status', 'activo')
       .order('created_at', { ascending: false })
       .limit(1)
       .single();
@@ -524,7 +527,10 @@ export async function recalcularPlano(userId, novaFase = null) {
     }
 
     // 10. Respeitar abordagem preferida se keto/low-carb
-    const abordagem = intake.abordagem_preferida || 'equilibrado';
+    // Normalizar abordagem: 'nao_sei' e valores inesperados → 'equilibrado'
+    const ABORDAGENS_VALIDAS = ['keto_if', 'low_carb', 'equilibrado'];
+    const abordagemRaw = intake.abordagem_preferida || 'equilibrado';
+    const abordagem = ABORDAGENS_VALIDAS.includes(abordagemRaw) ? abordagemRaw : 'equilibrado';
     let proteinaG, carboidratosG, gorduraG;
 
     if (abordagem === 'keto_if') {
@@ -569,7 +575,7 @@ export async function recalcularPlano(userId, novaFase = null) {
       .update({ status: 'inactivo' })
       .eq('id', planoActual.id);
 
-    // 14. Criar novo plano com versão incrementada (pendente revisao da coach)
+    // 14. Criar novo plano com versão incrementada
     const { data: novoPlano, error: novoPlanoError } = await supabase
       .from('vitalis_meal_plans')
       .insert([{
@@ -581,7 +587,7 @@ export async function recalcularPlano(userId, novaFase = null) {
         proteina_g: proteinaG,
         carboidratos_g: carboidratosG,
         gordura_g: gorduraG,
-        status: 'pendente_revisao',
+        status: 'activo',
         receitas_incluidas: JSON.stringify({
           porcoes_diarias: {
             proteina: porcoesProteina,
