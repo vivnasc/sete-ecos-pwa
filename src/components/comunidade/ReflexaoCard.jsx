@@ -16,6 +16,7 @@ import {
   toggleGhostRessonancia,
   getGhostEspelhos
 } from '../../lib/ghost-users'
+import { Avatar } from './HubComunidade'
 
 const RESSONANCIA_KEYS = Object.keys(RESSONANCIA_TIPOS)
 
@@ -193,35 +194,29 @@ export default function ReflexaoCard({
 
   // ───── Avatar render ─────
 
-  const renderAvatar = (p, size = 'w-10 h-10', textSize = 'text-xl') => {
+  const renderAvatar = (p, pxSize = 40) => {
     if (isAnonymous && p === perfil) {
       return (
-        <div className={`${size} rounded-full bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center ${textSize}`}>
-          🌸
+        <div className="rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center" style={{ width: pxSize, height: pxSize }}>
+          <span style={{ fontSize: pxSize * 0.5 }}>🌙</span>
         </div>
       )
     }
-    if (p?.avatar_url) {
-      return <img src={p.avatar_url} alt="" className={`${size} rounded-full object-cover`} />
-    }
-    return (
-      <div className={`${size} rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center ${textSize}`}>
-        {p?.avatar_emoji || '🌸'}
-      </div>
-    )
+    return <Avatar perfil={p} size={pxSize} />
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-4 overflow-hidden">
+    <div className="rounded-2xl mb-4 overflow-hidden"
+      style={{ background: 'rgba(255,255,255,0.85)', border: '1px solid rgba(0,0,0,0.05)' }}>
 
       {/* ───── Header ───── */}
       <div className="flex items-center justify-between p-4 pb-2">
         <button
-          onClick={() => !isAnonymous && !isGhost && onPerfilClick?.(post.user_id)}
-          className={`flex items-center gap-3 ${(isAnonymous || isGhost) ? 'cursor-default' : 'hover:opacity-80'} transition-opacity`}
-          disabled={isAnonymous || isGhost}
+          onClick={() => !isAnonymous && onPerfilClick?.(post.user_id)}
+          className={`flex items-center gap-3 ${isAnonymous ? 'cursor-default' : 'hover:opacity-80'} transition-opacity`}
+          disabled={isAnonymous}
         >
-          {renderAvatar(perfil)}
+          {renderAvatar(perfil, 40)}
           <div className="text-left">
             <p className="font-semibold text-sm text-gray-800" style={{ fontFamily: 'var(--font-corpo)' }}>
               {isAnonymous ? 'Alma Anónima' : (perfil?.display_name || 'Utilizadora')}
@@ -373,7 +368,7 @@ export default function ReflexaoCard({
             ) : (
               espelhos.map(e => (
                 <div key={e.id} className="flex gap-2.5">
-                  {renderAvatar(e.community_profiles, 'w-7 h-7', 'text-sm')}
+                  {renderAvatar(e.community_profiles, 28)}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-baseline gap-2">
                       <button
