@@ -16,6 +16,7 @@ import {
   toggleGhostRessonancia,
   getGhostEspelhos
 } from '../../lib/ghost-users'
+import { Avatar } from './HubComunidade'
 
 const RESSONANCIA_KEYS = Object.keys(RESSONANCIA_TIPOS)
 
@@ -227,15 +228,19 @@ export default function ReflexaoImersiva({
           <button
             onClick={(e) => {
               e.stopPropagation()
-              if (!isAnonymous && !isGhost) onPerfilClick?.(post.user_id)
+              if (!isAnonymous) onPerfilClick?.(post.user_id)
             }}
-            className="flex items-center gap-3 group"
-            disabled={isAnonymous || isGhost}
+            className={`flex items-center gap-3 group ${isAnonymous ? 'cursor-default' : ''}`}
+            disabled={isAnonymous}
           >
-            <div className="w-11 h-11 rounded-full flex items-center justify-center text-xl shadow-sm"
-              style={{ background: 'linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%)', border: '2px solid white' }}>
-              {isAnonymous ? '🌙' : (perfil?.avatar_emoji || '🌸')}
-            </div>
+            {isAnonymous ? (
+              <div className="w-11 h-11 rounded-full flex items-center justify-center text-xl shadow-sm"
+                style={{ background: 'linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%)', border: '2px solid white' }}>
+                🌙
+              </div>
+            ) : (
+              <Avatar perfil={perfil} size={44} className="shadow-sm border-2 border-white" />
+            )}
             <div>
               <p className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'var(--font-corpo)' }}>
                 {isAnonymous ? 'Alma Anónima' : (perfil?.display_name || 'Utilizadora')}

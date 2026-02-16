@@ -345,6 +345,35 @@ export const GHOST_PROFILES = [
     seguidores: 21,
     seguindo: 16,
     membro_desde: '2025-11-25'
+  },
+  // ──── Perfis masculinos ────
+  {
+    id: 'ghost_rafael',
+    display_name: 'Rafael Tembe',
+    bio: 'Personal trainer em Maputo. Descobri que treinar o corpo sem nutrir a mente é só metade do caminho.',
+    avatar_emoji: '💪',
+    avatar_color: { bg: '#1E40AF', text: '#FFF' },
+    iniciais: 'RT',
+    cidade: 'Maputo',
+    ecos_activos: ['vitalis'],
+    personalidade: 'determinada',
+    seguidores: 19,
+    seguindo: 14,
+    membro_desde: '2025-10-10'
+  },
+  {
+    id: 'ghost_dinis',
+    display_name: 'Dinis Machanguana',
+    bio: 'Engenheiro na Matola. A cuidar da saúde por mim e pelos meus filhos.',
+    avatar_emoji: '🛠️',
+    avatar_color: { bg: '#065F46', text: '#FFF' },
+    iniciais: 'DM',
+    cidade: 'Matola',
+    ecos_activos: ['vitalis', 'lumina'],
+    personalidade: 'pratica',
+    seguidores: 15,
+    seguindo: 11,
+    membro_desde: '2025-12-15'
   }
 ]
 
@@ -543,6 +572,28 @@ const GHOST_REFLEXOES = [
     conteudo: 'Pedi ajuda ontem. À minha irmã. Disse-lhe que não estava bem. Foi das coisas mais difíceis e mais libertadoras que fiz.',
     prompt_id: 'con_2',
     personalidades: ['corajosa', 'empática']
+  },
+
+  // === MASCULINAS ===
+  {
+    tema: 'desafio',
+    eco: 'vitalis',
+    conteudo: 'Sempre achei que cuidar da alimentação era "coisa de mulher". O Vitalis mostrou-me que é coisa de quem se respeita. A minha energia no treino duplicou.',
+    prompt_id: 'des_2',
+    personalidades: ['determinada', 'pratica']
+  },
+  {
+    tema: 'transformacao',
+    eco: 'vitalis',
+    conteudo: 'Dois meses a seguir o plano. Os meus filhos notaram que já brinco mais com eles ao fim do dia. A nutrição dá-nos energia para o que importa.',
+    prompt_id: 'trans_2',
+    personalidades: ['pratica', 'calorosa']
+  },
+  {
+    tema: 'livre',
+    eco: 'lumina',
+    conteudo: 'Fiz a leitura do Lumina pela primeira vez. Não esperava que me fosse tocar tanto. Há padrões que um homem também precisa de reconhecer.',
+    personalidades: ['pratica', 'reflexiva']
   },
 
   // === CORPO ===
@@ -907,10 +958,10 @@ export function getGhostCommunityStats() {
   const seed = dateSeed()
   const rng = seededRandom(seed)
   return {
-    totalReflexoes: 28 + Math.floor(rng() * 15),
-    totalRessonancia: 94 + Math.floor(rng() * 40),
-    membrosActivos: 8 + Math.floor(rng() * 6),
-    circulosActivos: 2 + Math.floor(rng() * 2)
+    totalReflexoes: 12 + Math.floor(rng() * 8),
+    totalRessonancia: 24 + Math.floor(rng() * 15),
+    membrosActivos: 6 + Math.floor(rng() * 4),
+    circulosActivos: 2
   }
 }
 
@@ -960,8 +1011,8 @@ export function getGhostCirculos() {
     {
       id: 'ghost_circulo_forca',
       eco: 'vitalis',
-      nome: 'Força Feminina',
-      intencao: 'Celebrar a força do corpo feminino e encontrar equilíbrio.',
+      nome: 'Força Interior',
+      intencao: 'Celebrar a força do corpo e encontrar equilíbrio.',
       descricao: null,
       max_membros: 12,
       _ghost: true,
