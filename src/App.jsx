@@ -76,6 +76,21 @@ const Circulos = lazy(() => import('./components/comunidade/Circulos'))
 const Fogueira = lazy(() => import('./components/comunidade/Fogueira'))
 const Sussurros = lazy(() => import('./components/comunidade/Sussurros'))
 
+// ECO 3: SERENA (Emoção & Fluidez)
+const LandingSerena = lazy(() => import('./pages/LandingSerena'))
+const SerenaAccessGuard = lazy(() => import('./components/serena/SerenaAccessGuard'))
+const DashboardSerena = lazy(() => import('./components/serena/DashboardSerena'))
+const DiarioEmocional = lazy(() => import('./components/serena/DiarioEmocional'))
+const SOSEmocional = lazy(() => import('./components/serena/SOSEmocional'))
+const RespiracaoGuiada = lazy(() => import('./components/serena/RespiracaoGuiada'))
+const FluidezPraticas = lazy(() => import('./components/serena/FluidezPraticas'))
+const RituaisLibertacao = lazy(() => import('./components/serena/RituaisLibertacao'))
+const ChatSerena = lazy(() => import('./components/serena/ChatSerena'))
+const InsightsSerena = lazy(() => import('./components/serena/InsightsSerena'))
+const BibliotecaEmocoes = lazy(() => import('./components/serena/BibliotecaEmocoes'))
+const PerfilSerena = lazy(() => import('./components/serena/PerfilSerena'))
+const NotificacoesSerena = lazy(() => import('./components/serena/NotificacoesSerena'))
+
 // ECO 2: ÁUREA (Valor & Presença)
 const LandingAurea = lazy(() => import('./pages/LandingAurea'))
 const PagamentoAurea = lazy(() => import('./components/aurea/PagamentoAurea'))
@@ -120,6 +135,14 @@ function VitalisRoute({ children }) {
 function AureaRoute({ children }) {
   return (
     <ProtectedRoute guard={AureaAccessGuard} eco="Áurea">
+      <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
+    </ProtectedRoute>
+  )
+}
+
+function SerenaRoute({ children }) {
+  return (
+    <ProtectedRoute guard={SerenaAccessGuard} eco="Serena">
       <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
     </ProtectedRoute>
   )
@@ -211,8 +234,21 @@ function AppRoutes() {
             <Route path="/comunidade/fogueira" element={<AuthRoute from="/comunidade"><Fogueira /></AuthRoute>} />
             <Route path="/comunidade/sussurros" element={<AuthRoute from="/comunidade"><Sussurros /></AuthRoute>} />
 
-            {/* ===== ECOS 3-7: Em Breve ===== */}
-            <Route path="/serena" element={<ComingSoon />} />
+            {/* ===== ECO 3: SERENA - Emoção & Fluidez ===== */}
+            <Route path="/serena" element={<LandingSerena />} />
+            <Route path="/serena/dashboard" element={<SerenaRoute><DashboardSerena /></SerenaRoute>} />
+            <Route path="/serena/diario" element={<SerenaRoute><DiarioEmocional /></SerenaRoute>} />
+            <Route path="/serena/sos" element={<SOSEmocional />} />
+            <Route path="/serena/respiracao" element={<SerenaRoute><RespiracaoGuiada /></SerenaRoute>} />
+            <Route path="/serena/praticas" element={<SerenaRoute><FluidezPraticas /></SerenaRoute>} />
+            <Route path="/serena/rituais" element={<SerenaRoute><RituaisLibertacao /></SerenaRoute>} />
+            <Route path="/serena/chat" element={<SerenaRoute><ChatSerena /></SerenaRoute>} />
+            <Route path="/serena/insights" element={<SerenaRoute><InsightsSerena /></SerenaRoute>} />
+            <Route path="/serena/biblioteca" element={<SerenaRoute><BibliotecaEmocoes /></SerenaRoute>} />
+            <Route path="/serena/perfil" element={<SerenaRoute><PerfilSerena /></SerenaRoute>} />
+            <Route path="/serena/notificacoes" element={<SerenaRoute><NotificacoesSerena /></SerenaRoute>} />
+
+            {/* ===== ECOS 4-7: Em Breve ===== */}
             <Route path="/ignis" element={<ComingSoon />} />
             <Route path="/ventis" element={<ComingSoon />} />
             <Route path="/ecoa" element={<ComingSoon />} />
