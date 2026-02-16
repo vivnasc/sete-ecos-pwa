@@ -1,7 +1,6 @@
 // ============================================================
 // GHOST USERS — Presenças Simuladas na Comunidade
-// Gera perfis, reflexões e interacções fictícias que se
-// misturam com conteúdo real para dar vida à comunidade.
+// Perfis moçambicanos autênticos com histórias reais.
 // Tudo é determinístico (baseado em datas) e client-side.
 // ============================================================
 
@@ -39,175 +38,317 @@ function shuffle(arr, rng) {
   return a
 }
 
-// ---------- GHOST PROFILES ----------
+// ---------- AVATAR COLORS (warm, African-inspired palette) ----------
+
+const AVATAR_COLORS = [
+  { bg: '#D97706', text: '#FFF' },  // Amber
+  { bg: '#B45309', text: '#FFF' },  // Bronze
+  { bg: '#92400E', text: '#FFF' },  // Terracotta escuro
+  { bg: '#DC2626', text: '#FFF' },  // Vermelho capulana
+  { bg: '#9333EA', text: '#FFF' },  // Roxo profundo
+  { bg: '#059669', text: '#FFF' },  // Verde tropical
+  { bg: '#0891B2', text: '#FFF' },  // Azul índico
+  { bg: '#BE185D', text: '#FFF' },  // Rosa intenso
+  { bg: '#7C3AED', text: '#FFF' },  // Violeta
+  { bg: '#EA580C', text: '#FFF' },  // Laranja quente
+  { bg: '#0D9488', text: '#FFF' },  // Teal
+  { bg: '#4338CA', text: '#FFF' },  // Índigo
+  { bg: '#C026D3', text: '#FFF' },  // Fúcsia
+  { bg: '#15803D', text: '#FFF' },  // Verde floresta
+  { bg: '#A16207', text: '#FFF' },  // Ouro escuro
+  { bg: '#7E22CE', text: '#FFF' },  // Púrpura real
+  { bg: '#DB2777', text: '#FFF' },  // Magenta
+  { bg: '#0E7490', text: '#FFF' },  // Ciano profundo
+  { bg: '#B91C1C', text: '#FFF' },  // Vermelho terra
+  { bg: '#6D28D9', text: '#FFF' },  // Violeta real
+]
+
+// ---------- GHOST PROFILES — Maioria moçambicana ----------
 
 export const GHOST_PROFILES = [
-  // --- Nomes portugueses ---
   {
-    id: 'ghost_ana_sofia',
-    display_name: 'Ana Sofia',
-    bio: 'A aprender a ouvir o meu corpo. Vitalis mudou a minha relação com a comida.',
-    avatar_emoji: '🌿',
-    ecos_activos: ['vitalis'],
-    personalidade: 'reflexiva'
-  },
-  {
-    id: 'ghost_mariana',
-    display_name: 'Mariana',
-    bio: 'Mãe de dois. Encontrei no Sete Ecos o espaço que me faltava.',
-    avatar_emoji: '🦋',
-    ecos_activos: ['vitalis', 'lumina'],
-    personalidade: 'calorosa'
-  },
-  {
-    id: 'ghost_fatima_rosa',
-    display_name: 'Fátima Rosa',
-    bio: 'Em Maputo, a transformar-me um dia de cada vez.',
+    id: 'ghost_graca',
+    display_name: 'Graça Mondlane',
+    bio: 'Mãe de três, de Maputo. O Vitalis devolveu-me a energia que achava perdida.',
     avatar_emoji: '🌺',
+    avatar_color: AVATAR_COLORS[0],
+    iniciais: 'GM',
+    cidade: 'Maputo',
     ecos_activos: ['vitalis'],
-    personalidade: 'poetica'
+    personalidade: 'calorosa',
+    seguidores: 23,
+    seguindo: 15,
+    membro_desde: '2025-09-14'
   },
   {
-    id: 'ghost_lucia',
-    display_name: 'Lúcia',
-    bio: 'Nutricionista em formação. O Vitalis é o meu laboratório interior.',
-    avatar_emoji: '🍃',
-    ecos_activos: ['vitalis'],
-    personalidade: 'pratica'
-  },
-  {
-    id: 'ghost_carolina',
-    display_name: 'Carolina M.',
-    bio: 'Yoga, meditação e autoconhecimento. Este é o meu jardim.',
-    avatar_emoji: '🧘',
-    ecos_activos: ['vitalis', 'lumina'],
-    personalidade: 'espiritual'
-  },
-  {
-    id: 'ghost_amelia',
-    display_name: 'Amélia',
-    bio: 'Avó aos 52. Nunca é tarde para recomeçar.',
-    avatar_emoji: '🌸',
-    ecos_activos: ['vitalis'],
-    personalidade: 'sabia'
-  },
-  {
-    id: 'ghost_beatriz',
-    display_name: 'Beatriz N.',
-    bio: 'De Beira. O caminho da cura começa por dentro.',
-    avatar_emoji: '💜',
-    ecos_activos: ['vitalis', 'lumina'],
-    personalidade: 'corajosa'
-  },
-  {
-    id: 'ghost_ines',
-    display_name: 'Inês',
-    bio: 'Artista plástica. Encontro nos Ecos cores que não sabia que tinha.',
-    avatar_emoji: '🎨',
-    ecos_activos: ['vitalis', 'lumina'],
-    personalidade: 'criativa'
-  },
-  {
-    id: 'ghost_raquel',
-    display_name: 'Raquel S.',
-    bio: 'Professora primária. A ensinar-me a mim mesma.',
+    id: 'ghost_esperanca',
+    display_name: 'Esperança Nhaca',
+    bio: 'Professora em Matola. A ensinar e a aprender todos os dias.',
     avatar_emoji: '📚',
-    ecos_activos: ['vitalis'],
-    personalidade: 'reflexiva'
-  },
-  {
-    id: 'ghost_sara',
-    display_name: 'Sara Luz',
-    bio: 'Estudante de psicologia. Fascinada pelo autoconhecimento.',
-    avatar_emoji: '🔮',
-    ecos_activos: ['lumina'],
-    personalidade: 'curiosa'
-  },
-  {
-    id: 'ghost_tania',
-    display_name: 'Tânia',
-    bio: 'Empreendedora em Maputo. A equilibrar trabalho e alma.',
-    avatar_emoji: '✨',
-    ecos_activos: ['vitalis'],
-    personalidade: 'determinada'
-  },
-  {
-    id: 'ghost_joana',
-    display_name: 'Joana P.',
-    bio: 'Depois de uma fase difícil, estou a renascer.',
-    avatar_emoji: '🌱',
-    ecos_activos: ['vitalis'],
-    personalidade: 'vulneravel'
-  },
-  {
-    id: 'ghost_helena',
-    display_name: 'Helena',
-    bio: 'Enfermeira. Cuido dos outros, agora aprendo a cuidar de mim.',
-    avatar_emoji: '🕊️',
-    ecos_activos: ['vitalis'],
-    personalidade: 'empática'
-  },
-  {
-    id: 'ghost_marta',
-    display_name: 'Marta C.',
-    bio: 'Lisboa. Runner e amante de chás. A descobrir o meu ritmo.',
-    avatar_emoji: '🍵',
-    ecos_activos: ['vitalis'],
-    personalidade: 'energetica'
-  },
-  {
-    id: 'ghost_claudia',
-    display_name: 'Cláudia',
-    bio: 'Jornalista freelancer. As palavras curam quando são verdadeiras.',
-    avatar_emoji: '🖊️',
+    avatar_color: AVATAR_COLORS[1],
+    iniciais: 'EN',
+    cidade: 'Matola',
     ecos_activos: ['vitalis', 'lumina'],
-    personalidade: 'articulada'
+    personalidade: 'reflexiva',
+    seguidores: 18,
+    seguindo: 22,
+    membro_desde: '2025-10-02'
   },
-  // --- Nomes muçulmanos (Moçambique) ---
+  {
+    id: 'ghost_celeste',
+    display_name: 'Celeste Macuácua',
+    bio: 'Enfermeira na Beira. Cuido dos outros, agora aprendo a cuidar de mim.',
+    avatar_emoji: '🕊️',
+    avatar_color: AVATAR_COLORS[2],
+    iniciais: 'CM',
+    cidade: 'Beira',
+    ecos_activos: ['vitalis'],
+    personalidade: 'empática',
+    seguidores: 31,
+    seguindo: 19,
+    membro_desde: '2025-08-20'
+  },
   {
     id: 'ghost_amina',
-    display_name: 'Amina',
+    display_name: 'Amina Hassane',
     bio: 'De Nampula. O Vitalis ensinou-me a alimentar o corpo com intenção e gratidão.',
     avatar_emoji: '🌙',
+    avatar_color: AVATAR_COLORS[3],
+    iniciais: 'AH',
+    cidade: 'Nampula',
     ecos_activos: ['vitalis'],
-    personalidade: 'sabia'
+    personalidade: 'sabia',
+    seguidores: 27,
+    seguindo: 12,
+    membro_desde: '2025-07-15'
+  },
+  {
+    id: 'ghost_fatima',
+    display_name: 'Fátima Sitoe',
+    bio: 'Empreendedora em Maputo. A equilibrar negócio e alma.',
+    avatar_emoji: '✨',
+    avatar_color: AVATAR_COLORS[4],
+    iniciais: 'FS',
+    cidade: 'Maputo',
+    ecos_activos: ['vitalis', 'lumina'],
+    personalidade: 'determinada',
+    seguidores: 42,
+    seguindo: 28,
+    membro_desde: '2025-06-10'
   },
   {
     id: 'ghost_halima',
-    display_name: 'Halima J.',
+    display_name: 'Halima Januário',
     bio: 'Mãe e comerciante na Ilha de Moçambique. A cuidar de mim para cuidar dos meus.',
     avatar_emoji: '🕊️',
+    avatar_color: AVATAR_COLORS[5],
+    iniciais: 'HJ',
+    cidade: 'Ilha de Moçambique',
     ecos_activos: ['vitalis'],
-    personalidade: 'calorosa'
+    personalidade: 'calorosa',
+    seguidores: 19,
+    seguindo: 16,
+    membro_desde: '2025-11-05'
+  },
+  {
+    id: 'ghost_dulce',
+    display_name: 'Dulce Cossa',
+    bio: 'Avó aos 50. Nunca é tarde para recomeçar. Cada dia é uma nova semente.',
+    avatar_emoji: '🌸',
+    avatar_color: AVATAR_COLORS[6],
+    iniciais: 'DC',
+    cidade: 'Inhambane',
+    ecos_activos: ['vitalis'],
+    personalidade: 'sabia',
+    seguidores: 35,
+    seguindo: 10,
+    membro_desde: '2025-05-22'
   },
   {
     id: 'ghost_aisha',
-    display_name: 'Aisha',
+    display_name: 'Aisha Momade',
     bio: 'Farmacêutica em Maputo. Descobri no Lumina padrões que não via há anos.',
     avatar_emoji: '🌟',
+    avatar_color: AVATAR_COLORS[7],
+    iniciais: 'AM',
+    cidade: 'Maputo',
     ecos_activos: ['vitalis', 'lumina'],
-    personalidade: 'curiosa'
+    personalidade: 'curiosa',
+    seguidores: 24,
+    seguindo: 31,
+    membro_desde: '2025-09-28'
   },
   {
     id: 'ghost_zainab',
-    display_name: 'Zainab M.',
+    display_name: 'Zainab Mussá',
     bio: 'Professora em Pemba. A transformação começa no prato e no coração.',
     avatar_emoji: '💫',
+    avatar_color: AVATAR_COLORS[8],
+    iniciais: 'ZM',
+    cidade: 'Pemba',
     ecos_activos: ['vitalis'],
-    personalidade: 'determinada'
+    personalidade: 'determinada',
+    seguidores: 16,
+    seguindo: 20,
+    membro_desde: '2025-12-01'
   },
   {
     id: 'ghost_mariamo',
-    display_name: 'Mariamo',
+    display_name: 'Mariamo Abdala',
     bio: 'Nascida em Angoche. O caminho do autoconhecimento não tem pressa.',
     avatar_emoji: '🌷',
+    avatar_color: AVATAR_COLORS[9],
+    iniciais: 'MA',
+    cidade: 'Angoche',
     ecos_activos: ['vitalis', 'lumina'],
-    personalidade: 'poetica'
+    personalidade: 'poetica',
+    seguidores: 20,
+    seguindo: 17,
+    membro_desde: '2025-10-18'
+  },
+  {
+    id: 'ghost_joana',
+    display_name: 'Joana Tembe',
+    bio: 'Depois de uma fase difícil, estou a renascer. Maputo é a minha raiz.',
+    avatar_emoji: '🌱',
+    avatar_color: AVATAR_COLORS[10],
+    iniciais: 'JT',
+    cidade: 'Maputo',
+    ecos_activos: ['vitalis'],
+    personalidade: 'vulneravel',
+    seguidores: 14,
+    seguindo: 25,
+    membro_desde: '2026-01-08'
+  },
+  {
+    id: 'ghost_luisa',
+    display_name: 'Luísa Cumbane',
+    bio: 'Artista plástica em Xai-Xai. Encontro nos Ecos cores que não sabia que tinha.',
+    avatar_emoji: '🎨',
+    avatar_color: AVATAR_COLORS[11],
+    iniciais: 'LC',
+    cidade: 'Xai-Xai',
+    ecos_activos: ['vitalis', 'lumina'],
+    personalidade: 'criativa',
+    seguidores: 38,
+    seguindo: 22,
+    membro_desde: '2025-08-03'
+  },
+  {
+    id: 'ghost_rosa',
+    display_name: 'Rosa Mabjaia',
+    bio: 'Nutricionista em formação. O Vitalis é o meu laboratório interior.',
+    avatar_emoji: '🍃',
+    avatar_color: AVATAR_COLORS[12],
+    iniciais: 'RM',
+    cidade: 'Maputo',
+    ecos_activos: ['vitalis'],
+    personalidade: 'pratica',
+    seguidores: 29,
+    seguindo: 18,
+    membro_desde: '2025-07-20'
+  },
+  {
+    id: 'ghost_beatriz',
+    display_name: 'Beatriz Nhambi',
+    bio: 'De Chimoio. O caminho da cura começa por dentro.',
+    avatar_emoji: '💜',
+    avatar_color: AVATAR_COLORS[13],
+    iniciais: 'BN',
+    cidade: 'Chimoio',
+    ecos_activos: ['vitalis', 'lumina'],
+    personalidade: 'corajosa',
+    seguidores: 22,
+    seguindo: 14,
+    membro_desde: '2025-11-12'
+  },
+  {
+    id: 'ghost_safira',
+    display_name: 'Safira Langa',
+    bio: 'Estudante de psicologia na UEM. Fascinada pelo autoconhecimento.',
+    avatar_emoji: '🔮',
+    avatar_color: AVATAR_COLORS[14],
+    iniciais: 'SL',
+    cidade: 'Maputo',
+    ecos_activos: ['lumina'],
+    personalidade: 'curiosa',
+    seguidores: 33,
+    seguindo: 27,
+    membro_desde: '2025-09-05'
+  },
+  {
+    id: 'ghost_nhara',
+    display_name: 'Nhara Guambe',
+    bio: 'Runner e amante de chás. A descobrir o meu ritmo entre Matola e o mar.',
+    avatar_emoji: '🍵',
+    avatar_color: AVATAR_COLORS[15],
+    iniciais: 'NG',
+    cidade: 'Matola',
+    ecos_activos: ['vitalis'],
+    personalidade: 'energetica',
+    seguidores: 26,
+    seguindo: 21,
+    membro_desde: '2025-10-30'
+  },
+  {
+    id: 'ghost_ines',
+    display_name: 'Inês Chissano',
+    bio: 'Jornalista freelancer. As palavras curam quando são verdadeiras.',
+    avatar_emoji: '🖊️',
+    avatar_color: AVATAR_COLORS[16],
+    iniciais: 'IC',
+    cidade: 'Maputo',
+    ecos_activos: ['vitalis', 'lumina'],
+    personalidade: 'articulada',
+    seguidores: 41,
+    seguindo: 19,
+    membro_desde: '2025-06-28'
+  },
+  {
+    id: 'ghost_marta',
+    display_name: 'Marta Chiziane',
+    bio: 'Yoga e meditação em Vilankulo. Este mar é o meu jardim.',
+    avatar_emoji: '🧘',
+    avatar_color: AVATAR_COLORS[17],
+    iniciais: 'MC',
+    cidade: 'Vilankulo',
+    ecos_activos: ['vitalis', 'lumina'],
+    personalidade: 'espiritual',
+    seguidores: 30,
+    seguindo: 13,
+    membro_desde: '2025-08-15'
+  },
+  {
+    id: 'ghost_ana',
+    display_name: 'Ana Macie',
+    bio: 'Cozinheira de coração. A comida tradicional é a minha meditação.',
+    avatar_emoji: '🍲',
+    avatar_color: AVATAR_COLORS[18],
+    iniciais: 'AM',
+    cidade: 'Quelimane',
+    ecos_activos: ['vitalis'],
+    personalidade: 'pratica',
+    seguidores: 17,
+    seguindo: 23,
+    membro_desde: '2025-12-20'
+  },
+  {
+    id: 'ghost_claudia',
+    display_name: 'Cláudia Dzucula',
+    bio: 'Contabilista que descobriu que os números da alma importam mais.',
+    avatar_emoji: '📊',
+    avatar_color: AVATAR_COLORS[19],
+    iniciais: 'CD',
+    cidade: 'Maputo',
+    ecos_activos: ['vitalis'],
+    personalidade: 'reflexiva',
+    seguidores: 21,
+    seguindo: 16,
+    membro_desde: '2025-11-25'
   }
 ]
 
 // ---------- GHOST REFLEXÕES ----------
-// Conteúdos escritos em português natural, conectados com temas e prompts
 
 const GHOST_REFLEXOES = [
   // === GRATIDÃO ===
@@ -221,14 +362,14 @@ const GHOST_REFLEXOES = [
   {
     tema: 'gratidao',
     eco: 'geral',
-    conteudo: 'O meu filho disse-me "mãe, tens os olhos bonitos quando sorris". Estes pequenos momentos são ouro puro.',
+    conteudo: 'O meu filho disse-me "mamã, tens os olhos bonitos quando sorris". Estes pequenos momentos são ouro puro.',
     prompt_id: 'grat_2',
     personalidades: ['calorosa']
   },
   {
     tema: 'gratidao',
     eco: 'vitalis',
-    conteudo: 'Grata por ter descoberto que cozinhar pode ser meditação. Fiz uma sopa hoje com tanta intenção que até sabia diferente.',
+    conteudo: 'Grata por ter descoberto que cozinhar pode ser meditação. Fiz uma sopa de abóbora com gengibre hoje com tanta intenção que até sabia diferente.',
     prompt_id: 'grat_1',
     personalidades: ['pratica', 'calorosa']
   },
@@ -249,9 +390,16 @@ const GHOST_REFLEXOES = [
   {
     tema: 'gratidao',
     eco: 'vitalis',
-    conteudo: 'Alhamdulillah pelo corpo que tenho. Hoje cozinhei matapa com tanto amor. Alimentar a família é alimentar a alma.',
+    conteudo: 'Alhamdulillah pelo corpo que tenho. Hoje cozinhei matapa com todo o amor. Alimentar a família é alimentar a alma.',
     prompt_id: 'grat_1',
     personalidades: ['calorosa', 'sabia']
+  },
+  {
+    tema: 'gratidao',
+    eco: 'vitalis',
+    conteudo: 'Fui ao mercado do Xipamanine e encontrei cajú fresco. Fiz um snack saudável para os miúdos. Pequenas vitórias que o Vitalis me ensinou.',
+    prompt_id: 'grat_2',
+    personalidades: ['pratica', 'energetica']
   },
 
   // === DESAFIO ===
@@ -283,6 +431,13 @@ const GHOST_REFLEXOES = [
     prompt_id: 'des_2',
     personalidades: ['determinada', 'calorosa']
   },
+  {
+    tema: 'desafio',
+    eco: 'geral',
+    conteudo: 'Viver em Pemba e manter a disciplina com a alimentação não é fácil. Mas o grupo dá-me força. Uma chapa de cada vez.',
+    prompt_id: 'des_1',
+    personalidades: ['determinada', 'corajosa']
+  },
 
   // === DESCOBERTA ===
   {
@@ -295,7 +450,7 @@ const GHOST_REFLEXOES = [
   {
     tema: 'descoberta',
     eco: 'geral',
-    conteudo: 'Estou a redescobrir a parte de mim que gosta de dançar. Pus música na cozinha e dancei sozinha. Senti-me viva.',
+    conteudo: 'Estou a redescobrir a parte de mim que gosta de dançar. Pus marrabenta na cozinha e dancei sozinha. Senti-me viva.',
     prompt_id: 'desc_1',
     personalidades: ['criativa', 'energetica']
   },
@@ -390,7 +545,7 @@ const GHOST_REFLEXOES = [
     personalidades: ['corajosa', 'empática']
   },
 
-  // === VITALIS (corpo/nutrição) ===
+  // === CORPO ===
   {
     tema: 'corpo',
     eco: 'vitalis',
@@ -401,33 +556,33 @@ const GHOST_REFLEXOES = [
   {
     tema: 'corpo',
     eco: 'vitalis',
-    conteudo: 'Ofereci ao meu corpo uma caminhada ao pôr-do-sol. Sem cronómetro, sem objectivo. Só sentir o vento e o chão debaixo dos pés.',
+    conteudo: 'Ofereci ao meu corpo uma caminhada ao pôr-do-sol na Marginal. Sem cronómetro, sem objectivo. Só sentir o vento do Índico e o chão debaixo dos pés.',
     prompt_id: 'vit_2',
     personalidades: ['poetica', 'espiritual', 'energetica']
   },
   {
     tema: 'corpo',
     eco: 'vitalis',
-    conteudo: 'Fiz uma sopa de abóbora com gengibre e limão. Nutriu-me a alma tanto quanto o estômago. Cozinhar com intenção muda tudo.',
+    conteudo: 'Fiz caril de amendoim com couve e arroz integral. Nutriu-me a alma tanto quanto o estômago. Cozinhar com intenção muda tudo.',
     prompt_id: 'vit_3',
     personalidades: ['pratica', 'criativa']
   },
   {
     tema: 'corpo',
     eco: 'vitalis',
-    conteudo: 'Descobri no Vitalis que o meu corpo precisa de mais proteína. Comecei a incluir feijão e lentilhas em todas as refeições. Sinto-me com mais energia.',
+    conteudo: 'Descobri no Vitalis que o meu corpo precisa de mais proteína. Comecei a incluir feijão nhemba e lentilhas em todas as refeições. Sinto-me com mais energia.',
     prompt_id: 'vit_1',
     personalidades: ['pratica', 'energetica']
   },
   {
     tema: 'corpo',
     eco: 'vitalis',
-    conteudo: 'Hoje fiz xima com caril de amendoim e legumes frescos. O Vitalis ensinou-me que a nossa comida tradicional pode ser muito nutritiva.',
+    conteudo: 'Hoje fiz xima com caril de amendoim e legumes frescos do mercado. O Vitalis ensinou-me que a nossa comida tradicional pode ser muito nutritiva.',
     prompt_id: 'vit_3',
     personalidades: ['calorosa', 'pratica']
   },
 
-  // === LUMINA (visão/diagnóstico) ===
+  // === VISÃO ===
   {
     tema: 'visao',
     eco: 'lumina',
@@ -443,7 +598,7 @@ const GHOST_REFLEXOES = [
     personalidades: ['empática', 'reflexiva']
   },
 
-  // === LIVRE (sem prompt) ===
+  // === LIVRE ===
   {
     tema: 'livre',
     eco: 'vitalis',
@@ -489,7 +644,7 @@ const GHOST_REFLEXOES = [
   {
     tema: 'livre',
     eco: 'vitalis',
-    conteudo: 'Ensinei a minha filha a preparar um batido de fruta. Ela disse "mãe, somos chefs!". A alimentação saudável pode ser diversão em família.',
+    conteudo: 'Ensinei a minha filha a preparar um batido de manga com aveia. Ela disse "mamã, somos chefs!". A alimentação saudável pode ser diversão em família.',
     personalidades: ['calorosa', 'energetica']
   },
   {
@@ -503,10 +658,28 @@ const GHOST_REFLEXOES = [
     eco: 'lumina',
     conteudo: 'Voltei a fazer a leitura do Lumina depois de 2 meses. Os resultados mudaram. Eu mudei. É bonito ter essa prova.',
     personalidades: ['curiosa', 'reflexiva']
+  },
+  {
+    tema: 'livre',
+    eco: 'geral',
+    conteudo: 'Sentada na varanda em Inhambane, a ouvir o mar. Às vezes o maior acto de coragem é simplesmente parar.',
+    personalidades: ['poetica', 'espiritual']
+  },
+  {
+    tema: 'livre',
+    eco: 'vitalis',
+    conteudo: 'Troquei o pão branco pelo pão de milho caseiro. Os vizinhos já pedem a receita. A mudança é contagiosa.',
+    personalidades: ['pratica', 'calorosa']
+  },
+  {
+    tema: 'livre',
+    eco: 'geral',
+    conteudo: 'Hoje a minha mãe disse que me vê diferente. "Pareces mais leve", disse ela. Três meses de Sete Ecos e a mudança já se nota por fora.',
+    personalidades: ['vulneravel', 'determinada']
   }
 ]
 
-// ---------- GHOST ESPELHOS (respostas a reflexões) ----------
+// ---------- GHOST ESPELHOS ----------
 
 const GHOST_ESPELHOS = [
   'Isto fez-me pensar no quanto também evito parar. Obrigada por partilhares.',
@@ -529,7 +702,7 @@ const GHOST_ESPELHOS = [
   'A tua partilha dá-me uma nova perspectiva. Obrigada.',
 ]
 
-// ---------- GHOST CHAMAS (para a Fogueira) ----------
+// ---------- GHOST CHAMAS ----------
 
 const GHOST_CHAMAS = [
   'Estar aqui à volta desta fogueira lembra-me que pertencer não exige ser perfeita.',
@@ -550,16 +723,10 @@ const GHOST_CHAMAS = [
 // GENERATION FUNCTIONS
 // ============================================================
 
-/**
- * Gera um ID de ghost post determinístico baseado em data e índice
- */
 function ghostPostId(date, index) {
   return `ghost_${dateSeed(date)}_${index}`
 }
 
-/**
- * Selecciona um perfil ghost para uma reflexão baseado na personalidade
- */
 function selectProfile(reflexao, rng) {
   const compatible = GHOST_PROFILES.filter(p =>
     reflexao.personalidades.some(pers => pers === p.personalidade)
@@ -568,10 +735,6 @@ function selectProfile(reflexao, rng) {
   return pool[Math.floor(rng() * pool.length)]
 }
 
-/**
- * Gera uma data/hora realista para um post ghost
- * Os posts aparecem em horas típicas de uso (7-9h, 12-14h, 19-23h)
- */
 function generateTimestamp(baseDate, index, rng) {
   const horasPico = [7, 8, 9, 12, 13, 19, 20, 21, 22]
   const hora = horasPico[Math.floor(rng() * horasPico.length)]
@@ -582,15 +745,11 @@ function generateTimestamp(baseDate, index, rng) {
   return d.toISOString()
 }
 
-/**
- * Gera posts ghost para um dia específico.
- * Retorna 2-4 posts por dia, determinísticos para a mesma data.
- */
 export function getGhostPostsForDate(date) {
   const seed = dateSeed(date)
   const rng = seededRandom(seed)
 
-  const numPosts = 2 + Math.floor(rng() * 3) // 2-4 posts
+  const numPosts = 2 + Math.floor(rng() * 3)
   const available = shuffle(GHOST_REFLEXOES, rng)
 
   const posts = []
@@ -607,7 +766,7 @@ export function getGhostPostsForDate(date) {
       eco: reflexao.eco,
       conteudo: reflexao.conteudo,
       prompt_id: reflexao.prompt_id || null,
-      is_anonymous: rng() < 0.08, // 8% chance de ser anónimo
+      is_anonymous: rng() < 0.08,
       imagem_url: null,
       hashtags: [],
       likes_count: ressonanciaCount,
@@ -619,6 +778,8 @@ export function getGhostPostsForDate(date) {
       community_profiles: {
         display_name: perfil.display_name,
         avatar_emoji: perfil.avatar_emoji,
+        avatar_color: perfil.avatar_color,
+        iniciais: perfil.iniciais,
         avatar_url: null,
         ecos_activos: perfil.ecos_activos
       }
@@ -628,10 +789,6 @@ export function getGhostPostsForDate(date) {
   return posts
 }
 
-/**
- * Gera posts ghost para os últimos N dias.
- * Usado para preencher o feed com actividade recente.
- */
 export function getGhostPostsForRange(days = 14) {
   const posts = []
   const hoje = new Date()
@@ -642,27 +799,18 @@ export function getGhostPostsForRange(days = 14) {
     posts.push(...getGhostPostsForDate(date))
   }
 
-  // Ordenar por data descendente (mais recente primeiro)
   posts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
   return posts
 }
 
-/**
- * Mistura posts ghost com posts reais, intercalando de forma natural.
- * Não coloca dois ghost posts seguidos se houver posts reais disponíveis.
- */
 export function mergeGhostPosts(realPosts, ghostPosts) {
   if (!ghostPosts.length) return realPosts
   if (!realPosts.length) return ghostPosts
 
-  const merged = []
-  const ghosts = [...ghostPosts]
-  const reals = [...realPosts]
-
-  // Misturar por cronologia, mas garantir que não há mais de 2 ghost seguidos
-  let allPosts = [...reals, ...ghosts]
+  let allPosts = [...realPosts, ...ghostPosts]
   allPosts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 
+  const merged = []
   let consecutiveGhosts = 0
   const delayed = []
 
@@ -675,7 +823,6 @@ export function mergeGhostPosts(realPosts, ghostPosts) {
       consecutiveGhosts++
     } else {
       consecutiveGhosts = 0
-      // Inserir ghost posts atrasados
       if (delayed.length > 0) {
         merged.push(delayed.shift())
         consecutiveGhosts = 1
@@ -684,20 +831,15 @@ export function mergeGhostPosts(realPosts, ghostPosts) {
     merged.push(post)
   }
 
-  // Adicionar restantes atrasados no final
   merged.push(...delayed)
   return merged
 }
 
-/**
- * Gera espelhos ghost para um post (real ou ghost).
- * Retorna 0-2 espelhos fictícios.
- */
 export function getGhostEspelhos(postId) {
   const seed = hashStr(postId + '_espelhos')
   const rng = seededRandom(seed)
 
-  const count = Math.floor(rng() * 3) // 0-2 espelhos
+  const count = Math.floor(rng() * 3)
   if (count === 0) return []
 
   const espelhos = []
@@ -717,6 +859,8 @@ export function getGhostEspelhos(postId) {
         user_id: perfil.id,
         display_name: perfil.display_name,
         avatar_emoji: perfil.avatar_emoji,
+        avatar_color: perfil.avatar_color,
+        iniciais: perfil.iniciais,
         avatar_url: null
       }
     })
@@ -725,23 +869,19 @@ export function getGhostEspelhos(postId) {
   return espelhos
 }
 
-/**
- * Gera chamas ghost para uma fogueira.
- * Retorna 3-6 chamas fictícias.
- */
 export function getGhostChamas(fogueiraId) {
   if (!fogueiraId) return []
   const seed = hashStr(String(fogueiraId) + '_chamas')
   const rng = seededRandom(seed)
 
-  const count = 3 + Math.floor(rng() * 4) // 3-6
+  const count = 3 + Math.floor(rng() * 4)
   const chamas = []
   const shuffledTexts = shuffle(GHOST_CHAMAS, rng)
   const shuffledProfiles = shuffle(GHOST_PROFILES, rng)
 
   for (let i = 0; i < count; i++) {
     const perfil = shuffledProfiles[i % shuffledProfiles.length]
-    const horasAtras = 1 + rng() * 18 // entre 1h e 19h atrás
+    const horasAtras = 1 + rng() * 18
     chamas.push({
       id: `ghost_chama_${fogueiraId}_${i}`,
       fogueira_id: fogueiraId,
@@ -752,19 +892,17 @@ export function getGhostChamas(fogueiraId) {
       community_profiles: {
         display_name: perfil.display_name,
         avatar_emoji: perfil.avatar_emoji,
+        avatar_color: perfil.avatar_color,
+        iniciais: perfil.iniciais,
         avatar_url: null
       }
     })
   }
 
-  // Ordenar cronologicamente
   chamas.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
   return chamas
 }
 
-/**
- * Gera stats da comunidade (para o Hub) somando actividade ghost.
- */
 export function getGhostCommunityStats() {
   const seed = dateSeed()
   const rng = seededRandom(seed)
@@ -776,9 +914,6 @@ export function getGhostCommunityStats() {
   }
 }
 
-/**
- * Gera círculos ghost para preencher a página de Círculos.
- */
 export function getGhostCirculos() {
   const rng = seededRandom(dateSeed())
   const profiles = shuffle(GHOST_PROFILES.filter(p => p.ecos_activos.includes('vitalis')), rng)
@@ -797,7 +932,9 @@ export function getGhostCirculos() {
         role: i === 0 ? 'guardia' : 'membro',
         community_profiles: {
           display_name: p.display_name,
-          avatar_emoji: p.avatar_emoji
+          avatar_emoji: p.avatar_emoji,
+          avatar_color: p.avatar_color,
+          iniciais: p.iniciais
         }
       }))
     },
@@ -814,7 +951,9 @@ export function getGhostCirculos() {
         role: i === 0 ? 'guardia' : 'membro',
         community_profiles: {
           display_name: p.display_name,
-          avatar_emoji: p.avatar_emoji
+          avatar_emoji: p.avatar_emoji,
+          avatar_color: p.avatar_color,
+          iniciais: p.iniciais
         }
       }))
     },
@@ -831,7 +970,9 @@ export function getGhostCirculos() {
         role: i === 0 ? 'guardia' : 'membro',
         community_profiles: {
           display_name: p.display_name,
-          avatar_emoji: p.avatar_emoji
+          avatar_emoji: p.avatar_emoji,
+          avatar_color: p.avatar_color,
+          iniciais: p.iniciais
         }
       }))
     }
@@ -841,22 +982,53 @@ export function getGhostCirculos() {
 }
 
 /**
- * Verifica se um user_id é ghost
+ * Retorna reflexões ghost de um perfil específico (para a página de perfil)
  */
+export function getGhostUserReflexoes(ghostId) {
+  const perfil = GHOST_PROFILES.find(p => p.id === ghostId)
+  if (!perfil) return []
+
+  const rng = seededRandom(hashStr(ghostId + '_reflexoes'))
+  const compatible = GHOST_REFLEXOES.filter(r =>
+    r.personalidades.some(p => p === perfil.personalidade)
+  )
+  const selected = shuffle(compatible.length > 3 ? compatible : GHOST_REFLEXOES, rng).slice(0, 3 + Math.floor(rng() * 3))
+
+  return selected.map((r, i) => ({
+    id: `ghost_user_ref_${ghostId}_${i}`,
+    user_id: ghostId,
+    tipo: r.tema,
+    eco: r.eco,
+    conteudo: r.conteudo,
+    prompt_id: r.prompt_id || null,
+    is_anonymous: false,
+    imagem_url: null,
+    hashtags: [],
+    likes_count: 2 + Math.floor(rng() * 10),
+    comments_count: Math.floor(rng() * 3),
+    saves_count: 0,
+    ressonancia_count: 2 + Math.floor(rng() * 10),
+    created_at: new Date(Date.now() - (i + 1) * 86400000 * (1 + Math.floor(rng() * 5))).toISOString(),
+    _ghost: true,
+    community_profiles: {
+      display_name: perfil.display_name,
+      avatar_emoji: perfil.avatar_emoji,
+      avatar_color: perfil.avatar_color,
+      iniciais: perfil.iniciais,
+      avatar_url: null,
+      ecos_activos: perfil.ecos_activos
+    }
+  }))
+}
+
 export function isGhostUser(userId) {
   return typeof userId === 'string' && userId.startsWith('ghost_')
 }
 
-/**
- * Verifica se um post é ghost
- */
 export function isGhostPost(post) {
   return post && post._ghost === true
 }
 
-/**
- * Retorna o perfil ghost por ID
- */
 export function getGhostProfile(ghostId) {
   const profile = GHOST_PROFILES.find(p => p.id === ghostId)
   if (!profile) return null
@@ -865,15 +1037,18 @@ export function getGhostProfile(ghostId) {
     display_name: profile.display_name,
     bio: profile.bio,
     avatar_emoji: profile.avatar_emoji,
+    avatar_color: profile.avatar_color,
+    iniciais: profile.iniciais,
     avatar_url: null,
     ecos_activos: profile.ecos_activos,
+    cidade: profile.cidade,
+    seguidores: profile.seguidores,
+    seguindo: profile.seguindo,
+    membro_desde: profile.membro_desde,
     _ghost: true
   }
 }
 
-/**
- * Simula ressonância num post ghost (guardado em localStorage).
- */
 export function toggleGhostRessonancia(postId, tipo) {
   const key = 'ghost_ressonancia'
   const stored = JSON.parse(localStorage.getItem(key) || '{}')
@@ -889,9 +1064,6 @@ export function toggleGhostRessonancia(postId, tipo) {
   }
 }
 
-/**
- * Verifica se o user já deu ressonância em posts ghost (batch).
- */
 export function getGhostRessonanciaBatch(postIds) {
   const stored = JSON.parse(localStorage.getItem('ghost_ressonancia') || '{}')
   const map = {}
