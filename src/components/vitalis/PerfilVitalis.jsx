@@ -42,6 +42,8 @@ export default function PerfilVitalis() {
   const [altura, setAltura] = useState('');
   const [pesoAtual, setPesoAtual] = useState('');
   const [pesoMeta, setPesoMeta] = useState('');
+  const [cintura, setCintura] = useState('');
+  const [anca, setAnca] = useState('');
   const [mensagemSucesso, setMensagemSucesso] = useState('');
   const [erro, setErro] = useState('');
 
@@ -101,6 +103,8 @@ export default function PerfilVitalis() {
         setAltura(clientData.altura?.toString() || '');
         setPesoAtual(clientData.peso_actual?.toString() || '');
         setPesoMeta(clientData.peso_meta?.toString() || '');
+        setCintura(clientData.cintura_cm?.toString() || '');
+        setAnca(clientData.anca_cm?.toString() || '');
       } else {
         // Bypass user sem vitalis_clients - usar dados básicos
         setNomeCompleto(nomeDoUser);
@@ -216,6 +220,8 @@ export default function PerfilVitalis() {
           altura: altura ? parseFloat(altura) : null,
           peso_actual: pesoAtual ? parseFloat(pesoAtual) : null,
           peso_meta: pesoMeta ? parseFloat(pesoMeta) : null,
+          cintura_cm: cintura ? parseFloat(cintura) : null,
+          anca_cm: anca ? parseFloat(anca) : null,
           updated_at: new Date().toISOString()
         };
 
@@ -241,7 +247,9 @@ export default function PerfilVitalis() {
             avatar: avatarSelecionado || null,
             altura: altura ? parseFloat(altura) : null,
             peso_actual: pesoAtual ? parseFloat(pesoAtual) : null,
-            peso_meta: pesoMeta ? parseFloat(pesoMeta) : null
+            peso_meta: pesoMeta ? parseFloat(pesoMeta) : null,
+            cintura_cm: cintura ? parseFloat(cintura) : null,
+            anca_cm: anca ? parseFloat(anca) : null
           });
 
         if (insertError) {
@@ -493,6 +501,34 @@ export default function PerfilVitalis() {
               />
             </div>
           </div>
+
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Cintura (cm)</label>
+              <input
+                type="number"
+                step="0.1"
+                value={cintura}
+                onChange={(e) => setCintura(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-[#7C8B6F] focus:outline-none transition-colors text-center"
+                placeholder="80"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Anca (cm)</label>
+              <input
+                type="number"
+                step="0.1"
+                value={anca}
+                onChange={(e) => setAnca(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-[#7C8B6F] focus:outline-none transition-colors text-center"
+                placeholder="95"
+              />
+            </div>
+          </div>
+          <p className="text-xs text-gray-400 mt-2">
+            Cintura e anca ajudam a calcular a tua composicao corporal nos graficos de tendencia.
+          </p>
 
           {pesoAtual && pesoMeta && (
             <div className="mt-4 p-4 bg-[#F5F2ED] rounded-xl">
