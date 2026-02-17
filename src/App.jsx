@@ -88,6 +88,10 @@ const RituaisLibertacao = lazy(() => import('./components/serena/RituaisLibertac
 const ChatSerena = lazy(() => import('./components/serena/ChatSerena'))
 const InsightsSerena = lazy(() => import('./components/serena/InsightsSerena'))
 const BibliotecaEmocoes = lazy(() => import('./components/serena/BibliotecaEmocoes'))
+const MapaEmocional = lazy(() => import('./components/serena/MapaEmocional'))
+const CicloEmocional = lazy(() => import('./components/serena/CicloEmocional'))
+const DetectorPadroes = lazy(() => import('./components/serena/DetectorPadroes'))
+const CicloMenstrual = lazy(() => import('./components/serena/CicloMenstrual'))
 const PerfilSerena = lazy(() => import('./components/serena/PerfilSerena'))
 const NotificacoesSerena = lazy(() => import('./components/serena/NotificacoesSerena'))
 
@@ -374,6 +378,10 @@ function AppRoutes() {
             <Route path="/serena/chat" element={<SerenaRoute><ChatSerena /></SerenaRoute>} />
             <Route path="/serena/insights" element={<SerenaRoute><InsightsSerena /></SerenaRoute>} />
             <Route path="/serena/biblioteca" element={<SerenaRoute><BibliotecaEmocoes /></SerenaRoute>} />
+            <Route path="/serena/mapa" element={<SerenaRoute><MapaEmocional /></SerenaRoute>} />
+            <Route path="/serena/ciclo" element={<SerenaRoute><CicloEmocional /></SerenaRoute>} />
+            <Route path="/serena/padroes" element={<SerenaRoute><DetectorPadroes /></SerenaRoute>} />
+            <Route path="/serena/ciclo-menstrual" element={<SerenaRoute><CicloMenstrual /></SerenaRoute>} />
             <Route path="/serena/perfil" element={<SerenaRoute><PerfilSerena /></SerenaRoute>} />
             <Route path="/serena/notificacoes" element={<SerenaRoute><NotificacoesSerena /></SerenaRoute>} />
 
