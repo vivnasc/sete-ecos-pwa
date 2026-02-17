@@ -343,27 +343,30 @@ async function handleSetup(req, res) {
     const phoneData = await phoneRes.json();
     diagnostico.steps.push({ step: '1. Phone Number Info', ok: phoneRes.ok, data: phoneData });
 
-    // Step 2: Find WABA ID
-    let wabaId = process.env.WHATSAPP_BUSINESS_ACCOUNT_ID || null;
+    // Step 2: Find WABA ID (auto-discover from phone number)
+    let wabaId = null;
 
-    if (!wabaId) {
-      // Try to get WABA from phone number endpoint
-      const wabaRes = await fetch(`${GRAPH_BASE}/${phoneId}?fields=id`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const wabaData = await wabaRes.json();
-      diagnostico.steps.push({ step: '2a. WABA via phone', ok: wabaRes.ok, data: wabaData });
+    // Always try to discover WABA from phone number first (most reliable)
+    const wabaRes = await fetch(`${GRAPH_BASE}/${phoneId}?fields=whatsapp_business_account`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const wabaData = await wabaRes.json();
+    if (wabaData?.whatsapp_business_account?.id) {
+      wabaId = wabaData.whatsapp_business_account.id;
     }
 
+    // Fallback to env var
     if (!wabaId) {
-      diagnostico.steps.push({
-        step: '2. WABA ID',
-        message: 'Não encontrado automaticamente. Adiciona WHATSAPP_BUSINESS_ACCOUNT_ID ao Vercel.',
-        hint: 'Encontra o WABA ID em business.facebook.com > WhatsApp Accounts',
-      });
-    } else {
-      diagnostico.steps.push({ step: '2. WABA ID', wabaId });
+      wabaId = process.env.WHATSAPP_BUSINESS_ACCOUNT_ID || null;
     }
+
+    diagnostico.steps.push({
+      step: '2. WABA ID',
+      ok: !!wabaId,
+      wabaId,
+      source: wabaData?.whatsapp_business_account?.id ? 'auto-discovered' : 'env var',
+      apiResponse: wabaData,
+    });
 
     // Step 3: Listar TODOS os números do WABA
     if (wabaId) {
