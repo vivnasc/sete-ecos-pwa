@@ -73,7 +73,7 @@ const MonthHeader = ({ label, count }) => (
   <div className="flex items-center justify-between px-1 mb-3">
     <h3
       className="text-sm font-semibold text-gray-300 uppercase tracking-wider"
-      style={{ fontFamily: "'Cormorant Garamond', serif" }}
+      style={{ fontFamily: 'var(--font-titulos)' }}
     >
       {label}
     </h3>
@@ -374,7 +374,7 @@ export default function RegistoVozRecuperada() {
           <div className="space-y-6 animate-fadeIn">
             {/* Inspiration */}
             <div className="p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-              <p className="text-sm italic text-gray-300" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              <p className="text-sm italic text-gray-300" style={{ fontFamily: 'var(--font-titulos)' }}>
                 &ldquo;Hoje disse algo que normalmente calaria.&rdquo;
               </p>
             </div>
@@ -502,7 +502,7 @@ export default function RegistoVozRecuperada() {
             <div>
               <h2
                 className="text-xl font-semibold text-white mb-2"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 A tua voz foi {g('ouvido', 'ouvida')}!
               </h2>
@@ -543,7 +543,7 @@ export default function RegistoVozRecuperada() {
                 <div className="text-4xl">🤫</div>
                 <h3
                   className="text-lg font-semibold text-white"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   Ainda sem vitorias de voz
                 </h3>
@@ -562,7 +562,7 @@ export default function RegistoVozRecuperada() {
               <>
                 {/* Total counter */}
                 <div className="p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                  <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                     {entries.length}
                   </p>
                   <p className="text-sm text-gray-400">
@@ -573,7 +573,7 @@ export default function RegistoVozRecuperada() {
                 {/* Insight */}
                 {insight && (
                   <div className="p-4 rounded-xl" style={{ background: `${ACCENT}11`, border: `1px solid ${ACCENT}22` }}>
-                    <p className="text-sm text-gray-300 italic" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                    <p className="text-sm text-gray-300 italic" style={{ fontFamily: 'var(--font-titulos)' }}>
                       As tuas maiores coragens de voz foram com <strong className="text-white">{insight.person}</strong> sobre <strong className="text-white">{insight.topic}</strong>
                     </p>
                   </div>

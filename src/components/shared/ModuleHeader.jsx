@@ -115,7 +115,7 @@ export default function ModuleHeader({
           </div>
         </div>
         <div className="text-white">
-          <h1 className="text-xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h1 className="text-xl font-bold" style={{ fontFamily: 'var(--font-titulos)' }}>
             {title}
           </h1>
           {subtitle && (

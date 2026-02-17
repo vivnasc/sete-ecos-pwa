@@ -9,7 +9,7 @@ import { g } from '../../utils/genero'
 /**
  * PERFIL IMAGO — Perfil do utilizador no Imago
  * Mostra: nivel + estrelas, gamificacao completa, stats, badges, subscricao, exportar
- * Tema: #8B7BA5, #1a1a2e, Cormorant Garamond, Estrelas
+ * Tema: #8B7BA5, #1a1a2e, Playfair Display, Estrelas
  */
 
 const IMAGO_COLOR = '#8B7BA5'
@@ -134,7 +134,7 @@ export default function PerfilImago() {
           </div>
           <h2
             className="text-xl font-bold text-white"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Nivel: {clientData?.nivel || 'Reflexo'}
           </h2>

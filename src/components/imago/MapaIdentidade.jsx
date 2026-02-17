@@ -198,7 +198,7 @@ export default function MapaIdentidade() {
             <div className="text-center mb-2">
               <h2
                 className="text-white text-lg font-semibold"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 As tuas 7 dimensoes
               </h2>
@@ -269,7 +269,7 @@ export default function MapaIdentidade() {
                 <div className="text-3xl mb-2" aria-hidden="true">&#11088;</div>
                 <h3
                   className="text-white font-semibold mb-1"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   Mapa {g('completo', 'completa')}!
                 </h3>
@@ -298,7 +298,7 @@ export default function MapaIdentidade() {
               </div>
               <h2
                 className="text-white text-xl font-bold mb-1"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 {activeDim.nome}
               </h2>
@@ -317,7 +317,7 @@ export default function MapaIdentidade() {
             >
               <p
                 className="text-lg text-white italic leading-relaxed"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 &ldquo;{activeDim.pergunta}&rdquo;
               </p>
@@ -401,7 +401,7 @@ export default function MapaIdentidade() {
             <div>
               <h2
                 className="text-xl font-semibold text-white mb-2"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Reflexao {g('guardado', 'guardada')}
               </h2>

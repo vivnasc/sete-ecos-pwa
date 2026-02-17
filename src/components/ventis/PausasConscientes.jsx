@@ -117,7 +117,7 @@ function PauseTimer({ exercicio, onComplete }) {
       {/* Nome */}
       <h2
         className="text-xl text-white/90 text-center"
-        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+        style={{ fontFamily: 'var(--font-titulos)' }}
       >
         {exercicio.nome}
       </h2>
@@ -125,7 +125,7 @@ function PauseTimer({ exercicio, onComplete }) {
       {/* Descricao / Instrucoes */}
       <p
         className="text-white/60 text-center max-w-xs leading-relaxed"
-        style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem' }}
+        style={{ fontFamily: 'var(--font-titulos)', fontSize: '1.05rem' }}
       >
         {exercicio.descricao}
       </p>
@@ -425,7 +425,7 @@ export default function PausasConscientes() {
             <div className="text-5xl mb-4">🍃</div>
             <h2
               className="text-2xl text-white/90 mb-2"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Como te sentes agora?
             </h2>
@@ -464,7 +464,7 @@ export default function PausasConscientes() {
             }`}
             style={{
               backgroundColor: (!salvando && sensacao) ? VENTIS_COLOR : 'rgba(255,255,255,0.1)',
-              fontFamily: "'Cormorant Garamond', serif"
+              fontFamily: 'var(--font-titulos)'
             }}
           >
             {salvando ? 'A guardar...' : `Guardar (+${FOLHAS_POR_PAUSA} 🍃)`}
@@ -486,7 +486,7 @@ export default function PausasConscientes() {
           <div className="text-6xl mb-6">🌿</div>
           <h2
             className="text-2xl text-white/90 mb-3"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Pausa {g('registado', 'registada')}
           </h2>
@@ -526,7 +526,7 @@ export default function PausasConscientes() {
         <section>
           <h3
             className="text-white/80 text-lg mb-3"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Escolhe a tua pausa
           </h3>
@@ -571,14 +571,14 @@ export default function PausasConscientes() {
           <div className="pausas-fadeIn">
             {/* Preview do exercicio */}
             <div className="bg-white/5 border border-[#5D9B84]/30 rounded-xl p-4 mb-3">
-              <p className="text-white/60 text-sm leading-relaxed" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              <p className="text-white/60 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-titulos)' }}>
                 {exercicioSelecionado.descricao}
               </p>
             </div>
             <button
               onClick={() => iniciarPausa(exercicioSelecionado)}
               className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-white font-bold text-lg transition-all hover:scale-[1.01] active:scale-[0.99] shadow-lg"
-              style={{ backgroundColor: VENTIS_COLOR, fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ backgroundColor: VENTIS_COLOR, fontFamily: 'var(--font-titulos)' }}
             >
               <PlayIcon />
               Iniciar Pausa
@@ -592,7 +592,7 @@ export default function PausasConscientes() {
             <div className="flex items-center justify-between">
               <h3
                 className="text-white/80 text-lg"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Hoje
               </h3>
@@ -637,7 +637,7 @@ export default function PausasConscientes() {
           <section className="space-y-3">
             <h3
               className="text-white/80 text-lg"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Estatisticas
             </h3>

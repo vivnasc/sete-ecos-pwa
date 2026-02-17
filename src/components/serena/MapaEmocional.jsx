@@ -348,7 +348,7 @@ export default function MapaEmocional() {
           >
             <h3
               className="text-white text-lg font-semibold mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Resumo do Mês
             </h3>

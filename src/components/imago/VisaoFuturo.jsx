@@ -113,7 +113,7 @@ const BoardItem = ({ item, index, totalItems, onEdit, onDelete, onMoveUp, onMove
         ) : item.tipo === 'frase' ? (
           <p
             className="text-sm italic leading-relaxed text-gray-300"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             "{item.conteudo}"
           </p>
@@ -163,7 +163,7 @@ const ItemModal = ({ item, onSave, onClose, editing }) => {
         <div className="text-center">
           <h3
             className="text-lg font-semibold text-white"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             {editing ? 'Editar item' : 'Adicionar ao quadro'}
           </h3>
@@ -469,7 +469,7 @@ export default function VisaoFuturo() {
               <div className="text-3xl mb-3">🗑️</div>
               <h3
                 className="text-lg font-semibold text-white mb-2"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Eliminar este item?
               </h3>
@@ -526,7 +526,7 @@ export default function VisaoFuturo() {
           >
             <p
               className="text-sm italic text-gray-300 text-center leading-relaxed"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               "Isto ainda ressoa contigo?" — Marca cada item como "ainda ressoa" ou "já evoluiu".
             </p>
@@ -552,7 +552,7 @@ export default function VisaoFuturo() {
             <div className="text-5xl">🔮</div>
             <h3
               className="text-lg font-semibold text-white"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               O teu quadro de visão está vazio
             </h3>
@@ -624,19 +624,19 @@ export default function VisaoFuturo() {
             {/* Stats summary */}
             <div className="mt-6 flex gap-3">
               <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                   {items.length}
                 </p>
                 <p className="text-xs text-gray-400">{items.length === 1 ? 'item' : 'itens'}</p>
               </div>
               <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                   {new Set(items.map(i => i.tipo)).size}
                 </p>
                 <p className="text-xs text-gray-400">tipos</p>
               </div>
               <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                   {totalRessoa}
                 </p>
                 <p className="text-xs text-gray-400">ressoam</p>

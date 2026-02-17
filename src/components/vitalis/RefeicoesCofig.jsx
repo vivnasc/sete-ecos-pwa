@@ -187,7 +187,7 @@ export default function RefeicoesCofig() {
           <div className="flex items-center gap-3">
             <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-12 h-12 object-contain drop-shadow-lg" />
             <div>
-              <h1 className="text-3xl font-bold text-white" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+              <h1 className="text-3xl font-bold text-white" style={{ fontFamily: 'Playfair Display, serif' }}>
                 As Minhas Refeições
               </h1>
               <p className="text-orange-100 mt-1">Configura as refeições que fazes no teu dia</p>

@@ -424,7 +424,7 @@ export default function DiarioConquistas() {
                   <div className="text-5xl mb-3 animate-bounce">{'\u{1F525}'}</div>
                   <h2
                     className="text-2xl font-bold text-white mb-1"
-                    style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                    style={{ fontFamily: 'var(--font-titulos)' }}
                   >
                     {g('Conquistas registadas', 'Conquistas registadas')}!
                   </h2>
@@ -501,7 +501,7 @@ export default function DiarioConquistas() {
                 <div className="text-center mb-2">
                   <h2
                     className="text-xl font-bold text-white"
-                    style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                    style={{ fontFamily: 'var(--font-titulos)' }}
                   >
                     Hoje consegui...
                   </h2>
@@ -696,7 +696,7 @@ export default function DiarioConquistas() {
               <div className="text-4xl mb-2">{'\u{1F3C6}'}</div>
               <p
                 className="text-3xl font-bold text-white"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 {totalConquistas}
               </p>
@@ -824,7 +824,7 @@ export default function DiarioConquistas() {
             {/* Título */}
             <h2
               className="text-xl font-bold text-white text-center"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               As tuas estatísticas
             </h2>
@@ -839,7 +839,7 @@ export default function DiarioConquistas() {
                 <div className="text-2xl mb-1">{'\u{1F525}'}</div>
                 <p
                   className="text-2xl font-bold text-white"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   {totalConquistas}
                 </p>
@@ -854,7 +854,7 @@ export default function DiarioConquistas() {
                 <div className="text-2xl mb-1">{'\u{26A1}'}</div>
                 <p
                   className="text-2xl font-bold text-white"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   {streakDias}
                 </p>
@@ -869,7 +869,7 @@ export default function DiarioConquistas() {
                 <div className="text-2xl mb-1">{'\u{1F4D6}'}</div>
                 <p
                   className="text-2xl font-bold text-white"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   {historico.length}
                 </p>

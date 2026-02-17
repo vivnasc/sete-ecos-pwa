@@ -9,7 +9,7 @@ import { g } from '../../utils/genero'
 /**
  * PERFIL AURORA — Perfil do utilizador na Aurora
  * Mostra: raios, badges, certificado de graduacao, subscricao, exportar dados
- * Tema: #D4A5A5, #2e1a1a, Cormorant Garamond, Raios de Aurora
+ * Tema: #D4A5A5, #2e1a1a, Playfair Display, Raios de Aurora
  */
 
 const AURORA_COLOR = '#D4A5A5'
@@ -127,7 +127,7 @@ export default function PerfilAurora() {
           </div>
           <h2
             className="text-xl font-bold text-white"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             {clientData?.graduacao_data ? g('Graduado', 'Graduada') : 'Em jornada'}
           </h2>
@@ -161,7 +161,7 @@ export default function PerfilAurora() {
             <span className="text-3xl block mb-2">🎓</span>
             <h3
               className="text-white font-semibold text-lg mb-1"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Certificado de Graduacao
             </h3>

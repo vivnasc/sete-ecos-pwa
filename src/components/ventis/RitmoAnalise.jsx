@@ -15,7 +15,7 @@ const VENTIS_DARK = '#1a2e24'
 const VENTIS_LIGHT = '#7DB8A2'
 const VENTIS_GLOW = 'rgba(93,155,132,0.15)'
 
-const HEADING_FONT = "'Cormorant Garamond', serif"
+const HEADING_FONT = "'Playfair Display', serif"
 
 // ---- Icons (inline SVGs) ----
 const WindIcon = ({ className = 'w-5 h-5' }) => (

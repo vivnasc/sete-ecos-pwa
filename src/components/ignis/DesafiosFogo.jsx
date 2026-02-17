@@ -219,7 +219,7 @@ export default function DesafiosFogo() {
 
             <h3
               className="text-white text-lg font-bold mb-2"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               {desafioActivoInfo.nome}
             </h3>

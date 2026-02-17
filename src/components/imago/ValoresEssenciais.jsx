@@ -269,7 +269,7 @@ export default function ValoresEssenciais() {
           <div className="text-center mb-2">
             <h2
               className="text-white text-xl font-bold"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Os teus 3 valores essenciais
             </h2>
@@ -294,7 +294,7 @@ export default function ValoresEssenciais() {
                   </div>
                   <h3
                     className="text-white text-lg font-semibold"
-                    style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                    style={{ fontFamily: 'var(--font-titulos)' }}
                   >
                     {valor}
                   </h3>
@@ -373,7 +373,7 @@ export default function ValoresEssenciais() {
           <div className="text-center mb-6">
             <h2
               className="text-white text-lg font-bold mb-1"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               {currentTitle}
             </h2>
@@ -548,7 +548,7 @@ export default function ValoresEssenciais() {
                       </div>
                       <span
                         className={`text-base font-medium ${isSelected ? 'text-white' : 'text-white/60'}`}
-                        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                        style={{ fontFamily: 'var(--font-titulos)' }}
                       >
                         {valor}
                       </span>
@@ -600,7 +600,7 @@ export default function ValoresEssenciais() {
                   </div>
                   <h3
                     className="text-white text-lg font-semibold"
-                    style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                    style={{ fontFamily: 'var(--font-titulos)' }}
                   >
                     {valor}
                   </h3>
@@ -671,7 +671,7 @@ export default function ValoresEssenciais() {
               </div>
               <h2
                 className="text-white text-2xl font-bold mb-2"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Os teus 3 valores essenciais
               </h2>
@@ -700,7 +700,7 @@ export default function ValoresEssenciais() {
                     </div>
                     <h3
                       className="text-white text-lg font-semibold"
-                      style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                      style={{ fontFamily: 'var(--font-titulos)' }}
                     >
                       {valor}
                     </h3>

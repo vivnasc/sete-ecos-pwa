@@ -492,7 +492,7 @@ export default function MicroVoz() {
               <div className="mb-6">
                 <h2
                   className="text-xl font-bold text-white mb-2"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   Semana {currentWeek}: {weekData.titulo}
                 </h2>
@@ -558,7 +558,7 @@ export default function MicroVoz() {
                   <p className="text-2xl">{'\uD83C\uDF1F'}</p>
                   <h3
                     className="text-lg font-bold text-white"
-                    style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                    style={{ fontFamily: 'var(--font-titulos)' }}
                   >
                     Programa completo!
                   </h3>
@@ -578,7 +578,7 @@ export default function MicroVoz() {
                 <p className="text-3xl">{'\uD83D\uDD0A'}</p>
                 <h3
                   className="text-lg font-semibold text-white"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   Sem histórico ainda
                 </h3>

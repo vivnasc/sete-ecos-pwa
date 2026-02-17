@@ -48,9 +48,9 @@ export default function CatalogoPDF() {
         <div style={{ position: 'absolute', bottom: '30%', left: 50, width: 60, height: 60, borderRadius: '50%', background: 'rgba(193,99,74,0.08)' }} />
 
         <img src="/logos/SETEECOS_HERO.png" alt="Sete Ecos" className="w-48 h-48 mb-8 drop-shadow-2xl" />
-        <h1 className="text-6xl font-bold text-white mb-3 tracking-tight" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>SETE ECOS</h1>
+        <h1 className="text-6xl font-bold text-white mb-3 tracking-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>SETE ECOS</h1>
         <div className="w-24 h-0.5 mb-4" style={{ background: `linear-gradient(to right, transparent, ${B.verde}, transparent)` }} />
-        <p className="text-xl text-white/60 mb-2 italic" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>Sistema de Transmutação Feminina</p>
+        <p className="text-xl text-white/60 mb-2 italic" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Sistema de Transmutação Feminina</p>
         <p className="text-white/40 text-sm mt-16 tracking-widest uppercase">Catálogo de Serviços · 2026</p>
         <p className="text-white/25 text-xs mt-2">Maputo, Moçambique</p>
 
@@ -68,7 +68,7 @@ export default function CatalogoPDF() {
         <div className="flex items-center gap-3 mb-5">
           <img src="/logos/CENTRO_7ECOS.png" alt="7 Ecos" className="w-14 h-14" />
           <div>
-            <h2 className="text-3xl font-bold" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: B.castanho }}>Quem Somos</h2>
+            <h2 className="text-3xl font-bold" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: B.castanho }}>Quem Somos</h2>
             <div className="w-12 h-0.5 mt-1" style={{ backgroundColor: B.verde }} />
           </div>
         </div>
@@ -91,7 +91,7 @@ export default function CatalogoPDF() {
           <div className="flex flex-col">
             <div className="rounded-2xl p-6 mb-4 flex-1" style={{ background: `linear-gradient(to bottom right, ${B.creme}, ${B.linho})` }}>
               <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: B.verde }}>A nossa missão</p>
-              <p className="italic leading-relaxed text-gray-600 mb-6" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '17px' }}>
+              <p className="italic leading-relaxed text-gray-600 mb-6" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '17px' }}>
                 "Ajudar cada mulher a ouvir o seu corpo, alimentar-se com consciência e transformar-se sem culpa. Sem dietas importadas. Sem julgamento. Com amor e ciência."
               </p>
               <div className="pt-4 flex items-center gap-3" style={{ borderTop: `1px solid ${B.borda}` }}>
@@ -146,7 +146,7 @@ export default function CatalogoPDF() {
         <div className="flex items-center gap-3 mb-4">
           <img src="/logos/lumina-logo_v2.png" alt="Lumina" className="w-14 h-14" />
           <div className="flex-1">
-            <h2 className="text-3xl font-bold text-purple-700" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>LUMINA</h2>
+            <h2 className="text-3xl font-bold text-purple-700" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>LUMINA</h2>
             <p className="text-sm text-purple-400">O teu diagnóstico de transformação</p>
           </div>
           <span className="bg-green-100 text-green-700 px-5 py-2 rounded-full text-sm font-bold">GRÁTIS</span>
@@ -212,7 +212,7 @@ export default function CatalogoPDF() {
         <div className="flex items-center gap-3 mb-4">
           <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-14 h-14" />
           <div className="flex-1">
-            <h2 className="text-3xl font-bold" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: B.verde }}>VITALIS</h2>
+            <h2 className="text-3xl font-bold" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: B.verde }}>VITALIS</h2>
             <p className="text-sm" style={{ color: B.verde + 'aa' }}>Coaching Nutricional Completo</p>
           </div>
           <span className="text-white px-5 py-2 rounded-full text-sm font-bold" style={{ backgroundColor: B.verde }}>PREMIUM</span>
@@ -353,7 +353,7 @@ export default function CatalogoPDF() {
         <div className="flex items-center gap-3 mb-4">
           <div className="w-14 h-14 rounded-full flex items-center justify-center text-white text-2xl" style={{ background: `linear-gradient(to bottom right, #9b59b6, ${B.terracota})` }}>⚡</div>
           <div className="flex-1">
-            <h2 className="text-3xl font-bold" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: B.castanho }}>Comunidade</h2>
+            <h2 className="text-3xl font-bold" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: B.castanho }}>Comunidade</h2>
             <p className="text-sm text-gray-400">Espaço coletivo de transformação</p>
           </div>
         </div>
@@ -398,7 +398,7 @@ export default function CatalogoPDF() {
         <div className="flex items-center gap-3 mb-6">
           <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-12 h-12" />
           <div>
-            <h2 className="text-3xl font-bold" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: B.castanho }}>Planos e Preços</h2>
+            <h2 className="text-3xl font-bold" style={{ fontFamily: "'Playfair Display', Georgia, serif", color: B.castanho }}>Planos e Preços</h2>
             <div className="w-12 h-0.5 mt-1" style={{ backgroundColor: B.verde }} />
           </div>
         </div>
@@ -491,7 +491,7 @@ export default function CatalogoPDF() {
         <div style={{ position: 'absolute', bottom: 100, left: 40, width: 100, height: 100, borderRadius: '50%', background: 'rgba(124,139,111,0.08)' }} />
 
         <img src="/logos/SETEECOS_HERO.png" alt="Sete Ecos" className="w-28 h-28 mb-8 drop-shadow-xl" />
-        <h2 className="text-5xl font-bold text-white mb-3" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>Começa Hoje</h2>
+        <h2 className="text-5xl font-bold text-white mb-3" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Começa Hoje</h2>
         <p className="text-white/45 text-base mb-10 max-w-md">O primeiro passo é gratuito. Faz o diagnóstico LUMINA e descobre o que o teu corpo precisa.</p>
 
         <div className="space-y-4 w-full max-w-lg">

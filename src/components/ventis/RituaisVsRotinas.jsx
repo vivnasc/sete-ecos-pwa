@@ -125,7 +125,7 @@ const SeccaoEducacao = () => {
       >
         <h3
           className="text-white font-semibold"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Rotina vs Ritual
         </h3>
@@ -220,7 +220,7 @@ const FerramentaTransformacao = ({ rotinas, onTransformar, saving }) => {
         <div className="text-3xl mb-3" role="img" aria-hidden="true">✨</div>
         <h3
           className="text-white font-semibold mb-1"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Todas as rotinas transformadas!
         </h3>
@@ -235,7 +235,7 @@ const FerramentaTransformacao = ({ rotinas, onTransformar, saving }) => {
     <div className="bg-white/5 rounded-2xl border border-white/10 p-5">
       <h3
         className="text-white font-semibold mb-1"
-        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+        style={{ fontFamily: 'var(--font-titulos)' }}
       >
         Escolhe uma rotina para transformar
       </h3>
@@ -352,7 +352,7 @@ const MeusRituais = ({ rituais, onPraticar, saving }) => {
         <div className="text-3xl mb-3" role="img" aria-hidden="true">🌱</div>
         <h3
           className="text-white font-semibold mb-1"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Ainda sem rituais
         </h3>
@@ -367,7 +367,7 @@ const MeusRituais = ({ rituais, onPraticar, saving }) => {
     <div className="bg-white/5 rounded-2xl border border-white/10 p-5">
       <h3
         className="text-white font-semibold mb-1"
-        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+        style={{ fontFamily: 'var(--font-titulos)' }}
       >
         Os meus rituais
       </h3>
@@ -431,7 +431,7 @@ const RituaisGuiados = () => {
     <div className="bg-white/5 rounded-2xl border border-white/10 p-5">
       <h3
         className="text-white font-semibold mb-1"
-        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+        style={{ fontFamily: 'var(--font-titulos)' }}
       >
         Rituais guiados
       </h3>

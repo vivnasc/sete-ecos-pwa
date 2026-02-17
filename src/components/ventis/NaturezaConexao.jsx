@@ -262,7 +262,7 @@ function SessaoActividade({ actividade, userId, onBack, onSaved }) {
           <span className="text-5xl">{actividade.icon}</span>
           <h3
             className="text-xl font-bold text-white/90"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             {actividade.nome}
           </h3>

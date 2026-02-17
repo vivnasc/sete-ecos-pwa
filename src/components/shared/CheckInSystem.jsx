@@ -218,7 +218,7 @@ export default function CheckInSystem({ eco, userId, config, onComplete }) {
         >
           <span className="text-4xl">&#10003;</span>
         </div>
-        <h3 className="text-white text-xl font-bold mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <h3 className="text-white text-xl font-bold mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
           Check-in {g('registado', 'registada')}
         </h3>
         <p className="text-white/50 text-sm">
@@ -252,7 +252,7 @@ export default function CheckInSystem({ eco, userId, config, onComplete }) {
     <div className="py-4">
       {/* Titulo */}
       {config.title && step === 0 && (
-        <h2 className="text-white text-lg font-bold mb-6" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <h2 className="text-white text-lg font-bold mb-6" style={{ fontFamily: 'var(--font-titulos)' }}>
           {config.title}
         </h2>
       )}

@@ -423,7 +423,7 @@ export default function ListaCompras() {
                 ←
               </Link>
               <div>
-                <h1 className="text-xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Lista de Compras</h1>
+                <h1 className="text-xl font-bold" style={{ fontFamily: 'var(--font-titulos)' }}>Lista de Compras</h1>
                 <p className="text-white/70 text-sm">
                   {planoCompleto?.fase?.nome || 'Personalizada'} • {plano?.porcoes_proteina || 6}P {plano?.porcoes_hidratos || 3}H {plano?.porcoes_gordura || 8}G
                 </p>

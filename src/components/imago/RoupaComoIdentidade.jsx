@@ -144,7 +144,7 @@ const PatternsInsight = ({ entries }) => {
     <div className="p-4 rounded-2xl space-y-3" style={{ background: ACCENT_SUBTLE, border: `1px solid ${ACCENT}22` }}>
       <div className="flex items-center gap-2">
         <span className="text-lg" aria-hidden="true">🔍</span>
-        <h3 className="text-sm font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <h3 className="text-sm font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
           Padroes {g('detectados', 'detectadas')}
         </h3>
       </div>
@@ -325,7 +325,7 @@ export default function RoupaComoIdentidade() {
           <div className="text-center mb-2">
             <h2
               className="text-lg font-semibold text-white"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Reflexao de hoje
             </h2>
@@ -406,7 +406,7 @@ export default function RoupaComoIdentidade() {
         <div className="mt-8 space-y-3">
           <h3
             className="text-base font-semibold text-white"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Ultimos 7 dias
           </h3>
@@ -456,7 +456,7 @@ export default function RoupaComoIdentidade() {
           <div className="mt-8 space-y-3">
             <h3
               className="text-base font-semibold text-white"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Registos anteriores
             </h3>
@@ -482,7 +482,7 @@ export default function RoupaComoIdentidade() {
             <div className="text-4xl" aria-hidden="true">👔</div>
             <h3
               className="text-lg font-semibold text-white"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Ainda sem registos
             </h3>

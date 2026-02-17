@@ -236,7 +236,7 @@ export default function DashboardAurea() {
 
         {/* Saudação elegante */}
         <div className="mt-2">
-          <h2 className="text-2xl font-light" style={{ color: CORES.text, fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-2xl font-light" style={{ color: CORES.text, fontFamily: 'var(--font-titulos)' }}>
             Olá, <span className="font-semibold">{userName}</span>
           </h2>
           <p className="text-sm mt-1" style={{ color: CORES.textLight }}>

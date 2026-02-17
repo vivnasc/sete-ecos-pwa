@@ -359,7 +359,7 @@ function FeelingCheck({ titulo, subtitulo, onSelect }) {
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
       <h2
         className="text-2xl font-bold mb-2"
-        style={{ color: '#e8edf0', fontFamily: "'Cormorant Garamond', serif" }}
+        style={{ color: '#e8edf0', fontFamily: 'var(--font-titulos)' }}
       >
         {titulo}
       </h2>
@@ -487,7 +487,7 @@ function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausad
           {/* Timer number */}
           <span
             className="text-4xl font-light tabular-nums"
-            style={{ color: '#e8edf0', fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ color: '#e8edf0', fontFamily: 'var(--font-titulos)' }}
           >
             {tempoRestante}
           </span>
@@ -499,7 +499,7 @@ function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausad
         className="relative z-10 text-2xl font-light mb-2"
         style={{
           color: '#e8edf0',
-          fontFamily: "'Cormorant Garamond', serif"
+          fontFamily: 'var(--font-titulos)'
         }}
       >
         {label}
@@ -577,7 +577,7 @@ function Conclusao({ tecnica, sentimentoAntes, sentimentoDepois, startTime, onNo
 
       <h2
         className="text-2xl font-bold mb-2"
-        style={{ color: '#e8edf0', fontFamily: "'Cormorant Garamond', serif" }}
+        style={{ color: '#e8edf0', fontFamily: 'var(--font-titulos)' }}
       >
         Sessao Completa
       </h2>

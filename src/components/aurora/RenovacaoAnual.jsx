@@ -331,7 +331,7 @@ export default function RenovacaoAnual() {
               <div className="text-4xl" aria-hidden="true">🔄</div>
               <h2
                 className="text-xl font-semibold text-white"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 1 ano depois — o que mudou?
               </h2>
@@ -451,7 +451,7 @@ export default function RenovacaoAnual() {
                 <div className="text-4xl" aria-hidden="true">🔄</div>
                 <h3
                   className="text-lg font-semibold text-white"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   Nenhuma renovação registada
                 </h3>
@@ -471,13 +471,13 @@ export default function RenovacaoAnual() {
                 {/* Stats */}
                 <div className="flex gap-3">
                   <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                    <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                    <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                       {renovacoes.length}
                     </p>
                     <p className="text-xs text-gray-400">{renovacoes.length === 1 ? 'renovação' : 'renovações'}</p>
                   </div>
                   <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                    <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                    <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                       {renovacoes.reduce((sum, r) => sum + (r.intencoes_novas || []).length, 0)}
                     </p>
                     <p className="text-xs text-gray-400">intenções totais</p>

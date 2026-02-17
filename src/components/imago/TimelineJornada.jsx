@@ -90,7 +90,7 @@ const StatCard = ({ value, label, icon }) => (
     <div className="text-lg mb-1" aria-hidden="true">{icon}</div>
     <p
       className="text-2xl font-bold text-white"
-      style={{ fontFamily: "'Cormorant Garamond', serif" }}
+      style={{ fontFamily: 'var(--font-titulos)' }}
     >
       {value}
     </p>
@@ -320,7 +320,7 @@ export default function TimelineJornada() {
             <div className="text-4xl" aria-hidden="true">🪞</div>
             <h3
               className="text-lg font-semibold text-white"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               A tua timeline esta vazia
             </h3>

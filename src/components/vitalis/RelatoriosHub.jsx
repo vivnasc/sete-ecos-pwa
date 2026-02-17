@@ -318,7 +318,7 @@ export default function RelatoriosHub() {
               className="w-12 h-12 object-contain drop-shadow-lg"
             />
             <div>
-              <h1 className="text-2xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Relatórios</h1>
+              <h1 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-titulos)' }}>Relatórios</h1>
               <p className="text-orange-100 mt-1">Acompanha a tua evolução</p>
             </div>
           </div>

@@ -50,7 +50,7 @@ const FraseCard = ({ frase, isOwn, onLike }) => {
         <div className="flex-1 min-w-0">
           <p
             className="text-white leading-relaxed italic"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem' }}
+            style={{ fontFamily: 'var(--font-titulos)', fontSize: '1.05rem' }}
           >
             "{frase.frase_sabedoria}"
           </p>
@@ -292,7 +292,7 @@ export default function Mentoria() {
                 <div className="text-4xl" aria-hidden="true">🌅</div>
                 <h3
                   className="text-lg font-semibold text-white"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   Nenhuma sabedoria partilhada ainda
                 </h3>
@@ -334,7 +334,7 @@ export default function Mentoria() {
               <div className="text-3xl" aria-hidden="true">🌟</div>
               <h2
                 className="text-lg font-semibold text-white"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Partilhar Sabedoria
               </h2>
@@ -396,7 +396,7 @@ export default function Mentoria() {
                 <p className="text-xs text-gray-500 mb-2">Pre-visualizacao:</p>
                 <p
                   className="text-white leading-relaxed italic"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   "{novaFrase.trim()}"
                 </p>
@@ -425,13 +425,13 @@ export default function Mentoria() {
             {/* Stats */}
             <div className="flex gap-3">
               <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                   {totalPartilhadas}
                 </p>
                 <p className="text-xs text-gray-400">{totalPartilhadas === 1 ? 'frase partilhada' : 'frases partilhadas'}</p>
               </div>
               <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                   {totalLikes}
                 </p>
                 <p className="text-xs text-gray-400">{totalLikes === 1 ? 'like recebido' : 'likes recebidos'}</p>
@@ -443,7 +443,7 @@ export default function Mentoria() {
                 <div className="text-4xl" aria-hidden="true">🌟</div>
                 <h3
                   className="text-lg font-semibold text-white"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   Ainda nao partilhaste sabedoria
                 </h3>

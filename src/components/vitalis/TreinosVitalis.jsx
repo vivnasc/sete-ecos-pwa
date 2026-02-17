@@ -1163,7 +1163,7 @@ export default function TreinosVitalis() {
             <Link to="/vitalis/dashboard" className="text-white/70 hover:text-white">
               ← Voltar
             </Link>
-            <h1 className="text-xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>💪 Treinos</h1>
+            <h1 className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>💪 Treinos</h1>
             <div className="w-16"></div>
           </div>
         </div>

@@ -124,7 +124,7 @@ function MenuTecnicas({ onSelect }) {
         </div>
         <h2
           className="text-2xl font-bold text-white mb-2"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           {g('Estas seguro', 'Estas segura')}. Respira.
         </h2>
@@ -262,7 +262,7 @@ function RespiracaoBox({ onVoltar, onConcluir }) {
   if (!activa) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
-        <h2 className="text-xl font-bold text-white mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <h2 className="text-xl font-bold text-white mb-3" style={{ fontFamily: 'var(--font-titulos)' }}>
           Respiração Box
         </h2>
         <p className="text-white/60 text-sm mb-8 max-w-xs">
@@ -384,7 +384,7 @@ function GroundingExercicio({ onVoltar, onConcluir }) {
   if (passoActual === -1) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
-        <h2 className="text-xl font-bold text-white mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <h2 className="text-xl font-bold text-white mb-3" style={{ fontFamily: 'var(--font-titulos)' }}>
           5-4-3-2-1 Grounding
         </h2>
         <p className="text-white/60 text-sm mb-3 max-w-xs">
@@ -569,7 +569,7 @@ function BodyScanRapido({ onVoltar, onConcluir }) {
   if (zonaActual === -1) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
-        <h2 className="text-xl font-bold text-white mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <h2 className="text-xl font-bold text-white mb-3" style={{ fontFamily: 'var(--font-titulos)' }}>
           Body Scan Rápido
         </h2>
         <p className="text-white/60 text-sm mb-3 max-w-xs">
@@ -659,7 +659,7 @@ function BodyScanRapido({ onVoltar, onConcluir }) {
       <div className="text-center mb-6 max-w-xs">
         <h3
           className="text-2xl font-bold mb-4"
-          style={{ color: SERENA_COLOR, fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ color: SERENA_COLOR, fontFamily: 'var(--font-titulos)' }}
         >
           {zona.nome}
         </h3>
@@ -748,7 +748,7 @@ function EcraConclusao({ tecnica, onVoltar, onMenu }) {
 
       <h2
         className="text-2xl font-bold text-white mb-3"
-        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+        style={{ fontFamily: 'var(--font-titulos)' }}
       >
         {g('Muito bem, querido', 'Muito bem, querida')}.
       </h2>

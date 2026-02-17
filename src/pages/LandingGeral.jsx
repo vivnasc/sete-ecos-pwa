@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import SEOHead from '../components/SEOHead';
 import PartilharSocial from '../components/PartilharSocial';
+import ScrollReveal from '../components/ScrollReveal';
 
 /**
  * SETE ECOS - Landing Page Geral
@@ -164,84 +165,95 @@ const LandingGeral = () => {
       />
       {/* Hero Section */}
       <header className="relative overflow-hidden">
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 hero-gradient-animated" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #1a1a2e 50%, #0f0f23 75%, #1a1a2e 100%)' }}>
           <div className="absolute top-20 left-20 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-20 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl"></div>
         </div>
 
         <nav className="relative z-10 max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <img src="/logos/CENTRO_7ECOS.png" alt="Sete Ecos" className="w-12 h-12" />
-            <span className="text-2xl font-bold text-white">Sete Ecos</span>
+            <img src="/logos/CENTRO_7ECOS.png" alt="Sete Ecos" className="w-12 h-12 animate-float" />
+            <span className="text-2xl font-bold text-white tracking-wide" style={{ fontFamily: 'var(--font-titulos)' }}>Sete Ecos</span>
           </div>
           <div className="hidden md:flex gap-4 items-center">
-            <a href="#lumina" className="px-4 py-2 text-purple-300 hover:text-white transition-colors">
+            <a href="#lumina" className="px-4 py-2 text-purple-300 hover:text-white transition-colors tracking-wide text-sm">
               Lumina
             </a>
-            <a href="#ecos" className="px-4 py-2 text-emerald-300 hover:text-white transition-colors">
+            <a href="#ecos" className="px-4 py-2 text-emerald-300 hover:text-white transition-colors tracking-wide text-sm">
               Os Ecos
             </a>
-            <a href="#comunidade" className="px-4 py-2 text-purple-300 hover:text-white transition-colors">
+            <a href="#comunidade" className="px-4 py-2 text-purple-300 hover:text-white transition-colors tracking-wide text-sm">
               Comunidade
             </a>
           </div>
           <div className="flex gap-3 items-center">
-            <Link to="/login" className="px-4 py-2 text-purple-300 hover:text-white transition-colors font-medium text-sm">
+            <Link to="/login" className="px-4 py-2 text-purple-300 hover:text-white transition-colors font-medium text-sm tracking-wide">
               Entrar
             </Link>
-            <Link to="/lumina" className="px-5 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-medium text-sm hover:shadow-lg hover:shadow-purple-500/30 transition-all">
+            <Link to="/lumina" className="px-5 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-medium text-sm hover:shadow-lg hover:shadow-purple-500/30 transition-all animate-pulse-glow-purple tracking-wide">
               Começar
             </Link>
           </div>
         </nav>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 text-center">
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
-            <span className="bg-gradient-to-r from-amber-200 via-purple-300 to-pink-200 bg-clip-text text-transparent">
-              Sete Ecos
-            </span>
-          </h1>
-          <p className="text-xl md:text-2xl text-purple-200 mb-4 max-w-3xl mx-auto">
-            Um ecossistema de transformação integral para a mulher moderna
-          </p>
-          <p className="text-lg text-purple-300/80 mb-12 max-w-2xl mx-auto">
-            Sete caminhos que se complementam para te guiar numa jornada de autodescoberta,
-            equilíbrio e plenitude. Cada eco desperta uma dimensão essencial do teu ser.
-          </p>
+        <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 md:py-32 text-center">
+          <ScrollReveal variant="scale" duration={0.8}>
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-8" style={{ fontFamily: 'var(--font-titulos)' }}>
+              <span className="bg-gradient-to-r from-amber-200 via-purple-300 to-pink-200 bg-clip-text text-transparent">
+                Sete Ecos
+              </span>
+            </h1>
+          </ScrollReveal>
+          <ScrollReveal variant="fadeUp" delay={0.2}>
+            <p className="text-xl md:text-2xl text-purple-200 mb-5 max-w-3xl mx-auto leading-relaxed">
+              Um ecossistema de transformação integral para a mulher moderna
+            </p>
+          </ScrollReveal>
+          <ScrollReveal variant="fadeUp" delay={0.4}>
+            <p className="text-lg text-purple-300/80 mb-14 max-w-2xl mx-auto leading-relaxed">
+              Sete caminhos que se complementam para te guiar numa jornada de autodescoberta,
+              equilíbrio e plenitude. Cada eco desperta uma dimensão essencial do teu ser.
+            </p>
+          </ScrollReveal>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/lumina"
-              className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-xl font-medium hover:bg-white/20 transition-all border border-white/20"
-            >
-              💡 Começar pelo Lumina (Gratuito)
-            </Link>
-            <Link
-              to="/vitalis"
-              className="px-8 py-4 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-emerald-500/30 transition-all"
-            >
-              🌱 Ir directo ao Vitalis
-            </Link>
-          </div>
+          <ScrollReveal variant="fadeUp" delay={0.6}>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                to="/lumina"
+                className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-xl font-medium hover:bg-white/20 transition-all duration-300 border border-white/20 hover:scale-105"
+              >
+                Começar pelo Lumina (Gratuito)
+              </Link>
+              <Link
+                to="/vitalis"
+                className="px-8 py-4 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 animate-pulse-glow-sage hover:scale-105"
+              >
+                Ir directo ao Vitalis
+              </Link>
+            </div>
+          </ScrollReveal>
         </div>
       </header>
 
       {/* O que está disponível */}
-      <section id="lumina" className="py-16 bg-gradient-to-r from-emerald-900/30 to-purple-900/30">
+      <section id="lumina" className="py-20 bg-gradient-to-r from-emerald-900/30 to-purple-900/30">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <span className="inline-block px-4 py-2 bg-green-500/20 rounded-full text-green-400 text-sm mb-4">
-              ✨ Já disponível
-            </span>
-            <h2 className="text-3xl font-bold text-white mb-4">Começa a Tua Jornada Hoje</h2>
-            <p className="text-purple-300 max-w-2xl mx-auto">
-              Todos os caminhos estão abertos — escolhe onde começar
-            </p>
-          </div>
+          <ScrollReveal variant="fadeUp">
+            <div className="text-center mb-14">
+              <span className="inline-block px-4 py-2 bg-green-500/20 rounded-full text-green-400 text-sm mb-4 tracking-wide">
+                Já disponível
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-5" style={{ fontFamily: 'var(--font-titulos)' }}>Começa a Tua Jornada Hoje</h2>
+              <p className="text-purple-300 max-w-2xl mx-auto leading-relaxed">
+                Todos os caminhos estão abertos — escolhe onde começar
+              </p>
+            </div>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Lumina */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-purple-500/30 hover:border-purple-500/50 transition-all">
+            <ScrollReveal variant="fadeLeft" delay={0.1}>
+            <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-purple-500/30 hover:border-purple-500/50 transition-all duration-300 hover:scale-[1.02]">
               <div className="flex items-start justify-between mb-4">
                 <img src="/logos/lumina-logo_v2.png" alt="Lumina" className="w-20 h-20" />
                 <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">
@@ -267,14 +279,16 @@ const LandingGeral = () => {
               </ul>
               <Link
                 to="/lumina"
-                className="block text-center py-3 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl font-medium hover:shadow-lg transition-all"
+                className="block text-center py-3 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 animate-pulse-glow-purple"
               >
                 Experimentar Lumina →
               </Link>
             </div>
+            </ScrollReveal>
 
             {/* Vitalis */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-emerald-500/30 hover:border-emerald-500/50 transition-all">
+            <ScrollReveal variant="fadeRight" delay={0.2}>
+            <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-emerald-500/30 hover:border-emerald-500/50 transition-all duration-300 hover:scale-[1.02]">
               <div className="flex items-start justify-between mb-4">
                 <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-20 h-20" />
                 <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-sm">
@@ -300,27 +314,31 @@ const LandingGeral = () => {
               </ul>
               <Link
                 to="/vitalis"
-                className="block text-center py-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl font-medium hover:shadow-lg transition-all"
+                className="block text-center py-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 animate-pulse-glow-sage"
               >
                 Conhecer Vitalis →
               </Link>
             </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
       {/* Flor dos 7 Ecos */}
-      <section id="ecos" className="py-20">
+      <section id="ecos" className="py-24">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">Os Sete Caminhos</h2>
-            <p className="text-purple-300 max-w-2xl mx-auto">
-              Cada eco representa uma dimensão essencial da tua vida.
-              Juntos, formam um ecossistema completo de transformação.
-            </p>
-          </div>
+          <ScrollReveal variant="fadeUp">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-5" style={{ fontFamily: 'var(--font-titulos)' }}>Os Sete Caminhos</h2>
+              <p className="text-purple-300 max-w-2xl mx-auto leading-relaxed">
+                Cada eco representa uma dimensão essencial da tua vida.
+                Juntos, formam um ecossistema completo de transformação.
+              </p>
+            </div>
+          </ScrollReveal>
 
           {/* Flor Visual */}
+          <ScrollReveal variant="scale" delay={0.2}>
           <div className="relative max-w-lg mx-auto mb-16" style={{ aspectRatio: '1/1' }}>
             {/* Centro */}
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
@@ -382,6 +400,7 @@ const LandingGeral = () => {
               })}
             </svg>
           </div>
+          </ScrollReveal>
 
           {/* Cards detalhados */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -431,35 +450,43 @@ const LandingGeral = () => {
       </section>
 
       {/* Comunidade - Espaço de Autoconhecimento */}
-      <section id="comunidade" className="py-20 bg-gradient-to-r from-purple-900/20 to-indigo-900/20">
+      <section id="comunidade" className="py-24 bg-gradient-to-r from-purple-900/20 to-indigo-900/20">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <span className="inline-block px-4 py-2 bg-purple-500/20 rounded-full text-purple-300 text-sm mb-4">
-              🌊 Espaço Colectivo
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Comunidade de Autoconhecimento</h2>
-            <p className="text-purple-300 max-w-2xl mx-auto">
-              Mais do que uma rede social — um espaço sagrado onde mulheres partilham reflexões,
-              oferecem ressonância e caminham juntas na transformação.
-            </p>
-          </div>
+          <ScrollReveal variant="fadeUp">
+            <div className="text-center mb-14">
+              <span className="inline-block px-4 py-2 bg-purple-500/20 rounded-full text-purple-300 text-sm mb-4 tracking-wide">
+                Espaço Colectivo
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-5" style={{ fontFamily: 'var(--font-titulos)' }}>Comunidade de Autoconhecimento</h2>
+              <p className="text-purple-300 max-w-2xl mx-auto leading-relaxed">
+                Mais do que uma rede social — um espaço sagrado onde mulheres partilham reflexões,
+                oferecem ressonância e caminham juntas na transformação.
+              </p>
+            </div>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-6 mb-10">
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20 text-center">
-              <span className="text-4xl block mb-3">🌊</span>
-              <h3 className="text-lg font-bold text-white mb-2">O Rio</h3>
-              <p className="text-purple-300/80 text-sm">Um diário colectivo de reflexões guiadas. Partilha pensamentos profundos com prompts de autoconhecimento.</p>
-            </div>
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-orange-500/20 text-center">
-              <span className="text-4xl block mb-3">🔥</span>
-              <h3 className="text-lg font-bold text-white mb-2">Fogueira</h3>
-              <p className="text-purple-300/80 text-sm">Um espaço efémero de 24 horas. Todas se reúnem em torno de um tema. Quando o fogo apaga, ficam as cinzas da memória.</p>
-            </div>
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-pink-500/20 text-center">
-              <span className="text-4xl block mb-3">👥</span>
-              <h3 className="text-lg font-bold text-white mb-2">Círculos de Eco</h3>
-              <p className="text-purple-300/80 text-sm">Pequenos grupos de 7-12 mulheres que exploram o mesmo caminho. Intimidade, apoio e partilha verdadeira.</p>
-            </div>
+            <ScrollReveal variant="fadeUp" delay={0.1}>
+              <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-7 border border-purple-500/20 text-center hover:border-purple-500/40 transition-all duration-300 hover:scale-[1.03]">
+                <span className="text-4xl block mb-3">🌊</span>
+                <h3 className="text-lg font-bold text-white mb-2">O Rio</h3>
+                <p className="text-purple-300/80 text-sm leading-relaxed">Um diário colectivo de reflexões guiadas. Partilha pensamentos profundos com prompts de autoconhecimento.</p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal variant="fadeUp" delay={0.2}>
+              <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-7 border border-orange-500/20 text-center hover:border-orange-500/40 transition-all duration-300 hover:scale-[1.03]">
+                <span className="text-4xl block mb-3">🔥</span>
+                <h3 className="text-lg font-bold text-white mb-2">Fogueira</h3>
+                <p className="text-purple-300/80 text-sm leading-relaxed">Um espaço efémero de 24 horas. Todas se reúnem em torno de um tema. Quando o fogo apaga, ficam as cinzas da memória.</p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal variant="fadeUp" delay={0.3}>
+              <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-7 border border-pink-500/20 text-center hover:border-pink-500/40 transition-all duration-300 hover:scale-[1.03]">
+                <span className="text-4xl block mb-3">👥</span>
+                <h3 className="text-lg font-bold text-white mb-2">Círculos de Eco</h3>
+                <p className="text-purple-300/80 text-sm leading-relaxed">Pequenos grupos de 7-12 mulheres que exploram o mesmo caminho. Intimidade, apoio e partilha verdadeira.</p>
+              </div>
+            </ScrollReveal>
           </div>
 
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20 max-w-2xl mx-auto">
@@ -516,31 +543,37 @@ const LandingGeral = () => {
       </section>
 
       {/* Aurora - O Destino */}
-      <section className="py-20 bg-gradient-to-b from-transparent to-amber-900/20">
+      <section className="py-24 bg-gradient-to-b from-transparent to-amber-900/20">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <img src="/logos/AURORA_LOGO_V3.png" alt="Aurora" className="w-24 h-24 mx-auto mb-6" />
-          <h2 className="text-4xl font-bold text-white mb-4">
+          <ScrollReveal variant="scale">
+            <img src="/logos/AURORA_LOGO_V3.png" alt="Aurora" className="w-24 h-24 mx-auto mb-6 animate-float" />
+          </ScrollReveal>
+          <ScrollReveal variant="fadeUp" delay={0.15}>
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-5" style={{ fontFamily: 'var(--font-titulos)' }}>
             <span className="bg-gradient-to-r from-amber-200 to-pink-200 bg-clip-text text-transparent">
               Aurōra
             </span>
           </h2>
-          <p className="text-xl text-amber-200 mb-4">A Coroação — Presença Plena</p>
-          <p className="text-purple-300/80 max-w-2xl mx-auto mb-8">
+          <p className="text-xl text-amber-200 mb-5">A Coroação — Presença Plena</p>
+          <p className="text-purple-300/80 max-w-2xl mx-auto mb-10 leading-relaxed">
             Ao completares os sete caminhos, atinges a Aurōra — o estado de integração
             onde todas as dimensões do teu ser vibram em harmonia.
             Não é um fim, mas um novo começar, com raízes profundas e asas prontas a voar.
           </p>
+          </ScrollReveal>
+          <ScrollReveal variant="fadeUp" delay={0.3}>
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-amber-500/20 max-w-md mx-auto">
             <p className="text-sm text-purple-300 mb-3">
               O culminar da tua transformação integral
             </p>
             <Link
               to="/aurora"
-              className="inline-block px-6 py-3 bg-gradient-to-r from-amber-500 to-pink-500 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-amber-500/30 transition-all"
+              className="inline-block px-6 py-3 bg-gradient-to-r from-amber-500 to-pink-500 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300 animate-pulse-glow"
             >
               Conhecer Aurōra →
             </Link>
           </div>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -595,13 +628,14 @@ const LandingGeral = () => {
       </section>
 
       {/* Lumina CTA - Funil Gratuito */}
-      <section id="lumina-cta" className="py-20">
+      <section id="lumina-cta" className="py-24">
         <div className="max-w-xl mx-auto px-6">
-          <div className="bg-gradient-to-br from-purple-900/40 to-indigo-900/40 backdrop-blur-sm rounded-3xl p-8 border border-purple-500/20 text-center">
+          <ScrollReveal variant="scale">
+          <div className="bg-gradient-to-br from-purple-900/40 to-indigo-900/40 backdrop-blur-sm rounded-3xl p-10 border border-purple-500/20 text-center">
             <div className="w-20 h-20 mx-auto mb-6 bg-purple-500/20 rounded-full flex items-center justify-center">
               <img src="/logos/lumina-eye.png" alt="Lumina" className="w-12 h-12" onError={(e) => { e.target.style.display='none'; }} />
             </div>
-            <h2 className="text-3xl font-bold text-white mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <h2 className="text-3xl font-bold text-white mb-3" style={{ fontFamily: 'var(--font-titulos)' }}>
               Começa por te Conhecer
             </h2>
             <p className="text-purple-200 mb-2 text-lg">
@@ -614,7 +648,7 @@ const LandingGeral = () => {
             <div className="flex flex-col gap-3 items-center">
               <Link
                 to="/lumina"
-                className="w-full max-w-xs py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all text-center block"
+                className="w-full max-w-xs py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 text-center block animate-pulse-glow-purple"
               >
                 Fazer o Meu Diagnóstico Gratuito
               </Link>
@@ -634,6 +668,7 @@ const LandingGeral = () => {
               ))}
             </div>
           </div>
+          </ScrollReveal>
         </div>
       </section>
 

@@ -303,7 +303,7 @@ export default function PagamentoAurea() {
       <nav className="px-6 py-4 flex justify-between items-center border-b border-amber-500/20">
         <Link to="/aurea" className="flex items-center gap-3">
           <img src="/logos/AUREA_LOGO_V3.png" alt="ÁUREA" className="w-10 h-10" />
-          <span className="text-xl font-bold text-amber-200" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <span className="text-xl font-bold text-amber-200" style={{ fontFamily: 'var(--font-titulos)' }}>
             ÁUREA
           </span>
         </Link>

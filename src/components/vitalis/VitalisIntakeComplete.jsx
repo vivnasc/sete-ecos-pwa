@@ -1018,7 +1018,7 @@ try {
             alt="Vitalis"
             className="w-20 h-20 mx-auto mb-4 drop-shadow-lg"
           />
-          <h1 className="text-4xl font-bold text-[#4A4035] mb-3" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+          <h1 className="text-4xl font-bold text-[#4A4035] mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>
             {section.title}
           </h1>
           {section.subtitle && <p className="text-[#6B4423] italic text-sm">{section.subtitle}</p>}

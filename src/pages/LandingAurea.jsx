@@ -193,7 +193,7 @@ const LandingAurea = () => {
   };
 
   return (
-    <div className="min-h-screen" style={{ fontFamily: "'DM Sans', sans-serif", background: 'linear-gradient(to bottom, #2D2A24, #3D3830, #2D2A24)' }}>
+    <div className="min-h-screen" style={{ fontFamily: 'var(--font-corpo)', background: 'linear-gradient(to bottom, #2D2A24, #3D3830, #2D2A24)' }}>
       <SEOHead
         title="ÁUREA - Valor & Presença | Sete Ecos"
         description="Para mulheres que merecem mais. Micro-práticas diárias, Espelho de Roupa, Carteira de Merecimento e coaching personalizado. Desde 975 MZN/mês."
@@ -216,7 +216,7 @@ const LandingAurea = () => {
       <nav className="fixed top-0 w-full px-4 md:px-8 py-4 flex justify-between items-center bg-[#2D2A24]/95 backdrop-blur-sm z-50 border-b border-amber-500/20">
         <Link to="/landing" className="flex items-center gap-3">
           <img src="/logos/AUREA_LOGO_V3.png" alt="ÁUREA" className="w-12 h-12" />
-          <span className="text-2xl font-bold text-amber-200" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <span className="text-2xl font-bold text-amber-200" style={{ fontFamily: 'var(--font-titulos)' }}>
             ÁUREA
           </span>
         </Link>
@@ -253,7 +253,7 @@ const LandingAurea = () => {
             <span className="text-amber-300 text-sm font-medium">✨ Já ajudou +200 mulheres a priorizarem-se</span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold text-amber-100 mb-6" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h1 className="text-5xl md:text-7xl font-bold text-amber-100 mb-6" style={{ fontFamily: 'var(--font-titulos)' }}>
             Valor & Presença
           </h1>
 
@@ -303,7 +303,7 @@ const LandingAurea = () => {
       <section className="py-20 px-4 bg-gradient-to-r from-amber-900/20 to-amber-800/20">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
               Reconheces-te?
             </h2>
           </div>
@@ -336,7 +336,7 @@ const LandingAurea = () => {
       <section id="features" className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
               Como ÁUREA funciona
             </h2>
             <p className="text-amber-200/70 max-w-2xl mx-auto">
@@ -382,7 +382,7 @@ const LandingAurea = () => {
       <section id="niveis" className="py-20 px-4 bg-gradient-to-r from-amber-900/20 to-amber-800/20">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
               Jóias de Ouro
             </h2>
             <p className="text-amber-200/70 max-w-2xl mx-auto">
@@ -416,7 +416,7 @@ const LandingAurea = () => {
       <section id="testemunhos" className="py-20 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
               Resultados reais
             </h2>
           </div>
@@ -443,7 +443,7 @@ const LandingAurea = () => {
         <div className="max-w-4xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="text-center md:text-left">
-              <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-6" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-6" style={{ fontFamily: 'var(--font-titulos)' }}>
                 Quem criou ÁUREA
               </h2>
               <p className="text-amber-200/80 mb-4">
@@ -485,7 +485,7 @@ const LandingAurea = () => {
       <section id="precos" className="py-20 px-4 bg-gradient-to-r from-amber-900/20 to-amber-800/20">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
               Investimento em ti
             </h2>
             <p className="text-amber-200/70">
@@ -553,7 +553,7 @@ const LandingAurea = () => {
       {/* FAQ */}
       <section className="py-20 px-4">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-amber-100 text-center mb-12" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-3xl font-bold text-amber-100 text-center mb-12" style={{ fontFamily: 'var(--font-titulos)' }}>
             Perguntas frequentes
           </h2>
 
@@ -581,7 +581,7 @@ const LandingAurea = () => {
       {/* CTA Final */}
       <section className="py-20 px-4 bg-gradient-to-r from-amber-600/20 to-amber-500/20">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
             A tua jornada começa agora
           </h2>
           <p className="text-amber-200/80 text-lg mb-4">

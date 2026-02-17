@@ -93,7 +93,7 @@ export default function GeradorPDFPlano({ userId, onClose }) {
             alt="Vitalis"
             style={{width:'100px',height:'100px',objectFit:'contain',marginBottom:'15px',filter:'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'}}
           />
-          <h2 style={{fontSize:'24px',fontWeight:'600',margin:'0 0 8px',fontFamily:'Cormorant Garamond, serif'}}>Plano Alimentar</h2>
+          <h2 style={{fontSize:'24px',fontWeight:'600',margin:'0 0 8px',fontFamily:'Playfair Display, serif'}}>Plano Alimentar</h2>
           <p style={{fontSize:'15px',opacity:0.9,margin:0}}>{dados?.nome}</p>
         </div>
 

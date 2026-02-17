@@ -288,7 +288,7 @@ export default function FocoConsciente() {
                 <div>
                   <p
                     className="text-[#C1634A] text-lg leading-relaxed"
-                    style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                    style={{ fontFamily: 'var(--font-titulos)' }}
                   >
                     &ldquo;Isto e realmente importante ou estou a evitar algo?&rdquo;
                   </p>
@@ -364,7 +364,7 @@ export default function FocoConsciente() {
                   ? 'bg-[#C1634A] hover:bg-[#a8523c] shadow-lg shadow-[#C1634A]/30 active:scale-[0.98]'
                   : 'bg-white/10 text-white/30 cursor-not-allowed'
               }`}
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Acender o Foco
             </button>
@@ -440,7 +440,7 @@ export default function FocoConsciente() {
 
                   {/* Tempo restante */}
                   <p className="text-white text-4xl font-light tracking-widest mt-2"
-                     style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                     style={{ fontFamily: 'var(--font-titulos)' }}>
                     {formatTime(tempoRestante)}
                   </p>
 
@@ -511,7 +511,7 @@ export default function FocoConsciente() {
                 <div className="relative bg-[#2e1a14] border border-[#C1634A]/30 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
                   <FlameIcon size={32} className="text-[#C1634A]/50 mx-auto mb-3" />
                   <p className="text-white text-center text-lg mb-2"
-                     style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                     style={{ fontFamily: 'var(--font-titulos)' }}>
                     Tens a certeza?
                   </p>
                   <p className="text-white/50 text-center text-sm mb-6">
@@ -548,7 +548,7 @@ export default function FocoConsciente() {
               </div>
               <h2
                 className="text-white text-2xl"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Sessao {g('completo', 'completa')}
               </h2>
@@ -560,7 +560,7 @@ export default function FocoConsciente() {
             {/* Pergunta: aproximou do importante? */}
             <div className="bg-white/5 border border-[#C1634A]/20 rounded-2xl p-5 space-y-4">
               <p className="text-white/80 text-sm"
-                 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem' }}>
+                 style={{ fontFamily: 'var(--font-titulos)', fontSize: '1.05rem' }}>
                 Isto aproximou-me do que importa?
               </p>
               <div className="grid grid-cols-3 gap-3">
@@ -630,7 +630,7 @@ export default function FocoConsciente() {
                   ? 'bg-[#C1634A] hover:bg-[#a8523c] shadow-lg shadow-[#C1634A]/30 active:scale-[0.98]'
                   : 'bg-white/10 text-white/30 cursor-not-allowed'
               }`}
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               {salvando ? 'A guardar...' : `Guardar Reflexao (+${CHAMAS_POR_SESSAO} chamas)`}
             </button>
@@ -642,7 +642,7 @@ export default function FocoConsciente() {
           <div className="flex items-center justify-between">
             <h3
               className="text-white/80 text-lg"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Historico de Sessoes
             </h3>

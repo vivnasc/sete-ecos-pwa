@@ -306,7 +306,7 @@ function GuidedSteps({ passos, onComplete, usaPausa = true }) {
         style={{ animation: 'fadeInUp 0.6s ease-out' }}
         key={passoActual}
       >
-        <p className="text-xl text-white/90 leading-relaxed" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <p className="text-xl text-white/90 leading-relaxed" style={{ fontFamily: 'var(--font-titulos)' }}>
           {passos[passoActual]?.texto}
         </p>
       </div>
@@ -356,7 +356,7 @@ function CartaNaoEnviada({ onComplete, onClose }) {
         </div>
         <h3
           className="text-2xl text-white/90 mb-3"
-          style={{ fontFamily: "'Cormorant Garamond', serif", animation: 'fadeInUp 1s ease-out' }}
+          style={{ fontFamily: 'var(--font-titulos)', animation: 'fadeInUp 1s ease-out' }}
         >
           {g('Libertado', 'Libertada')}
         </h3>
@@ -378,7 +378,7 @@ function CartaNaoEnviada({ onComplete, onClose }) {
   if (!categoria) {
     return (
       <div className="px-4 py-6">
-        <h3 className="text-lg text-white/90 mb-2 text-center" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <h3 className="text-lg text-white/90 mb-2 text-center" style={{ fontFamily: 'var(--font-titulos)' }}>
           Sobre o que e esta carta?
         </h3>
         <p className="text-white/50 text-sm text-center mb-6">
@@ -423,7 +423,7 @@ function CartaNaoEnviada({ onComplete, onClose }) {
               ? 'burning-paper'
               : 'bg-white/5 border border-white/10'
           }`}
-          style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.1rem', lineHeight: '1.8' }}
+          style={{ fontFamily: 'var(--font-titulos)', fontSize: '1.1rem', lineHeight: '1.8' }}
         />
 
         {queimando && (
@@ -498,7 +498,7 @@ function DancaLivre({ onComplete }) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] px-6 text-center">
         <div className="text-6xl mb-6">{'\uD83D\uDC83'}</div>
-        <h3 className="text-2xl text-white/90 mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <h3 className="text-2xl text-white/90 mb-3" style={{ fontFamily: 'var(--font-titulos)' }}>
           Danca Livre
         </h3>
         <p className="text-white/60 mb-2 max-w-xs">
@@ -524,7 +524,7 @@ function DancaLivre({ onComplete }) {
         <div className="text-5xl mb-6" style={{ animation: 'fadeInUp 0.8s ease-out' }}>{'\u2728'}</div>
         <h3
           className="text-2xl text-white/90 mb-3"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Lindo. {g('Obrigado', 'Obrigada')} corpo.
         </h3>
@@ -549,7 +549,7 @@ function DancaLivre({ onComplete }) {
       />
       <p
         className="text-xl text-white/70 mt-8 text-center max-w-xs"
-        style={{ fontFamily: "'Cormorant Garamond', serif", animation: 'fadeInUp 0.6s ease-out' }}
+        style={{ fontFamily: 'var(--font-titulos)', animation: 'fadeInUp 0.6s ease-out' }}
         key={msgIndex}
       >
         {mensagens[msgIndex]}
@@ -607,7 +607,7 @@ function SacudimentoCorporal({ onComplete }) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] px-6 text-center">
         <div className="text-6xl mb-6">{'\uD83E\uDD32'}</div>
-        <h3 className="text-2xl text-white/90 mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <h3 className="text-2xl text-white/90 mb-3" style={{ fontFamily: 'var(--font-titulos)' }}>
           Sacudimento Corporal
         </h3>
         <p className="text-white/60 mb-2 max-w-xs">
@@ -631,7 +631,7 @@ function SacudimentoCorporal({ onComplete }) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] px-6 text-center">
         <div className="text-5xl mb-6" style={{ animation: 'fadeInUp 0.8s ease-out' }}>{'\u2728'}</div>
-        <h3 className="text-2xl text-white/90 mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <h3 className="text-2xl text-white/90 mb-3" style={{ fontFamily: 'var(--font-titulos)' }}>
           Corpo mais leve.
         </h3>
         <p className="text-white/60 mb-8">
@@ -671,7 +671,7 @@ function SacudimentoCorporal({ onComplete }) {
 
       {/* Instrucao */}
       <div className="text-center px-4 mb-8" key={passoIdx} style={{ animation: 'fadeInUp 0.5s ease-out' }}>
-        <p className="text-xl text-white/90 leading-relaxed" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <p className="text-xl text-white/90 leading-relaxed" style={{ fontFamily: 'var(--font-titulos)' }}>
           {PASSOS_SACUDIMENTO[passoIdx].texto}
         </p>
       </div>
@@ -695,7 +695,7 @@ function ReflexaoFinal({ tipoRitual, onSave, saving }) {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh] px-4">
-      <h3 className="text-xl text-white/90 mb-2 text-center" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+      <h3 className="text-xl text-white/90 mb-2 text-center" style={{ fontFamily: 'var(--font-titulos)' }}>
         Como te sentes agora?
       </h3>
       <p className="text-white/50 text-sm text-center mb-6 max-w-xs">
@@ -708,7 +708,7 @@ function ReflexaoFinal({ tipoRitual, onSave, saving }) {
         placeholder="O que sinto agora..."
         rows={5}
         className="w-full max-w-md px-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white/90 placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-[#6B8E9B]/50 resize-none"
-        style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem', lineHeight: '1.7' }}
+        style={{ fontFamily: 'var(--font-titulos)', fontSize: '1.05rem', lineHeight: '1.7' }}
       />
 
       <div className="flex gap-3 mt-6">
@@ -888,7 +888,7 @@ export default function RituaisLibertacao() {
           <div className="text-6xl mb-6" style={{ animation: 'fadeInUp 0.8s ease-out' }}>{'\uD83C\uDF3F'}</div>
           <h2
             className="text-2xl text-white/90 mb-3"
-            style={{ fontFamily: "'Cormorant Garamond', serif", animation: 'fadeInUp 1s ease-out' }}
+            style={{ fontFamily: 'var(--font-titulos)', animation: 'fadeInUp 1s ease-out' }}
           >
             Ritual concluido
           </h2>

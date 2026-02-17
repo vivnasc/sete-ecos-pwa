@@ -302,7 +302,7 @@ export const ReceitasBrowse = () => {
               />
             </div>
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
                 Biblioteca de Receitas
               </h1>
               <p className="text-white/90 text-lg">

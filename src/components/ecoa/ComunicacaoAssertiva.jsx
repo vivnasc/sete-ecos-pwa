@@ -82,7 +82,7 @@ const TemplateCard = ({ template, onPractice }) => (
 
     {/* Template formula */}
     <div className="p-3 rounded-lg mb-3" style={{ background: `${ACCENT}15` }}>
-      <p className="text-sm text-gray-300 italic" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+      <p className="text-sm text-gray-300 italic" style={{ fontFamily: 'var(--font-titulos)' }}>
         {template.template}
       </p>
     </div>
@@ -135,7 +135,7 @@ const PracticeView = ({ template, onBack, onDone }) => {
           </svg>
         </button>
         <div className="flex-1">
-          <h2 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
             {template.nome}
           </h2>
         </div>
@@ -144,7 +144,7 @@ const PracticeView = ({ template, onBack, onDone }) => {
 
       {/* Template reference */}
       <div className="p-3 rounded-xl" style={{ background: ACCENT_SUBTLE }}>
-        <p className="text-sm text-gray-300 italic" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <p className="text-sm text-gray-300 italic" style={{ fontFamily: 'var(--font-titulos)' }}>
           {template.template}
         </p>
       </div>
@@ -173,7 +173,7 @@ const PracticeView = ({ template, onBack, onDone }) => {
         <div className="space-y-4 animate-fadeIn">
           <div className="p-5 rounded-xl" style={{ background: `${ACCENT}15`, border: `1px solid ${ACCENT}33` }}>
             <p className="text-xs text-gray-500 mb-2">A tua frase:</p>
-            <p className="text-base text-white leading-relaxed" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.1rem' }}>
+            <p className="text-base text-white leading-relaxed" style={{ fontFamily: 'var(--font-titulos)', fontSize: '1.1rem' }}>
               "{preview}"
             </p>
           </div>
@@ -415,7 +415,7 @@ export default function ComunicacaoAssertiva() {
                   {'\uD83D\uDCAC'}
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-white mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  <h2 className="text-xl font-semibold text-white mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
                     Situacao registada!
                   </h2>
                   <p className="text-sm text-gray-400 max-w-xs">
@@ -441,7 +441,7 @@ export default function ComunicacaoAssertiva() {
             ) : (
               <>
                 <div className="text-center mb-4">
-                  <h2 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  <h2 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                     Registar situacao
                   </h2>
                   <p className="text-sm text-gray-400 mt-1">
@@ -531,7 +531,7 @@ export default function ComunicacaoAssertiva() {
             ) : historico.length === 0 ? (
               <div className="text-center py-16 space-y-4">
                 <div className="text-4xl">{'\uD83D\uDCAC'}</div>
-                <h3 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h3 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                   Ainda sem registos
                 </h3>
                 <p className="text-sm text-gray-400 max-w-xs mx-auto">
@@ -558,7 +558,7 @@ export default function ComunicacaoAssertiva() {
           // ---- TEMPLATES ----
           <div className="space-y-4 animate-fadeIn">
             <div className="text-center mb-6">
-              <h2 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              <h2 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                 Templates de Assertividade
               </h2>
               <p className="text-sm text-gray-400 mt-1">

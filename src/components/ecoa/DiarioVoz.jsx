@@ -244,7 +244,7 @@ export default function DiarioVoz() {
                 <div className="text-2xl mb-3" aria-hidden="true">🎤</div>
                 <p
                   className="text-lg text-white italic leading-relaxed"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   &ldquo;{currentPrompt}&rdquo;
                 </p>
@@ -331,7 +331,7 @@ export default function DiarioVoz() {
             <div>
               <h2
                 className="text-xl font-semibold text-white mb-2"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Voz {g('registado', 'registada')} no diario
               </h2>
@@ -372,7 +372,7 @@ export default function DiarioVoz() {
                 <div className="text-4xl">🎤</div>
                 <h3
                   className="text-lg font-semibold text-white"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   O teu diario esta vazio
                 </h3>

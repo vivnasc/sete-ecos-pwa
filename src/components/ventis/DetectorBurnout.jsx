@@ -111,7 +111,7 @@ const EstadoNormal = ({ tendencia }) => (
       </div>
       <h2
         className="text-xl font-bold text-white mb-2"
-        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+        style={{ fontFamily: 'var(--font-titulos)' }}
       >
         O teu ritmo está sustentável
       </h2>
@@ -126,7 +126,7 @@ const EstadoNormal = ({ tendencia }) => (
       <div className="bg-white/5 rounded-2xl border border-white/10 p-5">
         <h3
           className="text-white font-semibold mb-4"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Tendência dos últimos 7 dias
         </h3>
@@ -147,7 +147,7 @@ const EstadoNormal = ({ tendencia }) => (
     <div className="bg-white/5 rounded-2xl border border-white/10 p-5">
       <h3
         className="text-white font-semibold mb-3"
-        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+        style={{ fontFamily: 'var(--font-titulos)' }}
       >
         Para manter o equilíbrio
       </h3>
@@ -199,7 +199,7 @@ const EstadoAlerta = ({
         </div>
         <h2
           className="text-xl font-bold text-white mb-2"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Há {diasConsecutivos} dias em modo esforço
         </h2>
@@ -223,7 +223,7 @@ const EstadoAlerta = ({
         <div className="bg-white/5 rounded-2xl border border-white/10 p-5">
           <h3
             className="text-white font-semibold mb-4"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Os teus últimos dias
           </h3>
@@ -244,7 +244,7 @@ const EstadoAlerta = ({
       <div className="bg-white/5 rounded-2xl border border-white/10 p-5">
         <h3
           className="text-white font-semibold mb-1"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           O que podes fazer agora
         </h3>
@@ -328,7 +328,7 @@ const HistoricoAlertas = ({ alertas }) => {
         <div className="text-3xl mb-3" role="img" aria-hidden="true">🍃</div>
         <h3
           className="text-white font-semibold mb-1"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Sem alertas recentes
         </h3>
@@ -343,7 +343,7 @@ const HistoricoAlertas = ({ alertas }) => {
     <div className="bg-white/5 rounded-2xl border border-white/10 p-5">
       <h3
         className="text-white font-semibold mb-4"
-        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+        style={{ fontFamily: 'var(--font-titulos)' }}
       >
         Alertas nos últimos 3 meses
       </h3>
@@ -558,7 +558,7 @@ export default function DetectorBurnout() {
           </div>
           <h2
             className="text-2xl font-bold text-white mb-3"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             {g('Corajoso', 'Corajosa')} por agires
           </h2>

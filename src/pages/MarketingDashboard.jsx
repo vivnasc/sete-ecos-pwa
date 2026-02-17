@@ -340,7 +340,7 @@ export default function MarketingDashboard() {
               <span className="text-[10px] bg-white/10 px-3 py-1 rounded-full border border-white/20">LANÇAMENTO</span>
             </div>
           </div>
-          <h1 className="text-2xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h1 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-titulos)' }}>
             Plano de Lançamento
           </h1>
           <p className="text-white/50 text-sm mt-1">8-21 Fevereiro 2026 &middot; Semana 1: Aquecer &middot; Semana 2: Lançar</p>

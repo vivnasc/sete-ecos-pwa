@@ -224,7 +224,7 @@ export default function CicloEmocional() {
         >
           <h2
             className="text-white text-lg font-semibold mb-1"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Como te sentes hoje?
           </h2>
@@ -311,7 +311,7 @@ export default function CicloEmocional() {
           >
             <h3
               className="text-white text-lg font-semibold mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Ultimos 14 dias
             </h3>
@@ -363,7 +363,7 @@ export default function CicloEmocional() {
           >
             <h3
               className="text-white text-lg font-semibold mb-3"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Padrao Detectado
             </h3>

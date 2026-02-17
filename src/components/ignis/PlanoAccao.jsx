@@ -223,7 +223,7 @@ export default function PlanoAccao() {
           >
             <h3
               className="text-white text-lg font-bold"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Novo Objectivo
             </h3>
@@ -356,7 +356,7 @@ export default function PlanoAccao() {
           <div>
             <h3
               className="text-white text-lg font-bold mb-3"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Planos Activos
             </h3>
@@ -475,7 +475,7 @@ export default function PlanoAccao() {
             <span className="text-5xl block mb-4">🎯</span>
             <h3
               className="text-white text-lg font-bold mb-2"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Sem planos ainda
             </h3>

@@ -163,7 +163,7 @@ export const CheckinDiario = () => {
               className="w-14 h-14 object-contain drop-shadow-lg"
             />
             <div>
-              <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Cormorant Garamond, serif', letterSpacing: '2px' }}>
+              <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Playfair Display, serif', letterSpacing: '2px' }}>
                 Check-in Diário
               </h1>
               <p className="text-white/80">Como está o teu dia hoje? 🌱</p>

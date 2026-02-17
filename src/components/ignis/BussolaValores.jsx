@@ -260,7 +260,7 @@ function DefinirSignificados({ valoresSelecionados, onComplete, onBack }) {
         </div>
         <h3
           className="text-xl text-white/90 mb-2"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           O que este valor significa para ti?
         </h3>
@@ -276,7 +276,7 @@ function DefinirSignificados({ valoresSelecionados, onComplete, onBack }) {
         placeholder={`O que ${valoresSelecionados[currentIdx]} significa na tua vida...`}
         rows={4}
         className="w-full px-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white/90 placeholder-white/25 focus:outline-none focus:ring-2 focus:ring-[#C1634A]/50 resize-none"
-        style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem', lineHeight: '1.7' }}
+        style={{ fontFamily: 'var(--font-titulos)', fontSize: '1.05rem', lineHeight: '1.7' }}
         autoFocus
       />
 
@@ -364,7 +364,7 @@ function VerificacaoAlinhamento({ valores, onComplete, onCancel, saving }) {
         </div>
         <h3
           className="text-lg text-white/90 mb-2"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Esta semana, vivi de acordo com este valor?
         </h3>
@@ -669,7 +669,7 @@ export default function BussolaValores() {
           </div>
           <h2
             className="text-2xl text-white/90 mb-3"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Mudar os teus valores é sério.
           </h2>
@@ -758,7 +758,7 @@ export default function BussolaValores() {
           <div className="text-center mb-8" style={{ animation: 'fadeInUp 0.6s ease-out' }}>
             <p
               className="text-lg text-white/80 leading-relaxed"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               A tua bússola interior precisa de direcção. Identifica 5 valores que são essenciais para ti.
             </p>
@@ -856,7 +856,7 @@ export default function BussolaValores() {
               background: selecionados.length === 5
                 ? 'linear-gradient(135deg, #C1634A, #E07A5F)'
                 : 'rgba(255,255,255,0.05)',
-              fontFamily: "'Cormorant Garamond', serif"
+              fontFamily: 'var(--font-titulos)'
             }}
           >
             <FireIcon />
@@ -901,7 +901,7 @@ export default function BussolaValores() {
           <div className="flex items-center justify-center gap-2 mt-1">
             <span
               className="text-4xl font-bold"
-              style={{ color: '#C1634A', fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ color: '#C1634A', fontFamily: 'var(--font-titulos)' }}
             >
               {overallScore}
             </span>
@@ -958,7 +958,7 @@ export default function BussolaValores() {
           className="w-full flex items-center justify-center gap-2 py-4 mt-8 rounded-xl text-white font-medium text-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
           style={{
             background: 'linear-gradient(135deg, #C1634A, #E07A5F)',
-            fontFamily: "'Cormorant Garamond', serif"
+            fontFamily: 'var(--font-titulos)'
           }}
         >
           <FireIcon />

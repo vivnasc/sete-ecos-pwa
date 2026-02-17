@@ -380,7 +380,7 @@ export default function MapaSilenciamento() {
           <div>
             <h3
               className="text-white text-lg font-semibold mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Zonas de Silêncio
             </h3>
@@ -419,7 +419,7 @@ export default function MapaSilenciamento() {
             <div>
               <h3
                 className="text-white text-lg font-semibold mb-4"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Com Quem Te Calas
               </h3>
@@ -458,7 +458,7 @@ export default function MapaSilenciamento() {
             <div>
               <h3
                 className="text-white text-lg font-semibold mb-4"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Verdades Guardadas
               </h3>
@@ -538,7 +538,7 @@ export default function MapaSilenciamento() {
             <div className="text-center mb-6">
               <h2
                 className="text-white text-xl font-bold mb-2"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Onde te calas mais?
               </h2>
@@ -635,7 +635,7 @@ export default function MapaSilenciamento() {
             <div className="text-center mb-6">
               <h2
                 className="text-white text-xl font-bold mb-2"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Com quem te calas?
               </h2>
@@ -755,7 +755,7 @@ export default function MapaSilenciamento() {
             <div className="text-center mb-6">
               <h2
                 className="text-white text-xl font-bold mb-2"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Que verdades guardam a tua garganta?
               </h2>

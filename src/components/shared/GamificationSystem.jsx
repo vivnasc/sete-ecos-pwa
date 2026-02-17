@@ -115,7 +115,7 @@ export function GamificationPanel({ eco, config, total, streak, userData }) {
         <div className="flex items-center justify-between mb-3">
           <div>
             <p className="text-white/50 text-xs uppercase tracking-wider">Nivel Actual</p>
-            <p className="text-white text-xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <p className="text-white text-xl font-bold" style={{ fontFamily: 'var(--font-titulos)' }}>
               {levelInfo.current.name}
             </p>
           </div>

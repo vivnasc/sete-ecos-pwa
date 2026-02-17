@@ -9,7 +9,7 @@ import { g } from '../../utils/genero'
 /**
  * PERFIL IGNIS — Perfil do utilizador no Ignis
  * Mostra: gamificacao completa, stats, badges, config
- * Tema: #C1634A, #2e1a14, Cormorant Garamond, Chamas
+ * Tema: #C1634A, #2e1a14, Playfair Display, Chamas
  */
 
 const IGNIS_COLOR = '#C1634A'
@@ -100,7 +100,7 @@ export default function PerfilIgnis() {
           </div>
           <h2
             className="text-xl font-bold text-white"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Nivel: {clientData?.nivel || 'Faisca'}
           </h2>

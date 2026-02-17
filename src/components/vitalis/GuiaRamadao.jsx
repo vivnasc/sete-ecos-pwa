@@ -37,7 +37,7 @@ export default function GuiaRamadao() {
               ←
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+              <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'Playfair Display, serif' }}>
                 Guia Ramadan
               </h1>
               <p className="text-white/70 text-sm">Nutrição consciente durante o mês sagrado</p>
@@ -483,7 +483,7 @@ export default function GuiaRamadao() {
 
             <div className="bg-gradient-to-r from-[#1a1a3e] to-[#2d2d5e] rounded-2xl p-5 text-white text-center">
               <p className="text-2xl mb-2">🤲</p>
-              <p className="text-lg font-bold mb-1" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+              <p className="text-lg font-bold mb-1" style={{ fontFamily: 'Playfair Display, serif' }}>
                 Ramadan Mubarak
               </p>
               <p className="text-white/80 text-sm">

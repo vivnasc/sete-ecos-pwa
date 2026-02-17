@@ -328,7 +328,7 @@ const EspacoRetorno = () => {
             </div>
           </div>
 
-          <h1 className="text-3xl font-bold text-white mb-4" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+          <h1 className="text-3xl font-bold text-white mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
             Espaço de Retorno
           </h1>
           
@@ -375,7 +375,7 @@ const EspacoRetorno = () => {
             >
               ← Voltar
             </button>
-            <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+            <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
               O que estás a sentir agora?
             </h2>
             <p className="text-purple-300">
@@ -834,7 +834,7 @@ const EspacoRetorno = () => {
             />
           </div>
 
-          <h2 className="text-3xl font-bold text-white mb-4" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+          <h2 className="text-3xl font-bold text-white mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
             Momento Guardado
           </h2>
           

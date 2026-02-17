@@ -147,7 +147,7 @@ export default function BibliotecaEmocoes() {
               <span className="text-6xl block mb-3">{emocao.icon}</span>
               <h2
                 className="text-2xl font-bold text-white"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 {emocao.nome}
               </h2>

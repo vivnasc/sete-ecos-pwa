@@ -141,7 +141,7 @@ export default function Login() {
       <nav className="px-4 py-4 flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
           <img src="/logos/CENTRO_7ECOS.png" alt="Sete Ecos" className="w-8 h-8" />
-          <span className="text-lg font-bold text-[#4A3728]" style={{ fontFamily: "'Cormorant Garamond', serif", letterSpacing: '0.1em' }}>
+          <span className="text-lg font-bold text-[#4A3728]" style={{ fontFamily: 'var(--font-titulos)', letterSpacing: '0.1em' }}>
             SETE ECOS
           </span>
         </Link>
@@ -157,7 +157,7 @@ export default function Login() {
             {/* Logo e titulo */}
             <div className="text-center mb-8">
               <img src="/logos/CENTRO_7ECOS.png" alt="Sete Ecos" className="w-16 h-16 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold text-[#4A3728] mb-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              <h1 className="text-2xl font-bold text-[#4A3728] mb-1" style={{ fontFamily: 'var(--font-titulos)' }}>
                 {isLogin ? g('Bem-vindo de volta', 'Bem-vinda de volta') : 'Cria a tua conta'}
               </h1>
               <p className="text-[#6B5344] text-sm">

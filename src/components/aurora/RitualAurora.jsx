@@ -408,7 +408,7 @@ export default function RitualAurora() {
               <div className="text-4xl" aria-hidden="true">🌅</div>
               <h2
                 className="text-xl font-semibold text-white"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Bom dia, {g('querido', 'querida')}
               </h2>
@@ -466,7 +466,7 @@ export default function RitualAurora() {
                 <div className="text-4xl" aria-hidden="true">🌅</div>
                 <h3
                   className="text-lg font-semibold text-white"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   Nenhum ritual registado
                 </h3>
@@ -486,13 +486,13 @@ export default function RitualAurora() {
                 {/* Stats */}
                 <div className="flex gap-3">
                   <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                    <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                    <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                       {logEntries.length}
                     </p>
                     <p className="text-xs text-gray-400">{logEntries.length === 1 ? 'ritual' : 'rituais'}</p>
                   </div>
                   <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                    <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                    <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                       {logEntries.reduce((sum, e) => sum + (e.duracao_minutos || 0), 0)}
                     </p>
                     <p className="text-xs text-gray-400">min totais</p>
@@ -525,7 +525,7 @@ export default function RitualAurora() {
                 Sair
               </button>
               <div className="text-right">
-                <p className="text-lg font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <p className="text-lg font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                   {formatTime(tempoDecorrido)}
                 </p>
                 <p className="text-xs text-gray-500">
@@ -574,7 +574,7 @@ export default function RitualAurora() {
             <div>
               <h2
                 className="text-xl font-semibold text-white mb-2"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Ritual completo!
               </h2>
@@ -633,7 +633,7 @@ export default function RitualAurora() {
             <div>
               <h2
                 className="text-xl font-semibold text-white mb-2"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 {g('Renovado', 'Renovada')} pela Aurora
               </h2>

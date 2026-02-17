@@ -7,7 +7,7 @@ import { g } from '../utils/genero'
  * "Integração Final" - Elemento: Luz
  * Módulo final de celebração, manutenção e renovação
  * GRATUITA — desbloqueia ao completar todos os 7 ecos
- * Tema: rosa (#D4A5A5), Cormorant Garamond
+ * Tema: rosa (#D4A5A5), Playfair Display
  */
 
 const LandingAurora = () => {
@@ -78,7 +78,7 @@ const LandingAurora = () => {
   ]
 
   return (
-    <div className="min-h-screen" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+    <div className="min-h-screen" style={{ fontFamily: 'var(--font-corpo)' }}>
 
       {/* ===== HERO ===== */}
       <header
@@ -95,14 +95,14 @@ const LandingAurora = () => {
 
           <h1
             className="text-5xl md:text-7xl font-bold text-white mb-4"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             AURORA
           </h1>
 
           <p
             className="text-xl md:text-2xl text-white/80 mb-2"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}
+            style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}
           >
             Integração Final
           </p>
@@ -140,7 +140,7 @@ const LandingAurora = () => {
         <div className="max-w-3xl mx-auto text-center">
           <h2
             className="text-3xl md:text-4xl font-bold text-white mb-6"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Percorreste um caminho extraordinário. E agora?
           </h2>
@@ -183,7 +183,7 @@ const LandingAurora = () => {
           <div className="text-center mb-14">
             <h2
               className="text-3xl md:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               A Aurora é onde a tua jornada se torna eterna
             </h2>
@@ -201,7 +201,7 @@ const LandingAurora = () => {
                 <div className="text-3xl mb-4 group-hover:scale-110 transition-transform">
                   {f.icone}
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h3 className="text-lg font-bold text-white mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
                   {f.titulo}
                 </h3>
                 <p className="text-[#D4A5A5]/70 text-sm">{f.desc}</p>
@@ -217,7 +217,7 @@ const LandingAurora = () => {
           <div className="text-center mb-14">
             <h2
               className="text-3xl md:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Como desbloquear a Aurora
             </h2>
@@ -234,7 +234,7 @@ const LandingAurora = () => {
               >
                 <span
                   className="absolute top-3 right-4 text-5xl font-bold text-white/5"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   {p.numero}
                 </span>
@@ -246,7 +246,7 @@ const LandingAurora = () => {
                 </div>
                 <h3
                   className="text-xl font-bold text-white mb-3"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   {p.titulo}
                 </h3>
@@ -263,7 +263,7 @@ const LandingAurora = () => {
           <div className="text-center mb-14">
             <h2
               className="text-3xl md:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Os 7 ecos que desbloqueiam a Aurora
             </h2>
@@ -300,7 +300,7 @@ const LandingAurora = () => {
         <div className="max-w-2xl mx-auto">
           <h2
             className="text-3xl md:text-4xl font-bold text-white mb-4"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             A Aurora espera por ti
           </h2>
@@ -331,7 +331,7 @@ const LandingAurora = () => {
           <div className="flex items-center gap-3">
             <span
               className="text-xl font-bold text-[#D4A5A5]"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               AURORA
             </span>

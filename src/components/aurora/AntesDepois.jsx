@@ -280,7 +280,7 @@ export default function AntesDepois() {
                     </p>
                     <h2
                       className="text-2xl font-bold text-gray-800 mb-3"
-                      style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                      style={{ fontFamily: 'var(--font-titulos)' }}
                     >
                       {pergunta.titulo}
                     </h2>
@@ -363,7 +363,7 @@ export default function AntesDepois() {
             <div className="text-center mb-2">
               <h2
                 className="text-xl font-bold text-gray-800"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Carta para ti {g('mesmo', 'mesma')}
               </h2>
@@ -494,7 +494,7 @@ export default function AntesDepois() {
             <div className="text-center mb-6">
               <h2
                 className="text-2xl font-bold text-gray-800"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 A Tua Transformação
               </h2>

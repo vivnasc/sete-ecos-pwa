@@ -216,7 +216,7 @@ export default function EspelhoTriplo() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
           <h2
             className="text-xl font-bold mb-1"
-            style={{ color: IMAGO_COLOR, fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ color: IMAGO_COLOR, fontFamily: 'var(--font-titulos)' }}
           >
             {guiaActual.titulo}
           </h2>
@@ -286,7 +286,7 @@ export default function EspelhoTriplo() {
               <span className="text-2xl">🔍</span>
               <h2
                 className="text-xl font-bold"
-                style={{ color: IMAGO_COLOR, fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ color: IMAGO_COLOR, fontFamily: 'var(--font-titulos)' }}
               >
                 As Distancias Entre os Espelhos
               </h2>
@@ -351,7 +351,7 @@ export default function EspelhoTriplo() {
               <span className="text-2xl">🎭</span>
               <h2
                 className="text-xl font-bold"
-                style={{ color: IMAGO_COLOR, fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ color: IMAGO_COLOR, fontFamily: 'var(--font-titulos)' }}
               >
                 Identificar Mascaras
               </h2>
