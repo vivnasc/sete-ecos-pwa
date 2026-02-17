@@ -93,7 +93,7 @@ function BlocoForm({ onAdd }) {
         type="text"
         value={nome}
         onChange={(e) => setNome(e.target.value)}
-        placeholder="Nome do bloco (ex: Meditacao)"
+        placeholder="Nome do bloco (ex: Meditação)"
         className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#5D9B84]/50 transition-colors"
         aria-label="Nome do bloco"
       />
@@ -106,15 +106,15 @@ function BlocoForm({ onAdd }) {
           min="1"
           max="120"
           className="w-28 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#5D9B84]/50 transition-colors"
-          aria-label="Duracao em minutos"
+          aria-label="Duração em minutos"
         />
         <input
           type="text"
           value={descricao}
           onChange={(e) => setDescricao(e.target.value)}
-          placeholder="Descricao (opcional)"
+          placeholder="Descrição (opcional)"
           className="flex-1 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#5D9B84]/50 transition-colors"
-          aria-label="Descricao do bloco"
+          aria-label="Descrição do bloco"
         />
       </div>
       <button
@@ -138,7 +138,7 @@ function BlocoForm({ onAdd }) {
 function BlocoCard({ bloco, index, total, onMoveUp, onMoveDown, onRemove }) {
   return (
     <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl p-3 transition-all hover:border-[#5D9B84]/30">
-      {/* Numero */}
+      {/* Número */}
       <div
         className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
         style={{ backgroundColor: `${VENTIS_COLOR}33`, color: VENTIS_COLOR }}
@@ -160,7 +160,7 @@ function BlocoCard({ bloco, index, total, onMoveUp, onMoveDown, onRemove }) {
         </div>
       </div>
 
-      {/* Accoes */}
+      {/* Acções */}
       <div className="flex items-center gap-1 flex-shrink-0">
         <button
           onClick={onMoveUp}
@@ -190,7 +190,7 @@ function BlocoCard({ bloco, index, total, onMoveUp, onMoveDown, onRemove }) {
   )
 }
 
-// ===== COMPONENTE: TIMER DE EXECUCAO =====
+// ===== COMPONENTE: TIMER DE EXECUÇÃO =====
 
 function ExecutionTimer({ bloco, onComplete }) {
   const totalSeconds = bloco.duracao * 60
@@ -226,7 +226,7 @@ function ExecutionTimer({ bloco, onComplete }) {
 
   return (
     <div className="flex flex-col items-center gap-6 py-8">
-      {/* Circulo de progresso */}
+      {/* Círculo de progresso */}
       <div className="relative w-48 h-48">
         <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
           <circle
@@ -371,18 +371,18 @@ export default function RotinasBuilder() {
   const [rotinas, setRotinas] = useState([])
   const [carregando, setCarregando] = useState(true)
 
-  // Execucao
-  const [executando, setExecutando] = useState(null) // rotina em execucao
+  // Execução
+  const [executando, setExecutando] = useState(null) // rotina em execução
   const [blocoActual, setBlocoActual] = useState(0)
   const [blocosCompletados, setBlocosCompletados] = useState([])
   const [inicioExecucao, setInicioExecucao] = useState(null)
 
-  // Pos-execucao
+  // Pós-execução
   const [faseExecucao, setFaseExecucao] = useState('idle') // idle | running | sensation | done
   const [sensacao, setSensacao] = useState('')
   const [salvando, setSalvando] = useState(false)
 
-  // Logs de historico
+  // Logs de histórico
   const [logs, setLogs] = useState([])
 
   // ===== CARREGAR ROTINAS =====
@@ -398,7 +398,7 @@ export default function RotinasBuilder() {
 
       setRotinas(rotinasData || [])
 
-      // Carregar logs dos ultimos 7 dias
+      // Carregar logs dos últimos 7 dias
       const seteDiasAtras = new Date()
       seteDiasAtras.setDate(seteDiasAtras.getDate() - 7)
 
@@ -421,7 +421,7 @@ export default function RotinasBuilder() {
     carregarDados()
   }, [carregarDados])
 
-  // ===== GESTAO DE BLOCOS =====
+  // ===== GESTÃO DE BLOCOS =====
   const addBloco = (bloco) => {
     setBlocos(prev => [...prev, bloco])
   }
@@ -504,7 +504,7 @@ export default function RotinasBuilder() {
     }
   }
 
-  // ===== INICIAR EXECUCAO =====
+  // ===== INICIAR EXECUÇÃO =====
   const iniciarExecucao = (rotina) => {
     let blocosParsed
     try {
@@ -535,7 +535,7 @@ export default function RotinasBuilder() {
     }
   }, [executando, blocoActual])
 
-  // ===== GUARDAR LOG DE EXECUCAO =====
+  // ===== GUARDAR LOG DE EXECUÇÃO =====
   const guardarExecucao = async () => {
     if (!userId || !executando) return
     setSalvando(true)
@@ -570,7 +570,7 @@ export default function RotinasBuilder() {
       setFaseExecucao('done')
       await carregarDados()
     } catch (err) {
-      console.error('Erro ao guardar execucao:', err)
+      console.error('Erro ao guardar execução:', err)
     } finally {
       setSalvando(false)
     }
@@ -597,7 +597,7 @@ export default function RotinasBuilder() {
   // ===== ROTINAS FILTRADAS POR TAB =====
   const rotinasFiltradas = rotinas.filter(r => r.tipo === tab)
 
-  // ===== RENDER: EXECUCAO ACTIVA =====
+  // ===== RENDER: EXECUÇÃO ACTIVA =====
 
   if (faseExecucao === 'running' && executando) {
     const blocoAtual = executando.blocosParsed[blocoActual]
@@ -616,7 +616,7 @@ export default function RotinasBuilder() {
             <button
               onClick={resetExecucao}
               className="p-2 rounded-lg hover:bg-white/10 text-white/60 transition-colors"
-              aria-label="Cancelar execucao"
+              aria-label="Cancelar execução"
             >
               <CloseIcon />
             </button>
@@ -655,13 +655,13 @@ export default function RotinasBuilder() {
     )
   }
 
-  // ===== RENDER: SENSACAO POS-EXECUCAO =====
+  // ===== RENDER: SENSAÇÃO PÓS-EXECUÇÃO =====
 
   if (faseExecucao === 'sensation') {
     return (
       <div className="min-h-screen pb-24" style={{ background: `linear-gradient(135deg, ${VENTIS_DARK} 0%, #243d30 50%, ${VENTIS_DARK} 100%)` }}>
         <RotinasStyles />
-        <ModuleHeader eco="ventis" title="Reflexao" compact showHomeButton={false} />
+        <ModuleHeader eco="ventis" title="Reflexão" compact showHomeButton={false} />
 
         <main className="max-w-lg mx-auto px-4 py-8 ventis-fadeIn">
           <div className="text-center mb-8">
@@ -688,7 +688,7 @@ export default function RotinasBuilder() {
               rows={4}
               className="w-full bg-white/10 border border-[#5D9B84]/30 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#5D9B84]/60 focus:ring-1 focus:ring-[#5D9B84]/30 resize-none transition-colors"
               style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem' }}
-              aria-label="Como te sentes apos a rotina"
+              aria-label="Como te sentes após a rotina"
             />
 
             <div className="flex gap-3">
@@ -718,7 +718,7 @@ export default function RotinasBuilder() {
     )
   }
 
-  // ===== RENDER: CONCLUSAO =====
+  // ===== RENDER: CONCLUSÃO =====
 
   if (faseExecucao === 'done') {
     return (
@@ -745,7 +745,7 @@ export default function RotinasBuilder() {
             className="px-8 py-3 rounded-full text-white font-medium transition-all hover:scale-105"
             style={{ backgroundColor: VENTIS_COLOR }}
           >
-            Voltar as rotinas
+            Voltar às rotinas
           </button>
         </main>
       </div>
@@ -761,7 +761,7 @@ export default function RotinasBuilder() {
       <ModuleHeader
         eco="ventis"
         title="Rotinas"
-        subtitle={executando ? executando.nome : 'Constroi os teus rituais diarios'}
+        subtitle={executando ? executando.nome : 'Constrói os teus rituais diários'}
       />
 
       <main className="max-w-lg mx-auto px-4 py-6 space-y-6">
@@ -812,7 +812,7 @@ export default function RotinasBuilder() {
               type="text"
               value={nomeRotina}
               onChange={(e) => setNomeRotina(e.target.value)}
-              placeholder="Nome da rotina (ex: Ritual da Manha)"
+              placeholder="Nome da rotina (ex: Ritual da Manhã)"
               className="w-full bg-white/10 border border-[#5D9B84]/30 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#5D9B84]/60 focus:ring-1 focus:ring-[#5D9B84]/30 transition-colors"
               style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem' }}
               aria-label="Nome da rotina"
@@ -840,9 +840,9 @@ export default function RotinasBuilder() {
                 />
               </div>
               <div className="text-left">
-                <p className="text-white/90 text-sm font-medium">E um ritual?</p>
+                <p className="text-white/90 text-sm font-medium">É um ritual?</p>
                 <p className="text-white/40 text-xs">
-                  Um ritual e consciente e intencional, nao automatico.
+                  Um ritual é consciente e intencional, não automático.
                 </p>
               </div>
             </button>
@@ -870,7 +870,7 @@ export default function RotinasBuilder() {
             {/* Adicionar bloco */}
             <BlocoForm onAdd={addBloco} />
 
-            {/* Botao guardar */}
+            {/* Botão guardar */}
             <button
               onClick={guardarRotina}
               disabled={salvando || !nomeRotina.trim() || blocos.length === 0}
@@ -975,7 +975,7 @@ export default function RotinasBuilder() {
                       ))}
                     </div>
 
-                    {/* Botao iniciar */}
+                    {/* Botão iniciar */}
                     <button
                       onClick={() => iniciarExecucao(rotina)}
                       className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-white font-medium transition-all hover:scale-[1.01] active:scale-[0.99]"

@@ -7,12 +7,12 @@ import { useAuth } from '../../contexts/AuthContext'
 import { g } from '../../utils/genero'
 
 /**
- * MODULE ACCESS GUARD — Componente generico de proteccao de acesso
+ * MODULE ACCESS GUARD — Componente genérico de protecção de acesso
  *
  * Uso: <ModuleAccessGuard eco="serena">{children}</ModuleAccessGuard>
  *
  * Funciona para qualquer eco: serena, ignis, ventis, ecoa, imago
- * Verifica subscricao, mostra trial banner, redireciona para pagamento se necessario.
+ * Verifica subscrição, mostra trial banner, redireciona para pagamento se necessário.
  */
 const ModuleAccessGuard = ({ eco, children, features = [] }) => {
   const [loading, setLoading] = useState(true)
@@ -100,9 +100,9 @@ const ModuleAccessGuard = ({ eco, children, features = [] }) => {
           <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <span className="text-4xl" role="img" aria-label="Ampulheta">&#9203;</span>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">Pagamento em Analise</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">Pagamento em Análise</h2>
           <p className="text-gray-600 mb-6 leading-relaxed">
-            Recebemos o teu registo de pagamento! A Coach Vivianne vai confirmar em ate 24 horas.
+            Recebemos o teu registo de pagamento! A Coach Vivianne vai confirmar em até 24 horas.
           </p>
           <Link
             to={`/${eco}`}
@@ -112,7 +112,7 @@ const ModuleAccessGuard = ({ eco, children, features = [] }) => {
             Voltar
           </Link>
           <a
-            href={`https://wa.me/258851006473?text=Ola! Fiz um pagamento para o ${theme.name} e estou a aguardar aprovacao.`}
+            href={`https://wa.me/258851006473?text=Olá! Fiz um pagamento para o ${theme.name} e estou a aguardar aprovação.`}
             target="_blank"
             rel="noopener noreferrer"
             className="block w-full py-3 px-6 bg-[#25D366] text-white rounded-xl font-semibold hover:shadow-lg transition-all"
@@ -132,7 +132,7 @@ const ModuleAccessGuard = ({ eco, children, features = [] }) => {
   const isTrial = accessInfo?.status === SUBSCRIPTION_STATUS.TRIAL
   const daysLeft = accessInfo?.daysLeft || 0
 
-  // Banner de aviso de expiracao (14 dias antes)
+  // Banner de aviso de expiração (14 dias antes)
   const showExpiryWarning = accessInfo?.expiresAt &&
     new Date(accessInfo.expiresAt) - new Date() < 14 * 24 * 60 * 60 * 1000
 
@@ -156,11 +156,11 @@ const ModuleAccessGuard = ({ eco, children, features = [] }) => {
         </div>
       )}
 
-      {/* Banner de expiracao */}
+      {/* Banner de expiração */}
       {showExpiryWarning && !isTrial && accessInfo.status !== SUBSCRIPTION_STATUS.TESTER && (
         <div className="bg-yellow-500/20 border-b border-yellow-500/30 px-4 py-2 text-center">
           <p className="text-yellow-200 text-sm">
-            A tua subscricao expira em {Math.ceil((new Date(accessInfo.expiresAt) - new Date()) / (24 * 60 * 60 * 1000))} dias.{' '}
+            A tua subscrição expira em {Math.ceil((new Date(accessInfo.expiresAt) - new Date()) / (24 * 60 * 60 * 1000))} dias.{' '}
             <Link to={`/${eco}/pagamento`} className="underline font-medium">Renovar agora</Link>
           </p>
         </div>
@@ -170,7 +170,7 @@ const ModuleAccessGuard = ({ eco, children, features = [] }) => {
       {accessInfo?.status === SUBSCRIPTION_STATUS.PENDING && (
         <div className="bg-blue-500/20 border-b border-blue-500/30 px-4 py-2 text-center">
           <p className="text-blue-200 text-sm">
-            O teu pagamento esta em verificacao. Recebes confirmacao em breve!
+            O teu pagamento está em verificação. Recebes confirmação em breve!
           </p>
         </div>
       )}

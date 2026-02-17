@@ -7,7 +7,7 @@ import ModuleHeader from './ModuleHeader'
 /**
  * AI COACH — Componente generico de coach IA para qualquer eco
  *
- * Cada eco tem um coach com personalidade unica:
+ * Cada eco tem um coach com personalidade única:
  * - Serena: calma, validadora, acolhedora
  * - Ignis: directa, sem paternalismo, questiona motivacoes
  * - Ventis: gentil, ritmada, foco em sustentabilidade

@@ -6,8 +6,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { EMOCOES, CORPO_ZONAS } from '../../lib/serena/gamificacao';
 
 // ============================================================
-// SERENA — Diario Emocional
-// Eco da Emocao & Fluidez (Svadhisthana)
+// SERENA — Diário Emocional
+// Eco da Emoção & Fluidez (Svadhisthana)
 // ============================================================
 
 const ACCENT = '#6B8E9B';
@@ -16,11 +16,11 @@ const ACCENT_LIGHT = '#8BADB8';
 const ACCENT_SUBTLE = 'rgba(107,142,155,0.12)';
 
 const STEP_LABELS = [
-  { key: 'emocao', label: 'Emocao' },
+  { key: 'emocao', label: 'Emoção' },
   { key: 'intensidade', label: 'Intensidade' },
   { key: 'trigger', label: 'Trigger' },
   { key: 'corpo', label: 'Corpo' },
-  { key: 'reflexao', label: 'Reflexao' }
+  { key: 'reflexao', label: 'Reflexão' }
 ];
 
 // ---- Wave SVG decorative background ----
@@ -69,7 +69,7 @@ const StepIndicator = ({ current, total }) => (
   </div>
 );
 
-// ---- Botao de navegacao ----
+// ---- Botão de navegação ----
 const NavButton = ({ onClick, disabled, children, primary = false }) => (
   <button
     onClick={onClick}
@@ -89,7 +89,7 @@ const NavButton = ({ onClick, disabled, children, primary = false }) => (
 );
 
 // ==========================
-// Step 1: Emocao
+// Step 1: Emoção
 // ==========================
 const StepEmocao = ({ selected, onSelect }) => (
   <div className="space-y-4 animate-fadeIn">
@@ -97,7 +97,7 @@ const StepEmocao = ({ selected, onSelect }) => (
       <h2 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
         O que sentes agora?
       </h2>
-      <p className="text-sm text-gray-400 mt-1">Escolhe a emocao mais presente</p>
+      <p className="text-sm text-gray-400 mt-1">Escolhe a emoção mais presente</p>
     </div>
     <div className="grid grid-cols-4 gap-3">
       {EMOCOES.map((em) => {
@@ -185,7 +185,7 @@ const StepIntensidade = ({ value, onChange, emocao }) => {
 
       {/* Label */}
       <p className="text-center text-sm text-gray-500 italic">
-        {value <= 3 ? 'Leve, quase um sussurro' : value <= 6 ? 'Presente, faz-se sentir' : value <= 8 ? 'Forte, dificil de ignorar' : 'Muito intenso, avassalador'}
+        {value <= 3 ? 'Leve, quase um sussurro' : value <= 6 ? 'Presente, faz-se sentir' : value <= 8 ? 'Forte, difícil de ignorar' : 'Muito intenso, avassalador'}
       </p>
     </div>
   );
@@ -198,15 +198,15 @@ const StepTrigger = ({ value, onChange }) => (
   <div className="space-y-6 animate-fadeIn">
     <div className="text-center mb-4">
       <h2 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-        O que provocou esta emocao?
+        O que provocou esta emoção?
       </h2>
-      <p className="text-sm text-gray-400 mt-1">Opcional — podes avancar sem escrever</p>
+      <p className="text-sm text-gray-400 mt-1">Opcional — podes avançar sem escrever</p>
     </div>
     <div className="relative">
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Uma conversa, uma memoria, algo que vi..."
+        placeholder="Uma conversa, uma memória, algo que vi..."
         rows={4}
         maxLength={500}
         className="w-full p-4 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
@@ -215,12 +215,12 @@ const StepTrigger = ({ value, onChange }) => (
           borderColor: 'transparent',
           focusRingColor: ACCENT
         }}
-        aria-label="Descreve o que provocou esta emocao"
+        aria-label="Descreve o que provocou esta emoção"
       />
       <span className="absolute bottom-3 right-3 text-xs text-gray-600">{value.length}/500</span>
     </div>
     <div className="flex flex-wrap gap-2">
-      {['Trabalho', 'Relacao', 'Familia', 'Saude', 'Dinheiro', 'Solidao', 'Sem razao clara'].map((tag) => (
+      {['Trabalho', 'Relação', 'Família', 'Saúde', 'Dinheiro', 'Solidão', 'Sem razão clara'].map((tag) => (
         <button
           key={tag}
           onClick={() => onChange(value ? `${value} ${tag}` : tag)}
@@ -243,7 +243,7 @@ const StepCorpo = ({ selected, onSelect }) => (
       <h2 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
         Onde sentes no corpo?
       </h2>
-      <p className="text-sm text-gray-400 mt-1">Onde esta emocao se manifesta fisicamente?</p>
+      <p className="text-sm text-gray-400 mt-1">Onde esta emoção se manifesta fisicamente?</p>
     </div>
     <div className="grid grid-cols-2 gap-3">
       {CORPO_ZONAS.map((zona) => {
@@ -275,7 +275,7 @@ const StepCorpo = ({ selected, onSelect }) => (
 );
 
 // ==========================
-// Step 5: Reflexao
+// Step 5: Reflexão
 // ==========================
 const StepReflexao = ({ value, onChange }) => (
   <div className="space-y-6 animate-fadeIn">
@@ -289,7 +289,7 @@ const StepReflexao = ({ value, onChange }) => (
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="O que esta emocao quer me dizer? O que preciso agora?"
+        placeholder="O que esta emoção quer me dizer? O que preciso agora?"
         rows={5}
         maxLength={1000}
         className="w-full p-4 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
@@ -298,21 +298,21 @@ const StepReflexao = ({ value, onChange }) => (
           borderColor: 'transparent',
           focusRingColor: ACCENT
         }}
-        aria-label="Reflexao livre sobre a emocao"
+        aria-label="Reflexão livre sobre a emoção"
       />
       <span className="absolute bottom-3 right-3 text-xs text-gray-600">{value.length}/1000</span>
     </div>
     <div className="p-4 rounded-xl" style={{ background: 'rgba(107,142,155,0.08)' }}>
       <p className="text-xs text-gray-400 italic leading-relaxed">
-        Nao ha respostas certas nem erradas. Este espaco e teu — escreve livremente,
-        sem julgar. A agua nao forca o caminho, ela encontra-o.
+        Não há respostas certas nem erradas. Este espaço é teu — escreve livremente,
+        sem julgar. A água não força o caminho, ela encontra-o.
       </p>
     </div>
   </div>
 );
 
 // ==========================
-// Confirmacao pos-submit
+// Confirmação pós-submit
 // ==========================
 const SuccessScreen = ({ emocao, onNovo, onHistorico }) => {
   const emObj = EMOCOES.find(e => e.value === emocao);
@@ -337,19 +337,19 @@ const SuccessScreen = ({ emocao, onNovo, onHistorico }) => {
           {g('Registado', 'Registada')} com carinho
         </h2>
         <p className="text-sm text-gray-400 max-w-xs">
-          Cada emocao que reconheces e uma gota de consciencia no teu oceano interior. +5 Gotas 💧
+          Cada emoção que reconheces é uma gota de consciência no teu oceano interior. +5 Gotas 💧
         </p>
       </div>
       <div className="flex gap-3 pt-4">
         <NavButton onClick={onNovo}>Novo registo</NavButton>
-        <NavButton onClick={onHistorico} primary>Ver historico</NavButton>
+        <NavButton onClick={onHistorico} primary>Ver histórico</NavButton>
       </div>
     </div>
   );
 };
 
 // ==========================
-// Historico — Entrada individual
+// Histórico — Entrada individual
 // ==========================
 const HistoricoEntry = ({ entry }) => {
   const [expanded, setExpanded] = useState(false);
@@ -419,7 +419,7 @@ const HistoricoEntry = ({ entry }) => {
           )}
           {entry.reflexao && (
             <div className="text-sm text-gray-400">
-              <span className="font-medium text-gray-300">Reflexao:</span> {entry.reflexao}
+              <span className="font-medium text-gray-300">Reflexão:</span> {entry.reflexao}
             </div>
           )}
         </div>
@@ -429,7 +429,7 @@ const HistoricoEntry = ({ entry }) => {
 };
 
 // ==========================
-// Historico — Vista principal
+// Histórico — Vista principal
 // ==========================
 const HistoricoView = ({ userId, onVoltar }) => {
   const [entries, setEntries] = useState([]);
@@ -449,7 +449,7 @@ const HistoricoView = ({ userId, onVoltar }) => {
         if (error) throw error;
         setEntries(data || []);
       } catch (err) {
-        console.error('Erro ao carregar historico emocional:', err);
+        console.error('Erro ao carregar histórico emocional:', err);
       } finally {
         setLoading(false);
       }
@@ -485,10 +485,10 @@ const HistoricoView = ({ userId, onVoltar }) => {
       <div className="text-center py-16 space-y-4 animate-fadeIn">
         <div className="text-4xl">💧</div>
         <h3 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-          O teu diario esta vazio
+          O teu diário está vazio
         </h3>
         <p className="text-sm text-gray-400 max-w-xs mx-auto">
-          Quando registares a tua primeira emocao, ela aparecera aqui. Cada gota conta.
+          Quando registares a tua primeira emoção, ela aparecerá aqui. Cada gota conta.
         </p>
         <NavButton onClick={onVoltar} primary>Registar agora</NavButton>
       </div>
@@ -591,8 +591,8 @@ export default function DiarioEmocional() {
       if (error) throw error;
       setShowSuccess(true);
     } catch (err) {
-      console.error('Erro ao guardar emocao:', err);
-      alert('Nao foi possivel guardar. Tenta novamente.');
+      console.error('Erro ao guardar emoção:', err);
+      alert('Não foi possível guardar. Tenta novamente.');
     } finally {
       setSaving(false);
     }
@@ -607,7 +607,7 @@ export default function DiarioEmocional() {
         style={view === 'registar' ? { background: `${ACCENT}33` } : undefined}
         aria-pressed={view === 'registar'}
       >
-        Registar Emocao
+        Registar Emoção
       </button>
       <button
         onClick={() => setView('historico')}
@@ -615,7 +615,7 @@ export default function DiarioEmocional() {
         style={view === 'historico' ? { background: `${ACCENT}33` } : undefined}
         aria-pressed={view === 'historico'}
       >
-        Historico
+        Histórico
       </button>
     </div>
   );
@@ -642,7 +642,7 @@ export default function DiarioEmocional() {
     <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${ACCENT_DARK} 0%, #111318 30%, #0d0f13 100%)` }}>
       <ModuleHeader
         eco="serena"
-        title="Diario Emocional"
+        title="Diário Emocional"
         subtitle="Regista, observa, deixa fluir"
       />
 
@@ -653,7 +653,7 @@ export default function DiarioEmocional() {
         ref={containerRef}
         className="max-w-lg mx-auto px-4 pb-24"
         role="main"
-        aria-label="Diario Emocional"
+        aria-label="Diário Emocional"
       >
         {renderTabs()}
 

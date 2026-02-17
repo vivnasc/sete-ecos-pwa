@@ -4,11 +4,11 @@ import React, { useRef, useState, useEffect } from 'react';
  * TemplateVisual v2 - Gerador profissional de imagens para redes sociais
  *
  * Templates:
- * - Dica do Dia: frase centrada com decoracao
- * - Carrossel (slides): titulo + pontos, 1-5 slides
- * - Testemunho: citacao com aspas estilizadas
- * - Antes/Depois: comparacao visual
- * - CTA / Promo: chamada para accao com botao visual
+ * - Dica do Dia: frase centrada com decoração
+ * - Carrossel (slides): título + pontos, 1-5 slides
+ * - Testemunho: citação com aspas estilizadas
+ * - Antes/Depois: comparação visual
+ * - CTA / Promo: chamada para acção com botão visual
  */
 
 const CORES = {
@@ -47,7 +47,7 @@ const CORES = {
     textDark: '#1a1a2e',
     logo: '/logos/seteecos_logo_v2.png',
     nome: 'SETE ECOS',
-    subtitulo: 'Transmutacao Feminina',
+    subtitulo: 'Transmutação Feminina',
   },
   lumina: {
     primary: '#5C6BC0',
@@ -59,7 +59,7 @@ const CORES = {
     textDark: '#1a1a3e',
     logo: '/logos/lumina-logo_v2.png',
     nome: 'LUMINA',
-    subtitulo: 'Diagnostico Gratuito',
+    subtitulo: 'Diagnóstico Gratuito',
   },
 };
 
@@ -69,11 +69,11 @@ const FORMATOS = {
 };
 
 const TEMPLATES = {
-  dica: { label: 'Dica / Frase', icon: '💡', desc: 'Frase centrada com decoracao' },
+  dica: { label: 'Dica / Frase', icon: '💡', desc: 'Frase centrada com decoração' },
   carrossel: { label: 'Carrossel', icon: '📑', desc: 'Slides para deslizar' },
-  testemunho: { label: 'Testemunho', icon: '💬', desc: 'Citacao com aspas' },
-  cta: { label: 'Promocao / CTA', icon: '🎯', desc: 'Chamada para accao' },
-  stats: { label: 'Estatistica', icon: '📊', desc: 'Numero grande + contexto' },
+  testemunho: { label: 'Testemunho', icon: '💬', desc: 'Citação com aspas' },
+  cta: { label: 'Promoção / CTA', icon: '🎯', desc: 'Chamada para acção' },
+  stats: { label: 'Estatística', icon: '📊', desc: 'Número grande + contexto' },
   statusWA: { label: 'WA Status', icon: '📱', desc: 'WhatsApp Status com foto' },
 };
 
@@ -325,7 +325,7 @@ async function renderCarrossel(canvas, config) {
     ctx.fill();
     ctx.font = `700 24px 'Quicksand', sans-serif`;
     ctx.fillStyle = cores.primary;
-    ctx.fillText('Comeca Agora', width / 2, btnY + 40);
+    ctx.fillText('Começa Agora', width / 2, btnY + 40);
   } else if (!isFirst) {
     ctx.font = `500 18px 'Quicksand', sans-serif`;
     ctx.fillStyle = isDark ? 'rgba(255,255,255,0.4)' : (cores.primary + '50');
@@ -984,7 +984,7 @@ export default function TemplateVisual({ texto, subtitulo, onClose }) {
           {!gerado && !gerando && (
             <div className="py-12 text-center">
               <span className="text-3xl block mb-2">🎨</span>
-              <p className="text-sm text-[#6B5C4C]">A gerar pre-visualizacao...</p>
+              <p className="text-sm text-[#6B5C4C]">A gerar pré-visualização...</p>
             </div>
           )}
           {gerando && (

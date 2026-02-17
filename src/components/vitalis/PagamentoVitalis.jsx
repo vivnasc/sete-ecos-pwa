@@ -19,7 +19,7 @@ import { EmailTriggers } from '../../lib/emails';
 import { isCoach } from '../../lib/coach';
 
 /**
- * VITALIS - Pagina de Pagamento
+ * VITALIS - Página de Pagamento
  *
  * SEMPRE mostra os planos primeiro
  * Login/Registo aparece abaixo se não autenticado
@@ -699,8 +699,8 @@ const PagamentoVitalis = () => {
         {planType === 'bundle' && (
           <div className="bg-gradient-to-r from-[#7C8B6F]/20 to-[#C9A227]/20 border border-[#C9A227]/30 rounded-xl px-4 py-3 mb-4">
             <p className="text-white/90 text-xs text-center leading-relaxed">
-              Vitalis (Nutricao) + Aurea (Autocuidado) juntos com 25% de desconto.
-              Dois sistemas integrados para a tua transformacao completa.
+              Vitalis (Nutrição) + Aurea (Autocuidado) juntos com 25% de desconto.
+              Dois sistemas integrados para a tua transformação completa.
             </p>
           </div>
         )}
@@ -1148,7 +1148,7 @@ const PagamentoVitalis = () => {
               'Sistema de 3 fases',
               'Receitas ilimitadas',
               'Tracking de progresso',
-              'Relatorios semanais',
+              'Relatórios semanais',
               'Chat com a coach Vivianne',
               ...(planType === 'bundle' ? [
                 '— AUREA incluido —',

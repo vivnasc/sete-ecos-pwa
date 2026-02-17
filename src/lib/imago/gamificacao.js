@@ -1,7 +1,7 @@
 /**
- * IMAGO — Sistema de Gamificacao
+ * IMAGO — Sistema de Gamificação
  * Moeda: Estrelas ⭐
- * Niveis: Reflexo → Clareza → Sabedoria → Luminosidade
+ * Níveis: Reflexo → Clareza → Sabedoria → Luminosidade
  */
 
 export const IMAGO_GAMIFICATION = {
@@ -22,50 +22,50 @@ export const IMAGO_GAMIFICATION = {
     },
     {
       id: 'mascara_reconhecida',
-      name: 'Mascara Reconhecida',
-      description: 'Identificar 3 mascaras no Espelho Triplo',
+      name: 'Máscara Reconhecida',
+      description: 'Identificar 3 máscaras no Espelho Triplo',
       icon: '🎭',
       condition: (data) => (data.mascaras_total || 0) >= 3
     },
     {
       id: 'valores_definidos',
       name: 'Valores Definidos',
-      description: 'Completar a seleccao dos 3 valores essenciais',
+      description: 'Completar a selecção dos 3 valores essenciais',
       icon: '💠',
       condition: (data) => (data.valores_definidos || false)
     },
     {
       id: 'arqueologia_profunda',
       name: 'Arqueologia Profunda',
-      description: 'Fazer 5 escavacoes de identidade',
+      description: 'Fazer 5 escavações de identidade',
       icon: '⛏️',
       condition: (data) => (data.arqueologia_total || 0) >= 5
     },
     {
       id: 'nomeacao_sagrada',
-      name: 'Nomeacao Sagrada',
-      description: 'Completar o primeiro ritual de auto-nomeacao',
+      name: 'Nomeação Sagrada',
+      description: 'Completar o primeiro ritual de auto-nomeação',
       icon: '📜',
       condition: (data) => (data.nomeacao_feita || false)
     },
     {
       id: 'meditacao_essencia',
-      name: 'Essencia Meditada',
-      description: 'Completar 10 meditacoes de essencia',
+      name: 'Essência Meditada',
+      description: 'Completar 10 meditações de essência',
       icon: '🧘',
       condition: (data) => (data.meditacoes_total || 0) >= 10
     },
     {
       id: 'integrador',
       name: 'Integrador de Ecos',
-      description: 'Registar insights de integracao entre 3 ecos diferentes',
+      description: 'Registar insights de integração entre 3 ecos diferentes',
       icon: '🌀',
       condition: (data) => (data.integracoes_total || 0) >= 3
     },
     {
       id: 'jornada_completa',
       name: 'Jornada Completa',
-      description: 'Alcancar o nivel Luminosidade',
+      description: 'Alcançar o nível Luminosidade',
       icon: '✨',
       condition: (data) => (data.estrelas_total || 0) >= 500
     }
@@ -85,21 +85,21 @@ export const IMAGO_GAMIFICATION = {
 }
 
 /**
- * Meditacoes de Essencia — Scripts em portugues
+ * Meditações de Essência — Scripts em português
  */
 export const MEDITACOES_ESSENCIA = [
   {
     id: 'sem_rotulos',
-    nome: 'Quem sou sem rotulos?',
-    descricao: 'Meditacao guiada para explorar a identidade alem de papeis e rotulos sociais.',
+    nome: 'Quem sou sem rótulos?',
+    descricao: 'Meditação guiada para explorar a identidade além de papéis e rótulos sociais.',
     duracao_min: 10,
     script: [
-      'Fecha os olhos. Respira fundo tres vezes.',
-      'Imagina que podes tirar todos os rotulos que carregas: mae, filha, profissional, amiga...',
+      'Fecha os olhos. Respira fundo três vezes.',
+      'Imagina que podes tirar todos os rótulos que carregas: mãe, filha, profissional, amiga...',
       'Tira cada um, como se fossem roupas. Um a um.',
-      'O que resta quando nao es nenhum desses papeis?',
-      'Fica nesse espaco. Observa o que sentes.',
-      'Esse espaco vazio nao e nada — e tudo. E a tua essencia.',
+      'O que resta quando não és nenhum desses papéis?',
+      'Fica nesse espaço. Observa o que sentes.',
+      'Esse espaço vazio não é nada — é tudo. É a tua essência.',
       'Respira nesse lugar. Ele sempre esteve aqui.',
       'Quando estiveres pronta, abre os olhos lentamente.'
     ]
@@ -107,103 +107,103 @@ export const MEDITACOES_ESSENCIA = [
   {
     id: 'eu_essencial',
     nome: 'O meu eu essencial',
-    descricao: 'Conectar com a versao mais autentica de si, antes das mascaras.',
+    descricao: 'Conectar com a versão mais autêntica de si, antes das máscaras.',
     duracao_min: 12,
     script: [
       'Senta-te confortavelmente. Deixa o corpo relaxar.',
-      'Imagina-te numa sala de espelhos. Cada espelho mostra uma versao tua.',
-      'Num espelho, ves quem mostras ao mundo. Observa.',
-      'Noutro, ves quem eras antes de aprender a esconder-te.',
-      'Num terceiro, ves quem queres ser.',
-      'Agora, caminha para alem dos espelhos. Ha uma porta.',
-      'Atras da porta esta a versao mais real de ti. Sem filtros.',
+      'Imagina-te numa sala de espelhos. Cada espelho mostra uma versão tua.',
+      'Num espelho, vês quem mostras ao mundo. Observa.',
+      'Noutro, vês quem eras antes de aprender a esconder-te.',
+      'Num terceiro, vês quem queres ser.',
+      'Agora, caminha para além dos espelhos. Há uma porta.',
+      'Atrás da porta está a versão mais real de ti. Sem filtros.',
       'Encontra-a. Olha-a nos olhos. O que te diz?',
-      'Respira com essa versao de ti. Ela nunca foi embora.',
+      'Respira com essa versão de ti. Ela nunca foi embora.',
       'Quando estiveres pronta, regressa lentamente.'
     ]
   },
   {
     id: 'integracao_7_ecos',
-    nome: 'Integracao dos 7 Ecos',
-    descricao: 'Meditacao de integracao que percorre cada eco e unifica a experiencia.',
+    nome: 'Integração dos 7 Ecos',
+    descricao: 'Meditação de integração que percorre cada eco e unifica a experiência.',
     duracao_min: 15,
     script: [
-      'Fecha os olhos. Sente a tua base, o teu corpo. Isto e Vitalis — o chao.',
+      'Fecha os olhos. Sente a tua base, o teu corpo. Isto é Vitalis — o chão.',
       'Sobe ao teu centro emocional. Serena — o que sentes agora?',
       'Vai ao teu centro de vontade. Ignis — o que queres realmente?',
-      'Expande ao teu peito. Ventis — qual e o teu ritmo hoje?',
-      'Sobe a garganta. Ecoa — que verdade precisa de ser dita?',
-      'Chega ao espaco entre os olhos. O que ves com clareza?',
-      'Finalmente, a coroa. Imago — quem es tu, inteira?',
-      'Sente os 7 centros a vibrar juntos. Nao separados — integrados.',
-      'Es uma so pessoa com muitas dimensoes. Todas sao tuas.',
+      'Expande ao teu peito. Ventis — qual é o teu ritmo hoje?',
+      'Sobe à garganta. Ecoa — que verdade precisa de ser dita?',
+      'Chega ao espaço entre os olhos. O que vês com clareza?',
+      'Finalmente, a coroa. Imago — quem és tu, inteira?',
+      'Sente os 7 centros a vibrar juntos. Não separados — integrados.',
+      'És uma só pessoa com muitas dimensões. Todas são tuas.',
       'Respira nessa inteireza. Permanece.',
       'Quando estiveres pronta, abre os olhos com suavidade.'
     ]
   },
   {
     id: 'soltar_versoes',
-    nome: 'Soltar versoes antigas',
-    descricao: 'Ritual meditativo para libertar identidades que ja nao servem.',
+    nome: 'Soltar versões antigas',
+    descricao: 'Ritual meditativo para libertar identidades que já não servem.',
     duracao_min: 12,
     script: [
       'Respira fundo. Permite-te estar presente.',
-      'Pensa numa versao tua que ja nao te serve. Pode ser a que agrada, a que se esconde, a que tem medo.',
-      'Visualiza essa versao a tua frente. Olha para ela com compaixao.',
-      'Diz-lhe: "Obrigada por me teres protegido. Ja nao preciso de ti assim."',
+      'Pensa numa versão tua que já não te serve. Pode ser a que agrada, a que se esconde, a que tem medo.',
+      'Visualiza essa versão à tua frente. Olha para ela com compaixão.',
+      'Diz-lhe: "Obrigada por me teres protegido. Já não preciso de ti assim."',
       'Observa como ela reage. Talvez sorria. Talvez chore.',
-      'Abraca-a. E depois, suavemente, deixa-a ir.',
-      'Observa-a a afastar-se. Nao com tristeza — com gratidao.',
-      'No espaco que ela deixou, o que surge? Fica atenta.',
-      'Respira. O espaco vazio e o espaco da possibilidade.',
+      'Abraça-a. E depois, suavemente, deixa-a ir.',
+      'Observa-a a afastar-se. Não com tristeza — com gratidão.',
+      'No espaço que ela deixou, o que surge? Fica atenta.',
+      'Respira. O espaço vazio é o espaço da possibilidade.',
       'Quando estiveres pronta, regressa ao presente.'
     ]
   },
   {
     id: 'corpo_identidade',
     nome: 'O corpo como identidade',
-    descricao: 'Exploracao da relacao entre corpo e sentido de eu.',
+    descricao: 'Exploração da relação entre corpo e sentido de eu.',
     duracao_min: 8,
     script: [
-      'Fecha os olhos. Traz a atencao ao teu corpo.',
+      'Fecha os olhos. Traz a atenção ao teu corpo.',
       'Este corpo que te carrega. Que mudou tantas vezes.',
-      'Cada cicatriz conta uma historia. Cada ruga e um mapa.',
-      'O teu corpo nao e so um veiculo — e parte de quem es.',
+      'Cada cicatriz conta uma história. Cada ruga é um mapa.',
+      'O teu corpo não é só um veículo — é parte de quem és.',
       'Pergunta ao teu corpo: "O que sabes sobre mim que eu esqueci?"',
-      'Ouve. O corpo fala em sensacoes, nao em palavras.',
-      'Agradece ao teu corpo. Ele sempre soube quem es.',
+      'Ouve. O corpo fala em sensações, não em palavras.',
+      'Agradece ao teu corpo. Ele sempre soube quem és.',
       'Abre os olhos quando estiveres pronta.'
     ]
   }
 ]
 
 /**
- * 50 Valores para o exercicio de seleccao progressiva
+ * 50 Valores para o exercício de selecção progressiva
  */
 export const LISTA_VALORES = [
-  'Autenticidade', 'Coragem', 'Compaixao', 'Criatividade', 'Curiosidade',
-  'Determinacao', 'Empatia', 'Equidade', 'Esperanca', 'Fe',
-  'Generosidade', 'Gratidao', 'Honestidade', 'Humildade', 'Humor',
-  'Independencia', 'Integridade', 'Intuicao', 'Justica', 'Lealdade',
-  'Liberdade', 'Lideranca', 'Amor', 'Natureza', 'Optimismo',
-  'Paciencia', 'Paz', 'Perseveranca', 'Presenca', 'Prosperidade',
-  'Resiliencia', 'Respeito', 'Responsabilidade', 'Sabedoria', 'Saude',
-  'Seguranca', 'Serenidade', 'Servico', 'Simplicidade', 'Solidariedade',
-  'Sustentabilidade', 'Ternura', 'Tolerancia', 'Tradicao', 'Transparencia',
-  'Unidade', 'Versatilidade', 'Visao', 'Vulnerabilidade', 'Zelo'
+  'Autenticidade', 'Coragem', 'Compaixão', 'Criatividade', 'Curiosidade',
+  'Determinação', 'Empatia', 'Equidade', 'Esperança', 'Fé',
+  'Generosidade', 'Gratidão', 'Honestidade', 'Humildade', 'Humor',
+  'Independência', 'Integridade', 'Intuição', 'Justiça', 'Lealdade',
+  'Liberdade', 'Liderança', 'Amor', 'Natureza', 'Optimismo',
+  'Paciência', 'Paz', 'Perseverança', 'Presença', 'Prosperidade',
+  'Resiliência', 'Respeito', 'Responsabilidade', 'Sabedoria', 'Saúde',
+  'Segurança', 'Serenidade', 'Serviço', 'Simplicidade', 'Solidariedade',
+  'Sustentabilidade', 'Ternura', 'Tolerância', 'Tradição', 'Transparência',
+  'Unidade', 'Versatilidade', 'Visão', 'Vulnerabilidade', 'Zelo'
 ]
 
 /**
- * Dimensoes do Mapa de Identidade — uma por eco
+ * Dimensões do Mapa de Identidade — uma por eco
  */
 export const DIMENSOES_IDENTIDADE = [
   { id: 'corpo', eco: 'vitalis', nome: 'Corpo', icon: '🌱', cor: '#7C8B6F', pergunta: 'Como habito o meu corpo?' },
   { id: 'valor', eco: 'aurea', nome: 'Valor', icon: '✨', cor: '#C4A265', pergunta: 'Qual o meu valor inerente?' },
-  { id: 'emocao', eco: 'serena', nome: 'Emocao', icon: '💧', cor: '#6B8E9B', pergunta: 'Como fluo com as minhas emocoes?' },
+  { id: 'emocao', eco: 'serena', nome: 'Emoção', icon: '💧', cor: '#6B8E9B', pergunta: 'Como fluo com as minhas emoções?' },
   { id: 'vontade', eco: 'ignis', nome: 'Vontade', icon: '🔥', cor: '#C1634A', pergunta: 'O que escolho conscientemente?' },
-  { id: 'energia', eco: 'ventis', nome: 'Energia', icon: '🍃', cor: '#5D9B84', pergunta: 'Qual e o meu ritmo natural?' },
+  { id: 'energia', eco: 'ventis', nome: 'Energia', icon: '🍃', cor: '#5D9B84', pergunta: 'Qual é o meu ritmo natural?' },
   { id: 'voz', eco: 'ecoa', nome: 'Voz', icon: '🔊', cor: '#4A90A4', pergunta: 'O que preciso de dizer?' },
-  { id: 'essencia', eco: 'imago', nome: 'Essencia', icon: '⭐', cor: '#8B7BA5', pergunta: 'Quem sou eu, inteira?' }
+  { id: 'essencia', eco: 'imago', nome: 'Essência', icon: '⭐', cor: '#8B7BA5', pergunta: 'Quem sou eu, inteira?' }
 ]
 
 /**
@@ -213,25 +213,25 @@ export const ESPELHO_TRIPLO_GUIA = {
   essencia: {
     titulo: 'Quem sou realmente?',
     perguntas: [
-      'Quando estou sozinha e ninguem ve, como sou?',
-      'Que qualidades surgem quando nao estou a tentar impressionar?',
-      'O que faco quando ninguem espera nada de mim?',
+      'Quando estou sozinha e ninguém vê, como sou?',
+      'Que qualidades surgem quando não estou a tentar impressionar?',
+      'O que faço quando ninguém espera nada de mim?',
       'Que tipo de pessoa sou nos meus momentos mais honestos?'
     ]
   },
   mascara: {
     titulo: 'Quem mostro ao mundo?',
     perguntas: [
-      'Que versao de mim apresento em publico?',
+      'Que versão de mim apresento em público?',
       'O que escondo das pessoas por medo de julgamento?',
       'Quando e que sinto que estou a "actuar" em vez de "ser"?',
-      'Que mascaras uso em diferentes contextos (trabalho, familia, amigos)?'
+      'Que máscaras uso em diferentes contextos (trabalho, família, amigos)?'
     ]
   },
   aspiracao: {
     titulo: 'Quem quero ser?',
     perguntas: [
-      'Se pudesse ser qualquer versao de mim, qual escolheria?',
+      'Se pudesse ser qualquer versão de mim, qual escolheria?',
       'O que me impede de ser essa pessoa agora?',
       'Que qualidades admiro nos outros que gostaria de cultivar?',
       'Daqui a 5 anos, como me vejo a viver?'
@@ -245,35 +245,35 @@ export const ESPELHO_TRIPLO_GUIA = {
 export const CAMADAS_ARQUEOLOGIA = [
   {
     id: 'infancia',
-    nome: 'Infancia',
+    nome: 'Infância',
     icon: '👶',
     pergunta_central: 'Quem era eu antes de aprender a adaptar-me?',
     sub_perguntas: [
-      'O que adorava fazer quando era crianca?',
-      'Que sonhos tinha antes do mundo dizer "nao podes"?',
+      'O que adorava fazer quando era criança?',
+      'Que sonhos tinha antes do mundo dizer "não podes"?',
       'Que parte de mim ficou nessa idade?'
     ]
   },
   {
     id: 'adolescencia',
-    nome: 'Adolescencia',
+    nome: 'Adolescência',
     icon: '🌸',
     pergunta_central: 'Que identidade construi para sobreviver?',
     sub_perguntas: [
-      'Que mascara comecei a usar nessa fase?',
+      'Que máscara comecei a usar nessa fase?',
       'O que sacrifiquei para ser aceite?',
       'Que parte rebelde silenciei?'
     ]
   },
   {
     id: 'relacoes',
-    nome: 'Relacoes',
+    nome: 'Relações',
     icon: '💞',
     pergunta_central: 'Quem me tornei para agradar os outros?',
     sub_perguntas: [
-      'Que versao de mim criei para cada relacao importante?',
-      'O que perdi de mim nas relacoes?',
-      'Que identidade assumi que nao e minha?'
+      'Que versão de mim criei para cada relação importante?',
+      'O que perdi de mim nas relações?',
+      'Que identidade assumi que não é minha?'
     ]
   },
   {
@@ -283,7 +283,7 @@ export const CAMADAS_ARQUEOLOGIA = [
     pergunta_central: 'Que evento mudou quem eu era?',
     sub_perguntas: [
       'Antes disso acontecer, quem era eu?',
-      'Que versao minha ficou presa nesse momento?',
+      'Que versão minha ficou presa nesse momento?',
       'O que preciso de dizer a essa versao?'
     ]
   },
@@ -293,7 +293,7 @@ export const CAMADAS_ARQUEOLOGIA = [
     icon: '🌟',
     pergunta_central: 'Quem sou eu agora, com tudo isto?',
     sub_perguntas: [
-      'Que partes de todas essas versoes ainda carrego?',
+      'Que partes de todas essas versões ainda carrego?',
       'O que estou pronta a integrar?',
       'O que estou pronta a libertar?'
     ]

@@ -7,11 +7,11 @@ import { g } from '../../utils/genero'
 /**
  * DIARIO DE CONQUISTAS — Ignis
  *
- * "Hoje consegui..." — registo diario de 3 conquistas alinhadas.
- * Nao e sobre completar tarefas, mas sobre vitorias intencionais.
+ * "Hoje consegui..." — registo diário de 3 conquistas alinhadas.
+ * Não é sobre completar tarefas, mas sobre vitórias intencionais.
  *
- * Tabela: ignis_conquistas_log (user_id, data, conquista_1/2/3, alinhada_com_valor, reflexao)
- * Gamificacao: +5 chamas por entrada
+ * Tabela: ignis_conquistas_log (user_id, data, conquista_1/2/3, alinhada_com_valor, reflexão)
+ * Gamificação: +5 chamas por entrada
  *
  * Tema: #C1634A (fogo), fundo escuro #2e1a14
  */
@@ -62,7 +62,7 @@ const CalendarIcon = ({ className = 'w-5 h-5' }) => (
 const TABS = [
   { id: 'hoje', label: 'Hoje', icon: FireIcon },
   { id: 'biblioteca', label: 'Vitorias', icon: TrophyIcon },
-  { id: 'stats', label: 'Estatisticas', icon: ChartIcon }
+  { id: 'stats', label: 'Estatísticas', icon: ChartIcon }
 ]
 
 export default function DiarioConquistas() {
@@ -74,20 +74,20 @@ export default function DiarioConquistas() {
   const [userId, setUserId] = useState(null)
   const [activeTab, setActiveTab] = useState('hoje')
 
-  // Formulario de hoje
+  // Formulário de hoje
   const [conquista1, setConquista1] = useState('')
   const [conquista2, setConquista2] = useState('')
   const [conquista3, setConquista3] = useState('')
   const [alinhadaCom, setAlinhadaCom] = useState('')
   const [reflexao, setReflexao] = useState('')
 
-  // Entrada de hoje (se ja existe)
+  // Entrada de hoje (se já existe)
   const [entradaHoje, setEntradaHoje] = useState(null)
 
   // Valores do utilizador (para o dropdown)
   const [valores, setValores] = useState([])
 
-  // Historico
+  // Histórico
   const [historico, setHistorico] = useState([])
 
   // Stats
@@ -95,7 +95,7 @@ export default function DiarioConquistas() {
   const [streakDias, setStreakDias] = useState(0)
   const [valorMaisAlinhado, setValorMaisAlinhado] = useState(null)
 
-  // Motivacao aleatoria
+  // Motivação aleatória
   const [conquistaAleatoria, setConquistaAleatoria] = useState(null)
 
   const hoje = new Date().toISOString().split('T')[0]
@@ -142,7 +142,7 @@ export default function DiarioConquistas() {
         setValores(Array.isArray(parsed) ? parsed : [])
       }
 
-      // Buscar historico (ultimas 60 entradas)
+      // Buscar histórico (últimas 60 entradas)
       const { data: historicoData } = await supabase
         .from('ignis_conquistas_log')
         .select('*')
@@ -166,7 +166,7 @@ export default function DiarioConquistas() {
       // Valor mais alinhado
       calcularValorMaisAlinhado(historicoData || [])
 
-      // Conquista aleatoria para motivacao
+      // Conquista aleatória para motivação
       if (historicoData && historicoData.length > 1) {
         // Excluir hoje
         const passadas = historicoData.filter(e => e.data !== hoje)
@@ -351,8 +351,8 @@ export default function DiarioConquistas() {
       {/* Header */}
       <ModuleHeader
         eco="ignis"
-        title="Diario de Conquistas"
-        subtitle={g('O que conquistaste hoje com intencao?', 'O que conquistaste hoje com intencao?')}
+        title="Diário de Conquistas"
+        subtitle={g('O que conquistaste hoje com intenção?', 'O que conquistaste hoje com intenção?')}
       />
 
       {/* Tabs */}
@@ -361,7 +361,7 @@ export default function DiarioConquistas() {
           className="flex rounded-xl p-1 gap-1"
           style={{ background: 'rgba(255,255,255,0.06)' }}
           role="tablist"
-          aria-label="Seccoes do diario"
+          aria-label="Secções do diário"
         >
           {TABS.map(tab => {
             const Icon = tab.icon
@@ -393,7 +393,7 @@ export default function DiarioConquistas() {
         {activeTab === 'hoje' && (
           <div className="space-y-5">
 
-            {/* Conquista aleatoria como motivacao */}
+            {/* Conquista aleatória como motivação */}
             {conquistaAleatoria && !entradaHoje && (
               <div
                 className="rounded-2xl border p-4"
@@ -403,7 +403,7 @@ export default function DiarioConquistas() {
                   <SparklesIcon className="w-5 h-5 flex-shrink-0" style={{ color: IGNIS_COLOR }} />
                   <div>
                     <p className="text-white/40 text-xs uppercase tracking-wider mb-1">
-                      Relembra as tuas vitorias
+                      Relembra as tuas vitórias
                     </p>
                     <p className="text-white/80 text-sm italic leading-relaxed">
                       "{conquistaAleatoria.texto}"
@@ -417,9 +417,9 @@ export default function DiarioConquistas() {
             )}
 
             {entradaHoje ? (
-              /* ===== Ja registou hoje — mostrar com celebracao ===== */
+              /* ===== Já registou hoje — mostrar com celebração ===== */
               <div className="space-y-4">
-                {/* Celebracao header */}
+                {/* Celebração header */}
                 <div className="text-center py-6">
                   <div className="text-5xl mb-3 animate-bounce">{'\u{1F525}'}</div>
                   <h2
@@ -458,7 +458,7 @@ export default function DiarioConquistas() {
                   }
                 </div>
 
-                {/* Valor e reflexao */}
+                {/* Valor e reflexão */}
                 {(entradaHoje.alinhada_com_valor || entradaHoje.reflexao) && (
                   <div
                     className="rounded-xl border p-4"
@@ -489,15 +489,15 @@ export default function DiarioConquistas() {
                   style={{ background: `${IGNIS_COLOR}05`, borderColor: `${IGNIS_COLOR}10` }}
                 >
                   <p className="text-white/40 text-xs">
-                    Amanha podes voltar e registar mais 3 conquistas.{' '}
+                    Amanhã podes voltar e registar mais 3 conquistas.{' '}
                     {g('Mantém o fogo aceso', 'Mantém o fogo aceso')}!
                   </p>
                 </div>
               </div>
             ) : (
-              /* ===== Formulario de registo ===== */
+              /* ===== Formulário de registo ===== */
               <div className="space-y-4">
-                {/* Titulo */}
+                {/* Título */}
                 <div className="text-center mb-2">
                   <h2
                     className="text-xl font-bold text-white"
@@ -506,7 +506,7 @@ export default function DiarioConquistas() {
                     Hoje consegui...
                   </h2>
                   <p className="text-white/40 text-sm mt-1">
-                    Nao tarefas, mas vitorias {g('alinhado', 'alinhada')}s com quem queres ser
+                    Não tarefas, mas vitórias {g('alinhado', 'alinhada')}s com quem queres ser
                   </p>
                 </div>
 
@@ -530,7 +530,7 @@ export default function DiarioConquistas() {
                       value={conquista1}
                       onChange={(e) => setConquista1(e.target.value)}
                       className="w-full bg-transparent text-white/90 text-sm px-3 py-3 placeholder:text-white/20 focus:outline-none"
-                      placeholder={`Ex: Dizer nao a algo que nao me serve`}
+                      placeholder={`Ex: Dizer não a algo que não me serve`}
                       maxLength={300}
                     />
                   </div>
@@ -582,7 +582,7 @@ export default function DiarioConquistas() {
                       value={conquista3}
                       onChange={(e) => setConquista3(e.target.value)}
                       className="w-full bg-transparent text-white/90 text-sm px-3 py-3 placeholder:text-white/20 focus:outline-none"
-                      placeholder={`Ex: Manter a calma num momento dificil`}
+                      placeholder={`Ex: Manter a calma num momento difícil`}
                       maxLength={300}
                     />
                   </div>
@@ -592,7 +592,7 @@ export default function DiarioConquistas() {
                 {valores.length > 0 && (
                   <div>
                     <label className="block text-white/50 text-xs mb-1.5 uppercase tracking-wider">
-                      Com que valor esta alinhada? (opcional)
+                      Com que valor está alinhada? (opcional)
                     </label>
                     <select
                       value={alinhadaCom}
@@ -620,7 +620,7 @@ export default function DiarioConquistas() {
                   </div>
                 )}
 
-                {/* Reflexao (opcional) */}
+                {/* Reflexão (opcional) */}
                 <div>
                   <label className="block text-white/50 text-xs mb-1.5 uppercase tracking-wider">
                     O que senti ao conquistar isto? (opcional)
@@ -640,7 +640,7 @@ export default function DiarioConquistas() {
                   />
                 </div>
 
-                {/* Botao guardar */}
+                {/* Botão guardar */}
                 <button
                   onClick={guardarConquistas}
                   disabled={saving || (!conquista1.trim() && !conquista2.trim() && !conquista3.trim())}
@@ -651,7 +651,7 @@ export default function DiarioConquistas() {
                       : IGNIS_COLOR
                   }}
                 >
-                  {/* Animacao de fogo no hover */}
+                  {/* Animação de fogo no hover */}
                   <span
                     className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity"
                     style={{
@@ -680,14 +680,14 @@ export default function DiarioConquistas() {
 
                 {/* Info: chamas */}
                 <p className="text-center text-white/25 text-xs">
-                  Cada registo no diario acrescenta 5 chamas ao teu fogo
+                  Cada registo no diário acrescenta 5 chamas ao teu fogo
                 </p>
               </div>
             )}
           </div>
         )}
 
-        {/* ========== TAB: BIBLIOTECA DE VITORIAS ========== */}
+        {/* ========== TAB: BIBLIOTECA DE VITÓRIAS ========== */}
         {activeTab === 'biblioteca' && (
           <div className="space-y-5">
 
@@ -705,7 +705,7 @@ export default function DiarioConquistas() {
               </p>
             </div>
 
-            {/* Conquista aleatoria motivacional */}
+            {/* Conquista aleatória motivacional */}
             {conquistaAleatoria && (
               <div
                 className="rounded-2xl border p-4"
@@ -715,7 +715,7 @@ export default function DiarioConquistas() {
                   <SparklesIcon className="w-5 h-5 flex-shrink-0" style={{ color: IGNIS_COLOR }} />
                   <div>
                     <p className="text-white/40 text-xs uppercase tracking-wider mb-1">
-                      Relembra as tuas vitorias
+                      Relembra as tuas vitórias
                     </p>
                     <p className="text-white/80 text-sm italic leading-relaxed">
                       "{conquistaAleatoria.texto}"
@@ -728,15 +728,15 @@ export default function DiarioConquistas() {
               </div>
             )}
 
-            {/* Historico agrupado por semana */}
+            {/* Histórico agrupado por semana */}
             {historicoAgrupado.length === 0 ? (
               <div className="text-center py-12">
                 <div className="text-4xl mb-3 opacity-40">{'\u{1F4D6}'}</div>
                 <p className="text-white/40 text-sm">
-                  Ainda nao tens conquistas registadas.
+                  Ainda não tens conquistas registadas.
                 </p>
                 <p className="text-white/25 text-xs mt-1">
-                  Comeca hoje a registar as tuas vitorias!
+                  Começa hoje a registar as tuas vitórias!
                 </p>
                 <button
                   onClick={() => setActiveTab('hoje')}
@@ -750,7 +750,7 @@ export default function DiarioConquistas() {
               <div className="space-y-6">
                 {historicoAgrupado.map((semana) => (
                   <div key={semana.inicio}>
-                    {/* Cabecalho da semana */}
+                    {/* Cabeçalho da semana */}
                     <div className="flex items-center gap-3 mb-3">
                       <CalendarIcon className="w-4 h-4 text-white/30" />
                       <h3 className="text-white/50 text-xs uppercase tracking-wider font-medium">
@@ -801,7 +801,7 @@ export default function DiarioConquistas() {
                             }
                           </div>
 
-                          {/* Reflexao */}
+                          {/* Reflexão */}
                           {entrada.reflexao && (
                             <p className="text-white/40 text-xs italic mt-2 pl-5">
                               "{entrada.reflexao}"
@@ -817,16 +817,16 @@ export default function DiarioConquistas() {
           </div>
         )}
 
-        {/* ========== TAB: ESTATISTICAS ========== */}
+        {/* ========== TAB: ESTATÍSTICAS ========== */}
         {activeTab === 'stats' && (
           <div className="space-y-5">
 
-            {/* Titulo */}
+            {/* Título */}
             <h2
               className="text-xl font-bold text-white text-center"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              As tuas estatisticas
+              As tuas estatísticas
             </h2>
 
             {/* Cards de stats */}
@@ -898,7 +898,7 @@ export default function DiarioConquistas() {
                   </span>
                 </div>
                 <p className="text-white/40 text-xs mt-3">
-                  Este e o valor que mais aparece nas tuas conquistas.{' '}
+                  Este é o valor que mais aparece nas tuas conquistas.{' '}
                   {g('Estás alinhado', 'Estás alinhada')} com o que importa.
                 </p>
               </div>
@@ -934,16 +934,17 @@ export default function DiarioConquistas() {
             )}
 
             {/* Mensagem motivacional */}
+
             <div
               className="rounded-xl border p-4 text-center"
               style={{ background: `${IGNIS_COLOR}05`, borderColor: `${IGNIS_COLOR}10` }}
             >
               <p className="text-white/50 text-sm italic">
                 {totalConquistas === 0
-                  ? 'A primeira chama esta a espera de ser acesa. Comeca hoje.'
+                  ? 'A primeira chama está à espera de ser acesa. Começa hoje.'
                   : totalConquistas < 30
-                    ? `Ja registaste ${totalConquistas} conquistas. O fogo esta a crescer.`
-                    : `${totalConquistas} conquistas! O teu fogo interno e ${g('forte', 'forte')}.`
+                    ? `Já registaste ${totalConquistas} conquistas. O fogo está a crescer.`
+                    : `${totalConquistas} conquistas! O teu fogo interno é ${g('forte', 'forte')}.`
                 }
               </p>
             </div>

@@ -2,9 +2,9 @@ import React from 'react'
 import NotificacoesModule from '../shared/NotificacoesModule'
 
 /**
- * NOTIFICACOES IMAGO — Config de lembretes do Imago
- * Lembretes para reflexao diaria, insights semanais,
- * meditacoes e revisao trimestral de valores
+ * NOTIFICAÇÕES IMAGO — Config de lembretes do Imago
+ * Lembretes para reflexão diária, insights semanais,
+ * meditações e revisão trimestral de valores
  */
 
 const IMAGO_NOTIFICACOES_CONFIG = {
@@ -12,8 +12,8 @@ const IMAGO_NOTIFICACOES_CONFIG = {
   reminders: [
     {
       id: 'reflexao_diaria',
-      label: 'Reflexao Diaria',
-      description: 'Quem es tu hoje? Momento de auto-observacao',
+      label: 'Reflexão Diária',
+      description: 'Quem és tu hoje? Momento de auto-observação',
       defaultTime: '08:00',
       defaultEnabled: true
     },
@@ -26,14 +26,14 @@ const IMAGO_NOTIFICACOES_CONFIG = {
     },
     {
       id: 'meditacao',
-      label: 'Lembrete de Meditacao',
-      description: 'Momento para meditacao de essencia',
+      label: 'Lembrete de Meditação',
+      description: 'Momento para meditação de essência',
       defaultTime: '07:00',
       defaultEnabled: false
     },
     {
       id: 'revisao_valores',
-      label: 'Revisao Trimestral de Valores',
+      label: 'Revisão Trimestral de Valores',
       description: 'Os teus valores continuam actuais?',
       defaultTime: '10:00',
       defaultEnabled: false

@@ -9,7 +9,7 @@ import { VENTIS_GAMIFICATION } from '../../lib/ventis/gamificacao'
 // ============================================================
 // VENTIS — Detector de Burnout (Preventivo)
 // Eco da Energia & Ritmo (Anahata)
-// NOTA: Isto e PREVENTIVO, nao diagnostico.
+// NOTA: Isto é PREVENTIVO, não diagnóstico.
 // ============================================================
 
 const ACCENT = '#5D9B84'
@@ -17,21 +17,21 @@ const ACCENT_DARK = '#1a2e24'
 const ACCENT_LIGHT = '#7FBDA6'
 const ACCENT_SUBTLE = 'rgba(93,155,132,0.12)'
 
-// Limiar: energia media abaixo de 40% = dia de baixa energia
+// Limiar: energia média abaixo de 40% = dia de baixa energia
 const LIMIAR_BAIXA_ENERGIA = 40
 // Dias consecutivos para activar alerta
 const DIAS_CONSECUTIVOS_ALERTA = 5
 
-// Accoes recomendadas quando burnout detectado
+// Acções recomendadas quando burnout detectado
 const ACCOES_RECOMENDADAS = [
-  { id: 'cancelar', texto: 'Cancela 1 compromisso nao-essencial hoje', icon: '📋' },
-  { id: 'pausa', texto: 'Faz uma pausa de 30 minutos sem ecra', icon: '📵' },
+  { id: 'cancelar', texto: 'Cancela 1 compromisso não-essencial hoje', icon: '📋' },
+  { id: 'pausa', texto: 'Faz uma pausa de 30 minutos sem ecrã', icon: '📵' },
   { id: 'dormir', texto: 'Deita-te 1 hora mais cedo hoje', icon: '🛏️' },
-  { id: 'natureza', texto: 'Vai la fora 10 minutos', icon: '🌿' },
-  { id: 'nao', texto: 'Diz nao a 1 pedido hoje', icon: '🚫' }
+  { id: 'natureza', texto: 'Vai lá fora 10 minutos', icon: '🌿' },
+  { id: 'nao', texto: 'Diz não a 1 pedido hoje', icon: '🚫' }
 ]
 
-// Dicas de prevencao
+// Dicas de prevenção
 const DICAS_PREVENCAO = [
   { texto: 'Faz pausas regulares', icon: '⏸️' },
   { texto: 'Move o corpo pelo menos 1x/dia', icon: '🏃' },
@@ -39,7 +39,7 @@ const DICAS_PREVENCAO = [
   { texto: 'Conecta com a natureza', icon: '🌳' }
 ]
 
-// ---- Icone de folha decorativo ----
+// ---- Ícone de folha decorativo ----
 const LeafDecoration = ({ className = '' }) => (
   <div className={`pointer-events-none select-none ${className}`} aria-hidden="true">
     <svg
@@ -113,7 +113,7 @@ const EstadoNormal = ({ tendencia }) => (
         className="text-xl font-bold text-white mb-2"
         style={{ fontFamily: "'Cormorant Garamond', serif" }}
       >
-        O teu ritmo esta sustentavel
+        O teu ritmo está sustentável
       </h2>
       <StatusBadge tipo="ok">Energia equilibrada</StatusBadge>
       <p className="text-gray-400 text-sm mt-3">
@@ -121,14 +121,14 @@ const EstadoNormal = ({ tendencia }) => (
       </p>
     </div>
 
-    {/* Tendencia ultimos 7 dias */}
+    {/* Tendência últimos 7 dias */}
     {tendencia.length > 0 && (
       <div className="bg-white/5 rounded-2xl border border-white/10 p-5">
         <h3
           className="text-white font-semibold mb-4"
           style={{ fontFamily: "'Cormorant Garamond', serif" }}
         >
-          Tendencia dos ultimos 7 dias
+          Tendência dos últimos 7 dias
         </h3>
         <div className="flex items-end gap-1.5 h-24">
           {tendencia.map((d) => (
@@ -143,13 +143,13 @@ const EstadoNormal = ({ tendencia }) => (
       </div>
     )}
 
-    {/* Dicas de prevencao */}
+    {/* Dicas de prevenção */}
     <div className="bg-white/5 rounded-2xl border border-white/10 p-5">
       <h3
         className="text-white font-semibold mb-3"
         style={{ fontFamily: "'Cormorant Garamond', serif" }}
       >
-        Para manter o equilbrio
+        Para manter o equilíbrio
       </h3>
       <div className="space-y-2.5">
         {DICAS_PREVENCAO.map((dica, i) => (
@@ -201,31 +201,31 @@ const EstadoAlerta = ({
           className="text-xl font-bold text-white mb-2"
           style={{ fontFamily: "'Cormorant Garamond', serif" }}
         >
-          Ha {diasConsecutivos} dias em modo esforco
+          Há {diasConsecutivos} dias em modo esforço
         </h2>
         <StatusBadge tipo={tipo}>
-          {tipo === 'critico' ? 'Alerta critico' : 'Atencao necessaria'}
+          {tipo === 'critico' ? 'Alerta crítico' : 'Atenção necessária'}
         </StatusBadge>
         <p className="text-gray-300 text-sm mt-4 max-w-sm mx-auto leading-relaxed">
-          Isto nao e sustentavel. A tua energia media esta nos{' '}
+          Isto não é sustentável. A tua energia média está nos{' '}
           <span className="font-bold" style={{ color: corAlerta }}>{Math.round(nivelMedio)}%</span>.
         </p>
         <p
           className="text-sm mt-3 italic max-w-xs mx-auto"
           style={{ color: `${corAlerta}cc` }}
         >
-          O teu corpo esta a dizer-te algo. Ouve-o.
+          O teu corpo está a dizer-te algo. Ouve-o.
         </p>
       </div>
 
-      {/* Visualizacao dos dias baixos */}
+      {/* Visualização dos dias baixos */}
       {tendencia.length > 0 && (
         <div className="bg-white/5 rounded-2xl border border-white/10 p-5">
           <h3
             className="text-white font-semibold mb-4"
             style={{ fontFamily: "'Cormorant Garamond', serif" }}
           >
-            Os teus ultimos dias
+            Os teus últimos dias
           </h3>
           <div className="flex items-end gap-1.5 h-24">
             {tendencia.map((d) => (
@@ -240,7 +240,7 @@ const EstadoAlerta = ({
         </div>
       )}
 
-      {/* Accoes recomendadas */}
+      {/* Acções recomendadas */}
       <div className="bg-white/5 rounded-2xl border border-white/10 p-5">
         <h3
           className="text-white font-semibold mb-1"
@@ -249,7 +249,7 @@ const EstadoAlerta = ({
           O que podes fazer agora
         </h3>
         <p className="text-gray-500 text-xs mb-4">
-          Marca pelo menos 1 accao para activar
+          Marca pelo menos 1 acção para activar
         </p>
         <div className="space-y-2.5">
           {ACCOES_RECOMENDADAS.map((accao) => {
@@ -292,7 +292,7 @@ const EstadoAlerta = ({
           })}
         </div>
 
-        {/* Botao de accao */}
+        {/* Botão de acção */}
         <button
           onClick={onAgir}
           disabled={accoesMarcadas.length === 0 || saving}
@@ -320,7 +320,7 @@ const EstadoAlerta = ({
   )
 }
 
-// ---- Historico de alertas ----
+// ---- Histórico de alertas ----
 const HistoricoAlertas = ({ alertas }) => {
   if (alertas.length === 0) {
     return (
@@ -333,7 +333,7 @@ const HistoricoAlertas = ({ alertas }) => {
           Sem alertas recentes
         </h3>
         <p className="text-gray-500 text-sm">
-          Nenhum alerta de burnout nos ultimos 3 meses. Bom sinal!
+          Nenhum alerta de burnout nos últimos 3 meses. Bom sinal!
         </p>
       </div>
     )
@@ -345,7 +345,7 @@ const HistoricoAlertas = ({ alertas }) => {
         className="text-white font-semibold mb-4"
         style={{ fontFamily: "'Cormorant Garamond', serif" }}
       >
-        Alertas nos ultimos 3 meses
+        Alertas nos últimos 3 meses
       </h3>
       <div className="space-y-3">
         {alertas.map((alerta, i) => {
@@ -370,12 +370,12 @@ const HistoricoAlertas = ({ alertas }) => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-white">
-                    {alerta.dias_consecutivos} dias em modo esforco
+                    {alerta.dias_consecutivos} dias em modo esforço
                   </span>
                   <span className="text-xs text-gray-500">{dataStr}</span>
                 </div>
                 <p className="text-xs text-gray-400 mt-0.5">
-                  Energia media: {Math.round(alerta.nivel_medio)}%
+                  Energia média: {Math.round(alerta.nivel_medio)}%
                 </p>
                 {alerta.accao_tomada && (
                   <p className="text-xs mt-1" style={{ color: ACCENT }}>
@@ -410,13 +410,13 @@ export default function DetectorBurnout() {
   const [view, setView] = useState('actual') // 'actual' | 'historico'
   const [showSuccess, setShowSuccess] = useState(false)
 
-  // Calcular tendencia e detectar burnout
+  // Calcular tendência e detectar burnout
   const analisarEnergia = useCallback(async () => {
     if (!userId) return
     setLoading(true)
 
     try {
-      // Buscar ultimos 14 dias de logs de energia
+      // Buscar últimos 14 dias de logs de energia
       const dataLimite = new Date()
       dataLimite.setDate(dataLimite.getDate() - 14)
 
@@ -429,7 +429,7 @@ export default function DetectorBurnout() {
 
       if (error) throw error
 
-      // Agrupar por dia e calcular media
+      // Agrupar por dia e calcular média
       const porDia = {}
       ;(logs || []).forEach((log) => {
         const dia = log.data
@@ -459,14 +459,14 @@ export default function DetectorBurnout() {
 
       const mediaBaixa = consecutivos > 0 ? somaConsecutivos / consecutivos : 0
 
-      // Ultimos 7 dias para o grafico
+      // Últimos 7 dias para o gráfico
       const ultimos7 = mediasDiarias.slice(-7)
 
       setTendencia(ultimos7)
       setDiasConsecutivosBaixos(consecutivos)
       setNivelMedio(mediaBaixa)
 
-      // Buscar historico de alertas (ultimos 3 meses)
+      // Buscar histórico de alertas (últimos 3 meses)
       const data3Meses = new Date()
       data3Meses.setMonth(data3Meses.getMonth() - 3)
 
@@ -491,7 +491,7 @@ export default function DetectorBurnout() {
     analisarEnergia()
   }, [analisarEnergia])
 
-  // Toggle accao marcada
+  // Toggle acção marcada
   const toggleAccao = useCallback((accaoId) => {
     setAccoesMarcadas((prev) =>
       prev.includes(accaoId)
@@ -500,7 +500,7 @@ export default function DetectorBurnout() {
     )
   }, [])
 
-  // Guardar accao de burnout
+  // Guardar acção de burnout
   const handleAgir = useCallback(async () => {
     if (!userId || accoesMarcadas.length === 0) return
     setSaving(true)
@@ -530,8 +530,8 @@ export default function DetectorBurnout() {
         analisarEnergia()
       }, 3000)
     } catch (err) {
-      console.error('Erro ao guardar accao:', err)
-      alert('Nao foi possivel guardar. Tenta novamente.')
+      console.error('Erro ao guardar acção:', err)
+      alert('Não foi possível guardar. Tenta novamente.')
     } finally {
       setSaving(false)
     }
@@ -539,14 +539,14 @@ export default function DetectorBurnout() {
 
   const burnoutDetectado = diasConsecutivosBaixos >= DIAS_CONSECUTIVOS_ALERTA
 
-  // Vista de sucesso (pos-accao)
+  // Vista de sucesso (pós-acção)
   if (showSuccess) {
     return (
       <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${ACCENT_DARK} 0%, #111318 30%, #0d0f13 100%)` }}>
         <ModuleHeader
           eco="ventis"
           title="Detector de Burnout"
-          subtitle="Prevencao e consciencia"
+          subtitle="Prevenção e consciência"
         />
         <LeafDecoration className="-mt-1" />
         <div className="max-w-lg mx-auto px-4 py-16 text-center animate-fadeIn">
@@ -563,7 +563,7 @@ export default function DetectorBurnout() {
             {g('Corajoso', 'Corajosa')} por agires
           </h2>
           <p className="text-gray-400 text-sm max-w-xs mx-auto">
-            Ouvir o corpo e o primeiro passo. +8 Folhas 🍃 adicionadas.
+            Ouvir o corpo é o primeiro passo. +8 Folhas 🍃 adicionadas.
           </p>
         </div>
       </div>
@@ -601,7 +601,7 @@ export default function DetectorBurnout() {
             style={view === 'historico' ? { background: `${ACCENT}33` } : undefined}
             aria-pressed={view === 'historico'}
           >
-            Historico
+            Histórico
           </button>
         </div>
 
@@ -631,8 +631,8 @@ export default function DetectorBurnout() {
         {/* Nota preventiva */}
         <div className="mt-8 p-4 rounded-xl" style={{ background: 'rgba(93,155,132,0.08)' }}>
           <p className="text-xs text-gray-500 italic leading-relaxed text-center">
-            Este detector e preventivo, nao diagnostico. Se sentes que precisas de ajuda profissional,
-            procura um medico ou psicologo. Cuidar de ti e um acto de forca.
+            Este detector é preventivo, não diagnóstico. Se sentes que precisas de ajuda profissional,
+            procura um médico ou psicólogo. Cuidar de ti é um acto de força.
           </p>
         </div>
 

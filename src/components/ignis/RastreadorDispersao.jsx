@@ -5,7 +5,7 @@ import { g } from '../../utils/genero';
 import { useAuth } from '../../contexts/AuthContext';
 
 // ============================================================
-// IGNIS — Rastreador de Dispersao
+// IGNIS — Rastreador de Dispersão
 // Eco da Vontade & Foco (Manipura)
 // "O que te desvia do essencial?"
 // ============================================================
@@ -68,10 +68,10 @@ const DAY_NAMES_SHORT = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'];
 // ---- Motivational messages based on dispersal count ----
 const getMotivationalMessage = (count) => {
   if (count === 0) return `Dia limpo! ${g('Focado', 'Focada')} no essencial.`;
-  if (count === 1) return 'Uma dispersao apenas. Consciencia e o primeiro passo.';
-  if (count <= 3) return 'Estas a identificar padroes. Isso e poder.';
-  if (count <= 5) return 'Dia intenso. Cada "nao" que aprendes a dizer e uma vitoria.';
-  return 'Muitas dispersoes hoje. Respira. Amanha e uma nova chama.';
+  if (count === 1) return 'Uma dispersão apenas. Consciência é o primeiro passo.';
+  if (count <= 3) return 'Estás a identificar padrões. Isso é poder.';
+  if (count <= 5) return 'Dia intenso. Cada "não" que aprendes a dizer é uma vitória.';
+  return 'Muitas dispersões hoje. Respira. Amanhã é uma nova chama.';
 };
 
 // ==========================
@@ -110,7 +110,7 @@ const LogForm = ({ onSave, saving }) => {
           type="text"
           value={situacao}
           onChange={(e) => setSituacao(e.target.value)}
-          placeholder="Descreve a situacao..."
+          placeholder="Descreve a situação..."
           maxLength={300}
           required
           className="w-full px-4 py-3 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all duration-200"
@@ -126,7 +126,7 @@ const LogForm = ({ onSave, saving }) => {
       <div className="flex items-center justify-between p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
         <div className="flex-1 pr-4">
           <p className="text-sm font-medium text-gray-200">
-            Disseste sim quando querias dizer nao?
+            Disseste sim quando querias dizer não?
           </p>
           <p className="text-xs text-gray-500 mt-0.5">
             Cedeste contra a tua vontade
@@ -156,7 +156,7 @@ const LogForm = ({ onSave, saving }) => {
           <textarea
             value={porqueDissesSim}
             onChange={(e) => setPorqueDissesSim(e.target.value)}
-            placeholder="Medo de rejeicao, culpa, pressao social..."
+            placeholder="Medo de rejeição, culpa, pressão social..."
             rows={3}
             maxLength={500}
             className="w-full px-4 py-3 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
@@ -164,7 +164,7 @@ const LogForm = ({ onSave, saving }) => {
               background: 'rgba(193,99,74,0.08)',
               focusRingColor: IGNIS
             }}
-            aria-label="Porque disseste sim quando querias dizer nao"
+            aria-label="Porque disseste sim quando querias dizer não"
           />
         </div>
       )}
@@ -205,7 +205,7 @@ const LogForm = ({ onSave, saving }) => {
         className="w-full py-3.5 rounded-xl text-white font-medium transition-all duration-200 shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
         style={{ background: `linear-gradient(135deg, ${IGNIS}, ${IGNIS_DARK})` }}
       >
-        {saving ? 'A guardar...' : 'Registar dispersao'}
+        {saving ? 'A guardar...' : 'Registar dispersão'}
       </button>
     </form>
   );
@@ -220,7 +220,7 @@ const TodayLog = ({ entries, totalEnergy }) => {
       <div className="text-center py-8 space-y-3">
         <FlameIcon className="w-10 h-10 mx-auto opacity-30" />
         <p className="text-sm text-gray-500">
-          Nenhuma dispersao registada hoje.
+          Nenhuma dispersão registada hoje.
         </p>
         <p className="text-xs text-gray-600 italic">
           {g('Focado', 'Focada')} no essencial — assim se alimenta a chama.
@@ -259,7 +259,7 @@ const TodayLog = ({ entries, totalEnergy }) => {
                 </span>
                 {entry.disse_sim_queria_nao && (
                   <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: `${IGNIS}22`, color: IGNIS_LIGHT }}>
-                    Disse sim, queria nao
+                    Disse sim, queria não
                   </span>
                 )}
               </div>
@@ -285,7 +285,7 @@ const TodayLog = ({ entries, totalEnergy }) => {
           </p>
         </div>
         <div className="text-right">
-          <p className="text-xs text-gray-500">Dispersoes</p>
+          <p className="text-xs text-gray-500">Dispersões</p>
           <p className="text-lg font-bold text-gray-200">{entries.length}</p>
         </div>
       </div>
@@ -350,7 +350,7 @@ const WeeklySummary = ({ weekEntries }) => {
         <FlameIcon className="w-10 h-10 mx-auto opacity-30" />
         <p className="text-sm text-gray-500">Sem dados esta semana.</p>
         <p className="text-xs text-gray-600 italic">
-          Comeca a registar as tuas dispersoes para ver padroes.
+          Começa a registar as tuas dispersões para ver padrões.
         </p>
       </div>
     );
@@ -360,7 +360,7 @@ const WeeklySummary = ({ weekEntries }) => {
     <div className="space-y-6">
       {/* Bar chart */}
       <div>
-        <h3 className="text-sm font-medium text-gray-400 mb-3">Dispersoes por dia</h3>
+        <h3 className="text-sm font-medium text-gray-400 mb-3">Dispersões por dia</h3>
         <div className="flex items-end justify-between gap-2 h-32">
           {dailyCounts.map((day, i) => {
             const barHeight = maxCount > 0 ? (day.count / maxCount) * 100 : 0;
@@ -399,7 +399,7 @@ const WeeklySummary = ({ weekEntries }) => {
         </div>
         <div className="p-3 rounded-xl text-center" style={{ background: `${IGNIS}11` }}>
           <p className="text-lg font-bold" style={{ color: IGNIS }}>{totalSimQueriaNao}</p>
-          <p className="text-xs text-gray-500">Sims que eram nao</p>
+          <p className="text-xs text-gray-500">Sims que eram não</p>
         </div>
         <div className="p-3 rounded-xl text-center" style={{ background: 'rgba(255,255,255,0.04)' }}>
           <p className="text-lg font-bold text-gray-200">{totalEnergy}</p>
@@ -412,7 +412,7 @@ const WeeklySummary = ({ weekEntries }) => {
         <div className="p-4 rounded-xl" style={{ background: `${IGNIS}10`, border: `1px solid ${IGNIS}22` }}>
           <div className="flex items-center gap-2 mb-3">
             <TrendUpIcon className="w-4 h-4" style={{ color: IGNIS }} />
-            <h3 className="text-sm font-semibold text-gray-200">Padrao detectado</h3>
+            <h3 className="text-sm font-semibold text-gray-200">Padrão detectado</h3>
           </div>
           <div className="space-y-2">
             {patterns.map(([situacao, count]) => (
@@ -494,7 +494,7 @@ const Insights = ({ allEntries }) => {
           className="text-base font-semibold text-gray-200 mb-4"
           style={{ fontFamily: HEADING_FONT }}
         >
-          As tuas maiores fontes de dispersao
+          As tuas maiores fontes de dispersão
         </h3>
         <div className="space-y-3">
           {insights.topSources.map((source, i) => (
@@ -514,7 +514,7 @@ const Insights = ({ allEntries }) => {
                 <div className="flex items-center gap-3 mt-1">
                   <span className="text-xs text-gray-500">{source.count}x</span>
                   <span className="text-xs text-gray-500">
-                    Energia media: {source.avgEnergy.toFixed(1)}
+                    Energia média: {source.avgEnergy.toFixed(1)}
                   </span>
                   {source.simCount > 0 && (
                     <span className="text-xs" style={{ color: IGNIS }}>
@@ -533,7 +533,7 @@ const Insights = ({ allEntries }) => {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-gray-300">
-              Percentagem de vezes que disseste sim quando querias dizer nao
+              Percentagem de vezes que disseste sim quando querias dizer não
             </p>
             <p className="text-xs text-gray-500 mt-1">
               Em {insights.totalEntries} {insights.totalEntries === 1 ? 'registo' : 'registos'} totais
@@ -560,8 +560,8 @@ const Insights = ({ allEntries }) => {
       {/* Reflective message */}
       <div className="p-4 rounded-xl text-center" style={{ background: 'rgba(255,255,255,0.03)' }}>
         <p className="text-xs text-gray-400 italic leading-relaxed">
-          A dispersao nao e fraqueza — e informacao. Cada vez que a reconheces,
-          a tua chama interior fica mais {g('forte', 'forte')}. O fogo nao se alimenta do que te desvia,
+          A dispersão não é fraqueza — é informação. Cada vez que a reconheces,
+          a tua chama interior fica mais {g('forte', 'forte')}. O fogo não se alimenta do que te desvia,
           mas do que te chama.
         </p>
       </div>
@@ -633,7 +633,7 @@ export default function RastreadorDispersao() {
       if (allError) throw allError;
       setAllEntries(allData || []);
     } catch (err) {
-      console.error('Erro ao carregar dados de dispersao:', err);
+      console.error('Erro ao carregar dados de dispersão:', err);
     } finally {
       setLoading(false);
     }
@@ -686,7 +686,7 @@ export default function RastreadorDispersao() {
       // Refresh data
       await fetchData();
     } catch (err) {
-      console.error('Erro ao guardar dispersao:', err);
+      console.error('Erro ao guardar dispersão:', err);
       alert('Erro ao guardar. Tenta novamente.');
     } finally {
       setSaving(false);
@@ -709,7 +709,7 @@ export default function RastreadorDispersao() {
   if (loading) {
     return (
       <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${IGNIS_DARK} 0%, #111318 30%, #0d0f13 100%)` }}>
-        <ModuleHeader eco="ignis" title="Rastreador de Dispersao" />
+        <ModuleHeader eco="ignis" title="Rastreador de Dispersão" />
         <div className="flex items-center justify-center py-20">
           <div
             className="w-8 h-8 border-2 rounded-full animate-spin"
@@ -724,15 +724,15 @@ export default function RastreadorDispersao() {
     <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${IGNIS_DARK} 0%, #111318 30%, #0d0f13 100%)` }}>
       <ModuleHeader
         eco="ignis"
-        title="Rastreador de Dispersao"
+        title="Rastreador de Dispersão"
         subtitle="O que te desvia do essencial?"
       />
 
-      <div className="max-w-lg mx-auto px-4 pb-24" role="main" aria-label="Rastreador de Dispersao">
+      <div className="max-w-lg mx-auto px-4 pb-24" role="main" aria-label="Rastreador de Dispersão">
         {/* Concept quote */}
         <div className="text-center py-5">
           <p className="text-xs text-gray-500 italic leading-relaxed max-w-xs mx-auto">
-            &ldquo;Quantas vezes disseste sim quando querias dizer nao?&rdquo;
+            &ldquo;Quantas vezes disseste sim quando querias dizer não?&rdquo;
           </p>
         </div>
 
@@ -748,7 +748,7 @@ export default function RastreadorDispersao() {
               <p className="text-sm text-green-300 font-medium">
                 {g('Registado', 'Registada')}! +3 chamas
               </p>
-              <p className="text-xs text-green-400/60">Consciencia e o primeiro acto de vontade.</p>
+              <p className="text-xs text-green-400/60">Consciência é o primeiro acto de vontade.</p>
             </div>
           </div>
         )}
@@ -784,7 +784,7 @@ export default function RastreadorDispersao() {
                 className="text-lg font-semibold text-white mb-5"
                 style={{ fontFamily: HEADING_FONT }}
               >
-                Nova dispersao
+                Nova dispersão
               </h2>
               <LogForm onSave={handleSave} saving={saving} />
             </div>

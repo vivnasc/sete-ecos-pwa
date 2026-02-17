@@ -1,7 +1,7 @@
 /**
- * SERENA — Sistema de Gamificacao
+ * SERENA — Sistema de Gamificação
  * Moeda: Gotas 💧
- * Niveis: Nascente → Riacho → Rio → Oceano
+ * Níveis: Nascente → Riacho → Rio → Oceano
  */
 
 export const SERENA_GAMIFICATION = {
@@ -15,8 +15,8 @@ export const SERENA_GAMIFICATION = {
   badges: [
     {
       id: 'primeira_lagrima',
-      name: 'Primeira Lagrima',
-      description: 'Registar a primeira emocao',
+      name: 'Primeira Lágrima',
+      description: 'Registar a primeira emoção',
       icon: '😢',
       condition: (data) => (data.emocoes_total || 0) >= 1
     },
@@ -29,22 +29,22 @@ export const SERENA_GAMIFICATION = {
     },
     {
       id: 'respiracao_mestre',
-      name: 'Respiracao Consciente',
-      description: 'Completar 10 sessoes de respiracao',
+      name: 'Respiração Consciente',
+      description: 'Completar 10 sessões de respiração',
       icon: '🫁',
       condition: (data) => (data.respiracoes_total || 0) >= 10
     },
     {
       id: 'ritual_libertacao',
-      name: 'Ritual de Libertacao',
+      name: 'Ritual de Libertação',
       description: 'Completar o primeiro ritual',
       icon: '🔓',
       condition: (data) => (data.rituais_total || 0) >= 1
     },
     {
       id: 'explorador_emocoes',
-      name: 'Explorador de Emocoes',
-      description: 'Registar 5 emocoes diferentes',
+      name: 'Explorador de Emoções',
+      description: 'Registar 5 emoções diferentes',
       icon: '🎨',
       condition: (data) => (data.emocoes_unicas || 0) >= 5
     },
@@ -57,7 +57,7 @@ export const SERENA_GAMIFICATION = {
     },
     {
       id: 'praticas_10',
-      name: 'Fluir com Agua',
+      name: 'Fluir com Água',
       description: 'Completar 10 praticas de fluidez',
       icon: '💧',
       condition: (data) => (data.praticas_total || 0) >= 10
@@ -65,7 +65,7 @@ export const SERENA_GAMIFICATION = {
     {
       id: 'oceano_interior',
       name: 'Oceano Interior',
-      description: 'Alcancar o nivel Oceano',
+      description: 'Alcançar o nível Oceano',
       icon: '🌏',
       condition: (data) => (data.gotas_total || 0) >= 500
     }
@@ -82,7 +82,7 @@ export const SERENA_GAMIFICATION = {
 }
 
 /**
- * Lista de emocoes disponiveis na roda emocional
+ * Lista de emoções disponíveis na roda emocional
  */
 export const EMOCOES = [
   { value: 'alegria', label: 'Alegria', icon: '😊', cor: '#FFD700' },
@@ -91,39 +91,39 @@ export const EMOCOES = [
   { value: 'medo', label: 'Medo', icon: '😨', cor: '#8B7BA5' },
   { value: 'ansiedade', label: 'Ansiedade', icon: '😰', cor: '#C4A265' },
   { value: 'calma', label: 'Calma', icon: '😌', cor: '#5D9B84' },
-  { value: 'cansaco', label: 'Cansaco', icon: '😴', cor: '#6B5C4C' },
-  { value: 'motivacao', label: 'Motivacao', icon: '💪', cor: '#7C8B6F' },
+  { value: 'cansaco', label: 'Cansaço', icon: '😴', cor: '#6B5C4C' },
+  { value: 'motivacao', label: 'Motivação', icon: '💪', cor: '#7C8B6F' },
   { value: 'vazio', label: 'Vazio', icon: '😶', cor: '#9E9E9E' },
-  { value: 'gratidao', label: 'Gratidao', icon: '🙏', cor: '#E8B4B8' },
-  { value: 'confusao', label: 'Confusao', icon: '😵‍💫', cor: '#B39DDB' },
-  { value: 'esperanca', label: 'Esperanca', icon: '🌟', cor: '#81C784' },
+  { value: 'gratidao', label: 'Gratidão', icon: '🙏', cor: '#E8B4B8' },
+  { value: 'confusao', label: 'Confusão', icon: '😵‍💫', cor: '#B39DDB' },
+  { value: 'esperanca', label: 'Esperança', icon: '🌟', cor: '#81C784' },
   { value: 'vergonha', label: 'Vergonha', icon: '😳', cor: '#CE93D8' },
   { value: 'culpa', label: 'Culpa', icon: '😔', cor: '#A1887F' },
-  { value: 'solidao', label: 'Solidao', icon: '🥺', cor: '#78909C' },
+  { value: 'solidao', label: 'Solidão', icon: '🥺', cor: '#78909C' },
   { value: 'amor', label: 'Amor', icon: '💕', cor: '#E57373' }
 ]
 
 /**
- * Zonas do corpo para mapeamento de emocoes
+ * Zonas do corpo para mapeamento de emoções
  */
 export const CORPO_ZONAS = [
-  { value: 'cabeca', label: 'Cabeca', icon: '🧠' },
+  { value: 'cabeca', label: 'Cabeça', icon: '🧠' },
   { value: 'garganta', label: 'Garganta', icon: '🗣️' },
   { value: 'peito', label: 'Peito', icon: '💗' },
-  { value: 'estomago', label: 'Estomago', icon: '🫄' },
-  { value: 'maos', label: 'Maos', icon: '🤲' },
+  { value: 'estomago', label: 'Estômago', icon: '🫄' },
+  { value: 'maos', label: 'Mãos', icon: '🤲' },
   { value: 'pernas', label: 'Pernas', icon: '🦵' },
   { value: 'corpo_todo', label: 'Corpo todo', icon: '🧍' },
-  { value: 'nenhum', label: 'Nao sinto no corpo', icon: '❓' }
+  { value: 'nenhum', label: 'Não sinto no corpo', icon: '❓' }
 ]
 
 /**
- * Tecnicas de respiracao
+ * Técnicas de respiração
  */
 export const TECNICAS_RESPIRACAO = [
   {
     id: '4-7-8',
-    nome: 'Respiracao 4-7-8',
+    nome: 'Respiração 4-7-8',
     descricao: 'Inspira 4s, segura 7s, expira 8s. Acalma o sistema nervoso.',
     passos: [
       { accao: 'inspira', duracao: 4 },
@@ -131,11 +131,11 @@ export const TECNICAS_RESPIRACAO = [
       { accao: 'expira', duracao: 8 }
     ],
     ciclos: 4,
-    para: 'ansiedade, insonia'
+    para: 'ansiedade, insónia'
   },
   {
     id: 'box',
-    nome: 'Respiracao Box',
+    nome: 'Respiração Box',
     descricao: 'Inspira 4s, segura 4s, expira 4s, segura 4s. Equilibra.',
     passos: [
       { accao: 'inspira', duracao: 4 },
@@ -148,31 +148,31 @@ export const TECNICAS_RESPIRACAO = [
   },
   {
     id: 'oceanica',
-    nome: 'Respiracao Oceanica',
+    nome: 'Respiração Oceânica',
     descricao: 'Inspira lentamente pelo nariz, expira pela boca como ondas do mar.',
     passos: [
       { accao: 'inspira', duracao: 5 },
       { accao: 'expira', duracao: 7 }
     ],
     ciclos: 6,
-    para: 'calma, presenca'
+    para: 'calma, presença'
   },
   {
     id: 'suspiro',
-    nome: 'Suspiro Fisiologico',
-    descricao: 'Duas inspiracoes curtas pelo nariz + expiracao longa. O reset mais rapido.',
+    nome: 'Suspiro Fisiológico',
+    descricao: 'Duas inspirações curtas pelo nariz + expiração longa. O reset mais rápido.',
     passos: [
       { accao: 'inspira', duracao: 2 },
       { accao: 'inspira', duracao: 1 },
       { accao: 'expira', duracao: 6 }
     ],
     ciclos: 3,
-    para: 'panico, emergencia'
+    para: 'pânico, emergência'
   },
   {
     id: 'alternada',
-    nome: 'Respiracao Alternada',
-    descricao: 'Alterna entre narinas. Equilibra hemisferios cerebrais.',
+    nome: 'Respiração Alternada',
+    descricao: 'Alterna entre narinas. Equilibra hemisférios cerebrais.',
     passos: [
       { accao: 'inspira (narina esquerda)', duracao: 4 },
       { accao: 'segura', duracao: 2 },
@@ -182,43 +182,43 @@ export const TECNICAS_RESPIRACAO = [
       { accao: 'expira (narina esquerda)', duracao: 4 }
     ],
     ciclos: 3,
-    para: 'equilibrio, clareza'
+    para: 'equilíbrio, clareza'
   },
   {
     id: 'coerencia',
-    nome: 'Coerencia Cardiaca',
-    descricao: 'Inspira 5s, expira 5s. 6 respiracoes por minuto = coerencia.',
+    nome: 'Coerência Cardíaca',
+    descricao: 'Inspira 5s, expira 5s. 6 respirações por minuto = coerência.',
     passos: [
       { accao: 'inspira', duracao: 5 },
       { accao: 'expira', duracao: 5 }
     ],
     ciclos: 6,
-    para: 'regulacao emocional, coerencia'
+    para: 'regulação emocional, coerência'
   }
 ]
 
 /**
- * Praticas de fluidez (elemento agua)
+ * Práticas de fluidez (elemento água)
  */
 export const PRATICAS_FLUIDEZ = [
   // Nivel 1: Iniciante
-  { id: 'agua_intencao', nivel: 1, nome: 'Beber agua com intencao', descricao: 'Bebe um copo de agua devagar, sentindo cada gole. Sem pressa.', duracao: '2 min' },
-  { id: 'banho_consciente', nivel: 1, nome: 'Banho consciente', descricao: 'No banho, sente a agua no corpo. Imagina que lava o que ja nao precisas.', duracao: '5 min' },
-  { id: 'observar_agua', nivel: 1, nome: 'Observar agua', descricao: 'Olha para agua a correr (torneira, rio, chuva). Deixa a mente fluir.', duracao: '3 min' },
-  { id: 'lagrimas_permitidas', nivel: 1, nome: 'Lagrimas permitidas', descricao: 'Se precisares de chorar, chora. Sem julgar. A agua limpa.', duracao: 'quanto precisar' },
-  { id: 'mao_na_agua', nivel: 1, nome: 'Mao na agua', descricao: 'Coloca as maos em agua morna. Sente a temperatura. Respira.', duracao: '3 min' },
+  { id: 'agua_intencao', nivel: 1, nome: 'Beber água com intenção', descricao: 'Bebe um copo de água devagar, sentindo cada gole. Sem pressa.', duracao: '2 min' },
+  { id: 'banho_consciente', nivel: 1, nome: 'Banho consciente', descricao: 'No banho, sente a água no corpo. Imagina que lava o que já não precisas.', duracao: '5 min' },
+  { id: 'observar_agua', nivel: 1, nome: 'Observar água', descricao: 'Olha para água a correr (torneira, rio, chuva). Deixa a mente fluir.', duracao: '3 min' },
+  { id: 'lagrimas_permitidas', nivel: 1, nome: 'Lágrimas permitidas', descricao: 'Se precisares de chorar, chora. Sem julgar. A água limpa.', duracao: 'quanto precisar' },
+  { id: 'mao_na_agua', nivel: 1, nome: 'Mão na água', descricao: 'Coloca as mãos em água morna. Sente a temperatura. Respira.', duracao: '3 min' },
 
-  // Nivel 2: Intermedio
-  { id: 'fluir_mudanca', nivel: 2, nome: 'Fluir com a mudanca', descricao: 'Identifica algo que resistes. Pergunta: "E se eu deixasse fluir?"', duracao: '5 min' },
+  // Nível 2: Intermédio
+  { id: 'fluir_mudanca', nivel: 2, nome: 'Fluir com a mudança', descricao: 'Identifica algo que resistes. Pergunta: "E se eu deixasse fluir?"', duracao: '5 min' },
   { id: 'escrita_fluida', nivel: 2, nome: 'Escrita fluida', descricao: 'Escreve sem parar 5 minutos. Sem editar, sem julgar. Deixa sair.', duracao: '5 min' },
-  { id: 'movimento_agua', nivel: 2, nome: 'Movimento de agua', descricao: 'Move o corpo como agua: suave, ondulante, sem rigidez. Sem certo ou errado.', duracao: '5 min' },
+  { id: 'movimento_agua', nivel: 2, nome: 'Movimento de água', descricao: 'Move o corpo como água: suave, ondulante, sem rigidez. Sem certo ou errado.', duracao: '5 min' },
   { id: 'soltar_controlo', nivel: 2, nome: 'Soltar o controlo', descricao: 'Escolhe UMA coisa que tentas controlar. Deixa-a ser como e, so por hoje.', duracao: '1 min' },
-  { id: 'compaixao_silenciosa', nivel: 2, nome: 'Compaixao silenciosa', descricao: 'Coloca a mao no peito. Diz em silencio: "Isto e dificil, e eu estou aqui."', duracao: '2 min' },
+  { id: 'compaixao_silenciosa', nivel: 2, nome: 'Compaixão silenciosa', descricao: 'Coloca a mão no peito. Diz em silêncio: "Isto é difícil, e eu estou aqui."', duracao: '2 min' },
 
-  // Nivel 3: Avancado
-  { id: 'ritual_chuva', nivel: 3, nome: 'Ritual de chuva', descricao: 'Se chover, sai a chuva (ou imagina). Sente a purificacao. Solta.', duracao: '10 min' },
+  // Nível 3: Avançado
+  { id: 'ritual_chuva', nivel: 3, nome: 'Ritual de chuva', descricao: 'Se chover, sai à chuva (ou imagina). Sente a purificação. Solta.', duracao: '10 min' },
   { id: 'carta_ao_rio', nivel: 3, nome: 'Carta ao rio', descricao: 'Escreve o que queres soltar num papel. Imagina que o rio leva embora.', duracao: '10 min' },
-  { id: 'silencio_liquido', nivel: 3, nome: 'Silencio liquido', descricao: '10 minutos em silencio. Observa os pensamentos como bolhas que sobem e rebentam.', duracao: '10 min' },
-  { id: 'reconciliacao', nivel: 3, nome: 'Reconciliacao interna', descricao: 'Conversa internamente com uma parte de ti que tem estado em conflito.', duracao: '15 min' },
-  { id: 'oceano_interior', nivel: 3, nome: 'Oceano interior', descricao: 'Meditacao: imagina que dentro de ti ha um oceano. Mergulha. O que encontras?', duracao: '15 min' }
+  { id: 'silencio_liquido', nivel: 3, nome: 'Silêncio líquido', descricao: '10 minutos em silêncio. Observa os pensamentos como bolhas que sobem e rebentam.', duracao: '10 min' },
+  { id: 'reconciliacao', nivel: 3, nome: 'Reconciliação interna', descricao: 'Conversa internamente com uma parte de ti que tem estado em conflito.', duracao: '15 min' },
+  { id: 'oceano_interior', nivel: 3, nome: 'Oceano interior', descricao: 'Meditação: imagina que dentro de ti há um oceano. Mergulha. O que encontras?', duracao: '15 min' }
 ]

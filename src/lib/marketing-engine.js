@@ -2090,7 +2090,7 @@ export function getGuiaMetaDeveloper() {
         instrucoes: [
           'No painel da app, ir a "Ferramentas" → "Graph API Explorer"',
           'Em "Meta App", seleccionar a app criada',
-          'Em "User or Page", seleccionar a tua Pagina de Facebook',
+          'Em "User or Page", seleccionar a tua Página de Facebook',
           'Adicionar permissoes: instagram_basic, instagram_content_publish, pages_show_list, pages_read_engagement',
           'Clicar "Generate Access Token" e autorizar',
           'IMPORTANTE: Este token expira em 1 hora. Para token permanente, seguir passo 4.',
@@ -2103,7 +2103,7 @@ export function getGuiaMetaDeveloper() {
           'Copiar o token do passo 3',
           'Ir ao Graph API Explorer e fazer este pedido:',
           'GET /me/accounts?access_token={TOKEN_CURTO}',
-          'Na resposta, encontrar a tua Pagina e copiar o "access_token" dela',
+          'Na resposta, encontrar a tua Página e copiar o "access_token" dela',
           'Este Page Token ja NAO expira (Long-Lived Page Token)',
           'Guardar este token - e o META_ACCESS_TOKEN',
         ],
@@ -2115,7 +2115,7 @@ export function getGuiaMetaDeveloper() {
         instrucoes: [
           'No Graph API Explorer, fazer:',
           'GET /me/accounts (com o token permanente)',
-          'Copiar o "id" da Pagina de Facebook',
+          'Copiar o "id" da Página de Facebook',
           'Depois fazer: GET /{PAGE_ID}?fields=instagram_business_account',
           'O campo "instagram_business_account.id" e o teu INSTAGRAM_ACCOUNT_ID',
         ],
@@ -2258,7 +2258,7 @@ export function getSetupWhatsAppBusiness() {
   return {
     perfil: {
       nome: 'Sete Ecos',
-      categoria: 'Saude e bem-estar',
+      categoria: 'Saúde e bem-estar',
       descricao: 'Coaching nutricional e bem-estar feminino 🌿 Feito em Moçambique 🇲🇿',
       sobre: 'Coaching nutricional e bem-estar feminino 🌿 Feito em Moçambique 🇲🇿',
       horario: 'Seg-Sex: 8h-18h',

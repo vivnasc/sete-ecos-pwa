@@ -7,12 +7,12 @@ import ModuleHeader from '../shared/ModuleHeader'
 
 // ============================================================
 // AURORA — Resumo da Jornada
-// Relatorio completo com dados de TODOS os ecos activos
+// Relatório completo com dados de TODOS os ecos activos
 // ============================================================
 
 const AURORA_COLOR = '#D4A5A5'
 
-// Definicao dos ecos e suas cores/icones
+// Definição dos ecos e suas cores/ícones
 const ECO_DEFINITIONS = [
   {
     key: 'vitalis',
@@ -226,7 +226,7 @@ export default function ResumoJornada() {
       <ModuleHeader
         eco="aurora"
         title="Resumo da Jornada"
-        subtitle="Relatorio completo da tua transformacao"
+        subtitle="Relatório completo da tua transformação"
       />
 
       <div className="max-w-3xl mx-auto px-4 py-6">
@@ -289,11 +289,11 @@ export default function ResumoJornada() {
               className="text-lg font-bold text-gray-800 mb-2"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              A tua jornada esta a comecar
+              A tua jornada está a começar
             </h3>
             <p className="text-sm text-gray-500 max-w-md mx-auto">
-              Ainda nao tens ecos activos. Quando {g('comecares', 'comecares')} a explorar os diferentes ecos,
-              o teu resumo aparecera aqui.
+              Ainda não tens ecos activos. Quando {g('começares', 'começares')} a explorar os diferentes ecos,
+              o teu resumo aparecerá aqui.
             </p>
           </div>
         ) : (
@@ -384,7 +384,7 @@ export default function ResumoJornada() {
                   {stats.length === 0 && (
                     <div className="px-5 py-4">
                       <p className="text-sm text-gray-400 italic">
-                        {g('Comeca', 'Comeca')} a explorar {eco.name} para ver as tuas estatisticas.
+                        {g('Começa', 'Começa')} a explorar {eco.name} para ver as tuas estatísticas.
                       </p>
                     </div>
                   )}
@@ -420,7 +420,7 @@ export default function ResumoJornada() {
           </div>
         )}
 
-        {/* ======= Evolucao Global ======= */}
+        {/* ======= Evolução Global ======= */}
         {totalEcos > 0 && (
           <div
             className="rounded-2xl p-6 mb-6 border"
@@ -430,7 +430,7 @@ export default function ResumoJornada() {
               className="text-lg font-bold text-gray-800 mb-4"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              Evolucao Global
+              Evolução Global
             </h3>
 
             <div className="space-y-4">
@@ -466,17 +466,17 @@ export default function ResumoJornada() {
                 <p className="text-sm text-gray-600 leading-relaxed">
                   {totalEcos === 7
                     ? g(
-                        'Parabens! Completaste todos os 7 ecos. A tua transformacao e total.',
-                        'Parabens! Completaste todos os 7 ecos. A tua transformacao e total.'
+                        'Parabéns! Completaste todos os 7 ecos. A tua transformação é total.',
+                        'Parabéns! Completaste todos os 7 ecos. A tua transformação é total.'
                       )
                     : totalEcos >= 4
                       ? g(
-                          `Ja estas em ${totalEcos} ecos. A tua jornada de transformacao esta a avançar com forca.`,
-                          `Ja estas em ${totalEcos} ecos. A tua jornada de transformacao esta a avancar com forca.`
+                          `Já estás em ${totalEcos} ecos. A tua jornada de transformação está a avançar com força.`,
+                          `Já estás em ${totalEcos} ecos. A tua jornada de transformação está a avançar com força.`
                         )
                       : g(
-                          `Comecaste ${totalEcos} ${totalEcos === 1 ? 'eco' : 'ecos'}. Cada passo conta na tua transformacao.`,
-                          `Comecaste ${totalEcos} ${totalEcos === 1 ? 'eco' : 'ecos'}. Cada passo conta na tua transformacao.`
+                          `Começaste ${totalEcos} ${totalEcos === 1 ? 'eco' : 'ecos'}. Cada passo conta na tua transformação.`,
+                          `Começaste ${totalEcos} ${totalEcos === 1 ? 'eco' : 'ecos'}. Cada passo conta na tua transformação.`
                         )}
                 </p>
                 <p className="text-xs text-gray-400 mt-2">
@@ -502,7 +502,7 @@ export default function ResumoJornada() {
             style={{ backgroundColor: `${AURORA_COLOR}15`, border: `1px solid ${AURORA_COLOR}30` }}
           >
             <p className="text-sm font-medium" style={{ color: AURORA_COLOR }}>
-              A exportacao em PDF esta a ser desenvolvida e estara {g('disponivel', 'disponivel')} em breve.
+              A exportação em PDF está a ser desenvolvida e estará {g('disponível', 'disponível')} em breve.
             </p>
           </div>
         )}
@@ -510,8 +510,8 @@ export default function ResumoJornada() {
         {/* Motivational footer */}
         <p className="text-center text-xs text-gray-400 mt-6 px-4">
           {g(
-            'Cada eco que percorres e um passo na tua transformacao.',
-            'Cada eco que percorres e um passo na tua transformacao.'
+            'Cada eco que percorres é um passo na tua transformação.',
+            'Cada eco que percorres é um passo na tua transformação.'
           )}
         </p>
       </div>

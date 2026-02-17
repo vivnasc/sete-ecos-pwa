@@ -7,9 +7,9 @@ import ModuleHeader from '../shared/ModuleHeader'
 import { MEDITACOES_ESSENCIA } from '../../lib/imago/gamificacao'
 
 // ============================================================
-// IMAGO — Meditacoes de Essencia
-// Meditacoes guiadas com scripts em portugues sobre identidade
-// Chakra: Sahasrara (Coroa) — Consciencia e essencia
+// IMAGO — Meditações de Essência
+// Meditações guiadas com scripts em português sobre identidade
+// Chakra: Sahasrara (Coroa) — Consciência e essência
 // ============================================================
 
 const ACCENT = '#8B7BA5'
@@ -111,7 +111,7 @@ const LogEntry = ({ entry }) => {
       {expanded && entry.reflexao && (
         <div className="px-4 pb-4 animate-fadeIn">
           <div className="pt-2 border-t border-white/5">
-            <p className="text-xs text-gray-500 mb-1">Reflexao:</p>
+            <p className="text-xs text-gray-500 mb-1">Reflexão:</p>
             <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap italic">
               {entry.reflexao}
             </p>
@@ -295,7 +295,7 @@ export default function MeditacoesEssencia() {
       fetchLog()
     } catch (err) {
       console.error('Erro ao guardar meditacao:', err)
-      alert('Nao foi possivel guardar. Tenta novamente.')
+      alert('Não foi possível guardar. Tenta novamente.')
     } finally {
       setSaving(false)
     }
@@ -333,8 +333,8 @@ export default function MeditacoesEssencia() {
       {fase !== 'player' && (
         <ModuleHeader
           eco="imago"
-          title="Meditacoes de Essencia"
-          subtitle="Quem sou sem rotulos?"
+          title="Meditações de Essência"
+          subtitle="Quem sou sem rótulos?"
         />
       )}
 
@@ -358,14 +358,14 @@ export default function MeditacoesEssencia() {
                 style={view === 'historico' ? { background: `${ACCENT}33` } : undefined}
                 aria-pressed={view === 'historico'}
               >
-                Historico ({logEntries.length})
+                Histórico ({logEntries.length})
               </button>
             </div>
 
             {view === 'meditar' && (
               <div className="space-y-3 animate-fadeIn">
                 <p className="text-sm text-gray-400 mb-4">
-                  Escolhe uma meditacao guiada. Cada uma explora uma faceta diferente da tua identidade e essencia.
+                  Escolhe uma meditação guiada. Cada uma explora uma faceta diferente da tua identidade e essência.
                 </p>
                 {MEDITACOES_ESSENCIA.map(med => (
                   <MeditacaoCard
@@ -393,17 +393,17 @@ export default function MeditacoesEssencia() {
                       className="text-lg font-semibold text-white"
                       style={{ fontFamily: "'Cormorant Garamond', serif" }}
                     >
-                      Nenhuma meditacao registada
+                      Nenhuma meditação registada
                     </h3>
                     <p className="text-sm text-gray-400 max-w-xs mx-auto">
-                      As meditacoes de essencia ajudam-te a conectar com quem realmente es.
+                      As meditações de essência ajudam-te a conectar com quem realmente és.
                     </p>
                     <button
                       onClick={() => setView('meditar')}
                       className="px-6 py-3 rounded-xl font-medium text-sm text-white shadow-lg transition-all duration-200"
                       style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
                     >
-                      Comecar a meditar
+                      Começar a meditar
                     </button>
                   </div>
                 ) : (
@@ -414,7 +414,7 @@ export default function MeditacoesEssencia() {
                         <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                           {logEntries.length}
                         </p>
-                        <p className="text-xs text-gray-400">{logEntries.length === 1 ? 'meditacao' : 'meditacoes'}</p>
+                        <p className="text-xs text-gray-400">{logEntries.length === 1 ? 'meditação' : 'meditações'}</p>
                       </div>
                       <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
                         <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
@@ -448,7 +448,7 @@ export default function MeditacoesEssencia() {
               onClick={handleCancelar}
               className="absolute top-6 left-6 z-10 p-2 rounded-lg"
               style={{ color: '#6a7490' }}
-              aria-label="Cancelar meditacao"
+              aria-label="Cancelar meditação"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6">
                 <path d="M6 18L18 6M6 6l12 12" />
@@ -552,7 +552,7 @@ export default function MeditacoesEssencia() {
                 className="px-6 py-2.5 rounded-xl text-sm font-medium text-white transition-all duration-200 active:scale-95"
                 style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
               >
-                {linhaActual === meditacaoEscolhida.script.length - 1 ? 'Concluir' : 'Proximo'}
+                {linhaActual === meditacaoEscolhida.script.length - 1 ? 'Concluir' : 'Próximo'}
               </button>
             </div>
 
@@ -583,7 +583,7 @@ export default function MeditacoesEssencia() {
                 className="text-xl font-semibold text-white mb-2"
                 style={{ fontFamily: "'Cormorant Garamond', serif" }}
               >
-                Meditacao completa
+                Meditação completa
               </h2>
               <p className="text-sm text-gray-400">
                 {meditacaoEscolhida.nome} — {g('Obrigado', 'Obrigada')} por este momento contigo.
@@ -602,7 +602,7 @@ export default function MeditacoesEssencia() {
                 maxLength={2000}
                 className="w-full p-4 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
                 style={{ background: 'rgba(255,255,255,0.06)', focusRingColor: ACCENT }}
-                aria-label="Reflexao apos meditacao"
+                aria-label="Reflexão após meditação"
               />
             </div>
 
@@ -642,10 +642,10 @@ export default function MeditacoesEssencia() {
                 className="text-xl font-semibold text-white mb-2"
                 style={{ fontFamily: "'Cormorant Garamond', serif" }}
               >
-                {g('Conectado', 'Conectada')} com a essencia
+                {g('Conectado', 'Conectada')} com a essência
               </h2>
               <p className="text-sm text-gray-400 max-w-xs">
-                A tua pratica de "{meditacaoEscolhida.nome}" foi registada. +8 Estrelas
+                A tua prática de "{meditacaoEscolhida.nome}" foi registada. +8 Estrelas
               </p>
             </div>
 
@@ -655,11 +655,11 @@ export default function MeditacoesEssencia() {
               style={{ background: ACCENT_DARK, border: `1px solid ${ACCENT}22` }}
             >
               <div className="flex justify-between items-center mb-3 pb-3" style={{ borderBottom: `1px solid ${ACCENT}15` }}>
-                <span className="text-xs uppercase tracking-wider" style={{ color: '#6a7490' }}>Meditacao</span>
+                <span className="text-xs uppercase tracking-wider" style={{ color: '#6a7490' }}>Meditação</span>
                 <span className="text-sm font-medium text-white">{meditacaoEscolhida.nome}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-xs uppercase tracking-wider" style={{ color: '#6a7490' }}>Duracao</span>
+                <span className="text-xs uppercase tracking-wider" style={{ color: '#6a7490' }}>Duração</span>
                 <span className="text-sm font-medium text-white">~{meditacaoEscolhida.duracao_min} min</span>
               </div>
             </div>
@@ -670,7 +670,7 @@ export default function MeditacoesEssencia() {
                 className="w-full py-3 rounded-xl font-semibold text-white transition-all duration-200 hover:brightness-110 active:scale-95"
                 style={{ background: ACCENT }}
               >
-                Outra meditacao
+                Outra meditação
               </button>
               <button
                 onClick={() => navigate('/imago/dashboard')}

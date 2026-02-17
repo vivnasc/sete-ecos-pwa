@@ -6,8 +6,8 @@ import ModuleHeader from '../shared/ModuleHeader'
 import { g } from '../../utils/genero'
 
 /**
- * INSIGHTS ECOA — Relatorio semanal de voz e expressao
- * Metricas: micro-voz, vozes recuperadas, cartas, exercicios
+ * INSIGHTS ECOA — Relatório semanal de voz e expressão
+ * Métricas: micro-voz, vozes recuperadas, cartas, exercícios
  */
 
 const ECOA_INSIGHTS_CONFIG = {
@@ -16,7 +16,7 @@ const ECOA_INSIGHTS_CONFIG = {
   metrics: [
     {
       id: 'micro_voz',
-      label: 'Exercicios Micro-Voz',
+      label: 'Exercícios Micro-Voz',
       icon: '🗣️',
       table: 'ecoa_micro_voz_log',
       selectColumns: 'id, completed, created_at',
@@ -26,7 +26,7 @@ const ECOA_INSIGHTS_CONFIG = {
 
         let insight = ''
         if (completed >= 7) insight = 'Voz em crescimento!'
-        else if (completed >= 4) insight = 'Bom ritmo de pratica'
+        else if (completed >= 4) insight = 'Bom ritmo de prática'
         else if (completed > 0) insight = 'Cada micro-voz conta'
 
         return {
@@ -49,8 +49,8 @@ const ECOA_INSIGHTS_CONFIG = {
 
         let insight = ''
         if (count >= 7) insight = 'A tua voz ressoa!'
-        else if (count >= 3) insight = 'Cada voz recuperada e vitoria'
-        else if (count > 0) insight = 'O primeiro som e o mais corajoso'
+        else if (count >= 3) insight = 'Cada voz recuperada é vitória'
+        else if (count > 0) insight = 'O primeiro som é o mais corajoso'
 
         return {
           value: count,
@@ -72,8 +72,8 @@ const ECOA_INSIGHTS_CONFIG = {
 
         let insight = ''
         if (libertadas >= 3) insight = 'Palavras libertadas!'
-        else if (count >= 3) insight = 'A escrita cura o silencio'
-        else if (count > 0) insight = 'Escrever ja e falar'
+        else if (count >= 3) insight = 'A escrita cura o silêncio'
+        else if (count > 0) insight = 'Escrever já é falar'
 
         return {
           value: count,
@@ -85,20 +85,20 @@ const ECOA_INSIGHTS_CONFIG = {
     },
     {
       id: 'exercicios',
-      label: 'Exercicios de expressao',
+      label: 'Exercícios de expressão',
       icon: '🎤',
       table: 'ecoa_exercicios_log',
       selectColumns: 'id, created_at',
       analysis: (data, allData) => {
-        // Combinar com comunicacao_log se disponivel
+        // Combinar com comunicacao_log se disponível
         const exerciciosCount = data.length
         const comunicacaoCount = allData?.comunicacao?.length || 0
         const count = exerciciosCount + comunicacaoCount
 
         let insight = ''
-        if (count >= 7) insight = 'Expressao fluida!'
-        else if (count >= 3) insight = 'A pratica fortalece a voz'
-        else if (count > 0) insight = 'Cada exercicio e um passo'
+        if (count >= 7) insight = 'Expressão fluida!'
+        else if (count >= 3) insight = 'A prática fortalece a voz'
+        else if (count > 0) insight = 'Cada exercício é um passo'
 
         return {
           value: count,
@@ -107,7 +107,7 @@ const ECOA_INSIGHTS_CONFIG = {
           extra: { exercicios: exerciciosCount, comunicacao: comunicacaoCount }
         }
       },
-      // Tabela extra para combinar
+      // Tabela extra para combinar (comunicação)
       extraTable: 'ecoa_comunicacao_log',
       extraKey: 'comunicacao',
       extraColumns: 'id, created_at'
@@ -120,15 +120,15 @@ const ECOA_INSIGHTS_CONFIG = {
     const exercicios = metricsData.exercicios || {}
 
     if (microVoz.value >= 5 && vozes.value >= 3) {
-      return `Semana poderosa! ${microVoz.value} exercicios de Micro-Voz e ${vozes.value} vozes recuperadas. ${vozes.extra?.topicos?.length > 0 ? `Falaste sobre: ${vozes.extra.topicos.slice(0, 3).join(', ')}.` : ''} ${g('Estas a reconquistar', 'Estas a reconquistar')} a tua voz — como um eco que ganha forca a cada repeticao.`
+      return `Semana poderosa! ${microVoz.value} exercícios de Micro-Voz e ${vozes.value} vozes recuperadas. ${vozes.extra?.topicos?.length > 0 ? `Falaste sobre: ${vozes.extra.topicos.slice(0, 3).join(', ')}.` : ''} ${g('Estás a reconquistar', 'Estás a reconquistar')} a tua voz — como um eco que ganha força a cada repetição.`
     }
     if (microVoz.value >= 3) {
-      return `Bom ritmo de pratica vocal. ${microVoz.value} exercicios de Micro-Voz completados. ${cartas.value > 0 ? `Escreveste ${cartas.value} carta${cartas.value > 1 ? 's' : ''} — cada palavra escrita e uma voz libertada.` : 'Tenta escrever uma carta nao enviada esta semana — a escrita e uma forma poderosa de voz.'}`
+      return `Bom ritmo de prática vocal. ${microVoz.value} exercícios de Micro-Voz completados. ${cartas.value > 0 ? `Escreveste ${cartas.value} carta${cartas.value > 1 ? 's' : ''} — cada palavra escrita é uma voz libertada.` : 'Tenta escrever uma carta não enviada esta semana — a escrita é uma forma poderosa de voz.'}`
     }
     if (microVoz.value > 0 || vozes.value > 0) {
-      return `Comecaste a usar a tua voz esta semana — isso ja e um acto de coragem. Como um eco que comeca suave, a tua voz vai ganhando forca com a pratica. Tenta completar pelo menos 3 exercicios de Micro-Voz por semana.`
+      return `Começaste a usar a tua voz esta semana — isso já é um acto de coragem. Como um eco que começa suave, a tua voz vai ganhando força com a prática. Tenta completar pelo menos 3 exercícios de Micro-Voz por semana.`
     }
-    return 'Esta semana a tua voz ficou em silencio. O eco precisa de som para existir. Vai ao Dashboard e faz o teu primeiro exercicio de Micro-Voz — comeca pelo mais simples. A tua voz merece ser ouvida.'
+    return 'Esta semana a tua voz ficou em silêncio. O eco precisa de som para existir. Vai ao Dashboard e faz o teu primeiro exercício de Micro-Voz — começa pelo mais simples. A tua voz merece ser ouvida.'
   }
 }
 

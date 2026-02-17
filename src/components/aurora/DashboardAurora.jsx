@@ -9,7 +9,7 @@ import { GamificationBadge } from '../shared/GamificationSystem'
 
 /**
  * AURORA — Dashboard Principal
- * Modulo de Integracao Final
+ * Módulo de Integração Final
  * Tema: rosa (#D4A5A5), fundo escuro (#2e1a1a)
  * Moeda: Raios de Aurora, Elemento: Luz
  */
@@ -25,7 +25,7 @@ export default function DashboardAurora() {
   const [userId, setUserId] = useState(null)
   const [userName, setUserName] = useState('')
 
-  // Gamificacao
+  // Gamificação
   const [raios, setRaios] = useState(0)
 
   // Aurora-specific
@@ -83,12 +83,12 @@ export default function DashboardAurora() {
     loadDashboard()
   }, [loadDashboard])
 
-  // Saudacao contextual baseada na hora
+  // Saudação contextual baseada na hora
   function getSaudacao() {
     const hora = new Date().getHours()
-    if (hora < 12) return 'Uma nova aurora comeca agora'
+    if (hora < 12) return 'Uma nova aurora começa agora'
     if (hora < 18) return 'A tua luz continua a brilhar'
-    return 'Que esta noite traga renovacao'
+    return 'Que esta noite traga renovação'
   }
 
   // Icones dos ecos completados
@@ -119,13 +119,13 @@ export default function DashboardAurora() {
 
   // ===== Quick Actions =====
   const quickActions = [
-    { label: 'Cerimonia de Graduacao', to: '/aurora/cerimonia', icon: '🌅', subtitle: 'Celebrar a tua jornada' },
-    { label: 'Antes & Depois', to: '/aurora/antes-depois', icon: '\u{1F4D6}', subtitle: 'A tua historia' },
-    { label: 'Resumo da Jornada', to: '/aurora/resumo', icon: '\u{1F4CA}', subtitle: 'Relatorio completo' },
-    { label: 'Modo Manutencao', to: '/aurora/manutencao', icon: '\u{1F6E1}\uFE0F', subtitle: 'Check-ins mensais' },
+    { label: 'Cerimónia de Graduação', to: '/aurora/cerimonia', icon: '🌅', subtitle: 'Celebrar a tua jornada' },
+    { label: 'Antes & Depois', to: '/aurora/antes-depois', icon: '\u{1F4D6}', subtitle: 'A tua história' },
+    { label: 'Resumo da Jornada', to: '/aurora/resumo', icon: '\u{1F4CA}', subtitle: 'Relatório completo' },
+    { label: 'Modo Manutenção', to: '/aurora/manutencao', icon: '\u{1F6E1}\uFE0F', subtitle: 'Check-ins mensais' },
     { label: 'Mentoria', to: '/aurora/mentoria', icon: '\u{1F31F}', subtitle: 'Partilhar sabedoria' },
     { label: 'Ritual Aurora', to: '/aurora/ritual', icon: '\u2600\uFE0F', subtitle: 'Ritual matinal' },
-    { label: 'Renovacao Anual', to: '/aurora/renovacao', icon: '\u{1F504}', subtitle: 'Renovar intencoes' }
+    { label: 'Renovação Anual', to: '/aurora/renovacao', icon: '\u{1F504}', subtitle: 'Renovar intenções' }
   ]
 
   // ===== Stats =====
@@ -192,12 +192,12 @@ export default function DashboardAurora() {
 
         {ecosCompletados >= 7 && (
           <p className="text-white/60 text-sm mt-3">
-            Todos os ecos completados! {g('Es um verdadeiro mestre', 'Es uma verdadeira mestra')} da tua jornada.
+            Todos os ecos completados! {g('És um verdadeiro mestre', 'És uma verdadeira mestra')} da tua jornada.
           </p>
         )}
       </div>
 
-      {/* Estado da graduacao */}
+      {/* Estado da graduação */}
       {graduacaoData ? (
         <div
           className="mt-5 rounded-2xl border p-4"
@@ -210,7 +210,7 @@ export default function DashboardAurora() {
             <span className="text-xl flex-shrink-0">🎓</span>
             <div>
               <p className="text-white/80 text-sm font-medium">
-                Cerimonia de Graduacao {g('completado', 'completada')}
+                Cerimónia de Graduação {g('completado', 'completada')}
               </p>
               <p className="text-white/40 text-xs mt-0.5">
                 {new Date(graduacaoData).toLocaleDateString('pt-PT')}
@@ -237,7 +237,7 @@ export default function DashboardAurora() {
             <span className="text-xl flex-shrink-0">🌅</span>
             <div>
               <p className="text-white/80 text-sm font-medium">
-                A tua cerimonia de graduacao espera por ti
+                A tua cerimónia de graduação espera por ti
               </p>
               <p className="text-white/40 text-xs mt-1">
                 Celebra tudo o que conquistaste nesta jornada
@@ -254,7 +254,7 @@ export default function DashboardAurora() {
         </div>
       )}
 
-      {/* Modo manutencao e mentoria */}
+      {/* Modo manutenção e mentoria */}
       <div className="mt-5 grid grid-cols-2 gap-3">
         <div
           className="rounded-xl border p-3 text-center"
@@ -267,7 +267,7 @@ export default function DashboardAurora() {
           <p className="text-white/70 text-xs">
             {modoManutencao ? g('Activo', 'Activa') : g('Inactivo', 'Inactiva')}
           </p>
-          <p className="text-white/40 text-[10px]">Manutencao</p>
+          <p className="text-white/40 text-[10px]">Manutenção</p>
         </div>
         <div
           className="rounded-xl border p-3 text-center"
@@ -296,16 +296,16 @@ export default function DashboardAurora() {
           <span className="text-xl flex-shrink-0">☀️</span>
           <div>
             <p className="text-white/80 text-sm italic leading-relaxed">
-              "Nao e o fim da jornada — e o inicio de uma vida {g('vivido', 'vivida')} com consciencia. Tu ja sabes quem es. Agora vive isso."
+              "Não é o fim da jornada — é o início de uma vida {g('vivido', 'vivida')} com consciência. Tu já sabes quem és. Agora vive isso."
             </p>
             <p className="text-white/30 text-xs mt-2">
-              — O teu espaco de integracao
+              — O teu espaço de integração
             </p>
           </div>
         </div>
       </div>
 
-      {/* Gamificacao completa (badge) */}
+      {/* Gamificação completa (badge) */}
       <div className="mt-5">
         <GamificationBadge
           eco="aurora"

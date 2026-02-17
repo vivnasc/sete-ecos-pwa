@@ -596,7 +596,7 @@ export default function CoachDashboard() {
             >
               <div className="flex items-center gap-2">
                 <span className="text-lg">🌍</span>
-                <span className="font-medium text-gray-800 text-sm">Visao Geral — Todos os Ecos</span>
+                <span className="font-medium text-gray-800 text-sm">Visão Geral — Todos os Ecos</span>
                 <span className="text-xs text-gray-400">
                   ({Object.values(multiEcoStats).reduce((acc, s) => acc + s.total, 0)} clientes total)
                 </span>

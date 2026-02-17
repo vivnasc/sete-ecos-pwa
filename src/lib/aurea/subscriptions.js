@@ -12,7 +12,7 @@ import { supabase } from '../supabase';
 // Status possiveis de subscricao
 export const SUBSCRIPTION_STATUS = {
   TESTER: 'tester',           // Acesso gratuito permanente
-  TRIAL: 'trial',             // Periodo experimental (7 dias)
+  TRIAL: 'trial',             // Período experimental (7 dias)
   ACTIVE: 'active',           // Pagamento confirmado
   PENDING: 'pending',         // Aguarda confirmacao de pagamento
   EXPIRED: 'expired',         // Trial ou subscricao expirou
@@ -52,7 +52,7 @@ export const AUREA_PLANS = {
   }
 };
 
-// Configuracoes gerais
+// Configurações gerais
 export const AUREA_CONFIG = {
   TRIAL_DAYS: 7,              // 7 dias de trial gratis
   DEFAULT_PLAN: 'monthly',

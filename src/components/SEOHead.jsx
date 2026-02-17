@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 
 /**
- * SEOHead - Actualiza meta tags dinamicamente por pagina
- * Usa document.head directamente (sem dependencias externas)
+ * SEOHead - Actualiza meta tags dinamicamente por página
+ * Usa document.head directamente (sem dependências externas)
  */
 const SEO_DEFAULTS = {
-  title: 'SETE ECOS - Sistema de Transmutacao Feminina',
-  description: 'Sete caminhos para despertar cada dimensao da tua essencia feminina. Uma jornada completa de transformacao.',
+  title: 'SETE ECOS - Sistema de Transmutação Feminina',
+  description: 'Sete caminhos para despertar cada dimensão da tua essência feminina. Uma jornada completa de transformação.',
   image: 'https://app.seteecos.com/og-image.png',
   url: 'https://app.seteecos.com/',
   type: 'website'

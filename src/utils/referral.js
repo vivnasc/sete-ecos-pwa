@@ -1,6 +1,6 @@
 /**
  * Sistema de Referencia (Referral)
- * Permite utilizadoras convidarem amigas com link unico
+ * Permite utilizadoras convidarem amigas com link único
  * Os dados sao guardados em localStorage e podem ser enviados ao Supabase
  */
 
@@ -8,7 +8,7 @@ const REFERRAL_KEY = 'sete_ecos_referral';
 const REFERRAL_CODE_KEY = 'sete_ecos_my_referral_code';
 
 /**
- * Gera um codigo de referencia unico baseado no userId
+ * Gera um código de referência único baseado no userId
  */
 export function generateReferralCode(userId) {
   if (!userId) return null;

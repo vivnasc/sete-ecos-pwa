@@ -6,10 +6,10 @@ import { g } from '../../utils/genero'
 import ModuleHeader from '../shared/ModuleHeader'
 
 // ============================================================
-// AURORA — Renovacao Anual
-// Renovacao anual — refazer jornada condensada em 1 mes,
+// AURORA — Renovação Anual
+// Renovação anual — refazer jornada condensada em 1 mês,
 // ver o que mudou.
-// Chakra: Integracao Total — Ciclo de renovacao
+// Chakra: Integração Total — Ciclo de renovação
 // ============================================================
 
 const ACCENT = '#D4A5A5'
@@ -29,15 +29,15 @@ const IntencaoItem = ({ intencao, index, onUpdate, onRemove }) => (
       type="text"
       value={intencao}
       onChange={(e) => onUpdate(index, e.target.value)}
-      placeholder="Escreve uma intencao..."
+      placeholder="Escreve uma intenção..."
       maxLength={200}
       className="flex-1 bg-transparent text-white text-sm placeholder-gray-500 focus:outline-none"
-      aria-label={`Intencao ${index + 1}`}
+      aria-label={`Intenção ${index + 1}`}
     />
     <button
       onClick={() => onRemove(index)}
       className="p-1.5 rounded-lg hover:bg-white/10 text-gray-500 hover:text-red-400 transition-colors flex-shrink-0"
-      aria-label={`Remover intencao ${index + 1}`}
+      aria-label={`Remover intenção ${index + 1}`}
     >
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
         <path d="M6 18L18 6M6 6l12 12" />
@@ -46,7 +46,7 @@ const IntencaoItem = ({ intencao, index, onUpdate, onRemove }) => (
   </div>
 )
 
-// ---- Renovacao Historico Card ----
+// ---- Renovação Histórico Card ----
 const RenovacaoCard = ({ renovacao, isLatest }) => {
   const [expanded, setExpanded] = useState(false)
   const intencoes = renovacao.intencoes_novas || []
@@ -75,7 +75,7 @@ const RenovacaoCard = ({ renovacao, isLatest }) => {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <p className="text-sm text-white font-medium">
-                Renovacao {renovacao.ano}
+                Renovação {renovacao.ano}
               </p>
               {isLatest && (
                 <span
@@ -89,7 +89,7 @@ const RenovacaoCard = ({ renovacao, isLatest }) => {
             <p className="text-xs text-gray-500 mt-0.5">
               {renovacao.cerimonia_data
                 ? new Date(renovacao.cerimonia_data).toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' })
-                : 'Data nao registada'}
+                : 'Data não registada'}
             </p>
           </div>
           <svg
@@ -114,7 +114,7 @@ const RenovacaoCard = ({ renovacao, isLatest }) => {
             )}
             {intencoes.length > 0 && (
               <div>
-                <p className="text-xs text-gray-500 mb-2">Intencoes para o ano:</p>
+                <p className="text-xs text-gray-500 mb-2">Intenções para o ano:</p>
                 <div className="space-y-1.5">
                   {intencoes.map((int, idx) => (
                     <div key={idx} className="flex items-start gap-2">
@@ -161,7 +161,7 @@ export default function RenovacaoAnual() {
   // Previous renewal for comparison
   const renovacaoAnterior = renovacoes.length > 0 ? renovacoes[0] : null
 
-  // ===== Carregar renovacoes =====
+  // ===== Carregar renovações =====
   const fetchRenovacoes = useCallback(async () => {
     if (!userId) return
     setLoadingRenovacoes(true)
@@ -185,7 +185,7 @@ export default function RenovacaoAnual() {
     fetchRenovacoes()
   }, [fetchRenovacoes])
 
-  // ===== Manage intencoes =====
+  // ===== Manage intenções =====
   const handleUpdateIntencao = useCallback((index, value) => {
     setIntencoes(prev => {
       const updated = [...prev]
@@ -230,7 +230,7 @@ export default function RenovacaoAnual() {
     }
   }, [userId])
 
-  // ===== Guardar renovacao =====
+  // ===== Guardar renovação =====
   const handleSave = useCallback(async () => {
     if (!userId) return
     setSaving(true)
@@ -275,7 +275,7 @@ export default function RenovacaoAnual() {
       setTimeout(() => setShowSuccess(false), 5000)
     } catch (err) {
       console.error('Erro ao guardar renovacao:', err)
-      alert('Nao foi possivel guardar. Tenta novamente.')
+      alert('Não foi possível guardar. Tenta novamente.')
     } finally {
       setSaving(false)
     }
@@ -286,7 +286,7 @@ export default function RenovacaoAnual() {
     <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${ACCENT_DARK} 0%, #111318 30%, #0d0f13 100%)` }}>
       <ModuleHeader
         eco="aurora"
-        title="Renovacao Anual"
+        title="Renovação Anual"
         subtitle="O que mudou num ano?"
       />
 
@@ -299,7 +299,7 @@ export default function RenovacaoAnual() {
             style={view === 'nova' ? { background: `${ACCENT}33` } : undefined}
             aria-pressed={view === 'nova'}
           >
-            Nova Renovacao
+            Nova Renovação
           </button>
           <button
             onClick={() => setView('historico')}
@@ -307,7 +307,7 @@ export default function RenovacaoAnual() {
             style={view === 'historico' ? { background: `${ACCENT}33` } : undefined}
             aria-pressed={view === 'historico'}
           >
-            Historico ({renovacoes.length})
+            Histórico ({renovacoes.length})
           </button>
         </div>
 
@@ -321,7 +321,7 @@ export default function RenovacaoAnual() {
                 style={{ background: '#4ade8022', border: '1px solid #4ade8044' }}
               >
                 <p className="text-sm font-medium text-emerald-300">
-                  Renovacao guardada com sucesso! +40 Raios de Aurora
+                  Renovação guardada com sucesso! +40 Raios de Aurora
                 </p>
               </div>
             )}
@@ -336,7 +336,7 @@ export default function RenovacaoAnual() {
                 1 ano depois — o que mudou?
               </h2>
               <p className="text-sm text-gray-400 max-w-xs mx-auto">
-                {g('Querido', 'Querida')}, este e o momento de olhar para tras e reconhecer a tua transformacao.
+                {g('Querido', 'Querida')}, este é o momento de olhar para trás e reconhecer a tua transformação.
               </p>
             </div>
 
@@ -349,7 +349,7 @@ export default function RenovacaoAnual() {
                 <div className="flex items-center gap-2">
                   <span className="text-sm" aria-hidden="true">📋</span>
                   <h3 className="text-sm font-semibold text-rose-200">
-                    As tuas intencoes de {renovacaoAnterior.ano}
+                    As tuas intenções de {renovacaoAnterior.ano}
                   </h3>
                 </div>
                 {(renovacaoAnterior.intencoes_novas || []).length > 0 ? (
@@ -364,7 +364,7 @@ export default function RenovacaoAnual() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-400 italic">Sem intencoes registadas.</p>
+                  <p className="text-sm text-gray-400 italic">Sem intenções registadas.</p>
                 )}
                 {renovacaoAnterior.o_que_mudou && (
                   <div className="pt-2 border-t border-white/5">
@@ -385,7 +385,7 @@ export default function RenovacaoAnual() {
               <textarea
                 value={oQueMudou}
                 onChange={(e) => setOQueMudou(e.target.value)}
-                placeholder="Reflecte sobre as mudancas que aconteceram... O que ganhou forca? O que deixaste ir? O que descobriste?"
+                placeholder="Reflecte sobre as mudanças que aconteceram... O que ganhou força? O que deixaste ir? O que descobriste?"
                 rows={5}
                 maxLength={3000}
                 className="w-full p-4 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
@@ -397,10 +397,10 @@ export default function RenovacaoAnual() {
             {/* Novas intencoes */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-300 block">
-                Novas intencoes para {anoActual}
+                Novas intenções para {anoActual}
               </label>
               <p className="text-xs text-gray-500">
-                Define ate 10 intencoes para o proximo ciclo.
+                Define até 10 intenções para o próximo ciclo.
               </p>
               <div className="space-y-2">
                 {intencoes.map((int, idx) => (
@@ -419,7 +419,7 @@ export default function RenovacaoAnual() {
                   className="w-full py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-white/5 active:scale-[0.98]"
                   style={{ color: ACCENT, border: `1px dashed ${ACCENT}44` }}
                 >
-                  + Adicionar intencao
+                  + Adicionar intenção
                 </button>
               )}
             </div>
@@ -431,7 +431,7 @@ export default function RenovacaoAnual() {
               className="w-full py-4 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl active:scale-[0.97] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
             >
-              {saving ? 'A guardar...' : 'Iniciar Renovacao (+40 Raios)'}
+              {saving ? 'A guardar...' : 'Iniciar Renovação (+40 Raios)'}
             </button>
           </div>
         )}
@@ -453,17 +453,17 @@ export default function RenovacaoAnual() {
                   className="text-lg font-semibold text-white"
                   style={{ fontFamily: "'Cormorant Garamond', serif" }}
                 >
-                  Nenhuma renovacao registada
+                  Nenhuma renovação registada
                 </h3>
                 <p className="text-sm text-gray-400 max-w-xs mx-auto">
-                  A renovacao anual e um momento de reconhecer a tua transformacao e definir novas intencoes.
+                  A renovação anual é um momento de reconhecer a tua transformação e definir novas intenções.
                 </p>
                 <button
                   onClick={() => setView('nova')}
                   className="px-6 py-3 rounded-xl font-medium text-sm text-white shadow-lg transition-all duration-200"
                   style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
                 >
-                  Fazer a primeira renovacao
+                  Fazer a primeira renovação
                 </button>
               </div>
             ) : (
@@ -474,13 +474,13 @@ export default function RenovacaoAnual() {
                     <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                       {renovacoes.length}
                     </p>
-                    <p className="text-xs text-gray-400">{renovacoes.length === 1 ? 'renovacao' : 'renovacoes'}</p>
+                    <p className="text-xs text-gray-400">{renovacoes.length === 1 ? 'renovação' : 'renovações'}</p>
                   </div>
                   <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
                     <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                       {renovacoes.reduce((sum, r) => sum + (r.intencoes_novas || []).length, 0)}
                     </p>
-                    <p className="text-xs text-gray-400">intencoes totais</p>
+                    <p className="text-xs text-gray-400">intenções totais</p>
                   </div>
                 </div>
 

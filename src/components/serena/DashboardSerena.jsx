@@ -9,9 +9,9 @@ import { GamificationBadge } from '../shared/GamificationSystem'
 
 /**
  * SERENA — Dashboard Principal
- * Modulo de Emocao & Fluidez (Chakra Svadhisthana)
+ * Módulo de Emoção & Fluidez (Chakra Svadhisthana)
  * Tema: azul-acinzentado (#6B8E9B), fundo escuro (#1a2e3a)
- * Moeda: Gotas, Elemento: Agua
+ * Moeda: Gotas, Elemento: Água
  */
 
 const SERENA_COLOR = '#6B8E9B'
@@ -25,12 +25,12 @@ export default function DashboardSerena() {
   const [userId, setUserId] = useState(null)
   const [userName, setUserName] = useState('')
 
-  // Gamificacao
+  // Gamificação
   const [gotas, setGotas] = useState(0)
   const [streak, setStreak] = useState(0)
   const [nivel, setNivel] = useState('')
 
-  // Emocao do dia
+  // Emoção do dia
   const [emocaoHoje, setEmocaoHoje] = useState(null)
   const [emocaoSelecionada, setEmocaoSelecionada] = useState(null)
   const [aGuardarEmocao, setAGuardarEmocao] = useState(false)
@@ -77,7 +77,7 @@ export default function DashboardSerena() {
         setNivel(clientData.nivel || 'Nascente')
       }
 
-      // Emocao de hoje
+      // Emoção de hoje
       const { data: emocaoHojeData } = await supabase
         .from('serena_emocoes_log')
         .select('emocao, intensidade, created_at')
@@ -121,7 +121,7 @@ export default function DashboardSerena() {
     loadDashboard()
   }, [loadDashboard])
 
-  // ===== Guardar emocao rapida =====
+  // ===== Guardar emoção rápida =====
   const guardarEmocaoRapida = async (emocaoValue) => {
     if (!userId || aGuardarEmocao) return
 
@@ -145,7 +145,7 @@ export default function DashboardSerena() {
         setEmocaoSelecionada(null)
         setEmocoesEstaSemana(prev => prev + 1)
 
-        // Adicionar gotas pela emocao registada
+        // Adicionar gotas pela emoção registada
         const pontosGanhos = SERENA_GAMIFICATION.actions.log_emotion || 5
         const novoTotal = gotas + pontosGanhos
         setGotas(novoTotal)
@@ -156,7 +156,7 @@ export default function DashboardSerena() {
           .eq('user_id', userId)
       }
     } catch (err) {
-      console.error('Erro ao guardar emocao:', err)
+      console.error('Erro ao guardar emoção:', err)
     } finally {
       setAGuardarEmocao(false)
     }
@@ -179,8 +179,8 @@ export default function DashboardSerena() {
   // Saudacao contextual baseada na hora
   function getSaudacao() {
     const hora = new Date().getHours()
-    if (hora < 12) return 'Como te sentes esta manha?'
-    if (hora < 18) return 'Como esta a tua tarde?'
+    if (hora < 12) return 'Como te sentes esta manhã?'
+    if (hora < 18) return 'Como está a tua tarde?'
     return 'Como te sentes esta noite?'
   }
 
@@ -193,33 +193,33 @@ export default function DashboardSerena() {
       >
         <div className="text-center">
           <div className="text-6xl mb-4 animate-pulse">💧</div>
-          <p className="text-white/60 text-sm">A preparar o teu espaco...</p>
+          <p className="text-white/60 text-sm">A preparar o teu espaço...</p>
         </div>
       </div>
     )
   }
 
-  // ===== Emocao de hoje (display) =====
+  // ===== Emoção de hoje (display) =====
   const emocaoHojeInfo = emocaoHoje ? getEmocaoInfo(emocaoHoje.emocao) : null
 
   // ===== Quick Actions =====
   const quickActions = [
-    { label: 'Diario Emocional', to: '/serena/diario', icon: '\u{1F4D6}', subtitle: 'Registar emocoes' },
-    { label: 'Respiracao Guiada', to: '/serena/respiracao', icon: '\u{1FAC1}', subtitle: 'Acalmar a mente' },
-    { label: 'Mapa Emocional', to: '/serena/mapa', icon: '\u{1F5FA}\u{FE0F}', subtitle: 'Calendario visual' },
+    { label: 'Diário Emocional', to: '/serena/diario', icon: '\u{1F4D6}', subtitle: 'Registar emoções' },
+    { label: 'Respiração Guiada', to: '/serena/respiracao', icon: '\u{1FAC1}', subtitle: 'Acalmar a mente' },
+    { label: 'Mapa Emocional', to: '/serena/mapa', icon: '\u{1F5FA}\u{FE0F}', subtitle: 'Calendário visual' },
     { label: 'Ciclo Emocional', to: '/serena/ciclo', icon: '\u{1F300}', subtitle: 'Fases emocionais' },
-    { label: 'Detector Padroes', to: '/serena/padroes', icon: '\u{1F50D}', subtitle: 'Padroes ocultos' },
-    { label: 'Ciclo Menstrual', to: '/serena/ciclo-menstrual', icon: '\u{1F319}', subtitle: 'Corpo e emocao' },
+    { label: 'Detector Padrões', to: '/serena/padroes', icon: '\u{1F50D}', subtitle: 'Padrões ocultos' },
+    { label: 'Ciclo Menstrual', to: '/serena/ciclo-menstrual', icon: '\u{1F319}', subtitle: 'Corpo e emoção' },
     { label: 'SOS Emocional', to: '/serena/sos', icon: '\u{1F198}', subtitle: 'Ajuda imediata' },
-    { label: 'Praticas de Fluidez', to: '/serena/praticas', icon: '\u{1F4A7}', subtitle: 'Elemento agua' },
-    { label: 'Rituais de Libertacao', to: '/serena/rituais', icon: '\u{1F513}', subtitle: 'Soltar e fluir' },
+    { label: 'Práticas de Fluidez', to: '/serena/praticas', icon: '\u{1F4A7}', subtitle: 'Elemento água' },
+    { label: 'Rituais de Libertação', to: '/serena/rituais', icon: '\u{1F513}', subtitle: 'Soltar e fluir' },
     { label: 'Coach Serena', to: '/serena/chat', icon: '\u{1F4AC}', subtitle: 'Fala comigo' }
   ]
 
   // ===== Stats =====
   const stats = [
-    { label: 'Emocoes', value: emocoesEstaSemana, icon: '\u{1F4D6}' },
-    { label: 'Respiracao', value: sessoesRespiracao, icon: '\u{1FAC1}' },
+    { label: 'Emoções', value: emocoesEstaSemana, icon: '\u{1F4D6}' },
+    { label: 'Respiração', value: sessoesRespiracao, icon: '\u{1FAC1}' },
     { label: 'Streak', value: `${streak}d`, icon: '\u{1F525}' }
   ]
 
@@ -239,7 +239,7 @@ export default function DashboardSerena() {
         streak: streak
       }}
     >
-      {/* Emocao do Dia */}
+      {/* Emoção do Dia */}
       <div
         className="rounded-2xl border p-5"
         style={{
@@ -251,11 +251,11 @@ export default function DashboardSerena() {
           className="text-white text-lg font-semibold mb-3"
           style={{ fontFamily: "'Cormorant Garamond', serif" }}
         >
-          Emocao do Dia
+          Emoção do Dia
         </h2>
 
         {emocaoHojeInfo ? (
-          /* Emocao ja registada */
+          /* Emoção já registada */
           <div className="flex items-center gap-4">
             <div
               className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
@@ -278,10 +278,10 @@ export default function DashboardSerena() {
             </Link>
           </div>
         ) : (
-          /* Seleccionar emocao rapida */
+          /* Seleccionar emoção rápida */
           <div>
             <p className="text-white/60 text-sm mb-4">
-              Como te sentes agora? Toca numa emocao para registar.
+              Como te sentes agora? Toca numa emoção para registar.
             </p>
 
             <div className="grid grid-cols-4 gap-2">
@@ -317,10 +317,10 @@ export default function DashboardSerena() {
               to="/serena/diario"
               className="block text-center text-white/40 text-xs mt-2 hover:text-white/60 transition-colors"
             >
-              Ver todas as emocoes →
+              Ver todas as emoções →
             </Link>
 
-            {/* Botao de confirmar */}
+            {/* Botão de confirmar */}
             {emocaoSelecionada && (
               <button
                 onClick={() => guardarEmocaoRapida(emocaoSelecionada)}
@@ -354,16 +354,16 @@ export default function DashboardSerena() {
           <span className="text-xl flex-shrink-0">🌊</span>
           <div>
             <p className="text-white/80 text-sm italic leading-relaxed">
-              "As emocoes sao como ondas. Nao as podes impedir de vir, mas podes aprender a surfar."
+              "As emoções são como ondas. Não as podes impedir de vir, mas podes aprender a surfar."
             </p>
             <p className="text-white/30 text-xs mt-2">
-              — O teu espaco seguro para sentir
+              — O teu espaço seguro para sentir
             </p>
           </div>
         </div>
       </div>
 
-      {/* Gamificacao completa (badge) */}
+      {/* Gamificação completa (badge) */}
       <div className="mt-5">
         <GamificationBadge
           eco="serena"

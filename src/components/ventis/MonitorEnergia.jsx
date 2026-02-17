@@ -7,7 +7,7 @@ import { g } from '../../utils/genero'
 // ===== CONSTANTES =====
 
 const PERIODOS = {
-  manha: { label: 'Manha', icon: '\u2600\uFE0F', range: [0, 12] },
+  manha: { label: 'Manhã', icon: '\u2600\uFE0F', range: [0, 12] },
   tarde: { label: 'Tarde', icon: '\uD83C\uDF24\uFE0F', range: [12, 18] },
   noite: { label: 'Noite', icon: '\uD83C\uDF19', range: [18, 24] }
 }
@@ -133,7 +133,7 @@ function EnergySlider({ value, onChange }) {
             WebkitAppearance: 'none',
             '--thumb-color': getCorNivel(value)
           }}
-          aria-label="Nivel de energia"
+          aria-label="Nível de energia"
         />
       </div>
       {/* Labels visuais */}
@@ -184,7 +184,7 @@ export default function MonitorEnergia() {
   const [registosSemana, setRegistosSemana] = useState([])
   const [folhasTotal, setFolhasTotal] = useState(0)
 
-  // Formulario de check-in
+  // Formulário de check-in
   const [nivel, setNivel] = useState(50)
   const [sonoQualidade, setSonoQualidade] = useState(0)
   const [alimentacaoQualidade, setAlimentacaoQualidade] = useState(0)
@@ -196,7 +196,7 @@ export default function MonitorEnergia() {
   const periodoActual = getPeriodoActual()
   const hoje = new Date().toISOString().split('T')[0]
 
-  // Verificar se o periodo actual ja foi registado
+  // Verificar se o período actual já foi registado
   const periodoJaRegistado = useMemo(() => {
     return registosHoje.find(r => r.periodo === periodoActual)
   }, [registosHoje, periodoActual])
@@ -219,7 +219,7 @@ export default function MonitorEnergia() {
       if (hojeErr) throw hojeErr
       setRegistosHoje(hojeData || [])
 
-      // Registos dos ultimos 7 dias
+      // Registos dos últimos 7 dias
       const dataLimite = new Date()
       dataLimite.setDate(dataLimite.getDate() - 7)
       const dataLimiteStr = dataLimite.toISOString().split('T')[0]
@@ -272,7 +272,7 @@ export default function MonitorEnergia() {
         actividade_fisica: actividadeFisica
       }
 
-      // Campos condicionais por periodo
+      // Campos condicionais por período
       if (periodoActual === 'manha' && sonoQualidade > 0) {
         registo.sono_qualidade = sonoQualidade
       }
@@ -294,7 +294,7 @@ export default function MonitorEnergia() {
         user_id_value: userId
       })
 
-      // Se a funcao RPC nao existe, tentar update directo
+      // Se a função RPC não existe, tentar update directo
       if (folhasErr) {
         const { data: clientAtual } = await supabase
           .from('ventis_clients')
@@ -324,7 +324,7 @@ export default function MonitorEnergia() {
       // Recarregar dados
       await carregarDados()
 
-      // Limpar mensagem apos 3s
+      // Limpar mensagem após 3s
       setTimeout(() => setMensagemSucesso(''), 3000)
     } catch (err) {
       console.error('Erro ao guardar check-in:', err)
@@ -335,7 +335,7 @@ export default function MonitorEnergia() {
     }
   }
 
-  // ===== DADOS PARA O GRAFICO SEMANAL =====
+  // ===== DADOS PARA O GRÁFICO SEMANAL =====
 
   const dadosSemana = useMemo(() => {
     const dias = []
@@ -358,7 +358,7 @@ export default function MonitorEnergia() {
     return dias
   }, [registosSemana])
 
-  // ===== CORRELACOES =====
+  // ===== CORRELAÇÕES =====
 
   const correlacoes = useMemo(() => {
     if (registosSemana.length < 7) return null
@@ -376,7 +376,7 @@ export default function MonitorEnergia() {
       const diff = mediaBomSono - mediaMauSono
       if (diff > 0) {
         result.push({
-          texto: `Quando dormes bem, a tua energia e ${diff}% maior`,
+          texto: `Quando dormes bem, a tua energia é ${diff}% maior`,
           icone: '\uD83D\uDCA4',
           positivo: true
         })
@@ -389,7 +389,7 @@ export default function MonitorEnergia() {
       const diff = mediaComAct - mediaSemAct
       if (diff > 0) {
         result.push({
-          texto: `Nos dias com actividade fisica, energia sobe ${diff}%`,
+          texto: `Nos dias com actividade física, energia sobe ${diff}%`,
           icone: '\uD83C\uDFC3',
           positivo: true
         })
@@ -443,7 +443,7 @@ export default function MonitorEnergia() {
           </div>
         )}
 
-        {/* ===== SECAO 1: TIMELINE DE HOJE ===== */}
+        {/* ===== SECÇÃO 1: TIMELINE DE HOJE ===== */}
         <section className="bg-white/5 backdrop-blur rounded-2xl p-5 border border-[#5D9B84]/20">
           <h2
             className="text-lg font-bold text-white mb-4"
@@ -493,7 +493,7 @@ export default function MonitorEnergia() {
           </div>
         </section>
 
-        {/* ===== SECAO 2: CHECK-IN ACTUAL ===== */}
+        {/* ===== SECÇÃO 2: CHECK-IN ACTUAL ===== */}
         {!periodoJaRegistado ? (
           <section className="bg-white/5 backdrop-blur rounded-2xl p-5 border border-[#5D9B84]/30">
             <div className="flex items-center gap-3 mb-5">
@@ -513,13 +513,13 @@ export default function MonitorEnergia() {
 
             {/* Nivel de Energia — Slider */}
             <div className="mb-6">
-              <label className="text-sm text-gray-300 mb-2 block">Nivel de energia</label>
+              <label className="text-sm text-gray-300 mb-2 block">Nível de energia</label>
               <div className="bg-white/10 rounded-xl p-4">
                 <EnergySlider value={nivel} onChange={setNivel} />
               </div>
             </div>
 
-            {/* Qualidade do Sono — so de manha */}
+            {/* Qualidade do Sono — só de manhã */}
             {periodoActual === 'manha' && (
               <div className="mb-5">
                 <StarRating
@@ -530,21 +530,21 @@ export default function MonitorEnergia() {
               </div>
             )}
 
-            {/* Qualidade da Alimentacao — so de tarde */}
+            {/* Qualidade da Alimentação — só de tarde */}
             {periodoActual === 'tarde' && (
               <div className="mb-5">
                 <StarRating
                   value={alimentacaoQualidade}
                   onChange={setAlimentacaoQualidade}
-                  label="Como foi a alimentacao hoje?"
+                  label="Como foi a alimentação hoje?"
                 />
               </div>
             )}
 
-            {/* Actividade Fisica — tarde e noite */}
+            {/* Actividade Física — tarde e noite */}
             {(periodoActual === 'tarde' || periodoActual === 'noite') && (
               <div className="mb-5">
-                <p className="text-sm text-gray-300 mb-2">Fizeste actividade fisica hoje?</p>
+                <p className="text-sm text-gray-300 mb-2">Fizeste actividade física hoje?</p>
                 <button
                   type="button"
                   onClick={() => setActividadeFisica(!actividadeFisica)}
@@ -561,7 +561,7 @@ export default function MonitorEnergia() {
                     <div className="w-5 h-5 rounded-full bg-white m-0.5 shadow" />
                   </div>
                   <span className="text-sm">
-                    {actividadeFisica ? 'Sim, fiz exercicio!' : 'Nao, hoje nao'}
+                    {actividadeFisica ? 'Sim, fiz exercício!' : 'Não, hoje não'}
                   </span>
                 </button>
               </div>
@@ -569,7 +569,7 @@ export default function MonitorEnergia() {
 
             {/* Humor */}
             <div className="mb-5">
-              <p className="text-sm text-gray-300 mb-2">Estado de espirito</p>
+              <p className="text-sm text-gray-300 mb-2">Estado de espírito</p>
               <div className="grid grid-cols-3 gap-2">
                 {HUMORES.map((h) => (
                   <button
@@ -606,7 +606,7 @@ export default function MonitorEnergia() {
               />
             </div>
 
-            {/* Botao Guardar */}
+            {/* Botão Guardar */}
             <button
               onClick={guardarCheckin}
               disabled={saving}
@@ -617,7 +617,7 @@ export default function MonitorEnergia() {
             </button>
           </section>
         ) : (
-          /* Periodo ja registado — mostrar leitura */
+          /* Período já registado — mostrar leitura */
           <section className="bg-white/5 backdrop-blur rounded-2xl p-5 border border-[#5D9B84]/20">
             <div className="flex items-center gap-3 mb-4">
               <span className="text-2xl">{PERIODOS[periodoActual].icon}</span>
@@ -665,7 +665,7 @@ export default function MonitorEnergia() {
                 )}
                 {periodoJaRegistado.alimentacao_qualidade && (
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-400">Alimentacao:</span>
+                    <span className="text-sm text-gray-400">Alimentação:</span>
                     <span className="text-sm text-yellow-400">
                       {'\u2B50'.repeat(periodoJaRegistado.alimentacao_qualidade)}
                     </span>
@@ -687,7 +687,7 @@ export default function MonitorEnergia() {
           </section>
         )}
 
-        {/* ===== SECAO 3: GRAFICO SEMANAL ===== */}
+        {/* ===== SECÇÃO 3: GRÁFICO SEMANAL ===== */}
         <section className="bg-white/5 backdrop-blur rounded-2xl p-5 border border-[#5D9B84]/20">
           <h2
             className="text-lg font-bold text-white mb-4"
@@ -698,7 +698,7 @@ export default function MonitorEnergia() {
 
           {dadosSemana.some(d => d.media !== null) ? (
             <div className="space-y-3">
-              {/* Barras do grafico */}
+              {/* Barras do gráfico */}
               <div className="flex items-end justify-between gap-2" style={{ height: 160 }}>
                 {dadosSemana.map((dia, idx) => {
                   const alturaMax = 140
@@ -733,7 +733,7 @@ export default function MonitorEnergia() {
                 })}
               </div>
 
-              {/* Media semanal */}
+              {/* Média semanal */}
               {(() => {
                 const diasComDados = dadosSemana.filter(d => d.media !== null)
                 if (diasComDados.length === 0) return null
@@ -742,7 +742,7 @@ export default function MonitorEnergia() {
                 )
                 return (
                   <div className="flex items-center justify-center gap-2 pt-3 border-t border-gray-700">
-                    <span className="text-sm text-gray-400">Media semanal:</span>
+                    <span className="text-sm text-gray-400">Média semanal:</span>
                     <span className="font-bold" style={{ color: getCorNivel(mediaSemana) }}>
                       {mediaSemana}%
                     </span>
@@ -758,7 +758,7 @@ export default function MonitorEnergia() {
           )}
         </section>
 
-        {/* ===== SECAO 4: CORRELACOES ===== */}
+        {/* ===== SECÇÃO 4: CORRELAÇÕES ===== */}
         {correlacoes && (
           <section className="bg-white/5 backdrop-blur rounded-2xl p-5 border border-[#5D9B84]/20">
             <h2
@@ -781,7 +781,7 @@ export default function MonitorEnergia() {
             </div>
 
             <p className="text-xs text-gray-500 mt-3 text-center">
-              Baseado nos teus registos dos ultimos 7 dias
+              Baseado nos teus registos dos últimos 7 dias
             </p>
           </section>
         )}
@@ -790,7 +790,7 @@ export default function MonitorEnergia() {
         {registosSemana.length < 7 && registosSemana.length > 0 && (
           <div className="text-center py-4">
             <p className="text-xs text-gray-500">
-              {'\uD83D\uDCA1'} Faz check-ins durante 7+ dias para ver correlacoes entre sono, actividade e energia
+              {'\uD83D\uDCA1'} Faz check-ins durante 7+ dias para ver correlações entre sono, actividade e energia
             </p>
           </div>
         )}

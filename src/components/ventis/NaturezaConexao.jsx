@@ -1,5 +1,5 @@
 // src/components/ventis/NaturezaConexao.jsx
-// Actividades de conexao com a natureza — VENTIS
+// Actividades de conexão com a natureza — VENTIS
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ModuleHeader from '../shared/ModuleHeader';
@@ -49,7 +49,7 @@ const JournalIcon = () => (
 
 const TABS = [
   { id: 'explorar', label: 'Actividades' },
-  { id: 'diario', label: 'Diario' }
+  { id: 'diario', label: 'Diário' }
 ];
 
 // ===== UTILIDADES =====
@@ -231,7 +231,7 @@ function SessaoActividade({ actividade, userId, onBack, onSaved }) {
       onSaved?.();
     } catch (err) {
       console.error('Erro ao guardar actividade:', err);
-      setErro('Nao foi possivel guardar. Tenta novamente.');
+      setErro('Não foi possível guardar. Tenta novamente.');
     } finally {
       setSalvando(false);
     }
@@ -269,7 +269,7 @@ function SessaoActividade({ actividade, userId, onBack, onSaved }) {
           <p className="text-white/70 leading-relaxed text-sm">{actividade.descricao}</p>
           <div className="flex items-center justify-center gap-1 text-xs text-[#5D9B84]">
             <ClockIcon />
-            <span>Duracao sugerida: {actividade.duracao}</span>
+            <span>Duração sugerida: {actividade.duracao}</span>
           </div>
         </div>
 
@@ -357,7 +357,7 @@ function SessaoActividade({ actividade, userId, onBack, onSaved }) {
                 }
               `}
             >
-              {salvando ? 'A guardar...' : 'Guardar experiencia'}
+              {salvando ? 'A guardar...' : 'Guardar experiência'}
             </button>
           </div>
         )}
@@ -367,7 +367,7 @@ function SessaoActividade({ actividade, userId, onBack, onSaved }) {
           <div className="bg-[#1a2e24]/60 rounded-2xl p-6 border border-[#5D9B84]/20 text-center space-y-3 animate-fadeIn">
             <div className="text-4xl">🍃</div>
             <p className="text-white/90 font-medium">
-              Experiencia registada! +6 Folhas
+              Experiência registada! +6 Folhas
             </p>
             <p className="text-sm text-white/50">
               Cada momento na natureza fortalece o teu ritmo interior.
@@ -376,7 +376,7 @@ function SessaoActividade({ actividade, userId, onBack, onSaved }) {
               onClick={onBack}
               className="mt-2 px-6 py-2.5 rounded-xl bg-[#5D9B84]/20 text-[#5D9B84] font-medium hover:bg-[#5D9B84]/30 transition-colors"
             >
-              Voltar as actividades
+              Voltar às actividades
             </button>
           </div>
         )}
@@ -424,7 +424,7 @@ function Diario({ userId }) {
           }
         }
       } catch (err) {
-        console.error('Erro ao carregar diario:', err);
+        console.error('Erro ao carregar diário:', err);
       } finally {
         setCarregando(false);
       }
@@ -437,7 +437,7 @@ function Diario({ userId }) {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-3">
         <div className="w-8 h-8 border-2 border-[#5D9B84]/30 border-t-[#5D9B84] rounded-full animate-spin" />
-        <p className="text-sm text-white/40">A carregar diario...</p>
+        <p className="text-sm text-white/40">A carregar diário...</p>
       </div>
     );
   }
@@ -446,8 +446,8 @@ function Diario({ userId }) {
     return (
       <div className="text-center py-16 space-y-3">
         <span className="text-4xl">🌿</span>
-        <p className="text-white/50 text-sm">O teu diario de natureza esta vazio.</p>
-        <p className="text-white/30 text-xs">Faz uma actividade e a tua experiencia aparece aqui.</p>
+        <p className="text-white/50 text-sm">O teu diário de natureza está vazio.</p>
+        <p className="text-white/30 text-xs">Faz uma actividade e a tua experiência aparece aqui.</p>
       </div>
     );
   }
@@ -519,7 +519,7 @@ function Diario({ userId }) {
                       )}
                       {exp.foto_url && (
                         <p className="text-xs text-[#5D9B84]/60 mt-1">
-                          Observacao visual: {exp.foto_url}
+                          Observação visual: {exp.foto_url}
                         </p>
                       )}
                     </div>
@@ -544,7 +544,7 @@ export default function NaturezaConexao() {
   const [actividadeSelecionada, setActividadeSelecionada] = useState(null);
 
   const handleSaved = () => {
-    // Forca recarga do diario ao voltar
+    // Força recarga do diário ao voltar
   };
 
   // ===== VISTA DE SESSAO =====
@@ -564,13 +564,13 @@ export default function NaturezaConexao() {
     <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #0f2018 0%, #1a2e24 50%, #0f2018 100%)' }}>
       <ModuleHeader
         eco="ventis"
-        title="Conexao com a Natureza"
+        title="Conexão com a Natureza"
         subtitle={g('Reconectado', 'Reconectada') + ' com o mundo natural'}
       />
 
       <div className="max-w-lg mx-auto px-4 py-5 space-y-5">
         {/* Tabs */}
-        <div className="flex gap-2" role="tablist" aria-label="Seccoes de natureza">
+        <div className="flex gap-2" role="tablist" aria-label="Secções de natureza">
           {TABS.map(tab => (
             <button
               key={tab.id}
@@ -601,12 +601,12 @@ export default function NaturezaConexao() {
           </div>
         )}
 
-        {/* Tab: Diario */}
+        {/* Tab: Diário */}
         {tabActiva === 'diario' && (
           <Diario userId={userId} />
         )}
 
-        {/* Espacamento final para navegacao */}
+        {/* Espaçamento final para navegação */}
         <div className="h-20" aria-hidden="true" />
       </div>
     </div>

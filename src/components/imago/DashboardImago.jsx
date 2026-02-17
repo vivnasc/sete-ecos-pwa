@@ -11,7 +11,7 @@ import { GamificationBadge } from '../shared/GamificationSystem'
  * IMAGO — Dashboard Principal
  * Modulo de Identidade & Espelho (Chakra Sahasrara — Coroa)
  * Tema: roxo (#8B7BA5), fundo escuro (#1a1a2e)
- * Moeda: Estrelas, Elemento: Consciencia
+ * Moeda: Estrelas, Elemento: Consciência
  */
 
 const IMAGO_COLOR = '#8B7BA5'
@@ -137,7 +137,7 @@ export default function DashboardImago() {
   // Saudacao contextual baseada na hora
   function getSaudacao() {
     const hora = new Date().getHours()
-    if (hora < 12) return 'Quem es tu esta manha?'
+    if (hora < 12) return 'Quem és tu esta manhã?'
     if (hora < 18) return 'O que te define nesta tarde?'
     return 'O que descobriste sobre ti hoje?'
   }
@@ -161,20 +161,20 @@ export default function DashboardImago() {
   const quickActions = [
     { label: 'Espelho Triplo', to: '/imago/espelho', icon: '\u{1FA9E}', subtitle: 'Quem sou vs. quem mostro' },
     { label: 'Arqueologia de Si', to: '/imago/arqueologia', icon: '\u26CF\uFE0F', subtitle: 'Escavar camadas de identidade' },
-    { label: 'Nomeacao', to: '/imago/nomeacao', icon: '\u{1F4DC}', subtitle: 'Como me nomeio agora' },
-    { label: 'Mapa de Identidade', to: '/imago/mapa', icon: '\u{1F5FA}\uFE0F', subtitle: '7 dimensoes do meu ser' },
+    { label: 'Nomeação', to: '/imago/nomeacao', icon: '\u{1F4DC}', subtitle: 'Como me nomeio agora' },
+    { label: 'Mapa de Identidade', to: '/imago/mapa', icon: '\u{1F5FA}\uFE0F', subtitle: '7 dimensões do meu ser' },
     { label: 'Valores Essenciais', to: '/imago/valores', icon: '\u{1F4A0}', subtitle: 'Os meus 3 valores fundamentais' },
     { label: 'Roupa como Identidade', to: '/imago/roupa', icon: '\u{1F457}', subtitle: 'O que visto comunica quem?' },
-    { label: 'Meditacoes', to: '/imago/meditacoes', icon: '\u{1F9D8}', subtitle: 'Meditacoes de essencia' },
-    { label: 'Visao Futuro', to: '/imago/visao', icon: '\u{1F52E}', subtitle: 'Quadro de visao digital' },
+    { label: 'Meditações', to: '/imago/meditacoes', icon: '\u{1F9D8}', subtitle: 'Meditações de essência' },
+    { label: 'Visão Futuro', to: '/imago/visao', icon: '\u{1F52E}', subtitle: 'Quadro de visão digital' },
     { label: 'Timeline', to: '/imago/timeline', icon: '\u{1F4CA}', subtitle: 'A minha jornada completa' },
-    { label: 'Integracao', to: '/imago/integracao', icon: '\u{1F300}', subtitle: 'Conexoes entre os ecos' }
+    { label: 'Integração', to: '/imago/integracao', icon: '\u{1F300}', subtitle: 'Conexões entre os ecos' }
   ]
 
   // ===== Stats =====
   const stats = [
-    { label: 'Reflexoes', value: reflexoesEstaSemana, icon: '\u{1FA9E}' },
-    { label: 'Meditacoes', value: meditacoesEstaSemana, icon: '\u{1F9D8}' },
+    { label: 'Reflexões', value: reflexoesEstaSemana, icon: '\u{1FA9E}' },
+    { label: 'Meditações', value: meditacoesEstaSemana, icon: '\u{1F9D8}' },
     { label: 'Streak', value: `${streak}d`, icon: '\u{1F525}' }
   ]
 
@@ -206,7 +206,7 @@ export default function DashboardImago() {
           className="text-white text-lg font-semibold mb-3"
           style={{ fontFamily: "'Cormorant Garamond', serif" }}
         >
-          Quem es tu hoje?
+          Quem és tu hoje?
         </h2>
 
         {reflexaoHoje ? (
@@ -238,7 +238,7 @@ export default function DashboardImago() {
           /* Sem reflexao ainda */
           <div>
             <p className="text-white/60 text-sm mb-4">
-              Pensa um momento: o que define quem es neste instante?
+              Pensa um momento: o que define quem és neste instante?
             </p>
 
             <div className="flex flex-col gap-3">
@@ -250,7 +250,7 @@ export default function DashboardImago() {
                 <span className="text-2xl">🪞</span>
                 <div>
                   <p className="text-white font-medium text-sm">Abrir Espelho Triplo</p>
-                  <p className="text-white/40 text-xs">Explorar essencia, mascara e aspiracao</p>
+                  <p className="text-white/40 text-xs">Explorar essência, máscara e aspiração</p>
                 </div>
               </Link>
 
@@ -259,7 +259,7 @@ export default function DashboardImago() {
                   className="px-4 py-3 rounded-xl"
                   style={{ background: `${IMAGO_COLOR}10`, border: `1px solid ${IMAGO_COLOR}15` }}
                 >
-                  <p className="text-white/40 text-xs mb-1">A tua nomeacao actual:</p>
+                  <p className="text-white/40 text-xs mb-1">A tua nomeação actual:</p>
                   <p className="text-white font-medium text-sm italic">
                     "{nomeacaoActual}"
                   </p>
@@ -286,7 +286,7 @@ export default function DashboardImago() {
                 Espelho Triplo {g('completado', 'completada')}
               </p>
               <p className="text-white/40 text-xs mt-0.5">
-                Ja exploraste quem es, quem mostras e quem queres ser
+                Já exploraste quem és, quem mostras e quem queres ser
               </p>
             </div>
             <Link
@@ -312,10 +312,10 @@ export default function DashboardImago() {
           <span className="text-xl flex-shrink-0">👑</span>
           <div>
             <p className="text-white/80 text-sm italic leading-relaxed">
-              "Nao te tornas quem es por acaso. Descobres-te camada a camada, ate chegar ao centro — e ai percebes que sempre estiveste {g('inteiro', 'inteira')}."
+              "Não te tornas quem és por acaso. Descobres-te camada a camada, até chegar ao centro — e aí percebes que sempre estiveste {g('inteiro', 'inteira')}."
             </p>
             <p className="text-white/30 text-xs mt-2">
-              — O teu espaco de identidade
+              — O teu espaço de identidade
             </p>
           </div>
         </div>

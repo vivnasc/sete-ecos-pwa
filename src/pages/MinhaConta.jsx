@@ -127,7 +127,7 @@ export default function MinhaConta() {
           {sub?.subscription_expires && (
             <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-[#6B5344]/40'}`}>Expira: {formatDate(sub.subscription_expires)}</p>
           )}
-          {!sub && <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-[#6B5344]/40'}`}>Sem subscricao</p>}
+          {!sub && <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-[#6B5344]/40'}`}>Sem subscrição</p>}
         </div>
         {hasAccess ? (
           <Link to={link} className="text-xs font-semibold px-3 py-1.5 rounded-xl text-white flex-shrink-0" style={{ background: `linear-gradient(135deg, ${colors[0]}, ${colors[1]})` }}>
@@ -215,7 +215,7 @@ export default function MinhaConta() {
                   <span className={`font-semibold text-sm ${isDark ? 'text-gray-100' : 'text-[#4A3728]'}`}>LUMINA</span>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-violet-500/15 text-violet-700 dark:text-violet-400">Gratuito</span>
                 </div>
-                <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-[#6B5344]/40'}`}>Diagnostico diario</p>
+                <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-[#6B5344]/40'}`}>Diagnóstico diário</p>
               </div>
               <Link to="/lumina" className="text-xs font-semibold px-3 py-1.5 rounded-xl text-white flex-shrink-0" style={{ background: 'linear-gradient(135deg, #8B5CF6, #5B21B6)' }}>
                 Abrir
@@ -228,7 +228,7 @@ export default function MinhaConta() {
         <section className="px-5 mb-6">
           <div className="flex items-center gap-2 mb-3">
             <div className={`w-1 h-5 bg-gradient-to-b rounded-full ${isDark ? 'from-gray-400 to-gray-400/30' : 'from-[#6B5344] to-[#6B5344]/30'}`} />
-            <h2 className={`text-sm font-semibold tracking-widest uppercase ${isDark ? 'text-gray-200' : 'text-[#4A3728]'}`}>Definicoes</h2>
+            <h2 className={`text-sm font-semibold tracking-widest uppercase ${isDark ? 'text-gray-200' : 'text-[#4A3728]'}`}>Definições</h2>
           </div>
 
           <div className={`backdrop-blur-md rounded-3xl border shadow-lg overflow-hidden ${isDark ? 'bg-white/10 border-white/15 divide-y divide-white/10' : 'bg-white/50 border-white/60 divide-y divide-[#E8D5A3]/15'}`}>
@@ -283,7 +283,7 @@ export default function MinhaConta() {
                 </svg>
               </div>
               <div className="flex-1 text-left">
-                <span className="text-red-400 font-medium text-sm">Terminar Sessao</span>
+                <span className="text-red-400 font-medium text-sm">Terminar Sessão</span>
               </div>
             </button>
           </div>

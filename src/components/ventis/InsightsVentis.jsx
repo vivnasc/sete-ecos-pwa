@@ -6,8 +6,8 @@ import ModuleHeader from '../shared/ModuleHeader'
 import { g } from '../../utils/genero'
 
 /**
- * INSIGHTS VENTIS — Relatorio semanal de energia e ritmo
- * Metricas: energia, rotinas, pausas, movimento
+ * INSIGHTS VENTIS — Relatório semanal de energia e ritmo
+ * Métricas: energia, rotinas, pausas, movimento
  */
 
 const VENTIS_INSIGHTS_CONFIG = {
@@ -39,7 +39,7 @@ const VENTIS_INSIGHTS_CONFIG = {
         const piorPeriodo = periodoEntries.sort((a, b) => a.avg - b.avg)[0]
 
         let insight = ''
-        if (count >= 21) insight = 'Monitorizacao completa!'
+        if (count >= 21) insight = 'Monitorização completa!'
         else if (count >= 14) insight = 'Bom ritmo de registo'
         else if (count >= 7) insight = 'Uma por dia — bom começo'
         else if (count > 0) insight = 'Tenta registar mais vezes'
@@ -62,8 +62,8 @@ const VENTIS_INSIGHTS_CONFIG = {
         const count = data.length
 
         let insight = ''
-        if (count >= 14) insight = 'Consistencia excepcional!'
-        else if (count >= 7) insight = 'Rotinas a criar raizes'
+        if (count >= 14) insight = 'Consistência excepcional!'
+        else if (count >= 7) insight = 'Rotinas a criar raízes'
         else if (count > 0) insight = 'Continua a regar as rotinas'
 
         return {
@@ -98,7 +98,7 @@ const VENTIS_INSIGHTS_CONFIG = {
     },
     {
       id: 'movimento',
-      label: 'Sessoes de movimento',
+      label: 'Sessões de movimento',
       icon: '🧘',
       table: 'ventis_movimento_log',
       selectColumns: 'id, duracao_minutos, created_at',
@@ -127,15 +127,15 @@ const VENTIS_INSIGHTS_CONFIG = {
     const movimento = metricsData.movimento || {}
 
     if (energia.value >= 14 && rotinas.value >= 7) {
-      return `Semana com ritmo! ${energia.value} check-ins de energia e ${rotinas.value} rotinas completadas. ${energia.extra?.melhorPeriodo ? `O teu melhor periodo e "${energia.extra.melhorPeriodo}".` : ''} ${g('Estas conectado', 'Estas conectada')} com o teu ritmo natural — como o vento que sabe quando soprar.`
+      return `Semana com ritmo! ${energia.value} check-ins de energia e ${rotinas.value} rotinas completadas. ${energia.extra?.melhorPeriodo ? `O teu melhor período é "${energia.extra.melhorPeriodo}".` : ''} ${g('Estás conectado', 'Estás conectada')} com o teu ritmo natural — como o vento que sabe quando soprar.`
     }
     if (energia.value >= 7) {
-      return `Bom ritmo de monitorizacao energetica. ${energia.extra?.avgNivel ? `Nivel medio de energia: ${energia.extra.avgNivel}/10.` : ''} ${pausas.value > 0 ? `Fizeste ${pausas.value} pausas conscientes — cada pausa e ar fresco para o corpo.` : 'Tenta adicionar pausas conscientes — sao o oxigenio do dia.'}`
+      return `Bom ritmo de monitorização energética. ${energia.extra?.avgNivel ? `Nível médio de energia: ${energia.extra.avgNivel}/10.` : ''} ${pausas.value > 0 ? `Fizeste ${pausas.value} pausas conscientes — cada pausa é ar fresco para o corpo.` : 'Tenta adicionar pausas conscientes — são o oxigénio do dia.'}`
     }
     if (energia.value > 0) {
-      return `Comecaste a monitorizar a tua energia — isso ja e um passo importante. Como o vento que comeca suave antes de ganhar forca, a consistencia vai trazer padrones. Tenta registar energia 3 vezes por dia: manha, tarde e noite.`
+      return `Começaste a monitorizar a tua energia — isso já é um passo importante. Como o vento que começa suave antes de ganhar força, a consistência vai trazer padrões. Tenta registar energia 3 vezes por dia: manhã, tarde e noite.`
     }
-    return 'Esta semana ainda nao registaste a tua energia. O vento so pode guiar-te se souberes de onde sopra. Vai ao Dashboard e faz o teu primeiro check-in de energia.'
+    return 'Esta semana ainda não registaste a tua energia. O vento só pode guiar-te se souberes de onde sopra. Vai ao Dashboard e faz o teu primeiro check-in de energia.'
   }
 }
 

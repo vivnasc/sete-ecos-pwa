@@ -1,5 +1,5 @@
 // src/components/ventis/MovimentoFlow.jsx
-// Sequencias de movimento/flow — yoga, tai chi, alongamentos, caminhada consciente, danca livre, sacudimento
+// Sequências de movimento/flow — yoga, tai chi, alongamentos, caminhada consciente, dança livre, sacudimento
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ModuleHeader from '../shared/ModuleHeader';
@@ -72,7 +72,7 @@ const SENSACOES = [
 
 const TABS = [
   { id: 'explorar', label: 'Explorar' },
-  { id: 'historico', label: 'Historico' }
+  { id: 'historico', label: 'Histórico' }
 ];
 
 // ===== UTILIDADES =====
@@ -261,8 +261,8 @@ function SessaoMovimento({ tipo, userId, onBack, onSaved }) {
       setSalvo(true);
       onSaved?.();
     } catch (err) {
-      console.error('Erro ao guardar sessao:', err);
-      setErro('Nao foi possivel guardar. Tenta novamente.');
+      console.error('Erro ao guardar sessão:', err);
+      setErro('Não foi possível guardar. Tenta novamente.');
     } finally {
       setSalvando(false);
     }
@@ -302,7 +302,7 @@ function SessaoMovimento({ tipo, userId, onBack, onSaved }) {
         {/* Escolha de duracao (antes de comecar) */}
         {!duracaoEscolhida && !timerAtivo && !timerConcluido && (
           <div className="bg-[#1a2e24]/60 rounded-2xl p-5 border border-[#5D9B84]/10 space-y-4">
-            <h3 className="text-white/90 font-semibold text-sm">Escolhe a duracao</h3>
+            <h3 className="text-white/90 font-semibold text-sm">Escolhe a duração</h3>
             <div className="flex gap-3">
               {tipo.duracoes.map(dur => (
                 <button
@@ -323,7 +323,7 @@ function SessaoMovimento({ tipo, userId, onBack, onSaved }) {
             onClick={handleComecar}
             className="w-full py-4 rounded-2xl bg-[#5D9B84] text-white font-semibold hover:bg-[#4d8a73] transition-colors text-lg"
           >
-            Comecar {duracaoEscolhida} min 🍃
+            Começar {duracaoEscolhida} min 🍃
           </button>
         )}
 
@@ -402,9 +402,9 @@ function SessaoMovimento({ tipo, userId, onBack, onSaved }) {
                     ? 'text-white/20 cursor-not-allowed'
                     : 'text-[#5D9B84] hover:bg-[#5D9B84]/10'
                 }`}
-                aria-label="Proximo passo"
+                aria-label="Próximo passo"
               >
-                Proximo
+                Próximo
                 <ChevronRightIcon />
               </button>
             </div>
@@ -447,7 +447,7 @@ function SessaoMovimento({ tipo, userId, onBack, onSaved }) {
                 }
               `}
             >
-              {salvando ? 'A guardar...' : 'Guardar sessao'}
+              {salvando ? 'A guardar...' : 'Guardar sessão'}
             </button>
           </div>
         )}
@@ -457,7 +457,7 @@ function SessaoMovimento({ tipo, userId, onBack, onSaved }) {
           <div className="bg-[#1a2e24]/60 rounded-2xl p-6 border border-[#5D9B84]/20 text-center space-y-3 animate-fadeIn">
             <div className="text-4xl">🍃</div>
             <p className="text-white/90 font-medium">
-              Sessao registada! +7 Folhas
+              Sessão registada! +7 Folhas
             </p>
             <p className="text-sm text-white/50">
               O teu corpo agradece cada momento de movimento consciente.
@@ -525,7 +525,7 @@ function Historico({ userId }) {
           }
         }
       } catch (err) {
-        console.error('Erro ao carregar historico:', err);
+        console.error('Erro ao carregar histórico:', err);
       } finally {
         setCarregando(false);
       }
@@ -538,7 +538,7 @@ function Historico({ userId }) {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-3">
         <div className="w-8 h-8 border-2 border-[#5D9B84]/30 border-t-[#5D9B84] rounded-full animate-spin" />
-        <p className="text-sm text-white/40">A carregar historico...</p>
+        <p className="text-sm text-white/40">A carregar histórico...</p>
       </div>
     );
   }
@@ -547,8 +547,8 @@ function Historico({ userId }) {
     return (
       <div className="text-center py-16 space-y-3">
         <span className="text-4xl">🍃</span>
-        <p className="text-white/50 text-sm">Ainda nao tens sessoes de movimento.</p>
-        <p className="text-white/30 text-xs">Comeca com uma sessao e os teus dados aparecem aqui.</p>
+        <p className="text-white/50 text-sm">Ainda não tens sessões de movimento.</p>
+        <p className="text-white/30 text-xs">Começa com uma sessão e os teus dados aparecem aqui.</p>
       </div>
     );
   }
@@ -563,7 +563,7 @@ function Historico({ userId }) {
         </div>
         <div className="bg-[#1a2e24]/60 rounded-xl p-3 border border-[#5D9B84]/10 text-center">
           <p className="text-lg font-bold text-[#5D9B84]">{tempoMes}</p>
-          <p className="text-xs text-white/40">min este mes</p>
+          <p className="text-xs text-white/40">min este mês</p>
         </div>
         <div className="bg-[#1a2e24]/60 rounded-xl p-3 border border-[#5D9B84]/10 text-center">
           {tipoFavorito ? (
@@ -584,9 +584,9 @@ function Historico({ userId }) {
       <div>
         <h3 className="text-white/70 text-sm font-semibold mb-3 flex items-center gap-2">
           <HistoryIcon />
-          Sessoes recentes
+          Sessões recentes
         </h3>
-        <div className="space-y-2" role="list" aria-label="Sessoes recentes de movimento">
+        <div className="space-y-2" role="list" aria-label="Sessões recentes de movimento">
           {sessoes.map((sessao, idx) => {
             const tipoInfo = TIPOS_MOVIMENTO.find(t => t.id === sessao.tipo);
             const sensacaoInfo = SENSACOES.find(s => s.id === sessao.sensacao);
@@ -627,7 +627,7 @@ export default function MovimentoFlow() {
   const [tipoSelecionado, setTipoSelecionado] = useState(null);
 
   const handleSaved = () => {
-    // Forca recarga do historico ao voltar
+    // Força recarga do histórico ao voltar
   };
 
   // ===== VISTA DE SESSAO =====
@@ -653,7 +653,7 @@ export default function MovimentoFlow() {
 
       <div className="max-w-lg mx-auto px-4 py-5 space-y-5">
         {/* Tabs */}
-        <div className="flex gap-2" role="tablist" aria-label="Seccoes de movimento">
+        <div className="flex gap-2" role="tablist" aria-label="Secções de movimento">
           {TABS.map(tab => (
             <button
               key={tab.id}
@@ -684,12 +684,12 @@ export default function MovimentoFlow() {
           </div>
         )}
 
-        {/* Tab: Historico */}
+        {/* Tab: Histórico */}
         {tabActiva === 'historico' && (
           <Historico userId={userId} />
         )}
 
-        {/* Espacamento final para navegacao */}
+        {/* Espaçamento final para navegação */}
         <div className="h-20" aria-hidden="true" />
       </div>
     </div>

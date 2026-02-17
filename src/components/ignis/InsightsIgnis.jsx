@@ -6,8 +6,8 @@ import ModuleHeader from '../shared/ModuleHeader'
 import { g } from '../../utils/genero'
 
 /**
- * INSIGHTS IGNIS — Relatorio semanal de vontade e direccao
- * Metricas: escolhas, foco, dispersao, conquistas
+ * INSIGHTS IGNIS — Relatório semanal de vontade e direcção
+ * Métricas: escolhas, foco, dispersão, conquistas
  */
 
 const IGNIS_INSIGHTS_CONFIG = {
@@ -27,7 +27,7 @@ const IGNIS_INSIGHTS_CONFIG = {
         const taxaAlinhamento = count > 0 ? Math.round((alinhadas / count) * 100) : 0
 
         let insight = ''
-        if (count >= 21) insight = 'Consistencia excepcional!'
+        if (count >= 21) insight = 'Consistência excepcional!'
         else if (count >= 14) insight = 'Bom ritmo de escolhas'
         else if (count >= 7) insight = 'Uma escolha por dia — bom começo'
         else if (count > 0) insight = 'Tenta registar mais escolhas'
@@ -42,7 +42,7 @@ const IGNIS_INSIGHTS_CONFIG = {
     },
     {
       id: 'foco',
-      label: 'Sessoes de foco',
+      label: 'Sessões de foco',
       icon: '🧠',
       table: 'ignis_foco_sessions',
       selectColumns: 'id, duracao_minutos, nivel_foco, created_at',
@@ -56,7 +56,7 @@ const IGNIS_INSIGHTS_CONFIG = {
         let insight = ''
         if (totalMinutos >= 120) insight = 'Foco profundo!'
         else if (totalMinutos >= 60) insight = 'Bom tempo de foco'
-        else if (count > 0) insight = 'Tenta aumentar a duracao'
+        else if (count > 0) insight = 'Tenta aumentar a duração'
 
         return {
           value: count,
@@ -68,7 +68,7 @@ const IGNIS_INSIGHTS_CONFIG = {
     },
     {
       id: 'dispersao',
-      label: 'Dispersoes registadas',
+      label: 'Dispersões registadas',
       icon: '🌪️',
       table: 'ignis_dispersao_log',
       selectColumns: 'id, disse_sim_queria_nao, created_at',
@@ -78,9 +78,9 @@ const IGNIS_INSIGHTS_CONFIG = {
         const percentagemSimQueriaNao = count > 0 ? Math.round((simQueriaNao / count) * 100) : 0
 
         let insight = ''
-        if (count > 0 && percentagemSimQueriaNao < 30) insight = 'Menos "sim queria nao" — bom sinal!'
-        else if (count > 0 && percentagemSimQueriaNao >= 50) insight = 'Muitos "sim" quando querias "nao"'
-        else if (count > 0) insight = 'Registar dispersoes traz consciencia'
+        if (count > 0 && percentagemSimQueriaNao < 30) insight = 'Menos "sim queria não" — bom sinal!'
+        else if (count > 0 && percentagemSimQueriaNao >= 50) insight = 'Muitos "sim" quando querias "não"'
+        else if (count > 0) insight = 'Registar dispersões traz consciência'
 
         return {
           value: count,
@@ -99,7 +99,7 @@ const IGNIS_INSIGHTS_CONFIG = {
       analysis: (data) => ({
         value: data.length,
         trend: data.length >= 5 ? 'up' : data.length >= 2 ? 'stable' : 'down',
-        insight: data.length >= 7 ? 'Uma conquista por dia!' : data.length > 0 ? 'Celebra as tuas vitorias' : ''
+        insight: data.length >= 7 ? 'Uma conquista por dia!' : data.length > 0 ? 'Celebra as tuas vitórias' : ''
       })
     }
   ],
@@ -110,15 +110,15 @@ const IGNIS_INSIGHTS_CONFIG = {
     const conquistas = metricsData.conquistas || {}
 
     if (escolhas.value >= 14 && foco.value >= 3) {
-      return `Semana de fogo! ${escolhas.value} escolhas conscientes e ${foco.value} sessoes de foco (${foco.extra?.totalMinutos || 0} min total). ${escolhas.extra?.taxaAlinhamento > 50 ? `${escolhas.extra.taxaAlinhamento}% das escolhas alinhadas com valores — excelente!` : ''} ${g('Estas alinhado', 'Estas alinhada')} com o teu fogo interior.`
+      return `Semana de fogo! ${escolhas.value} escolhas conscientes e ${foco.value} sessões de foco (${foco.extra?.totalMinutos || 0} min total). ${escolhas.extra?.taxaAlinhamento > 50 ? `${escolhas.extra.taxaAlinhamento}% das escolhas alinhadas com valores — excelente!` : ''} ${g('Estás alinhado', 'Estás alinhada')} com o teu fogo interior.`
     }
     if (escolhas.value >= 7) {
-      return `Bom ritmo de escolhas conscientes. ${dispersao.value > 0 ? `Registaste ${dispersao.value} dispersoes — ${dispersao.extra?.percentagemSimQueriaNao || 0}% foram "sim queria nao". Cada registo e consciencia.` : 'Tenta registar tambem as dispersoes — saber o que te desvia e tao importante quanto saber o que escolhes.'}`
+      return `Bom ritmo de escolhas conscientes. ${dispersao.value > 0 ? `Registaste ${dispersao.value} dispersões — ${dispersao.extra?.percentagemSimQueriaNao || 0}% foram "sim queria não". Cada registo é consciência.` : 'Tenta registar também as dispersões — saber o que te desvia é tão importante quanto saber o que escolhes.'}`
     }
     if (escolhas.value > 0) {
-      return `Comecaste a semana com ${escolhas.value} escolhas conscientes. O fogo acende-se devagar — mas acende-se. Tenta definir 3 escolhas todas as manhas. A consistencia alimenta a chama.`
+      return `Começaste a semana com ${escolhas.value} escolhas conscientes. O fogo acende-se devagar — mas acende-se. Tenta definir 3 escolhas todas as manhãs. A consistência alimenta a chama.`
     }
-    return 'Esta semana ainda nao registaste escolhas conscientes. O fogo precisa de lenha — vai ao Dashboard e define as tuas escolhas de hoje. Uma so ja e um começo.'
+    return 'Esta semana ainda não registaste escolhas conscientes. O fogo precisa de lenha — vai ao Dashboard e define as tuas escolhas de hoje. Uma só já é um começo.'
   }
 }
 
