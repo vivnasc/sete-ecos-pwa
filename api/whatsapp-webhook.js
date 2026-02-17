@@ -373,8 +373,8 @@ async function handleSetup(req, res) {
       const subsData = await subsRes.json();
       diagnostico.steps.push({ step: '3. Current Subscriptions', ok: subsRes.ok, data: subsData });
 
-      // On POST, subscribe
-      if (req.method === 'POST') {
+      // Subscribe: POST ou GET com &subscribe=true
+      if (req.method === 'POST' || req.query.subscribe === 'true') {
         const subRes = await fetch(`${GRAPH_BASE}/${wabaId}/subscribed_apps`, {
           method: 'POST',
           headers: {
@@ -386,7 +386,7 @@ async function handleSetup(req, res) {
         const subData = await subRes.json();
         diagnostico.steps.push({ step: '4. Subscribe App', ok: subRes.ok, data: subData });
       } else {
-        diagnostico.steps.push({ step: '4. Ação', message: 'Faz POST com ?action=setup para subscrever.' });
+        diagnostico.steps.push({ step: '4. Ação', message: 'Abre ?action=setup&subscribe=true para subscrever a tua app.' });
       }
     }
   } catch (err) {
