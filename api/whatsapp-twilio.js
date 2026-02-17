@@ -33,7 +33,11 @@ export default async function handler(req, res) {
   const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
   const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
   const TWILIO_WHATSAPP_NUMBER = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886';
-  const COACH_WHATSAPP_NUMBER = process.env.COACH_WHATSAPP_NUMBER || 'whatsapp:+258851006473';
+  // Prioridade: VIVIANNE_PERSONAL_NUMBER > COACH_WHATSAPP_NUMBER > default
+  const personalNumber = (process.env.VIVIANNE_PERSONAL_NUMBER || '').trim();
+  const COACH_WHATSAPP_NUMBER = personalNumber
+    ? `whatsapp:+${personalNumber.replace(/^\+/, '')}`
+    : (process.env.COACH_WHATSAPP_NUMBER || 'whatsapp:+258851006473');
 
   if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN) {
     console.error('Twilio não configurado');
