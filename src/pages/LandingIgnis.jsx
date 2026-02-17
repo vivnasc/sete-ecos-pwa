@@ -111,7 +111,8 @@ const LandingIgnis = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              to="/ignis/pagamento"
+              to="/login"
+              state={{ eco: 'Ignis' }}
               className="px-10 py-4 bg-white text-[#2e1a14] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
             >
               Acender o Fogo
@@ -143,24 +144,21 @@ const LandingIgnis = () => {
           <div className="grid gap-4 max-w-lg mx-auto text-left">
             {[
               'Dizes sim por obrigacao, nao por vontade',
-              'Sentes-te {g} sem rumo, a reagir em vez de escolher',
+              'Sentes-te sem rumo, a reagir em vez de escolher',
               'Tens mil coisas mas nada avanca'
-            ].map((item, i) => {
-              const textoFinal = i === 1 ? `${g('Sentes-te', 'Sentes-te')} sem rumo, a reagir em vez de escolher` : item
-              return (
-                <div
-                  key={i}
-                  className="flex items-start gap-4 p-5 bg-white/5 rounded-xl border border-[#C1634A]/20"
-                >
-                  <span className="text-[#C1634A] text-xl mt-0.5">&#10003;</span>
-                  <span className="text-white/80 text-lg">{textoFinal}</span>
-                </div>
-              )
-            })}
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="flex items-start gap-4 p-5 bg-white/5 rounded-xl border border-[#C1634A]/20"
+              >
+                <span className="text-[#C1634A] text-xl mt-0.5">&#10003;</span>
+                <span className="text-white/80 text-lg">{item}</span>
+              </div>
+            ))}
           </div>
 
           <p className="text-[#C1634A]/60 mt-8 text-sm">
-            Se te {g('reconheceste', 'reconheceste')} em pelo menos uma, o Ignis foi {g('criado', 'criado')} para ti.
+            Se te reconheceste em pelo menos uma, o Ignis foi {g('criado', 'criada')} para ti.
           </p>
         </div>
       </section>
@@ -305,7 +303,8 @@ const LandingIgnis = () => {
                 )}
 
                 <Link
-                  to="/ignis/pagamento"
+                  to="/login"
+              state={{ eco: 'Ignis' }}
                   className="mt-4 block w-full py-3 text-white rounded-full font-semibold transition-all hover:shadow-lg"
                   style={{ background: 'linear-gradient(135deg, #C1634A, #8B4513)' }}
                 >

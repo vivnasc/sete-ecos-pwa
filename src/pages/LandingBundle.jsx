@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { g } from '../utils/genero';
 import SEOHead from '../components/SEOHead';
 import PartilharSocial from '../components/PartilharSocial';
 
@@ -107,7 +108,7 @@ export default function LandingBundle() {
     },
     {
       q: 'Preciso usar os dois ao mesmo tempo?',
-      a: 'Não! Podes começar com um e adicionar o outro quando te sentires pronta. O acesso é simultâneo, mas o ritmo é teu.',
+      a: 'Não! Podes começar com um e adicionar o outro quando te sentires preparado/a. O acesso é simultâneo, mas o ritmo é teu.',
     },
     {
       q: 'Posso fazer upgrade do Vitalis para Bundle?',
@@ -123,7 +124,7 @@ export default function LandingBundle() {
     },
     {
       q: 'Há garantia de devolução?',
-      a: 'Sim! Tens 7 dias de garantia total. Se não ficares satisfeita, devolvemos 100% do valor pago.',
+      a: 'Sim! Tens 7 dias de garantia total. Se não ficares satisfeito/a, devolvemos 100% do valor pago.',
     },
   ];
 
@@ -465,7 +466,7 @@ export default function LandingBundle() {
               className="text-3xl md:text-4xl font-bold mb-4"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              Pronta para a Tua Transformação Completa?
+              {g('Pronto', 'Pronta')} para a Tua Transformação Completa?
             </h2>
             <p className="text-lg text-white/90 mb-8">
               Começa com 7 dias grátis. Cancela quando quiseres. Garantia de devolução total.

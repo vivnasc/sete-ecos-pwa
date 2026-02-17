@@ -116,7 +116,8 @@ const LandingVentis = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              to="/ventis/pagamento"
+              to="/login"
+              state={{ eco: 'Ventis' }}
               className="px-10 py-4 bg-white text-[#1a2e24] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
             >
               Encontrar o Meu Ritmo
@@ -169,7 +170,7 @@ const LandingVentis = () => {
           </div>
 
           <p className="text-[#5D9B84]/60 mt-8 text-sm">
-            Se te {g('reconheceste', 'reconheceste')} em pelo menos uma, o Ventis foi {g('criado', 'criado')} para ti.
+            Se te reconheceste em pelo menos uma, o Ventis foi {g('criado', 'criada')} para ti.
           </p>
         </div>
       </section>
@@ -314,7 +315,8 @@ const LandingVentis = () => {
                 )}
 
                 <Link
-                  to="/ventis/pagamento"
+                  to="/login"
+              state={{ eco: 'Ventis' }}
                   className="mt-4 block w-full py-3 text-white rounded-full font-semibold transition-all hover:shadow-lg"
                   style={{ background: 'linear-gradient(135deg, #5D9B84, #3a6b5a)' }}
                 >

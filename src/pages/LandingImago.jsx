@@ -170,7 +170,7 @@ const LandingImago = () => {
           </div>
 
           <p className="text-[#8B7BA5]/60 mt-8 text-sm">
-            Se te {g('reconheceste', 'reconheceste')} em pelo menos uma, o Imago foi {g('criado', 'criado')} para ti.
+            Se te reconheceste em pelo menos uma, o Imago foi {g('criado', 'criada')} para ti.
           </p>
         </div>
       </section>

@@ -252,11 +252,11 @@ const LandingGeral = () => {
               <p className="text-purple-300 text-lg mb-4">O Espelho Interior</p>
               <p className="text-purple-400/80 mb-6">
                 Antes de transformar, é preciso ver. Ritual diário de auto-observação
-                com 7 perguntas para consciência, leituras personalizadas e rastreamento do ciclo.
+                com 8 perguntas para consciência, leituras personalizadas e rastreamento do ciclo.
               </p>
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2 text-purple-200 text-sm">
-                  <span className="text-green-400">✓</span> 7 perguntas diárias
+                  <span className="text-green-400">✓</span> 8 perguntas diárias
                 </li>
                 <li className="flex items-center gap-2 text-purple-200 text-sm">
                   <span className="text-green-400">✓</span> Leituras personalizadas
@@ -608,7 +608,7 @@ const LandingGeral = () => {
               O <strong>LUMINA</strong> é um diagnóstico gratuito que revela padrões sobre a tua energia, emoção e corpo.
             </p>
             <p className="text-purple-300/80 mb-6 text-sm">
-              7 perguntas. 2 minutos. Uma leitura que pode mudar o teu dia.
+              8 perguntas. 2 minutos. Uma leitura que pode mudar o teu dia.
             </p>
 
             <div className="flex flex-col gap-3 items-center">
@@ -623,7 +623,7 @@ const LandingGeral = () => {
 
             <div className="mt-8 grid grid-cols-3 gap-4">
               {[
-                { num: '7', label: 'Perguntas' },
+                { num: '8', label: 'Perguntas' },
                 { num: '2 min', label: 'Duração' },
                 { num: '23', label: 'Padrões' },
               ].map(s => (
