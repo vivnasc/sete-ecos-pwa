@@ -1240,18 +1240,38 @@ export default function Lumina() {
 
           {/* Ponte Contextual: Lumina → Vitalis/Áurea */}
           {(() => {
-            // Determinar se o check-in sugere necessidade de Vitalis
+            // Converter respostas de string para score numérico
+            const SCORE_MAP = {
+              // Energia
+              vazia: 1, baixa: 2, normal: 3, boa: 4, cheia: 5,
+              // Corpo
+              pesado: 1, tenso: 2, solto: 4, leve: 5,
+              // Mente
+              caotica: 1, barulhenta: 2, calma: 4, silenciosa: 5,
+              // Passado
+              preso: 1, apesar: 2, arrumado: 4,
+              // Impulso
+              esconder: 1, parar: 2, nada: 3, decidir: 4, agir: 5,
+              // Futuro
+              escuro: 1, luminoso: 5, claro: 4,
+              // Espelho
+              invisivel: 1, apagada: 2, visivel: 4, luminosa: 5,
+              // Cuidado
+              esquecida: 1, 'por ultimo': 2, presente: 4, prioritaria: 5
+            };
+            const toScore = (val) => SCORE_MAP[val] || 3;
             const vals = Object.values(respostas || {});
-            const media = vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : 5;
-            const corpo = respostas?.corpo || respostas?.energia || 5;
-            const espelho = respostas?.espelho || 5;
-            const needsVitalis = corpo <= 4 || media <= 4;
-            const needsAurea = espelho <= 3;
+            const media = vals.length > 0 ? vals.reduce((sum, v) => sum + toScore(v), 0) / vals.length : 3;
+            const corpoScore = toScore(respostas?.corpo) || toScore(respostas?.energia) || 3;
+            const espelhoScore = toScore(respostas?.espelho) || 3;
+            const cuidadoScore = toScore(respostas?.cuidado) || 3;
+            const needsVitalis = corpoScore <= 2 || media <= 2.5;
+            const needsAurea = espelhoScore <= 2 || cuidadoScore <= 2;
             const eco = needsAurea ? 'aurea' : 'vitalis';
             const ecoNome = needsAurea ? 'ÁUREA' : 'VITALIS';
             const ecoMsg = needsAurea
-              ? 'Os teus padroes mostram que a tua relacao contigo pode precisar de atencao. A ÁUREA trabalha o valor proprio — sem culpa, sem pressao.'
-              : 'O teu corpo esta a pedir atencao. O VITALIS combina nutricao cientifica com apoio emocional para uma transformacao real e sustentavel.';
+              ? 'Os teus padrões mostram que a tua relação contigo pode precisar de atenção. A ÁUREA trabalha o valor próprio — sem culpa, sem pressão.'
+              : 'O teu corpo está a pedir atenção. O VITALIS combina nutrição científica com apoio emocional para uma transformação real e sustentável.';
             const ecoCor = needsAurea ? '#C9A227' : '#7C8B6F';
             const ecoBg = needsAurea
               ? 'linear-gradient(135deg, rgba(201, 162, 39, 0.12) 0%, rgba(212, 175, 55, 0.06) 100%)'
@@ -1378,7 +1398,7 @@ export default function Lumina() {
             }}>
               <div style={{ fontSize: '24px', marginBottom: '6px' }}>✓</div>
               <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#059669' }}>
-                Obrigada! Vais receber os teus resultados em breve.
+                {bemVindo(genero || profile?.genero) === 'Bem-vindo' ? 'Obrigado' : 'Obrigada'}! Vais receber os teus resultados em breve.
               </div>
               <a href="/login" style={{
                 display: 'inline-block',
