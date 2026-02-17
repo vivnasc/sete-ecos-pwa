@@ -145,6 +145,25 @@ const InsightsEcoa = lazy(() => import('./components/ecoa/InsightsEcoa'))
 const PerfilEcoa = lazy(() => import('./components/ecoa/PerfilEcoa'))
 const NotificacoesEcoa = lazy(() => import('./components/ecoa/NotificacoesEcoa'))
 
+// ECO 7: IMAGO (Identidade & Espelho)
+const LandingImago = lazy(() => import('./pages/LandingImago'))
+const ImagoAccessGuard = lazy(() => import('./components/imago/ImagoAccessGuard'))
+const DashboardImago = lazy(() => import('./components/imago/DashboardImago'))
+const EspelhoTriplo = lazy(() => import('./components/imago/EspelhoTriplo'))
+const ArqueologiaDeSi = lazy(() => import('./components/imago/ArqueologiaDeSi'))
+const Nomeacao = lazy(() => import('./components/imago/Nomeacao'))
+const MapaIdentidade = lazy(() => import('./components/imago/MapaIdentidade'))
+const ValoresEssenciais = lazy(() => import('./components/imago/ValoresEssenciais'))
+const RoupaComoIdentidade = lazy(() => import('./components/imago/RoupaComoIdentidade'))
+const TimelineJornada = lazy(() => import('./components/imago/TimelineJornada'))
+const IntegracaoEcos = lazy(() => import('./components/imago/IntegracaoEcos'))
+const MeditacoesEssencia = lazy(() => import('./components/imago/MeditacoesEssencia'))
+const VisaoFuturo = lazy(() => import('./components/imago/VisaoFuturo'))
+const ChatImago = lazy(() => import('./components/imago/ChatImago'))
+const InsightsImago = lazy(() => import('./components/imago/InsightsImago'))
+const PerfilImago = lazy(() => import('./components/imago/PerfilImago'))
+const NotificacoesImago = lazy(() => import('./components/imago/NotificacoesImago'))
+
 // ECO 2: ÁUREA (Valor & Presença)
 const LandingAurea = lazy(() => import('./pages/LandingAurea'))
 const PagamentoAurea = lazy(() => import('./components/aurea/PagamentoAurea'))
@@ -221,6 +240,14 @@ function VentisRoute({ children }) {
 function EcoaRoute({ children }) {
   return (
     <ProtectedRoute guard={EcoaAccessGuard} eco="Ecoa">
+      <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
+    </ProtectedRoute>
+  )
+}
+
+function ImagoRoute({ children }) {
+  return (
+    <ProtectedRoute guard={ImagoAccessGuard} eco="Imago">
       <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
     </ProtectedRoute>
   )
@@ -377,8 +404,25 @@ function AppRoutes() {
             <Route path="/ecoa/perfil" element={<EcoaRoute><PerfilEcoa /></EcoaRoute>} />
             <Route path="/ecoa/notificacoes" element={<EcoaRoute><NotificacoesEcoa /></EcoaRoute>} />
 
-            {/* ===== ECO 7: Em Breve ===== */}
-            <Route path="/imago" element={<ComingSoon />} />
+            {/* ===== ECO 7: IMAGO - Identidade & Espelho ===== */}
+            <Route path="/imago" element={<LandingImago />} />
+            <Route path="/imago/dashboard" element={<ImagoRoute><DashboardImago /></ImagoRoute>} />
+            <Route path="/imago/espelho" element={<ImagoRoute><EspelhoTriplo /></ImagoRoute>} />
+            <Route path="/imago/arqueologia" element={<ImagoRoute><ArqueologiaDeSi /></ImagoRoute>} />
+            <Route path="/imago/nomeacao" element={<ImagoRoute><Nomeacao /></ImagoRoute>} />
+            <Route path="/imago/mapa" element={<ImagoRoute><MapaIdentidade /></ImagoRoute>} />
+            <Route path="/imago/valores" element={<ImagoRoute><ValoresEssenciais /></ImagoRoute>} />
+            <Route path="/imago/roupa" element={<ImagoRoute><RoupaComoIdentidade /></ImagoRoute>} />
+            <Route path="/imago/timeline" element={<ImagoRoute><TimelineJornada /></ImagoRoute>} />
+            <Route path="/imago/integracao" element={<ImagoRoute><IntegracaoEcos /></ImagoRoute>} />
+            <Route path="/imago/meditacoes" element={<ImagoRoute><MeditacoesEssencia /></ImagoRoute>} />
+            <Route path="/imago/visao" element={<ImagoRoute><VisaoFuturo /></ImagoRoute>} />
+            <Route path="/imago/chat" element={<ImagoRoute><ChatImago /></ImagoRoute>} />
+            <Route path="/imago/insights" element={<ImagoRoute><InsightsImago /></ImagoRoute>} />
+            <Route path="/imago/perfil" element={<ImagoRoute><PerfilImago /></ImagoRoute>} />
+            <Route path="/imago/notificacoes" element={<ImagoRoute><NotificacoesImago /></ImagoRoute>} />
+
+            {/* ===== AURORA: Em Breve ===== */}
             <Route path="/aurora" element={<ComingSoon />} />
 
             {/* ===== ADMIN / COACH ===== */}
