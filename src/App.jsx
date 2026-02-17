@@ -126,6 +126,25 @@ const InsightsVentis = lazy(() => import('./components/ventis/InsightsVentis'))
 const PerfilVentis = lazy(() => import('./components/ventis/PerfilVentis'))
 const NotificacoesVentis = lazy(() => import('./components/ventis/NotificacoesVentis'))
 
+// ECO 6: ECOA (Voz & Desbloqueio do Silencio)
+const LandingEcoa = lazy(() => import('./pages/LandingEcoa'))
+const EcoaAccessGuard = lazy(() => import('./components/ecoa/EcoaAccessGuard'))
+const DashboardEcoa = lazy(() => import('./components/ecoa/DashboardEcoa'))
+const MapaSilenciamento = lazy(() => import('./components/ecoa/MapaSilenciamento'))
+const MicroVoz = lazy(() => import('./components/ecoa/MicroVoz'))
+const BibliotecaFrases = lazy(() => import('./components/ecoa/BibliotecaFrases'))
+const RegistoVozRecuperada = lazy(() => import('./components/ecoa/RegistoVozRecuperada'))
+const DiarioVoz = lazy(() => import('./components/ecoa/DiarioVoz'))
+const CartasNaoEnviadas = lazy(() => import('./components/ecoa/CartasNaoEnviadas'))
+const AfirmacoesDiarias = lazy(() => import('./components/ecoa/AfirmacoesDiarias'))
+const ExpressaoExercicios = lazy(() => import('./components/ecoa/ExpressaoExercicios'))
+const ComunicacaoAssertiva = lazy(() => import('./components/ecoa/ComunicacaoAssertiva'))
+const PadroesExpressao = lazy(() => import('./components/ecoa/PadroesExpressao'))
+const ChatEcoa = lazy(() => import('./components/ecoa/ChatEcoa'))
+const InsightsEcoa = lazy(() => import('./components/ecoa/InsightsEcoa'))
+const PerfilEcoa = lazy(() => import('./components/ecoa/PerfilEcoa'))
+const NotificacoesEcoa = lazy(() => import('./components/ecoa/NotificacoesEcoa'))
+
 // ECO 2: ÁUREA (Valor & Presença)
 const LandingAurea = lazy(() => import('./pages/LandingAurea'))
 const PagamentoAurea = lazy(() => import('./components/aurea/PagamentoAurea'))
@@ -194,6 +213,14 @@ function IgnisRoute({ children }) {
 function VentisRoute({ children }) {
   return (
     <ProtectedRoute guard={VentisAccessGuard} eco="Ventis">
+      <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
+    </ProtectedRoute>
+  )
+}
+
+function EcoaRoute({ children }) {
+  return (
+    <ProtectedRoute guard={EcoaAccessGuard} eco="Ecoa">
       <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
     </ProtectedRoute>
   )
@@ -332,8 +359,25 @@ function AppRoutes() {
             <Route path="/ventis/perfil" element={<VentisRoute><PerfilVentis /></VentisRoute>} />
             <Route path="/ventis/notificacoes" element={<VentisRoute><NotificacoesVentis /></VentisRoute>} />
 
-            {/* ===== ECOS 6-7: Em Breve ===== */}
-            <Route path="/ecoa" element={<ComingSoon />} />
+            {/* ===== ECO 6: ECOA - Voz & Desbloqueio do Silencio ===== */}
+            <Route path="/ecoa" element={<LandingEcoa />} />
+            <Route path="/ecoa/dashboard" element={<EcoaRoute><DashboardEcoa /></EcoaRoute>} />
+            <Route path="/ecoa/mapa" element={<EcoaRoute><MapaSilenciamento /></EcoaRoute>} />
+            <Route path="/ecoa/micro-voz" element={<EcoaRoute><MicroVoz /></EcoaRoute>} />
+            <Route path="/ecoa/biblioteca" element={<EcoaRoute><BibliotecaFrases /></EcoaRoute>} />
+            <Route path="/ecoa/voz-recuperada" element={<EcoaRoute><RegistoVozRecuperada /></EcoaRoute>} />
+            <Route path="/ecoa/diario" element={<EcoaRoute><DiarioVoz /></EcoaRoute>} />
+            <Route path="/ecoa/cartas" element={<EcoaRoute><CartasNaoEnviadas /></EcoaRoute>} />
+            <Route path="/ecoa/afirmacoes" element={<EcoaRoute><AfirmacoesDiarias /></EcoaRoute>} />
+            <Route path="/ecoa/exercicios" element={<EcoaRoute><ExpressaoExercicios /></EcoaRoute>} />
+            <Route path="/ecoa/comunicacao" element={<EcoaRoute><ComunicacaoAssertiva /></EcoaRoute>} />
+            <Route path="/ecoa/padroes" element={<EcoaRoute><PadroesExpressao /></EcoaRoute>} />
+            <Route path="/ecoa/chat" element={<EcoaRoute><ChatEcoa /></EcoaRoute>} />
+            <Route path="/ecoa/insights" element={<EcoaRoute><InsightsEcoa /></EcoaRoute>} />
+            <Route path="/ecoa/perfil" element={<EcoaRoute><PerfilEcoa /></EcoaRoute>} />
+            <Route path="/ecoa/notificacoes" element={<EcoaRoute><NotificacoesEcoa /></EcoaRoute>} />
+
+            {/* ===== ECO 7: Em Breve ===== */}
             <Route path="/imago" element={<ComingSoon />} />
             <Route path="/aurora" element={<ComingSoon />} />
 
