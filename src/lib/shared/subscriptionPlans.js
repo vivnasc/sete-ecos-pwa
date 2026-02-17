@@ -104,6 +104,90 @@ export const ECO_PLANS = {
   }
 }
 
+// ===== BUNDLES (PACOTES DE DESCONTO) =====
+export const BUNDLE_PLANS = {
+  duo: {
+    id: 'duo',
+    name: 'Duo — 2 Ecos',
+    description: 'Escolhe 2 ecos a tua escolha',
+    discount: 15,
+    minEcos: 2,
+    maxEcos: 2,
+    monthly: { price_mzn: 1275, price_usd: 20 },
+    semestral: { price_mzn: 6502, price_usd: 100 },
+    annual: { price_mzn: 12240, price_usd: 187 }
+  },
+  trio: {
+    id: 'trio',
+    name: 'Trio — 3 Ecos',
+    description: 'Escolhe 3 ecos a tua escolha',
+    discount: 25,
+    minEcos: 3,
+    maxEcos: 3,
+    monthly: { price_mzn: 1687, price_usd: 27 },
+    semestral: { price_mzn: 8606, price_usd: 132 },
+    annual: { price_mzn: 16200, price_usd: 248 }
+  },
+  jornada: {
+    id: 'jornada',
+    name: 'Jornada Completa — 5+ Ecos',
+    description: 'Acesso a 5 ou mais ecos com desconto maximo',
+    discount: 35,
+    minEcos: 5,
+    maxEcos: 7,
+    monthly: { price_mzn: 2437, price_usd: 39 },
+    semestral: { price_mzn: 12431, price_usd: 190 },
+    annual: { price_mzn: 23400, price_usd: 358 }
+  },
+  tudo: {
+    id: 'tudo',
+    name: 'Tudo — Todos os Ecos',
+    description: 'Acesso completo a todos os 7 ecos + Aurora',
+    discount: 40,
+    minEcos: 8,
+    maxEcos: 8,
+    monthly: { price_mzn: 3150, price_usd: 50 },
+    semestral: { price_mzn: 16065, price_usd: 246 },
+    annual: { price_mzn: 30240, price_usd: 463 }
+  }
+}
+
+/**
+ * Calcula o preco de um bundle baseado nos ecos seleccionados
+ */
+export function calculateBundlePrice(ecoKeys, period = 'monthly') {
+  if (!ecoKeys || ecoKeys.length < 2) return null
+
+  // Encontrar bundle aplicavel
+  let bundle = null
+  if (ecoKeys.length >= 8) bundle = BUNDLE_PLANS.tudo
+  else if (ecoKeys.length >= 5) bundle = BUNDLE_PLANS.jornada
+  else if (ecoKeys.length >= 3) bundle = BUNDLE_PLANS.trio
+  else if (ecoKeys.length >= 2) bundle = BUNDLE_PLANS.duo
+
+  if (!bundle) return null
+
+  // Calcular preco individual total
+  const individualTotal = ecoKeys.reduce((total, eco) => {
+    const config = ECO_PLANS[eco]
+    if (!config) return total
+    const plan = config[period]
+    return total + (plan?.price_mzn || 0)
+  }, 0)
+
+  const bundlePrice = bundle[period]?.price_mzn || Math.round(individualTotal * (1 - bundle.discount / 100))
+  const savings = individualTotal - bundlePrice
+
+  return {
+    bundle,
+    individualTotal,
+    bundlePrice,
+    savings,
+    discount: bundle.discount,
+    period
+  }
+}
+
 // ===== FUNCOES DE ACESSO GENERICAS =====
 
 /**

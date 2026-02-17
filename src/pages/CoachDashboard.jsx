@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { coachApi } from '../lib/coachApi';
 import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
 import { enviarBoasVindas, enviarConfirmacaoPagamento } from '../lib/emails';
+import { supabase } from '../lib/supabase';
+import { ECO_PLANS } from '../lib/shared/subscriptionPlans';
 
 /**
  * SETE ECOS - COACH DASHBOARD v5
@@ -59,10 +61,44 @@ export default function CoachDashboard() {
 
   // Quick stats
   const [stats, setStats] = useState({ total: 0, active: 0, trial: 0, pending: 0, semPlano: 0, aguardaRevisao: 0, erros: 0 });
+  const [multiEcoStats, setMultiEcoStats] = useState(null);
+  const [showMultiEco, setShowMultiEco] = useState(false);
 
   useEffect(() => {
     loadClients();
+    loadMultiEcoStats();
   }, []);
+
+  const loadMultiEcoStats = async () => {
+    try {
+      const ecoNames = ['serena', 'ignis', 'ventis', 'ecoa', 'imago', 'aurora', 'aurea'];
+      const results = {};
+
+      for (const eco of ecoNames) {
+        const config = ECO_PLANS[eco];
+        if (!config) continue;
+
+        const { data, error } = await supabase
+          .from(config.table)
+          .select('subscription_status');
+
+        if (data) {
+          const ecoStats = { total: data.length, active: 0, trial: 0, pending: 0, tester: 0 };
+          data.forEach(c => {
+            if (c.subscription_status === 'active') ecoStats.active++;
+            else if (c.subscription_status === 'trial') ecoStats.trial++;
+            else if (c.subscription_status === 'pending') ecoStats.pending++;
+            else if (c.subscription_status === 'tester') ecoStats.tester++;
+          });
+          results[eco] = ecoStats;
+        }
+      }
+
+      setMultiEcoStats(results);
+    } catch (err) {
+      console.error('Erro ao carregar stats multi-eco:', err);
+    }
+  };
 
   const loadClients = async () => {
     try {
@@ -265,6 +301,81 @@ export default function CoachDashboard() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-4 space-y-4">
+        {/* Multi-Eco Overview */}
+        {multiEcoStats && (
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <button
+              onClick={() => setShowMultiEco(!showMultiEco)}
+              className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-lg">🌍</span>
+                <span className="font-medium text-gray-800 text-sm">Visao Geral — Todos os Ecos</span>
+                <span className="text-xs text-gray-400">
+                  ({Object.values(multiEcoStats).reduce((acc, s) => acc + s.total, 0)} clientes total)
+                </span>
+              </div>
+              <span className="text-gray-400 text-sm">{showMultiEco ? '▲' : '▼'}</span>
+            </button>
+
+            {showMultiEco && (
+              <div className="px-4 pb-4 border-t border-gray-100">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
+                  {Object.entries(multiEcoStats).map(([eco, ecoStats]) => {
+                    const config = ECO_PLANS[eco];
+                    if (!config || ecoStats.total === 0) return null;
+                    return (
+                      <div
+                        key={eco}
+                        className="p-3 rounded-xl border"
+                        style={{ borderColor: `${config.color}30`, background: `${config.color}08` }}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <div
+                            className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                            style={{ background: config.color }}
+                          >
+                            {config.name[0]}
+                          </div>
+                          <span className="font-medium text-gray-800 text-sm">{config.name}</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-1 text-xs">
+                          <div>
+                            <span className="text-gray-500">Total: </span>
+                            <span className="font-bold text-gray-800">{ecoStats.total}</span>
+                          </div>
+                          <div>
+                            <span className="text-green-600">Activos: </span>
+                            <span className="font-bold text-green-700">{ecoStats.active}</span>
+                          </div>
+                          {ecoStats.trial > 0 && (
+                            <div>
+                              <span className="text-blue-600">Trial: </span>
+                              <span className="font-bold text-blue-700">{ecoStats.trial}</span>
+                            </div>
+                          )}
+                          {ecoStats.pending > 0 && (
+                            <div>
+                              <span className="text-yellow-600">Pendente: </span>
+                              <span className="font-bold text-yellow-700">{ecoStats.pending}</span>
+                            </div>
+                          )}
+                          {ecoStats.tester > 0 && (
+                            <div>
+                              <span className="text-purple-600">Tester: </span>
+                              <span className="font-bold text-purple-700">{ecoStats.tester}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Quick Stats */}
         <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
           <button

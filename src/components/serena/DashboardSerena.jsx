@@ -206,6 +206,10 @@ export default function DashboardSerena() {
   const quickActions = [
     { label: 'Diario Emocional', to: '/serena/diario', icon: '\u{1F4D6}', subtitle: 'Registar emocoes' },
     { label: 'Respiracao Guiada', to: '/serena/respiracao', icon: '\u{1FAC1}', subtitle: 'Acalmar a mente' },
+    { label: 'Mapa Emocional', to: '/serena/mapa', icon: '\u{1F5FA}\u{FE0F}', subtitle: 'Calendario visual' },
+    { label: 'Ciclo Emocional', to: '/serena/ciclo', icon: '\u{1F300}', subtitle: 'Fases emocionais' },
+    { label: 'Detector Padroes', to: '/serena/padroes', icon: '\u{1F50D}', subtitle: 'Padroes ocultos' },
+    { label: 'Ciclo Menstrual', to: '/serena/ciclo-menstrual', icon: '\u{1F319}', subtitle: 'Corpo e emocao' },
     { label: 'SOS Emocional', to: '/serena/sos', icon: '\u{1F198}', subtitle: 'Ajuda imediata' },
     { label: 'Praticas de Fluidez', to: '/serena/praticas', icon: '\u{1F4A7}', subtitle: 'Elemento agua' },
     { label: 'Rituais de Libertacao', to: '/serena/rituais', icon: '\u{1F513}', subtitle: 'Soltar e fluir' },

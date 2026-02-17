@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { calcularNivel, calcularProgressoNivel, formatarJoias } from '../../lib/aurea/gamificacao';
@@ -36,6 +36,7 @@ export default function DashboardAurea() {
   const [praticasHoje, setPraticasHoje] = useState(0);
   const [quotaHoje, setQuotaHoje] = useState(null);
   const [semanaStats, setSemanaStats] = useState({ diasCumpridos: 0, joiasGanhas: 0 });
+  const [evolucaoSemanal, setEvolucaoSemanal] = useState([]);
 
   // Prática do dia
   const praticaDoDia = getPraticaDoDia();
@@ -119,6 +120,30 @@ export default function DashboardAurea() {
         diasCumpridos: semanaData?.length || 0,
         joiasGanhas: totalJoiasSemana
       });
+
+      // Evolucao ultimas 4 semanas (para mini-grafico)
+      const quatroSemanasAtras = new Date();
+      quatroSemanasAtras.setDate(quatroSemanasAtras.getDate() - 28);
+      const { data: evolucaoData } = await supabase
+        .from('aurea_joias_log')
+        .select('quantidade, created_at')
+        .eq('user_id', userData.id)
+        .gte('created_at', quatroSemanasAtras.toISOString())
+        .order('created_at', { ascending: true });
+
+      if (evolucaoData && evolucaoData.length > 0) {
+        // Agrupar por semana
+        const semanas = {};
+        evolucaoData.forEach(j => {
+          const d = new Date(j.created_at);
+          const weekKey = `${d.getFullYear()}-W${Math.ceil((d.getDate() + new Date(d.getFullYear(), d.getMonth(), 1).getDay()) / 7)}`;
+          semanas[weekKey] = (semanas[weekKey] || 0) + j.quantidade;
+        });
+        setEvolucaoSemanal(Object.entries(semanas).map(([week, total]) => ({
+          semana: week.split('-W')[1] ? `S${week.split('-W')[1]}` : week,
+          joias: total
+        })));
+      }
 
     } catch (err) {
       console.error('Erro ao carregar dashboard:', err);
@@ -448,6 +473,81 @@ export default function DashboardAurea() {
             </Link>
           </div>
         </div>
+
+        {/* Evolução Semanal (Dashboard v2) */}
+        {evolucaoSemanal.length > 1 && (
+          <div className="p-4 rounded-2xl" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: CORES.textLight }}>
+                Evolução
+              </h3>
+              <Link to="/aurea/insights" className="text-xs" style={{ color: CORES.goldDark }}>
+                Ver mais →
+              </Link>
+            </div>
+            <div className="flex items-end gap-2 justify-center" style={{ height: '80px' }}>
+              {evolucaoSemanal.map((s, i) => {
+                const maxJoias = Math.max(...evolucaoSemanal.map(x => x.joias), 1);
+                const height = Math.max(8, (s.joias / maxJoias) * 64);
+                return (
+                  <div key={i} className="flex flex-col items-center gap-1" style={{ flex: 1 }}>
+                    <span className="text-xs font-bold" style={{ color: CORES.goldDark }}>{s.joias}</span>
+                    <div
+                      className="w-full rounded-t-lg transition-all duration-500"
+                      style={{
+                        height: `${height}px`,
+                        background: `linear-gradient(180deg, ${CORES.gold} 0%, ${CORES.goldLight} 100%)`,
+                        minWidth: '20px'
+                      }}
+                    />
+                    <span className="text-[10px]" style={{ color: CORES.textLight }}>{s.semana}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Lumina Integration */}
+        <Link
+          to="/lumina"
+          className="block p-4 rounded-2xl transition-all hover:shadow-lg"
+          style={{
+            background: `linear-gradient(135deg, rgba(88, 86, 214, 0.08) 0%, rgba(88, 86, 214, 0.02) 100%)`,
+            border: '1px solid rgba(88, 86, 214, 0.15)',
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(88, 86, 214, 0.12)' }}>
+              <span className="text-xl">🔮</span>
+            </div>
+            <div className="flex-1">
+              <div className="font-medium" style={{ color: CORES.text }}>Lumina — Diagnóstico</div>
+              <div className="text-sm" style={{ color: CORES.textLight }}>Descobre o que precisas hoje</div>
+            </div>
+            <span style={{ color: CORES.textLight }}>→</span>
+          </div>
+        </Link>
+
+        {/* Partilha social */}
+        {joias >= 50 && (
+          <Link
+            to="/comunidade"
+            className="block p-4 rounded-2xl transition-all hover:shadow-lg"
+            style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🏆</span>
+              <div className="flex-1">
+                <div className="font-medium" style={{ color: CORES.text }}>Partilha as tuas conquistas</div>
+                <div className="text-sm" style={{ color: CORES.textLight }}>
+                  {formatarJoias(joias)} jóias — nível {nivelInfo.nivelActual.nome}
+                </div>
+              </div>
+              <span style={{ color: CORES.textLight }}>→</span>
+            </div>
+          </Link>
+        )}
 
         {/* Desbloqueios por nível */}
         {nivelInfo.nivelActual.id === 'prata' && (
