@@ -438,11 +438,12 @@ async function handleSetup(req, res) {
     });
   }
 
-  // ===== ?action=setup&test=true → envia mensagem de teste à coach =====
+  // ===== ?action=setup&test=true → envia mensagem de teste =====
   if (req.query.test === 'true') {
     return handleTestSend(req, res, token, phoneId);
   }
 
+  const baseUrl = `${req.headers?.['x-forwarded-proto'] || 'https'}://${req.headers?.host || 'app.seteecos.com'}`;
   const result = {
     timestamp: new Date().toISOString(),
     phoneNumberId: phoneId,
@@ -465,38 +466,68 @@ async function handleSetup(req, res) {
 
     // ── Passo 2: Descobrir WABA ID (múltiplos métodos) ──
     let wabaId = null;
+    let appId = null;
     const wabaAttempts = [];
 
+    // Método 0: URL param ?waba=XXXXX (input manual directo)
+    if (req.query.waba) {
+      const manualWaba = req.query.waba.trim();
+      const check = await graphGet(`${manualWaba}?fields=id,name,currency,message_template_namespace`, token);
+      if (check.ok && check.data?.id) {
+        wabaId = check.data.id;
+        wabaAttempts.push({ metodo: '0: URL param ?waba (manual)', ok: true, wabaId, nome: check.data.name });
+      } else {
+        wabaAttempts.push({ metodo: '0: URL param ?waba (manual)', ok: false, wabaTestado: manualWaba, resposta: check.data });
+      }
+    }
+
     // Método A: Campo whatsapp_business_account no phone number
-    const wabaA = await graphGet(`${phoneId}?fields=whatsapp_business_account`, token);
-    if (wabaA.data?.whatsapp_business_account?.id) {
-      wabaId = wabaA.data.whatsapp_business_account.id;
-      wabaAttempts.push({ metodo: 'A: phone_number → waba', ok: true, wabaId });
-    } else {
-      wabaAttempts.push({ metodo: 'A: phone_number → waba', ok: false, nota: 'Token sem permissão whatsapp_business_management' });
+    if (!wabaId) {
+      const wabaA = await graphGet(`${phoneId}?fields=whatsapp_business_account`, token);
+      if (wabaA.data?.whatsapp_business_account?.id) {
+        wabaId = wabaA.data.whatsapp_business_account.id;
+        wabaAttempts.push({ metodo: 'A: phone_number → waba', ok: true, wabaId });
+      } else {
+        wabaAttempts.push({ metodo: 'A: phone_number → waba', ok: false, resposta: wabaA.data });
+      }
     }
 
     // Método B: GET /debug_token para ver app ID e permissões
-    if (!wabaId) {
-      const debug = await graphGet(`debug_token?input_token=${token}`, token);
-      const appId = debug.data?.data?.app_id;
-      const scopes = debug.data?.data?.scopes || [];
-      wabaAttempts.push({
-        metodo: 'B: debug_token',
-        ok: !!appId,
-        appId,
-        permissoes: scopes,
-      });
+    const debug = await graphGet(`debug_token?input_token=${token}`, token);
+    appId = debug.data?.data?.app_id;
+    const scopes = debug.data?.data?.scopes || [];
+    wabaAttempts.push({
+      metodo: 'B: debug_token',
+      ok: !!appId,
+      appId,
+      permissoes: scopes,
+    });
 
-      // Método C: Usar app ID para buscar WABAs associados
-      if (appId) {
-        // Try getting WABA through the app's product
-        const appWaba = await graphGet(`${appId}/subscriptions`, token);
-        wabaAttempts.push({
-          metodo: 'C: app subscriptions',
-          ok: appWaba.ok,
-          dados: appWaba.data,
-        });
+    // Método C: Listar WABAs do business que criou o token
+    if (!wabaId && appId) {
+      // Tentar via o owner business do token
+      const meInfo = await graphGet(`me?fields=id,name`, token);
+      if (meInfo.ok && meInfo.data?.id) {
+        // O "me" com system user token retorna o system user
+        const systemUserId = meInfo.data.id;
+
+        // Tentar buscar assigned_pages ou assigned assets
+        const assignedWabas = await graphGet(`${systemUserId}/assigned_whatsapp_business_accounts?fields=id,name`, token);
+        if (assignedWabas.ok && assignedWabas.data?.data?.length > 0) {
+          wabaId = assignedWabas.data.data[0].id;
+          wabaAttempts.push({
+            metodo: `C: system_user → assigned WABAs`,
+            ok: true,
+            wabaId,
+            todosWabas: assignedWabas.data.data,
+          });
+        } else {
+          wabaAttempts.push({
+            metodo: `C: system_user (${meInfo.data.name || systemUserId})`,
+            ok: false,
+            resposta: assignedWabas.data,
+          });
+        }
       }
     }
 
@@ -519,25 +550,24 @@ async function handleSetup(req, res) {
             wabaAttempts.push({
               metodo: `D: business ${business.name}`,
               ok: false,
-              dados: wabas.data,
+              resposta: wabas.data,
             });
           }
         }
       } else {
-        wabaAttempts.push({ metodo: 'D: me/businesses', ok: false, dados: biz.data });
+        wabaAttempts.push({ metodo: 'D: me/businesses', ok: false, resposta: biz.data });
       }
     }
 
-    // Método E: Env var como último recurso
+    // Método E: Env var WHATSAPP_BUSINESS_ACCOUNT_ID
     if (!wabaId && process.env.WHATSAPP_BUSINESS_ACCOUNT_ID) {
-      const envWaba = process.env.WHATSAPP_BUSINESS_ACCOUNT_ID;
-      // Verificar se é válido
+      const envWaba = (process.env.WHATSAPP_BUSINESS_ACCOUNT_ID || '').trim();
       const check = await graphGet(`${envWaba}?fields=id,name`, token);
       if (check.ok && check.data?.id) {
         wabaId = envWaba;
         wabaAttempts.push({ metodo: 'E: env var WHATSAPP_BUSINESS_ACCOUNT_ID', ok: true, wabaId });
       } else {
-        wabaAttempts.push({ metodo: 'E: env var WHATSAPP_BUSINESS_ACCOUNT_ID', ok: false, nota: `ID ${envWaba} é INVÁLIDO`, dados: check.data });
+        wabaAttempts.push({ metodo: 'E: env var WHATSAPP_BUSINESS_ACCOUNT_ID', ok: false, nota: `ID ${envWaba} é INVÁLIDO — actualiza no Vercel!`, resposta: check.data });
       }
     }
 
@@ -546,64 +576,133 @@ async function handleSetup(req, res) {
       ok: !!wabaId,
       wabaId: wabaId || 'NÃO ENCONTRADO',
       tentativas: wabaAttempts,
+      comoTestar: !wabaId ? `Tenta com o WABA ID manual: ${baseUrl}/api/whatsapp-webhook?action=setup&waba=COLOCA_WABA_ID_AQUI` : undefined,
     });
     result.resumo.wabaId = wabaId ? `OK (${wabaId})` : 'NÃO ENCONTRADO';
 
     // ── Passo 3: Webhook subscription ──
+    let webhookOk = false;
+
+    // 3A: Subscrição ao nível do WABA (se temos WABA ID)
     if (wabaId) {
       const subs = await graphGet(`${wabaId}/subscribed_apps`, token);
       const isSubscribed = subs.ok && subs.data?.data?.length > 0;
 
-      // Subscrever automaticamente se pedido OU se não está subscrito
-      if (req.query.subscribe === 'true' || (!isSubscribed && req.query.subscribe !== 'false')) {
+      if (req.query.subscribe !== 'false' && (!isSubscribed || req.query.subscribe === 'true')) {
         const sub = await graphPost(`${wabaId}/subscribed_apps`, token);
+        webhookOk = sub.ok;
         result.passos.push({
-          passo: '3. Webhook subscription',
+          passo: '3A. Subscrição WABA',
           ok: sub.ok,
           accao: 'Subscrevemos o app ao WABA',
-          resultado: sub.ok ? 'SUBSCRITO COM SUCESSO' : 'FALHOU',
+          resultado: sub.ok ? 'SUBSCRITO COM SUCESSO!' : 'FALHOU',
           dados: sub.data,
-          subscricaoAnterior: subs.data,
         });
-        result.resumo.webhook = sub.ok ? 'SUBSCRITO' : 'FALHOU';
       } else {
+        webhookOk = isSubscribed;
         result.passos.push({
-          passo: '3. Webhook subscription',
+          passo: '3A. Subscrição WABA',
           ok: isSubscribed,
           resultado: isSubscribed ? 'JÁ SUBSCRITO' : 'NÃO SUBSCRITO',
           dados: subs.data,
         });
-        result.resumo.webhook = isSubscribed ? 'OK' : 'NÃO SUBSCRITO';
       }
-    } else {
-      result.passos.push({
-        passo: '3. Webhook subscription',
-        ok: false,
-        resultado: 'Não é possível verificar sem WABA ID',
-        instrucoes: [
-          '1. Vai a developers.facebook.com → Tua App → WhatsApp → Configuration',
-          '2. Em Webhook, confirma que o Callback URL é: https://app.seteecos.com/api/whatsapp-webhook',
-          '3. Verify token: seteecos2026',
-          '4. Em Webhook fields, activa "messages"',
-          '5. Se o WABA ID aparecer no URL do Meta Business (business.facebook.com), copia-o e mete em WHATSAPP_BUSINESS_ACCOUNT_ID no Vercel',
-        ],
-      });
-      result.resumo.webhook = 'VERIFICAR MANUALMENTE (ver instruções)';
     }
 
-    // ── Passo 4: Testar envio de mensagem ──
-    result.passos.push({
-      passo: '4. Testar envio',
-      nota: 'Adiciona &test=true ao URL para enviar uma mensagem de teste à Vivianne',
-      url: `${req.headers?.['x-forwarded-proto'] || 'https'}://${req.headers?.host || 'app.seteecos.com'}/api/whatsapp-webhook?action=setup&test=true`,
-    });
+    // 3B: Subscrição ao nível da App (fallback — requer App Secret)
+    const appSecret = (process.env.WHATSAPP_APP_SECRET || process.env.META_APP_SECRET || '').trim();
+    if (!webhookOk && appId && appSecret) {
+      const appToken = `${appId}|${appSecret}`;
+      const callbackUrl = `${baseUrl}/api/whatsapp-webhook`;
 
-    // ── Resumo final ──
-    const allOk = result.resumo.numero === 'OK' && result.resumo.wabaId?.startsWith('OK');
+      // Primeiro verificar subscrições existentes
+      const existingSubs = await graphGet(`${appId}/subscriptions`, appToken);
+
+      // Subscrever a app para receber webhooks WhatsApp
+      const subResult = await fetch(`${GRAPH_BASE}/${appId}/subscriptions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          object: 'whatsapp_business_account',
+          callback_url: callbackUrl,
+          verify_token: VERIFY_TOKEN,
+          fields: 'messages',
+          access_token: appToken,
+        }),
+      });
+      const subData = await subResult.json();
+      webhookOk = subResult.ok && subData.success;
+
+      result.passos.push({
+        passo: '3B. Subscrição App-Level',
+        ok: webhookOk,
+        accao: `Subscrição ao nível da App (${appId})`,
+        callbackUrl,
+        resultado: webhookOk ? 'SUBSCRITO COM SUCESSO!' : 'FALHOU',
+        dados: subData,
+        subscricoesExistentes: existingSubs.data,
+      });
+    } else if (!webhookOk && !appSecret) {
+      result.passos.push({
+        passo: '3B. Subscrição App-Level (alternativa)',
+        ok: false,
+        resultado: 'App Secret não disponível',
+        instrucoes: [
+          'Para subscrever automaticamente sem WABA ID, adiciona ao Vercel:',
+          'WHATSAPP_APP_SECRET = (App Secret de developers.facebook.com → App → Settings → Basic)',
+          'Depois volta a correr este setup.',
+        ],
+      });
+    }
+
+    // Se nenhum método funcinou, instruções manuais
+    if (!webhookOk) {
+      result.passos.push({
+        passo: '3C. Configuração Manual',
+        ok: false,
+        resultado: 'NECESSÁRIA — os métodos automáticos falharam',
+        instrucoes: [
+          '━━━ OPÇÃO 1: Encontrar o WABA ID ━━━',
+          '1. Abre business.facebook.com',
+          '2. No menu esquerdo: Business Settings → Accounts → WhatsApp Accounts',
+          '3. Seleciona a conta "Sete Ecos"',
+          '4. O WABA ID aparece no URL: business.facebook.com/settings/whatsapp-accounts/XXXXXXXXXX/',
+          `5. Copia esse número e abre: ${baseUrl}/api/whatsapp-webhook?action=setup&waba=COLOCA_AQUI`,
+          '',
+          '━━━ OPÇÃO 2: Configurar webhook manualmente ━━━',
+          '1. Abre developers.facebook.com',
+          `2. Seleciona a App (ID: ${appId || 'desconhecido'})`,
+          '3. Menu esquerdo: WhatsApp → Configuration',
+          `4. Callback URL: ${baseUrl}/api/whatsapp-webhook`,
+          `5. Verify Token: ${VERIFY_TOKEN}`,
+          '6. Clica "Verify and Save"',
+          '7. Abaixo, em Webhook Fields, activa "messages"',
+          '',
+          '━━━ OPÇÃO 3: Adicionar App Secret ━━━',
+          `1. Abre developers.facebook.com → App (ID: ${appId || 'desconhecido'}) → Settings → Basic`,
+          '2. Copia o "App Secret"',
+          '3. Adiciona no Vercel: WHATSAPP_APP_SECRET = (o valor copiado)',
+          '4. Volta a correr este setup',
+        ],
+      });
+      result.resumo.webhook = 'FALHOU — ver instruções em 3C';
+    } else {
+      result.resumo.webhook = 'OK';
+    }
+
+    // ── Passo 4: Resumo e próximos passos ──
+    const allOk = result.resumo.numero === 'OK' && webhookOk;
     result.resumo.estado = allOk ? 'PRONTO — o chatbot deve funcionar!' : 'INCOMPLETO — ver passos acima';
+
+    result.urlsUteis = {
+      testarEnvio: `${baseUrl}/api/whatsapp-webhook?action=setup&test=true`,
+      verActividade: `${baseUrl}/api/whatsapp-webhook?action=status`,
+      setupComWaba: `${baseUrl}/api/whatsapp-webhook?action=setup&waba=COLOCA_WABA_ID_AQUI`,
+    };
 
   } catch (err) {
     result.erro = err.message;
+    result.stack = err.stack?.split('\n').slice(0, 3);
   }
 
   return res.status(200).json(result);
