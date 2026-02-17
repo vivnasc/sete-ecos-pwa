@@ -188,6 +188,9 @@ export default async function handler(req, res) {
 
     const numeroLimpo = from.replace('whatsapp:', '').replace('+', '');
 
+    // ANTI-LOOP: Detectar se a mensagem é da coach (Vivianne)
+    const isCoach = numeroLimpo === COACH_NUMERO;
+
     // Media (comprovativo de pagamento, etc.)
     if (numMedia > 0 && !msgBody) {
       const mediaMsg = 'Recebemos a tua imagem! Se é um comprovativo de pagamento, a Vivianne vai verificar e ativar o teu acesso em menos de 1 hora.\n\nSe precisas de mais ajuda, responde com um número:\n1 VITALIS  2 LUMINA  3 ÁUREA  4 Preços  5 Pagamento  7 Falar com Vivianne';
@@ -199,16 +202,18 @@ export default async function handler(req, res) {
         mensagemIn: `[${numMedia} imagem(s)]`,
         mensagemOut: mediaMsg,
         chave: 'media',
-        notificouCoach: true,
+        notificouCoach: !isCoach,
       }).catch(err => console.error('Log erro:', err.message));
 
       // Tentar REST API primeiro
       const result = await enviarMensagemTwilio(from, mediaMsg);
 
-      // Notificar coach em paralelo
-      notificarVivianne(numeroLimpo, profileName, `Enviou ${numMedia} imagem(s) — possivelmente comprovativo de pagamento`).catch(err => {
-        console.error('Erro ao notificar coach:', err);
-      });
+      // Notificar coach em paralelo — MAS NUNCA se a mensagem é DA coach (evita loop)
+      if (!isCoach) {
+        notificarVivianne(numeroLimpo, profileName, `Enviou ${numMedia} imagem(s) — possivelmente comprovativo de pagamento`).catch(err => {
+          console.error('Erro ao notificar coach:', err);
+        });
+      }
 
       // Se REST falhou, usar TwiML como fallback
       if (!result.ok) {
@@ -221,7 +226,7 @@ export default async function handler(req, res) {
 
     // Gerar resposta do chatbot
     const { resposta, chave, notificarCoach } = gerarResposta(msgBody, profileName, numeroLimpo);
-    console.log('Resposta gerada para:', msgBody, '| chave:', chave, '| tamanho:', resposta.length);
+    console.log('Resposta gerada para:', msgBody, '| chave:', chave, '| tamanho:', resposta.length, '| isCoach:', isCoach);
 
     // Registar no Supabase (não bloqueia)
     logMensagem({
@@ -230,7 +235,7 @@ export default async function handler(req, res) {
       mensagemIn: msgBody,
       mensagemOut: resposta,
       chave,
-      notificouCoach: notificarCoach,
+      notificouCoach: notificarCoach && !isCoach,
     }).catch(err => console.error('Log erro:', err.message));
 
     // Tentar enviar via REST API (permite mensagens mais longas)
@@ -247,7 +252,8 @@ export default async function handler(req, res) {
         : resposta;
 
       // Notificar coach se necessário antes de responder (TwiML fecha a conexão)
-      if (notificarCoach) {
+      // ANTI-LOOP: nunca notificar se a mensagem é da própria coach
+      if (notificarCoach && !isCoach) {
         const contexto = msgBody === '7'
           ? 'Cliente pediu para falar com a Vivianne'
           : `Mensagem não reconhecida: "${msgBody}"`;
@@ -260,7 +266,8 @@ export default async function handler(req, res) {
     }
 
     // Notificar coach se necessário (não bloqueia)
-    if (notificarCoach) {
+    // ANTI-LOOP: nunca notificar se a mensagem é da própria coach
+    if (notificarCoach && !isCoach) {
       const contexto = msgBody === '7'
         ? 'Cliente pediu para falar com a Vivianne'
         : `Mensagem não reconhecida: "${msgBody}"`;

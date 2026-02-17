@@ -23,6 +23,33 @@ const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'seteecos2026';
 const ACCESS_TOKEN = () => process.env.WHATSAPP_ACCESS_TOKEN;
 const PHONE_NUMBER_ID = () => process.env.WHATSAPP_PHONE_NUMBER_ID;
 
+// ===== DEDUPLICAÇÃO DE MENSAGENS =====
+// Meta pode reenviar webhooks se o processamento demora >5s
+const mensagensProcessadas = new Set();
+const MAX_CACHE = 500;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+const cacheTimestamps = new Map();
+
+function jaProcessada(messageId) {
+  if (!messageId) return false;
+  if (mensagensProcessadas.has(messageId)) return true;
+
+  // Limpar cache se muito grande
+  if (mensagensProcessadas.size > MAX_CACHE) {
+    const agora = Date.now();
+    for (const [id, ts] of cacheTimestamps) {
+      if (agora - ts > CACHE_TTL) {
+        mensagensProcessadas.delete(id);
+        cacheTimestamps.delete(id);
+      }
+    }
+  }
+
+  mensagensProcessadas.add(messageId);
+  cacheTimestamps.set(messageId, Date.now());
+  return false;
+}
+
 // ===== ENVIAR MENSAGEM VIA META CLOUD API =====
 
 async function enviarMensagem(para, texto) {
@@ -196,6 +223,16 @@ export default async function handler(req, res) {
       body: message.text?.body?.slice(0, 100),
     }));
 
+    // Deduplicação: ignorar mensagens já processadas (Meta pode reenviar)
+    if (jaProcessada(messageId)) {
+      console.log('Mensagem duplicada ignorada:', messageId);
+      return res.status(200).send('OK');
+    }
+
+    // ANTI-LOOP: Detectar se a mensagem é da coach (Vivianne)
+    // Se for, NÃO notificar a coach sobre a própria mensagem
+    const isCoachMsg = from === COACH_NUMERO;
+
     // Marcar como lida (ticks azuis)
     marcarComoLida(messageId).catch(() => {});
 
@@ -209,14 +246,16 @@ export default async function handler(req, res) {
         mensagemIn: `[${messageType}]`,
         mensagemOut: mediaMsg,
         chave: 'media',
-        notificouCoach: true,
+        notificouCoach: !isCoachMsg,
         canal: 'whatsapp-meta',
       }).catch(() => {});
 
       await enviarMensagem(from, mediaMsg);
 
-      // Notificar coach
-      notificarVivianne(from, nome, `Enviou ${messageType} — possivelmente comprovativo de pagamento`).catch(() => {});
+      // Notificar coach — MAS NUNCA se a mensagem é DA coach (evita loop)
+      if (!isCoachMsg) {
+        notificarVivianne(from, nome, `Enviou ${messageType} — possivelmente comprovativo de pagamento`).catch(() => {});
+      }
 
       return res.status(200).send('OK');
     }
@@ -228,7 +267,7 @@ export default async function handler(req, res) {
     // Gerar resposta usando módulo partilhado (com telefone para sessões)
     const { resposta, chave, notificarCoach } = gerarResposta(msgBody, nome, from);
 
-    console.log('Resposta gerada para:', msgBody, '| chave:', chave, '| tamanho:', resposta.length);
+    console.log('Resposta gerada para:', msgBody, '| chave:', chave, '| tamanho:', resposta.length, '| isCoach:', isCoachMsg);
 
     // Registar no Supabase (não bloqueia)
     logMensagem({
@@ -237,7 +276,7 @@ export default async function handler(req, res) {
       mensagemIn: msgBody,
       mensagemOut: resposta,
       chave,
-      notificouCoach: notificarCoach,
+      notificouCoach: notificarCoach && !isCoachMsg,
       canal: 'whatsapp-meta',
     }).catch(err => console.error('Log erro:', err.message));
 
@@ -248,8 +287,8 @@ export default async function handler(req, res) {
       console.error('Falha ao enviar resposta Meta:', result.error);
     }
 
-    // Notificar coach se necessário
-    if (notificarCoach) {
+    // Notificar coach se necessário — MAS NUNCA se a mensagem é DA coach (evita loop)
+    if (notificarCoach && !isCoachMsg) {
       const contexto = chave === '7'
         ? 'Cliente pediu para falar com a Vivianne'
         : `Mensagem não reconhecida: "${msgBody}"`;
