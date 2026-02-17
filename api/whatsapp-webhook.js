@@ -147,6 +147,11 @@ export default async function handler(req, res) {
       return res.status(200).send(challenge);
     }
 
+    // ===== SETUP: ?action=setup — diagnosticar e subscrever WABA =====
+    if (req.query.action === 'setup') {
+      return handleSetup(req, res);
+    }
+
     // Diagnóstico rápido no browser
     const hasToken = !!ACCESS_TOKEN();
     const hasPhoneId = !!PHONE_NUMBER_ID();
@@ -160,6 +165,11 @@ export default async function handler(req, res) {
       },
       timestamp: new Date().toISOString()
     });
+  }
+
+  // ===== POST com action=setup — subscrever app ao WABA =====
+  if (req.query?.action === 'setup') {
+    return handleSetup(req, res);
   }
 
   if (req.method !== 'POST') {
@@ -304,6 +314,86 @@ export default async function handler(req, res) {
     // Meta espera sempre 200 — senão tenta reenviar
     return res.status(200).send('OK');
   }
+}
+
+// ===== SETUP: Diagnosticar e subscrever WABA ao webhook =====
+
+const API_VERSION = 'v21.0';
+const GRAPH_BASE = `https://graph.facebook.com/${API_VERSION}`;
+
+async function handleSetup(req, res) {
+  const token = ACCESS_TOKEN();
+  const phoneId = PHONE_NUMBER_ID();
+
+  if (!token || !phoneId) {
+    return res.status(200).json({
+      error: 'Variáveis em falta',
+      hasAccessToken: !!token,
+      hasPhoneNumberId: !!phoneId,
+    });
+  }
+
+  const diagnostico = { timestamp: new Date().toISOString(), phoneNumberId: phoneId, steps: [] };
+
+  try {
+    // Step 1: Phone number info
+    const phoneRes = await fetch(`${GRAPH_BASE}/${phoneId}?fields=display_phone_number,verified_name,quality_rating`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const phoneData = await phoneRes.json();
+    diagnostico.steps.push({ step: '1. Phone Number Info', ok: phoneRes.ok, data: phoneData });
+
+    // Step 2: Find WABA ID
+    let wabaId = process.env.WHATSAPP_BUSINESS_ACCOUNT_ID || null;
+
+    if (!wabaId) {
+      // Try to get WABA from phone number endpoint
+      const wabaRes = await fetch(`${GRAPH_BASE}/${phoneId}?fields=id`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const wabaData = await wabaRes.json();
+      diagnostico.steps.push({ step: '2a. WABA via phone', ok: wabaRes.ok, data: wabaData });
+    }
+
+    if (!wabaId) {
+      diagnostico.steps.push({
+        step: '2. WABA ID',
+        message: 'Não encontrado automaticamente. Adiciona WHATSAPP_BUSINESS_ACCOUNT_ID ao Vercel.',
+        hint: 'Encontra o WABA ID em business.facebook.com > WhatsApp Accounts',
+      });
+    } else {
+      diagnostico.steps.push({ step: '2. WABA ID', wabaId });
+    }
+
+    // Step 3: If we have WABA ID, check/subscribe
+    if (wabaId) {
+      const subsRes = await fetch(`${GRAPH_BASE}/${wabaId}/subscribed_apps`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const subsData = await subsRes.json();
+      diagnostico.steps.push({ step: '3. Current Subscriptions', ok: subsRes.ok, data: subsData });
+
+      // On POST, subscribe
+      if (req.method === 'POST') {
+        const subRes = await fetch(`${GRAPH_BASE}/${wabaId}/subscribed_apps`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({}),
+        });
+        const subData = await subRes.json();
+        diagnostico.steps.push({ step: '4. Subscribe App', ok: subRes.ok, data: subData });
+      } else {
+        diagnostico.steps.push({ step: '4. Ação', message: 'Faz POST com ?action=setup para subscrever.' });
+      }
+    }
+  } catch (err) {
+    diagnostico.error = err.message;
+  }
+
+  return res.status(200).json(diagnostico);
 }
 
 // ===== CORS HELPER =====
