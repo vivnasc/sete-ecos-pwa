@@ -109,3 +109,22 @@ ALTER TABLE serena_praticas_log ENABLE ROW LEVEL SECURITY;
 ALTER TABLE serena_ciclo_emocional ENABLE ROW LEVEL SECURITY;
 ALTER TABLE serena_ciclo_menstrual ENABLE ROW LEVEL SECURITY;
 ALTER TABLE serena_chat_messages ENABLE ROW LEVEL SECURITY;
+
+-- Politicas RLS (utilizadores so acedem aos seus proprios dados)
+DO $$
+DECLARE
+  t TEXT;
+BEGIN
+  FOR t IN SELECT unnest(ARRAY[
+    'serena_clients', 'serena_emocoes_log', 'serena_respiracao_log',
+    'serena_rituais_log', 'serena_praticas_log', 'serena_ciclo_emocional',
+    'serena_ciclo_menstrual', 'serena_chat_messages'
+  ])
+  LOOP
+    EXECUTE format('
+      CREATE POLICY IF NOT EXISTS %I_user_policy ON %I
+      FOR ALL USING (
+        user_id IN (SELECT id FROM users WHERE auth_id = auth.uid())
+      )', t, t);
+  END LOOP;
+END $$;

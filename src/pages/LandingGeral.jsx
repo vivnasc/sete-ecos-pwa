@@ -39,7 +39,7 @@ const LandingGeral = () => {
       logo: '/logos/AUREA_LOGO_V3.png',
       cor: 'from-amber-500 to-yellow-600',
       bgCor: 'bg-amber-500/20',
-      disponivel: false, // Oculto até testes completos - acesso directo via /aurea
+      disponivel: true,
       modelo: 'Subscrição mensal',
       rota: '/aurea'
     },
@@ -51,9 +51,9 @@ const LandingGeral = () => {
       logo: '/logos/SERENA_LOGO_V3.png',
       cor: 'from-blue-500 to-cyan-600',
       bgCor: 'bg-blue-500/20',
-      disponivel: false,
+      disponivel: true,
       modelo: 'Subscrição mensal',
-      rota: null
+      rota: '/serena'
     },
     {
       nome: 'IGNIS',
@@ -63,9 +63,9 @@ const LandingGeral = () => {
       logo: '/logos/IGNIS-LOGO-V3.png',
       cor: 'from-orange-500 to-red-600',
       bgCor: 'bg-orange-500/20',
-      disponivel: false,
+      disponivel: true,
       modelo: 'Subscrição mensal',
-      rota: null
+      rota: '/ignis'
     },
     {
       nome: 'VENTIS',
@@ -75,9 +75,9 @@ const LandingGeral = () => {
       logo: '/logos/VENTIS_LOGO_V3.png',
       cor: 'from-sky-500 to-blue-600',
       bgCor: 'bg-sky-500/20',
-      disponivel: false,
+      disponivel: true,
       modelo: 'Subscrição mensal',
-      rota: null
+      rota: '/ventis'
     },
     {
       nome: 'ECOA',
@@ -87,9 +87,9 @@ const LandingGeral = () => {
       logo: '/logos/ECOA_LOGO_V3.png',
       cor: 'from-pink-500 to-rose-600',
       bgCor: 'bg-pink-500/20',
-      disponivel: false,
+      disponivel: true,
       modelo: 'Subscrição mensal',
-      rota: null
+      rota: '/ecoa'
     },
     {
       nome: 'IMAGO',
@@ -99,9 +99,9 @@ const LandingGeral = () => {
       logo: '/logos/IMAGO_LOGO_V3.png',
       cor: 'from-purple-500 to-violet-600',
       bgCor: 'bg-purple-500/20',
-      disponivel: false,
-      modelo: 'Pagamento único',
-      rota: null
+      disponivel: true,
+      modelo: 'Subscrição mensal',
+      rota: '/imago'
     }
   ];
 
@@ -235,7 +235,7 @@ const LandingGeral = () => {
             </span>
             <h2 className="text-3xl font-bold text-white mb-4">Começa a Tua Jornada Hoje</h2>
             <p className="text-purple-300 max-w-2xl mx-auto">
-              Dois caminhos já abertos para ti — escolhe onde começar
+              Todos os caminhos estão abertos — escolhe onde começar
             </p>
           </div>
 
@@ -493,23 +493,23 @@ const LandingGeral = () => {
         </div>
       </section>
 
-      {/* Em breve - Teaser motivador */}
+      {/* Todos os Ecos activos */}
       <section className="py-16 bg-gradient-to-r from-purple-900/30 to-pink-900/30">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <span className="inline-block px-4 py-2 bg-purple-500/20 rounded-full text-purple-300 text-sm mb-6">
-            🚀 Em desenvolvimento
+          <span className="inline-block px-4 py-2 bg-green-500/20 rounded-full text-green-300 text-sm mb-6">
+            ✨ Ecossistema completo
           </span>
-          <h2 className="text-3xl font-bold text-white mb-4">Mais Caminhos a Abrir</h2>
+          <h2 className="text-3xl font-bold text-white mb-4">Todos os Caminhos Abertos</h2>
           <p className="text-purple-300 mb-8 max-w-2xl mx-auto">
-            Os restantes ecos estão a ser desenvolvidos com o mesmo cuidado e profundidade.
-            Cada um desenhado para complementar a tua jornada de transformação integral.
+            Os sete ecos estão prontos para te acompanhar. Escolhe o que mais ressoa contigo
+            e começa a tua jornada de transformação integral.
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {ecos.filter(e => !e.disponivel).map(eco => (
-              <div key={eco.nome} className="bg-white/5 rounded-xl p-4 text-center">
-                <img src={eco.logo} alt={eco.nome} className="w-12 h-12 mx-auto mb-2 opacity-60" />
-                <p className="text-white/70 text-sm font-medium">{eco.nome}</p>
-              </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {ecos.map(eco => (
+              <Link key={eco.nome} to={eco.rota} className="bg-white/5 rounded-xl p-4 text-center hover:bg-white/10 transition-all">
+                <img src={eco.logo} alt={eco.nome} className="w-12 h-12 mx-auto mb-2" />
+                <p className="text-white text-sm font-medium">{eco.nome}</p>
+              </Link>
             ))}
           </div>
         </div>
@@ -531,16 +531,15 @@ const LandingGeral = () => {
             Não é um fim, mas um novo começar, com raízes profundas e asas prontas a voar.
           </p>
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-amber-500/20 max-w-md mx-auto">
-            <div className="flex justify-between text-sm text-purple-300 mb-3">
-              <span>A tua jornada</span>
-              <span className="font-semibold text-amber-200">1 de 7 Ecos</span>
-            </div>
-            <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-              <div className="h-full rounded-full bg-gradient-to-r from-pink-400 to-amber-400" style={{ width: '14%' }}></div>
-            </div>
-            <p className="text-xs text-amber-300 mt-3">
-              ✨ Desbloqueia ao completar os 7 caminhos
+            <p className="text-sm text-purple-300 mb-3">
+              O culminar da tua transformação integral
             </p>
+            <Link
+              to="/aurora"
+              className="inline-block px-6 py-3 bg-gradient-to-r from-amber-500 to-pink-500 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-amber-500/30 transition-all"
+            >
+              Conhecer Aurōra →
+            </Link>
           </div>
         </div>
       </section>
@@ -681,6 +680,12 @@ const LandingGeral = () => {
               <div className="flex flex-col gap-1">
                 <Link to="/lumina" className="text-purple-300/70 text-sm hover:text-white transition-colors">Lumina (Gratuito)</Link>
                 <Link to="/vitalis" className="text-purple-300/70 text-sm hover:text-white transition-colors">Vitalis</Link>
+                <Link to="/aurea" className="text-purple-300/70 text-sm hover:text-white transition-colors">Áurea</Link>
+                <Link to="/serena" className="text-purple-300/70 text-sm hover:text-white transition-colors">Serena</Link>
+                <Link to="/ignis" className="text-purple-300/70 text-sm hover:text-white transition-colors">Ignis</Link>
+                <Link to="/ventis" className="text-purple-300/70 text-sm hover:text-white transition-colors">Ventis</Link>
+                <Link to="/ecoa" className="text-purple-300/70 text-sm hover:text-white transition-colors">Ecoa</Link>
+                <Link to="/imago" className="text-purple-300/70 text-sm hover:text-white transition-colors">Imago</Link>
                 <Link to="/comunidade" className="text-purple-300/70 text-sm hover:text-white transition-colors">Comunidade</Link>
               </div>
             </div>
