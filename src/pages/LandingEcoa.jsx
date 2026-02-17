@@ -121,7 +121,8 @@ const LandingEcoa = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              to="/ecoa/pagamento"
+              to="/login"
+              state={{ eco: 'Ecoa' }}
               className="px-10 py-4 bg-white text-[#1a2a34] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
             >
               Recuperar a Minha Voz
@@ -167,7 +168,7 @@ const LandingEcoa = () => {
           </div>
 
           <p className="text-[#4A90A4]/60 mt-8 text-sm">
-            Se te reconheceste em pelo menos uma, o Ecoa foi criado para ti.
+            Se te reconheceste em pelo menos uma, o Ecoa foi {g('criado', 'criada')} para ti.
           </p>
         </div>
       </section>
@@ -312,7 +313,8 @@ const LandingEcoa = () => {
                 )}
 
                 <Link
-                  to="/ecoa/pagamento"
+                  to="/login"
+              state={{ eco: 'Ecoa' }}
                   className="mt-4 block w-full py-3 text-white rounded-full font-semibold transition-all hover:shadow-lg"
                   style={{ background: 'linear-gradient(135deg, #4A90A4, #2a6a7a)' }}
                 >

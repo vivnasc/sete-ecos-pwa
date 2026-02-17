@@ -38,6 +38,7 @@ const CoachClienteDetalhe = lazy(() => import('./pages/CoachClienteDetalhe'))
 const ChatbotTeste = lazy(() => import('./pages/ChatbotTeste'))
 const AnalyticsDashboard = lazy(() => import('./pages/AnalyticsDashboard'))
 const LandingBundle = lazy(() => import('./pages/LandingBundle'))
+const LandingGeral = lazy(() => import('./pages/LandingGeral'))
 
 // ECO 1: VITALIS (Nutrição) — ~800KB separado
 const LandingVitalis = lazy(() => import('./pages/LandingVitalis'))
@@ -304,6 +305,7 @@ function AppRoutes() {
             <Route path="/landing" element={<Navigate to="/" />} />
             <Route path="/recuperar-password" element={<RecuperarPassword />} />
             <Route path="/bundle" element={<LandingBundle />} />
+            <Route path="/sete-ecos" element={<LandingGeral />} />
 
             {/* ===== CONTA E PERFIL ===== */}
             <Route path="/conta" element={<AuthRoute from="/conta"><MinhaConta /></AuthRoute>} />
