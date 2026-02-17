@@ -10,7 +10,7 @@ import { RITUAL_COMPONENTES } from '../../lib/aurora/gamificacao'
 // AURORA — Ritual Aurora
 // Ritual matinal integrado combinando elementos de todos os
 // ecos completados pelo utilizador.
-// Chakra: Integracao Total — Ritual integrado
+// Chakra: Integração Total — Ritual integrado
 // ============================================================
 
 const ACCENT = '#D4A5A5'
@@ -142,7 +142,7 @@ const LogEntry = ({ entry }) => {
             </div>
             {entry.reflexao && (
               <div className="mt-2">
-                <p className="text-xs text-gray-500 mb-1">Reflexao:</p>
+                <p className="text-xs text-gray-500 mb-1">Reflexão:</p>
                 <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap italic">
                   {entry.reflexao}
                 </p>
@@ -184,7 +184,7 @@ export default function RitualAurora() {
   // View
   const [view, setView] = useState('ritual') // 'ritual' | 'historico'
 
-  // ===== Carregar historico =====
+  // ===== Carregar histórico =====
   const fetchLog = useCallback(async () => {
     if (!userId) return
     setLoadingLog(true)
@@ -303,7 +303,7 @@ export default function RitualAurora() {
       fetchLog()
     } catch (err) {
       console.error('Erro ao guardar ritual:', err)
-      alert('Nao foi possivel guardar. Tenta novamente.')
+      alert('Não foi possível guardar. Tenta novamente.')
     } finally {
       setSaving(false)
     }
@@ -335,13 +335,13 @@ export default function RitualAurora() {
       fetchLog()
     } catch (err) {
       console.error('Erro ao guardar ritual:', err)
-      alert('Nao foi possivel guardar. Tenta novamente.')
+      alert('Não foi possível guardar. Tenta novamente.')
     } finally {
       setSaving(false)
     }
   }, [userId, completados, awardRaios, fetchLog])
 
-  // ===== Nova sessao =====
+  // ===== Nova sessão =====
   const handleNovoRitual = useCallback(() => {
     setFase('inicio')
     setStepActual(0)
@@ -396,7 +396,7 @@ export default function RitualAurora() {
               style={view === 'historico' ? { background: `${ACCENT}33` } : undefined}
               aria-pressed={view === 'historico'}
             >
-              Historico ({logEntries.length})
+              Histórico ({logEntries.length})
             </button>
           </div>
         )}
@@ -413,7 +413,7 @@ export default function RitualAurora() {
                 Bom dia, {g('querido', 'querida')}
               </h2>
               <p className="text-sm text-gray-400 max-w-xs mx-auto">
-                O teu ritual matinal Aurora integra elementos dos 7 ecos. ~{totalDuracao} minutos de presenca.
+                O teu ritual matinal Aurora integra elementos dos 7 ecos. ~{totalDuracao} minutos de presença.
               </p>
             </div>
 
@@ -471,7 +471,7 @@ export default function RitualAurora() {
                   Nenhum ritual registado
                 </h3>
                 <p className="text-sm text-gray-400 max-w-xs mx-auto">
-                  O ritual matinal Aurora integra todos os ecos numa pratica diaria.
+                  O ritual matinal Aurora integra todos os ecos numa prática diária.
                 </p>
                 <button
                   onClick={() => setView('ritual')}
@@ -595,7 +595,7 @@ export default function RitualAurora() {
                 maxLength={2000}
                 className="w-full p-4 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
                 style={{ background: 'rgba(255,255,255,0.06)', '--tw-ring-color': ACCENT }}
-                aria-label="Reflexao apos ritual"
+                aria-label="Reflexão após ritual"
               />
             </div>
 

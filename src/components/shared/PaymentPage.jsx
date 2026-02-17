@@ -8,7 +8,7 @@ import { getEcoTheme } from '../../lib/shared/subscriptionPlans'
 import ModuleHeader from './ModuleHeader'
 
 /**
- * SETE ECOS — Pagina de Pagamento Generica
+ * SETE ECOS — Página de Pagamento Genérica
  *
  * Props:
  * - eco: string (serena, ignis, ventis, ecoa, imago, aurora)
@@ -49,7 +49,7 @@ export default function PaymentPage({ eco, features = [], testimonial = null }) 
   if (!config) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <p className="text-white/60">Eco nao encontrado</p>
+        <p className="text-white/60">Eco não encontrado</p>
       </div>
     )
   }
@@ -103,7 +103,7 @@ export default function PaymentPage({ eco, features = [], testimonial = null }) 
       <ModuleHeader
         eco={eco}
         title={config.name}
-        subtitle="Comeca a tua jornada"
+        subtitle="Começa a tua jornada"
         backTo={`/${eco}`}
       />
 
@@ -160,7 +160,7 @@ export default function PaymentPage({ eco, features = [], testimonial = null }) 
           >
             {trialLoading
               ? 'A activar...'
-              : `Experimentar ${config.trial.days} dias gratis`
+              : `Experimentar ${config.trial.days} dias grátis`
             }
           </button>
         )}
@@ -191,7 +191,7 @@ export default function PaymentPage({ eco, features = [], testimonial = null }) 
                   <div>
                     <p className="text-white font-medium">{plan.name}</p>
                     <p className="text-white/40 text-xs">
-                      {plan.duration === 1 ? '1 mes' : `${plan.duration} meses`}
+                      {plan.duration === 1 ? '1 mês' : `${plan.duration} meses`}
                       {plan.discount > 0 && ` · ${plan.discount}% desconto`}
                     </p>
                   </div>
@@ -210,7 +210,7 @@ export default function PaymentPage({ eco, features = [], testimonial = null }) 
           className="rounded-2xl border p-5 mb-6"
           style={{ background: `${theme.color}08`, borderColor: `${theme.color}15` }}
         >
-          <h3 className="text-white text-lg font-semibold mb-4">Metodo de pagamento</h3>
+          <h3 className="text-white text-lg font-semibold mb-4">Método de pagamento</h3>
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => setPaymentMethod('mpesa')}
@@ -262,7 +262,7 @@ export default function PaymentPage({ eco, features = [], testimonial = null }) 
                 type="text"
                 value={mpesaRef}
                 onChange={(e) => setMpesaRef(e.target.value)}
-                placeholder="Referencia M-Pesa (ex: MP24...)"
+                placeholder="Referência M-Pesa (ex: MP24...)"
                 className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/30"
               />
 
@@ -295,7 +295,7 @@ export default function PaymentPage({ eco, features = [], testimonial = null }) 
                 PayPal em modo {config.paypal.mode}.
               </p>
               <p className="text-white/40 text-xs mt-2">
-                O botao PayPal sera carregado aqui.
+                O botão PayPal será carregado aqui.
               </p>
             </div>
           )}

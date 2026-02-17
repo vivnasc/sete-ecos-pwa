@@ -6,9 +6,9 @@ import { g } from '../../utils/genero'
 import { MICRO_VOZ_PROGRAMA } from '../../lib/ecoa/gamificacao'
 
 // ============================================================
-// ECOA — Micro-Voz: Exercicios Progressivos de Recuperacao de Voz
-// Eco da Expressao & Voz (Vishuddha)
-// 8 semanas de desafios de expressao cada vez mais profundos
+// ECOA — Micro-Voz: Exercícios Progressivos de Recuperação de Voz
+// Eco da Expressão & Voz (Vishuddha)
+// 8 semanas de desafios de expressão cada vez mais profundos
 // ============================================================
 
 const ACCENT = '#4A90A4'
@@ -20,10 +20,10 @@ const ECOS_PER_EXERCISE = 8
 
 // Motivational messages per week range
 const MOTIVACAO = {
-  early: 'Estamos a comecar devagar. Cada voz pequena conta.',
-  growing: 'A tua voz esta a ficar mais forte.',
-  strong: 'Ja nao sussurras \u2014 falas.',
-  full: 'A tua voz e tua. Ninguem ta tira.'
+  early: 'Estamos a começar devagar. Cada voz pequena conta.',
+  growing: 'A tua voz está a ficar mais forte.',
+  strong: 'Já não sussurras \u2014 falas.',
+  full: 'A tua voz é tua. Ninguém ta tira.'
 }
 
 function getMotivacao(semana) {
@@ -127,7 +127,7 @@ const ExerciseCard = ({
             setShowReflexao(!showReflexao)
           }
         }}
-        aria-label={`Exercicio ${index + 1}: ${exercicio}`}
+        aria-label={`Exercício ${index + 1}: ${exercicio}`}
         aria-pressed={isCompleted}
       >
         <div className="pt-0.5">
@@ -150,7 +150,7 @@ const ExerciseCard = ({
           <textarea
             value={reflexao}
             onChange={(e) => onReflexaoChange(index, e.target.value)}
-            placeholder="Partilha como foi esta experiencia..."
+            placeholder="Partilha como foi esta experiência..."
             rows={2}
             maxLength={500}
             className="w-full p-3 rounded-lg text-sm text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
@@ -158,7 +158,7 @@ const ExerciseCard = ({
               background: 'rgba(255,255,255,0.05)',
               focusRingColor: ACCENT
             }}
-            aria-label="Reflexao sobre o exercicio"
+            aria-label="Reflexão sobre o exercício"
           />
           {reflexao && (
             <button
@@ -167,7 +167,7 @@ const ExerciseCard = ({
               className="text-xs px-3 py-1.5 rounded-lg text-white transition-all duration-200 hover:opacity-80 disabled:opacity-40"
               style={{ background: ACCENT }}
             >
-              {saving ? 'A guardar...' : 'Guardar reflexao'}
+              {saving ? 'A guardar...' : 'Guardar reflexão'}
             </button>
           )}
         </div>
@@ -198,7 +198,7 @@ const HistoryWeek = ({ semana, completedExercises }) => {
           </div>
           <div>
             <p className="text-sm font-medium text-white">{weekData.titulo}</p>
-            <p className="text-xs text-white/30">{completedExercises.length}/5 exercicios</p>
+            <p className="text-xs text-white/30">{completedExercises.length}/5 exercícios</p>
           </div>
         </div>
         <svg
@@ -333,7 +333,7 @@ export default function MicroVoz() {
         .order('created_at', { ascending: false })
       setAllLogs(logs || [])
     } catch (err) {
-      console.error('Erro ao marcar exercicio:', err)
+      console.error('Erro ao marcar exercício:', err)
     } finally {
       setSaving(false)
     }
@@ -357,7 +357,7 @@ export default function MicroVoz() {
 
       if (error) throw error
     } catch (err) {
-      console.error('Erro ao guardar reflexao:', err)
+      console.error('Erro ao guardar reflexão:', err)
     } finally {
       setSaving(false)
     }
@@ -398,7 +398,7 @@ export default function MicroVoz() {
       setCompletedExercises(completed)
       setReflexoes(refs)
     } catch (err) {
-      console.error('Erro ao avancar semana:', err)
+      console.error('Erro ao avançar semana:', err)
     } finally {
       setSaving(false)
     }
@@ -421,7 +421,7 @@ export default function MicroVoz() {
   if (loading) {
     return (
       <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${ACCENT_DARK} 0%, #111318 30%, #0d0f13 100%)` }}>
-        <ModuleHeader eco="ecoa" title="Micro-Voz" subtitle="Exercicios progressivos de expressao" />
+        <ModuleHeader eco="ecoa" title="Micro-Voz" subtitle="Exercícios progressivos de expressão" />
         <div className="flex items-center justify-center py-20">
           <div
             className="w-8 h-8 border-2 rounded-full animate-spin"
@@ -437,12 +437,12 @@ export default function MicroVoz() {
       <ModuleHeader
         eco="ecoa"
         title="Micro-Voz"
-        subtitle="Exercicios progressivos de expressao"
+        subtitle="Exercícios progressivos de expressão"
       />
 
       <SoundWave className="-mt-1" />
 
-      <div className="max-w-lg mx-auto px-4 pb-24" role="main" aria-label="Micro-Voz exercicios">
+      <div className="max-w-lg mx-auto px-4 pb-24" role="main" aria-label="Micro-Voz exercícios">
 
         {/* Week progress bar */}
         <div className="mb-6">
@@ -481,7 +481,7 @@ export default function MicroVoz() {
             style={view === 'historico' ? { background: `${ACCENT}33` } : undefined}
             aria-pressed={view === 'historico'}
           >
-            Historico
+            Histórico
           </button>
         </div>
 
@@ -498,7 +498,7 @@ export default function MicroVoz() {
                 </h2>
                 <p className="text-sm text-white/50">{weekData.descricao}</p>
                 <div className="flex items-center gap-2 mt-3">
-                  <span className="text-xs text-white/30">{completedCount}/5 exercicios</span>
+                  <span className="text-xs text-white/30">{completedCount}/5 exercícios</span>
                   <span className="text-xs" style={{ color: ACCENT_LIGHT }}>
                     (+{completedCount * ECOS_PER_EXERCISE} Ecos {'\uD83D\uDD0A'})
                   </span>
@@ -531,10 +531,10 @@ export default function MicroVoz() {
                   style={{ background: `${ACCENT}15`, border: `1px solid ${ACCENT}33` }}
                 >
                   <p className="text-sm font-medium text-white">
-                    {g('Parabens', 'Parabens')}! Podes avancar para a Semana {currentWeek + 1}
+                    {g('Parabéns', 'Parabéns')}! Podes avançar para a Semana {currentWeek + 1}
                   </p>
                   <p className="text-xs text-white/40">
-                    Completaste {completedCount} exercicios esta semana.
+                    Completaste {completedCount} exercícios esta semana.
                   </p>
                   <button
                     onClick={handleAdvance}
@@ -542,7 +542,7 @@ export default function MicroVoz() {
                     className="px-6 py-3 rounded-xl text-white text-sm font-medium transition-all duration-200 hover:opacity-90 active:scale-[0.97] disabled:opacity-40"
                     style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})`, boxShadow: `0 4px 16px ${ACCENT}44` }}
                   >
-                    {saving ? 'A avancar...' : `Avancar para Semana ${currentWeek + 1}`}
+                    {saving ? 'A avançar...' : `Avançar para Semana ${currentWeek + 1}`}
                   </button>
                 </div>
               </div>
@@ -564,7 +564,7 @@ export default function MicroVoz() {
                   </h3>
                   <p className="text-sm text-white/60">
                     {g('Chegaste', 'Chegaste')} ao fim do programa Micro-Voz.
-                    A tua voz agora e mais forte, mais clara, mais tua.
+                    A tua voz agora é mais forte, mais clara, mais tua.
                   </p>
                 </div>
               </div>
@@ -580,10 +580,10 @@ export default function MicroVoz() {
                   className="text-lg font-semibold text-white"
                   style={{ fontFamily: "'Cormorant Garamond', serif" }}
                 >
-                  Sem historico ainda
+                  Sem histórico ainda
                 </h3>
                 <p className="text-sm text-white/40 max-w-xs mx-auto">
-                  Quando completares a primeira semana e avancares, o historico aparecera aqui.
+                  Quando completares a primeira semana e avançares, o histórico aparecerá aqui.
                 </p>
               </div>
             ) : (

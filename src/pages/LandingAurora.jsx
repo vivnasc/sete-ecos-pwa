@@ -1,73 +1,80 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { ECO_PLANS } from '../lib/shared/subscriptionPlans'
 import { g } from '../utils/genero'
 
 /**
  * AURORA - Landing Page
- * "Integracao Final" - Elemento: Luz
- * Modulo final de celebracao, manutencao e renovacao
+ * "Integração Final" - Elemento: Luz
+ * Módulo final de celebração, manutenção e renovação
+ * GRATUITA — desbloqueia ao completar todos os 7 ecos
  * Tema: rosa (#D4A5A5), Cormorant Garamond
  */
 
 const LandingAurora = () => {
-  const aurora = ECO_PLANS.aurora
-  const planos = [aurora.monthly, aurora.semestral, aurora.annual]
-
   const features = [
     {
       icone: '🌅',
-      titulo: 'Cerimonia de Graduacao',
+      titulo: 'Cerimónia de Graduação',
       desc: 'Celebra a tua jornada completa. Um ritual de reconhecimento por tudo o que conquistaste.'
     },
     {
       icone: '📖',
       titulo: 'Antes & Depois',
-      desc: 'A tua historia contada por ti. Quem eras, o que soltaste, quem te tornaste.'
+      desc: 'A tua história contada por ti. Quem eras, o que soltaste, quem te tornaste.'
     },
     {
       icone: '📊',
       titulo: 'Resumo da Jornada',
-      desc: 'Relatorio completo de toda a tua evolucao. Dados, insights e marcos de cada eco.'
+      desc: 'Relatório completo de toda a tua evolução. Dados, insights e marcos de cada eco.'
     },
     {
       icone: '\u{1F6E1}\uFE0F',
-      titulo: 'Modo Manutencao',
-      desc: 'Check-ins mensais para manter as mudancas. Alertas de regressao de padroes.'
+      titulo: 'Modo Manutenção',
+      desc: 'Check-ins mensais para manter as mudanças. Alertas de regressão de padrões.'
     },
     {
       icone: '🌟',
       titulo: 'Mentoria',
-      desc: 'Partilha a tua sabedoria com quem esta a comecar. A tua experiencia inspira.'
+      desc: 'Partilha a tua sabedoria com quem está a começar. A tua experiência inspira.'
     },
     {
       icone: '☀️',
       titulo: 'Ritual Aurora',
-      desc: 'Ritual matinal que integra elementos de cada eco. Comeca o dia com consciencia.'
+      desc: 'Ritual matinal que integra elementos de cada eco. Começa o dia com consciência.'
     },
     {
       icone: '🔄',
-      titulo: 'Renovacao Anual',
-      desc: 'Renova as tuas intencoes a cada ano. A jornada nunca termina — transforma-se.'
+      titulo: 'Renovação Anual',
+      desc: 'Renova as tuas intenções a cada ano. A jornada nunca termina — transforma-se.'
     }
   ]
 
   const passos = [
     {
       numero: '01',
-      titulo: 'Celebra',
-      desc: 'Honra o caminho percorrido. Cerimonia de graduacao e historia Antes & Depois.'
+      titulo: 'Completa',
+      desc: 'Percorre os 7 ecos: Vitalis, Áurea, Serena, Ignis, Ventis, Ecoa e Imago.'
     },
     {
       numero: '02',
-      titulo: 'Mantem',
-      desc: 'Check-ins mensais, rituais matinais e alertas de regressao para manter as mudancas.'
+      titulo: 'Desbloqueia',
+      desc: 'Ao completar todos os ecos, a Aurora abre-se automaticamente. É a tua recompensa.'
     },
     {
       numero: '03',
-      titulo: 'Renova',
-      desc: 'Renovacao anual de intencoes. Mentoria. A tua luz ilumina o caminho de outras.'
+      titulo: 'Celebra & Renova',
+      desc: 'Cerimónia de graduação, história Antes & Depois, mentoria e renovação anual.'
     }
+  ]
+
+  const ecos = [
+    { name: 'Vitalis', icon: '🌿', color: '#7C8B6F', desc: 'Corpo & Nutrição' },
+    { name: 'Áurea', icon: '✨', color: '#C4A265', desc: 'Valor & Presença' },
+    { name: 'Serena', icon: '🌊', color: '#6B8E9B', desc: 'Emoção & Fluidez' },
+    { name: 'Ignis', icon: '🔥', color: '#C1634A', desc: 'Vontade & Foco' },
+    { name: 'Ventis', icon: '🍃', color: '#5D9B84', desc: 'Energia & Ritmo' },
+    { name: 'Ecoa', icon: '🗣️', color: '#4A90A4', desc: 'Expressão & Voz' },
+    { name: 'Imago', icon: '🔮', color: '#8B7BA5', desc: 'Identidade & Visão' }
   ]
 
   return (
@@ -78,13 +85,12 @@ const LandingAurora = () => {
         className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden"
         style={{ background: 'linear-gradient(135deg, #2e1a1a 0%, #3e2a2a 40%, #D4A5A5 100%)' }}
       >
-        {/* Decorative blurs */}
         <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-[#D4A5A5]/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-[-15%] left-[-5%] w-[400px] h-[400px] bg-[#2e1a1a]/40 rounded-full blur-3xl"></div>
 
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           <p className="text-[#D4A5A5]/80 text-sm tracking-[0.3em] uppercase mb-4">
-            Integracao Final &middot; Elemento: Luz
+            Integração Final &middot; Elemento: Luz
           </p>
 
           <h1
@@ -98,51 +104,57 @@ const LandingAurora = () => {
             className="text-xl md:text-2xl text-white/80 mb-2"
             style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}
           >
-            Integracao Final
+            Integração Final
           </p>
 
-          <p className="text-white/60 max-w-xl mx-auto mb-10">
+          <p className="text-white/60 max-w-xl mx-auto mb-4">
             Celebra a tua jornada completa.
-            Tu ja sabes quem es. Agora vive isso.
+            Tu já sabes quem és. Agora vive isso.
           </p>
+
+          <div className="inline-block px-6 py-2 bg-white/10 rounded-full border border-[#D4A5A5]/40 mb-10">
+            <span className="text-[#D4A5A5] font-semibold">
+              100% Gratuita — Desbloqueia ao completar os 7 ecos
+            </span>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/login"
-              state={{ eco: 'Aurora' }}
-              className="px-10 py-4 bg-white text-[#2e1a1a] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
-            >
-              Comecar a minha aurora
-            </Link>
             <a
               href="#como-funciona"
+              className="px-10 py-4 bg-white text-[#2e1a1a] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
+            >
+              Como desbloquear
+            </a>
+            <Link
+              to="/landing"
               className="px-10 py-4 bg-white/15 text-white rounded-full font-semibold text-lg hover:bg-white/25 transition-all border border-white/20"
             >
-              Como funciona
-            </a>
+              Ver os 7 ecos
+            </Link>
           </div>
         </div>
       </header>
 
-      {/* ===== PROBLEMA ===== */}
+      {/* ===== MENSAGEM ===== */}
       <section className="py-20 px-4" style={{ background: 'linear-gradient(to bottom, #2e1a1a, #1e1212)' }}>
         <div className="max-w-3xl mx-auto text-center">
           <h2
             className="text-3xl md:text-4xl font-bold text-white mb-6"
             style={{ fontFamily: "'Cormorant Garamond', serif" }}
           >
-            Percorreste um caminho extraordinario. E agora?
+            Percorreste um caminho extraordinário. E agora?
           </h2>
 
           <p className="text-[#D4A5A5]/80 mb-10 text-lg">
-            A Aurora e para quem completou a jornada e quer manter, celebrar e partilhar.
+            A Aurora é a tua recompensa por completar toda a jornada.
+            Não se compra — conquista-se.
           </p>
 
           <div className="grid gap-4 max-w-lg mx-auto text-left">
             {[
-              'Tens medo de perder as mudancas que conquistaste',
-              'Queres celebrar o teu caminho mas nao sabes como',
-              `Sentes que a tua experiencia pode ajudar ${g('outros', 'outras')}`
+              'Celebra tudo o que conquistaste com uma cerimónia de graduação',
+              'Mantém as mudanças com check-ins mensais e rituais matinais',
+              `Partilha a tua sabedoria como mentora e inspira ${g('outros', 'outras')}`
             ].map((item, i) => (
               <div
                 key={i}
@@ -154,13 +166,18 @@ const LandingAurora = () => {
             ))}
           </div>
 
-          <p className="text-[#D4A5A5]/60 mt-8 text-sm">
-            Gratuita para quem completou 5+ ecos, ou 500 MZN/mes standalone.
-          </p>
+          <div className="mt-10 p-6 bg-[#D4A5A5]/10 rounded-2xl border border-[#D4A5A5]/30">
+            <p className="text-[#D4A5A5] font-semibold text-lg mb-1">
+              Aurora é 100% gratuita
+            </p>
+            <p className="text-white/60 text-sm">
+              Completa todos os 7 ecos e a Aurora desbloqueia automaticamente. Sem custos adicionais.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* ===== SOLUCAO / FEATURES ===== */}
+      {/* ===== FEATURES ===== */}
       <section id="features" className="py-20 px-4" style={{ background: '#1e1212' }}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
@@ -168,7 +185,7 @@ const LandingAurora = () => {
               className="text-3xl md:text-4xl font-bold text-white mb-4"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              A Aurora e onde a tua jornada se torna eterna
+              A Aurora é onde a tua jornada se torna eterna
             </h2>
             <p className="text-[#D4A5A5]/70 max-w-2xl mx-auto">
               Ferramentas para celebrar, manter e renovar tudo o que conquistaste.
@@ -202,10 +219,10 @@ const LandingAurora = () => {
               className="text-3xl md:text-4xl font-bold text-white mb-4"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              Como funciona
+              Como desbloquear a Aurora
             </h2>
             <p className="text-[#D4A5A5]/70">
-              Tres passos. Celebra, mantem, renova.
+              Três passos. Completa, desbloqueia, celebra.
             </p>
           </div>
 
@@ -240,80 +257,42 @@ const LandingAurora = () => {
         </div>
       </section>
 
-      {/* ===== PRECOS ===== */}
-      <section id="precos" className="py-20 px-4" style={{ background: '#1e1212' }}>
+      {/* ===== OS 7 ECOS ===== */}
+      <section className="py-20 px-4" style={{ background: '#1e1212' }}>
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-14">
             <h2
               className="text-3xl md:text-4xl font-bold text-white mb-4"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              Escolhe o teu plano
+              Os 7 ecos que desbloqueiam a Aurora
             </h2>
             <p className="text-[#D4A5A5]/70">
-              Precos simples. Sem compromisso. Cancela quando quiseres.
+              Cada eco é uma dimensão da tua transformação.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {planos.map((plano, i) => (
-              <div
-                key={plano.id}
-                className={`p-6 rounded-2xl border text-center transition-all hover:translate-y-[-3px] hover:shadow-lg ${
-                  i === 1
-                    ? 'bg-[#D4A5A5]/15 border-[#D4A5A5] relative'
-                    : 'bg-white/5 border-[#D4A5A5]/20'
-                }`}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {ecos.map((eco) => (
+              <Link
+                key={eco.name}
+                to={`/${eco.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`}
+                className="p-5 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all text-center group"
               >
-                {i === 1 && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-[#D4A5A5] text-white text-xs font-semibold rounded-full">
-                    Mais Popular
-                  </span>
-                )}
-
-                <h3
-                  className="text-2xl font-bold text-white mb-1"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
-                >
-                  {plano.name}
-                </h3>
-
-                {plano.discount > 0 && (
-                  <span className="inline-block px-3 py-1 bg-[#D4A5A5]/20 text-[#D4A5A5] text-xs font-semibold rounded-full mb-3">
-                    -{plano.discount}% desconto
-                  </span>
-                )}
-
-                <div className="text-3xl font-bold text-white my-3">
-                  {plano.price_mzn.toLocaleString('pt-MZ')}{' '}
-                  <span className="text-sm font-normal text-[#D4A5A5]/70">MZN</span>
+                <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">
+                  {eco.icon}
                 </div>
-
-                <p className="text-[#D4A5A5]/50 text-sm mb-2">
-                  (~${plano.price_usd} USD)
-                </p>
-
-                {plano.duration > 1 && (
-                  <p className="text-[#D4A5A5]/50 text-xs mb-4">
-                    {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mes
-                  </p>
-                )}
-
-                <Link
-                  to="/login"
-                  state={{ eco: 'Aurora' }}
-                  className="mt-4 block w-full py-3 text-white rounded-full font-semibold transition-all hover:shadow-lg"
-                  style={{ background: 'linear-gradient(135deg, #D4A5A5, #a07070)' }}
-                >
-                  Escolher
-                </Link>
-              </div>
+                <h3 className="text-white font-bold mb-1" style={{ color: eco.color }}>
+                  {eco.name}
+                </h3>
+                <p className="text-white/50 text-xs">{eco.desc}</p>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===== TRIAL CTA ===== */}
+      {/* ===== CTA ===== */}
       <section
         className="py-20 px-4 text-center"
         style={{ background: 'linear-gradient(135deg, #2e1a1a 0%, #D4A5A5 100%)' }}
@@ -323,23 +302,22 @@ const LandingAurora = () => {
             className="text-3xl md:text-4xl font-bold text-white mb-4"
             style={{ fontFamily: "'Cormorant Garamond', serif" }}
           >
-            Experimenta 7 dias gratis
+            A Aurora espera por ti
           </h2>
           <p className="text-white/70 mb-4 text-lg">
-            Sem compromisso. Sem cartao. Cancelas quando quiseres.
+            Completa os 7 ecos e desbloqueia a tua recompensa final.
           </p>
           <p className="text-white/50 mb-8">
-            Celebra a tua jornada. Mantem as mudancas. Renova as intencoes.
+            Sem custos. Sem compromisso. Apenas a tua dedicação.
           </p>
           <Link
-            to="/login"
-            state={{ eco: 'Aurora' }}
+            to="/landing"
             className="inline-block px-10 py-5 bg-white text-[#2e1a1a] rounded-full font-bold text-xl hover:translate-y-[-3px] hover:shadow-xl transition-all"
           >
-            Quero comecar HOJE
+            Começar a jornada
           </Link>
           <p className="text-white/40 text-sm mt-6">
-            7 dias gratis &middot; Acesso completo &middot; Cancela quando quiseres
+            Gratuita &middot; Desbloqueia ao completar todos os ecos
           </p>
         </div>
       </section>
@@ -357,7 +335,7 @@ const LandingAurora = () => {
             >
               AURORA
             </span>
-            <span className="text-white/40 text-sm">Integracao Final</span>
+            <span className="text-white/40 text-sm">Integração Final</span>
           </div>
           <div className="flex gap-6 text-sm">
             <Link to="/landing" className="text-white/40 hover:text-white transition-colors">

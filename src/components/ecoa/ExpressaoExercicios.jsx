@@ -6,9 +6,9 @@ import { g } from '../../utils/genero';
 import { EXERCICIOS_EXPRESSAO } from '../../lib/ecoa/gamificacao';
 
 // ============================================================
-// ECOA — Exercicios de Expressao
+// ECOA — Exercícios de Expressão
 // Escrita livre, lista de verdades, carta ao futuro, manifesto,
-// dialogo interno
+// diálogo interno
 // Chakra: Vishuddha (Garganta) | Moeda: Ecos
 // ============================================================
 
@@ -17,7 +17,7 @@ const ACCENT_DARK = '#1a2a34';
 const ACCENT_LIGHT = '#6BAABB';
 const ACCENT_SUBTLE = 'rgba(74,144,164,0.12)';
 
-// Timer durations in seconds (from exercise duracao)
+// Timer durations in seconds (from exercise duração)
 const TIMER_MAP = {
   escrita_livre: 5 * 60,   // 5 min
   lista_verdades: 10 * 60, // 10 min
@@ -112,7 +112,7 @@ const HistoricoEntry = ({ entry }) => {
           )}
           {entry.reflexao && (
             <div className="p-3 rounded-lg" style={{ background: 'rgba(74,144,164,0.08)' }}>
-              <p className="text-xs text-gray-500 mb-1">Reflexao:</p>
+              <p className="text-xs text-gray-500 mb-1">Reflexão:</p>
               <p className="text-sm text-gray-300 italic">{entry.reflexao}</p>
             </div>
           )}
@@ -181,7 +181,7 @@ export default function ExpressaoExercicios() {
           .limit(50);
         setHistorico(data || []);
       } catch (err) {
-        console.error('Erro ao carregar historico:', err);
+        console.error('Erro ao carregar histórico:', err);
       } finally {
         setHistoricoLoading(false);
       }
@@ -248,8 +248,8 @@ export default function ExpressaoExercicios() {
       setTimerActive(false);
       if (timerRef.current) clearInterval(timerRef.current);
     } catch (err) {
-      console.error('Erro ao guardar exercicio:', err);
-      alert('Nao foi possivel guardar. Tenta novamente.');
+      console.error('Erro ao guardar exercício:', err);
+      alert('Não foi possível guardar. Tenta novamente.');
     } finally {
       setSaving(false);
     }
@@ -275,7 +275,7 @@ export default function ExpressaoExercicios() {
         style={view !== 'historico' ? { background: `${ACCENT}33` } : undefined}
         aria-pressed={view !== 'historico'}
       >
-        Exercicios
+        Exercícios
       </button>
       <button
         onClick={() => setView('historico')}
@@ -283,7 +283,7 @@ export default function ExpressaoExercicios() {
         style={view === 'historico' ? { background: `${ACCENT}33` } : undefined}
         aria-pressed={view === 'historico'}
       >
-        Historico
+        Histórico
       </button>
     </div>
   );
@@ -300,13 +300,13 @@ export default function ExpressaoExercicios() {
     <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${ACCENT_DARK} 0%, #111318 30%, #0d0f13 100%)` }}>
       <ModuleHeader
         eco="ecoa"
-        title="Exercicios de Expressao"
+        title="Exercícios de Expressão"
         subtitle="Escreve, descobre, liberta"
       />
 
       <SoundWaveDecoration className="-mt-1" />
 
-      <div className="max-w-lg mx-auto px-4 pb-24" role="main" aria-label="Exercicios de Expressao">
+      <div className="max-w-lg mx-auto px-4 pb-24" role="main" aria-label="Exercícios de Expressão">
         {view !== 'exercise' && renderTabs()}
 
         {view === 'historico' ? (
@@ -320,17 +320,17 @@ export default function ExpressaoExercicios() {
               <div className="text-center py-16 space-y-4">
                 <div className="text-4xl">{'\u270D\uFE0F'}</div>
                 <h3 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                  Ainda sem exercicios
+                  Ainda sem exercícios
                 </h3>
                 <p className="text-sm text-gray-400 max-w-xs mx-auto">
-                  Quando completares o teu primeiro exercicio, ele aparecera aqui.
+                  Quando completares o teu primeiro exercício, ele aparecerá aqui.
                 </p>
                 <button
                   onClick={() => setView('browse')}
                   className="px-6 py-3 rounded-xl text-white text-sm font-medium shadow-lg"
                   style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
                 >
-                  Explorar exercicios
+                  Explorar exercícios
                 </button>
               </div>
             ) : (
@@ -366,10 +366,10 @@ export default function ExpressaoExercicios() {
                 </div>
                 <div>
                   <h2 className="text-xl font-semibold text-white mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                    Exercicio {g('completo', 'completo')}!
+                    Exercício {g('completo', 'completo')}!
                   </h2>
                   <p className="text-sm text-gray-400 max-w-xs">
-                    Cada palavra escrita e uma voz a ganhar forma. +6 Ecos {'\uD83D\uDD0A'}
+                    Cada palavra escrita é uma voz a ganhar forma. +6 Ecos {'\uD83D\uDD0A'}
                   </p>
                 </div>
                 <div className="flex gap-3">
@@ -377,14 +377,14 @@ export default function ExpressaoExercicios() {
                     onClick={handleBackToBrowse}
                     className="px-5 py-3 rounded-xl text-sm font-medium bg-white/10 text-gray-300 hover:bg-white/15 transition-all"
                   >
-                    Outro exercicio
+                    Outro exercício
                   </button>
                   <button
                     onClick={() => setView('historico')}
                     className="px-5 py-3 rounded-xl text-white text-sm font-medium shadow-lg"
                     style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
                   >
-                    Ver historico
+                    Ver histórico
                   </button>
                 </div>
               </div>
@@ -471,7 +471,7 @@ export default function ExpressaoExercicios() {
                   <span className="absolute bottom-3 right-3 text-xs text-gray-600">{conteudo.length}/5000</span>
                 </div>
 
-                {/* Reflexao toggle */}
+                {/* Reflexão toggle */}
                 {conteudo.trim().length > 0 && !showReflexao && (
                   <button
                     onClick={() => setShowReflexao(true)}
@@ -482,19 +482,19 @@ export default function ExpressaoExercicios() {
                   </button>
                 )}
 
-                {/* Reflexao textarea */}
+                {/* Reflexão textarea */}
                 {showReflexao && (
                   <div className="space-y-2 animate-fadeIn">
                     <label className="text-sm text-gray-400">O que descobriste ao escrever?</label>
                     <textarea
                       value={reflexao}
                       onChange={(e) => setReflexao(e.target.value)}
-                      placeholder="Uma surpresa, uma emocao, algo que nao esperavas..."
+                      placeholder="Uma surpresa, uma emoção, algo que não esperavas..."
                       rows={3}
                       maxLength={1000}
                       className="w-full p-4 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
                       style={{ background: 'rgba(255,255,255,0.06)', focusRingColor: ACCENT }}
-                      aria-label="Reflexao sobre o exercicio"
+                      aria-label="Reflexão sobre o exercício"
                     />
                   </div>
                 )}
@@ -506,7 +506,7 @@ export default function ExpressaoExercicios() {
                   className="w-full py-4 rounded-xl text-white text-sm font-medium shadow-lg transition-all duration-200 hover:shadow-xl disabled:opacity-40 disabled:cursor-not-allowed"
                   style={{ background: conteudo.trim() ? `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` : 'rgba(255,255,255,0.08)' }}
                 >
-                  {saving ? 'A guardar...' : `Guardar exercicio (+6 Ecos ${'\uD83D\uDD0A'})`}
+                  {saving ? 'A guardar...' : `Guardar exercício (+6 Ecos ${'\uD83D\uDD0A'})`}
                 </button>
               </>
             )}
@@ -516,10 +516,10 @@ export default function ExpressaoExercicios() {
           <div className="space-y-3 animate-fadeIn">
             <div className="text-center mb-6">
               <h2 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                Escolhe um exercicio
+                Escolhe um exercício
               </h2>
               <p className="text-sm text-gray-400 mt-1">
-                Cada exercicio e uma porta para a tua voz interior
+                Cada exercício é uma porta para a tua voz interior
               </p>
             </div>
 

@@ -7,9 +7,9 @@ import { useAuth } from '../../contexts/AuthContext'
 // ===== VALORES SUGERIDOS =====
 
 const VALORES_SUGERIDOS = [
-  'Honestidade', 'Liberdade', 'Familia', 'Criatividade', 'Coragem',
-  'Compaixao', 'Justica', 'Autonomia', 'Amor', 'Crescimento',
-  'Saude', 'Respeito', 'Autenticidade', 'Conexao', 'Paz',
+  'Honestidade', 'Liberdade', 'Família', 'Criatividade', 'Coragem',
+  'Compaixão', 'Justiça', 'Autonomia', 'Amor', 'Crescimento',
+  'Saúde', 'Respeito', 'Autenticidade', 'Conexão', 'Paz',
   'Aventura', 'Sabedoria', 'Generosidade', 'Disciplina', 'Alegria'
 ]
 
@@ -89,7 +89,7 @@ function CompassStar({ valores, alinhamento }) {
         viewBox={`0 0 ${size} ${size}`}
         className="w-full max-w-[300px]"
         role="img"
-        aria-label={`Bussola de valores com ${valores.length} pontos`}
+        aria-label={`Bússola de valores com ${valores.length} pontos`}
       >
         {/* Ambient glow */}
         <defs>
@@ -265,7 +265,7 @@ function DefinirSignificados({ valoresSelecionados, onComplete, onBack }) {
           O que este valor significa para ti?
         </h3>
         <p className="text-white/40 text-sm">
-          Nao ha respostas certas. E a tua verdade.
+          Não há respostas certas. É a tua verdade.
         </p>
       </div>
 
@@ -300,7 +300,7 @@ function DefinirSignificados({ valoresSelecionados, onComplete, onBack }) {
               <span>Guardar</span>
             </>
           ) : (
-            <span>Proximo</span>
+            <span>Próximo</span>
           )}
         </button>
       </div>
@@ -339,7 +339,7 @@ function VerificacaoAlinhamento({ valores, onComplete, onCancel, saving }) {
       <div className="mb-6">
         <div className="flex justify-between text-xs text-white/40 mb-2">
           <span>Valor {currentIdx + 1} de {valores.length}</span>
-          <span>Media: {overall}/10</span>
+          <span>Média: {overall}/10</span>
         </div>
         <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
           <div
@@ -420,7 +420,7 @@ function VerificacaoAlinhamento({ valores, onComplete, onCancel, saving }) {
               <span>Concluir</span>
             </>
           ) : (
-            <span>Proximo</span>
+            <span>Próximo</span>
           )}
         </button>
       </div>
@@ -649,7 +649,7 @@ export default function BussolaValores() {
   if (loading || fase === 'loading') {
     return (
       <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #2e1a14 0%, #3d2319 50%, #2e1a14 100%)' }}>
-        <ModuleHeader eco="ignis" title="Bussola de Valores" />
+        <ModuleHeader eco="ignis" title="Bússola de Valores" />
         <div className="flex justify-center items-center min-h-[60vh]">
           <div className="w-10 h-10 border-2 border-[#C1634A] border-t-transparent rounded-full animate-spin" />
         </div>
@@ -662,7 +662,7 @@ export default function BussolaValores() {
   if (fase === 'edit-confirm') {
     return (
       <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #2e1a14 0%, #3d2319 50%, #2e1a14 100%)' }}>
-        <ModuleHeader eco="ignis" title="Bussola de Valores" compact />
+        <ModuleHeader eco="ignis" title="Bússola de Valores" compact />
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
           <div className="w-16 h-16 rounded-full bg-[#C1634A]/20 flex items-center justify-center mb-6">
             <EditIcon />
@@ -671,13 +671,13 @@ export default function BussolaValores() {
             className="text-2xl text-white/90 mb-3"
             style={{ fontFamily: "'Cormorant Garamond', serif" }}
           >
-            Mudar os teus valores e serio.
+            Mudar os teus valores é sério.
           </h2>
           <p className="text-white/50 mb-2 max-w-xs">
-            Os teus valores definem a tua direccao. Tens a certeza que queres redefinir?
+            Os teus valores definem a tua direcção. Tens a certeza que queres redefinir?
           </p>
           <p className="text-white/30 text-sm mb-8 max-w-xs">
-            O historico de alinhamento sera {g('reiniciado', 'reiniciada')}.
+            O histórico de alinhamento será {g('reiniciado', 'reiniciada')}.
           </p>
           <div className="flex gap-3">
             <button
@@ -728,7 +728,7 @@ export default function BussolaValores() {
       <div className="min-h-screen pb-24" style={{ background: 'linear-gradient(135deg, #2e1a14 0%, #3d2319 50%, #2e1a14 100%)' }}>
         <ModuleHeader
           eco="ignis"
-          title="Verificacao de Alinhamento"
+          title="Verificação de Alinhamento"
           compact
         />
         <VerificacaoAlinhamento
@@ -749,7 +749,7 @@ export default function BussolaValores() {
       <div className="min-h-screen pb-24" style={{ background: 'linear-gradient(135deg, #2e1a14 0%, #3d2319 50%, #2e1a14 100%)' }}>
         <ModuleHeader
           eco="ignis"
-          title="Bussola de Valores"
+          title="Bússola de Valores"
           subtitle="Identifica o que te guia"
         />
 
@@ -760,7 +760,7 @@ export default function BussolaValores() {
               className="text-lg text-white/80 leading-relaxed"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              A tua bussola interior precisa de direccao. Identifica 5 valores que sao essenciais para ti.
+              A tua bússola interior precisa de direcção. Identifica 5 valores que são essenciais para ti.
             </p>
           </div>
 
@@ -795,7 +795,7 @@ export default function BussolaValores() {
 
           {/* Suggested values grid */}
           <div className="mb-6">
-            <span className="text-white/40 text-xs uppercase tracking-wide mb-3 block">Sugestoes</span>
+            <span className="text-white/40 text-xs uppercase tracking-wide mb-3 block">Sugestões</span>
             <div className="flex flex-wrap gap-2">
               {VALORES_SUGERIDOS.map(nome => {
                 const isSelected = selecionados.includes(nome)
@@ -881,7 +881,7 @@ export default function BussolaValores() {
     <div className="min-h-screen pb-24" style={{ background: 'linear-gradient(135deg, #2e1a14 0%, #3d2319 50%, #2e1a14 100%)' }}>
       <ModuleHeader
         eco="ignis"
-        title="Bussola de Valores"
+        title="Bússola de Valores"
         subtitle={`${g('Alinhado', 'Alinhada')} com o que importa`}
         rightAction={
           <button
@@ -962,13 +962,13 @@ export default function BussolaValores() {
           }}
         >
           <FireIcon />
-          <span>Verificacao de Alinhamento</span>
+          <span>Verificação de Alinhamento</span>
         </button>
 
         {/* Last updated */}
         {valoresData?.updated_at && (
           <p className="text-white/20 text-xs text-center mt-4">
-            Ultima actualizacao: {new Date(valoresData.updated_at).toLocaleDateString('pt-PT', {
+            Última actualização: {new Date(valoresData.updated_at).toLocaleDateString('pt-PT', {
               day: 'numeric',
               month: 'long',
               year: 'numeric'

@@ -6,9 +6,9 @@ import { g } from '../../utils/genero'
 import ModuleHeader from '../shared/ModuleHeader'
 
 // ============================================================
-// IMAGO — Visao do Futuro
-// Quadro de visao digital pessoal com simbolos, palavras e frases
-// Chakra: Sahasrara (Coroa) — Visao e identidade futura
+// IMAGO — Visão do Futuro
+// Quadro de visão digital pessoal com símbolos, palavras e frases
+// Chakra: Sahasrara (Coroa) — Visão e identidade futura
 // ============================================================
 
 const ACCENT = '#8B7BA5'
@@ -17,7 +17,7 @@ const ACCENT_SUBTLE = 'rgba(139,123,165,0.12)'
 
 const ITEM_TYPES = [
   { tipo: 'palavra', label: 'Palavra', icon: '🔤', placeholder: 'Uma palavra que te define ou inspira' },
-  { tipo: 'simbolo', label: 'Simbolo', icon: '✨', placeholder: 'Um emoji ou simbolo que te representa' },
+  { tipo: 'simbolo', label: 'Símbolo', icon: '✨', placeholder: 'Um emoji ou símbolo que te representa' },
   { tipo: 'imagem', label: 'Imagem', icon: '🖼️', placeholder: 'URL de uma imagem inspiradora' },
   { tipo: 'frase', label: 'Frase', icon: '💬', placeholder: 'Uma frase que ressoa contigo' }
 ]
@@ -98,13 +98,13 @@ const BoardItem = ({ item, index, totalItems, onEdit, onDelete, onMoveUp, onMove
           <div className="rounded-lg overflow-hidden">
             <img
               src={item.conteudo}
-              alt="Item do quadro de visao"
+              alt="Item do quadro de visão"
               className="w-full h-32 object-cover rounded-lg"
               onError={(e) => {
                 e.target.onerror = null
                 e.target.src = ''
                 e.target.style.display = 'none'
-                e.target.parentElement.innerHTML = '<p class="text-sm text-gray-500 italic p-2">Imagem nao disponivel</p>'
+                e.target.parentElement.innerHTML = '<p class="text-sm text-gray-500 italic p-2">Imagem não disponível</p>'
               }}
             />
           </div>
@@ -138,7 +138,7 @@ const BoardItem = ({ item, index, totalItems, onEdit, onDelete, onMoveUp, onMove
               : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }
             }
           >
-            {item.ressoa ? 'Ainda ressoa' : 'Ja evoluiu'}
+            {item.ressoa ? 'Ainda ressoa' : 'Já evoluiu'}
           </button>
         </div>
       )}
@@ -192,7 +192,7 @@ const ItemModal = ({ item, onSave, onClose, editing }) => {
 
         {/* Content input */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-300">Conteudo:</label>
+          <label className="text-sm font-medium text-gray-300">Conteúdo:</label>
           {tipo === 'frase' ? (
             <textarea
               value={conteudo}
@@ -202,7 +202,7 @@ const ItemModal = ({ item, onSave, onClose, editing }) => {
               maxLength={500}
               className="w-full p-3 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
               style={{ background: 'rgba(255,255,255,0.06)' }}
-              aria-label="Conteudo do item"
+              aria-label="Conteúdo do item"
             />
           ) : (
             <input
@@ -213,7 +213,7 @@ const ItemModal = ({ item, onSave, onClose, editing }) => {
               maxLength={tipo === 'imagem' ? 1000 : 100}
               className="w-full p-3 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all duration-200"
               style={{ background: 'rgba(255,255,255,0.06)' }}
-              aria-label="Conteudo do item"
+              aria-label="Conteúdo do item"
             />
           )}
         </div>
@@ -363,7 +363,7 @@ export default function VisaoFuturo() {
       setTimeout(() => setSaveSuccess(false), 3000)
     } catch (err) {
       console.error('Erro ao guardar board:', err)
-      alert('Nao foi possivel guardar. Tenta novamente.')
+      alert('Não foi possível guardar. Tenta novamente.')
     } finally {
       setSaving(false)
     }
@@ -440,8 +440,8 @@ export default function VisaoFuturo() {
     <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${ACCENT_DARK} 0%, #111318 30%, #0d0f13 100%)` }}>
       <ModuleHeader
         eco="imago"
-        title="Visao do Futuro"
-        subtitle="O teu quadro de visao pessoal"
+        title="Visão do Futuro"
+        subtitle="O teu quadro de visão pessoal"
         rightAction={
           items.length > 0 && (
             <button
@@ -452,7 +452,7 @@ export default function VisaoFuturo() {
                 color: '#fff'
               }}
             >
-              {reviewMode ? 'Sair revisao' : 'Revisao trimestral'}
+              {reviewMode ? 'Sair revisão' : 'Revisão trimestral'}
             </button>
           )
         }
@@ -474,7 +474,7 @@ export default function VisaoFuturo() {
                 Eliminar este item?
               </h3>
               <p className="text-sm text-gray-400">
-                Esta accao nao pode ser desfeita.
+                Esta acção não pode ser desfeita.
               </p>
             </div>
             <div className="flex gap-3">
@@ -528,7 +528,7 @@ export default function VisaoFuturo() {
               className="text-sm italic text-gray-300 text-center leading-relaxed"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              "Isto ainda ressoa contigo?" — Marca cada item como "ainda ressoa" ou "ja evoluiu".
+              "Isto ainda ressoa contigo?" — Marca cada item como "ainda ressoa" ou "já evoluiu".
             </p>
             {items.length > 0 && (
               <div className="flex justify-center gap-4 mt-3">
@@ -554,10 +554,10 @@ export default function VisaoFuturo() {
               className="text-lg font-semibold text-white"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              O teu quadro de visao esta vazio
+              O teu quadro de visão está vazio
             </h3>
             <p className="text-sm text-gray-400 max-w-xs mx-auto">
-              Adiciona palavras, simbolos, imagens e frases que representam quem queres ser.
+              Adiciona palavras, símbolos, imagens e frases que representam quem queres ser.
             </p>
             <button
               onClick={openAdd}
@@ -616,7 +616,7 @@ export default function VisaoFuturo() {
 
               {lastSaved && (
                 <p className="text-xs text-gray-500 text-center">
-                  {g('Ultimo', 'Ultima')} gravacao: {new Date(lastSaved).toLocaleDateString('pt-PT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                  {g('Último', 'Última')} gravação: {new Date(lastSaved).toLocaleDateString('pt-PT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                 </p>
               )}
             </div>

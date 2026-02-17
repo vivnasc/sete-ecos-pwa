@@ -3,7 +3,7 @@
 // Sete Ecos - Vivianne dos Santos
 // ============================================================
 
-// Opcoes de genero para seleccao
+// Opções de género para seleccao
 export const GENEROS = [
   { valor: 'F', label: 'Feminino' },
   { valor: 'M', label: 'Masculino' },
@@ -151,8 +151,8 @@ export function mostrarCicloMenstrual(genero) {
 
 export function taglineSistema(genero) {
   switch (genero) {
-    case 'M': return 'Sistema de Transmutacao Integral';
-    case 'O': return 'Sistema de Transmutacao Integral';
-    default: return 'Sistema de Transmutacao Feminina';
+    case 'M': return 'Sistema de Transmutação Integral';
+    case 'O': return 'Sistema de Transmutação Integral';
+    default: return 'Sistema de Transmutação Feminina';
   }
 }

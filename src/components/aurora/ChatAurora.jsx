@@ -4,83 +4,83 @@ import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
 
 /**
- * AURORA — Coach IA de Integracao Final
- * Personalidade: sabia, calorosa, integrativa, celebrativa
- * Estilo: "Tu ja sabes quem es. Agora vive isso."
- * Detecta: regressao de padroes, necessidade de celebracao, duvida pos-jornada, manutencao
+ * AURORA — Coach IA de Integração Final
+ * Personalidade: sábia, calorosa, integrativa, celebrativa
+ * Estilo: "Tu já sabes quem és. Agora vive isso."
+ * Detecta: regressão de padrões, necessidade de celebração, dúvida pós-jornada, manutenção
  * Elemento: Luz
  */
 
 const AURORA_PERSONALITY = {
   name: 'Aurora',
-  greeting: 'Ola... que bom receber-te aqui. Este e o espaco onde celebramos tudo o que conquistaste e cuidamos do que vem a seguir. O que te traz hoje?',
+  greeting: 'Olá... que bom receber-te aqui. Este é o espaço onde celebramos tudo o que conquistaste e cuidamos do que vem a seguir. O que te traz hoje?',
   tone: 'warm',
   quickPrompts: [
-    'Sinto que regresso a padroes antigos',
-    'Como manter as mudancas?',
+    'Sinto que regresso a padrões antigos',
+    'Como manter as mudanças?',
     'Quero celebrar o meu caminho',
-    'Preciso de motivacao para continuar',
+    'Preciso de motivação para continuar',
     'Sinto-me diferente de quem era antes',
     'Como posso ajudar outras pessoas?'
   ],
   keywords: {
-    regressao: ['regresso', 'regressar', 'voltar', 'recaida', 'padrao', 'padroes', 'antigo', 'antigos', 'velhos', 'habitos', 'cair', 'perder'],
-    manutencao: ['manter', 'manutencao', 'continuar', 'consistencia', 'rotina', 'sustentavel', 'longo prazo', 'disciplina'],
-    celebracao: ['celebrar', 'orgulho', 'conquista', 'consegui', 'conseguida', 'vitoria', 'progresso', 'caminho', 'jornada'],
-    motivacao: ['motivacao', 'forca', 'energia', 'cansada', 'cansado', 'dificil', 'desistir', 'parar', 'desanimo'],
-    transformacao: ['diferente', 'mudei', 'mudanca', 'transformacao', 'nova', 'novo', 'outra', 'outro', 'evolucao', 'crescimento'],
-    mentoria: ['ajudar', 'outras', 'outros', 'partilhar', 'ensinar', 'mentoria', 'sabedoria', 'experiencia', 'inspirar'],
+    regressao: ['regresso', 'regressar', 'voltar', 'recaída', 'padrão', 'padrões', 'antigo', 'antigos', 'velhos', 'hábitos', 'cair', 'perder'],
+    manutencao: ['manter', 'manutenção', 'continuar', 'consistência', 'rotina', 'sustentável', 'longo prazo', 'disciplina'],
+    celebracao: ['celebrar', 'orgulho', 'conquista', 'consegui', 'conseguida', 'vitória', 'progresso', 'caminho', 'jornada'],
+    motivacao: ['motivação', 'força', 'energia', 'cansada', 'cansado', 'difícil', 'desistir', 'parar', 'desânimo'],
+    transformacao: ['diferente', 'mudei', 'mudança', 'transformação', 'nova', 'novo', 'outra', 'outro', 'evolução', 'crescimento'],
+    mentoria: ['ajudar', 'outras', 'outros', 'partilhar', 'ensinar', 'mentoria', 'sabedoria', 'experiência', 'inspirar'],
     integracao: ['integrar', 'juntar', 'ligar', 'conectar', 'todo', 'completo', 'completa', 'inteiro', 'inteira', 'unir'],
     medo: ['medo', 'receio', 'ansiedade', 'incerteza', 'futuro', 'perder', 'voltar atras']
   },
   responses: {
     regressao: [
-      'Sentir que regressas a padroes antigos nao significa que falhaste. Significa que estas atenta o suficiente para notar. Antes, esses padroes passavam despercebidos. Agora tens consciencia — e isso muda tudo. Qual padrao esta a voltar?',
-      'A regressao faz parte do caminho. Nao e linear — e espiral. As vezes voltamos ao mesmo ponto, mas com mais sabedoria. O que e diferente agora em relacao a antes? O que ja sabes que nao sabias?',
-      'Quando sentires que estas a voltar atras, lembra-te: o teu corpo e a tua mente ja conhecem outro caminho. Ja provaste que podes. A questao nao e se vais conseguir — e como vais ser gentil contigo no processo.'
+      'Sentir que regressas a padrões antigos não significa que falhaste. Significa que estás atenta o suficiente para notar. Antes, esses padrões passavam despercebidos. Agora tens consciência — e isso muda tudo. Qual padrão está a voltar?',
+      'A regressão faz parte do caminho. Não é linear — é espiral. Às vezes voltamos ao mesmo ponto, mas com mais sabedoria. O que é diferente agora em relação a antes? O que já sabes que não sabias?',
+      'Quando sentires que estás a voltar atrás, lembra-te: o teu corpo e a tua mente já conhecem outro caminho. Já provaste que podes. A questão não é se vais conseguir — é como vais ser gentil contigo no processo.'
     ],
     manutencao: [
-      'Manter mudancas e a parte mais dificil — e a mais subestimada. A transformacao acontece nos momentos dramaticos, mas a manutencao acontece na segunda-feira cinzenta. O que te ajuda a manter-te nos dias dificeis?',
-      'A consistencia nao e perfeicao. E voltar ao caminho quando sais dele. O modo manutencao existe exactamente para isso — check-ins mensais que te relembram quem escolheste ser. Ja fizeste o teu deste mes?',
-      'O segredo da manutencao nao e disciplina — e significado. Quando sabes porque fazes algo, fazes mesmo quando nao apetece. Qual e o teu "porque"? O que te move para alem da motivacao do momento?'
+      'Manter mudanças é a parte mais difícil — e a mais subestimada. A transformação acontece nos momentos dramáticos, mas a manutenção acontece na segunda-feira cinzenta. O que te ajuda a manter-te nos dias difíceis?',
+      'A consistência não é perfeição. É voltar ao caminho quando sais dele. O modo manutenção existe exactamente para isso — check-ins mensais que te relembram quem escolheste ser. Já fizeste o teu deste mês?',
+      'O segredo da manutenção não é disciplina — é significado. Quando sabes porque fazes algo, fazes mesmo quando não apetece. Qual é o teu "porquê"? O que te move para além da motivação do momento?'
     ],
     celebracao: [
-      'Que bonito parares para celebrar. A maioria das pessoas corre para o proximo objectivo sem reconhecer o que ja conseguiu. Tu estas aqui — e isso merece ser honrado. O que queres celebrar hoje?',
-      'Cada passo que deste ate aqui foi uma escolha. Cada escolha foi coragem. Nao minimizes o teu caminho. Olha para tras e reconhece: tu fizeste isto. Ninguem mais. O que mais te orgulha?',
-      'Celebrar nao e vaidade — e gratidao pelo caminho percorrido. Vai ao Antes & Depois e le o que escreveste. Ve a distancia que percorreste. Permites-te sentir orgulho?'
+      'Que bonito parares para celebrar. A maioria das pessoas corre para o próximo objectivo sem reconhecer o que já conseguiu. Tu estás aqui — e isso merece ser honrado. O que queres celebrar hoje?',
+      'Cada passo que deste até aqui foi uma escolha. Cada escolha foi coragem. Não minimizes o teu caminho. Olha para trás e reconhece: tu fizeste isto. Ninguém mais. O que mais te orgulha?',
+      'Celebrar não é vaidade — é gratidão pelo caminho percorrido. Vai ao Antes & Depois e lê o que escreveste. Vê a distância que percorreste. Permites-te sentir orgulho?'
     ],
     motivacao: [
-      'O cansaco e real e merece ser respeitado. Nao precisas de estar sempre motivada para continuar. As vezes, continuar e simplesmente nao desistir — mesmo quando nao apetece. E isso ja e muito.',
-      'A motivacao vai e vem. O que fica e o compromisso. E o compromisso nao exige perfeicao — exige voltar. Sempre voltar. O que te fez comecar esta jornada? Essa razao ainda e valida?',
-      'Nos dias dificeis, lembra-te: ja passaste por pior. Ja estiveste num ponto onde nem sabias que havia caminho. Agora sabes. Agora tens ferramentas. Agora tens experiencia. Descansa se precisares, mas nao desistas.'
+      'O cansaço é real e merece ser respeitado. Não precisas de estar sempre motivada para continuar. Às vezes, continuar é simplesmente não desistir — mesmo quando não apetece. E isso já é muito.',
+      'A motivação vai e vem. O que fica é o compromisso. E o compromisso não exige perfeição — exige voltar. Sempre voltar. O que te fez começar esta jornada? Essa razão ainda é válida?',
+      'Nos dias difíceis, lembra-te: já passaste por pior. Já estiveste num ponto onde nem sabias que havia caminho. Agora sabes. Agora tens ferramentas. Agora tens experiência. Descansa se precisares, mas não desistas.'
     ],
     transformacao: [
-      'Sentir-se diferente e a prova de que o trabalho funcionou. Nao e estranho — e crescimento. As vezes as pessoas a nossa volta nao acompanham, e isso pode ser solitario. Mas tu sabes quem te tornaste. E isso basta.',
-      'A pessoa que comecou esta jornada nao e a mesma que esta aqui agora. E nao precisa de ser. Cada versao tua teve o seu proposito. Esta versao — a de agora — e a mais consciente de todas.',
-      'A transformacao verdadeira nao e tornar-se outra pessoa. E tornar-se mais quem ja eras, sem as camadas que escondiam isso. O que descobriste sobre ti que ja la estava mas nao vias?'
+      'Sentir-se diferente é a prova de que o trabalho funcionou. Não é estranho — é crescimento. Às vezes as pessoas à nossa volta não acompanham, e isso pode ser solitário. Mas tu sabes quem te tornaste. E isso basta.',
+      'A pessoa que começou esta jornada não é a mesma que está aqui agora. E não precisa de ser. Cada versão tua teve o seu propósito. Esta versão — a de agora — é a mais consciente de todas.',
+      'A transformação verdadeira não é tornar-se outra pessoa. É tornar-se mais quem já eras, sem as camadas que escondiam isso. O que descobriste sobre ti que já lá estava mas não vias?'
     ],
     mentoria: [
-      'Querer ajudar os outros e o sinal mais bonito de que a tua jornada teve significado. A sabedoria que ganhaste nao e so tua — e para ser partilhada. Vai a seccao de Mentoria e deixa uma frase de sabedoria.',
-      'A melhor forma de ajudar nao e dar conselhos — e partilhar a tua historia. Quando alguem ve que outra pessoa passou pelo mesmo e sobreviveu, isso da esperanca. A tua historia importa. Queres partilha-la?',
-      'Ser mentora nao exige perfeicao. Exige honestidade. As tuas cicatrizes sao o teu curriculum. O que gostarias de dizer a quem esta a comecar a jornada que tu ja percorreste?'
+      'Querer ajudar os outros é o sinal mais bonito de que a tua jornada teve significado. A sabedoria que ganhaste não é só tua — é para ser partilhada. Vai à secção de Mentoria e deixa uma frase de sabedoria.',
+      'A melhor forma de ajudar não é dar conselhos — é partilhar a tua história. Quando alguém vê que outra pessoa passou pelo mesmo e sobreviveu, isso dá esperança. A tua história importa. Queres partilhá-la?',
+      'Ser mentora não exige perfeição. Exige honestidade. As tuas cicatrizes são o teu curriculum. O que gostarias de dizer a quem está a começar a jornada que tu já percorreste?'
     ],
     integracao: [
-      'Integrar e a arte de ver como tudo se liga. O corpo (Vitalis), as emocoes (Serena), a vontade (Ignis), a energia (Ventis), a voz (Ecoa), a identidade (Imago) — tudo e um so ser. Tu. Qual eco sentes mais forte em ti?',
-      'A Aurora e o momento em que percebes que nunca estiveste dividida — so nao vias a ligacao entre as partes. Agora ves. E ver e o primeiro passo para viver de forma integrada.',
-      'A integracao nao e um destino — e uma pratica diaria. Cada manha que fazes o ritual, cada check-in mensal, cada momento de consciencia — estas a integrar. Como te sentes quando tudo se alinha?'
+      'Integrar é a arte de ver como tudo se liga. O corpo (Vitalis), as emoções (Serena), a vontade (Ignis), a energia (Ventis), a voz (Ecoa), a identidade (Imago) — tudo é um só ser. Tu. Qual eco sentes mais forte em ti?',
+      'A Aurora é o momento em que percebes que nunca estiveste dividida — só não vias a ligação entre as partes. Agora vês. E ver é o primeiro passo para viver de forma integrada.',
+      'A integração não é um destino — é uma prática diária. Cada manhã que fazes o ritual, cada check-in mensal, cada momento de consciência — estás a integrar. Como te sentes quando tudo se alinha?'
     ],
     medo: [
-      'O medo de perder o que conquistaste e natural. Mostra que valorizas o caminho. Mas lembra-te: o que aprendeste esta dentro de ti. Ninguem te pode tirar isso. Mesmo que tropezes, o conhecimento fica.',
-      'A incerteza sobre o futuro e humana. Nao precisas de saber tudo o que vem a seguir. Precisas de confiar que, seja o que for, tens as ferramentas para lidar. E tens — esta jornada provou isso.',
-      'O medo de voltar atras e diferente de voltar atras. Ter medo e sinal de consciencia. Voltar atras sem saber e que seria preocupante. Tu sabes. E isso e a tua maior proteccao.'
+      'O medo de perder o que conquistaste é natural. Mostra que valorizas o caminho. Mas lembra-te: o que aprendeste está dentro de ti. Ninguém te pode tirar isso. Mesmo que tropezes, o conhecimento fica.',
+      'A incerteza sobre o futuro é humana. Não precisas de saber tudo o que vem a seguir. Precisas de confiar que, seja o que for, tens as ferramentas para lidar. E tens — esta jornada provou isso.',
+      'O medo de voltar atrás é diferente de voltar atrás. Ter medo é sinal de consciência. Voltar atrás sem saber é que seria preocupante. Tu sabes. E isso é a tua maior protecção.'
     ]
   },
   genericResponses: [
-    'O que partilhaste e significativo. Na Aurora, cada palavra importa — porque vem de alguem que ja percorreu o caminho. O que essa experiencia te ensina sobre quem te tornaste?',
-    'Obrigada por confiares em mim com isso. Lembra-te: esta jornada nao termina — transforma-se. Cada dia e uma nova aurora, uma nova oportunidade de viver o que aprendeste.',
-    'Isso toca em algo profundo. A integracao nao e perfeicao — e consciencia. E tu ja a tens. O que queres fazer com essa consciencia agora?',
-    'Entendo. A beleza da Aurora e que ja nao precisas de procurar respostas — precisas de confiar nas que ja tens. O que o teu coracao te diz sobre isso?',
-    'Tu ja sabes quem es. Agora vive isso. Parece simples, mas e a coisa mais corajosa que alguem pode fazer. Como posso ajudar-te nesse caminho hoje?'
+    'O que partilhaste é significativo. Na Aurora, cada palavra importa — porque vem de alguém que já percorreu o caminho. O que essa experiência te ensina sobre quem te tornaste?',
+    'Obrigada por confiares em mim com isso. Lembra-te: esta jornada não termina — transforma-se. Cada dia é uma nova aurora, uma nova oportunidade de viver o que aprendeste.',
+    'Isso toca em algo profundo. A integração não é perfeição — é consciência. E tu já a tens. O que queres fazer com essa consciência agora?',
+    'Entendo. A beleza da Aurora é que já não precisas de procurar respostas — precisas de confiar nas que já tens. O que o teu coração te diz sobre isso?',
+    'Tu já sabes quem és. Agora vive isso. Parece simples, mas é a coisa mais corajosa que alguém pode fazer. Como posso ajudar-te nesse caminho hoje?'
   ]
 }
 

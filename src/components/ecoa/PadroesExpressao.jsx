@@ -5,8 +5,8 @@ import ModuleHeader from '../shared/ModuleHeader';
 import { g } from '../../utils/genero';
 
 // ============================================================
-// ECOA — Padroes de Expressao
-// Analytics dashboard: estatisticas, temas, evolucao, insights
+// ECOA — Padrões de Expressão
+// Analytics dashboard: estatísticas, temas, evolução, insights
 // Chakra: Vishuddha (Garganta) | Moeda: Ecos
 // ============================================================
 
@@ -181,7 +181,7 @@ export default function PadroesExpressao() {
           silenciamento: silRes.data || null
         });
       } catch (err) {
-        console.error('Erro ao carregar dados de expressao:', err);
+        console.error('Erro ao carregar dados de expressão:', err);
       } finally {
         setLoading(false);
       }
@@ -198,10 +198,10 @@ export default function PadroesExpressao() {
 
     // Meios usados
     const meiosUsados = [
-      { label: 'Texto (diario)', icon: '\u270D\uFE0F', value: diarioVoz.filter(d => d.tipo === 'texto').length, color: '#4A90A4' },
+      { label: 'Texto (diário)', icon: '\u270D\uFE0F', value: diarioVoz.filter(d => d.tipo === 'texto').length, color: '#4A90A4' },
       { label: 'Cartas', icon: '\uD83D\uDCDD', value: cartas.length, color: '#6BAA7E' },
       { label: 'Micro-voz', icon: '\uD83C\uDFA4', value: vozRecuperada.length, color: '#D4A84B' },
-      { label: 'Exercicios', icon: '\u2728', value: exerciciosLog.length, color: '#8B6BAA' }
+      { label: 'Exercícios', icon: '\u2728', value: exerciciosLog.length, color: '#8B6BAA' }
     ];
 
     // Temas recorrentes (from sobre_o_que in voz_recuperada)
@@ -220,7 +220,7 @@ export default function PadroesExpressao() {
       }))
       .sort((a, b) => b.value - a.value);
 
-    // Evolucao assertividade: comunicacao entries grouped by week
+    // Evolução assertividade: comunicação entries grouped by week
     const evolucaoSemanal = [];
     const weekMap = {};
     comunicacaoLog.forEach(entry => {
@@ -241,7 +241,7 @@ export default function PadroesExpressao() {
         });
       });
 
-    // Zonas de silencio que estao a abrir
+    // Zonas de silêncio que estão a abrir
     const zonasAbertas = [];
     if (silenciamento && Array.isArray(silenciamento.zonas)) {
       const zonasOrigem = silenciamento.zonas.map(z =>
@@ -265,7 +265,7 @@ export default function PadroesExpressao() {
     // Tema dominante
     const temaDominante = temasRecorrentes.length > 0 ? temasRecorrentes[0] : null;
 
-    // Zona que mais esta a abrir
+    // Zona que mais está a abrir
     const zonaAberta = zonasAbertas
       .filter(z => z.aAbrir)
       .sort((a, b) => b.vozesRecuperadas - a.vozesRecuperadas)[0] || null;
@@ -286,7 +286,7 @@ export default function PadroesExpressao() {
   if (loading) {
     return (
       <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${ACCENT_DARK} 0%, #111318 30%, #0d0f13 100%)` }}>
-        <ModuleHeader eco="ecoa" title="Padroes de Expressao" subtitle="A tua voz em numeros" />
+        <ModuleHeader eco="ecoa" title="Padrões de Expressão" subtitle="A tua voz em números" />
         <div className="flex items-center justify-center py-20">
           <div className="w-8 h-8 border-2 rounded-full animate-spin" style={{ borderColor: `${ACCENT}33`, borderTopColor: ACCENT }} />
         </div>
@@ -306,17 +306,17 @@ export default function PadroesExpressao() {
 
       <SoundWaveDecoration className="-mt-1" />
 
-      <div className="max-w-lg mx-auto px-4 pb-24" role="main" aria-label="Padroes de Expressao">
+      <div className="max-w-lg mx-auto px-4 pb-24" role="main" aria-label="Padrões de Expressão">
         {!hasData ? (
           // ---- EMPTY STATE ----
           <div className="text-center py-16 space-y-4 animate-fadeIn">
             <div className="text-4xl">{'\uD83D\uDCCA'}</div>
             <h3 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-              Os teus padroes vao aparecer aqui
+              Os teus padrões vão aparecer aqui
             </h3>
             <p className="text-sm text-gray-400 max-w-xs mx-auto">
-              Quando começares a usar os exercicios de expressao, diario de voz e comunicacao assertiva,
-              os teus padroes serao {g('analisado', 'analisados')} aqui.
+              Quando começares a usar os exercícios de expressão, diário de voz e comunicação assertiva,
+              os teus padrões serão {g('analisado', 'analisados')} aqui.
             </p>
           </div>
         ) : (
@@ -328,13 +328,13 @@ export default function PadroesExpressao() {
                 icon="\uD83D\uDD0A"
                 value={analytics.totalExpressoes}
                 label="Vezes expressas"
-                sublabel="nos ultimos 30 dias"
+                sublabel="nos últimos 30 dias"
               />
               <StatCard
                 icon="\uD83D\uDCAC"
                 value={analytics.comunicacaoTotal}
-                label="Situacoes registadas"
-                sublabel="comunicacao assertiva"
+                label="Situações registadas"
+                sublabel="comunicação assertiva"
               />
             </div>
 
@@ -362,9 +362,9 @@ export default function PadroesExpressao() {
             {analytics.evolucaoSemanal.length > 0 && (
               <div className="p-5 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
                 <h3 className="text-sm font-semibold text-white mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                  Evolucao da assertividade
+                  Evolução da assertividade
                 </h3>
-                <p className="text-xs text-gray-500 mb-3">Registos de comunicacao por semana</p>
+                <p className="text-xs text-gray-500 mb-3">Registos de comunicação por semana</p>
                 <SimpleBarChart data={analytics.evolucaoSemanal} />
               </div>
             )}
@@ -373,7 +373,7 @@ export default function PadroesExpressao() {
             {analytics.zonasAbertas.length > 0 && (
               <div className="p-5 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
                 <h3 className="text-sm font-semibold text-white mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                  Zonas de silencio que estao a abrir
+                  Zonas de silêncio que estão a abrir
                 </h3>
                 <div className="space-y-3">
                   {analytics.zonasAbertas.map((zona, idx) => (
@@ -404,34 +404,34 @@ export default function PadroesExpressao() {
               </h3>
 
               <InsightCard
-                text={`Ja te expressaste ${analytics.totalExpressoes} ${analytics.totalExpressoes === 1 ? 'vez' : 'vezes'} este mes. Cada uma e um acto de coragem.`}
+                text={`Já te expressaste ${analytics.totalExpressoes} ${analytics.totalExpressoes === 1 ? 'vez' : 'vezes'} este mês. Cada uma é um acto de coragem.`}
                 icon="\uD83D\uDD0A"
               />
 
               {analytics.temaDominante && (
                 <InsightCard
-                  text={`As tuas maiores coragens sao sobre ${analytics.temaDominante.label.toLowerCase()}. E ai que a tua voz mais precisa de ser ouvida.`}
+                  text={`As tuas maiores coragens são sobre ${analytics.temaDominante.label.toLowerCase()}. É aí que a tua voz mais precisa de ser ouvida.`}
                   icon={analytics.temaDominante.icon}
                 />
               )}
 
               {analytics.zonaAberta && (
                 <InsightCard
-                  text={`A zona que mais esta a abrir e "${analytics.zonaAberta.label}". O silencio esta a transformar-se em expressao.`}
+                  text={`A zona que mais está a abrir é "${analytics.zonaAberta.label}". O silêncio está a transformar-se em expressão.`}
                   icon="\uD83D\uDD13"
                 />
               )}
 
               {analytics.comunicacaoTotal > 5 && (
                 <InsightCard
-                  text={`Ja reflectiste sobre ${analytics.comunicacaoTotal} situacoes de comunicacao. A consciencia e o primeiro passo para a mudanca.`}
+                  text={`Já reflectiste sobre ${analytics.comunicacaoTotal} situações de comunicação. A consciência é o primeiro passo para a mudança.`}
                   icon="\uD83D\uDCAC"
                 />
               )}
 
               {analytics.totalExpressoes === 0 && analytics.comunicacaoTotal > 0 && (
                 <InsightCard
-                  text={`Estas a reflectir sobre como comunicas — experimenta tambem os exercicios de expressao para fortalecer a tua voz.`}
+                  text={`Estás a reflectir sobre como comunicas — experimenta também os exercícios de expressão para fortalecer a tua voz.`}
                   icon="\u2728"
                 />
               )}
@@ -441,8 +441,8 @@ export default function PadroesExpressao() {
             <div className="p-5 rounded-xl text-center" style={{ background: 'rgba(74,144,164,0.08)' }}>
               <p className="text-sm text-gray-300 italic leading-relaxed" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                 {g(
-                  'Cada palavra que dizes e um eco que ressoa alem de ti. Estas a construir uma voz que ninguem pode silenciar.',
-                  'Cada palavra que dizes e um eco que ressoa alem de ti. Estas a construir uma voz que ninguem pode silenciar.'
+                  'Cada palavra que dizes é um eco que ressoa além de ti. Estás a construir uma voz que ninguém pode silenciar.',
+                  'Cada palavra que dizes é um eco que ressoa além de ti. Estás a construir uma voz que ninguém pode silenciar.'
                 )}
               </p>
             </div>

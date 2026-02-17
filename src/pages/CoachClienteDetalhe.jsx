@@ -337,7 +337,7 @@ export default function CoachClienteDetalhe() {
         {tab === 'resumo' && (
           <>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <InfoCard label="Subscricao" value={STATUS_LABELS_TEXT[client?.subscription_status] || 'N/A'} />
+              <InfoCard label="Subscrição" value={STATUS_LABELS_TEXT[client?.subscription_status] || 'N/A'} />
               <InfoCard label="Intake" value={hasIntake ? 'Completo' : 'Em falta'} color={hasIntake ? 'green' : 'red'} />
               <InfoCard label="Plano" value={
                 activePlan?.status === 'activo' ? 'Activo' :
@@ -746,12 +746,12 @@ export default function CoachClienteDetalhe() {
                   <IntakeField label="Jejum" value={intake.aceita_jejum ? 'Sim' : 'Nao'} />
                   <IntakeField label="Refeicoes/dia" value={intake.num_refeicoes_dia} />
                   <IntakeField label="Pequeno almoco" value={intake.pequeno_almoco} />
-                  <IntakeField label="Emocao dominante" value={intake.emocao_dominante} />
+                  <IntakeField label="Emoção dominante" value={intake.emocao_dominante} />
                   <IntakeField label="Prontidao (1-10)" value={intake.prontidao_1a10} />
                 </div>
                 {intake.restricoes_alimentares && (
                   <div className="mt-4">
-                    <p className="text-sm text-gray-500 mb-1">Restricoes alimentares:</p>
+                    <p className="text-sm text-gray-500 mb-1">Restrições alimentares:</p>
                     <p className="text-sm text-gray-800">{Array.isArray(intake.restricoes_alimentares) ? intake.restricoes_alimentares.join(', ') : intake.restricoes_alimentares}</p>
                   </div>
                 )}
@@ -886,7 +886,7 @@ export default function CoachClienteDetalhe() {
             )}
 
             <div className="bg-white rounded-xl border border-gray-100 p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Subscricao</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">Subscrição</h3>
               <div className="grid grid-cols-2 gap-2 text-sm mb-4">
                 <div><p className="text-gray-500">Estado</p><p className="font-medium">{STATUS_LABELS_TEXT[client?.subscription_status] || 'N/A'}</p></div>
                 <div><p className="text-gray-500">Plano</p><p className="font-medium">{client?.subscription_plan || 'N/A'}</p></div>

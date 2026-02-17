@@ -7,8 +7,8 @@ import ModuleHeader from '../shared/ModuleHeader'
 import { ANTES_DEPOIS_PERGUNTAS } from '../../lib/aurora/gamificacao'
 
 // ============================================================
-// AURORA — Antes & Depois (Narrativa de Transformacao)
-// Nao sao metricas — e uma historia de transformacao
+// AURORA — Antes & Depois (Narrativa de Transformação)
+// Não são métricas — é uma história de transformação
 // ============================================================
 
 const AURORA_COLOR = '#D4A5A5'
@@ -215,7 +215,7 @@ export default function AntesDepois() {
       <ModuleHeader
         eco="aurora"
         title="Antes & Depois"
-        subtitle="A tua historia de transformacao"
+        subtitle="A tua história de transformação"
       />
 
       <div className="max-w-3xl mx-auto px-4 py-6">
@@ -250,7 +250,7 @@ export default function AntesDepois() {
             } disabled:opacity-40 disabled:cursor-not-allowed`}
             style={view === 'comparacao' ? { backgroundColor: AURORA_COLOR } : undefined}
           >
-            Comparacao
+            Comparação
           </button>
         </div>
 
@@ -337,7 +337,7 @@ export default function AntesDepois() {
                       style={{ backgroundColor: AURORA_COLOR }}
                     >
                       {currentStep < STEPS.length - 1
-                        ? 'Proximo \u2192'
+                        ? 'Próximo \u2192'
                         : 'Ver Cartas \u2192'}
                     </button>
                   </div>
@@ -387,7 +387,7 @@ export default function AntesDepois() {
                     Carta do teu eu do passado
                   </h3>
                   <p className="text-xs text-gray-500">
-                    O que {g('dirias', 'dirias')} a ti {g('mesmo', 'mesma')} quando comecaste esta jornada?
+                    O que {g('dirias', 'dirias')} a ti {g('mesmo', 'mesma')} quando começaste esta jornada?
                   </p>
                 </div>
               </div>
@@ -471,7 +471,7 @@ export default function AntesDepois() {
                   className="flex-1 py-3 rounded-xl text-white text-sm font-medium transition-all shadow-md"
                   style={{ backgroundColor: AURORA_COLOR }}
                 >
-                  Ver Comparacao &rarr;
+                  Ver Comparação &rarr;
                 </button>
               )}
             </div>
@@ -496,7 +496,7 @@ export default function AntesDepois() {
                 className="text-2xl font-bold text-gray-800"
                 style={{ fontFamily: "'Cormorant Garamond', serif" }}
               >
-                A Tua Transformacao
+                A Tua Transformação
               </h2>
               <p className="text-sm text-gray-500 mt-1">
                 {g('Olha para o caminho que percorreste.', 'Olha para o caminho que percorreste.')}
@@ -526,7 +526,7 @@ export default function AntesDepois() {
                     {ANTES_DEPOIS_PERGUNTAS.quem_eras.titulo}
                   </h4>
                   <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    {answers.quem_eras || <span className="text-gray-400 italic">Ainda nao respondeste.</span>}
+                    {answers.quem_eras || <span className="text-gray-400 italic">Ainda não respondeste.</span>}
                   </p>
                 </div>
 
@@ -542,7 +542,7 @@ export default function AntesDepois() {
                     {ANTES_DEPOIS_PERGUNTAS.que_feridas.titulo}
                   </h4>
                   <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    {answers.que_feridas || <span className="text-gray-400 italic">Ainda nao respondeste.</span>}
+                    {answers.que_feridas || <span className="text-gray-400 italic">Ainda não respondeste.</span>}
                   </p>
                 </div>
 
@@ -583,7 +583,7 @@ export default function AntesDepois() {
                     {ANTES_DEPOIS_PERGUNTAS.o_que_soltaste.titulo}
                   </h4>
                   <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    {answers.o_que_soltaste || <span className="text-gray-400 italic">Ainda nao respondeste.</span>}
+                    {answers.o_que_soltaste || <span className="text-gray-400 italic">Ainda não respondeste.</span>}
                   </p>
                 </div>
 
@@ -599,7 +599,7 @@ export default function AntesDepois() {
                     {ANTES_DEPOIS_PERGUNTAS.quem_es_agora.titulo}
                   </h4>
                   <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    {answers.quem_es_agora || <span className="text-gray-400 italic">Ainda nao respondeste.</span>}
+                    {answers.quem_es_agora || <span className="text-gray-400 italic">Ainda não respondeste.</span>}
                   </p>
                 </div>
 
@@ -661,8 +661,8 @@ export default function AntesDepois() {
         {/* Motivational footer */}
         <p className="text-center text-xs text-gray-400 mt-6 px-4">
           {g(
-            'A tua historia e unica. Cada passo que deste trouxe-te ate aqui.',
-            'A tua historia e unica. Cada passo que deste trouxe-te ate aqui.'
+            'A tua história é única. Cada passo que deste trouxe-te até aqui.',
+            'A tua história é única. Cada passo que deste trouxe-te até aqui.'
           )}
         </p>
       </div>

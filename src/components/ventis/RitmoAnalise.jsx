@@ -5,9 +5,9 @@ import ModuleHeader from '../shared/ModuleHeader'
 import { g } from '../../utils/genero'
 
 // ============================================================
-// VENTIS — Ritmo Analise
+// VENTIS — Ritmo Análise
 // Eco da Energia & Ritmo (Anahata)
-// Dashboard analitico do ritmo pessoal
+// Dashboard analítico do ritmo pessoal
 // ============================================================
 
 const VENTIS = '#5D9B84'
@@ -85,7 +85,7 @@ const getEnergyColor = (pct) => {
 
 const getEnergyLabel = (pct) => {
   if (pct > 70) return 'Alta'
-  if (pct >= 40) return 'Media'
+  if (pct >= 40) return 'Média'
   return 'Baixa'
 }
 
@@ -171,7 +171,7 @@ const EnergyOverview = ({ energiaLogs, weekDates }) => {
           )}
         </div>
         <p className="text-sm text-gray-400 mt-1">
-          Energia media esta semana
+          Energia média esta semana
         </p>
         <p className="text-xs mt-1" style={{ color: getEnergyColor(avgEnergy) }}>
           {getEnergyLabel(avgEnergy)}
@@ -180,7 +180,7 @@ const EnergyOverview = ({ energiaLogs, weekDates }) => {
 
       {/* 7 days x 3 periods bar chart */}
       <div>
-        <h3 className="text-sm font-medium text-gray-400 mb-3">Energia por periodo</h3>
+        <h3 className="text-sm font-medium text-gray-400 mb-3">Energia por período</h3>
         <div className="flex items-end justify-between gap-1.5">
           {gridData.map((day, i) => {
             const isToday = day.date === todayStr()
@@ -217,7 +217,7 @@ const EnergyOverview = ({ energiaLogs, weekDates }) => {
         {/* Legend */}
         <div className="flex items-center justify-center gap-4 mt-3">
           {[
-            { label: 'Manha', color: '#94a3b8' },
+            { label: 'Manhã', color: '#94a3b8' },
             { label: 'Tarde', color: '#94a3b8' },
             { label: 'Noite', color: '#94a3b8' }
           ].map(item => (
@@ -269,7 +269,7 @@ const RoutineAdherence = ({ rotinasLogs, weekDates }) => {
         className="text-base font-semibold text-white mb-4"
         style={{ fontFamily: HEADING_FONT }}
       >
-        Aderencia a Rotina
+        Aderência à Rotina
       </h3>
 
       {/* X de 7 dias */}
@@ -349,7 +349,7 @@ const SleepQuality = ({ energiaLogs, weekDates }) => {
 
       {manhaLogs.length === 0 ? (
         <p className="text-sm text-gray-500">
-          Sem dados de sono esta semana. Regista a qualidade do sono no check-in da manha.
+          Sem dados de sono esta semana. Regista a qualidade do sono no check-in da manhã.
         </p>
       ) : (
         <div className="space-y-3">
@@ -370,7 +370,7 @@ const SleepQuality = ({ energiaLogs, weekDates }) => {
             </span>
           </div>
           <p className="text-xs text-gray-500">
-            Media de {manhaLogs.length} {manhaLogs.length === 1 ? 'registo' : 'registos'} esta semana
+            Média de {manhaLogs.length} {manhaLogs.length === 1 ? 'registo' : 'registos'} esta semana
           </p>
         </div>
       )}
@@ -472,7 +472,7 @@ const PausesSummary = ({ pausasLogs, weekDates }) => {
 
       {weekLogs.length === 0 ? (
         <p className="text-sm text-gray-500">
-          Sem pausas registadas esta semana. As pausas sao tao importantes como a accao.
+          Sem pausas registadas esta semana. As pausas são tão importantes como a acção.
         </p>
       ) : (
         <div className="grid grid-cols-2 gap-3">
@@ -486,7 +486,7 @@ const PausesSummary = ({ pausasLogs, weekDates }) => {
             <p className="text-2xl font-bold" style={{ color: VENTIS, fontFamily: HEADING_FONT }}>
               {avgPerDay}
             </p>
-            <p className="text-xs text-gray-500">Media por dia</p>
+            <p className="text-xs text-gray-500">Média por dia</p>
           </div>
         </div>
       )}
@@ -503,7 +503,7 @@ const OverallInsight = ({ energiaLogs, movimentoLogs, weekDates }) => {
     const weekMovimento = movimentoLogs.filter(l => weekDates.includes(l.data))
 
     if (weekEnergia.length === 0) {
-      return `Ainda nao tens dados de energia esta semana. Comeca a registar 3x/dia — manha, tarde e noite — para descobrir o teu ritmo natural.`
+      return `Ainda não tens dados de energia esta semana. Começa a registar 3x/dia — manhã, tarde e noite — para descobrir o teu ritmo natural.`
     }
 
     const avgEnergy = Math.round(weekEnergia.reduce((sum, l) => sum + (l.energia || 0), 0) / weekEnergia.length)
@@ -543,9 +543,9 @@ const OverallInsight = ({ energiaLogs, movimentoLogs, weekDates }) => {
 
     const sleepCorrelation = sleepWithMovement.length >= 2 && sleepWithoutMovement.length >= 2 && avgSleepMove > avgSleepNoMove
 
-    let text = `Esta semana a tua energia media foi ${avgEnergy}%.`
-    if (peakLabel) text += ` Os teus picos sao ${peakLabel}.`
-    if (sleepCorrelation) text += ` Dormiste melhor nos dias com actividade fisica.`
+    let text = `Esta semana a tua energia média foi ${avgEnergy}%.`
+    if (peakLabel) text += ` Os teus picos são ${peakLabel}.`
+    if (sleepCorrelation) text += ` Dormiste melhor nos dias com actividade física.`
     if (weekMovimento.length === 0 && avgEnergy < 50) text += ` Experimenta adicionar movimento — pode ajudar a subir a energia.`
     if (avgEnergy >= 70) text += ` ${g('Estas num bom ritmo', 'Estas num bom ritmo')} — continua assim!`
 
@@ -658,11 +658,11 @@ export default function RitmoAnalise() {
     <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${VENTIS_DARK} 0%, #111318 30%, #0d0f13 100%)` }}>
       <ModuleHeader
         eco="ventis"
-        title="Analise de Ritmo"
+        title="Análise de Ritmo"
         subtitle={`O teu ritmo pessoal — ${g('mapeado', 'mapeada')} e ${g('compreendido', 'compreendida')}`}
       />
 
-      <div className="max-w-lg mx-auto px-4 pb-24 space-y-6" role="main" aria-label="Analise de Ritmo Ventis">
+      <div className="max-w-lg mx-auto px-4 pb-24 space-y-6" role="main" aria-label="Análise de Ritmo Ventis">
         {/* Concept quote */}
         <div className="text-center py-3">
           <p className="text-xs text-gray-500 italic leading-relaxed max-w-xs mx-auto">
@@ -671,7 +671,7 @@ export default function RitmoAnalise() {
         </div>
 
         {/* Energy Overview */}
-        <section aria-label="Visao geral de energia">
+        <section aria-label="Visão geral de energia">
           <div className="p-5 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
             <h2
               className="text-base font-semibold text-white mb-4"
@@ -684,7 +684,7 @@ export default function RitmoAnalise() {
         </section>
 
         {/* Routine Adherence */}
-        <section aria-label="Aderencia a rotina">
+        <section aria-label="Aderência à rotina">
           <RoutineAdherence rotinasLogs={rotinasLogs} weekDates={weekDates} />
         </section>
 

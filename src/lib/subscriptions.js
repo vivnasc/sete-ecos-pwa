@@ -13,7 +13,7 @@ import { supabase } from './supabase';
 // Status possiveis de subscricao
 export const SUBSCRIPTION_STATUS = {
   TESTER: 'tester',           // Acesso gratuito permanente (tu defines)
-  TRIAL: 'trial',             // Periodo experimental
+  TRIAL: 'trial',             // Período experimental
   ACTIVE: 'active',           // Pagamento confirmado
   PENDING: 'pending',         // Aguarda confirmacao de pagamento
   EXPIRED: 'expired',         // Trial ou subscricao expirou
@@ -115,13 +115,13 @@ export const TRIAL_RESTRICTED_ROUTES = [
   '/vitalis/lista-compras',   // Depende do plano
   '/vitalis/relatorios',      // Relatorios completos
   '/vitalis/relatorio-semanal',
-  '/vitalis/tendencias',      // Graficos de tendencia
+  '/vitalis/tendencias',      // Gráficos de tendência
   '/vitalis/fotos-progresso', // Fotos de progresso
   '/vitalis/plano-pdf',       // Export PDF
   '/vitalis/sugestoes',       // Sugestoes de refeicoes
 ];
 
-// Configuracoes gerais
+// Configurações gerais
 export const SUBSCRIPTION_CONFIG = {
   TRIAL_DAYS: 7,              // 7 dias de trial com acesso limitado
   DEFAULT_PLAN: 'monthly',
@@ -154,7 +154,7 @@ export const checkVitalisAccess = async (userId) => {
       return { hasAccess: true, status, reason: 'tester' };
     }
 
-    // Subscricao ativa
+    // Subscrição activa
     if (status === SUBSCRIPTION_STATUS.ACTIVE) {
       // Verificar se nao expirou
       if (client.subscription_expires) {

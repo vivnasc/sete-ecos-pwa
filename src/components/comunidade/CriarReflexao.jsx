@@ -244,7 +244,7 @@ export default function CriarReflexao({ userId, onReflexaoCriada, onFechar, prom
           </div>
         )}
 
-        {/* ===== Configuracao ===== */}
+        {/* ===== Configuração ===== */}
         <div className="px-4 pb-3">
           <p className="text-[10px] uppercase tracking-wider text-gray-300 font-semibold mb-2.5"
             style={{ fontFamily: 'var(--font-corpo)' }}

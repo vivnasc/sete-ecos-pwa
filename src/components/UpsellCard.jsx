@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 /**
- * UPSELL CARD - Recomendacao contextual apos leitura Lumina
+ * UPSELL CARD - Recomendação contextual apos leitura Lumina
  *
  * Aparece apos a leitura com mensagem adaptada ao padrao detectado.
  * So visivel para quem NAO tem Vitalis/Aurea activo.

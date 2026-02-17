@@ -31,28 +31,28 @@ export default function WelcomeTutorial({ eco = 'vitalis', onComplete }) {
           icon: '📊'
         },
         {
-          title: 'Check-in Diario',
-          description: 'Regista as tuas refeicoes, agua, sono e exercicio. A consistencia e a chave para resultados duradouros.',
+          title: 'Check-in Diário',
+          description: 'Regista as tuas refeições, água, sono e exercício. A consistência é a chave para resultados duradouros.',
           icon: '✅'
         },
         {
           title: 'Plano Alimentar',
-          description: 'O teu plano personalizado com porcoes medidas pela tua mao. Simples e pratico!',
+          description: 'O teu plano personalizado com porções medidas pela tua mão. Simples e prático!',
           icon: '🥗'
         },
         {
           title: 'Receitas',
-          description: 'Centenas de receitas saudaveis e deliciosas para inspirar as tuas refeicoes.',
+          description: 'Centenas de receitas saudáveis e deliciosas para inspirar as tuas refeições.',
           icon: '👩‍🍳'
         },
         {
           title: 'Chat com Coach',
-          description: 'Duvidas? Fala comigo a qualquer momento. Estou aqui para te apoiar!',
+          description: 'Dúvidas? Fala comigo a qualquer momento. Estou aqui para te apoiar!',
           icon: '💬'
         },
         {
           title: g('Estamos juntos!', 'Estamos juntas!'),
-          description: 'Esta e a TUA jornada. Vai ao teu ritmo, celebra cada pequena vitoria. Estou aqui contigo!',
+          description: 'Esta é a TUA jornada. Vai ao teu ritmo, celebra cada pequena vitória. Estou aqui contigo!',
           icon: '💚'
         }
       ]
@@ -62,28 +62,28 @@ export default function WelcomeTutorial({ eco = 'vitalis', onComplete }) {
       color: '#C9A227',
       steps: [
         {
-          title: 'O teu Espaco Dourado',
-          description: 'Um lugar para reconheceres o teu valor e cultivares a tua presenca.',
+          title: 'O teu Espaço Dourado',
+          description: 'Um lugar para reconheceres o teu valor e cultivares a tua presença.',
           icon: '✨'
         },
         {
-          title: 'Micro-Praticas',
-          description: 'Pequenos momentos de consciencia que transformam o teu dia.',
+          title: 'Micro-Práticas',
+          description: 'Pequenos momentos de consciência que transformam o teu dia.',
           icon: '🌟'
         },
         {
           title: 'Carteira de Merecimento',
-          description: 'Guarda aqui as provas do teu valor. Relembra sempre que es merecedora.',
+          description: 'Guarda aqui as provas do teu valor. Relembra sempre que és merecedora.',
           icon: '💛'
         },
         {
-          title: 'Diario de Reflexao',
-          description: 'Um espaco seguro para os teus pensamentos e descobertas.',
+          title: 'Diário de Reflexão',
+          description: 'Um espaço seguro para os teus pensamentos e descobertas.',
           icon: '📝'
         },
         {
           title: 'Brilha!',
-          description: 'O teu brilho interior esta sempre la. Aurea ajuda-te a ve-lo.',
+          description: 'O teu brilho interior está sempre lá. Aurea ajuda-te a vê-lo.',
           icon: '👑'
         }
       ]
@@ -93,18 +93,18 @@ export default function WelcomeTutorial({ eco = 'vitalis', onComplete }) {
       color: '#8B5CF6',
       steps: [
         {
-          title: 'Diagnostico Diario',
+          title: 'Diagnóstico Diário',
           description: 'Responde a 7 perguntas simples sobre como te sentes hoje.',
           icon: '🔮'
         },
         {
           title: 'Leitura Personalizada',
-          description: 'Recebe uma interpretacao unica baseada nas tuas respostas.',
+          description: 'Recebe uma interpretação única baseada nas tuas respostas.',
           icon: '📖'
         },
         {
-          title: 'Padroes e Insights',
-          description: 'Ao longo do tempo, descobre padroes no teu bem-estar.',
+          title: 'Padrões e Insights',
+          description: 'Ao longo do tempo, descobre padrões no teu bem-estar.',
           icon: '💜'
         }
       ]
@@ -189,7 +189,7 @@ export default function WelcomeTutorial({ eco = 'vitalis', onComplete }) {
             className="w-full py-3.5 rounded-xl font-semibold text-white transition-all hover:shadow-lg"
             style={{ background: `linear-gradient(135deg, ${tutorial.color}, ${tutorial.color}dd)` }}
           >
-            {currentStep < totalSteps - 1 ? 'Continuar' : 'Comecar!'}
+            {currentStep < totalSteps - 1 ? 'Continuar' : 'Começar!'}
           </button>
 
           <div className="flex justify-between items-center">

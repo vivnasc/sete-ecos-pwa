@@ -5,8 +5,8 @@ import { g } from '../utils/genero'
 
 /**
  * ECOA - Landing Page
- * "Voz & Desbloqueio do Silencio" - Chakra Vishuddha (Garganta), Elemento: Eter/Som
- * Modulo de recuperacao da voz silenciada, expressao autentica e assertividade
+ * "Voz & Desbloqueio do Silêncio" - Chakra Vishuddha (Garganta), Elemento: Éter/Som
+ * Módulo de recuperação da voz silenciada, expressão autêntica e assertividade
  */
 
 const LandingEcoa = () => {
@@ -17,17 +17,17 @@ const LandingEcoa = () => {
     {
       icone: '🗺️',
       titulo: 'Mapa de Silenciamento',
-      desc: 'Identifica onde, quando e com quem te calas. O primeiro passo e ver o padrao.'
+      desc: 'Identifica onde, quando e com quem te calas. O primeiro passo é ver o padrão.'
     },
     {
       icone: '🗣️',
       titulo: 'Programa Micro-Voz',
-      desc: '8 semanas progressivas: de preferencias simples a verdades profundas. Um exercicio por dia.'
+      desc: '8 semanas progressivas: de preferências simples a verdades profundas. Um exercício por dia.'
     },
     {
       icone: '📖',
-      titulo: 'Biblioteca de Frases Dificeis',
-      desc: `Frases prontas para situacoes em que normalmente te calas. Pratica antes de precisar.`
+      titulo: 'Biblioteca de Frases Difíceis',
+      desc: `Frases prontas para situações em que normalmente te calas. Pratica antes de precisar.`
     },
     {
       icone: '💬',
@@ -36,33 +36,33 @@ const LandingEcoa = () => {
     },
     {
       icone: '📝',
-      titulo: 'Diario de Voz',
-      desc: 'Espaco seguro para escrever o que a tua voz quer dizer — sem filtro, sem julgamento.'
+      titulo: 'Diário de Voz',
+      desc: 'Espaço seguro para escrever o que a tua voz quer dizer — sem filtro, sem julgamento.'
     },
     {
       icone: '📨',
-      titulo: 'Cartas Nao Enviadas',
-      desc: 'Escreve cartas a quem te silenciou. Liberta as palavras presas. Nao precisas de enviar.'
+      titulo: 'Cartas Não Enviadas',
+      desc: 'Escreve cartas a quem te silenciou. Liberta as palavras presas. Não precisas de enviar.'
     },
     {
       icone: '🔊',
-      titulo: 'Afirmacoes Personalizadas',
-      desc: 'Afirmacoes de voz para repetir em voz alta. A repeticao transforma crenca em verdade.'
+      titulo: 'Afirmações Personalizadas',
+      desc: 'Afirmações de voz para repetir em voz alta. A repetição transforma crença em verdade.'
     },
     {
       icone: '✍️',
-      titulo: 'Exercicios de Expressao',
+      titulo: 'Exercícios de Expressão',
       desc: 'Escrita livre, listas de verdade, manifestos pessoais. Ferramentas para libertar a voz interior.'
     },
     {
       icone: '💎',
-      titulo: 'Comunicacao Assertiva',
-      desc: `Templates e tecnicas para comunicar com clareza e firmeza. Ser ${g('directo', 'directa')} sem ser ${g('agressivo', 'agressiva')}.`
+      titulo: 'Comunicação Assertiva',
+      desc: `Templates e técnicas para comunicar com clareza e firmeza. Ser ${g('directo', 'directa')} sem ser ${g('agressivo', 'agressiva')}.`
     },
     {
       icone: '🤖',
       titulo: 'Coach Ecoa',
-      desc: `Coach virtual ${g('encorajador', 'encorajadora')} que te guia na recuperacao da tua voz. Sem julgamento, com firmeza gentil.`
+      desc: `Coach virtual ${g('encorajador', 'encorajadora')} que te guia na recuperação da tua voz. Sem julgamento, com firmeza gentil.`
     }
   ]
 
@@ -70,12 +70,12 @@ const LandingEcoa = () => {
     {
       numero: '01',
       titulo: 'Mapeia onde te calas',
-      desc: 'Identifica os padroes de silencio: com quem, quando e porquê. Consciencia e o primeiro som.'
+      desc: 'Identifica os padrões de silêncio: com quem, quando e porquê. Consciência é o primeiro som.'
     },
     {
       numero: '02',
       titulo: 'Pratica a tua voz progressivamente',
-      desc: 'De preferencias simples a verdades profundas. Um exercicio por dia. A voz e um musculo — treina-se.'
+      desc: 'De preferências simples a verdades profundas. Um exercício por dia. A voz é um músculo — treina-se.'
     },
     {
       numero: '03',
@@ -112,7 +112,7 @@ const LandingEcoa = () => {
             className="text-xl md:text-2xl text-white/80 mb-2"
             style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}
           >
-            Voz &amp; Desbloqueio do Silencio
+            Voz &amp; Desbloqueio do Silêncio
           </p>
 
           <p className="text-white/60 max-w-xl mx-auto mb-10">
@@ -147,14 +147,14 @@ const LandingEcoa = () => {
           </h2>
 
           <p className="text-[#4A90A4]/80 mb-10 text-lg">
-            O silencio protege — mas quando se torna habito, aprisiona.
+            O silêncio protege — mas quando se torna hábito, aprisiona.
           </p>
 
           <div className="grid gap-4 max-w-lg mx-auto text-left">
             {[
-              { text: `Dizes que sim quando queres dizer nao`, useG: false },
-              { text: `Calas o que sentes para nao incomodar`, useG: false },
-              { text: `Sentes que a tua voz nao tem peso`, useG: false }
+              { text: `Dizes que sim quando queres dizer não`, useG: false },
+              { text: `Calas o que sentes para não incomodar`, useG: false },
+              { text: `Sentes que a tua voz não tem peso`, useG: false }
             ].map((item, i) => (
               <div
                 key={i}
@@ -180,10 +180,10 @@ const LandingEcoa = () => {
               className="text-3xl md:text-4xl font-bold text-white mb-4"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              O Ecoa e o espaco onde recuperas a tua voz
+              O Ecoa é o espaço onde recuperas a tua voz
             </h2>
             <p className="text-[#4A90A4]/70 max-w-2xl mx-auto">
-              Ferramentas para desbloquear o silencio, fortalecer a expressao e falar a tua verdade.
+              Ferramentas para desbloquear o silêncio, fortalecer a expressão e falar a tua verdade.
             </p>
           </div>
 
@@ -217,7 +217,7 @@ const LandingEcoa = () => {
               Como funciona
             </h2>
             <p className="text-[#4A90A4]/70">
-              Tres passos. Do silencio a voz.
+              Três passos. Do silêncio à voz.
             </p>
           </div>
 
@@ -263,7 +263,7 @@ const LandingEcoa = () => {
               Escolhe o teu plano
             </h2>
             <p className="text-[#4A90A4]/70">
-              Precos simples. Sem compromisso. Cancela quando quiseres.
+              Preços simples. Sem compromisso. Cancela quando quiseres.
             </p>
           </div>
 
@@ -307,7 +307,7 @@ const LandingEcoa = () => {
 
                 {plano.duration > 1 && (
                   <p className="text-[#4A90A4]/50 text-xs mb-4">
-                    {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mes
+                    {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mês
                   </p>
                 )}
 
@@ -334,13 +334,13 @@ const LandingEcoa = () => {
             className="text-3xl md:text-4xl font-bold text-white mb-4"
             style={{ fontFamily: "'Cormorant Garamond', serif" }}
           >
-            Experimenta 7 dias gratis
+            Experimenta 7 dias grátis
           </h2>
           <p className="text-white/70 mb-4 text-lg">
-            Sem compromisso. Sem cartao. Cancelas quando quiseres.
+            Sem compromisso. Sem cartão. Cancelas quando quiseres.
           </p>
           <p className="text-white/50 mb-8">
-            Descobre como e viver com a tua voz — sem filtros, sem medo, sem silencio forçado.
+            Descobre como é viver com a tua voz — sem filtros, sem medo, sem silêncio forçado.
           </p>
           <Link
             to="/ecoa/pagamento"
@@ -349,7 +349,7 @@ const LandingEcoa = () => {
             Quero recuperar a minha voz
           </Link>
           <p className="text-white/40 text-sm mt-6">
-            7 dias gratis &middot; Acesso completo &middot; Cancela quando quiseres
+            7 dias grátis &middot; Acesso completo &middot; Cancela quando quiseres
           </p>
         </div>
       </section>
@@ -367,7 +367,7 @@ const LandingEcoa = () => {
             >
               ECOA
             </span>
-            <span className="text-white/40 text-sm">Voz &amp; Desbloqueio do Silencio</span>
+            <span className="text-white/40 text-sm">Voz &amp; Desbloqueio do Silêncio</span>
           </div>
           <div className="flex gap-6 text-sm">
             <Link to="/landing" className="text-white/40 hover:text-white transition-colors">

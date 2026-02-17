@@ -6,8 +6,8 @@ import ModuleHeader from '../shared/ModuleHeader'
 import { g } from '../../utils/genero'
 
 /**
- * INSIGHTS IMAGO — Relatorio semanal de identidade & espelho
- * Metricas: espelho triplo, arqueologia, meditacoes, valores, nomeacao, integracoes
+ * INSIGHTS IMAGO — Relatório semanal de identidade & espelho
+ * Métricas: espelho triplo, arqueologia, meditações, valores, nomeação, integrações
  * Dados de: imago_clients, imago_espelho_triplo, imago_arqueologia,
  *           imago_meditacoes_log, imago_valores, imago_nomeacao, imago_integracoes_log
  */
@@ -18,7 +18,7 @@ const IMAGO_INSIGHTS_CONFIG = {
   metrics: [
     {
       id: 'espelho',
-      label: 'Sessoes Espelho Triplo',
+      label: 'Sessões Espelho Triplo',
       icon: '🪞',
       table: 'imago_espelho_triplo',
       selectColumns: 'id, essencia, mascara, aspiracao, created_at',
@@ -27,9 +27,9 @@ const IMAGO_INSIGHTS_CONFIG = {
         const preenchidos = data.filter(d => d.essencia && d.mascara && d.aspiracao).length
 
         let insight = ''
-        if (preenchidos >= 3) insight = 'Reflexao profunda e consistente!'
-        else if (count >= 2) insight = 'Bom ritmo de auto-observacao'
-        else if (count > 0) insight = 'Cada reflexao revela mais de ti'
+        if (preenchidos >= 3) insight = 'Reflexão profunda e consistente!'
+        else if (count >= 2) insight = 'Bom ritmo de auto-observação'
+        else if (count > 0) insight = 'Cada reflexão revela mais de ti'
 
         return {
           value: count,
@@ -41,7 +41,7 @@ const IMAGO_INSIGHTS_CONFIG = {
     },
     {
       id: 'arqueologia',
-      label: 'Escavacoes de identidade',
+      label: 'Escavações de identidade',
       icon: '⛏️',
       table: 'imago_arqueologia',
       selectColumns: 'id, created_at',
@@ -53,26 +53,26 @@ const IMAGO_INSIGHTS_CONFIG = {
     },
     {
       id: 'meditacoes',
-      label: 'Meditacoes de essencia',
+      label: 'Meditações de essência',
       icon: '🧘',
       table: 'imago_meditacoes_log',
       selectColumns: 'id, created_at',
       analysis: (data) => ({
         value: data.length,
         trend: data.length >= 3 ? 'up' : data.length > 0 ? 'stable' : 'down',
-        insight: data.length >= 5 ? 'Pratica regular de essencia!' : data.length > 0 ? 'Cada meditacao conecta-te mais' : ''
+        insight: data.length >= 5 ? 'Prática regular de essência!' : data.length > 0 ? 'Cada meditação conecta-te mais' : ''
       })
     },
     {
       id: 'integracoes',
-      label: 'Insights de integracao',
+      label: 'Insights de integração',
       icon: '🌀',
       table: 'imago_integracoes_log',
       selectColumns: 'id, created_at',
       analysis: (data) => ({
         value: data.length,
         trend: data.length >= 2 ? 'up' : data.length > 0 ? 'stable' : 'down',
-        insight: data.length >= 3 ? 'Integracao em movimento!' : data.length > 0 ? 'Conectar ecos traz clareza' : ''
+        insight: data.length >= 3 ? 'Integração em movimento!' : data.length > 0 ? 'Conectar ecos traz clareza' : ''
       })
     }
   ],
@@ -83,15 +83,15 @@ const IMAGO_INSIGHTS_CONFIG = {
     const integracoes = metricsData.integracoes || {}
 
     if (espelho.value >= 3 && meditacoes.value >= 2) {
-      return `Semana de profundidade! ${espelho.value} sessoes de Espelho Triplo e ${meditacoes.value} meditacoes de essencia. ${espelho.extra?.preenchidos >= 2 ? 'As tres dimensoes do espelho estao a revelar-se.' : ''} ${g('Estas mais conectado', 'Estas mais conectada')} contigo ${g('mesmo', 'mesma')}.`
+      return `Semana de profundidade! ${espelho.value} sessões de Espelho Triplo e ${meditacoes.value} meditações de essência. ${espelho.extra?.preenchidos >= 2 ? 'As três dimensões do espelho estão a revelar-se.' : ''} ${g('Estás mais conectado', 'Estás mais conectada')} contigo ${g('mesmo', 'mesma')}.`
     }
     if (espelho.value >= 1 && arqueologia.value >= 1) {
-      return `Combinaste reflexao e arqueologia esta semana — uma combinacao poderosa. Olhar para quem es agora e escavar quem foste cria pontes de compreensao. ${integracoes.value > 0 ? `E ainda registaste ${integracoes.value} insight(s) de integracao!` : 'Tenta registar insights de integracao entre os ecos.'}`
+      return `Combinaste reflexão e arqueologia esta semana — uma combinação poderosa. Olhar para quem és agora e escavar quem foste cria pontes de compreensão. ${integracoes.value > 0 ? `E ainda registaste ${integracoes.value} insight(s) de integração!` : 'Tenta registar insights de integração entre os ecos.'}`
     }
     if (espelho.value > 0) {
-      return `Comecaste a semana com ${espelho.value} reflexao(oes) no Espelho Triplo. Cada vez que te olhas honestamente, a identidade clareia. Tenta adicionar a Arqueologia de Si — escavar o passado ilumina o presente.`
+      return `Começaste a semana com ${espelho.value} reflexão(ões) no Espelho Triplo. Cada vez que te olhas honestamente, a identidade clareia. Tenta adicionar a Arqueologia de Si — escavar o passado ilumina o presente.`
     }
-    return `Esta semana ainda nao registaste reflexoes de identidade. A jornada do autoconhecimento comeca com uma pergunta simples: "Quem sou eu hoje?" Vai ao Espelho Triplo e comeca por ai.`
+    return `Esta semana ainda não registaste reflexões de identidade. A jornada do autoconhecimento começa com uma pergunta simples: "Quem sou eu hoje?" Vai ao Espelho Triplo e começa por aí.`
   }
 }
 

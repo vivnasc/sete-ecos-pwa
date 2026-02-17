@@ -9,8 +9,8 @@ import ModuleHeader from '../shared/ModuleHeader'
 /**
  * SERENA — Mapa Emocional
  * Mapa de calor emocional ao longo do tempo.
- * Visualizacao mensal com cores por emocao,
- * identificacao de padroes recorrentes.
+ * Visualização mensal com cores por emoção,
+ * identificação de padrões recorrentes.
  */
 
 const SERENA_COLOR = '#6B8E9B'
@@ -18,7 +18,7 @@ const SERENA_DARK = '#1a2e3a'
 
 const DIAS_SEMANA = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom']
 const MESES = [
-  'Janeiro', 'Fevereiro', 'Marco', 'Abril', 'Maio', 'Junho',
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
 ]
 
@@ -209,17 +209,17 @@ export default function MapaEmocional() {
       <ModuleHeader
         eco="serena"
         title="Mapa Emocional"
-        subtitle="Visualiza as tuas emocoes ao longo do tempo"
+        subtitle="Visualiza as tuas emoções ao longo do tempo"
         backTo="/serena/dashboard"
       />
 
       <div className="max-w-lg mx-auto px-4 py-6">
-        {/* Navegacao de mes */}
+        {/* Navegação de mês */}
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={() => setMesOffset(prev => prev + 1)}
             className="p-2 rounded-lg transition-colors hover:bg-white/10"
-            aria-label="Mes anterior"
+            aria-label="Mês anterior"
           >
             <span className="text-white/60 text-lg">←</span>
           </button>
@@ -230,7 +230,7 @@ export default function MapaEmocional() {
             onClick={() => setMesOffset(prev => Math.max(0, prev - 1))}
             disabled={mesOffset === 0}
             className="p-2 rounded-lg transition-colors hover:bg-white/10 disabled:opacity-30"
-            aria-label="Mes seguinte"
+            aria-label="Mês seguinte"
           >
             <span className="text-white/60 text-lg">→</span>
           </button>
@@ -299,12 +299,12 @@ export default function MapaEmocional() {
           })}
         </div>
 
-        {/* Filtro por emocao */}
+        {/* Filtro por emoção */}
         <div
           className="rounded-2xl border p-4 mb-6"
           style={{ background: `${SERENA_COLOR}08`, borderColor: `${SERENA_COLOR}15` }}
         >
-          <h3 className="text-white/70 text-sm font-medium mb-3">Filtrar por emocao</h3>
+          <h3 className="text-white/70 text-sm font-medium mb-3">Filtrar por emoção</h3>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setEmocaoFiltro(null)}
@@ -350,7 +350,7 @@ export default function MapaEmocional() {
               className="text-white text-lg font-semibold mb-4"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              Resumo do Mes
+              Resumo do Mês
             </h3>
 
             {/* Stats grid */}
@@ -365,12 +365,12 @@ export default function MapaEmocional() {
               </div>
               <div className="text-center">
                 <p className="text-white text-xl font-bold">{estatisticas.intensidadeMedia}</p>
-                <p className="text-white/40 text-xs">Int. media</p>
+                <p className="text-white/40 text-xs">Int. média</p>
               </div>
             </div>
 
-            {/* Top emocoes */}
-            <h4 className="text-white/60 text-sm mb-3">Emocoes mais frequentes</h4>
+            {/* Top emoções */}
+            <h4 className="text-white/60 text-sm mb-3">Emoções mais frequentes</h4>
             <div className="space-y-2">
               {estatisticas.topEmocoes.map(({ emocao, count, percent }) => (
                 <div key={emocao.value} className="flex items-center gap-3">
@@ -395,10 +395,10 @@ export default function MapaEmocional() {
           >
             <div className="text-5xl mb-4">🗺️</div>
             <h3 className="text-white text-lg font-medium mb-2">
-              Sem registos este mes
+              Sem registos este mês
             </h3>
             <p className="text-white/50 text-sm">
-              Começa a registar as tuas emocoes no Diario Emocional para ver o mapa ganhar vida.
+              Começa a registar as tuas emoções no Diário Emocional para ver o mapa ganhar vida.
             </p>
           </div>
         )}

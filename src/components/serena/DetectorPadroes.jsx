@@ -7,19 +7,19 @@ import { EMOCOES } from '../../lib/serena/gamificacao'
 import ModuleHeader from '../shared/ModuleHeader'
 
 /**
- * SERENA — Detector de Padroes
- * Apos 2 semanas de uso, detecta padroes como:
- * "Aos domingos a noite, a ansiedade sobe 60%"
- * "Raiva aparece sempre depois de reunioes"
- * "Tristeza aumenta nos dias sem exercicio"
+ * SERENA — Detector de Padrões
+ * Após 2 semanas de uso, detecta padrões como:
+ * "Aos domingos à noite, a ansiedade sobe 60%"
+ * "Raiva aparece sempre depois de reuniões"
+ * "Tristeza aumenta nos dias sem exercício"
  */
 
 const SERENA_COLOR = '#6B8E9B'
 const SERENA_DARK = '#1a2e3a'
 
-const DIAS_SEMANA_NOMES = ['Domingo', 'Segunda', 'Terca', 'Quarta', 'Quinta', 'Sexta', 'Sabado']
+const DIAS_SEMANA_NOMES = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado']
 const PERIODOS = {
-  manha: { label: 'Manha', horas: [6, 12], icon: '🌅' },
+  manha: { label: 'Manhã', horas: [6, 12], icon: '🌅' },
   tarde: { label: 'Tarde', horas: [12, 18], icon: '☀️' },
   noite: { label: 'Noite', horas: [18, 24], icon: '🌙' },
   madrugada: { label: 'Madrugada', horas: [0, 6], icon: '🌑' }
@@ -87,7 +87,7 @@ export default function DetectorPadroes() {
 
     const resultados = []
 
-    // 1. Padrao por dia da semana
+    // 1. Padrão por dia da semana
     const porDiaSemana = {}
     registos.forEach(r => {
       const dia = new Date(r.data + 'T12:00:00').getDay()
@@ -117,7 +117,7 @@ export default function DetectorPadroes() {
             icon: emocaoInfo.icon,
             cor: emocaoInfo.cor,
             titulo: `${emocaoInfo.label} domina as ${DIAS_SEMANA_NOMES[dia]}s`,
-            descricao: `${percent}% dos registos de ${DIAS_SEMANA_NOMES[dia]} sao de ${emocaoInfo.label.toLowerCase()}.`,
+            descricao: `${percent}% dos registos de ${DIAS_SEMANA_NOMES[dia]} são de ${emocaoInfo.label.toLowerCase()}.`,
             forca: percent,
             dica: getDicaPorEmocao(topEmocao, DIAS_SEMANA_NOMES[dia])
           })
@@ -125,7 +125,7 @@ export default function DetectorPadroes() {
       }
     })
 
-    // 2. Padrao por periodo do dia
+    // 2. Padrão por período do dia
     const porPeriodo = {}
     registos.forEach(r => {
       const periodo = getPeriodo(r.created_at)
@@ -154,7 +154,7 @@ export default function DetectorPadroes() {
             icon: periodoInfo.icon,
             cor: emocaoInfo.cor,
             titulo: `${emocaoInfo.label} aparece mais de ${periodoInfo.label.toLowerCase()}`,
-            descricao: `${percent}% dos registos da ${periodoInfo.label.toLowerCase()} sao de ${emocaoInfo.label.toLowerCase()}.`,
+            descricao: `${percent}% dos registos da ${periodoInfo.label.toLowerCase()} são de ${emocaoInfo.label.toLowerCase()}.`,
             forca: percent,
             dica: getDicaPorPeriodo(topEmocao, periodo)
           })
@@ -162,7 +162,7 @@ export default function DetectorPadroes() {
       }
     })
 
-    // 3. Padrao de intensidade
+    // 3. Padrão de intensidade
     const intensidadeMedia = registos.reduce((acc, r) => acc + (r.intensidade || 5), 0) / registos.length
 
     // Emocoes com alta intensidade
@@ -182,13 +182,13 @@ export default function DetectorPadroes() {
             titulo: `${emocaoInfo.label} tende a ser intensa`,
             descricao: `${count} vezes a ${emocaoInfo.label.toLowerCase()} apareceu com intensidade 7 ou mais.`,
             forca: Math.min(100, count * 15),
-            dica: `Quando a ${emocaoInfo.label.toLowerCase()} vem forte, lembra-te: e uma onda. Vai passar.`
+            dica: `Quando a ${emocaoInfo.label.toLowerCase()} vem forte, lembra-te: é uma onda. Vai passar.`
           })
         }
       }
     })
 
-    // 4. Padrao de zonas do corpo
+    // 4. Padrão de zonas do corpo
     const porZona = {}
     registos.filter(r => r.corpo_zona && r.corpo_zona !== 'nenhum').forEach(r => {
       if (!porZona[r.corpo_zona]) porZona[r.corpo_zona] = {}
@@ -208,7 +208,7 @@ export default function DetectorPadroes() {
             titulo: `${emocaoInfo.label} manifesta-se no ${zona.replace('_', ' ')}`,
             descricao: `Quando sentes ${emocaoInfo.label.toLowerCase()}, o teu corpo responde na zona do ${zona.replace('_', ' ')}.`,
             forca: Math.min(100, topCount * 20),
-            dica: `Da atencao ao teu ${zona.replace('_', ' ')}. Respira para essa zona quando a ${emocaoInfo.label.toLowerCase()} aparecer.`
+            dica: `Dá atenção ao teu ${zona.replace('_', ' ')}. Respira para essa zona quando a ${emocaoInfo.label.toLowerCase()} aparecer.`
           })
         }
       }
@@ -234,9 +234,9 @@ export default function DetectorPadroes() {
               icon: '🎯',
               cor: emocaoInfo.cor,
               titulo: `"${trigger}" liga a ${emocaoInfo.label.toLowerCase()}`,
-              descricao: `O trigger "${trigger}" ja apareceu ${info.count} vezes, associado a ${emocaoInfo.label.toLowerCase()}.`,
+              descricao: `O trigger "${trigger}" já apareceu ${info.count} vezes, associado a ${emocaoInfo.label.toLowerCase()}.`,
               forca: Math.min(100, info.count * 20),
-              dica: `Quando "${trigger}" acontecer, ja sabes: ${emocaoInfo.label.toLowerCase()} pode vir. Prepara-te com uma respiracao antes.`
+              dica: `Quando "${trigger}" acontecer, já sabes: ${emocaoInfo.label.toLowerCase()} pode vir. Prepara-te com uma respiração antes.`
             })
           }
         }
@@ -250,25 +250,25 @@ export default function DetectorPadroes() {
   // Dicas contextuais
   function getDicaPorEmocao(emocao, dia) {
     const dicas = {
-      ansiedade: `As ${dia}s podem ser um gatilho. Considera uma respiracao preventiva nesse dia.`,
-      tristeza: `A tristeza tem um padrao. Nos dias de ${dia}, planeia algo que te nutre.`,
-      raiva: `A raiva pede expressao. Nas ${dia}s, reserva tempo para soltar — escreve, move-te.`,
+      ansiedade: `As ${dia}s podem ser um gatilho. Considera uma respiração preventiva nesse dia.`,
+      tristeza: `A tristeza tem um padrão. Nos dias de ${dia}, planeia algo que te nutre.`,
+      raiva: `A raiva pede expressão. Nas ${dia}s, reserva tempo para soltar — escreve, move-te.`,
       cansaco: `${dia}s parecem drenar-te. Avalia se podes descansar mais nesse dia.`,
-      medo: `O medo surge mais nas ${dia}s. Reconhece-o: "Estou com medo, e isso e normal."`,
-      calma: `Otimo! ${dia}s tendem a ser dias de calma. Aproveita para reflexao.`,
+      medo: `O medo surge mais nas ${dia}s. Reconhece-o: "Estou com medo, e isso é normal."`,
+      calma: `Ótimo! ${dia}s tendem a ser dias de calma. Aproveita para reflexão.`,
       alegria: `${dia}s trazem-te alegria! Nota o que fazes nesse dia — repete.`
     }
-    return dicas[emocao] || `Presta atencao ao que acontece nas ${dia}s.`
+    return dicas[emocao] || `Presta atenção ao que acontece nas ${dia}s.`
   }
 
   function getDicaPorPeriodo(emocao, periodo) {
     const dicas = {
-      manha: `A ${EMOCOES.find(e => e.value === emocao)?.label?.toLowerCase() || 'emocao'} aparece de manha. Comeca o dia com uma micro-pratica.`,
-      tarde: `A tarde traz esta emocao. Uma pausa consciente pode ajudar.`,
-      noite: `A noite intensifica. Antes de dormir, faz uma respiracao para soltar o dia.`,
-      madrugada: `Se acordas com esta emocao, o corpo esta a processar. Nao ignores.`
+      manha: `A ${EMOCOES.find(e => e.value === emocao)?.label?.toLowerCase() || 'emoção'} aparece de manhã. Começa o dia com uma micro-prática.`,
+      tarde: `A tarde traz esta emoção. Uma pausa consciente pode ajudar.`,
+      noite: `A noite intensifica. Antes de dormir, faz uma respiração para soltar o dia.`,
+      madrugada: `Se acordas com esta emoção, o corpo está a processar. Não ignores.`
     }
-    return dicas[periodo] || 'Observa o que acontece neste periodo.'
+    return dicas[periodo] || 'Observa o que acontece neste período.'
   }
 
   // Loading
@@ -280,7 +280,7 @@ export default function DetectorPadroes() {
       >
         <div className="text-center">
           <div className="text-6xl mb-4 animate-pulse">🔍</div>
-          <p className="text-white/60 text-sm">A analisar os teus padroes...</p>
+          <p className="text-white/60 text-sm">A analisar os teus padrões...</p>
         </div>
       </div>
     )
@@ -296,8 +296,8 @@ export default function DetectorPadroes() {
     >
       <ModuleHeader
         eco="serena"
-        title="Detector de Padroes"
-        subtitle="Descobre os teus padroes emocionais"
+        title="Detector de Padrões"
+        subtitle="Descobre os teus padrões emocionais"
         backTo="/serena/dashboard"
       />
 
@@ -313,7 +313,7 @@ export default function DetectorPadroes() {
               A recolher dados...
             </h2>
             <p className="text-white/60 text-sm mb-4 leading-relaxed">
-              Precisas de pelo menos 5 dias de registos emocionais para o detector encontrar padroes.
+              Precisas de pelo menos 5 dias de registos emocionais para o detector encontrar padrões.
             </p>
 
             {/* Progresso */}
@@ -338,21 +338,21 @@ export default function DetectorPadroes() {
             </p>
           </div>
         ) : padroes.length === 0 ? (
-          /* Sem padroes detectados */
+          /* Sem padrões detectados */
           <div
             className="rounded-2xl border p-8 text-center"
             style={{ background: `${SERENA_COLOR}10`, borderColor: `${SERENA_COLOR}25` }}
           >
             <div className="text-5xl mb-4">🌊</div>
             <h3 className="text-white text-lg font-medium mb-2">
-              Sem padroes claros (ainda)
+              Sem padrões claros (ainda)
             </h3>
             <p className="text-white/50 text-sm">
-              Continua a registar. Quanto mais dados, mais padroes o detector encontra.
+              Continua a registar. Quanto mais dados, mais padrões o detector encontra.
             </p>
           </div>
         ) : (
-          /* Padroes detectados */
+          /* Padrões detectados */
           <>
             {/* Resumo */}
             <div
@@ -363,7 +363,7 @@ export default function DetectorPadroes() {
                 <span className="text-3xl">🔍</span>
                 <div>
                   <h2 className="text-white text-lg font-semibold">
-                    {padroes.length} {padroes.length === 1 ? 'padrao' : 'padroes'} {padroes.length === 1 ? g('detectado', 'detectada') : g('detectados', 'detectadas')}
+                    {padroes.length} {padroes.length === 1 ? 'padrão' : 'padrões'} {padroes.length === 1 ? g('detectado', 'detectada') : g('detectados', 'detectadas')}
                   </h2>
                   <p className="text-white/40 text-xs">
                     Baseado em {registos.length} registos ao longo de {diasDeUso} dias
@@ -372,7 +372,7 @@ export default function DetectorPadroes() {
               </div>
             </div>
 
-            {/* Lista de padroes */}
+            {/* Lista de padrões */}
             <div className="space-y-4">
               {padroes.map((padrao, idx) => (
                 <div
@@ -392,10 +392,10 @@ export default function DetectorPadroes() {
                     </div>
                   </div>
 
-                  {/* Barra de forca */}
+                  {/* Barra de força */}
                   <div className="mb-3">
                     <div className="flex justify-between text-white/30 text-[10px] mb-1">
-                      <span>Forca do padrao</span>
+                      <span>Força do padrão</span>
                       <span>{padrao.forca}%</span>
                     </div>
                     <div className="h-1.5 rounded-full overflow-hidden" style={{ background: `${padrao.cor}15` }}>
@@ -423,7 +423,7 @@ export default function DetectorPadroes() {
                       style={{ background: `${padrao.cor}20`, color: `${padrao.cor}` }}
                     >
                       {padrao.tipo === 'dia_semana' && '📅 Dia da semana'}
-                      {padrao.tipo === 'periodo' && '🕐 Periodo do dia'}
+                      {padrao.tipo === 'periodo' && '🕐 Período do dia'}
                       {padrao.tipo === 'intensidade' && '📈 Intensidade'}
                       {padrao.tipo === 'corpo' && '🧍 Corpo'}
                       {padrao.tipo === 'trigger' && '🎯 Gatilho'}
@@ -443,8 +443,8 @@ export default function DetectorPadroes() {
           <div className="flex items-start gap-3">
             <span className="text-lg flex-shrink-0">ℹ️</span>
             <p className="text-white/40 text-xs leading-relaxed">
-              Os padroes sao calculados com base nos teus registos no Diario Emocional.
-              Quanto mais registares (incluindo triggers e zonas do corpo), mais precisos serao os padroes.
+              Os padrões são calculados com base nos teus registos no Diário Emocional.
+              Quanto mais registares (incluindo triggers e zonas do corpo), mais precisos serão os padrões.
             </p>
           </div>
         </div>

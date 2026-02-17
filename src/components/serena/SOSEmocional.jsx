@@ -9,43 +9,43 @@ const SERENA_COLOR = '#6B8E9B'
 const SERENA_DARK = '#1a2e3a'
 
 const TECNICAS = [
-  { id: 'respiracao', nome: 'Respiracao Box', icone: 'breath', duracao: '~4 min' },
+  { id: 'respiracao', nome: 'Respiração Box', icone: 'breath', duracao: '~4 min' },
   { id: 'grounding', nome: '5-4-3-2-1 Grounding', icone: 'ground', duracao: '~3 min' },
-  { id: 'bodyscan', nome: 'Body Scan Rapido', icone: 'body', duracao: '~3 min' }
+  { id: 'bodyscan', nome: 'Body Scan Rápido', icone: 'body', duracao: '~3 min' }
 ]
 
 const GROUNDING_PASSOS = [
-  { numero: 5, sentido: 'ves', instrucao: 'Olha a tua volta. Identifica 5 coisas que consegues ver.' },
+  { numero: 5, sentido: 'vês', instrucao: 'Olha à tua volta. Identifica 5 coisas que consegues ver.' },
   { numero: 4, sentido: 'tocas', instrucao: 'Toca em 4 coisas perto de ti. Sente a textura.' },
-  { numero: 3, sentido: 'ouves', instrucao: 'Fica em silencio. Identifica 3 sons a tua volta.' },
+  { numero: 3, sentido: 'ouves', instrucao: 'Fica em silêncio. Identifica 3 sons à tua volta.' },
   { numero: 2, sentido: 'cheiras', instrucao: 'Respira fundo. Identifica 2 cheiros.' },
   { numero: 1, sentido: 'saboreias', instrucao: 'Nota 1 sabor na tua boca, mesmo que subtil.' }
 ]
 
 const BODY_ZONAS = [
   {
-    nome: 'Cabeca',
-    instrucao: 'Fecha os olhos. Repara nas sensacoes no topo da tua cabeca, testa, rosto. Relaxa a mandibula. Solta a tensao entre as sobrancelhas.'
+    nome: 'Cabeça',
+    instrucao: 'Fecha os olhos. Repara nas sensações no topo da tua cabeça, testa, rosto. Relaxa a mandíbula. Solta a tensão entre as sobrancelhas.'
   },
   {
     nome: 'Ombros',
-    instrucao: 'Desce a atencao para os ombros. Nota se estao tensos ou levantados. Inspira e ao expirar, deixa-os cair suavemente.'
+    instrucao: 'Desce a atenção para os ombros. Nota se estão tensos ou levantados. Inspira e ao expirar, deixa-os cair suavemente.'
   },
   {
     nome: 'Peito',
-    instrucao: 'Sente o teu peito. Observa o movimento da respiracao. Nota se ha aperto ou abertura. Nao mudes nada, apenas observa.'
+    instrucao: 'Sente o teu peito. Observa o movimento da respiração. Nota se há aperto ou abertura. Não mudes nada, apenas observa.'
   },
   {
     nome: 'Barriga',
-    instrucao: 'Traz a atencao para a barriga. Sente-a a expandir e contrair com cada respiracao. Permite que ela se solte.'
+    instrucao: 'Traz a atenção para a barriga. Sente-a a expandir e contrair com cada respiração. Permite que ela se solte.'
   },
   {
     nome: 'Pernas',
     instrucao: 'Nota as tuas pernas. Sente o contacto com a cadeira ou o chao. Relaxa as coxas, joelhos, pantorrilhas.'
   },
   {
-    nome: 'Pes',
-    instrucao: 'Termina nos pes. Sente o peso do teu corpo nos pes. Imagina raizes a crescer para baixo, ancorando-te a terra.'
+    nome: 'Pés',
+    instrucao: 'Termina nos pés. Sente o peso do teu corpo nos pés. Imagina raízes a crescer para baixo, ancorando-te à terra.'
   }
 ]
 
@@ -110,7 +110,7 @@ const TECNICA_ICONES = {
   body: BodyIcon
 }
 
-// ===== COMPONENTE: Menu de Tecnicas =====
+// ===== COMPONENTE: Menu de Técnicas =====
 
 function MenuTecnicas({ onSelect }) {
   return (
@@ -129,7 +129,7 @@ function MenuTecnicas({ onSelect }) {
           {g('Estas seguro', 'Estas segura')}. Respira.
         </h2>
         <p className="text-white/70 text-sm max-w-xs mx-auto">
-          Escolhe uma tecnica rapida para te acalmar. Nao precisas de conta, nada e guardado.
+          Escolhe uma técnica rápida para te acalmar. Não precisas de conta, nada é guardado.
         </p>
       </div>
 
@@ -168,7 +168,7 @@ function MenuTecnicas({ onSelect }) {
   )
 }
 
-// ===== COMPONENTE: Respiracao Box =====
+// ===== COMPONENTE: Respiração Box =====
 
 const FASES_RESPIRACAO = [
   { label: 'Inspira', duracao: 4 },
@@ -188,7 +188,7 @@ function RespiracaoBox({ onVoltar, onConcluir }) {
 
   const fase = FASES_RESPIRACAO[faseIndex]
 
-  // Escala do circulo por fase: inspira=crescer, segurar=manter, expirar=encolher
+  // Escala do círculo por fase: inspira=crescer, segurar=manter, expirar=encolher
   const getEscala = () => {
     if (faseIndex === 0) {
       // Inspira: cresce de 0.6 a 1.0
@@ -263,10 +263,10 @@ function RespiracaoBox({ onVoltar, onConcluir }) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
         <h2 className="text-xl font-bold text-white mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-          Respiracao Box
+          Respiração Box
         </h2>
         <p className="text-white/60 text-sm mb-8 max-w-xs">
-          Uma tecnica de respiracao em quadrado: inspira, segura, expira, segura — 4 segundos cada.
+          Uma técnica de respiração em quadrado: inspira, segura, expira, segura — 4 segundos cada.
           Vamos fazer {totalCiclos} ciclos.
         </p>
 
@@ -275,7 +275,7 @@ function RespiracaoBox({ onVoltar, onConcluir }) {
           className="px-8 py-4 rounded-2xl text-white font-semibold text-lg transition-all duration-300 hover:scale-105 active:scale-95"
           style={{ backgroundColor: SERENA_COLOR }}
         >
-          Comecar
+          Começar
         </button>
 
         <button
@@ -307,7 +307,7 @@ function RespiracaoBox({ onVoltar, onConcluir }) {
         </div>
       </div>
 
-      {/* Circulo animado */}
+      {/* Círculo animado */}
       <div className="relative flex items-center justify-center mb-8">
         <div
           className="w-48 h-48 rounded-full flex items-center justify-center"
@@ -388,7 +388,7 @@ function GroundingExercicio({ onVoltar, onConcluir }) {
           5-4-3-2-1 Grounding
         </h2>
         <p className="text-white/60 text-sm mb-3 max-w-xs">
-          Esta tecnica usa os teus 5 sentidos para te trazer de volta ao momento presente.
+          Esta técnica usa os teus 5 sentidos para te trazer de volta ao momento presente.
         </p>
         <p className="text-white/40 text-xs mb-8 max-w-xs">
           Vais percorrer cada sentido, um de cada vez. Sem pressa.
@@ -399,7 +399,7 @@ function GroundingExercicio({ onVoltar, onConcluir }) {
           className="px-8 py-4 rounded-2xl text-white font-semibold text-lg transition-all duration-300 hover:scale-105 active:scale-95"
           style={{ backgroundColor: SERENA_COLOR }}
         >
-          Comecar
+          Começar
         </button>
 
         <button
@@ -432,7 +432,7 @@ function GroundingExercicio({ onVoltar, onConcluir }) {
         </div>
       </div>
 
-      {/* Numero grande */}
+      {/* Número grande */}
       <div
         className="w-28 h-28 rounded-full flex items-center justify-center mb-6 transition-all duration-700"
         style={{
@@ -446,7 +446,7 @@ function GroundingExercicio({ onVoltar, onConcluir }) {
         </span>
       </div>
 
-      {/* Instrucao do sentido */}
+      {/* Instrução do sentido */}
       <div className="text-center mb-8 max-w-xs">
         <h3 className="text-white font-semibold text-lg mb-2">
           {passo.numero} {passo.numero === 1 ? 'coisa' : 'coisas'} que {passo.sentido}
@@ -486,7 +486,7 @@ function GroundingExercicio({ onVoltar, onConcluir }) {
         className="px-8 py-3.5 rounded-2xl text-white font-semibold transition-all duration-300 hover:scale-105 active:scale-95"
         style={{ backgroundColor: SERENA_COLOR }}
       >
-        {passoActual + 1 >= totalPassos ? 'Concluir' : 'Proximo sentido'}
+        {passoActual + 1 >= totalPassos ? 'Concluir' : 'Próximo sentido'}
       </button>
 
       <button
@@ -499,7 +499,7 @@ function GroundingExercicio({ onVoltar, onConcluir }) {
   )
 }
 
-// ===== COMPONENTE: Body Scan Rapido =====
+// ===== COMPONENTE: Body Scan Rápido =====
 
 function BodyScanRapido({ onVoltar, onConcluir }) {
   const [zonaActual, setZonaActual] = useState(-1) // -1 = intro
@@ -570,10 +570,10 @@ function BodyScanRapido({ onVoltar, onConcluir }) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
         <h2 className="text-xl font-bold text-white mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-          Body Scan Rapido
+          Body Scan Rápido
         </h2>
         <p className="text-white/60 text-sm mb-3 max-w-xs">
-          Vamos percorrer o teu corpo da cabeca aos pes. Cada zona fica 30 segundos, mas podes ficar mais tempo ou avancar.
+          Vamos percorrer o teu corpo da cabeça aos pés. Cada zona fica 30 segundos, mas podes ficar mais tempo ou avançar.
         </p>
         <p className="text-white/40 text-xs mb-8 max-w-xs">
           {g('Senta-te confortavelmente ou fica de pe. Fecha os olhos se quiseres.',
@@ -585,7 +585,7 @@ function BodyScanRapido({ onVoltar, onConcluir }) {
           className="px-8 py-4 rounded-2xl text-white font-semibold text-lg transition-all duration-300 hover:scale-105 active:scale-95"
           style={{ backgroundColor: SERENA_COLOR }}
         >
-          Comecar
+          Começar
         </button>
 
         <button
@@ -711,7 +711,7 @@ function BodyScanRapido({ onVoltar, onConcluir }) {
           className="px-5 py-2.5 rounded-xl text-white text-sm font-medium transition-all duration-300 hover:scale-105 active:scale-95"
           style={{ backgroundColor: SERENA_COLOR }}
         >
-          {zonaActual + 1 >= totalZonas ? 'Concluir' : 'Avancar'}
+          {zonaActual + 1 >= totalZonas ? 'Concluir' : 'Avançar'}
         </button>
       </div>
 
@@ -728,13 +728,13 @@ function BodyScanRapido({ onVoltar, onConcluir }) {
   )
 }
 
-// ===== COMPONENTE: Ecra de Conclusao =====
+// ===== COMPONENTE: Ecrã de Conclusão =====
 
 function EcraConclusao({ tecnica, onVoltar, onMenu }) {
   const nomes = {
-    respiracao: 'Respiracao Box',
+    respiracao: 'Respiração Box',
     grounding: '5-4-3-2-1 Grounding',
-    bodyscan: 'Body Scan Rapido'
+    bodyscan: 'Body Scan Rápido'
   }
 
   return (
@@ -753,10 +753,10 @@ function EcraConclusao({ tecnica, onVoltar, onMenu }) {
         {g('Muito bem, querido', 'Muito bem, querida')}.
       </h2>
       <p className="text-white/60 text-sm mb-2 max-w-xs">
-        Completaste a tecnica <strong className="text-white/80">{nomes[tecnica]}</strong>.
+        Completaste a técnica <strong className="text-white/80">{nomes[tecnica]}</strong>.
       </p>
       <p className="text-white/40 text-xs mb-10 max-w-xs">
-        Lembra-te: cada momento de pausa e um acto de coragem. {g('Estas a cuidar de ti.', 'Estas a cuidar de ti.')}
+        Lembra-te: cada momento de pausa é um acto de coragem. {g('Estas a cuidar de ti.', 'Estas a cuidar de ti.')}
       </p>
 
       <div className="flex flex-col gap-3 w-full max-w-xs">
@@ -765,7 +765,7 @@ function EcraConclusao({ tecnica, onVoltar, onMenu }) {
           className="w-full py-3.5 rounded-2xl text-white font-semibold transition-all duration-300 hover:scale-105 active:scale-95"
           style={{ backgroundColor: SERENA_COLOR }}
         >
-          Tentar outra tecnica
+          Tentar outra técnica
         </button>
         <button
           onClick={onVoltar}
@@ -814,20 +814,20 @@ export default function SOSEmocional() {
       <ModuleHeader
         eco="serena"
         title="SOS Emocional"
-        subtitle={g('Um espaco seguro para ti', 'Um espaco seguro para ti')}
+        subtitle={g('Um espaço seguro para ti', 'Um espaço seguro para ti')}
         backTo="/serena/dashboard"
         showHomeButton={true}
         compact={false}
       />
 
-      {/* Conteudo principal */}
+      {/* Conteúdo principal */}
       <main className="flex-1 relative" id="sos-content">
-        {/* Menu de tecnicas */}
+        {/* Menu de técnicas */}
         {!tecnicaActiva && !concluida && (
           <MenuTecnicas onSelect={handleSelect} />
         )}
 
-        {/* Respiracao Box */}
+        {/* Respiração Box */}
         {tecnicaActiva === 'respiracao' && (
           <RespiracaoBox
             onVoltar={handleVoltar}
@@ -843,7 +843,7 @@ export default function SOSEmocional() {
           />
         )}
 
-        {/* Body Scan Rapido */}
+        {/* Body Scan Rápido */}
         {tecnicaActiva === 'bodyscan' && (
           <BodyScanRapido
             onVoltar={handleVoltar}
@@ -851,7 +851,7 @@ export default function SOSEmocional() {
           />
         )}
 
-        {/* Ecra de conclusao */}
+        {/* Ecrã de conclusão */}
         {concluida && (
           <EcraConclusao
             tecnica={concluida}
@@ -864,7 +864,7 @@ export default function SOSEmocional() {
       {/* Rodape discreto */}
       <footer className="text-center py-4 px-6">
         <p className="text-white/20 text-[10px]">
-          Se estiveres em crise, contacta a linha de apoio emocional do teu pais.
+          Se estiveres em crise, contacta a linha de apoio emocional do teu país.
         </p>
       </footer>
     </div>

@@ -11,11 +11,11 @@ import { g } from '../../utils/genero'
  * Fluxo de 3 passos:
  * 1. ZONAS — Onde te calas mais? (multi-select + slider 1-10)
  * 2. PESSOAS — Com quem te calas? (multi-select + tipos de verdade)
- * 3. VERDADES — Que verdades guardas? (texto livre + destinatario + barreira)
+ * 3. VERDADES — Que verdades guardas? (texto livre + destinatário + barreira)
  *
  * Ao completar: salva em ecoa_silenciamento, marca silenciamento_mapeado = true, +15 ecos
  *
- * Modo visualizacao: mapa visual com circulos, pessoas, verdades, e botao para editar
+ * Modo visualização: mapa visual com círculos, pessoas, verdades, e botão para editar
  */
 
 const ECOA_COLOR = '#4A90A4'
@@ -25,18 +25,18 @@ const ECOA_DARK = '#1a2a34'
 const ZONAS_OPTIONS = [
   { id: 'casa', label: 'Casa', icon: '\u{1F3E0}' },
   { id: 'trabalho', label: 'Trabalho', icon: '\u{1F4BC}' },
-  { id: 'familia', label: 'Familia', icon: '\u{1F46A}' },
+  { id: 'familia', label: 'Família', icon: '\u{1F46A}' },
   { id: 'amigos', label: 'Amigos', icon: '\u{1F46B}' },
-  { id: 'relacao_amorosa', label: 'Relacao amorosa', icon: '\u{2764}\uFE0F' },
+  { id: 'relacao_amorosa', label: 'Relação amorosa', icon: '\u{2764}\uFE0F' },
   { id: 'redes_sociais', label: 'Redes sociais', icon: '\u{1F4F1}' },
-  { id: 'reunioes', label: 'Reunioes', icon: '\u{1F4CB}' },
-  { id: 'espacos_publicos', label: 'Espacos publicos', icon: '\u{1F3DB}\uFE0F' }
+  { id: 'reunioes', label: 'Reuniões', icon: '\u{1F4CB}' },
+  { id: 'espacos_publicos', label: 'Espaços públicos', icon: '\u{1F3DB}\uFE0F' }
 ]
 
 // Pessoas com quem se cala
 const PESSOAS_OPTIONS = [
   { id: 'parceiro', label: g('Parceiro', 'Parceira'), icon: '\u{1F491}' },
-  { id: 'mae', label: 'Mae', icon: '\u{1F469}' },
+  { id: 'mae', label: 'Mãe', icon: '\u{1F469}' },
   { id: 'pai', label: 'Pai', icon: '\u{1F468}' },
   { id: 'chefe', label: 'Chefe', icon: '\u{1F454}' },
   { id: 'colegas', label: 'Colegas', icon: '\u{1F465}' },
@@ -45,13 +45,13 @@ const PESSOAS_OPTIONS = [
   { id: 'filhos', label: 'Filhos', icon: '\u{1F476}' }
 ]
 
-// Tipos de verdade que nao se dizem
+// Tipos de verdade que não se dizem
 const TIPOS_VERDADE = [
   { id: 'desacordo', label: 'Desacordo' },
   { id: 'desejo', label: 'Desejo' },
   { id: 'limite', label: 'Limite' },
   { id: 'dor', label: 'Dor' },
-  { id: 'opiniao', label: 'Opiniao' },
+  { id: 'opiniao', label: 'Opinião' },
   { id: 'necessidade', label: 'Necessidade' }
 ]
 
@@ -62,7 +62,7 @@ export default function MapaSilenciamento() {
   const [saving, setSaving] = useState(false)
   const [userId, setUserId] = useState(null)
 
-  // Modo: 'setup' (novo ou edicao) ou 'view' (ja mapeado)
+  // Modo: 'setup' (novo ou edição) ou 'view' (já mapeado)
   const [mode, setMode] = useState('setup')
   const [step, setStep] = useState(1)
 
@@ -125,7 +125,7 @@ export default function MapaSilenciamento() {
           setExistingData({ zonas, pessoas, verdades: verdadesData })
           setMode('view')
 
-          // Preencher formulario para possivel edicao
+          // Preencher formulário para possível edição
           const zonaIds = zonas.map(z => z.id)
           setSelectedZonas(zonaIds)
           const niveis = {}
@@ -142,7 +142,7 @@ export default function MapaSilenciamento() {
         }
       }
 
-      // Contar zonas que ja comecaram a abrir (voz_recuperada com zona)
+      // Contar zonas que já começaram a abrir (voz_recuperada com zona)
       const { count: vozesCount } = await supabase
         .from('ecoa_voz_recuperada')
         .select('id', { count: 'exact', head: true })
@@ -287,7 +287,7 @@ export default function MapaSilenciamento() {
         silenciamento_mapeado: true
       }
 
-      // Dar ecos so na primeira vez
+      // Dar ecos só na primeira vez
       if (!wasAlreadyMapped) {
         updatePayload.ecos_total = currentEcos + 15
       }
@@ -349,7 +349,7 @@ export default function MapaSilenciamento() {
         <ModuleHeader
           eco="ecoa"
           title="Mapa de Silenciamento"
-          subtitle="O teu mapa de onde guardas silencio"
+          subtitle="O teu mapa de onde guardas silêncio"
         />
 
         <div className="px-5 mt-6 max-w-lg mx-auto space-y-6">
@@ -362,7 +362,7 @@ export default function MapaSilenciamento() {
             >
               <p className="text-white/80 text-sm text-center">
                 <span style={{ color: ECOA_COLOR }} className="font-bold">{zonasAbertas}</span>
-                {' '}das tuas {zonas.length} zonas de silencio ja comecaram a abrir
+                {' '}das tuas {zonas.length} zonas de silêncio já começaram a abrir
               </p>
               <div className="h-2 bg-white/10 rounded-full overflow-hidden mt-3">
                 <div
@@ -382,7 +382,7 @@ export default function MapaSilenciamento() {
               className="text-white text-lg font-semibold mb-4"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              Zonas de Silencio
+              Zonas de Silêncio
             </h3>
             <div className="flex flex-wrap gap-4 justify-center">
               {zonas.map((zona) => {
@@ -453,7 +453,7 @@ export default function MapaSilenciamento() {
             </div>
           )}
 
-          {/* Verdades nao ditas */}
+          {/* Verdades não ditas */}
           {verdadesView && verdadesView.length > 0 && (
             <div>
               <h3
@@ -488,7 +488,7 @@ export default function MapaSilenciamento() {
             </div>
           )}
 
-          {/* Botao para editar */}
+          {/* Botão para editar */}
           <div className="text-center pt-2 pb-8">
             <button
               onClick={() => { setMode('setup'); setStep(1) }}
@@ -543,11 +543,11 @@ export default function MapaSilenciamento() {
                 Onde te calas mais?
               </h2>
               <p className="text-white/50 text-sm">
-                Selecciona os espacos onde a tua voz fica presa
+                Selecciona os espaços onde a tua voz fica presa
               </p>
             </div>
 
-            {/* Zonas como cards seleccionaveis */}
+            {/* Zonas como cards seleccionáveis */}
             <div className="grid grid-cols-2 gap-3">
               {ZONAS_OPTIONS.map(zona => {
                 const isSelected = selectedZonas.includes(zona.id)
@@ -615,7 +615,7 @@ export default function MapaSilenciamento() {
               </div>
             )}
 
-            {/* Navegacao */}
+            {/* Navegação */}
             <div className="flex justify-end pt-4">
               <button
                 onClick={() => setStep(2)}
@@ -623,7 +623,7 @@ export default function MapaSilenciamento() {
                 className="px-6 py-3 rounded-xl font-medium text-sm text-white transition-all disabled:opacity-30"
                 style={{ background: selectedZonas.length > 0 ? ECOA_COLOR : 'rgba(255,255,255,0.1)' }}
               >
-                Proximo {'\u{2192}'}
+                Próximo {'\u{2192}'}
               </button>
             </div>
           </div>
@@ -640,11 +640,11 @@ export default function MapaSilenciamento() {
                 Com quem te calas?
               </h2>
               <p className="text-white/50 text-sm">
-                Selecciona as pessoas com quem guardas silencio
+                Selecciona as pessoas com quem guardas silêncio
               </p>
             </div>
 
-            {/* Pessoas como cards seleccionaveis */}
+            {/* Pessoas como cards seleccionáveis */}
             <div className="grid grid-cols-2 gap-3">
               {PESSOAS_OPTIONS.map(pessoa => {
                 const isSelected = selectedPessoas.includes(pessoa.id)
@@ -692,7 +692,7 @@ export default function MapaSilenciamento() {
             {selectedPessoas.length > 0 && (
               <div className="space-y-4 mt-4">
                 <p className="text-white/70 text-sm font-medium text-center">
-                  Que tipo de verdades nao dizes a esta pessoa?
+                  Que tipo de verdades não dizes a esta pessoa?
                 </p>
                 {selectedPessoas.map(pessoaId => (
                   <div
@@ -728,7 +728,7 @@ export default function MapaSilenciamento() {
               </div>
             )}
 
-            {/* Navegacao */}
+            {/* Navegação */}
             <div className="flex justify-between pt-4">
               <button
                 onClick={() => setStep(1)}
@@ -743,7 +743,7 @@ export default function MapaSilenciamento() {
                 className="px-6 py-3 rounded-xl font-medium text-sm text-white transition-all disabled:opacity-30"
                 style={{ background: selectedPessoas.length > 0 ? ECOA_COLOR : 'rgba(255,255,255,0.1)' }}
               >
-                Proximo {'\u{2192}'}
+                Próximo {'\u{2192}'}
               </button>
             </div>
           </div>
@@ -760,11 +760,11 @@ export default function MapaSilenciamento() {
                 Que verdades guardam a tua garganta?
               </h2>
               <p className="text-white/50 text-sm">
-                Escreve verdades que nao dizes — ninguem vai ler isto alem de ti
+                Escreve verdades que não dizes — ninguém vai ler isto além de ti
               </p>
             </div>
 
-            {/* Verdades ja adicionadas */}
+            {/* Verdades já adicionadas */}
             {verdades.length > 0 && (
               <div className="space-y-3">
                 {verdades.map((v, i) => (
@@ -796,7 +796,7 @@ export default function MapaSilenciamento() {
               </div>
             )}
 
-            {/* Formulario para nova verdade */}
+            {/* Formulário para nova verdade */}
             <div
               className="rounded-xl p-4 space-y-3"
               style={{ background: `${ECOA_COLOR}08`, border: `1px solid ${ECOA_COLOR}20` }}
@@ -804,7 +804,7 @@ export default function MapaSilenciamento() {
               <textarea
                 value={novaVerdade}
                 onChange={(e) => setNovaVerdade(e.target.value)}
-                placeholder="Escreve uma verdade que nao dizes..."
+                placeholder="Escreve uma verdade que não dizes..."
                 rows={3}
                 className="w-full px-4 py-3 rounded-xl text-sm text-white placeholder-white/30 outline-none resize-none"
                 style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
@@ -835,7 +835,7 @@ export default function MapaSilenciamento() {
               </button>
             </div>
 
-            {/* Navegacao */}
+            {/* Navegação */}
             <div className="flex justify-between pt-4">
               <button
                 onClick={() => setStep(2)}
@@ -854,9 +854,9 @@ export default function MapaSilenciamento() {
               </button>
             </div>
 
-            {/* Nota de seguranca */}
+            {/* Nota de segurança */}
             <p className="text-white/25 text-xs text-center mt-4">
-              Estas verdades sao {g('teus', 'tuas')}. So tu podes ver e editar o teu mapa.
+              Estas verdades são {g('teus', 'tuas')}. Só tu podes ver e editar o teu mapa.
             </p>
           </div>
         )}

@@ -5,8 +5,8 @@ import { g } from '../utils/genero'
 
 /**
  * SERENA - Landing Page
- * "Emocao & Fluidez" - Chakra Svadhisthana (Sacral), Elemento: Agua
- * Modulo de gestao emocional e fluidez interior
+ * "Emoção & Fluidez" - Chakra Svadhisthana (Sacral), Elemento: Água
+ * Módulo de gestão emocional e fluidez interior
  */
 
 const LandingSerena = () => {
@@ -16,33 +16,33 @@ const LandingSerena = () => {
   const features = [
     {
       icone: '📓',
-      titulo: 'Diario Emocional',
-      desc: 'Regista o que sentes sem julgamento. Identifica padroes emocionais ao longo do tempo.'
+      titulo: 'Diário Emocional',
+      desc: 'Regista o que sentes sem julgamento. Identifica padrões emocionais ao longo do tempo.'
     },
     {
       icone: '🌬️',
-      titulo: 'Respiracao Guiada',
-      desc: 'Exercicios de respiracao para cada estado emocional. Acalma o corpo, clareia a mente.'
+      titulo: 'Respiração Guiada',
+      desc: 'Exercícios de respiração para cada estado emocional. Acalma o corpo, clareia a mente.'
     },
     {
       icone: '🆘',
       titulo: 'SOS Emocional',
-      desc: 'Quando a emocao transborda, tens apoio imediato. Tecnicas rapidas de 60 segundos.'
+      desc: 'Quando a emoção transborda, tens apoio imediato. Técnicas rápidas de 60 segundos.'
     },
     {
       icone: '🌊',
-      titulo: 'Praticas de Fluidez',
-      desc: 'Movimentos, visualizacoes e exercicios para desbloquear emocoes estagnadas.'
+      titulo: 'Práticas de Fluidez',
+      desc: 'Movimentos, visualizações e exercícios para desbloquear emoções estagnadas.'
     },
     {
       icone: '🔥',
-      titulo: 'Rituais de Libertacao',
-      desc: 'Rituais para soltar o que ja nao serve. Raiva, magoa, culpa — tudo tem saida.'
+      titulo: 'Rituais de Libertação',
+      desc: 'Rituais para soltar o que já não serve. Raiva, mágoa, culpa — tudo tem saída.'
     },
     {
       icone: '💬',
       titulo: 'Coach Serena',
-      desc: 'Coach virtual especializada em emocoes. Guia-te com gentileza quando precisas.'
+      desc: 'Coach virtual especializada em emoções. Guia-te com gentileza quando precisas.'
     }
   ]
 
@@ -50,17 +50,17 @@ const LandingSerena = () => {
     {
       numero: '01',
       titulo: 'Sente',
-      desc: 'Reconhece a emocao. Da-lhe nome. Sem fugir, sem julgar.'
+      desc: 'Reconhece a emoção. Dá-lhe nome. Sem fugir, sem julgar.'
     },
     {
       numero: '02',
       titulo: 'Processa',
-      desc: 'Respiracao, rituais, praticas. O corpo processa o que a mente nao consegue sozinha.'
+      desc: 'Respiração, rituais, práticas. O corpo processa o que a mente não consegue sozinha.'
     },
     {
       numero: '03',
       titulo: 'Flui',
-      desc: 'Deixa ir o que nao serve. A emocao e energia — quando flui, liberta.'
+      desc: 'Deixa ir o que não serve. A emoção é energia — quando flui, liberta.'
     }
   ]
 
@@ -78,7 +78,7 @@ const LandingSerena = () => {
 
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           <p className="text-[#6B8E9B]/80 text-sm tracking-[0.3em] uppercase mb-4">
-            Svadhisthana &middot; Sacral &middot; Elemento: Agua
+            Svadhisthana &middot; Sacral &middot; Elemento: Água
           </p>
 
           <h1
@@ -92,12 +92,12 @@ const LandingSerena = () => {
             className="text-xl md:text-2xl text-white/80 mb-2"
             style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}
           >
-            Emocao &amp; Fluidez
+            Emoção &amp; Fluidez
           </p>
 
           <p className="text-white/60 max-w-xl mx-auto mb-10">
-            O espaco onde as tuas emocoes finalmente tem voz.
-            Sem julgamento, sem pressa — so fluidez.
+            O espaço onde as tuas emoções finalmente têm voz.
+            Sem julgamento, sem pressa — só fluidez.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -105,7 +105,7 @@ const LandingSerena = () => {
               to="/serena/pagamento"
               className="px-10 py-4 bg-white text-[#1a2e3a] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
             >
-              Comecar a Jornada
+              Começar a Jornada
             </Link>
             <a
               href="#como-funciona"
@@ -128,14 +128,14 @@ const LandingSerena = () => {
           </h2>
 
           <p className="text-[#6B8E9B]/80 mb-10 text-lg">
-            A maioria de nos aprendeu a esconder o que sente. O Serena muda isso.
+            A maioria de nós aprendeu a esconder o que sente. O Serena muda isso.
           </p>
 
           <div className="grid gap-4 max-w-lg mx-auto text-left">
             {[
               'Sorris quando querias chorar',
-              'Dizes que estas bem quando nao estas',
-              'Explodes sem saber porque'
+              'Dizes que estás bem quando não estás',
+              'Explodes sem saber porquê'
             ].map((item, i) => (
               <div
                 key={i}
@@ -161,7 +161,7 @@ const LandingSerena = () => {
               className="text-3xl md:text-4xl font-bold text-white mb-4"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              O Serena e o espaco onde as tuas emocoes finalmente tem voz
+              O Serena é o espaço onde as tuas emoções finalmente têm voz
             </h2>
             <p className="text-[#6B8E9B]/70 max-w-2xl mx-auto">
               Ferramentas criadas para acolher, processar e libertar — ao teu ritmo.
@@ -198,7 +198,7 @@ const LandingSerena = () => {
               Como funciona
             </h2>
             <p className="text-[#6B8E9B]/70">
-              Tres passos. Sem complicacoes.
+              Três passos. Sem complicações.
             </p>
           </div>
 
@@ -244,7 +244,7 @@ const LandingSerena = () => {
               Escolhe o teu plano
             </h2>
             <p className="text-[#6B8E9B]/70">
-              Precos simples. Sem compromisso. Cancela quando quiseres.
+              Preços simples. Sem compromisso. Cancela quando quiseres.
             </p>
           </div>
 
@@ -288,7 +288,7 @@ const LandingSerena = () => {
 
                 {plano.duration > 1 && (
                   <p className="text-[#6B8E9B]/50 text-xs mb-4">
-                    {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mes
+                    {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mês
                   </p>
                 )}
 
@@ -315,22 +315,22 @@ const LandingSerena = () => {
             className="text-3xl md:text-4xl font-bold text-white mb-4"
             style={{ fontFamily: "'Cormorant Garamond', serif" }}
           >
-            Experimenta 7 dias gratis
+            Experimenta 7 dias grátis
           </h2>
           <p className="text-white/70 mb-4 text-lg">
-            Sem compromisso. Sem cartao. Cancelas quando quiseres.
+            Sem compromisso. Sem cartão. Cancelas quando quiseres.
           </p>
           <p className="text-white/50 mb-8">
-            Descobre como e sentir sem medo e fluir sem travar.
+            Descobre como é sentir sem medo e fluir sem travar.
           </p>
           <Link
             to="/serena/pagamento"
             className="inline-block px-10 py-5 bg-white text-[#1a2e3a] rounded-full font-bold text-xl hover:translate-y-[-3px] hover:shadow-xl transition-all"
           >
-            Quero comecar HOJE
+            Quero começar HOJE
           </Link>
           <p className="text-white/40 text-sm mt-6">
-            7 dias gratis &middot; Acesso completo &middot; Cancela quando quiseres
+            7 dias grátis &middot; Acesso completo &middot; Cancela quando quiseres
           </p>
         </div>
       </section>
@@ -348,7 +348,7 @@ const LandingSerena = () => {
             >
               SERENA
             </span>
-            <span className="text-white/40 text-sm">Emocao &amp; Fluidez</span>
+            <span className="text-white/40 text-sm">Emoção &amp; Fluidez</span>
           </div>
           <div className="flex gap-6 text-sm">
             <Link to="/landing" className="text-white/40 hover:text-white transition-colors">

@@ -7,44 +7,44 @@ import ModuleHeader from '../shared/ModuleHeader'
 import { DIMENSOES_IDENTIDADE } from '../../lib/imago/gamificacao'
 
 // ============================================================
-// IMAGO — Integracao dos Ecos
-// Painel de correlacao entre diferentes ecos/dimensoes
-// Chakra: Sahasrara (Coroa) — Consciencia integradora
+// IMAGO — Integração dos Ecos
+// Painel de correlação entre diferentes ecos/dimensões
+// Chakra: Sahasrara (Coroa) — Consciência integradora
 // ============================================================
 
 const ACCENT = '#8B7BA5'
 const ACCENT_DARK = '#1a1a2e'
 const ACCENT_SUBTLE = 'rgba(139,123,165,0.12)'
 
-// Prompts de correlacao entre ecos
+// Prompts de correlação entre ecos
 const CORRELATION_PROMPTS = {
-  'vitalis-serena': 'Quando cuidas do teu corpo (Vitalis), as tuas emocoes (Serena) tendem a...',
-  'vitalis-ignis': 'Quando o teu corpo esta bem (Vitalis), a tua vontade (Ignis) tende a...',
-  'vitalis-ventis': 'Quando a tua alimentacao esta equilibrada (Vitalis), a tua energia (Ventis) tende a...',
-  'vitalis-ecoa': 'Quando cuidas do teu corpo (Vitalis), a tua expressao (Ecoa) tende a...',
-  'vitalis-imago': 'Quando o teu corpo esta saudavel (Vitalis), o teu sentido de identidade (Imago) tende a...',
+  'vitalis-serena': 'Quando cuidas do teu corpo (Vitalis), as tuas emoções (Serena) tendem a...',
+  'vitalis-ignis': 'Quando o teu corpo está bem (Vitalis), a tua vontade (Ignis) tende a...',
+  'vitalis-ventis': 'Quando a tua alimentação está equilibrada (Vitalis), a tua energia (Ventis) tende a...',
+  'vitalis-ecoa': 'Quando cuidas do teu corpo (Vitalis), a tua expressão (Ecoa) tende a...',
+  'vitalis-imago': 'Quando o teu corpo está saudável (Vitalis), o teu sentido de identidade (Imago) tende a...',
   'vitalis-aurea': 'Quando cuidas do teu corpo (Vitalis), o teu sentido de valor (Aurea) tende a...',
-  'serena-ignis': 'Quando as tuas emocoes estao equilibradas (Serena), a tua vontade (Ignis) tende a...',
-  'serena-ventis': 'Quando as tuas emocoes fluem (Serena), a tua energia (Ventis) tende a...',
-  'serena-ecoa': 'Quando te sentes emocionalmente estavel (Serena), a tua voz (Ecoa) tende a...',
-  'serena-imago': 'Quando as tuas emocoes estao claras (Serena), a tua identidade (Imago) tende a...',
-  'serena-aurea': 'Quando as tuas emocoes fluem (Serena), o teu sentido de valor (Aurea) tende a...',
-  'ignis-ventis': 'Quando a tua vontade esta forte (Ignis), a tua energia (Ventis) tende a...',
-  'ignis-ecoa': 'Quando escolhes conscientemente (Ignis), a tua expressao (Ecoa) tende a...',
-  'ignis-imago': 'Quando a tua vontade esta clara (Ignis), a tua identidade (Imago) tende a...',
-  'ignis-aurea': 'Quando a tua determinacao e forte (Ignis), o teu sentido de valor (Aurea) tende a...',
-  'ventis-ecoa': 'Quando a tua energia esta alta (Ventis), a tua expressao (Ecoa) tende a...',
-  'ventis-imago': 'Quando o teu ritmo esta alinhado (Ventis), a tua identidade (Imago) tende a...',
+  'serena-ignis': 'Quando as tuas emoções estão equilibradas (Serena), a tua vontade (Ignis) tende a...',
+  'serena-ventis': 'Quando as tuas emoções fluem (Serena), a tua energia (Ventis) tende a...',
+  'serena-ecoa': 'Quando te sentes emocionalmente estável (Serena), a tua voz (Ecoa) tende a...',
+  'serena-imago': 'Quando as tuas emoções estão claras (Serena), a tua identidade (Imago) tende a...',
+  'serena-aurea': 'Quando as tuas emoções fluem (Serena), o teu sentido de valor (Aurea) tende a...',
+  'ignis-ventis': 'Quando a tua vontade está forte (Ignis), a tua energia (Ventis) tende a...',
+  'ignis-ecoa': 'Quando escolhes conscientemente (Ignis), a tua expressão (Ecoa) tende a...',
+  'ignis-imago': 'Quando a tua vontade está clara (Ignis), a tua identidade (Imago) tende a...',
+  'ignis-aurea': 'Quando a tua determinação é forte (Ignis), o teu sentido de valor (Aurea) tende a...',
+  'ventis-ecoa': 'Quando a tua energia está alta (Ventis), a tua expressão (Ecoa) tende a...',
+  'ventis-imago': 'Quando o teu ritmo está alinhado (Ventis), a tua identidade (Imago) tende a...',
   'ventis-aurea': 'Quando a tua energia flui (Ventis), o teu sentido de valor (Aurea) tende a...',
   'ecoa-imago': 'Quando dizes a tua verdade (Ecoa), a tua identidade (Imago) tende a...',
   'ecoa-aurea': 'Quando te expressas com autenticidade (Ecoa), o teu sentido de valor (Aurea) tende a...',
-  'imago-aurea': 'Quando sabes quem es (Imago), o teu sentido de valor (Aurea) tende a...'
+  'imago-aurea': 'Quando sabes quem és (Imago), o teu sentido de valor (Aurea) tende a...'
 }
 
 function getCorrelationPrompt(eco1, eco2) {
   const key1 = `${eco1}-${eco2}`
   const key2 = `${eco2}-${eco1}`
-  return CORRELATION_PROMPTS[key1] || CORRELATION_PROMPTS[key2] || `Que conexao percebes entre ${eco1} e ${eco2}?`
+  return CORRELATION_PROMPTS[key1] || CORRELATION_PROMPTS[key2] || `Que conexão percebes entre ${eco1} e ${eco2}?`
 }
 
 // ---- Eco Selector Card ----
@@ -127,7 +127,7 @@ const InsightEntry = ({ entry }) => {
           </div>
           {entry.reflexao && (
             <div className="pt-2">
-              <p className="text-xs text-gray-500 mb-1">Reflexao:</p>
+              <p className="text-xs text-gray-500 mb-1">Reflexão:</p>
               <p className="text-sm text-gray-400 leading-relaxed whitespace-pre-wrap italic">
                 {entry.reflexao}
               </p>
@@ -244,7 +244,7 @@ export default function IntegracaoEcos() {
       setTimeout(() => setSaveSuccess(false), 3000)
     } catch (err) {
       console.error('Erro ao guardar integracao:', err)
-      alert('Nao foi possivel guardar. Tenta novamente.')
+      alert('Não foi possível guardar. Tenta novamente.')
     } finally {
       setSaving(false)
     }
@@ -262,8 +262,8 @@ export default function IntegracaoEcos() {
     <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${ACCENT_DARK} 0%, #111318 30%, #0d0f13 100%)` }}>
       <ModuleHeader
         eco="imago"
-        title="Integracao dos Ecos"
-        subtitle="Descobre as conexoes entre as tuas dimensoes"
+        title="Integração dos Ecos"
+        subtitle="Descobre as conexões entre as tuas dimensões"
       />
 
       <div className="max-w-lg mx-auto px-4 pb-24">
@@ -275,7 +275,7 @@ export default function IntegracaoEcos() {
             style={view === 'registar' ? { background: `${ACCENT}33` } : undefined}
             aria-pressed={view === 'registar'}
           >
-            Nova Conexao
+            Nova Conexão
           </button>
           <button
             onClick={() => setView('historico')}
@@ -283,7 +283,7 @@ export default function IntegracaoEcos() {
             style={view === 'historico' ? { background: `${ACCENT}33` } : undefined}
             aria-pressed={view === 'historico'}
           >
-            Historico ({entries.length})
+            Histórico ({entries.length})
           </button>
         </div>
 
@@ -294,7 +294,7 @@ export default function IntegracaoEcos() {
             style={{ background: `${ACCENT}22`, border: `1px solid ${ACCENT}44` }}
           >
             <p className="text-sm text-white">
-              Conexao registada! +12 Estrelas
+              Conexão registada! +12 Estrelas
             </p>
           </div>
         )}
@@ -308,7 +308,7 @@ export default function IntegracaoEcos() {
                 className="text-lg font-semibold text-white"
                 style={{ fontFamily: "'Cormorant Garamond', serif" }}
               >
-                Conexoes entre os teus ecos
+                Conexões entre os teus ecos
               </h2>
               <p className="text-sm text-gray-400 mt-1">
                 Escolhe dois ecos e explora como se influenciam mutuamente
@@ -374,12 +374,12 @@ export default function IntegracaoEcos() {
                     <textarea
                       value={insight}
                       onChange={(e) => setInsight(e.target.value)}
-                      placeholder="Descreve a conexao que percebes entre estes dois ecos..."
+                      placeholder="Descreve a conexão que percebes entre estes dois ecos..."
                       rows={4}
                       maxLength={2000}
                       className="w-full p-4 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
                       style={{ background: 'rgba(255,255,255,0.06)', focusRingColor: ACCENT }}
-                      aria-label="Insight de integracao"
+                      aria-label="Insight de integração"
                     />
                     <span className="absolute bottom-3 right-3 text-xs text-gray-600">
                       {insight.length}/2000
@@ -390,17 +390,17 @@ export default function IntegracaoEcos() {
                 {/* Optional reflexao */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-300">
-                    Reflexao adicional <span className="text-gray-500">(opcional)</span>:
+                    Reflexão adicional <span className="text-gray-500">(opcional)</span>:
                   </label>
                   <textarea
                     value={reflexao}
                     onChange={(e) => setReflexao(e.target.value)}
-                    placeholder="Algo mais que queiras anotar sobre esta conexao..."
+                    placeholder="Algo mais que queiras anotar sobre esta conexão..."
                     rows={2}
                     maxLength={1000}
                     className="w-full p-3 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200 text-sm"
                     style={{ background: 'rgba(255,255,255,0.04)', focusRingColor: ACCENT }}
-                    aria-label="Reflexao adicional"
+                    aria-label="Reflexão adicional"
                   />
                 </div>
 
@@ -411,7 +411,7 @@ export default function IntegracaoEcos() {
                   className="w-full py-4 rounded-xl font-medium text-white transition-all duration-200 shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
                   style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
                 >
-                  {saving ? 'A guardar...' : `Guardar conexao (+12 Estrelas)`}
+                  {saving ? 'A guardar...' : `Guardar conexão (+12 Estrelas)`}
                 </button>
               </div>
             )}
@@ -435,17 +435,17 @@ export default function IntegracaoEcos() {
                   className="text-lg font-semibold text-white"
                   style={{ fontFamily: "'Cormorant Garamond', serif" }}
                 >
-                  Nenhuma conexao registada
+                  Nenhuma conexão registada
                 </h3>
                 <p className="text-sm text-gray-400 max-w-xs mx-auto">
-                  Comeca por explorar como os teus diferentes ecos se influenciam mutuamente.
+                  Começa por explorar como os teus diferentes ecos se influenciam mutuamente.
                 </p>
                 <button
                   onClick={() => setView('registar')}
                   className="px-6 py-3 rounded-xl font-medium text-sm text-white shadow-lg transition-all duration-200"
                   style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
                 >
-                  Registar primeira conexao
+                  Registar primeira conexão
                 </button>
               </div>
             ) : (
@@ -456,7 +456,7 @@ export default function IntegracaoEcos() {
                     <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                       {entries.length}
                     </p>
-                    <p className="text-xs text-gray-400">{entries.length === 1 ? 'conexao' : 'conexoes'}</p>
+                    <p className="text-xs text-gray-400">{entries.length === 1 ? 'conexão' : 'conexões'}</p>
                   </div>
                   <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
                     <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>

@@ -8,7 +8,7 @@ import { VENTIS_GAMIFICATION } from '../../lib/ventis/gamificacao'
 
 // ============================================================
 // VENTIS — Rituais vs Rotinas
-// Transformar rotina em ritual: do automatismo para a presenca
+// Transformar rotina em ritual: do automatismo para a presença
 // ============================================================
 
 const ACCENT = '#5D9B84'
@@ -16,29 +16,29 @@ const ACCENT_DARK = '#1a2e24'
 const ACCENT_LIGHT = '#7FBDA6'
 const ACCENT_SUBTLE = 'rgba(93,155,132,0.12)'
 
-// Comparacao Rotina vs Ritual
+// Comparação Rotina vs Ritual
 const COMPARACAO = [
-  { rotina: 'Automatica', ritual: 'Consciente', icon: '🧠' },
+  { rotina: 'Automática', ritual: 'Consciente', icon: '🧠' },
   { rotina: 'Eficiente', ritual: 'Significativa', icon: '💎' },
-  { rotina: 'Sem atencao', ritual: 'Com atencao plena', icon: '👁️' },
+  { rotina: 'Sem atenção', ritual: 'Com atenção plena', icon: '👁️' },
   { rotina: 'Repetitiva', ritual: 'Transformadora', icon: '🦋' }
 ]
 
-// Exemplos de transformacao
+// Exemplos de transformação
 const EXEMPLOS = [
   {
-    rotina: 'Beber cafe a correr',
-    ritual: '5 minutos sentada, saboreando, sem telemovel',
+    rotina: 'Beber café a correr',
+    ritual: '5 minutos sentada, saboreando, sem telemóvel',
     icon: '☕'
   },
   {
     rotina: 'Lavar os dentes antes de dormir',
-    ritual: 'Lavar os dentes como limpeza do dia — soltar o que ja nao preciso',
+    ritual: 'Lavar os dentes como limpeza do dia — soltar o que já não preciso',
     icon: '🪥'
   },
   {
     rotina: 'Fazer a cama',
-    ritual: 'Fazer a cama como acto de preparar o espaco para um novo dia',
+    ritual: 'Fazer a cama como acto de preparar o espaço para um novo dia',
     icon: '🛏️'
   }
 ]
@@ -47,15 +47,15 @@ const EXEMPLOS = [
 const RITUAIS_GUIADOS = [
   {
     id: 'cafe_consciente',
-    nome: 'Cafe Consciente',
+    nome: 'Café Consciente',
     icon: '☕',
-    descricao: 'Transforma o teu cafe da manha num momento de presenca e intencao.',
+    descricao: 'Transforma o teu café da manhã num momento de presença e intenção.',
     passos: [
-      'Prepara o teu cafe devagar, ouvindo a agua ferver',
-      'Senta-te confortavelmente, sem telemovel nem distracoes',
-      'Segura a chavena com as duas maos — sente o calor',
+      'Prepara o teu café devagar, ouvindo a água ferver',
+      'Senta-te confortavelmente, sem telemóvel nem distrações',
+      'Segura a chávena com as duas mãos — sente o calor',
       'Bebe o primeiro golo com os olhos fechados — saboreia',
-      'Define uma intencao para o teu dia, simples e clara'
+      'Define uma intenção para o teu dia, simples e clara'
     ]
   },
   {
@@ -65,41 +65,41 @@ const RITUAIS_GUIADOS = [
     descricao: 'O banho da noite como ritual de limpeza do dia que passou.',
     passos: [
       'Antes de entrar, inspira fundo 3 vezes',
-      'Imagina que a agua leva tudo o que ja nao precisas',
-      'Lava cada parte do corpo com atencao — sem pressa',
-      'Quando a agua cai, mentalmente solta uma preocupacao',
+      'Imagina que a água leva tudo o que já não precisas',
+      'Lava cada parte do corpo com atenção — sem pressa',
+      'Quando a água cai, mentalmente solta uma preocupação',
       'Ao sair, {g_sente_novo}: {g_limpo_limpa} por dentro e por fora'
     ]
   },
   {
     id: 'primeira_respiracao',
-    nome: 'Primeira Respiracao',
+    nome: 'Primeira Respiração',
     icon: '🌅',
-    descricao: 'O primeiro acto consciente do dia: a tua primeira respiracao.',
+    descricao: 'O primeiro acto consciente do dia: a tua primeira respiração.',
     passos: [
-      'Ao acordar, nao pegues no telemovel',
+      'Ao acordar, não pegues no telemóvel',
       'Mantem os olhos fechados mais 30 segundos',
-      'Inspira fundo pelo nariz, contando ate 4',
-      'Segura o ar contando ate 4',
-      'Expira pela boca contando ate 6 — com som se quiseres'
+      'Inspira fundo pelo nariz, contando até 4',
+      'Segura o ar contando até 4',
+      'Expira pela boca contando até 6 — com som se quiseres'
     ]
   },
   {
     id: 'ultimo_pensamento',
     nome: 'Ultimo Pensamento',
     icon: '🌙',
-    descricao: 'Antes de dormir, um momento de gratidao e quietude.',
+    descricao: 'Antes de dormir, um momento de gratidão e quietude.',
     passos: [
       'Deita-te e coloca uma mao no peito',
       'Pensa em 1 coisa boa que aconteceu hoje — pode ser pequena',
-      'Agradece em silencio por essa coisa',
-      'Deixa o corpo relaxar, zona a zona, dos pes a cabeca',
+      'Agradece em silêncio por essa coisa',
+      'Deixa o corpo relaxar, zona a zona, dos pés à cabeça',
       'O teu ultimo pensamento seja gentil — para ti'
     ]
   }
 ]
 
-// ---- Decoracao folha ----
+// ---- Decoração folha ----
 const LeafDecoration = ({ className = '' }) => (
   <div className={`pointer-events-none select-none ${className}`} aria-hidden="true">
     <svg
@@ -113,7 +113,7 @@ const LeafDecoration = ({ className = '' }) => (
   </div>
 )
 
-// ---- Seccao educativa: Rotina vs Ritual ----
+// ---- Secção educativa: Rotina vs Ritual ----
 const SeccaoEducacao = () => {
   const [mostrar, setMostrar] = useState(true)
 
@@ -143,7 +143,7 @@ const SeccaoEducacao = () => {
 
       {mostrar && (
         <div className="px-5 pb-5 space-y-5 animate-fadeIn">
-          {/* Comparacao lado a lado */}
+          {/* Comparação lado a lado */}
           <div className="grid grid-cols-2 gap-3">
             <div className="text-center">
               <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">Rotina</span>
@@ -202,7 +202,7 @@ const SeccaoEducacao = () => {
   )
 }
 
-// ---- Ferramenta de transformacao ----
+// ---- Ferramenta de transformação ----
 const FerramentaTransformacao = ({ rotinas, onTransformar, saving }) => {
   const [rotinaSeleccionada, setRotinaSeleccionada] = useState(null)
   const [descricaoRitual, setDescricaoRitual] = useState('')
@@ -225,7 +225,7 @@ const FerramentaTransformacao = ({ rotinas, onTransformar, saving }) => {
           Todas as rotinas transformadas!
         </h3>
         <p className="text-gray-500 text-sm">
-          Nao tens rotinas pendentes. Todas ja sao rituais ou precisas de adicionar novas no dashboard.
+          Não tens rotinas pendentes. Todas já são rituais ou precisas de adicionar novas no dashboard.
         </p>
       </div>
     )
@@ -240,7 +240,7 @@ const FerramentaTransformacao = ({ rotinas, onTransformar, saving }) => {
         Escolhe uma rotina para transformar
       </h3>
       <p className="text-gray-500 text-xs mb-4">
-        Transforma o automatico em consciente. +10 Folhas 🍃 por transformacao
+        Transforma o automático em consciente. +10 Folhas 🍃 por transformação
       </p>
 
       {/* Lista de rotinas */}
@@ -307,7 +307,7 @@ const FerramentaTransformacao = ({ rotinas, onTransformar, saving }) => {
             <textarea
               value={descricaoRitual}
               onChange={(e) => setDescricaoRitual(e.target.value)}
-              placeholder="Exemplo: Em vez de fazer automaticamente, vou parar 1 minuto antes, respirar, e fazer com intencao..."
+              placeholder="Exemplo: Em vez de fazer automaticamente, vou parar 1 minuto antes, respirar, e fazer com intenção..."
               rows={3}
               maxLength={500}
               className="w-full p-4 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
@@ -344,7 +344,7 @@ const FerramentaTransformacao = ({ rotinas, onTransformar, saving }) => {
   )
 }
 
-// ---- Os meus rituais (com checklist diario) ----
+// ---- Os meus rituais (com checklist diário) ----
 const MeusRituais = ({ rituais, onPraticar, saving }) => {
   if (rituais.length === 0) {
     return (
@@ -436,7 +436,7 @@ const RituaisGuiados = () => {
         Rituais guiados
       </h3>
       <p className="text-gray-500 text-xs mb-4">
-        Templates prontos para inspiracao
+        Templates prontos para inspiração
       </p>
       <div className="space-y-2.5">
         {RITUAIS_GUIADOS.map((ritual) => {
@@ -589,7 +589,7 @@ export default function RituaisVsRotinas() {
       await carregarDados()
     } catch (err) {
       console.error('Erro ao transformar rotina:', err)
-      alert('Nao foi possivel transformar. Tenta novamente.')
+      alert('Não foi possível transformar. Tenta novamente.')
     } finally {
       setSaving(false)
     }
@@ -647,7 +647,7 @@ export default function RituaisVsRotinas() {
       <ModuleHeader
         eco="ventis"
         title="Rituais vs Rotinas"
-        subtitle="Do automatismo para a presenca"
+        subtitle="Do automatismo para a presença"
       />
 
       <LeafDecoration className="-mt-1" />
@@ -657,7 +657,7 @@ export default function RituaisVsRotinas() {
         role="main"
         aria-label="Rituais vs Rotinas"
       >
-        {/* Notificacao de sucesso */}
+        {/* Notificação de sucesso */}
         {showSuccess && (
           <div
             className="mb-4 p-3.5 rounded-xl text-center text-sm text-white font-medium animate-fadeIn"
@@ -677,10 +677,10 @@ export default function RituaisVsRotinas() {
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Seccao educativa */}
+            {/* Secção educativa */}
             <SeccaoEducacao />
 
-            {/* Ferramenta de transformacao */}
+            {/* Ferramenta de transformação */}
             <FerramentaTransformacao
               rotinas={rotinas}
               onTransformar={handleTransformar}
@@ -699,11 +699,11 @@ export default function RituaisVsRotinas() {
           </div>
         )}
 
-        {/* Nota filosofica */}
+        {/* Nota filosófica */}
         <div className="mt-8 p-4 rounded-xl" style={{ background: 'rgba(93,155,132,0.08)' }}>
           <p className="text-xs text-gray-500 italic leading-relaxed text-center">
-            A diferenca entre rotina e ritual esta na presenca.
-            Quando fazes algo com atencao, ate lavar a louca se torna sagrado.
+            A diferença entre rotina e ritual está na presença.
+            Quando fazes algo com atenção, até lavar a louça se torna sagrado.
           </p>
         </div>
 

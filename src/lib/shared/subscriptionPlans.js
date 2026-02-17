@@ -98,9 +98,7 @@ export const ECO_PLANS = {
     table: 'aurora_clients',
     color: '#D4A5A5',
     colorDark: '#2e1a1a',
-    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 500, price_usd: 8, discount: 0 },
-    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 2550, price_usd: 39, discount: 15, savings_mzn: 450 },
-    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 4800, price_usd: 74, discount: 20, savings_mzn: 1200 }
+    free: true  // Aurora é gratuita — desbloqueia ao completar todos os outros ecos
   }
 }
 
@@ -141,14 +139,14 @@ export const BUNDLE_PLANS = {
   },
   tudo: {
     id: 'tudo',
-    name: 'Tudo — Todos os Ecos',
-    description: 'Acesso completo a todos os 7 ecos + Aurora',
+    name: 'Tudo — Todos os 7 Ecos',
+    description: 'Acesso completo a todos os 7 ecos (Aurora desbloqueia grátis ao completar todos)',
     discount: 40,
-    minEcos: 8,
-    maxEcos: 8,
-    monthly: { price_mzn: 3150, price_usd: 50 },
-    semestral: { price_mzn: 16065, price_usd: 246 },
-    annual: { price_mzn: 30240, price_usd: 463 }
+    minEcos: 7,
+    maxEcos: 7,
+    monthly: { price_mzn: 2800, price_usd: 44 },
+    semestral: { price_mzn: 14280, price_usd: 219 },
+    annual: { price_mzn: 26880, price_usd: 412 }
   }
 }
 
@@ -202,6 +200,12 @@ export const checkEcoAccess = async (eco, userId) => {
     return { hasAccess: false, status: SUBSCRIPTION_STATUS.NONE, reason: 'eco_not_found' }
   }
 
+  // Aurora tem lógica própria — é gratuita ao completar todos os ecos
+  if (eco === 'aurora') {
+    const { checkAuroraAccess } = await import('../aurora/subscriptions')
+    return checkAuroraAccess(userId)
+  }
+
   try {
     const { data: client, error } = await supabase
       .from(ecoConfig.table)
@@ -220,7 +224,7 @@ export const checkEcoAccess = async (eco, userId) => {
       return { hasAccess: true, status, reason: 'tester' }
     }
 
-    // Subscricao ativa
+    // Subscrição activa
     if (status === SUBSCRIPTION_STATUS.ACTIVE) {
       if (client.subscription_expires) {
         const expires = new Date(client.subscription_expires)

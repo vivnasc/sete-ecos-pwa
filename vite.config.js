@@ -9,9 +9,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'SETE ECOS — Sistema de Transmutacao Feminina',
+        name: 'SETE ECOS — Sistema de Transmutação Feminina',
         short_name: 'Sete Ecos',
-        description: 'Sete caminhos para despertar cada dimensao da tua essencia feminina. Plataforma holistica de bem-estar.',
+        description: 'Sete caminhos para despertar cada dimensão da tua essência feminina. Plataforma holística de bem-estar.',
         lang: 'pt',
         theme_color: '#4B0082',
         background_color: '#FCFCFF',
@@ -41,13 +41,13 @@ export default defineConfig({
         screenshots: [],
         shortcuts: [
           {
-            name: 'Lumina — Diagnostico',
+            name: 'Lumina — Diagnóstico',
             short_name: 'Lumina',
             url: '/lumina',
             icons: [{ src: 'logos/lumina-logo_v2.png', sizes: '192x192' }]
           },
           {
-            name: 'Vitalis — Nutricao',
+            name: 'Vitalis — Nutrição',
             short_name: 'Vitalis',
             url: '/vitalis/dashboard',
             icons: [{ src: 'logos/VITALIS_LOGO_V3.png', sizes: '192x192' }]

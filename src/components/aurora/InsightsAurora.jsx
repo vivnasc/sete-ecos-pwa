@@ -6,8 +6,8 @@ import ModuleHeader from '../shared/ModuleHeader'
 import { g } from '../../utils/genero'
 
 /**
- * INSIGHTS AURORA — Relatorio da integracao final
- * Metricas: graduacao, manutencao mensal, mentoria, rituais, renovacao
+ * INSIGHTS AURORA — Relatório da integração final
+ * Métricas: graduação, manutenção mensal, mentoria, rituais, renovação
  * Dados de: aurora_clients, aurora_checkins, aurora_mentoria,
  *           aurora_rituais_log, aurora_renovacao
  */
@@ -25,8 +25,8 @@ const AURORA_INSIGHTS_CONFIG = {
       analysis: (data) => {
         const count = data.length
         let insight = ''
-        if (count >= 3) insight = 'Manutencao exemplar!'
-        else if (count >= 1) insight = 'A consistencia protege as mudancas'
+        if (count >= 3) insight = 'Manutenção exemplar!'
+        else if (count >= 1) insight = 'A consistência protege as mudanças'
         return {
           value: count,
           trend: count >= 2 ? 'up' : count > 0 ? 'stable' : 'down',
@@ -55,19 +55,19 @@ const AURORA_INSIGHTS_CONFIG = {
       analysis: (data) => ({
         value: data.length,
         trend: data.length >= 5 ? 'up' : data.length > 0 ? 'stable' : 'down',
-        insight: data.length >= 7 ? 'Ritual constante!' : data.length > 0 ? 'Cada manha e uma nova aurora' : ''
+        insight: data.length >= 7 ? 'Ritual constante!' : data.length > 0 ? 'Cada manhã é uma nova aurora' : ''
       })
     },
     {
       id: 'renovacao',
-      label: 'Renovacoes',
+      label: 'Renovações',
       icon: '🔄',
       table: 'aurora_renovacao',
       selectColumns: 'id, created_at',
       analysis: (data) => ({
         value: data.length,
         trend: data.length >= 1 ? 'up' : 'down',
-        insight: data.length >= 1 ? 'Intencoes renovadas!' : ''
+        insight: data.length >= 1 ? 'Intenções renovadas!' : ''
       })
     }
   ],
@@ -78,15 +78,15 @@ const AURORA_INSIGHTS_CONFIG = {
     const renovacao = metricsData.renovacao || {}
 
     if (rituais.value >= 5 && checkins.value >= 1) {
-      return `Semana de integracao plena! ${rituais.value} rituais matinais e check-in de manutencao ${g('feito', 'feita')}. ${mentoria.value > 0 ? `Ainda partilhaste ${mentoria.value} frase(s) de sabedoria como mentora.` : 'Considera partilhar a tua sabedoria na seccao de mentoria.'} ${g('Estas a viver o que aprendeste', 'Estas a viver o que aprendeste')}.`
+      return `Semana de integração plena! ${rituais.value} rituais matinais e check-in de manutenção ${g('feito', 'feita')}. ${mentoria.value > 0 ? `Ainda partilhaste ${mentoria.value} frase(s) de sabedoria como mentora.` : 'Considera partilhar a tua sabedoria na secção de mentoria.'} ${g('Estás a viver o que aprendeste', 'Estás a viver o que aprendeste')}.`
     }
     if (rituais.value >= 3) {
-      return `${rituais.value} rituais matinais esta semana — cada manha e uma nova aurora. ${checkins.value > 0 ? 'O teu check-in mensal esta em dia.' : 'Lembra-te do check-in mensal para manter as mudancas.'} A consistencia e a tua maior aliada.`
+      return `${rituais.value} rituais matinais esta semana — cada manhã é uma nova aurora. ${checkins.value > 0 ? 'O teu check-in mensal está em dia.' : 'Lembra-te do check-in mensal para manter as mudanças.'} A consistência é a tua maior aliada.`
     }
     if (checkins.value > 0 || mentoria.value > 0) {
-      return `Esta semana registaste actividade na Aurora. ${checkins.value > 0 ? 'Check-in de manutencao feito! ' : ''}${mentoria.value > 0 ? `${mentoria.value} frase(s) de sabedoria partilhada(s). ` : ''}Tenta adicionar o ritual matinal para uma integracao mais completa.`
+      return `Esta semana registaste actividade na Aurora. ${checkins.value > 0 ? 'Check-in de manutenção feito! ' : ''}${mentoria.value > 0 ? `${mentoria.value} frase(s) de sabedoria partilhada(s). ` : ''}Tenta adicionar o ritual matinal para uma integração mais completa.`
     }
-    return `Esta semana ainda nao registaste actividade na Aurora. A integracao e uma pratica diaria — comeca com o ritual matinal e ve como o teu dia muda. Tu ja tens as ferramentas. Usa-as.`
+    return `Esta semana ainda não registaste actividade na Aurora. A integração é uma prática diária — começa com o ritual matinal e vê como o teu dia muda. Tu já tens as ferramentas. Usa-as.`
   }
 }
 

@@ -6,9 +6,9 @@ import { g } from '../../utils/genero'
 import ModuleHeader from '../shared/ModuleHeader'
 
 /**
- * AURORA — Cerimonia de Graduacao
+ * AURORA — Cerimónia de Graduação
  *
- * Componente CORE do modulo Aurora — experiencia imersiva de graduacao
+ * Componente CORE do módulo Aurora — experiência imersiva de graduação
  * que celebra a jornada completa do utilizador pelos SETE ECOS.
  *
  * Tema: #D4A5A5 (rose/pink), Dark: #2e1a1a
@@ -16,17 +16,17 @@ import ModuleHeader from '../shared/ModuleHeader'
  *
  * Fluxo multi-etapa:
  * 1. Boas-vindas (sunrise gradient)
- * 2. Revisao da jornada (cada eco completado)
- * 3. Momentos-chave (selecao/escrita)
+ * 2. Revisão da jornada (cada eco completado)
+ * 3. Momentos-chave (seleção/escrita)
  * 4. Mensagem da Vivianne
  * 5. Certificado visual
- * 6. Conclusao (guardar + 50 Raios)
+ * 6. Conclusão (guardar + 50 Raios)
  */
 
 const AURORA_COLOR = '#D4A5A5'
 const AURORA_DARK = '#2e1a1a'
 
-// Definicao dos 7 Ecos com metadata para a cerimonia
+// Definição dos 7 Ecos com metadata para a cerimónia
 const ECOS_CONFIG = [
   {
     key: 'vitalis',
@@ -34,8 +34,8 @@ const ECOS_CONFIG = [
     icon: '🌿',
     color: '#7C8B6F',
     table: 'vitalis_clients',
-    descricao: 'Corpo & Nutricao',
-    aprendizagem: 'Aprendeste a honrar o teu corpo e a nutri-lo com consciencia.'
+    descricao: 'Corpo & Nutrição',
+    aprendizagem: 'Aprendeste a honrar o teu corpo e a nutri-lo com consciência.'
   },
   {
     key: 'aurea',
@@ -43,8 +43,8 @@ const ECOS_CONFIG = [
     icon: '✨',
     color: '#C4A265',
     table: 'aurea_clients',
-    descricao: 'Valor & Presenca',
-    aprendizagem: 'Descobriste o teu valor intrinseco e a forca da tua presenca.'
+    descricao: 'Valor & Presença',
+    aprendizagem: 'Descobriste o teu valor intrínseco e a força da tua presença.'
   },
   {
     key: 'serena',
@@ -52,8 +52,8 @@ const ECOS_CONFIG = [
     icon: '💧',
     color: '#6B8E9B',
     table: 'serena_clients',
-    descricao: 'Emocao & Fluidez',
-    aprendizagem: 'Aprendeste a acolher as tuas emocoes sem julgamento.'
+    descricao: 'Emoção & Fluidez',
+    aprendizagem: 'Aprendeste a acolher as tuas emoções sem julgamento.'
   },
   {
     key: 'ignis',
@@ -62,7 +62,7 @@ const ECOS_CONFIG = [
     color: '#C1634A',
     table: 'ignis_clients',
     descricao: 'Vontade & Foco',
-    aprendizagem: 'Cultivaste a direccao consciente e a forca da tua vontade.'
+    aprendizagem: 'Cultivaste a direcção consciente e a força da tua vontade.'
   },
   {
     key: 'ventis',
@@ -79,8 +79,8 @@ const ECOS_CONFIG = [
     icon: '🗣️',
     color: '#4A90A4',
     table: 'ecoa_clients',
-    descricao: 'Expressao & Voz',
-    aprendizagem: 'Libertaste a tua voz autentica e a coragem de te expressar.'
+    descricao: 'Expressão & Voz',
+    aprendizagem: 'Libertaste a tua voz autêntica e a coragem de te expressar.'
   },
   {
     key: 'imago',
@@ -88,8 +88,8 @@ const ECOS_CONFIG = [
     icon: '👁️',
     color: '#8B7BA5',
     table: 'imago_clients',
-    descricao: 'Identidade & Visao',
-    aprendizagem: 'Integraste a tua identidade e clarificaste a tua visao de futuro.'
+    descricao: 'Identidade & Visão',
+    aprendizagem: 'Integraste a tua identidade e clarificaste a tua visão de futuro.'
   }
 ]
 
@@ -97,8 +97,8 @@ export default function CerimoniaGraduacao() {
   const navigate = useNavigate()
   const { session } = useAuth()
 
-  // Estado da cerimonia
-  const [etapa, setEtapa] = useState('boas-vindas') // boas-vindas, revisao, momentos, mensagem, certificado, conclusao
+  // Estado da cerimónia
+  const [etapa, setEtapa] = useState('boas-vindas') // boas-vindas, revisão, momentos, mensagem, certificado, conclusão
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
@@ -115,10 +115,10 @@ export default function CerimoniaGraduacao() {
   const [momentosChave, setMomentosChave] = useState([])
   const [novoMomento, setNovoMomento] = useState('')
 
-  // Graduacao ja feita
+  // Graduação já feita
   const [jaGraduou, setJaGraduou] = useState(false)
 
-  // Animacao do sunrise
+  // Animação do sunrise
   const [sunriseVisible, setSunriseVisible] = useState(false)
 
   // ===== Carregar dados iniciais =====
@@ -147,7 +147,7 @@ export default function CerimoniaGraduacao() {
       setUserId(userData.id)
       setUserName(userData.nome || user.email?.split('@')[0] || '')
 
-      // Verificar se ja graduou
+      // Verificar se já graduou
       const { data: gradData } = await supabase
         .from('aurora_graduacao')
         .select('id, data, ecos_incluidos, momentos_chave')
@@ -189,7 +189,7 @@ export default function CerimoniaGraduacao() {
             })
           }
         } catch (err) {
-          // Tabela pode nao existir — ignorar silenciosamente
+          // Tabela pode não existir — ignorar silenciosamente
           console.debug(`Eco ${eco.key}: sem dados ou tabela`, err?.message)
         }
       }
@@ -198,7 +198,7 @@ export default function CerimoniaGraduacao() {
         setEcosCompletados(ecosData)
       }
     } catch (err) {
-      console.error('Erro ao carregar cerimonia:', err)
+      console.error('Erro ao carregar cerimónia:', err)
       setError('Ocorreu um erro ao carregar os dados. Tenta novamente.')
     } finally {
       setLoading(false)
@@ -209,7 +209,7 @@ export default function CerimoniaGraduacao() {
     loadData()
   }, [loadData])
 
-  // Animacao do sunrise na boas-vindas
+  // Animação do sunrise na boas-vindas
   useEffect(() => {
     if (etapa === 'boas-vindas') {
       const timer = setTimeout(() => setSunriseVisible(true), 300)
@@ -230,7 +230,7 @@ export default function CerimoniaGraduacao() {
     setMomentosChave(prev => prev.filter((_, i) => i !== index))
   }
 
-  // ===== Guardar graduacao =====
+  // ===== Guardar graduação =====
   const guardarGraduacao = async () => {
     if (!userId) return
     setSaving(true)
@@ -239,7 +239,7 @@ export default function CerimoniaGraduacao() {
     try {
       const ecosIncluidos = ecosCompletados.map(e => e.key)
 
-      // Inserir/actualizar registo de graduacao
+      // Inserir/actualizar registo de graduação
       const { error: insertError } = await supabase
         .from('aurora_graduacao')
         .upsert({
@@ -252,7 +252,7 @@ export default function CerimoniaGraduacao() {
 
       if (insertError) throw insertError
 
-      // Actualizar aurora_clients com data de graduacao e raios
+      // Actualizar aurora_clients com data de graduação e raios
       try {
         // Buscar raios actuais
         const { data: clientData } = await supabase
@@ -272,27 +272,27 @@ export default function CerimoniaGraduacao() {
           }, { onConflict: 'user_id' })
       } catch (err) {
         console.error('Erro ao actualizar aurora_clients:', err)
-        // Nao bloquear — a graduacao principal ja foi guardada
+        // Não bloquear — a graduação principal já foi guardada
       }
 
       setJaGraduou(true)
       setEtapa('conclusao')
     } catch (err) {
-      console.error('Erro ao guardar graduacao:', err)
-      setError('Ocorreu um erro ao guardar a graduacao. Tenta novamente.')
+      console.error('Erro ao guardar graduação:', err)
+      setError('Ocorreu um erro ao guardar a graduação. Tenta novamente.')
     } finally {
       setSaving(false)
     }
   }
 
-  // ===== Eco actual na revisao =====
+  // ===== Eco actual na revisão =====
   const ecoActual = ecosCompletados[ecoRevisaoIndex] || null
   const totalEcos = ecosCompletados.length
 
   // ===== Formatar data =====
   const formatarData = () => {
     const meses = [
-      'Janeiro', 'Fevereiro', 'Marco', 'Abril', 'Maio', 'Junho',
+      'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
       'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
     ]
     const d = new Date()
@@ -308,7 +308,7 @@ export default function CerimoniaGraduacao() {
             className="w-16 h-16 mx-auto mb-4 rounded-full animate-pulse"
             style={{ background: `${AURORA_COLOR}40` }}
           />
-          <p className="text-white/60">A preparar a cerimonia...</p>
+          <p className="text-white/60">A preparar a cerimónia...</p>
         </div>
       </div>
     )
@@ -327,13 +327,13 @@ export default function CerimoniaGraduacao() {
           }}
         />
 
-        {/* Conteudo */}
+        {/* Conteúdo */}
         <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-6">
           <div
             className="max-w-lg w-full text-center transition-all duration-1000"
             style={{ opacity: sunriseVisible ? 1 : 0, transform: sunriseVisible ? 'translateY(0)' : 'translateY(30px)' }}
           >
-            {/* Icone sunrise */}
+            {/* Ícone sunrise */}
             <div className="mb-8">
               <div
                 className="w-32 h-32 mx-auto rounded-full flex items-center justify-center"
@@ -349,11 +349,11 @@ export default function CerimoniaGraduacao() {
               className="text-4xl font-bold text-white mb-4"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              Cerimonia de Graduacao
+              Cerimónia de Graduação
             </h1>
 
             <p className="text-white/80 text-lg mb-2">
-              {g('Bem-vindo', 'Bem-vinda')} a esta celebracao, {userName || g('querido', 'querida')}.
+              {g('Bem-vindo', 'Bem-vinda')} a esta celebração, {userName || g('querido', 'querida')}.
             </p>
 
             <p className="text-white/60 mb-8 px-4">
@@ -369,7 +369,7 @@ export default function CerimoniaGraduacao() {
               <p className="text-white/90 text-sm">
                 {totalEcos > 0
                   ? `${totalEcos} ${totalEcos === 1 ? 'eco percorrido' : 'ecos percorridos'} na tua jornada`
-                  : 'A tua jornada sera celebrada aqui'
+                  : 'A tua jornada será celebrada aqui'
                 }
               </p>
             </div>
@@ -393,7 +393,7 @@ export default function CerimoniaGraduacao() {
                 className="w-full py-4 rounded-2xl font-semibold text-white transition-all hover:scale-[1.02]"
                 style={{ background: `linear-gradient(135deg, ${AURORA_COLOR}, ${AURORA_COLOR}cc)` }}
               >
-                {jaGraduou ? 'Reviver a cerimonia' : 'Iniciar cerimonia'} →
+                {jaGraduou ? 'Reviver a cerimónia' : 'Iniciar cerimónia'} →
               </button>
 
               <button
@@ -409,13 +409,13 @@ export default function CerimoniaGraduacao() {
     )
   }
 
-  // ===== ETAPA: REVISAO DA JORNADA =====
+  // ===== ETAPA: REVISÃO DA JORNADA =====
   if (etapa === 'revisao' && ecoActual) {
     return (
       <div className="min-h-screen" style={{ background: AURORA_DARK }}>
         <ModuleHeader
           eco="aurora"
-          title="Cerimonia de Graduacao"
+          title="Cerimónia de Graduação"
           subtitle="Celebra a tua jornada"
           backTo={ecoRevisaoIndex === 0 ? undefined : 'history'}
           showHomeButton={false}
@@ -449,7 +449,7 @@ export default function CerimoniaGraduacao() {
               borderColor: `${ecoActual.color}40`
             }}
           >
-            {/* Icone */}
+            {/* Ícone */}
             <div
               className="w-24 h-24 mx-auto rounded-full flex items-center justify-center mb-6"
               style={{ background: `${ecoActual.color}30` }}
@@ -508,7 +508,7 @@ export default function CerimoniaGraduacao() {
             </p>
           </div>
 
-          {/* Navegacao */}
+          {/* Navegação */}
           <div className="flex gap-4">
             {ecoRevisaoIndex > 0 && (
               <button
@@ -530,7 +530,7 @@ export default function CerimoniaGraduacao() {
               className="flex-1 py-4 rounded-2xl font-semibold text-white transition-all hover:scale-[1.02]"
               style={{ background: AURORA_COLOR }}
             >
-              {ecoRevisaoIndex < totalEcos - 1 ? 'Proximo eco →' : 'Continuar →'}
+              {ecoRevisaoIndex < totalEcos - 1 ? 'Próximo eco →' : 'Continuar →'}
             </button>
           </div>
         </div>
@@ -544,7 +544,7 @@ export default function CerimoniaGraduacao() {
       <div className="min-h-screen" style={{ background: AURORA_DARK }}>
         <ModuleHeader
           eco="aurora"
-          title="Cerimonia de Graduacao"
+          title="Cerimónia de Graduação"
           subtitle="Celebra a tua jornada"
           showHomeButton={false}
         />
@@ -562,7 +562,7 @@ export default function CerimoniaGraduacao() {
             </h2>
             <p className="text-white/60">
               Quais foram os momentos mais marcantes da tua jornada?
-              Escreve ate 7 — um por cada eco.
+              Escreve até 7 — um por cada eco.
             </p>
           </div>
 
@@ -629,7 +629,7 @@ export default function CerimoniaGraduacao() {
           {/* Sugestoes */}
           {momentosChave.length === 0 && (
             <div className="mb-8 space-y-2">
-              <p className="text-white/40 text-xs mb-3">Sugestoes para te inspirar:</p>
+              <p className="text-white/40 text-xs mb-3">Sugestões para te inspirar:</p>
               {[
                 'O dia em que percebi que merecia cuidar de mim',
                 'Quando senti orgulho de mim pela primeira vez',
@@ -649,7 +649,7 @@ export default function CerimoniaGraduacao() {
             </div>
           )}
 
-          {/* Navegacao */}
+          {/* Navegação */}
           <div className="flex gap-4">
             <button
               onClick={() => {
@@ -689,7 +689,7 @@ export default function CerimoniaGraduacao() {
       >
         <ModuleHeader
           eco="aurora"
-          title="Cerimonia de Graduacao"
+          title="Cerimónia de Graduação"
           subtitle="Celebra a tua jornada"
           showHomeButton={false}
           compact
@@ -722,7 +722,7 @@ export default function CerimoniaGraduacao() {
                 style={{ fontFamily: "'Cormorant Garamond', serif" }}
               >
                 "Chegaste aqui porque escolheste. Cada passo foi teu.
-                Cada eco, cada reflexao, cada momento de coragem — {g('foste tu', 'foste tu')}.
+                Cada eco, cada reflexão, cada momento de coragem — {g('foste tu', 'foste tu')}.
                 {' '}{g('Celebra-te', 'Celebra-te')}. Mereces."
               </p>
 
@@ -732,7 +732,7 @@ export default function CerimoniaGraduacao() {
               </div>
             </div>
 
-            {/* Navegacao */}
+            {/* Navegação */}
             <div className="flex gap-4">
               <button
                 onClick={() => setEtapa('momentos')}
@@ -764,7 +764,7 @@ export default function CerimoniaGraduacao() {
       >
         <ModuleHeader
           eco="aurora"
-          title="Cerimonia de Graduacao"
+          title="Cerimónia de Graduação"
           subtitle="Celebra a tua jornada"
           showHomeButton={false}
           compact
@@ -780,7 +780,7 @@ export default function CerimoniaGraduacao() {
                 borderColor: AURORA_COLOR
               }}
             >
-              {/* Decoracao cantos */}
+              {/* Decoração cantos */}
               <div
                 className="absolute top-0 left-0 w-20 h-20 opacity-20"
                 style={{
@@ -794,13 +794,13 @@ export default function CerimoniaGraduacao() {
                 }}
               />
 
-              {/* Conteudo do certificado */}
+              {/* Conteúdo do certificado */}
               <div className="relative z-10">
                 <p
                   className="text-sm tracking-[0.3em] uppercase mb-4"
                   style={{ color: `${AURORA_COLOR}cc` }}
                 >
-                  Certificado de Conclusao
+                  Certificado de Conclusão
                 </p>
 
                 <div
@@ -822,11 +822,11 @@ export default function CerimoniaGraduacao() {
                   Sete Ecos
                 </h2>
                 <p className="text-sm mb-6" style={{ color: '#8a7a6a' }}>
-                  Sistema de Transmutacao
+                  Sistema de Transmutação
                 </p>
 
                 <p className="text-sm mb-1" style={{ color: '#8a7a6a' }}>
-                  Este certificado e {g('atribuido', 'atribuida')} a
+                  Este certificado é {g('atribuído', 'atribuída')} a
                 </p>
                 <h3
                   className="text-2xl font-bold mb-4"
@@ -869,12 +869,12 @@ export default function CerimoniaGraduacao() {
                   className="text-xs mt-4 italic"
                   style={{ color: `${AURORA_COLOR}aa` }}
                 >
-                  "Cada eco e um reflexo de quem es."
+                  "Cada eco é um reflexo de quem és."
                 </p>
               </div>
             </div>
 
-            {/* Accoes */}
+            {/* Acções */}
             <div className="mt-8 space-y-3">
               {error && (
                 <div className="p-3 rounded-xl bg-red-500/20 border border-red-500/30">
@@ -889,7 +889,7 @@ export default function CerimoniaGraduacao() {
                   className="w-full py-4 rounded-2xl font-semibold text-white transition-all hover:scale-[1.02] disabled:opacity-50"
                   style={{ background: AURORA_COLOR }}
                 >
-                  {saving ? 'A guardar...' : `Concluir cerimonia (+50 Raios 🌅)`}
+                  {saving ? 'A guardar...' : `Concluir cerimónia (+50 Raios 🌅)`}
                 </button>
               ) : (
                 <button
@@ -914,7 +914,7 @@ export default function CerimoniaGraduacao() {
     )
   }
 
-  // ===== ETAPA: CONCLUSAO =====
+  // ===== ETAPA: CONCLUSÃO =====
   if (etapa === 'conclusao') {
     return (
       <div
@@ -924,13 +924,13 @@ export default function CerimoniaGraduacao() {
         }}
       >
         <div className="max-w-lg w-full text-center">
-          {/* Animacao celebracao */}
+          {/* Animação celebração */}
           <div className="mb-6">
             <div
               className="w-28 h-28 mx-auto rounded-full flex items-center justify-center"
               style={{ background: `linear-gradient(135deg, ${AURORA_COLOR}50, #f0c8a050)` }}
             >
-              <span className="text-6xl" role="img" aria-label="Celebracao">
+              <span className="text-6xl" role="img" aria-label="Celebração">
                 🌅
               </span>
             </div>
@@ -944,11 +944,11 @@ export default function CerimoniaGraduacao() {
           </h2>
 
           <p className="text-white/80 text-lg mb-2">
-            A cerimonia esta completa.
+            A cerimónia está completa.
           </p>
           <p className="text-white/60 mb-8">
             Recebeste <strong className="text-white">+50 Raios de Aurora</strong> 🌅
-            pela tua dedicacao.
+            pela tua dedicação.
           </p>
 
           {/* Resumo */}
@@ -981,7 +981,7 @@ export default function CerimoniaGraduacao() {
             )}
           </div>
 
-          {/* Accoes finais */}
+          {/* Acções finais */}
           <div className="space-y-3">
             <button
               onClick={() => navigate('/aurora/dashboard')}
@@ -995,7 +995,7 @@ export default function CerimoniaGraduacao() {
               onClick={() => setEtapa('boas-vindas')}
               className="w-full py-3 text-white/50 hover:text-white/80 transition-colors"
             >
-              Reviver a cerimonia
+              Reviver a cerimónia
             </button>
           </div>
         </div>
@@ -1003,6 +1003,6 @@ export default function CerimoniaGraduacao() {
     )
   }
 
-  // Fallback — nao deveria acontecer
+  // Fallback — não deveria acontecer
   return null
 }

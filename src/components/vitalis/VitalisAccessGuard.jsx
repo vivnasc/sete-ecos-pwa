@@ -196,7 +196,7 @@ const VitalisAccessGuard = ({ children }) => {
             <div className="space-y-3">
               {[
                 { icon: '🍽️', text: 'Plano alimentar 100% personalizado' },
-                { icon: '📊', text: 'Relatorios semanais e tendencias' },
+                { icon: '📊', text: 'Relatórios semanais e tendências' },
                 { icon: '📸', text: 'Registo de fotos de progresso' },
                 { icon: '🛒', text: 'Lista de compras automatica' },
                 { icon: '💡', text: 'Sugestoes inteligentes de refeicoes' },
