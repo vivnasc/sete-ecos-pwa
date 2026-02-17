@@ -328,11 +328,21 @@ export default async function handler(req, res) {
         ? resposta.slice(0, 1500) + '\n\n(mensagem truncada)'
         : resposta;
 
-      // Notificar coach se necessário antes de responder (TwiML fecha a conexão)
+      // Notificar coach de TODAS as interações antes de responder (TwiML fecha a conexão)
       if (notificarCoach) {
-        const contexto = msgBody === '7'
-          ? 'Cliente pediu para falar com a Vivianne'
-          : `Mensagem não reconhecida: "${msgBody}"`;
+        const CHAVE_NOMES = {
+          '1': 'VITALIS', '2': 'LUMINA', '3': 'ÁUREA', '4': 'Preços',
+          '5': 'Pagamento', '6': 'Trial grátis', '7': 'Falar com Vivianne',
+          'bundle': 'Bundle', 'catalogo': 'Catálogo', 'comunidade': 'Comunidade',
+          'referral': 'Referência', 'faq': 'FAQ', 'saudacao': 'Saudação',
+          'obrigada': 'Agradecimento',
+        };
+        const tema = CHAVE_NOMES[chave] || null;
+        const contexto = chave === '7'
+          ? `Pediu para falar contigo!\nMensagem: "${msgBody}"`
+          : tema
+            ? `Perguntou sobre *${tema}*\nMensagem: "${msgBody}"`
+            : `Mensagem não reconhecida: "${msgBody}"`;
         notificarVivianne(numeroLimpo, profileName, contexto).catch(err => {
           console.error('Erro ao notificar coach:', err);
         });
@@ -341,11 +351,21 @@ export default async function handler(req, res) {
       return respondTwiML(res, respostaTwiml);
     }
 
-    // Notificar coach se necessário (não bloqueia)
+    // Notificar coach de TODAS as interações (não bloqueia)
     if (notificarCoach) {
-      const contexto = msgBody === '7'
-        ? 'Cliente pediu para falar com a Vivianne'
-        : `Mensagem não reconhecida: "${msgBody}"`;
+      const CHAVE_NOMES = {
+        '1': 'VITALIS', '2': 'LUMINA', '3': 'ÁUREA', '4': 'Preços',
+        '5': 'Pagamento', '6': 'Trial grátis', '7': 'Falar com Vivianne',
+        'bundle': 'Bundle', 'catalogo': 'Catálogo', 'comunidade': 'Comunidade',
+        'referral': 'Referência', 'faq': 'FAQ', 'saudacao': 'Saudação',
+        'obrigada': 'Agradecimento',
+      };
+      const tema = CHAVE_NOMES[chave] || null;
+      const contexto = chave === '7'
+        ? `Pediu para falar contigo!\nMensagem: "${msgBody}"`
+        : tema
+          ? `Perguntou sobre *${tema}*\nMensagem: "${msgBody}"`
+          : `Mensagem não reconhecida: "${msgBody}"`;
 
       notificarVivianne(numeroLimpo, profileName, contexto).catch(err => {
         console.error('Erro ao notificar coach:', err);

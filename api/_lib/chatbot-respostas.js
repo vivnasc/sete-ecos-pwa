@@ -430,8 +430,9 @@ function gerarResposta(msgBody, nome, telefone) {
   // ANTI-LOOP: Se o telefone é o número da coach/negócio, nunca notificar coach
   const isCoach = telefone === COACH_NUMERO;
 
-  const { chave, notificarCoach: shouldNotify } = detectarResposta(msgBody);
-  const notificarCoach = shouldNotify && !isCoach;
+  const { chave } = detectarResposta(msgBody);
+  // SEMPRE notificar a coach sobre TODAS as interações (excepto as da própria coach)
+  const notificarCoach = !isCoach;
   const sessao = getSessao(telefone);
 
   let resposta;

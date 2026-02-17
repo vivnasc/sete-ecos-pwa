@@ -470,11 +470,22 @@ export default async function handler(req, res) {
       console.error('Falha ao enviar resposta Meta:', result.error);
     }
 
-    // Notificar coach se necessário (mensagens da coach já filtradas acima)
+    // Notificar coach de TODAS as interações (mensagens da coach já filtradas acima)
     if (notificarCoach) {
+      const CHAVE_NOMES = {
+        '1': 'VITALIS', '2': 'LUMINA', '3': 'ÁUREA', '4': 'Preços',
+        '5': 'Pagamento', '6': 'Trial grátis', '7': 'Falar com Vivianne',
+        'bundle': 'Bundle', 'catalogo': 'Catálogo', 'comunidade': 'Comunidade',
+        'referral': 'Referência', 'faq': 'FAQ', 'saudacao': 'Saudação',
+        'obrigada': 'Agradecimento',
+      };
+
+      const tema = CHAVE_NOMES[chave] || null;
       const contexto = chave === '7'
-        ? 'Cliente pediu para falar com a Vivianne'
-        : `Mensagem não reconhecida: "${msgBody}"`;
+        ? `Pediu para falar contigo!\nMensagem: "${msgBody}"`
+        : tema
+          ? `Perguntou sobre *${tema}*\nMensagem: "${msgBody}"`
+          : `Mensagem não reconhecida: "${msgBody}"`;
 
       notificarVivianne(from, nome, contexto).catch(err => {
         console.error('Erro ao notificar coach:', err);
