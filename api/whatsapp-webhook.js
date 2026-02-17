@@ -80,14 +80,15 @@ async function enviarMensagem(para, texto) {
     });
 
     if (!response.ok) {
-      const errText = await response.text();
-      console.error('Erro Meta API:', response.status, errText);
-      return { ok: false, error: 'api_error', status: response.status };
+      let errData;
+      try { errData = await response.json(); } catch (_) { errData = await response.text(); }
+      console.error('Erro Meta API:', response.status, JSON.stringify(errData));
+      return { ok: false, error: 'api_error', status: response.status, metaError: errData };
     }
 
     const result = await response.json();
     console.log('Meta API sucesso:', result.messages?.[0]?.id);
-    return { ok: true };
+    return { ok: true, messageId: result.messages?.[0]?.id };
   } catch (err) {
     console.error('Erro ao enviar mensagem Meta:', err.message);
     return { ok: false, error: 'network_error' };
@@ -526,19 +527,54 @@ async function handleTestSend(req, res, token, phoneId) {
   const destino = req.query.para || COACH_NUMERO;
   const texto = 'Teste Sete Ecos — se recebes esta mensagem, o chatbot WhatsApp está a funcionar correctamente! 🌿';
 
+  // Primeiro, verificar o token
+  const tokenCheck = await graphGet(`debug_token?input_token=${token}`, token);
+  const tokenInfo = tokenCheck.data?.data || {};
+
   try {
     const sendResult = await enviarMensagem(destino, texto);
+
+    // Diagnóstico baseado no tipo de erro
+    let diagnostico = '';
+    if (!sendResult.ok) {
+      const metaErr = sendResult.metaError?.error || sendResult.metaError || {};
+      const code = metaErr.code;
+      const subcode = metaErr.error_subcode;
+      const msg = metaErr.message || '';
+
+      if (code === 190) {
+        diagnostico = 'TOKEN EXPIRADO ou INVÁLIDO. Vai a developers.facebook.com → Tua App → WhatsApp → API Setup → gera um novo token permanente e actualiza WHATSAPP_ACCESS_TOKEN no Vercel.';
+      } else if (code === 131030 || msg.includes('pair')) {
+        diagnostico = 'O número de destino não tem conversa activa. Para enviar mensagem fora da janela de 24h, precisas de um Message Template aprovado pela Meta. Tenta mandar uma mensagem PRIMEIRO ao número Sete Ecos, e depois o bot responde.';
+      } else if (code === 131047 || msg.includes('re-engage')) {
+        diagnostico = 'Janela de 24h expirada. O contacto precisa mandar mensagem primeiro. Isto é normal — o chatbot SÓ responde a mensagens recebidas, não inicia conversas.';
+      } else if (code === 100) {
+        diagnostico = 'Parâmetro inválido. Verifica se o WHATSAPP_PHONE_NUMBER_ID está correcto no Vercel.';
+      } else if (sendResult.status === 401) {
+        diagnostico = 'Não autorizado. O token não tem permissão. Gera um novo System User Token com permissão whatsapp_business_messaging.';
+      } else {
+        diagnostico = `Erro Meta código ${code || sendResult.status}: ${msg}`;
+      }
+    }
+
     return res.status(200).json({
       teste: 'envio de mensagem',
       destino: `+${destino}`,
       sucesso: sendResult.ok,
       resultado: sendResult.ok
         ? 'MENSAGEM ENVIADA! Verifica o teu WhatsApp.'
-        : `FALHOU: ${sendResult.error || 'erro desconhecido'}`,
-      detalhes: sendResult,
+        : 'FALHOU — ver diagnóstico abaixo',
+      diagnostico: diagnostico || undefined,
+      erroMeta: !sendResult.ok ? sendResult.metaError : undefined,
+      tokenInfo: {
+        valido: tokenInfo.is_valid,
+        expira: tokenInfo.expires_at === 0 ? 'nunca (permanente)' : new Date((tokenInfo.expires_at || 0) * 1000).toISOString(),
+        permissoes: tokenInfo.scopes,
+        appId: tokenInfo.app_id,
+      },
       proximoPasso: sendResult.ok
-        ? 'O envio funciona! Agora falta confirmar que o webhook recebe mensagens. Manda uma mensagem ao número Sete Ecos no WhatsApp e vê se aparece resposta automática.'
-        : 'Verifica se o WHATSAPP_ACCESS_TOKEN no Vercel é válido e não expirou.',
+        ? 'O envio funciona! Manda uma mensagem ao número Sete Ecos no WhatsApp e vê se aparece resposta automática.'
+        : 'Lê o diagnóstico acima. Se o erro é sobre janela 24h, isso é NORMAL — o chatbot responde a mensagens, não inicia conversas. Testa mandando uma mensagem ao número Sete Ecos.',
     });
   } catch (err) {
     return res.status(200).json({
