@@ -1,10 +1,49 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { coachApi } from '../lib/coachApi';
 import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
 import { enviarBoasVindas, enviarConfirmacaoPagamento } from '../lib/emails';
 import { supabase } from '../lib/supabase';
 import { ECO_PLANS } from '../lib/shared/subscriptionPlans';
+
+// ─── Real-time toast notifications ───
+const POLL_INTERVAL = 30_000; // 30 seconds
+
+function CoachToast({ alerta, onDismiss, onNavigate }) {
+  const [exiting, setExiting] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => { setExiting(true); setTimeout(onDismiss, 300); }, 10000);
+    return () => clearTimeout(timer);
+  }, [onDismiss]);
+
+  const bgColor = alerta.prioridade === 'critica'
+    ? 'bg-red-600' : alerta.prioridade === 'alta'
+    ? 'bg-amber-500' : 'bg-gray-700';
+
+  return (
+    <div
+      className={`${bgColor} text-white rounded-xl px-4 py-3 shadow-2xl flex items-start gap-3 cursor-pointer
+        transition-all duration-300 ${exiting ? 'opacity-0 translate-x-full' : 'opacity-100 translate-x-0'}`}
+      style={{ maxWidth: 380, animation: exiting ? undefined : 'slideInRight 0.3s ease-out' }}
+      onClick={() => { onNavigate(alerta.user_id); onDismiss(); }}
+    >
+      <span className="text-xl flex-shrink-0">{alerta.emoji}</span>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold leading-tight">{alerta.titulo}</p>
+        {alerta.detalhe && <p className="text-xs opacity-80 mt-0.5 truncate">{alerta.detalhe}</p>}
+      </div>
+      <button
+        onClick={(e) => { e.stopPropagation(); setExiting(true); setTimeout(onDismiss, 300); }}
+        className="text-white/60 hover:text-white flex-shrink-0 mt-0.5"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  );
+}
 
 /**
  * SETE ECOS - COACH DASHBOARD v5
@@ -64,10 +103,145 @@ export default function CoachDashboard() {
   const [multiEcoStats, setMultiEcoStats] = useState(null);
   const [showMultiEco, setShowMultiEco] = useState(false);
 
+  // Coach notifications (static feed)
+  const [notificacoes, setNotificacoes] = useState([]);
+  const [loadingNotifs, setLoadingNotifs] = useState(true);
+  const [showNotifs, setShowNotifs] = useState(false);
+
+  // Real-time alerts (polling)
+  const [toasts, setToasts] = useState([]);
+  const seenAlertIds = useRef(new Set());
+  const lastPollTime = useRef(null);
+  const pollRef = useRef(null);
+
+  // ─── Push Notification subscription ───
+  const [pushStatus, setPushStatus] = useState(null); // null | 'subscribed' | 'denied' | 'unsupported'
+
+  useEffect(() => {
+    registerPushSubscription();
+  }, []);
+
+  const registerPushSubscription = async () => {
+    // Check support
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      setPushStatus('unsupported');
+      return;
+    }
+
+    // Request notification permission
+    if (Notification.permission === 'default') {
+      const result = await Notification.requestPermission();
+      if (result !== 'granted') { setPushStatus('denied'); return; }
+    } else if (Notification.permission !== 'granted') {
+      setPushStatus('denied');
+      return;
+    }
+
+    try {
+      const reg = await navigator.serviceWorker.ready;
+
+      // Check existing subscription
+      let subscription = await reg.pushManager.getSubscription();
+
+      if (!subscription) {
+        // Fetch VAPID public key
+        const vapidRes = await fetch('/api/coach', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'push-vapid-public' })
+        });
+        const { key } = await vapidRes.json();
+        if (!key) { setPushStatus('unsupported'); return; }
+
+        // Convert VAPID key to Uint8Array
+        const padding = '='.repeat((4 - key.length % 4) % 4);
+        const base64 = (key + padding).replace(/-/g, '+').replace(/_/g, '/');
+        const rawData = atob(base64);
+        const applicationServerKey = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; i++) applicationServerKey[i] = rawData.charCodeAt(i);
+
+        subscription = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey,
+        });
+      }
+
+      // Send subscription to server
+      const { data: { session } } = await (await import('../lib/supabase')).supabase.auth.getSession();
+      if (session?.access_token) {
+        await fetch('/api/coach', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            action: 'push-subscribe',
+            subscription: subscription.toJSON(),
+          }),
+        });
+      }
+
+      setPushStatus('subscribed');
+    } catch (err) {
+      console.error('[Push] Erro ao registar:', err);
+      setPushStatus('unsupported');
+    }
+  };
+
+  const showBrowserNotification = useCallback((alerta) => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      const notif = new Notification(alerta.titulo, {
+        body: alerta.detalhe || '',
+        icon: '/logos/VITALIS_LOGO_V3.png',
+        tag: alerta.id,
+        requireInteraction: alerta.prioridade === 'critica',
+      });
+      notif.onclick = () => { window.focus(); navigate(`/coach/cliente/${alerta.user_id}`); notif.close(); };
+    }
+  }, [navigate]);
+
+  // ─── Real-time polling ───
+  const pollAlertas = useCallback(async () => {
+    try {
+      const desde = lastPollTime.current || new Date(Date.now() - 2 * 60 * 1000).toISOString();
+      const data = await coachApi.buscarAlertasRT(desde);
+      lastPollTime.current = new Date().toISOString();
+
+      const newAlertas = (data.alertas || []).filter(a => !seenAlertIds.current.has(a.id));
+      if (newAlertas.length > 0) {
+        for (const a of newAlertas) {
+          seenAlertIds.current.add(a.id);
+        }
+        // Add toasts
+        setToasts(prev => [...newAlertas.map(a => ({ ...a, _key: a.id + '_' + Date.now() })), ...prev].slice(0, 5));
+        // Browser notifications for critical
+        for (const a of newAlertas) {
+          if (a.som || a.prioridade === 'critica') {
+            showBrowserNotification(a);
+          }
+        }
+        // Also refresh the static feed
+        loadNotificacoes();
+      }
+    } catch (err) {
+      // Silent fail — polling shouldn't break the dashboard
+    }
+  }, [showBrowserNotification]);
+
   useEffect(() => {
     loadClients();
     loadMultiEcoStats();
-  }, []);
+    loadNotificacoes();
+
+    // Start polling after initial load
+    const startPolling = () => {
+      lastPollTime.current = new Date().toISOString();
+      pollRef.current = setInterval(pollAlertas, POLL_INTERVAL);
+    };
+    const timer = setTimeout(startPolling, 3000); // Wait 3s before first poll
+    return () => { clearTimeout(timer); if (pollRef.current) clearInterval(pollRef.current); };
+  }, [pollAlertas]);
 
   const loadMultiEcoStats = async () => {
     try {
@@ -124,6 +298,17 @@ export default function CoachDashboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadNotificacoes = async () => {
+    setLoadingNotifs(true);
+    try {
+      const data = await coachApi.buscarNotificacoes();
+      setNotificacoes(data.notificacoes || []);
+    } catch (err) {
+      console.error('Erro ao carregar notificacoes coach:', err);
+    }
+    setLoadingNotifs(false);
   };
 
   // Filtered clients
@@ -231,6 +416,20 @@ export default function CoachDashboard() {
     }
   };
 
+  const tempoRelativo = (dateStr) => {
+    if (!dateStr) return '';
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'agora';
+    if (mins < 60) return `${mins}min`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h`;
+    const dias = Math.floor(hrs / 24);
+    return `${dias}d`;
+  };
+
+  const notifsCount = notificacoes.filter(n => n.prioridade === 'critica' || n.prioridade === 'alta').length;
+
   // Days since date
   const daysSince = (dateStr) => {
     if (!dateStr) return null;
@@ -250,6 +449,20 @@ export default function CoachDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
+      {/* ═══════ REAL-TIME TOAST NOTIFICATIONS ═══════ */}
+      {toasts.length > 0 && (
+        <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2" style={{ maxWidth: 380 }}>
+          {toasts.map(t => (
+            <CoachToast
+              key={t._key}
+              alerta={t}
+              onDismiss={() => setToasts(prev => prev.filter(x => x._key !== t._key))}
+              onNavigate={(uid) => navigate(`/coach/cliente/${uid}`)}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-4">
         <div className="max-w-6xl mx-auto">
@@ -258,12 +471,30 @@ export default function CoachDashboard() {
               <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-8 h-8 object-contain" />
               <div>
                 <h1 className="text-xl font-bold text-gray-900">Painel Coach</h1>
-                <p className="text-xs text-gray-500">Gestao de clientes Vitalis</p>
+                <p className="text-xs text-gray-500 flex items-center gap-1.5">
+                  Gestao de clientes Vitalis
+                  {pushStatus === 'subscribed' && <span title="Push activo" className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />}
+                  {pushStatus === 'denied' && <span title="Push bloqueado" className="text-[10px] text-red-400">(push off)</span>}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={loadClients}
+                onClick={() => setShowNotifs(!showNotifs)}
+                className={`relative p-2 rounded-lg transition-colors ${showNotifs ? 'bg-amber-100 text-amber-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}
+                title="Notificacoes"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                {notifsCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                    {notifsCount > 9 ? '9+' : notifsCount}
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={() => { loadClients(); loadNotificacoes(); }}
                 className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                 title="Actualizar"
               >
@@ -301,6 +532,61 @@ export default function CoachDashboard() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-4 space-y-4">
+        {/* ═══════ NOTIFICATION FEED ═══════ */}
+        {showNotifs && (
+          <div className="bg-white rounded-xl border border-amber-200 overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 bg-amber-50 border-b border-amber-100">
+              <h2 className="text-sm font-bold text-amber-900 flex items-center gap-2">
+                <span>🔔</span> Actividade dos clientes (7 dias)
+              </h2>
+              <button onClick={() => setShowNotifs(false)} className="text-amber-400 hover:text-amber-600">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="max-h-[400px] overflow-y-auto divide-y divide-gray-50">
+              {loadingNotifs ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="w-5 h-5 border-2 border-amber-300 border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : notificacoes.length === 0 ? (
+                <div className="text-center py-8 text-gray-400 text-sm">
+                  Sem actividade recente
+                </div>
+              ) : (
+                notificacoes.map(n => (
+                  <Link
+                    key={n.id}
+                    to={`/coach/cliente/${n.user_id}`}
+                    className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors ${
+                      n.prioridade === 'critica' ? 'bg-red-50/50' : n.prioridade === 'alta' ? 'bg-amber-50/30' : ''
+                    }`}
+                  >
+                    <span className="text-lg flex-shrink-0 mt-0.5">{n.emoji}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-medium ${
+                        n.prioridade === 'critica' ? 'text-red-800' : 'text-gray-800'
+                      }`}>
+                        {n.titulo}
+                      </p>
+                      {n.detalhe && (
+                        <p className="text-xs text-gray-500 mt-0.5">{n.detalhe}</p>
+                      )}
+                    </div>
+                    <span className="text-[10px] text-gray-400 flex-shrink-0 mt-1">
+                      {tempoRelativo(n.created_at)}
+                    </span>
+                    {n.prioridade === 'critica' && (
+                      <span className="flex-shrink-0 w-2 h-2 rounded-full bg-red-500 mt-2" />
+                    )}
+                  </Link>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Multi-Eco Overview */}
         {multiEcoStats && (
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">

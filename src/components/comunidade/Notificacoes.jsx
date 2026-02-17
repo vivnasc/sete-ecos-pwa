@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { getNotificacoes, marcarNotificacoesLidas, tempoRelativo } from '../../lib/comunidade'
+import { getGhostNotificationsForPosts, getGhostNotifsLidas, marcarGhostNotifsLidas } from '../../lib/ghost-users'
+import { Avatar } from './HubComunidade'
 
 export default function Notificacoes() {
   const navigate = useNavigate()
@@ -27,12 +29,28 @@ export default function Notificacoes() {
       if (userData) {
         setUserId(userData.id)
 
-        const [dados] = await Promise.all([
-          getNotificacoes(userData.id),
-          marcarNotificacoesLidas(userData.id)
+        // Load real notifications + user's recent posts for ghost notifications
+        const [dados, postsResult] = await Promise.all([
+          getNotificacoes(userData.id).then(d => { marcarNotificacoesLidas(userData.id); return d }),
+          supabase.from('community_posts').select('id, user_id, created_at').eq('user_id', userData.id).order('created_at', { ascending: false }).limit(20)
         ])
 
-        setNotificacoes(dados)
+        // Generate ghost notifications for the user's real posts
+        const myPosts = postsResult?.data || []
+        const ghostNotifs = getGhostNotificationsForPosts(myPosts)
+        const ghostRead = getGhostNotifsLidas()
+        const ghostNotifsMarked = ghostNotifs.map(n => ({
+          ...n,
+          lida: ghostRead.includes(n.id)
+        }))
+
+        // Mark ghost notifs as read now
+        marcarGhostNotifsLidas(ghostNotifs.map(n => n.id))
+
+        // Merge and sort by date
+        const all = [...(dados || []), ...ghostNotifsMarked]
+        all.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        setNotificacoes(all)
       }
     } catch (error) {
       console.error('Erro ao carregar notificacoes:', error)
@@ -66,18 +84,28 @@ export default function Notificacoes() {
     return grupos
   }
 
+  const RESSO_EMOJIS = { ressoo: '🫧', luz: '✨', forca: '🌿', espelho: '🪞', raiz: '🌱' }
+
   const getTextoNotificacao = (notif) => {
     switch (notif.tipo) {
+      case 'ressonancia': {
+        const emoji = RESSO_EMOJIS[notif.conteudo] || '🫧'
+        return `ressoou ${emoji} com a tua reflexão`
+      }
+      case 'espelho':
+        return notif.conteudo
+          ? `espelhou: "${notif.conteudo.length > 40 ? notif.conteudo.slice(0, 40) + '...' : notif.conteudo}"`
+          : 'espelhou a tua reflexão'
       case 'like':
-        return 'gostou da tua publicacao'
+        return 'gostou da tua publicação'
       case 'comment':
         return notif.conteudo
           ? `comentou: ${notif.conteudo.length > 50 ? notif.conteudo.slice(0, 50) + '...' : notif.conteudo}`
-          : 'comentou na tua publicacao'
+          : 'comentou na tua publicação'
       case 'follow':
-        return 'comecou a seguir-te'
+        return 'começou a seguir-te'
       case 'mention':
-        return 'mencionou-te numa publicacao'
+        return 'mencionou-te numa publicação'
       default:
         return 'interagiu contigo'
     }
@@ -85,11 +113,14 @@ export default function Notificacoes() {
 
   const handleClick = (notif) => {
     if (notif.tipo === 'follow') {
-      navigate(`/comunidade/perfil/${notif.actor_id}`)
+      navigate(`/comunidade/jornada/${notif.actor_id}`)
+    } else if (notif._ghost) {
+      // Ghost notification — go to Rio where the post is
+      navigate('/comunidade/rio')
     } else if (notif.post_id) {
-      navigate(`/comunidade/post/${notif.post_id}`)
+      navigate('/comunidade/rio')
     } else {
-      navigate(`/comunidade/perfil/${notif.actor_id}`)
+      navigate(`/comunidade/jornada/${notif.actor_id}`)
     }
   }
 
@@ -118,24 +149,11 @@ export default function Notificacoes() {
                 style={!notif.lida ? { backgroundColor: 'rgba(139, 92, 246, 0.04)' } : {}}
               >
                 {/* Avatar */}
-                <div className="flex-shrink-0">
-                  {avatarUrl ? (
-                    <img
-                      src={avatarUrl}
-                      alt={nome}
-                      className="w-11 h-11 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div
-                      className="w-11 h-11 rounded-full flex items-center justify-center text-xl"
-                      style={{ background: 'linear-gradient(135deg, #EDE9FE, #FCE7F3)' }}
-                    >
-                      {avatar}
-                    </div>
-                  )}
+                <div className="flex-shrink-0 relative">
+                  <Avatar perfil={actorProfile} size={44} />
                   {!notif.lida && (
                     <div
-                      className="w-2 h-2 rounded-full -mt-1 ml-auto mr-0.5"
+                      className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white"
                       style={{ backgroundColor: '#8B5CF6' }}
                     />
                   )}

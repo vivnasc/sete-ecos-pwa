@@ -71,11 +71,27 @@ export const CheckinDiario = () => {
       // Atualizar peso actual no cliente
       await supabase
         .from('vitalis_clients')
-        .update({ 
+        .update({
           peso_actual: parseFloat(formData.peso_kg),
           ultimo_registo: new Date().toISOString()
         })
         .eq('user_id', userData.id);
+
+      // Notificar coach se é o primeiro check-in
+      if (semanaPrograma <= 1) {
+        const { count } = await supabase.from('vitalis_registos')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', userData.id);
+        if (count <= 1) {
+          import('../../lib/emails').then(({ EmailTriggers }) => {
+            EmailTriggers.onPrimeiroCheckin({
+              nome: user.email.split('@')[0],
+              email: user.email,
+              peso: formData.peso_kg,
+            }).catch(() => {});
+          });
+        }
+      }
 
       setSuccess(true);
       

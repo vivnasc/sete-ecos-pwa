@@ -2,10 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 /**
- * Simulador de WhatsApp Chatbot — testa respostas sem gastar Twilio
+ * Simulador de WhatsApp Chatbot — testa respostas sem usar API real
  *
- * Usa o endpoint /api/whatsapp-test que chama gerarResposta()
- * exactamente como o webhook real, mas sem enviar via Twilio.
+ * Usa o endpoint /api/whatsapp-webhook?mode=test que chama gerarResposta()
+ * exactamente como o webhook Meta real, mas sem enviar via WhatsApp.
  */
 
 const QUICK_TESTS = [
@@ -47,7 +47,7 @@ export default function ChatbotTeste() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/whatsapp-chatbot?mode=test', {
+      const res = await fetch('/api/whatsapp-webhook?mode=test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mensagem: msg, nome: 'Teste Coach' }),
@@ -83,7 +83,7 @@ export default function ChatbotTeste() {
         <div className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center text-lg">🤖</div>
         <div className="flex-1">
           <h1 className="text-white font-semibold text-sm">Sete Ecos Bot — Simulador</h1>
-          <p className="text-[#8696A0] text-xs">Testa respostas sem gastar Twilio</p>
+          <p className="text-[#8696A0] text-xs">Testa respostas do chatbot WhatsApp</p>
         </div>
         <button onClick={limpar} className="text-[#8696A0] hover:text-white text-xs px-3 py-1 rounded-lg border border-white/10">
           Limpar

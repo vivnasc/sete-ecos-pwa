@@ -643,6 +643,10 @@ const PagamentoVitalis = () => {
                     const result = await startTrial(userId);
                     if (result.success) {
                       setMessage({ type: 'success', text: `🎉 Trial de ${result.trialDays} dias ativado! Redirecionando...` });
+                      // Notificar coach
+                      import('../../lib/emails').then(({ EmailTriggers }) => {
+                        EmailTriggers.onTrialIniciado({ nome: userEmail?.split('@')[0] || 'Cliente', email: userEmail }).catch(() => {});
+                      });
                       setTimeout(() => navigate('/vitalis/dashboard'), 1500);
                     } else {
                       setMessage({ type: 'error', text: 'Erro ao ativar trial. Tenta novamente.' });

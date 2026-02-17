@@ -6,6 +6,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import webpush from 'web-push';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://vvvdtogvlutrybultffx.supabase.co';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
@@ -17,6 +18,33 @@ const COACH_EMAILS = [
   'vivnasc@gmail.com',
   'vivianne.saraiva@outlook.com'
 ];
+
+// ─── Push notification helper (server-side) ───
+const VAPID_PUBLIC = process.env.VAPID_PUBLIC_KEY || 'BNTM9kj9OsZ_KBBsO-zVG3pX6WHFwyqPtBMQyW6_Woy89rjXFJe9yE3UJw2E8c-TQx8dkQ-6cSLOFkleuQi_qPs';
+const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY || 'd89K6ckTanOlUwJ-6xEaNna5pL1e6yKPQhqu6Hq0L6A';
+const VAPID_EMAIL = process.env.VAPID_EMAIL || 'mailto:viv.saraiva@gmail.com';
+
+try { webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE); } catch (e) { /* ok */ }
+
+async function pushCoachNotification({ title, body, url, tag }) {
+  try {
+    const { data: subs } = await supabase
+      .from('push_subscriptions')
+      .select('endpoint, keys_p256dh, keys_auth')
+      .in('user_email', COACH_EMAILS.map(e => e.toLowerCase()));
+    if (!subs || subs.length === 0) return;
+    const payload = JSON.stringify({ title, body, url: url || '/coach', tag: tag || 'coach', requireInteraction: true, vibrate: [200, 100, 200] });
+    for (const sub of subs) {
+      try {
+        await webpush.sendNotification({ endpoint: sub.endpoint, keys: { p256dh: sub.keys_p256dh, auth: sub.keys_auth } }, payload);
+      } catch (err) {
+        if (err.statusCode === 410 || err.statusCode === 404) {
+          await supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
+        }
+      }
+    }
+  } catch (e) { console.error('[Push] Erro:', e.message); }
+}
 
 // Env override for coach emails
 if (process.env.VITE_COACH_EMAILS) {
@@ -35,6 +63,15 @@ async function verifyCoach(req) {
   return user;
 }
 
+// ─── Verify any authenticated user ───
+async function verifyUser(req) {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  if (!token) return null;
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+  if (error || !user) return null;
+  return user;
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -43,15 +80,26 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const coach = await verifyCoach(req);
-  if (!coach) return res.status(403).json({ error: 'Acesso negado. Apenas coaches autorizadas.' });
-
   const { action, ...params } = req.body || {};
 
   try {
+    // ── Push actions (own auth logic, no coach verification required) ──
+    if (action === 'push-notify') return await pushNotify(params, res);
+    if (action === 'push-vapid-public') return res.status(200).json({ key: VAPID_PUBLIC });
+    if (action === 'push-subscribe') return await pushSubscribe(req, params, res);
+    if (action === 'push-unsubscribe') return await pushUnsubscribe(req, params, res);
+
+    // ── All other actions require coach auth ──
+    const coach = await verifyCoach(req);
+    if (!coach) return res.status(403).json({ error: 'Acesso negado. Apenas coaches autorizadas.' });
+
     switch (action) {
       case 'listar-clientes':
         return await listarClientes(res);
+      case 'coach-notificacoes':
+        return await coachNotificacoes(res);
+      case 'coach-alertas-rt':
+        return await coachAlertasRT(params.desde, res);
       case 'buscar-dados-cliente':
         return await buscarDadosCliente(params.userId, res);
       case 'buscar-plano-pdf':
@@ -87,6 +135,14 @@ async function gerarPlano(userId, res) {
   // Instead, log the error for debugging.
   const saveError = async (errorMsg) => {
     console.error(`[Coach API] Erro ao gerar plano para ${userId}: ${errorMsg}`);
+    // Push notification para coach
+    const { data: userData } = await supabase.from('users').select('nome').eq('id', userId).maybeSingle();
+    pushCoachNotification({
+      title: '❌ Erro ao gerar plano',
+      body: `${userData?.nome || 'Cliente'}: ${errorMsg.slice(0, 80)}`,
+      url: `/coach/cliente/${userId}`,
+      tag: 'plano-erro',
+    }).catch(() => {});
   };
 
   // 1. Fetch intake
@@ -587,4 +643,425 @@ async function buscarDadosCliente(userId, res) {
     mealsLogs: mealsRes.data || [],
     habitos: habitosRes.data || [],
   });
+}
+
+// ==========================================
+// COACH NOTIFICACOES - Activity feed dos clientes
+// ==========================================
+async function coachNotificacoes(res) {
+  const desde = new Date();
+  desde.setDate(desde.getDate() - 7);
+  const desdeISO = desde.toISOString();
+
+  // Fetch clients + user info for name lookup
+  const { data: clientsData } = await supabase
+    .from('vitalis_clients')
+    .select('user_id, subscription_status, data_fim, users!inner(id, nome)')
+    .order('created_at', { ascending: false });
+
+  if (!clientsData || clientsData.length === 0) {
+    return res.status(200).json({ notificacoes: [] });
+  }
+
+  const userIds = clientsData.map(c => c.user_id);
+  const nomeMap = {};
+  clientsData.forEach(c => { nomeMap[c.user_id] = c.users?.nome || 'Sem nome'; });
+
+  // Parallel queries for recent activity
+  const [registosRes, mealsRes, espacoRes, newClientsRes] = await Promise.all([
+    // Check-ins (last 7 days)
+    supabase.from('vitalis_registos')
+      .select('user_id, data, peso, energia_1a5, humor, aderencia_1a10, created_at')
+      .in('user_id', userIds)
+      .gte('created_at', desdeISO)
+      .order('created_at', { ascending: false })
+      .limit(50),
+    // Meals logged (last 7 days)
+    supabase.from('vitalis_meals_log')
+      .select('user_id, tipo_refeicao, data, created_at')
+      .in('user_id', userIds)
+      .gte('created_at', desdeISO)
+      .order('created_at', { ascending: false })
+      .limit(50),
+    // Espaco de Retorno (last 7 days)
+    supabase.from('vitalis_espaco_retorno')
+      .select('user_id, emocao, created_at')
+      .in('user_id', userIds)
+      .gte('created_at', desdeISO)
+      .order('created_at', { ascending: false })
+      .limit(20),
+    // New clients (last 7 days)
+    supabase.from('vitalis_clients')
+      .select('user_id, created_at, subscription_status, users!inner(nome)')
+      .gte('created_at', desdeISO)
+      .order('created_at', { ascending: false }),
+  ]);
+
+  const notificacoes = [];
+
+  // Check-ins
+  for (const r of (registosRes.data || [])) {
+    const nome = nomeMap[r.user_id] || 'Cliente';
+    let detalhe = '';
+    if (r.peso) detalhe += `${r.peso}kg`;
+    if (r.energia_1a5) detalhe += `${detalhe ? ' · ' : ''}energia ${r.energia_1a5}/5`;
+    if (r.aderencia_1a10) detalhe += `${detalhe ? ' · ' : ''}aderencia ${r.aderencia_1a10}/10`;
+
+    notificacoes.push({
+      id: `checkin_${r.user_id}_${r.created_at}`,
+      tipo: 'checkin',
+      emoji: '📊',
+      titulo: `${nome} fez check-in`,
+      detalhe: detalhe || null,
+      user_id: r.user_id,
+      created_at: r.created_at,
+      prioridade: r.aderencia_1a10 && r.aderencia_1a10 <= 4 ? 'alta' : 'normal',
+    });
+  }
+
+  // Meals logged (aggregate per user per day)
+  const mealsGrouped = {};
+  for (const m of (mealsRes.data || [])) {
+    const key = `${m.user_id}_${m.data}`;
+    if (!mealsGrouped[key]) {
+      mealsGrouped[key] = { user_id: m.user_id, data: m.data, count: 0, created_at: m.created_at };
+    }
+    mealsGrouped[key].count++;
+  }
+  for (const key of Object.keys(mealsGrouped)) {
+    const g = mealsGrouped[key];
+    const nome = nomeMap[g.user_id] || 'Cliente';
+    notificacoes.push({
+      id: `meals_${key}`,
+      tipo: 'refeicao',
+      emoji: '🍽️',
+      titulo: `${nome} registou ${g.count} refeicao${g.count > 1 ? 'es' : ''}`,
+      detalhe: null,
+      user_id: g.user_id,
+      created_at: g.created_at,
+      prioridade: 'normal',
+    });
+  }
+
+  // Espaco de Retorno (CRITICAL)
+  for (const e of (espacoRes.data || [])) {
+    const nome = nomeMap[e.user_id] || 'Cliente';
+    notificacoes.push({
+      id: `espaco_${e.user_id}_${e.created_at}`,
+      tipo: 'espaco_retorno',
+      emoji: '🆘',
+      titulo: `${nome} usou Espaco de Retorno`,
+      detalhe: e.emocao ? `Emocao: ${e.emocao}` : null,
+      user_id: e.user_id,
+      created_at: e.created_at,
+      prioridade: 'critica',
+    });
+  }
+
+  // New clients
+  for (const c of (newClientsRes.data || [])) {
+    const nome = c.users?.nome || 'Sem nome';
+    notificacoes.push({
+      id: `novo_${c.user_id}_${c.created_at}`,
+      tipo: 'nova_cliente',
+      emoji: '🌟',
+      titulo: `${nome} registou-se`,
+      detalhe: c.subscription_status === 'pending' ? 'Pagamento pendente' : c.subscription_status,
+      user_id: c.user_id,
+      created_at: c.created_at,
+      prioridade: 'alta',
+    });
+  }
+
+  // Inactive clients (5+ days)
+  for (const c of clientsData) {
+    if (!['active', 'trial', 'tester'].includes(c.subscription_status)) continue;
+    // Check for last activity
+    const { data: lastReg } = await supabase
+      .from('vitalis_registos')
+      .select('created_at')
+      .eq('user_id', c.user_id)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    const lastDate = lastReg?.[0]?.created_at;
+    if (lastDate) {
+      const dias = Math.floor((Date.now() - new Date(lastDate).getTime()) / 86400000);
+      if (dias >= 5) {
+        notificacoes.push({
+          id: `inactivo_${c.user_id}`,
+          tipo: 'inactividade',
+          emoji: '⚠️',
+          titulo: `${nomeMap[c.user_id]} inactiva ha ${dias} dias`,
+          detalhe: c.subscription_status === 'trial' ? 'Em trial — risco de perda' : null,
+          user_id: c.user_id,
+          created_at: lastDate,
+          prioridade: dias >= 10 ? 'critica' : 'alta',
+        });
+      }
+    }
+  }
+
+  // Subscriptions expiring in next 5 days
+  const em5dias = new Date();
+  em5dias.setDate(em5dias.getDate() + 5);
+  for (const c of clientsData) {
+    if (!c.data_fim || !['active', 'trial'].includes(c.subscription_status)) continue;
+    const expira = new Date(c.data_fim);
+    if (expira <= em5dias && expira >= new Date()) {
+      const diasRestantes = Math.ceil((expira - Date.now()) / 86400000);
+      notificacoes.push({
+        id: `expira_${c.user_id}`,
+        tipo: 'expiracao',
+        emoji: '⏰',
+        titulo: `Subscricao de ${nomeMap[c.user_id]} expira em ${diasRestantes} dia${diasRestantes !== 1 ? 's' : ''}`,
+        detalhe: null,
+        user_id: c.user_id,
+        created_at: new Date().toISOString(),
+        prioridade: diasRestantes <= 2 ? 'critica' : 'alta',
+      });
+    }
+  }
+
+  // Sort: critical first, then by date
+  const prioridadeOrdem = { critica: 0, alta: 1, normal: 2 };
+  notificacoes.sort((a, b) => {
+    const pa = prioridadeOrdem[a.prioridade] ?? 2;
+    const pb = prioridadeOrdem[b.prioridade] ?? 2;
+    if (pa !== pb) return pa - pb;
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+
+  return res.status(200).json({ notificacoes: notificacoes.slice(0, 100) });
+}
+
+// ==========================================
+// COACH ALERTAS REAL-TIME (lightweight polling)
+// Só tabelas críticas, últimos N minutos. Chamado a cada 30s.
+// ==========================================
+async function coachAlertasRT(desde, res) {
+  // Default: últimos 2 minutos
+  const desdeISO = desde || new Date(Date.now() - 2 * 60 * 1000).toISOString();
+
+  // Nome lookup — cached per request, only fetched if needed
+  const nomeCache = {};
+  const getNome = async (userId) => {
+    if (nomeCache[userId]) return nomeCache[userId];
+    const { data } = await supabase.from('users').select('nome').eq('id', userId).maybeSingle();
+    nomeCache[userId] = data?.nome || 'Cliente';
+    return nomeCache[userId];
+  };
+
+  // Parallel: query only critical tables for very recent events
+  const [newClientsRes, paymentsRes, espacoRes, planoErrosRes, registosRes] = await Promise.all([
+    // New registrations
+    supabase.from('vitalis_clients')
+      .select('user_id, created_at, subscription_status')
+      .gte('created_at', desdeISO)
+      .order('created_at', { ascending: false })
+      .limit(10),
+    // Payment submissions (pending status set recently)
+    supabase.from('vitalis_clients')
+      .select('user_id, payment_reference, payment_amount, payment_currency, payment_method, updated_at')
+      .eq('subscription_status', 'pending')
+      .not('payment_reference', 'is', null)
+      .gte('updated_at', desdeISO)
+      .limit(10),
+    // Espaco de Retorno (emotional crisis)
+    supabase.from('vitalis_espaco_retorno')
+      .select('user_id, emocao, created_at')
+      .gte('created_at', desdeISO)
+      .order('created_at', { ascending: false })
+      .limit(10),
+    // Plan generation errors
+    supabase.from('vitalis_meal_plans')
+      .select('user_id, status, created_at')
+      .eq('status', 'erro')
+      .gte('created_at', desdeISO)
+      .limit(10),
+    // New check-ins (less critical but coaches want to see)
+    supabase.from('vitalis_registos')
+      .select('user_id, peso, energia_1a5, aderencia_1a10, created_at')
+      .gte('created_at', desdeISO)
+      .order('created_at', { ascending: false })
+      .limit(10),
+  ]);
+
+  const alertas = [];
+
+  // New registrations
+  for (const c of (newClientsRes.data || [])) {
+    const nome = await getNome(c.user_id);
+    alertas.push({
+      id: `rt_novo_${c.user_id}_${c.created_at}`,
+      tipo: 'nova_cliente',
+      emoji: '🌟',
+      titulo: `Nova cliente: ${nome}`,
+      detalhe: c.subscription_status === 'pending' ? 'Pagamento pendente' : null,
+      user_id: c.user_id,
+      created_at: c.created_at,
+      prioridade: 'critica',
+      som: true,
+    });
+  }
+
+  // Payments pending
+  for (const p of (paymentsRes.data || [])) {
+    const nome = await getNome(p.user_id);
+    alertas.push({
+      id: `rt_pag_${p.user_id}_${p.updated_at}`,
+      tipo: 'pagamento',
+      emoji: '💰',
+      titulo: `${nome} submeteu pagamento`,
+      detalhe: `${p.payment_method || 'M-Pesa'} · Ref: ${p.payment_reference}${p.payment_amount ? ` · ${Number(p.payment_amount).toLocaleString('pt-MZ')} ${p.payment_currency || 'MZN'}` : ''}`,
+      user_id: p.user_id,
+      created_at: p.updated_at,
+      prioridade: 'critica',
+      som: true,
+    });
+  }
+
+  // Espaco de Retorno
+  for (const e of (espacoRes.data || [])) {
+    const nome = await getNome(e.user_id);
+    alertas.push({
+      id: `rt_espaco_${e.user_id}_${e.created_at}`,
+      tipo: 'espaco_retorno',
+      emoji: '🆘',
+      titulo: `${nome} activou Espaco de Retorno`,
+      detalhe: e.emocao ? `Emocao: ${e.emocao}` : 'Precisa de atencao',
+      user_id: e.user_id,
+      created_at: e.created_at,
+      prioridade: 'critica',
+      som: true,
+    });
+  }
+
+  // Plan errors
+  for (const p of (planoErrosRes.data || [])) {
+    const nome = await getNome(p.user_id);
+    alertas.push({
+      id: `rt_planerro_${p.user_id}_${p.created_at}`,
+      tipo: 'plano_erro',
+      emoji: '❌',
+      titulo: `Erro ao gerar plano de ${nome}`,
+      detalhe: 'Verificar e tentar novamente',
+      user_id: p.user_id,
+      created_at: p.created_at,
+      prioridade: 'critica',
+      som: true,
+    });
+  }
+
+  // Check-ins (important but not critical)
+  for (const r of (registosRes.data || [])) {
+    const nome = await getNome(r.user_id);
+    let detalhe = '';
+    if (r.peso) detalhe += `${r.peso}kg`;
+    if (r.aderencia_1a10) detalhe += `${detalhe ? ' · ' : ''}aderencia ${r.aderencia_1a10}/10`;
+    const isCritical = r.aderencia_1a10 && r.aderencia_1a10 <= 3;
+    alertas.push({
+      id: `rt_checkin_${r.user_id}_${r.created_at}`,
+      tipo: 'checkin',
+      emoji: isCritical ? '⚠️' : '📊',
+      titulo: `${nome} fez check-in`,
+      detalhe: detalhe || null,
+      user_id: r.user_id,
+      created_at: r.created_at,
+      prioridade: isCritical ? 'alta' : 'normal',
+      som: isCritical,
+    });
+  }
+
+  alertas.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  return res.status(200).json({ alertas });
+}
+
+// ==========================================
+// PUSH NOTIFICATIONS — Subscribe / Unsubscribe / Notify
+// (merged from push-coach.js to stay within Vercel Hobby 12-function limit)
+// ==========================================
+
+async function pushSubscribe(req, params, res) {
+  const user = await verifyUser(req);
+  if (!user) return res.status(401).json({ error: 'Nao autenticado' });
+  if (!COACH_EMAILS.includes(user.email.toLowerCase())) {
+    return res.status(403).json({ error: 'Apenas coaches podem subscrever push' });
+  }
+
+  const { subscription } = params;
+  if (!subscription?.endpoint || !subscription?.keys) {
+    return res.status(400).json({ error: 'Subscription invalida' });
+  }
+
+  const { error } = await supabase
+    .from('push_subscriptions')
+    .upsert({
+      user_email: user.email.toLowerCase(),
+      endpoint: subscription.endpoint,
+      keys_p256dh: subscription.keys.p256dh,
+      keys_auth: subscription.keys.auth,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'endpoint' });
+
+  if (error) {
+    console.error('[Push] Erro ao guardar subscription:', error);
+    return res.status(500).json({ error: 'Erro ao guardar. Tabela push_subscriptions existe?' });
+  }
+
+  return res.status(200).json({ ok: true });
+}
+
+async function pushUnsubscribe(req, params, res) {
+  const user = await verifyUser(req);
+  if (!user) return res.status(401).json({ error: 'Nao autenticado' });
+
+  if (params.endpoint) {
+    await supabase.from('push_subscriptions').delete().eq('endpoint', params.endpoint);
+  }
+  return res.status(200).json({ ok: true });
+}
+
+async function pushNotify(params, res) {
+  const { title, body, url, tag, requireInteraction } = params;
+  if (!title) return res.status(400).json({ error: 'Title obrigatorio' });
+
+  const { data: subs, error } = await supabase
+    .from('push_subscriptions')
+    .select('endpoint, keys_p256dh, keys_auth')
+    .in('user_email', COACH_EMAILS);
+
+  if (error || !subs || subs.length === 0) {
+    return res.status(200).json({ sent: 0, error: error?.message || 'Sem subscriptions' });
+  }
+
+  const payload = JSON.stringify({
+    title,
+    body: body || '',
+    url: url || '/coach',
+    tag: tag || 'coach-alert',
+    requireInteraction: requireInteraction || false,
+    vibrate: [200, 100, 200],
+  });
+
+  let sent = 0;
+  let failed = 0;
+
+  for (const sub of subs) {
+    try {
+      await webpush.sendNotification({
+        endpoint: sub.endpoint,
+        keys: { p256dh: sub.keys_p256dh, auth: sub.keys_auth }
+      }, payload);
+      sent++;
+    } catch (err) {
+      console.error('[Push] Falha ao enviar:', err.statusCode, sub.endpoint.slice(0, 50));
+      if (err.statusCode === 410 || err.statusCode === 404) {
+        await supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
+      }
+      failed++;
+    }
+  }
+
+  return res.status(200).json({ sent, failed });
 }

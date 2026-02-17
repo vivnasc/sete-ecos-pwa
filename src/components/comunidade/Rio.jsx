@@ -25,11 +25,13 @@ import {
   getGhostRessonanciaBatch,
   isGhostPost,
   getGhostEspelhos,
-  toggleGhostRessonancia
+  toggleGhostRessonancia,
+  getGhostReactionsForRealPost
 } from '../../lib/ghost-users'
 import ReflexaoImersiva from './ReflexaoImersiva'
 import CriarReflexao from './CriarReflexao'
 import EditarJornada from './EditarJornada'
+import { Avatar } from './HubComunidade'
 
 const PAGE_SIZE = 20
 const ECOS_FILTRO = ['vitalis', 'aurea', 'lumina', 'serena']
@@ -152,9 +154,16 @@ export default function Rio() {
       const ghostRessonancias = getGhostRessonanciaBatch(ghostPostIds)
       const allRessonancias = { ...ressonancias, ...ghostRessonancias }
 
-      // Build count map
+      // Build count map — add ghost reaction bonus for real posts
       const countMap = {}
-      data.forEach(p => { countMap[p.id] = p.ressonancia_count || p.likes_count || 0 })
+      data.forEach(p => {
+        let base = p.ressonancia_count || p.likes_count || 0
+        if (!p._ghost && p.created_at) {
+          const { ressonanciaBonus } = getGhostReactionsForRealPost(p.id, p.created_at)
+          base += ressonanciaBonus
+        }
+        countMap[p.id] = base
+      })
 
       if (reset) {
         setPosts(data)
@@ -205,7 +214,10 @@ export default function Rio() {
         setEspelhos(getGhostEspelhos(post.id))
       } else {
         const data = await getEspelhos(post.id)
-        setEspelhos([...getGhostEspelhos(post.id), ...data])
+        // Add ghost espelhos to real posts too (from the ghost-on-post system)
+        const ghostEsp = getGhostEspelhos(post.id)
+        const { espelhos: ghostReactEsp } = getGhostReactionsForRealPost(post.id, post.created_at)
+        setEspelhos([...ghostEsp, ...ghostReactEsp, ...data])
       }
     } catch (e) { setEspelhos(getGhostEspelhos(post.id)) }
     setLoadingEspelhos(false)
@@ -263,7 +275,7 @@ export default function Rio() {
   if (loading) {
     return (
       <div className="h-screen flex flex-col items-center justify-center gap-4"
-        style={{ background: 'linear-gradient(180deg, #FCFCFF 0%, #F5F3FF 100%)' }}>
+        style={{ background: 'linear-gradient(160deg, #FDF8F3 0%, #F5F0EB 50%, #FDF8F3 100%)' }}>
         <div className="w-16 h-16 rounded-full flex items-center justify-center text-3xl animate-pulse"
           style={{ background: 'linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%)' }}>
           🌊
@@ -277,7 +289,7 @@ export default function Rio() {
 
   return (
     <div className="h-[100dvh] relative overflow-hidden"
-      style={{ background: 'linear-gradient(180deg, #FCFCFF 0%, #F5F3FF 100%)' }}>
+      style={{ background: 'linear-gradient(160deg, #FDF8F3 0%, #F5F0EB 50%, #FDF8F3 100%)' }}>
 
       {/* ═══════ FLUID SCROLL RIVER ═══════ */}
       <div ref={scrollRef} className="rio-flow h-full w-full px-4 pt-20 pb-28">
@@ -357,18 +369,24 @@ export default function Rio() {
                 >
                   {/* Header: avatar + name + badges */}
                   <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-9 h-9 rounded-full flex items-center justify-center text-base"
-                        style={{ background: 'linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%)' }}>
-                        {post.is_anonymous ? '🌙' : (perfilPost?.avatar_emoji || '🌸')}
-                      </div>
+                    <button
+                      className="flex items-center gap-2.5 text-left"
+                      onClick={(e) => { e.stopPropagation(); if (!post.is_anonymous) navigate(`/comunidade/jornada/${post.user_id}`) }}
+                      disabled={post.is_anonymous}
+                    >
+                      {post.is_anonymous ? (
+                        <div className="w-9 h-9 rounded-full flex items-center justify-center text-base"
+                          style={{ background: 'linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%)' }}>🌙</div>
+                      ) : (
+                        <Avatar perfil={perfilPost} size={36} />
+                      )}
                       <div>
                         <p className="text-sm font-medium text-gray-700" style={{ fontFamily: 'var(--font-corpo)' }}>
                           {post.is_anonymous ? 'Alma Anónima' : (perfilPost?.display_name || 'Utilizadora')}
                         </p>
                         <p className="text-[10px] text-gray-300">{tempoRelativo(post.created_at)}</p>
                       </div>
-                    </div>
+                    </button>
                     <div className="flex items-center gap-1.5">
                       {ecoInfo && (
                         <span className="text-[10px] px-2 py-0.5 rounded-full"
@@ -468,7 +486,7 @@ export default function Rio() {
 
       {/* ═══════ OVERLAY: Top bar ═══════ */}
       <div className="absolute top-0 left-0 right-0 z-30 pointer-events-none"
-        style={{ background: 'linear-gradient(180deg, rgba(252,252,255,0.95) 0%, transparent 100%)' }}>
+        style={{ background: 'linear-gradient(180deg, rgba(253,248,243,0.95) 0%, transparent 100%)' }}>
         <div className="flex items-center justify-between px-4 pt-4 pb-6 pointer-events-auto">
           <button onClick={() => navigate('/comunidade')}
             className="w-9 h-9 rounded-full flex items-center justify-center active:scale-90 bg-white shadow-sm"
@@ -488,9 +506,8 @@ export default function Rio() {
           </button>
 
           <button onClick={() => navigate(`/comunidade/jornada/${userId}`)}
-            className="w-9 h-9 rounded-full flex items-center justify-center text-base active:scale-90 shadow-sm"
-            style={{ background: 'linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%)', border: '2px solid white' }}>
-            {perfil?.avatar_emoji || '🌸'}
+            className="active:scale-90">
+            <Avatar perfil={perfil} size={36} className="border-2 border-white shadow-sm" />
           </button>
         </div>
       </div>
@@ -539,7 +556,7 @@ export default function Rio() {
       <button
         onClick={() => { setPromptPreenchido(null); setShowCriarReflexao(true) }}
         className="absolute bottom-24 right-4 w-13 h-13 rounded-full text-white flex items-center justify-center z-30 active:scale-90"
-        style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)', boxShadow: '0 6px 24px rgba(139,92,246,0.35)', width: 52, height: 52 }}
+        style={{ background: 'linear-gradient(135deg, #D97706 0%, #EA580C 100%)', boxShadow: '0 6px 24px rgba(217,119,6,0.35)', width: 52, height: 52 }}
         aria-label="Criar reflexão">
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
@@ -597,10 +614,7 @@ export default function Rio() {
                 </div>
               ) : espelhos.map(e => (
                 <div key={e.id} className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm flex-shrink-0"
-                    style={{ background: 'linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%)' }}>
-                    {e.community_profiles?.avatar_emoji || '🌸'}
-                  </div>
+                  <Avatar perfil={e.community_profiles} size={32} className="flex-shrink-0" />
                   <div>
                     <div className="flex items-baseline gap-2">
                       <span className="text-xs font-bold text-gray-700">{e.community_profiles?.display_name || 'Utilizadora'}</span>
