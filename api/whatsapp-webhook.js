@@ -19,9 +19,18 @@
 import { gerarResposta, COACH_NUMERO } from './_lib/chatbot-respostas.js';
 import { logMensagem } from './_lib/chatbot-log.js';
 
-const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'seteecos2026';
-const ACCESS_TOKEN = () => process.env.WHATSAPP_ACCESS_TOKEN;
-const PHONE_NUMBER_ID = () => process.env.WHATSAPP_PHONE_NUMBER_ID;
+const VERIFY_TOKEN = (process.env.WHATSAPP_VERIFY_TOKEN || 'seteecos2026').trim();
+const ACCESS_TOKEN = () => (process.env.WHATSAPP_ACCESS_TOKEN || '').trim();
+const PHONE_NUMBER_ID = () => (process.env.WHATSAPP_PHONE_NUMBER_ID || '').trim();
+
+// ===== LOG DE ACTIVIDADE (in-memory para diagnóstico) =====
+const activityLog = [];
+const MAX_LOG = 50;
+
+function logActivity(type, data) {
+  activityLog.unshift({ type, ...data, ts: new Date().toISOString() });
+  if (activityLog.length > MAX_LOG) activityLog.length = MAX_LOG;
+}
 
 // ===== DEDUPLICAÇÃO DE MENSAGENS =====
 // Meta pode reenviar webhooks se o processamento demora >5s
@@ -61,7 +70,20 @@ async function enviarMensagem(para, texto) {
     return { ok: false, error: 'not_configured' };
   }
 
-  const url = `https://graph.facebook.com/v21.0/${phoneId}/messages`;
+  // Limpar número: só dígitos, sem +, sem espaços
+  const paraLimpo = para.replace(/[^0-9]/g, '');
+
+  const url = `https://graph.facebook.com/v22.0/${phoneId}/messages`;
+
+  const payload = {
+    messaging_product: 'whatsapp',
+    recipient_type: 'individual',
+    to: paraLimpo,
+    type: 'text',
+    text: { body: texto },
+  };
+
+  console.log('enviarMensagem →', { para: paraLimpo, phoneId, urlBase: `v22.0/${phoneId}/messages`, textoLen: texto.length });
 
   try {
     const response = await fetch(url, {
@@ -70,27 +92,25 @@ async function enviarMensagem(para, texto) {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        messaging_product: 'whatsapp',
-        recipient_type: 'individual',
-        to: para,
-        type: 'text',
-        text: { body: texto },
-      }),
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
       let errData;
       try { errData = await response.json(); } catch (_) { errData = await response.text(); }
       console.error('Erro Meta API:', response.status, JSON.stringify(errData));
+      logActivity('send_error', { para: paraLimpo, status: response.status, error: errData?.error?.message || 'unknown' });
       return { ok: false, error: 'api_error', status: response.status, metaError: errData };
     }
 
     const result = await response.json();
-    console.log('Meta API sucesso:', result.messages?.[0]?.id);
-    return { ok: true, messageId: result.messages?.[0]?.id };
+    const msgId = result.messages?.[0]?.id;
+    console.log('Meta API sucesso:', msgId);
+    logActivity('send_ok', { para: paraLimpo, messageId: msgId });
+    return { ok: true, messageId: msgId };
   } catch (err) {
     console.error('Erro ao enviar mensagem Meta:', err.message);
+    logActivity('send_exception', { para: paraLimpo, error: err.message });
     return { ok: false, error: 'network_error' };
   }
 }
@@ -103,7 +123,7 @@ async function marcarComoLida(messageId) {
   if (!token || !phoneId) return;
 
   try {
-    await fetch(`https://graph.facebook.com/v21.0/${phoneId}/messages`, {
+    await fetch(`https://graph.facebook.com/v22.0/${phoneId}/messages`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -121,10 +141,23 @@ async function marcarComoLida(messageId) {
 }
 
 // ===== NOTIFICAR COACH =====
+// Nota: COACH_NUMERO é o mesmo que o número do negócio WhatsApp,
+// portanto NÃO podemos enviar mensagem de si para si.
+// Se VIVIANNE_PERSONAL_NUMBER estiver configurado no Vercel, envia para lá.
+// Caso contrário, registamos no log de actividade e no Supabase (que já é feito).
 
 async function notificarVivianne(clienteNumero, clienteNome, contexto) {
-  const msg = `*Nova mensagem Sete Ecos*\n\n${clienteNome || 'Contacto novo'}\n+${clienteNumero}\n${contexto}\n\nResponde directamente à cliente no WhatsApp.`;
-  await enviarMensagem(COACH_NUMERO, msg);
+  const personalNumber = (process.env.VIVIANNE_PERSONAL_NUMBER || '').trim();
+
+  logActivity('coach_notify', { cliente: clienteNumero, nome: clienteNome, contexto });
+
+  if (personalNumber && personalNumber !== COACH_NUMERO) {
+    const msg = `*Nova mensagem Sete Ecos*\n\n${clienteNome || 'Contacto novo'}\n+${clienteNumero}\n${contexto}\n\nResponde directamente à cliente no WhatsApp.`;
+    await enviarMensagem(personalNumber, msg);
+  } else {
+    // Sem número pessoal configurado — log apenas (Supabase já regista)
+    console.log('Coach notify (sem envio — mesmo número):', clienteNumero, clienteNome, contexto);
+  }
 }
 
 // ===== HANDLER PRINCIPAL =====
@@ -153,6 +186,28 @@ export default async function handler(req, res) {
       return handleSetup(req, res);
     }
 
+    // ===== STATUS: ?action=status — ver actividade recente =====
+    if (req.query.action === 'status') {
+      return res.status(200).json({
+        status: 'ok',
+        endpoint: 'whatsapp-webhook (Meta Cloud API)',
+        config: {
+          hasAccessToken: !!ACCESS_TOKEN(),
+          hasPhoneNumberId: !!PHONE_NUMBER_ID(),
+          phoneNumberId: PHONE_NUMBER_ID() ? `${PHONE_NUMBER_ID().slice(0, 4)}...${PHONE_NUMBER_ID().slice(-4)}` : 'N/A',
+          tokenPreview: ACCESS_TOKEN() ? `${ACCESS_TOKEN().slice(0, 8)}...` : 'N/A',
+          verifyToken: VERIFY_TOKEN,
+          apiVersion: 'v22.0',
+        },
+        actividade: activityLog,
+        deduplicacao: {
+          mensagensEmCache: mensagensProcessadas.size,
+        },
+        timestamp: new Date().toISOString(),
+        nota: 'Se "actividade" está vazio e enviaste mensagens, o webhook NÃO está a receber POSTs da Meta. Verifica a configuração do webhook em developers.facebook.com → App → WhatsApp → Configuration.',
+      });
+    }
+
     // Diagnóstico rápido no browser
     const hasToken = !!ACCESS_TOKEN();
     const hasPhoneId = !!PHONE_NUMBER_ID();
@@ -163,6 +218,11 @@ export default async function handler(req, res) {
         hasAccessToken: hasToken,
         hasPhoneNumberId: hasPhoneId,
         verifyToken: VERIFY_TOKEN ? 'configurado' : 'NÃO CONFIGURADO',
+        apiVersion: 'v22.0',
+      },
+      urls: {
+        status: '/api/whatsapp-webhook?action=status',
+        setup: '/api/whatsapp-webhook?action=setup',
       },
       timestamp: new Date().toISOString()
     });
@@ -214,12 +274,36 @@ export default async function handler(req, res) {
   // ===== WEBHOOK META (mensagens reais) =====
   try {
     const body = req.body;
+
+    // Log de TUDO que chega por POST — crucial para diagnóstico
+    console.log('WEBHOOK POST recebido:', JSON.stringify({
+      hasBody: !!body,
+      object: body?.object,
+      entryCount: body?.entry?.length,
+      firstEntry: body?.entry?.[0] ? {
+        id: body.entry[0].id,
+        changesCount: body.entry[0].changes?.length,
+        field: body.entry[0].changes?.[0]?.field,
+        hasMessages: !!body.entry[0].changes?.[0]?.value?.messages,
+        hasStatuses: !!body.entry[0].changes?.[0]?.value?.statuses,
+      } : 'N/A',
+    }));
+
+    logActivity('webhook_post', {
+      object: body?.object,
+      hasMessages: !!body?.entry?.[0]?.changes?.[0]?.value?.messages,
+      hasStatuses: !!body?.entry?.[0]?.changes?.[0]?.value?.statuses,
+      entryId: body?.entry?.[0]?.id,
+    });
+
     const entry = body?.entry?.[0];
     const changes = entry?.changes?.[0];
     const value = changes?.value;
 
     // Sem mensagens — pode ser status update, etc.
     if (!value?.messages?.[0]) {
+      console.log('POST sem mensagens — provavelmente status update');
+      logActivity('webhook_no_msg', { field: changes?.field, statuses: value?.statuses?.length });
       return res.status(200).send('OK');
     }
 
@@ -232,7 +316,10 @@ export default async function handler(req, res) {
     console.log('WhatsApp Meta recebeu:', JSON.stringify({
       from, nome, type: messageType,
       body: message.text?.body?.slice(0, 100),
+      messageId,
     }));
+
+    logActivity('msg_received', { from, nome, type: messageType, body: message.text?.body?.slice(0, 50), messageId });
 
     // Deduplicação: ignorar mensagens já processadas (Meta pode reenviar)
     if (jaProcessada(messageId)) {
@@ -319,7 +406,7 @@ export default async function handler(req, res) {
 
 // ===== SETUP: Diagnosticar, descobrir WABA, testar envio =====
 
-const API_VERSION = 'v21.0';
+const API_VERSION = 'v22.0';
 const GRAPH_BASE = `https://graph.facebook.com/${API_VERSION}`;
 
 async function graphGet(path, token) {
