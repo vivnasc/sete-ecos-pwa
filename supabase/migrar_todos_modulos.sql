@@ -861,7 +861,7 @@ DECLARE t TEXT;
 BEGIN
   FOR t IN SELECT unnest(ARRAY[
     'aurora_clients', 'aurora_graduacao', 'aurora_antes_depois',
-    'aurora_manutencao_log', 'aurora_mentoria', 'aurora_ritual_log',
+    'aurora_manutencao_log', 'aurora_ritual_log',
     'aurora_renovacao', 'aurora_chat_messages'
   ]) LOOP
     EXECUTE format('DROP POLICY IF EXISTS %I_user_policy ON %I', t, t);
@@ -871,7 +871,11 @@ BEGIN
   END LOOP;
 END $$;
 
--- Mentoria tem politica especial: todas podem ler frases (anonimas)
+-- Mentoria usa mentora_user_id (nao user_id) + leitura publica
+DROP POLICY IF EXISTS aurora_mentoria_user_policy ON aurora_mentoria;
+CREATE POLICY aurora_mentoria_user_policy ON aurora_mentoria
+FOR ALL USING (mentora_user_id IN (SELECT id FROM users WHERE auth_id = auth.uid()));
+
 DROP POLICY IF EXISTS aurora_mentoria_read_policy ON aurora_mentoria;
 CREATE POLICY aurora_mentoria_read_policy ON aurora_mentoria
 FOR SELECT USING (true);
