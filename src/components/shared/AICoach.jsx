@@ -38,7 +38,8 @@ const COACH_AVATARS = {
   ignis: { icon: '🔥', bg: '#C1634A' },
   ventis: { icon: '🍃', bg: '#5D9B84' },
   ecoa: { icon: '🗣️', bg: '#4A90A4' },
-  imago: { icon: '🪞', bg: '#8B7BA5' }
+  imago: { icon: '🪞', bg: '#8B7BA5' },
+  aurora: { icon: '🌅', bg: '#D4A5A5' }
 }
 
 export default function AICoach({ eco, userId, personality }) {

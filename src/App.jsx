@@ -164,6 +164,22 @@ const InsightsImago = lazy(() => import('./components/imago/InsightsImago'))
 const PerfilImago = lazy(() => import('./components/imago/PerfilImago'))
 const NotificacoesImago = lazy(() => import('./components/imago/NotificacoesImago'))
 
+// AURORA (Integracao Final)
+const LandingAurora = lazy(() => import('./pages/LandingAurora'))
+const AuroraAccessGuard = lazy(() => import('./components/aurora/AuroraAccessGuard'))
+const DashboardAurora = lazy(() => import('./components/aurora/DashboardAurora'))
+const CerimoniaGraduacao = lazy(() => import('./components/aurora/CerimoniaGraduacao'))
+const AntesDepois = lazy(() => import('./components/aurora/AntesDepois'))
+const ResumoJornada = lazy(() => import('./components/aurora/ResumoJornada'))
+const ModoManutencao = lazy(() => import('./components/aurora/ModoManutencao'))
+const Mentoria = lazy(() => import('./components/aurora/Mentoria'))
+const RitualAurora = lazy(() => import('./components/aurora/RitualAurora'))
+const RenovacaoAnual = lazy(() => import('./components/aurora/RenovacaoAnual'))
+const ChatAurora = lazy(() => import('./components/aurora/ChatAurora'))
+const InsightsAurora = lazy(() => import('./components/aurora/InsightsAurora'))
+const PerfilAurora = lazy(() => import('./components/aurora/PerfilAurora'))
+const NotificacoesAurora = lazy(() => import('./components/aurora/NotificacoesAurora'))
+
 // ECO 2: ÁUREA (Valor & Presença)
 const LandingAurea = lazy(() => import('./pages/LandingAurea'))
 const PagamentoAurea = lazy(() => import('./components/aurea/PagamentoAurea'))
@@ -248,6 +264,14 @@ function EcoaRoute({ children }) {
 function ImagoRoute({ children }) {
   return (
     <ProtectedRoute guard={ImagoAccessGuard} eco="Imago">
+      <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
+    </ProtectedRoute>
+  )
+}
+
+function AuroraRoute({ children }) {
+  return (
+    <ProtectedRoute guard={AuroraAccessGuard} eco="Aurora">
       <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
     </ProtectedRoute>
   )
@@ -422,8 +446,20 @@ function AppRoutes() {
             <Route path="/imago/perfil" element={<ImagoRoute><PerfilImago /></ImagoRoute>} />
             <Route path="/imago/notificacoes" element={<ImagoRoute><NotificacoesImago /></ImagoRoute>} />
 
-            {/* ===== AURORA: Em Breve ===== */}
-            <Route path="/aurora" element={<ComingSoon />} />
+            {/* ===== AURORA - Integracao Final ===== */}
+            <Route path="/aurora" element={<LandingAurora />} />
+            <Route path="/aurora/dashboard" element={<AuroraRoute><DashboardAurora /></AuroraRoute>} />
+            <Route path="/aurora/cerimonia" element={<AuroraRoute><CerimoniaGraduacao /></AuroraRoute>} />
+            <Route path="/aurora/antes-depois" element={<AuroraRoute><AntesDepois /></AuroraRoute>} />
+            <Route path="/aurora/resumo" element={<AuroraRoute><ResumoJornada /></AuroraRoute>} />
+            <Route path="/aurora/manutencao" element={<AuroraRoute><ModoManutencao /></AuroraRoute>} />
+            <Route path="/aurora/mentoria" element={<AuroraRoute><Mentoria /></AuroraRoute>} />
+            <Route path="/aurora/ritual" element={<AuroraRoute><RitualAurora /></AuroraRoute>} />
+            <Route path="/aurora/renovacao" element={<AuroraRoute><RenovacaoAnual /></AuroraRoute>} />
+            <Route path="/aurora/chat" element={<AuroraRoute><ChatAurora /></AuroraRoute>} />
+            <Route path="/aurora/insights" element={<AuroraRoute><InsightsAurora /></AuroraRoute>} />
+            <Route path="/aurora/perfil" element={<AuroraRoute><PerfilAurora /></AuroraRoute>} />
+            <Route path="/aurora/notificacoes" element={<AuroraRoute><NotificacoesAurora /></AuroraRoute>} />
 
             {/* ===== ADMIN / COACH ===== */}
             <Route path="/coach" element={

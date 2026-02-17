@@ -92,6 +92,15 @@ export const ECO_PLANS = {
     monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 975, price_usd: 15, discount: 0 },
     semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 4972, price_usd: 76, discount: 15, savings_mzn: 878 },
     annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 9360, price_usd: 144, discount: 20, savings_mzn: 2340 }
+  },
+  aurora: {
+    name: 'Aurora',
+    table: 'aurora_clients',
+    color: '#D4A5A5',
+    colorDark: '#2e1a1a',
+    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 500, price_usd: 8, discount: 0 },
+    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 2550, price_usd: 39, discount: 15, savings_mzn: 450 },
+    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 4800, price_usd: 74, discount: 20, savings_mzn: 1200 }
   }
 }
 
