@@ -17,15 +17,16 @@ const MENU_PRINCIPAL = `Como te posso ajudar?
 
 *Os 7 Ecos da Transformação:*
 1️⃣ VITALIS — Nutrição e corpo
-2️⃣ LUMINA — Diagnóstico gratuito
-3️⃣ ÁUREA — Auto-valor e presença
-4️⃣ SERENA — Emoções e fluidez
-5️⃣ IGNIS — Vontade e foco
-6️⃣ VENTIS — Energia e ritmo
-7️⃣ ECOA — Voz e expressão
-8️⃣ IMAGO — Identidade e espelho
+2️⃣ ÁUREA — Auto-valor e presença
+3️⃣ SERENA — Emoções e fluidez
+4️⃣ IGNIS — Vontade e foco
+5️⃣ VENTIS — Energia e ritmo
+6️⃣ ECOA — Voz e expressão
+7️⃣ IMAGO — Identidade e espelho
 
 *Mais opções:*
+✨ *lumina* — Diagnóstico gratuito (5 min)
+🌅 *aurora* — Integração final (grátis)
 💰 *preços* — Ver todos os planos
 🎁 *bundle* — Pacotes com desconto (até 40%!)
 🆓 *trial* — Experimentar grátis 7 dias
@@ -77,8 +78,8 @@ Experimenta *7 dias grátis* antes de decidir.
 
 Ou responde *preços* para comparar todos os planos`;
 
-// --- 2: LUMINA ---
-R['2'] = `*LUMINA — O Teu Primeiro Passo* ✨
+// --- LUMINA (não é Eco — é ferramenta de diagnóstico gratuita) ---
+R['lumina'] = `*LUMINA — O Teu Primeiro Passo* ✨
 
 Em *5 minutos* descobres coisas sobre ti que talvez nunca tenhas percebido.
 
@@ -100,7 +101,7 @@ São *23 padrões possíveis* — a tua leitura é única.
 
 👉 Começa agora: app.seteecos.com/lumina
 
-Depois do LUMINA, o passo natural é o *VITALIS* (responde *1*) ou a *SERENA* (responde *4*) — depende do que a tua leitura revelar`;
+Depois do LUMINA, o passo natural é o *VITALIS* (responde *1*) ou a *SERENA* (responde *3*) — depende do que a tua leitura revelar`;
 
 // --- 3: ÁUREA ---
 R['3'] = `*ÁUREA — Valor e Presença* 👑
@@ -293,7 +294,7 @@ O AURORA é o *presente* que recebes ao completar os 7 Ecos. Não se compra — 
 
 É a coroa da tua transformação. 👑
 
-Queres começar? Responde *2* para o diagnóstico gratuito LUMINA ou *preços* para ver os planos.`;
+Queres começar? Responde *lumina* para o diagnóstico gratuito ou *preços* para ver os planos.`;
 
 // --- PREÇOS ---
 R['precos'] = `*Planos e Preços — Sete Ecos 2026*
@@ -533,14 +534,12 @@ Boa transformação! ✨`;
 // --- MENSAGEM GENÉRICA ---
 const GENERICA = `Obrigada pela tua mensagem!
 
-Posso ajudar-te com qualquer um dos *7 Ecos*:
+Posso ajudar-te com os *7 Ecos*:
 
-1 VITALIS (nutrição) · 2 LUMINA (grátis)
-3 ÁUREA (auto-valor) · 4 SERENA (emoções)
-5 IGNIS (vontade) · 6 VENTIS (energia)
-7 ECOA (voz) · 8 IMAGO (identidade)
+1 VITALIS · 2 ÁUREA · 3 SERENA · 4 IGNIS
+5 VENTIS · 6 ECOA · 7 IMAGO
 
-Ou escreve: *preços*, *bundle*, *trial*, *pagar*, *comunidade*, *faq*, *catalogo*
+Ou escreve: *lumina* (grátis), *aurora*, *preços*, *bundle*, *trial*, *pagar*, *faq*
 
 Ou responde *vivianne* para falar comigo directamente.`;
 
@@ -549,15 +548,14 @@ Ou responde *vivianne* para falar comigo directamente.`;
 function detectarResposta(texto) {
   const t = texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 
-  // Números diretos (1-8)
-  if (t === '1') return { chave: '1' };
-  if (t === '2') return { chave: '2' };
-  if (t === '3') return { chave: '3' };
-  if (t === '4') return { chave: 'serena' };
-  if (t === '5') return { chave: 'ignis' };
-  if (t === '6') return { chave: 'ventis' };
-  if (t === '7') return { chave: 'ecoa' };
-  if (t === '8') return { chave: 'imago' };
+  // Números diretos (1-7 = os 7 Ecos)
+  if (t === '1') return { chave: '1' };        // Vitalis
+  if (t === '2') return { chave: '3' };        // Áurea
+  if (t === '3') return { chave: 'serena' };   // Serena
+  if (t === '4') return { chave: 'ignis' };    // Ignis
+  if (t === '5') return { chave: 'ventis' };   // Ventis
+  if (t === '6') return { chave: 'ecoa' };     // Ecoa
+  if (t === '7') return { chave: 'imago' };    // Imago
 
   // Palavras-chave directas (módulos escritos por nome)
   if (t === 'bundle' || t === 'pacote' || t === 'bundles' || t === 'pacotes')
@@ -657,10 +655,10 @@ function detectarResposta(texto) {
       t.includes('valores') || t.includes('perdida') || t.includes('nao sei quem sou'))
     return { chave: 'imago' };
 
-  // LUMINA
+  // LUMINA (não é Eco — ferramenta gratuita)
   if (t.includes('lumina') || t.includes('diagnostico') || t.includes('leitura') ||
       t.includes('padrao'))
-    return { chave: '2' };
+    return { chave: 'lumina' };
 
   // ÁUREA
   if (t.includes('aurea') || t.includes('auto-valor') || t.includes('autovalor') ||
@@ -738,8 +736,8 @@ function atualizarSessao(telefone, chaveIn, chaveOut) {
 // Nomes legíveis das chaves para contexto
 const NOMES_CHAVES = {
   '1': 'Vitalis',
-  '2': 'Lumina',
   '3': 'Áurea',
+  'lumina': 'Lumina',
   'serena': 'Serena',
   'ignis': 'Ignis',
   'ventis': 'Ventis',
@@ -759,7 +757,7 @@ const NOMES_CHAVES = {
 // Follow-ups contextuais baseados na última interação
 const FOLLOW_UPS = {
   '1': '\n\n💡 _Já viste os preços? Responde *preços*. Ou experimenta grátis: *trial*_',
-  '2': '\n\n💡 _O LUMINA é gratuito! Depois experimenta o VITALIS (*1*) ou a SERENA (*4*)_',
+  'lumina': '\n\n💡 _O LUMINA é gratuito! Depois experimenta o VITALIS (*1*) ou a SERENA (*3*)_',
   '3': '\n\n💡 _Queres combinar Ecos? Responde *bundle* para ver descontos até 40%!_',
   'serena': '\n\n💡 _Combina bem com VITALIS (corpo + emoção). Responde *bundle* para descontos!_',
   'ignis': '\n\n💡 _O IGNIS + VENTIS juntos são perfeitos. Responde *bundle*!_',
