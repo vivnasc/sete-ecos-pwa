@@ -16,7 +16,7 @@
  * - WHATSAPP_PHONE_NUMBER_ID: ID do número no Meta Business
  */
 
-import { gerarResposta, COACH_NUMERO } from './_lib/chatbot-respostas.js';
+import { gerarResposta, COACH_NUMERO, NOMES_CHAVES } from './_lib/chatbot-respostas.js';
 import { logMensagem } from './_lib/chatbot-log.js';
 
 const VERIFY_TOKEN = (process.env.WHATSAPP_VERIFY_TOKEN || 'seteecos2026').trim();
@@ -423,7 +423,7 @@ export default async function handler(req, res) {
 
     // ===== MEDIA (imagem/documento = comprovativo) =====
     if (['image', 'document'].includes(messageType) && !message.text?.body) {
-      const mediaMsg = 'Recebemos a tua imagem! Se é um comprovativo de pagamento, a Vivianne vai verificar e ativar o teu acesso em menos de 1 hora.\n\nSe precisas de mais ajuda, responde com um número:\n1 VITALIS  2 LUMINA  3 ÁUREA  4 Preços  5 Pagamento  7 Falar com Vivianne';
+      const mediaMsg = 'Recebemos a tua imagem! Se é um comprovativo de pagamento, vou verificar e activar o teu acesso em menos de 1 hora.\n\nSe precisas de mais ajuda, escreve:\n*preços* · *trial* · *pagar* · *vivianne*\nOu o número de um Eco (1-7)';
 
       logMensagem({
         telefone: from,
@@ -472,16 +472,8 @@ export default async function handler(req, res) {
 
     // Notificar coach de TODAS as interações (mensagens da coach já filtradas acima)
     if (notificarCoach) {
-      const CHAVE_NOMES = {
-        '1': 'VITALIS', '2': 'LUMINA', '3': 'ÁUREA', '4': 'Preços',
-        '5': 'Pagamento', '6': 'Trial grátis', '7': 'Falar com Vivianne',
-        'bundle': 'Bundle', 'catalogo': 'Catálogo', 'comunidade': 'Comunidade',
-        'referral': 'Referência', 'faq': 'FAQ', 'saudacao': 'Saudação',
-        'obrigada': 'Agradecimento',
-      };
-
-      const tema = CHAVE_NOMES[chave] || null;
-      const contexto = chave === '7'
+      const tema = NOMES_CHAVES[chave] || null;
+      const contexto = chave === 'vivianne_contacto'
         ? `Pediu para falar contigo!\nMensagem: "${msgBody}"`
         : tema
           ? `Perguntou sobre *${tema}*\nMensagem: "${msgBody}"`
