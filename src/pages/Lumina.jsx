@@ -991,11 +991,11 @@ export default function Lumina() {
     const SETE_ECOS = [
       { nome: 'Vitalis', foco: 'Corpo & Nutrição', cor: '#7C8B6F', disponivel: true, link: '/vitalis' },
       { nome: 'Áurea', foco: 'Auto-Valor & Merecimento', cor: '#C9A227', disponivel: true, link: '/aurea' },
-      { nome: 'Serena', foco: 'Emoção & Fluidez', cor: '#6B8E9B', disponivel: false },
-      { nome: 'Ignis', foco: 'Vontade & Foco', cor: '#C1634A', disponivel: false },
-      { nome: 'Ventis', foco: 'Ritmo & Energia', cor: '#5D9B84', disponivel: false },
-      { nome: 'Ecoa', foco: 'Voz & Expressão', cor: '#4A90A4', disponivel: false },
-      { nome: 'Imago', foco: 'Identidade & Essência', cor: '#8B7BA5', disponivel: false }
+      { nome: 'Serena', foco: 'Emoção & Fluidez', cor: '#6B8E9B', disponivel: true, link: '/serena' },
+      { nome: 'Ignis', foco: 'Vontade & Foco', cor: '#C1634A', disponivel: true, link: '/ignis' },
+      { nome: 'Ventis', foco: 'Ritmo & Energia', cor: '#5D9B84', disponivel: true, link: '/ventis' },
+      { nome: 'Ecoa', foco: 'Voz & Expressão', cor: '#4A90A4', disponivel: true, link: '/ecoa' },
+      { nome: 'Imago', foco: 'Identidade & Essência', cor: '#8B7BA5', disponivel: true, link: '/imago' }
     ];
 
     // Informação do ciclo para mostrar
