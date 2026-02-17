@@ -559,6 +559,36 @@ async function handleSetup(req, res) {
       }
     }
 
+    // Método F: Business ID directo (conhecido ou via URL param ?business=XXXX)
+    if (!wabaId) {
+      const businessIds = [
+        req.query.business,                                        // URL param
+        (process.env.META_BUSINESS_ID || '').trim(),               // Env var
+        '955492164319345',                                         // Business ID conhecido (Sete Ecos)
+      ].filter(Boolean);
+
+      for (const bizId of businessIds) {
+        const wabas = await graphGet(`${bizId}/owned_whatsapp_business_accounts?fields=id,name,currency`, token);
+        if (wabas.ok && wabas.data?.data?.length > 0) {
+          wabaId = wabas.data.data[0].id;
+          wabaAttempts.push({
+            metodo: `F: business_id ${bizId} → WABAs`,
+            ok: true,
+            wabaId,
+            wabaName: wabas.data.data[0].name,
+            todosWabas: wabas.data.data,
+          });
+          break;
+        } else {
+          wabaAttempts.push({
+            metodo: `F: business_id ${bizId}`,
+            ok: false,
+            resposta: wabas.data,
+          });
+        }
+      }
+    }
+
     // Método E: Env var WHATSAPP_BUSINESS_ACCOUNT_ID
     if (!wabaId && process.env.WHATSAPP_BUSINESS_ACCOUNT_ID) {
       const envWaba = (process.env.WHATSAPP_BUSINESS_ACCOUNT_ID || '').trim();
