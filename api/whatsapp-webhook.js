@@ -365,15 +365,27 @@ async function handleSetup(req, res) {
       diagnostico.steps.push({ step: '2. WABA ID', wabaId });
     }
 
-    // Step 3: If we have WABA ID, check/subscribe
+    // Step 3: Listar TODOS os números do WABA
     if (wabaId) {
+      const phonesRes = await fetch(`${GRAPH_BASE}/${wabaId}/phone_numbers?fields=id,display_phone_number,verified_name,quality_rating`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const phonesData = await phonesRes.json();
+      diagnostico.steps.push({
+        step: '3. Todos os números do WABA',
+        ok: phonesRes.ok,
+        hint: 'Copia o "id" do teu número real e mete em WHATSAPP_PHONE_NUMBER_ID no Vercel',
+        data: phonesData,
+      });
+
+      // Step 4: Subscriptions
       const subsRes = await fetch(`${GRAPH_BASE}/${wabaId}/subscribed_apps`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const subsData = await subsRes.json();
-      diagnostico.steps.push({ step: '3. Current Subscriptions', ok: subsRes.ok, data: subsData });
+      diagnostico.steps.push({ step: '4. Subscriptions', ok: subsRes.ok, data: subsData });
 
-      // Subscribe: POST ou GET com &subscribe=true
+      // Step 5: Subscribe se pedido
       if (req.method === 'POST' || req.query.subscribe === 'true') {
         const subRes = await fetch(`${GRAPH_BASE}/${wabaId}/subscribed_apps`, {
           method: 'POST',
@@ -384,9 +396,7 @@ async function handleSetup(req, res) {
           body: JSON.stringify({}),
         });
         const subData = await subRes.json();
-        diagnostico.steps.push({ step: '4. Subscribe App', ok: subRes.ok, data: subData });
-      } else {
-        diagnostico.steps.push({ step: '4. Ação', message: 'Abre ?action=setup&subscribe=true para subscrever a tua app.' });
+        diagnostico.steps.push({ step: '5. Subscribe App', ok: subRes.ok, data: subData });
       }
     }
   } catch (err) {
