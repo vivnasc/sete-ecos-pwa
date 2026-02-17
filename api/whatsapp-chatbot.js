@@ -22,6 +22,56 @@ const TWILIO_AUTH_TOKEN = () => process.env.TWILIO_AUTH_TOKEN;
 const TWILIO_ACCOUNT_SID = () => process.env.TWILIO_ACCOUNT_SID;
 const TWILIO_WHATSAPP_NUMBER = () => process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886';
 
+// ===== ANTI-LOOP: Deduplicação de mensagens =====
+// Twilio pode reenviar webhooks se o processamento demora
+const mensagensProcessadas = new Set();
+const MAX_CACHE = 300;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+const cacheTimestamps = new Map();
+
+function jaProcessada(messageSid) {
+  if (!messageSid) return false;
+  if (mensagensProcessadas.has(messageSid)) return true;
+
+  if (mensagensProcessadas.size > MAX_CACHE) {
+    const agora = Date.now();
+    for (const [id, ts] of cacheTimestamps) {
+      if (agora - ts > CACHE_TTL) {
+        mensagensProcessadas.delete(id);
+        cacheTimestamps.delete(id);
+      }
+    }
+  }
+
+  mensagensProcessadas.add(messageSid);
+  cacheTimestamps.set(messageSid, Date.now());
+  return false;
+}
+
+// ===== ANTI-LOOP: Rate limiting por número =====
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minuto
+const RATE_LIMIT_MAX = 5; // máx 5 respostas por minuto por número
+
+function verificarRateLimit(telefone) {
+  if (!telefone) return true;
+  const agora = Date.now();
+  const registo = rateLimitMap.get(telefone);
+
+  if (!registo || agora - registo.inicio > RATE_LIMIT_WINDOW) {
+    rateLimitMap.set(telefone, { inicio: agora, count: 1 });
+    return true;
+  }
+
+  registo.count++;
+  if (registo.count > RATE_LIMIT_MAX) {
+    console.warn('RATE LIMIT Twilio atingido para:', telefone, '| msgs:', registo.count);
+    return false;
+  }
+
+  return true;
+}
+
 // ===== ENVIAR MENSAGEM VIA TWILIO REST API =====
 
 async function enviarMensagemTwilio(para, texto) {
@@ -169,11 +219,14 @@ export default async function handler(req, res) {
 
   try {
     const body = req.body || {};
+    const messageSid = body.MessageSid || body.SmsSid || '';
+
     console.log('WhatsApp chatbot recebeu:', JSON.stringify({
       From: body.From,
       Body: body.Body,
       NumMedia: body.NumMedia,
-      ProfileName: body.ProfileName
+      ProfileName: body.ProfileName,
+      MessageSid: messageSid,
     }));
 
     const from = body.From || '';
@@ -188,34 +241,58 @@ export default async function handler(req, res) {
 
     const numeroLimpo = from.replace('whatsapp:', '').replace('+', '');
 
-    // ANTI-LOOP: Detectar se a mensagem é da coach (Vivianne)
+    // ANTI-LOOP 1: Deduplicação — ignorar mensagens já processadas (Twilio retries)
+    if (jaProcessada(messageSid)) {
+      console.log('ANTI-LOOP: Mensagem Twilio duplicada ignorada:', messageSid);
+      return ackTwilio(res);
+    }
+
+    // ANTI-LOOP 2: Detectar se a mensagem é da coach (Vivianne)
+    // Se for, NÃO responder automaticamente — é a Vivianne a falar manualmente
     const isCoach = numeroLimpo === COACH_NUMERO;
+
+    if (isCoach) {
+      console.log('ANTI-LOOP: Mensagem da coach — ignorar processamento automático');
+
+      logMensagem({
+        telefone: numeroLimpo,
+        nome: profileName,
+        mensagemIn: msgBody || `[${numMedia} imagem(s)]`,
+        mensagemOut: '[coach — sem resposta automática]',
+        chave: 'coach_manual',
+        notificouCoach: false,
+        canal: 'twilio',
+      }).catch(() => {});
+
+      return ackTwilio(res);
+    }
+
+    // ANTI-LOOP 3: Rate limiting — máx 5 respostas por minuto por número
+    if (!verificarRateLimit(numeroLimpo)) {
+      console.log('ANTI-LOOP: Rate limit atingido para', numeroLimpo);
+      return ackTwilio(res);
+    }
 
     // Media (comprovativo de pagamento, etc.)
     if (numMedia > 0 && !msgBody) {
       const mediaMsg = 'Recebemos a tua imagem! Se é um comprovativo de pagamento, a Vivianne vai verificar e ativar o teu acesso em menos de 1 hora.\n\nSe precisas de mais ajuda, responde com um número:\n1 VITALIS  2 LUMINA  3 ÁUREA  4 Preços  5 Pagamento  7 Falar com Vivianne';
 
-      // Registar media no Supabase
       logMensagem({
         telefone: numeroLimpo,
         nome: profileName,
         mensagemIn: `[${numMedia} imagem(s)]`,
         mensagemOut: mediaMsg,
         chave: 'media',
-        notificouCoach: !isCoach,
+        notificouCoach: true,
+        canal: 'twilio',
       }).catch(err => console.error('Log erro:', err.message));
 
-      // Tentar REST API primeiro
       const result = await enviarMensagemTwilio(from, mediaMsg);
 
-      // Notificar coach em paralelo — MAS NUNCA se a mensagem é DA coach (evita loop)
-      if (!isCoach) {
-        notificarVivianne(numeroLimpo, profileName, `Enviou ${numMedia} imagem(s) — possivelmente comprovativo de pagamento`).catch(err => {
-          console.error('Erro ao notificar coach:', err);
-        });
-      }
+      notificarVivianne(numeroLimpo, profileName, `Enviou ${numMedia} imagem(s) — possivelmente comprovativo de pagamento`).catch(err => {
+        console.error('Erro ao notificar coach:', err);
+      });
 
-      // Se REST falhou, usar TwiML como fallback
       if (!result.ok) {
         console.log('REST API falhou, usando TwiML fallback para media');
         return respondTwiML(res, mediaMsg);
@@ -226,7 +303,7 @@ export default async function handler(req, res) {
 
     // Gerar resposta do chatbot
     const { resposta, chave, notificarCoach } = gerarResposta(msgBody, profileName, numeroLimpo);
-    console.log('Resposta gerada para:', msgBody, '| chave:', chave, '| tamanho:', resposta.length, '| isCoach:', isCoach);
+    console.log('Resposta gerada para:', msgBody, '| chave:', chave, '| tamanho:', resposta.length);
 
     // Registar no Supabase (não bloqueia)
     logMensagem({
@@ -235,7 +312,8 @@ export default async function handler(req, res) {
       mensagemIn: msgBody,
       mensagemOut: resposta,
       chave,
-      notificouCoach: notificarCoach && !isCoach,
+      notificouCoach: !!notificarCoach,
+      canal: 'twilio',
     }).catch(err => console.error('Log erro:', err.message));
 
     // Tentar enviar via REST API (permite mensagens mais longas)
@@ -246,14 +324,12 @@ export default async function handler(req, res) {
     } else {
       // REST API falhou — usar TwiML como fallback
       console.log('REST API falhou (erro:', result.error, ') — usando TwiML fallback');
-      // TwiML tem limite de ~1600 chars, truncar se necessário
       const respostaTwiml = resposta.length > 1500
         ? resposta.slice(0, 1500) + '\n\n(mensagem truncada)'
         : resposta;
 
       // Notificar coach se necessário antes de responder (TwiML fecha a conexão)
-      // ANTI-LOOP: nunca notificar se a mensagem é da própria coach
-      if (notificarCoach && !isCoach) {
+      if (notificarCoach) {
         const contexto = msgBody === '7'
           ? 'Cliente pediu para falar com a Vivianne'
           : `Mensagem não reconhecida: "${msgBody}"`;
@@ -266,8 +342,7 @@ export default async function handler(req, res) {
     }
 
     // Notificar coach se necessário (não bloqueia)
-    // ANTI-LOOP: nunca notificar se a mensagem é da própria coach
-    if (notificarCoach && !isCoach) {
+    if (notificarCoach) {
       const contexto = msgBody === '7'
         ? 'Cliente pediu para falar com a Vivianne'
         : `Mensagem não reconhecida: "${msgBody}"`;

@@ -59,6 +59,51 @@ function jaProcessada(messageId) {
   return false;
 }
 
+// ===== ANTI-LOOP: Rate limiting por número =====
+// Máximo de respostas por número num intervalo curto
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minuto
+const RATE_LIMIT_MAX = 5; // máx 5 respostas por minuto por número
+
+function verificarRateLimit(telefone) {
+  if (!telefone) return true; // permitir se sem número
+
+  const agora = Date.now();
+  const registo = rateLimitMap.get(telefone);
+
+  if (!registo || agora - registo.inicio > RATE_LIMIT_WINDOW) {
+    rateLimitMap.set(telefone, { inicio: agora, count: 1 });
+    return true;
+  }
+
+  registo.count++;
+  if (registo.count > RATE_LIMIT_MAX) {
+    console.warn('RATE LIMIT atingido para:', telefone, '| msgs:', registo.count);
+    logActivity('rate_limited', { telefone, count: registo.count });
+    return false;
+  }
+
+  return true;
+}
+
+// ===== ANTI-LOOP: IDs de mensagens enviadas pelo bot =====
+// Se a Meta reenvia a nossa própria mensagem como echo, ignoramos
+const mensagensEnviadas = new Set();
+const MAX_SENT_CACHE = 200;
+
+function registarMensagemEnviada(msgId) {
+  if (!msgId) return;
+  mensagensEnviadas.add(msgId);
+  if (mensagensEnviadas.size > MAX_SENT_CACHE) {
+    const iter = mensagensEnviadas.values();
+    for (let i = 0; i < 50; i++) mensagensEnviadas.delete(iter.next().value);
+  }
+}
+
+function eMensagemPropria(msgId) {
+  return msgId && mensagensEnviadas.has(msgId);
+}
+
 // ===== ENVIAR MENSAGEM VIA META CLOUD API =====
 
 async function enviarMensagem(para, texto) {
@@ -107,6 +152,8 @@ async function enviarMensagem(para, texto) {
     const msgId = result.messages?.[0]?.id;
     console.log('Meta API sucesso:', msgId);
     logActivity('send_ok', { para: paraLimpo, messageId: msgId });
+    // ANTI-LOOP: registar ID da mensagem enviada para ignorar echos
+    registarMensagemEnviada(msgId);
     return { ok: true, messageId: msgId };
   } catch (err) {
     console.error('Erro ao enviar mensagem Meta:', err.message);
@@ -313,13 +360,24 @@ export default async function handler(req, res) {
     const messageId = message.id;
     const messageType = message.type; // text, image, document, etc.
 
+    // Número do negócio (extraído do payload Meta)
+    const businessPhone = value.metadata?.display_phone_number?.replace(/[^0-9]/g, '') || '';
+
     console.log('WhatsApp Meta recebeu:', JSON.stringify({
       from, nome, type: messageType,
       body: message.text?.body?.slice(0, 100),
       messageId,
+      businessPhone,
     }));
 
     logActivity('msg_received', { from, nome, type: messageType, body: message.text?.body?.slice(0, 50), messageId });
+
+    // ANTI-LOOP 1: Ignorar mensagens enviadas pelo próprio bot (echos)
+    if (eMensagemPropria(messageId)) {
+      console.log('ANTI-LOOP: Mensagem própria (echo) ignorada:', messageId);
+      logActivity('echo_blocked', { messageId, from });
+      return res.status(200).send('OK');
+    }
 
     // Deduplicação: ignorar mensagens já processadas (Meta pode reenviar)
     if (jaProcessada(messageId)) {
@@ -327,9 +385,38 @@ export default async function handler(req, res) {
       return res.status(200).send('OK');
     }
 
-    // ANTI-LOOP: Detectar se a mensagem é da coach (Vivianne)
-    // Se for, NÃO notificar a coach sobre a própria mensagem
-    const isCoachMsg = from === COACH_NUMERO;
+    // ANTI-LOOP 2: Detectar se a mensagem é do número do negócio ou da coach
+    // COACH_NUMERO é o mesmo que o número do negócio WhatsApp (258851006473)
+    // Se a mensagem vem desse número, é a Vivianne a responder manualmente
+    // NÃO devemos processar automaticamente — senão cria loop
+    const isCoachMsg = from === COACH_NUMERO || (businessPhone && from === businessPhone);
+
+    if (isCoachMsg) {
+      console.log('ANTI-LOOP: Mensagem da coach/número do negócio — ignorar processamento automático');
+      logActivity('coach_msg_skipped', { from, nome, body: message.text?.body?.slice(0, 50) });
+
+      // Registar no Supabase para histórico mas NÃO responder
+      logMensagem({
+        telefone: from,
+        nome,
+        mensagemIn: message.text?.body || `[${messageType}]`,
+        mensagemOut: '[coach — sem resposta automática]',
+        chave: 'coach_manual',
+        notificouCoach: false,
+        canal: 'whatsapp-meta',
+      }).catch(() => {});
+
+      // Marcar como lida para mostrar ticks azuis
+      marcarComoLida(messageId).catch(() => {});
+      return res.status(200).send('OK');
+    }
+
+    // ANTI-LOOP 3: Rate limiting — máx 5 respostas por minuto por número
+    if (!verificarRateLimit(from)) {
+      console.log('ANTI-LOOP: Rate limit atingido para', from);
+      marcarComoLida(messageId).catch(() => {});
+      return res.status(200).send('OK');
+    }
 
     // Marcar como lida (ticks azuis)
     marcarComoLida(messageId).catch(() => {});
@@ -344,16 +431,14 @@ export default async function handler(req, res) {
         mensagemIn: `[${messageType}]`,
         mensagemOut: mediaMsg,
         chave: 'media',
-        notificouCoach: !isCoachMsg,
+        notificouCoach: true,
         canal: 'whatsapp-meta',
       }).catch(() => {});
 
       await enviarMensagem(from, mediaMsg);
 
-      // Notificar coach — MAS NUNCA se a mensagem é DA coach (evita loop)
-      if (!isCoachMsg) {
-        notificarVivianne(from, nome, `Enviou ${messageType} — possivelmente comprovativo de pagamento`).catch(() => {});
-      }
+      // Notificar coach (mensagens da coach já foram filtradas acima)
+      notificarVivianne(from, nome, `Enviou ${messageType} — possivelmente comprovativo de pagamento`).catch(() => {});
 
       return res.status(200).send('OK');
     }
@@ -365,7 +450,7 @@ export default async function handler(req, res) {
     // Gerar resposta usando módulo partilhado (com telefone para sessões)
     const { resposta, chave, notificarCoach } = gerarResposta(msgBody, nome, from);
 
-    console.log('Resposta gerada para:', msgBody, '| chave:', chave, '| tamanho:', resposta.length, '| isCoach:', isCoachMsg);
+    console.log('Resposta gerada para:', msgBody, '| chave:', chave, '| tamanho:', resposta.length);
 
     // Registar no Supabase (não bloqueia)
     logMensagem({
@@ -374,7 +459,7 @@ export default async function handler(req, res) {
       mensagemIn: msgBody,
       mensagemOut: resposta,
       chave,
-      notificouCoach: notificarCoach && !isCoachMsg,
+      notificouCoach: !!notificarCoach,
       canal: 'whatsapp-meta',
     }).catch(err => console.error('Log erro:', err.message));
 
@@ -385,8 +470,8 @@ export default async function handler(req, res) {
       console.error('Falha ao enviar resposta Meta:', result.error);
     }
 
-    // Notificar coach se necessário — MAS NUNCA se a mensagem é DA coach (evita loop)
-    if (notificarCoach && !isCoachMsg) {
+    // Notificar coach se necessário (mensagens da coach já filtradas acima)
+    if (notificarCoach) {
       const contexto = chave === '7'
         ? 'Cliente pediu para falar com a Vivianne'
         : `Mensagem não reconhecida: "${msgBody}"`;
