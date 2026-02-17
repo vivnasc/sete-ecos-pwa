@@ -123,8 +123,7 @@ const LandingImago = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              to="/login"
-              state={{ eco: 'Imago' }}
+              to="/imago/pagamento"
               className="px-10 py-4 bg-white text-[#1a1a2e] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
             >
               Descobrir quem sou
@@ -315,8 +314,7 @@ const LandingImago = () => {
                 )}
 
                 <Link
-                  to="/login"
-                  state={{ eco: 'Imago' }}
+                  to="/imago/pagamento"
                   className="mt-4 block w-full py-3 text-white rounded-full font-semibold transition-all hover:shadow-lg"
                   style={{ background: 'linear-gradient(135deg, #8B7BA5, #5a4d7a)' }}
                 >
@@ -347,8 +345,7 @@ const LandingImago = () => {
             Descobre quem és para além de tudo o que já disseram que eras.
           </p>
           <Link
-            to="/login"
-            state={{ eco: 'Imago' }}
+            to="/imago/pagamento"
             className="inline-block px-10 py-5 bg-white text-[#1a1a2e] rounded-full font-bold text-xl hover:translate-y-[-3px] hover:shadow-xl transition-all"
           >
             Quero começar HOJE

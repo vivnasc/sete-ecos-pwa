@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import AICoach from '../shared/AICoach'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
+import { g } from '../../utils/genero'
 
 /**
  * IMAGO — Coach IA de Identidade & Espelho
@@ -11,7 +12,7 @@ import { supabase } from '../../lib/supabase'
  * Chakra Sahasrara — elemento consciencia
  */
 
-const IMAGO_PERSONALITY = {
+const getImagoPersonality = () => ({
   name: 'Imago',
   greeting: 'Ola... senta-te comigo um momento. Aqui nao precisas de ser ninguem para alem de quem es. O que te trouxe ao espelho hoje?',
   tone: 'deep',
@@ -36,7 +37,7 @@ const IMAGO_PERSONALITY = {
   responses: {
     identidade: [
       'Nao saber quem es nao e fraqueza — e o inicio de uma busca honesta. A maioria das pessoas nunca para para perguntar. Tu paraste. Isso ja diz muito sobre quem es. O que sentes quando tiras todos os rotulos?',
-      'A pergunta "quem sou eu?" nao tem uma resposta fixa — e uma conversa continua contigo mesma. Nao es a mesma pessoa que eras ha 5 anos. E isso e lindo. O que mudou em ti recentemente?',
+      `A pergunta "quem sou eu?" nao tem uma resposta fixa — e uma conversa continua ${g('contigo mesmo', 'contigo mesma')}. Nao es a mesma pessoa que eras ha 5 anos. E isso e lindo. O que mudou em ti recentemente?`,
       '"Nao sei quem sou" as vezes significa "sei quem nao sou, mas ainda nao encontrei o que resta." E se, em vez de procurar uma definicao, te permitisses simplesmente observar? O que surge quando paras de tentar ser alguem?'
     ],
     mascaras: [
@@ -47,7 +48,7 @@ const IMAGO_PERSONALITY = {
     outros: [
       'Viver para os outros e a forma mais silenciosa de desaparecer. Ninguem nota porque estas sempre la — para todos menos para ti. Quando foi a ultima vez que fizeste algo so porque TU querias?',
       'As expectativas dos outros sao o espelho deles, nao o teu. O que a tua familia espera de ti diz mais sobre eles do que sobre quem tu es. Se pudesses viver sem aprovacao de ninguem, o que mudavas amanha?',
-      'Ha uma diferenca entre amar alguem e perder-se em alguem. Podes estar presente para os outros sem te ausentar de ti mesma. Mas isso exige uma coisa dificil: saber quem es fora dessas relacoes. Sabes?'
+      `Ha uma diferenca entre amar alguem e perder-se em alguem. Podes estar presente para os outros sem te ausentar de ti ${g('mesmo', 'mesma')}. Mas isso exige uma coisa dificil: saber quem es fora dessas relacoes. Sabes?`
     ],
     desconexao: [
       'A desconexao e o corpo a dizer: "Ja nao aguento ser quem nao sou." Nao e falha — e proteccao. Quando te sentes desligada, o que e que falta? Nao no mundo — dentro de ti?',
@@ -56,7 +57,7 @@ const IMAGO_PERSONALITY = {
     ],
     essencia: [
       'A tua essencia nao e algo que precisas de construir — ja esta la. Ficou apenas soterrada debaixo de expectativas, medos e versoes de ti que criaste para sobreviver. O Espelho Triplo pode ajudar-te a escavar. Ja experimentaste?',
-      'Quando dizes "quero ser autentica", a pergunta real e: "Estou disposta a ser vista como realmente sou?" Porque autenticidade sem visibilidade e so um conceito bonito. O que te impede de ser vista?',
+      `Quando dizes "quero ser ${g('autentico', 'autentica')}", a pergunta real e: "${g('Estou disposto', 'Estou disposta')} a ser ${g('visto', 'vista')} como realmente sou?" Porque autenticidade sem visibilidade e so um conceito bonito. O que te impede de ser ${g('visto', 'vista')}?`,
       'A verdade sobre quem es nao vem de grandes revelacoes. Vem dos momentos pequenos: o que te faz rir quando ninguem ve, o que te move quando nao ha obrigacao, o que escolherias se ninguem soubesse. O que e?'
     ],
     valores: [
@@ -70,19 +71,19 @@ const IMAGO_PERSONALITY = {
       'Recomecar nao significa apagar o passado. Significa escolher o que levas contigo e o que deixas para tras. O que carregas que ja nao te pertence? Que versao tua precisa de ser solta com gratidao?'
     ],
     medo: [
-      'O medo de ser vista como realmente es e o medo mais humano que existe. Mas pensa: as pessoas que mais admiras sao aquelas que se mostram como sao, com todas as imperfeicoes. E se o medo te estiver a proteger de algo que ja nao e perigoso?',
+      `O medo de ser ${g('visto', 'vista')} como realmente es e o medo mais humano que existe. Mas pensa: as pessoas que mais admiras sao aquelas que se mostram como sao, com todas as imperfeicoes. E se o medo te estiver a proteger de algo que ja nao e perigoso?`,
       'A vulnerabilidade nao e fraqueza — e a forma mais pura de forca. Mostrar-se sem mascara num mundo que nos ensina a esconder tudo e um acto de coragem radical. Qual e o passo mais pequeno que podes dar hoje nessa direccao?',
-      'O julgamento dos outros doi — mas o julgamento que fazes de ti mesma doi mais. Se te tratasses com a compaixao que das aos outros, o que te dirias agora? Faz o exercicio da Nomeacao — da-te um nome que honre quem es.'
+      `O julgamento dos outros doi — mas o julgamento que fazes de ti ${g('mesmo', 'mesma')} doi mais. Se te tratasses com a compaixao que das aos outros, o que te dirias agora? Faz o exercicio da Nomeacao — da-te um nome que honre quem es.`
     ]
   },
   genericResponses: [
     'O que partilhaste e profundo. A identidade nao e uma resposta — e uma pergunta que vivemos todos os dias. O que e que essa experiencia te revelou sobre quem es?',
-    'Obrigada por confiares em mim com isso. Aqui nao ha pressa para chegar a conclusoes. As vezes o mais valioso e simplesmente estar com a pergunta: "Quem sou eu neste momento?"',
+    `${g('Obrigado', 'Obrigada')} por confiares em mim com isso. Aqui nao ha pressa para chegar a conclusoes. As vezes o mais valioso e simplesmente estar com a pergunta: "Quem sou eu neste momento?"`,
     'Isso toca em algo essencial. A maioria das pessoas foge dessa pergunta a vida inteira. Tu estas aqui, a olhar de frente. Isso ja e identidade — e coragem de se conhecer.',
     'Entendo. Lembra-te: nao precisas de ter uma resposta perfeita sobre quem es. Precisas de ter a honestidade de perguntar. Queres explorar isto no Espelho Triplo ou na Arqueologia?',
     'Quem es tu para alem de tudo o que ja disseram que eras? Essa e a pergunta mais libertadora que existe. Vamos ficar com ela um momento.'
   ]
-}
+})
 
 export default function ChatImago() {
   const { session } = useAuth()
@@ -132,5 +133,5 @@ export default function ChatImago() {
     )
   }
 
-  return <AICoach eco="imago" userId={userId} personality={IMAGO_PERSONALITY} />
+  return <AICoach eco="imago" userId={userId} personality={getImagoPersonality()} />
 }

@@ -79,6 +79,7 @@ const Sussurros = lazy(() => import('./components/comunidade/Sussurros'))
 
 // ECO 3: SERENA (Emoção & Fluidez)
 const LandingSerena = lazy(() => import('./pages/LandingSerena'))
+const PagamentoSerena = lazy(() => import('./components/serena/PagamentoSerena'))
 const SerenaAccessGuard = lazy(() => import('./components/serena/SerenaAccessGuard'))
 const DashboardSerena = lazy(() => import('./components/serena/DashboardSerena'))
 const DiarioEmocional = lazy(() => import('./components/serena/DiarioEmocional'))
@@ -98,6 +99,7 @@ const NotificacoesSerena = lazy(() => import('./components/serena/NotificacoesSe
 
 // ECO 4: IGNIS (Vontade & Direccao Consciente)
 const LandingIgnis = lazy(() => import('./pages/LandingIgnis'))
+const PagamentoIgnis = lazy(() => import('./components/ignis/PagamentoIgnis'))
 const IgnisAccessGuard = lazy(() => import('./components/ignis/IgnisAccessGuard'))
 const DashboardIgnis = lazy(() => import('./components/ignis/DashboardIgnis'))
 const EscolhasConscientes = lazy(() => import('./components/ignis/EscolhasConscientes'))
@@ -115,6 +117,7 @@ const NotificacoesIgnis = lazy(() => import('./components/ignis/NotificacoesIgni
 
 // ECO 5: VENTIS (Energia & Ritmo)
 const LandingVentis = lazy(() => import('./pages/LandingVentis'))
+const PagamentoVentis = lazy(() => import('./components/ventis/PagamentoVentis'))
 const VentisAccessGuard = lazy(() => import('./components/ventis/VentisAccessGuard'))
 const DashboardVentis = lazy(() => import('./components/ventis/DashboardVentis'))
 const MonitorEnergia = lazy(() => import('./components/ventis/MonitorEnergia'))
@@ -133,6 +136,7 @@ const NotificacoesVentis = lazy(() => import('./components/ventis/NotificacoesVe
 
 // ECO 6: ECOA (Voz & Desbloqueio do Silencio)
 const LandingEcoa = lazy(() => import('./pages/LandingEcoa'))
+const PagamentoEcoa = lazy(() => import('./components/ecoa/PagamentoEcoa'))
 const EcoaAccessGuard = lazy(() => import('./components/ecoa/EcoaAccessGuard'))
 const DashboardEcoa = lazy(() => import('./components/ecoa/DashboardEcoa'))
 const MapaSilenciamento = lazy(() => import('./components/ecoa/MapaSilenciamento'))
@@ -152,6 +156,7 @@ const NotificacoesEcoa = lazy(() => import('./components/ecoa/NotificacoesEcoa')
 
 // ECO 7: IMAGO (Identidade & Espelho)
 const LandingImago = lazy(() => import('./pages/LandingImago'))
+const PagamentoImago = lazy(() => import('./components/imago/PagamentoImago'))
 const ImagoAccessGuard = lazy(() => import('./components/imago/ImagoAccessGuard'))
 const DashboardImago = lazy(() => import('./components/imago/DashboardImago'))
 const EspelhoTriplo = lazy(() => import('./components/imago/EspelhoTriplo'))
@@ -371,6 +376,7 @@ function AppRoutes() {
 
             {/* ===== ECO 3: SERENA - Emoção & Fluidez ===== */}
             <Route path="/serena" element={<LandingSerena />} />
+            <Route path="/serena/pagamento" element={<PagamentoSerena />} />
             <Route path="/serena/dashboard" element={<SerenaRoute><DashboardSerena /></SerenaRoute>} />
             <Route path="/serena/diario" element={<SerenaRoute><DiarioEmocional /></SerenaRoute>} />
             <Route path="/serena/sos" element={<SOSEmocional />} />
@@ -389,6 +395,7 @@ function AppRoutes() {
 
             {/* ===== ECO 4: IGNIS - Vontade & Direccao Consciente ===== */}
             <Route path="/ignis" element={<LandingIgnis />} />
+            <Route path="/ignis/pagamento" element={<PagamentoIgnis />} />
             <Route path="/ignis/dashboard" element={<IgnisRoute><DashboardIgnis /></IgnisRoute>} />
             <Route path="/ignis/escolhas" element={<IgnisRoute><EscolhasConscientes /></IgnisRoute>} />
             <Route path="/ignis/foco" element={<IgnisRoute><FocoConsciente /></IgnisRoute>} />
@@ -405,6 +412,7 @@ function AppRoutes() {
 
             {/* ===== ECO 5: VENTIS - Energia & Ritmo ===== */}
             <Route path="/ventis" element={<LandingVentis />} />
+            <Route path="/ventis/pagamento" element={<PagamentoVentis />} />
             <Route path="/ventis/dashboard" element={<VentisRoute><DashboardVentis /></VentisRoute>} />
             <Route path="/ventis/energia" element={<VentisRoute><MonitorEnergia /></VentisRoute>} />
             <Route path="/ventis/rotinas" element={<VentisRoute><RotinasBuilder /></VentisRoute>} />
@@ -422,6 +430,7 @@ function AppRoutes() {
 
             {/* ===== ECO 6: ECOA - Voz & Desbloqueio do Silencio ===== */}
             <Route path="/ecoa" element={<LandingEcoa />} />
+            <Route path="/ecoa/pagamento" element={<PagamentoEcoa />} />
             <Route path="/ecoa/dashboard" element={<EcoaRoute><DashboardEcoa /></EcoaRoute>} />
             <Route path="/ecoa/mapa" element={<EcoaRoute><MapaSilenciamento /></EcoaRoute>} />
             <Route path="/ecoa/micro-voz" element={<EcoaRoute><MicroVoz /></EcoaRoute>} />
@@ -440,6 +449,7 @@ function AppRoutes() {
 
             {/* ===== ECO 7: IMAGO - Identidade & Espelho ===== */}
             <Route path="/imago" element={<LandingImago />} />
+            <Route path="/imago/pagamento" element={<PagamentoImago />} />
             <Route path="/imago/dashboard" element={<ImagoRoute><DashboardImago /></ImagoRoute>} />
             <Route path="/imago/espelho" element={<ImagoRoute><EspelhoTriplo /></ImagoRoute>} />
             <Route path="/imago/arqueologia" element={<ImagoRoute><ArqueologiaDeSi /></ImagoRoute>} />

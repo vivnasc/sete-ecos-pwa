@@ -102,8 +102,7 @@ const LandingSerena = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              to="/login"
-              state={{ eco: 'Serena' }}
+              to="/serena/pagamento"
               className="px-10 py-4 bg-white text-[#1a2e3a] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
             >
               Começar a Jornada
@@ -294,8 +293,7 @@ const LandingSerena = () => {
                 )}
 
                 <Link
-                  to="/login"
-              state={{ eco: 'Serena' }}
+                  to="/serena/pagamento"
                   className="mt-4 block w-full py-3 text-white rounded-full font-semibold transition-all hover:shadow-lg"
                   style={{ background: 'linear-gradient(135deg, #6B8E9B, #4a6e7b)' }}
                 >

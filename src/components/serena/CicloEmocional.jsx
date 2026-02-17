@@ -386,8 +386,8 @@ export default function CicloEmocional() {
 
             {padraoCiclo.ciclico ? (
               <p className="text-white/60 text-sm">
-                🔄 O teu ciclo emocional esta activo — ha movimento entre fases.
-                Isso e saudavel e natural.
+                🔄 O teu ciclo emocional está {g('activo', 'activa')} — há movimento entre fases.
+                Isso é saudável e natural.
               </p>
             ) : (
               <p className="text-white/60 text-sm">

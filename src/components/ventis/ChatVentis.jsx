@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import AICoach from '../shared/AICoach'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
+import { g } from '../../utils/genero'
 
 /**
  * VENTIS — Coach IA de Energia & Ritmo
@@ -10,7 +11,7 @@ import { supabase } from '../../lib/supabase'
  * Chakra Anahata — elemento ar
  */
 
-const VENTIS_PERSONALITY = {
+const getVentisPersonality = () => ({
   name: 'Ventis',
   greeting: 'Ola... respira fundo. Como esta a tua energia hoje? Estou aqui para te ajudar a encontrar o teu ritmo.',
   tone: 'gentle',
@@ -39,7 +40,7 @@ const VENTIS_PERSONALITY = {
       'O cansaco tem camadas. Ha o cansaco fisico, o emocional e o de alma. Qual deles sentes mais? O fisico pede descanso, o emocional pede espaco, o de alma pede sentido. Nao apresses. Encontra o teu ritmo.'
     ],
     burnout: [
-      'O burnout nao e um sinal de que es fraca — e um sinal de que foste forte durante demasiado tempo sem pausa. O teu corpo esta a pedir-te para parar. Nao amanha. Agora. Consegues dar-te 10 minutos de nada?',
+      `O burnout nao e um sinal de que es ${g('fraco', 'fraca')} — e um sinal de que foste forte durante demasiado tempo sem pausa. O teu corpo esta a pedir-te para parar. Nao amanha. Agora. Consegues dar-te 10 minutos de nada?`,
       'Quando o corpo chega ao limite, ja ultrapassaste a linha ha muito tempo. O burnout e o alarme final. Nao o ignores. O que e que podes soltar esta semana? Nem tudo e urgente. Nem tudo e teu.',
       'Reconhecer o burnout ja e um acto de coragem. Muitas pessoas so param quando o corpo as obriga. Tu estas a ouvir. Respira. O ritmo sustentavel nao e lento — e inteligente. Vamos encontrar o teu.'
     ],
@@ -75,13 +76,13 @@ const VENTIS_PERSONALITY = {
     ]
   },
   genericResponses: [
-    'Obrigada por partilhares. A energia e como o vento — muda, flui, transforma-se. O importante e estares atenta ao teu ritmo. O que sentes que o teu corpo precisa agora?',
+    `${g('Obrigado', 'Obrigada')} por partilhares. A energia e como o vento — muda, flui, transforma-se. O importante e estares ${g('atento', 'atenta')} ao teu ritmo. O que sentes que o teu corpo precisa agora?`,
     'Entendo. Lembra-te: nao precisas de correr para avancar. As vezes o passo mais inteligente e abrandar. Como esta o teu ritmo hoje?',
     'Isso e importante. O teu corpo sabe coisas que a mente ainda nao ouviu. Para um momento, respira fundo, e pergunta: o que preciso agora? A resposta pode surpreender-te.',
     'Estou aqui contigo, ao ritmo do vento. Sem pressa, sem julgamento. Que tal registares como esta a tua energia agora? O simples acto de notar ja e cuidar.',
     'A vida tem estacoes — e tu tambem. Ha dias de brisa suave e dias de tempestade. Ambos fazem parte. Nao apresses. Encontra o teu ritmo. Ele ja esta dentro de ti.'
   ]
-}
+})
 
 export default function ChatVentis() {
   const { session } = useAuth()
@@ -131,5 +132,5 @@ export default function ChatVentis() {
     )
   }
 
-  return <AICoach eco="ventis" userId={userId} personality={VENTIS_PERSONALITY} />
+  return <AICoach eco="ventis" userId={userId} personality={getVentisPersonality()} />
 }
