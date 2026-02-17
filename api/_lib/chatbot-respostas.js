@@ -427,7 +427,11 @@ const FOLLOW_UPS = {
 // ===== GERAR RESPOSTA =====
 
 function gerarResposta(msgBody, nome, telefone) {
-  const { chave, notificarCoach } = detectarResposta(msgBody);
+  // ANTI-LOOP: Se o telefone é o número da coach/negócio, nunca notificar coach
+  const isCoach = telefone === COACH_NUMERO;
+
+  const { chave, notificarCoach: shouldNotify } = detectarResposta(msgBody);
+  const notificarCoach = shouldNotify && !isCoach;
   const sessao = getSessao(telefone);
 
   let resposta;
