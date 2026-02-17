@@ -23,6 +23,15 @@ const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABA
 // Coach email - configurável via Vercel ENV
 const COACH_EMAIL = process.env.COACH_EMAIL || 'viv.saraiva@gmail.com';
 
+// WhatsApp config para notificações pessoais
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+const TWILIO_WHATSAPP_NUMBER = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886';
+const VIVIANNE_PERSONAL_NUMBER = (process.env.VIVIANNE_PERSONAL_NUMBER || '').trim();
+const COACH_WHATSAPP_NUMBER = VIVIANNE_PERSONAL_NUMBER
+  ? `whatsapp:+${VIVIANNE_PERSONAL_NUMBER.replace(/^\+/, '')}`
+  : (process.env.COACH_WHATSAPP_NUMBER || 'whatsapp:+258851006473');
+
 export default async function handler(req, res) {
   // Auth centralizada no api/cron.js dispatcher
 
@@ -229,14 +238,26 @@ async function enviarResumoDiario(supabase, resultados) {
         .gte('created_at', ontem.toISOString())
     ]);
 
-    await enviarEmail('coach-resumo-diario', COACH_EMAIL, {
+    const dadosResumo = {
       data: new Date().toLocaleDateString('pt-PT'),
       totalClientes: totalClientes || 0,
       checkinsOntem: checkinsOntem || 0,
       alertasOntem: espacoRetornoOntem || 0,
       novasClientes: novasClientes?.length || 0,
       clientesLista: novasClientes?.map(c => c.users?.nome || c.users?.email).join(', ') || 'Nenhuma'
-    });
+    };
+
+    await enviarEmail('coach-resumo-diario', COACH_EMAIL, dadosResumo);
+
+    // WhatsApp resumo diário para número pessoal
+    await enviarWhatsAppCoach(`📊 *RESUMO VITALIS* — ${dadosResumo.data}
+
+👥 Clientes activas: ${dadosResumo.totalClientes}
+✅ Check-ins ontem: ${dadosResumo.checkinsOntem}
+⚠️ Alertas: ${dadosResumo.alertasOntem}
+🆕 Novas: ${dadosResumo.novasClientes}${dadosResumo.novasClientes > 0 ? `\n🌟 ${dadosResumo.clientesLista}` : ''}
+
+Bom dia! 🌱`);
 
     resultados.resumo = true;
   } catch (err) {
@@ -352,6 +373,41 @@ async function enviarCuriosidadeInsana(supabase, resultados) {
     }
   } catch (err) {
     resultados.erros.push('Erro curiosidade insana: ' + err.message);
+  }
+}
+
+/**
+ * Envia WhatsApp para a coach via Twilio (notificação pessoal)
+ */
+async function enviarWhatsAppCoach(mensagem) {
+  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN) {
+    console.log('Twilio não configurado — WhatsApp não enviado');
+    return false;
+  }
+  try {
+    const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
+    const auth = Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString('base64');
+    const response = await fetch(twilioUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        From: TWILIO_WHATSAPP_NUMBER,
+        To: COACH_WHATSAPP_NUMBER,
+        Body: mensagem
+      })
+    });
+    if (!response.ok) {
+      const err = await response.json();
+      console.error('Erro Twilio (tarefas):', err.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('Erro WhatsApp (tarefas):', err.message);
+    return false;
   }
 }
 

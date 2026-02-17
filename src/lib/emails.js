@@ -342,6 +342,16 @@ Considera fazer follow-up se for uma cliente engajada! 💪`);
       ultimaActividade: new Date().toLocaleDateString('pt-PT'),
     });
 
+    // WhatsApp para coach
+    await enviarWhatsAppCoach(`📋 *INTAKE COMPLETO*
+
+👤 ${cliente.nome}
+📧 ${cliente.email}
+🎯 Objectivo: ${cliente.objectivo || 'N/A'}
+📊 Status: ${cliente.status === 'active' || cliente.status === 'tester' ? 'Plano a ser gerado' : 'Aguarda pagamento/trial'}
+
+Verifica no Coach Dashboard! 🌱`);
+
     await pushCoach({
       title: '📋 Intake Completo!',
       body: `${cliente.nome} — ${cliente.status === 'active' || cliente.status === 'tester' ? 'Plano a ser gerado' : 'Aguarda pagamento/trial'}`,
@@ -355,6 +365,16 @@ Considera fazer follow-up se for uma cliente engajada! 💪`);
    * Chamar quando cliente inicia trial gratuito
    */
   async onTrialIniciado(cliente) {
+    // WhatsApp para coach
+    await enviarWhatsAppCoach(`🚀 *TRIAL INICIADO*
+
+👤 ${cliente.nome}
+📧 ${cliente.email}
+⏱️ 7 dias de trial gratuito
+📅 Início: ${new Date().toLocaleDateString('pt-PT')}
+
+Acompanha no Coach Dashboard! 💪`);
+
     await pushCoach({
       title: '🚀 Trial Iniciado!',
       body: `${cliente.nome} (${cliente.email}) começou 7 dias de trial`,
@@ -368,6 +388,15 @@ Considera fazer follow-up se for uma cliente engajada! 💪`);
    * Chamar no primeiro check-in de uma cliente
    */
   async onPrimeiroCheckin(cliente) {
+    // WhatsApp para coach
+    await enviarWhatsAppCoach(`🎉 *PRIMEIRO CHECK-IN!*
+
+👤 ${cliente.nome}
+⚖️ Peso: ${cliente.peso}kg
+📅 ${new Date().toLocaleDateString('pt-PT')}
+
+A jornada começou! 🌱`);
+
     await pushCoach({
       title: '🎉 Primeiro Check-in!',
       body: `${cliente.nome} fez o primeiro registo (${cliente.peso}kg)`,
