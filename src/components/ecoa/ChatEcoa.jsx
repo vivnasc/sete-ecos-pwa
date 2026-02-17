@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import AICoach from '../shared/AICoach'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
+import { g } from '../../utils/genero'
 
 /**
  * ECOA — Coach IA de Voz & Expressão
@@ -10,7 +11,7 @@ import { supabase } from '../../lib/supabase'
  * Chakra Vishuddha — elemento eter/som
  */
 
-const ECOA_PERSONALITY = {
+const getEcoaPersonality = () => ({
   name: 'Ecoa',
   greeting: 'Olá... o que é que a tua voz quer dizer hoje? Estou aqui para ouvir — e para te ajudar a ouvir-te também.',
   tone: 'encouraging',
@@ -18,7 +19,7 @@ const ECOA_PERSONALITY = {
     'Tenho medo de falar',
     'Calo-me para evitar conflito',
     'Não consigo dizer não',
-    'Quero ser mais assertiva',
+    `Quero ser mais ${g('assertivo', 'assertiva')}`,
     'Preciso de colocar limites',
     'Como expressar o que sinto?'
   ],
@@ -36,7 +37,7 @@ const ECOA_PERSONALITY = {
     silencio: [
       'O silêncio às vezes protege — mas quando se torna hábito, aprisiona. Cada vez que te calas sobre algo que importa, uma parte de ti encolhe. Não precisa de ser hoje, nem tudo de uma vez. Mas pergunta: onde te estás a calar? O que é que a tua voz quer dizer?',
       'O silêncio tem peso. Carregá-lo durante muito tempo cansa mais do que qualquer palavra dita. A tua voz não precisa de ser perfeita — precisa de ser tua. Que tal começar com algo pequeno? Uma preferência, uma opinião. Uma micro-voz.',
-      'Quantas vezes calaste algo que precisava de ser dito? O silêncio não é paz quando é imposição. A voz é um músculo — quanto mais usas, mais forte fica. Começa pelo sussurro. O grito vem quando estiveres pronta.'
+      `Quantas vezes calaste algo que precisava de ser dito? O silêncio não é paz quando é imposição. A voz é um músculo — quanto mais usas, mais forte fica. Começa pelo sussurro. O grito vem quando estiveres ${g('pronto', 'pronta')}.`
     ],
     medo_falar: [
       'O medo de falar é quase sempre o medo da reacção. Mas pensa: quantas vezes imaginaste o pior e depois não aconteceu? A tua voz merece espaço. Começa com as pessoas seguras. Pratica lá onde é mais fácil. Depois, expande.',
@@ -44,13 +45,13 @@ const ECOA_PERSONALITY = {
       'O medo de falar muitas vezes vem de momentos em que a tua voz não foi bem recebida. Isso não é culpa tua. Mas agora és tu que decides. A tua voz tem valor. Não porque os outros a vão aceitar — mas porque é tua.'
     ],
     people_pleasing: [
-      'Dizer que sim a tudo é dizer que não a ti mesma. Cada vez que aceitas algo que não queres, a tua voz encolhe um pouco. Não precisas de ser rude — só precisa de ser honesta. "Não me apetece" é uma frase completa.',
-      'O people pleasing é um hábito de sobrevivência — aprendeste que ser amada dependia de ser agradável. Mas agora podes escolher: continuar a agradar ou começar a ser tu. A verdadeira conexão vem da autenticidade, não da submissão.',
-      'Evitar conflito custa mais do que o conflito em si. Cada "sim" forçado é energia roubada a ti mesma. E se experimentasses esta semana dizer "Preciso de pensar" em vez de "Sim, claro"? Ganhas tempo. Ganhas voz.'
+      `Dizer que sim a tudo é dizer que não a ti ${g('mesmo', 'mesma')}. Cada vez que aceitas algo que não queres, a tua voz encolhe um pouco. Não precisas de ser rude — só precisa de ser ${g('honesto', 'honesta')}. "Não me apetece" é uma frase completa.`,
+      `O people pleasing é um hábito de sobrevivência — aprendeste que ser ${g('amado', 'amada')} dependia de ser agradável. Mas agora podes escolher: continuar a agradar ou começar a ser tu. A verdadeira conexão vem da autenticidade, não da submissão.`,
+      `Evitar conflito custa mais do que o conflito em si. Cada "sim" forçado é energia roubada a ti ${g('mesmo', 'mesma')}. E se experimentasses esta semana dizer "Preciso de pensar" em vez de "Sim, claro"? Ganhas tempo. Ganhas voz.`
     ],
     limites: [
       'Colocar limites não é egoísmo — é higiene emocional. Sem limites, a tua energia escoa para quem não a merece. Um limite não precisa de ser uma muralha — pode ser uma frase simples: "Isso não funciona para mim."',
-      'Os limites assustam porque fomos ensinadas que amar é ceder tudo. Mas amar sem limites não é amor — é sacrifício. E o sacrifício gera ressentimento. Começa por um limite pequeno. A pessoa certa vai respeitar. A errada vai testar. E tu vais saber a diferença.',
+      `Os limites assustam porque fomos ${g('ensinados', 'ensinadas')} que amar é ceder tudo. Mas amar sem limites não é amor — é sacrifício. E o sacrifício gera ressentimento. Começa por um limite pequeno. A pessoa certa vai respeitar. A errada vai testar. E tu vais saber a diferença.`,
       'Limites são a forma mais clara de dizer: "Eu importo também." Não precisas de gritar. Não precisas de explicar tudo. Basta dizer com calma e firmeza. A tua voz não precisa de ser alta — precisa de ser clara.'
     ],
     voz: [
@@ -60,7 +61,7 @@ const ECOA_PERSONALITY = {
     ],
     expressao: [
       'Expressar o que sentes não é fraqueza — é a forma mais pura de força. Quem guarda tudo adoece. Quem diz o que sente, cura. Não precisas de encontrar as palavras perfeitas. As palavras imperfeitas mas honestas são as mais poderosas.',
-      'A expressão autêntica assusta porque nos torna visíveis. Mas a invisibilidade cansa mais. Ser vista — com falhas, com medo, com verdade — é o acto mais corajoso que existe. Começa por ti: o que sentes agora? Põe em palavras.',
+      `A expressão autêntica assusta porque nos torna visíveis. Mas a invisibilidade cansa mais. Ser ${g('visto', 'vista')} — com falhas, com medo, com verdade — é o acto mais corajoso que existe. Começa por ti: o que sentes agora? Põe em palavras.`,
       'Quando guardas emoções, elas não desaparecem — acumulam. Como água sem saída, estagna. A expressão é a válvula. Não precisa de ser para os outros — pode ser para ti. Escreve. Grava. Diz em voz alta. A tua voz precisa de ar.'
     ],
     assertividade: [
@@ -69,19 +70,19 @@ const ECOA_PERSONALITY = {
       'A comunicação assertiva é um superpoder. Não nasce — treina-se. Como qualquer músculo, precisa de prática. Começa pelas situações mais fáceis. Treina as frases. A confiança vem com a repetição. Tu és capaz disto.'
     ],
     verdade: [
-      'A verdade que guardas pesa mais do que a verdade que dizes. Sim, há risco em ser honesta. Mas há um risco maior em fingir: perder-te a ti mesma. A tua verdade é o teu poder. Ninguém te pode tirar o que é genuinamente teu.',
-      'Fingir é cansativo. A máscara pesa. A verdade liberta — mesmo quando é difícil, mesmo quando dói. Não precisas de dizer tudo a todos. Mas precisas de dizer a verdade a ti mesma. Isso já muda tudo.',
-      'Viver na verdade é um acto de coragem diária. Não é ser brutal — é ser honesta. Com gentileza, mas sem filtros que te apaguem. A tua verdade não é negociável. É a base de tudo o que és.'
+      `A verdade que guardas pesa mais do que a verdade que dizes. Sim, há risco em ser ${g('honesto', 'honesta')}. Mas há um risco maior em fingir: perder-te a ti ${g('mesmo', 'mesma')}. A tua verdade é o teu poder. Ninguém te pode tirar o que é genuinamente teu.`,
+      `Fingir é cansativo. A máscara pesa. A verdade liberta — mesmo quando é difícil, mesmo quando dói. Não precisas de dizer tudo a todos. Mas precisas de dizer a verdade a ti ${g('mesmo', 'mesma')}. Isso já muda tudo.`,
+      `Viver na verdade é um acto de coragem diária. Não é ser brutal — é ser ${g('honesto', 'honesta')}. Com gentileza, mas sem filtros que te apaguem. A tua verdade não é negociável. É a base de tudo o que és.`
     ]
   },
   genericResponses: [
-    'Obrigada por partilhares. A tua voz importa — cada palavra que dizes é uma semente de liberdade. O que é que a tua voz quer dizer agora?',
+    `${g('Obrigado', 'Obrigada')} por partilhares. A tua voz importa — cada palavra que dizes é uma semente de liberdade. O que é que a tua voz quer dizer agora?`,
     'Entendo. Lembra-te: não precisas de ter todas as respostas. Às vezes o primeiro passo é simplesmente dizer "não sei, mas estou a tentar descobrir." Isso também é voz.',
     'Isso é importante. Cada vez que falas sobre o que sentes, a tua voz fica mais forte. Não subestimes o poder de nomear as coisas. O que nomeias, podes transformar.',
     'Estou aqui contigo. Sem pressa, sem julgamento. A tua voz tem o seu próprio ritmo — não a forces, mas também não a silencies. Que tal registares este momento no teu Diário de Voz?',
     'A tua voz é como um eco — começa pequena e vai ganhando força. Cada vez que falas a tua verdade, o eco ressoa mais longe. Não desistas. O mundo precisa de ouvir-te.'
   ]
-}
+})
 
 export default function ChatEcoa() {
   const { session } = useAuth()
@@ -131,5 +132,5 @@ export default function ChatEcoa() {
     )
   }
 
-  return <AICoach eco="ecoa" userId={userId} personality={ECOA_PERSONALITY} />
+  return <AICoach eco="ecoa" userId={userId} personality={getEcoaPersonality()} />
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import AICoach from '../shared/AICoach'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
+import { g } from '../../utils/genero'
 
 /**
  * IGNIS — Coach IA de Vontade & Direccao Consciente
@@ -10,13 +11,13 @@ import { supabase } from '../../lib/supabase'
  * Chakra Manipura — elemento fogo
  */
 
-const IGNIS_PERSONALITY = {
+const getIgnisPersonality = () => ({
   name: 'Ignis',
   greeting: 'Estou aqui para te ajudar a ver com clareza. O que te trouxe ao fogo hoje?',
   tone: 'direct',
   quickPrompts: [
     'Nao consigo tomar decisoes',
-    'Ando dispersa, sem foco',
+    `Ando ${g('disperso', 'dispersa')}, sem foco`,
     'Preciso de aprender a dizer nao',
     'Como alinhar com os meus valores?',
     'Sinto que vivo no piloto automatico',
@@ -39,17 +40,17 @@ const IGNIS_PERSONALITY = {
       'A dispersao nao e falta de disciplina — e falta de clareza. Se soubesses exactamente o que queres, a dispersao desaparecia. O que e que queres? Sem "deveria", sem "tenho de". O que tu queres?'
     ],
     procrastinacao: [
-      'Adiar nao e preguica. E medo disfarçado. Medo de falhar, de nao ser perfeita, de descobrir que nao sabemos tanto. Que tarefa estas a adiar agora? E se fizesses so 5 minutos?',
+      `Adiar nao e preguica. E medo disfarçado. Medo de falhar, de nao ser ${g('perfeito', 'perfeita')}, de descobrir que nao sabemos tanto. Que tarefa estas a adiar agora? E se fizesses so 5 minutos?`,
       'A procrastinacao diz-te algo sobre a tarefa ou sobre ti. Sera que a tarefa nao e tua? Sera que estás a fazer algo que devia ter sido um "nao"? Nem tudo o que adias precisa de ser feito.',
       'O truque nao e motivacao — e accao. A motivacao vem depois de começar, nao antes. Escolhe a coisa mais pequena que podes fazer agora. Uma so. E faz.'
     ],
     perfeccionismo: [
-      'Perfecionismo nao e qualidade. E controlo. E o medo de ser julgada disfarçado de "quero dar o meu melhor." Feito e melhor que perfeito. Sempre. O que e que estás a segurar por nao ser perfeito?',
+      `Perfecionismo nao e qualidade. E controlo. E o medo de ser ${g('julgado', 'julgada')} disfarçado de "quero dar o meu melhor." Feito e melhor que perfeito. Sempre. O que e que estás a segurar por nao ser perfeito?`,
       'Quando dizes "nao e bom o suficiente", de quem e essa voz? Tua ou de alguem que te criticou? O teu suficiente ja e suficiente. Nao precisas de provar nada.',
       'O perfeccionismo rouba-te tempo, energia e alegria. E se te desses permissao para ser mediocre numa coisa hoje? Nao excelente. Mediocre. E verias que o mundo nao acaba.'
     ],
     people_pleasing: [
-      'Dizer sim quando queres dizer nao e uma traicao a ti mesma. Cada "sim" que nao e teu e um "nao" ao que realmente importa. A quem disseste sim esta semana quando querias dizer nao?',
+      `Dizer sim quando queres dizer nao e uma traicao a ti ${g('mesmo', 'mesma')}. Cada "sim" que nao e teu e um "nao" ao que realmente importa. A quem disseste sim esta semana quando querias dizer nao?`,
       'Agradar os outros e um vicio. Parece generosidade, mas e medo de rejeicao. Se dizeres nao e a pessoa se afastar — ela queria-te ou queria o teu "sim"?',
       'Nao es responsavel pelos sentimentos dos outros. So pelos teus. Isto nao e egoismo — e sobrevivencia emocional. Qual e o "nao" que precisas de dizer esta semana?'
     ],
@@ -65,7 +66,7 @@ const IGNIS_PERSONALITY = {
     ],
     coragem: [
       'Coragem nao e ausencia de medo. E accao apesar do medo. O que e que farias se nao tivesses medo? E se fizesses isso mesmo com medo? Qual e o pior que pode acontecer?',
-      'A coragem mais dificil nao e a de grandes gestos. E a de ser honesta contigo mesma. De admitir o que queres. De parar de fingir que esta tudo bem quando nao esta.',
+      `A coragem mais dificil nao e a de grandes gestos. E a de ser ${g('honesto', 'honesta')} contigo ${g('mesmo', 'mesma')}. De admitir o que queres. De parar de fingir que esta tudo bem quando nao esta.`,
       'Cada vez que ages com coragem, o medo perde poder. Nao desaparece — mas encolhe. Qual e a coisa mais pequena que podes fazer hoje que requer coragem?'
     ],
     motivacao: [
@@ -76,12 +77,12 @@ const IGNIS_PERSONALITY = {
   },
   genericResponses: [
     'Isso e importante. Mas deixa-me perguntar: isso que descreves — e teu, ou e uma expectativa de alguem? Saber a diferenca muda tudo.',
-    'Entendo. Antes de procurarmos solucoes, precisamos de clareza. Se pudesses ser completamente honesta agora, o que dirias?',
-    'Obrigada por partilhares. Nao vou suavizar o que vou dizer: as vezes a resposta ja esta dentro de nos, so precisamos de parar de fugir dela. O que achas que ja sabes mas nao queres admitir?',
+    `Entendo. Antes de procurarmos solucoes, precisamos de clareza. Se pudesses ser completamente ${g('honesto', 'honesta')} agora, o que dirias?`,
+    `${g('Obrigado', 'Obrigada')} por partilhares. Nao vou suavizar o que vou dizer: as vezes a resposta ja esta dentro de nos, so precisamos de parar de fugir dela. O que achas que ja sabes mas nao queres admitir?`,
     'Nao te vou dizer o que fazer — tu ja sabes. O que te impede de agir? Essa e a pergunta que importa.',
     'O fogo nao julga — ilumina. Vamos olhar para isto com clareza. Sem dramas, sem desculpas. So verdade. O que e que realmente se passa?'
   ]
-}
+})
 
 export default function ChatIgnis() {
   const { session } = useAuth()
@@ -131,5 +132,5 @@ export default function ChatIgnis() {
     )
   }
 
-  return <AICoach eco="ignis" userId={userId} personality={IGNIS_PERSONALITY} />
+  return <AICoach eco="ignis" userId={userId} personality={getIgnisPersonality()} />
 }

@@ -5,8 +5,8 @@ import { g } from '../utils/genero'
 
 /**
  * IGNIS - Landing Page
- * "Vontade & Direccao Consciente" - Chakra Manipura (Plexo Solar), Elemento: Fogo
- * Modulo de escolha consciente, foco e alinhamento com valores
+ * "Vontade & Direção Consciente" - Chakra Manipura (Plexo Solar), Elemento: Fogo
+ * Módulo de escolha consciente, foco e alinhamento com valores
  */
 
 const LandingIgnis = () => {
@@ -17,32 +17,32 @@ const LandingIgnis = () => {
     {
       icone: '🎯',
       titulo: 'Escolhas Conscientes',
-      desc: 'Define 3 escolhas por dia alinhadas com os teus valores. Nao reages — escolhes.'
+      desc: 'Define 3 escolhas por dia alinhadas com os teus valores. Não reages — escolhes.'
     },
     {
       icone: '🧠',
       titulo: 'Foco Consciente',
-      desc: 'Sessoes de foco com intencao. Sem distraccoes, sem multitarefa. Profundidade.'
+      desc: 'Sessões de foco com intenção. Sem distrações, sem multitarefa. Profundidade.'
     },
     {
       icone: '🌪️',
-      titulo: 'Rastreador de Dispersao',
-      desc: 'Regista quando dizes sim mas querias nao. Consciencia e o primeiro passo para mudar.'
+      titulo: 'Rastreador de Dispersão',
+      desc: 'Regista quando dizes sim mas querias não. Consciência é o primeiro passo para mudar.'
     },
     {
       icone: '🗡️',
-      titulo: 'Exercicio de Corte',
-      desc: 'Aprende a soltar o que nao e teu. Compromissos, habitos, relacoes que te dispersam.'
+      titulo: 'Exercício de Corte',
+      desc: 'Aprende a soltar o que não é teu. Compromissos, hábitos, relações que te dispersam.'
     },
     {
       icone: '🧭',
-      titulo: 'Bussola de Valores',
-      desc: 'Define os teus 5 valores essenciais. Todas as decisoes passam por este filtro.'
+      titulo: 'Bússola de Valores',
+      desc: 'Define os teus 5 valores essenciais. Todas as decisões passam por este filtro.'
     },
     {
       icone: '🏆',
-      titulo: 'Diario de Conquistas',
-      desc: 'Regista as tuas vitorias diarias. Celebrar o que conquistaste alimenta o fogo.'
+      titulo: 'Diário de Conquistas',
+      desc: 'Regista as tuas vitórias diárias. Celebrar o que conquistaste alimenta o fogo.'
     },
     {
       icone: '🦁',
@@ -52,7 +52,7 @@ const LandingIgnis = () => {
     {
       icone: '💬',
       titulo: 'Coach Ignis',
-      desc: `Coach virtual ${g('directo', 'directa')} e sem paternalismo. Questiona, ilumina, nao acaricia.`
+      desc: `Coach virtual ${g('directo', 'directa')} e sem paternalismo. Questiona, ilumina, não acaricia.`
     }
   ]
 
@@ -60,17 +60,17 @@ const LandingIgnis = () => {
     {
       numero: '01',
       titulo: 'Define valores',
-      desc: 'Descobre os teus 5 valores essenciais. A bussola interior que guia cada decisao.'
+      desc: 'Descobre os teus 5 valores essenciais. A bússola interior que guia cada decisão.'
     },
     {
       numero: '02',
-      titulo: 'Escolhe com consciencia',
-      desc: 'Cada dia, 3 escolhas alinhadas. Nao e produtividade — e direccao.'
+      titulo: 'Escolhe com consciência',
+      desc: 'Cada dia, 3 escolhas alinhadas. Não é produtividade — é direção.'
     },
     {
       numero: '03',
       titulo: 'Corta o que dispersa',
-      desc: 'O que nao e teu, solta. O fogo so queima o que nao pertence.'
+      desc: 'O que não é teu, solta. O fogo só queima o que não pertence.'
     }
   ]
 
@@ -102,17 +102,16 @@ const LandingIgnis = () => {
             className="text-xl md:text-2xl text-white/80 mb-2"
             style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}
           >
-            Vontade &amp; Direccao Consciente
+            Vontade &amp; Direção Consciente
           </p>
 
           <p className="text-white/60 max-w-xl mx-auto mb-10">
-            Escolhe o que e teu. Corta o que dispersa. Acende o fogo interior.
+            Escolhe o que é teu. Corta o que dispersa. Acende o fogo interior.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              to="/login"
-              state={{ eco: 'Ignis' }}
+              to="/ignis/pagamento"
               className="px-10 py-4 bg-white text-[#2e1a14] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
             >
               Acender o Fogo
@@ -134,18 +133,18 @@ const LandingIgnis = () => {
             className="text-3xl md:text-4xl font-bold text-white mb-6"
             style={{ fontFamily: "'Cormorant Garamond', serif" }}
           >
-            Quantas vezes disseste sim quando querias dizer nao?
+            Quantas vezes disseste sim quando querias dizer não?
           </h2>
 
           <p className="text-[#C1634A]/80 mb-10 text-lg">
-            Viver no piloto automatico nao e viver. O Ignis devolve-te o leme.
+            Viver no piloto automático não é viver. O Ignis devolve-te o leme.
           </p>
 
           <div className="grid gap-4 max-w-lg mx-auto text-left">
             {[
-              'Dizes sim por obrigacao, nao por vontade',
+              'Dizes sim por obrigação, não por vontade',
               'Sentes-te sem rumo, a reagir em vez de escolher',
-              'Tens mil coisas mas nada avanca'
+              'Tens mil coisas mas nada avança'
             ].map((item, i) => (
               <div
                 key={i}
@@ -171,10 +170,10 @@ const LandingIgnis = () => {
               className="text-3xl md:text-4xl font-bold text-white mb-4"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              O Ignis e o espaco onde retomas a direccao da tua vida
+              O Ignis é o espaço onde retomas a direção da tua vida
             </h2>
             <p className="text-[#C1634A]/70 max-w-2xl mx-auto">
-              Ferramentas para escolher com consciencia, focar no que importa e cortar o ruido.
+              Ferramentas para escolher com consciência, focar no que importa e cortar o ruído.
             </p>
           </div>
 
@@ -208,7 +207,7 @@ const LandingIgnis = () => {
               Como funciona
             </h2>
             <p className="text-[#C1634A]/70">
-              Tres passos. Sem complicacoes.
+              Três passos. Sem complicações.
             </p>
           </div>
 
@@ -254,7 +253,7 @@ const LandingIgnis = () => {
               Escolhe o teu plano
             </h2>
             <p className="text-[#C1634A]/70">
-              Precos simples. Sem compromisso. Cancela quando quiseres.
+              Preços simples. Sem compromisso. Cancela quando quiseres.
             </p>
           </div>
 
@@ -298,13 +297,12 @@ const LandingIgnis = () => {
 
                 {plano.duration > 1 && (
                   <p className="text-[#C1634A]/50 text-xs mb-4">
-                    {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mes
+                    {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mês
                   </p>
                 )}
 
                 <Link
-                  to="/login"
-              state={{ eco: 'Ignis' }}
+                  to="/ignis/pagamento"
                   className="mt-4 block w-full py-3 text-white rounded-full font-semibold transition-all hover:shadow-lg"
                   style={{ background: 'linear-gradient(135deg, #C1634A, #8B4513)' }}
                 >
@@ -326,22 +324,22 @@ const LandingIgnis = () => {
             className="text-3xl md:text-4xl font-bold text-white mb-4"
             style={{ fontFamily: "'Cormorant Garamond', serif" }}
           >
-            Experimenta 7 dias gratis
+            Experimenta 7 dias grátis
           </h2>
           <p className="text-white/70 mb-4 text-lg">
-            Sem compromisso. Sem cartao. Cancelas quando quiseres.
+            Sem compromisso. Sem cartão. Cancelas quando quiseres.
           </p>
           <p className="text-white/50 mb-8">
-            Descobre como e viver com direccao, clareza e fogo interior.
+            Descobre como é viver com direção, clareza e fogo interior.
           </p>
           <Link
             to="/ignis/pagamento"
             className="inline-block px-10 py-5 bg-white text-[#2e1a14] rounded-full font-bold text-xl hover:translate-y-[-3px] hover:shadow-xl transition-all"
           >
-            Quero comecar HOJE
+            Quero começar HOJE
           </Link>
           <p className="text-white/40 text-sm mt-6">
-            7 dias gratis &middot; Acesso completo &middot; Cancela quando quiseres
+            7 dias grátis &middot; Acesso completo &middot; Cancela quando quiseres
           </p>
         </div>
       </section>
@@ -359,7 +357,7 @@ const LandingIgnis = () => {
             >
               IGNIS
             </span>
-            <span className="text-white/40 text-sm">Vontade &amp; Direccao Consciente</span>
+            <span className="text-white/40 text-sm">Vontade &amp; Direção Consciente</span>
           </div>
           <div className="flex gap-6 text-sm">
             <Link to="/landing" className="text-white/40 hover:text-white transition-colors">

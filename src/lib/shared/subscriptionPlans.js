@@ -334,3 +334,33 @@ export const getEcoTheme = (eco) => {
   if (!config) return { name: eco, color: '#666', colorDark: '#1a1a1a' }
   return { name: config.name, color: config.color, colorDark: config.colorDark }
 }
+
+/**
+ * Regista pagamento pendente para qualquer eco
+ */
+export const registerEcoPendingPayment = async (eco, userId, paymentData) => {
+  const ecoConfig = ECO_PLANS[eco]
+  if (!ecoConfig) return { success: false, error: 'eco_not_found' }
+
+  try {
+    const { data, error } = await supabase
+      .from(ecoConfig.table)
+      .upsert({
+        user_id: userId,
+        subscription_status: SUBSCRIPTION_STATUS.PENDING,
+        payment_method: paymentData.method,
+        payment_reference: paymentData.reference,
+        payment_amount: paymentData.amount,
+        payment_currency: paymentData.currency,
+        pacote: paymentData.planId,
+        status: 'pendente'
+      }, { onConflict: 'user_id' })
+      .select()
+      .maybeSingle()
+
+    if (error) return { success: false, error }
+    return { success: true, data }
+  } catch (error) {
+    return { success: false, error: error.message }
+  }
+}

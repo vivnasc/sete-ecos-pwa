@@ -43,7 +43,7 @@ const AURORA_INSIGHTS_CONFIG = {
       analysis: (data) => ({
         value: data.length,
         trend: data.length >= 3 ? 'up' : data.length > 0 ? 'stable' : 'down',
-        insight: data.length >= 5 ? 'Mentora activa!' : data.length > 0 ? 'A tua sabedoria inspira' : ''
+        insight: data.length >= 5 ? `${g('Mentor activo', 'Mentora activa')}!` : data.length > 0 ? 'A tua sabedoria inspira' : ''
       })
     },
     {
@@ -78,7 +78,7 @@ const AURORA_INSIGHTS_CONFIG = {
     const renovacao = metricsData.renovacao || {}
 
     if (rituais.value >= 5 && checkins.value >= 1) {
-      return `Semana de integração plena! ${rituais.value} rituais matinais e check-in de manutenção ${g('feito', 'feita')}. ${mentoria.value > 0 ? `Ainda partilhaste ${mentoria.value} frase(s) de sabedoria como mentora.` : 'Considera partilhar a tua sabedoria na secção de mentoria.'} ${g('Estás a viver o que aprendeste', 'Estás a viver o que aprendeste')}.`
+      return `Semana de integração plena! ${rituais.value} rituais matinais e check-in de manutenção ${g('feito', 'feita')}. ${mentoria.value > 0 ? `Ainda partilhaste ${mentoria.value} frase(s) de sabedoria como ${g('mentor', 'mentora')}.` : 'Considera partilhar a tua sabedoria na secção de mentoria.'} ${g('Estás a viver o que aprendeste', 'Estás a viver o que aprendeste')}.`
     }
     if (rituais.value >= 3) {
       return `${rituais.value} rituais matinais esta semana — cada manhã é uma nova aurora. ${checkins.value > 0 ? 'O teu check-in mensal está em dia.' : 'Lembra-te do check-in mensal para manter as mudanças.'} A consistência é a tua maior aliada.`

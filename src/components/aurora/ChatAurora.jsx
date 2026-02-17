@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import AICoach from '../shared/AICoach'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
+import { g } from '../../utils/genero'
 
 /**
  * AURORA — Coach IA de Integração Final
@@ -11,7 +12,7 @@ import { supabase } from '../../lib/supabase'
  * Elemento: Luz
  */
 
-const AURORA_PERSONALITY = {
+const getAuroraPersonality = () => ({
   name: 'Aurora',
   greeting: 'Olá... que bom receber-te aqui. Este é o espaço onde celebramos tudo o que conquistaste e cuidamos do que vem a seguir. O que te traz hoje?',
   tone: 'warm',
@@ -35,7 +36,7 @@ const AURORA_PERSONALITY = {
   },
   responses: {
     regressao: [
-      'Sentir que regressas a padrões antigos não significa que falhaste. Significa que estás atenta o suficiente para notar. Antes, esses padrões passavam despercebidos. Agora tens consciência — e isso muda tudo. Qual padrão está a voltar?',
+      `Sentir que regressas a padrões antigos não significa que falhaste. Significa que estás ${g('atento', 'atenta')} o suficiente para notar. Antes, esses padrões passavam despercebidos. Agora tens consciência — e isso muda tudo. Qual padrão está a voltar?`,
       'A regressão faz parte do caminho. Não é linear — é espiral. Às vezes voltamos ao mesmo ponto, mas com mais sabedoria. O que é diferente agora em relação a antes? O que já sabes que não sabias?',
       'Quando sentires que estás a voltar atrás, lembra-te: o teu corpo e a tua mente já conhecem outro caminho. Já provaste que podes. A questão não é se vais conseguir — é como vais ser gentil contigo no processo.'
     ],
@@ -50,7 +51,7 @@ const AURORA_PERSONALITY = {
       'Celebrar não é vaidade — é gratidão pelo caminho percorrido. Vai ao Antes & Depois e lê o que escreveste. Vê a distância que percorreste. Permites-te sentir orgulho?'
     ],
     motivacao: [
-      'O cansaço é real e merece ser respeitado. Não precisas de estar sempre motivada para continuar. Às vezes, continuar é simplesmente não desistir — mesmo quando não apetece. E isso já é muito.',
+      `O cansaço é real e merece ser respeitado. Não precisas de estar sempre ${g('motivado', 'motivada')} para continuar. Às vezes, continuar é simplesmente não desistir — mesmo quando não apetece. E isso já é muito.`,
       'A motivação vai e vem. O que fica é o compromisso. E o compromisso não exige perfeição — exige voltar. Sempre voltar. O que te fez começar esta jornada? Essa razão ainda é válida?',
       'Nos dias difíceis, lembra-te: já passaste por pior. Já estiveste num ponto onde nem sabias que havia caminho. Agora sabes. Agora tens ferramentas. Agora tens experiência. Descansa se precisares, mas não desistas.'
     ],
@@ -62,7 +63,7 @@ const AURORA_PERSONALITY = {
     mentoria: [
       'Querer ajudar os outros é o sinal mais bonito de que a tua jornada teve significado. A sabedoria que ganhaste não é só tua — é para ser partilhada. Vai à secção de Mentoria e deixa uma frase de sabedoria.',
       'A melhor forma de ajudar não é dar conselhos — é partilhar a tua história. Quando alguém vê que outra pessoa passou pelo mesmo e sobreviveu, isso dá esperança. A tua história importa. Queres partilhá-la?',
-      'Ser mentora não exige perfeição. Exige honestidade. As tuas cicatrizes são o teu curriculum. O que gostarias de dizer a quem está a começar a jornada que tu já percorreste?'
+      `Ser ${g('mentor', 'mentora')} não exige perfeição. Exige honestidade. As tuas cicatrizes são o teu curriculum. O que gostarias de dizer a quem está a começar a jornada que tu já percorreste?`
     ],
     integracao: [
       'Integrar é a arte de ver como tudo se liga. O corpo (Vitalis), as emoções (Serena), a vontade (Ignis), a energia (Ventis), a voz (Ecoa), a identidade (Imago) — tudo é um só ser. Tu. Qual eco sentes mais forte em ti?',
@@ -77,12 +78,12 @@ const AURORA_PERSONALITY = {
   },
   genericResponses: [
     'O que partilhaste é significativo. Na Aurora, cada palavra importa — porque vem de alguém que já percorreu o caminho. O que essa experiência te ensina sobre quem te tornaste?',
-    'Obrigada por confiares em mim com isso. Lembra-te: esta jornada não termina — transforma-se. Cada dia é uma nova aurora, uma nova oportunidade de viver o que aprendeste.',
+    `${g('Obrigado', 'Obrigada')} por confiares em mim com isso. Lembra-te: esta jornada não termina — transforma-se. Cada dia é uma nova aurora, uma nova oportunidade de viver o que aprendeste.`,
     'Isso toca em algo profundo. A integração não é perfeição — é consciência. E tu já a tens. O que queres fazer com essa consciência agora?',
     'Entendo. A beleza da Aurora é que já não precisas de procurar respostas — precisas de confiar nas que já tens. O que o teu coração te diz sobre isso?',
     'Tu já sabes quem és. Agora vive isso. Parece simples, mas é a coisa mais corajosa que alguém pode fazer. Como posso ajudar-te nesse caminho hoje?'
   ]
-}
+})
 
 export default function ChatAurora() {
   const { session } = useAuth()
@@ -132,5 +133,5 @@ export default function ChatAurora() {
     )
   }
 
-  return <AICoach eco="aurora" userId={userId} personality={AURORA_PERSONALITY} />
+  return <AICoach eco="aurora" userId={userId} personality={getAuroraPersonality()} />
 }

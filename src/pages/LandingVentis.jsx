@@ -5,8 +5,8 @@ import { g } from '../utils/genero'
 
 /**
  * VENTIS - Landing Page
- * "Energia & Ritmo" - Chakra Anahata (Coracao), Elemento: Ar
- * Modulo de gestao energetica, ritmo sustentavel e conexao com a natureza
+ * "Energia & Ritmo" - Chakra Anahata (Coração), Elemento: Ar
+ * Módulo de gestão energética, ritmo sustentável e conexão com a natureza
  */
 
 const LandingVentis = () => {
@@ -22,27 +22,27 @@ const LandingVentis = () => {
     {
       icone: '🔄',
       titulo: 'Rotinas & Rituais',
-      desc: 'Cria micro-rotinas que respeitam o teu ritmo. Sem rigidez, com consistencia.'
+      desc: 'Cria micro-rotinas que respeitam o teu ritmo. Sem rigidez, com consistência.'
     },
     {
       icone: '🍃',
       titulo: 'Pausas Conscientes',
-      desc: 'Micro-pausas de 1 a 5 minutos para oxigenar o dia. Parar e avancar.'
+      desc: 'Micro-pausas de 1 a 5 minutos para oxigenar o dia. Parar e avançar.'
     },
     {
       icone: '🧘',
       titulo: 'Movimento Flow',
-      desc: 'Yoga suave, danca livre, caminhada consciente. Move-te ao teu ritmo, nao ao do mundo.'
+      desc: 'Yoga suave, dança livre, caminhada consciente. Move-te ao teu ritmo, não ao do mundo.'
     },
     {
       icone: '🌿',
-      titulo: 'Conexao Natureza',
-      desc: 'Actividades para reconectar com o ar, a terra, o sol. A natureza e o ritmo original.'
+      titulo: 'Conexão Natureza',
+      desc: 'Actividades para reconectar com o ar, a terra, o sol. A natureza é o ritmo original.'
     },
     {
       icone: '📊',
-      titulo: 'Analise de Ritmo',
-      desc: 'Insights semanais sobre a tua energia. Descobre padroes e optimiza o teu dia.'
+      titulo: 'Análise de Ritmo',
+      desc: 'Insights semanais sobre a tua energia. Descobre padrões e optimiza o teu dia.'
     },
     {
       icone: '📈',
@@ -52,12 +52,12 @@ const LandingVentis = () => {
     {
       icone: '🛡️',
       titulo: 'Detector de Burnout',
-      desc: 'Alertas quando a energia cai consistentemente. Prevenir e melhor que recuperar.'
+      desc: 'Alertas quando a energia cai consistentemente. Prevenir é melhor que recuperar.'
     },
     {
       icone: '💬',
       titulo: 'Coach Ventis',
-      desc: `Coach virtual ${g('gentil', 'gentil')} como uma brisa. Guia-te para encontrar o teu ritmo sustentavel.`
+      desc: `Coach virtual ${g('gentil', 'gentil')} como uma brisa. Guia-te para encontrar o teu ritmo sustentável.`
     }
   ]
 
@@ -74,8 +74,8 @@ const LandingVentis = () => {
     },
     {
       numero: '03',
-      titulo: 'Encontra o ritmo sustentavel',
-      desc: 'Nao mais rapido. Nao mais lento. O teu ritmo. Sustentavel, natural, teu.'
+      titulo: 'Encontra o ritmo sustentável',
+      desc: 'Não mais rápido. Não mais lento. O teu ritmo. Sustentável, natural, teu.'
     }
   ]
 
@@ -93,7 +93,7 @@ const LandingVentis = () => {
 
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           <p className="text-[#5D9B84]/80 text-sm tracking-[0.3em] uppercase mb-4">
-            Anahata &middot; Coracao &middot; Elemento: Ar
+            Anahata &middot; Coração &middot; Elemento: Ar
           </p>
 
           <h1
@@ -116,8 +116,7 @@ const LandingVentis = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              to="/login"
-              state={{ eco: 'Ventis' }}
+              to="/ventis/pagamento"
               className="px-10 py-4 bg-white text-[#1a2e24] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
             >
               Encontrar o Meu Ritmo
@@ -143,19 +142,19 @@ const LandingVentis = () => {
           </h2>
 
           <p className="text-[#5D9B84]/80 mb-10 text-lg">
-            Correr sem parar nao e viver. O Ventis devolve-te o ritmo.
+            Correr sem parar não é viver. O Ventis devolve-te o ritmo.
           </p>
 
           <div className="grid gap-4 max-w-lg mx-auto text-left">
             {[
               'Acordas cansada e adormeces exausta',
-              'Nao tens pausas — so urgencias',
-              'Sentes que vives em piloto automatico sem energia'
+              'Não tens pausas — só urgências',
+              'Sentes que vives em piloto automático sem energia'
             ].map((item, i) => {
               const textoFinal = i === 0
                 ? `Acordas ${g('cansado', 'cansada')} e adormeces ${g('exausto', 'exausta')}`
                 : i === 2
-                  ? `Sentes que vives em piloto automatico sem energia`
+                  ? `Sentes que vives em piloto automático sem energia`
                   : item
               return (
                 <div
@@ -183,7 +182,7 @@ const LandingVentis = () => {
               className="text-3xl md:text-4xl font-bold text-white mb-4"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              O Ventis e o espaco onde encontras o teu ritmo natural
+              O Ventis é o espaço onde encontras o teu ritmo natural
             </h2>
             <p className="text-[#5D9B84]/70 max-w-2xl mx-auto">
               Ferramentas para monitorizar, sustentar e harmonizar a tua energia — ao teu ritmo.
@@ -220,7 +219,7 @@ const LandingVentis = () => {
               Como funciona
             </h2>
             <p className="text-[#5D9B84]/70">
-              Tres passos. Sem complicacoes.
+              Três passos. Sem complicações.
             </p>
           </div>
 
@@ -266,7 +265,7 @@ const LandingVentis = () => {
               Escolhe o teu plano
             </h2>
             <p className="text-[#5D9B84]/70">
-              Precos simples. Sem compromisso. Cancela quando quiseres.
+              Preços simples. Sem compromisso. Cancela quando quiseres.
             </p>
           </div>
 
@@ -310,13 +309,12 @@ const LandingVentis = () => {
 
                 {plano.duration > 1 && (
                   <p className="text-[#5D9B84]/50 text-xs mb-4">
-                    {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mes
+                    {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mês
                   </p>
                 )}
 
                 <Link
-                  to="/login"
-              state={{ eco: 'Ventis' }}
+                  to="/ventis/pagamento"
                   className="mt-4 block w-full py-3 text-white rounded-full font-semibold transition-all hover:shadow-lg"
                   style={{ background: 'linear-gradient(135deg, #5D9B84, #3a6b5a)' }}
                 >
@@ -338,22 +336,22 @@ const LandingVentis = () => {
             className="text-3xl md:text-4xl font-bold text-white mb-4"
             style={{ fontFamily: "'Cormorant Garamond', serif" }}
           >
-            Experimenta 7 dias gratis
+            Experimenta 7 dias grátis
           </h2>
           <p className="text-white/70 mb-4 text-lg">
-            Sem compromisso. Sem cartao. Cancelas quando quiseres.
+            Sem compromisso. Sem cartão. Cancelas quando quiseres.
           </p>
           <p className="text-white/50 mb-8">
-            Descobre como e viver ao teu ritmo, com energia sustentavel e pausas que renovam.
+            Descobre como é viver ao teu ritmo, com energia sustentável e pausas que renovam.
           </p>
           <Link
             to="/ventis/pagamento"
             className="inline-block px-10 py-5 bg-white text-[#1a2e24] rounded-full font-bold text-xl hover:translate-y-[-3px] hover:shadow-xl transition-all"
           >
-            Quero comecar HOJE
+            Quero começar HOJE
           </Link>
           <p className="text-white/40 text-sm mt-6">
-            7 dias gratis &middot; Acesso completo &middot; Cancela quando quiseres
+            7 dias grátis &middot; Acesso completo &middot; Cancela quando quiseres
           </p>
         </div>
       </section>
