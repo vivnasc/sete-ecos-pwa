@@ -316,10 +316,26 @@ export default async function handler(req, res) {
   }
 }
 
-// ===== SETUP: Diagnosticar e subscrever WABA ao webhook =====
+// ===== SETUP: Diagnosticar, descobrir WABA, testar envio =====
 
 const API_VERSION = 'v21.0';
 const GRAPH_BASE = `https://graph.facebook.com/${API_VERSION}`;
+
+async function graphGet(path, token) {
+  const res = await fetch(`${GRAPH_BASE}/${path}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return { ok: res.ok, data: await res.json() };
+}
+
+async function graphPost(path, token, body = {}) {
+  const res = await fetch(`${GRAPH_BASE}/${path}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  return { ok: res.ok, data: await res.json() };
+}
 
 async function handleSetup(req, res) {
   const token = ACCESS_TOKEN();
@@ -327,86 +343,210 @@ async function handleSetup(req, res) {
 
   if (!token || !phoneId) {
     return res.status(200).json({
-      error: 'Variáveis em falta',
-      hasAccessToken: !!token,
-      hasPhoneNumberId: !!phoneId,
+      erro: 'Variáveis em falta no Vercel',
+      WHATSAPP_ACCESS_TOKEN: token ? 'OK' : 'EM FALTA',
+      WHATSAPP_PHONE_NUMBER_ID: phoneId ? 'OK' : 'EM FALTA',
+      instrucoes: 'Vai a vercel.com > Settings > Environment Variables e adiciona as que faltam.',
     });
   }
 
-  const diagnostico = { timestamp: new Date().toISOString(), phoneNumberId: phoneId, steps: [] };
+  // ===== ?action=setup&test=true → envia mensagem de teste à coach =====
+  if (req.query.test === 'true') {
+    return handleTestSend(req, res, token, phoneId);
+  }
+
+  const result = {
+    timestamp: new Date().toISOString(),
+    phoneNumberId: phoneId,
+    resumo: {},
+    passos: [],
+  };
 
   try {
-    // Step 1: Phone number info
-    const phoneRes = await fetch(`${GRAPH_BASE}/${phoneId}?fields=display_phone_number,verified_name,quality_rating`, {
-      headers: { Authorization: `Bearer ${token}` },
+    // ── Passo 1: Verificar número ──
+    const phone = await graphGet(`${phoneId}?fields=display_phone_number,verified_name,quality_rating,id`, token);
+    result.passos.push({
+      passo: '1. Número de telefone',
+      ok: phone.ok,
+      resultado: phone.ok
+        ? `${phone.data.verified_name} (${phone.data.display_phone_number})`
+        : 'FALHOU — Phone Number ID pode estar errado',
+      dados: phone.data,
     });
-    const phoneData = await phoneRes.json();
-    diagnostico.steps.push({ step: '1. Phone Number Info', ok: phoneRes.ok, data: phoneData });
+    result.resumo.numero = phone.ok ? 'OK' : 'FALHOU';
 
-    // Step 2: Find WABA ID (auto-discover from phone number)
+    // ── Passo 2: Descobrir WABA ID (múltiplos métodos) ──
     let wabaId = null;
+    const wabaAttempts = [];
 
-    // Always try to discover WABA from phone number first (most reliable)
-    const wabaRes = await fetch(`${GRAPH_BASE}/${phoneId}?fields=whatsapp_business_account`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const wabaData = await wabaRes.json();
-    if (wabaData?.whatsapp_business_account?.id) {
-      wabaId = wabaData.whatsapp_business_account.id;
+    // Método A: Campo whatsapp_business_account no phone number
+    const wabaA = await graphGet(`${phoneId}?fields=whatsapp_business_account`, token);
+    if (wabaA.data?.whatsapp_business_account?.id) {
+      wabaId = wabaA.data.whatsapp_business_account.id;
+      wabaAttempts.push({ metodo: 'A: phone_number → waba', ok: true, wabaId });
+    } else {
+      wabaAttempts.push({ metodo: 'A: phone_number → waba', ok: false, nota: 'Token sem permissão whatsapp_business_management' });
     }
 
-    // Fallback to env var
+    // Método B: GET /debug_token para ver app ID e permissões
     if (!wabaId) {
-      wabaId = process.env.WHATSAPP_BUSINESS_ACCOUNT_ID || null;
-    }
-
-    diagnostico.steps.push({
-      step: '2. WABA ID',
-      ok: !!wabaId,
-      wabaId,
-      source: wabaData?.whatsapp_business_account?.id ? 'auto-discovered' : 'env var',
-      apiResponse: wabaData,
-    });
-
-    // Step 3: Listar TODOS os números do WABA
-    if (wabaId) {
-      const phonesRes = await fetch(`${GRAPH_BASE}/${wabaId}/phone_numbers?fields=id,display_phone_number,verified_name,quality_rating`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const phonesData = await phonesRes.json();
-      diagnostico.steps.push({
-        step: '3. Todos os números do WABA',
-        ok: phonesRes.ok,
-        hint: 'Copia o "id" do teu número real e mete em WHATSAPP_PHONE_NUMBER_ID no Vercel',
-        data: phonesData,
+      const debug = await graphGet(`debug_token?input_token=${token}`, token);
+      const appId = debug.data?.data?.app_id;
+      const scopes = debug.data?.data?.scopes || [];
+      wabaAttempts.push({
+        metodo: 'B: debug_token',
+        ok: !!appId,
+        appId,
+        permissoes: scopes,
       });
 
-      // Step 4: Subscriptions
-      const subsRes = await fetch(`${GRAPH_BASE}/${wabaId}/subscribed_apps`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const subsData = await subsRes.json();
-      diagnostico.steps.push({ step: '4. Subscriptions', ok: subsRes.ok, data: subsData });
-
-      // Step 5: Subscribe se pedido
-      if (req.method === 'POST' || req.query.subscribe === 'true') {
-        const subRes = await fetch(`${GRAPH_BASE}/${wabaId}/subscribed_apps`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({}),
+      // Método C: Usar app ID para buscar WABAs associados
+      if (appId) {
+        // Try getting WABA through the app's product
+        const appWaba = await graphGet(`${appId}/subscriptions`, token);
+        wabaAttempts.push({
+          metodo: 'C: app subscriptions',
+          ok: appWaba.ok,
+          dados: appWaba.data,
         });
-        const subData = await subRes.json();
-        diagnostico.steps.push({ step: '5. Subscribe App', ok: subRes.ok, data: subData });
       }
     }
+
+    // Método D: Buscar businesses do utilizador do token
+    if (!wabaId) {
+      const biz = await graphGet(`me/businesses?fields=id,name`, token);
+      if (biz.data?.data?.length > 0) {
+        for (const business of biz.data.data.slice(0, 3)) {
+          const wabas = await graphGet(`${business.id}/owned_whatsapp_business_accounts?fields=id,name`, token);
+          if (wabas.data?.data?.length > 0) {
+            wabaId = wabas.data.data[0].id;
+            wabaAttempts.push({
+              metodo: `D: business ${business.name} → WABAs`,
+              ok: true,
+              wabaId,
+              todosWabas: wabas.data.data,
+            });
+            break;
+          } else {
+            wabaAttempts.push({
+              metodo: `D: business ${business.name}`,
+              ok: false,
+              dados: wabas.data,
+            });
+          }
+        }
+      } else {
+        wabaAttempts.push({ metodo: 'D: me/businesses', ok: false, dados: biz.data });
+      }
+    }
+
+    // Método E: Env var como último recurso
+    if (!wabaId && process.env.WHATSAPP_BUSINESS_ACCOUNT_ID) {
+      const envWaba = process.env.WHATSAPP_BUSINESS_ACCOUNT_ID;
+      // Verificar se é válido
+      const check = await graphGet(`${envWaba}?fields=id,name`, token);
+      if (check.ok && check.data?.id) {
+        wabaId = envWaba;
+        wabaAttempts.push({ metodo: 'E: env var WHATSAPP_BUSINESS_ACCOUNT_ID', ok: true, wabaId });
+      } else {
+        wabaAttempts.push({ metodo: 'E: env var WHATSAPP_BUSINESS_ACCOUNT_ID', ok: false, nota: `ID ${envWaba} é INVÁLIDO`, dados: check.data });
+      }
+    }
+
+    result.passos.push({
+      passo: '2. Descobrir WABA ID',
+      ok: !!wabaId,
+      wabaId: wabaId || 'NÃO ENCONTRADO',
+      tentativas: wabaAttempts,
+    });
+    result.resumo.wabaId = wabaId ? `OK (${wabaId})` : 'NÃO ENCONTRADO';
+
+    // ── Passo 3: Webhook subscription ──
+    if (wabaId) {
+      const subs = await graphGet(`${wabaId}/subscribed_apps`, token);
+      const isSubscribed = subs.ok && subs.data?.data?.length > 0;
+
+      // Subscrever automaticamente se pedido OU se não está subscrito
+      if (req.query.subscribe === 'true' || (!isSubscribed && req.query.subscribe !== 'false')) {
+        const sub = await graphPost(`${wabaId}/subscribed_apps`, token);
+        result.passos.push({
+          passo: '3. Webhook subscription',
+          ok: sub.ok,
+          accao: 'Subscrevemos o app ao WABA',
+          resultado: sub.ok ? 'SUBSCRITO COM SUCESSO' : 'FALHOU',
+          dados: sub.data,
+          subscricaoAnterior: subs.data,
+        });
+        result.resumo.webhook = sub.ok ? 'SUBSCRITO' : 'FALHOU';
+      } else {
+        result.passos.push({
+          passo: '3. Webhook subscription',
+          ok: isSubscribed,
+          resultado: isSubscribed ? 'JÁ SUBSCRITO' : 'NÃO SUBSCRITO',
+          dados: subs.data,
+        });
+        result.resumo.webhook = isSubscribed ? 'OK' : 'NÃO SUBSCRITO';
+      }
+    } else {
+      result.passos.push({
+        passo: '3. Webhook subscription',
+        ok: false,
+        resultado: 'Não é possível verificar sem WABA ID',
+        instrucoes: [
+          '1. Vai a developers.facebook.com → Tua App → WhatsApp → Configuration',
+          '2. Em Webhook, confirma que o Callback URL é: https://app.seteecos.com/api/whatsapp-webhook',
+          '3. Verify token: seteecos2026',
+          '4. Em Webhook fields, activa "messages"',
+          '5. Se o WABA ID aparecer no URL do Meta Business (business.facebook.com), copia-o e mete em WHATSAPP_BUSINESS_ACCOUNT_ID no Vercel',
+        ],
+      });
+      result.resumo.webhook = 'VERIFICAR MANUALMENTE (ver instruções)';
+    }
+
+    // ── Passo 4: Testar envio de mensagem ──
+    result.passos.push({
+      passo: '4. Testar envio',
+      nota: 'Adiciona &test=true ao URL para enviar uma mensagem de teste à Vivianne',
+      url: `${req.headers?.['x-forwarded-proto'] || 'https'}://${req.headers?.host || 'app.seteecos.com'}/api/whatsapp-webhook?action=setup&test=true`,
+    });
+
+    // ── Resumo final ──
+    const allOk = result.resumo.numero === 'OK' && result.resumo.wabaId?.startsWith('OK');
+    result.resumo.estado = allOk ? 'PRONTO — o chatbot deve funcionar!' : 'INCOMPLETO — ver passos acima';
+
   } catch (err) {
-    diagnostico.error = err.message;
+    result.erro = err.message;
   }
 
-  return res.status(200).json(diagnostico);
+  return res.status(200).json(result);
+}
+
+// ===== TESTE DE ENVIO =====
+async function handleTestSend(req, res, token, phoneId) {
+  const destino = req.query.para || COACH_NUMERO;
+  const texto = 'Teste Sete Ecos — se recebes esta mensagem, o chatbot WhatsApp está a funcionar correctamente! 🌿';
+
+  try {
+    const sendResult = await enviarMensagem(destino, texto);
+    return res.status(200).json({
+      teste: 'envio de mensagem',
+      destino: `+${destino}`,
+      sucesso: sendResult.ok,
+      resultado: sendResult.ok
+        ? 'MENSAGEM ENVIADA! Verifica o teu WhatsApp.'
+        : `FALHOU: ${sendResult.error || 'erro desconhecido'}`,
+      detalhes: sendResult,
+      proximoPasso: sendResult.ok
+        ? 'O envio funciona! Agora falta confirmar que o webhook recebe mensagens. Manda uma mensagem ao número Sete Ecos no WhatsApp e vê se aparece resposta automática.'
+        : 'Verifica se o WHATSAPP_ACCESS_TOKEN no Vercel é válido e não expirou.',
+    });
+  } catch (err) {
+    return res.status(200).json({
+      teste: 'envio de mensagem',
+      sucesso: false,
+      erro: err.message,
+    });
+  }
 }
 
 // ===== CORS HELPER =====
