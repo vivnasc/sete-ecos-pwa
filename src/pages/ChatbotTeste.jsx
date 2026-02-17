@@ -13,15 +13,27 @@ const QUICK_TESTS = [
   { label: '1 Vitalis', msg: '1' },
   { label: '2 Lumina', msg: '2' },
   { label: '3 Áurea', msg: '3' },
-  { label: '4 Preços', msg: '4' },
-  { label: '5 Pagamento', msg: '5' },
-  { label: '6 Trial', msg: '6' },
-  { label: '7 Vivianne', msg: '7' },
-  { label: 'mpesa', msg: 'quero pagar por mpesa' },
-  { label: 'receita', msg: 'tens receitas?' },
-  { label: 'bundle', msg: 'bundle' },
-  { label: 'comunidade', msg: 'comunidade' },
-  { label: 'random', msg: 'xpto abc 123' },
+  { label: '4 Serena', msg: '4' },
+  { label: '5 Ignis', msg: '5' },
+  { label: '6 Ventis', msg: '6' },
+  { label: '7 Ecoa', msg: '7' },
+  { label: '8 Imago', msg: '8' },
+  { label: 'Preços', msg: 'preços' },
+  { label: 'Bundle', msg: 'bundle' },
+  { label: 'Trial', msg: 'trial' },
+  { label: 'Pagar', msg: 'pagar' },
+  { label: 'Aurora', msg: 'aurora' },
+  { label: 'Comunidade', msg: 'comunidade' },
+  { label: 'FAQ', msg: 'faq' },
+  { label: 'Vivianne', msg: 'vivianne' },
+  { label: 'Triste', msg: 'estou triste' },
+  { label: 'Cansada', msg: 'estou muito cansada' },
+  { label: 'Peso', msg: 'quero perder peso' },
+  { label: 'Calada', msg: 'sinto-me calada' },
+  { label: 'Perdida', msg: 'nao sei quem sou' },
+  { label: 'Foco', msg: 'nao consigo ter foco' },
+  { label: 'M-Pesa', msg: 'quero pagar por mpesa' },
+  { label: 'Random', msg: 'xpto abc 123' },
 ];
 
 export default function ChatbotTeste() {
@@ -58,6 +70,7 @@ export default function ChatbotTeste() {
       setMensagens(prev => [...prev, {
         tipo: 'bot',
         texto: data.resposta || 'Sem resposta',
+        chave: data.chave,
         notificarCoach: data.notificarCoach,
         hora: new Date(),
       }]);
@@ -83,7 +96,7 @@ export default function ChatbotTeste() {
         <div className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center text-lg">🤖</div>
         <div className="flex-1">
           <h1 className="text-white font-semibold text-sm">Sete Ecos Bot — Simulador</h1>
-          <p className="text-[#8696A0] text-xs">Testa respostas do chatbot WhatsApp</p>
+          <p className="text-[#8696A0] text-xs">Testa respostas do chatbot WhatsApp (7 Ecos)</p>
         </div>
         <button onClick={limpar} className="text-[#8696A0] hover:text-white text-xs px-3 py-1 rounded-lg border border-white/10">
           Limpar
@@ -110,7 +123,8 @@ export default function ChatbotTeste() {
           <div className="text-center py-12">
             <div className="text-4xl mb-3">💬</div>
             <p className="text-[#8696A0] text-sm">Envia uma mensagem para testar o chatbot</p>
-            <p className="text-[#8696A0]/60 text-xs mt-1">Usa os botões rápidos em cima ou escreve</p>
+            <p className="text-[#8696A0]/60 text-xs mt-1">Usa os botões rápidos em cima ou escreve livremente</p>
+            <p className="text-[#8696A0]/40 text-xs mt-3">Agora com todos os 7 Ecos, bundles e mais keywords</p>
           </div>
         )}
 
@@ -126,6 +140,11 @@ export default function ChatbotTeste() {
               {m.notificarCoach && (
                 <div className="text-[10px] text-amber-400 font-bold mb-1 flex items-center gap-1">
                   ⚠ Notificaria a Vivianne
+                </div>
+              )}
+              {m.chave && m.tipo === 'bot' && (
+                <div className="text-[10px] text-[#25D366]/60 mb-1">
+                  chave: {m.chave}
                 </div>
               )}
               <p className="text-sm whitespace-pre-wrap leading-relaxed">{m.texto}</p>

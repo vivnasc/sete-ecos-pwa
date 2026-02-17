@@ -1,6 +1,9 @@
 /**
  * Chatbot Sete Ecos — Respostas e Detecção Partilhada
  *
+ * A voz da Vivianne: calorosa, directa, motivadora, vendedora natural.
+ * Conhece TODOS os 7 Ecos, bundles, promos e a Comunidade.
+ *
  * Módulo reutilizável por ambos os webhooks:
  * - Meta Cloud API (whatsapp-webhook.js)
  * - Twilio (whatsapp-chatbot.js)
@@ -12,19 +15,28 @@ const COACH_NUMERO = '258851006473';
 
 const MENU_PRINCIPAL = `Como te posso ajudar?
 
-1️⃣ VITALIS — Coaching nutricional
+*Os 7 Ecos da Transformação:*
+1️⃣ VITALIS — Nutrição e corpo
 2️⃣ LUMINA — Diagnóstico gratuito
 3️⃣ ÁUREA — Auto-valor e presença
-4️⃣ Preços e planos
-5️⃣ Como pagar (M-Pesa, PayPal, etc.)
-6️⃣ Experimentar grátis (7 dias)
-7️⃣ Falar com a Vivianne
+4️⃣ SERENA — Emoções e fluidez
+5️⃣ IGNIS — Vontade e foco
+6️⃣ VENTIS — Energia e ritmo
+7️⃣ ECOA — Voz e expressão
+8️⃣ IMAGO — Identidade e espelho
+
+*Mais opções:*
+💰 *preços* — Ver todos os planos
+🎁 *bundle* — Pacotes com desconto (até 40%!)
+🆓 *trial* — Experimentar grátis 7 dias
+💳 *pagar* — Formas de pagamento
+👩 *vivianne* — Falar comigo directamente
 
 Responde com o número ou escreve à vontade`;
 
-const SAUDACAO = `Olá! Bem-vindo/a ao *Sete Ecos*.
+const SAUDACAO = `Olá! Sou a *Vivianne*, criadora do Sete Ecos.
 
-Sou a Vivianne, coach de nutrição e bem-estar. Este é um sistema de transformação holística.
+Este é um sistema de transformação feminina com *7 dimensões* — do corpo à alma. Começa por onde precisas, ao teu ritmo.
 
 ${MENU_PRINCIPAL}`;
 
@@ -33,350 +45,659 @@ ${MENU_PRINCIPAL}`;
 const R = {};
 
 // --- 1: VITALIS ---
-R['1'] = `*VITALIS — Coaching Nutricional Completo*
+R['1'] = `*VITALIS — Raiz da Transformação* 🌱
 
-O VITALIS é um programa de transformação nutricional feito para a mulher moçambicana. Não é uma dieta — é uma mudança real, ao teu ritmo.
+O VITALIS não é uma dieta. É uma mudança real na tua relação com a comida — feita com *comida moçambicana* que já conheces e amas.
 
-*O que inclui:*
-- Plano alimentar personalizado (xima, matapa, caril, feijão nhemba)
-- Receitas moçambicanas saudáveis
-- Check-in diário (30 segundos)
-- Chat direto com a coach Vivianne
-- Relatórios semanais de progresso
-- Treinos adaptados (sem ginásio)
-- Lista de compras automática
-- Espaço de Retorno (sem culpa se recaíres)
-- Gamificação com XP, níveis e conquistas
-- Acesso à Comunidade
+*O que recebes:*
+✅ Plano alimentar personalizado (xima, matapa, caril, feijão nhemba...)
+✅ Receitas moçambicanas saudáveis
+✅ Check-in diário (30 segundos — cria o hábito)
+✅ Chat directo comigo, Vivianne
+✅ Relatórios semanais de progresso
+✅ Lista de compras automática
+✅ Treinos adaptados (sem ginásio!)
+✅ Espaço de Retorno — recaíste? Sem culpa. Voltamos juntas.
+✅ Gamificação com XP, níveis e conquistas
+✅ Acesso à Comunidade
 
-*3 fases do programa:*
-1. Indução — primeiras mudanças
-2. Estabilização — criar hábitos
-3. Reeducação — transformação duradoura
+*3 fases:*
+1. *Indução* — primeiras mudanças, sem pressão
+2. *Estabilização* — criar hábitos que ficam
+3. *Reeducação* — transformação que dura para sempre
 
-Catálogo completo: app.seteecos.com/catalogo
-Ver na app: app.seteecos.com/vitalis
+*Preços:*
+Mensal — *2.500 MZN*/mês
+Semestral — *12.500 MZN* (poupas 2.500!)
+Anual — *21.000 MZN* (poupas 9.000!)
 
-Responde *4* para ver preços ou *6* para experimentar grátis 7 dias`;
+Experimenta *7 dias grátis* antes de decidir.
+
+👉 Começa: app.seteecos.com/vitalis
+
+Ou responde *preços* para comparar todos os planos`;
 
 // --- 2: LUMINA ---
-R['2'] = `*LUMINA — Diagnóstico Gratuito*
+R['2'] = `*LUMINA — O Teu Primeiro Passo* ✨
 
-O LUMINA é o teu primeiro passo. Em *5 minutos* descobres:
+Em *5 minutos* descobres coisas sobre ti que talvez nunca tenhas percebido.
 
-- O teu padrão emocional dominante
-- Como a alimentação afeta o teu humor
-- O que o teu corpo realmente precisa
-- Leitura personalizada com orientações
+*O LUMINA revela:*
+🔮 O teu padrão emocional dominante
+🍽️ Como a alimentação afecta o teu humor
+💡 O que o teu corpo realmente precisa
+📖 Leitura personalizada com orientações
 
-São *23 padrões possíveis* — cada leitura é única.
+São *23 padrões possíveis* — a tua leitura é única.
 
-O diagnóstico também avalia:
+*Também avalia:*
 - Relação com a comida
 - Nível de energia e sono
 - Estado emocional
 - Fase do ciclo menstrual (opcional)
 
-*Começa agora:* app.seteecos.com/lumina
+*100% gratuito · Sem registo · 5 minutos*
 
-100% gratuito - Sem registo - 5 minutos
+👉 Começa agora: app.seteecos.com/lumina
 
-Após o LUMINA, o próximo passo natural é o *VITALIS* (responde *1*)`;
+Depois do LUMINA, o passo natural é o *VITALIS* (responde *1*) ou a *SERENA* (responde *4*) — depende do que a tua leitura revelar`;
 
 // --- 3: ÁUREA ---
-R['3'] = `*ÁUREA — Auto-Valor e Presença*
+R['3'] = `*ÁUREA — Valor e Presença* 👑
 
-O ÁUREA trabalha a tua relação contigo mesma. Não é sobre aparência — é sobre *merecimento*.
+Quanto tempo passas a cuidar dos outros e esqueces de cuidar de ti? O ÁUREA muda isso.
+
+*O que recebes:*
+✅ 100+ micro-práticas diárias de auto-cuidado
+✅ Espelho de Roupa — presença através do vestir
+✅ Carteira de Merecimento — quanto investes em ti?
+✅ Diário de Merecimento — escrita reflexiva
+✅ 5 meditações guiadas em áudio
+✅ Insights semanais e análise de padrões
+✅ Chat comigo
+✅ Acesso à Comunidade
+
+*Sistema de Jóias (os teus níveis):*
+🥉 Bronze (0-50) — Despertar
+🥈 Prata (51-150) — Presença
+🥇 Ouro (151-300) — Valor
+💎 Diamante (301+) — Integração
+
+*Preços:*
+Mensal — *975 MZN*/mês
+Semestral — *5.265 MZN* (poupas 585 MZN)
+Anual — *9.945 MZN* (poupas 1.755 MZN)
+
+Experimenta *7 dias grátis* com acesso total.
+
+👉 Começa: app.seteecos.com/aurea
+
+💡 _Combina com o VITALIS? Responde *bundle* para ver pacotes com até 40% desconto!_`;
+
+// --- 4: SERENA ---
+R['serena'] = `*SERENA — A Maré Interior* 🌊
+
+Sentes que as emoções te controlam em vez de seres tu a controlá-las? O SERENA é para ti.
+
+*O que recebes:*
+✅ Diário emocional inteligente
+✅ Botão SOS para momentos de crise
+✅ Exercícios de respiração guiada
+✅ Rituais de libertação emocional
+✅ Biblioteca emocional completa
+✅ Mapa das tuas emoções ao longo do tempo
+✅ Correlação com o ciclo menstrual
+✅ Detecção de padrões emocionais
+✅ Chat comigo
+✅ Acesso à Comunidade
+
+O SERENA conecta o que sentes com o teu ciclo, a lua, e os teus hábitos. Não é para "controlar" emoções — é para *entendê-las*.
+
+*Preços:*
+Mensal — *750 MZN*/mês
+Semestral — *3.825 MZN* (poupas 675 MZN)
+Anual — *7.200 MZN* (poupas 1.800 MZN)
+
+Experimenta *7 dias grátis*.
+
+👉 Começa: app.seteecos.com/serena
+
+💡 _Combina muito bem com o VITALIS — corpo e emoção juntos. Responde *bundle*._`;
+
+// --- 5: IGNIS ---
+R['ignis'] = `*IGNIS — O Fogo Interior* 🔥
+
+Sabes aquela coisa que queres fazer mas nunca começas? O IGNIS acende esse fogo.
+
+*O que recebes:*
+✅ Exercícios de escolha consciente
+✅ Atenção focada — treino de concentração
+✅ Rastreador de distracções
+✅ Exercício do Corte — aprender a dizer NÃO
+✅ Bússola de Valores — o que realmente importa
+✅ Diário de Conquistas
+✅ Desafios de fogo semanais
+✅ Plano de acção pessoal
+✅ Chat comigo
+✅ Acesso à Comunidade
+
+O IGNIS não é sobre produtividade. É sobre *clareza de vontade* — saber o que queres e ter coragem de ir buscar.
+
+*Preços:*
+Mensal — *750 MZN*/mês
+Semestral — *3.825 MZN* (poupas 675 MZN)
+Anual — *7.200 MZN* (poupas 1.800 MZN)
+
+Experimenta *7 dias grátis*.
+
+👉 Começa: app.seteecos.com/ignis`;
+
+// --- 6: VENTIS ---
+R['ventis'] = `*VENTIS — O Fôlego Vital* 🍃
+
+Cansada mesmo depois de dormir? A exaustão crónica tem solução. O VENTIS ajuda-te a encontrar o teu ritmo.
+
+*O que recebes:*
+✅ Monitor de energia diário
+✅ Construtor de rotinas conscientes
+✅ Pausas conscientes guiadas
+✅ Fluxo de movimento (exercícios suaves)
+✅ Conexão com a natureza
+✅ Análise do teu ritmo pessoal
+✅ Mapa de picos e vales de energia
+✅ Detector de burnout
+✅ Rituais vs. Rotinas — encontrar o equilíbrio
+✅ Chat comigo
+✅ Acesso à Comunidade
+
+*Preços:*
+Mensal — *750 MZN*/mês
+Semestral — *3.825 MZN* (poupas 675 MZN)
+Anual — *7.200 MZN* (poupas 1.800 MZN)
+
+Experimenta *7 dias grátis*.
+
+👉 Começa: app.seteecos.com/ventis`;
+
+// --- 7: ECOA ---
+R['ecoa'] = `*ECOA — Voz e Desbloqueio do Silêncio* 🗣️
+
+Quantas vezes engoliste o que querias dizer? O ECOA devolve-te a voz.
+
+*O que recebes:*
+✅ Mapa do silenciamento — onde te calaste?
+✅ Micro-exercícios de voz diários
+✅ Biblioteca de frases assertivas
+✅ Registo de vozes recuperadas
+✅ Diário de voz — o que disseste e não disseste
+✅ Cartas não enviadas — escreve o que nunca disseste
+✅ Afirmações diárias personalizadas
+✅ Exercícios de expressão e comunicação assertiva
+✅ Chat comigo
+✅ Acesso à Comunidade
+
+O ECOA é para todas as mulheres que foram silenciadas — pela cultura, pela família, por um parceiro. A tua voz importa.
+
+*Preços:*
+Mensal — *750 MZN*/mês
+Semestral — *3.825 MZN* (poupas 675 MZN)
+Anual — *7.200 MZN* (poupas 1.800 MZN)
+
+Experimenta *7 dias grátis*.
+
+👉 Começa: app.seteecos.com/ecoa`;
+
+// --- 8: IMAGO ---
+R['imago'] = `*IMAGO — Identidade e Espelho* 🪞
+
+Quem és tu quando ninguém está a ver? O IMAGO é o eco mais profundo — a integração de tudo o que és.
+
+*O que recebes:*
+✅ Espelho Triplo — auto-reflexão guiada
+✅ Arqueologia de Si — escavar as camadas da identidade
+✅ Cerimónia de Nomeação — dar nome ao que sentes
+✅ Mapa de Identidade pessoal
+✅ Valores essenciais — o teu norte
+✅ Roupa como identidade — o que comunicas ao vestir
+✅ Linha do tempo da jornada
+✅ Integração com todos os outros Ecos
+✅ Meditações de essência em áudio
+✅ Visão do futuro
+✅ Chat comigo
+✅ Acesso à Comunidade
+
+*Preços:*
+Mensal — *975 MZN*/mês
+Semestral — *4.972 MZN* (poupas 878 MZN)
+Anual — *9.360 MZN* (poupas 2.340 MZN)
+
+Experimenta *7 dias grátis*.
+
+👉 Começa: app.seteecos.com/imago`;
+
+// --- AURORA (módulo bónus gratuito) ---
+R['aurora'] = `*AURORA — Integração Final* 🌅
+
+O AURORA é o *presente* que recebes ao completar os 7 Ecos. Não se compra — conquista-se.
 
 *O que inclui:*
-- 100+ micro-práticas diárias de auto-cuidado
-- Espelho de Roupa — presença através do vestir
-- Carteira de Merecimento — quanto investes em ti
-- Diário de Merecimento — escrita reflexiva
-- 5 meditações guiadas em áudio
-- Insights semanais e análise de padrões
-- Chat com coach
-- Acesso à Comunidade
+🎓 Cerimónia de graduação
+📊 Comparação antes/depois da tua transformação
+📖 Resumo completo da jornada
+🔄 Modo de manutenção — continuar sem recomeçar
+🤝 Mentoria — ajudar outras mulheres
+🌀 Ritual de renovação anual
+💡 Insights de integração
 
-*Sistema de Jóias de Ouro:*
-Bronze (0-50) — Despertar
-Prata (51-150) — Presença
-Ouro (151-300) — Valor
-Diamante (301+) — Integração
+*Preço:* GRÁTIS — desbloqueia automaticamente quando completares Vitalis, Áurea, Serena, Ignis, Ventis, Ecoa e Imago.
 
-*Preços ÁUREA:*
-- Mensal: 975 MZN/mês
-- Semestral: 5.265 MZN (poupas 585 MZN)
-- Anual: 9.945 MZN (poupas 1.755 MZN)
+É a coroa da tua transformação. 👑
 
-Ver na app: app.seteecos.com/aurea
+Queres começar? Responde *2* para o diagnóstico gratuito LUMINA ou *preços* para ver os planos.`;
 
-Ou experimenta o *BUNDLE* (Vitalis + Áurea) com 25% de desconto — responde *bundle*`;
-
-// --- 4: PREÇOS ---
-R['4'] = `*Planos e Preços — Sete Ecos*
+// --- PREÇOS ---
+R['precos'] = `*Planos e Preços — Sete Ecos 2026*
 
 ━━━━━━━━━━━━━━━━━━
-*VITALIS* (Coaching Nutricional)
+*VITALIS* (Nutrição) ⭐ Mais popular
 ━━━━━━━━━━━━━━━━━━
 Mensal — *2.500 MZN*/mês
 Semestral — *12.500 MZN* (poupas 2.500!)
 Anual — *21.000 MZN* (poupas 9.000!)
 
 ━━━━━━━━━━━━━━━━━━
-*ÁUREA* (Auto-Valor)
+*ÁUREA* (Auto-Valor) · *IMAGO* (Identidade)
 ━━━━━━━━━━━━━━━━━━
-Mensal — *975 MZN*/mês
-Semestral — *5.265 MZN* (10% desc.)
-Anual — *9.945 MZN* (15% desc.)
-
-━━━━━━━━━━━━━━━━━━
-*BUNDLE* (Vitalis + Áurea — 25% desc.)
-━━━━━━━━━━━━━━━━━━
-Mensal — *2.600 MZN*/mês (poupas 875!)
-Semestral — *13.300 MZN* (poupas 4.465!)
-Anual — *23.200 MZN* (poupas 7.745!)
+Mensal — *975 MZN*/mês cada
+Semestral — a partir de *4.972 MZN*
+Anual — a partir de *9.360 MZN*
 
 ━━━━━━━━━━━━━━━━━━
-*LUMINA* — *GRÁTIS* (sempre!)
+*SERENA · IGNIS · VENTIS · ECOA*
 ━━━━━━━━━━━━━━━━━━
+Mensal — *750 MZN*/mês cada
+Semestral — *3.825 MZN* cada
+Anual — *7.200 MZN* cada
 
-Todos os planos incluem acesso à *Comunidade*.
+━━━━━━━━━━━━━━━━━━
+*BUNDLES* (Quanto mais, mais poupas!)
+━━━━━━━━━━━━━━━━━━
+DUO (2 Ecos) — *15% desconto*
+TRIO (3 Ecos) — *25% desconto*
+JORNADA (5+ Ecos) — *35% desconto*
+TUDO (7 Ecos) — *40% desconto* 🔥
+Ex: Todos os 7 = *2.800 MZN/mês* (em vez de 7.400!)
 
-Responde *5* para saber como pagar ou *6* para experimentar grátis 7 dias`;
+━━━━━━━━━━━━━━━━━━
+*GRÁTIS*
+━━━━━━━━━━━━━━━━━━
+LUMINA — Diagnóstico gratuito (sempre)
+AURORA — Desbloqueia ao completar os 7 Ecos
 
-// --- 5: PAGAMENTO ---
-R['5'] = `*Como Pagar — Sete Ecos*
+Todos incluem: *7 dias grátis* + Comunidade + chat comigo.
 
-*1. PayPal / Cartão (acesso imediato)*
-Visa, Mastercard ou PayPal direto na app.
-app.seteecos.com/vitalis/pagamento
+Responde *pagar* para saber como pagar ou *bundle* para mais detalhes`;
+
+// --- PAGAMENTO ---
+R['pagar'] = `*Como Pagar — Sete Ecos*
+
+*1. PayPal / Cartão (acesso imediato!)*
+Visa, Mastercard ou PayPal directo na app.
+👉 app.seteecos.com/vitalis/pagamento
 
 *2. M-Pesa*
 Envia para: *85 100 6473*
 Nome: Vivianne Santos
-Depois envia o comprovativo aqui.
+Depois envia-me o comprovativo aqui neste chat!
 
 *3. Transferência Bancária*
-Contacta-nos para os dados bancários.
+Contacta-me para os dados bancários.
 Depois envia o comprovativo aqui.
 
-*Prazos de ativação:*
-- PayPal/cartão: acesso imediato
-- M-Pesa/transferência: ativação em menos de 1 hora após comprovativo
+*Prazos de activação:*
+⚡ PayPal/cartão: acesso *imediato*
+📱 M-Pesa: activação em menos de *1 hora*
+🏦 Transferência: até 24 horas
 
-Já pagaste? Envia o comprovativo aqui que ativo o teu acesso!`;
+Já pagaste? Envia-me o comprovativo aqui que activo o teu acesso!
 
-// --- 6: TRIAL ---
-R['6'] = `*Experimenta Grátis — 7 Dias*
+💡 _Não tens a certeza? Experimenta *7 dias grátis* primeiro — responde *trial*_`;
 
-Podes experimentar o VITALIS durante *7 dias grátis* antes de decidir.
+// --- TRIAL ---
+R['trial'] = `*Experimenta Grátis — 7 Dias* 🎁
+
+Podes experimentar *qualquer Eco* durante *7 dias grátis* antes de decidir. Sem compromisso, sem cartão.
 
 *O que tens acesso no trial:*
-- Dashboard com progresso
-- Check-in diário
-- Receitas moçambicanas
-- Espaço de Retorno
-- Desafios semanais
-- Chat com a coach
+✅ Dashboard completo
+✅ Check-in diário
+✅ Práticas e exercícios
+✅ Espaço de Retorno
+✅ Desafios semanais
+✅ Chat comigo directamente
 
-*Limitações do trial:*
+*No trial do VITALIS, ficas sem:*
 - Plano alimentar completo
 - Lista de compras
 - Relatórios detalhados
 - Fotos de progresso
 
-Para ativar o trial gratuito:
-Regista-te em app.seteecos.com/vitalis/pagamento
-Ou responde *7* e peço à Vivianne para te ativar`;
+Nos outros Ecos o trial tem *acesso total*.
 
-// --- 7: FALAR COM VIVIANNE ---
-R['7'] = `*Falar com a Vivianne*
+Para activar o trial:
+👉 app.seteecos.com (escolhe o Eco e clica "Experimentar grátis")
 
-A tua mensagem foi recebida! A Vivianne vai responder-te pessoalmente assim que possível.
+Ou responde *vivianne* e eu activo-te manualmente!`;
 
-Horário: Seg-Sex, 9h-18h (Maputo)
+// --- FALAR COM VIVIANNE ---
+R['vivianne_contacto'] = `*Falar com a Vivianne* 💬
 
-Enquanto esperas:
-Diagnóstico gratuito: app.seteecos.com/lumina
-Catálogo: app.seteecos.com/catalogo
+A tua mensagem foi recebida! Vou responder-te pessoalmente assim que puder.
 
-Obrigada pela paciência`;
+*Horário:* Seg-Sex, 9h-18h (hora de Maputo)
+
+Enquanto esperas, experimenta:
+🔮 Diagnóstico gratuito: app.seteecos.com/lumina
+📖 Catálogo completo: app.seteecos.com/catalogo
+
+Obrigada pela paciência — falo contigo em breve!`;
 
 // --- BUNDLE ---
-R['bundle'] = `*BUNDLE — Vitalis + Áurea (25% desconto!)*
+R['bundle'] = `*BUNDLES — Quanto mais Ecos, mais poupas!* 🎁
 
-A combinação perfeita: nutrição + auto-valor.
+A transformação é mais poderosa quando trabalhas várias dimensões juntas. E eu recompenso isso com descontos sérios.
 
-*O que inclui:*
-Tudo do VITALIS (coaching nutricional completo)
-Tudo do ÁUREA (micro-práticas, meditações, diário)
-Comunidade incluída
+━━━━━━━━━━━━━━━━━━
+*DUO* — 2 Ecos (15% desc.)
+━━━━━━━━━━━━━━━━━━
+Escolhe qualquer 2. Exemplo: Vitalis + Serena
+A partir de *1.275 MZN/mês*
 
-*Preços Bundle (25% desconto):*
-Mensal — *2.600 MZN*/mês (poupas 875 MZN!)
-Semestral — *13.300 MZN* (poupas 4.465 MZN!)
-Anual — *23.200 MZN* (poupas 7.745 MZN!)
+━━━━━━━━━━━━━━━━━━
+*TRIO* — 3 Ecos (25% desc.)
+━━━━━━━━━━━━━━━━━━
+Escolhe qualquer 3. Exemplo: Vitalis + Áurea + Ignis
+A partir de *1.687 MZN/mês*
 
-Ver mais: app.seteecos.com/bundle
+━━━━━━━━━━━━━━━━━━
+*JORNADA* — 5+ Ecos (35% desc.)
+━━━━━━━━━━━━━━━━━━
+Para quem quer transformação profunda.
+A partir de *2.437 MZN/mês*
 
-Responde *5* para saber como pagar`;
+━━━━━━━━━━━━━━━━━━
+*TUDO* — Todos os 7 Ecos (40% desc.) 🔥
+━━━━━━━━━━━━━━━━━━
+*2.800 MZN/mês* (em vez de 7.400!)
+Poupas *4.600 MZN por mês*!
++ AURORA desbloqueia GRÁTIS ao completar tudo
+
+Todos os bundles incluem Comunidade + chat comigo.
+
+Responde *pagar* para saber como pagar, ou *vivianne* e monto o teu pacote à medida!`;
 
 // --- COMUNIDADE ---
-R['comunidade'] = `*Comunidade Sete Ecos*
+R['comunidade'] = `*Comunidade Sete Ecos* 🤝
 
-Um espaço seguro de transformação coletiva. Incluída em todos os planos pagos.
+Um espaço seguro. Sem julgamento. De mulheres para mulheres.
 
-*4 espaços:*
+*4 espaços únicos:*
 
-*O Rio* — Reflexões guiadas por prompts diários. Partilha pensamentos, lê os de outras mulheres.
+*🏞️ O Rio* — Reflexões guiadas por prompts diários. Partilha os teus pensamentos, lê os de outras mulheres.
 
-*Círculos de Eco* — Grupos de 7-12 mulheres que exploram o mesmo tema juntas, com apoio mútuo.
+*⭕ Círculos de Eco* — Grupos de 7-12 mulheres que exploram o mesmo tema juntas, com apoio mútuo.
 
-*Fogueira* — Espaço efémero de 24h. Todas se reúnem num tema. Conversas honestas que desaparecem.
+*🔥 Fogueira* — Espaço efémero de 24h. Todas se reúnem num tema. Conversas honestas que desaparecem.
 
-*Sussurros* — Mensagens privadas de apoio e encorajamento entre mulheres.
+*💌 Sussurros* — Mensagens privadas de apoio e encorajamento entre mulheres.
 
-Não é uma rede social. É um espaço de cura coletiva.
+Isto *não é* uma rede social. É um espaço de cura colectiva.
 
-A Comunidade vem incluída no VITALIS, ÁUREA e Bundle`;
+Incluída em *todos* os planos pagos.
+
+Queres experimentar? Responde *trial* para 7 dias grátis.`;
 
 // --- REFERRAL ---
-R['referral'] = `*Programa de Referência*
+R['referral'] = `*Programa de Referência* 🎉
 
-Partilha o Sete Ecos com amigas e ambas ganham!
+Partilha o Sete Ecos com amigas e *ambas ganham*!
 
 *Como funciona:*
 1. Recebes o teu código único (formato ECOS-XXXXXX)
 2. Partilha com amigas
 3. Quando ela subscreve, tu ganhas *+7 dias grátis*
-4. Ela ganha *7 dias de trial*
+4. Ela também ganha *7 dias de trial*
 
 Podes convidar até *10 pessoas*.
 
-Para receber o teu código de referência, regista-te em app.seteecos.com e vai ao teu perfil.
+Para receber o teu código, regista-te em app.seteecos.com e vai ao teu perfil.
 
-Ou responde *7* e a Vivianne envia-te o teu código`;
+Ou responde *vivianne* e eu envio-te o código directamente!`;
 
 // --- CATÁLOGO ---
-R['catalogo'] = `*Catálogo Sete Ecos 2026*
+R['catalogo'] = `*Catálogo Sete Ecos 2026* 📖
 
-Tudo sobre os nossos serviços num só lugar:
+Tudo sobre os nossos 7 Ecos num só lugar:
 
-app.seteecos.com/catalogo
+👉 app.seteecos.com/catalogo
 
-Inclui: LUMINA, VITALIS, ÁUREA, Comunidade, preços e formas de pagamento.
+Inclui: LUMINA, VITALIS, ÁUREA, SERENA, IGNIS, VENTIS, ECOA, IMAGO, Comunidade, preços e formas de pagamento.
 
-Tens dúvidas? Responde com um número:
-1 VITALIS  2 LUMINA  3 ÁUREA  4 Preços  5 Pagamento  7 Falar com Vivianne`;
+Tens dúvidas? Escreve aqui ou responde *vivianne* para falar comigo directamente.`;
 
 // --- FAQ ---
-R['faq'] = `*Perguntas Frequentes*
+R['faq'] = `*Perguntas Frequentes* ❓
+
+*O que é o Sete Ecos?*
+Um sistema de transformação feminina com 7 dimensões (Ecos) — do corpo à identidade. Cada Eco trabalha uma parte de ti.
 
 *É uma dieta?*
-Não. É um sistema de transformação nutricional que usa a comida moçambicana que já conheces.
+O VITALIS trabalha nutrição, mas não é dieta. É reeducação alimentar com comida moçambicana real (xima, matapa, caril...).
 
 *Preciso de ginásio?*
 Não. Os treinos são adaptados para fazer em casa.
 
+*Por onde começo?*
+Pelo LUMINA — é gratuito e em 5 minutos descobres o teu padrão. Depois eu recomendo o melhor Eco para ti.
+
+*Posso experimentar antes de pagar?*
+Sim! 7 dias grátis em qualquer Eco pago.
+
 *Funciona sem internet?*
-Sim! A app funciona offline (PWA).
+Sim! A app funciona offline (é uma PWA).
 
 *Posso cancelar?*
 Sim, a qualquer momento.
 
-*Que comida usam?*
-Xima, matapa, caril, feijão nhemba — comida real moçambicana.
-
 *A coach é real?*
-Sim! A Vivianne responde pessoalmente, não é um bot.
-
-*O LUMINA é mesmo grátis?*
-Sim, 100% gratuito, sem registo, em 5 minutos.
+Sim! Eu, Vivianne, respondo pessoalmente. Não sou um bot (mas este WhatsApp é automático — para falar comigo responde *vivianne*).
 
 *Posso pagar por M-Pesa?*
 Sim! M-Pesa, PayPal, cartão e transferência bancária.
 
-Mais dúvidas? Responde *7* para falar com a Vivianne`;
+*Quanto custa tudo junto?*
+Com o Bundle TUDO (7 Ecos), pagas *2.800 MZN/mês* em vez de 7.400. São 40% de desconto!
+
+Mais dúvidas? Responde *vivianne* e eu esclareço tudo.`;
+
+// --- OBRIGADA ---
+R['obrigada'] = `De nada! Estou aqui para ti, sempre.
+
+Se precisares de alguma coisa:
+🔮 Diagnóstico gratuito: app.seteecos.com/lumina
+📖 Catálogo: app.seteecos.com/catalogo
+💬 Falar comigo: responde *vivianne*
+
+Boa transformação! ✨`;
 
 // --- MENSAGEM GENÉRICA ---
 const GENERICA = `Obrigada pela tua mensagem!
 
-Posso ajudar-te com:
+Posso ajudar-te com qualquer um dos *7 Ecos*:
 
-1 VITALIS (coaching nutricional)
-2 LUMINA (diagnóstico grátis)
-3 ÁUREA (auto-valor)
-4 Preços e planos
-5 Como pagar
-6 Experimentar grátis
-7 Falar com a Vivianne
+1 VITALIS (nutrição) · 2 LUMINA (grátis)
+3 ÁUREA (auto-valor) · 4 SERENA (emoções)
+5 IGNIS (vontade) · 6 VENTIS (energia)
+7 ECOA (voz) · 8 IMAGO (identidade)
 
-Ou escreve: *catalogo*, *bundle*, *comunidade*, *referral*, *faq*
+Ou escreve: *preços*, *bundle*, *trial*, *pagar*, *comunidade*, *faq*, *catalogo*
 
-Responde com o número ou palavra`;
+Ou responde *vivianne* para falar comigo directamente.`;
 
 // ===== DETECÇÃO POR PALAVRAS-CHAVE =====
 
 function detectarResposta(texto) {
-  const t = texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const t = texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 
-  // Números diretos
-  if (['1', '2', '3', '4', '5', '6', '7'].includes(texto.trim())) {
-    return { chave: texto.trim(), notificarCoach: texto.trim() === '7' };
-  }
+  // Números diretos (1-8)
+  if (t === '1') return { chave: '1' };
+  if (t === '2') return { chave: '2' };
+  if (t === '3') return { chave: '3' };
+  if (t === '4') return { chave: 'serena' };
+  if (t === '5') return { chave: 'ignis' };
+  if (t === '6') return { chave: 'ventis' };
+  if (t === '7') return { chave: 'ecoa' };
+  if (t === '8') return { chave: 'imago' };
 
-  // Palavras-chave específicas
-  if (t.includes('bundle') || t.includes('pacote') || (t.includes('vitalis') && t.includes('aurea')))
+  // Palavras-chave directas (módulos escritos por nome)
+  if (t === 'bundle' || t === 'pacote' || t === 'bundles' || t === 'pacotes')
     return { chave: 'bundle' };
 
-  if (t.includes('catalogo') || t.includes('brochura'))
+  if (t === 'catalogo' || t === 'brochura')
     return { chave: 'catalogo' };
 
-  if (t.includes('comunidade') || t.includes('rio') || t.includes('circulo') || t.includes('fogueira') || t.includes('sussurro'))
-    return { chave: 'comunidade' };
-
-  if (t.includes('referral') || t.includes('referencia') || t.includes('convidar') || t.includes('codigo') || t.includes('indicar'))
-    return { chave: 'referral' };
-
-  if (t.includes('faq') || t.includes('pergunta') || t.includes('duvida'))
+  if (t === 'faq' || t === 'perguntas')
     return { chave: 'faq' };
 
+  // Bundle multi-eco
+  if (t.includes('bundle') || t.includes('pacote') || t.includes('combo') ||
+      t.includes('duo') || t.includes('trio') || t.includes('jornada') ||
+      t.includes('tudo junto') || t.includes('todos os ecos') || t.includes('todos juntos'))
+    return { chave: 'bundle' };
+
+  // Aurora
+  if (t.includes('aurora') || t.includes('integracao final') || t.includes('graduacao'))
+    return { chave: 'aurora' };
+
+  // Comunidade
+  if (t.includes('comunidade') || t.includes('rio') || t.includes('circulo') ||
+      t.includes('fogueira') || t.includes('sussurro'))
+    return { chave: 'comunidade' };
+
+  // Referral
+  if (t.includes('referral') || t.includes('referencia') || t.includes('convidar') ||
+      t.includes('codigo') || t.includes('indicar') || t.includes('convite'))
+    return { chave: 'referral' };
+
   // Pagamento
-  if (t.includes('pagar') || t.includes('pagamento') || t.includes('mpesa') || t.includes('m-pesa') || t.includes('paypal') || t.includes('transferencia') || t.includes('comprovativo') || t.includes('cartao'))
-    return { chave: '5' };
+  if (t.includes('pagar') || t.includes('pagamento') || t.includes('mpesa') ||
+      t.includes('m-pesa') || t.includes('paypal') || t.includes('transferencia') ||
+      t.includes('comprovativo') || t.includes('cartao') || t.includes('visa') ||
+      t.includes('mastercard') || t.includes('recibo'))
+    return { chave: 'pagar' };
 
   // Preços
-  if (t.includes('preco') || t.includes('quanto custa') || t.includes('valor') || t.includes('quanto') || t.includes('plano'))
-    return { chave: '4' };
+  if (t.includes('preco') || t.includes('quanto custa') || t.includes('valor') ||
+      t.includes('quanto') || t.includes('plano') || t.includes('custos') ||
+      t.includes('mensalidade') || t.includes('assinatura') || t.includes('barato') ||
+      t.includes('caro') || t.includes('desconto') || t.includes('promocao'))
+    return { chave: 'precos' };
 
   // Trial
-  if (t.includes('gratis') || t.includes('gratuito') || t.includes('trial') || t.includes('experimentar') || t.includes('teste'))
-    return { chave: '6' };
+  if (t.includes('gratis') || t.includes('gratuito') || t.includes('trial') ||
+      t.includes('experimentar') || t.includes('teste') || t.includes('sem pagar') ||
+      t.includes('sem compromisso'))
+    return { chave: 'trial' };
 
-  // Lumina
-  if (t.includes('lumina') || t.includes('diagnostico') || t.includes('leitura') || t.includes('padrao'))
+  // FAQ
+  if (t.includes('faq') || t.includes('pergunta') || t.includes('duvida') ||
+      t.includes('como funciona') || t.includes('o que e'))
+    return { chave: 'faq' };
+
+  // --- MÓDULOS POR TEMA ---
+
+  // SERENA (emoções)
+  if (t.includes('serena') || t.includes('emocao') || t.includes('emocoes') ||
+      t.includes('emocional') || t.includes('ansiedade') || t.includes('ansiosa') ||
+      t.includes('triste') || t.includes('tristeza') || t.includes('choro') ||
+      t.includes('chorar') || t.includes('deprimida') || t.includes('stress') ||
+      t.includes('stressada') || t.includes('angustia') || t.includes('mare') ||
+      t.includes('ciclo emocional') || t.includes('sentir'))
+    return { chave: 'serena' };
+
+  // IGNIS (vontade, foco)
+  if (t.includes('ignis') || t.includes('foco') || t.includes('vontade') ||
+      t.includes('motivacao') || t.includes('preguica') || t.includes('procrastin') ||
+      t.includes('disciplina') || t.includes('objetivo') || t.includes('meta') ||
+      t.includes('desistir') || t.includes('comecar') || t.includes('coragem') ||
+      t.includes('determinacao') || t.includes('forca de vontade'))
+    return { chave: 'ignis' };
+
+  // VENTIS (energia, ritmo)
+  if (t.includes('ventis') || t.includes('energia') || t.includes('cansada') ||
+      t.includes('cansaco') || t.includes('exausta') || t.includes('exaustao') ||
+      t.includes('burnout') || t.includes('dormir') || t.includes('sono') ||
+      t.includes('insonia') || t.includes('rotina') || t.includes('ritmo') ||
+      t.includes('respirar') || t.includes('respiracao') || t.includes('descanso') ||
+      t.includes('pausa'))
+    return { chave: 'ventis' };
+
+  // ECOA (voz, expressão)
+  if (t.includes('ecoa') || t.includes('voz') || t.includes('silencio') ||
+      t.includes('silenciada') || t.includes('calada') || t.includes('calar') ||
+      t.includes('expressao') || t.includes('expressar') || t.includes('comunicacao') ||
+      t.includes('assertiv') || t.includes('falar') || t.includes('dizer') ||
+      t.includes('opiniao') || t.includes('nao consigo dizer'))
+    return { chave: 'ecoa' };
+
+  // IMAGO (identidade)
+  if (t.includes('imago') || t.includes('identidade') || t.includes('quem sou') ||
+      t.includes('auto-conhecimento') || t.includes('autoconhecimento') ||
+      t.includes('espelho') || t.includes('essencia') || t.includes('proposito') ||
+      t.includes('valores') || t.includes('perdida') || t.includes('nao sei quem sou'))
+    return { chave: 'imago' };
+
+  // LUMINA
+  if (t.includes('lumina') || t.includes('diagnostico') || t.includes('leitura') ||
+      t.includes('padrao'))
     return { chave: '2' };
 
-  // Áurea
-  if (t.includes('aurea') || t.includes('auto-valor') || t.includes('autovalor') || t.includes('merecimento') || t.includes('presenca') || t.includes('meditac'))
+  // ÁUREA
+  if (t.includes('aurea') || t.includes('auto-valor') || t.includes('autovalor') ||
+      t.includes('merecimento') || t.includes('presenca') || t.includes('meditac') ||
+      t.includes('autoestima') || t.includes('auto estima') || t.includes('nao mereco') ||
+      t.includes('nao valho'))
     return { chave: '3' };
 
-  // Vitalis
-  if (t.includes('vitalis') || t.includes('nutri') || t.includes('coaching') || t.includes('receita') || t.includes('plano alimentar') || t.includes('emagrecer') || t.includes('peso') || t.includes('dieta') || t.includes('comida') || t.includes('alimenta'))
+  // VITALIS (mais amplo — por último entre os módulos)
+  if (t.includes('vitalis') || t.includes('nutri') || t.includes('coaching') ||
+      t.includes('receita') || t.includes('plano alimentar') || t.includes('emagrecer') ||
+      t.includes('peso') || t.includes('dieta') || t.includes('comida') ||
+      t.includes('alimenta') || t.includes('xima') || t.includes('matapa') ||
+      t.includes('engordar') || t.includes('gordo') || t.includes('gorda') ||
+      t.includes('magra') || t.includes('barriga') || t.includes('corpo'))
     return { chave: '1' };
 
   // Saudações
-  if (/^(ola|oi|bom dia|boa tarde|boa noite|hello|hi|hey|boa|epa)/.test(t))
+  if (/^(ola|oi|bom dia|boa tarde|boa noite|hello|hi|hey|boa|epa|yo|hola)/.test(t))
     return { chave: 'saudacao' };
 
-  // Falar com humana
-  if (t.includes('vivianne') || t.includes('coach') || t.includes('ajuda') || t.includes('suporte') || t.includes('problema') || t.includes('reclamar') || t.includes('nao funciona') || t.includes('erro'))
-    return { chave: '7', notificarCoach: true };
+  // Falar com Vivianne (humana)
+  if (t.includes('vivianne') || t.includes('coach') || t.includes('ajuda') ||
+      t.includes('suporte') || t.includes('problema') || t.includes('reclamar') ||
+      t.includes('nao funciona') || t.includes('erro') || t.includes('falar contigo') ||
+      t.includes('pessoa real') || t.includes('humana') || t.includes('atendimento'))
+    return { chave: 'vivianne_contacto', notificarCoach: true };
 
   // Agradecimento
-  if (t.includes('obrigad') || t.includes('thanks') || t.includes('brigada'))
+  if (t.includes('obrigad') || t.includes('thanks') || t.includes('brigada') ||
+      t.includes('agradec') || t.includes('valeu') || t.includes('fixe'))
     return { chave: 'obrigada' };
+
+  // Catálogo
+  if (t.includes('catalogo') || t.includes('brochura') || t.includes('informacao') ||
+      t.includes('saber mais'))
+    return { chave: 'catalogo' };
 
   return { chave: null, notificarCoach: true };
 }
@@ -414,14 +735,41 @@ function atualizarSessao(telefone, chaveIn, chaveOut) {
   }
 }
 
+// Nomes legíveis das chaves para contexto
+const NOMES_CHAVES = {
+  '1': 'Vitalis',
+  '2': 'Lumina',
+  '3': 'Áurea',
+  'serena': 'Serena',
+  'ignis': 'Ignis',
+  'ventis': 'Ventis',
+  'ecoa': 'Ecoa',
+  'imago': 'Imago',
+  'aurora': 'Aurora',
+  'precos': 'Preços',
+  'pagar': 'Pagamento',
+  'trial': 'Trial',
+  'bundle': 'Bundles',
+  'comunidade': 'Comunidade',
+  'faq': 'FAQ',
+  'referral': 'Referência',
+  'catalogo': 'Catálogo',
+};
+
 // Follow-ups contextuais baseados na última interação
 const FOLLOW_UPS = {
-  '1': '\n\n💡 _Já viste os preços? Responde *4*. Ou experimenta grátis: *6*_',
-  '2': '\n\n💡 _O LUMINA é gratuito! Depois experimenta o VITALIS: *1*_',
-  '3': '\n\n💡 _Queres o BUNDLE Vitalis+Áurea com 25% desc? Responde *bundle*_',
-  '4': '\n\n💡 _Para saber como pagar responde *5*. Ou experimenta grátis: *6*_',
-  '5': '\n\n💡 _Já tens comprovativo? Envia a foto aqui!_',
-  '6': '\n\n💡 _Para ativar o trial vai a app.seteecos.com/vitalis/pagamento_',
+  '1': '\n\n💡 _Já viste os preços? Responde *preços*. Ou experimenta grátis: *trial*_',
+  '2': '\n\n💡 _O LUMINA é gratuito! Depois experimenta o VITALIS (*1*) ou a SERENA (*4*)_',
+  '3': '\n\n💡 _Queres combinar Ecos? Responde *bundle* para ver descontos até 40%!_',
+  'serena': '\n\n💡 _Combina bem com VITALIS (corpo + emoção). Responde *bundle* para descontos!_',
+  'ignis': '\n\n💡 _O IGNIS + VENTIS juntos são perfeitos. Responde *bundle*!_',
+  'ventis': '\n\n💡 _Tens problemas de energia E emoção? Experimenta VENTIS + SERENA. Responde *bundle*!_',
+  'ecoa': '\n\n💡 _O ECOA + ÁUREA são transformadores juntos. Responde *bundle*!_',
+  'imago': '\n\n💡 _O IMAGO é o eco mais profundo. Combina com tudo. Responde *bundle* para descontos!_',
+  'precos': '\n\n💡 _Para saber como pagar responde *pagar*. Ou experimenta grátis: *trial*_',
+  'pagar': '\n\n💡 _Já tens comprovativo? Envia a foto aqui!_',
+  'trial': '\n\n💡 _Para activar o trial vai a app.seteecos.com e escolhe o teu Eco!_',
+  'bundle': '\n\n💡 _Queres que eu monte o teu pacote? Responde *vivianne*!_',
 };
 
 // ===== GERAR RESPOSTA =====
@@ -439,11 +787,11 @@ function gerarResposta(msgBody, nome, telefone) {
       resposta = `Olá de novo${primeiroNome ? `, ${primeiroNome}` : ''}! Em que posso ajudar?\n\n${MENU_PRINCIPAL}`;
     } else {
       resposta = nome
-        ? `Olá ${nome.split(' ')[0]}! Bem-vindo/a ao *Sete Ecos*.\n\nSou a Vivianne, coach de nutrição e bem-estar.\n\n${MENU_PRINCIPAL}`
+        ? `Olá ${nome.split(' ')[0]}! Sou a *Vivianne*, criadora do Sete Ecos.\n\nBem-vindo/a a um sistema de transformação feminina com *7 dimensões* — do corpo à alma.\n\n${MENU_PRINCIPAL}`
         : SAUDACAO;
     }
   } else if (chave === 'obrigada') {
-    resposta = `De nada! Estou aqui para o que precisares.\n\nDiagnóstico gratuito: app.seteecos.com/lumina\nCatálogo: app.seteecos.com/catalogo\n\nBoa transformação!`;
+    resposta = R['obrigada'];
   } else if (R[chave]) {
     resposta = R[chave];
     // Adicionar follow-up contextual se não é repetição da mesma chave
@@ -452,16 +800,8 @@ function gerarResposta(msgBody, nome, telefone) {
     }
   } else {
     // Mensagem não reconhecida — se tem contexto, sugerir com base no último tema
-    if (sessao && sessao.ultimaChave && R[sessao.ultimaChave]) {
-      resposta = `Não percebi essa mensagem, mas vi que estavas a ver sobre *${
-        sessao.ultimaChave === '1' ? 'Vitalis' :
-        sessao.ultimaChave === '2' ? 'Lumina' :
-        sessao.ultimaChave === '3' ? 'Áurea' :
-        sessao.ultimaChave === '4' ? 'Preços' :
-        sessao.ultimaChave === '5' ? 'Pagamento' :
-        sessao.ultimaChave === '6' ? 'Trial' :
-        'os nossos serviços'
-      }*. Precisas de mais informação?\n\nOu responde com um número:\n${MENU_PRINCIPAL}`;
+    if (sessao && sessao.ultimaChave && NOMES_CHAVES[sessao.ultimaChave]) {
+      resposta = `Não percebi essa mensagem, mas vi que estavas a ver sobre *${NOMES_CHAVES[sessao.ultimaChave]}*. Precisas de mais informação?\n\nOu escolhe uma opção:\n${MENU_PRINCIPAL}`;
     } else {
       resposta = GENERICA;
     }
@@ -479,6 +819,7 @@ export {
   SAUDACAO,
   GENERICA,
   R,
+  NOMES_CHAVES,
   detectarResposta,
   gerarResposta
 };

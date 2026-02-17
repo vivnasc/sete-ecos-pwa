@@ -16,12 +16,12 @@
  * - WHATSAPP_PHONE_NUMBER_ID: ID do número no Meta Business
  */
 
-import { gerarResposta, COACH_NUMERO } from './_lib/chatbot-respostas.js';
+import { gerarResposta, COACH_NUMERO, NOMES_CHAVES } from './_lib/chatbot-respostas.js';
 import { logMensagem } from './_lib/chatbot-log.js';
 
-const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'seteecos2026';
-const ACCESS_TOKEN = () => process.env.WHATSAPP_ACCESS_TOKEN;
-const PHONE_NUMBER_ID = () => process.env.WHATSAPP_PHONE_NUMBER_ID;
+const VERIFY_TOKEN = (process.env.WHATSAPP_VERIFY_TOKEN || 'seteecos2026').trim();
+const ACCESS_TOKEN = () => (process.env.WHATSAPP_ACCESS_TOKEN || '').trim();
+const PHONE_NUMBER_ID = () => (process.env.WHATSAPP_PHONE_NUMBER_ID || '').trim();
 
 // ===== DEDUPLICAÇÃO DE MENSAGENS =====
 // Meta pode reenviar webhooks se o processamento demora >5s
@@ -238,7 +238,7 @@ export default async function handler(req, res) {
 
     // ===== MEDIA (imagem/documento = comprovativo) =====
     if (['image', 'document'].includes(messageType) && !message.text?.body) {
-      const mediaMsg = 'Recebemos a tua imagem! Se é um comprovativo de pagamento, a Vivianne vai verificar e ativar o teu acesso em menos de 1 hora.\n\nSe precisas de mais ajuda, responde com um número:\n1 VITALIS  2 LUMINA  3 ÁUREA  4 Preços  5 Pagamento  7 Falar com Vivianne';
+      const mediaMsg = 'Recebemos a tua imagem! Se é um comprovativo de pagamento, vou verificar e activar o teu acesso em menos de 1 hora.\n\nSe precisas de mais ajuda, escreve:\n*preços* · *trial* · *pagar* · *vivianne*\nOu o número de um Eco (1-8)';
 
       logMensagem({
         telefone: from,
@@ -289,9 +289,12 @@ export default async function handler(req, res) {
 
     // Notificar coach se necessário — MAS NUNCA se a mensagem é DA coach (evita loop)
     if (notificarCoach && !isCoachMsg) {
-      const contexto = chave === '7'
-        ? 'Cliente pediu para falar com a Vivianne'
-        : `Mensagem não reconhecida: "${msgBody}"`;
+      const tema = NOMES_CHAVES[chave] || null;
+      const contexto = chave === 'vivianne_contacto'
+        ? `Pediu para falar contigo!\nMensagem: "${msgBody}"`
+        : tema
+          ? `Perguntou sobre *${tema}*\nMensagem: "${msgBody}"`
+          : `Mensagem não reconhecida: "${msgBody}"`;
 
       notificarVivianne(from, nome, contexto).catch(err => {
         console.error('Erro ao notificar coach:', err);

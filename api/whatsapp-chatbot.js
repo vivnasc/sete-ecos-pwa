@@ -15,7 +15,7 @@
  * - TWILIO_WHATSAPP_NUMBER: Número WhatsApp Twilio (ex: whatsapp:+14155238886)
  */
 
-import { gerarResposta, COACH_NUMERO } from './_lib/chatbot-respostas.js';
+import { gerarResposta, COACH_NUMERO, NOMES_CHAVES } from './_lib/chatbot-respostas.js';
 import { logMensagem } from './_lib/chatbot-log.js';
 
 const TWILIO_AUTH_TOKEN = () => process.env.TWILIO_AUTH_TOKEN;
@@ -193,7 +193,7 @@ export default async function handler(req, res) {
 
     // Media (comprovativo de pagamento, etc.)
     if (numMedia > 0 && !msgBody) {
-      const mediaMsg = 'Recebemos a tua imagem! Se é um comprovativo de pagamento, a Vivianne vai verificar e ativar o teu acesso em menos de 1 hora.\n\nSe precisas de mais ajuda, responde com um número:\n1 VITALIS  2 LUMINA  3 ÁUREA  4 Preços  5 Pagamento  7 Falar com Vivianne';
+      const mediaMsg = 'Recebemos a tua imagem! Se é um comprovativo de pagamento, vou verificar e activar o teu acesso em menos de 1 hora.\n\nSe precisas de mais ajuda, escreve:\n*preços* · *trial* · *pagar* · *vivianne*\nOu o número de um Eco (1-8)';
 
       // Registar media no Supabase
       logMensagem({
@@ -254,9 +254,12 @@ export default async function handler(req, res) {
       // Notificar coach se necessário antes de responder (TwiML fecha a conexão)
       // ANTI-LOOP: nunca notificar se a mensagem é da própria coach
       if (notificarCoach && !isCoach) {
-        const contexto = msgBody === '7'
-          ? 'Cliente pediu para falar com a Vivianne'
-          : `Mensagem não reconhecida: "${msgBody}"`;
+        const tema = NOMES_CHAVES[chave] || null;
+        const contexto = chave === 'vivianne_contacto'
+          ? `Pediu para falar contigo!\nMensagem: "${msgBody}"`
+          : tema
+            ? `Perguntou sobre *${tema}*\nMensagem: "${msgBody}"`
+            : `Mensagem não reconhecida: "${msgBody}"`;
         notificarVivianne(numeroLimpo, profileName, contexto).catch(err => {
           console.error('Erro ao notificar coach:', err);
         });
