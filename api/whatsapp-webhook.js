@@ -1,122 +1,280 @@
 /**
  * WhatsApp Business API — Webhook Meta Cloud API
  *
- * Versão Meta Cloud API do chatbot Sete Ecos.
+ * Webhook para receber e responder mensagens WhatsApp via Meta Cloud API.
  * Usa o módulo partilhado chatbot-respostas.js para respostas e detecção.
  *
- * Variáveis de ambiente:
+ * Configuração no Meta Business:
+ * 1. Ir a developers.facebook.com > App > WhatsApp > Configuration
+ * 2. Callback URL: https://app.seteecos.com/api/whatsapp-webhook
+ * 3. Verify Token: o valor de WHATSAPP_VERIFY_TOKEN (ex: "seteecos2026")
+ * 4. Webhook fields: messages
+ *
+ * Variáveis de ambiente (Vercel):
  * - WHATSAPP_VERIFY_TOKEN: Token de verificação (ex: "seteecos2026")
- * - WHATSAPP_ACCESS_TOKEN: Token da Meta Cloud API
+ * - WHATSAPP_ACCESS_TOKEN: Token permanente da Meta Cloud API
  * - WHATSAPP_PHONE_NUMBER_ID: ID do número no Meta Business
  */
 
 import { gerarResposta, COACH_NUMERO } from './_lib/chatbot-respostas.js';
+import { logMensagem } from './_lib/chatbot-log.js';
 
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'seteecos2026';
-const ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
-const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
+const ACCESS_TOKEN = () => process.env.WHATSAPP_ACCESS_TOKEN;
+const PHONE_NUMBER_ID = () => process.env.WHATSAPP_PHONE_NUMBER_ID;
 
-// ===== HANDLER PRINCIPAL =====
+// ===== ENVIAR MENSAGEM VIA META CLOUD API =====
 
-export default async function handler(req, res) {
-  // GET = verificação do webhook pela Meta
-  if (req.method === 'GET') {
-    const mode = req.query['hub.mode'];
-    const token = req.query['hub.verify_token'];
-    const challenge = req.query['hub.challenge'];
+async function enviarMensagem(para, texto) {
+  const token = ACCESS_TOKEN();
+  const phoneId = PHONE_NUMBER_ID();
 
-    if (mode === 'subscribe' && token === VERIFY_TOKEN) {
-      console.log('Webhook WhatsApp verificado');
-      return res.status(200).send(challenge);
-    }
-    return res.status(403).send('Token inválido');
+  if (!token || !phoneId) {
+    console.error('WhatsApp Meta API não configurada — WHATSAPP_ACCESS_TOKEN ou WHATSAPP_PHONE_NUMBER_ID em falta');
+    return { ok: false, error: 'not_configured' };
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método não permitido' });
-  }
+  const url = `https://graph.facebook.com/v21.0/${phoneId}/messages`;
 
   try {
-    const body = req.body;
-    const entry = body?.entry?.[0];
-    const changes = entry?.changes?.[0];
-    const value = changes?.value;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: para,
+        type: 'text',
+        text: { body: texto },
+      }),
+    });
 
-    if (!value?.messages?.[0]) {
-      return res.status(200).send('OK');
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('Erro Meta API:', response.status, errText);
+      return { ok: false, error: 'api_error', status: response.status };
     }
 
-    const message = value.messages[0];
-    const from = message.from;
-    const nome = value.contacts?.[0]?.profile?.name || '';
-    const msgBody = (message.text?.body || '').trim();
-
-    // Ignorar mensagens vazias
-    if (!msgBody) return res.status(200).send('OK');
-
-    // Gerar resposta usando módulo partilhado
-    const { resposta, notificarCoach, chave } = gerarResposta(msgBody, nome);
-
-    // Enviar resposta
-    await enviarMensagem(from, resposta);
-
-    // Notificar coach se necessário
-    if (notificarCoach) {
-      const contexto = chave === '7'
-        ? `Cliente pediu para falar com a Vivianne`
-        : `Mensagem não reconhecida: "${msgBody}"`;
-
-      notificarVivianne(from, nome, contexto).catch(() => {});
-    }
-
-    return res.status(200).send('OK');
-  } catch (error) {
-    console.error('Erro no webhook WhatsApp:', error);
-    return res.status(200).send('OK');
+    const result = await response.json();
+    console.log('Meta API sucesso:', result.messages?.[0]?.id);
+    return { ok: true };
+  } catch (err) {
+    console.error('Erro ao enviar mensagem Meta:', err.message);
+    return { ok: false, error: 'network_error' };
   }
 }
 
-// ===== ENVIAR MENSAGEM =====
+// ===== MARCAR COMO LIDA =====
 
-async function enviarMensagem(para, texto) {
-  if (!ACCESS_TOKEN || !PHONE_NUMBER_ID) {
-    console.error('WhatsApp API não configurada');
-    return;
-  }
+async function marcarComoLida(messageId) {
+  const token = ACCESS_TOKEN();
+  const phoneId = PHONE_NUMBER_ID();
+  if (!token || !phoneId) return;
 
-  const url = `https://graph.facebook.com/v21.0/${PHONE_NUMBER_ID}/messages`;
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${ACCESS_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      messaging_product: 'whatsapp',
-      recipient_type: 'individual',
-      to: para,
-      type: 'text',
-      text: { body: texto },
-    }),
-  });
-
-  if (!response.ok) {
-    const err = await response.text();
-    console.error('Erro ao enviar WhatsApp:', err);
+  try {
+    await fetch(`https://graph.facebook.com/v21.0/${phoneId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        status: 'read',
+        message_id: messageId,
+      }),
+    });
+  } catch (_) {
+    // Não bloqueia — apenas cosmético (ticks azuis)
   }
 }
 
 // ===== NOTIFICAR COACH =====
 
 async function notificarVivianne(clienteNumero, clienteNome, contexto) {
-  const msg = `*Nova mensagem Sete Ecos*
-
-${clienteNome || 'Contacto novo'}
-+${clienteNumero}
-${contexto}
-
-Responde directamente à cliente no WhatsApp.`;
-
+  const msg = `*Nova mensagem Sete Ecos*\n\n${clienteNome || 'Contacto novo'}\n+${clienteNumero}\n${contexto}\n\nResponde directamente à cliente no WhatsApp.`;
   await enviarMensagem(COACH_NUMERO, msg);
+}
+
+// ===== HANDLER PRINCIPAL =====
+
+export default async function handler(req, res) {
+  // ===== OPTIONS = preflight CORS (para simulador) =====
+  if (req.method === 'OPTIONS') {
+    setCorsHeaders(req, res);
+    return res.status(200).end();
+  }
+
+  // ===== GET = verificação do webhook pela Meta =====
+  if (req.method === 'GET') {
+    const mode = req.query['hub.mode'];
+    const token = req.query['hub.verify_token'];
+    const challenge = req.query['hub.challenge'];
+
+    // Verificação Meta
+    if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+      console.log('Webhook WhatsApp Meta verificado');
+      return res.status(200).send(challenge);
+    }
+
+    // Diagnóstico rápido no browser
+    const hasToken = !!ACCESS_TOKEN();
+    const hasPhoneId = !!PHONE_NUMBER_ID();
+    return res.status(200).json({
+      status: 'ok',
+      endpoint: 'whatsapp-webhook (Meta Cloud API)',
+      config: {
+        hasAccessToken: hasToken,
+        hasPhoneNumberId: hasPhoneId,
+        verifyToken: VERIFY_TOKEN ? 'configurado' : 'NÃO CONFIGURADO',
+      },
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método não permitido' });
+  }
+
+  // ===== MODO TESTE (simulador sem Meta API) =====
+  const isTest = req.query?.mode === 'test' || req.body?.mode === 'test';
+  if (isTest) {
+    setCorsHeaders(req, res);
+
+    try {
+      const { mensagem, nome } = req.body || {};
+      if (!mensagem) return res.status(400).json({ error: 'mensagem é obrigatória' });
+
+      const { resposta, chave, notificarCoach } = gerarResposta(mensagem, nome || 'Teste', 'teste-simulador');
+
+      logMensagem({
+        telefone: 'teste-simulador',
+        nome: nome || 'Teste',
+        mensagemIn: mensagem,
+        mensagemOut: resposta,
+        chave,
+        notificouCoach: notificarCoach,
+        canal: 'simulador',
+      }).catch(() => {});
+
+      return res.status(200).json({
+        resposta,
+        chave,
+        notificarCoach,
+        input: mensagem,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Erro no teste chatbot:', error);
+      return res.status(500).json({ error: 'Erro interno' });
+    }
+  }
+
+  // ===== WEBHOOK META (mensagens reais) =====
+  try {
+    const body = req.body;
+    const entry = body?.entry?.[0];
+    const changes = entry?.changes?.[0];
+    const value = changes?.value;
+
+    // Sem mensagens — pode ser status update, etc.
+    if (!value?.messages?.[0]) {
+      return res.status(200).send('OK');
+    }
+
+    const message = value.messages[0];
+    const from = message.from; // número sem +
+    const nome = value.contacts?.[0]?.profile?.name || '';
+    const messageId = message.id;
+    const messageType = message.type; // text, image, document, etc.
+
+    console.log('WhatsApp Meta recebeu:', JSON.stringify({
+      from, nome, type: messageType,
+      body: message.text?.body?.slice(0, 100),
+    }));
+
+    // Marcar como lida (ticks azuis)
+    marcarComoLida(messageId).catch(() => {});
+
+    // ===== MEDIA (imagem/documento = comprovativo) =====
+    if (['image', 'document'].includes(messageType) && !message.text?.body) {
+      const mediaMsg = 'Recebemos a tua imagem! Se é um comprovativo de pagamento, a Vivianne vai verificar e ativar o teu acesso em menos de 1 hora.\n\nSe precisas de mais ajuda, responde com um número:\n1 VITALIS  2 LUMINA  3 ÁUREA  4 Preços  5 Pagamento  7 Falar com Vivianne';
+
+      logMensagem({
+        telefone: from,
+        nome,
+        mensagemIn: `[${messageType}]`,
+        mensagemOut: mediaMsg,
+        chave: 'media',
+        notificouCoach: true,
+        canal: 'whatsapp-meta',
+      }).catch(() => {});
+
+      await enviarMensagem(from, mediaMsg);
+
+      // Notificar coach
+      notificarVivianne(from, nome, `Enviou ${messageType} — possivelmente comprovativo de pagamento`).catch(() => {});
+
+      return res.status(200).send('OK');
+    }
+
+    // ===== TEXTO =====
+    const msgBody = (message.text?.body || '').trim();
+    if (!msgBody) return res.status(200).send('OK');
+
+    // Gerar resposta usando módulo partilhado (com telefone para sessões)
+    const { resposta, chave, notificarCoach } = gerarResposta(msgBody, nome, from);
+
+    console.log('Resposta gerada para:', msgBody, '| chave:', chave, '| tamanho:', resposta.length);
+
+    // Registar no Supabase (não bloqueia)
+    logMensagem({
+      telefone: from,
+      nome,
+      mensagemIn: msgBody,
+      mensagemOut: resposta,
+      chave,
+      notificouCoach: notificarCoach,
+      canal: 'whatsapp-meta',
+    }).catch(err => console.error('Log erro:', err.message));
+
+    // Enviar resposta
+    const result = await enviarMensagem(from, resposta);
+
+    if (!result.ok) {
+      console.error('Falha ao enviar resposta Meta:', result.error);
+    }
+
+    // Notificar coach se necessário
+    if (notificarCoach) {
+      const contexto = chave === '7'
+        ? 'Cliente pediu para falar com a Vivianne'
+        : `Mensagem não reconhecida: "${msgBody}"`;
+
+      notificarVivianne(from, nome, contexto).catch(err => {
+        console.error('Erro ao notificar coach:', err);
+      });
+    }
+
+    return res.status(200).send('OK');
+  } catch (error) {
+    console.error('Erro no webhook WhatsApp Meta:', error);
+    // Meta espera sempre 200 — senão tenta reenviar
+    return res.status(200).send('OK');
+  }
+}
+
+// ===== CORS HELPER =====
+
+function setCorsHeaders(req, res) {
+  const allowedOrigins = ['https://app.seteecos.com', 'https://seteecos.com', 'http://localhost:3000'];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 }
