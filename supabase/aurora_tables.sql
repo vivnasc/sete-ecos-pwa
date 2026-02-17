@@ -137,8 +137,9 @@ BEGIN
     'aurora_renovacao', 'aurora_chat_messages'
   ])
   LOOP
+    EXECUTE format('DROP POLICY IF EXISTS %I_user_policy ON %I', t, t);
     EXECUTE format('
-      CREATE POLICY IF NOT EXISTS %I_user_policy ON %I
+      CREATE POLICY %I_user_policy ON %I
       FOR ALL USING (
         user_id IN (SELECT id FROM users WHERE auth_id = auth.uid())
       )', t, t);
@@ -146,5 +147,6 @@ BEGIN
 END $$;
 
 -- Mentoria tem politica especial: todas podem ler frases (anonimas)
-CREATE POLICY IF NOT EXISTS aurora_mentoria_read_policy ON aurora_mentoria
+DROP POLICY IF EXISTS aurora_mentoria_read_policy ON aurora_mentoria;
+CREATE POLICY aurora_mentoria_read_policy ON aurora_mentoria
 FOR SELECT USING (true);

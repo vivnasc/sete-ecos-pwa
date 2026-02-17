@@ -167,8 +167,9 @@ BEGIN
     'ignis_chat_messages'
   ])
   LOOP
+    EXECUTE format('DROP POLICY IF EXISTS %I_user_policy ON %I', t, t);
     EXECUTE format('
-      CREATE POLICY IF NOT EXISTS %I_user_policy ON %I
+      CREATE POLICY %I_user_policy ON %I
       FOR ALL USING (
         user_id IN (SELECT id FROM users WHERE auth_id = auth.uid())
       )', t, t);

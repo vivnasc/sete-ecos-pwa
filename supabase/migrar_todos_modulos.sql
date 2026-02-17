@@ -117,8 +117,9 @@ BEGIN
     'serena_rituais_log', 'serena_praticas_log', 'serena_ciclo_emocional',
     'serena_ciclo_menstrual', 'serena_chat_messages'
   ]) LOOP
+    EXECUTE format('DROP POLICY IF EXISTS %I_user_policy ON %I', t, t);
     EXECUTE format('
-      CREATE POLICY IF NOT EXISTS %I_user_policy ON %I
+      CREATE POLICY %I_user_policy ON %I
       FOR ALL USING (user_id IN (SELECT id FROM users WHERE auth_id = auth.uid()))', t, t);
   END LOOP;
 END $$;
@@ -269,8 +270,9 @@ BEGIN
     'ignis_conquistas_log', 'ignis_desafios_log', 'ignis_plano_accao',
     'ignis_chat_messages'
   ]) LOOP
+    EXECUTE format('DROP POLICY IF EXISTS %I_user_policy ON %I', t, t);
     EXECUTE format('
-      CREATE POLICY IF NOT EXISTS %I_user_policy ON %I
+      CREATE POLICY %I_user_policy ON %I
       FOR ALL USING (user_id IN (SELECT id FROM users WHERE auth_id = auth.uid()))', t, t);
   END LOOP;
 END $$;
@@ -412,8 +414,9 @@ BEGIN
     'ventis_rotinas_log', 'ventis_pausas_log', 'ventis_movimento_log',
     'ventis_natureza_log', 'ventis_burnout_alertas', 'ventis_chat_messages'
   ]) LOOP
+    EXECUTE format('DROP POLICY IF EXISTS %I_user_policy ON %I', t, t);
     EXECUTE format('
-      CREATE POLICY IF NOT EXISTS %I_user_policy ON %I
+      CREATE POLICY %I_user_policy ON %I
       FOR ALL USING (user_id IN (SELECT id FROM users WHERE auth_id = auth.uid()))', t, t);
   END LOOP;
 END $$;
@@ -565,8 +568,9 @@ BEGIN
     'ecoa_afirmacoes_log', 'ecoa_exercicios_log', 'ecoa_comunicacao_log',
     'ecoa_chat_messages'
   ]) LOOP
+    EXECUTE format('DROP POLICY IF EXISTS %I_user_policy ON %I', t, t);
     EXECUTE format('
-      CREATE POLICY IF NOT EXISTS %I_user_policy ON %I
+      CREATE POLICY %I_user_policy ON %I
       FOR ALL USING (user_id IN (SELECT id FROM users WHERE auth_id = auth.uid()))', t, t);
   END LOOP;
 END $$;
@@ -728,8 +732,9 @@ BEGIN
     'imago_roupa_identidade', 'imago_meditacoes_log', 'imago_visao_board',
     'imago_integracoes_log', 'imago_chat_messages'
   ]) LOOP
+    EXECUTE format('DROP POLICY IF EXISTS %I_user_policy ON %I', t, t);
     EXECUTE format('
-      CREATE POLICY IF NOT EXISTS %I_user_policy ON %I
+      CREATE POLICY %I_user_policy ON %I
       FOR ALL USING (user_id IN (SELECT id FROM users WHERE auth_id = auth.uid()))', t, t);
   END LOOP;
 END $$;
@@ -859,14 +864,16 @@ BEGIN
     'aurora_manutencao_log', 'aurora_mentoria', 'aurora_ritual_log',
     'aurora_renovacao', 'aurora_chat_messages'
   ]) LOOP
+    EXECUTE format('DROP POLICY IF EXISTS %I_user_policy ON %I', t, t);
     EXECUTE format('
-      CREATE POLICY IF NOT EXISTS %I_user_policy ON %I
+      CREATE POLICY %I_user_policy ON %I
       FOR ALL USING (user_id IN (SELECT id FROM users WHERE auth_id = auth.uid()))', t, t);
   END LOOP;
 END $$;
 
 -- Mentoria tem politica especial: todas podem ler frases (anonimas)
-CREATE POLICY IF NOT EXISTS aurora_mentoria_read_policy ON aurora_mentoria
+DROP POLICY IF EXISTS aurora_mentoria_read_policy ON aurora_mentoria;
+CREATE POLICY aurora_mentoria_read_policy ON aurora_mentoria
 FOR SELECT USING (true);
 
 -- ============================================================
