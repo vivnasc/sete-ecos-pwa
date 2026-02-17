@@ -706,6 +706,46 @@ async function handleSetup(req, res) {
     });
     result.resumo.wabaId = wabaId ? `OK (${wabaId})` : 'NÃO ENCONTRADO';
 
+    // ── Passo 2B: Listar Phone Numbers do WABA (descobrir o correcto) ──
+    if (wabaId) {
+      const phoneNumbers = await graphGet(`${wabaId}/phone_numbers?fields=id,display_phone_number,verified_name,quality_rating,code_verification_status`, token);
+      if (phoneNumbers.ok && phoneNumbers.data?.data?.length > 0) {
+        const numeros = phoneNumbers.data.data;
+        const phoneIdActual = PHONE_NUMBER_ID();
+        const phoneIdCorreto = numeros[0]?.id;
+        const phoneIdErrado = phoneIdActual && !numeros.some(n => n.id === phoneIdActual);
+
+        result.passos.push({
+          passo: '2B. Números de telefone do WABA',
+          ok: true,
+          numerosEncontrados: numeros.map(n => ({
+            phoneNumberId: n.id,
+            numero: n.display_phone_number,
+            nome: n.verified_name,
+            qualidade: n.quality_rating,
+          })),
+          phoneIdActual: phoneIdActual || 'NÃO CONFIGURADO',
+          phoneIdCorreto: phoneIdCorreto,
+          phoneIdErrado,
+          accao: phoneIdErrado
+            ? `PHONE NUMBER ID ERRADO! O correcto é: ${phoneIdCorreto}. Actualiza WHATSAPP_PHONE_NUMBER_ID no Vercel para: ${phoneIdCorreto}`
+            : phoneIdActual === phoneIdCorreto
+              ? 'Phone Number ID está CORRECTO!'
+              : `Configura WHATSAPP_PHONE_NUMBER_ID no Vercel para: ${phoneIdCorreto}`,
+        });
+        result.resumo.phoneNumberId = phoneIdErrado
+          ? `ERRADO — usar ${phoneIdCorreto}`
+          : 'OK';
+      } else {
+        result.passos.push({
+          passo: '2B. Números de telefone do WABA',
+          ok: false,
+          resultado: 'Não consegui listar os números — permissão pode faltar',
+          dados: phoneNumbers.data,
+        });
+      }
+    }
+
     // ── Passo 3: Webhook subscription ──
     let webhookOk = false;
 
