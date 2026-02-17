@@ -271,18 +271,18 @@ export function obterLeitura(padrao) {
 const ECOS_DISPONIVEIS = {
   Vitalis: { link: '/vitalis', disponivel: true },
   Aurea: { link: '/aurea', disponivel: true },
-  Serena: { link: null, disponivel: false },
-  Ignis: { link: null, disponivel: false },
-  Ventis: { link: null, disponivel: false },
-  Ecoa: { link: null, disponivel: false },
-  Imago: { link: null, disponivel: false }
+  Serena: { link: '/serena', disponivel: true },
+  Ignis: { link: '/ignis', disponivel: true },
+  Ventis: { link: '/ventis', disponivel: true },
+  Ecoa: { link: '/ecoa', disponivel: true },
+  Imago: { link: '/imago', disponivel: true }
 };
 
 export function obterRecomendacaoEco(respostas) {
   const { corpo, passado, impulso, futuro, mente, espelho, cuidado } = respostas;
   const recs = [];
 
-  // ÁUREA - auto-sacrifício/valor próprio (disponível) - PRIORIDADE
+  // ÁUREA - auto-sacrifício/valor próprio - PRIORIDADE
   if (['esquecida', 'por ultimo'].includes(cuidado)) {
     recs.push({
       eco: 'Áurea',
@@ -293,7 +293,7 @@ export function obterRecomendacaoEco(respostas) {
     });
   }
 
-  // Vitalis - corpo (disponível)
+  // Vitalis - corpo
   if (['pesado', 'tenso'].includes(corpo)) {
     recs.push({
       eco: 'Vitalis',
@@ -303,58 +303,53 @@ export function obterRecomendacaoEco(respostas) {
     });
   }
 
-  // Serena - passado/emoção (em breve)
+  // Serena - passado/emoção
   if (['preso', 'apesar'].includes(passado)) {
     recs.push({
       eco: 'Serena',
-      msg: 'Há emoção por fluir. O Serena vai ajudar-te a processar o passado.',
-      link: null,
-      disponivel: false,
-      emBreve: true
+      msg: 'Há emoção por fluir. O Serena ajuda-te a processar o passado com fluidez.',
+      link: '/serena',
+      disponivel: true
     });
   }
 
-  // Ignis - impulso/vontade (em breve)
-  if (['esconder', 'parar'].includes(impulso) && ['pesado', 'tenso'].includes(corpo)) {
+  // Ignis - impulso/vontade
+  if (['esconder', 'parar'].includes(impulso)) {
     recs.push({
       eco: 'Ignis',
-      msg: 'A vontade precisa de direcção. O Ignis vai ajudar-te a agir com propósito.',
-      link: null,
-      disponivel: false,
-      emBreve: true
+      msg: 'A vontade precisa de direcção. O Ignis ajuda-te a agir com propósito e foco.',
+      link: '/ignis',
+      disponivel: true
     });
   }
 
-  // Ventis - futuro/ritmo (em breve)
+  // Ventis - futuro/ritmo
   if (['escuro', 'pesado'].includes(futuro)) {
     recs.push({
       eco: 'Ventis',
-      msg: 'Precisas de ar, de ritmo. O Ventis vai trazer leveza ao teu futuro.',
-      link: null,
-      disponivel: false,
-      emBreve: true
+      msg: 'Precisas de ar, de ritmo. O Ventis traz leveza e energia ao teu dia.',
+      link: '/ventis',
+      disponivel: true
     });
   }
 
-  // Ecoa - mente/expressão (em breve)
+  // Ecoa - mente/expressão
   if (['caotica', 'barulhenta'].includes(mente)) {
     recs.push({
       eco: 'Ecoa',
-      msg: 'Há ruído por expressar. O Ecoa vai ajudar-te a encontrar a tua voz.',
-      link: null,
-      disponivel: false,
-      emBreve: true
+      msg: 'Há ruído por expressar. O Ecoa ajuda-te a encontrar e libertar a tua voz.',
+      link: '/ecoa',
+      disponivel: true
     });
   }
 
-  // Imago - espelho/identidade (em breve)
+  // Imago - espelho/identidade
   if (['invisivel', 'apagada'].includes(espelho)) {
     recs.push({
       eco: 'Imago',
-      msg: 'Não te estás a ver. O Imago vai ajudar-te a reconhecer a tua essência.',
-      link: null,
-      disponivel: false,
-      emBreve: true
+      msg: 'Não te estás a ver. O Imago ajuda-te a reconhecer a tua essência.',
+      link: '/imago',
+      disponivel: true
     });
   }
 
@@ -362,11 +357,7 @@ export function obterRecomendacaoEco(respostas) {
   const aureaPrioritaria = recs.find(r => r.prioridade && r.eco === 'Áurea');
   if (aureaPrioritaria) return aureaPrioritaria;
 
-  // Priorizar outros Ecos disponíveis
-  const disponivel = recs.find(r => r.disponivel);
-  if (disponivel) return disponivel;
-
-  // Se não há Eco disponível, retornar o primeiro com nota de "em breve"
+  // Retornar o primeiro eco recomendado
   return recs.length > 0 ? recs[0] : null;
 }
 
@@ -688,8 +679,8 @@ export function obterRecomendacaoCicloEco(respostas, faseActual, historico) {
     contextoCiclo: recomendacaoFase,
     fase: cicloInfo.fase,
     lua: cicloInfo.lua,
-    disponivel: ['Vitalis', 'Áurea'].includes(ecoSugerido),
-    link: ecoSugerido === 'Vitalis' ? '/vitalis' : ecoSugerido === 'Áurea' ? '/aurea' : null
+    disponivel: true,
+    link: ECOS_DISPONIVEIS[ecoSugerido === 'Áurea' ? 'Aurea' : ecoSugerido]?.link || `/${ecoSugerido.toLowerCase()}`
   };
 }
 

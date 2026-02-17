@@ -76,6 +76,110 @@ const Circulos = lazy(() => import('./components/comunidade/Circulos'))
 const Fogueira = lazy(() => import('./components/comunidade/Fogueira'))
 const Sussurros = lazy(() => import('./components/comunidade/Sussurros'))
 
+// ECO 3: SERENA (Emoção & Fluidez)
+const LandingSerena = lazy(() => import('./pages/LandingSerena'))
+const SerenaAccessGuard = lazy(() => import('./components/serena/SerenaAccessGuard'))
+const DashboardSerena = lazy(() => import('./components/serena/DashboardSerena'))
+const DiarioEmocional = lazy(() => import('./components/serena/DiarioEmocional'))
+const SOSEmocional = lazy(() => import('./components/serena/SOSEmocional'))
+const RespiracaoGuiada = lazy(() => import('./components/serena/RespiracaoGuiada'))
+const FluidezPraticas = lazy(() => import('./components/serena/FluidezPraticas'))
+const RituaisLibertacao = lazy(() => import('./components/serena/RituaisLibertacao'))
+const ChatSerena = lazy(() => import('./components/serena/ChatSerena'))
+const InsightsSerena = lazy(() => import('./components/serena/InsightsSerena'))
+const BibliotecaEmocoes = lazy(() => import('./components/serena/BibliotecaEmocoes'))
+const PerfilSerena = lazy(() => import('./components/serena/PerfilSerena'))
+const NotificacoesSerena = lazy(() => import('./components/serena/NotificacoesSerena'))
+
+// ECO 4: IGNIS (Vontade & Direccao Consciente)
+const LandingIgnis = lazy(() => import('./pages/LandingIgnis'))
+const IgnisAccessGuard = lazy(() => import('./components/ignis/IgnisAccessGuard'))
+const DashboardIgnis = lazy(() => import('./components/ignis/DashboardIgnis'))
+const EscolhasConscientes = lazy(() => import('./components/ignis/EscolhasConscientes'))
+const FocoConsciente = lazy(() => import('./components/ignis/FocoConsciente'))
+const RastreadorDispersao = lazy(() => import('./components/ignis/RastreadorDispersao'))
+const ExercicioCorte = lazy(() => import('./components/ignis/ExercicioCorte'))
+const BussolaValores = lazy(() => import('./components/ignis/BussolaValores'))
+const DiarioConquistas = lazy(() => import('./components/ignis/DiarioConquistas'))
+const DesafiosFogo = lazy(() => import('./components/ignis/DesafiosFogo'))
+const PlanoAccao = lazy(() => import('./components/ignis/PlanoAccao'))
+const ChatIgnis = lazy(() => import('./components/ignis/ChatIgnis'))
+const InsightsIgnis = lazy(() => import('./components/ignis/InsightsIgnis'))
+const PerfilIgnis = lazy(() => import('./components/ignis/PerfilIgnis'))
+const NotificacoesIgnis = lazy(() => import('./components/ignis/NotificacoesIgnis'))
+
+// ECO 5: VENTIS (Energia & Ritmo)
+const LandingVentis = lazy(() => import('./pages/LandingVentis'))
+const VentisAccessGuard = lazy(() => import('./components/ventis/VentisAccessGuard'))
+const DashboardVentis = lazy(() => import('./components/ventis/DashboardVentis'))
+const MonitorEnergia = lazy(() => import('./components/ventis/MonitorEnergia'))
+const RotinasBuilder = lazy(() => import('./components/ventis/RotinasBuilder'))
+const PausasConscientes = lazy(() => import('./components/ventis/PausasConscientes'))
+const MovimentoFlow = lazy(() => import('./components/ventis/MovimentoFlow'))
+const NaturezaConexao = lazy(() => import('./components/ventis/NaturezaConexao'))
+const RitmoAnalise = lazy(() => import('./components/ventis/RitmoAnalise'))
+const MapaPicosVales = lazy(() => import('./components/ventis/MapaPicosVales'))
+const DetectorBurnout = lazy(() => import('./components/ventis/DetectorBurnout'))
+const RituaisVsRotinas = lazy(() => import('./components/ventis/RituaisVsRotinas'))
+const ChatVentis = lazy(() => import('./components/ventis/ChatVentis'))
+const InsightsVentis = lazy(() => import('./components/ventis/InsightsVentis'))
+const PerfilVentis = lazy(() => import('./components/ventis/PerfilVentis'))
+const NotificacoesVentis = lazy(() => import('./components/ventis/NotificacoesVentis'))
+
+// ECO 6: ECOA (Voz & Desbloqueio do Silencio)
+const LandingEcoa = lazy(() => import('./pages/LandingEcoa'))
+const EcoaAccessGuard = lazy(() => import('./components/ecoa/EcoaAccessGuard'))
+const DashboardEcoa = lazy(() => import('./components/ecoa/DashboardEcoa'))
+const MapaSilenciamento = lazy(() => import('./components/ecoa/MapaSilenciamento'))
+const MicroVoz = lazy(() => import('./components/ecoa/MicroVoz'))
+const BibliotecaFrases = lazy(() => import('./components/ecoa/BibliotecaFrases'))
+const RegistoVozRecuperada = lazy(() => import('./components/ecoa/RegistoVozRecuperada'))
+const DiarioVoz = lazy(() => import('./components/ecoa/DiarioVoz'))
+const CartasNaoEnviadas = lazy(() => import('./components/ecoa/CartasNaoEnviadas'))
+const AfirmacoesDiarias = lazy(() => import('./components/ecoa/AfirmacoesDiarias'))
+const ExpressaoExercicios = lazy(() => import('./components/ecoa/ExpressaoExercicios'))
+const ComunicacaoAssertiva = lazy(() => import('./components/ecoa/ComunicacaoAssertiva'))
+const PadroesExpressao = lazy(() => import('./components/ecoa/PadroesExpressao'))
+const ChatEcoa = lazy(() => import('./components/ecoa/ChatEcoa'))
+const InsightsEcoa = lazy(() => import('./components/ecoa/InsightsEcoa'))
+const PerfilEcoa = lazy(() => import('./components/ecoa/PerfilEcoa'))
+const NotificacoesEcoa = lazy(() => import('./components/ecoa/NotificacoesEcoa'))
+
+// ECO 7: IMAGO (Identidade & Espelho)
+const LandingImago = lazy(() => import('./pages/LandingImago'))
+const ImagoAccessGuard = lazy(() => import('./components/imago/ImagoAccessGuard'))
+const DashboardImago = lazy(() => import('./components/imago/DashboardImago'))
+const EspelhoTriplo = lazy(() => import('./components/imago/EspelhoTriplo'))
+const ArqueologiaDeSi = lazy(() => import('./components/imago/ArqueologiaDeSi'))
+const Nomeacao = lazy(() => import('./components/imago/Nomeacao'))
+const MapaIdentidade = lazy(() => import('./components/imago/MapaIdentidade'))
+const ValoresEssenciais = lazy(() => import('./components/imago/ValoresEssenciais'))
+const RoupaComoIdentidade = lazy(() => import('./components/imago/RoupaComoIdentidade'))
+const TimelineJornada = lazy(() => import('./components/imago/TimelineJornada'))
+const IntegracaoEcos = lazy(() => import('./components/imago/IntegracaoEcos'))
+const MeditacoesEssencia = lazy(() => import('./components/imago/MeditacoesEssencia'))
+const VisaoFuturo = lazy(() => import('./components/imago/VisaoFuturo'))
+const ChatImago = lazy(() => import('./components/imago/ChatImago'))
+const InsightsImago = lazy(() => import('./components/imago/InsightsImago'))
+const PerfilImago = lazy(() => import('./components/imago/PerfilImago'))
+const NotificacoesImago = lazy(() => import('./components/imago/NotificacoesImago'))
+
+// AURORA (Integracao Final)
+const LandingAurora = lazy(() => import('./pages/LandingAurora'))
+const AuroraAccessGuard = lazy(() => import('./components/aurora/AuroraAccessGuard'))
+const DashboardAurora = lazy(() => import('./components/aurora/DashboardAurora'))
+const CerimoniaGraduacao = lazy(() => import('./components/aurora/CerimoniaGraduacao'))
+const AntesDepois = lazy(() => import('./components/aurora/AntesDepois'))
+const ResumoJornada = lazy(() => import('./components/aurora/ResumoJornada'))
+const ModoManutencao = lazy(() => import('./components/aurora/ModoManutencao'))
+const Mentoria = lazy(() => import('./components/aurora/Mentoria'))
+const RitualAurora = lazy(() => import('./components/aurora/RitualAurora'))
+const RenovacaoAnual = lazy(() => import('./components/aurora/RenovacaoAnual'))
+const ChatAurora = lazy(() => import('./components/aurora/ChatAurora'))
+const InsightsAurora = lazy(() => import('./components/aurora/InsightsAurora'))
+const PerfilAurora = lazy(() => import('./components/aurora/PerfilAurora'))
+const NotificacoesAurora = lazy(() => import('./components/aurora/NotificacoesAurora'))
+
 // ECO 2: ÁUREA (Valor & Presença)
 const LandingAurea = lazy(() => import('./pages/LandingAurea'))
 const PagamentoAurea = lazy(() => import('./components/aurea/PagamentoAurea'))
@@ -120,6 +224,54 @@ function VitalisRoute({ children }) {
 function AureaRoute({ children }) {
   return (
     <ProtectedRoute guard={AureaAccessGuard} eco="Áurea">
+      <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
+    </ProtectedRoute>
+  )
+}
+
+function SerenaRoute({ children }) {
+  return (
+    <ProtectedRoute guard={SerenaAccessGuard} eco="Serena">
+      <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
+    </ProtectedRoute>
+  )
+}
+
+function IgnisRoute({ children }) {
+  return (
+    <ProtectedRoute guard={IgnisAccessGuard} eco="Ignis">
+      <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
+    </ProtectedRoute>
+  )
+}
+
+function VentisRoute({ children }) {
+  return (
+    <ProtectedRoute guard={VentisAccessGuard} eco="Ventis">
+      <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
+    </ProtectedRoute>
+  )
+}
+
+function EcoaRoute({ children }) {
+  return (
+    <ProtectedRoute guard={EcoaAccessGuard} eco="Ecoa">
+      <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
+    </ProtectedRoute>
+  )
+}
+
+function ImagoRoute({ children }) {
+  return (
+    <ProtectedRoute guard={ImagoAccessGuard} eco="Imago">
+      <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
+    </ProtectedRoute>
+  )
+}
+
+function AuroraRoute({ children }) {
+  return (
+    <ProtectedRoute guard={AuroraAccessGuard} eco="Aurora">
       <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
     </ProtectedRoute>
   )
@@ -211,13 +363,103 @@ function AppRoutes() {
             <Route path="/comunidade/fogueira" element={<AuthRoute from="/comunidade"><Fogueira /></AuthRoute>} />
             <Route path="/comunidade/sussurros" element={<AuthRoute from="/comunidade"><Sussurros /></AuthRoute>} />
 
-            {/* ===== ECOS 3-7: Em Breve ===== */}
-            <Route path="/serena" element={<ComingSoon />} />
-            <Route path="/ignis" element={<ComingSoon />} />
-            <Route path="/ventis" element={<ComingSoon />} />
-            <Route path="/ecoa" element={<ComingSoon />} />
-            <Route path="/imago" element={<ComingSoon />} />
-            <Route path="/aurora" element={<ComingSoon />} />
+            {/* ===== ECO 3: SERENA - Emoção & Fluidez ===== */}
+            <Route path="/serena" element={<LandingSerena />} />
+            <Route path="/serena/dashboard" element={<SerenaRoute><DashboardSerena /></SerenaRoute>} />
+            <Route path="/serena/diario" element={<SerenaRoute><DiarioEmocional /></SerenaRoute>} />
+            <Route path="/serena/sos" element={<SOSEmocional />} />
+            <Route path="/serena/respiracao" element={<SerenaRoute><RespiracaoGuiada /></SerenaRoute>} />
+            <Route path="/serena/praticas" element={<SerenaRoute><FluidezPraticas /></SerenaRoute>} />
+            <Route path="/serena/rituais" element={<SerenaRoute><RituaisLibertacao /></SerenaRoute>} />
+            <Route path="/serena/chat" element={<SerenaRoute><ChatSerena /></SerenaRoute>} />
+            <Route path="/serena/insights" element={<SerenaRoute><InsightsSerena /></SerenaRoute>} />
+            <Route path="/serena/biblioteca" element={<SerenaRoute><BibliotecaEmocoes /></SerenaRoute>} />
+            <Route path="/serena/perfil" element={<SerenaRoute><PerfilSerena /></SerenaRoute>} />
+            <Route path="/serena/notificacoes" element={<SerenaRoute><NotificacoesSerena /></SerenaRoute>} />
+
+            {/* ===== ECO 4: IGNIS - Vontade & Direccao Consciente ===== */}
+            <Route path="/ignis" element={<LandingIgnis />} />
+            <Route path="/ignis/dashboard" element={<IgnisRoute><DashboardIgnis /></IgnisRoute>} />
+            <Route path="/ignis/escolhas" element={<IgnisRoute><EscolhasConscientes /></IgnisRoute>} />
+            <Route path="/ignis/foco" element={<IgnisRoute><FocoConsciente /></IgnisRoute>} />
+            <Route path="/ignis/dispersao" element={<IgnisRoute><RastreadorDispersao /></IgnisRoute>} />
+            <Route path="/ignis/corte" element={<IgnisRoute><ExercicioCorte /></IgnisRoute>} />
+            <Route path="/ignis/bussola" element={<IgnisRoute><BussolaValores /></IgnisRoute>} />
+            <Route path="/ignis/conquistas" element={<IgnisRoute><DiarioConquistas /></IgnisRoute>} />
+            <Route path="/ignis/desafios" element={<IgnisRoute><DesafiosFogo /></IgnisRoute>} />
+            <Route path="/ignis/plano" element={<IgnisRoute><PlanoAccao /></IgnisRoute>} />
+            <Route path="/ignis/chat" element={<IgnisRoute><ChatIgnis /></IgnisRoute>} />
+            <Route path="/ignis/insights" element={<IgnisRoute><InsightsIgnis /></IgnisRoute>} />
+            <Route path="/ignis/perfil" element={<IgnisRoute><PerfilIgnis /></IgnisRoute>} />
+            <Route path="/ignis/notificacoes" element={<IgnisRoute><NotificacoesIgnis /></IgnisRoute>} />
+
+            {/* ===== ECO 5: VENTIS - Energia & Ritmo ===== */}
+            <Route path="/ventis" element={<LandingVentis />} />
+            <Route path="/ventis/dashboard" element={<VentisRoute><DashboardVentis /></VentisRoute>} />
+            <Route path="/ventis/energia" element={<VentisRoute><MonitorEnergia /></VentisRoute>} />
+            <Route path="/ventis/rotinas" element={<VentisRoute><RotinasBuilder /></VentisRoute>} />
+            <Route path="/ventis/pausas" element={<VentisRoute><PausasConscientes /></VentisRoute>} />
+            <Route path="/ventis/movimento" element={<VentisRoute><MovimentoFlow /></VentisRoute>} />
+            <Route path="/ventis/natureza" element={<VentisRoute><NaturezaConexao /></VentisRoute>} />
+            <Route path="/ventis/ritmo" element={<VentisRoute><RitmoAnalise /></VentisRoute>} />
+            <Route path="/ventis/picos" element={<VentisRoute><MapaPicosVales /></VentisRoute>} />
+            <Route path="/ventis/burnout" element={<VentisRoute><DetectorBurnout /></VentisRoute>} />
+            <Route path="/ventis/rituais" element={<VentisRoute><RituaisVsRotinas /></VentisRoute>} />
+            <Route path="/ventis/chat" element={<VentisRoute><ChatVentis /></VentisRoute>} />
+            <Route path="/ventis/insights" element={<VentisRoute><InsightsVentis /></VentisRoute>} />
+            <Route path="/ventis/perfil" element={<VentisRoute><PerfilVentis /></VentisRoute>} />
+            <Route path="/ventis/notificacoes" element={<VentisRoute><NotificacoesVentis /></VentisRoute>} />
+
+            {/* ===== ECO 6: ECOA - Voz & Desbloqueio do Silencio ===== */}
+            <Route path="/ecoa" element={<LandingEcoa />} />
+            <Route path="/ecoa/dashboard" element={<EcoaRoute><DashboardEcoa /></EcoaRoute>} />
+            <Route path="/ecoa/mapa" element={<EcoaRoute><MapaSilenciamento /></EcoaRoute>} />
+            <Route path="/ecoa/micro-voz" element={<EcoaRoute><MicroVoz /></EcoaRoute>} />
+            <Route path="/ecoa/biblioteca" element={<EcoaRoute><BibliotecaFrases /></EcoaRoute>} />
+            <Route path="/ecoa/voz-recuperada" element={<EcoaRoute><RegistoVozRecuperada /></EcoaRoute>} />
+            <Route path="/ecoa/diario" element={<EcoaRoute><DiarioVoz /></EcoaRoute>} />
+            <Route path="/ecoa/cartas" element={<EcoaRoute><CartasNaoEnviadas /></EcoaRoute>} />
+            <Route path="/ecoa/afirmacoes" element={<EcoaRoute><AfirmacoesDiarias /></EcoaRoute>} />
+            <Route path="/ecoa/exercicios" element={<EcoaRoute><ExpressaoExercicios /></EcoaRoute>} />
+            <Route path="/ecoa/comunicacao" element={<EcoaRoute><ComunicacaoAssertiva /></EcoaRoute>} />
+            <Route path="/ecoa/padroes" element={<EcoaRoute><PadroesExpressao /></EcoaRoute>} />
+            <Route path="/ecoa/chat" element={<EcoaRoute><ChatEcoa /></EcoaRoute>} />
+            <Route path="/ecoa/insights" element={<EcoaRoute><InsightsEcoa /></EcoaRoute>} />
+            <Route path="/ecoa/perfil" element={<EcoaRoute><PerfilEcoa /></EcoaRoute>} />
+            <Route path="/ecoa/notificacoes" element={<EcoaRoute><NotificacoesEcoa /></EcoaRoute>} />
+
+            {/* ===== ECO 7: IMAGO - Identidade & Espelho ===== */}
+            <Route path="/imago" element={<LandingImago />} />
+            <Route path="/imago/dashboard" element={<ImagoRoute><DashboardImago /></ImagoRoute>} />
+            <Route path="/imago/espelho" element={<ImagoRoute><EspelhoTriplo /></ImagoRoute>} />
+            <Route path="/imago/arqueologia" element={<ImagoRoute><ArqueologiaDeSi /></ImagoRoute>} />
+            <Route path="/imago/nomeacao" element={<ImagoRoute><Nomeacao /></ImagoRoute>} />
+            <Route path="/imago/mapa" element={<ImagoRoute><MapaIdentidade /></ImagoRoute>} />
+            <Route path="/imago/valores" element={<ImagoRoute><ValoresEssenciais /></ImagoRoute>} />
+            <Route path="/imago/roupa" element={<ImagoRoute><RoupaComoIdentidade /></ImagoRoute>} />
+            <Route path="/imago/timeline" element={<ImagoRoute><TimelineJornada /></ImagoRoute>} />
+            <Route path="/imago/integracao" element={<ImagoRoute><IntegracaoEcos /></ImagoRoute>} />
+            <Route path="/imago/meditacoes" element={<ImagoRoute><MeditacoesEssencia /></ImagoRoute>} />
+            <Route path="/imago/visao" element={<ImagoRoute><VisaoFuturo /></ImagoRoute>} />
+            <Route path="/imago/chat" element={<ImagoRoute><ChatImago /></ImagoRoute>} />
+            <Route path="/imago/insights" element={<ImagoRoute><InsightsImago /></ImagoRoute>} />
+            <Route path="/imago/perfil" element={<ImagoRoute><PerfilImago /></ImagoRoute>} />
+            <Route path="/imago/notificacoes" element={<ImagoRoute><NotificacoesImago /></ImagoRoute>} />
+
+            {/* ===== AURORA - Integracao Final ===== */}
+            <Route path="/aurora" element={<LandingAurora />} />
+            <Route path="/aurora/dashboard" element={<AuroraRoute><DashboardAurora /></AuroraRoute>} />
+            <Route path="/aurora/cerimonia" element={<AuroraRoute><CerimoniaGraduacao /></AuroraRoute>} />
+            <Route path="/aurora/antes-depois" element={<AuroraRoute><AntesDepois /></AuroraRoute>} />
+            <Route path="/aurora/resumo" element={<AuroraRoute><ResumoJornada /></AuroraRoute>} />
+            <Route path="/aurora/manutencao" element={<AuroraRoute><ModoManutencao /></AuroraRoute>} />
+            <Route path="/aurora/mentoria" element={<AuroraRoute><Mentoria /></AuroraRoute>} />
+            <Route path="/aurora/ritual" element={<AuroraRoute><RitualAurora /></AuroraRoute>} />
+            <Route path="/aurora/renovacao" element={<AuroraRoute><RenovacaoAnual /></AuroraRoute>} />
+            <Route path="/aurora/chat" element={<AuroraRoute><ChatAurora /></AuroraRoute>} />
+            <Route path="/aurora/insights" element={<AuroraRoute><InsightsAurora /></AuroraRoute>} />
+            <Route path="/aurora/perfil" element={<AuroraRoute><PerfilAurora /></AuroraRoute>} />
+            <Route path="/aurora/notificacoes" element={<AuroraRoute><NotificacoesAurora /></AuroraRoute>} />
 
             {/* ===== ADMIN / COACH ===== */}
             <Route path="/coach" element={
