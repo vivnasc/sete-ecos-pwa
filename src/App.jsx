@@ -108,6 +108,24 @@ const InsightsIgnis = lazy(() => import('./components/ignis/InsightsIgnis'))
 const PerfilIgnis = lazy(() => import('./components/ignis/PerfilIgnis'))
 const NotificacoesIgnis = lazy(() => import('./components/ignis/NotificacoesIgnis'))
 
+// ECO 5: VENTIS (Energia & Ritmo)
+const LandingVentis = lazy(() => import('./pages/LandingVentis'))
+const VentisAccessGuard = lazy(() => import('./components/ventis/VentisAccessGuard'))
+const DashboardVentis = lazy(() => import('./components/ventis/DashboardVentis'))
+const MonitorEnergia = lazy(() => import('./components/ventis/MonitorEnergia'))
+const RotinasBuilder = lazy(() => import('./components/ventis/RotinasBuilder'))
+const PausasConscientes = lazy(() => import('./components/ventis/PausasConscientes'))
+const MovimentoFlow = lazy(() => import('./components/ventis/MovimentoFlow'))
+const NaturezaConexao = lazy(() => import('./components/ventis/NaturezaConexao'))
+const RitmoAnalise = lazy(() => import('./components/ventis/RitmoAnalise'))
+const MapaPicosVales = lazy(() => import('./components/ventis/MapaPicosVales'))
+const DetectorBurnout = lazy(() => import('./components/ventis/DetectorBurnout'))
+const RituaisVsRotinas = lazy(() => import('./components/ventis/RituaisVsRotinas'))
+const ChatVentis = lazy(() => import('./components/ventis/ChatVentis'))
+const InsightsVentis = lazy(() => import('./components/ventis/InsightsVentis'))
+const PerfilVentis = lazy(() => import('./components/ventis/PerfilVentis'))
+const NotificacoesVentis = lazy(() => import('./components/ventis/NotificacoesVentis'))
+
 // ECO 2: ÁUREA (Valor & Presença)
 const LandingAurea = lazy(() => import('./pages/LandingAurea'))
 const PagamentoAurea = lazy(() => import('./components/aurea/PagamentoAurea'))
@@ -168,6 +186,14 @@ function SerenaRoute({ children }) {
 function IgnisRoute({ children }) {
   return (
     <ProtectedRoute guard={IgnisAccessGuard} eco="Ignis">
+      <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
+    </ProtectedRoute>
+  )
+}
+
+function VentisRoute({ children }) {
+  return (
+    <ProtectedRoute guard={VentisAccessGuard} eco="Ventis">
       <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
     </ProtectedRoute>
   )
@@ -289,8 +315,24 @@ function AppRoutes() {
             <Route path="/ignis/perfil" element={<IgnisRoute><PerfilIgnis /></IgnisRoute>} />
             <Route path="/ignis/notificacoes" element={<IgnisRoute><NotificacoesIgnis /></IgnisRoute>} />
 
-            {/* ===== ECOS 5-7: Em Breve ===== */}
-            <Route path="/ventis" element={<ComingSoon />} />
+            {/* ===== ECO 5: VENTIS - Energia & Ritmo ===== */}
+            <Route path="/ventis" element={<LandingVentis />} />
+            <Route path="/ventis/dashboard" element={<VentisRoute><DashboardVentis /></VentisRoute>} />
+            <Route path="/ventis/energia" element={<VentisRoute><MonitorEnergia /></VentisRoute>} />
+            <Route path="/ventis/rotinas" element={<VentisRoute><RotinasBuilder /></VentisRoute>} />
+            <Route path="/ventis/pausas" element={<VentisRoute><PausasConscientes /></VentisRoute>} />
+            <Route path="/ventis/movimento" element={<VentisRoute><MovimentoFlow /></VentisRoute>} />
+            <Route path="/ventis/natureza" element={<VentisRoute><NaturezaConexao /></VentisRoute>} />
+            <Route path="/ventis/ritmo" element={<VentisRoute><RitmoAnalise /></VentisRoute>} />
+            <Route path="/ventis/picos" element={<VentisRoute><MapaPicosVales /></VentisRoute>} />
+            <Route path="/ventis/burnout" element={<VentisRoute><DetectorBurnout /></VentisRoute>} />
+            <Route path="/ventis/rituais" element={<VentisRoute><RituaisVsRotinas /></VentisRoute>} />
+            <Route path="/ventis/chat" element={<VentisRoute><ChatVentis /></VentisRoute>} />
+            <Route path="/ventis/insights" element={<VentisRoute><InsightsVentis /></VentisRoute>} />
+            <Route path="/ventis/perfil" element={<VentisRoute><PerfilVentis /></VentisRoute>} />
+            <Route path="/ventis/notificacoes" element={<VentisRoute><NotificacoesVentis /></VentisRoute>} />
+
+            {/* ===== ECOS 6-7: Em Breve ===== */}
             <Route path="/ecoa" element={<ComingSoon />} />
             <Route path="/imago" element={<ComingSoon />} />
             <Route path="/aurora" element={<ComingSoon />} />
