@@ -11,11 +11,21 @@ const API_URL = '/api/instagram-publish';
 /**
  * Publicar imediatamente no Instagram
  */
-export async function publicarAgora({ type, imageUrl, caption }) {
+export async function publicarAgora({ type, imageUrl, videoUrl, caption, coverUrl, shareToFeed }) {
+  const body = { type, caption };
+
+  if (type === 'reel') {
+    body.videoUrl = videoUrl;
+    if (coverUrl) body.coverUrl = coverUrl;
+    body.shareToFeed = shareToFeed !== false;
+  } else {
+    body.imageUrl = imageUrl;
+  }
+
   const res = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ type, imageUrl, caption }),
+    body: JSON.stringify(body),
   });
 
   const data = await res.json();
@@ -30,20 +40,30 @@ export async function publicarAgora({ type, imageUrl, caption }) {
 /**
  * Agendar publicação para data/hora específica
  */
-export async function agendarPublicacao({ type, imageUrl, caption, scheduledAt, diaCalendario, tarefaTitulo }) {
+export async function agendarPublicacao({ type, imageUrl, videoUrl, caption, coverUrl, shareToFeed, scheduledAt, platform, diaCalendario, tarefaTitulo }) {
   const { data: { user } } = await supabase.auth.getUser();
+
+  const row = {
+    type,
+    caption,
+    scheduled_at: scheduledAt,
+    platform: platform || 'instagram',
+    created_by: user?.id,
+    dia_calendario: diaCalendario,
+    tarefa_titulo: tarefaTitulo,
+  };
+
+  if (type === 'reel') {
+    row.video_url = videoUrl;
+    if (coverUrl) row.cover_url = coverUrl;
+    row.share_to_feed = shareToFeed !== false;
+  } else {
+    row.image_url = Array.isArray(imageUrl) ? JSON.stringify(imageUrl) : imageUrl;
+  }
 
   const { data, error } = await supabase
     .from('scheduled_posts')
-    .insert({
-      type,
-      image_url: Array.isArray(imageUrl) ? JSON.stringify(imageUrl) : imageUrl,
-      caption,
-      scheduled_at: scheduledAt,
-      created_by: user?.id,
-      dia_calendario: diaCalendario,
-      tarefa_titulo: tarefaTitulo,
-    })
+    .insert(row)
     .select()
     .single();
 

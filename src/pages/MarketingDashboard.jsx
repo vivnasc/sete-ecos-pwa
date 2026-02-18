@@ -451,6 +451,12 @@ function VitalisTab({ copiar, copiado }) {
             {s.icon} {s.label}
           </button>
         ))}
+        <Link
+          to="/coach/social"
+          className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-lg"
+        >
+          🗓 Agendar Posts
+        </Link>
       </div>
 
       {/* =================== SETUP INSTAGRAM =================== */}
