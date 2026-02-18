@@ -58,12 +58,12 @@ export default function ModuleHeader({
 
   if (compact) {
     return (
-      <header className={`sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 ${className}`}>
+      <header className={`sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-gray-100 ${className}`}>
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               onClick={handleBack}
-              className="p-2 -ml-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+              className="p-2 -ml-2 rounded-xl hover:bg-gray-100 text-gray-500 transition-all duration-300"
               aria-label="Voltar"
             >
               <ArrowLeftIcon />
@@ -75,7 +75,7 @@ export default function ModuleHeader({
             {showHomeButton && (
               <button
                 onClick={() => navigate(dashboardPath)}
-                className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+                className="p-2 rounded-xl hover:bg-gray-100 text-gray-500 transition-all duration-300"
                 aria-label="Dashboard"
               >
                 <HomeIcon />
@@ -89,14 +89,14 @@ export default function ModuleHeader({
 
   return (
     <header
-      className={className}
+      className={`hero-gradient-animated ${className}`}
       style={{ background: `linear-gradient(135deg, ${theme.color} 0%, ${theme.color}dd 50%, ${theme.colorDark} 100%)` }}
     >
-      <div className="max-w-4xl mx-auto px-4 py-4">
-        <div className="flex items-center justify-between mb-2">
+      <div className="max-w-4xl mx-auto px-4 py-5">
+        <div className="flex items-center justify-between mb-3">
           <button
             onClick={handleBack}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-sm transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-sm transition-all duration-300 backdrop-blur-sm"
           >
             <ArrowLeftIcon />
             <span>Voltar</span>
@@ -106,7 +106,7 @@ export default function ModuleHeader({
             {showHomeButton && (
               <button
                 onClick={() => navigate(dashboardPath)}
-                className="p-2 rounded-lg bg-white/20 hover:bg-white/30 text-white transition-colors"
+                className="p-2 rounded-xl bg-white/15 hover:bg-white/25 text-white transition-all duration-300 backdrop-blur-sm"
                 aria-label="Dashboard"
               >
                 <HomeIcon />
@@ -119,7 +119,7 @@ export default function ModuleHeader({
             {title}
           </h1>
           {subtitle && (
-            <p className="text-white/80 text-sm mt-1">{subtitle}</p>
+            <p className="text-white/70 text-sm mt-1 leading-relaxed">{subtitle}</p>
           )}
         </div>
       </div>

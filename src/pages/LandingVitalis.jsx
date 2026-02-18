@@ -6,6 +6,7 @@ import { isNearRamadan } from '../utils/ramadao';
 import SEOHead from '../components/SEOHead';
 import PartilharSocial from '../components/PartilharSocial';
 import WhatsAppMockup from '../components/WhatsAppMockup';
+import ScrollReveal from '../components/ScrollReveal';
 
 /**
  * VITALIS - Landing Page
@@ -239,7 +240,7 @@ const LandingVitalis = () => {
         }}
       />
       {/* Navegacao */}
-      <nav className="fixed top-0 w-full px-4 md:px-8 py-4 flex justify-between items-center bg-white/95 backdrop-blur-sm z-50 border-b border-[#E8E2D9]">
+      <nav className="fixed top-0 w-full px-4 md:px-8 py-4 flex justify-between items-center bg-white/90 backdrop-blur-xl z-50 border-b border-[#E8E2D9]/50">
         <Link to="/landing" className="flex items-center gap-3">
           <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-12 h-12" />
           <span className="text-2xl font-bold text-[#7C8B6F]" style={{ fontFamily: 'var(--font-titulos)' }}>
@@ -269,14 +270,17 @@ const LandingVitalis = () => {
       </nav>
 
       {/* Hero */}
-      <header className="pt-28 pb-16 px-4 text-center relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #7C8B6F 0%, #6B7A5D 50%, #5A6B4E 100%)' }}>
+      <header className="pt-28 pb-16 px-4 text-center relative overflow-hidden hero-gradient-animated" style={{ background: 'linear-gradient(135deg, #7C8B6F 0%, #6B7A5D 50%, #5A6B4E 100%)' }}>
         <div className="absolute top-[-50%] right-[-20%] w-[600px] h-[600px] bg-white/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-[-30%] left-[-10%] w-[400px] h-[400px] bg-[#9CAF88]/20 rounded-full blur-3xl"></div>
         <div className="relative z-10 max-w-3xl mx-auto">
-          <div className="w-24 h-24 mx-auto mb-6 bg-white/20 rounded-full flex items-center justify-center">
-            <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-16 h-16" />
+          <div className="relative w-24 h-24 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full opacity-30 animate-pulse" style={{ background: 'radial-gradient(circle, #9CAF88 0%, transparent 70%)', transform: 'scale(1.5)' }} />
+            <div className="relative w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+              <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-16 h-16" />
+            </div>
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4" style={{ fontFamily: 'var(--font-titulos)', letterSpacing: '0.1em' }}>
             VITALIS
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-2" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
@@ -290,7 +294,7 @@ const LandingVitalis = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={handleComecar}
-              className="px-10 py-4 bg-white text-[#7C8B6F] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
+              className="px-10 py-4 bg-white text-[#7C8B6F] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-xl transition-all duration-300 animate-pulse-glow-sage"
             >
               Começar a Transformação →
             </button>
@@ -397,12 +401,14 @@ const LandingVitalis = () => {
       {/* Método */}
       <section id="metodo" className="py-16 bg-[#F5F2ED]">
         <div className="max-w-5xl mx-auto px-4">
+          <ScrollReveal variant="fadeUp">
           <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
             O Método Precision Nutrition
           </h2>
           <p className="text-center text-[#6B5C4C] mb-10 max-w-xl mx-auto">
             Um método científico que transforma a forma como o teu corpo queima gordura
           </p>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
@@ -411,7 +417,8 @@ const LandingVitalis = () => {
               { icone: '⏰', titulo: 'Jejum Flexível', desc: 'Janelas alimentares adaptadas à tua rotina. Tu escolhes o que funciona melhor.' },
               { icone: '💬', titulo: 'Acompanhamento Real', desc: 'Chat coach IA + suporte humano. Nunca estás sozinha nesta jornada.' }
             ].map((item, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl border-2 border-[#E8E2D9] hover:border-[#7C8B6F] hover:translate-y-[-3px] hover:shadow-lg transition-all">
+              <ScrollReveal key={i} variant="fadeUp" delay={i * 0.1}>
+              <div className="bg-white p-6 rounded-2xl border-2 border-[#E8E2D9] hover:border-[#7C8B6F] hover:translate-y-[-3px] hover:shadow-lg transition-all duration-300">
                 <div className="w-14 h-14 bg-gradient-to-br from-[#7C8B6F]/20 to-[#9CAF88]/20 rounded-xl flex items-center justify-center text-3xl mb-4">
                   {item.icone}
                 </div>
@@ -420,6 +427,7 @@ const LandingVitalis = () => {
                 </h3>
                 <p className="text-sm text-[#6B5C4C]">{item.desc}</p>
               </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
@@ -428,12 +436,14 @@ const LandingVitalis = () => {
       {/* As 3 Fases */}
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4">
+          <ScrollReveal variant="fadeUp">
           <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
             As 3 Fases da Transformação
           </h2>
           <p className="text-center text-[#6B5C4C] mb-10 max-w-xl mx-auto">
             Um método progressivo que respeita o teu corpo e cria resultados duradouros
           </p>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-6">
             {fases.map((fase) => (
@@ -456,14 +466,16 @@ const LandingVitalis = () => {
       </section>
 
       {/* Plataforma/Features */}
-      <section id="plataforma" className="py-16 bg-gradient-to-b from-[#7C8B6F] to-[#6B7A5D] text-white">
+      <section id="plataforma" className="py-16 bg-gradient-to-b from-[#7C8B6F] to-[#6B7A5D] text-white hero-gradient-animated">
         <div className="max-w-6xl mx-auto px-4">
+          <ScrollReveal variant="fadeUp">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
             A Plataforma Completa
           </h2>
           <p className="text-center text-white/80 mb-12 max-w-xl mx-auto">
             Tudo o que precisas numa app simples e intuitiva
           </p>
+          </ScrollReveal>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {features.map((feature, i) => (

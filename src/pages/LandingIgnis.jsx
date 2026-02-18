@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { ECO_PLANS } from '../lib/shared/subscriptionPlans'
 import { g } from '../utils/genero'
+import ScrollReveal from '../components/ScrollReveal'
 
 /**
  * IGNIS - Landing Page
@@ -79,7 +80,7 @@ const LandingIgnis = () => {
 
       {/* ===== HERO ===== */}
       <header
-        className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden"
+        className="hero-gradient-animated relative min-h-screen flex items-center justify-center px-4 overflow-hidden"
         style={{ background: 'linear-gradient(135deg, #2e1a14 0%, #4a2a1e 40%, #C1634A 100%)' }}
       >
         {/* Decorative blurs */}
@@ -112,7 +113,7 @@ const LandingIgnis = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/ignis/pagamento"
-              className="px-10 py-4 bg-white text-[#2e1a14] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
+              className="animate-pulse-glow px-10 py-4 bg-white text-[#2e1a14] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
             >
               Acender o Fogo
             </Link>
@@ -129,16 +130,18 @@ const LandingIgnis = () => {
       {/* ===== PROBLEMA ===== */}
       <section className="py-20 px-4" style={{ background: 'linear-gradient(to bottom, #2e1a14, #1a0f0a)' }}>
         <div className="max-w-3xl mx-auto text-center">
-          <h2
-            className="text-3xl md:text-4xl font-bold text-white mb-6"
-            style={{ fontFamily: 'var(--font-titulos)' }}
-          >
-            Quantas vezes disseste sim quando querias dizer não?
-          </h2>
+          <ScrollReveal variant="fadeUp">
+            <h2
+              className="text-3xl md:text-4xl font-bold text-white mb-6"
+              style={{ fontFamily: 'var(--font-titulos)' }}
+            >
+              Quantas vezes disseste sim quando querias dizer não?
+            </h2>
 
-          <p className="text-[#C1634A]/80 mb-10 text-lg">
-            Viver no piloto automático não é viver. O Ignis devolve-te o leme.
-          </p>
+            <p className="text-[#C1634A]/80 mb-10 text-lg">
+              Viver no piloto automático não é viver. O Ignis devolve-te o leme.
+            </p>
+          </ScrollReveal>
 
           <div className="grid gap-4 max-w-lg mx-auto text-left">
             {[
@@ -165,23 +168,25 @@ const LandingIgnis = () => {
       {/* ===== SOLUCAO / FEATURES ===== */}
       <section id="features" className="py-20 px-4" style={{ background: '#1a0f0a' }}>
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14">
-            <h2
-              className="text-3xl md:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: 'var(--font-titulos)' }}
-            >
-              O Ignis é o espaço onde retomas a direção da tua vida
-            </h2>
-            <p className="text-[#C1634A]/70 max-w-2xl mx-auto">
-              Ferramentas para escolher com consciência, focar no que importa e cortar o ruído.
-            </p>
-          </div>
+          <ScrollReveal variant="fadeUp">
+            <div className="text-center mb-14">
+              <h2
+                className="text-3xl md:text-4xl font-bold text-white mb-4"
+                style={{ fontFamily: 'var(--font-titulos)' }}
+              >
+                O Ignis é o espaço onde retomas a direção da tua vida
+              </h2>
+              <p className="text-[#C1634A]/70 max-w-2xl mx-auto">
+                Ferramentas para escolher com consciência, focar no que importa e cortar o ruído.
+              </p>
+            </div>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((f, i) => (
               <div
                 key={i}
-                className="p-6 bg-white/5 rounded-2xl border border-[#C1634A]/20 hover:bg-white/10 hover:border-[#C1634A]/40 transition-all group"
+                className="p-6 bg-white/5 rounded-2xl border border-[#C1634A]/20 hover:bg-white/10 hover:border-[#C1634A]/40 transition-all duration-300 group"
               >
                 <div className="text-3xl mb-4 group-hover:scale-110 transition-transform">
                   {f.icone}
@@ -261,7 +266,7 @@ const LandingIgnis = () => {
             {planos.map((plano, i) => (
               <div
                 key={plano.id}
-                className={`p-6 rounded-2xl border text-center transition-all hover:translate-y-[-3px] hover:shadow-lg ${
+                className={`p-6 rounded-2xl border text-center transition-all duration-300 hover:translate-y-[-3px] hover:shadow-lg ${
                   i === 1
                     ? 'bg-[#C1634A]/15 border-[#C1634A] relative'
                     : 'bg-white/5 border-[#C1634A]/20'

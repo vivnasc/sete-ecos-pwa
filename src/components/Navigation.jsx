@@ -43,10 +43,10 @@ export default function Navigation({ variant = 'default' }) {
     const isAnalytics = location.pathname === '/coach/analytics'
 
     return (
-      <nav role="navigation" aria-label="Navegacao Coach" className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+      <nav role="navigation" aria-label="Navegacao Coach" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/50 shadow-2xl z-50">
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
           <div className="bg-gradient-to-r from-gray-800 to-gray-700 px-4 py-1 rounded-t-lg shadow-md">
-            <span className="text-white text-xs font-semibold tracking-wide">COACH</span>
+            <span className="text-white text-[10px] font-semibold tracking-[0.2em]">COACH</span>
           </div>
         </div>
         <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
@@ -100,11 +100,11 @@ export default function Navigation({ variant = 'default' }) {
   // Aurea-specific navigation
   if (isAureaSection) {
     return (
-      <nav role="navigation" aria-label="Navegacao Aurea" className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E8D5A3] shadow-lg z-50">
+      <nav role="navigation" aria-label="Navegacao Aurea" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-[#E8D5A3]/30 shadow-2xl z-50">
         {/* Current Eco indicator */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
           <div className="bg-gradient-to-r from-[#C9A227] to-[#B8911E] px-4 py-1 rounded-t-lg shadow-md">
-            <span className="text-white text-xs font-semibold tracking-wide">AUREA</span>
+            <span className="text-white text-[10px] font-semibold tracking-[0.2em]">AUREA</span>
           </div>
         </div>
 
@@ -163,11 +163,11 @@ export default function Navigation({ variant = 'default' }) {
           </button>
         )}
 
-        <nav role="navigation" aria-label="Navegacao Vitalis" className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E8E2D9] shadow-lg z-50">
+        <nav role="navigation" aria-label="Navegacao Vitalis" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-[#E8E2D9]/30 shadow-2xl z-50">
         {/* Current Eco indicator */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
           <div className="bg-gradient-to-r from-[#7C8B6F] to-[#5D6B4F] px-4 py-1 rounded-t-lg shadow-md">
-            <span className="text-white text-xs font-semibold tracking-wide">VITALIS</span>
+            <span className="text-white text-[10px] font-semibold tracking-[0.2em]">VITALIS</span>
           </div>
         </div>
 
@@ -220,11 +220,11 @@ export default function Navigation({ variant = 'default' }) {
   // Lumina navigation
   if (isLuminaSection) {
     return (
-      <nav role="navigation" aria-label="Navegacao Lumina" className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+      <nav role="navigation" aria-label="Navegacao Lumina" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/30 shadow-2xl z-50">
         {/* Current Eco indicator */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
           <div className="bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] px-4 py-1 rounded-t-lg shadow-md">
-            <span className="text-white text-xs font-semibold tracking-wide">LUMINA</span>
+            <span className="text-white text-[10px] font-semibold tracking-[0.2em]">LUMINA</span>
           </div>
         </div>
 
@@ -281,11 +281,11 @@ export default function Navigation({ variant = 'default' }) {
     const isSussurros = location.pathname === '/comunidade/sussurros'
 
     return (
-      <nav role="navigation" aria-label="Navegacao Comunidade" className="fixed bottom-0 left-0 right-0 bg-white border-t border-purple-100 shadow-lg z-50">
+      <nav role="navigation" aria-label="Navegacao Comunidade" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-purple-100/30 shadow-2xl z-50">
         {/* Current section indicator — clickable to go to community hub */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
           <button onClick={() => navigate('/comunidade')} className="bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] px-4 py-1 rounded-t-lg shadow-md cursor-pointer hover:opacity-90 transition-opacity">
-            <span className="text-white text-xs font-semibold tracking-wide">COMUNIDADE</span>
+            <span className="text-white text-[10px] font-semibold tracking-[0.2em]">COMUNIDADE</span>
           </button>
         </div>
 
@@ -332,7 +332,7 @@ export default function Navigation({ variant = 'default' }) {
 
   // Default navigation (Home)
   return (
-    <nav role="navigation" aria-label="Navegacao principal" className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+    <nav role="navigation" aria-label="Navegacao principal" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/30 shadow-2xl z-50">
       <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
         <NavItem
           logo="/logos/CENTRO_7ECOS.png"
@@ -441,10 +441,10 @@ function NavItem({ icon, logo, label, active, onClick, color }) {
       onClick={onClick}
       aria-label={`Navegar para ${label}`}
       aria-current={active ? 'page' : undefined}
-      className={`flex flex-col items-center justify-center px-4 py-1 rounded-lg transition-all ${
+      className={`flex flex-col items-center justify-center px-4 py-1.5 rounded-xl transition-all duration-300 ${
         active
-          ? 'bg-gray-100'
-          : 'hover:bg-gray-50'
+          ? 'bg-gray-100/80 scale-105'
+          : 'hover:bg-gray-50 hover:scale-105'
       }`}
       style={{
         color: active ? color : '#9CA3AF',

@@ -815,7 +815,7 @@ export default function DashboardVitalis() {
   }
 
   return (
-    <div className={`min-h-screen pb-20 transition-colors duration-300 ${
+    <div className={`min-h-screen pb-20 transition-colors duration-500 animate-page-enter ${
       isDarkMode
         ? 'bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f0f23]'
         : 'bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]'
@@ -824,15 +824,16 @@ export default function DashboardVitalis() {
       {/* Tutorial de Boas-vindas - Primeira vez */}
       <WelcomeTutorial eco="vitalis" />
 
-      {/* Header com Perfil */}
+      {/* Header com Perfil — premium animated gradient */}
       <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D]"></div>
-        <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] hero-gradient-animated"></div>
+        <div className="absolute inset-0 opacity-8">
           <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
             <path d="M0,50 Q25,30 50,50 T100,50 V100 H0 Z" fill="white"/>
           </svg>
         </div>
-        <div className="relative max-w-6xl mx-auto px-4 py-4">
+        <div className="absolute top-0 right-0 w-60 h-60 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, #C9A227 0%, transparent 70%)', filter: 'blur(40px)' }} />
+        <div className="relative max-w-6xl mx-auto px-4 py-5">
           {/* Top bar com logo e ações */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -841,13 +842,13 @@ export default function DashboardVitalis() {
                 alt="Vitalis"
                 className="w-10 h-10 object-contain drop-shadow-lg"
               />
-              <h1 className="text-xl font-bold text-white" style={{ fontFamily: 'Playfair Display, serif', letterSpacing: '3px' }}>VITALIS</h1>
+              <h1 className="text-xl font-bold text-white premium-label" style={{ fontFamily: 'var(--font-titulos)', letterSpacing: '0.2em', fontSize: '1.1rem' }}>VITALIS</h1>
             </div>
             <div className="flex items-center gap-2">
               {/* Notificações */}
               <Link
                 to="/vitalis/notificacoes"
-                className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-base border border-white/30 hover:bg-white/30 transition-colors"
+                className="w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center text-base border border-white/20 hover:bg-white/25 transition-all duration-300"
                 title="Notificações"
               >
                 🔔
@@ -855,7 +856,7 @@ export default function DashboardVitalis() {
               {/* Dark Mode Toggle */}
               <button
                 onClick={toggleDarkMode}
-                className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-base border border-white/30 hover:bg-white/30 transition-colors"
+                className="w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center text-base border border-white/20 hover:bg-white/25 transition-all duration-300"
                 title={isDarkMode ? 'Modo claro' : 'Modo escuro'}
               >
                 {isDarkMode ? '☀️' : '🌙'}

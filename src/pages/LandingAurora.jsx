@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { g } from '../utils/genero'
+import ScrollReveal from '../components/ScrollReveal'
 
 /**
  * AURORA - Landing Page
@@ -82,7 +83,7 @@ const LandingAurora = () => {
 
       {/* ===== HERO ===== */}
       <header
-        className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden"
+        className="hero-gradient-animated relative min-h-screen flex items-center justify-center px-4 overflow-hidden"
         style={{ background: 'linear-gradient(135deg, #2e1a1a 0%, #3e2a2a 40%, #D4A5A5 100%)' }}
       >
         <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-[#D4A5A5]/20 rounded-full blur-3xl"></div>
@@ -121,7 +122,7 @@ const LandingAurora = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="#como-funciona"
-              className="px-10 py-4 bg-white text-[#2e1a1a] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
+              className="animate-pulse-glow px-10 py-4 bg-white text-[#2e1a1a] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
             >
               Como desbloquear
             </a>
@@ -138,17 +139,19 @@ const LandingAurora = () => {
       {/* ===== MENSAGEM ===== */}
       <section className="py-20 px-4" style={{ background: 'linear-gradient(to bottom, #2e1a1a, #1e1212)' }}>
         <div className="max-w-3xl mx-auto text-center">
-          <h2
-            className="text-3xl md:text-4xl font-bold text-white mb-6"
-            style={{ fontFamily: 'var(--font-titulos)' }}
-          >
-            Percorreste um caminho extraordinário. E agora?
-          </h2>
+          <ScrollReveal variant="fadeUp">
+            <h2
+              className="text-3xl md:text-4xl font-bold text-white mb-6"
+              style={{ fontFamily: 'var(--font-titulos)' }}
+            >
+              Percorreste um caminho extraordinário. E agora?
+            </h2>
 
-          <p className="text-[#D4A5A5]/80 mb-10 text-lg">
-            A Aurora é a tua recompensa por completar toda a jornada.
-            Não se compra — conquista-se.
-          </p>
+            <p className="text-[#D4A5A5]/80 mb-10 text-lg">
+              A Aurora é a tua recompensa por completar toda a jornada.
+              Não se compra — conquista-se.
+            </p>
+          </ScrollReveal>
 
           <div className="grid gap-4 max-w-lg mx-auto text-left">
             {[
@@ -180,23 +183,25 @@ const LandingAurora = () => {
       {/* ===== FEATURES ===== */}
       <section id="features" className="py-20 px-4" style={{ background: '#1e1212' }}>
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14">
-            <h2
-              className="text-3xl md:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: 'var(--font-titulos)' }}
-            >
-              A Aurora é onde a tua jornada se torna eterna
-            </h2>
-            <p className="text-[#D4A5A5]/70 max-w-2xl mx-auto">
-              Ferramentas para celebrar, manter e renovar tudo o que conquistaste.
-            </p>
-          </div>
+          <ScrollReveal variant="fadeUp">
+            <div className="text-center mb-14">
+              <h2
+                className="text-3xl md:text-4xl font-bold text-white mb-4"
+                style={{ fontFamily: 'var(--font-titulos)' }}
+              >
+                A Aurora é onde a tua jornada se torna eterna
+              </h2>
+              <p className="text-[#D4A5A5]/70 max-w-2xl mx-auto">
+                Ferramentas para celebrar, manter e renovar tudo o que conquistaste.
+              </p>
+            </div>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((f, i) => (
               <div
                 key={i}
-                className="p-6 bg-white/5 rounded-2xl border border-[#D4A5A5]/20 hover:bg-white/10 hover:border-[#D4A5A5]/40 transition-all group"
+                className="p-6 bg-white/5 rounded-2xl border border-[#D4A5A5]/20 hover:bg-white/10 hover:border-[#D4A5A5]/40 transition-all duration-300 group"
               >
                 <div className="text-3xl mb-4 group-hover:scale-110 transition-transform">
                   {f.icone}
@@ -277,7 +282,7 @@ const LandingAurora = () => {
               <Link
                 key={eco.name}
                 to={`/${eco.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`}
-                className="p-5 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all text-center group"
+                className="p-5 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 text-center group"
               >
                 <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">
                   {eco.icon}

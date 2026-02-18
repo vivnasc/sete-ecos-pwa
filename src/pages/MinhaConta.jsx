@@ -143,13 +143,16 @@ export default function MinhaConta() {
   };
 
   return (
-    <div className="min-h-screen pb-24" style={{ fontFamily: 'var(--font-corpo)' }}>
-      {/* Background */}
-      <div className={`fixed inset-0 -z-10 ${isDark ? 'bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f0f23]' : ''}`}
-        style={!isDark ? { background: 'linear-gradient(135deg, #FAF6F0 0%, #F0E6D4 50%, #E8D5A3 100%)' } : undefined}
+    <div className="min-h-screen pb-24 animate-page-enter" style={{ fontFamily: 'var(--font-corpo)' }}>
+      {/* Background — animated */}
+      <div className={`fixed inset-0 -z-10 hero-gradient-animated ${isDark ? 'bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f0f23]' : ''}`}
+        style={!isDark ? { background: 'linear-gradient(135deg, #FAF6F0 0%, #F0E6D4 25%, #E8D5A3 50%, #F0E6D4 75%, #FAF6F0 100%)' } : undefined}
       >
         {!isDark && (
-          <div className="absolute top-0 right-0 w-72 h-72 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, #C9A227 0%, transparent 70%)', filter: 'blur(60px)' }} />
+          <>
+            <div className="absolute top-20 right-10 w-72 h-72 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, #C9A227 0%, transparent 70%)', filter: 'blur(60px)' }} />
+            <div className="absolute bottom-20 left-10 w-60 h-60 rounded-full opacity-10" style={{ background: 'radial-gradient(circle, #8B5CF6 0%, transparent 70%)', filter: 'blur(50px)' }} />
+          </>
         )}
       </div>
 
@@ -162,14 +165,14 @@ export default function MinhaConta() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <p className="text-[#C9A227] text-xs tracking-widest uppercase font-semibold">Minha Conta</p>
+            <p className="premium-label" style={{ color: '#C9A227' }}>Minha Conta</p>
             <div className="w-10" />
           </div>
         </header>
 
         {/* Profile card */}
         <section className="px-5 py-6">
-          <div className={`backdrop-blur-md rounded-3xl border shadow-lg p-5 ${isDark ? 'bg-white/10 border-white/15' : 'bg-white/50 border-white/60'}`}>
+          <div className={`backdrop-blur-xl rounded-3xl border shadow-2xl p-5 transition-all duration-300 ${isDark ? 'bg-white/10 border-white/15' : 'bg-white/60 border-white/70'}`}>
             <div className="flex items-center gap-4">
               <div className="relative flex-shrink-0">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#C9A227] to-[#8B6914] flex items-center justify-center shadow-lg">
@@ -201,7 +204,7 @@ export default function MinhaConta() {
             <h2 className={`text-sm font-semibold tracking-widest uppercase ${isDark ? 'text-gray-200' : 'text-[#4A3728]'}`}>Os meus Ecos</h2>
           </div>
 
-          <div className={`backdrop-blur-md rounded-3xl border shadow-lg overflow-hidden ${isDark ? 'bg-white/10 border-white/15 divide-y divide-white/10' : 'bg-white/50 border-white/60 divide-y divide-[#E8D5A3]/15'}`}>
+          <div className={`backdrop-blur-xl rounded-3xl border shadow-2xl overflow-hidden ${isDark ? 'bg-white/10 border-white/15 divide-y divide-white/10' : 'bg-white/50 border-white/60 divide-y divide-[#E8D5A3]/15'}`}>
             {renderSubscriptionRow('vitalis', 'VITALIS', '/logos/VITALIS_LOGO_V3.png', ['#7C8B6F', '#3D4D35'], '/vitalis/dashboard', '/vitalis/pagamento')}
             {renderSubscriptionRow('aurea', 'AUREA', '/logos/logo_aurea.png', ['#C9A227', '#8B6914'], '/aurea/dashboard', '/aurea/pagamento')}
 
@@ -231,7 +234,7 @@ export default function MinhaConta() {
             <h2 className={`text-sm font-semibold tracking-widest uppercase ${isDark ? 'text-gray-200' : 'text-[#4A3728]'}`}>Definições</h2>
           </div>
 
-          <div className={`backdrop-blur-md rounded-3xl border shadow-lg overflow-hidden ${isDark ? 'bg-white/10 border-white/15 divide-y divide-white/10' : 'bg-white/50 border-white/60 divide-y divide-[#E8D5A3]/15'}`}>
+          <div className={`backdrop-blur-xl rounded-3xl border shadow-2xl overflow-hidden ${isDark ? 'bg-white/10 border-white/15 divide-y divide-white/10' : 'bg-white/50 border-white/60 divide-y divide-[#E8D5A3]/15'}`}>
             {isCoach(user?.email) && (
               <Link to="/coach" className={`flex items-center gap-3 p-3.5 transition-colors ${isDark ? 'hover:bg-white/10' : 'hover:bg-white/40'}`}>
                 <div className="w-9 h-9 bg-emerald-500/10 rounded-xl flex items-center justify-center flex-shrink-0">

@@ -31,45 +31,45 @@ export default function ModuleDashboardShell({
 
   return (
     <div
-      className={`min-h-screen pb-24 ${className}`}
+      className={`min-h-screen pb-24 animate-page-enter ${className}`}
       style={{ background: `linear-gradient(180deg, ${theme.colorDark} 0%, #0f0f0f 100%)` }}
     >
-      {/* Header com saudacao */}
+      {/* Header com saudacao — premium */}
       <div
-        className="px-5 pt-6 pb-8"
-        style={{ background: `linear-gradient(135deg, ${theme.colorDark} 0%, ${theme.color}33 100%)` }}
+        className="px-5 pt-8 pb-10 hero-gradient-animated"
+        style={{ background: `linear-gradient(135deg, ${theme.colorDark} 0%, ${theme.color}33 50%, ${theme.colorDark} 100%)` }}
       >
         <div className="max-w-lg mx-auto">
-          <p className="text-white/60 text-sm mb-1">{theme.name}</p>
+          <p className="text-white/50 text-xs premium-label mb-2">{theme.name}</p>
           <h1
-            className="text-2xl font-bold text-white mb-1"
+            className="text-3xl font-bold text-white mb-1.5"
             style={{ fontFamily: 'var(--font-titulos)' }}
           >
             {g('Bem-vindo', 'Bem-vinda')}{userName ? `, ${userName}` : ''}
           </h1>
           {greeting && (
-            <p className="text-white/70 text-sm">{greeting}</p>
+            <p className="text-white/60 text-sm leading-relaxed">{greeting}</p>
           )}
 
-          {/* Gamificacao resumida */}
+          {/* Gamificacao resumida — glass card */}
           {gamification && (
             <div
-              className="mt-4 flex items-center gap-3 px-4 py-2.5 rounded-xl"
-              style={{ background: `${theme.color}20`, border: `1px solid ${theme.color}30` }}
+              className="mt-5 flex items-center gap-3 px-4 py-3 rounded-2xl glass-card"
+              style={{ borderColor: `${theme.color}25` }}
             >
               <span className="text-2xl">{gamification.icon}</span>
               <div>
                 <p className="text-white font-semibold text-sm">
                   {gamification.total} {gamification.currency}
                 </p>
-                <p className="text-white/50 text-xs">
+                <p className="text-white/40 text-xs">
                   Nivel: {gamification.level}
                 </p>
               </div>
               {gamification.streak > 0 && (
                 <div className="ml-auto text-right">
                   <p className="text-white font-semibold text-sm">{gamification.streak} dias</p>
-                  <p className="text-white/50 text-xs">streak</p>
+                  <p className="text-white/40 text-xs">streak</p>
                 </div>
               )}
             </div>
@@ -77,19 +77,20 @@ export default function ModuleDashboardShell({
         </div>
       </div>
 
-      {/* Stats cards */}
+      {/* Stats cards — glass cards com hover */}
       {stats.length > 0 && (
-        <div className="px-5 -mt-4">
+        <div className="px-5 -mt-5">
           <div className="max-w-lg mx-auto">
             <div className={`grid gap-3 ${stats.length <= 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
               {stats.map((stat, i) => (
                 <div
                   key={i}
-                  className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-3 text-center"
+                  className="glass-card rounded-2xl p-4 text-center"
+                  style={{ animationDelay: `${i * 0.1}s` }}
                 >
-                  <span className="text-xl block mb-1">{stat.icon}</span>
+                  <span className="text-xl block mb-1.5">{stat.icon}</span>
                   <p className="text-white font-bold text-lg">{stat.value}</p>
-                  <p className="text-white/50 text-xs">{stat.label}</p>
+                  <p className="text-white/40 text-[11px] mt-0.5 tracking-wide">{stat.label}</p>
                 </div>
               ))}
             </div>
@@ -97,22 +98,22 @@ export default function ModuleDashboardShell({
         </div>
       )}
 
-      {/* Quick actions */}
+      {/* Quick actions — premium buttons */}
       {quickActions.length > 0 && (
-        <div className="px-5 mt-6">
+        <div className="px-5 mt-7">
           <div className="max-w-lg mx-auto">
             <div className="grid grid-cols-2 gap-3">
               {quickActions.map((action, i) => (
                 <Link
                   key={i}
                   to={action.to}
-                  className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                  className="glass-card flex items-center gap-3 p-4 rounded-2xl"
                 >
                   <span className="text-2xl">{action.icon}</span>
                   <div>
                     <p className="text-white font-medium text-sm">{action.label}</p>
                     {action.subtitle && (
-                      <p className="text-white/40 text-xs">{action.subtitle}</p>
+                      <p className="text-white/35 text-xs mt-0.5">{action.subtitle}</p>
                     )}
                   </div>
                 </Link>
@@ -123,7 +124,7 @@ export default function ModuleDashboardShell({
       )}
 
       {/* Conteudo especifico do eco */}
-      <div className="px-5 mt-6">
+      <div className="px-5 mt-7">
         <div className="max-w-lg mx-auto">
           {children}
         </div>

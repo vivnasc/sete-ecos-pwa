@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { ECO_PLANS } from '../lib/shared/subscriptionPlans'
 import { g } from '../utils/genero'
+import ScrollReveal from '../components/ScrollReveal'
 
 /**
  * ECOA - Landing Page
@@ -89,7 +90,7 @@ const LandingEcoa = () => {
 
       {/* ===== HERO ===== */}
       <header
-        className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden"
+        className="hero-gradient-animated relative min-h-screen flex items-center justify-center px-4 overflow-hidden"
         style={{ background: 'linear-gradient(135deg, #1a2a34 0%, #2a4a54 40%, #4A90A4 100%)' }}
       >
         {/* Decorative blurs */}
@@ -122,7 +123,7 @@ const LandingEcoa = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/ecoa/pagamento"
-              className="px-10 py-4 bg-white text-[#1a2a34] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
+              className="animate-pulse-glow px-10 py-4 bg-white text-[#1a2a34] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
             >
               Recuperar a Minha Voz
             </Link>
@@ -139,16 +140,18 @@ const LandingEcoa = () => {
       {/* ===== PROBLEMA ===== */}
       <section className="py-20 px-4" style={{ background: 'linear-gradient(to bottom, #1a2a34, #0f1f28)' }}>
         <div className="max-w-3xl mx-auto text-center">
-          <h2
-            className="text-3xl md:text-4xl font-bold text-white mb-6"
-            style={{ fontFamily: 'var(--font-titulos)' }}
-          >
-            Quantas vezes calaste algo que precisava de ser dito?
-          </h2>
+          <ScrollReveal variant="fadeUp">
+            <h2
+              className="text-3xl md:text-4xl font-bold text-white mb-6"
+              style={{ fontFamily: 'var(--font-titulos)' }}
+            >
+              Quantas vezes calaste algo que precisava de ser dito?
+            </h2>
 
-          <p className="text-[#4A90A4]/80 mb-10 text-lg">
-            O silêncio protege — mas quando se torna hábito, aprisiona.
-          </p>
+            <p className="text-[#4A90A4]/80 mb-10 text-lg">
+              O silêncio protege — mas quando se torna hábito, aprisiona.
+            </p>
+          </ScrollReveal>
 
           <div className="grid gap-4 max-w-lg mx-auto text-left">
             {[
@@ -175,23 +178,25 @@ const LandingEcoa = () => {
       {/* ===== SOLUCAO / FEATURES ===== */}
       <section id="features" className="py-20 px-4" style={{ background: '#0f1f28' }}>
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14">
-            <h2
-              className="text-3xl md:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: 'var(--font-titulos)' }}
-            >
-              O Ecoa é o espaço onde recuperas a tua voz
-            </h2>
-            <p className="text-[#4A90A4]/70 max-w-2xl mx-auto">
-              Ferramentas para desbloquear o silêncio, fortalecer a expressão e falar a tua verdade.
-            </p>
-          </div>
+          <ScrollReveal variant="fadeUp">
+            <div className="text-center mb-14">
+              <h2
+                className="text-3xl md:text-4xl font-bold text-white mb-4"
+                style={{ fontFamily: 'var(--font-titulos)' }}
+              >
+                O Ecoa é o espaço onde recuperas a tua voz
+              </h2>
+              <p className="text-[#4A90A4]/70 max-w-2xl mx-auto">
+                Ferramentas para desbloquear o silêncio, fortalecer a expressão e falar a tua verdade.
+              </p>
+            </div>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((f, i) => (
               <div
                 key={i}
-                className="p-6 bg-white/5 rounded-2xl border border-[#4A90A4]/20 hover:bg-white/10 hover:border-[#4A90A4]/40 transition-all group"
+                className="p-6 bg-white/5 rounded-2xl border border-[#4A90A4]/20 hover:bg-white/10 hover:border-[#4A90A4]/40 transition-all duration-300 group"
               >
                 <div className="text-3xl mb-4 group-hover:scale-110 transition-transform">
                   {f.icone}
@@ -271,7 +276,7 @@ const LandingEcoa = () => {
             {planos.map((plano, i) => (
               <div
                 key={plano.id}
-                className={`p-6 rounded-2xl border text-center transition-all hover:translate-y-[-3px] hover:shadow-lg ${
+                className={`p-6 rounded-2xl border text-center transition-all duration-300 hover:translate-y-[-3px] hover:shadow-lg ${
                   i === 1
                     ? 'bg-[#4A90A4]/15 border-[#4A90A4] relative'
                     : 'bg-white/5 border-[#4A90A4]/20'

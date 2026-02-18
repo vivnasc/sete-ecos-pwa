@@ -187,7 +187,7 @@ export default function Jornada() {
   }
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: 'linear-gradient(160deg, #FDF8F3 0%, #F5F0EB 100%)' }}>
+    <div className="min-h-screen pb-24 animate-page-enter" style={{ background: 'linear-gradient(160deg, #FDF8F3 0%, #F5F0EB 100%)' }}>
       {/* Sticky header */}
       <div className="sticky top-0 z-10 backdrop-blur-lg border-b border-amber-100/50"
         style={{ background: 'rgba(253,248,243,0.85)' }}>

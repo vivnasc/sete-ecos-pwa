@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { ECO_PLANS } from '../lib/shared/subscriptionPlans'
 import { g } from '../utils/genero'
+import ScrollReveal from '../components/ScrollReveal'
 
 /**
  * SERENA - Landing Page
@@ -69,7 +70,7 @@ const LandingSerena = () => {
 
       {/* ===== HERO ===== */}
       <header
-        className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden"
+        className="hero-gradient-animated relative min-h-screen flex items-center justify-center px-4 overflow-hidden"
         style={{ background: 'linear-gradient(135deg, #1a2e3a 0%, #2a4a5a 40%, #6B8E9B 100%)' }}
       >
         {/* Decorative blurs */}
@@ -103,7 +104,7 @@ const LandingSerena = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/serena/pagamento"
-              className="px-10 py-4 bg-white text-[#1a2e3a] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
+              className="animate-pulse-glow px-10 py-4 bg-white text-[#1a2e3a] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
             >
               Começar a Jornada
             </Link>
@@ -120,16 +121,18 @@ const LandingSerena = () => {
       {/* ===== PROBLEMA ===== */}
       <section className="py-20 px-4" style={{ background: 'linear-gradient(to bottom, #1a2e3a, #0f1f28)' }}>
         <div className="max-w-3xl mx-auto text-center">
-          <h2
-            className="text-3xl md:text-4xl font-bold text-white mb-6"
-            style={{ fontFamily: 'var(--font-titulos)' }}
-          >
-            Quantas vezes engoliste o que sentias?
-          </h2>
+          <ScrollReveal variant="fadeUp">
+            <h2
+              className="text-3xl md:text-4xl font-bold text-white mb-6"
+              style={{ fontFamily: 'var(--font-titulos)' }}
+            >
+              Quantas vezes engoliste o que sentias?
+            </h2>
 
-          <p className="text-[#6B8E9B]/80 mb-10 text-lg">
-            A maioria de nós aprendeu a esconder o que sente. O Serena muda isso.
-          </p>
+            <p className="text-[#6B8E9B]/80 mb-10 text-lg">
+              A maioria de nós aprendeu a esconder o que sente. O Serena muda isso.
+            </p>
+          </ScrollReveal>
 
           <div className="grid gap-4 max-w-lg mx-auto text-left">
             {[
@@ -156,23 +159,25 @@ const LandingSerena = () => {
       {/* ===== SOLUCAO / FEATURES ===== */}
       <section id="features" className="py-20 px-4" style={{ background: '#0f1f28' }}>
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14">
-            <h2
-              className="text-3xl md:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: 'var(--font-titulos)' }}
-            >
-              O Serena é o espaço onde as tuas emoções finalmente têm voz
-            </h2>
-            <p className="text-[#6B8E9B]/70 max-w-2xl mx-auto">
-              Ferramentas criadas para acolher, processar e libertar — ao teu ritmo.
-            </p>
-          </div>
+          <ScrollReveal variant="fadeUp">
+            <div className="text-center mb-14">
+              <h2
+                className="text-3xl md:text-4xl font-bold text-white mb-4"
+                style={{ fontFamily: 'var(--font-titulos)' }}
+              >
+                O Serena é o espaço onde as tuas emoções finalmente têm voz
+              </h2>
+              <p className="text-[#6B8E9B]/70 max-w-2xl mx-auto">
+                Ferramentas criadas para acolher, processar e libertar — ao teu ritmo.
+              </p>
+            </div>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((f, i) => (
               <div
                 key={i}
-                className="p-6 bg-white/5 rounded-2xl border border-[#6B8E9B]/20 hover:bg-white/10 hover:border-[#6B8E9B]/40 transition-all group"
+                className="p-6 bg-white/5 rounded-2xl border border-[#6B8E9B]/20 hover:bg-white/10 hover:border-[#6B8E9B]/40 transition-all duration-300 group"
               >
                 <div className="text-3xl mb-4 group-hover:scale-110 transition-transform">
                   {f.icone}
@@ -252,7 +257,7 @@ const LandingSerena = () => {
             {planos.map((plano, i) => (
               <div
                 key={plano.id}
-                className={`p-6 rounded-2xl border text-center transition-all hover:translate-y-[-3px] hover:shadow-lg ${
+                className={`p-6 rounded-2xl border text-center transition-all duration-300 hover:translate-y-[-3px] hover:shadow-lg ${
                   i === 1
                     ? 'bg-[#6B8E9B]/15 border-[#6B8E9B] relative'
                     : 'bg-white/5 border-[#6B8E9B]/20'
