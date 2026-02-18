@@ -11,8 +11,8 @@ import ScrollReveal from '../components/ScrollReveal'
 
 /**
  * IGNIS - Landing Page (Expanded)
- * "Vontade & Direcao Consciente" - Chakra Manipura (Plexo Solar), Elemento: Fogo
- * Modulo de escolha consciente, foco e alinhamento com valores
+ * "Vontade & Direção Consciente" - Chakra Manipura (Plexo Solar), Elemento: Fogo
+ * Módulo de escolha consciente, foco e alinhamento com valores
  */
 
 const LandingIgnis = () => {
@@ -39,32 +39,32 @@ const LandingIgnis = () => {
     {
       icone: '🎯',
       titulo: 'Escolhas Conscientes',
-      desc: 'Define 3 escolhas por dia alinhadas com os teus valores. Nao reages — escolhes.'
+      desc: 'Define 3 escolhas por dia alinhadas com os teus valores. Não reages — escolhes.'
     },
     {
       icone: '🧠',
       titulo: 'Foco Consciente',
-      desc: 'Sessoes de foco com intencao. Sem distracoes, sem multitarefa. Profundidade.'
+      desc: 'Sessões de foco com intenção. Sem distrações, sem multitarefa. Profundidade.'
     },
     {
       icone: '🌪️',
-      titulo: 'Rastreador de Dispersao',
-      desc: 'Regista quando dizes sim mas querias nao. Consciencia e o primeiro passo para mudar.'
+      titulo: 'Rastreador de Dispersão',
+      desc: 'Regista quando dizes sim mas querias não. Consciência é o primeiro passo para mudar.'
     },
     {
       icone: '🗡️',
-      titulo: 'Exercicio de Corte',
-      desc: 'Aprende a soltar o que nao e teu. Compromissos, habitos, relacoes que te dispersam.'
+      titulo: 'Exercício de Corte',
+      desc: 'Aprende a soltar o que não é teu. Compromissos, hábitos, relações que te dispersam.'
     },
     {
       icone: '🧭',
-      titulo: 'Bussola de Valores',
-      desc: 'Define os teus 5 valores essenciais. Todas as decisoes passam por este filtro.'
+      titulo: 'Bússola de Valores',
+      desc: 'Define os teus 5 valores essenciais. Todas as decisões passam por este filtro.'
     },
     {
       icone: '🏆',
-      titulo: 'Diario de Conquistas',
-      desc: 'Regista as tuas vitorias diarias. Celebrar o que conquistaste alimenta o fogo.'
+      titulo: 'Diário de Conquistas',
+      desc: 'Regista as tuas vitórias diárias. Celebrar o que conquistaste alimenta o fogo.'
     },
     {
       icone: '🦁',
@@ -74,7 +74,7 @@ const LandingIgnis = () => {
     {
       icone: '💬',
       titulo: 'Coach Ignis',
-      desc: `Coach virtual ${g('directo', 'directa')} e sem paternalismo. Questiona, ilumina, nao acaricia.`
+      desc: `Coach virtual ${g('directo', 'directa')} e sem paternalismo. Questiona, ilumina, não acaricia.`
     }
   ]
 
@@ -82,53 +82,53 @@ const LandingIgnis = () => {
     {
       numero: '01',
       titulo: 'Define valores',
-      desc: 'Descobre os teus 5 valores essenciais. A bussola interior que guia cada decisao.'
+      desc: 'Descobre os teus 5 valores essenciais. A bússola interior que guia cada decisão.'
     },
     {
       numero: '02',
-      titulo: 'Escolhe com consciencia',
-      desc: 'Cada dia, 3 escolhas alinhadas. Nao e produtividade — e direcao.'
+      titulo: 'Escolhe com consciência',
+      desc: 'Cada dia, 3 escolhas alinhadas. Não é produtividade — é direção.'
     },
     {
       numero: '03',
       titulo: 'Corta o que dispersa',
-      desc: 'O que nao e teu, solta. O fogo so queima o que nao pertence.'
+      desc: 'O que não é teu, solta. O fogo só queima o que não pertence.'
     }
   ]
 
   const dorPontos = [
-    'Dizes sim por obrigacao, nao por vontade',
+    'Dizes sim por obrigação, não por vontade',
     'Sentes-te sem rumo, a reagir em vez de escolher',
-    'Tens mil coisas mas nada avanca',
-    'Comecas mil coisas e nao terminas nenhuma',
+    'Tens mil coisas mas nada avança',
+    'Começas mil coisas e não terminas nenhuma',
     'Deixas os outros decidirem por ti',
     'Vives sem saber o que realmente queres',
     'Procrastinas o que importa',
-    'Sentes-te a viver no piloto automatico'
+    'Sentes-te a viver no piloto automático'
   ]
 
   const valoresBussola = [
     { nome: 'Coragem', icone: '🦁', desc: 'Agir apesar do medo. Enfrentar o que importa.' },
-    { nome: 'Autenticidade', icone: '💎', desc: 'Viver de acordo contigo. Sem mascaras.' },
-    { nome: 'Liberdade', icone: '🦅', desc: 'Escolher o teu caminho. Sem prisoes externas.' },
-    { nome: 'Proposito', icone: '🎯', desc: 'Cada accao tem intencao. Cada passo conta.' },
+    { nome: 'Autenticidade', icone: '💎', desc: 'Viver de acordo contigo. Sem máscaras.' },
+    { nome: 'Liberdade', icone: '🦅', desc: 'Escolher o teu caminho. Sem prisões externas.' },
+    { nome: 'Propósito', icone: '🎯', desc: 'Cada ação tem intenção. Cada passo conta.' },
     { nome: 'Integridade', icone: '⚖️', desc: 'O que dizes, fazes. O que sentes, honras.' }
   ]
 
   const testemunhos = [
     {
       contacto: 'SM',
-      resultado: 'Decisoes alinhadas em 2 meses',
+      resultado: 'Decisões alinhadas em 2 meses',
       mensagens: [
-        { texto: 'A Bussola de Valores mudou a forma como tomo decisoes', hora: '10:32', tipo: 'recebida' },
-        { texto: 'Antes dizia sim a tudo. Agora escolho com consciencia.', hora: '10:33', tipo: 'recebida' },
+        { texto: 'A Bússola de Valores mudou a forma como tomo decisões', hora: '10:32', tipo: 'recebida' },
+        { texto: 'Antes dizia sim a tudo. Agora escolho com consciência.', hora: '10:33', tipo: 'recebida' },
       ]
     },
     {
       contacto: 'AF',
       resultado: 'De 20 para 3 tarefas/dia',
       mensagens: [
-        { texto: 'Reduzi as tarefas de 20 para 3 por dia. E faco mais.', hora: '14:10', tipo: 'recebida' },
+        { texto: 'Reduzi as tarefas de 20 para 3 por dia. E faço mais.', hora: '14:10', tipo: 'recebida' },
         { texto: 'Foco > quantidade. O Ignis ensinou-me isso.', hora: '14:11', tipo: 'recebida' },
       ]
     },
@@ -136,32 +136,32 @@ const LandingIgnis = () => {
       contacto: 'RC',
       resultado: '5 compromissos cortados',
       mensagens: [
-        { texto: 'Cortei 5 compromissos que nao estavam alinhados comigo', hora: '19:45', tipo: 'recebida' },
-        { texto: 'Soltar nao e perder. E libertar.', hora: '19:46', tipo: 'recebida' },
+        { texto: 'Cortei 5 compromissos que não estavam alinhados comigo', hora: '19:45', tipo: 'recebida' },
+        { texto: 'Soltar não é perder. É libertar.', hora: '19:46', tipo: 'recebida' },
       ]
     }
   ]
 
   const faqs = [
     {
-      pergunta: 'Isto e produtividade disfarcada?',
-      resposta: 'Nao. Ignis nao e sobre fazer mais — e sobre escolher melhor. Nao medimos tarefas concluidas. Medimos alinhamento com os teus valores. E possivel fazer menos e viver mais.'
+      pergunta: 'Isto é produtividade disfarçada?',
+      resposta: 'Não. Ignis não é sobre fazer mais — é sobre escolher melhor. Não medimos tarefas concluídas. Medimos alinhamento com os teus valores. É possível fazer menos e viver mais.'
     },
     {
-      pergunta: 'E se eu nao souber o que quero?',
-      resposta: 'A Bussola de Valores ajuda-te a descobrir. Atraves de exercicios progressivos, defines os teus 5 valores essenciais. Nao precisas saber tudo ao inicio — o processo revela.'
+      pergunta: 'E se eu não souber o que quero?',
+      resposta: 'A Bússola de Valores ajuda-te a descobrir. Através de exercícios progressivos, defines os teus 5 valores essenciais. Não precisas saber tudo ao início — o processo revela.'
     },
     {
       pergunta: 'Quanto tempo preciso por dia?',
-      resposta: '3 escolhas conscientes = 5 minutos. Os desafios de fogo = 10 minutos. O minimo e acessivel. Se quiseres ir mais fundo, o Diario de Conquistas e o Coach Ignis estao disponiveis.'
+      resposta: '3 escolhas conscientes = 5 minutos. Os desafios de fogo = 10 minutos. O mínimo é acessível. Se quiseres ir mais fundo, o Diário de Conquistas e o Coach Ignis estão disponíveis.'
     },
     {
       pergunta: 'Posso experimentar antes de pagar?',
-      resposta: 'Sim! 7 dias gratis com acesso completo. Sem compromisso, sem cartao. Se no fim dos 7 dias quiseres continuar, escolhes um plano.'
+      resposta: 'Sim! 7 dias grátis com acesso completo. Sem compromisso, sem cartão. Se no fim dos 7 dias quiseres continuar, escolhes um plano.'
     },
     {
       pergunta: 'E se eu tiver medo de cortar compromissos?',
-      resposta: 'O Exercicio de Corte e progressivo. Comeca com pequenos "nao" antes de chegar aos grandes. E o Coach Ignis acompanha-te em cada passo. Nao estas sozinha nesta jornada.'
+      resposta: 'O Exercício de Corte é progressivo. Começa com pequenos "não" antes de chegar aos grandes. E o Coach Ignis acompanha-te em cada passo. Não estás sozinha nesta jornada.'
     }
   ]
 
@@ -174,15 +174,15 @@ const LandingIgnis = () => {
 
       {/* ===== SEO HEAD ===== */}
       <SEOHead
-        title="IGNIS - Vontade & Direcao Consciente | Sete Ecos"
-        description="Escolha consciente, foco e alinhamento com valores. Bussola de Valores, Escolhas Conscientes, Desafios de Fogo e Coach Ignis. Descobre o teu fogo interior."
+        title="IGNIS - Vontade & Direção Consciente | Sete Ecos"
+        description="Escolha consciente, foco e alinhamento com valores. Bússola de Valores, Escolhas Conscientes, Desafios de Fogo e Coach Ignis. Descobre o teu fogo interior."
         url="https://app.seteecos.com/ignis"
         image="https://app.seteecos.com/og-image.png"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Product",
-          "name": "IGNIS - Vontade & Direcao Consciente",
-          "description": "Modulo de escolha consciente, foco e alinhamento com valores pessoais. Bussola de Valores, Exercicio de Corte e coaching personalizado.",
+          "name": "IGNIS - Vontade & Direção Consciente",
+          "description": "Módulo de escolha consciente, foco e alinhamento com valores pessoais. Bússola de Valores, Exercício de Corte e coaching personalizado.",
           "brand": { "@type": "Brand", "name": "Sete Ecos" },
           "offers": [
             { "@type": "Offer", "name": "Mensal", "price": "750", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
@@ -210,7 +210,7 @@ const LandingIgnis = () => {
           <a href="#features" className="text-white/60 hover:text-[#C1634A] transition-colors" style={{ fontFamily: 'var(--font-corpo)' }}>Funcionalidades</a>
           <a href="#como-funciona" className="text-white/60 hover:text-[#C1634A] transition-colors" style={{ fontFamily: 'var(--font-corpo)' }}>Como Funciona</a>
           <a href="#resultados" className="text-white/60 hover:text-[#C1634A] transition-colors" style={{ fontFamily: 'var(--font-corpo)' }}>Resultados</a>
-          <a href="#precos" className="text-white/60 hover:text-[#C1634A] transition-colors" style={{ fontFamily: 'var(--font-corpo)' }}>Precos</a>
+          <a href="#precos" className="text-white/60 hover:text-[#C1634A] transition-colors" style={{ fontFamily: 'var(--font-corpo)' }}>Preços</a>
         </div>
         <div className="flex gap-3 items-center">
           <Link
@@ -262,11 +262,11 @@ const LandingIgnis = () => {
             className="text-xl md:text-2xl text-white/80 mb-2"
             style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}
           >
-            Vontade &amp; Direcao Consciente
+            Vontade &amp; Direção Consciente
           </p>
 
           <p className="text-white/60 max-w-xl mx-auto mb-10" style={{ fontFamily: 'var(--font-corpo)' }}>
-            Escolhe o que e teu. Corta o que dispersa. Acende o fogo interior.
+            Escolhe o que é teu. Corta o que dispersa. Acende o fogo interior.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -298,7 +298,7 @@ const LandingIgnis = () => {
             </div>
             <div>
               <div className="text-3xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>70%</div>
-              <div className="text-[#C1634A]/70 text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>reducao de dispersao</div>
+              <div className="text-[#C1634A]/70 text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>redução de dispersão</div>
             </div>
           </div>
         </div>
@@ -312,11 +312,11 @@ const LandingIgnis = () => {
               className="text-3xl md:text-4xl font-bold text-white mb-6"
               style={{ fontFamily: 'var(--font-titulos)' }}
             >
-              Quantas vezes disseste sim quando querias dizer nao?
+              Quantas vezes disseste sim quando querias dizer não?
             </h2>
 
             <p className="text-[#C1634A]/80 mb-10 text-lg" style={{ fontFamily: 'var(--font-corpo)' }}>
-              Viver no piloto automatico nao e viver. O Ignis devolve-te o leme.
+              Viver no piloto automático não é viver. O Ignis devolve-te o leme.
             </p>
           </ScrollReveal>
 
@@ -348,10 +348,10 @@ const LandingIgnis = () => {
                 className="text-3xl md:text-4xl font-bold text-white mb-4"
                 style={{ fontFamily: 'var(--font-titulos)' }}
               >
-                O Ignis e o espaco onde retomas a direcao da tua vida
+                O Ignis é o espaço onde retomas a direção da tua vida
               </h2>
               <p className="text-[#C1634A]/70 max-w-2xl mx-auto" style={{ fontFamily: 'var(--font-corpo)' }}>
-                Ferramentas para escolher com consciencia, focar no que importa e cortar o ruido.
+                Ferramentas para escolher com consciência, focar no que importa e cortar o ruído.
               </p>
             </div>
           </ScrollReveal>
@@ -380,7 +380,7 @@ const LandingIgnis = () => {
               className="px-8 py-4 bg-white text-[#2e1a14] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
               style={{ fontFamily: 'var(--font-corpo)' }}
             >
-              Experimentar 7 dias gratis
+              Experimentar 7 dias grátis
             </button>
           </div>
         </div>
@@ -398,10 +398,10 @@ const LandingIgnis = () => {
                 className="text-3xl md:text-4xl font-bold text-white mb-4"
                 style={{ fontFamily: 'var(--font-titulos)' }}
               >
-                Bussola de Valores — A tua direcao interior
+                Bússola de Valores — A tua direção interior
               </h2>
               <p className="text-[#C1634A]/70 max-w-2xl mx-auto text-lg" style={{ fontFamily: 'var(--font-corpo)' }}>
-                Define os teus 5 valores essenciais. Todas as decisoes passam por este filtro.
+                Define os teus 5 valores essenciais. Todas as decisões passam por este filtro.
               </p>
             </div>
           </ScrollReveal>
@@ -440,7 +440,7 @@ const LandingIgnis = () => {
 
             <div className="text-center mt-10">
               <p className="text-white/50 text-sm italic" style={{ fontFamily: 'var(--font-corpo)' }}>
-                Quando sabes o que e teu, tudo o que nao e... solta-se naturalmente.
+                Quando sabes o que é teu, tudo o que não é... solta-se naturalmente.
               </p>
             </div>
           </div>
@@ -459,7 +459,7 @@ const LandingIgnis = () => {
                 Como funciona
               </h2>
               <p className="text-[#C1634A]/70" style={{ fontFamily: 'var(--font-corpo)' }}>
-                Tres passos. Sem complicacoes.
+                Três passos. Sem complicações.
               </p>
             </div>
           </ScrollReveal>
@@ -508,7 +508,7 @@ const LandingIgnis = () => {
                 Resultados reais
               </h2>
               <p className="text-[#C1634A]/70" style={{ fontFamily: 'var(--font-corpo)' }}>
-                O que dizem quem ja acendeu o fogo interior
+                O que dizem quem já acendeu o fogo interior
               </p>
             </div>
           </ScrollReveal>
@@ -544,15 +544,15 @@ const LandingIgnis = () => {
                 Quem criou o IGNIS
               </h2>
               <p className="text-white/80 mb-4" style={{ fontFamily: 'var(--font-corpo)' }}>
-                <strong className="text-white">Vivianne Santos</strong> e terapeuta, coach de desenvolvimento pessoal
-                e criadora do Sistema Sete Ecos — um caminho de transformacao que integra corpo, emocao e espirito.
+                <strong className="text-white">Vivianne Santos</strong> é terapeuta, coach de desenvolvimento pessoal
+                e criadora do Sistema Sete Ecos — um caminho de transformação que integra corpo, emoção e espírito.
               </p>
               <p className="text-white/70 mb-4" style={{ fontFamily: 'var(--font-corpo)' }}>
-                O IGNIS nasceu da observacao de que muitas pessoas vivem a reagir ao mundo em vez de escolher a direcao.
-                Dizem sim por obrigacao, dispersam-se em mil tarefas, e perdem o contacto com o que realmente importa.
+                O IGNIS nasceu da observação de que muitas pessoas vivem a reagir ao mundo em vez de escolher a direção.
+                Dizem sim por obrigação, dispersam-se em mil tarefas, e perdem o contacto com o que realmente importa.
               </p>
               <p className="text-white/70 mb-6" style={{ fontFamily: 'var(--font-corpo)' }}>
-                "O fogo interior nao grita. Ele ilumina. Quando sabes o que e teu, o ruido desaparece."
+                "O fogo interior não grita. Ele ilumina. Quando sabes o que é teu, o ruído desaparece."
               </p>
               <div className="flex items-center gap-4 justify-center md:justify-start">
                 <img
@@ -570,7 +570,7 @@ const LandingIgnis = () => {
               >
                 <div className="text-center p-8">
                   <div className="text-6xl mb-4">🔥</div>
-                  <p className="text-white/70 text-sm italic" style={{ fontFamily: 'var(--font-corpo)' }}>"Escolhe o que e teu. Tudo o resto e ruido."</p>
+                  <p className="text-white/70 text-sm italic" style={{ fontFamily: 'var(--font-corpo)' }}>"Escolhe o que é teu. Tudo o resto é ruído."</p>
                   <p className="text-[#C1634A] text-sm mt-2 font-semibold" style={{ fontFamily: 'var(--font-corpo)' }}>— Vivianne Santos</p>
                 </div>
               </div>
@@ -591,7 +591,7 @@ const LandingIgnis = () => {
                 Escolhe o teu plano
               </h2>
               <p className="text-[#C1634A]/70" style={{ fontFamily: 'var(--font-corpo)' }}>
-                Precos simples. Sem compromisso. Cancela quando quiseres.
+                Preços simples. Sem compromisso. Cancela quando quiseres.
               </p>
             </div>
           </ScrollReveal>
@@ -636,13 +636,13 @@ const LandingIgnis = () => {
 
                 {plano.duration > 1 && (
                   <p className="text-[#C1634A]/50 text-xs mb-4" style={{ fontFamily: 'var(--font-corpo)' }}>
-                    {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mes
+                    {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mês
                   </p>
                 )}
 
                 <ul className="space-y-2 mb-6 text-left">
                   <li className="flex items-center gap-2 text-white/80 text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>
-                    <span className="text-[#C1634A]">&#10003;</span> Bussola de Valores
+                    <span className="text-[#C1634A]">&#10003;</span> Bússola de Valores
                   </li>
                   <li className="flex items-center gap-2 text-white/80 text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>
                     <span className="text-[#C1634A]">&#10003;</span> Coach Ignis
@@ -651,7 +651,7 @@ const LandingIgnis = () => {
                     <span className="text-[#C1634A]">&#10003;</span> Desafios de Fogo
                   </li>
                   <li className="flex items-center gap-2 text-white/80 text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>
-                    <span className="text-[#C1634A]">&#10003;</span> Diario de Conquistas
+                    <span className="text-[#C1634A]">&#10003;</span> Diário de Conquistas
                   </li>
                   <li className="flex items-center gap-2 text-white/80 text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>
                     <span className="text-[#C1634A]">&#10003;</span> Todas as ferramentas
@@ -679,10 +679,10 @@ const LandingIgnis = () => {
             </h3>
             <div className="grid md:grid-cols-2 gap-6">
               {[
-                { icone: '&#10003;', titulo: '7 Dias Garantia', desc: 'Se nao gostares, reembolso total sem perguntas' },
+                { icone: '&#10003;', titulo: '7 Dias Garantia', desc: 'Se não gostares, reembolso total sem perguntas' },
                 { icone: '🎯', titulo: 'Resultado em 30 Dias', desc: 'Ou ajustamos o teu plano gratuitamente' },
-                { icone: '💬', titulo: 'Suporte Incluido', desc: `Nunca estas ${g('sozinho', 'sozinha')} nesta jornada` },
-                { icone: '🚪', titulo: 'Cancela Quando Quiseres', desc: 'Sem multas, sem complicacoes, sem stress' }
+                { icone: '💬', titulo: 'Suporte Incluído', desc: `Nunca estás ${g('sozinho', 'sozinha')} nesta jornada` },
+                { icone: '🚪', titulo: 'Cancela Quando Quiseres', desc: 'Sem multas, sem complicações, sem stress' }
               ].map((garantia) => (
                 <div key={garantia.titulo} className="flex items-start gap-4">
                   <span className="text-2xl text-[#C1634A]" dangerouslySetInnerHTML={{ __html: garantia.icone }}></span>
@@ -708,7 +708,7 @@ const LandingIgnis = () => {
               Perguntas Frequentes
             </h2>
             <p className="text-center text-[#C1634A]/70 mb-12" style={{ fontFamily: 'var(--font-corpo)' }}>
-              Respondemos as duvidas mais comuns
+              Respondemos as dúvidas mais comuns
             </p>
           </ScrollReveal>
 
@@ -743,23 +743,23 @@ const LandingIgnis = () => {
             className="text-3xl md:text-4xl font-bold text-white mb-4"
             style={{ fontFamily: 'var(--font-titulos)' }}
           >
-            Experimenta 7 dias gratis
+            Experimenta 7 dias grátis
           </h2>
           <p className="text-white/70 mb-4 text-lg" style={{ fontFamily: 'var(--font-corpo)' }}>
-            Sem compromisso. Sem cartao. Cancelas quando quiseres.
+            Sem compromisso. Sem cartão. Cancelas quando quiseres.
           </p>
           <p className="text-white/50 mb-8" style={{ fontFamily: 'var(--font-corpo)' }}>
-            Descobre como e viver com direcao, clareza e fogo interior.
+            Descobre como é viver com direção, clareza e fogo interior.
           </p>
           <button
             onClick={handleComecar}
             className="inline-block px-10 py-5 bg-white text-[#2e1a14] rounded-full font-bold text-xl hover:translate-y-[-3px] hover:shadow-xl transition-all"
             style={{ fontFamily: 'var(--font-corpo)' }}
           >
-            Quero comecar HOJE
+            Quero começar HOJE
           </button>
           <p className="text-white/40 text-sm mt-6" style={{ fontFamily: 'var(--font-corpo)' }}>
-            7 dias gratis &middot; Acesso completo &middot; Cancela quando quiseres
+            7 dias grátis &middot; Acesso completo &middot; Cancela quando quiseres
           </p>
         </div>
       </section>
@@ -782,8 +782,8 @@ const LandingIgnis = () => {
                 </span>
               </div>
               <p className="text-white/50 text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>
-                Vontade &amp; Direcao Consciente.<br />
-                Escolhe o que e teu. Corta o que dispersa.
+                Vontade &amp; Direção Consciente.<br />
+                Escolhe o que é teu. Corta o que dispersa.
               </p>
             </div>
             <div>
@@ -800,7 +800,7 @@ const LandingIgnis = () => {
             <div>
               <h3 className="font-bold text-[#C1634A] mb-3" style={{ fontFamily: 'var(--font-titulos)' }}>Links</h3>
               <div className="flex flex-col gap-1">
-                <a href="#precos" className="text-white/50 text-sm hover:text-white transition-colors" style={{ fontFamily: 'var(--font-corpo)' }}>Precos</a>
+                <a href="#precos" className="text-white/50 text-sm hover:text-white transition-colors" style={{ fontFamily: 'var(--font-corpo)' }}>Preços</a>
                 <Link to="/landing" className="text-white/50 text-sm hover:text-white transition-colors" style={{ fontFamily: 'var(--font-corpo)' }}>Sete Ecos</Link>
                 <Link to="/lumina" className="text-white/50 text-sm hover:text-white transition-colors" style={{ fontFamily: 'var(--font-corpo)' }}>Lumina</Link>
                 <a href="/termos.pdf" className="text-white/50 text-sm hover:text-white transition-colors" style={{ fontFamily: 'var(--font-corpo)' }}>Termos</a>
@@ -813,7 +813,7 @@ const LandingIgnis = () => {
             <PartilharSocial
               compact
               url="https://app.seteecos.com/ignis"
-              titulo="IGNIS - Vontade & Direcao Consciente"
+              titulo="IGNIS - Vontade & Direção Consciente"
               texto="Descobre o IGNIS, um programa de escolha consciente, foco e alinhamento com valores. Acende o teu fogo interior."
             />
           </div>

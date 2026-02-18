@@ -11,8 +11,8 @@ import ScrollReveal from '../components/ScrollReveal'
 
 /**
  * SERENA - Landing Page
- * "Emocao & Fluidez" - Chakra Svadhisthana (Sacral), Elemento: Agua
- * Modulo de gestao emocional e fluidez interior
+ * "Emoção & Fluidez" - Chakra Svadhisthana (Sacral), Elemento: Água
+ * Módulo de gestão emocional e fluidez interior
  */
 
 const LandingSerena = () => {
@@ -43,33 +43,33 @@ const LandingSerena = () => {
   const features = [
     {
       icone: '\uD83D\uDCD3',
-      titulo: 'Diario Emocional',
-      desc: 'Regista o que sentes sem julgamento. Identifica padroes emocionais ao longo do tempo.'
+      titulo: 'Diário Emocional',
+      desc: 'Regista o que sentes sem julgamento. Identifica padrões emocionais ao longo do tempo.'
     },
     {
       icone: '\uD83C\uDF2C\uFE0F',
-      titulo: 'Respiracao Guiada',
-      desc: 'Exercicios de respiracao para cada estado emocional. Acalma o corpo, clareia a mente.'
+      titulo: 'Respiração Guiada',
+      desc: 'Exercícios de respiração para cada estado emocional. Acalma o corpo, clareia a mente.'
     },
     {
       icone: '\uD83C\uDD98',
       titulo: 'SOS Emocional',
-      desc: 'Quando a emocao transborda, tens apoio imediato. Tecnicas rapidas de 60 segundos.'
+      desc: 'Quando a emoção transborda, tens apoio imediato. Técnicas rápidas de 60 segundos.'
     },
     {
       icone: '\uD83C\uDF0A',
-      titulo: 'Praticas de Fluidez',
-      desc: 'Movimentos, visualizacoes e exercicios para desbloquear emocoes estagnadas.'
+      titulo: 'Práticas de Fluidez',
+      desc: 'Movimentos, visualizações e exercícios para desbloquear emoções estagnadas.'
     },
     {
       icone: '\uD83D\uDD25',
-      titulo: 'Rituais de Libertacao',
-      desc: 'Rituais para soltar o que ja nao serve. Raiva, magoa, culpa \u2014 tudo tem saida.'
+      titulo: 'Rituais de Libertação',
+      desc: 'Rituais para soltar o que já não serve. Raiva, mágoa, culpa \u2014 tudo tem saída.'
     },
     {
       icone: '\uD83D\uDCAC',
       titulo: 'Coach Serena',
-      desc: 'Coach virtual especializada em emocoes. Guia-te com gentileza quando precisas.'
+      desc: 'Coach virtual especializada em emoções. Guia-te com gentileza quando precisas.'
     }
   ]
 
@@ -77,17 +77,17 @@ const LandingSerena = () => {
     {
       numero: '01',
       titulo: 'Sente',
-      desc: 'Reconhece a emocao. Da-lhe nome. Sem fugir, sem julgar.'
+      desc: 'Reconhece a emoção. Dá-lhe nome. Sem fugir, sem julgar.'
     },
     {
       numero: '02',
       titulo: 'Processa',
-      desc: 'Respiracao, rituais, praticas. O corpo processa o que a mente nao consegue sozinha.'
+      desc: 'Respiração, rituais, práticas. O corpo processa o que a mente não consegue sozinha.'
     },
     {
       numero: '03',
       titulo: 'Flui',
-      desc: 'Deixa ir o que nao serve. A emocao e energia \u2014 quando flui, liberta.'
+      desc: 'Deixa ir o que não serve. A emoção é energia \u2014 quando flui, liberta.'
     }
   ]
 
@@ -95,13 +95,13 @@ const LandingSerena = () => {
     {
       estado: 'Ansiedade',
       icone: '\uD83D\uDE30',
-      tecnicas: ['Respiracao 4-7-8', 'Grounding 5-4-3-2-1'],
+      tecnicas: ['Respiração 4-7-8', 'Grounding 5-4-3-2-1'],
       cor: '#6B8E9B'
     },
     {
       estado: 'Raiva',
       icone: '\uD83D\uDE24',
-      tecnicas: ['Tecnica de Contencao', 'Movimento Libertacao'],
+      tecnicas: ['Técnica de Contenção', 'Movimento Libertação'],
       cor: '#4a6e7b'
     },
     {
@@ -111,9 +111,9 @@ const LandingSerena = () => {
       cor: '#6B8E9B'
     },
     {
-      estado: 'Panico',
+      estado: 'Pânico',
       icone: '\uD83D\uDE28',
-      tecnicas: ['Respiracao Quadrada', 'Ancoragem Sensorial'],
+      tecnicas: ['Respiração Quadrada', 'Ancoragem Sensorial'],
       cor: '#4a6e7b'
     }
   ]
@@ -129,17 +129,17 @@ const LandingSerena = () => {
     },
     {
       contacto: 'MR',
-      resultado: 'Diario emocional transformador',
+      resultado: 'Diário emocional transformador',
       mensagens: [
-        { texto: 'Pela primeira vez na vida tenho um espaco para sentir sem culpa', hora: '21:10', tipo: 'recebida' },
-        { texto: 'O diario emocional mudou tudo', hora: '21:11', tipo: 'recebida' }
+        { texto: 'Pela primeira vez na vida tenho um espaço para sentir sem culpa', hora: '21:10', tipo: 'recebida' },
+        { texto: 'O diário emocional mudou tudo', hora: '21:11', tipo: 'recebida' }
       ]
     },
     {
       contacto: 'TC',
-      resultado: 'Crises reduzidas de 4x para 1x/mes',
+      resultado: 'Crises reduzidas de 4x para 1x/mês',
       mensagens: [
-        { texto: 'Reduzi as crises de choro de 4x/semana para 1x/mes', hora: '08:45', tipo: 'recebida' },
+        { texto: 'Reduzi as crises de choro de 4x/semana para 1x/mês', hora: '08:45', tipo: 'recebida' },
         { texto: 'O Serena ensinou-me a processar em vez de engolir', hora: '08:46', tipo: 'recebida' }
       ]
     }
@@ -147,39 +147,39 @@ const LandingSerena = () => {
 
   const faqs = [
     {
-      pergunta: 'Isto e terapia?',
-      resposta: 'Nao. O Serena e um espaco de auto-gestao emocional. Nao substitui terapia nem acompanhamento psicologico. E uma ferramenta para o dia-a-dia que te ajuda a identificar, processar e libertar emocoes de forma saudavel. Se precisares de apoio profissional, recomendamos sempre um terapeuta.'
+      pergunta: 'Isto é terapia?',
+      resposta: 'Não. O Serena é um espaço de auto-gestão emocional. Não substitui terapia nem acompanhamento psicológico. É uma ferramenta para o dia-a-dia que te ajuda a identificar, processar e libertar emoções de forma saudável. Se precisares de apoio profissional, recomendamos sempre um terapeuta.'
     },
     {
-      pergunta: 'E se eu nao souber o que sinto?',
-      resposta: 'E exactamente para isso que o Serena existe. O diario emocional guia-te com perguntas simples ate conseguires nomear o que sentes. Muitas pessoas nunca aprenderam a identificar emocoes \u2014 o Serena ajuda-te nesse processo, passo a passo.'
+      pergunta: 'E se eu não souber o que sinto?',
+      resposta: 'É exactamente para isso que o Serena existe. O diário emocional guia-te com perguntas simples até conseguires nomear o que sentes. Muitas pessoas nunca aprenderam a identificar emoções \u2014 o Serena ajuda-te nesse processo, passo a passo.'
     },
     {
       pergunta: 'Quanto tempo preciso por dia?',
-      resposta: 'O SOS e de 60 segundos. O diario leva 3-5 minutos. As praticas de fluidez e respiracao variam entre 5 e 15 minutos. Podes usar apenas o que precisas no momento \u2014 sem obrigacao de seguir uma rotina rigida.'
+      resposta: 'O SOS é de 60 segundos. O diário leva 3-5 minutos. As práticas de fluidez e respiração variam entre 5 e 15 minutos. Podes usar apenas o que precisas no momento \u2014 sem obrigação de seguir uma rotina rígida.'
     },
     {
       pergunta: 'Posso experimentar antes de pagar?',
-      resposta: 'Sim! Tens 7 dias de trial gratuito com acesso completo a todas as funcionalidades. Sem compromisso, sem cartao de credito. Se no fim dos 7 dias quiseres continuar, escolhes um plano.'
+      resposta: 'Sim! Tens 7 dias de trial gratuito com acesso completo a todas as funcionalidades. Sem compromisso, sem cartão de crédito. Se no fim dos 7 dias quiseres continuar, escolhes um plano.'
     },
     {
       pergunta: 'E se eu estiver em crise?',
-      resposta: 'O SOS Emocional tem tecnicas de 60 segundos para momentos de crise \u2014 ansiedade, panico, raiva ou tristeza intensa. Sao ferramentas de primeira resposta. Para crises graves ou pensamentos de auto-mutilacao, contacta sempre a linha de apoio ao cidadao ou um profissional de saude mental.'
+      resposta: 'O SOS Emocional tem técnicas de 60 segundos para momentos de crise \u2014 ansiedade, pânico, raiva ou tristeza intensa. São ferramentas de primeira resposta. Para crises graves ou pensamentos de auto-mutilação, contacta sempre a linha de apoio ao cidadão ou um profissional de saúde mental.'
     }
   ]
 
   return (
     <div className="min-h-screen" style={{ fontFamily: 'var(--font-corpo)' }}>
       <SEOHead
-        title="SERENA - Emocao & Fluidez | Sete Ecos"
-        description="Programa de gestao emocional para mulheres. Diario emocional, SOS Emocional, respiracao guiada e coaching personalizado."
+        title="SERENA - Emoção & Fluidez | Sete Ecos"
+        description="Programa de gestão emocional para mulheres. Diário emocional, SOS Emocional, respiração guiada e coaching personalizado."
         url="https://app.seteecos.com/serena"
         image="https://app.seteecos.com/og-image.png"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Product",
-          "name": "SERENA - Emocao & Fluidez",
-          "description": "Programa de gestao emocional com diario emocional, SOS Emocional, respiracao guiada e coaching personalizado.",
+          "name": "SERENA - Emoção & Fluidez",
+          "description": "Programa de gestão emocional com diário emocional, SOS Emocional, respiração guiada e coaching personalizado.",
           "brand": { "@type": "Brand", "name": "Sete Ecos" },
           "offers": [
             { "@type": "Offer", "name": "Mensal", "price": "750", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
@@ -189,7 +189,7 @@ const LandingSerena = () => {
         }}
       />
 
-      {/* ===== NAVEGACAO FIXA ===== */}
+      {/* ===== NAVEGAÇÃO FIXA ===== */}
       <nav className="fixed top-0 w-full px-4 md:px-8 py-4 flex justify-between items-center bg-[#1a2e3a]/90 backdrop-blur-xl z-50 border-b border-[#6B8E9B]/15">
         <Link to="/landing" className="flex items-center gap-3">
           <img src="/logos/SERENA_LOGO_V3.png" alt="SERENA" className="w-12 h-12" />
@@ -204,7 +204,7 @@ const LandingSerena = () => {
           <a href="#features" className="text-white/70 hover:text-[#6B8E9B] transition-colors">Funcionalidades</a>
           <a href="#como-funciona" className="text-white/70 hover:text-[#6B8E9B] transition-colors">Como Funciona</a>
           <a href="#resultados" className="text-white/70 hover:text-[#6B8E9B] transition-colors">Resultados</a>
-          <a href="#precos" className="text-white/70 hover:text-[#6B8E9B] transition-colors">Precos</a>
+          <a href="#precos" className="text-white/70 hover:text-[#6B8E9B] transition-colors">Preços</a>
         </div>
         <div className="flex gap-3 items-center">
           <Link
@@ -218,7 +218,7 @@ const LandingSerena = () => {
             className="px-6 py-2 text-white rounded-full font-semibold text-sm hover:opacity-90 transition-all shadow-lg shadow-[#6B8E9B]/30"
             style={{ background: 'linear-gradient(135deg, #6B8E9B, #4a6e7b)' }}
           >
-            7 Dias Gratis
+            7 Dias Grátis
           </button>
         </div>
       </nav>
@@ -234,7 +234,7 @@ const LandingSerena = () => {
 
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           <div className="inline-block px-4 py-2 bg-[#6B8E9B]/20 rounded-full mb-6">
-            <span className="text-[#6B8E9B] text-sm font-medium">Svadhisthana &middot; Sacral &middot; Elemento: Agua</span>
+            <span className="text-[#6B8E9B] text-sm font-medium">Svadhisthana &middot; Sacral &middot; Elemento: Água</span>
           </div>
 
           <h1
@@ -248,12 +248,12 @@ const LandingSerena = () => {
             className="text-xl md:text-2xl text-white/80 mb-2"
             style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}
           >
-            Emocao &amp; Fluidez
+            Emoção &amp; Fluidez
           </p>
 
           <p className="text-white/60 max-w-xl mx-auto mb-10">
-            O espaco onde as tuas emocoes finalmente tem voz.
-            Sem julgamento, sem pressa &mdash; so fluidez.
+            O espaço onde as tuas emoções finalmente têm voz.
+            Sem julgamento, sem pressa &mdash; só fluidez.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -261,7 +261,7 @@ const LandingSerena = () => {
               onClick={handleComecar}
               className="animate-pulse-glow px-10 py-4 bg-white text-[#1a2e3a] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
             >
-              Comecar a Jornada
+              Começar a Jornada
             </button>
             <a
               href="#como-funciona"
@@ -271,11 +271,11 @@ const LandingSerena = () => {
             </a>
           </div>
 
-          {/* Estatisticas sociais */}
+          {/* Estatísticas sociais */}
           <div className="grid grid-cols-3 gap-8 max-w-lg mx-auto">
             <div>
               <div className="text-3xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>94%</div>
-              <div className="text-white/50 text-sm">reducao de ansiedade</div>
+              <div className="text-white/50 text-sm">redução de ansiedade</div>
             </div>
             <div>
               <div className="text-3xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>60s</div>
@@ -283,7 +283,7 @@ const LandingSerena = () => {
             </div>
             <div>
               <div className="text-3xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>8+</div>
-              <div className="text-white/50 text-sm">rituais de libertacao</div>
+              <div className="text-white/50 text-sm">rituais de libertação</div>
             </div>
           </div>
         </div>
@@ -302,7 +302,7 @@ const LandingSerena = () => {
               </h2>
 
               <p className="text-[#6B8E9B]/80 mb-10 text-lg">
-                A maioria de nos aprendeu a esconder o que sente. O Serena muda isso.
+                A maioria de nós aprendeu a esconder o que sente. O Serena muda isso.
               </p>
             </div>
           </ScrollReveal>
@@ -310,13 +310,13 @@ const LandingSerena = () => {
           <div className="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto">
             {[
               'Sorris quando querias chorar',
-              'Dizes que estas bem quando nao estas',
-              'Explodes sem saber porque',
-              'Acumulas emocoes ate explodir',
-              'Sentes que nao tens direito a sentir',
+              'Dizes que estás bem quando não estás',
+              'Explodes sem saber porquê',
+              'Acumulas emoções até explodir',
+              'Sentes que não tens direito a sentir',
               'A ansiedade controla os teus dias',
               'Choras {escondida} no carro ou no banho',
-              'Cuidas de todos menos das tuas emocoes'
+              'Cuidas de todos menos das tuas emoções'
             ].map((item, i) => (
               <ScrollReveal key={i} variant="fadeUp" delay={i * 0.05}>
                 <div
@@ -339,7 +339,7 @@ const LandingSerena = () => {
         </div>
       </section>
 
-      {/* ===== SOLUCAO / FEATURES ===== */}
+      {/* ===== SOLUÇÃO / FEATURES ===== */}
       <section id="features" className="py-20 px-4" style={{ background: '#0f1f28' }}>
         <div className="max-w-5xl mx-auto">
           <ScrollReveal variant="fadeUp">
@@ -348,7 +348,7 @@ const LandingSerena = () => {
                 className="text-3xl md:text-4xl font-bold text-white mb-4"
                 style={{ fontFamily: 'var(--font-titulos)' }}
               >
-                O Serena e o espaco onde as tuas emocoes finalmente tem voz
+                O Serena é o espaço onde as tuas emoções finalmente têm voz
               </h2>
               <p className="text-[#6B8E9B]/70 max-w-2xl mx-auto">
                 Ferramentas criadas para acolher, processar e libertar &mdash; ao teu ritmo.
@@ -379,7 +379,7 @@ const LandingSerena = () => {
               onClick={handleComecar}
               className="px-8 py-4 bg-white text-[#1a2e3a] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
             >
-              Experimentar 7 dias gratis
+              Experimentar 7 dias grátis
             </button>
           </div>
         </div>
@@ -400,7 +400,7 @@ const LandingSerena = () => {
                 SOS Emocional &mdash; Apoio em 60 segundos
               </h2>
               <p className="text-[#6B8E9B]/70 max-w-xl mx-auto text-lg">
-                Quando a emocao transborda, tens apoio imediato.
+                Quando a emoção transborda, tens apoio imediato.
               </p>
             </div>
           </ScrollReveal>
@@ -438,7 +438,7 @@ const LandingSerena = () => {
           <div className="text-center mt-10">
             <div className="inline-block px-6 py-3 bg-white/5 rounded-2xl border border-[#6B8E9B]/20">
               <p className="text-[#6B8E9B]/80 text-sm">
-                60 segundos. Sem necessidade de pensar. So seguir o guia.
+                60 segundos. Sem necessidade de pensar. Só seguir o guia.
               </p>
             </div>
           </div>
@@ -457,7 +457,7 @@ const LandingSerena = () => {
                 Como funciona
               </h2>
               <p className="text-[#6B8E9B]/70">
-                Tres passos. Sem complicacoes.
+                Três passos. Sem complicações.
               </p>
             </div>
           </ScrollReveal>
@@ -506,7 +506,7 @@ const LandingSerena = () => {
                 Resultados reais
               </h2>
               <p className="text-[#6B8E9B]/70">
-                Historias de quem aprendeu a sentir sem medo.
+                Histórias de quem aprendeu a sentir sem medo.
               </p>
             </div>
           </ScrollReveal>
@@ -543,17 +543,17 @@ const LandingSerena = () => {
                   Quem criou SERENA
                 </h2>
                 <p className="text-white/80 mb-4">
-                  <strong className="text-[#6B8E9B]">Vivianne Santos</strong> e terapeuta, coach de desenvolvimento pessoal
-                  e criadora do Sistema Sete Ecos &mdash; um caminho de transformacao feminina que integra corpo, emocao e espirito.
+                  <strong className="text-[#6B8E9B]">Vivianne Santos</strong> é terapeuta, coach de desenvolvimento pessoal
+                  e criadora do Sistema Sete Ecos &mdash; um caminho de transformação feminina que integra corpo, emoção e espírito.
                 </p>
                 <p className="text-white/70 mb-4">
-                  SERENA nasceu da observacao de um padrao muito comum: pessoas que acumulam emocoes
-                  ate o corpo e a mente nao aguentarem mais. Que aprenderam a engolir o que sentem
-                  para nao incomodar ninguem.
+                  SERENA nasceu da observação de um padrão muito comum: pessoas que acumulam emoções
+                  até o corpo e a mente não aguentarem mais. Que aprenderam a engolir o que sentem
+                  para não incomodar ninguém.
                 </p>
                 <p className="text-white/70 mb-6">
-                  &ldquo;Criei o Serena para que possas finalmente dar espaco ao que sentes &mdash; sem culpa,
-                  sem pressa. Porque sentir e o primeiro acto de coragem.&rdquo;
+                  &ldquo;Criei o Serena para que possas finalmente dar espaço ao que sentes &mdash; sem culpa,
+                  sem pressa. Porque sentir é o primeiro acto de coragem.&rdquo;
                 </p>
                 <div className="flex items-center gap-4 justify-center md:justify-start">
                   <img
@@ -574,7 +574,7 @@ const LandingSerena = () => {
                 >
                   <div className="text-center p-8">
                     <div className="text-6xl mb-4">{'\uD83C\uDF0A'}</div>
-                    <p className="text-white/70 text-sm italic">&ldquo;Sentir e o primeiro acto de coragem.&rdquo;</p>
+                    <p className="text-white/70 text-sm italic">&ldquo;Sentir é o primeiro acto de coragem.&rdquo;</p>
                     <p className="text-[#6B8E9B] text-sm mt-2">&mdash; Vivianne Santos</p>
                   </div>
                 </div>
@@ -584,7 +584,7 @@ const LandingSerena = () => {
         </div>
       </section>
 
-      {/* ===== PRECOS ===== */}
+      {/* ===== PREÇOS ===== */}
       <section id="precos" className="py-20 px-4" style={{ background: 'linear-gradient(to bottom, #0f1f28, #1a2e3a)' }}>
         <div className="max-w-4xl mx-auto">
           <ScrollReveal variant="fadeUp">
@@ -596,7 +596,7 @@ const LandingSerena = () => {
                 Escolhe o teu plano
               </h2>
               <p className="text-[#6B8E9B]/70">
-                Precos simples. Sem compromisso. Cancela quando quiseres.
+                Preços simples. Sem compromisso. Cancela quando quiseres.
               </p>
             </div>
           </ScrollReveal>
@@ -641,22 +641,22 @@ const LandingSerena = () => {
 
                   {plano.duration > 1 && (
                     <p className="text-[#6B8E9B]/50 text-xs mb-4">
-                      {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mes
+                      {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mês
                     </p>
                   )}
 
                   <ul className="space-y-2 mb-6 text-left">
                     <li className="flex items-center gap-2 text-white/80 text-sm">
-                      <span className="text-[#6B8E9B]">&#10003;</span> Diario Emocional
+                      <span className="text-[#6B8E9B]">&#10003;</span> Diário Emocional
                     </li>
                     <li className="flex items-center gap-2 text-white/80 text-sm">
                       <span className="text-[#6B8E9B]">&#10003;</span> SOS Emocional
                     </li>
                     <li className="flex items-center gap-2 text-white/80 text-sm">
-                      <span className="text-[#6B8E9B]">&#10003;</span> Respiracao Guiada
+                      <span className="text-[#6B8E9B]">&#10003;</span> Respiração Guiada
                     </li>
                     <li className="flex items-center gap-2 text-white/80 text-sm">
-                      <span className="text-[#6B8E9B]">&#10003;</span> 8+ Rituais de Libertacao
+                      <span className="text-[#6B8E9B]">&#10003;</span> 8+ Rituais de Libertação
                     </li>
                     <li className="flex items-center gap-2 text-white/80 text-sm">
                       <span className="text-[#6B8E9B]">&#10003;</span> Coach Serena
@@ -668,7 +668,7 @@ const LandingSerena = () => {
                     className="mt-4 block w-full py-3 text-white rounded-full font-semibold transition-all hover:shadow-lg hover:opacity-90"
                     style={{ background: 'linear-gradient(135deg, #6B8E9B, #4a6e7b)' }}
                   >
-                    {i === 0 ? 'Experimentar gratis' : i === 1 ? 'Escolher este plano' : 'Subscrever anual'}
+                    {i === 0 ? 'Experimentar grátis' : i === 1 ? 'Escolher este plano' : 'Subscrever anual'}
                   </button>
                 </div>
               </ScrollReveal>
@@ -721,22 +721,22 @@ const LandingSerena = () => {
               className="text-3xl md:text-4xl font-bold text-white mb-4"
               style={{ fontFamily: 'var(--font-titulos)' }}
             >
-              Experimenta 7 dias gratis
+              Experimenta 7 dias grátis
             </h2>
             <p className="text-white/70 mb-4 text-lg">
-              Sem compromisso. Sem cartao. Cancelas quando quiseres.
+              Sem compromisso. Sem cartão. Cancelas quando quiseres.
             </p>
             <p className="text-white/50 mb-8">
-              Descobre como e sentir sem medo e fluir sem travar.
+              Descobre como é sentir sem medo e fluir sem travar.
             </p>
             <button
               onClick={handleComecar}
               className="inline-block px-10 py-5 bg-white text-[#1a2e3a] rounded-full font-bold text-xl hover:translate-y-[-3px] hover:shadow-xl transition-all"
             >
-              Quero comecar HOJE
+              Quero começar HOJE
             </button>
             <p className="text-white/40 text-sm mt-6">
-              7 dias gratis &middot; Acesso completo &middot; Cancela quando quiseres
+              7 dias grátis &middot; Acesso completo &middot; Cancela quando quiseres
             </p>
           </ScrollReveal>
         </div>
@@ -760,8 +760,8 @@ const LandingSerena = () => {
                 </span>
               </div>
               <p className="text-white/50 text-sm">
-                Emocao &amp; Fluidez.<br />
-                O espaco onde as tuas emocoes tem voz.
+                Emoção &amp; Fluidez.<br />
+                O espaço onde as tuas emoções têm voz.
               </p>
             </div>
             <div>
@@ -774,7 +774,7 @@ const LandingSerena = () => {
                   Funcionalidades
                 </a>
                 <a href="#precos" className="text-white/40 hover:text-white transition-colors text-sm">
-                  Precos
+                  Preços
                 </a>
                 <a href="/termos.pdf" className="text-white/40 hover:text-white transition-colors text-sm">
                   Termos
@@ -789,8 +789,8 @@ const LandingSerena = () => {
               <PartilharSocial
                 compact
                 url="https://app.seteecos.com/serena"
-                titulo="SERENA - Emocao & Fluidez"
-                texto="Descobre o SERENA, um programa de gestao emocional com diario emocional, SOS Emocional e coaching personalizado."
+                titulo="SERENA - Emoção & Fluidez"
+                texto="Descobre o SERENA, um programa de gestão emocional com diário emocional, SOS Emocional e coaching personalizado."
               />
             </div>
           </div>
