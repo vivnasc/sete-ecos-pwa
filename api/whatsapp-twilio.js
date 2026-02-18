@@ -1,11 +1,10 @@
 /**
- * API Endpoint: Enviar WhatsApp via Twilio
+ * API Endpoint: Enviar WhatsApp via Meta Cloud API
  *
  * Configuração no Vercel:
- * - TWILIO_ACCOUNT_SID: Account SID do Twilio
- * - TWILIO_AUTH_TOKEN: Auth Token do Twilio
- * - TWILIO_WHATSAPP_NUMBER: Número WhatsApp do Twilio (formato: whatsapp:+14155238886)
- * - COACH_WHATSAPP_NUMBER: Número da Vivianne (formato: whatsapp:+258851006473)
+ * - WHATSAPP_ACCESS_TOKEN: Token de acesso Meta Business
+ * - WHATSAPP_PHONE_NUMBER_ID: ID do número WhatsApp Business
+ * - VIVIANNE_PERSONAL_NUMBER: Número pessoal da coach (ex: 258851006473)
  */
 
 export default async function handler(req, res) {
@@ -30,18 +29,16 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Método não permitido' });
   }
 
-  const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
-  const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
-  const TWILIO_WHATSAPP_NUMBER = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886';
-  // Prioridade: VIVIANNE_PERSONAL_NUMBER > COACH_WHATSAPP_NUMBER > default
+  const WHATSAPP_ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
+  const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
   const personalNumber = (process.env.VIVIANNE_PERSONAL_NUMBER || '').trim();
-  const COACH_WHATSAPP_NUMBER = personalNumber
-    ? `whatsapp:+${personalNumber.replace(/^\+/, '')}`
-    : (process.env.COACH_WHATSAPP_NUMBER || 'whatsapp:+258851006473');
+  const COACH_NUMBER = personalNumber
+    ? personalNumber.replace(/[^0-9]/g, '')
+    : '258851006473';
 
-  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN) {
-    console.error('Twilio não configurado');
-    return res.status(500).json({ error: 'Twilio não configurado. Adiciona TWILIO_ACCOUNT_SID e TWILIO_AUTH_TOKEN no Vercel.' });
+  if (!WHATSAPP_ACCESS_TOKEN || !WHATSAPP_PHONE_NUMBER_ID) {
+    console.error('Meta WhatsApp API não configurada');
+    return res.status(500).json({ error: 'Meta WhatsApp API não configurada. Adiciona WHATSAPP_ACCESS_TOKEN e WHATSAPP_PHONE_NUMBER_ID no Vercel.' });
   }
 
   try {
@@ -51,40 +48,41 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Mensagem é obrigatória' });
     }
 
-    // Destino: coach por defeito, ou número específico
-    const destinatario = para || COACH_WHATSAPP_NUMBER;
+    // Destino: coach por defeito, ou número específico (só dígitos)
+    const destinatario = para
+      ? para.replace(/[^0-9]/g, '')
+      : COACH_NUMBER;
 
-    // Twilio API URL
-    const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
+    const url = `https://graph.facebook.com/v22.0/${WHATSAPP_PHONE_NUMBER_ID}/messages`;
 
-    // Autenticação Basic
-    const auth = Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString('base64');
-
-    const response = await fetch(twilioUrl, {
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Authorization': `Basic ${auth}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json',
       },
-      body: new URLSearchParams({
-        From: TWILIO_WHATSAPP_NUMBER,
-        To: destinatario,
-        Body: mensagem
-      })
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: destinatario,
+        type: 'text',
+        text: { body: mensagem },
+      }),
     });
 
     const result = await response.json();
 
     if (!response.ok) {
-      console.error('Erro Twilio:', result);
+      console.error('Erro Meta API:', result?.error?.message || JSON.stringify(result));
       return res.status(response.status).json({
-        error: result.message || 'Erro ao enviar WhatsApp',
-        code: result.code
+        error: result?.error?.message || 'Erro ao enviar WhatsApp',
+        code: result?.error?.code
       });
     }
 
-    console.log('WhatsApp enviado:', result.sid);
-    return res.status(200).json({ success: true, sid: result.sid });
+    const msgId = result.messages?.[0]?.id;
+    console.log('WhatsApp enviado via Meta:', msgId);
+    return res.status(200).json({ success: true, messageId: msgId });
 
   } catch (error) {
     console.error('Erro ao enviar WhatsApp:', error);
