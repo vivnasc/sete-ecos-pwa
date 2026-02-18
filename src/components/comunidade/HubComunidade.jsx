@@ -184,17 +184,17 @@ export default function HubComunidade() {
             </div>
           </div>
 
-          {/* Stats — glass horizontal cards */}
-          <div className="grid grid-cols-3 gap-2">
+          {/* Stats — gradient accent cards */}
+          <div className="grid grid-cols-3 gap-3">
             {[
-              { n: stats.reflexoes, label: 'Reflexões', cor: '#D97706' },
-              { n: stats.ressonancia, label: 'Ressonância', cor: '#EA580C' },
-              { n: stats.circulos, label: 'Círculos', cor: '#059669' }
+              { n: stats.reflexoes, label: 'Reflexões', cor: '#D97706', grad: 'linear-gradient(135deg, #FEF3C7, #FDE68A)' },
+              { n: stats.ressonancia, label: 'Ressonância', cor: '#EA580C', grad: 'linear-gradient(135deg, #FFEDD5, #FED7AA)' },
+              { n: stats.circulos, label: 'Círculos', cor: '#059669', grad: 'linear-gradient(135deg, #D1FAE5, #A7F3D0)' }
             ].map(s => (
-              <div key={s.label} className="glass-card-light rounded-2xl px-3 py-3 text-center"
-                style={{ background: 'rgba(255,255,255,0.55)', border: `1px solid ${s.cor}15` }}>
-                <span className="text-2xl font-bold block" style={{ fontFamily: 'var(--font-titulos)', color: '#292524' }}>{s.n}</span>
-                <p className="premium-label mt-0.5" style={{ color: s.cor, fontSize: '0.6rem' }}>
+              <div key={s.label} className="rounded-2xl px-3 py-4 text-center shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                style={{ background: s.grad, borderBottom: `3px solid ${s.cor}` }}>
+                <span className="text-3xl font-bold block" style={{ fontFamily: 'var(--font-titulos)', color: s.cor }}>{s.n}</span>
+                <p className="text-[10px] font-bold mt-1 uppercase tracking-widest" style={{ color: s.cor }}>
                   {s.label}
                 </p>
               </div>
@@ -327,30 +327,33 @@ export default function HubComunidade() {
 
       {/* ══════ ESPAÇOS — Grid moderno ══════ */}
       <div className="px-5 mb-5">
-        <h2 className="text-base font-semibold mb-3" style={{ fontFamily: 'var(--font-titulos)', color: '#292524' }}>
-          Explorar
-        </h2>
+        <div className="flex items-center gap-2 mb-4">
+          <h2 className="text-sm font-bold tracking-widest uppercase" style={{ fontFamily: 'var(--font-titulos)', color: '#78716C' }}>
+            Explorar
+          </h2>
+          <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, #D97706, transparent)' }} />
+        </div>
         <div className="grid grid-cols-2 gap-3">
           {[
-            { id: 'circulos', emoji: '👥', titulo: 'Círculos', desc: 'Grupos de transformação', rota: '/comunidade/circulos', cor: '#059669', bgCor: '#ECFDF5' },
-            { id: 'fogueira', emoji: '🔥', titulo: 'Fogueira', desc: 'Espaço efémero 24h', rota: '/comunidade/fogueira', cor: '#D97706', bgCor: '#FFFBEB' },
-            { id: 'sussurros', emoji: '💜', titulo: 'Sussurros', desc: 'Mensagens privadas', rota: '/comunidade/sussurros', cor: '#9333EA', bgCor: '#FAF5FF' },
-            { id: 'jornada', emoji: '🦋', titulo: 'Minha Jornada', desc: 'O teu caminho', rota: userId ? `/comunidade/jornada/${userId}` : '/comunidade/rio', cor: '#EA580C', bgCor: '#FFF7ED' }
+            { id: 'circulos', emoji: '👥', titulo: 'Círculos', desc: 'Grupos de transformação', rota: '/comunidade/circulos', cor: '#059669', bgGrad: 'linear-gradient(145deg, #ECFDF5 0%, #D1FAE5 100%)' },
+            { id: 'fogueira', emoji: '🔥', titulo: 'Fogueira', desc: 'Espaço efémero 24h', rota: '/comunidade/fogueira', cor: '#D97706', bgGrad: 'linear-gradient(145deg, #FFFBEB 0%, #FEF3C7 100%)' },
+            { id: 'sussurros', emoji: '💜', titulo: 'Sussurros', desc: 'Mensagens privadas', rota: '/comunidade/sussurros', cor: '#9333EA', bgGrad: 'linear-gradient(145deg, #FAF5FF 0%, #F3E8FF 100%)' },
+            { id: 'jornada', emoji: '🦋', titulo: 'Minha Jornada', desc: 'O teu caminho', rota: userId ? `/comunidade/jornada/${userId}` : '/comunidade/rio', cor: '#EA580C', bgGrad: 'linear-gradient(145deg, #FFF7ED 0%, #FFEDD5 100%)' }
           ].map(esp => (
             <button
               key={esp.id}
               onClick={() => navigate(esp.rota)}
-              className="rounded-2xl p-4 text-left transition-all duration-300 active:scale-95 hover:shadow-lg hover:-translate-y-0.5"
-              style={{ background: esp.bgCor, border: `1px solid ${esp.cor}15` }}
+              className="rounded-2xl p-4 text-left transition-all duration-300 active:scale-95 hover:shadow-xl hover:-translate-y-1 shadow-md"
+              style={{ background: esp.bgGrad, borderLeft: `4px solid ${esp.cor}` }}
             >
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-2.5"
-                style={{ background: `${esp.cor}15` }}>
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl mb-3 shadow-sm"
+                style={{ background: `${esp.cor}20`, border: `1px solid ${esp.cor}30` }}>
                 {esp.emoji}
               </div>
-              <h3 className="text-sm font-semibold mb-0.5" style={{ fontFamily: 'var(--font-titulos)', color: '#292524' }}>
+              <h3 className="text-sm font-bold mb-0.5" style={{ fontFamily: 'var(--font-titulos)', color: '#292524' }}>
                 {esp.titulo}
               </h3>
-              <p className="text-[10px]" style={{ color: '#A8A29E', fontFamily: 'var(--font-corpo)' }}>
+              <p className="text-[11px]" style={{ color: '#78716C', fontFamily: 'var(--font-corpo)' }}>
                 {esp.desc}
               </p>
             </button>
@@ -360,23 +363,29 @@ export default function HubComunidade() {
 
       {/* ══════ COMO FUNCIONA ══════ */}
       <div className="px-5 mb-6">
-        <h2 className="text-base font-semibold mb-3" style={{ fontFamily: 'var(--font-titulos)', color: '#292524' }}>
-          Como Funciona
-        </h2>
-        <div className="space-y-2">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, transparent, #D97706, transparent)' }} />
+          <h2 className="text-sm font-bold tracking-widest uppercase" style={{ fontFamily: 'var(--font-titulos)', color: '#78716C' }}>
+            Como Funciona
+          </h2>
+          <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, transparent, #D97706, transparent)' }} />
+        </div>
+        <div className="space-y-2.5">
           {[
-            { emoji: '🫧', titulo: 'Ressonância', desc: 'Cinco formas de reconhecer em vez de "likes"' },
-            { emoji: '🪞', titulo: 'Espelhos', desc: 'Devoluções de presença e escuta profunda' },
-            { emoji: '🦋', titulo: 'Jornada', desc: 'O teu caminho, não os teus seguidores' }
+            { emoji: '🫧', titulo: 'Ressonância', desc: 'Cinco formas de reconhecer em vez de "likes"', cor: '#D97706' },
+            { emoji: '🪞', titulo: 'Espelhos', desc: 'Devoluções de presença e escuta profunda', cor: '#9333EA' },
+            { emoji: '🦋', titulo: 'Jornada', desc: 'O teu caminho, não os teus seguidores', cor: '#EA580C' }
           ].map(c => (
-            <div key={c.titulo} className="glass-card-light rounded-xl p-3 flex items-center gap-3"
-              style={{ background: 'rgba(255,255,255,0.55)' }}>
-              <span className="text-lg flex-shrink-0">{c.emoji}</span>
+            <div key={c.titulo} className="rounded-xl p-3.5 flex items-center gap-3 shadow-sm transition-all duration-300 hover:shadow-md"
+              style={{ background: 'white', borderLeft: `3px solid ${c.cor}` }}>
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${c.cor}12` }}>
+                <span className="text-lg">{c.emoji}</span>
+              </div>
               <div className="flex-1 min-w-0">
-                <span className="text-xs font-semibold" style={{ fontFamily: 'var(--font-titulos)', color: '#292524' }}>
+                <span className="text-xs font-bold block" style={{ fontFamily: 'var(--font-titulos)', color: '#292524' }}>
                   {c.titulo}
                 </span>
-                <span className="text-xs ml-2" style={{ color: '#A8A29E', fontFamily: 'var(--font-corpo)' }}>
+                <span className="text-[11px] block mt-0.5" style={{ color: '#78716C', fontFamily: 'var(--font-corpo)' }}>
                   {c.desc}
                 </span>
               </div>

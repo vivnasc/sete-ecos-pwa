@@ -36,6 +36,24 @@ export default function Navigation({ variant = 'default' }) {
     return null
   }
 
+  // Landing/marketing pages: hide bottom nav but keep chatbot "V" on Vitalis landing
+  const landingPages = ['/vitalis', '/aurea', '/sete-ecos', '/bundle', '/serena', '/ignis', '/ventis', '/ecoa', '/imago', '/aurora']
+  if (landingPages.includes(location.pathname)) {
+    // On Vitalis landing, show only the chatbot button (above WhatsApp)
+    if (location.pathname === '/vitalis') {
+      return (
+        <button
+          onClick={() => navigate('/vitalis/chat')}
+          className="fixed bottom-24 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[#7C8B6F] to-[#5D6B4F] shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-2 border-white/30"
+          aria-label="Falar com Vivianne"
+        >
+          <span className="text-white font-bold text-lg">V</span>
+        </button>
+      )
+    }
+    return null
+  }
+
   // Coach navigation
   if (isCoachSection && isCoachUser) {
     const isClientes = location.pathname === '/coach' || location.pathname.startsWith('/coach/cliente')

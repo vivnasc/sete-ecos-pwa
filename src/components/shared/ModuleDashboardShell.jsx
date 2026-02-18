@@ -77,7 +77,7 @@ export default function ModuleDashboardShell({
         </div>
       </div>
 
-      {/* Stats cards — glass cards com hover */}
+      {/* Stats cards — prominent floating cards */}
       {stats.length > 0 && (
         <div className="px-5 -mt-5">
           <div className="max-w-lg mx-auto">
@@ -85,12 +85,18 @@ export default function ModuleDashboardShell({
               {stats.map((stat, i) => (
                 <div
                   key={i}
-                  className="glass-card rounded-2xl p-4 text-center"
-                  style={{ animationDelay: `${i * 0.1}s` }}
+                  className="rounded-2xl p-4 text-center shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
+                  style={{
+                    background: `linear-gradient(145deg, ${theme.color}22 0%, ${theme.color}11 100%)`,
+                    border: `1px solid ${theme.color}30`,
+                    backdropFilter: 'blur(20px)',
+                    borderBottom: `3px solid ${theme.color}`,
+                    animationDelay: `${i * 0.1}s`
+                  }}
                 >
-                  <span className="text-xl block mb-1.5">{stat.icon}</span>
-                  <p className="text-white font-bold text-lg">{stat.value}</p>
-                  <p className="text-white/40 text-[11px] mt-0.5 tracking-wide">{stat.label}</p>
+                  <span className="text-2xl block mb-1.5">{stat.icon}</span>
+                  <p className="text-white font-bold text-xl">{stat.value}</p>
+                  <p className="text-white/50 text-[10px] mt-1 tracking-widest font-bold uppercase">{stat.label}</p>
                 </div>
               ))}
             </div>
@@ -107,13 +113,19 @@ export default function ModuleDashboardShell({
                 <Link
                   key={i}
                   to={action.to}
-                  className="glass-card flex items-center gap-3 p-4 rounded-2xl"
+                  className="flex items-center gap-3 p-4 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                  style={{
+                    background: `linear-gradient(145deg, ${theme.color}18 0%, ${theme.color}08 100%)`,
+                    border: `1px solid ${theme.color}25`,
+                    borderLeft: `3px solid ${theme.color}60`,
+                    backdropFilter: 'blur(12px)'
+                  }}
                 >
                   <span className="text-2xl">{action.icon}</span>
                   <div>
-                    <p className="text-white font-medium text-sm">{action.label}</p>
+                    <p className="text-white font-semibold text-sm">{action.label}</p>
                     {action.subtitle && (
-                      <p className="text-white/35 text-xs mt-0.5">{action.subtitle}</p>
+                      <p className="text-white/40 text-xs mt-0.5">{action.subtitle}</p>
                     )}
                   </div>
                 </Link>

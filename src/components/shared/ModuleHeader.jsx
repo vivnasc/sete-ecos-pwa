@@ -89,14 +89,18 @@ export default function ModuleHeader({
 
   return (
     <header
-      className={`hero-gradient-animated ${className}`}
+      className={`hero-gradient-animated relative overflow-hidden ${className}`}
       style={{ background: `linear-gradient(135deg, ${theme.color} 0%, ${theme.color}dd 50%, ${theme.colorDark} 100%)` }}
     >
-      <div className="max-w-4xl mx-auto px-4 py-5">
+      {/* Decorative gradient accent strip */}
+      <div className="absolute top-0 left-0 right-0 h-1" style={{ background: `linear-gradient(90deg, transparent, ${theme.color}, white, ${theme.color}, transparent)` }} />
+      {/* Decorative orb */}
+      <div className="absolute top-0 right-0 w-40 h-40 rounded-full opacity-20 pointer-events-none" style={{ background: `radial-gradient(circle, white 0%, transparent 70%)`, filter: 'blur(40px)' }} />
+      <div className="relative max-w-4xl mx-auto px-4 py-5">
         <div className="flex items-center justify-between mb-3">
           <button
             onClick={handleBack}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-sm transition-all duration-300 backdrop-blur-sm"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-sm transition-all duration-300 backdrop-blur-sm shadow-lg"
           >
             <ArrowLeftIcon />
             <span>Voltar</span>
@@ -106,7 +110,7 @@ export default function ModuleHeader({
             {showHomeButton && (
               <button
                 onClick={() => navigate(dashboardPath)}
-                className="p-2 rounded-xl bg-white/15 hover:bg-white/25 text-white transition-all duration-300 backdrop-blur-sm"
+                className="p-2 rounded-xl bg-white/15 hover:bg-white/25 text-white transition-all duration-300 backdrop-blur-sm shadow-lg"
                 aria-label="Dashboard"
               >
                 <HomeIcon />
@@ -115,6 +119,7 @@ export default function ModuleHeader({
           </div>
         </div>
         <div className="text-white">
+          <p className="text-white/40 text-[10px] font-bold tracking-widest uppercase mb-1">{theme.name}</p>
           <h1 className="text-xl font-bold" style={{ fontFamily: 'var(--font-titulos)' }}>
             {title}
           </h1>
