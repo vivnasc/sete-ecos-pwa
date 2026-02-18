@@ -1,20 +1,14 @@
 /**
- * WhatsApp Notifications via Twilio
+ * WhatsApp Notifications via Meta Cloud API
  *
  * Configuração no Vercel:
- * 1. Criar conta em twilio.com
- * 2. Activar WhatsApp Sandbox ou Business API
- * 3. Adicionar variáveis de ambiente:
- *    - TWILIO_ACCOUNT_SID
- *    - TWILIO_AUTH_TOKEN
- *    - TWILIO_WHATSAPP_NUMBER (ex: whatsapp:+14155238886)
- *    - COACH_WHATSAPP_NUMBER (ex: whatsapp:+258851006473)
+ * - WHATSAPP_ACCESS_TOKEN: Token Meta Business
+ * - WHATSAPP_PHONE_NUMBER_ID: ID do número WhatsApp Business
+ * - VIVIANNE_PERSONAL_NUMBER: Número pessoal da coach
  */
 
-const COACH_PHONE = '+258851006473';
-
 /**
- * Envia mensagem WhatsApp via Twilio
+ * Envia mensagem WhatsApp via Meta Cloud API
  * @param {string} mensagem - Texto da mensagem
  * @param {string} para - Número de destino (opcional, usa coach por defeito)
  */
@@ -25,7 +19,7 @@ export async function enviarWhatsApp(mensagem, para = null) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         mensagem,
-        para: para ? `whatsapp:${para}` : null
+        para: para || null
       })
     });
 
@@ -36,7 +30,7 @@ export async function enviarWhatsApp(mensagem, para = null) {
       return { success: false, error: result.error };
     }
 
-    return { success: true, sid: result.sid };
+    return { success: true, messageId: result.messageId };
   } catch (error) {
     console.error('Erro de rede WhatsApp:', error);
     return { success: false, error: 'Erro de rede' };
