@@ -167,7 +167,7 @@ export default function LandingBundle() {
 
                 <h1
                   className="text-4xl md:text-5xl font-bold text-[#2D3A25] mb-6"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   Vitalis + Áurea
                   <br />
@@ -281,7 +281,7 @@ export default function LandingBundle() {
             <div className="text-center mb-12">
               <h2
                 className="text-3xl md:text-4xl font-bold text-[#2D3A25] mb-4"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 O Melhor de Ambos os Mundos
               </h2>
@@ -314,7 +314,7 @@ export default function LandingBundle() {
             <div className="text-center mb-12">
               <h2
                 className="text-3xl md:text-4xl font-bold mb-4"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Quanto Poupas com o Bundle?
               </h2>
@@ -385,7 +385,7 @@ export default function LandingBundle() {
             <div className="text-center mb-12">
               <h2
                 className="text-3xl md:text-4xl font-bold text-[#2D3A25] mb-4"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Quem Já Transformou com o Bundle
               </h2>
@@ -423,7 +423,7 @@ export default function LandingBundle() {
             <div className="text-center mb-12">
               <h2
                 className="text-3xl md:text-4xl font-bold text-[#2D3A25] mb-4"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Perguntas Frequentes
               </h2>
@@ -464,7 +464,7 @@ export default function LandingBundle() {
           <div className="max-w-4xl mx-auto px-4 text-center">
             <h2
               className="text-3xl md:text-4xl font-bold mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               {g('Pronto', 'Pronta')} para a Tua Transformação Completa?
             </h2>

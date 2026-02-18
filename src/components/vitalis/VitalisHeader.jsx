@@ -103,7 +103,7 @@ export default function VitalisHeader({
 
         {/* Title */}
         <div className="text-white">
-          <h1 className="text-xl font-bold" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+          <h1 className="text-xl font-bold" style={{ fontFamily: 'Playfair Display, serif' }}>
             {title}
           </h1>
           {subtitle && (

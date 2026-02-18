@@ -200,7 +200,7 @@ export default function InsightsSemanal() {
         {/* Main Card */}
         <div className="p-6 bg-gradient-to-br from-amber-600/20 to-amber-500/20 rounded-2xl border border-amber-500/30">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-amber-100" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <h2 className="text-2xl font-bold text-amber-100" style={{ fontFamily: 'var(--font-titulos)' }}>
               ÁUREA — A Tua Semana
             </h2>
           </div>

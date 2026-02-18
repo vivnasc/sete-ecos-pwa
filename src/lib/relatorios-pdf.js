@@ -109,7 +109,7 @@ export async function gerarRelatorioMensal(dados) {
     : 0;
 
   const html = `
-    <div style="font-family: 'Quicksand', sans-serif; max-width: 800px; margin: 0 auto;">
+    <div style="font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto;">
       ${gerarHeader('Relatório Mensal', mes)}
 
       <div style="padding: 0 20px;">
@@ -200,7 +200,7 @@ export async function gerarRelatorioFase(dados) {
   const duracaoFase = fase.numero === 1 ? '2 semanas' : fase.numero === 2 ? '4 semanas' : '6 semanas';
 
   const html = `
-    <div style="font-family: 'Quicksand', sans-serif; max-width: 800px; margin: 0 auto;">
+    <div style="font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto;">
       ${gerarHeader(`Fase ${fase.numero}: ${fase.nome}`, `Relatório de Conclusão`)}
 
       <div style="padding: 0 20px;">
@@ -272,7 +272,7 @@ export async function gerarRelatorioFinal(dados) {
   const consistencia = Math.round((totalRegistos / diasPrograma) * 100);
 
   const html = `
-    <div style="font-family: 'Quicksand', sans-serif; max-width: 800px; margin: 0 auto;">
+    <div style="font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto;">
       ${gerarHeader('Relatório de Conclusão', 'A tua jornada Vitalis')}
 
       <div style="padding: 0 20px;">

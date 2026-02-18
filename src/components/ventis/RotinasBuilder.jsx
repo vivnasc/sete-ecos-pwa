@@ -668,7 +668,7 @@ export default function RotinasBuilder() {
             <div className="text-5xl mb-4">🍃</div>
             <h2
               className="text-2xl text-white/90 mb-2"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Rotina {g('completo', 'completa')}!
             </h2>
@@ -687,7 +687,7 @@ export default function RotinasBuilder() {
               placeholder={g('Descreve como te sentes agora...', 'Descreve como te sentes agora...')}
               rows={4}
               className="w-full bg-white/10 border border-[#5D9B84]/30 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#5D9B84]/60 focus:ring-1 focus:ring-[#5D9B84]/30 resize-none transition-colors"
-              style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem' }}
+              style={{ fontFamily: 'var(--font-titulos)', fontSize: '1.05rem' }}
               aria-label="Como te sentes após a rotina"
             />
 
@@ -730,7 +730,7 @@ export default function RotinasBuilder() {
           <div className="text-6xl mb-6">🌿</div>
           <h2
             className="text-2xl text-white/90 mb-3"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             {g('Magnifico', 'Magnifica')}!
           </h2>
@@ -794,7 +794,7 @@ export default function RotinasBuilder() {
             <div className="flex items-center justify-between">
               <h3
                 className="text-white/90 text-lg"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 {editandoId ? 'Editar rotina' : 'Nova rotina'}
               </h3>
@@ -814,7 +814,7 @@ export default function RotinasBuilder() {
               onChange={(e) => setNomeRotina(e.target.value)}
               placeholder="Nome da rotina (ex: Ritual da Manhã)"
               className="w-full bg-white/10 border border-[#5D9B84]/30 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#5D9B84]/60 focus:ring-1 focus:ring-[#5D9B84]/30 transition-colors"
-              style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem' }}
+              style={{ fontFamily: 'var(--font-titulos)', fontSize: '1.05rem' }}
               aria-label="Nome da rotina"
             />
 
@@ -881,7 +881,7 @@ export default function RotinasBuilder() {
               }`}
               style={{
                 backgroundColor: (!salvando && nomeRotina.trim() && blocos.length > 0) ? VENTIS_COLOR : 'rgba(255,255,255,0.1)',
-                fontFamily: "'Cormorant Garamond', serif"
+                fontFamily: 'var(--font-titulos)'
               }}
             >
               {salvando ? 'A guardar...' : (editandoId ? 'Actualizar rotina' : 'Guardar rotina')}
@@ -996,7 +996,7 @@ export default function RotinasBuilder() {
           <section className="space-y-4 pt-2">
             <h3
               className="text-white/80 text-lg"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Historico
             </h3>

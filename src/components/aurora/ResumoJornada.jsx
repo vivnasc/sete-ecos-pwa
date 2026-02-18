@@ -237,7 +237,7 @@ export default function ResumoJornada() {
         >
           <h2
             className="text-xl font-bold mb-4 text-center"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             A Tua Jornada
           </h2>
@@ -287,7 +287,7 @@ export default function ResumoJornada() {
             <p className="text-4xl mb-4" aria-hidden="true">{'\uD83C\uDF05'}</p>
             <h3
               className="text-lg font-bold text-gray-800 mb-2"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               A tua jornada está a começar
             </h3>
@@ -300,7 +300,7 @@ export default function ResumoJornada() {
           <div className="space-y-4 mb-6">
             <h3
               className="text-lg font-bold text-gray-800"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Os Teus Ecos
             </h3>
@@ -428,7 +428,7 @@ export default function ResumoJornada() {
           >
             <h3
               className="text-lg font-bold text-gray-800 mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Evolução Global
             </h3>

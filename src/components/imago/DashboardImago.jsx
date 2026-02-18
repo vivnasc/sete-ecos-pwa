@@ -204,7 +204,7 @@ export default function DashboardImago() {
       >
         <h2
           className="text-white text-lg font-semibold mb-3"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Quem és tu hoje?
         </h2>

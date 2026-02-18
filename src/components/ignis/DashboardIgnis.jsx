@@ -208,7 +208,7 @@ export default function DashboardIgnis() {
       >
         <h2
           className="text-white text-lg font-semibold mb-3"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Escolha do Dia
         </h2>

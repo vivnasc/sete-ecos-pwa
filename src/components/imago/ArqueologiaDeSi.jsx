@@ -254,7 +254,7 @@ export default function ArqueologiaDeSi() {
             <span className="text-3xl">{camadaSelecionada.icon}</span>
             <h2
               className="text-xl font-bold"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               {camadaSelecionada.nome}
             </h2>

@@ -140,7 +140,7 @@ export default function AureaAuth() {
       <nav className="px-6 py-4 flex justify-between items-center">
         <Link to="/aurea" className="flex items-center gap-3">
           <img src="/logos/AUREA_LOGO_V3.png" alt="ÁUREA" className="w-10 h-10" />
-          <span className="text-xl font-bold text-amber-200" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <span className="text-xl font-bold text-amber-200" style={{ fontFamily: 'var(--font-titulos)' }}>
             ÁUREA
           </span>
         </Link>
@@ -156,7 +156,7 @@ export default function AureaAuth() {
             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
               <span className="text-3xl">✨</span>
             </div>
-            <h1 className="text-2xl font-bold text-amber-100 mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <h1 className="text-2xl font-bold text-amber-100 mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
               {isLogin ? g('Bem-vindo de volta', 'Bem-vinda de volta') : 'Começa a tua jornada'}
             </h1>
             <p className="text-amber-200/70">

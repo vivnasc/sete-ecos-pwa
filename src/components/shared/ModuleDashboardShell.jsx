@@ -43,7 +43,7 @@ export default function ModuleDashboardShell({
           <p className="text-white/60 text-sm mb-1">{theme.name}</p>
           <h1
             className="text-2xl font-bold text-white mb-1"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             {g('Bem-vindo', 'Bem-vinda')}{userName ? `, ${userName}` : ''}
           </h1>

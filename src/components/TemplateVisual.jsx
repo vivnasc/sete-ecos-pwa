@@ -169,7 +169,7 @@ async function renderDica(canvas, config) {
   const padding = 100;
   const maxW = width - padding * 2;
   const fontSize = texto.length > 120 ? 44 : texto.length > 80 ? 50 : texto.length > 40 ? 58 : 64;
-  ctx.font = `600 ${fontSize}px 'Cormorant Garamond', Georgia, serif`;
+  ctx.font = `600 ${fontSize}px 'Playfair Display', Georgia, serif`;
   ctx.fillStyle = '#FFFFFF';
   ctx.textAlign = 'center';
   const lines = wrapText(ctx, texto, maxW);
@@ -180,7 +180,7 @@ async function renderDica(canvas, config) {
   // Subtitle
   if (subtitulo) {
     const subY = startY + totalH + 30;
-    ctx.font = `400 ${Math.round(fontSize * 0.45)}px 'Quicksand', sans-serif`;
+    ctx.font = `400 ${Math.round(fontSize * 0.45)}px 'Inter', sans-serif`;
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.fillText(subtitulo, width / 2, subY);
   }
@@ -194,10 +194,10 @@ async function renderDica(canvas, config) {
   ctx.stroke();
 
   // Footer
-  ctx.font = `600 22px 'Quicksand', sans-serif`;
+  ctx.font = `600 22px 'Inter', sans-serif`;
   ctx.fillStyle = 'rgba(255,255,255,0.8)';
   ctx.fillText('app.seteecos.com', width / 2, bottomLineY + 45);
-  ctx.font = `400 18px 'Quicksand', sans-serif`;
+  ctx.font = `400 18px 'Inter', sans-serif`;
   ctx.fillStyle = 'rgba(255,255,255,0.4)';
   ctx.fillText(`${cores.nome} • @seteecos`, width / 2, bottomLineY + 75);
 }
@@ -275,7 +275,7 @@ async function renderCarrossel(canvas, config) {
 
   // Calculate title
   const titleSize = texto.length > 100 ? 36 : texto.length > 70 ? 42 : texto.length > 40 ? 50 : 58;
-  ctx.font = `700 ${titleSize}px 'Cormorant Garamond', Georgia, serif`;
+  ctx.font = `700 ${titleSize}px 'Playfair Display', Georgia, serif`;
   const titleLines = wrapText(ctx, texto, maxW);
   const titleH = titleLines.length * (titleSize * 1.35);
 
@@ -284,7 +284,7 @@ async function renderCarrossel(canvas, config) {
   let subLines = [];
   let subH = 0;
   if (subtitulo) {
-    ctx.font = `400 ${subSize}px 'Quicksand', sans-serif`;
+    ctx.font = `400 ${subSize}px 'Inter', sans-serif`;
     subLines = wrapText(ctx, subtitulo, maxW);
     subH = subLines.length * (subSize * 1.5) + 35;
   }
@@ -294,7 +294,7 @@ async function renderCarrossel(canvas, config) {
   const textStartY = (height - totalTextH) / 2 + titleSize * 0.3;
 
   // Draw title
-  ctx.font = `700 ${titleSize}px 'Cormorant Garamond', Georgia, serif`;
+  ctx.font = `700 ${titleSize}px 'Playfair Display', Georgia, serif`;
   ctx.fillStyle = textColor;
   drawCenteredText(ctx, titleLines, width / 2, textStartY, titleSize * 1.35);
 
@@ -306,7 +306,7 @@ async function renderCarrossel(canvas, config) {
   // Subtitle
   if (subtitulo && subLines.length > 0) {
     const subStartY = accentY + 28;
-    ctx.font = `400 ${subSize}px 'Quicksand', sans-serif`;
+    ctx.font = `400 ${subSize}px 'Inter', sans-serif`;
     ctx.fillStyle = subColor;
     drawCenteredText(ctx, subLines, width / 2, subStartY, subSize * 1.5);
   }
@@ -323,22 +323,22 @@ async function renderCarrossel(canvas, config) {
     ctx.fillStyle = '#FFFFFF';
     roundRect(ctx, btnX, btnY, btnW, btnH, 32);
     ctx.fill();
-    ctx.font = `700 24px 'Quicksand', sans-serif`;
+    ctx.font = `700 24px 'Inter', sans-serif`;
     ctx.fillStyle = cores.primary;
     ctx.fillText('Começa Agora', width / 2, btnY + 40);
   } else if (!isFirst) {
-    ctx.font = `500 18px 'Quicksand', sans-serif`;
+    ctx.font = `500 18px 'Inter', sans-serif`;
     ctx.fillStyle = isDark ? 'rgba(255,255,255,0.4)' : (cores.primary + '50');
     ctx.fillText('Desliza ▸', width / 2, height - (isStories ? 160 : 80));
   } else {
     // Cover slide - "Desliza para descobrir"
-    ctx.font = `500 20px 'Quicksand', sans-serif`;
+    ctx.font = `500 20px 'Inter', sans-serif`;
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
     ctx.fillText('Desliza para descobrir ▸', width / 2, height - (isStories ? 200 : 110));
   }
 
   // Footer
-  ctx.font = `400 16px 'Quicksand', sans-serif`;
+  ctx.font = `400 16px 'Inter', sans-serif`;
   ctx.fillStyle = isDark ? 'rgba(255,255,255,0.25)' : (cores.primary + '35');
   ctx.fillText('app.seteecos.com', width / 2, height - (isStories ? 120 : 45));
 }
@@ -376,7 +376,7 @@ async function renderTestemunho(canvas, config) {
   const padding = 100;
   const maxW = width - padding * 2;
   const fontSize = texto.length > 100 ? 38 : texto.length > 60 ? 44 : 52;
-  ctx.font = `italic 500 ${fontSize}px 'Cormorant Garamond', Georgia, serif`;
+  ctx.font = `italic 500 ${fontSize}px 'Playfair Display', Georgia, serif`;
   ctx.fillStyle = '#FFFFFF';
   ctx.textAlign = 'center';
   const lines = wrapText(ctx, texto, maxW);
@@ -390,7 +390,7 @@ async function renderTestemunho(canvas, config) {
   ctx.fillRect(width / 2 - 30, authorY, 60, 3);
 
   if (subtitulo) {
-    ctx.font = `600 26px 'Quicksand', sans-serif`;
+    ctx.font = `600 26px 'Inter', sans-serif`;
     ctx.fillStyle = cores.accent;
     ctx.fillText(subtitulo, width / 2, authorY + 40);
   }
@@ -402,10 +402,10 @@ async function renderTestemunho(canvas, config) {
     const logoSize = 40;
     ctx.drawImage(logo, (width - logoSize) / 2, footerY, logoSize, logoSize);
   }
-  ctx.font = `500 20px 'Quicksand', sans-serif`;
+  ctx.font = `500 20px 'Inter', sans-serif`;
   ctx.fillStyle = 'rgba(255,255,255,0.5)';
   ctx.fillText(cores.nome, width / 2, footerY + 65);
-  ctx.font = `400 16px 'Quicksand', sans-serif`;
+  ctx.font = `400 16px 'Inter', sans-serif`;
   ctx.fillStyle = 'rgba(255,255,255,0.3)';
   ctx.fillText('app.seteecos.com', width / 2, footerY + 90);
 }
@@ -455,7 +455,7 @@ async function renderCTA(canvas, config) {
   const maxW = width - padding * 2;
   const headY = isStories ? 450 : 320;
   const headSize = texto.length > 50 ? 48 : 58;
-  ctx.font = `800 ${headSize}px 'Cormorant Garamond', Georgia, serif`;
+  ctx.font = `800 ${headSize}px 'Playfair Display', Georgia, serif`;
   ctx.fillStyle = '#FFFFFF';
   ctx.textAlign = 'center';
   const headLines = wrapText(ctx, texto, maxW);
@@ -468,7 +468,7 @@ async function renderCTA(canvas, config) {
   // Sub-headline
   if (subtitulo) {
     y += 15;
-    ctx.font = `400 28px 'Quicksand', sans-serif`;
+    ctx.font = `400 28px 'Inter', sans-serif`;
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
     const subLines = wrapText(ctx, subtitulo, maxW);
     subLines.forEach(line => {
@@ -494,15 +494,15 @@ async function renderCTA(canvas, config) {
   ctx.fill();
 
   // Button text
-  ctx.font = `700 26px 'Quicksand', sans-serif`;
+  ctx.font = `700 26px 'Inter', sans-serif`;
   ctx.fillStyle = cores.primary;
   ctx.fillText('Experimenta Agora', width / 2, btnY + 45);
 
   // Footer
-  ctx.font = `500 22px 'Quicksand', sans-serif`;
+  ctx.font = `500 22px 'Inter', sans-serif`;
   ctx.fillStyle = 'rgba(255,255,255,0.6)';
   ctx.fillText('app.seteecos.com', width / 2, height - (isStories ? 150 : 80));
-  ctx.font = `400 18px 'Quicksand', sans-serif`;
+  ctx.font = `400 18px 'Inter', sans-serif`;
   ctx.fillStyle = 'rgba(255,255,255,0.3)';
   ctx.fillText(`${cores.nome} • ${cores.subtitulo}`, width / 2, height - (isStories ? 115 : 50));
 }
@@ -533,7 +533,7 @@ async function renderStats(canvas, config) {
 
   // The big stat number (first line of texto)
   const centerY = height / 2 - (isStories ? 100 : 50);
-  ctx.font = `900 ${isStories ? 160 : 130}px 'Cormorant Garamond', Georgia, serif`;
+  ctx.font = `900 ${isStories ? 160 : 130}px 'Playfair Display', Georgia, serif`;
   ctx.fillStyle = cores.primary;
   ctx.textAlign = 'center';
   ctx.fillText(texto.split('\n')[0] || texto, width / 2, centerY);
@@ -542,7 +542,7 @@ async function renderStats(canvas, config) {
   if (subtitulo) {
     const padding = 100;
     const maxW = width - padding * 2;
-    ctx.font = `500 32px 'Quicksand', sans-serif`;
+    ctx.font = `500 32px 'Inter', sans-serif`;
     ctx.fillStyle = cores.textDark + 'CC';
     const lines = wrapText(ctx, subtitulo, maxW);
     let y = centerY + 50;
@@ -557,10 +557,10 @@ async function renderStats(canvas, config) {
   ctx.fillRect(width / 2 - 40, centerY + 15, 80, 4);
 
   // Footer
-  ctx.font = `500 20px 'Quicksand', sans-serif`;
+  ctx.font = `500 20px 'Inter', sans-serif`;
   ctx.fillStyle = cores.primary;
   ctx.fillText(cores.nome, width / 2, height - (isStories ? 130 : 70));
-  ctx.font = `400 16px 'Quicksand', sans-serif`;
+  ctx.font = `400 16px 'Inter', sans-serif`;
   ctx.fillStyle = cores.textDark + '60';
   ctx.fillText('app.seteecos.com', width / 2, height - (isStories ? 100 : 42));
 }
@@ -642,7 +642,7 @@ async function renderStatusWA(canvas, config) {
     ctx.drawImage(logo, (width - logoSize) / 2, 80, logoSize, logoSize);
   }
   ctx.textAlign = 'center';
-  ctx.font = `600 26px 'Quicksand', sans-serif`;
+  ctx.font = `600 26px 'Inter', sans-serif`;
   ctx.fillStyle = cores.accent || '#FFFFFF';
   ctx.fillText(cores.nome, width / 2, 185);
   ctx.fillStyle = cores.accent || '#FFFFFF';
@@ -654,7 +654,7 @@ async function renderStatusWA(canvas, config) {
   const padding = 90;
   const maxW = width - padding * 2;
   const fontSize = texto.length > 100 ? 46 : texto.length > 60 ? 54 : texto.length > 35 ? 62 : 70;
-  ctx.font = `800 ${fontSize}px 'Cormorant Garamond', Georgia, serif`;
+  ctx.font = `800 ${fontSize}px 'Playfair Display', Georgia, serif`;
   const mainLines = wrapText(ctx, texto, maxW);
   const mainH = mainLines.length * (fontSize * 1.3);
 
@@ -662,7 +662,7 @@ async function renderStatusWA(canvas, config) {
   const subSize = Math.round(fontSize * 0.45);
   let subH = 0;
   if (subtitulo) {
-    ctx.font = `500 ${subSize}px 'Quicksand', sans-serif`;
+    ctx.font = `500 ${subSize}px 'Inter', sans-serif`;
     subLines = wrapText(ctx, subtitulo, maxW);
     subH = subLines.length * (subSize * 1.5) + 35;
   }
@@ -671,7 +671,7 @@ async function renderStatusWA(canvas, config) {
   const textStartY = textZoneTop + (textZoneH - totalTextH) / 2 + fontSize * 0.3;
 
   // 6) Texto principal com sombra
-  ctx.font = `800 ${fontSize}px 'Cormorant Garamond', Georgia, serif`;
+  ctx.font = `800 ${fontSize}px 'Playfair Display', Georgia, serif`;
   ctx.fillStyle = '#FFFFFF';
   ctx.shadowColor = 'rgba(0,0,0,0.5)';
   ctx.shadowBlur = 10;
@@ -686,7 +686,7 @@ async function renderStatusWA(canvas, config) {
   // 7) Subtítulo
   if (subtitulo && subLines.length > 0) {
     const subY = textStartY + mainH + 35;
-    ctx.font = `500 ${subSize}px 'Quicksand', sans-serif`;
+    ctx.font = `500 ${subSize}px 'Inter', sans-serif`;
     ctx.fillStyle = 'rgba(255,255,255,0.85)';
     ctx.shadowColor = 'rgba(0,0,0,0.3)';
     ctx.shadowBlur = 6;
@@ -705,10 +705,10 @@ async function renderStatusWA(canvas, config) {
   ctx.fillStyle = stripGrad;
   ctx.fillRect(0, stripY, width, stripH);
 
-  ctx.font = `700 26px 'Quicksand', sans-serif`;
+  ctx.font = `700 26px 'Inter', sans-serif`;
   ctx.fillStyle = '#FFFFFF';
   ctx.fillText('app.seteecos.com', width / 2, height - 85);
-  ctx.font = `500 20px 'Quicksand', sans-serif`;
+  ctx.font = `500 20px 'Inter', sans-serif`;
   ctx.fillStyle = 'rgba(255,255,255,0.65)';
   ctx.fillText(cores.subtitulo || '@seteecos', width / 2, height - 50);
 }
@@ -767,7 +767,7 @@ async function renderStatusMinimal(canvas, config) {
     ctx.drawImage(logo, (width - logoSize) / 2, 80, logoSize, logoSize);
   }
   ctx.textAlign = 'center';
-  ctx.font = `600 26px 'Quicksand', sans-serif`;
+  ctx.font = `600 26px 'Inter', sans-serif`;
   ctx.fillStyle = cores.accent || '#FFFFFF';
   ctx.fillText(cores.nome, width / 2, 185);
 
@@ -783,7 +783,7 @@ async function renderStatusMinimal(canvas, config) {
   const padding = 90;
   const maxW = width - padding * 2;
   const fontSize = texto.length > 100 ? 46 : texto.length > 60 ? 54 : texto.length > 35 ? 62 : 70;
-  ctx.font = `700 ${fontSize}px 'Cormorant Garamond', Georgia, serif`;
+  ctx.font = `700 ${fontSize}px 'Playfair Display', Georgia, serif`;
   const mainLines = wrapText(ctx, texto, maxW);
   const mainH = mainLines.length * (fontSize * 1.35);
 
@@ -791,7 +791,7 @@ async function renderStatusMinimal(canvas, config) {
   const subSize = Math.round(fontSize * 0.45);
   let subH = 0;
   if (subtitulo) {
-    ctx.font = `400 ${subSize}px 'Quicksand', sans-serif`;
+    ctx.font = `400 ${subSize}px 'Inter', sans-serif`;
     subLines = wrapText(ctx, subtitulo, maxW);
     subH = subLines.length * (subSize * 1.5) + 35;
   }
@@ -800,7 +800,7 @@ async function renderStatusMinimal(canvas, config) {
   const textStartY = textZoneTop + (textZoneH - totalTextH) / 2 + fontSize * 0.3;
 
   // 6) Texto principal
-  ctx.font = `700 ${fontSize}px 'Cormorant Garamond', Georgia, serif`;
+  ctx.font = `700 ${fontSize}px 'Playfair Display', Georgia, serif`;
   ctx.fillStyle = '#FFFFFF';
   drawCenteredText(ctx, mainLines, width / 2, textStartY, fontSize * 1.35);
 
@@ -814,7 +814,7 @@ async function renderStatusMinimal(canvas, config) {
   // 7) Subtítulo
   if (subtitulo && subLines.length > 0) {
     const subY = accentY + 25;
-    ctx.font = `400 ${subSize}px 'Quicksand', sans-serif`;
+    ctx.font = `400 ${subSize}px 'Inter', sans-serif`;
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     drawCenteredText(ctx, subLines, width / 2, subY, subSize * 1.5);
   }
@@ -823,10 +823,10 @@ async function renderStatusMinimal(canvas, config) {
   ctx.fillStyle = 'rgba(255,255,255,0.15)';
   ctx.fillRect(width * 0.15, height - 170, width * 0.7, 1);
 
-  ctx.font = `600 24px 'Quicksand', sans-serif`;
+  ctx.font = `600 24px 'Inter', sans-serif`;
   ctx.fillStyle = 'rgba(255,255,255,0.7)';
   ctx.fillText('app.seteecos.com', width / 2, height - 110);
-  ctx.font = `400 18px 'Quicksand', sans-serif`;
+  ctx.font = `400 18px 'Inter', sans-serif`;
   ctx.fillStyle = 'rgba(255,255,255,0.35)';
   ctx.fillText(`${cores.nome} • ${cores.subtitulo}`, width / 2, height - 78);
 }

@@ -42,9 +42,9 @@ const BROADCAST_TEMPLATES = {
   catalogo: {
     assunto: (nome) => `${nome}, conhece o catálogo completo Sete Ecos`,
     html: (nome) => `
-      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+      <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
         <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 26px;">Catálogo Sete Ecos 2026</h1>
+          <h1 style="font-family: 'Playfair Display', serif; color: #4A4035; font-size: 26px;">Catálogo Sete Ecos 2026</h1>
           <p style="color: #6B5C4C;">Olá ${nome}, aqui está tudo sobre o nosso ecossistema</p>
         </div>
 
@@ -116,8 +116,8 @@ const BROADCAST_TEMPLATES = {
   promo: {
     assunto: (nome) => `${nome}, 20% de desconto no VITALIS — código exclusivo`,
     html: (nome) => `
-      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
-        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 26px; text-align: center;">${nome}, tenho um presente para ti</h1>
+      <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <h1 style="font-family: 'Playfair Display', serif; color: #4A4035; font-size: 26px; text-align: center;">${nome}, tenho um presente para ti</h1>
 
         <div style="background: linear-gradient(135deg, #2C2C2C, #1a1a1a); color: white; padding: 30px; border-radius: 16px; margin: 24px 0; text-align: center;">
           <p style="font-size: 12px; letter-spacing: 3px; margin: 0; color: #FF6B6B;">OFERTA EXCLUSIVA</p>
@@ -145,8 +145,8 @@ const BROADCAST_TEMPLATES = {
   'convite-whatsapp': {
     assunto: (nome) => `${nome}, agora podes falar comigo no WhatsApp!`,
     html: (nome) => `
-      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
-        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 26px; text-align: center;">Novidade, ${nome}!</h1>
+      <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <h1 style="font-family: 'Playfair Display', serif; color: #4A4035; font-size: 26px; text-align: center;">Novidade, ${nome}!</h1>
 
         <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8; text-align: center;">Agora podes falar comigo diretamente no WhatsApp!</p>
 

@@ -143,7 +143,7 @@ export default function MinhaConta() {
   };
 
   return (
-    <div className="min-h-screen pb-24" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+    <div className="min-h-screen pb-24" style={{ fontFamily: 'var(--font-corpo)' }}>
       {/* Background */}
       <div className={`fixed inset-0 -z-10 ${isDark ? 'bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f0f23]' : ''}`}
         style={!isDark ? { background: 'linear-gradient(135deg, #FAF6F0 0%, #F0E6D4 50%, #E8D5A3 100%)' } : undefined}
@@ -173,11 +173,11 @@ export default function MinhaConta() {
             <div className="flex items-center gap-4">
               <div className="relative flex-shrink-0">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#C9A227] to-[#8B6914] flex items-center justify-center shadow-lg">
-                  <span className="text-white text-lg font-bold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{initials}</span>
+                  <span className="text-white text-lg font-bold" style={{ fontFamily: 'var(--font-titulos)' }}>{initials}</span>
                 </div>
               </div>
               <div className="flex-1 min-w-0">
-                <h1 className={`text-xl font-bold truncate ${isDark ? 'text-gray-100' : 'text-[#4A3728]'}`} style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h1 className={`text-xl font-bold truncate ${isDark ? 'text-gray-100' : 'text-[#4A3728]'}`} style={{ fontFamily: 'var(--font-titulos)' }}>
                   {displayName}
                 </h1>
                 <p className={`text-xs truncate ${isDark ? 'text-gray-400' : 'text-[#6B5344]/50'}`}>{user?.email}</p>

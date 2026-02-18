@@ -106,7 +106,7 @@ export default function AureaOnboarding() {
           <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
             <span className="text-4xl">✨</span>
           </div>
-          <h1 className="text-3xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h1 className="text-3xl font-bold text-amber-100 mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
             {g('Bem-vindo à ÁUREA', 'Bem-vinda à ÁUREA')}
           </h1>
           <p className="text-amber-200/80 text-lg leading-relaxed">
@@ -125,7 +125,7 @@ export default function AureaOnboarding() {
           <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-amber-400/20 to-amber-600/20 border border-amber-400/30 flex items-center justify-center">
             <span className="text-3xl">💰</span>
           </div>
-          <h2 className="text-2xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-2xl font-bold text-amber-100 mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
             Valor & Presença
           </h2>
           <p className="text-amber-200/80 leading-relaxed">
@@ -148,7 +148,7 @@ export default function AureaOnboarding() {
           <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-amber-400/20 to-amber-600/20 border border-amber-400/30 flex items-center justify-center">
             <span className="text-3xl">💎</span>
           </div>
-          <h2 className="text-2xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-2xl font-bold text-amber-100 mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
             Só tu e tu
           </h2>
           <p className="text-amber-200/80 leading-relaxed">
@@ -170,7 +170,7 @@ export default function AureaOnboarding() {
             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-400/20 to-amber-600/20 border border-amber-400/30 flex items-center justify-center">
               <span className="text-3xl">📊</span>
             </div>
-            <h2 className="text-2xl font-bold text-amber-100 mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <h2 className="text-2xl font-bold text-amber-100 mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
               A tua Quota de Presença
             </h2>
             <p className="text-amber-200/70 text-sm">
@@ -260,7 +260,7 @@ export default function AureaOnboarding() {
           <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
             <span className="text-4xl">👑</span>
           </div>
-          <h2 className="text-2xl font-bold text-amber-100 mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-2xl font-bold text-amber-100 mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
             Tudo pronto
           </h2>
           <p className="text-amber-200/80 leading-relaxed mb-6">

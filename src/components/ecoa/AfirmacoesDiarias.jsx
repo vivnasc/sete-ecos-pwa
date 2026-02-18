@@ -335,7 +335,7 @@ export default function AfirmacoesDiarias() {
             {historico.length === 0 ? (
               <div className="text-center py-16 space-y-4">
                 <div className="text-4xl">{'\uD83D\uDD0A'}</div>
-                <h3 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h3 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                   Ainda sem afirmacoes
                 </h3>
                 <p className="text-sm text-gray-400 max-w-xs mx-auto">
@@ -371,7 +371,7 @@ export default function AfirmacoesDiarias() {
                   {'\uD83D\uDD0A'}
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-white mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  <h2 className="text-xl font-semibold text-white mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
                     Pratica {g('completo', 'completa')}!
                   </h2>
                   <p className="text-sm text-gray-400 max-w-xs">
@@ -402,7 +402,7 @@ export default function AfirmacoesDiarias() {
 
                 {/* Instructions */}
                 <div className="text-center py-4">
-                  <h2 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  <h2 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                     Repete cada uma em voz alta 3 vezes
                   </h2>
                   <p className="text-sm text-gray-400 mt-2">
@@ -446,7 +446,7 @@ export default function AfirmacoesDiarias() {
                           className={`text-base leading-relaxed transition-all duration-200 ${
                             checkedItems[idx] ? 'text-white' : 'text-gray-300'
                           }`}
-                          style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.1rem' }}
+                          style={{ fontFamily: 'var(--font-titulos)', fontSize: '1.1rem' }}
                         >
                           "{af}"
                         </p>

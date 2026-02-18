@@ -29,11 +29,11 @@ const emailTemplate = (content, preheader) => `
   <meta name="color-scheme" content="light">
   <meta name="supported-color-schemes" content="light">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap');
-    body { margin: 0; padding: 0; font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background-color: #F5F2ED; }
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
+    body { margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background-color: #F5F2ED; }
     .container { max-width: 600px; margin: 0 auto; background-color: #FFFFFF; }
     .header { background: linear-gradient(135deg, #7C8B6F 0%, #6B7A5D 100%); padding: 40px 30px; text-align: center; }
-    .header h1 { font-family: 'Cormorant Garamond', serif; color: #FFFFFF; margin: 0; font-size: 32px; font-weight: 700; }
+    .header h1 { font-family: 'Playfair Display', serif; color: #FFFFFF; margin: 0; font-size: 32px; font-weight: 700; }
     .content { padding: 40px 30px; color: #4A4035; }
     .content p { line-height: 1.7; margin-bottom: 16px; font-size: 16px; }
     .cta { text-align: center; margin: 32px 0; }

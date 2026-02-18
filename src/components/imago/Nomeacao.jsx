@@ -81,7 +81,7 @@ const IntroSection = () => (
     <div>
       <h2
         className="text-xl font-semibold text-white"
-        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+        style={{ fontFamily: 'var(--font-titulos)' }}
       >
         Ritual de Nomeacao
       </h2>
@@ -104,7 +104,7 @@ const NomeActualDisplay = ({ nome, significado }) => (
     <h2
       className="text-3xl font-bold text-white leading-tight"
       style={{
-        fontFamily: "'Cormorant Garamond', serif",
+        fontFamily: 'var(--font-titulos)',
         textShadow: `0 0 30px ${ACCENT}44`
       }}
     >
@@ -142,7 +142,7 @@ const NomeForm = ({ nome, setNome, significado, setSignificado, onSubmit, saving
         className="w-full p-4 rounded-xl text-white placeholder-gray-500 text-lg focus:outline-none focus:ring-2 transition-all duration-200"
         style={{
           background: 'rgba(255,255,255,0.06)',
-          fontFamily: "'Cormorant Garamond', serif",
+          fontFamily: 'var(--font-titulos)',
           focusRingColor: ACCENT
         }}
         aria-label="O teu nome escolhido"
@@ -229,7 +229,7 @@ const HistoricoNomes = ({ historico }) => {
     <div className="space-y-4 animate-fadeInImago">
       <h3
         className="text-lg font-semibold text-white"
-        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+        style={{ fontFamily: 'var(--font-titulos)' }}
       >
         Nomes que ja habitei
       </h3>
@@ -247,7 +247,7 @@ const HistoricoNomes = ({ historico }) => {
               <div className="pb-6 flex-1 min-w-0">
                 <p
                   className="text-base font-medium text-white/90"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   {item.nome}
                 </p>
@@ -289,14 +289,14 @@ const SuccessScreen = ({ nome, onContinue }) => (
     <div>
       <h2
         className="text-xl font-semibold text-white mb-2"
-        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+        style={{ fontFamily: 'var(--font-titulos)' }}
       >
         {g('Es agora nomeado', 'Es agora nomeada')}
       </h2>
       <p
         className="text-2xl font-bold mt-3"
         style={{
-          fontFamily: "'Cormorant Garamond', serif",
+          fontFamily: 'var(--font-titulos)',
           color: ACCENT_LIGHT,
           textShadow: `0 0 20px ${ACCENT}44`
         }}

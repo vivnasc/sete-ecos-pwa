@@ -80,7 +80,7 @@ const LandingVentis = () => {
   ]
 
   return (
-    <div className="min-h-screen" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+    <div className="min-h-screen" style={{ fontFamily: 'var(--font-corpo)' }}>
 
       {/* ===== HERO ===== */}
       <header
@@ -98,14 +98,14 @@ const LandingVentis = () => {
 
           <h1
             className="text-5xl md:text-7xl font-bold text-white mb-4"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             VENTIS
           </h1>
 
           <p
             className="text-xl md:text-2xl text-white/80 mb-2"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}
+            style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}
           >
             Energia &amp; Ritmo
           </p>
@@ -136,7 +136,7 @@ const LandingVentis = () => {
         <div className="max-w-3xl mx-auto text-center">
           <h2
             className="text-3xl md:text-4xl font-bold text-white mb-6"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Quantas vezes sentiste que a energia acabou antes do dia?
           </h2>
@@ -180,7 +180,7 @@ const LandingVentis = () => {
           <div className="text-center mb-14">
             <h2
               className="text-3xl md:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               O Ventis é o espaço onde encontras o teu ritmo natural
             </h2>
@@ -198,7 +198,7 @@ const LandingVentis = () => {
                 <div className="text-3xl mb-4 group-hover:scale-110 transition-transform">
                   {f.icone}
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h3 className="text-lg font-bold text-white mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
                   {f.titulo}
                 </h3>
                 <p className="text-[#5D9B84]/70 text-sm">{f.desc}</p>
@@ -214,7 +214,7 @@ const LandingVentis = () => {
           <div className="text-center mb-14">
             <h2
               className="text-3xl md:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Como funciona
             </h2>
@@ -231,7 +231,7 @@ const LandingVentis = () => {
               >
                 <span
                   className="absolute top-3 right-4 text-5xl font-bold text-white/5"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   {p.numero}
                 </span>
@@ -243,7 +243,7 @@ const LandingVentis = () => {
                 </div>
                 <h3
                   className="text-xl font-bold text-white mb-3"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   {p.titulo}
                 </h3>
@@ -260,7 +260,7 @@ const LandingVentis = () => {
           <div className="text-center mb-14">
             <h2
               className="text-3xl md:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Escolhe o teu plano
             </h2>
@@ -287,7 +287,7 @@ const LandingVentis = () => {
 
                 <h3
                   className="text-2xl font-bold text-white mb-1"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   {plano.name}
                 </h3>
@@ -334,7 +334,7 @@ const LandingVentis = () => {
         <div className="max-w-2xl mx-auto">
           <h2
             className="text-3xl md:text-4xl font-bold text-white mb-4"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Experimenta 7 dias grátis
           </h2>
@@ -365,7 +365,7 @@ const LandingVentis = () => {
           <div className="flex items-center gap-3">
             <span
               className="text-xl font-bold text-[#5D9B84]"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               VENTIS
             </span>

@@ -262,7 +262,7 @@ const ReceitaDetalhe = () => {
               {origemLabels[receita.origem] || '🌍 Internacional'}
             </span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+          <h1 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg" style={{ fontFamily: 'Playfair Display, serif' }}>
             {receita.titulo}
           </h1>
         </div>

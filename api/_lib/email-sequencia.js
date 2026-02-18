@@ -47,9 +47,9 @@ const SEQUENCIA = [
     dia: 0,
     assunto: 'Bem-vindo/a ao Sete Ecos!',
     template: (nome) => `
-      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+      <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
         <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 28px;">Bem-vindo/a, ${nome}!</h1>
+          <h1 style="font-family: 'Playfair Display', serif; color: #4A4035; font-size: 28px;">Bem-vindo/a, ${nome}!</h1>
         </div>
         <p style="color: #6B5C4C; line-height: 1.8;">Obrigado/a por te juntares ao Sete Ecos.</p>
         <p style="color: #6B5C4C; line-height: 1.8;">O Sete Ecos é um ecossistema de transformação feminina - sete caminhos que se complementam para te guiar numa jornada de autodescoberta, equilíbrio e plenitude.</p>
@@ -66,8 +66,8 @@ const SEQUENCIA = [
     dia: 3,
     assunto: 'Já experimentaste o Lumina?',
     template: (nome) => `
-      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
-        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, 2 minutos podem mudar o teu dia.</h1>
+      <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <h1 style="font-family: 'Playfair Display', serif; color: #4A4035; font-size: 24px;">${nome}, 2 minutos podem mudar o teu dia.</h1>
         <p style="color: #6B5C4C; line-height: 1.8;">O <strong>Lumina</strong> é um ritual diário de auto-observação. 7 perguntas simples que revelam padrões sobre como te sentes - corpo, mente e emoção.</p>
         <p style="color: #6B5C4C; line-height: 1.8;">Mulheres que usam o Lumina reportam:</p>
         <ul style="color: #6B5C4C; line-height: 2;">
@@ -87,8 +87,8 @@ const SEQUENCIA = [
     dia: 7,
     assunto: '3 sinais de que o teu corpo precisa de atenção',
     template: (nome) => `
-      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
-        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, o teu corpo fala. Estás a ouvir?</h1>
+      <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <h1 style="font-family: 'Playfair Display', serif; color: #4A4035; font-size: 24px;">${nome}, o teu corpo fala. Estás a ouvir?</h1>
         <p style="color: #6B5C4C; line-height: 1.8;">Há 3 sinais que muitas mulheres ignoram:</p>
         <div style="background: white; padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #7C8B6F;">
           <p style="color: #4A4035; margin: 0 0 12px;"><strong>1. Cansaço crónico</strong> - Se dormes e acordas cansada, pode ser o que comes (ou não comes).</p>
@@ -108,8 +108,8 @@ const SEQUENCIA = [
     dia: 10,
     assunto: 'O segredo que ninguém te conta sobre perder peso',
     template: (nome) => `
-      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
-        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, preciso de te contar uma coisa.</h1>
+      <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <h1 style="font-family: 'Playfair Display', serif; color: #4A4035; font-size: 24px;">${nome}, preciso de te contar uma coisa.</h1>
         <p style="color: #6B5C4C; line-height: 1.8;">Tenho trabalhado com mulheres moçambicanas há anos. E há um padrão que vejo repetir-se:</p>
         <div style="background: #2C2C2C; color: white; padding: 24px; border-radius: 12px; margin: 20px 0;">
           <p style="font-size: 18px; font-style: italic; line-height: 1.6; margin: 0;">"A maioria das mulheres que me procura não tem um problema de comida. Tem um problema de emoção disfarçado de fome."</p>
@@ -133,8 +133,8 @@ const SEQUENCIA = [
     dia: 14,
     assunto: '${nome}, tenho um presente para ti (20% desconto)',
     template: (nome) => `
-      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
-        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, imagina isto:</h1>
+      <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <h1 style="font-family: 'Playfair Display', serif; color: #4A4035; font-size: 24px;">${nome}, imagina isto:</h1>
         <p style="color: #6B5C4C; line-height: 1.8;">Daqui a 3 meses, acordas com mais energia. A roupa cabe melhor. Comes sem culpa porque sabes o que o teu corpo precisa.</p>
         <p style="color: #6B5C4C; line-height: 1.8;">Não é fantasia. É o que acontece quando tens o método certo + acompanhamento real.</p>
         <div style="background: white; padding: 20px; border-radius: 12px; margin: 20px 0;">
@@ -160,8 +160,8 @@ const SEQUENCIA = [
     dia: 21,
     assunto: '"Perdi 8kg sem passar fome" - história real',
     template: (nome) => `
-      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
-        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, isto é possível para ti também.</h1>
+      <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <h1 style="font-family: 'Playfair Display', serif; color: #4A4035; font-size: 24px;">${nome}, isto é possível para ti também.</h1>
         <div style="background: white; padding: 24px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #7C8B6F;">
           <p style="color: #4A4035; font-style: italic; font-size: 16px; line-height: 1.6;">"Finalmente um método que não me faz sentir em dieta. Perdi 8kg em 3 meses e aprendi a comer sem culpa. O Espaço de Retorno mudou tudo - percebi que comia por ansiedade, não por fome."</p>
           <p style="color: #7C8B6F; font-weight: bold; margin-top: 12px;">- M.J., Maputo</p>
@@ -186,8 +186,8 @@ const SEQUENCIA = [
     dia: 30,
     assunto: 'Última chance: 20% desconto + garantia total',
     template: (nome) => `
-      <div style="font-family: 'Quicksand', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
-        <h1 style="font-family: 'Cormorant Garamond', serif; color: #4A4035; font-size: 24px;">${nome}, já passou um mês.</h1>
+      <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6F0; padding: 40px 30px;">
+        <h1 style="font-family: 'Playfair Display', serif; color: #4A4035; font-size: 24px;">${nome}, já passou um mês.</h1>
         <p style="color: #6B5C4C; line-height: 1.8;">Há 30 dias juntaste-te à lista de espera do Sete Ecos. Nesse tempo, mulheres que começaram o VITALIS já:</p>
         <ul style="color: #6B5C4C; line-height: 2;">
           <li>Perderam 2-4kg na primeira semana</li>

@@ -61,7 +61,7 @@ export default function ComingSoon() {
     <div style={{
       minHeight: '100vh',
       background: `linear-gradient(135deg, ${info.cor}15 0%, #FAF6F0 50%, ${info.cor}10 100%)`,
-      fontFamily: "'Quicksand', sans-serif",
+      fontFamily: 'var(--font-corpo)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -82,7 +82,7 @@ export default function ComingSoon() {
         boxShadow: `0 10px 40px ${info.cor}40`
       }}>
         <span style={{
-          fontFamily: "'Cormorant Garamond', serif",
+          fontFamily: 'var(--font-titulos)',
           fontSize: '2.5rem',
           fontWeight: '600',
           color: 'white',
@@ -94,7 +94,7 @@ export default function ComingSoon() {
 
       {/* Eco name */}
       <h1 style={{
-        fontFamily: "'Cormorant Garamond', serif",
+        fontFamily: 'var(--font-titulos)',
         fontSize: '2.8rem',
         fontWeight: '400',
         letterSpacing: '0.25em',
@@ -106,7 +106,7 @@ export default function ComingSoon() {
 
       {/* Slogan */}
       <p style={{
-        fontFamily: "'Cormorant Garamond', serif",
+        fontFamily: 'var(--font-titulos)',
         fontSize: '1.2rem',
         fontStyle: 'italic',
         color: '#6B5344',
@@ -145,7 +145,7 @@ export default function ComingSoon() {
         marginBottom: '40px'
       }}>
         <p style={{
-          fontFamily: "'Cormorant Garamond', serif",
+          fontFamily: 'var(--font-titulos)',
           fontSize: '1.1rem',
           fontWeight: '500',
           letterSpacing: '0.2em',

@@ -316,7 +316,7 @@ export default function PlanoHTML() {
           }
           .page:last-child { page-break-after: auto !important; }
         }
-        h1, h2, h3 { font-family: 'Cormorant Garamond', Georgia, serif; }
+        h1, h2, h3 { font-family: 'Playfair Display', Georgia, serif; }
       `}</style>
 
       <div className="no-print" style={{position:'fixed',bottom:'30px',right:'30px',zIndex:1000,display:'flex',gap:'12px'}}>
@@ -332,21 +332,21 @@ export default function PlanoHTML() {
           <Logo size={160} />
           <div style={{fontSize:'15px',color:'#6B5C4C',letterSpacing:'7px',marginTop:'18px',fontFamily:'Lato,sans-serif',fontWeight:'300'}}>A RAIZ DA TRANSFORMAÇÃO</div>
           <div style={{width:'140px',height:'3px',background:'linear-gradient(90deg, transparent, #7C8B6F, transparent)',margin:'55px 0'}}></div>
-          <h1 style={{fontSize:'42px',fontWeight:'600',color:'#3A3025',letterSpacing:'5px',fontFamily:'Cormorant Garamond,serif',marginBottom:'8px'}}>Guia Personalizado</h1>
+          <h1 style={{fontSize:'42px',fontWeight:'600',color:'#3A3025',letterSpacing:'5px',fontFamily:'Playfair Display,serif',marginBottom:'8px'}}>Guia Personalizado</h1>
           <div style={{fontSize:'20px',color:'#7C8B6F',fontWeight:'500',letterSpacing:'7px',marginTop:'8px',marginBottom:'60px',fontFamily:'Lato,sans-serif'}}>PLANO ALIMENTAR</div>
 
           <div style={{background:'white',border:'2px solid #C5D1BC',borderRadius:'30px',padding:'50px 100px',textAlign:'center',boxShadow:'0 20px 60px rgba(0,0,0,0.1)'}}>
             <div style={{fontSize:'12px',color:'#6B5C4C',letterSpacing:'5px',marginBottom:'14px',fontFamily:'Lato,sans-serif',fontWeight:'300'}}>PREPARADO EXCLUSIVAMENTE PARA</div>
-            <div style={{fontSize:'44px',fontWeight:'600',color:'#3A3025',marginBottom:'35px',fontFamily:'Cormorant Garamond,serif'}}>{dados.nome}</div>
+            <div style={{fontSize:'44px',fontWeight:'600',color:'#3A3025',marginBottom:'35px',fontFamily:'Playfair Display,serif'}}>{dados.nome}</div>
             <div style={{display:'flex',gap:'50px',justifyContent:'center',alignItems:'center',marginBottom:'14px'}}>
               <div style={{textAlign:'center'}}>
                 <div style={{fontSize:'11px',color:'#6B5C4C',letterSpacing:'3px',marginBottom:'8px',fontFamily:'Lato,sans-serif'}}>PESO ACTUAL</div>
-                <div style={{fontSize:'40px',color:'#6B7A5D',fontWeight:'700',fontFamily:'Cormorant Garamond,serif'}}>{dados.peso_actual} kg</div>
+                <div style={{fontSize:'40px',color:'#6B7A5D',fontWeight:'700',fontFamily:'Playfair Display,serif'}}>{dados.peso_actual} kg</div>
               </div>
               <div style={{color:'#6B8E23',fontSize:'45px'}}>→</div>
               <div style={{textAlign:'center'}}>
                 <div style={{fontSize:'11px',color:'#6B5C4C',letterSpacing:'3px',marginBottom:'8px',fontFamily:'Lato,sans-serif'}}>META</div>
-                <div style={{fontSize:'40px',color:'#6B8E23',fontWeight:'700',fontFamily:'Cormorant Garamond,serif'}}>{dados.peso_meta} kg</div>
+                <div style={{fontSize:'40px',color:'#6B8E23',fontWeight:'700',fontFamily:'Playfair Display,serif'}}>{dados.peso_meta} kg</div>
               </div>
             </div>
             <div style={{fontSize:'15px',color:'#6B5C4C',fontFamily:'Georgia,serif'}}>Início: {formatarData(dados.data_inicio)}</div>
@@ -369,7 +369,7 @@ export default function PlanoHTML() {
         <div className="page-content">
           <PageHeader />
 
-          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'16px',fontFamily:'Cormorant Garamond,serif'}}>👋 Boas-vindas à Tua Jornada</h2>
+          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'16px',fontFamily:'Playfair Display,serif'}}>👋 Boas-vindas à Tua Jornada</h2>
 
           <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'1px solid #C5D1BC',borderRadius:'16px',padding:'14px',marginBottom:'14px',boxShadow:'0 4px 16px rgba(0,0,0,0.06)'}}>
             <p style={{fontSize:'16px',lineHeight:'1.7',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -383,7 +383,7 @@ export default function PlanoHTML() {
             </p>
           </div>
 
-          <h2 style={{fontSize:'22px',fontWeight:'600',color:'#3A3025',marginBottom:'14px',marginTop:'20px',fontFamily:'Cormorant Garamond,serif'}}>🔥 {faseConfig.nome}</h2>
+          <h2 style={{fontSize:'22px',fontWeight:'600',color:'#3A3025',marginBottom:'14px',marginTop:'20px',fontFamily:'Playfair Display,serif'}}>🔥 {faseConfig.nome}</h2>
 
           <div style={{background:'linear-gradient(135deg, #FFFFFF, #FDF8F3)',border:'1px solid #C5D1BC',borderRadius:'16px',padding:'14px',marginBottom:'14px',boxShadow:'0 4px 16px rgba(0,0,0,0.06)'}}>
             <span style={{display:'inline-block',padding:'10px 24px',background:'linear-gradient(135deg, #7C8B6F, #8B9A7A)',color:'white',borderRadius:'25px',fontSize:'13px',marginBottom:'12px',fontFamily:'Lato,sans-serif',fontWeight:'600'}}>Duração: {faseConfig.duracao}</span>
@@ -403,15 +403,15 @@ export default function PlanoHTML() {
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'16px'}}>
             <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 12px rgba(0,0,0,0.05)'}}>
               <div style={{fontSize:'11px',color:'#7C8B6F',letterSpacing:'2px',marginBottom:'12px',fontFamily:'Lato,sans-serif',fontWeight:'600'}}>ABORDAGEM</div>
-              <div style={{fontSize:'19px',fontWeight:'600',color:'#6B7A5D',textTransform:'capitalize',fontFamily:'Cormorant Garamond,serif'}}>{dados.abordagem?.replace('_', ' ')}</div>
+              <div style={{fontSize:'19px',fontWeight:'600',color:'#6B7A5D',textTransform:'capitalize',fontFamily:'Playfair Display,serif'}}>{dados.abordagem?.replace('_', ' ')}</div>
             </div>
             <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 12px rgba(0,0,0,0.05)'}}>
               <div style={{fontSize:'11px',color:'#7C8B6F',letterSpacing:'2px',marginBottom:'12px',fontFamily:'Lato,sans-serif',fontWeight:'600'}}>A PERDER</div>
-              <div style={{fontSize:'28px',fontWeight:'700',color:'#E65100',fontFamily:'Cormorant Garamond,serif'}}>{(dados.peso_actual - dados.peso_meta).toFixed(1)} kg</div>
+              <div style={{fontSize:'28px',fontWeight:'700',color:'#E65100',fontFamily:'Playfair Display,serif'}}>{(dados.peso_actual - dados.peso_meta).toFixed(1)} kg</div>
             </div>
             <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 12px rgba(0,0,0,0.05)'}}>
               <div style={{fontSize:'11px',color:'#7C8B6F',letterSpacing:'2px',marginBottom:'12px',fontFamily:'Lato,sans-serif',fontWeight:'600'}}>ESTIMATIVA</div>
-              <div style={{fontSize:'19px',fontWeight:'600',color:'#6B8E23',fontFamily:'Cormorant Garamond,serif'}}>{Math.ceil((dados.peso_actual - dados.peso_meta) / 0.75)} semanas</div>
+              <div style={{fontSize:'19px',fontWeight:'600',color:'#6B8E23',fontFamily:'Playfair Display,serif'}}>{Math.ceil((dados.peso_actual - dados.peso_meta) / 0.75)} semanas</div>
             </div>
           </div>
 
@@ -424,7 +424,7 @@ export default function PlanoHTML() {
         <div className="page-content">
           <PageHeader />
 
-          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'12px',fontFamily:'Cormorant Garamond,serif'}}>🤚 A Tua Mão É a Tua Medida</h2>
+          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'12px',fontFamily:'Playfair Display,serif'}}>🤚 A Tua Mão É a Tua Medida</h2>
           <p style={{fontSize:'15px',color:'#6B5C4C',marginBottom:'12px',fontFamily:'Georgia,serif',lineHeight:'1.8'}}>
             <strong>Sem balança, sem stress, sem apps.</strong> A tua mão é proporcional ao teu corpo — mãos maiores significam corpo maior, logo porções maiores. É simples, prático e funciona em qualquer lugar.
           </p>
@@ -452,13 +452,13 @@ export default function PlanoHTML() {
             </div>
           </div>
 
-          <h3 style={{fontSize:'20px',fontWeight:'600',color:'#3A3025',marginBottom:'12px',fontFamily:'Cormorant Garamond,serif'}}>As Tuas Porções Diárias:</h3>
+          <h3 style={{fontSize:'20px',fontWeight:'600',color:'#3A3025',marginBottom:'12px',fontFamily:'Playfair Display,serif'}}>As Tuas Porções Diárias:</h3>
 
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px',marginBottom:'12px'}}>
             <div style={{background:'linear-gradient(135deg, #FFEBEE, #FFCDD2)',border:'3px solid #E57373',borderRadius:'20px',padding:'16px',textAlign:'center',boxShadow:'0 4px 16px rgba(229,115,115,0.2)'}}>
               <div style={{fontSize:'36px',marginBottom:'6px'}}>🫲</div>
               <div style={{fontSize:'15px',fontWeight:'600',color:'#C62828',marginBottom:'6px',fontFamily:'Lato,sans-serif'}}>Proteína</div>
-              <div style={{fontSize:'52px',fontWeight:'700',color:'#C62828',lineHeight:1,fontFamily:'Cormorant Garamond,serif'}}>{dados.porcoes_proteina}</div>
+              <div style={{fontSize:'52px',fontWeight:'700',color:'#C62828',lineHeight:1,fontFamily:'Playfair Display,serif'}}>{dados.porcoes_proteina}</div>
               <div style={{fontSize:'13px',color:'#6B5C4C',marginTop:'8px',fontFamily:'Georgia,serif'}}>palmas por dia</div>
               <div style={{fontSize:'11px',color:'#999',marginTop:'6px',fontFamily:'Georgia,serif',fontStyle:'italic'}}>Tamanho e espessura da tua palma</div>
             </div>
@@ -466,7 +466,7 @@ export default function PlanoHTML() {
             <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',border:'3px solid #81C784',borderRadius:'20px',padding:'16px',textAlign:'center',boxShadow:'0 4px 16px rgba(129,199,132,0.2)'}}>
               <div style={{fontSize:'36px',marginBottom:'6px'}}>✊</div>
               <div style={{fontSize:'15px',fontWeight:'600',color:'#2E7D32',marginBottom:'6px',fontFamily:'Lato,sans-serif'}}>Legumes</div>
-              <div style={{fontSize:'52px',fontWeight:'700',color:'#2E7D32',lineHeight:1,fontFamily:'Cormorant Garamond,serif'}}>{dados.porcoes_legumes}</div>
+              <div style={{fontSize:'52px',fontWeight:'700',color:'#2E7D32',lineHeight:1,fontFamily:'Playfair Display,serif'}}>{dados.porcoes_legumes}</div>
               <div style={{fontSize:'13px',color:'#6B5C4C',marginTop:'8px',fontFamily:'Georgia,serif'}}>punhos por dia (mínimo)</div>
               <div style={{fontSize:'11px',color:'#999',marginTop:'6px',fontFamily:'Georgia,serif',fontStyle:'italic'}}>Tamanho do teu punho fechado</div>
             </div>
@@ -474,7 +474,7 @@ export default function PlanoHTML() {
             <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',border:'3px solid #64B5F6',borderRadius:'20px',padding:'16px',textAlign:'center',boxShadow:'0 4px 16px rgba(100,181,246,0.2)'}}>
               <div style={{fontSize:'36px',marginBottom:'6px'}}>🤲</div>
               <div style={{fontSize:'15px',fontWeight:'600',color:'#1565C0',marginBottom:'6px',fontFamily:'Lato,sans-serif'}}>Hidratos</div>
-              <div style={{fontSize:'52px',fontWeight:'700',color:'#1565C0',lineHeight:1,fontFamily:'Cormorant Garamond,serif'}}>{dados.porcoes_hidratos}</div>
+              <div style={{fontSize:'52px',fontWeight:'700',color:'#1565C0',lineHeight:1,fontFamily:'Playfair Display,serif'}}>{dados.porcoes_hidratos}</div>
               <div style={{fontSize:'13px',color:'#6B5C4C',marginTop:'8px',fontFamily:'Georgia,serif'}}>mãos concha por dia</div>
               <div style={{fontSize:'11px',color:'#999',marginTop:'6px',fontFamily:'Georgia,serif',fontStyle:'italic'}}>O que cabe na tua mão em concha</div>
             </div>
@@ -482,32 +482,32 @@ export default function PlanoHTML() {
             <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'3px solid #FFD54F',borderRadius:'20px',padding:'16px',textAlign:'center',boxShadow:'0 4px 16px rgba(255,213,79,0.2)'}}>
               <div style={{fontSize:'36px',marginBottom:'6px'}}>👍</div>
               <div style={{fontSize:'15px',fontWeight:'600',color:'#F57F17',marginBottom:'6px',fontFamily:'Lato,sans-serif'}}>Gordura</div>
-              <div style={{fontSize:'52px',fontWeight:'700',color:'#F57F17',lineHeight:1,fontFamily:'Cormorant Garamond,serif'}}>{dados.porcoes_gordura}</div>
+              <div style={{fontSize:'52px',fontWeight:'700',color:'#F57F17',lineHeight:1,fontFamily:'Playfair Display,serif'}}>{dados.porcoes_gordura}</div>
               <div style={{fontSize:'13px',color:'#6B5C4C',marginTop:'8px',fontFamily:'Georgia,serif'}}>polegares por dia</div>
               <div style={{fontSize:'11px',color:'#999',marginTop:'6px',fontFamily:'Georgia,serif',fontStyle:'italic'}}>Tamanho da ponta do teu polegar</div>
             </div>
           </div>
 
-          <h3 style={{fontSize:'18px',fontWeight:'600',color:'#3A3025',marginBottom:'14px',fontFamily:'Cormorant Garamond,serif'}}>Resumo Nutricional:</h3>
+          <h3 style={{fontSize:'18px',fontWeight:'600',color:'#3A3025',marginBottom:'14px',fontFamily:'Playfair Display,serif'}}>Resumo Nutricional:</h3>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:'14px'}}>
             <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'14px',textAlign:'center',padding:'16px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
               <div style={{fontSize:'20px',marginBottom:'6px'}}>🔥</div>
-              <div style={{fontSize:'24px',fontWeight:'700',color:'#7C8B6F',fontFamily:'Cormorant Garamond,serif'}}>{dados.calorias}</div>
+              <div style={{fontSize:'24px',fontWeight:'700',color:'#7C8B6F',fontFamily:'Playfair Display,serif'}}>{dados.calorias}</div>
               <div style={{fontSize:'11px',color:'#6B5C4C',marginTop:'4px',fontFamily:'Lato,sans-serif'}}>kcal/dia</div>
             </div>
             <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'14px',textAlign:'center',padding:'16px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
               <div style={{fontSize:'20px',marginBottom:'6px'}}>🥩</div>
-              <div style={{fontSize:'24px',fontWeight:'700',color:'#C62828',fontFamily:'Cormorant Garamond,serif'}}>{dados.proteina_g}g</div>
+              <div style={{fontSize:'24px',fontWeight:'700',color:'#C62828',fontFamily:'Playfair Display,serif'}}>{dados.proteina_g}g</div>
               <div style={{fontSize:'11px',color:'#6B5C4C',marginTop:'4px',fontFamily:'Lato,sans-serif'}}>Proteína</div>
             </div>
             <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'14px',textAlign:'center',padding:'16px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
               <div style={{fontSize:'20px',marginBottom:'6px'}}>🍚</div>
-              <div style={{fontSize:'24px',fontWeight:'700',color:'#1565C0',fontFamily:'Cormorant Garamond,serif'}}>{dados.carboidratos_g}g</div>
+              <div style={{fontSize:'24px',fontWeight:'700',color:'#1565C0',fontFamily:'Playfair Display,serif'}}>{dados.carboidratos_g}g</div>
               <div style={{fontSize:'11px',color:'#6B5C4C',marginTop:'4px',fontFamily:'Lato,sans-serif'}}>Hidratos</div>
             </div>
             <div style={{background:'white',border:'1px solid #C5D1BC',borderRadius:'14px',textAlign:'center',padding:'16px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
               <div style={{fontSize:'20px',marginBottom:'6px'}}>🥑</div>
-              <div style={{fontSize:'24px',fontWeight:'700',color:'#F57F17',fontFamily:'Cormorant Garamond,serif'}}>{dados.gordura_g}g</div>
+              <div style={{fontSize:'24px',fontWeight:'700',color:'#F57F17',fontFamily:'Playfair Display,serif'}}>{dados.gordura_g}g</div>
               <div style={{fontSize:'11px',color:'#6B5C4C',marginTop:'4px',fontFamily:'Lato,sans-serif'}}>Gordura</div>
             </div>
           </div>
@@ -521,7 +521,7 @@ export default function PlanoHTML() {
         <div className="page-content">
           <PageHeader />
 
-          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'10px',fontFamily:'Cormorant Garamond,serif'}}>🫲 O Que Conta Como 1 Porção?</h2>
+          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'10px',fontFamily:'Playfair Display,serif'}}>🫲 O Que Conta Como 1 Porção?</h2>
           <p style={{fontSize:'14px',color:'#6B5C4C',marginBottom:'16px',fontStyle:'italic',fontFamily:'Georgia,serif'}}>
             Usa a <strong>TUA</strong> mão como referência — é proporcional ao teu corpo. Não precisas de balança! Estes valores são <em>guias práticos</em> baseados nas tuas medidas.
           </p>
@@ -529,8 +529,8 @@ export default function PlanoHTML() {
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
             {/* Proteína */}
             <div style={{background:'linear-gradient(135deg, #FFEBEE, #FFCDD2)',border:'3px solid #E57373',borderRadius:'20px',padding:'22px',boxShadow:'0 4px 16px rgba(229,115,115,0.2)'}}>
-              <div style={{fontWeight:'700',color:'#C62828',marginBottom:'6px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🫲 A Palma — PROTEÍNA</div>
-              <div style={{color:'#C62828',fontWeight:'700',fontSize:'20px',marginBottom:'14px',fontFamily:'Cormorant Garamond,serif'}}>~{dados.tamanho_palma}g por palma</div>
+              <div style={{fontWeight:'700',color:'#C62828',marginBottom:'6px',fontSize:'17px',fontFamily:'Playfair Display,serif'}}>🫲 A Palma — PROTEÍNA</div>
+              <div style={{color:'#C62828',fontWeight:'700',fontSize:'20px',marginBottom:'14px',fontFamily:'Playfair Display,serif'}}>~{dados.tamanho_palma}g por palma</div>
               <div style={{fontSize:'13px',color:'#3A3025',lineHeight:'1.8',fontFamily:'Georgia,serif'}}>
                 🍗 1 peito de frango (~100g)<br/>
                 🐟 1 lata de atum escorrida<br/>
@@ -547,7 +547,7 @@ export default function PlanoHTML() {
 
             {/* Legumes */}
             <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',border:'3px solid #81C784',borderRadius:'20px',padding:'22px',boxShadow:'0 4px 16px rgba(129,199,132,0.2)'}}>
-              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'6px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>✊ Punho — LEGUMES</div>
+              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'6px',fontSize:'17px',fontFamily:'Playfair Display,serif'}}>✊ Punho — LEGUMES</div>
               <div style={{fontSize:'12px',color:'#2E7D32',marginBottom:'14px',fontStyle:'italic',fontFamily:'Georgia,serif'}}>Tamanho do teu punho fechado ≈ 150g cozidos</div>
               <div style={{fontSize:'13px',color:'#3A3025',lineHeight:'1.8',fontFamily:'Georgia,serif'}}>
                 🥗 2 mãos cheias de salada crua<br/>
@@ -565,8 +565,8 @@ export default function PlanoHTML() {
 
             {/* Hidratos */}
             <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',border:'3px solid #64B5F6',borderRadius:'20px',padding:'22px',boxShadow:'0 4px 16px rgba(100,181,246,0.2)'}}>
-              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'6px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🤲 Mão Concha — HIDRATOS</div>
-              <div style={{color:'#1565C0',fontWeight:'700',fontSize:'20px',marginBottom:'14px',fontFamily:'Cormorant Garamond,serif'}}>~{dados.tamanho_mao}g carbs por mão</div>
+              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'6px',fontSize:'17px',fontFamily:'Playfair Display,serif'}}>🤲 Mão Concha — HIDRATOS</div>
+              <div style={{color:'#1565C0',fontWeight:'700',fontSize:'20px',marginBottom:'14px',fontFamily:'Playfair Display,serif'}}>~{dados.tamanho_mao}g carbs por mão</div>
               <div style={{fontSize:'13px',color:'#3A3025',lineHeight:'1.8',fontFamily:'Georgia,serif'}}>
                 🍚 3 col. sopa arroz cozido<br/>
                 🥔 1 batata pequena<br/>
@@ -583,8 +583,8 @@ export default function PlanoHTML() {
 
             {/* Gordura */}
             <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'3px solid #FFD54F',borderRadius:'20px',padding:'22px',boxShadow:'0 4px 16px rgba(255,213,79,0.2)'}}>
-              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'6px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>👍 O Polegar — GORDURA</div>
-              <div style={{color:'#F57F17',fontWeight:'700',fontSize:'20px',marginBottom:'14px',fontFamily:'Cormorant Garamond,serif'}}>~{dados.tamanho_polegar}g por polegar</div>
+              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'6px',fontSize:'17px',fontFamily:'Playfair Display,serif'}}>👍 O Polegar — GORDURA</div>
+              <div style={{color:'#F57F17',fontWeight:'700',fontSize:'20px',marginBottom:'14px',fontFamily:'Playfair Display,serif'}}>~{dados.tamanho_polegar}g por polegar</div>
               <div style={{fontSize:'13px',color:'#3A3025',lineHeight:'1.8',fontFamily:'Georgia,serif'}}>
                 🫒 1 col. sopa azeite<br/>
                 🥑 ¼ de abacate médio<br/>
@@ -614,14 +614,14 @@ export default function PlanoHTML() {
         <div className="page-content">
           <PageHeader />
 
-          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'16px',fontFamily:'Cormorant Garamond,serif'}}>🥩 Proteínas — O Pilar da Transformação</h2>
+          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'16px',fontFamily:'Playfair Display,serif'}}>🥩 Proteínas — O Pilar da Transformação</h2>
           <p style={{fontSize:'15px',color:'#6B5C4C',marginBottom:'12px',fontFamily:'Georgia,serif',lineHeight:'1.8'}}>
             A proteína constrói músculo, acelera o metabolismo, sacia a fome e mantém-te forte. <strong>É o macronutriente mais importante</strong> na tua jornada. Prioriza sempre!
           </p>
 
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'18px',marginBottom:'12px'}}>
             <div style={{background:'linear-gradient(135deg, #FFFFFF, #FFF5F5)',border:'1px solid #FFCDD2',borderLeft:'5px solid #C62828',borderRadius:'16px',padding:'18px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
-              <div style={{fontWeight:'700',color:'#C62828',marginBottom:'12px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <div style={{fontWeight:'700',color:'#C62828',marginBottom:'12px',fontSize:'18px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'10px'}}>
                 <span style={{fontSize:'24px'}}>🥩</span> Carnes Vermelhas (magras)
               </div>
               <p style={{fontSize:'14px',lineHeight:'1.9',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -633,7 +633,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFFFFF, #FFFEF5)',border:'1px solid #FFE0B2',borderLeft:'5px solid #F57C00',borderRadius:'16px',padding:'18px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
-              <div style={{fontWeight:'700',color:'#F57C00',marginBottom:'12px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <div style={{fontWeight:'700',color:'#F57C00',marginBottom:'12px',fontSize:'18px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'10px'}}>
                 <span style={{fontSize:'24px'}}>🍗</span> Aves
               </div>
               <p style={{fontSize:'14px',lineHeight:'1.9',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -645,7 +645,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFFFFF, #F0F8FF)',border:'1px solid #BBDEFB',borderLeft:'5px solid #1976D2',borderRadius:'16px',padding:'18px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
-              <div style={{fontWeight:'700',color:'#1976D2',marginBottom:'12px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <div style={{fontWeight:'700',color:'#1976D2',marginBottom:'12px',fontSize:'18px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'10px'}}>
                 <span style={{fontSize:'24px'}}>🐟</span> Peixes & Mariscos
               </div>
               <p style={{fontSize:'14px',lineHeight:'1.9',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -657,7 +657,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFFFFF, #FFFBF0)',border:'1px solid #FFF9C4',borderLeft:'5px solid #F9A825',borderRadius:'16px',padding:'18px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
-              <div style={{fontWeight:'700',color:'#F9A825',marginBottom:'12px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <div style={{fontWeight:'700',color:'#F9A825',marginBottom:'12px',fontSize:'18px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'10px'}}>
                 <span style={{fontSize:'24px'}}>🥚</span> Ovos & Lacticínios
               </div>
               <p style={{fontSize:'14px',lineHeight:'1.9',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -670,7 +670,7 @@ export default function PlanoHTML() {
           </div>
 
           <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',borderRadius:'16px',padding:'16px',marginTop:'18px',border:'2px solid #66BB6A'}}>
-            <h3 style={{fontSize:'18px',fontWeight:'700',color:'#2E7D32',marginBottom:'14px',fontFamily:'Cormorant Garamond,serif'}}>✨ Proteínas Vegetais (para variar)</h3>
+            <h3 style={{fontSize:'18px',fontWeight:'700',color:'#2E7D32',marginBottom:'14px',fontFamily:'Playfair Display,serif'}}>✨ Proteínas Vegetais (para variar)</h3>
             <p style={{fontSize:'14px',lineHeight:'1.8',color:'#3A3025',fontFamily:'Georgia,serif'}}>
               Tofu • Tempeh • Edamame • Grão-de-bico • Lentilhas • Feijão preto • Quinoa • Sementes de cânhamo • Proteína de ervilha
             </p>
@@ -688,70 +688,70 @@ export default function PlanoHTML() {
         <div className="page-content">
           <PageHeader />
 
-          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'10px',fontFamily:'Cormorant Garamond,serif'}}>🍚 Hidratos Inteligentes</h2>
+          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'10px',fontFamily:'Playfair Display,serif'}}>🍚 Hidratos Inteligentes</h2>
           <p style={{fontSize:'14px',color:'#6B5C4C',marginBottom:'14px',fontFamily:'Georgia,serif',lineHeight:'1.8'}}>
             Hidratos não são inimigos — são <strong>combustível</strong>. A questão é <em>quando</em> e <em>quais</em>. Prioriza hidratos complexos e come-os perto do treino.
           </p>
 
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px',marginBottom:'14px'}}>
             <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',border:'2px solid #64B5F6',borderRadius:'16px',padding:'22px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
-              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'14px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🥔 Tubérculos & Raízes</div>
+              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'14px',fontSize:'17px',fontFamily:'Playfair Display,serif'}}>🥔 Tubérculos & Raízes</div>
               <p style={{fontSize:'14px',lineHeight:'1.8',color:'#3A3025',fontFamily:'Georgia,serif'}}>
                 Batata-doce (favorita!) • Mandioca/Macaxeira • Inhame • Batata inglesa • Cenoura cozida
               </p>
             </div>
 
             <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',border:'2px solid #64B5F6',borderRadius:'16px',padding:'22px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
-              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'14px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🌾 Grãos Integrais</div>
+              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'14px',fontSize:'17px',fontFamily:'Playfair Display,serif'}}>🌾 Grãos Integrais</div>
               <p style={{fontSize:'14px',lineHeight:'1.8',color:'#3A3025',fontFamily:'Georgia,serif'}}>
                 Arroz integral • Quinoa • Aveia • Cuscuz integral • Massa integral • Pão integral de verdade
               </p>
             </div>
 
             <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',border:'2px solid #64B5F6',borderRadius:'16px',padding:'22px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
-              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'14px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🍎 Frutas (baixo índice glicémico)</div>
+              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'14px',fontSize:'17px',fontFamily:'Playfair Display,serif'}}>🍎 Frutas (baixo índice glicémico)</div>
               <p style={{fontSize:'14px',lineHeight:'1.8',color:'#3A3025',fontFamily:'Georgia,serif'}}>
                 Frutos vermelhos • Maçã verde • Pera • Laranja • Toranja • Kiwi • Morango • Framboesa
               </p>
             </div>
 
             <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',border:'2px solid #64B5F6',borderRadius:'16px',padding:'22px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
-              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'14px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🫘 Leguminosas</div>
+              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'14px',fontSize:'17px',fontFamily:'Playfair Display,serif'}}>🫘 Leguminosas</div>
               <p style={{fontSize:'14px',lineHeight:'1.8',color:'#3A3025',fontFamily:'Georgia,serif'}}>
                 Grão-de-bico • Lentilhas • Feijão preto • Feijão vermelho • Ervilhas
               </p>
             </div>
           </div>
 
-          <h2 style={{fontSize:'22px',fontWeight:'600',color:'#3A3025',marginTop:'24px',marginBottom:'10px',fontFamily:'Cormorant Garamond,serif'}}>🥑 Gorduras Saudáveis</h2>
+          <h2 style={{fontSize:'22px',fontWeight:'600',color:'#3A3025',marginTop:'24px',marginBottom:'10px',fontFamily:'Playfair Display,serif'}}>🥑 Gorduras Saudáveis</h2>
           <p style={{fontSize:'14px',color:'#6B5C4C',marginBottom:'12px',fontFamily:'Georgia,serif',lineHeight:'1.8'}}>
             Gorduras boas <strong>saciam, nutrem o cérebro, regulam hormonas e absorvem vitaminas</strong>. Essenciais para saúde!
           </p>
 
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
             <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'2px solid #FFD54F',borderRadius:'16px',padding:'22px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
-              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'14px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🫒 Óleos & Manteigas</div>
+              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'14px',fontSize:'17px',fontFamily:'Playfair Display,serif'}}>🫒 Óleos & Manteigas</div>
               <p style={{fontSize:'14px',lineHeight:'1.8',color:'#3A3025',fontFamily:'Georgia,serif'}}>
                 Azeite extra-virgem (o melhor!) • Óleo de coco • Óleo de abacate • Manteiga de vaca • Ghee (manteiga clarificada)
               </p>
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'2px solid #FFD54F',borderRadius:'16px',padding:'22px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
-              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'14px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🥜 Frutos Secos & Sementes</div>
+              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'14px',fontSize:'17px',fontFamily:'Playfair Display,serif'}}>🥜 Frutos Secos & Sementes</div>
               <p style={{fontSize:'14px',lineHeight:'1.8',color:'#3A3025',fontFamily:'Georgia,serif'}}>
                 Amêndoas • Nozes (Ómega-3) • Cajus • Amendoins • Sementes de chia • Linhaça • Sementes de abóbora
               </p>
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'2px solid #FFD54F',borderRadius:'16px',padding:'22px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
-              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'14px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🥑 Outras Fontes</div>
+              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'14px',fontSize:'17px',fontFamily:'Playfair Display,serif'}}>🥑 Outras Fontes</div>
               <p style={{fontSize:'14px',lineHeight:'1.8',color:'#3A3025',fontFamily:'Georgia,serif'}}>
                 Abacate • Azeitonas • Coco • Chocolate negro (+75%) • Gema de ovo • Peixes gordos (salmão, sardinha)
               </p>
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'2px solid #FFD54F',borderRadius:'16px',padding:'22px',boxShadow:'0 3px 14px rgba(0,0,0,0.06)'}}>
-              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'14px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif'}}>🥜 Manteigas de Frutos Secos</div>
+              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'14px',fontSize:'17px',fontFamily:'Playfair Display,serif'}}>🥜 Manteigas de Frutos Secos</div>
               <p style={{fontSize:'14px',lineHeight:'1.8',color:'#3A3025',fontFamily:'Georgia,serif'}}>
                 Manteiga de amendoim (100% amendoim) • Manteiga de amêndoa • Manteiga de caju • Tahini (pasta de sésamo)
               </p>
@@ -767,14 +767,14 @@ export default function PlanoHTML() {
         <div className="page-content">
           <PageHeader />
 
-          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'12px',fontFamily:'Cormorant Garamond,serif'}}>🥬 Vegetais — Come o Arco-Íris!</h2>
+          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'12px',fontFamily:'Playfair Display,serif'}}>🥬 Vegetais — Come o Arco-Íris!</h2>
           <p style={{fontSize:'15px',color:'#6B5C4C',marginBottom:'12px',textAlign:'center',fontFamily:'Georgia,serif',lineHeight:'1.9'}}>
             Cada cor representa diferentes <strong>fitonutrientes, antioxidantes e vitaminas</strong>. Inclui <strong>pelo menos 3 cores por refeição</strong> e maximiza a nutrição!
           </p>
 
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px',marginBottom:'16px'}}>
             <div style={{background:'linear-gradient(135deg, #F1F8E9, #DCEDC8)',border:'1px solid #C5D1BC',borderLeft:'6px solid #4CAF50',borderRadius:'16px',padding:'16px',boxShadow:'0 3px 14px rgba(76,175,80,0.15)'}}>
-              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'16px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'16px',fontSize:'18px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'10px'}}>
                 🟢 Verdes — Os Super-Heróis
               </div>
               <p style={{fontSize:'14px',lineHeight:'1.8',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -786,7 +786,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFEBEE, #FFCDD2)',border:'1px solid #C5D1BC',borderLeft:'6px solid #F44336',borderRadius:'16px',padding:'16px',boxShadow:'0 3px 14px rgba(244,67,54,0.15)'}}>
-              <div style={{fontWeight:'700',color:'#C62828',marginBottom:'16px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <div style={{fontWeight:'700',color:'#C62828',marginBottom:'16px',fontSize:'18px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'10px'}}>
                 🔴 Vermelhos — Antioxidantes
               </div>
               <p style={{fontSize:'14px',lineHeight:'1.8',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -800,7 +800,7 @@ export default function PlanoHTML() {
 
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px',marginBottom:'16px'}}>
             <div style={{background:'linear-gradient(135deg, #FFF3E0, #FFE0B2)',border:'1px solid #C5D1BC',borderLeft:'6px solid #FF9800',borderRadius:'16px',padding:'16px',boxShadow:'0 3px 14px rgba(255,152,0,0.15)'}}>
-              <div style={{fontWeight:'700',color:'#E65100',marginBottom:'16px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <div style={{fontWeight:'700',color:'#E65100',marginBottom:'16px',fontSize:'18px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'10px'}}>
                 🟠 Laranjas — Vitamina A
               </div>
               <p style={{fontSize:'14px',lineHeight:'1.8',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -812,7 +812,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #F3E5F5, #E1BEE7)',border:'1px solid #C5D1BC',borderLeft:'6px solid #9C27B0',borderRadius:'16px',padding:'16px',boxShadow:'0 3px 14px rgba(156,39,176,0.15)'}}>
-              <div style={{fontWeight:'700',color:'#6A1B9A',marginBottom:'16px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <div style={{fontWeight:'700',color:'#6A1B9A',marginBottom:'16px',fontSize:'18px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'10px'}}>
                 🟣 Roxos — Anti-inflamatórios
               </div>
               <p style={{fontSize:'14px',lineHeight:'1.8',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -826,7 +826,7 @@ export default function PlanoHTML() {
 
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
             <div style={{background:'linear-gradient(135deg, #FAFAFA, #F5F5F5)',border:'1px solid #C5D1BC',borderLeft:'6px solid #9E9E9E',borderRadius:'16px',padding:'16px',boxShadow:'0 3px 14px rgba(158,158,158,0.15)'}}>
-              <div style={{fontWeight:'700',color:'#616161',marginBottom:'16px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <div style={{fontWeight:'700',color:'#616161',marginBottom:'16px',fontSize:'18px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'10px'}}>
                 ⚪ Brancos — Imunidade
               </div>
               <p style={{fontSize:'14px',lineHeight:'1.8',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -838,7 +838,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFF9C4, #FFF59D)',border:'1px solid #C5D1BC',borderLeft:'6px solid #FBC02D',borderRadius:'16px',padding:'16px',boxShadow:'0 3px 14px rgba(251,192,45,0.15)'}}>
-              <div style={{fontWeight:'700',color:'#F57F00',marginBottom:'16px',fontSize:'18px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <div style={{fontWeight:'700',color:'#F57F00',marginBottom:'16px',fontSize:'18px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'10px'}}>
                 🟡 Amarelos — Vitamina C
               </div>
               <p style={{fontSize:'14px',lineHeight:'1.8',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -851,7 +851,7 @@ export default function PlanoHTML() {
           </div>
 
           <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',borderRadius:'16px',padding:'14px',marginTop:'18px',textAlign:'center',border:'2px solid #66BB6A'}}>
-            <p style={{fontSize:'15px',fontWeight:'600',color:'#2E7D32',fontFamily:'Cormorant Garamond,serif',marginBottom:'8px'}}>🎯 META DIÁRIA</p>
+            <p style={{fontSize:'15px',fontWeight:'600',color:'#2E7D32',fontFamily:'Playfair Display,serif',marginBottom:'8px'}}>🎯 META DIÁRIA</p>
             <p style={{fontSize:'14px',color:'#3A3025',lineHeight:'1.9',fontFamily:'Georgia,serif'}}>
               Mínimo <strong>{dados.porcoes_legumes} punhos</strong> por dia. <strong>Máximo? Não há!</strong> Come vegetais à vontade em TODAS as refeições.
             </p>
@@ -866,14 +866,14 @@ export default function PlanoHTML() {
         <div className="page-content">
           <PageHeader />
 
-          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'12px',fontFamily:'Cormorant Garamond,serif'}}>🛒 Lista de Compras Semanal</h2>
+          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'12px',fontFamily:'Playfair Display,serif'}}>🛒 Lista de Compras Semanal</h2>
           <p style={{fontSize:'14px',color:'#6B5C4C',marginBottom:'16px',fontFamily:'Georgia,serif',lineHeight:'1.8'}}>
             Imprime esta página e leva ao supermercado! <strong>Compra fresco</strong> sempre que possível. Quanto menos embalagens, melhor.
           </p>
 
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'13px'}}>
             <div style={{background:'linear-gradient(135deg, #FFFFFF, #FFF5F5)',border:'2px solid #E57373',borderRadius:'14px',padding:'12px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
-              <div style={{fontWeight:'700',color:'#C62828',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #E57373',paddingBottom:'8px',fontFamily:'Cormorant Garamond,serif'}}>
+              <div style={{fontWeight:'700',color:'#C62828',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #E57373',paddingBottom:'8px',fontFamily:'Playfair Display,serif'}}>
                 🥩 Proteínas
               </div>
               <div style={{fontSize:'12px',lineHeight:'1.7',fontFamily:'Georgia,serif'}}>
@@ -888,7 +888,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFFFFF, #F1F8E9)',border:'2px solid #81C784',borderRadius:'14px',padding:'12px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
-              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #81C784',paddingBottom:'8px',fontFamily:'Cormorant Garamond,serif'}}>
+              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #81C784',paddingBottom:'8px',fontFamily:'Playfair Display,serif'}}>
                 🥬 Vegetais (cores variadas!)
               </div>
               <div style={{fontSize:'12px',lineHeight:'1.7',fontFamily:'Georgia,serif'}}>
@@ -904,7 +904,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFFFFF, #E3F2FD)',border:'2px solid #64B5F6',borderRadius:'14px',padding:'12px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
-              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #64B5F6',paddingBottom:'8px',fontFamily:'Cormorant Garamond,serif'}}>
+              <div style={{fontWeight:'700',color:'#1565C0',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #64B5F6',paddingBottom:'8px',fontFamily:'Playfair Display,serif'}}>
                 🍚 Hidratos (conforme fase)
               </div>
               <div style={{fontSize:'12px',lineHeight:'1.7',fontFamily:'Georgia,serif'}}>
@@ -919,7 +919,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFFFFF, #FFF8E1)',border:'2px solid #FFD54F',borderRadius:'14px',padding:'12px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
-              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #FFD54F',paddingBottom:'8px',fontFamily:'Cormorant Garamond,serif'}}>
+              <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #FFD54F',paddingBottom:'8px',fontFamily:'Playfair Display,serif'}}>
                 🥑 Gorduras Saudáveis
               </div>
               <div style={{fontSize:'12px',lineHeight:'1.7',fontFamily:'Georgia,serif'}}>
@@ -934,7 +934,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'14px',padding:'12px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
-              <div style={{fontWeight:'700',color:'#6B5C4C',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #C5D1BC',paddingBottom:'8px',fontFamily:'Cormorant Garamond,serif'}}>
+              <div style={{fontWeight:'700',color:'#6B5C4C',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #C5D1BC',paddingBottom:'8px',fontFamily:'Playfair Display,serif'}}>
                 🧂 Despensa & Temperos
               </div>
               <div style={{fontSize:'12px',lineHeight:'1.7',fontFamily:'Georgia,serif'}}>
@@ -949,7 +949,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFFFFF, #E8F5E9)',border:'2px solid #66BB6A',borderRadius:'14px',padding:'12px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
-              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #66BB6A',paddingBottom:'8px',fontFamily:'Cormorant Garamond,serif'}}>
+              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'10px',fontSize:'16px',borderBottom:'2px solid #66BB6A',paddingBottom:'8px',fontFamily:'Playfair Display,serif'}}>
                 💧 Hidratação & Extras
               </div>
               <div style={{fontSize:'12px',lineHeight:'1.7',fontFamily:'Georgia,serif'}}>
@@ -979,14 +979,14 @@ export default function PlanoHTML() {
         <div className="page-content">
           <PageHeader />
 
-          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'10px',fontFamily:'Cormorant Garamond,serif'}}>📋 Regras da {faseConfig.nome}</h2>
+          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'10px',fontFamily:'Playfair Display,serif'}}>📋 Regras da {faseConfig.nome}</h2>
           <p style={{fontSize:'13px',color:'#6B5C4C',marginBottom:'10px',textAlign:'center',fontFamily:'Georgia,serif',lineHeight:'1.6'}}>
             Estas regras foram desenhadas para <strong>maximizar os teus resultados</strong> nesta fase. Segue-as com <em>consistência</em>, não perfeição.
           </p>
 
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px',marginBottom:'10px'}}>
             <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',border:'2px solid #66BB6A',borderRadius:'14px',padding:'11px',boxShadow:'0 3px 14px rgba(102,187,106,0.2)'}}>
-              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'10px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'8px'}}>
+              <div style={{fontWeight:'700',color:'#2E7D32',marginBottom:'10px',fontSize:'17px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'8px'}}>
                 <span style={{fontSize:'19px'}}>✓</span> PRIORIZAR
               </div>
               <div style={{fontSize:'13px',lineHeight:'1.6',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -997,7 +997,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFEBEE, #FFCDD2)',border:'2px solid #E57373',borderRadius:'14px',padding:'11px',boxShadow:'0 3px 14px rgba(229,115,115,0.2)'}}>
-              <div style={{fontWeight:'700',color:'#C62828',marginBottom:'10px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'8px'}}>
+              <div style={{fontWeight:'700',color:'#C62828',marginBottom:'10px',fontSize:'17px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'8px'}}>
                 <span style={{fontSize:'19px'}}>✗</span> EVITAR
               </div>
               <div style={{fontSize:'13px',lineHeight:'1.6',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -1009,7 +1009,7 @@ export default function PlanoHTML() {
           </div>
 
           <div style={{background:'linear-gradient(135deg, #FFF8E1, #FFECB3)',border:'2px solid #FFD54F',borderRadius:'14px',padding:'11px',marginBottom:'12px',boxShadow:'0 3px 14px rgba(255,213,79,0.2)'}}>
-            <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'10px',fontSize:'17px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'8px'}}>
+            <div style={{fontWeight:'700',color:'#F57F17',marginBottom:'10px',fontSize:'17px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'8px'}}>
               <span style={{fontSize:'19px'}}>💡</span> DICAS PARA O SUCESSO
             </div>
             <div style={{fontSize:'13px',lineHeight:'1.6',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -1020,7 +1020,7 @@ export default function PlanoHTML() {
           </div>
 
           <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',borderRadius:'14px',padding:'13px',border:'2px solid #42A5F5',boxShadow:'0 2px 12px rgba(66,165,245,0.18)'}}>
-            <h3 style={{fontSize:'16px',fontWeight:'700',color:'#1565C0',marginBottom:'10px',fontFamily:'Cormorant Garamond,serif'}}>⏰ Estrutura Diária Recomendada</h3>
+            <h3 style={{fontSize:'16px',fontWeight:'700',color:'#1565C0',marginBottom:'10px',fontFamily:'Playfair Display,serif'}}>⏰ Estrutura Diária Recomendada</h3>
             <div style={{fontSize:'12px',lineHeight:'1.6',color:'#3A3025',fontFamily:'Georgia,serif'}}>
               <strong>7h-8h:</strong> Pequeno-almoço com proteína (ovos, iogurte grego)<br/>
               <strong>10h-11h:</strong> Snack (se necessário): frutos secos ou fruta<br/>
@@ -1040,14 +1040,14 @@ export default function PlanoHTML() {
         <div className="page-content">
           <PageHeader />
 
-          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'10px',fontFamily:'Cormorant Garamond,serif'}}>📱 Como Usar a Plataforma VITALIS</h2>
+          <h2 style={{fontSize:'24px',fontWeight:'600',color:'#3A3025',marginBottom:'10px',fontFamily:'Playfair Display,serif'}}>📱 Como Usar a Plataforma VITALIS</h2>
           <p style={{fontSize:'13px',color:'#6B5C4C',marginBottom:'10px',fontFamily:'Georgia,serif',lineHeight:'1.6',textAlign:'center'}}>
             O teu plano em papel é o <strong>guia base</strong>. A plataforma digital é o <strong>acompanhamento vivo</strong> — regista progressos, pede ajuda e ajusta conforme necessário.
           </p>
 
           <div style={{display:'grid',gridTemplateColumns:'1fr',gap:'13px',marginBottom:'12px'}}>
             <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
-              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'10px'}}>
                 <span style={{fontSize:'24px'}}>📊</span> 1. Regista Peso Semanal
               </div>
               <p style={{fontSize:'13px',lineHeight:'1.5',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -1056,7 +1056,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
-              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'10px'}}>
                 <span style={{fontSize:'24px'}}>📸</span> 2. Tira Fotos de Progresso
               </div>
               <p style={{fontSize:'13px',lineHeight:'1.5',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -1065,7 +1065,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
-              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'10px'}}>
                 <span style={{fontSize:'24px'}}>📏</span> 3. Mede Circunferências Mensais
               </div>
               <p style={{fontSize:'13px',lineHeight:'1.5',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -1074,7 +1074,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
-              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'10px'}}>
                 <span style={{fontSize:'24px'}}>💬</span> 4. Usa o Chat para Dúvidas
               </div>
               <p style={{fontSize:'13px',lineHeight:'1.5',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -1083,7 +1083,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
-              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'10px'}}>
                 <span style={{fontSize:'24px'}}>📝</span> 5. Diário Alimentar (Opcional mas Poderoso)
               </div>
               <p style={{fontSize:'13px',lineHeight:'1.5',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -1092,7 +1092,7 @@ export default function PlanoHTML() {
             </div>
 
             <div style={{background:'linear-gradient(135deg, #FFFFFF, #F5F0E8)',border:'2px solid #C5D1BC',borderRadius:'14px',padding:'14px',boxShadow:'0 2px 10px rgba(0,0,0,0.05)'}}>
-              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Cormorant Garamond,serif',display:'flex',alignItems:'center',gap:'10px'}}>
+              <div style={{fontWeight:'700',color:'#7C8B6F',marginBottom:'10px',fontSize:'16px',fontFamily:'Playfair Display,serif',display:'flex',alignItems:'center',gap:'10px'}}>
                 <span style={{fontSize:'24px'}}>🔔</span> 6. Activa Notificações de Água
               </div>
               <p style={{fontSize:'13px',lineHeight:'1.5',color:'#3A3025',fontFamily:'Georgia,serif'}}>
@@ -1102,7 +1102,7 @@ export default function PlanoHTML() {
           </div>
 
           <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',borderRadius:'14px',padding:'16px',border:'2px solid #66BB6A',textAlign:'center'}}>
-            <p style={{fontSize:'14px',fontWeight:'600',color:'#2E7D32',marginBottom:'6px',fontFamily:'Cormorant Garamond,serif'}}>💚 Lembra-te</p>
+            <p style={{fontSize:'14px',fontWeight:'600',color:'#2E7D32',marginBottom:'6px',fontFamily:'Playfair Display,serif'}}>💚 Lembra-te</p>
             <p style={{fontSize:'13px',color:'#3A3025',lineHeight:'1.6',fontFamily:'Georgia,serif'}}>
               A plataforma é uma <strong>ferramenta</strong>, não uma prisão. Usa-a para te <em>apoiar</em>, não para te <em>stressar</em>. Consistência > Perfeição.
             </p>
@@ -1117,7 +1117,7 @@ export default function PlanoHTML() {
         <div className="page-content">
           <PageHeader />
 
-          <h2 style={{fontSize:'28px',fontWeight:'600',color:'#3A3025',marginBottom:'10px',textAlign:'center',fontFamily:'Cormorant Garamond,serif'}}>💪 A Tua Jornada Começa Aqui</h2>
+          <h2 style={{fontSize:'28px',fontWeight:'600',color:'#3A3025',marginBottom:'10px',textAlign:'center',fontFamily:'Playfair Display,serif'}}>💪 A Tua Jornada Começa Aqui</h2>
           <p style={{fontSize:'13px',color:'#6B5C4C',marginBottom:'18px',textAlign:'center',fontFamily:'Georgia,serif',lineHeight:'1.5',fontStyle:'italic'}}>
             Este plano não é sobre <strong>perfeição</strong>. É sobre <strong>progresso</strong>. Não é sobre <strong>restrição</strong>. É sobre <strong>transformação</strong>.
           </p>
@@ -1134,7 +1134,7 @@ export default function PlanoHTML() {
             </div>
           </div>
 
-          <h3 style={{fontSize:'19px',fontWeight:'600',color:'#3A3025',marginBottom:'12px',fontFamily:'Cormorant Garamond,serif'}}>🎯 Os Teus Princípios de Sucesso</h3>
+          <h3 style={{fontSize:'19px',fontWeight:'600',color:'#3A3025',marginBottom:'12px',fontFamily:'Playfair Display,serif'}}>🎯 Os Teus Princípios de Sucesso</h3>
 
           <div style={{display:'grid',gridTemplateColumns:'1fr',gap:'11px'}}>
             <div style={{background:'#F5F0E8',borderLeft:'4px solid #7C8B6F',borderRadius:'10px',padding:'13px'}}>
@@ -1181,7 +1181,7 @@ export default function PlanoHTML() {
           </div>
 
           <div style={{background:'linear-gradient(135deg, #E8F5E9, #C8E6C9)',borderRadius:'14px',padding:'14px',marginTop:'16px',textAlign:'center',border:'2px solid #66BB6A'}}>
-            <p style={{fontSize:'16px',fontWeight:'700',color:'#2E7D32',marginBottom:'8px',fontFamily:'Cormorant Garamond,serif'}}>
+            <p style={{fontSize:'16px',fontWeight:'700',color:'#2E7D32',marginBottom:'8px',fontFamily:'Playfair Display,serif'}}>
               🌱 És Capaz. Eu Acredito. Agora Acredita Tu.
             </p>
             <p style={{fontSize:'13px',color:'#3A3025',lineHeight:'1.6',fontFamily:'Georgia,serif'}}>
@@ -1210,25 +1210,25 @@ export default function PlanoHTML() {
 
           <div style={{textAlign:'center',marginBottom:'40px'}}>
             <div style={{fontSize:'12px',color:'#6B5C4C',letterSpacing:'5px',marginBottom:'12px',fontFamily:'Lato,sans-serif',fontWeight:'300'}}>CRIADO EXCLUSIVAMENTE PARA</div>
-            <div style={{fontSize:'44px',fontWeight:'600',color:'#3A3025',fontFamily:'Cormorant Garamond,serif',marginBottom:'12px'}}>{dados.nome}</div>
+            <div style={{fontSize:'44px',fontWeight:'600',color:'#3A3025',fontFamily:'Playfair Display,serif',marginBottom:'12px'}}>{dados.nome}</div>
             <div style={{fontSize:'15px',color:'#7C8B6F',fontFamily:'Georgia,serif'}}>{formatarData(dados.data_inicio)}</div>
           </div>
 
           <div style={{display:'grid',gridTemplateColumns:'repeat(4, 1fr)',gap:'20px',maxWidth:'550px',marginTop:'30px'}}>
             <div style={{textAlign:'center'}}>
-              <div style={{fontSize:'22px',fontWeight:'700',color:'#7C8B6F',fontFamily:'Cormorant Garamond,serif'}}>{dados.porcoes_proteina}</div>
+              <div style={{fontSize:'22px',fontWeight:'700',color:'#7C8B6F',fontFamily:'Playfair Display,serif'}}>{dados.porcoes_proteina}</div>
               <div style={{fontSize:'11px',color:'#6B5C4C',marginTop:'4px',fontFamily:'Lato,sans-serif'}}>Proteína<br/>(palmas/dia)</div>
             </div>
             <div style={{textAlign:'center'}}>
-              <div style={{fontSize:'22px',fontWeight:'700',color:'#6B8E23',fontFamily:'Cormorant Garamond,serif'}}>{dados.porcoes_legumes}+</div>
+              <div style={{fontSize:'22px',fontWeight:'700',color:'#6B8E23',fontFamily:'Playfair Display,serif'}}>{dados.porcoes_legumes}+</div>
               <div style={{fontSize:'11px',color:'#6B5C4C',marginTop:'4px',fontFamily:'Lato,sans-serif'}}>Legumes<br/>(punhos/dia)</div>
             </div>
             <div style={{textAlign:'center'}}>
-              <div style={{fontSize:'22px',fontWeight:'700',color:'#1976D2',fontFamily:'Cormorant Garamond,serif'}}>{dados.porcoes_hidratos}</div>
+              <div style={{fontSize:'22px',fontWeight:'700',color:'#1976D2',fontFamily:'Playfair Display,serif'}}>{dados.porcoes_hidratos}</div>
               <div style={{fontSize:'11px',color:'#6B5C4C',marginTop:'4px',fontFamily:'Lato,sans-serif'}}>Hidratos<br/>(mãos/dia)</div>
             </div>
             <div style={{textAlign:'center'}}>
-              <div style={{fontSize:'22px',fontWeight:'700',color:'#F57F17',fontFamily:'Cormorant Garamond,serif'}}>{dados.porcoes_gordura}</div>
+              <div style={{fontSize:'22px',fontWeight:'700',color:'#F57F17',fontFamily:'Playfair Display,serif'}}>{dados.porcoes_gordura}</div>
               <div style={{fontSize:'11px',color:'#6B5C4C',marginTop:'4px',fontFamily:'Lato,sans-serif'}}>Gordura<br/>(polegares/dia)</div>
             </div>
           </div>

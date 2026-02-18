@@ -119,7 +119,7 @@ export default function InsightEngine({ eco, userId, config }) {
     <div className="space-y-6">
       {/* Titulo */}
       <div>
-        <h2 className="text-white text-xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <h2 className="text-white text-xl font-bold" style={{ fontFamily: 'var(--font-titulos)' }}>
           {config.title || `Insights ${range.label}`}
         </h2>
         <p className="text-white/40 text-sm mt-1">{range.label}</p>

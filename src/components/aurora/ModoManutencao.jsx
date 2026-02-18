@@ -347,7 +347,7 @@ export default function ModoManutencao() {
               <div className="text-3xl" aria-hidden="true">🌅</div>
               <h2
                 className="text-lg font-semibold text-white"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Como foi o teu mes?
               </h2>
@@ -488,7 +488,7 @@ export default function ModoManutencao() {
                 <div className="text-4xl" aria-hidden="true">🌅</div>
                 <h3
                   className="text-lg font-semibold text-white"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   Nenhum check-in registado
                 </h3>
@@ -508,13 +508,13 @@ export default function ModoManutencao() {
                 {/* Stats */}
                 <div className="flex gap-3">
                   <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                    <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                    <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                       {historico.length}
                     </p>
                     <p className="text-xs text-gray-400">{historico.length === 1 ? 'check-in' : 'check-ins'}</p>
                   </div>
                   <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                    <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                    <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                       {historico.filter(h => (h.padroes_regressao || []).length === 0).length}
                     </p>
                     <p className="text-xs text-gray-400">meses limpos</p>

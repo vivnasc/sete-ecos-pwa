@@ -20,7 +20,7 @@ const styles = {
     paddingBottom: '2rem'
   },
   heading: {
-    fontFamily: "'Cormorant Garamond', serif",
+    fontFamily: 'var(--font-titulos)',
     color: '#C1634A'
   },
   cardBg: 'bg-white/5 border border-[#C1634A]/20 rounded-2xl',
@@ -102,7 +102,7 @@ function PassoListar({ lista, setLista, onNext }) {
           onClick={onNext}
           disabled={preenchidos < 5}
           className={`px-6 py-3 ${styles.accentBg} text-white rounded-xl font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:brightness-110`}
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Seguinte
         </button>
@@ -214,7 +214,7 @@ function PassoCortar({ lista, cortadas, setCortadas, razoes, setRazoes, onNext, 
           onClick={onNext}
           disabled={cortadas.length !== 3 || !todasRazoesPreenchidas}
           className={`px-6 py-3 ${styles.accentBg} text-white rounded-xl font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:brightness-110`}
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Ritual de Corte
         </button>
@@ -323,7 +323,7 @@ function PassoReflexao({ lista, cortadas, razoes, reflexao, setReflexao, onSave,
           onClick={onSave}
           disabled={!reflexao.trim() || saving}
           className={`px-8 py-3 ${styles.accentBg} text-white rounded-xl font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:brightness-110`}
-          style={{ fontFamily: "'Cormorant Garamond', serif", animation: reflexao.trim() ? 'ignisPulse 2s ease-in-out infinite' : 'none' }}
+          style={{ fontFamily: 'var(--font-titulos)', animation: reflexao.trim() ? 'ignisPulse 2s ease-in-out infinite' : 'none' }}
         >
           {saving ? 'A guardar...' : 'Guardar Ritual'}
         </button>
@@ -684,7 +684,7 @@ export default function ExercicioCorte() {
                   <button
                     onClick={() => setPasso(1)}
                     className={`px-8 py-3 ${styles.accentBg} text-white rounded-xl font-semibold transition-all hover:brightness-110`}
-                    style={{ fontFamily: "'Cormorant Garamond', serif", animation: 'ignisPulse 2s ease-in-out infinite' }}
+                    style={{ fontFamily: 'var(--font-titulos)', animation: 'ignisPulse 2s ease-in-out infinite' }}
                   >
                     Comecar Ritual
                   </button>

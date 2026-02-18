@@ -7,7 +7,7 @@ import { g } from '../utils/genero'
  * IMAGO - Landing Page
  * "Identidade & Espelho" - Chakra Sahasrara (Coroa), Elemento: Consciência
  * Módulo de autoconhecimento profundo, identidade e integração
- * Tema: roxo (#8B7BA5), Cormorant Garamond
+ * Tema: roxo (#8B7BA5), Playfair Display
  */
 
 const LandingImago = () => {
@@ -86,7 +86,7 @@ const LandingImago = () => {
   ]
 
   return (
-    <div className="min-h-screen" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+    <div className="min-h-screen" style={{ fontFamily: 'var(--font-corpo)' }}>
 
       {/* ===== HERO ===== */}
       <header
@@ -104,14 +104,14 @@ const LandingImago = () => {
 
           <h1
             className="text-5xl md:text-7xl font-bold text-white mb-4"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             IMAGO
           </h1>
 
           <p
             className="text-xl md:text-2xl text-white/80 mb-2"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}
+            style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}
           >
             Identidade &amp; Espelho
           </p>
@@ -143,7 +143,7 @@ const LandingImago = () => {
         <div className="max-w-3xl mx-auto text-center">
           <h2
             className="text-3xl md:text-4xl font-bold text-white mb-6"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Quantas versões de ti criaste para agradar os outros?
           </h2>
@@ -180,7 +180,7 @@ const LandingImago = () => {
           <div className="text-center mb-14">
             <h2
               className="text-3xl md:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               O Imago é o espaço onde te encontras para além de tudo o que já disseram que eras
             </h2>
@@ -198,7 +198,7 @@ const LandingImago = () => {
                 <div className="text-3xl mb-4 group-hover:scale-110 transition-transform">
                   {f.icone}
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h3 className="text-lg font-bold text-white mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
                   {f.titulo}
                 </h3>
                 <p className="text-[#8B7BA5]/70 text-sm">{f.desc}</p>
@@ -214,7 +214,7 @@ const LandingImago = () => {
           <div className="text-center mb-14">
             <h2
               className="text-3xl md:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Como funciona
             </h2>
@@ -231,7 +231,7 @@ const LandingImago = () => {
               >
                 <span
                   className="absolute top-3 right-4 text-5xl font-bold text-white/5"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   {p.numero}
                 </span>
@@ -243,7 +243,7 @@ const LandingImago = () => {
                 </div>
                 <h3
                   className="text-xl font-bold text-white mb-3"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   {p.titulo}
                 </h3>
@@ -260,7 +260,7 @@ const LandingImago = () => {
           <div className="text-center mb-14">
             <h2
               className="text-3xl md:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Escolhe o teu plano
             </h2>
@@ -287,7 +287,7 @@ const LandingImago = () => {
 
                 <h3
                   className="text-2xl font-bold text-white mb-1"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   {plano.name}
                 </h3>
@@ -334,7 +334,7 @@ const LandingImago = () => {
         <div className="max-w-2xl mx-auto">
           <h2
             className="text-3xl md:text-4xl font-bold text-white mb-4"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Experimenta 7 dias grátis
           </h2>
@@ -365,7 +365,7 @@ const LandingImago = () => {
           <div className="flex items-center gap-3">
             <span
               className="text-xl font-bold text-[#8B7BA5]"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               IMAGO
             </span>

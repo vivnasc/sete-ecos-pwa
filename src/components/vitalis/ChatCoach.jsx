@@ -1098,7 +1098,7 @@ export default function ChatCoach() {
             <Link to="/vitalis/dashboard" className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-lg hover:bg-white/30 transition-colors">←</Link>
             <img src="/logos/VITALIS_LOGO_V3.png" alt="Vivianne" className="w-11 h-11 rounded-full bg-white/90 object-contain shadow-sm flex-shrink-0 p-1" />
             <div className="flex-1 min-w-0">
-              <h1 className="font-bold text-base" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Vivianne</h1>
+              <h1 className="font-bold text-base" style={{ fontFamily: 'var(--font-titulos)' }}>Vivianne</h1>
               <p className="text-white/80 text-xs flex items-center gap-1.5">
                 <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                 Coach Vitalis

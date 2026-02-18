@@ -92,7 +92,7 @@ export default function OnboardingShell({ eco, steps, onComplete, logo }) {
         <div className="px-5 mb-6">
           <h1
             className="text-2xl font-bold text-white text-center"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             {step.title}
           </h1>

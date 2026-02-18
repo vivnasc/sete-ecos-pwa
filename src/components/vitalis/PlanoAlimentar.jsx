@@ -650,7 +650,7 @@ export default function PlanoAlimentar() {
               className="w-12 h-12 object-contain drop-shadow-lg"
             />
             <div>
-              <h1 className="text-2xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>O Meu Plano</h1>
+              <h1 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-titulos)' }}>O Meu Plano</h1>
               <p className="text-white/80 mt-1">Resumo do teu plano alimentar</p>
             </div>
           </div>

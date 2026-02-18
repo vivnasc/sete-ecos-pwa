@@ -150,7 +150,7 @@ export default function WelcomeTutorial({ eco = 'vitalis', onComplete }) {
           className="p-6 text-center text-white"
           style={{ background: `linear-gradient(135deg, ${tutorial.color}, ${tutorial.color}dd)` }}
         >
-          <h2 className="text-xl font-bold mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-xl font-bold mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
             {currentStep === 0 ? tutorial.title : step.title}
           </h2>
 

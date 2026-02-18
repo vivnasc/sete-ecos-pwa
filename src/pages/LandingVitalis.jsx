@@ -215,7 +215,7 @@ const LandingVitalis = () => {
   };
 
   return (
-    <div className="min-h-screen" style={{ fontFamily: "'DM Sans', sans-serif", background: 'linear-gradient(to bottom, #F5F2ED, #E8E4DC, #C5D1BC)' }}>
+    <div className="min-h-screen" style={{ fontFamily: 'var(--font-corpo)', background: 'linear-gradient(to bottom, #F5F2ED, #E8E4DC, #C5D1BC)' }}>
       <SEOHead
         title="VITALIS - Coaching Nutricional Personalizado | Sete Ecos"
         description="Coaching nutricional baseado em Precision Nutrition. App completa com plano personalizado, receitas adaptadas, apoio emocional e coach IA. Desde 2.500 MZN/mês."
@@ -242,7 +242,7 @@ const LandingVitalis = () => {
       <nav className="fixed top-0 w-full px-4 md:px-8 py-4 flex justify-between items-center bg-white/95 backdrop-blur-sm z-50 border-b border-[#E8E2D9]">
         <Link to="/landing" className="flex items-center gap-3">
           <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-12 h-12" />
-          <span className="text-2xl font-bold text-[#7C8B6F]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <span className="text-2xl font-bold text-[#7C8B6F]" style={{ fontFamily: 'var(--font-titulos)' }}>
             VITALIS
           </span>
         </Link>
@@ -276,10 +276,10 @@ const LandingVitalis = () => {
           <div className="w-24 h-24 mx-auto mb-6 bg-white/20 rounded-full flex items-center justify-center">
             <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-16 h-16" />
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
             VITALIS
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>
+          <p className="text-xl md:text-2xl text-white/90 mb-2" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
             A raiz da transformação
           </p>
           <p className="text-lg text-white/80 mb-2">🌿 Quando o excesso cai, o corpo responde</p>
@@ -316,7 +316,7 @@ const LandingVitalis = () => {
               <p className="text-yellow-300 text-sm font-semibold tracking-widest uppercase mb-2">
                 {dentroRamadao ? 'Ramadan Mubarak' : 'O Ramadan está a chegar'}
               </p>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3" style={{ fontFamily: 'var(--font-titulos)' }}>
                 Nutrição consciente durante o mês sagrado
               </h2>
               <p className="text-white/70 text-sm max-w-xl mx-auto mb-4">
@@ -337,16 +337,16 @@ const LandingVitalis = () => {
       {/* Prova Social */}
       <section className="py-12 bg-white border-b-4 border-[#7C8B6F]">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-[#4A4035] mb-8" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#4A4035] mb-8" style={{ fontFamily: 'var(--font-titulos)' }}>
             Já Mudou Vidas. Pode Mudar a Tua.
           </h2>
           <div className="flex flex-wrap justify-center gap-8 md:gap-16 mb-6">
             <div className="text-center">
-              <span className="text-4xl md:text-5xl font-bold text-[#7C8B6F]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>84%</span>
+              <span className="text-4xl md:text-5xl font-bold text-[#7C8B6F]" style={{ fontFamily: 'var(--font-titulos)' }}>84%</span>
               <p className="text-sm text-[#6B5C4C] uppercase tracking-wider">Taxa Sucesso Método PN</p>
             </div>
             <div className="text-center">
-              <span className="text-4xl md:text-5xl font-bold text-[#7C8B6F]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>100K+</span>
+              <span className="text-4xl md:text-5xl font-bold text-[#7C8B6F]" style={{ fontFamily: 'var(--font-titulos)' }}>100K+</span>
               <p className="text-sm text-[#6B5C4C] uppercase tracking-wider">Profissionais Usam Globalmente</p>
             </div>
           </div>
@@ -359,7 +359,7 @@ const LandingVitalis = () => {
       {/* O que funciona vs não funciona */}
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
             Cansada de dietas que não funcionam?
           </h2>
           <p className="text-center text-[#6B5C4C] mb-10">Não és tu que falhas. São as dietas que te falharam.</p>
@@ -397,7 +397,7 @@ const LandingVitalis = () => {
       {/* Método */}
       <section id="metodo" className="py-16 bg-[#F5F2ED]">
         <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
             O Método Precision Nutrition
           </h2>
           <p className="text-center text-[#6B5C4C] mb-10 max-w-xl mx-auto">
@@ -415,7 +415,7 @@ const LandingVitalis = () => {
                 <div className="w-14 h-14 bg-gradient-to-br from-[#7C8B6F]/20 to-[#9CAF88]/20 rounded-xl flex items-center justify-center text-3xl mb-4">
                   {item.icone}
                 </div>
-                <h3 className="text-lg font-bold text-[#7C8B6F] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h3 className="text-lg font-bold text-[#7C8B6F] mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
                   {item.titulo}
                 </h3>
                 <p className="text-sm text-[#6B5C4C]">{item.desc}</p>
@@ -428,7 +428,7 @@ const LandingVitalis = () => {
       {/* As 3 Fases */}
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
             As 3 Fases da Transformação
           </h2>
           <p className="text-center text-[#6B5C4C] mb-10 max-w-xl mx-auto">
@@ -438,13 +438,13 @@ const LandingVitalis = () => {
           <div className="grid md:grid-cols-3 gap-6">
             {fases.map((fase) => (
               <div key={fase.numero} className="bg-[#F5F2ED] p-8 rounded-2xl border-2 border-[#E8E2D9] text-center relative hover:border-[#7C8B6F] hover:translate-y-[-3px] transition-all">
-                <span className="absolute top-3 right-4 text-5xl font-bold text-black/5" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <span className="absolute top-3 right-4 text-5xl font-bold text-black/5" style={{ fontFamily: 'var(--font-titulos)' }}>
                   {fase.numero}
                 </span>
                 <div className="w-16 h-16 bg-white border-3 border-[#7C8B6F] rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
                   {fase.icone}
                 </div>
-                <h3 className="text-xl font-bold text-[#4A4035] mb-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h3 className="text-xl font-bold text-[#4A4035] mb-1" style={{ fontFamily: 'var(--font-titulos)' }}>
                   {fase.nome}
                 </h3>
                 <p className="text-sm text-[#7C8B6F] font-semibold mb-3">{fase.duracao}</p>
@@ -458,7 +458,7 @@ const LandingVitalis = () => {
       {/* Plataforma/Features */}
       <section id="plataforma" className="py-16 bg-gradient-to-b from-[#7C8B6F] to-[#6B7A5D] text-white">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
             A Plataforma Completa
           </h2>
           <p className="text-center text-white/80 mb-12 max-w-xl mx-auto">
@@ -491,7 +491,7 @@ const LandingVitalis = () => {
       <section className="py-16 text-white relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #5D4E6D 0%, #3D3249 100%)' }}>
         <div className="absolute top-[-100px] right-[-100px] w-[350px] h-[350px] bg-white/5 rounded-full blur-3xl"></div>
         <div className="max-w-4xl mx-auto px-4 relative z-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
             💜 Espaço de Retorno
           </h2>
           <p className="text-center text-white/80 mb-6">
@@ -536,7 +536,7 @@ const LandingVitalis = () => {
       {/* Funcionalidades Exclusivas */}
       <section className="py-16 bg-gradient-to-b from-[#F5F2ED] to-white">
         <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
             ✨ Funcionalidades Exclusivas
           </h2>
           <p className="text-center text-[#6B5C4C] mb-10 max-w-xl mx-auto">
@@ -554,7 +554,7 @@ const LandingVitalis = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-[#7C8B6F] to-[#9CAF88] rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-lg">
                   📅
                 </div>
-                <h3 className="text-xl font-bold text-[#4A4035] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h3 className="text-xl font-bold text-[#4A4035] mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
                   Calendário Semanal
                 </h3>
                 <p className="text-[#6B5C4C] text-sm mb-4">
@@ -578,7 +578,7 @@ const LandingVitalis = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-[#7C8B6F] to-[#9CAF88] rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-lg">
                   🛒
                 </div>
-                <h3 className="text-xl font-bold text-[#4A4035] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h3 className="text-xl font-bold text-[#4A4035] mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
                   Lista de Compras Inteligente
                 </h3>
                 <p className="text-[#6B5C4C] text-sm mb-4">
@@ -602,7 +602,7 @@ const LandingVitalis = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-[#7C8B6F] to-[#9CAF88] rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-lg">
                   💡
                 </div>
-                <h3 className="text-xl font-bold text-[#4A4035] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h3 className="text-xl font-bold text-[#4A4035] mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
                   Sugestões "O Que Comer"
                 </h3>
                 <p className="text-[#6B5C4C] text-sm mb-4">
@@ -622,7 +622,7 @@ const LandingVitalis = () => {
       {/* Preços */}
       <section id="precos" className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
             Escolhe o Teu Plano
           </h2>
           <p className="text-center text-[#6B5C4C] mb-10">
@@ -645,7 +645,7 @@ const LandingVitalis = () => {
                     Mais Popular
                   </span>
                 )}
-                <h3 className="text-2xl font-bold text-[#4A4035] mb-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h3 className="text-2xl font-bold text-[#4A4035] mb-1" style={{ fontFamily: 'var(--font-titulos)' }}>
                   {plano.nome}
                 </h3>
                 {plano.desconto > 0 && (
@@ -676,7 +676,7 @@ const LandingVitalis = () => {
 
           {/* Garantias */}
           <div className="bg-[#F5F2ED] p-8 rounded-2xl border-2 border-[#E8E2D9]">
-            <h3 className="text-2xl font-bold text-[#4A4035] text-center mb-6" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <h3 className="text-2xl font-bold text-[#4A4035] text-center mb-6" style={{ fontFamily: 'var(--font-titulos)' }}>
               🛡️ Compromisso Vitalis
             </h3>
             <div className="grid md:grid-cols-2 gap-6">
@@ -702,7 +702,7 @@ const LandingVitalis = () => {
       {/* Testemunhos */}
       <section id="resultados" className="py-16 bg-[#F5F2ED]">
         <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
             O Que Dizem as Clientes
           </h2>
           <p className="text-center text-[#6B5C4C] mb-10">Histórias reais de transformação</p>
@@ -753,7 +753,7 @@ const LandingVitalis = () => {
               </div>
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-[#4A4035] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              <h3 className="text-2xl font-bold text-[#4A4035] mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
                 Vivianne Saraiva
               </h3>
               <p className="text-[#6B5C4C] mb-4">
@@ -777,7 +777,7 @@ const LandingVitalis = () => {
       {/* CTA Final */}
       <section className="py-16 text-white text-center" style={{ background: 'linear-gradient(135deg, #7C8B6F 0%, #6B7A5D 100%)' }}>
         <div className="max-w-2xl mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
             Pronta para começar a tua transformação?
           </h2>
           <p className="text-white/90 mb-6">Escolhe o teu plano e dá o primeiro passo hoje</p>
@@ -796,7 +796,7 @@ const LandingVitalis = () => {
       {/* FAQ */}
       <section className="py-16 bg-white">
         <div className="max-w-3xl mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#4A4035] text-center mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
             Perguntas Frequentes
           </h2>
           <p className="text-center text-[#6B5C4C] mb-10">Respondemos às dúvidas mais comuns</p>

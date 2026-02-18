@@ -94,7 +94,7 @@ const NavButton = ({ onClick, disabled, children, primary = false }) => (
 const StepEmocao = ({ selected, onSelect }) => (
   <div className="space-y-4 animate-fadeIn">
     <div className="text-center mb-6">
-      <h2 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+      <h2 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
         O que sentes agora?
       </h2>
       <p className="text-sm text-gray-400 mt-1">Escolhe a emoção mais presente</p>
@@ -140,7 +140,7 @@ const StepIntensidade = ({ value, onChange, emocao }) => {
   return (
     <div className="space-y-6 animate-fadeIn">
       <div className="text-center mb-4">
-        <h2 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <h2 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
           Qual a intensidade?
         </h2>
         <p className="text-sm text-gray-400 mt-1">
@@ -197,7 +197,7 @@ const StepIntensidade = ({ value, onChange, emocao }) => {
 const StepTrigger = ({ value, onChange }) => (
   <div className="space-y-6 animate-fadeIn">
     <div className="text-center mb-4">
-      <h2 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+      <h2 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
         O que provocou esta emoção?
       </h2>
       <p className="text-sm text-gray-400 mt-1">Opcional — podes avançar sem escrever</p>
@@ -240,7 +240,7 @@ const StepTrigger = ({ value, onChange }) => (
 const StepCorpo = ({ selected, onSelect }) => (
   <div className="space-y-6 animate-fadeIn">
     <div className="text-center mb-4">
-      <h2 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+      <h2 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
         Onde sentes no corpo?
       </h2>
       <p className="text-sm text-gray-400 mt-1">Onde esta emoção se manifesta fisicamente?</p>
@@ -280,7 +280,7 @@ const StepCorpo = ({ selected, onSelect }) => (
 const StepReflexao = ({ value, onChange }) => (
   <div className="space-y-6 animate-fadeIn">
     <div className="text-center mb-4">
-      <h2 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+      <h2 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
         Queres reflectir sobre isto?
       </h2>
       <p className="text-sm text-gray-400 mt-1">Opcional — um momento para ti</p>
@@ -333,7 +333,7 @@ const SuccessScreen = ({ emocao, onNovo, onHistorico }) => {
         </div>
       </div>
       <div>
-        <h2 className="text-xl font-semibold text-white mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <h2 className="text-xl font-semibold text-white mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
           {g('Registado', 'Registada')} com carinho
         </h2>
         <p className="text-sm text-gray-400 max-w-xs">
@@ -484,7 +484,7 @@ const HistoricoView = ({ userId, onVoltar }) => {
     return (
       <div className="text-center py-16 space-y-4 animate-fadeIn">
         <div className="text-4xl">💧</div>
-        <h3 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <h3 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
           O teu diário está vazio
         </h3>
         <p className="text-sm text-gray-400 max-w-xs mx-auto">

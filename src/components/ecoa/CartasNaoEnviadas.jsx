@@ -36,7 +36,7 @@ const ReleaseAnimation = ({ show, onComplete }) => {
         <p
           className="text-white text-lg"
           style={{
-            fontFamily: "'Cormorant Garamond', serif",
+            fontFamily: 'var(--font-titulos)',
             animation: 'fadeInText 1s ease-out 0.5s both'
           }}
         >
@@ -330,7 +330,7 @@ export default function CartasNaoEnviadas() {
               <div className="text-3xl mb-3">🕊️</div>
               <h3
                 className="text-lg font-semibold text-white mb-2"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Libertar esta carta?
               </h3>
@@ -384,7 +384,7 @@ export default function CartasNaoEnviadas() {
             <div className="text-center mb-4">
               <h2
                 className="text-lg font-semibold text-white"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Que tipo de carta queres escrever?
               </h2>
@@ -430,7 +430,7 @@ export default function CartasNaoEnviadas() {
             <div className="p-4 rounded-xl" style={{ background: ACCENT_SUBTLE, border: `1px solid ${ACCENT}22` }}>
               <p
                 className="text-sm italic text-gray-300 leading-relaxed"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 {selectedCat.prompt}
               </p>
@@ -493,7 +493,7 @@ export default function CartasNaoEnviadas() {
             <div>
               <h2
                 className="text-xl font-semibold text-white mb-2"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Carta guardada
               </h2>
@@ -546,7 +546,7 @@ export default function CartasNaoEnviadas() {
                 <div className="text-4xl">📝</div>
                 <h3
                   className="text-lg font-semibold text-white"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   Nenhuma carta ainda
                 </h3>
@@ -566,13 +566,13 @@ export default function CartasNaoEnviadas() {
                 {/* Stats */}
                 <div className="flex gap-3">
                   <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                    <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                    <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                       {cartas.length}
                     </p>
                     <p className="text-xs text-gray-400">{cartas.length === 1 ? 'carta' : 'cartas'}</p>
                   </div>
                   <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                    <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                    <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                       {totalLibertadas}
                     </p>
                     <p className="text-xs text-gray-400">{totalLibertadas === 1 ? 'libertada' : 'libertadas'} 🕊️</p>

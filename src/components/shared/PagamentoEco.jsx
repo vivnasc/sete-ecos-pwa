@@ -343,7 +343,7 @@ export default function PagamentoEco({ eco }) {
           />
           <span
             className="text-xl font-bold"
-            style={{ color: theme.color, fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ color: theme.color, fontFamily: 'var(--font-titulos)' }}
           >
             {theme.name.toUpperCase()}
           </span>
@@ -565,7 +565,7 @@ export default function PagamentoEco({ eco }) {
           >
             <h3
               className="text-lg font-bold text-white mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               O que inclui o {theme.name.toUpperCase()}
             </h3>

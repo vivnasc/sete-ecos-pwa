@@ -15,7 +15,7 @@ const IGNIS_DARK = '#2e1a14';
 const IGNIS_LIGHT = '#D4836E';
 const IGNIS_GLOW = 'rgba(193,99,74,0.15)';
 
-const HEADING_FONT = "'Cormorant Garamond', serif";
+const HEADING_FONT = "'Playfair Display', serif";
 
 // ---- Icons (inline SVGs) ----
 const FlameIcon = ({ className = 'w-5 h-5' }) => (

@@ -161,7 +161,7 @@ export default function DashboardAurora() {
       >
         <h2
           className="text-white text-lg font-semibold mb-3"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Ecos Completados
         </h2>

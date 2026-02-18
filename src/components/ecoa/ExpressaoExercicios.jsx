@@ -319,7 +319,7 @@ export default function ExpressaoExercicios() {
             ) : historico.length === 0 ? (
               <div className="text-center py-16 space-y-4">
                 <div className="text-4xl">{'\u270D\uFE0F'}</div>
-                <h3 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h3 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                   Ainda sem exercícios
                 </h3>
                 <p className="text-sm text-gray-400 max-w-xs mx-auto">
@@ -365,7 +365,7 @@ export default function ExpressaoExercicios() {
                   {selectedExercicio.icon}
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-white mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                  <h2 className="text-xl font-semibold text-white mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
                     Exercício {g('completo', 'completo')}!
                   </h2>
                   <p className="text-sm text-gray-400 max-w-xs">
@@ -402,7 +402,7 @@ export default function ExpressaoExercicios() {
                     </svg>
                   </button>
                   <div className="flex-1">
-                    <h2 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                    <h2 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                       {selectedExercicio.nome}
                     </h2>
                   </div>
@@ -462,7 +462,7 @@ export default function ExpressaoExercicios() {
                     style={{
                       background: 'rgba(255,255,255,0.06)',
                       focusRingColor: ACCENT,
-                      fontFamily: "'Cormorant Garamond', serif",
+                      fontFamily: 'var(--font-titulos)',
                       fontSize: '1rem',
                       lineHeight: '1.8'
                     }}
@@ -515,7 +515,7 @@ export default function ExpressaoExercicios() {
           // ---- BROWSE ----
           <div className="space-y-3 animate-fadeIn">
             <div className="text-center mb-6">
-              <h2 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              <h2 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                 Escolhe um exercício
               </h2>
               <p className="text-sm text-gray-400 mt-1">

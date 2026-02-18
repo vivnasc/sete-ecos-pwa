@@ -167,7 +167,7 @@ export default function FotosProgresso() {
                 ←
               </Link>
               <div>
-                <h1 className="text-xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Fotos de Progresso</h1>
+                <h1 className="text-xl font-bold" style={{ fontFamily: 'var(--font-titulos)' }}>Fotos de Progresso</h1>
                 <p className="text-white/70 text-sm">{fotos.length} fotos guardadas</p>
               </div>
             </div>

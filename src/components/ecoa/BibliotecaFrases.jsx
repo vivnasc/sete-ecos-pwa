@@ -45,7 +45,7 @@ const FraseCard = ({ frase, onClick }) => (
     <CategoriaBadge categoria={frase.categoria} />
     <p
       className="text-white font-semibold text-base leading-snug flex-1"
-      style={{ fontFamily: "'Cormorant Garamond', serif" }}
+      style={{ fontFamily: 'var(--font-titulos)' }}
     >
       "{frase.frase}"
     </p>
@@ -64,7 +64,7 @@ const FraseDetalhe = ({ frase, onBack }) => {
         <CategoriaBadge categoria={frase.categoria} />
         <h2
           className="text-2xl font-bold text-white leading-tight px-4"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           "{frase.frase}"
         </h2>
@@ -94,7 +94,7 @@ const FraseDetalhe = ({ frase, onBack }) => {
               </div>
               <p
                 className="text-white/75 text-sm leading-relaxed italic"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 "{variacao}"
               </p>
@@ -122,7 +122,7 @@ const FraseDetalhe = ({ frase, onBack }) => {
         <div className="text-3xl mb-3" aria-hidden="true">{'\uD83D\uDD0A'}</div>
         <h3
           className="font-bold text-base text-white mb-2"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Pratica
         </h3>
@@ -131,7 +131,7 @@ const FraseDetalhe = ({ frase, onBack }) => {
         </p>
         <p
           className="text-lg font-semibold text-white mt-4 leading-relaxed"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           "{frase.frase}"
         </p>

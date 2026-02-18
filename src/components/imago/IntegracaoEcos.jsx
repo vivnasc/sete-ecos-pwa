@@ -306,7 +306,7 @@ export default function IntegracaoEcos() {
             <div className="text-center">
               <h2
                 className="text-lg font-semibold text-white"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Conexões entre os teus ecos
               </h2>
@@ -358,7 +358,7 @@ export default function IntegracaoEcos() {
               >
                 <p
                   className="text-sm italic text-gray-300 leading-relaxed"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   {correlationPrompt}
                 </p>
@@ -433,7 +433,7 @@ export default function IntegracaoEcos() {
                 <div className="text-4xl">🌀</div>
                 <h3
                   className="text-lg font-semibold text-white"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   Nenhuma conexão registada
                 </h3>
@@ -453,13 +453,13 @@ export default function IntegracaoEcos() {
                 {/* Stats */}
                 <div className="flex gap-3">
                   <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                    <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                    <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                       {entries.length}
                     </p>
                     <p className="text-xs text-gray-400">{entries.length === 1 ? 'conexão' : 'conexões'}</p>
                   </div>
                   <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                    <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                    <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                       {new Set(entries.flatMap(e => [e.eco_1, e.eco_2])).size}
                     </p>
                     <p className="text-xs text-gray-400">ecos {g('explorados', 'exploradas')}</p>

@@ -841,7 +841,7 @@ export default function DashboardVitalis() {
                 alt="Vitalis"
                 className="w-10 h-10 object-contain drop-shadow-lg"
               />
-              <h1 className="text-xl font-bold text-white" style={{ fontFamily: 'Cormorant Garamond, serif', letterSpacing: '3px' }}>VITALIS</h1>
+              <h1 className="text-xl font-bold text-white" style={{ fontFamily: 'Playfair Display, serif', letterSpacing: '3px' }}>VITALIS</h1>
             </div>
             <div className="flex items-center gap-2">
               {/* Notificações */}

@@ -223,7 +223,7 @@ export default function MealsTracker() {
             </button>
             <div className="flex items-center gap-3">
               <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-12 h-12 object-contain drop-shadow-lg" />
-              <h1 className="text-3xl font-bold text-white" style={{ fontFamily: 'Cormorant Garamond, serif' }}>Registo de Refeições</h1>
+              <h1 className="text-3xl font-bold text-white" style={{ fontFamily: 'Playfair Display, serif' }}>Registo de Refeições</h1>
             </div>
           </div>
         </div>
@@ -265,7 +265,7 @@ export default function MealsTracker() {
                 alt="Vitalis"
                 className="w-12 h-12 object-contain drop-shadow-lg"
               />
-              <h1 className="text-3xl font-bold text-white" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+              <h1 className="text-3xl font-bold text-white" style={{ fontFamily: 'Playfair Display, serif' }}>
                 Refeições
               </h1>
             </div>

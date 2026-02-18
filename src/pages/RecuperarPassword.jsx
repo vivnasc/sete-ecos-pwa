@@ -109,7 +109,7 @@ export default function RecuperarPassword() {
       <nav className="px-4 py-4 flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
           <img src="/logos/CENTRO_7ECOS.png" alt="Sete Ecos" className="w-8 h-8" />
-          <span className="text-lg font-bold text-[#4A3728]" style={{ fontFamily: "'Cormorant Garamond', serif", letterSpacing: '0.1em' }}>
+          <span className="text-lg font-bold text-[#4A3728]" style={{ fontFamily: 'var(--font-titulos)', letterSpacing: '0.1em' }}>
             SETE ECOS
           </span>
         </Link>
@@ -127,7 +127,7 @@ export default function RecuperarPassword() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                 </svg>
               </div>
-              <h1 className="text-2xl font-bold text-[#4A3728] mb-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              <h1 className="text-2xl font-bold text-[#4A3728] mb-1" style={{ fontFamily: 'var(--font-titulos)' }}>
                 {mode === 'request' ? 'Recuperar Password' : 'Nova Password'}
               </h1>
               <p className="text-[#6B5344] text-sm">

@@ -217,7 +217,7 @@ export default function DashboardEcoa() {
       >
         <h2
           className="text-white text-lg font-semibold mb-3"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Mapa de Silenciamento
         </h2>
@@ -278,7 +278,7 @@ export default function DashboardEcoa() {
       >
         <h2
           className="text-white text-lg font-semibold mb-3"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Micro-Voz
         </h2>

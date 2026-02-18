@@ -223,7 +223,7 @@ export default function VitalisAuth() {
               </svg>
             </div>
 
-            <h2 className="text-2xl font-bold text-[#4A4035] mb-3" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+            <h2 className="text-2xl font-bold text-[#4A4035] mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>
               Confirma o teu Email
             </h2>
 
@@ -286,7 +286,7 @@ export default function VitalisAuth() {
           </div>
           <h1
             className="text-4xl font-bold text-[#4A4035] mb-2"
-            style={{ fontFamily: 'Cormorant Garamond, serif', letterSpacing: '6px' }}
+            style={{ fontFamily: 'Playfair Display, serif', letterSpacing: '6px' }}
           >
             VITALIS
           </h1>

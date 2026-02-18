@@ -61,7 +61,7 @@ const SimpleBarChart = ({ data, maxValue, label }) => {
 const StatCard = ({ icon, value, label, sublabel }) => (
   <div className="p-4 rounded-xl text-center" style={{ background: 'rgba(255,255,255,0.04)' }}>
     <div className="text-2xl mb-2">{icon}</div>
-    <div className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+    <div className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
       {value}
     </div>
     <p className="text-xs text-gray-400 mt-1">{label}</p>
@@ -73,7 +73,7 @@ const StatCard = ({ icon, value, label, sublabel }) => (
 const InsightCard = ({ text, icon = '\uD83D\uDD0A' }) => (
   <div className="flex items-start gap-3 p-4 rounded-xl" style={{ background: ACCENT_SUBTLE }}>
     <span className="text-lg shrink-0">{icon}</span>
-    <p className="text-sm text-gray-300 leading-relaxed" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+    <p className="text-sm text-gray-300 leading-relaxed" style={{ fontFamily: 'var(--font-titulos)' }}>
       {text}
     </p>
   </div>
@@ -311,7 +311,7 @@ export default function PadroesExpressao() {
           // ---- EMPTY STATE ----
           <div className="text-center py-16 space-y-4 animate-fadeIn">
             <div className="text-4xl">{'\uD83D\uDCCA'}</div>
-            <h3 className="text-lg font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <h3 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
               Os teus padrões vão aparecer aqui
             </h3>
             <p className="text-sm text-gray-400 max-w-xs mx-auto">
@@ -341,7 +341,7 @@ export default function PadroesExpressao() {
             {/* ---- MEIOS USADOS ---- */}
             {analytics.meiosUsados.some(m => m.value > 0) && (
               <div className="p-5 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
-                <h3 className="text-sm font-semibold text-white mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h3 className="text-sm font-semibold text-white mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
                   Meios usados
                 </h3>
                 <SimpleBarChart data={analytics.meiosUsados.filter(m => m.value > 0)} />
@@ -351,7 +351,7 @@ export default function PadroesExpressao() {
             {/* ---- TEMAS RECORRENTES ---- */}
             {analytics.temasRecorrentes.length > 0 && (
               <div className="p-5 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
-                <h3 className="text-sm font-semibold text-white mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h3 className="text-sm font-semibold text-white mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
                   Temas recorrentes
                 </h3>
                 <SimpleBarChart data={analytics.temasRecorrentes} />
@@ -361,7 +361,7 @@ export default function PadroesExpressao() {
             {/* ---- EVOLUCAO DA ASSERTIVIDADE ---- */}
             {analytics.evolucaoSemanal.length > 0 && (
               <div className="p-5 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
-                <h3 className="text-sm font-semibold text-white mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h3 className="text-sm font-semibold text-white mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
                   Evolução da assertividade
                 </h3>
                 <p className="text-xs text-gray-500 mb-3">Registos de comunicação por semana</p>
@@ -372,7 +372,7 @@ export default function PadroesExpressao() {
             {/* ---- ZONAS DE SILENCIO QUE ESTAO A ABRIR ---- */}
             {analytics.zonasAbertas.length > 0 && (
               <div className="p-5 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
-                <h3 className="text-sm font-semibold text-white mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <h3 className="text-sm font-semibold text-white mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
                   Zonas de silêncio que estão a abrir
                 </h3>
                 <div className="space-y-3">
@@ -399,7 +399,7 @@ export default function PadroesExpressao() {
 
             {/* ---- INSIGHTS ---- */}
             <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              <h3 className="text-sm font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                 Os teus insights
               </h3>
 
@@ -439,7 +439,7 @@ export default function PadroesExpressao() {
 
             {/* ---- MOTIVATIONAL NOTE ---- */}
             <div className="p-5 rounded-xl text-center" style={{ background: 'rgba(74,144,164,0.08)' }}>
-              <p className="text-sm text-gray-300 italic leading-relaxed" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              <p className="text-sm text-gray-300 italic leading-relaxed" style={{ fontFamily: 'var(--font-titulos)' }}>
                 {g(
                   'Cada palavra que dizes é um eco que ressoa além de ti. Estás a construir uma voz que ninguém pode silenciar.',
                   'Cada palavra que dizes é um eco que ressoa além de ti. Estás a construir uma voz que ninguém pode silenciar.'

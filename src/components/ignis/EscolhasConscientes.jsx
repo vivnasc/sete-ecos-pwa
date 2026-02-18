@@ -18,7 +18,7 @@ const ACCENT_DARK = '#2e1a14';
 const ACCENT_LIGHT = '#D4836E';
 const ACCENT_SUBTLE = 'rgba(193,99,74,0.12)';
 
-const HEADING_FONT = "'Cormorant Garamond', serif";
+const HEADING_FONT = "'Playfair Display', serif";
 
 // ---- Flame SVG decorative ----
 const FlameDecoration = ({ className = '' }) => (

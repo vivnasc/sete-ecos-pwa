@@ -132,7 +132,7 @@ export default function PaymentPage({ eco, features = [], testimonial = null }) 
           >
             <h2
               className="text-white text-lg font-semibold mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               O que inclui o {config.name}
             </h2>

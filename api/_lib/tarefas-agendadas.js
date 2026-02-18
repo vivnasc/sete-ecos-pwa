@@ -421,7 +421,7 @@ async function enviarEmail(tipo, destinatario, dados) {
     'lembrete-checkin': {
       assunto: `${dados.nome}, sentimos a tua falta no Vitalis`,
       html: `
-        <div style="font-family: 'Quicksand', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
           <div style="text-align: center; margin-bottom: 30px;">
             <img src="https://app.seteecos.com/logos/VITALIS_LOGO_V3.png" alt="Vitalis" style="height: 60px;">
           </div>
@@ -453,7 +453,7 @@ async function enviarEmail(tipo, destinatario, dados) {
     'motivacao-intensa': {
       assunto: `${dados.nome}, preciso de te dizer uma coisa importante`,
       html: `
-        <div style="font-family: 'Quicksand', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background: #FAF6F0;">
+        <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background: #FAF6F0;">
           <div style="text-align: center; margin-bottom: 20px;">
             <img src="https://app.seteecos.com/logos/VITALIS_LOGO_V3.png" alt="Vitalis" style="height: 50px;">
           </div>
@@ -502,7 +502,7 @@ async function enviarEmail(tipo, destinatario, dados) {
     'curiosidade-insana': {
       assunto: `${dados.curiosidade?.assunto || dados.nome + ', descobri algo que precisas de saber'}`,
       html: `
-        <div style="font-family: 'Quicksand', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background: #FAF6F0;">
+        <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background: #FAF6F0;">
           <div style="text-align: center; margin-bottom: 20px;">
             <img src="https://app.seteecos.com/logos/VITALIS_LOGO_V3.png" alt="Vitalis" style="height: 50px;">
           </div>
@@ -536,7 +536,7 @@ async function enviarEmail(tipo, destinatario, dados) {
     'expiracao-aviso': {
       assunto: `⏰ ${dados.nome}, a tua subscrição Vitalis expira em ${dados.dias} dias`,
       html: `
-        <div style="font-family: 'Quicksand', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
           <div style="text-align: center; margin-bottom: 30px;">
             <img src="https://app.seteecos.com/logos/VITALIS_LOGO_V3.png" alt="Vitalis" style="height: 60px;">
           </div>
@@ -564,7 +564,7 @@ async function enviarEmail(tipo, destinatario, dados) {
     'coach-resumo-diario': {
       assunto: `📊 Resumo Vitalis - ${dados.data}`,
       html: `
-        <div style="font-family: 'Quicksand', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
           <h1 style="color: #7C8B6F; font-size: 24px;">Resumo Diário Vitalis 📊</h1>
           <p style="color: #6B5C4C; font-size: 14px;">${dados.data}</p>
 

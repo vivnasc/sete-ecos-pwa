@@ -391,7 +391,7 @@ export default function MeditacoesEssencia() {
                     <div className="text-4xl">🧘</div>
                     <h3
                       className="text-lg font-semibold text-white"
-                      style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                      style={{ fontFamily: 'var(--font-titulos)' }}
                     >
                       Nenhuma meditação registada
                     </h3>
@@ -411,13 +411,13 @@ export default function MeditacoesEssencia() {
                     {/* Stats */}
                     <div className="flex gap-3">
                       <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                        <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                        <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                           {logEntries.length}
                         </p>
                         <p className="text-xs text-gray-400">{logEntries.length === 1 ? 'meditação' : 'meditações'}</p>
                       </div>
                       <div className="flex-1 p-4 rounded-xl text-center" style={{ background: ACCENT_SUBTLE }}>
-                        <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                        <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                           {logEntries.reduce((sum, e) => sum + (e.duracao_minutos || 0), 0)}
                         </p>
                         <p className="text-xs text-gray-400">min totais</p>
@@ -488,7 +488,7 @@ export default function MeditacoesEssencia() {
                         style={{
                           color: '#4d5a6a',
                           fontSize: '0.875rem',
-                          fontFamily: "'Cormorant Garamond', serif",
+                          fontFamily: 'var(--font-titulos)',
                           opacity: 0.4 + (idx * 0.2)
                         }}
                       >
@@ -505,7 +505,7 @@ export default function MeditacoesEssencia() {
                     style={{
                       color: '#e8edf0',
                       fontSize: '1.25rem',
-                      fontFamily: "'Cormorant Garamond', serif",
+                      fontFamily: 'var(--font-titulos)',
                       textShadow: `0 0 40px ${ACCENT}44`
                     }}
                   >
@@ -581,7 +581,7 @@ export default function MeditacoesEssencia() {
             <div>
               <h2
                 className="text-xl font-semibold text-white mb-2"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Meditação completa
               </h2>
@@ -640,7 +640,7 @@ export default function MeditacoesEssencia() {
             <div>
               <h2
                 className="text-xl font-semibold text-white mb-2"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 {g('Conectado', 'Conectada')} com a essência
               </h2>

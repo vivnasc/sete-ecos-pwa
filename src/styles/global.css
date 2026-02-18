@@ -53,8 +53,8 @@
     --aurora: #F59E0B;            /* Dourado */
 
     /* Tipografia */
-    --font-titulos: 'Cormorant Garamond', Georgia, serif;
-    --font-corpo: 'Quicksand', 'DM Sans', system-ui, sans-serif;
+    --font-titulos: 'Playfair Display', Georgia, serif;
+    --font-corpo: 'Inter', system-ui, -apple-system, sans-serif;
 
     /* Sombras */
     --sombra-suave: 0 2px 8px rgba(26, 26, 78, 0.08);
@@ -70,6 +70,7 @@
   html {
     font-size: 16px;
     -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
   }
 
   body {
@@ -84,8 +85,9 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-titulos);
-    font-weight: 500;
-    line-height: 1.3;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
     color: var(--lumina-indigo);
   }
 
@@ -244,6 +246,47 @@
 @keyframes slideInRight {
   from { opacity: 0; transform: translateX(100%); }
   to { opacity: 1; transform: translateX(0); }
+}
+
+/* ============================================================
+   PREMIUM — Gradient Shift, Pulse-Glow, Letter-spacing
+   ============================================================ */
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.hero-gradient-animated {
+  background-size: 200% 200%;
+  animation: gradient-shift 12s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.3); }
+  50% { box-shadow: 0 0 20px 4px rgba(201, 162, 39, 0.15); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+@keyframes pulse-glow-sage {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(124, 139, 111, 0.3); }
+  50% { box-shadow: 0 0 20px 4px rgba(124, 139, 111, 0.15); }
+}
+
+.animate-pulse-glow-sage {
+  animation: pulse-glow-sage 3s ease-in-out infinite;
+}
+
+@keyframes pulse-glow-purple {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.3); }
+  50% { box-shadow: 0 0 20px 4px rgba(139, 92, 246, 0.15); }
+}
+
+.animate-pulse-glow-purple {
+  animation: pulse-glow-purple 3s ease-in-out infinite;
 }
 
 /* ============================================================

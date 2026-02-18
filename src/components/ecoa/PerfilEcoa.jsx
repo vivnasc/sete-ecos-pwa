@@ -9,7 +9,7 @@ import { g } from '../../utils/genero'
 /**
  * PERFIL ECOA — Perfil do utilizador no Ecoa
  * Mostra: gamificacao completa, stats, badges, config
- * Tema: #4A90A4, #1a2a34, Cormorant Garamond, Som
+ * Tema: #4A90A4, #1a2a34, Playfair Display, Som
  */
 
 const ECOA_COLOR = '#4A90A4'
@@ -111,7 +111,7 @@ export default function PerfilEcoa() {
           </div>
           <h2
             className="text-xl font-bold text-white"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Nivel: {clientData?.nivel || 'Sussurro'}
           </h2>

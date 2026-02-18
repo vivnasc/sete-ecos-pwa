@@ -9,7 +9,7 @@ import { g } from '../../utils/genero'
 /**
  * PERFIL VENTIS — Perfil do utilizador no Ventis
  * Mostra: gamificacao completa, stats, badges, config
- * Tema: #5D9B84, #1a2e24, Cormorant Garamond, Folhas
+ * Tema: #5D9B84, #1a2e24, Playfair Display, Folhas
  */
 
 const VENTIS_COLOR = '#5D9B84'
@@ -93,7 +93,7 @@ export default function PerfilVentis() {
           </div>
           <h2
             className="text-xl font-bold text-white"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Nivel: {clientData?.nivel || 'Semente'}
           </h2>

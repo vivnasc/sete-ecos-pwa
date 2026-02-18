@@ -92,7 +92,7 @@ export default function PerfilSerena() {
           </div>
           <h2
             className="text-xl font-bold text-white"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Nivel: {clientData?.nivel || 'Nascente'}
           </h2>

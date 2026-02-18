@@ -319,7 +319,7 @@ export default function CicloMenstrual() {
             >
               <h2
                 className="text-white text-lg font-semibold mb-1"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 Em que fase estas hoje?
               </h2>
@@ -415,7 +415,7 @@ export default function CicloMenstrual() {
               >
                 <h3
                   className="text-white text-lg font-semibold mb-4"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   Correlacoes Detectadas
                 </h3>

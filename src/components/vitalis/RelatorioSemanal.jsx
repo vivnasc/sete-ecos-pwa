@@ -275,7 +275,7 @@ export default function RelatorioSemanal() {
                 alt="Vitalis"
                 className="w-10 h-10 object-contain drop-shadow-lg"
               />
-              <h1 className="text-2xl font-bold" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Relatório Semanal</h1>
+              <h1 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-titulos)' }}>Relatório Semanal</h1>
             </div>
             <div className="w-16"></div>
           </div>

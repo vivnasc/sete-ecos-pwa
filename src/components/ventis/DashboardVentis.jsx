@@ -271,7 +271,7 @@ export default function DashboardVentis() {
       >
         <h2
           className="text-white text-lg font-semibold mb-3"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          style={{ fontFamily: 'var(--font-titulos)' }}
         >
           Energia Agora
         </h2>

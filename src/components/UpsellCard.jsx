@@ -145,7 +145,7 @@ export default function UpsellCard({ padrao, onDismiss }) {
         {/* Logo + title */}
         <div className="flex items-center gap-3 mb-3">
           <img src={style.logo} alt="" className="w-8 h-8 opacity-80" onError={(e) => { e.target.style.display = 'none'; }} />
-          <h3 className="text-white font-bold text-base" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h3 className="text-white font-bold text-base" style={{ fontFamily: 'var(--font-titulos)' }}>
             {upsell.titulo}
           </h3>
         </div>

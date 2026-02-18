@@ -447,7 +447,7 @@ export default function MonitorEnergia() {
         <section className="bg-white/5 backdrop-blur rounded-2xl p-5 border border-[#5D9B84]/20">
           <h2
             className="text-lg font-bold text-white mb-4"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Energia de Hoje
           </h2>
@@ -501,7 +501,7 @@ export default function MonitorEnergia() {
               <div>
                 <h2
                   className="text-lg font-bold text-white"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   Check-in da {PERIODOS[periodoActual].label}
                 </h2>
@@ -624,7 +624,7 @@ export default function MonitorEnergia() {
               <div>
                 <h2
                   className="text-lg font-bold text-white"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                  style={{ fontFamily: 'var(--font-titulos)' }}
                 >
                   Check-in da {PERIODOS[periodoActual].label}
                 </h2>
@@ -691,7 +691,7 @@ export default function MonitorEnergia() {
         <section className="bg-white/5 backdrop-blur rounded-2xl p-5 border border-[#5D9B84]/20">
           <h2
             className="text-lg font-bold text-white mb-4"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             Energia Semanal
           </h2>
@@ -763,7 +763,7 @@ export default function MonitorEnergia() {
           <section className="bg-white/5 backdrop-blur rounded-2xl p-5 border border-[#5D9B84]/20">
             <h2
               className="text-lg font-bold text-white mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               {g('O que influencia a tua energia', 'O que influencia a tua energia')}
             </h2>

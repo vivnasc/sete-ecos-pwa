@@ -347,7 +347,7 @@ export default function CerimoniaGraduacao() {
 
             <h1
               className="text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Cerimónia de Graduação
             </h1>
@@ -462,7 +462,7 @@ export default function CerimoniaGraduacao() {
             {/* Nome do eco */}
             <h2
               className="text-3xl font-bold text-white mb-2"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               {ecoActual.nome}
             </h2>
@@ -556,7 +556,7 @@ export default function CerimoniaGraduacao() {
             </span>
             <h2
               className="text-2xl font-bold text-white mb-2"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              style={{ fontFamily: 'var(--font-titulos)' }}
             >
               Momentos Transformadores
             </h2>
@@ -719,7 +719,7 @@ export default function CerimoniaGraduacao() {
             >
               <p
                 className="text-white text-xl leading-relaxed italic"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                style={{ fontFamily: 'var(--font-titulos)' }}
               >
                 "Chegaste aqui porque escolheste. Cada passo foi teu.
                 Cada eco, cada reflexão, cada momento de coragem — {g('foste tu', 'foste tu')}.
@@ -815,7 +815,7 @@ export default function CerimoniaGraduacao() {
                 <h2
                   className="text-3xl font-bold mb-1"
                   style={{
-                    fontFamily: "'Cormorant Garamond', serif",
+                    fontFamily: 'var(--font-titulos)',
                     color: AURORA_DARK
                   }}
                 >
@@ -831,7 +831,7 @@ export default function CerimoniaGraduacao() {
                 <h3
                   className="text-2xl font-bold mb-4"
                   style={{
-                    fontFamily: "'Cormorant Garamond', serif",
+                    fontFamily: 'var(--font-titulos)',
                     color: AURORA_DARK
                   }}
                 >
@@ -938,7 +938,7 @@ export default function CerimoniaGraduacao() {
 
           <h2
             className="text-3xl font-bold text-white mb-4"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            style={{ fontFamily: 'var(--font-titulos)' }}
           >
             {g('Graduado', 'Graduada')}!
           </h2>

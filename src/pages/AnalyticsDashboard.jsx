@@ -256,7 +256,7 @@ export default function AnalyticsDashboard() {
           <Link to="/coach" className="text-white/80 hover:text-white text-sm mb-4 inline-block">
             ← Coach Dashboard
           </Link>
-          <h1 className="text-3xl font-bold mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h1 className="text-3xl font-bold mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
             Analytics Dashboard
           </h1>
           <p className="text-white/80">Métricas avançadas de monetização</p>
