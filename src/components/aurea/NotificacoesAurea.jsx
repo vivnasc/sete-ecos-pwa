@@ -190,7 +190,7 @@ export default function NotificacoesAurea() {
     }
 
     try {
-      const response = await fetch('/api/whatsapp-notify', {
+      const response = await fetch('/api/whatsapp-twilio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
