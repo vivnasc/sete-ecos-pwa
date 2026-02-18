@@ -16,7 +16,12 @@ export default function MinhaConta() {
   const [loading, setLoading] = useState(true);
   const [subscriptions, setSubscriptions] = useState({
     vitalis: null,
-    aurea: null
+    aurea: null,
+    serena: null,
+    ignis: null,
+    ventis: null,
+    ecoa: null,
+    imago: null
   });
 
   useEffect(() => {
@@ -40,21 +45,30 @@ export default function MinhaConta() {
         .maybeSingle();
 
       if (userData) {
-        const { data: vitalisData } = await supabase
-          .from('vitalis_clients')
-          .select('*')
-          .eq('user_id', userData.id)
-          .maybeSingle();
+        // Queries em paralelo para todos os módulos
+        const [vitalisRes, aureaRes, serenaRes, ignisRes, ventisRes, ecoaRes, imagoRes] = await Promise.all([
+          supabase.from('vitalis_clients').select('*').eq('user_id', userData.id).maybeSingle(),
+          supabase.from('aurea_clients').select('*').eq('user_id', userData.id).maybeSingle(),
+          supabase.from('serena_clients').select('*').eq('user_id', userData.id).maybeSingle().catch(() => ({ data: null })),
+          supabase.from('ignis_clients').select('*').eq('user_id', userData.id).maybeSingle().catch(() => ({ data: null })),
+          supabase.from('ventis_clients').select('*').eq('user_id', userData.id).maybeSingle().catch(() => ({ data: null })),
+          supabase.from('ecoa_clients').select('*').eq('user_id', userData.id).maybeSingle().catch(() => ({ data: null })),
+          supabase.from('imago_clients').select('*').eq('user_id', userData.id).maybeSingle().catch(() => ({ data: null }))
+        ]);
 
-        const { data: aureaData } = await supabase
-          .from('aurea_clients')
-          .select('*')
-          .eq('user_id', userData.id)
-          .maybeSingle();
+        // Para coaches: criar acesso virtual se não houver registo na tabela
+        const coachBypass = isCoach(session.user?.email)
+          ? { subscription_status: 'tester' }
+          : null;
 
         setSubscriptions({
-          vitalis: vitalisData || null,
-          aurea: aureaData || null
+          vitalis: vitalisRes.data || coachBypass,
+          aurea: aureaRes.data || coachBypass,
+          serena: serenaRes.data || coachBypass,
+          ignis: ignisRes.data || coachBypass,
+          ventis: ventisRes.data || coachBypass,
+          ecoa: ecoaRes.data || coachBypass,
+          imago: imagoRes.data || coachBypass
         });
       }
     } catch (error) {
@@ -206,7 +220,12 @@ export default function MinhaConta() {
 
           <div className={`backdrop-blur-xl rounded-3xl border shadow-2xl overflow-hidden ${isDark ? 'bg-white/10 border-white/15 divide-y divide-white/10' : 'bg-white/50 border-white/60 divide-y divide-[#E8D5A3]/15'}`}>
             {renderSubscriptionRow('vitalis', 'VITALIS', '/logos/VITALIS_LOGO_V3.png', ['#7C8B6F', '#3D4D35'], '/vitalis/dashboard', '/vitalis/pagamento')}
-            {renderSubscriptionRow('aurea', 'AUREA', '/logos/logo_aurea.png', ['#C9A227', '#8B6914'], '/aurea/dashboard', '/aurea/pagamento')}
+            {renderSubscriptionRow('aurea', 'AUREA', '/logos/AUREA_LOGO_V3.png', ['#C9A227', '#8B6914'], '/aurea/dashboard', '/aurea/pagamento')}
+            {renderSubscriptionRow('serena', 'SERENA', '/logos/SERENA_LOGO_V3.png', ['#6B8E9B', '#4a6e7b'], '/serena/dashboard', '/serena/pagamento')}
+            {renderSubscriptionRow('ignis', 'IGNIS', '/logos/IGNIS-LOGO-V3.png', ['#C1634A', '#8B4513'], '/ignis/dashboard', '/ignis/pagamento')}
+            {renderSubscriptionRow('ventis', 'VENTIS', '/logos/VENTIS_LOGO_V3.png', ['#7BA38E', '#5a8070'], '/ventis/dashboard', '/ventis/pagamento')}
+            {renderSubscriptionRow('ecoa', 'ECOA', '/logos/ECOA_LOGO_V3.png', ['#4A90A4', '#2a6a7a'], '/ecoa/dashboard', '/ecoa/pagamento')}
+            {renderSubscriptionRow('imago', 'IMAGO', '/logos/IMAGO_LOGO_V3.png', ['#8B7BA5', '#5a4d7a'], '/imago/dashboard', '/imago/pagamento')}
 
             {/* Lumina - always free */}
             <div className="flex items-center gap-3 p-3">

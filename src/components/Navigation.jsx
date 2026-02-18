@@ -15,23 +15,46 @@ export default function Navigation({ variant = 'default' }) {
   // Detect current Eco section
   const isVitalisSection = location.pathname.startsWith('/vitalis')
   const isAureaSection = location.pathname.startsWith('/aurea')
+  const isSerenaSection = location.pathname.startsWith('/serena')
+  const isIgnisSection = location.pathname.startsWith('/ignis')
+  const isVentisSection = location.pathname.startsWith('/ventis')
+  const isEcoaSection = location.pathname.startsWith('/ecoa')
+  const isImagoSection = location.pathname.startsWith('/imago')
   const isLuminaSection = location.pathname === '/lumina'
   const isAccountSection = location.pathname === '/conta' || location.pathname === '/perfil'
   const isCommunitySection = location.pathname.startsWith('/comunidade')
   const isCoachSection = location.pathname.startsWith('/coach')
+
+  // New module config for DRY navigation
+  const ecoNavConfig = {
+    serena: { name: 'SERENA', color: '#6B8E9B', colorDark: '#4a6e7b', borderColor: '#6B8E9B', logo: '/logos/SERENA_LOGO_V3.png', chatPath: '/serena/chat', dashPath: '/serena/dashboard' },
+    ignis: { name: 'IGNIS', color: '#C1634A', colorDark: '#8B4513', borderColor: '#C1634A', logo: '/logos/IGNIS-LOGO-V3.png', chatPath: '/ignis/chat', dashPath: '/ignis/dashboard' },
+    ventis: { name: 'VENTIS', color: '#7BA38E', colorDark: '#5a8070', borderColor: '#7BA38E', logo: '/logos/VENTIS_LOGO_V3.png', chatPath: '/ventis/chat', dashPath: '/ventis/dashboard' },
+    ecoa: { name: 'ECOA', color: '#4A90A4', colorDark: '#2a6a7a', borderColor: '#4A90A4', logo: '/logos/ECOA_LOGO_V3.png', chatPath: '/ecoa/chat', dashPath: '/ecoa/dashboard' },
+    imago: { name: 'IMAGO', color: '#8B7BA5', colorDark: '#5a4d7a', borderColor: '#8B7BA5', logo: '/logos/IMAGO_LOGO_V3.png', chatPath: '/imago/chat', dashPath: '/imago/dashboard' }
+  }
+
+  // Determine active new eco (if any)
+  const activeNewEco = isSerenaSection ? 'serena'
+    : isIgnisSection ? 'ignis'
+    : isVentisSection ? 'ventis'
+    : isEcoaSection ? 'ecoa'
+    : isImagoSection ? 'imago'
+    : null
 
   // Get current Eco info for header badge
   const getCurrentEco = () => {
     if (isVitalisSection) return { name: 'Vitalis', color: '#7C8B6F', logo: '/logos/VITALIS_LOGO_V3.png' }
     if (isAureaSection) return { name: 'Aurea', color: '#C9A227', logo: '/logos/logo_aurea.png' }
     if (isLuminaSection) return { name: 'Lumina', color: '#8B5CF6', logo: '/logos/lumina-logo_v2.png' }
+    if (activeNewEco) return { name: ecoNavConfig[activeNewEco].name, color: ecoNavConfig[activeNewEco].color, logo: ecoNavConfig[activeNewEco].logo }
     return null
   }
 
   const currentEco = getCurrentEco()
 
   // Don't show navigation on certain pages
-  const hiddenPaths = ['/landing', '/vitalis/login', '/vitalis/pagamento', '/aurea/pagamento', '/login', '/recuperar-password']
+  const hiddenPaths = ['/landing', '/vitalis/login', '/vitalis/pagamento', '/aurea/pagamento', '/serena/pagamento', '/ignis/pagamento', '/ventis/pagamento', '/ecoa/pagamento', '/imago/pagamento', '/login', '/recuperar-password']
   if (hiddenPaths.some(p => location.pathname === p || location.pathname.startsWith(p))) {
     return null
   }
@@ -231,6 +254,72 @@ export default function Navigation({ variant = 'default' }) {
           )}
         </div>
       </nav>
+      </>
+    )
+  }
+
+  // New Eco module navigation (Serena, Ignis, Ventis, Ecoa, Imago)
+  if (activeNewEco) {
+    const eco = ecoNavConfig[activeNewEco]
+    const isChatPage = location.pathname === eco.chatPath
+
+    return (
+      <>
+        {/* Floating chat button */}
+        {!isChatPage && (
+          <button
+            onClick={() => navigate(eco.chatPath)}
+            className="fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-2 border-white/30"
+            style={{ background: `linear-gradient(135deg, ${eco.color}, ${eco.colorDark})` }}
+            aria-label={`Falar com Coach ${eco.name}`}
+          >
+            <span className="text-white font-bold text-lg">{eco.name[0]}</span>
+          </button>
+        )}
+
+        <nav role="navigation" aria-label={`Navegacao ${eco.name}`} className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50" style={{ borderColor: `${eco.borderColor}40` }}>
+          {/* Current Eco indicator */}
+          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+            <div className="px-4 py-1 rounded-t-lg shadow-md" style={{ background: `linear-gradient(to right, ${eco.color}, ${eco.colorDark})` }}>
+              <span className="text-white text-xs font-semibold tracking-wide">{eco.name}</span>
+            </div>
+          </div>
+
+          <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
+            <NavItem
+              logo="/logos/CENTRO_7ECOS.png"
+              label="Hub"
+              active={isActive('/')}
+              onClick={() => navigate('/')}
+              color="#4A4035"
+            />
+            <NavItem
+              logo={eco.logo}
+              label={eco.name.charAt(0) + eco.name.slice(1).toLowerCase()}
+              active={true}
+              onClick={() => navigate(eco.dashPath)}
+              color={eco.color}
+            />
+            {isAuthenticated && (
+              <NavItem
+                icon="community"
+                label="Rio"
+                active={isCommunitySection}
+                onClick={() => navigate('/comunidade')}
+                color="#8B5CF6"
+              />
+            )}
+            {isAuthenticated && (
+              <NavItem
+                icon="account"
+                label="Conta"
+                active={isAccountSection}
+                onClick={() => navigate('/conta')}
+                color="#6B5C4C"
+              />
+            )}
+          </div>
+        </nav>
       </>
     )
   }
