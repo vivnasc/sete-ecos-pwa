@@ -28,6 +28,9 @@
     "api/instagram-publish.js": {
       "maxDuration": 60
     },
+    "api/facebook-publish.js": {
+      "maxDuration": 60
+    },
     "api/whatsapp-webhook.js": {
       "maxDuration": 30
     },

@@ -5,12 +5,16 @@
  * - photo: Imagem única com legenda
  * - carousel: Múltiplas imagens (2-10) com legenda
  * - story: Story com imagem
+ * - reel: Vídeo Reel (até 90s) com legenda
  *
  * Body (JSON):
  * {
- *   type: 'photo' | 'carousel' | 'story',
+ *   type: 'photo' | 'carousel' | 'story' | 'reel',
  *   imageUrl: string | string[],  // URL(s) públicas da(s) imagem(ns)
- *   caption: string               // Legenda (não aplicável a stories)
+ *   videoUrl: string,             // URL pública do vídeo (para reels)
+ *   caption: string,              // Legenda (não aplicável a stories)
+ *   coverUrl: string,             // URL da thumbnail do reel (opcional)
+ *   shareToFeed: boolean          // Partilhar reel no feed (default: true)
  * }
  *
  * Variáveis de ambiente necessárias:
@@ -56,14 +60,22 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { type, imageUrl, caption } = req.body;
+    const { type, imageUrl, videoUrl, caption, coverUrl, shareToFeed } = req.body;
 
-    if (!type || !imageUrl) {
-      return res.status(400).json({ error: 'Campos type e imageUrl são obrigatórios' });
+    if (!type) {
+      return res.status(400).json({ error: 'Campo type é obrigatório' });
     }
 
-    if (!['photo', 'carousel', 'story'].includes(type)) {
-      return res.status(400).json({ error: 'Tipo inválido. Use: photo, carousel ou story' });
+    if (!['photo', 'carousel', 'story', 'reel'].includes(type)) {
+      return res.status(400).json({ error: 'Tipo inválido. Use: photo, carousel, story ou reel' });
+    }
+
+    if (type === 'reel' && !videoUrl) {
+      return res.status(400).json({ error: 'Campo videoUrl é obrigatório para reels' });
+    }
+
+    if (type !== 'reel' && !imageUrl) {
+      return res.status(400).json({ error: 'Campo imageUrl é obrigatório para photo, carousel e story' });
     }
 
     let result;
@@ -84,6 +96,13 @@ export default async function handler(req, res) {
 
       case 'story':
         result = await publishStory(INSTAGRAM_ACCOUNT_ID, META_ACCESS_TOKEN, imageUrl);
+        break;
+
+      case 'reel':
+        result = await publishReel(INSTAGRAM_ACCOUNT_ID, META_ACCESS_TOKEN, videoUrl, caption, {
+          coverUrl,
+          shareToFeed: shareToFeed !== false
+        });
         break;
     }
 
@@ -196,6 +215,38 @@ async function publishStory(accountId, token, imageUrl) {
 }
 
 /**
+ * Publicar um Reel (vídeo até 90 segundos)
+ */
+async function publishReel(accountId, token, videoUrl, caption, options = {}) {
+  const { coverUrl, shareToFeed = true } = options;
+
+  // 1. Criar container de reel
+  const params = {
+    video_url: videoUrl,
+    media_type: 'REELS',
+    caption: caption || '',
+    share_to_feed: shareToFeed
+  };
+
+  if (coverUrl) {
+    params.cover_url = coverUrl;
+  }
+
+  const containerId = await createMediaContainer(accountId, token, params);
+
+  // 2. Aguardar processamento (vídeos demoram mais — timeout maior)
+  await waitForContainer(containerId, token, 120000);
+
+  // 3. Publicar
+  const publishResult = await publishMedia(accountId, token, containerId);
+
+  return {
+    containerId,
+    mediaId: publishResult.id
+  };
+}
+
+/**
  * Criar um container de media na Graph API
  */
 async function createMediaContainer(accountId, token, params) {
@@ -255,10 +306,11 @@ async function createCarouselContainer(accountId, token, childIds, caption) {
  * A Graph API processa media de forma assíncrona.
  * Estados possíveis: IN_PROGRESS, FINISHED, ERROR, EXPIRED
  */
-async function waitForContainer(containerId, token) {
+async function waitForContainer(containerId, token, timeout) {
   const startTime = Date.now();
+  const maxTimeout = timeout || POLL_TIMEOUT;
 
-  while (Date.now() - startTime < POLL_TIMEOUT) {
+  while (Date.now() - startTime < maxTimeout) {
     const url = `${GRAPH_API_BASE}/${containerId}?fields=status_code,status&access_token=${token}`;
 
     const response = await fetch(url);
@@ -365,7 +417,7 @@ function sleep(ms) {
  * Função exportada para uso interno (pelo instagram-schedule.js)
  * Permite publicar sem passar por HTTP
  */
-export async function publishToInstagram({ type, imageUrl, caption }) {
+export async function publishToInstagram({ type, imageUrl, videoUrl, caption, coverUrl, shareToFeed }) {
   const META_ACCESS_TOKEN = process.env.META_ACCESS_TOKEN;
   const INSTAGRAM_ACCOUNT_ID = process.env.INSTAGRAM_ACCOUNT_ID;
 
@@ -380,6 +432,11 @@ export async function publishToInstagram({ type, imageUrl, caption }) {
       return publishCarousel(INSTAGRAM_ACCOUNT_ID, META_ACCESS_TOKEN, imageUrl, caption);
     case 'story':
       return publishStory(INSTAGRAM_ACCOUNT_ID, META_ACCESS_TOKEN, imageUrl);
+    case 'reel':
+      return publishReel(INSTAGRAM_ACCOUNT_ID, META_ACCESS_TOKEN, videoUrl, caption, {
+        coverUrl,
+        shareToFeed: shareToFeed !== false
+      });
     default:
       throw new Error(`Tipo inválido: ${type}`);
   }

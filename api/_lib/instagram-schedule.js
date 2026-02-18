@@ -1,21 +1,27 @@
 /**
- * API Endpoint: Publicação Agendada no Instagram
+ * API Endpoint: Publicação Agendada no Instagram e Facebook
  *
  * Este endpoint é chamado por um cron job para:
  * 1. Buscar posts agendados na tabela 'scheduled_posts' (scheduled_at <= agora, status = 'pending')
- * 2. Publicar cada post via Meta Graph API
+ * 2. Publicar cada post via Meta Graph API (Instagram ou Facebook)
  * 3. Atualizar o estado para 'published' ou 'failed'
  *
  * Tabela Supabase 'scheduled_posts':
  * - id: uuid (PK)
- * - type: text ('photo' | 'carousel' | 'story')
+ * - type: text ('photo' | 'carousel' | 'story' | 'reel' | 'post' | 'video' | 'link')
+ * - platform: text ('instagram' | 'facebook') — default 'instagram'
  * - image_url: text ou jsonb (URL única ou array de URLs)
+ * - video_url: text (URL do vídeo para reels/vídeos)
+ * - cover_url: text (thumbnail para reels)
+ * - link_url: text (URL para partilhar no Facebook)
  * - caption: text
  * - scheduled_at: timestamptz
  * - status: text ('pending' | 'published' | 'failed')
  * - error_message: text (null se sucesso)
  * - published_at: timestamptz (null até publicar)
- * - media_id: text (ID do Instagram após publicação)
+ * - media_id: text (ID do Instagram/Facebook após publicação)
+ * - share_to_feed: boolean (para reels Instagram)
+ * - is_reel: boolean (para vídeos Facebook como reel)
  * - created_by: uuid (user_id de quem agendou)
  * - created_at: timestamptz
  *
@@ -40,6 +46,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { publishToInstagram } from '../instagram-publish.js';
+import { publishToFacebook } from '../facebook-publish.js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
@@ -125,12 +132,30 @@ export default async function handler(req, res) {
           }
         }
 
-        // Publicar via Meta Graph API
-        const result = await publishToInstagram({
-          type: post.type,
-          imageUrl,
-          caption: post.caption
-        });
+        // Publicar via Meta Graph API (Instagram ou Facebook)
+        let result;
+        const platform = post.platform || 'instagram';
+
+        if (platform === 'facebook') {
+          result = await publishToFacebook({
+            type: post.type,
+            message: post.caption,
+            imageUrl,
+            videoUrl: post.video_url || null,
+            linkUrl: post.link_url || null,
+            isReel: post.is_reel || false,
+            title: post.title || null
+          });
+        } else {
+          result = await publishToInstagram({
+            type: post.type,
+            imageUrl,
+            videoUrl: post.video_url || null,
+            caption: post.caption,
+            coverUrl: post.cover_url || null,
+            shareToFeed: post.share_to_feed !== false
+          });
+        }
 
         // Actualizar como publicado
         await supabase
