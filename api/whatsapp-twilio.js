@@ -125,10 +125,10 @@ async function handlePerfil(req, res, token, phoneId) {
 
     const profileData = {
       messaging_product: 'whatsapp',
-      about: 'Sistema de Transmutação Feminina 🌱',
-      description: 'SETE ECOS — Plataforma de bem-estar holístico para mulheres. 7 módulos que integram corpo, emoção, energia, expressão e identidade. Nutrição inteligente (Vitalis), presença e merecimento (Aurea), comunidade e muito mais. Criado por Vivianne dos Santos.',
-      email: 'viv.saraiva@gmail.com',
-      websites: ['https://app.seteecos.com'],
+      about: 'Bem-estar holístico para mulheres 🌱✨',
+      description: 'SETE ECOS — Sistema de Transmutação Feminina\n\n🌿 VITALIS — Nutrição inteligente e personalizada\n💛 ÁUREA — Presença, valor próprio e merecimento\n🔮 LUMINA — Diagnóstico energético e autoconhecimento\n👥 COMUNIDADE — Rede de apoio entre mulheres\n\n7 módulos que integram corpo, emoção, energia, expressão e identidade. Planos alimentares adaptados, acompanhamento por WhatsApp e uma comunidade que te acolhe.\n\n👩‍💼 Fundadora: Vivianne Saraiva\n📞 +258 845 243 875\n📍 Maputo, Moçambique',
+      email: 'feedback@seteecos.com',
+      websites: ['https://app.seteecos.com', 'https://seteecos.com'],
       address: 'Maputo, Moçambique',
       vertical: 'HEALTH',
     };
