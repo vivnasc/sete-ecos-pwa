@@ -11,8 +11,8 @@ import ScrollReveal from '../components/ScrollReveal'
 
 /**
  * IMAGO - Landing Page
- * "Identidade & Espelho" - Chakra Sahasrara (Coroa), Elemento: Consciencia
- * Modulo de autoconhecimento profundo, identidade e integracao
+ * "Identidade & Espelho" - Chakra Sahasrara (Coroa), Elemento: Consciência
+ * Módulo de autoconhecimento profundo, identidade e integração
  * Tema: roxo (#8B7BA5), Playfair Display
  */
 
@@ -40,52 +40,52 @@ const LandingImago = () => {
     {
       icone: '🪞',
       titulo: 'Espelho Triplo',
-      desc: 'Quem sou vs. quem mostro vs. quem quero ser. Tres dimensoes de ti num so exercicio.'
+      desc: 'Quem sou vs. quem mostro vs. quem quero ser. Três dimensões de ti num só exercício.'
     },
     {
       icone: '⛏️',
       titulo: 'Arqueologia de Si',
-      desc: 'Escava camadas de identidade — infancia, adolescencia, relacoes, rupturas. Descobre quem foste para entender quem es.'
+      desc: 'Escava camadas de identidade — infância, adolescência, relações, rupturas. Descobre quem foste para entender quem és.'
     },
     {
       icone: '📜',
-      titulo: 'Nomeacao',
-      desc: 'Como te nomeias agora? Um ritual de auto-definicao que muda com o teu crescimento.'
+      titulo: 'Nomeação',
+      desc: 'Como te nomeias agora? Um ritual de auto-definição que muda com o teu crescimento.'
     },
     {
       icone: '🗺️',
       titulo: 'Mapa de Identidade',
-      desc: '7 dimensoes do teu ser — uma por eco. Corpo, emocao, vontade, energia, voz, valor e essencia.'
+      desc: '7 dimensões do teu ser — uma por eco. Corpo, emoção, vontade, energia, voz, valor e essência.'
     },
     {
       icone: '💠',
       titulo: 'Valores Essenciais',
-      desc: 'Define os teus 3 valores fundamentais. A bussola que guia quando o mapa desaparece.'
+      desc: 'Define os teus 3 valores fundamentais. A bússola que guia quando o mapa desaparece.'
     },
     {
       icone: '🧘',
-      titulo: 'Meditacoes de Essencia',
-      desc: 'Meditacoes guiadas para conectar com o teu eu mais autentico, para alem dos rotulos.'
+      titulo: 'Meditações de Essência',
+      desc: 'Meditações guiadas para conectar com o teu eu mais autêntico, para além dos rótulos.'
     },
     {
       icone: '🔮',
-      titulo: 'Visao Futuro',
-      desc: 'Quadro de visao digital. Quem queres ser daqui a 1, 3, 5 anos? Visualiza e manifesta.'
+      titulo: 'Visão Futuro',
+      desc: 'Quadro de visão digital. Quem queres ser daqui a 1, 3, 5 anos? Visualiza e manifesta.'
     },
     {
       icone: '🌀',
-      titulo: 'Integracao dos Ecos',
-      desc: 'Conexoes entre todos os modulos. O Imago une tudo — corpo, emocao, vontade, ritmo, voz.'
+      titulo: 'Integração dos Ecos',
+      desc: 'Conexões entre todos os módulos. O Imago une tudo — corpo, emoção, vontade, ritmo, voz.'
     },
     {
       icone: '👗',
       titulo: 'Roupa como Identidade',
-      desc: 'O que vestes comunica quem es. Explora a relacao entre imagem exterior e identidade interior.'
+      desc: 'O que vestes comunica quem és. Explora a relação entre imagem exterior e identidade interior.'
     },
     {
       icone: '📊',
       titulo: 'Timeline',
-      desc: 'A tua jornada completa de identidade. Ve como evoluiste ao longo do tempo.'
+      desc: 'A tua jornada completa de identidade. Vê como evoluíste ao longo do tempo.'
     }
   ]
 
@@ -93,17 +93,17 @@ const LandingImago = () => {
     {
       numero: '01',
       titulo: 'Descobre',
-      desc: 'Olha-te no Espelho Triplo. Escava na Arqueologia. Quem es sem mascaras?'
+      desc: 'Olha-te no Espelho Triplo. Escava na Arqueologia. Quem és sem máscaras?'
     },
     {
       numero: '02',
       titulo: 'Integra',
-      desc: 'Conecta as partes de ti. Valores, essencia, aspiracao — tudo no mesmo mapa.'
+      desc: 'Conecta as partes de ti. Valores, essência, aspiração — tudo no mesmo mapa.'
     },
     {
       numero: '03',
       titulo: 'Transforma',
-      desc: 'Nomeia-te de novo. A identidade nao e fixa — e uma escolha que renovas todos os dias.'
+      desc: 'Nomeia-te de novo. A identidade não é fixa — é uma escolha que renovas todos os dias.'
     }
   ]
 
@@ -112,48 +112,48 @@ const LandingImago = () => {
       contacto: 'MC',
       resultado: 'Espelho Triplo mudou tudo',
       mensagens: [
-        { texto: 'O Espelho Triplo mostrou-me que a pessoa que mostro no trabalho nao tem nada a ver comigo', hora: '10:14', tipo: 'recebida' },
-        { texto: 'Pela primeira vez, entendi porque me sentia tao cansada de ser quem nao sou.', hora: '10:15', tipo: 'recebida' },
+        { texto: 'O Espelho Triplo mostrou-me que a pessoa que mostro no trabalho não tem nada a ver comigo', hora: '10:14', tipo: 'recebida' },
+        { texto: 'Pela primeira vez, entendi porque me sentia tão cansada de ser quem não sou.', hora: '10:15', tipo: 'recebida' },
       ]
     },
     {
       contacto: 'JR',
       resultado: 'Arqueologia de Si reveladora',
       mensagens: [
-        { texto: 'A Arqueologia de Si foi brutal. Descobri que vivo a vida que a minha mae queria', hora: '21:32', tipo: 'recebida' },
-        { texto: 'Chorei. Mas agora sei. E saber e o primeiro passo para mudar.', hora: '21:33', tipo: 'recebida' },
+        { texto: 'A Arqueologia de Si foi brutal. Descobri que vivo a vida que a minha mãe queria', hora: '21:32', tipo: 'recebida' },
+        { texto: 'Chorei. Mas agora sei. E saber é o primeiro passo para mudar.', hora: '21:33', tipo: 'recebida' },
       ]
     },
     {
       contacto: 'TS',
-      resultado: 'Nomeacao transformadora',
+      resultado: 'Nomeação transformadora',
       mensagens: [
-        { texto: 'A Nomeacao mudou tudo. Escolhi como me definir.', hora: '15:07', tipo: 'recebida' },
-        { texto: 'Nao sou o que me disseram. Sou o que escolho ser. \uD83D\uDC9C', hora: '15:08', tipo: 'recebida' },
+        { texto: 'A Nomeação mudou tudo. Escolhi como me definir.', hora: '15:07', tipo: 'recebida' },
+        { texto: 'Não sou o que me disseram. Sou o que escolho ser. \uD83D\uDC9C', hora: '15:08', tipo: 'recebida' },
       ]
     }
   ]
 
   const faqs = [
     {
-      pergunta: 'Isto e psicologia?',
-      resposta: 'Nao. O Imago e um programa de autoconhecimento pratico, baseado em exercicios de reflexao e integracao. Nao substitui terapia nem diagnostica. E uma ferramenta para te conheceres melhor — ao teu ritmo, com profundidade e sem julgamento.'
+      pergunta: 'Isto é psicologia?',
+      resposta: 'Não. O Imago é um programa de autoconhecimento prático, baseado em exercícios de reflexão e integração. Não substitui terapia nem diagnostica. É uma ferramenta para te conheceres melhor — ao teu ritmo, com profundidade e sem julgamento.'
     },
     {
-      pergunta: 'E se eu nao gostar do que encontrar?',
-      resposta: 'O Imago nao te julga. Mostra-te quem es para que possas escolher quem queres ser. Nao ha respostas certas ou erradas — ha honestidade. E essa honestidade e o inicio de tudo.'
+      pergunta: 'E se eu não gostar do que encontrar?',
+      resposta: 'O Imago não te julga. Mostra-te quem és para que possas escolher quem queres ser. Não há respostas certas ou erradas — há honestidade. E essa honestidade é o início de tudo.'
     },
     {
       pergunta: 'Quanto tempo preciso por dia?',
-      resposta: 'O Espelho Triplo = 10 min. A Arqueologia = 15 min. Os exercicios diarios = 5 min. Podes fazer mais se quiseres, mas o essencial e acessivel e rapido.'
+      resposta: 'O Espelho Triplo = 10 min. A Arqueologia = 15 min. Os exercícios diários = 5 min. Podes fazer mais se quiseres, mas o essencial é acessível e rápido.'
     },
     {
       pergunta: 'Posso experimentar antes de pagar?',
-      resposta: 'Sim! 7 dias gratis com acesso completo. Sem compromisso, sem cartao. Se no fim dos 7 dias quiseres continuar, escolhes o teu plano.'
+      resposta: 'Sim! 7 dias grátis com acesso completo. Sem compromisso, sem cartão. Se no fim dos 7 dias quiseres continuar, escolhes o teu plano.'
     },
     {
-      pergunta: 'Qual a ligacao com os outros Ecos?',
-      resposta: 'O Imago e o modulo de integracao. Conecta corpo (Vitalis), emocao (Serena), vontade (Ignis), energia (Ventis), voz (Ecoa) e valor (Aurea). E o espaco onde tudo se encontra e ganha sentido.'
+      pergunta: 'Qual a ligação com os outros Ecos?',
+      resposta: 'O Imago é o módulo de integração. Conecta corpo (Vitalis), emoção (Serena), vontade (Ignis), energia (Ventis), voz (Ecoa) e valor (Aurea). É o espaço onde tudo se encontra e ganha sentido.'
     }
   ]
 
@@ -166,14 +166,14 @@ const LandingImago = () => {
 
       <SEOHead
         title="IMAGO - Identidade & Espelho | Sete Ecos"
-        description="Autoconhecimento profundo. Descobre quem es, quem mostras ao mundo e quem queres ser. Espelho Triplo, Arqueologia de Si, Mapa de Identidade e integracao dos 7 Ecos. Desde 975 MZN/mes."
+        description="Autoconhecimento profundo. Descobre quem és, quem mostras ao mundo e quem queres ser. Espelho Triplo, Arqueologia de Si, Mapa de Identidade e integração dos 7 Ecos. Desde 975 MZN/mês."
         url="https://app.seteecos.com/imago"
         image="https://app.seteecos.com/og-image.png"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Product",
           "name": "IMAGO - Identidade & Espelho",
-          "description": "Programa de autoconhecimento profundo com Espelho Triplo, Arqueologia de Si, Mapa de Identidade e integracao dos 7 Ecos.",
+          "description": "Programa de autoconhecimento profundo com Espelho Triplo, Arqueologia de Si, Mapa de Identidade e integração dos 7 Ecos.",
           "brand": { "@type": "Brand", "name": "Sete Ecos" },
           "offers": [
             { "@type": "Offer", "name": "Mensal", "price": "975", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
@@ -183,7 +183,7 @@ const LandingImago = () => {
         }}
       />
 
-      {/* ===== NAVEGACAO FIXA ===== */}
+      {/* ===== NAVEGAÇÃO FIXA ===== */}
       <nav
         className="fixed top-0 w-full px-4 md:px-8 py-4 flex justify-between items-center backdrop-blur-xl z-50"
         style={{ background: 'rgba(26, 26, 46, 0.9)', borderBottom: '1px solid rgba(139, 123, 165, 0.25)' }}
@@ -201,7 +201,7 @@ const LandingImago = () => {
           <a href="#features" className="text-white/60 hover:text-[#8B7BA5] transition-colors">Funcionalidades</a>
           <a href="#como-funciona" className="text-white/60 hover:text-[#8B7BA5] transition-colors">Como Funciona</a>
           <a href="#resultados" className="text-white/60 hover:text-[#8B7BA5] transition-colors">Resultados</a>
-          <a href="#precos" className="text-white/60 hover:text-[#8B7BA5] transition-colors">Precos</a>
+          <a href="#precos" className="text-white/60 hover:text-[#8B7BA5] transition-colors">Preços</a>
         </div>
         <div className="flex gap-3 items-center">
           <Link
@@ -231,7 +231,7 @@ const LandingImago = () => {
 
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           <p className="text-[#8B7BA5]/80 text-sm tracking-[0.3em] uppercase mb-4">
-            Sahasrara &middot; Coroa &middot; Elemento: Consciencia
+            Sahasrara &middot; Coroa &middot; Elemento: Consciência
           </p>
 
           <div className="relative w-24 h-24 mx-auto mb-6">
@@ -260,7 +260,7 @@ const LandingImago = () => {
 
           <p className="text-white/60 max-w-xl mx-auto mb-10" style={{ fontFamily: 'var(--font-corpo)' }}>
             Quem sou vs. quem mostro vs. quem quero ser.
-            O espaco onde finalmente te encontras.
+            O espaço onde finalmente te encontras.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -282,7 +282,7 @@ const LandingImago = () => {
           <div className="grid grid-cols-3 gap-8 max-w-lg mx-auto">
             <div>
               <div className="text-3xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>7</div>
-              <div className="text-[#8B7BA5]/70 text-sm">dimensoes de identidade</div>
+              <div className="text-[#8B7BA5]/70 text-sm">dimensões de identidade</div>
             </div>
             <div>
               <div className="text-3xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>3</div>
@@ -290,7 +290,7 @@ const LandingImago = () => {
             </div>
             <div>
               <div className="text-3xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>100%</div>
-              <div className="text-[#8B7BA5]/70 text-sm">integracao dos ecos</div>
+              <div className="text-[#8B7BA5]/70 text-sm">integração dos ecos</div>
             </div>
           </div>
         </div>
@@ -304,24 +304,24 @@ const LandingImago = () => {
               className="text-3xl md:text-4xl font-bold text-white mb-6"
               style={{ fontFamily: 'var(--font-titulos)' }}
             >
-              Quantas versoes de ti criaste para agradar os outros?
+              Quantas versões de ti criaste para agradar os outros?
             </h2>
 
             <p className="text-[#8B7BA5]/80 mb-10 text-lg" style={{ fontFamily: 'var(--font-corpo)' }}>
-              A maioria de nos vive atras de mascaras. O Imago devolve-te o espelho.
+              A maioria de nós vive atrás de máscaras. O Imago devolve-te o espelho.
             </p>
           </ScrollReveal>
 
           <div className="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto text-left">
             {[
-              'Sentes que nao sabes quem es realmente',
+              'Sentes que não sabes quem és realmente',
               `Vives para os outros e esqueces-te de ti ${g('mesmo', 'mesma')}`,
-              'Usas mascaras diferentes com cada pessoa',
-              'Mudas de personalidade conforme quem esta na sala',
-              'Nao sabes o que queres porque sempre fizeste o que os outros esperavam',
-              'Sentes que perdeste a tua essencia ao longo dos anos',
-              'Olhas ao espelho e nao te reconheces',
-              'Tens medo de descobrir quem es de verdade'
+              'Usas máscaras diferentes com cada pessoa',
+              'Mudas de personalidade conforme quem está na sala',
+              'Não sabes o que queres porque sempre fizeste o que os outros esperavam',
+              'Sentes que perdeste a tua essência ao longo dos anos',
+              'Olhas ao espelho e não te reconheces',
+              'Tens medo de descobrir quem és de verdade'
             ].map((item, i) => (
               <ScrollReveal key={i} variant="fadeUp" delay={i * 0.05}>
                 <div
@@ -340,7 +340,7 @@ const LandingImago = () => {
         </div>
       </section>
 
-      {/* ===== SOLUCAO / FEATURES ===== */}
+      {/* ===== SOLUÇÃO / FEATURES ===== */}
       <section id="features" className="py-20 px-4" style={{ background: '#12121e' }}>
         <div className="max-w-5xl mx-auto">
           <ScrollReveal variant="fadeUp">
@@ -349,10 +349,10 @@ const LandingImago = () => {
                 className="text-3xl md:text-4xl font-bold text-white mb-4"
                 style={{ fontFamily: 'var(--font-titulos)' }}
               >
-                O Imago e o espaco onde te encontras para alem de tudo o que ja disseram que eras
+                O Imago é o espaço onde te encontras para além de tudo o que já disseram que eras
               </h2>
               <p className="text-[#8B7BA5]/70 max-w-2xl mx-auto" style={{ fontFamily: 'var(--font-corpo)' }}>
-                Ferramentas de autoconhecimento profundo para quem quer viver como realmente e.
+                Ferramentas de autoconhecimento profundo para quem quer viver como realmente é.
               </p>
             </div>
           </ScrollReveal>
@@ -380,13 +380,13 @@ const LandingImago = () => {
               onClick={handleComecar}
               className="px-8 py-4 bg-white text-[#1a1a2e] rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
             >
-              Experimentar 7 dias gratis
+              Experimentar 7 dias grátis
             </button>
           </div>
         </div>
       </section>
 
-      {/* ===== ESPELHO TRIPLO (secao especial unica do Imago) ===== */}
+      {/* ===== ESPELHO TRIPLO (secção especial única do Imago) ===== */}
       <section className="py-20 px-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #12121e 0%, #2e2a3e 50%, #12121e 100%)' }}>
         <div className="absolute top-[-100px] left-[-100px] w-[400px] h-[400px] bg-[#8B7BA5]/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-[-100px] right-[-100px] w-[350px] h-[350px] bg-[#5a4d7a]/15 rounded-full blur-3xl"></div>
@@ -404,7 +404,7 @@ const LandingImago = () => {
                 Espelho Triplo — Quem sou vs. quem mostro vs. quem quero ser
               </h2>
               <p className="text-[#8B7BA5]/80 text-lg max-w-2xl mx-auto" style={{ fontFamily: 'var(--font-corpo)' }}>
-                Tres dimensoes de ti. Um exercicio que muda tudo.
+                Três dimensões de ti. Um exercício que muda tudo.
               </p>
             </div>
           </ScrollReveal>
@@ -417,22 +417,22 @@ const LandingImago = () => {
               {
                 icone: '\uD83E\uDE9E',
                 titulo: 'Espelho Interior',
-                subtitulo: 'Quem sou quando ninguem ve.',
-                desc: 'A essencia crua. O que sentes quando paras. A voz que so ouves no silencio.',
+                subtitulo: 'Quem sou quando ninguém vê.',
+                desc: 'A essência crua. O que sentes quando paras. A voz que só ouves no silêncio.',
                 cor: 'from-[#8B7BA5]/20 to-[#5a4d7a]/20'
               },
               {
                 icone: '\uD83C\uDFAD',
                 titulo: 'Espelho Social',
                 subtitulo: 'Quem mostro ao mundo.',
-                desc: 'As mascaras que usas. Os papeis que representas. A versao que os outros conhecem.',
+                desc: 'As máscaras que usas. Os papéis que representas. A versão que os outros conhecem.',
                 cor: 'from-[#5a4d7a]/20 to-[#8B7BA5]/20'
               },
               {
                 icone: '\u2728',
                 titulo: 'Espelho Futuro',
                 subtitulo: 'Quem quero ser.',
-                desc: 'A versao que te chama. O potencial que sentes mas ainda nao viveste. A escolha que te espera.',
+                desc: 'A versão que te chama. O potencial que sentes mas ainda não viveste. A escolha que te espera.',
                 cor: 'from-[#8B7BA5]/20 to-[#5a4d7a]/20'
               }
             ].map((espelho, i) => (
@@ -485,7 +485,7 @@ const LandingImago = () => {
               Como funciona
             </h2>
             <p className="text-[#8B7BA5]/70" style={{ fontFamily: 'var(--font-corpo)' }}>
-              Tres passos. Sem complicacoes.
+              Três passos. Sem complicações.
             </p>
           </div>
 
@@ -530,10 +530,10 @@ const LandingImago = () => {
                 className="text-3xl md:text-4xl font-bold text-white mb-4"
                 style={{ fontFamily: 'var(--font-titulos)' }}
               >
-                O que dizem quem ja se olhou ao espelho
+                O que dizem quem já se olhou ao espelho
               </h2>
               <p className="text-[#8B7BA5]/70" style={{ fontFamily: 'var(--font-corpo)' }}>
-                Historias reais de auto-descoberta
+                Histórias reais de auto-descoberta
               </p>
             </div>
           </ScrollReveal>
@@ -569,15 +569,15 @@ const LandingImago = () => {
                 Quem criou o IMAGO
               </h2>
               <p className="text-white/80 mb-4" style={{ fontFamily: 'var(--font-corpo)' }}>
-                <strong className="text-[#8B7BA5]">Vivianne Santos</strong> e terapeuta, coach de desenvolvimento pessoal
-                e criadora do Sistema Sete Ecos — um caminho de transformacao que integra corpo, emocao e espirito.
+                <strong className="text-[#8B7BA5]">Vivianne Santos</strong> é terapeuta, coach de desenvolvimento pessoal
+                e criadora do Sistema Sete Ecos — um caminho de transformação que integra corpo, emoção e espírito.
               </p>
               <p className="text-white/70 mb-4" style={{ fontFamily: 'var(--font-corpo)' }}>
-                O Imago nasceu da certeza de que a maior jornada que podemos fazer e para dentro de nos.
-                Nao para nos julgarmos, mas para nos reconhecermos. Para alem dos rotulos, das expectativas, das mascaras.
+                O Imago nasceu da certeza de que a maior jornada que podemos fazer é para dentro de nós.
+                Não para nos julgarmos, mas para nos reconhecermos. Para além dos rótulos, das expectativas, das máscaras.
               </p>
               <p className="text-white/70 mb-6" style={{ fontFamily: 'var(--font-corpo)' }}>
-                O Espelho Triplo, a Arqueologia de Si, a Nomeacao — sao ferramentas que nasceram de anos
+                O Espelho Triplo, a Arqueologia de Si, a Nomeação — são ferramentas que nasceram de anos
                 de trabalho com mulheres que viviam a vida de toda a gente, menos a delas.
               </p>
               <div
@@ -585,7 +585,7 @@ const LandingImago = () => {
                 style={{ background: 'rgba(139, 123, 165, 0.1)' }}
               >
                 <p className="text-white/90" style={{ fontFamily: 'var(--font-corpo)' }}>
-                  "Conhece-te. Para alem de tudo o que ja disseram que eras."
+                  "Conhece-te. Para além de tudo o que já disseram que eras."
                 </p>
                 <cite
                   className="block text-right font-semibold text-[#8B7BA5] mt-3 not-italic"
@@ -616,7 +616,7 @@ const LandingImago = () => {
         </div>
       </section>
 
-      {/* ===== PRECOS ===== */}
+      {/* ===== PREÇOS ===== */}
       <section id="precos" className="py-20 px-4" style={{ background: '#12121e' }}>
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-14">
@@ -627,7 +627,7 @@ const LandingImago = () => {
               Escolhe o teu plano
             </h2>
             <p className="text-[#8B7BA5]/70" style={{ fontFamily: 'var(--font-corpo)' }}>
-              Precos simples. Sem compromisso. Cancela quando quiseres.
+              Preços simples. Sem compromisso. Cancela quando quiseres.
             </p>
           </div>
 
@@ -671,7 +671,7 @@ const LandingImago = () => {
 
                 {plano.duration > 1 && (
                   <p className="text-[#8B7BA5]/50 text-xs mb-4" style={{ fontFamily: 'var(--font-corpo)' }}>
-                    {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mes
+                    {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mês
                   </p>
                 )}
 
@@ -686,7 +686,7 @@ const LandingImago = () => {
                     <span className="text-[#8B7BA5]">&#10003;</span> Mapa de Identidade 7D
                   </li>
                   <li className="flex items-center gap-2 text-white/70 text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>
-                    <span className="text-[#8B7BA5]">&#10003;</span> Meditacoes de Essencia
+                    <span className="text-[#8B7BA5]">&#10003;</span> Meditações de Essência
                   </li>
                   <li className="flex items-center gap-2 text-white/70 text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>
                     <span className="text-[#8B7BA5]">&#10003;</span> Todas as ferramentas
@@ -714,10 +714,10 @@ const LandingImago = () => {
             </h3>
             <div className="grid md:grid-cols-2 gap-6">
               {[
-                { icone: '&#10003;', titulo: '7 Dias Gratis', desc: 'Experimenta sem compromisso, sem cartao' },
+                { icone: '&#10003;', titulo: '7 Dias Grátis', desc: 'Experimenta sem compromisso, sem cartão' },
                 { icone: '\uD83C\uDFAF', titulo: 'Resultados em 10 min', desc: 'O Espelho Triplo muda a tua perspectiva desde o primeiro dia' },
-                { icone: '\uD83D\uDCAC', titulo: 'Suporte Incluido', desc: 'Nunca estas sozinha nesta jornada' },
-                { icone: '\uD83D\uDEAA', titulo: 'Cancela Quando Quiseres', desc: 'Sem multas, sem complicacoes, sem stress' }
+                { icone: '\uD83D\uDCAC', titulo: 'Suporte Incluído', desc: 'Nunca estás sozinha nesta jornada' },
+                { icone: '\uD83D\uDEAA', titulo: 'Cancela Quando Quiseres', desc: 'Sem multas, sem complicações, sem stress' }
               ].map((garantia) => (
                 <div key={garantia.titulo} className="flex items-start gap-4">
                   <span className="text-2xl text-[#8B7BA5]" dangerouslySetInnerHTML={{ __html: garantia.icone }}></span>
@@ -742,7 +742,7 @@ const LandingImago = () => {
             Perguntas Frequentes
           </h2>
           <p className="text-center text-[#8B7BA5]/70 mb-10" style={{ fontFamily: 'var(--font-corpo)' }}>
-            Respondemos as duvidas mais comuns
+            Respondemos as dúvidas mais comuns
           </p>
 
           <div className="space-y-4">
@@ -781,22 +781,22 @@ const LandingImago = () => {
             className="text-3xl md:text-4xl font-bold text-white mb-4"
             style={{ fontFamily: 'var(--font-titulos)' }}
           >
-            Experimenta 7 dias gratis
+            Experimenta 7 dias grátis
           </h2>
           <p className="text-white/70 mb-4 text-lg" style={{ fontFamily: 'var(--font-corpo)' }}>
-            Sem compromisso. Sem cartao. Cancelas quando quiseres.
+            Sem compromisso. Sem cartão. Cancelas quando quiseres.
           </p>
           <p className="text-white/50 mb-8" style={{ fontFamily: 'var(--font-corpo)' }}>
-            Descobre quem es para alem de tudo o que ja disseram que eras.
+            Descobre quem és para além de tudo o que já disseram que eras.
           </p>
           <button
             onClick={handleComecar}
             className="inline-block px-10 py-5 bg-white text-[#1a1a2e] rounded-full font-bold text-xl hover:translate-y-[-3px] hover:shadow-xl transition-all"
           >
-            Quero comecar HOJE
+            Quero começar HOJE
           </button>
           <p className="text-white/40 text-sm mt-6" style={{ fontFamily: 'var(--font-corpo)' }}>
-            7 dias gratis &middot; Acesso completo &middot; Cancela quando quiseres
+            7 dias grátis &middot; Acesso completo &middot; Cancela quando quiseres
           </p>
         </div>
       </section>
@@ -820,7 +820,7 @@ const LandingImago = () => {
               </div>
               <p className="text-white/50 text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>
                 Identidade &amp; Espelho.<br />
-                O espaco onde te encontras.
+                O espaço onde te encontras.
               </p>
             </div>
             <div>
@@ -837,7 +837,7 @@ const LandingImago = () => {
             <div>
               <h3 className="font-bold text-[#8B7BA5] mb-3" style={{ fontFamily: 'var(--font-titulos)' }}>Links</h3>
               <div className="flex flex-col gap-1">
-                <a href="#precos" className="text-white/50 text-sm hover:text-white transition-colors" style={{ fontFamily: 'var(--font-corpo)' }}>Precos</a>
+                <a href="#precos" className="text-white/50 text-sm hover:text-white transition-colors" style={{ fontFamily: 'var(--font-corpo)' }}>Preços</a>
                 <Link to="/landing" className="text-white/50 text-sm hover:text-white transition-colors" style={{ fontFamily: 'var(--font-corpo)' }}>Sete Ecos</Link>
                 <Link to="/vitalis" className="text-white/50 text-sm hover:text-white transition-colors" style={{ fontFamily: 'var(--font-corpo)' }}>Vitalis</Link>
                 <Link to="/lumina" className="text-white/50 text-sm hover:text-white transition-colors" style={{ fontFamily: 'var(--font-corpo)' }}>Lumina</Link>

@@ -11,8 +11,8 @@ import ScrollReveal from '../components/ScrollReveal'
 
 /**
  * VENTIS - Landing Page
- * "Energia & Ritmo" - Chakra Anahata (Coracao), Elemento: Ar
- * Modulo de gestao energetica, ritmo sustentavel e conexao com a natureza
+ * "Energia & Ritmo" - Chakra Anahata (Coração), Elemento: Ar
+ * Módulo de gestão energética, ritmo sustentável e conexão com a natureza
  */
 
 const LandingVentis = () => {
@@ -44,27 +44,27 @@ const LandingVentis = () => {
     {
       icone: '🔄',
       titulo: 'Rotinas & Rituais',
-      desc: 'Cria micro-rotinas que respeitam o teu ritmo. Sem rigidez, com consistencia.'
+      desc: 'Cria micro-rotinas que respeitam o teu ritmo. Sem rigidez, com consistência.'
     },
     {
       icone: '🍃',
       titulo: 'Pausas Conscientes',
-      desc: 'Micro-pausas de 1 a 5 minutos para oxigenar o dia. Parar e avancar.'
+      desc: 'Micro-pausas de 1 a 5 minutos para oxigenar o dia. Parar e avançar.'
     },
     {
       icone: '🧘',
       titulo: 'Movimento Flow',
-      desc: 'Yoga suave, danca livre, caminhada consciente. Move-te ao teu ritmo, nao ao do mundo.'
+      desc: 'Yoga suave, dança livre, caminhada consciente. Move-te ao teu ritmo, não ao do mundo.'
     },
     {
       icone: '🌿',
-      titulo: 'Conexao Natureza',
-      desc: 'Actividades para reconectar com o ar, a terra, o sol. A natureza e o ritmo original.'
+      titulo: 'Conexão Natureza',
+      desc: 'Actividades para reconectar com o ar, a terra, o sol. A natureza é o ritmo original.'
     },
     {
       icone: '📊',
-      titulo: 'Analise de Ritmo',
-      desc: 'Insights semanais sobre a tua energia. Descobre padroes e optimiza o teu dia.'
+      titulo: 'Análise de Ritmo',
+      desc: 'Insights semanais sobre a tua energia. Descobre padrões e optimiza o teu dia.'
     },
     {
       icone: '📈',
@@ -74,12 +74,12 @@ const LandingVentis = () => {
     {
       icone: '🛡️',
       titulo: 'Detector de Burnout',
-      desc: 'Alertas quando a energia cai consistentemente. Prevenir e melhor que recuperar.'
+      desc: 'Alertas quando a energia cai consistentemente. Prevenir é melhor que recuperar.'
     },
     {
       icone: '💬',
       titulo: 'Coach Ventis',
-      desc: `Coach virtual ${g('gentil', 'gentil')} como uma brisa. Guia-te para encontrar o teu ritmo sustentavel.`
+      desc: `Coach virtual ${g('gentil', 'gentil')} como uma brisa. Guia-te para encontrar o teu ritmo sustentável.`
     }
   ]
 
@@ -96,20 +96,20 @@ const LandingVentis = () => {
     },
     {
       numero: '03',
-      titulo: 'Encontra o ritmo sustentavel',
-      desc: `Nao mais rapido. Nao mais lento. O teu ritmo. Sustentavel, natural, teu.`
+      titulo: 'Encontra o ritmo sustentável',
+      desc: `Não mais rápido. Não mais lento. O teu ritmo. Sustentável, natural, teu.`
     }
   ]
 
   const dorFrases = [
     `Acordas ${g('cansado', 'cansada')} e adormeces ${g('exausto', 'exausta')}`,
-    'Nao tens pausas — so urgencias',
-    'Sentes que vives em piloto automatico sem energia',
-    'Nao tens energia para o que te da prazer',
-    `Vives a base de cafe e forca de vontade`,
-    'Os fins-de-semana nao bastam para recuperar',
-    'Sentes que o corpo ja nao aguenta o ritmo',
-    `Dizes "estou bem" quando estas ${g('exausto', 'exausta')}`
+    'Não tens pausas — só urgências',
+    'Sentes que vives em piloto automático sem energia',
+    'Não tens energia para o que te dá prazer',
+    `Vives à base de café e força de vontade`,
+    'Os fins-de-semana não bastam para recuperar',
+    'Sentes que o corpo já não aguenta o ritmo',
+    `Dizes "estou bem" quando estás ${g('exausto', 'exausta')}`
   ]
 
   const burnoutNiveis = [
@@ -120,12 +120,12 @@ const LandingVentis = () => {
       cor: '#22c55e',
       corBg: 'rgba(34, 197, 94, 0.15)',
       corBorda: 'rgba(34, 197, 94, 0.3)',
-      desc: 'O teu ritmo esta saudavel. Continua a respeitar os teus ciclos.'
+      desc: 'O teu ritmo está saudável. Continua a respeitar os teus ciclos.'
     },
     {
       nivel: 'Amarelo',
       icone: '⚠️',
-      label: 'Atencao',
+      label: 'Atenção',
       cor: '#eab308',
       corBg: 'rgba(234, 179, 8, 0.15)',
       corBorda: 'rgba(234, 179, 8, 0.3)',
@@ -138,7 +138,7 @@ const LandingVentis = () => {
       cor: '#f97316',
       corBg: 'rgba(249, 115, 22, 0.15)',
       corBorda: 'rgba(249, 115, 22, 0.3)',
-      desc: 'Burnout iminente. Pausas urgentes e reorganizacao do dia.'
+      desc: 'Burnout iminente. Pausas urgentes e reorganização do dia.'
     },
     {
       nivel: 'Vermelho',
@@ -147,7 +147,7 @@ const LandingVentis = () => {
       cor: '#ef4444',
       corBg: 'rgba(239, 68, 68, 0.15)',
       corBorda: 'rgba(239, 68, 68, 0.3)',
-      desc: 'Burnout activo. Plano de recuperacao activado automaticamente.'
+      desc: 'Burnout activo. Plano de recuperação activado automaticamente.'
     }
   ]
 
@@ -156,8 +156,8 @@ const LandingVentis = () => {
       contacto: 'CL',
       resultado: 'Produtividade dobrou',
       mensagens: [
-        { texto: 'O Monitor de Energia mostrou-me que os meus picos sao de manha', hora: '08:32', tipo: 'recebida' },
-        { texto: 'Reorganizei o meu dia todo. Rendo o dobro sem esforco extra.', hora: '08:33', tipo: 'recebida' }
+        { texto: 'O Monitor de Energia mostrou-me que os meus picos são de manhã', hora: '08:32', tipo: 'recebida' },
+        { texto: 'Reorganizei o meu dia todo. Rendo o dobro sem esforço extra.', hora: '08:33', tipo: 'recebida' }
       ]
     },
     {
@@ -170,34 +170,34 @@ const LandingVentis = () => {
     },
     {
       contacto: 'PS',
-      resultado: 'Mais energia sem cafe',
+      resultado: 'Mais energia sem café',
       mensagens: [
-        { texto: 'Substitui 3 habitos de cafe por pausas conscientes', hora: '17:05', tipo: 'recebida' },
-        { texto: 'Mais energia as 17h do que tinha as 10h com cafe.', hora: '17:06', tipo: 'recebida' }
+        { texto: 'Substitui 3 hábitos de café por pausas conscientes', hora: '17:05', tipo: 'recebida' },
+        { texto: 'Mais energia às 17h do que tinha às 10h com café.', hora: '17:06', tipo: 'recebida' }
       ]
     }
   ]
 
   const faqs = [
     {
-      pergunta: 'Isto substitui um medico?',
-      resposta: `Nao. O Ventis e um programa de auto-gestao energetica e prevencao de burnout. Nao substitui acompanhamento medico. Se tens sintomas persistentes de exaustao, consulta um profissional de saude. O Ventis complementa — nao substitui.`
+      pergunta: 'Isto substitui um médico?',
+      resposta: `Não. O Ventis é um programa de auto-gestão energética e prevenção de burnout. Não substitui acompanhamento médico. Se tens sintomas persistentes de exaustão, consulta um profissional de saúde. O Ventis complementa — não substitui.`
     },
     {
-      pergunta: 'E se eu nao souber os meus picos de energia?',
-      resposta: 'E exactamente para isso que o Monitor de Energia existe. Nos primeiros 7 dias, registas como te sentes 3 vezes ao dia. O sistema analisa os dados e mostra-te os teus padroes naturais. A maioria das pessoas descobre coisas surpreendentes na primeira semana.'
+      pergunta: 'E se eu não souber os meus picos de energia?',
+      resposta: 'É exactamente para isso que o Monitor de Energia existe. Nos primeiros 7 dias, registas como te sentes 3 vezes ao dia. O sistema analisa os dados e mostra-te os teus padrões naturais. A maioria das pessoas descobre coisas surpreendentes na primeira semana.'
     },
     {
       pergunta: 'Quanto tempo preciso por dia?',
-      resposta: '3 check-ins de energia = 30 segundos cada. Pausas conscientes = 5 minutos (quando quiseres). No total, menos de 10 minutos por dia para transformar completamente a tua relacao com a energia.'
+      resposta: '3 check-ins de energia = 30 segundos cada. Pausas conscientes = 5 minutos (quando quiseres). No total, menos de 10 minutos por dia para transformar completamente a tua relação com a energia.'
     },
     {
       pergunta: 'Posso experimentar antes de pagar?',
-      resposta: 'Sim! 7 dias gratis com acesso completo. Sem compromisso, sem cartao. Se no fim dos 7 dias quiseres continuar, escolhes um plano. Se nao, nao pagas nada.'
+      resposta: 'Sim! 7 dias grátis com acesso completo. Sem compromisso, sem cartão. Se no fim dos 7 dias quiseres continuar, escolhes um plano. Se não, não pagas nada.'
     },
     {
-      pergunta: 'E se eu estiver ja em burnout?',
-      resposta: `O Detector de Burnout cria um plano de recuperacao personalizado quando detecta que estas em nivel vermelho. Inclui pausas obrigatorias, reducao gradual de carga, e exercicios de restauracao energetica. Nao e tarde — o corpo sabe regenerar-se quando lhe das espaco.`
+      pergunta: 'E se eu estiver já em burnout?',
+      resposta: `O Detector de Burnout cria um plano de recuperação personalizado quando detecta que estás em nível vermelho. Inclui pausas obrigatórias, redução gradual de carga, e exercícios de restauração energética. Não é tarde — o corpo sabe regenerar-se quando lhe dás espaço.`
     }
   ]
 
@@ -209,14 +209,14 @@ const LandingVentis = () => {
     <div className="min-h-screen" style={{ fontFamily: 'var(--font-corpo)' }}>
       <SEOHead
         title="VENTIS - Energia & Ritmo | Sete Ecos"
-        description="Gestao de energia sustentavel, ritmo natural e prevencao de burnout. Monitor de energia, pausas conscientes e Detector de Burnout. Desde 750 MZN/mes."
+        description="Gestão de energia sustentável, ritmo natural e prevenção de burnout. Monitor de energia, pausas conscientes e Detector de Burnout. Desde 750 MZN/mês."
         url="https://app.seteecos.com/ventis"
         image="https://app.seteecos.com/og-image.png"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Product",
           "name": "VENTIS - Energia & Ritmo",
-          "description": "Programa de gestao energetica com Monitor de Energia, Detector de Burnout, pausas conscientes e coaching personalizado.",
+          "description": "Programa de gestão energética com Monitor de Energia, Detector de Burnout, pausas conscientes e coaching personalizado.",
           "brand": { "@type": "Brand", "name": "Sete Ecos" },
           "offers": [
             { "@type": "Offer", "name": "Mensal", "price": "750", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
@@ -226,7 +226,7 @@ const LandingVentis = () => {
         }}
       />
 
-      {/* ===== NAVEGACAO FIXA ===== */}
+      {/* ===== NAVEGAÇÃO FIXA ===== */}
       <nav className="fixed top-0 w-full px-4 md:px-8 py-4 flex justify-between items-center backdrop-blur-xl z-50" style={{ background: 'rgba(15, 31, 24, 0.9)', borderBottom: '1px solid rgba(93, 155, 132, 0.3)' }}>
         <Link to="/landing" className="flex items-center gap-3">
           <img src="/logos/VENTIS_LOGO_V3.png" alt="Ventis" className="w-12 h-12" />
@@ -238,7 +238,7 @@ const LandingVentis = () => {
           <a href="#features" className="text-white/60 hover:text-[#5D9B84] transition-colors">Funcionalidades</a>
           <a href="#como-funciona" className="text-white/60 hover:text-[#5D9B84] transition-colors">Como Funciona</a>
           <a href="#resultados" className="text-white/60 hover:text-[#5D9B84] transition-colors">Resultados</a>
-          <a href="#precos" className="text-white/60 hover:text-[#5D9B84] transition-colors">Precos</a>
+          <a href="#precos" className="text-white/60 hover:text-[#5D9B84] transition-colors">Preços</a>
         </div>
         <div className="flex gap-3 items-center">
           <Link
@@ -268,7 +268,7 @@ const LandingVentis = () => {
 
         <div className="relative z-10 max-w-3xl mx-auto text-center pt-20">
           <p className="text-[#5D9B84]/80 text-sm tracking-[0.3em] uppercase mb-4">
-            Anahata &middot; Coracao &middot; Elemento: Ar
+            Anahata &middot; Coração &middot; Elemento: Ar
           </p>
 
           <div className="relative w-24 h-24 mx-auto mb-6">
@@ -319,11 +319,11 @@ const LandingVentis = () => {
             </div>
             <div>
               <div className="text-3xl font-bold text-[#5D9B84]" style={{ fontFamily: 'var(--font-titulos)' }}>3x</div>
-              <div className="text-white/50 text-sm">check-ins diarios</div>
+              <div className="text-white/50 text-sm">check-ins diários</div>
             </div>
             <div>
               <div className="text-3xl font-bold text-[#5D9B84]" style={{ fontFamily: 'var(--font-titulos)' }}>40%</div>
-              <div className="text-white/50 text-sm">reducao de burnout</div>
+              <div className="text-white/50 text-sm">redução de burnout</div>
             </div>
           </div>
         </div>
@@ -341,7 +341,7 @@ const LandingVentis = () => {
             </h2>
 
             <p className="text-[#5D9B84]/80 mb-10 text-lg">
-              Correr sem parar nao e viver. O Ventis devolve-te o ritmo.
+              Correr sem parar não é viver. O Ventis devolve-te o ritmo.
             </p>
           </ScrollReveal>
 
@@ -364,7 +364,7 @@ const LandingVentis = () => {
         </div>
       </section>
 
-      {/* ===== SOLUCAO / FEATURES ===== */}
+      {/* ===== SOLUÇÃO / FEATURES ===== */}
       <section id="features" className="py-20 px-4" style={{ background: '#0f1f18' }}>
         <div className="max-w-5xl mx-auto">
           <ScrollReveal variant="fadeUp">
@@ -373,7 +373,7 @@ const LandingVentis = () => {
                 className="text-3xl md:text-4xl font-bold text-white mb-4"
                 style={{ fontFamily: 'var(--font-titulos)' }}
               >
-                O Ventis e o espaco onde encontras o teu ritmo natural
+                O Ventis é o espaço onde encontras o teu ritmo natural
               </h2>
               <p className="text-[#5D9B84]/70 max-w-2xl mx-auto">
                 Ferramentas para monitorizar, sustentar e harmonizar a tua energia — ao teu ritmo.
@@ -453,8 +453,8 @@ const LandingVentis = () => {
 
           <div className="mt-12 text-center">
             <p className="text-[#5D9B84]/60 text-sm max-w-xl mx-auto">
-              O Detector analisa os teus check-ins diarios e alerta-te antes do burnout chegar.
-              Quanto mais cedo agires, mais rapido recuperas.
+              O Detector analisa os teus check-ins diários e alerta-te antes do burnout chegar.
+              Quanto mais cedo agires, mais rápido recuperas.
             </p>
           </div>
         </div>
@@ -471,7 +471,7 @@ const LandingVentis = () => {
               Como funciona
             </h2>
             <p className="text-[#5D9B84]/70">
-              Tres passos. Sem complicacoes.
+              Três passos. Sem complicações.
             </p>
           </div>
 
@@ -519,7 +519,7 @@ const LandingVentis = () => {
                 O que dizem {g('os utilizadores', 'as utilizadoras')}
               </h2>
               <p className="text-[#5D9B84]/70">
-                Historias reais de quem encontrou o seu ritmo
+                Histórias reais de quem encontrou o seu ritmo
               </p>
             </div>
           </ScrollReveal>
@@ -553,15 +553,15 @@ const LandingVentis = () => {
                 Quem criou o Ventis
               </h2>
               <p className="text-white/80 mb-4">
-                <strong className="text-[#5D9B84]">Vivianne Santos</strong> e terapeuta, coach de desenvolvimento pessoal
-                e criadora do Sistema Sete Ecos — um caminho de transformacao que integra corpo, emocao e espirito.
+                <strong className="text-[#5D9B84]">Vivianne Santos</strong> é terapeuta, coach de desenvolvimento pessoal
+                e criadora do Sistema Sete Ecos — um caminho de transformação que integra corpo, emoção e espírito.
               </p>
               <p className="text-white/70 mb-4">
-                O Ventis nasceu da observacao de um padrao moderno: corpos esgotados, mentes aceleradas, ritmos artificiais.
-                A energia nao se gasta — distribui-se. E isso pode ser aprendido.
+                O Ventis nasceu da observação de um padrão moderno: corpos esgotados, mentes aceleradas, ritmos artificiais.
+                A energia não se gasta — distribui-se. E isso pode ser aprendido.
               </p>
               <p className="text-white/70 mb-6">
-                "O corpo tem um ritmo proprio. Quando o respeitas, tudo flui — o trabalho, o descanso, o prazer.
+                "O corpo tem um ritmo próprio. Quando o respeitas, tudo flui — o trabalho, o descanso, o prazer.
                 O Ventis ensina-te a ouvir esse ritmo."
               </p>
               <div className="flex items-center gap-4 justify-center md:justify-start">
@@ -586,7 +586,7 @@ const LandingVentis = () => {
         </div>
       </section>
 
-      {/* ===== PRECOS ===== */}
+      {/* ===== PREÇOS ===== */}
       <section id="precos" className="py-20 px-4" style={{ background: '#0f1f18' }}>
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-14">
@@ -597,7 +597,7 @@ const LandingVentis = () => {
               Escolhe o teu plano
             </h2>
             <p className="text-[#5D9B84]/70">
-              Precos simples. Sem compromisso. Cancela quando quiseres.
+              Preços simples. Sem compromisso. Cancela quando quiseres.
             </p>
           </div>
 
@@ -641,7 +641,7 @@ const LandingVentis = () => {
 
                 {plano.duration > 1 && (
                   <p className="text-[#5D9B84]/50 text-xs mb-4">
-                    {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mes
+                    {Math.round(plano.price_mzn / plano.duration).toLocaleString('pt-MZ')} MZN/mês
                   </p>
                 )}
 
@@ -681,10 +681,10 @@ const LandingVentis = () => {
             </h3>
             <div className="grid md:grid-cols-2 gap-6">
               {[
-                { icone: '✅', titulo: '7 Dias Gratis', desc: 'Experimenta tudo sem compromisso nem cartao' },
-                { icone: '🎯', titulo: 'Resultados em 14 Dias', desc: 'Descobre os teus padroes de energia na primeira quinzena' },
-                { icone: '💬', titulo: 'Suporte Incluido', desc: `Nunca estas ${g('sozinho', 'sozinha')} — apoio disponivel sempre` },
-                { icone: '🚪', titulo: 'Cancela Quando Quiseres', desc: 'Sem multas, sem complicacoes, sem stress' }
+                { icone: '✅', titulo: '7 Dias Grátis', desc: 'Experimenta tudo sem compromisso nem cartão' },
+                { icone: '🎯', titulo: 'Resultados em 14 Dias', desc: 'Descobre os teus padrões de energia na primeira quinzena' },
+                { icone: '💬', titulo: 'Suporte Incluído', desc: `Nunca estás ${g('sozinho', 'sozinha')} — apoio disponível sempre` },
+                { icone: '🚪', titulo: 'Cancela Quando Quiseres', desc: 'Sem multas, sem complicações, sem stress' }
               ].map((garantia) => (
                 <div key={garantia.titulo} className="flex items-start gap-4">
                   <span className="text-2xl">{garantia.icone}</span>
@@ -709,7 +709,7 @@ const LandingVentis = () => {
             Perguntas Frequentes
           </h2>
           <p className="text-center text-[#5D9B84]/70 mb-10">
-            Respondemos as duvidas mais comuns
+            Respondemos às dúvidas mais comuns
           </p>
 
           <div className="space-y-4">
@@ -745,22 +745,22 @@ const LandingVentis = () => {
             className="text-3xl md:text-4xl font-bold text-white mb-4"
             style={{ fontFamily: 'var(--font-titulos)' }}
           >
-            Experimenta 7 dias gratis
+            Experimenta 7 dias grátis
           </h2>
           <p className="text-white/70 mb-4 text-lg">
-            Sem compromisso. Sem cartao. Cancelas quando quiseres.
+            Sem compromisso. Sem cartão. Cancelas quando quiseres.
           </p>
           <p className="text-white/50 mb-8">
-            Descobre como e viver ao teu ritmo, com energia sustentavel e pausas que renovam.
+            Descobre como é viver ao teu ritmo, com energia sustentável e pausas que renovam.
           </p>
           <button
             onClick={handleComecar}
             className="inline-block px-10 py-5 bg-white text-[#1a2e24] rounded-full font-bold text-xl hover:translate-y-[-3px] hover:shadow-xl transition-all"
           >
-            Quero comecar HOJE
+            Quero começar HOJE
           </button>
           <p className="text-white/40 text-sm mt-6">
-            7 dias gratis &middot; Acesso completo &middot; Cancela quando quiseres
+            7 dias grátis &middot; Acesso completo &middot; Cancela quando quiseres
           </p>
         </div>
       </section>
@@ -801,7 +801,7 @@ const LandingVentis = () => {
             <div>
               <h3 className="font-bold text-[#5D9B84] mb-3">Links</h3>
               <div className="flex flex-col gap-1">
-                <a href="#precos" className="text-white/50 text-sm hover:text-white transition-colors">Precos</a>
+                <a href="#precos" className="text-white/50 text-sm hover:text-white transition-colors">Preços</a>
                 <Link to="/landing" className="text-white/50 text-sm hover:text-white transition-colors">
                   Sete Ecos
                 </Link>
@@ -822,7 +822,7 @@ const LandingVentis = () => {
               compact
               url="https://app.seteecos.com/ventis"
               titulo="VENTIS - Energia & Ritmo"
-              texto="Descobre o VENTIS, um programa de gestao energetica com Monitor de Energia, Detector de Burnout e coaching personalizado."
+              texto="Descobre o VENTIS, um programa de gestão energética com Monitor de Energia, Detector de Burnout e coaching personalizado."
             />
           </div>
           <div className="border-t border-[#5D9B84]/10 pt-6 text-center text-white/30 text-sm">

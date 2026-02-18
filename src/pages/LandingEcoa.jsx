@@ -11,8 +11,8 @@ import ScrollReveal from '../components/ScrollReveal'
 
 /**
  * ECOA - Landing Page
- * "Voz & Desbloqueio do Silencio" - Chakra Vishuddha (Garganta), Elemento: Eter/Som
- * Modulo de recuperacao da voz silenciada, expressao autentica e assertividade
+ * "Voz & Desbloqueio do Silêncio" - Chakra Vishuddha (Garganta), Elemento: Éter/Som
+ * Módulo de recuperação da voz silenciada, expressão autêntica e assertividade
  */
 
 const LandingEcoa = () => {
@@ -212,7 +212,7 @@ const LandingEcoa = () => {
         }}
       />
 
-      {/* ===== NAVEGACAO FIXA ===== */}
+      {/* ===== NAVEGAÇÃO FIXA ===== */}
       <nav
         className="fixed top-0 w-full px-4 md:px-8 py-4 flex justify-between items-center backdrop-blur-xl z-50"
         style={{ background: 'rgba(26, 42, 52, 0.9)', borderBottom: '1px solid rgba(74, 144, 164, 0.3)' }}
@@ -359,7 +359,7 @@ const LandingEcoa = () => {
         </div>
       </section>
 
-      {/* ===== SOLUCAO / FEATURES ===== */}
+      {/* ===== SOLUÇÃO / FEATURES ===== */}
       <section id="features" className="py-20 px-4" style={{ background: '#0f1f28' }}>
         <div className="max-w-5xl mx-auto">
           <ScrollReveal variant="fadeUp">
@@ -616,7 +616,7 @@ const LandingEcoa = () => {
         </div>
       </section>
 
-      {/* ===== PRECOS ===== */}
+      {/* ===== PREÇOS ===== */}
       <section id="precos" className="py-20 px-4" style={{ background: 'linear-gradient(to bottom, #0f1f28, #1a2a34)' }}>
         <div className="max-w-4xl mx-auto">
           <ScrollReveal variant="fadeUp">
