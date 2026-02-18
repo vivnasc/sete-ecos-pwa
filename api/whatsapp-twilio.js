@@ -125,12 +125,12 @@ async function handlePerfil(req, res, token, phoneId) {
 
     const profileData = {
       messaging_product: 'whatsapp',
-      about: 'Bem-estar holístico para mulheres 🌱✨',
-      description: 'SETE ECOS — Sistema de Transmutação Feminina\n\n🌿 VITALIS — Nutrição inteligente e personalizada\n💛 ÁUREA — Presença, valor próprio e merecimento\n🔮 LUMINA — Diagnóstico energético e autoconhecimento\n👥 COMUNIDADE — Rede de apoio entre mulheres\n\n7 módulos que integram corpo, emoção, energia, expressão e identidade. Planos alimentares adaptados, acompanhamento por WhatsApp e uma comunidade que te acolhe.\n\n👩‍💼 Fundadora: Vivianne Saraiva\n📞 +258 845 243 875\n📍 Maputo, Moçambique',
+      about: 'Terapia holística e coaching nutricional 🌱✨',
+      description: 'SETE ECOS — Sistema de Transmutação Feminina\n\n🌿 VITALIS — Nutrição inteligente e personalizada\n💛 ÁUREA — Presença, valor próprio e merecimento\n🔮 LUMINA — Diagnóstico energético e autoconhecimento\n👥 COMUNIDADE — Rede de apoio entre mulheres\n\n7 módulos que integram corpo, emoção, energia, expressão e identidade. Planos alimentares adaptados, acompanhamento por WhatsApp e uma comunidade que te acolhe.\n\n👩‍💼 Vivianne Saraiva — Terapeuta Holística & Coach Nutricional\n📞 +258 845 243 875\n📍 Maputo, Moçambique',
       email: 'feedback@seteecos.com',
       websites: ['https://app.seteecos.com', 'https://seteecos.com'],
       address: 'Maputo, Moçambique',
-      vertical: 'HEALTH',
+      vertical: 'PROF_SERVICES',
     };
 
     const profileRes = await fetch(profileUrl, {
