@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import SEOHead from '../components/SEOHead';
 import PartilharSocial from '../components/PartilharSocial';
 import WhatsAppMockup from '../components/WhatsAppMockup';
+import ScrollReveal from '../components/ScrollReveal';
 
 /**
  * ÁUREA - Landing Page
@@ -213,7 +214,7 @@ const LandingAurea = () => {
         }}
       />
       {/* Navegação */}
-      <nav className="fixed top-0 w-full px-4 md:px-8 py-4 flex justify-between items-center bg-[#2D2A24]/95 backdrop-blur-sm z-50 border-b border-amber-500/20">
+      <nav className="fixed top-0 w-full px-4 md:px-8 py-4 flex justify-between items-center bg-[#2D2A24]/90 backdrop-blur-xl z-50 border-b border-amber-500/15">
         <Link to="/landing" className="flex items-center gap-3">
           <img src="/logos/AUREA_LOGO_V3.png" alt="ÁUREA" className="w-12 h-12" />
           <span className="text-2xl font-bold text-amber-200" style={{ fontFamily: 'var(--font-titulos)' }}>
@@ -243,7 +244,7 @@ const LandingAurea = () => {
       </nav>
 
       {/* Hero */}
-      <section className="pt-32 pb-20 px-4 relative overflow-hidden">
+      <section className="pt-32 pb-20 px-4 relative overflow-hidden hero-gradient-animated">
         {/* Gradientes decorativos */}
         <div className="absolute top-20 right-10 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-10 left-10 w-72 h-72 bg-amber-600/10 rounded-full blur-3xl"></div>
@@ -269,7 +270,7 @@ const LandingAurea = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <button
               onClick={handleComecar}
-              className="px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-semibold text-lg hover:from-amber-600 hover:to-amber-700 transition-all shadow-lg shadow-amber-500/30"
+              className="px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-semibold text-lg hover:from-amber-600 hover:to-amber-700 transition-all duration-300 shadow-lg shadow-amber-500/30 animate-pulse-glow"
             >
               Começar 7 Dias Grátis
             </button>
@@ -302,11 +303,13 @@ const LandingAurea = () => {
       {/* A Ferida */}
       <section className="py-20 px-4 bg-gradient-to-r from-amber-900/20 to-amber-800/20">
         <div className="max-w-4xl mx-auto">
+          <ScrollReveal variant="fadeUp">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
               Reconheces-te?
             </h2>
           </div>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-2 gap-6">
             {[
@@ -335,6 +338,7 @@ const LandingAurea = () => {
       {/* Features - 3 Pilares */}
       <section id="features" className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
+          <ScrollReveal variant="fadeUp">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-amber-100 mb-4" style={{ fontFamily: 'var(--font-titulos)' }}>
               Como ÁUREA funciona
@@ -343,6 +347,7 @@ const LandingAurea = () => {
               Três pilares para recuperar o teu direito de existir para ti.
             </p>
           </div>
+          </ScrollReveal>
 
           <div className="space-y-8">
             {pilares.map((pilar, i) => (

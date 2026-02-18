@@ -217,9 +217,9 @@ export default function DashboardAurea() {
   const nivelInfo = calcularProgressoNivel(joias);
 
   return (
-    <div className="min-h-screen pb-24" style={{ backgroundColor: CORES.bg }}>
-      {/* Header com gradiente suave */}
-      <header className="px-5 pt-6 pb-8" style={{ background: `linear-gradient(180deg, ${CORES.goldLight}40 0%, ${CORES.bg} 100%)` }}>
+    <div className="min-h-screen pb-24 animate-page-enter" style={{ backgroundColor: CORES.bg }}>
+      {/* Header com gradiente suave — animated */}
+      <header className="px-5 pt-6 pb-8 hero-gradient-animated" style={{ background: `linear-gradient(180deg, ${CORES.goldLight}40 0%, ${CORES.bg} 100%)` }}>
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-sm capitalize" style={{ color: CORES.textLight }}>{diaSemana}</p>
@@ -248,8 +248,8 @@ export default function DashboardAurea() {
 
         {/* Jóias e Nível - Card flutuante */}
         <div
-          className="mt-5 p-4 rounded-2xl shadow-lg"
-          style={{ backgroundColor: CORES.bgCard, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
+          className="mt-5 p-4 rounded-2xl shadow-2xl backdrop-blur-sm transition-all duration-300"
+          style={{ backgroundColor: `${CORES.bgCard}ee`, boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -375,10 +375,10 @@ export default function DashboardAurea() {
         {/* Esmeralda - Coach CTA destacado */}
         <Link
           to="/aurea/chat"
-          className="block p-4 rounded-2xl shadow-md transition-all hover:shadow-lg hover:scale-[1.01]"
+          className="block p-4 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] hover:-translate-y-0.5"
           style={{
             background: `linear-gradient(135deg, ${CORES.rose} 0%, ${CORES.roseDark} 100%)`,
-            boxShadow: `0 4px 15px ${CORES.rose}50`
+            boxShadow: `0 8px 24px ${CORES.rose}40`
           }}
         >
           <div className="flex items-center gap-4">
@@ -433,25 +433,25 @@ export default function DashboardAurea() {
 
         {/* Ferramentas - Título de secção */}
         <div className="pt-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: CORES.textLight }}>
+          <h3 className="premium-label mb-3" style={{ color: CORES.textLight }}>
             As Tuas Ferramentas
           </h3>
 
           {/* Grid de ferramentas principais */}
           <div className="grid grid-cols-4 gap-3">
-            <Link to="/aurea/roupa" className="flex flex-col items-center p-3 rounded-xl transition-all hover:scale-105" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+            <Link to="/aurea/roupa" className="flex flex-col items-center p-3 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-md" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
               <span className="text-2xl mb-1">👗</span>
               <span className="text-xs font-medium" style={{ color: CORES.text }}>Espelho</span>
             </Link>
-            <Link to="/aurea/carteira" className="flex flex-col items-center p-3 rounded-xl transition-all hover:scale-105" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+            <Link to="/aurea/carteira" className="flex flex-col items-center p-3 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-md" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
               <span className="text-2xl mb-1">💰</span>
               <span className="text-xs font-medium" style={{ color: CORES.text }}>Carteira</span>
             </Link>
-            <Link to="/aurea/diario" className="flex flex-col items-center p-3 rounded-xl transition-all hover:scale-105" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+            <Link to="/aurea/diario" className="flex flex-col items-center p-3 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-md" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
               <span className="text-2xl mb-1">📝</span>
               <span className="text-xs font-medium" style={{ color: CORES.text }}>Diário</span>
             </Link>
-            <Link to="/aurea/audios" className="flex flex-col items-center p-3 rounded-xl transition-all hover:scale-105" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+            <Link to="/aurea/audios" className="flex flex-col items-center p-3 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-md" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
               <span className="text-2xl mb-1">🎧</span>
               <span className="text-xs font-medium" style={{ color: CORES.text }}>Áudios</span>
             </Link>
@@ -459,15 +459,15 @@ export default function DashboardAurea() {
 
           {/* Segunda linha */}
           <div className="grid grid-cols-3 gap-3 mt-3">
-            <Link to="/aurea/padroes" className="flex flex-col items-center p-3 rounded-xl transition-all hover:scale-105" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+            <Link to="/aurea/padroes" className="flex flex-col items-center p-3 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-md" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
               <span className="text-2xl mb-1">🔍</span>
               <span className="text-xs font-medium" style={{ color: CORES.text }}>Padrões</span>
             </Link>
-            <Link to="/aurea/insights" className="flex flex-col items-center p-3 rounded-xl transition-all hover:scale-105" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+            <Link to="/aurea/insights" className="flex flex-col items-center p-3 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-md" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
               <span className="text-2xl mb-1">📊</span>
               <span className="text-xs font-medium" style={{ color: CORES.text }}>Insights</span>
             </Link>
-            <Link to="/aurea/notificacoes" className="flex flex-col items-center p-3 rounded-xl transition-all hover:scale-105" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+            <Link to="/aurea/notificacoes" className="flex flex-col items-center p-3 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-md" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
               <span className="text-2xl mb-1">🔔</span>
               <span className="text-xs font-medium" style={{ color: CORES.text }}>Lembretes</span>
             </Link>

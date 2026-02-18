@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { g } from '../utils/genero';
 import SEOHead from '../components/SEOHead';
 import PartilharSocial from '../components/PartilharSocial';
+import ScrollReveal from '../components/ScrollReveal';
 
 /**
  * Landing Page do Bundle Vitalis + Áurea
@@ -140,7 +141,7 @@ export default function LandingBundle() {
 
       <div className="min-h-screen bg-gradient-to-br from-[#F5F2ED] via-[#FAF6F0] to-[#F5F2ED]">
         {/* Hero Section */}
-        <section className="relative overflow-hidden">
+        <section className="relative overflow-hidden hero-gradient-animated">
           {/* Background decorative elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#7C8B6F]/10 rounded-full blur-3xl" />
@@ -185,7 +186,7 @@ export default function LandingBundle() {
                 <div className="flex flex-col sm:flex-row gap-4 mb-8">
                   <button
                     onClick={handleCTA}
-                    className="bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white px-8 py-4 rounded-full font-semibold text-lg hover:shadow-lg hover:scale-105 transition-all"
+                    className="bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white px-8 py-4 rounded-full font-semibold text-lg hover:shadow-lg hover:scale-105 transition-all animate-pulse-glow"
                   >
                     Começar 7 Dias Grátis
                   </button>
@@ -278,23 +279,25 @@ export default function LandingBundle() {
         {/* Benefícios Section */}
         <section className="py-16 bg-white">
           <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2
-                className="text-3xl md:text-4xl font-bold text-[#2D3A25] mb-4"
-                style={{ fontFamily: 'var(--font-titulos)' }}
-              >
-                O Melhor de Ambos os Mundos
-              </h2>
-              <p className="text-lg text-[#6B5C4C]">
-                Tudo o que precisas para uma transformação completa
-              </p>
-            </div>
+            <ScrollReveal variant="fadeUp">
+              <div className="text-center mb-12">
+                <h2
+                  className="text-3xl md:text-4xl font-bold text-[#2D3A25] mb-4"
+                  style={{ fontFamily: 'var(--font-titulos)' }}
+                >
+                  O Melhor de Ambos os Mundos
+                </h2>
+                <p className="text-lg text-[#6B5C4C]">
+                  Tudo o que precisas para uma transformação completa
+                </p>
+              </div>
+            </ScrollReveal>
 
             <div className="grid md:grid-cols-3 gap-8">
               {beneficios.map((beneficio, i) => (
                 <div
                   key={i}
-                  className="bg-gradient-to-br from-[#F5F2ED] to-white p-6 rounded-2xl border-2 border-[#E8E2D9] hover:border-[#7C8B6F] transition-all hover:shadow-lg"
+                  className="bg-gradient-to-br from-[#F5F2ED] to-white p-6 rounded-2xl border-2 border-[#E8E2D9] hover:border-[#7C8B6F] transition-all duration-300 hover:shadow-lg"
                 >
                   <div className="text-4xl mb-4">{beneficio.icon}</div>
                   <h3 className="font-bold text-xl text-[#2D3A25] mb-2">{beneficio.titulo}</h3>
@@ -325,7 +328,7 @@ export default function LandingBundle() {
               {Object.entries(precos).map(([periodo, valores]) => (
                 <div
                   key={periodo}
-                  className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border-2 border-white/20 hover:border-[#C9A227] transition-all hover:scale-105"
+                  className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border-2 border-white/20 hover:border-[#C9A227] transition-all duration-300 hover:scale-105"
                 >
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold capitalize mb-2">{periodo}</h3>

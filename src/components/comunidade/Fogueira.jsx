@@ -343,7 +343,7 @@ export default function Fogueira({ userId }) {
   // ----------------------------------------------------------
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(180deg, #FFFBF5 0%, #FFF7ED 100%)' }}>
+    <div className="min-h-screen flex flex-col animate-page-enter" style={{ background: 'linear-gradient(180deg, #FFFBF5 0%, #FFF7ED 100%)' }}>
 
       {/* ===== Header ===== */}
       <div className="text-center pt-8 pb-2 px-4">

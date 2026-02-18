@@ -484,12 +484,12 @@ export default function Rio() {
         )}
       </div>
 
-      {/* ═══════ OVERLAY: Top bar ═══════ */}
+      {/* ═══════ OVERLAY: Top bar — glass ═══════ */}
       <div className="absolute top-0 left-0 right-0 z-30 pointer-events-none"
-        style={{ background: 'linear-gradient(180deg, rgba(253,248,243,0.95) 0%, transparent 100%)' }}>
-        <div className="flex items-center justify-between px-4 pt-4 pb-6 pointer-events-auto">
+        style={{ background: 'linear-gradient(180deg, rgba(253,248,243,0.92) 0%, transparent 100%)' }}>
+        <div className="flex items-center justify-between px-4 pt-4 pb-6 pointer-events-auto backdrop-blur-sm">
           <button onClick={() => navigate('/comunidade')}
-            className="w-9 h-9 rounded-full flex items-center justify-center active:scale-90 bg-white shadow-sm"
+            className="w-9 h-9 rounded-full flex items-center justify-center active:scale-90 bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-md"
             style={{ border: '1px solid rgba(0,0,0,0.06)' }}>
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
@@ -517,7 +517,7 @@ export default function Rio() {
         <>
           <div className="absolute inset-0 z-20" onClick={() => setShowFilters(false)} />
           <div className="absolute top-16 left-4 right-4 z-30 animate-card-reveal">
-            <div className="rounded-2xl p-4 space-y-3 bg-white shadow-lg"
+            <div className="rounded-2xl p-4 space-y-3 bg-white/90 backdrop-blur-xl shadow-2xl"
               style={{ border: '1px solid rgba(0,0,0,0.06)' }}>
               <div className="flex flex-wrap gap-2">
                 <button onClick={() => { setFiltroEco(null); setFiltroTema(null); setShowFilters(false) }}
@@ -555,8 +555,8 @@ export default function Rio() {
       {/* FAB */}
       <button
         onClick={() => { setPromptPreenchido(null); setShowCriarReflexao(true) }}
-        className="absolute bottom-24 right-4 w-13 h-13 rounded-full text-white flex items-center justify-center z-30 active:scale-90"
-        style={{ background: 'linear-gradient(135deg, #D97706 0%, #EA580C 100%)', boxShadow: '0 6px 24px rgba(217,119,6,0.35)', width: 52, height: 52 }}
+        className="absolute bottom-24 right-4 w-13 h-13 rounded-full text-white flex items-center justify-center z-30 active:scale-90 transition-all duration-300 hover:scale-105"
+        style={{ background: 'linear-gradient(135deg, #D97706 0%, #EA580C 100%)', boxShadow: '0 8px 32px rgba(217,119,6,0.4)', width: 52, height: 52 }}
         aria-label="Criar reflexão">
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
@@ -590,7 +590,7 @@ export default function Rio() {
       {espelhosPost && (
         <div className="absolute inset-0 z-40">
           <div className="absolute inset-0 bg-black/30" onClick={() => { setEspelhosPost(null); setNovoEspelho('') }} />
-          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[65vh] flex flex-col animate-sheet-up">
+          <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl rounded-t-3xl max-h-[65vh] flex flex-col animate-sheet-up">
             <div className="flex-shrink-0 p-4 pb-2 border-b border-gray-100">
               <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-3" />
               <div className="flex items-center justify-between">

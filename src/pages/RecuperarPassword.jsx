@@ -104,12 +104,18 @@ export default function RecuperarPassword() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(135deg, #FAF6F0 0%, #E8D5A3 100%)' }}>
+    <div className="min-h-screen flex flex-col animate-page-enter" style={{ fontFamily: 'var(--font-corpo)' }}>
+      {/* Background — animated */}
+      <div className="fixed inset-0 -z-10 hero-gradient-animated" style={{ background: 'linear-gradient(135deg, #FAF6F0 0%, #F0E6D4 25%, #E8D5A3 50%, #F0E6D4 75%, #FAF6F0 100%)' }}>
+        <div className="absolute top-20 right-10 w-72 h-72 rounded-full opacity-20" style={{ background: 'radial-gradient(circle, #C9A227 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        <div className="absolute bottom-20 left-10 w-60 h-60 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, #8B5CF6 0%, transparent 70%)', filter: 'blur(50px)' }} />
+      </div>
+
       {/* Header */}
-      <nav className="px-4 py-4 flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2">
-          <img src="/logos/CENTRO_7ECOS.png" alt="Sete Ecos" className="w-8 h-8" />
-          <span className="text-lg font-bold text-[#4A3728]" style={{ fontFamily: 'var(--font-titulos)', letterSpacing: '0.1em' }}>
+      <nav className="px-5 py-5 flex justify-between items-center">
+        <Link to="/" className="flex items-center gap-2.5">
+          <img src="/logos/CENTRO_7ECOS.png" alt="Sete Ecos" className="w-9 h-9 animate-float" />
+          <span className="text-lg font-bold text-[#4A3728] tracking-[0.15em]" style={{ fontFamily: 'var(--font-titulos)' }}>
             SETE ECOS
           </span>
         </Link>
@@ -119,15 +125,18 @@ export default function RecuperarPassword() {
       <main className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-md">
           {/* Card */}
-          <div className="bg-white rounded-3xl shadow-xl p-8 border border-[#E8D5A3]/50">
-            {/* Icon */}
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/60">
+            {/* Icon with glow */}
             <div className="text-center mb-6">
-              <div className="w-16 h-16 mx-auto bg-gradient-to-br from-[#C9A227] to-[#B8911E] rounded-full flex items-center justify-center mb-4">
+              <div className="relative inline-block">
+                <div className="absolute inset-0 rounded-full opacity-20 animate-pulse" style={{ background: 'radial-gradient(circle, #C9A227 0%, transparent 70%)', transform: 'scale(1.5)' }} />
+                <div className="relative w-16 h-16 mx-auto bg-gradient-to-br from-[#C9A227] to-[#B8911E] rounded-full flex items-center justify-center mb-4" style={{ boxShadow: '0 8px 32px rgba(201,162,39,0.3)' }}>
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                 </svg>
+                </div>
               </div>
-              <h1 className="text-2xl font-bold text-[#4A3728] mb-1" style={{ fontFamily: 'var(--font-titulos)' }}>
+              <h1 className="text-2xl font-bold text-[#4A3728] mb-1.5" style={{ fontFamily: 'var(--font-titulos)' }}>
                 {mode === 'request' ? 'Recuperar Password' : 'Nova Password'}
               </h1>
               <p className="text-[#6B5344] text-sm">
@@ -167,7 +176,7 @@ export default function RecuperarPassword() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 bg-gradient-to-r from-[#C9A227] to-[#B8911E] text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+                  className="w-full py-3.5 bg-gradient-to-r from-[#C9A227] to-[#B8911E] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed animate-pulse-glow"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
@@ -261,7 +270,7 @@ export default function RecuperarPassword() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 bg-gradient-to-r from-[#C9A227] to-[#B8911E] text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+                  className="w-full py-3.5 bg-gradient-to-r from-[#C9A227] to-[#B8911E] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed animate-pulse-glow"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
@@ -291,7 +300,7 @@ export default function RecuperarPassword() {
       </main>
 
       {/* Footer */}
-      <footer className="py-4 text-center text-[#6B5344]/60 text-xs">
+      <footer className="py-5 text-center text-[#6B5344]/40 text-xs tracking-wide">
         <p>© 2026 Sete Ecos · Uma PWA. Sete caminhos.</p>
       </footer>
     </div>

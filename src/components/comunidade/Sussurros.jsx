@@ -73,7 +73,7 @@ function ConversasSussurrosList({ userId, conversas, loading, onAbrirConversa })
   }
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: 'linear-gradient(180deg, #FBF9FF 0%, #F5F0FA 100%)' }}>
+    <div className="min-h-screen pb-24 animate-page-enter" style={{ background: 'linear-gradient(180deg, #FBF9FF 0%, #F5F0FA 100%)' }}>
       {/* Header */}
       <div className="sticky top-0 z-10 bg-white/70 backdrop-blur-xl border-b border-purple-100/40">
         <div className="max-w-lg mx-auto p-4">

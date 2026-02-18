@@ -125,14 +125,14 @@ export default function HubComunidade() {
   }
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: 'linear-gradient(160deg, #FDF8F3 0%, #F5F0EB 50%, #FDF8F3 100%)' }}>
+    <div className="min-h-screen pb-24 animate-page-enter" style={{ background: 'linear-gradient(160deg, #FDF8F3 0%, #F5F0EB 50%, #FDF8F3 100%)' }}>
 
       {/* ══════ HERO — Warm, organic ══════ */}
       <div className="relative overflow-hidden pt-6 pb-4 px-5">
         {/* Decorative shapes — capulana-inspired */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute" style={{ width: 220, height: 220, top: '-15%', right: '-12%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(217,119,6,0.06) 0%, transparent 70%)' }} />
-          <div className="absolute" style={{ width: 160, height: 160, bottom: '-5%', left: '-8%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(234,88,12,0.04) 0%, transparent 70%)' }} />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none hero-gradient-animated">
+          <div className="absolute" style={{ width: 220, height: 220, top: '-15%', right: '-12%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(217,119,6,0.08) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+          <div className="absolute" style={{ width: 160, height: 160, bottom: '-5%', left: '-8%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(234,88,12,0.06) 0%, transparent 70%)', filter: 'blur(30px)' }} />
           {/* Geometric accent line */}
           <div className="absolute top-0 left-0 right-0 h-1" style={{ background: 'linear-gradient(90deg, #D97706 0%, #EA580C 25%, #9333EA 50%, #059669 75%, #0891B2 100%)' }} />
         </div>
@@ -184,17 +184,17 @@ export default function HubComunidade() {
             </div>
           </div>
 
-          {/* Stats — clean horizontal cards */}
+          {/* Stats — glass horizontal cards */}
           <div className="grid grid-cols-3 gap-2">
             {[
               { n: stats.reflexoes, label: 'Reflexões', cor: '#D97706' },
               { n: stats.ressonancia, label: 'Ressonância', cor: '#EA580C' },
               { n: stats.circulos, label: 'Círculos', cor: '#059669' }
             ].map(s => (
-              <div key={s.label} className="rounded-2xl px-3 py-3 text-center"
-                style={{ background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(0,0,0,0.04)' }}>
+              <div key={s.label} className="glass-card-light rounded-2xl px-3 py-3 text-center"
+                style={{ background: 'rgba(255,255,255,0.55)', border: `1px solid ${s.cor}15` }}>
                 <span className="text-2xl font-bold block" style={{ fontFamily: 'var(--font-titulos)', color: '#292524' }}>{s.n}</span>
-                <p className="text-[10px] font-medium mt-0.5" style={{ color: s.cor, fontFamily: 'var(--font-corpo)' }}>
+                <p className="premium-label mt-0.5" style={{ color: s.cor, fontSize: '0.6rem' }}>
                   {s.label}
                 </p>
               </div>
@@ -227,8 +227,8 @@ export default function HubComunidade() {
                   {stats.reflexoes} reflexões a fluir
                 </p>
               </div>
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
-                style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center backdrop-blur-sm"
+                style={{ background: 'rgba(255,255,255,0.1)' }}>
                 <span className="text-2xl">🌊</span>
               </div>
             </div>
@@ -340,8 +340,8 @@ export default function HubComunidade() {
             <button
               key={esp.id}
               onClick={() => navigate(esp.rota)}
-              className="rounded-2xl p-4 text-left transition-all active:scale-95"
-              style={{ background: esp.bgCor, border: `1px solid ${esp.cor}12` }}
+              className="rounded-2xl p-4 text-left transition-all duration-300 active:scale-95 hover:shadow-lg hover:-translate-y-0.5"
+              style={{ background: esp.bgCor, border: `1px solid ${esp.cor}15` }}
             >
               <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-2.5"
                 style={{ background: `${esp.cor}15` }}>
@@ -369,8 +369,8 @@ export default function HubComunidade() {
             { emoji: '🪞', titulo: 'Espelhos', desc: 'Devoluções de presença e escuta profunda' },
             { emoji: '🦋', titulo: 'Jornada', desc: 'O teu caminho, não os teus seguidores' }
           ].map(c => (
-            <div key={c.titulo} className="rounded-xl p-3 flex items-center gap-3"
-              style={{ background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(0,0,0,0.04)' }}>
+            <div key={c.titulo} className="glass-card-light rounded-xl p-3 flex items-center gap-3"
+              style={{ background: 'rgba(255,255,255,0.55)' }}>
               <span className="text-lg flex-shrink-0">{c.emoji}</span>
               <div className="flex-1 min-w-0">
                 <span className="text-xs font-semibold" style={{ fontFamily: 'var(--font-titulos)', color: '#292524' }}>
