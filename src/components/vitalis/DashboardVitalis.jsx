@@ -1151,14 +1151,15 @@ export default function DashboardVitalis() {
 
         {/* Mensagem + Streak */}
         <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1 bg-white/80 backdrop-blur rounded-2xl p-4 border border-white/50 shadow-lg">
+          <div className="flex-1 rounded-2xl p-4 shadow-lg transition-all duration-300 hover:shadow-xl"
+            style={{ background: 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 50%, #F0FDF4 100%)', borderLeft: '4px solid #7C8B6F' }}>
             <div className="flex items-center gap-3">
-              <div className="text-2xl animate-bounce">✨</div>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style={{ background: 'rgba(124,139,111,0.15)' }}>✨</div>
               <div>
-                <p className="text-gray-800 font-medium text-sm md:text-base">"Cada escolha consciente te aproxima da melhor versão de ti."</p>
+                <p className="text-gray-800 font-medium text-sm md:text-base" style={{ fontFamily: 'var(--font-titulos)' }}>"Cada escolha consciente te aproxima da melhor versão de ti."</p>
                 <p className="text-xs text-gray-500 mt-1">
-                  Dia {Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / (1000 * 60 * 60 * 24)) + 1} da tua jornada • 
-                  Semana {Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / (7 * 24 * 60 * 60 * 1000)) + 1} • 
+                  Dia {Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / (1000 * 60 * 60 * 24)) + 1} da tua jornada •
+                  Semana {Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / (7 * 24 * 60 * 60 * 1000)) + 1} •
                   Fase {plano?.fase || 'Inicial'}
                 </p>
               </div>
@@ -1174,40 +1175,21 @@ export default function DashboardVitalis() {
 
         {/* Quick Actions - Navegação Principal */}
         <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-          <Link to="/vitalis/plano" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
-            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">📋</div>
-            <p className="font-medium text-[#4A4035] group-hover:text-white text-sm">Meu Plano</p>
-          </Link>
-
-          <Link to="/vitalis/checkin" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
-            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">✅</div>
-            <p className="font-medium text-[#4A4035] group-hover:text-white text-sm">Check-in</p>
-          </Link>
-
-          <Link to="/vitalis/meals" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
-            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">🍽️</div>
-            <p className="font-medium text-[#4A4035] group-hover:text-white text-sm">Refeições</p>
-          </Link>
-
-          <Link to="/vitalis/receitas" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
-            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">🍳</div>
-            <p className="font-medium text-[#4A4035] group-hover:text-white text-sm">Receitas</p>
-          </Link>
-
-          <Link to="/vitalis/espaco-retorno" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
-            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">💜</div>
-            <p className="font-medium text-[#4A4035] group-hover:text-white text-sm">Espaço Retorno</p>
-          </Link>
-
-          <Link to="/vitalis/relatorios" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
-            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">📊</div>
-            <p className="font-medium text-[#4A4035] group-hover:text-white text-sm">Relatórios</p>
-          </Link>
-
-          <Link to="/vitalis/treinos" className="group bg-white hover:bg-[#7C8B6F] rounded-2xl p-4 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center border border-[#E8E2D9]">
-            <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">💪</div>
-            <p className="font-medium text-[#4A4035] group-hover:text-white text-sm">Treinos</p>
-          </Link>
+          {[
+            { to: '/vitalis/plano', emoji: '📋', label: 'Meu Plano', cor: '#7C8B6F', bg: 'linear-gradient(145deg, #F0FDF4, #DCFCE7)' },
+            { to: '/vitalis/checkin', emoji: '✅', label: 'Check-in', cor: '#059669', bg: 'linear-gradient(145deg, #ECFDF5, #D1FAE5)' },
+            { to: '/vitalis/meals', emoji: '🍽️', label: 'Refeições', cor: '#D97706', bg: 'linear-gradient(145deg, #FFFBEB, #FEF3C7)' },
+            { to: '/vitalis/receitas', emoji: '🍳', label: 'Receitas', cor: '#EA580C', bg: 'linear-gradient(145deg, #FFF7ED, #FFEDD5)' },
+            { to: '/vitalis/espaco-retorno', emoji: '💜', label: 'Espaço Retorno', cor: '#9333EA', bg: 'linear-gradient(145deg, #FAF5FF, #F3E8FF)' },
+            { to: '/vitalis/relatorios', emoji: '📊', label: 'Relatórios', cor: '#0891B2', bg: 'linear-gradient(145deg, #ECFEFF, #CFFAFE)' },
+            { to: '/vitalis/treinos', emoji: '💪', label: 'Treinos', cor: '#DC2626', bg: 'linear-gradient(145deg, #FEF2F2, #FECACA)' },
+          ].map(item => (
+            <Link key={item.to} to={item.to} className="group rounded-2xl p-4 shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl text-center"
+              style={{ background: item.bg, borderBottom: `3px solid ${item.cor}` }}>
+              <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">{item.emoji}</div>
+              <p className="font-semibold text-[#4A4035] text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>{item.label}</p>
+            </Link>
+          ))}
         </div>
 
         {/* Grid Principal */}
@@ -1217,8 +1199,9 @@ export default function DashboardVitalis() {
           <div className="col-span-12 md:col-span-4 space-y-4">
             
             {/* Círculo de Progresso */}
-            <div className="bg-white rounded-3xl shadow-xl p-5">
-              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Progresso Hoje</h3>
+            <div className="rounded-3xl shadow-xl p-5 transition-all duration-300 hover:shadow-2xl"
+              style={{ background: 'linear-gradient(180deg, #FFFFFF 0%, #F5F0EB 100%)', borderTop: '3px solid #7C8B6F' }}>
+              <h3 className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#7C8B6F' }}>Progresso Hoje</h3>
               
               <div className="relative w-44 h-44 mx-auto mb-4">
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
