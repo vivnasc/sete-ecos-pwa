@@ -36,6 +36,12 @@ export default function Navigation({ variant = 'default' }) {
     return null
   }
 
+  // Don't show navigation on landing/marketing pages (exact match only)
+  const landingPages = ['/vitalis', '/aurea', '/sete-ecos', '/bundle', '/serena', '/ignis', '/ventis', '/ecoa', '/imago', '/aurora']
+  if (landingPages.includes(location.pathname)) {
+    return null
+  }
+
   // Coach navigation
   if (isCoachSection && isCoachUser) {
     const isClientes = location.pathname === '/coach' || location.pathname.startsWith('/coach/cliente')
