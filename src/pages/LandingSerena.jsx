@@ -1,6 +1,8 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { ECO_PLANS } from '../lib/shared/subscriptionPlans'
+import React, { useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { ECO_PLANS, checkEcoAccess } from '../lib/shared/subscriptionPlans'
+import { useAuth } from '../contexts/AuthContext'
+import { isCoach } from '../lib/coach'
 import { g } from '../utils/genero'
 
 /**
@@ -10,8 +12,24 @@ import { g } from '../utils/genero'
  */
 
 const LandingSerena = () => {
+  const navigate = useNavigate()
+  const { session, userRecord } = useAuth()
   const serena = ECO_PLANS.serena
   const planos = [serena.monthly, serena.semestral, serena.annual]
+
+  // Redireciona coaches e utilizadores com acesso activo para o dashboard
+  useEffect(() => {
+    if (!session) return
+    if (isCoach(session.user?.email)) {
+      navigate('/serena/dashboard', { replace: true })
+      return
+    }
+    if (userRecord?.id) {
+      checkEcoAccess('serena', userRecord.id).then(access => {
+        if (access.hasAccess) navigate('/serena/dashboard', { replace: true })
+      }).catch(() => {})
+    }
+  }, [session, userRecord, navigate])
 
   const features = [
     {

@@ -1,6 +1,8 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { ECO_PLANS } from '../lib/shared/subscriptionPlans'
+import React, { useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { ECO_PLANS, checkEcoAccess } from '../lib/shared/subscriptionPlans'
+import { useAuth } from '../contexts/AuthContext'
+import { isCoach } from '../lib/coach'
 import { g } from '../utils/genero'
 
 /**
@@ -11,8 +13,23 @@ import { g } from '../utils/genero'
  */
 
 const LandingImago = () => {
+  const navigate = useNavigate()
+  const { session, userRecord } = useAuth()
   const imago = ECO_PLANS.imago
   const planos = [imago.monthly, imago.semestral, imago.annual]
+
+  useEffect(() => {
+    if (!session) return
+    if (isCoach(session.user?.email)) {
+      navigate('/imago/dashboard', { replace: true })
+      return
+    }
+    if (userRecord?.id) {
+      checkEcoAccess('imago', userRecord.id).then(access => {
+        if (access.hasAccess) navigate('/imago/dashboard', { replace: true })
+      }).catch(() => {})
+    }
+  }, [session, userRecord, navigate])
 
   const features = [
     {
