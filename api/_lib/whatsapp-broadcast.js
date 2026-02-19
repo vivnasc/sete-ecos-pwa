@@ -31,25 +31,118 @@ const PHONE_NUMBER_ID = () => (process.env.WHATSAPP_PHONE_NUMBER_ID || '').trim(
 // {{1}} = nome da pessoa (preenchido automaticamente pelo sistema)
 
 export const META_TEMPLATES = {
+  // ===== SEQUENCIA NURTURING (mesmo conteudo dos emails) =====
+
+  // Dia 0 — Boas-vindas (= email dia 0)
+  boas_vindas: {
+    name: 'sete_ecos_boas_vindas',
+    language: 'pt_BR',
+    category: 'MARKETING',
+    header: 'Bem-vinda ao Sete Ecos!',
+    body: 'Olá {{1}}! 🌿\n\nObrigada por te juntares ao Sete Ecos.\n\nO Sete Ecos é um ecossistema de transformação — sete caminhos que se complementam para te guiar numa jornada de autodescoberta, equilíbrio e plenitude.\n\nNos próximos dias vou partilhar contigo ferramentas que podem mudar a tua relação contigo mesma.\n\nA começar pelo *Lumina* — um diagnóstico gratuito que revela padrões sobre a tua energia, emoção e corpo.\n\nExperimenta aqui: https://app.seteecos.com/lumina\n\n— Vivianne',
+    footer: 'Sete Ecos — Sistema de Transmutação',
+    buttons: [{ type: 'URL', text: 'Experimentar Lumina', url: 'https://app.seteecos.com/lumina' }],
+    params: (nome) => [nome || 'amiga'],
+  },
+
+  // Dia 3 — Convite Lumina (= email dia 3)
+  convite_lumina: {
+    name: 'sete_ecos_convite_lumina',
+    language: 'pt_BR',
+    category: 'MARKETING',
+    header: 'Já experimentaste o Lumina?',
+    body: 'Olá {{1}}! ✨\n\n2 minutos podem mudar o teu dia.\n\nO *Lumina* é um ritual diário de auto-observação. 7 perguntas simples que revelam padrões sobre como te sentes — corpo, mente e emoção.\n\nMulheres que usam o Lumina reportam:\n• Mais consciência sobre padrões emocionais\n• Melhor capacidade de prever dias difíceis\n• Correlação entre ciclo menstrual e estados emocionais\n\nÉ *completamente gratuito*. Demora menos de 2 minutos.\n\nhttps://app.seteecos.com/lumina\n\n— Vivianne',
+    footer: 'Sete Ecos',
+    buttons: [{ type: 'URL', text: 'Fazer Diagnóstico', url: 'https://app.seteecos.com/lumina' }],
+    params: (nome) => [nome || 'amiga'],
+  },
+
+  // Dia 7 — 3 Sinais (= email dia 7)
+  tres_sinais: {
+    name: 'sete_ecos_tres_sinais',
+    language: 'pt_BR',
+    category: 'MARKETING',
+    header: 'O teu corpo fala. Estás a ouvir?',
+    body: 'Olá {{1}}! 💚\n\nHá 3 sinais que muitas mulheres ignoram:\n\n*1. Cansaço crónico* — Se dormes e acordas cansada, pode ser o que comes (ou não comes).\n\n*2. Comer por emoção* — Se comes quando estás triste, ansiosa ou aborrecida, o problema não é fome.\n\n*3. Efeito ioiô* — Se perdes peso e ganhas de volta, as dietas restritivas estão a sabotar o teu metabolismo.\n\nSe te identificas com pelo menos 1, o *VITALIS* foi criado exactamente para ti.\n\nhttps://app.seteecos.com/vitalis\n\n— Vivianne',
+    footer: 'Sete Ecos',
+    buttons: [{ type: 'URL', text: 'Conhecer o VITALIS', url: 'https://app.seteecos.com/vitalis' }],
+    params: (nome) => [nome || ''],
+  },
+
+  // Dia 10 — Segredo / Curiosidade (= email dia 10)
+  segredo: {
+    name: 'sete_ecos_segredo',
+    language: 'pt_BR',
+    category: 'MARKETING',
+    header: 'Preciso de te contar uma coisa',
+    body: 'Olá {{1}}!\n\nTenho trabalhado com mulheres moçambicanas há anos. E há um padrão que vejo repetir-se:\n\n_"A maioria das mulheres que me procura não tem um problema de comida. Tem um problema de emoção disfarçado de fome."_\n\nLeste isto e sentiste algo?\n\nQuando comes por ansiedade, por solidão, por tédio — o teu corpo não precisa de comida. Precisa de *presença*. E nenhuma dieta resolve isso.\n\nFoi por isso que criei o *Espaço de Retorno* dentro do VITALIS — um lugar onde podes ir quando sentes vontade de comer por emoção. Sem culpa. Sem julgamento.\n\n*Isto não existe em mais nenhum programa — em lado nenhum do mundo.*\n\nQueres saber mais? Responde aqui.\n\n— Vivianne',
+    footer: 'Sete Ecos',
+    params: (nome) => [nome || ''],
+  },
+
+  // Dia 14 — Convite VITALIS + código promo (= email dia 14)
   convite_trial: {
     name: 'sete_ecos_convite_trial',
     language: 'pt_BR',
     category: 'MARKETING',
-    header: 'VITALIS — 7 Dias Grátis',
-    body: 'Olá {{1}}! 🌿\n\nFalamos há uns dias e quero saber: já experimentaste o VITALIS?\n\nTens *7 dias grátis* para testar. Plano alimentar personalizado com comida moçambicana, check-in diário e o meu acompanhamento directo.\n\nSem compromisso. Se não gostares, não pagas nada.\n\nComeça aqui: https://app.seteecos.com/vitalis\n\nQualquer dúvida, responde aqui. Estou do outro lado.\n\n— Vivianne',
+    header: 'VITALIS — 20% Desconto',
+    body: 'Olá {{1}}! 🌿\n\nImagina isto: daqui a 3 meses, acordas com mais energia. A roupa cabe melhor. Comes sem culpa.\n\nO que inclui o *VITALIS*:\n• Plano alimentar personalizado com comida moçambicana\n• Receitas com ingredientes que já tens em casa\n• Check-in diário em 30 segundos\n• Espaço de Retorno (apoio emocional único)\n• Chat directo com a Vivianne\n• 7 dias de garantia total\n\nCódigo exclusivo: *VEMVITALIS20*\nDe 2.500 por *2.000 MZN/mês*\n\nComeça aqui: https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\n— Vivianne',
     footer: 'Sete Ecos — Sistema de Transmutação',
-    buttons: [{ type: 'URL', text: 'Começar Trial Grátis', url: 'https://app.seteecos.com/vitalis' }],
+    buttons: [{ type: 'URL', text: 'Começar com 20% Off', url: 'https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20' }],
     params: (nome) => [nome || 'amiga'],
   },
+
+  // Dia 21 — Testemunho / Prova social (= email dia 21)
+  testemunho: {
+    name: 'sete_ecos_testemunho',
+    language: 'pt_BR',
+    category: 'MARKETING',
+    header: 'Isto é possível para ti também',
+    body: 'Olá {{1}}! 💚\n\n_"Finalmente um método que não me faz sentir em dieta. Perdi 8kg em 3 meses e aprendi a comer sem culpa. O Espaço de Retorno mudou tudo — percebi que comia por ansiedade, não por fome."_\n— M.J., Maputo\n\n_"A app é tão fácil de usar. Uso a comida que já tenho em casa — xima, matapa, feijão nhemba. Não preciso de comprar nada especial."_\n— A.B., Beira\n\nO teu código ainda está activo:\n*VEMVITALIS20* — 20% de desconto\n\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\n— Vivianne',
+    footer: 'Sete Ecos',
+    buttons: [{ type: 'URL', text: 'Quero o Mesmo Resultado', url: 'https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20' }],
+    params: (nome) => [nome || ''],
+  },
+
+  // Dia 30 — Última chance (= email dia 30)
+  ultima_chance: {
+    name: 'sete_ecos_ultima_chance',
+    language: 'pt_BR',
+    category: 'MARKETING',
+    header: 'Última oportunidade',
+    body: 'Olá {{1}}!\n\nJá passou um mês. Nesse tempo, mulheres que começaram o VITALIS já:\n\n• Perderam 2-4kg na primeira semana\n• Aprenderam a medir porções sem balança (método da mão)\n• Descobriram o Espaço de Retorno para momentos difíceis\n• Construíram hábitos que duram — com comida moçambicana\n\nA única diferença entre elas e tu? *Elas começaram.*\n\n*ÚLTIMA OPORTUNIDADE*\nCódigo: *VEMVITALIS20* — 20% desconto\nDe 2.500 por *2.000 MZN/mês*\n7 dias de garantia total. Zero risco.\n\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\nPreferes falar comigo primeiro? Responde aqui.\n\n— Vivianne',
+    footer: 'Sete Ecos',
+    buttons: [{ type: 'URL', text: 'Começar Agora — 20% Off', url: 'https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20' }],
+    params: (nome) => [nome || ''],
+  },
+
+  // ===== UTILITÁRIOS =====
+
   lembrete_app: {
     name: 'sete_ecos_lembrete',
     language: 'pt_BR',
     category: 'UTILITY',
     header: 'Sete Ecos — Lembrete',
-    body: 'Olá {{1}}! 💚\n\nLembra-te de fazer o teu check-in diário na app Sete Ecos. Leva 30 segundos e o teu corpo agradece a consistência.\n\nSe precisares de ajuda ou tiveres dúvidas, responde aqui.\n\n— Vivianne',
+    body: 'Olá {{1}}! 💚\n\nJá lá vão uns dias desde o teu último registo no Vitalis.\n\nSabemos que a vida acontece, mas cada pequeno passo conta. Que tal registares algo hoje? Mesmo que seja só a água.\n\nLeva 30 segundos e o teu corpo agradece a consistência.\n\nhttps://app.seteecos.com/vitalis\n\n— Vivianne',
     footer: 'Sete Ecos',
+    buttons: [{ type: 'URL', text: 'Voltar ao Vitalis', url: 'https://app.seteecos.com/vitalis' }],
     params: (nome) => [nome || 'querida'],
   },
+
+  // Motivação intensa (= email inactivo 5+ dias)
+  motivacao: {
+    name: 'sete_ecos_motivacao',
+    language: 'pt_BR',
+    category: 'UTILITY',
+    header: 'Não desisti de ti',
+    body: 'Olá {{1}}!\n\nSei que estes dias não foram fáceis.\n\n_"A diferença entre quem transforma o corpo e quem desiste não é força de vontade. É ter alguém que não desiste de ti."_\n\nEu não desisti de ti. E não vou desistir.\n\nSabes o que acontece quando voltas hoje?\n• Todo o teu progresso anterior está guardado\n• Retomas exactamente onde paraste\n• Um check-in de 30 segundos já é uma vitória\n\nhttps://app.seteecos.com/vitalis\n\nQueres falar sobre o que te está a travar? Responde aqui. Sem julgamento.\n\n— Vivianne',
+    footer: 'Sete Ecos',
+    buttons: [{ type: 'URL', text: 'Fazer Check-in Agora', url: 'https://app.seteecos.com/vitalis' }],
+    params: (nome) => [nome || ''],
+  },
+
+  // ===== BROADCASTS MANUAIS =====
+
   follow_up: {
     name: 'sete_ecos_follow_up',
     language: 'pt_BR',
@@ -59,24 +152,38 @@ export const META_TEMPLATES = {
     footer: 'Sete Ecos — Transformação Feminina',
     params: (nome) => [nome || ''],
   },
+
   promo: {
     name: 'sete_ecos_promo',
     language: 'pt_BR',
     category: 'MARKETING',
-    header: '🎁 20% Desconto VITALIS',
+    header: '20% Desconto VITALIS',
     body: 'Olá {{1}}!\n\nTenho um presente especial para ti: usa o código *VEMVITALIS20* e tens *20% de desconto* no VITALIS.\n\nPlano alimentar personalizado + check-in diário + apoio emocional + receitas moçambicanas. De 2.500 por *2.000 MZN/mês*.\n\nComeça aqui: https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\nSó até ao fim do mês!\n\n— Vivianne',
     footer: 'Sete Ecos',
     buttons: [{ type: 'URL', text: 'Usar Código 20% Off', url: 'https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20' }],
     params: (nome) => [nome || ''],
   },
+
   novidade: {
     name: 'sete_ecos_novidade',
     language: 'pt_BR',
     category: 'MARKETING',
-    header: 'Novidades Sete Ecos! 🌟',
+    header: 'Novidades Sete Ecos!',
     body: 'Olá {{1}}!\n\nTemos novidades no Sete Ecos! Novos recursos e funcionalidades que vão tornar a tua jornada ainda melhor.\n\nPassa pela app para descobrir: https://app.seteecos.com\n\nSe tiveres dúvidas ou quiseres saber mais, responde aqui.\n\n— Vivianne',
     footer: 'Sete Ecos',
     buttons: [{ type: 'URL', text: 'Ver Novidades', url: 'https://app.seteecos.com' }],
+    params: (nome) => [nome || ''],
+  },
+
+  // Curiosidade semanal (= email curiosidade insana)
+  curiosidade: {
+    name: 'sete_ecos_curiosidade',
+    language: 'pt_BR',
+    category: 'MARKETING',
+    header: 'Comes por fome ou por emoção?',
+    body: 'Olá {{1}}!\n\nFaz este exercício: antes de comeres algo, põe a mão no peito e pergunta _"estou mesmo com fome ou estou a sentir algo?"_\n\nSe a resposta for "estou a sentir algo" — parabéns, acabaste de descobrir o padrão que 87% das mulheres moçambicanas ignoram.\n\nÉ este padrão que faz o efeito ioiô. Não é a comida. É a emoção.\n\nO VITALIS tem uma ferramenta única chamada *Espaço de Retorno* — feita exactamente para estes momentos. Nenhum outro programa no mundo tem isto.\n\nCódigo: *VEMVITALIS20* — 20% desconto\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\n— Vivianne',
+    footer: 'Sete Ecos',
+    buttons: [{ type: 'URL', text: 'Começar com 20% Off', url: 'https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20' }],
     params: (nome) => [nome || ''],
   },
 };
