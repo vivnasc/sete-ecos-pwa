@@ -18,7 +18,7 @@ const WA_TEMPLATES = {
     nome: 'Lembrete',
     metaTemplate: 'lembrete_app',
     texto: (nome) =>
-      `Olá ${nome || 'querida'}! Já lá vão uns dias desde o teu último registo. Cada pequeno passo conta. Que tal registares algo hoje? Mesmo que seja só a água.\n\nhttps://app.seteecos.com/vitalis\n\n— Vivianne`,
+      `Olá ${nome || ''}! Já lá vão uns dias desde o teu último registo. Cada pequeno passo conta. Que tal registares algo hoje? Mesmo que seja só a água.\n\nhttps://app.seteecos.com/vitalis\n\n— Vivianne`,
   },
   'motivacao': {
     nome: 'Motivação',
