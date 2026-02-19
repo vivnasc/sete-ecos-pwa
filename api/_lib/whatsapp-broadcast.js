@@ -141,6 +141,69 @@ export const META_TEMPLATES = {
     params: (nome) => [nome || ''],
   },
 
+  // ===== TEMPLATES PARA CLIENTES ACTIVOS =====
+
+  // Check-in lembrete (2 dias sem actividade)
+  checkin_lembrete: {
+    name: 'sete_ecos_checkin_lembrete',
+    language: 'pt_BR',
+    category: 'UTILITY',
+    header: 'Sete Ecos — Lembrete',
+    body: 'Olá {{1}}! 💚\n\nJá passaram 2 dias desde o teu último check-in no VITALIS.\n\nSabemos que a vida acontece, mas cada pequeno passo conta. Leva 30 segundos e o teu corpo agradece a consistência.\n\nQue tal registares algo hoje? Mesmo que seja só a água.\n\nhttps://app.seteecos.com/vitalis/dashboard\n\n— Vivianne',
+    footer: 'Sete Ecos',
+    buttons: [{ type: 'URL', text: 'Fazer Check-in', url: 'https://app.seteecos.com/vitalis/dashboard' }],
+    params: (nome) => [nome || ''],
+  },
+
+  // Celebração de marco (7, 30, 90 dias)
+  marco_celebracao: {
+    name: 'sete_ecos_marco',
+    language: 'pt_BR',
+    category: 'UTILITY',
+    header: 'Parabéns! 🎉',
+    body: 'Olá {{1}}! 🎉\n\n*{{2}} dias consecutivos de check-in!*\n\nIsto é enorme. A maioria das pessoas desiste antes de chegar aqui.\n\nTu não. Tu estás a construir hábitos que duram.\n\nContinua assim — cada dia conta, e o teu corpo está a agradecer.\n\nhttps://app.seteecos.com/vitalis/dashboard\n\n— Vivianne',
+    footer: 'Sete Ecos',
+    buttons: [{ type: 'URL', text: 'Ver Progresso', url: 'https://app.seteecos.com/vitalis/dashboard' }],
+    params: (nome, dias) => [nome || '', String(dias || 7)],
+    // dias = número do marco (7, 30, 90)
+  },
+
+  // Resumo semanal (segundas-feiras)
+  resumo_semanal: {
+    name: 'sete_ecos_resumo_semanal',
+    language: 'pt_BR',
+    category: 'UTILITY',
+    header: 'O teu resumo semanal',
+    body: 'Olá {{1}}! 📊\n\nResumo da tua semana no VITALIS:\n• Check-ins: {{2}}\n• Água média: {{3}}\n\nCada registo é um passo. Esta semana, tenta superar a anterior.\n\nhttps://app.seteecos.com/vitalis/dashboard\n\n— Vivianne',
+    footer: 'Sete Ecos',
+    buttons: [{ type: 'URL', text: 'Ver Dashboard', url: 'https://app.seteecos.com/vitalis/dashboard' }],
+    params: (nome, dias, extra) => [nome || '', String(dias || 0), extra || '—'],
+  },
+
+  // Trial a expirar (3 dias antes do fim)
+  trial_expirando: {
+    name: 'sete_ecos_trial_expirando',
+    language: 'pt_BR',
+    category: 'UTILITY',
+    header: 'O teu trial termina em breve',
+    body: 'Olá {{1}}!\n\nO teu período de experimentação no VITALIS termina em *3 dias*.\n\nPara continuares a ter acesso ao teu plano alimentar, receitas e check-in diário, subscreve agora:\n\nCódigo exclusivo: *VEMVITALIS20* — 20% desconto\nDe 2.500 por *2.000 MZN/mês*\n\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\nDúvidas? Responde aqui.\n\n— Vivianne',
+    footer: 'Sete Ecos',
+    buttons: [{ type: 'URL', text: 'Subscrever com 20% Off', url: 'https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20' }],
+    params: (nome) => [nome || ''],
+  },
+
+  // Win-back (3+ dias após expirar)
+  winback: {
+    name: 'sete_ecos_winback',
+    language: 'pt_BR',
+    category: 'MARKETING',
+    header: 'Sentimos a tua falta',
+    body: 'Olá {{1}}!\n\nA tua subscrição VITALIS expirou, mas quero que saibas: todo o teu progresso está guardado.\n\nSe voltares agora, retomas exactamente onde paraste — plano alimentar, receitas, histórico de check-ins. Tudo intacto.\n\nCódigo especial de regresso: *VEMVITALIS20* — 20% desconto\n\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\nEstou aqui se precisares de falar.\n\n— Vivianne',
+    footer: 'Sete Ecos',
+    buttons: [{ type: 'URL', text: 'Reactivar com 20% Off', url: 'https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20' }],
+    params: (nome) => [nome || ''],
+  },
+
   // ===== BROADCASTS MANUAIS =====
 
   follow_up: {
@@ -206,7 +269,7 @@ export async function enviarMensagemWA(para, texto, options = {}) {
 
   if (options.template && META_TEMPLATES[options.template]) {
     const tmpl = META_TEMPLATES[options.template];
-    const params = tmpl.params(options.nome || '');
+    const params = tmpl.params(options.nome || '', options.dias, options.extra);
 
     payload = {
       messaging_product: 'whatsapp',

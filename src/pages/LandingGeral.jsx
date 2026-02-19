@@ -146,21 +146,17 @@ const LandingGeral = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f0f23]">
       <SEOHead
-        title="SETE ECOS - Sistema de Transmutação Feminina"
-        description="Um ecossistema de transformação integral para a mulher moderna. Sete caminhos que se complementam: nutrição, emoção, foco, energia, expressão, visão e identidade."
+        title="Sete Ecos — Nutrição, Coaching e Bem-estar | Moçambique"
+        description="Plataforma de transformação pessoal com plano alimentar personalizado (VITALIS), diagnóstico energético gratuito (LUMINA) e coaching nutricional. Comida moçambicana, método científico. Por Vivianne Saraiva, Maputo."
         url="https://app.seteecos.com/"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "WebSite",
           "name": "Sete Ecos",
+          "alternateName": ["SETE ECOS", "SetEecos"],
           "url": "https://app.seteecos.com",
-          "description": "Sistema de Transmutação Feminina - Sete caminhos para despertar cada dimensão da tua essência feminina.",
-          "inLanguage": "pt",
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://app.seteecos.com/?q={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
+          "description": "Plataforma de transformação pessoal com nutrição, coaching e bem-estar. Planos alimentares personalizados com comida moçambicana.",
+          "inLanguage": "pt"
         }}
       />
       {/* Hero Section */}
