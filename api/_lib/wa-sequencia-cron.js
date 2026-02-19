@@ -44,10 +44,10 @@ export async function waSequenciaCron(req, res) {
   const resultados = { enviados: 0, ignorados: 0, erros: [], detalhes: [] };
 
   try {
-    // 1. Buscar leads da waitlist que tenham telefone
+    // 1. Buscar leads da waitlist que tenham WhatsApp
     const { data: waitlist, error: wlError } = await supabase
       .from('waitlist')
-      .select('id, nome, email, telefone, created_at');
+      .select('id, nome, email, whatsapp, created_at');
 
     if (wlError) {
       return res.status(200).json({
@@ -56,8 +56,8 @@ export async function waSequenciaCron(req, res) {
       });
     }
 
-    // Filtrar só quem tem telefone
-    const leadsComTel = (waitlist || []).filter(l => l.telefone && l.telefone.trim());
+    // Filtrar só quem tem numero WhatsApp
+    const leadsComTel = (waitlist || []).filter(l => l.whatsapp && l.whatsapp.trim());
 
     if (leadsComTel.length === 0) {
       return res.status(200).json({
@@ -84,7 +84,7 @@ export async function waSequenciaCron(req, res) {
         const { data: logs } = await supabase
           .from('whatsapp_broadcast_log')
           .select('id')
-          .eq('telefone', lead.telefone.replace(/[^0-9]/g, ''))
+          .eq('telefone', lead.whatsapp.replace(/[^0-9]/g, ''))
           .eq('tipo', 'cron-wa-sequencia')
           .like('mensagem', `%dia:${passo.dia}%`)
           .limit(1);
@@ -118,13 +118,13 @@ export async function waSequenciaCron(req, res) {
       const { lead, passo } = enviosPendentes[i];
       const nome = lead.nome || '';
 
-      const result = await enviarMensagemWA(lead.telefone, '', {
+      const result = await enviarMensagemWA(lead.whatsapp, '', {
         template: passo.template,
         nome,
       });
 
       const detalhe = {
-        telefone: lead.telefone.replace(/[^0-9]/g, ''),
+        telefone: lead.whatsapp.replace(/[^0-9]/g, ''),
         nome,
         dia: passo.dia,
         template: passo.template,
@@ -135,7 +135,7 @@ export async function waSequenciaCron(req, res) {
         resultados.enviados++;
       } else {
         detalhe.erro = result.error;
-        resultados.erros.push({ numero: lead.telefone, dia: passo.dia, erro: result.error });
+        resultados.erros.push({ numero: lead.whatsapp, dia: passo.dia, erro: result.error });
       }
 
       resultados.detalhes.push(detalhe);
@@ -143,7 +143,7 @@ export async function waSequenciaCron(req, res) {
       // Log no Supabase
       try {
         await supabase.from('whatsapp_broadcast_log').insert({
-          telefone: lead.telefone.replace(/[^0-9]/g, ''),
+          telefone: lead.whatsapp.replace(/[^0-9]/g, ''),
           mensagem: `[cron:wa-sequencia][dia:${passo.dia}][template:${passo.template}]`,
           tipo: 'cron-wa-sequencia',
           status: result.ok ? 'enviado' : 'erro',

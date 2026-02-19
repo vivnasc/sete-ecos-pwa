@@ -294,3 +294,63 @@ gx(client.sexo, 'activo', 'activa')
 | sozinho | sozinha | State descriptions |
 | inscrito | inscrita | Registration |
 | preparado | preparada | Readiness |
+
+## Content Generation Policy (MANDATORY)
+
+**Regras obrigatórias para toda geração de conteúdo — emails, WhatsApp, notificações, textos na app, landing pages, redes sociais.**
+
+### 1. Língua portuguesa com acentos SEMPRE
+
+- **NUNCA** escrever texto em português sem acentos. Isto inclui:
+  - Código fonte (strings user-facing): `'Olá'` nunca `'Ola'`, `'não'` nunca `'nao'`, `'código'` nunca `'codigo'`
+  - Templates de email e WhatsApp
+  - Labels na interface (botões, títulos, descrições)
+  - Comentários em código que apareçam ao utilizador
+- Palavras frequentes: Olá, não, código, Motivação, sequência, audiência, histórico, último, número, automática, disponível, exercício, publicação, vídeo, fácil, equilíbrio, subscrição, diagnóstico, saúde, início, próximo
+
+### 2. Gender sensitivity em conteúdos
+
+- **Quando sexo é conhecido** (componentes client-side, coach dashboard): usar `g()` ou `gx()` — ver secção Gender Sensitivity acima.
+- **Quando sexo NÃO é conhecido** (waitlist, leads, templates WA/email de nurturing):
+  - Usar linguagem neutra: "pessoas" em vez de "mulheres", "quem" em vez de "quem é", etc.
+  - Usar (a/o) ou (o/a) se necessário: "Bem-vindo(a)", "Obrigado(a)"
+  - **NUNCA** usar termos exclusivamente femininos: "amiga", "querida", "Bem-vinda" sem alternativa masculina
+  - **NUNCA** usar "mulheres" como público-alvo em mensagens directas — usar "pessoas" ou omitir
+- **Excepção**: testemunhos atribuídos a pessoas específicas podem manter o género original.
+
+### 3. Layout mobile-first SEMPRE
+
+- A plataforma é usada **maioritariamente no telemóvel**. Todo layout deve:
+  - Usar classes responsivas Tailwind: `text-sm sm:text-base`, `p-3 sm:p-4`, `gap-1.5 sm:gap-2`
+  - Botões com `py-2.5` mínimo (44px touch target)
+  - Textos com `truncate` e `min-w-0` para evitar overflow
+  - Listas com scroll: `overflow-y-auto max-h-[60vh]`
+  - Modais que subam do fundo no mobile: `items-end sm:items-center`
+  - Feedback táctil: `active:scale-95` ou `active:opacity-80`
+  - **NUNCA** fazer layout que só funcione em desktop
+
+### 4. Tom de voz (Vivianne)
+
+- Directo, humano, sem formalidades
+- Tutear sempre (tu, teu, tua — nunca você/seu/sua em PT-PT)
+- Frases curtas, parágrafos curtos
+- Assinar sempre com "— Vivianne"
+- Sem emojis excessivos (máximo 1-2 por mensagem, no início)
+- Sem exclamações excessivas (máximo 1 por parágrafo)
+
+### 5. Consistência entre canais
+
+- O conteúdo dos emails e WhatsApp deve ser **o mesmo** (adaptado ao formato):
+  - Email: mais longo, HTML, com headers e botões visuais
+  - WhatsApp: mais curto, texto puro com *negrito* WA e _itálico_ WA
+- A sequência de nurturing (dia 0-30) é definida em:
+  - Email: `api/_lib/email-sequencia.js`
+  - WhatsApp: `api/_lib/whatsapp-broadcast.js` (META_TEMPLATES) + `api/_lib/wa-sequencia-cron.js`
+- Alterar conteúdo num canal → alterar no outro também
+
+### 6. Preços e códigos promo
+
+- Preços actuais VITALIS: Mensal 2.500 MZN | Semestral 12.500 MZN | Anual 21.000 MZN
+- Código activo: `VEMVITALIS20` — 20% desconto (mensal passa a 2.000 MZN)
+- URL com código: `https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20`
+- **NUNCA** inventar preços ou códigos diferentes sem confirmar com a Vivianne
