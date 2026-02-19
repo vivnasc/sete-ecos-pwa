@@ -38,16 +38,18 @@ export async function enviarWhatsApp(token, para, mensagem) {
 
 /**
  * Broadcast WhatsApp para lista de números
+ * @param {object} extra - { template: 'nome_template' } para usar Meta Template
  */
-export async function broadcastWhatsApp(token, numeros, mensagem) {
-  return coachPost(token, 'wa-broadcast', { numeros, mensagem });
+export async function broadcastWhatsApp(token, numeros, mensagem, extra = {}) {
+  return coachPost(token, 'wa-broadcast', { numeros, mensagem, ...extra });
 }
 
 /**
  * Broadcast WhatsApp por grupo predefinido
+ * @param {object} extra - { template: 'nome_template' } para usar Meta Template
  */
-export async function broadcastWhatsAppGrupo(token, grupo, mensagem) {
-  return coachPost(token, 'wa-broadcast-grupo', { grupo, mensagem });
+export async function broadcastWhatsAppGrupo(token, grupo, mensagem, extra = {}) {
+  return coachPost(token, 'wa-broadcast-grupo', { grupo, mensagem, ...extra });
 }
 
 // ===== EMAIL =====
