@@ -6,6 +6,7 @@ import {
   broadcastWhatsApp,
   broadcastWhatsAppGrupo,
   broadcastEmail,
+  historicoWhatsApp,
 } from '../lib/broadcast-api';
 
 // ===== TEMPLATES DE MENSAGEM WHATSAPP =====
@@ -98,6 +99,10 @@ export default function CoachBroadcast() {
   const [emailTemplate, setEmailTemplate] = useState('catalogo');
   const [emailAudiencia, setEmailAudiencia] = useState('todos');
 
+  // Historico state
+  const [historico, setHistorico] = useState([]);
+  const [loadingHistorico, setLoadingHistorico] = useState(false);
+
   const getToken = useCallback(async () => {
     const { data } = await supabase.auth.getSession();
     return data?.session?.access_token;
@@ -119,11 +124,26 @@ export default function CoachBroadcast() {
     }
   }, [getToken]);
 
+  const carregarHistorico = useCallback(async () => {
+    setLoadingHistorico(true);
+    try {
+      const token = await getToken();
+      const data = await historicoWhatsApp(token, 100);
+      setHistorico(data.logs || []);
+    } catch (err) {
+      console.error('Erro ao carregar historico:', err);
+    } finally {
+      setLoadingHistorico(false);
+    }
+  }, [getToken]);
+
   useEffect(() => {
     if (tab === 'whatsapp') {
       carregarContactos();
+    } else if (tab === 'historico') {
+      carregarHistorico();
     }
-  }, [tab, carregarContactos]);
+  }, [tab, carregarContactos, carregarHistorico]);
 
   // ===== CONTAGEM DE AUDIENCIA =====
 
@@ -344,6 +364,7 @@ export default function CoachBroadcast() {
             { id: 'whatsapp', label: 'WhatsApp', icon: '💬' },
             { id: 'email', label: 'Email', icon: '📧' },
             { id: 'instagram', label: 'Instagram', icon: '📸' },
+            { id: 'historico', label: 'Historico', icon: '📋' },
           ].map(t => (
             <button
               key={t.id}
@@ -696,6 +717,93 @@ export default function CoachBroadcast() {
                 </li>
               </ul>
             </div>
+          </div>
+        )}
+
+        {/* ===== TAB: HISTORICO ===== */}
+        {tab === 'historico' && (
+          <div className="space-y-4">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold text-[#4A4035] dark:text-white">Historico de envios</h3>
+                <button
+                  onClick={carregarHistorico}
+                  disabled={loadingHistorico}
+                  className="text-xs text-[#7C8B6F] hover:underline disabled:opacity-50"
+                >
+                  {loadingHistorico ? 'A carregar...' : 'Actualizar'}
+                </button>
+              </div>
+
+              {loadingHistorico ? (
+                <p className="text-sm text-gray-500 py-8 text-center">A carregar historico...</p>
+              ) : historico.length === 0 ? (
+                <p className="text-sm text-gray-500 py-8 text-center">Nenhum envio registado ainda</p>
+              ) : (
+                <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+                  {historico.map((log, i) => (
+                    <div
+                      key={log.id || i}
+                      className={`p-3 rounded-lg border text-sm ${
+                        log.status === 'enviado'
+                          ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800'
+                          : 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-medium text-[#4A4035] dark:text-white">
+                          +{log.telefone}
+                        </span>
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                          log.status === 'enviado'
+                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                            : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+                        }`}>
+                          {log.status === 'enviado' ? 'Enviado' : 'Erro'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                        {log.mensagem}
+                      </p>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-[10px] text-gray-400">
+                          {log.tipo === 'broadcast' ? 'Broadcast' : log.tipo || 'Manual'}
+                        </span>
+                        <span className="text-[10px] text-gray-400">
+                          {log.created_at ? new Date(log.created_at).toLocaleString('pt-PT', {
+                            day: '2-digit', month: '2-digit', year: 'numeric',
+                            hour: '2-digit', minute: '2-digit',
+                          }) : ''}
+                        </span>
+                      </div>
+                      {log.erro && (
+                        <p className="text-xs text-red-500 mt-1">{log.erro}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {historico.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
+                <h4 className="text-sm font-semibold text-[#4A4035] dark:text-white mb-2">Resumo</h4>
+                <div className="grid grid-cols-3 gap-3 text-center">
+                  <div>
+                    <p className="text-lg font-bold text-[#7C8B6F]">{historico.length}</p>
+                    <p className="text-[10px] text-gray-500">Total</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-green-600">{historico.filter(l => l.status === 'enviado').length}</p>
+                    <p className="text-[10px] text-gray-500">Enviados</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-red-500">{historico.filter(l => l.status === 'erro').length}</p>
+                    <p className="text-[10px] text-gray-500">Erros</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

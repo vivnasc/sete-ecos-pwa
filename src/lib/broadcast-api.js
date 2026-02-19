@@ -60,3 +60,12 @@ export async function broadcastWhatsAppGrupo(token, grupo, mensagem, extra = {})
 export async function broadcastEmail(token, tipo, audiencia) {
   return coachPost(token, 'email-broadcast', { tipo, audiencia });
 }
+
+// ===== HISTORICO =====
+
+/**
+ * Historico de broadcasts enviados
+ */
+export async function historicoWhatsApp(token, limite = 50) {
+  return coachPost(token, 'wa-historico', { limite });
+}

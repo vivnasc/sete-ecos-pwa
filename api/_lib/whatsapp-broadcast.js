@@ -26,35 +26,57 @@ const PHONE_NUMBER_ID = () => (process.env.WHATSAPP_PHONE_NUMBER_ID || '').trim(
 // 6. Body: texto com {{1}}, {{2}} para variáveis (ex. nome)
 // 7. Submeter para aprovação (demora minutos a horas)
 
+// Textos EXACTOS para submeter na Meta Business Manager.
+// Copiar o campo "body" e colar no formulário da Meta.
+// {{1}} = nome da pessoa (preenchido automaticamente pelo sistema)
+
 export const META_TEMPLATES = {
   convite_trial: {
     name: 'sete_ecos_convite_trial',
     language: 'pt_BR',
-    // Body esperado no Meta: "Olá {{1}}! Experimentaste o VITALIS? Tens 7 dias grátis. Começa aqui: https://app.seteecos.com/vitalis — Vivianne"
+    category: 'MARKETING',
+    header: 'VITALIS — 7 Dias Grátis',
+    body: 'Olá {{1}}! 🌿\n\nFalamos há uns dias e quero saber: já experimentaste o VITALIS?\n\nTens *7 dias grátis* para testar. Plano alimentar personalizado com comida moçambicana, check-in diário e o meu acompanhamento directo.\n\nSem compromisso. Se não gostares, não pagas nada.\n\nComeça aqui: https://app.seteecos.com/vitalis\n\nQualquer dúvida, responde aqui. Estou do outro lado.\n\n— Vivianne',
+    footer: 'Sete Ecos — Sistema de Transmutação',
+    buttons: [{ type: 'URL', text: 'Começar Trial Grátis', url: 'https://app.seteecos.com/vitalis' }],
     params: (nome) => [nome || 'amiga'],
   },
   lembrete_app: {
     name: 'sete_ecos_lembrete',
     language: 'pt_BR',
-    // Body esperado: "Olá {{1}}! Lembra-te de fazer o teu check-in diário na app Sete Ecos. Precisas de ajuda? Responde aqui! — Vivianne"
+    category: 'UTILITY',
+    header: 'Sete Ecos — Lembrete',
+    body: 'Olá {{1}}! 💚\n\nLembra-te de fazer o teu check-in diário na app Sete Ecos. Leva 30 segundos e o teu corpo agradece a consistência.\n\nSe precisares de ajuda ou tiveres dúvidas, responde aqui.\n\n— Vivianne',
+    footer: 'Sete Ecos',
     params: (nome) => [nome || 'querida'],
   },
   follow_up: {
     name: 'sete_ecos_follow_up',
     language: 'pt_BR',
-    // Body esperado: "Olá {{1}}! Passaste por aqui e quero saber como estás. O VITALIS tem ajudado muitas mulheres. Queres saber mais? — Vivianne"
+    category: 'MARKETING',
+    header: 'Como estás?',
+    body: 'Olá {{1}}! 🤗\n\nPassaste por aqui há uns dias e quero saber como estás.\n\nO VITALIS tem ajudado muitas mulheres moçambicanas a encontrar o equilíbrio com a comida — sem dietas malucas, sem passar fome, com comida que já conheces.\n\nSe quiseres saber mais ou tiveres qualquer dúvida, responde aqui. Estou sempre disponível.\n\n— Vivianne',
+    footer: 'Sete Ecos — Transformação Feminina',
     params: (nome) => [nome || ''],
   },
   promo: {
     name: 'sete_ecos_promo',
     language: 'pt_BR',
-    // Body esperado: "Olá {{1}}! Presente especial: usa o código VEMVITALIS20 e tem 20% de desconto no VITALIS. Começa aqui: https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20 — Vivianne"
+    category: 'MARKETING',
+    header: '🎁 20% Desconto VITALIS',
+    body: 'Olá {{1}}!\n\nTenho um presente especial para ti: usa o código *VEMVITALIS20* e tens *20% de desconto* no VITALIS.\n\nPlano alimentar personalizado + check-in diário + apoio emocional + receitas moçambicanas. De 2.500 por *2.000 MZN/mês*.\n\nComeça aqui: https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\nSó até ao fim do mês!\n\n— Vivianne',
+    footer: 'Sete Ecos',
+    buttons: [{ type: 'URL', text: 'Usar Código 20% Off', url: 'https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20' }],
     params: (nome) => [nome || ''],
   },
   novidade: {
     name: 'sete_ecos_novidade',
     language: 'pt_BR',
-    // Body esperado: "Olá {{1}}! Temos novidades no Sete Ecos! Passa pela app: https://app.seteecos.com — Vivianne"
+    category: 'MARKETING',
+    header: 'Novidades Sete Ecos! 🌟',
+    body: 'Olá {{1}}!\n\nTemos novidades no Sete Ecos! Novos recursos e funcionalidades que vão tornar a tua jornada ainda melhor.\n\nPassa pela app para descobrir: https://app.seteecos.com\n\nSe tiveres dúvidas ou quiseres saber mais, responde aqui.\n\n— Vivianne',
+    footer: 'Sete Ecos',
+    buttons: [{ type: 'URL', text: 'Ver Novidades', url: 'https://app.seteecos.com' }],
     params: (nome) => [nome || ''],
   },
 };

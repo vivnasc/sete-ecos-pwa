@@ -149,6 +149,22 @@ export default async function handler(req, res) {
         return res.status(200).json(gResult);
       }
 
+      // ── Historico de Broadcasts ──
+      case 'wa-historico': {
+        const limite = params.limite || 50;
+        try {
+          const { data, error } = await supabase
+            .from('whatsapp_broadcast_log')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(limite);
+          if (error) return res.status(200).json({ logs: [], error: error.message });
+          return res.status(200).json({ logs: data || [] });
+        } catch (_) {
+          return res.status(200).json({ logs: [], nota: 'Tabela whatsapp_broadcast_log ainda não existe' });
+        }
+      }
+
       // ── Email Broadcast ──
       case 'email-broadcast': {
         const fakeReq = {

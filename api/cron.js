@@ -10,6 +10,7 @@
  *   /api/cron?task=email-sequencia → Sequência de nurturing (waitlist) c/ VEMVITALIS20
  *   /api/cron?task=instagram       → Publicações agendadas Instagram
  *   /api/cron?task=broadcast       → Broadcast para interessados (catálogo, promo, whatsapp)
+ *   /api/cron?task=wa-leads        → WhatsApp follow-up semanal a leads não convertidos
  */
 
 import tarefasAgendadas from './_lib/tarefas-agendadas.js';
@@ -17,6 +18,7 @@ import trialExpiringEmails from './_lib/trial-expiring-emails.js';
 import emailSequencia from './_lib/email-sequencia.js';
 import instagramSchedule from './_lib/instagram-schedule.js';
 import broadcastInteressados from './_lib/broadcast-interessados.js';
+import { waLeadsFollowUp } from './_lib/wa-leads-cron.js';
 
 export default async function handler(req, res) {
   // Verificar autorização (cron jobs do Vercel)
@@ -50,10 +52,12 @@ export default async function handler(req, res) {
         return await instagramSchedule(req, res);
       case 'broadcast':
         return await broadcastInteressados(req, res);
+      case 'wa-leads':
+        return await waLeadsFollowUp(req, res);
       default:
         return res.status(400).json({
           error: `Task desconhecida: ${task}`,
-          opcoes: ['tarefas', 'trial-emails', 'email-sequencia', 'instagram', 'broadcast']
+          opcoes: ['tarefas', 'trial-emails', 'email-sequencia', 'instagram', 'broadcast', 'wa-leads']
         });
     }
   } catch (error) {
