@@ -16,6 +16,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import { enviarMensagemWA } from './whatsapp-broadcast.js';
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
@@ -44,21 +45,30 @@ export default async function handler(req, res) {
     lembretes: 0,
     expiracoes: 0,
     curiosidade: 0,
+    marcos: 0,
+    winback: 0,
+    wa_enviados: 0,
     resumo: false,
     erros: []
   };
 
   try {
-    // 1. LEMBRETES PARA CLIENTES INATIVAS
+    // 1. LEMBRETES PARA CLIENTES INATIVAS (email + WhatsApp)
     await enviarLembretes(supabase, resultados);
 
-    // 2. AVISOS DE EXPIRAÇÃO
+    // 2. AVISOS DE EXPIRAÇÃO (email + WhatsApp trial)
     await enviarAvisosExpiracao(supabase, resultados);
 
-    // 3. CURIOSIDADE INSANA - users registados sem subscrição
+    // 3. MARCOS — celebração de streaks (WhatsApp)
+    await enviarMarcos(supabase, resultados);
+
+    // 4. WIN-BACK — clientes com subscrição expirada (WhatsApp)
+    await enviarWinback(supabase, resultados);
+
+    // 5. CURIOSIDADE INSANA - users registados sem subscrição
     await enviarCuriosidadeInsana(supabase, resultados);
 
-    // 4. RESUMO DIÁRIO PARA COACH
+    // 6. RESUMO DIÁRIO PARA COACH
     await enviarResumoDiario(supabase, resultados);
 
     return res.status(200).json({
@@ -142,6 +152,12 @@ async function enviarLembretes(supabase, resultados) {
           });
 
           resultados.lembretes++;
+
+          // Enviar também via WhatsApp (template apropriado)
+          const waTemplate = diasInactiva >= 5 ? 'motivacao' : 'checkin_lembrete';
+          await enviarWACliente(supabase, cliente.user_id, waTemplate, {
+            nome: cliente.users.nome || '',
+          }, resultados);
         }
       }
     } catch (err) {
@@ -206,6 +222,11 @@ async function enviarAvisosExpiracao(supabase, resultados) {
         });
 
         resultados.expiracoes++;
+
+        // WhatsApp trial/subscrição a expirar
+        await enviarWACliente(supabase, cliente.user_id, 'trial_expirando', {
+          nome: cliente.users.nome || '',
+        }, resultados);
       }
     } catch (err) {
       resultados.erros.push(`Erro expiração ${cliente.users?.email}: ${err.message}`);
@@ -261,6 +282,192 @@ Bom dia! 🌱`);
     resultados.resumo = true;
   } catch (err) {
     resultados.erros.push('Erro resumo diário: ' + err.message);
+  }
+}
+
+/**
+ * Helper: enviar WA template a um cliente activo (busca telefone do intake)
+ */
+async function enviarWACliente(supabase, userId, template, options, resultados) {
+  try {
+    const { data: intake } = await supabase
+      .from('vitalis_intake')
+      .select('whatsapp')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (!intake?.whatsapp) return;
+
+    // Deduplicação: verificar se já enviámos este template hoje
+    const hoje = new Date().toISOString().split('T')[0];
+    try {
+      const { data: jaEnviado } = await supabase
+        .from('whatsapp_broadcast_log')
+        .select('id')
+        .eq('telefone', intake.whatsapp.replace(/[^0-9]/g, ''))
+        .eq('tipo', `cron-cliente-${template}`)
+        .gte('created_at', hoje)
+        .limit(1);
+
+      if (jaEnviado && jaEnviado.length > 0) return;
+    } catch (_) { /* tabela pode não existir */ }
+
+    const result = await enviarMensagemWA(intake.whatsapp, '', {
+      template,
+      nome: options.nome || '',
+      ...(options.dias ? { dias: options.dias } : {}),
+    });
+
+    if (result.ok) resultados.wa_enviados++;
+
+    // Log
+    try {
+      await supabase.from('whatsapp_broadcast_log').insert({
+        telefone: intake.whatsapp.replace(/[^0-9]/g, ''),
+        mensagem: `[cron:cliente][template:${template}]`,
+        tipo: `cron-cliente-${template}`,
+        status: result.ok ? 'enviado' : 'erro',
+        erro: result.ok ? null : result.error,
+        message_id: result.messageId || null,
+      });
+    } catch (_) { /* tabela pode não existir */ }
+  } catch (_) {
+    // Silently fail — WA é complementar ao email
+  }
+}
+
+/**
+ * Celebrar marcos de consistência (7, 30, 90 dias de check-ins)
+ * Envia WA de parabéns quando o cliente atinge um marco
+ */
+async function enviarMarcos(supabase, resultados) {
+  const MARCOS = [7, 30, 90];
+
+  const { data: clientes, error } = await supabase
+    .from('vitalis_clients')
+    .select(`
+      id,
+      user_id,
+      users!inner(id, nome, email)
+    `)
+    .in('subscription_status', ['active', 'trial', 'tester']);
+
+  if (error || !clientes) return;
+
+  for (const cliente of clientes) {
+    try {
+      // Contar check-ins consecutivos recentes
+      const { data: registos } = await supabase
+        .from('vitalis_registos')
+        .select('created_at')
+        .eq('user_id', cliente.user_id)
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      if (!registos || registos.length === 0) continue;
+
+      // Contar dias únicos de check-in
+      const diasUnicos = new Set();
+      for (const r of registos) {
+        diasUnicos.add(new Date(r.created_at).toISOString().split('T')[0]);
+      }
+
+      const totalDias = diasUnicos.size;
+
+      // Verificar se atingiu um marco exacto
+      const marco = MARCOS.find(m => totalDias === m);
+      if (!marco) continue;
+
+      // Verificar se já celebrámos este marco
+      try {
+        const { data: jaEnviado } = await supabase
+          .from('whatsapp_broadcast_log')
+          .select('id')
+          .eq('tipo', `cron-cliente-marco_celebracao`)
+          .like('mensagem', `%marco:${marco}%`)
+          .limit(1);
+
+        // Buscar por telefone do intake
+        const { data: intake } = await supabase
+          .from('vitalis_intake')
+          .select('whatsapp')
+          .eq('user_id', cliente.user_id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (!intake?.whatsapp) continue;
+
+        const tel = intake.whatsapp.replace(/[^0-9]/g, '');
+        const { data: jaEnviadoTel } = await supabase
+          .from('whatsapp_broadcast_log')
+          .select('id')
+          .eq('telefone', tel)
+          .eq('tipo', 'cron-cliente-marco_celebracao')
+          .like('mensagem', `%marco:${marco}%`)
+          .limit(1);
+
+        if (jaEnviadoTel && jaEnviadoTel.length > 0) continue;
+
+        const result = await enviarMensagemWA(intake.whatsapp, '', {
+          template: 'marco_celebracao',
+          nome: cliente.users.nome || '',
+          dias: marco,
+        });
+
+        if (result.ok) resultados.marcos++;
+
+        await supabase.from('whatsapp_broadcast_log').insert({
+          telefone: tel,
+          mensagem: `[cron:cliente][template:marco_celebracao][marco:${marco}]`,
+          tipo: 'cron-cliente-marco_celebracao',
+          status: result.ok ? 'enviado' : 'erro',
+          erro: result.ok ? null : result.error,
+          message_id: result.messageId || null,
+        });
+      } catch (_) { /* tabela pode não existir */ }
+    } catch (_) {
+      // Skip individual errors
+    }
+  }
+}
+
+/**
+ * Win-back: clientes com subscrição expirada há 3+ dias
+ * Envia WA convidando a voltar com código de desconto
+ */
+async function enviarWinback(supabase, resultados) {
+  const tresDiasAtras = new Date();
+  tresDiasAtras.setDate(tresDiasAtras.getDate() - 3);
+  const trintaDiasAtras = new Date();
+  trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30);
+
+  const { data: clientes, error } = await supabase
+    .from('vitalis_clients')
+    .select(`
+      id,
+      user_id,
+      subscription_expires,
+      users!inner(id, nome, email)
+    `)
+    .eq('subscription_status', 'expired')
+    .gte('subscription_expires', trintaDiasAtras.toISOString())
+    .lte('subscription_expires', tresDiasAtras.toISOString());
+
+  if (error || !clientes) return;
+
+  for (const cliente of clientes) {
+    try {
+      await enviarWACliente(supabase, cliente.user_id, 'winback', {
+        nome: cliente.users.nome || '',
+      }, resultados);
+
+      if (resultados.wa_enviados > 0) resultados.winback++;
+    } catch (_) {
+      // Skip individual errors
+    }
   }
 }
 

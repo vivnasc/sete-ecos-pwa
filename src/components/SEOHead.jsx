@@ -5,8 +5,8 @@ import { useEffect } from 'react';
  * Usa document.head directamente (sem dependências externas)
  */
 const SEO_DEFAULTS = {
-  title: 'SETE ECOS - Sistema de Transmutação Feminina',
-  description: 'Sete caminhos para despertar cada dimensão da tua essência feminina. Uma jornada completa de transformação.',
+  title: 'Sete Ecos — Nutrição, Coaching e Bem-estar | Moçambique',
+  description: 'Plataforma de transformação pessoal com plano alimentar personalizado, coaching nutricional e bem-estar. Comida moçambicana, método científico. Por Vivianne Saraiva.',
   image: 'https://app.seteecos.com/og-image.png',
   url: 'https://app.seteecos.com/',
   type: 'website'
