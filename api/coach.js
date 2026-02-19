@@ -7,6 +7,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import webpush from 'web-push';
+import { listarContactosWA, enviarMensagemWA, broadcastWA, broadcastGrupoWA } from './_lib/whatsapp-broadcast.js';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://vvvdtogvlutrybultffx.supabase.co';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
@@ -114,6 +115,36 @@ export default async function handler(req, res) {
         return await activarSubscricao(params.userId, params.planKey, res);
       case 'set-tester':
         return await setTester(params.userId, res);
+
+      // ── WhatsApp Broadcast ──
+      case 'wa-contactos':
+        return res.status(200).json(await listarContactosWA(supabase));
+      case 'wa-enviar': {
+        if (!params.para || !params.mensagem) return res.status(400).json({ error: '"para" e "mensagem" obrigatórios' });
+        const waResult = await enviarMensagemWA(params.para, params.mensagem);
+        try {
+          await supabase.from('whatsapp_broadcast_log').insert({
+            telefone: params.para.replace(/[^0-9]/g, ''),
+            mensagem: params.mensagem.slice(0, 2000),
+            tipo: 'individual', status: waResult.ok ? 'enviado' : 'erro',
+            erro: waResult.ok ? null : waResult.error,
+            message_id: waResult.messageId || null,
+          });
+        } catch (_) { /* tabela pode não existir */ }
+        return res.status(waResult.ok ? 200 : 500).json(waResult);
+      }
+      case 'wa-broadcast': {
+        if (!params.numeros?.length || !params.mensagem) return res.status(400).json({ error: '"numeros" e "mensagem" obrigatórios' });
+        const bResult = await broadcastWA(supabase, params.numeros, params.mensagem);
+        bResult.message = `Broadcast: ${bResult.enviados}/${bResult.total} enviados`;
+        return res.status(200).json(bResult);
+      }
+      case 'wa-broadcast-grupo': {
+        if (!params.grupo || !params.mensagem) return res.status(400).json({ error: '"grupo" e "mensagem" obrigatórios' });
+        const gResult = await broadcastGrupoWA(supabase, params.grupo, params.mensagem);
+        return res.status(200).json(gResult);
+      }
+
       default:
         return res.status(400).json({ error: 'Accao desconhecida: ' + action });
     }
