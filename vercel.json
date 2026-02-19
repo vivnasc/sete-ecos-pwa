@@ -54,6 +54,10 @@
     {
       "path": "/api/cron?task=instagram",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron?task=wa-leads",
+      "schedule": "0 10 * * 1"
     }
   ]
 }

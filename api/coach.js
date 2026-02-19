@@ -121,12 +121,13 @@ export default async function handler(req, res) {
       case 'wa-contactos':
         return res.status(200).json(await listarContactosWA(supabase));
       case 'wa-enviar': {
-        if (!params.para || !params.mensagem) return res.status(400).json({ error: '"para" e "mensagem" obrigatórios' });
-        const waResult = await enviarMensagemWA(params.para, params.mensagem);
+        if (!params.para || (!params.mensagem && !params.template)) return res.status(400).json({ error: '"para" e "mensagem" (ou "template") obrigatórios' });
+        const waOpts = params.template ? { template: params.template, nome: params.nome } : {};
+        const waResult = await enviarMensagemWA(params.para, params.mensagem || '', waOpts);
         try {
           await supabase.from('whatsapp_broadcast_log').insert({
             telefone: params.para.replace(/[^0-9]/g, ''),
-            mensagem: params.mensagem.slice(0, 2000),
+            mensagem: params.template ? `[template:${params.template}]` : params.mensagem.slice(0, 2000),
             tipo: 'individual', status: waResult.ok ? 'enviado' : 'erro',
             erro: waResult.ok ? null : waResult.error,
             message_id: waResult.messageId || null,
@@ -135,15 +136,33 @@ export default async function handler(req, res) {
         return res.status(waResult.ok ? 200 : 500).json(waResult);
       }
       case 'wa-broadcast': {
-        if (!params.numeros?.length || !params.mensagem) return res.status(400).json({ error: '"numeros" e "mensagem" obrigatórios' });
-        const bResult = await broadcastWA(supabase, params.numeros, params.mensagem);
+        if (!params.numeros?.length || (!params.mensagem && !params.template)) return res.status(400).json({ error: '"numeros" e "mensagem" (ou "template") obrigatórios' });
+        const bOpts = params.template ? { template: params.template, nome: params.nome } : {};
+        const bResult = await broadcastWA(supabase, params.numeros, params.mensagem || '', bOpts);
         bResult.message = `Broadcast: ${bResult.enviados}/${bResult.total} enviados`;
         return res.status(200).json(bResult);
       }
       case 'wa-broadcast-grupo': {
-        if (!params.grupo || !params.mensagem) return res.status(400).json({ error: '"grupo" e "mensagem" obrigatórios' });
-        const gResult = await broadcastGrupoWA(supabase, params.grupo, params.mensagem);
+        if (!params.grupo || (!params.mensagem && !params.template)) return res.status(400).json({ error: '"grupo" e "mensagem" (ou "template") obrigatórios' });
+        const gOpts = params.template ? { template: params.template, nome: params.nome } : {};
+        const gResult = await broadcastGrupoWA(supabase, params.grupo, params.mensagem || '', gOpts);
         return res.status(200).json(gResult);
+      }
+
+      // ── Historico de Broadcasts ──
+      case 'wa-historico': {
+        const limite = params.limite || 50;
+        try {
+          const { data, error } = await supabase
+            .from('whatsapp_broadcast_log')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(limite);
+          if (error) return res.status(200).json({ logs: [], error: error.message });
+          return res.status(200).json({ logs: data || [] });
+        } catch (_) {
+          return res.status(200).json({ logs: [], nota: 'Tabela whatsapp_broadcast_log ainda não existe' });
+        }
       }
 
       // ── Email Broadcast ──
