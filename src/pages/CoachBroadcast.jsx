@@ -13,39 +13,104 @@ import {
 // Cada template tem: nome, texto (preview), metaTemplate (nome do template na Meta)
 
 const WA_TEMPLATES = {
+  // --- Sequencia nurturing (= emails) ---
+  'boas-vindas': {
+    nome: 'Boas-vindas',
+    metaTemplate: 'boas_vindas',
+    grupo: 'sequencia',
+    texto: (nome) =>
+      `Ola ${nome || 'amiga'}! Obrigada por te juntares ao Sete Ecos.\n\nNos proximos dias vou partilhar contigo ferramentas que podem mudar a tua relacao contigo mesma.\n\nA comecar pelo Lumina — um diagnostico gratuito que revela padroes sobre a tua energia, emocao e corpo.\n\nhttps://app.seteecos.com/lumina\n\n— Vivianne`,
+  },
+  'convite-lumina': {
+    nome: 'Convite Lumina',
+    metaTemplate: 'convite_lumina',
+    grupo: 'sequencia',
+    texto: (nome) =>
+      `Ola ${nome || 'amiga'}! 2 minutos podem mudar o teu dia.\n\nO Lumina e um ritual diario de auto-observacao. 7 perguntas simples que revelam padroes sobre como te sentes.\n\nMulheres que usam o Lumina reportam:\n- Mais consciencia sobre padroes emocionais\n- Melhor capacidade de prever dias dificeis\n- Correlacao entre ciclo menstrual e estados emocionais\n\nE completamente gratuito.\n\nhttps://app.seteecos.com/lumina\n\n— Vivianne`,
+  },
+  'tres-sinais': {
+    nome: '3 Sinais',
+    metaTemplate: 'tres_sinais',
+    grupo: 'sequencia',
+    texto: (nome) =>
+      `Ola ${nome || ''}! O teu corpo fala. Estas a ouvir?\n\nHa 3 sinais que muitas mulheres ignoram:\n\n1. Cansaco cronico — Se dormes e acordas cansada, pode ser o que comes.\n2. Comer por emocao — Se comes quando estas triste ou ansiosa, o problema nao e fome.\n3. Efeito ioio — As dietas restritivas estao a sabotar o teu metabolismo.\n\nSe te identificas com pelo menos 1, o VITALIS foi criado para ti.\n\nhttps://app.seteecos.com/vitalis\n\n— Vivianne`,
+  },
+  'segredo': {
+    nome: 'Segredo',
+    metaTemplate: 'segredo',
+    grupo: 'sequencia',
+    texto: (nome) =>
+      `Ola ${nome || ''}! Preciso de te contar uma coisa.\n\n"A maioria das mulheres que me procura nao tem um problema de comida. Tem um problema de emocao disfarcado de fome."\n\nQuando comes por ansiedade, solidao, tedio — o teu corpo nao precisa de comida. Precisa de presenca. Nenhuma dieta resolve isso.\n\nFoi por isso que criei o Espaco de Retorno dentro do VITALIS — para quando sentes vontade de comer por emocao. Sem culpa. Sem julgamento.\n\nIsto nao existe em mais nenhum programa.\n\nQueres saber mais? Responde aqui.\n\n— Vivianne`,
+  },
+  'convite-trial': {
+    nome: 'Convite 20% Off',
+    metaTemplate: 'convite_trial',
+    grupo: 'sequencia',
+    texto: (nome) =>
+      `Ola ${nome || ''}! Imagina: daqui a 3 meses, mais energia, roupa a caber melhor, comes sem culpa.\n\nO VITALIS inclui:\n- Plano alimentar com comida mocambicana\n- Receitas com ingredientes que ja tens em casa\n- Check-in diario em 30 segundos\n- Espaco de Retorno (apoio emocional unico)\n- Chat directo com a Vivianne\n- 7 dias de garantia total\n\nCodigo: VEMVITALIS20 — 20% desconto\nDe 2.500 por 2.000 MZN/mes\n\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\n— Vivianne`,
+  },
+  'testemunho': {
+    nome: 'Testemunho',
+    metaTemplate: 'testemunho',
+    grupo: 'sequencia',
+    texto: (nome) =>
+      `Ola ${nome || ''}! Isto e possivel para ti tambem.\n\n"Perdi 8kg em 3 meses e aprendi a comer sem culpa. O Espaco de Retorno mudou tudo." — M.J., Maputo\n\n"Uso a comida que ja tenho em casa — xima, matapa, feijao nhemba." — A.B., Beira\n\nO teu codigo ainda esta activo:\nVEMVITALIS20 — 20% desconto\n\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\n— Vivianne`,
+  },
+  'ultima-chance': {
+    nome: 'Ultima Chance',
+    metaTemplate: 'ultima_chance',
+    grupo: 'sequencia',
+    texto: (nome) =>
+      `Ola ${nome || ''}! Ja passou um mes. Mulheres que comecaram o VITALIS ja:\n\n- Perderam 2-4kg na primeira semana\n- Aprenderam a medir porcoes sem balanca\n- Descobriram o Espaco de Retorno\n- Construiram habitos que duram — com comida mocambicana\n\nA unica diferenca entre elas e tu? Elas comecaram.\n\nULTIMA OPORTUNIDADE\nVEMVITALIS20 — 20% desconto\nDe 2.500 por 2.000 MZN/mes\n7 dias de garantia. Zero risco.\n\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\n— Vivianne`,
+  },
+  // --- Utilitarios ---
   'lembrete-app': {
     nome: 'Lembrete App',
     metaTemplate: 'lembrete_app',
+    grupo: 'util',
     texto: (nome) =>
-      `Ola ${nome || 'querida'}! Lembra-te de fazer o teu check-in diario na app Sete Ecos. O teu corpo agradece a consistencia. Precisas de ajuda? Responde aqui!\n\n— Vivianne`,
+      `Ola ${nome || 'querida'}! Ja la vao uns dias desde o teu ultimo registo. Cada pequeno passo conta. Que tal registares algo hoje? Mesmo que seja so a agua.\n\nhttps://app.seteecos.com/vitalis\n\n— Vivianne`,
   },
-  'convite-trial': {
-    nome: 'Convite Trial',
-    metaTemplate: 'convite_trial',
+  'motivacao': {
+    nome: 'Motivacao',
+    metaTemplate: 'motivacao',
+    grupo: 'util',
     texto: (nome) =>
-      `Ola ${nome || ''}! Falamos ha uns dias e quero saber: ja experimentaste o VITALIS? Tens 7 dias gratis para testar. Sem compromisso.\n\nComeca aqui: https://app.seteecos.com/vitalis\n\nQualquer duvida, responde aqui.\n\n— Vivianne`,
+      `Ola ${nome || ''}! Sei que estes dias nao foram faceis.\n\n"A diferenca entre quem transforma o corpo e quem desiste nao e forca de vontade. E ter alguem que nao desiste de ti."\n\nEu nao desisti de ti.\n\nTodo o teu progresso esta guardado. Um check-in de 30 segundos ja e uma vitoria.\n\nhttps://app.seteecos.com/vitalis\n\nQueres falar? Responde aqui. Sem julgamento.\n\n— Vivianne`,
   },
+  // --- Broadcasts manuais ---
   'follow-up': {
     nome: 'Follow-up',
     metaTemplate: 'follow_up',
+    grupo: 'broadcast',
     texto: (nome) =>
       `Ola ${nome || ''}! Passaste por aqui e quero saber como estas. O VITALIS tem ajudado muitas mulheres a encontrar o equilibrio com a comida, sem dietas malucas.\n\nQueres saber mais? Responde aqui.\n\n— Vivianne`,
-  },
-  'novidade': {
-    nome: 'Novidade',
-    metaTemplate: 'novidade',
-    texto: (nome) =>
-      `Ola ${nome || ''}! Temos novidades no Sete Ecos! Novos recursos, novas funcionalidades. Passa pela app para descobrir: https://app.seteecos.com\n\nQualquer duvida, estou aqui.\n\n— Vivianne`,
   },
   'promo': {
     nome: 'Promo 20%',
     metaTemplate: 'promo',
+    grupo: 'broadcast',
     texto: (nome) =>
-      `Ola ${nome || ''}! Presente especial para ti: usa o codigo VEMVITALIS20 e tem 20% de desconto no VITALIS.\n\nComeca aqui: https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\nSo ate ao fim do mes!\n\n— Vivianne`,
+      `Ola ${nome || ''}! Presente especial: usa o codigo VEMVITALIS20 e tem 20% de desconto no VITALIS.\n\nDe 2.500 por 2.000 MZN/mes.\n\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\nSo ate ao fim do mes!\n\n— Vivianne`,
+  },
+  'novidade': {
+    nome: 'Novidade',
+    metaTemplate: 'novidade',
+    grupo: 'broadcast',
+    texto: (nome) =>
+      `Ola ${nome || ''}! Temos novidades no Sete Ecos! Novos recursos, novas funcionalidades.\n\nhttps://app.seteecos.com\n\nQualquer duvida, estou aqui.\n\n— Vivianne`,
+  },
+  'curiosidade': {
+    nome: 'Curiosidade',
+    metaTemplate: 'curiosidade',
+    grupo: 'broadcast',
+    texto: (nome) =>
+      `Ola ${nome || ''}! Faz este exercicio: antes de comeres algo, poe a mao no peito e pergunta "estou mesmo com fome ou estou a sentir algo?"\n\nSe a resposta for "estou a sentir algo" — parabens, descobriste o padrao que 87% das mulheres ignoram. E o efeito ioio. Nao e a comida. E a emocao.\n\nO VITALIS tem o Espaco de Retorno — feito para estes momentos.\n\nVEMVITALIS20 — 20% desconto\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\n— Vivianne`,
   },
   personalizado: {
     nome: 'Personalizado',
     metaTemplate: null,
+    grupo: 'broadcast',
     texto: () => '',
   },
 };
