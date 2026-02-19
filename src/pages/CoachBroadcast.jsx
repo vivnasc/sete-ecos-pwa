@@ -606,12 +606,51 @@ export default function CoachBroadcast() {
             {/* Template de mensagem */}
             <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
               <h3 className="font-semibold text-[#4A4035] dark:text-white mb-3">Mensagem</h3>
-              <div className="flex flex-wrap gap-2 mb-3">
-                {Object.entries(WA_TEMPLATES).map(([id, t]) => (
+
+              {/* Sequencia nurturing */}
+              <p className="text-[10px] uppercase tracking-wider text-gray-400 mb-1.5 mt-1">Sequencia (= emails)</p>
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {Object.entries(WA_TEMPLATES).filter(([, t]) => t.grupo === 'sequencia').map(([id, t]) => (
                   <button
                     key={id}
                     onClick={() => setWaTemplate(id)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                      waTemplate === id
+                        ? 'bg-[#25D366] text-white'
+                        : 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 hover:bg-green-100'
+                    }`}
+                  >
+                    {t.nome}
+                  </button>
+                ))}
+              </div>
+
+              {/* Utilitarios */}
+              <p className="text-[10px] uppercase tracking-wider text-gray-400 mb-1.5">Clientes activos</p>
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {Object.entries(WA_TEMPLATES).filter(([, t]) => t.grupo === 'util').map(([id, t]) => (
+                  <button
+                    key={id}
+                    onClick={() => setWaTemplate(id)}
+                    className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                      waTemplate === id
+                        ? 'bg-[#25D366] text-white'
+                        : 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 hover:bg-blue-100'
+                    }`}
+                  >
+                    {t.nome}
+                  </button>
+                ))}
+              </div>
+
+              {/* Broadcasts manuais */}
+              <p className="text-[10px] uppercase tracking-wider text-gray-400 mb-1.5">Broadcast manual</p>
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {Object.entries(WA_TEMPLATES).filter(([, t]) => t.grupo === 'broadcast').map(([id, t]) => (
+                  <button
+                    key={id}
+                    onClick={() => setWaTemplate(id)}
+                    className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
                       waTemplate === id
                         ? 'bg-[#25D366] text-white'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200'
