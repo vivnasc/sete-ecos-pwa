@@ -8,6 +8,7 @@
 import { createClient } from '@supabase/supabase-js';
 import webpush from 'web-push';
 import { listarContactosWA, enviarMensagemWA, broadcastWA, broadcastGrupoWA } from './_lib/whatsapp-broadcast.js';
+import broadcastInteressados from './_lib/broadcast-interessados.js';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://vvvdtogvlutrybultffx.supabase.co';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
@@ -143,6 +144,17 @@ export default async function handler(req, res) {
         if (!params.grupo || !params.mensagem) return res.status(400).json({ error: '"grupo" e "mensagem" obrigatórios' });
         const gResult = await broadcastGrupoWA(supabase, params.grupo, params.mensagem);
         return res.status(200).json(gResult);
+      }
+
+      // ── Email Broadcast ──
+      case 'email-broadcast': {
+        const fakeReq = {
+          method: 'POST',
+          headers: req.headers,
+          query: { tipo: params.tipo || 'catalogo', audiencia: params.audiencia || 'todos' },
+          body: { tipo: params.tipo || 'catalogo', audiencia: params.audiencia || 'todos' },
+        };
+        return await broadcastInteressados(fakeReq, res);
       }
 
       default:
