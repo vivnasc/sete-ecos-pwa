@@ -56,8 +56,5 @@ export async function broadcastWhatsAppGrupo(token, grupo, mensagem) {
  * Enviar broadcast de email
  */
 export async function broadcastEmail(token, tipo, audiencia) {
-  const res = await fetch(`${API_BASE}/api/cron?task=broadcast&tipo=${tipo}&audiencia=${audiencia}`, {
-    headers: { 'Authorization': `Bearer ${token}` },
-  });
-  return res.json();
+  return coachPost(token, 'email-broadcast', { tipo, audiencia });
 }
