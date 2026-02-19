@@ -1,12 +1,24 @@
 /**
  * Broadcast API Client
  *
- * Cliente frontend para as APIs de broadcast:
+ * Cliente frontend para as APIs de broadcast via /api/coach:
  * - WhatsApp Broadcast (proativo via Meta Cloud API)
  * - Email Broadcast (via Resend)
  */
 
 const API_BASE = import.meta.env.DEV ? 'http://localhost:3000' : '';
+
+async function coachPost(token, action, params = {}) {
+  const res = await fetch(`${API_BASE}/api/coach`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ action, ...params }),
+  });
+  return res.json();
+}
 
 // ===== WHATSAPP =====
 
@@ -14,56 +26,28 @@ const API_BASE = import.meta.env.DEV ? 'http://localhost:3000' : '';
  * Listar todos os contactos WhatsApp (do chatbot)
  */
 export async function listarContactosWhatsApp(token) {
-  const res = await fetch(`${API_BASE}/api/whatsapp-broadcast?action=contactos`, {
-    headers: { 'Authorization': `Bearer ${token}` },
-  });
-  if (!res.ok) throw new Error('Erro ao listar contactos');
-  return res.json();
+  return coachPost(token, 'wa-contactos');
 }
 
 /**
  * Enviar mensagem WhatsApp individual
  */
 export async function enviarWhatsApp(token, para, mensagem) {
-  const res = await fetch(`${API_BASE}/api/whatsapp-broadcast?action=enviar`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ para, mensagem }),
-  });
-  return res.json();
+  return coachPost(token, 'wa-enviar', { para, mensagem });
 }
 
 /**
  * Broadcast WhatsApp para lista de números
  */
 export async function broadcastWhatsApp(token, numeros, mensagem) {
-  const res = await fetch(`${API_BASE}/api/whatsapp-broadcast?action=broadcast`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ numeros, mensagem }),
-  });
-  return res.json();
+  return coachPost(token, 'wa-broadcast', { numeros, mensagem });
 }
 
 /**
  * Broadcast WhatsApp por grupo predefinido
  */
 export async function broadcastWhatsAppGrupo(token, grupo, mensagem) {
-  const res = await fetch(`${API_BASE}/api/whatsapp-broadcast?action=broadcast-grupo`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ grupo, mensagem }),
-  });
-  return res.json();
+  return coachPost(token, 'wa-broadcast-grupo', { grupo, mensagem });
 }
 
 // ===== EMAIL =====
@@ -71,9 +55,9 @@ export async function broadcastWhatsAppGrupo(token, grupo, mensagem) {
 /**
  * Enviar broadcast de email
  */
-export async function broadcastEmail(secret, tipo, audiencia) {
+export async function broadcastEmail(token, tipo, audiencia) {
   const res = await fetch(`${API_BASE}/api/cron?task=broadcast&tipo=${tipo}&audiencia=${audiencia}`, {
-    headers: { 'Authorization': `Bearer ${secret}` },
+    headers: { 'Authorization': `Bearer ${token}` },
   });
   return res.json();
 }
