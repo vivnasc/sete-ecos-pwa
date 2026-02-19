@@ -69,7 +69,7 @@ export default function VitalisIntakeComplete() {
   const fieldConfig = {
     nome: { label: 'Nome completo', type: 'text', required: true },
     email: { label: 'Email', type: 'email', required: true },
-    whatsapp: { label: 'WhatsApp', type: 'tel', placeholder: '+258…', inputMode: 'tel' },
+    whatsapp: { label: 'WhatsApp', type: 'tel', placeholder: '+258 84/85/86/87…', inputMode: 'tel', required: true },
     idade: { label: 'Idade', type: 'number', required: true, inputMode: 'numeric' },
     sexo: { label: 'Sexo', type: 'radio', options: ['feminino', 'masculino', 'outro'], labels: ['Feminino', 'Masculino', 'Prefiro não especificar'], required: true },
     altura_cm: { label: 'Altura (cm)', type: 'number', required: true, inputMode: 'numeric', min: '100', max: '250' },
@@ -273,6 +273,11 @@ export default function VitalisIntakeComplete() {
         }
       } else if (!value || value === '') {
         errors[fieldId] = 'Campo obrigatório';
+      } else if (config.type === 'tel' && fieldId === 'whatsapp') {
+        const limpo = value.replace(/[\s\-()]/g, '');
+        if (limpo.length < 9) {
+          errors[fieldId] = 'Número de WhatsApp inválido (mínimo 9 dígitos)';
+        }
       } else if (config.type === 'number') {
         // 🛡️ Validação numérica: verificar se é número válido e positivo
         const num = parseFloat(value);
