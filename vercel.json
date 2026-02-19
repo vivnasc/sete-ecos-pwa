@@ -56,6 +56,10 @@
       "schedule": "0 7 * * *"
     },
     {
+      "path": "/api/cron?task=wa-sequencia",
+      "schedule": "0 11 * * *"
+    },
+    {
       "path": "/api/cron?task=wa-leads",
       "schedule": "0 10 * * 1"
     }

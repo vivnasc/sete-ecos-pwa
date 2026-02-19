@@ -11,6 +11,7 @@
  *   /api/cron?task=instagram       → Publicações agendadas Instagram
  *   /api/cron?task=broadcast       → Broadcast para interessados (catálogo, promo, whatsapp)
  *   /api/cron?task=wa-leads        → WhatsApp follow-up semanal a leads não convertidos
+ *   /api/cron?task=wa-sequencia    → Sequência WA automática (dia 0,3,7,10,14,21,30)
  */
 
 import tarefasAgendadas from './_lib/tarefas-agendadas.js';
@@ -19,6 +20,7 @@ import emailSequencia from './_lib/email-sequencia.js';
 import instagramSchedule from './_lib/instagram-schedule.js';
 import broadcastInteressados from './_lib/broadcast-interessados.js';
 import { waLeadsFollowUp } from './_lib/wa-leads-cron.js';
+import { waSequenciaCron } from './_lib/wa-sequencia-cron.js';
 
 export default async function handler(req, res) {
   // Verificar autorização (cron jobs do Vercel)
@@ -54,10 +56,12 @@ export default async function handler(req, res) {
         return await broadcastInteressados(req, res);
       case 'wa-leads':
         return await waLeadsFollowUp(req, res);
+      case 'wa-sequencia':
+        return await waSequenciaCron(req, res);
       default:
         return res.status(400).json({
           error: `Task desconhecida: ${task}`,
-          opcoes: ['tarefas', 'trial-emails', 'email-sequencia', 'instagram', 'broadcast', 'wa-leads']
+          opcoes: ['tarefas', 'trial-emails', 'email-sequencia', 'instagram', 'broadcast', 'wa-leads', 'wa-sequencia']
         });
     }
   } catch (error) {
