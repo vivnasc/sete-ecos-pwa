@@ -4,14 +4,19 @@
  * Framework leve de i18n sem dependências externas.
  * Suporta: pt-PT (default), pt-BR, en, fr
  *
+ * Traduções modulares: cada módulo pode ter o seu ficheiro em src/lib/i18n/
+ * que é fundido automaticamente com as traduções base.
+ *
  * Uso:
  *   import { useI18n } from '../contexts/I18nContext'
  *   const { t, locale, setLocale, availableLocales } = useI18n()
  *   t('nav.home') // "Início"
  */
 
-// Traduções organizadas por namespace
-const translations = {
+import { luminaTranslations } from './i18n/lumina.js';
+
+// Traduções base organizadas por namespace
+const baseTranslations = {
   'pt': {
     // Navegação
     'nav.home': 'Início',
@@ -463,6 +468,15 @@ const translations = {
     'coach.dashboard': 'Tableau du Coach',
     'coach.clients': 'Clients',
     'coach.all_ecos': 'Tous les Ecos',
+  }
+}
+
+// Fundir traduções modulares com as traduções base
+const translations = {}
+for (const locale of ['pt', 'en', 'fr']) {
+  translations[locale] = {
+    ...(baseTranslations[locale] || {}),
+    ...(luminaTranslations[locale] || {}),
   }
 }
 
