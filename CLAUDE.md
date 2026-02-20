@@ -47,8 +47,28 @@ sete-ecos-pwa/
 ├── api/                        # Vercel serverless functions
 │   ├── gerar-pdf.js            # PDF generation endpoint
 │   ├── enviar-email.js         # Email service
-│   ├── tarefas-agendadas.js    # Daily scheduled tasks (9 AM)
-│   └── whatsapp-*.js           # WhatsApp integration
+│   ├── coach.js                # Coach dashboard backend (41.7K)
+│   ├── cron.js                 # Scheduled tasks router
+│   ├── diagnostico.js          # Diagnostic endpoint
+│   ├── facebook-publish.js     # Facebook social publishing
+│   ├── instagram-publish.js    # Instagram social publishing
+│   ├── gerar-plano-manual.js   # Manual plan generation
+│   ├── regenerar-plano-emergencia.js # Emergency plan regeneration
+│   ├── whatsapp-chatbot.js     # WhatsApp chatbot logic
+│   ├── whatsapp-twilio.js      # Twilio integration
+│   ├── whatsapp-webhook.js     # WhatsApp webhook handler
+│   └── _lib/                   # Shared serverless utilities
+│       ├── email-sequencia.js  # Email nurture sequences (day 0-30)
+│       ├── whatsapp-broadcast.js # WhatsApp broadcast templates
+│       ├── wa-sequencia-cron.js  # WhatsApp nurture cron
+│       ├── wa-leads-cron.js    # WhatsApp lead handling
+│       ├── tarefas-agendadas.js # Daily scheduled tasks (9 AM)
+│       ├── chatbot-respostas.js # Chatbot response logic (29.3K)
+│       ├── chatbot-log.js      # Chatbot logging
+│       ├── trial-expiring-emails.js # Trial expiry management
+│       ├── fix-clients-status.js    # Data maintenance
+│       ├── broadcast-interessados.js # Broadcast to leads
+│       └── instagram-schedule.js    # Social media scheduling
 ├── public/
 │   ├── logos/                  # Brand assets for all 7 Ecos
 │   ├── manifest.json           # PWA manifest (overridden by vite config)
@@ -62,9 +82,15 @@ sete-ecos-pwa/
 │   │   ├── Navigation.jsx      # Bottom navigation (ARIA labels, accessible)
 │   │   ├── SkipLink.jsx        # Accessibility skip-to-content link
 │   │   ├── SustainabilityBadge.jsx # Green coding badge component
-│   │   ├── vitalis/            # Vitalis module (31 components)
-│   │   ├── aurea/              # Aurea module (19 components)
-│   │   └── comunidade/         # Community module (15 components)
+│   │   ├── vitalis/            # Vitalis module (35 components)
+│   │   ├── aurea/              # Áurea module (15 components)
+│   │   ├── serena/             # Serena module (17 components)
+│   │   ├── ignis/              # Ignis module (15 components)
+│   │   ├── ventis/             # Ventis module (16 components)
+│   │   ├── ecoa/               # Ecoa module (17 components)
+│   │   ├── imago/              # Imago module (17 components)
+│   │   ├── aurora/             # Aurora module (13 components)
+│   │   └── comunidade/         # Community module (19 components)
 │   ├── contexts/
 │   │   ├── AuthContext.jsx     # Auth + module access state
 │   │   ├── I18nContext.jsx     # Internationalization context
@@ -77,17 +103,33 @@ sete-ecos-pwa/
 │   │   ├── coach.js            # Coach access control
 │   │   ├── comunidade.js       # Community social logic
 │   │   ├── validacao.js        # Input validation
-│   │   ├── aurea/              # Aurea-specific logic
-│   │   └── vitalis/            # Vitalis-specific logic
-│   ├── pages/                  # 14 page components
+│   │   ├── genero.js           # Gender-adaptive text (main implementation)
+│   │   ├── marketing-engine.js # Marketing automation logic
+│   │   ├── referrals.js        # Referral system
+│   │   ├── whatsapp.js         # WhatsApp integration
+│   │   ├── shared/             # Cross-module infrastructure
+│   │   │   ├── subscriptionPlans.js  # Centralized pricing (all Ecos)
+│   │   │   ├── moduleFactory.js      # Module creation helpers
+│   │   │   └── paymentFlow.js        # Shared payment logic
+│   │   ├── vitalis/            # Vitalis-specific logic
+│   │   ├── aurea/              # Áurea-specific logic
+│   │   ├── serena/             # Serena-specific logic
+│   │   ├── ignis/              # Ignis-specific logic
+│   │   ├── ventis/             # Ventis-specific logic
+│   │   ├── ecoa/               # Ecoa-specific logic
+│   │   ├── imago/              # Imago-specific logic
+│   │   └── aurora/             # Aurora-specific logic
+│   ├── pages/                  # 26 page components
 │   ├── styles/
 │   │   └── global.css          # Tailwind import, CSS vars, a11y, dark mode
 │   ├── test/
 │   │   └── setup.js            # Vitest setup (jest-dom)
 │   └── utils/
-│       ├── genero.js           # Gender-adaptive text system
+│       ├── genero.js           # Gender-adaptive text (wrapper/re-export)
 │       ├── notifications.js    # Browser notification helpers
-│       └── ramadao.js          # Ramadan date handling
+│       ├── ramadao.js          # Ramadan date handling
+│       ├── referral.js         # Referral link utilities
+│       └── utm.js              # UTM tracking helpers
 ├── index.html                  # App entry with structured data (JSON-LD)
 ├── postcss.config.js           # PostCSS with Tailwind v4
 ├── vite.config.js              # Vite + PWA + code splitting
@@ -95,38 +137,42 @@ sete-ecos-pwa/
 └── package.json
 ```
 
-**Total components**: 83 JSX files across 3 active modules + community
+**Total components**: ~164 JSX files across 9 active modules + community + 26 pages
 
 ## The 7 Ecos (Modules)
 
 | Eco | Chakra | Focus | Status | Components |
 |-----|--------|-------|--------|------------|
-| **VITALIS** | Muladhara (Root) | Body/Nutrition | Active (Paid) | 31 |
-| **AUREA** | — | Worth/Presence | Built (Hidden) | 19 |
-| **SERENA** | Svadhisthana | Emotion | Planned | 0 |
-| **IGNIS** | Manipura | Will/Focus | Planned | 0 |
-| **VENTIS** | Anahata | Energy/Rhythm | Planned | 0 |
-| **ECOA** | Vishuddha | Expression/Voice | Planned | 0 |
+| **VITALIS** | Muladhara (Root) | Body/Nutrition | Active (Paid) | 35 |
+| **ÁUREA** | — | Worth/Presence | Active (Paid) | 15 |
+| **SERENA** | Svadhisthana | Emotion/Fluidity | Active (Paid) | 17 |
+| **IGNIS** | Manipura | Will/Focus | Active (Paid) | 15 |
+| **VENTIS** | Anahata | Energy/Rhythm | Active (Paid) | 16 |
+| **ECOA** | Vishuddha | Expression/Voice | Active (Paid) | 17 |
 | **LUMINA** | Ajna | Vision/Diagnosis | Active (Free) | 1 |
-| **IMAGO** | Sahasrara | Identity | Planned | 0 |
-| **AURORA** | — | Final Integration | Future | 0 |
-| **COMUNIDADE** | — | Social/Self-knowledge | Active | 15 |
+| **IMAGO** | Sahasrara | Identity/Essence | Active (Paid) | 17 |
+| **AURORA** | — | Final Integration | Active (Free — unlocks at 7/7 Ecos) | 13 |
+| **COMUNIDADE** | — | Social/Self-knowledge | Active (Free) | 19 |
 
 ## Key Architectural Patterns (v2.0)
 
 ### Code Splitting (Lazy Loading)
-All modules load lazily via `React.lazy()`. Only Home, Login, and ComingSoon load eagerly.
+All modules load lazily via `React.lazy()`. Only Home and Login load eagerly.
 ```jsx
 const DashboardVitalis = lazy(() => import('./components/vitalis/DashboardVitalis'))
+const DashboardSerena = lazy(() => import('./components/serena/DashboardSerena'))
 // Used with <Suspense fallback={<LoadingFallback />}>
 ```
 
 ### Protected Route Helpers
 ```jsx
-<VitalisRoute><DashboardVitalis /></VitalisRoute>  // Auth + subscription guard
-<AureaRoute><DashboardAurea /></AureaRoute>         // Auth + Aurea guard
-<AuthRoute from="/lumina"><Lumina /></AuthRoute>     // Auth only
+<VitalisRoute><DashboardVitalis /></VitalisRoute>     // Auth + Vitalis subscription guard
+<AureaRoute><DashboardAurea /></AureaRoute>           // Auth + Áurea subscription guard
+<ModuleAccessGuard eco="serena">...</ModuleAccessGuard> // Generic guard (Serena, Ignis, Ventis, Ecoa, Imago)
+<AuroraAccessGuard>...</AuroraAccessGuard>            // Free — checks 7/7 Ecos completed
+<AuthRoute from="/lumina"><Lumina /></AuthRoute>       // Auth only (free modules)
 ```
+All paid modules redirect to `/{eco}/pagamento` if user has no active subscription.
 
 ### Error Boundary
 Wraps the entire app. Shows Portuguese error UI with retry button.
@@ -213,11 +259,20 @@ npm run test:coverage # Run tests with coverage report
 4. Safety timeout (3s) prevents infinite loading
 
 ### Subscription System
-**Vitalis** (`src/lib/subscriptions.js`):
-- Monthly: 2,500 MZN | Semestral: 12,500 MZN | Annual: 21,000 MZN
 
-**Aurea** (`src/lib/aurea/subscriptions.js`):
-- Monthly: 975 MZN | Semestral: 5,265 MZN | Annual: 9,945 MZN
+Centralized in `src/lib/shared/subscriptionPlans.js` with per-module configs:
+
+| Eco | Mensal | Semestral | Anual |
+|-----|--------|-----------|-------|
+| **Vitalis** | 2,500 MZN | 12,500 MZN | 21,000 MZN |
+| **Áurea** | 975 MZN | 5,265 MZN | 9,945 MZN |
+| **Serena** | 750 MZN | 3,825 MZN | 7,200 MZN |
+| **Ignis** | 750 MZN | 3,825 MZN | 7,200 MZN |
+| **Ventis** | 750 MZN | 3,825 MZN | 7,200 MZN |
+| **Ecoa** | 750 MZN | 3,825 MZN | 7,200 MZN |
+| **Imago** | 975 MZN | 4,972 MZN | 9,360 MZN |
+| **Aurora** | Free (unlocks when all 7 Ecos completed) | — | — |
+| **Lumina** | Free | — | — |
 
 **Statuses**: tester, trial, active, pending, expired, cancelled
 
@@ -234,11 +289,12 @@ Coach dashboard at `/coach` restricted to emails in `src/lib/coach.js`
 
 ## Common Tasks
 
-1. **Adding new Vitalis feature**: Create in `src/components/vitalis/`, add lazy import in `App.jsx`, wrap with `<VitalisRoute>`
+1. **Adding feature to any Eco**: Create in `src/components/{eco}/`, add lazy import in `App.jsx`, wrap with appropriate guard (`VitalisRoute`, `AureaRoute`, `ModuleAccessGuard eco="{eco}"`)
 2. **Adding translations**: Update `src/lib/i18n.js` translations object
-3. **Adding new Eco module**: Create folder in `src/components/`, add lazy routes, create AccessGuard
+3. **Changing subscription prices**: Update `src/lib/shared/subscriptionPlans.js` (centralized for all Ecos)
 4. **Running tests**: `npm run test` or `npm run test:watch`
 5. **Checking accessibility**: Review ARIA labels, focus styles, color contrast
+6. **Email/WhatsApp sequences**: Edit in `api/_lib/email-sequencia.js` and `api/_lib/whatsapp-broadcast.js` (keep both in sync)
 
 ## Security Notes
 
@@ -350,7 +406,13 @@ gx(client.sexo, 'activo', 'activa')
 
 ### 6. Preços e códigos promo
 
-- Preços actuais VITALIS: Mensal 2.500 MZN | Semestral 12.500 MZN | Anual 21.000 MZN
+- Preços actuais (todos os Ecos — ver tabela completa na secção Subscription System):
+  - VITALIS: Mensal 2.500 MZN | Semestral 12.500 MZN | Anual 21.000 MZN
+  - ÁUREA: Mensal 975 MZN | Semestral 5.265 MZN | Anual 9.945 MZN
+  - SERENA / IGNIS / VENTIS / ECOA: Mensal 750 MZN | Semestral 3.825 MZN | Anual 7.200 MZN
+  - IMAGO: Mensal 975 MZN | Semestral 4.972 MZN | Anual 9.360 MZN
+  - AURORA: Grátis (desbloqueia ao completar os 7 Ecos)
+  - LUMINA: Grátis
 - Código activo: `VEMVITALIS20` — 20% desconto (mensal passa a 2.000 MZN)
 - URL com código: `https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20`
 - **NUNCA** inventar preços ou códigos diferentes sem confirmar com a Vivianne
