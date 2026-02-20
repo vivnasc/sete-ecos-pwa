@@ -52,6 +52,11 @@ export default async function handler(req, res) {
     return handlePerfil(req, res, WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID);
   }
 
+  // Diagnóstico — descobre WABA ID automaticamente
+  if (action === 'diagnostico') {
+    return handleDiagnostico(req, res, WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID);
+  }
+
   // Templates management
   if (action && action.startsWith('templates')) {
     return handleTemplates(req, res, action, WHATSAPP_ACCESS_TOKEN);
@@ -317,6 +322,113 @@ async function listarTemplatesMeta(token, wabaId) {
   }
   const data = await response.json();
   return { ok: true, templates: data.data || [] };
+}
+
+// ═══════════════════════════════════════════
+// Diagnóstico — descobre WABA ID e mostra tudo
+// ═══════════════════════════════════════════
+async function handleDiagnostico(req, res, token, phoneId) {
+  const resultado = {
+    env_vars: {
+      WHATSAPP_PHONE_NUMBER_ID: phoneId,
+      WHATSAPP_BUSINESS_ACCOUNT_ID: (process.env.WHATSAPP_BUSINESS_ACCOUNT_ID || '(não definido)'),
+      META_BUSINESS_ID: (process.env.META_BUSINESS_ID || '(não definido)'),
+    },
+    token_info: null,
+    phone_info: null,
+    waba_encontrado: null,
+    todos_waba_ids: [],
+  };
+
+  // 1. debug_token — ver app, scopes, target_ids
+  try {
+    const debugRes = await fetch(`${GRAPH_API}/debug_token?input_token=${token}`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    if (debugRes.ok) {
+      const debugData = await debugRes.json();
+      const d = debugData.data || {};
+      resultado.token_info = {
+        app_id: d.app_id,
+        type: d.type,
+        is_valid: d.is_valid,
+        scopes: d.scopes,
+        granular_scopes: d.granular_scopes,
+        expires_at: d.expires_at ? new Date(d.expires_at * 1000).toISOString() : 'nunca',
+      };
+
+      // Extrair WABA IDs dos granular_scopes
+      for (const scope of (d.granular_scopes || [])) {
+        if (scope.scope === 'whatsapp_business_management' && scope.target_ids) {
+          for (const targetId of scope.target_ids) {
+            resultado.todos_waba_ids.push({ id: targetId, fonte: 'whatsapp_business_management scope' });
+          }
+        }
+        if (scope.scope === 'whatsapp_business_messaging' && scope.target_ids) {
+          for (const targetId of scope.target_ids) {
+            resultado.todos_waba_ids.push({ id: targetId, fonte: 'whatsapp_business_messaging scope' });
+          }
+        }
+      }
+    }
+  } catch (e) {
+    resultado.token_info = { erro: e.message };
+  }
+
+  // 2. Phone number info
+  try {
+    const phoneRes = await fetch(`${GRAPH_API}/${phoneId}?fields=id,display_phone_number,verified_name,quality_rating,name_status`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    if (phoneRes.ok) {
+      resultado.phone_info = await phoneRes.json();
+    } else {
+      const err = await phoneRes.json().catch(() => ({}));
+      resultado.phone_info = { erro: err?.error?.message || `HTTP ${phoneRes.status}` };
+    }
+  } catch (e) {
+    resultado.phone_info = { erro: e.message };
+  }
+
+  // 3. Testar cada WABA ID encontrado
+  const wabaIds = [...new Set(resultado.todos_waba_ids.map(w => w.id))];
+  for (const candidateId of wabaIds) {
+    try {
+      const checkRes = await fetch(`${GRAPH_API}/${candidateId}/message_templates?limit=1`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (checkRes.ok) {
+        resultado.waba_encontrado = {
+          id: candidateId,
+          funciona: true,
+          instrucao: `Mete WHATSAPP_BUSINESS_ACCOUNT_ID=${candidateId} no Vercel`,
+        };
+        break;
+      }
+    } catch (_) {}
+  }
+
+  // 4. Se não encontrou nos scopes, tentar via app subscribed WABAs
+  if (!resultado.waba_encontrado && resultado.token_info?.app_id) {
+    try {
+      const appId = resultado.token_info.app_id;
+      // Tentar listar WABAs subscritos à app
+      const subsRes = await fetch(`${GRAPH_API}/${appId}/subscriptions`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (subsRes.ok) {
+        const subsData = await subsRes.json();
+        resultado.app_subscriptions = subsData.data;
+      }
+    } catch (_) {}
+  }
+
+  return res.status(200).json({
+    message: resultado.waba_encontrado
+      ? `WABA ID encontrado: ${resultado.waba_encontrado.id}`
+      : 'Diagnóstico completo — verifica os dados abaixo',
+    ...resultado,
+  });
 }
 
 // Auto-detectar WABA ID (tenta env var, depois descobre via API)
