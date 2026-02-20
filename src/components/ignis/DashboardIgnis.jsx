@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import { g } from '../../utils/genero'
 import { IGNIS_GAMIFICATION } from '../../lib/ignis/gamificacao'
 import ModuleDashboardShell from '../shared/ModuleDashboardShell'
@@ -23,6 +24,7 @@ const IGNIS_DARK = '#2e1a14'
 export default function DashboardIgnis() {
   const navigate = useNavigate()
   const { session } = useAuth()
+  const { t } = useI18n()
 
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState(null)
@@ -157,7 +159,7 @@ export default function DashboardIgnis() {
       >
         <div className="text-center">
           <div className="text-6xl mb-4 animate-pulse">{'\u{1F525}'}</div>
-          <p className="text-white/60 text-sm">A acender o teu espaco...</p>
+          <p className="text-white/60 text-sm">{t('ignis.dashboard.loading')}</p>
         </div>
       </div>
     )
@@ -165,21 +167,21 @@ export default function DashboardIgnis() {
 
   // ===== Quick Actions =====
   const quickActions = [
-    { label: 'Escolhas', to: '/ignis/escolhas', icon: '\u{1F3AF}', subtitle: 'Escolhas conscientes' },
-    { label: 'Foco', to: '/ignis/foco', icon: '\u{1F9E0}', subtitle: 'Sessoes de foco' },
-    { label: 'Dispersao', to: '/ignis/dispersao', icon: '\u{1F32A}\uFE0F', subtitle: 'Registar dispersoes' },
-    { label: 'Corte', to: '/ignis/corte', icon: '\u{1F5E1}\uFE0F', subtitle: 'Cortar o que dispersa' },
-    { label: 'Bussola', to: '/ignis/bussola', icon: '\u{1F9ED}', subtitle: 'Valores essenciais' },
-    { label: 'Conquistas', to: '/ignis/conquistas', icon: '\u{1F3C6}', subtitle: 'As tuas vitorias' },
-    { label: 'Desafios', to: '/ignis/desafios', icon: '\u{1F981}', subtitle: 'Desafios de fogo' },
-    { label: 'Coach Ignis', to: '/ignis/chat', icon: '\u{1F4AC}', subtitle: 'Fala comigo' }
+    { label: t('ignis.menu.choices'), to: '/ignis/escolhas', icon: '\u{1F3AF}', subtitle: t('ignis.menu.choices_sub') },
+    { label: t('ignis.menu.focus'), to: '/ignis/foco', icon: '\u{1F9E0}', subtitle: t('ignis.menu.focus_sub') },
+    { label: t('ignis.menu.dispersion'), to: '/ignis/dispersao', icon: '\u{1F32A}\uFE0F', subtitle: t('ignis.menu.dispersion_sub') },
+    { label: t('ignis.menu.cut'), to: '/ignis/corte', icon: '\u{1F5E1}\uFE0F', subtitle: t('ignis.menu.cut_sub') },
+    { label: t('ignis.menu.compass'), to: '/ignis/bussola', icon: '\u{1F9ED}', subtitle: t('ignis.menu.compass_sub') },
+    { label: t('ignis.menu.achievements'), to: '/ignis/conquistas', icon: '\u{1F3C6}', subtitle: t('ignis.menu.achievements_sub') },
+    { label: t('ignis.menu.challenges'), to: '/ignis/desafios', icon: '\u{1F981}', subtitle: t('ignis.menu.challenges_sub') },
+    { label: t('ignis.menu.coach'), to: '/ignis/chat', icon: '\u{1F4AC}', subtitle: t('ignis.menu.coach_sub') }
   ]
 
   // ===== Stats =====
   const stats = [
-    { label: 'Escolhas', value: escolhasTotal, icon: '\u{1F3AF}' },
-    { label: 'Foco', value: focoSemana, icon: '\u{1F9E0}' },
-    { label: 'Cortadas', value: dispersoesCortadas, icon: '\u{2702}\uFE0F' }
+    { label: t('ignis.stats.choices'), value: escolhasTotal, icon: '\u{1F3AF}' },
+    { label: t('ignis.stats.focus'), value: focoSemana, icon: '\u{1F9E0}' },
+    { label: t('ignis.stats.cut'), value: dispersoesCortadas, icon: '\u{2702}\uFE0F' }
   ]
 
   // ===== Render =====
@@ -194,7 +196,7 @@ export default function DashboardIgnis() {
         icon: IGNIS_GAMIFICATION.currency.icon,
         total: chamas,
         currency: IGNIS_GAMIFICATION.currency.plural,
-        level: nivel || 'Faisca',
+        level: nivel || t('ignis.level.faisca'),
         streak: streak
       }}
     >
@@ -300,7 +302,7 @@ export default function DashboardIgnis() {
           className="text-sm transition-colors"
           style={{ color: `${IGNIS_COLOR}aa` }}
         >
-          {g('Ver conquistas e nivel completo', 'Ver conquistas e nivel completo')} {'\u{2192}'}
+          {t('ignis.dashboard.see_achievements')} {'\u{2192}'}
         </Link>
       </div>
     </ModuleDashboardShell>

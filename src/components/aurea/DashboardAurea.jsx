@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useI18n } from '../../contexts/I18nContext';
 import { supabase } from '../../lib/supabase';
 import { calcularNivel, calcularProgressoNivel, formatarJoias } from '../../lib/aurea/gamificacao';
 import { getPraticaDoDia, CATEGORIAS } from '../../lib/aurea/praticas';
@@ -25,6 +26,7 @@ const CORES = {
 
 export default function DashboardAurea() {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
   const [userName, setUserName] = useState('');
@@ -208,7 +210,7 @@ export default function DashboardAurea() {
           <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center animate-pulse" style={{ backgroundColor: CORES.goldLight }}>
             <span className="text-3xl">✨</span>
           </div>
-          <p style={{ color: CORES.textLight }}>A preparar o teu espaço...</p>
+          <p style={{ color: CORES.textLight }}>{t('aurea.dashboard.loading')}</p>
         </div>
       </div>
     );
@@ -237,12 +239,12 @@ export default function DashboardAurea() {
         {/* Saudação elegante */}
         <div className="mt-2">
           <h2 className="text-2xl font-light" style={{ color: CORES.text, fontFamily: 'var(--font-titulos)' }}>
-            Olá, <span className="font-semibold">{userName}</span>
+            {t('aurea.dashboard.greeting', { name: '' })}<span className="font-semibold">{userName}</span>
           </h2>
           <p className="text-sm mt-1" style={{ color: CORES.textLight }}>
             {quotaHoje?.resposta === 'sim'
-              ? '✨ Hoje já te priorizaste!'
-              : 'Como vais cuidar de ti hoje?'}
+              ? `✨ ${t('aurea.dashboard.prioritized_today')}`
+              : t('aurea.dashboard.how_care_today')}
           </p>
         </div>
 
@@ -266,7 +268,7 @@ export default function DashboardAurea() {
             </div>
             <div className="text-right">
               <div className="text-2xl font-bold" style={{ color: CORES.goldDark}}>{formatarJoias(joias)}</div>
-              <div className="text-xs" style={{ color: CORES.textLight }}>jóias ✨</div>
+              <div className="text-xs" style={{ color: CORES.textLight }}>{t('aurea.dashboard.jewels')} ✨</div>
             </div>
           </div>
 
@@ -286,7 +288,7 @@ export default function DashboardAurea() {
                 />
               </div>
               <p className="text-xs mt-1 text-center" style={{ color: CORES.textLight }}>
-                {nivelInfo.joiasParaProximo} jóias para subir
+                {t('aurea.dashboard.jewels_to_level', { count: nivelInfo.joiasParaProximo })}
               </p>
             </div>
           )}
@@ -306,21 +308,21 @@ export default function DashboardAurea() {
           >
             <div className="flex items-center gap-2 mb-3">
               <span className="text-xl">💫</span>
-              <h3 className="font-semibold" style={{ color: CORES.text }}>Hoje respeitaste a tua quota?</h3>
+              <h3 className="font-semibold" style={{ color: CORES.text }}>{t('aurea.dashboard.quota_question')}</h3>
             </div>
 
             <div className="grid grid-cols-3 gap-2 p-3 rounded-xl mb-4" style={{ backgroundColor: CORES.accent }}>
               <div className="text-center">
                 <div className="font-bold" style={{ color: CORES.goldDark}}>{client?.quota_tempo_horas || 3}h</div>
-                <div className="text-[10px]" style={{ color: CORES.textLight }}>tempo/semana</div>
+                <div className="text-[10px]" style={{ color: CORES.textLight }}>{t('aurea.dashboard.time_week')}</div>
               </div>
               <div className="text-center border-x" style={{ borderColor: CORES.goldLight }}>
                 <div className="font-bold" style={{ color: CORES.goldDark}}>{(client?.quota_dinheiro_mzn || 2000).toLocaleString()}</div>
-                <div className="text-[10px]" style={{ color: CORES.textLight }}>MT/mês</div>
+                <div className="text-[10px]" style={{ color: CORES.textLight }}>{t('aurea.dashboard.month')}</div>
               </div>
               <div className="text-center">
                 <div className="font-bold" style={{ color: CORES.goldDark}}>{client?.quota_energia_actividades || 2}</div>
-                <div className="text-[10px]" style={{ color: CORES.textLight }}>actividades</div>
+                <div className="text-[10px]" style={{ color: CORES.textLight }}>{t('aurea.dashboard.activities')}</div>
               </div>
             </div>
 
@@ -330,21 +332,21 @@ export default function DashboardAurea() {
                 className="py-3 rounded-xl font-medium transition-all hover:scale-105"
                 style={{ backgroundColor: '#D4EDDA', color: '#155724' }}
               >
-                ✅ Sim!
+                ✅ {t('aurea.dashboard.yes')}
               </button>
               <button
                 onClick={() => handleQuotaCheckin('parcial')}
                 className="py-3 rounded-xl font-medium transition-all hover:scale-105"
                 style={{ backgroundColor: '#FFF3CD', color: '#856404' }}
               >
-                🌓 Parcial
+                🌓 {t('aurea.dashboard.partial')}
               </button>
               <button
                 onClick={() => handleQuotaCheckin('nao')}
                 className="py-3 rounded-xl font-medium transition-all hover:scale-105"
                 style={{ backgroundColor: '#F8D7DA', color: '#721C24' }}
               >
-                💭 Não
+                💭 {t('aurea.dashboard.no')}
               </button>
             </div>
           </div>
@@ -360,9 +362,9 @@ export default function DashboardAurea() {
                 {quotaHoje.resposta === 'sim' ? '✅' : quotaHoje.resposta === 'parcial' ? '🌓' : '💭'}
               </span>
               <div>
-                <div className="font-medium" style={{ color: CORES.text }}>Quota de hoje</div>
+                <div className="font-medium" style={{ color: CORES.text }}>{t('aurea.dashboard.quota_today')}</div>
                 <div className="text-sm" style={{ color: CORES.textLight }}>
-                  {quotaHoje.resposta === 'sim' ? 'Parabéns! Priorizaste-te!' : quotaHoje.resposta === 'parcial' ? 'Um passo de cada vez' : 'Amanhã é uma nova oportunidade'}
+                  {quotaHoje.resposta === 'sim' ? t('aurea.dashboard.congrats') : quotaHoje.resposta === 'parcial' ? t('aurea.dashboard.step_by_step') : t('aurea.dashboard.tomorrow')}
                 </div>
               </div>
             </div>
@@ -386,8 +388,8 @@ export default function DashboardAurea() {
               <span className="text-2xl">💛</span>
             </div>
             <div className="flex-1">
-              <div className="font-semibold text-white">Fala com a Esmeralda</div>
-              <div className="text-white/80 text-sm">A tua coach de auto-valor está aqui</div>
+              <div className="font-semibold text-white">{t('aurea.dashboard.talk_esmeralda')}</div>
+              <div className="text-white/80 text-sm">{t('aurea.dashboard.coach_here')}</div>
             </div>
             <div className="text-white/80">→</div>
           </div>
@@ -401,7 +403,7 @@ export default function DashboardAurea() {
         >
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg">💎</span>
-            <span className="text-xs font-medium uppercase" style={{ color: CORES.goldDark}}>Prática do Dia</span>
+            <span className="text-xs font-medium uppercase" style={{ color: CORES.goldDark}}>{t('aurea.dashboard.practice_of_day')}</span>
             <span className="ml-auto text-sm font-semibold" style={{ color: CORES.goldDark}}>+{praticaDoDia.joias} ✨</span>
           </div>
           <p style={{ color: CORES.text }}>{praticaDoDia.texto}</p>
@@ -441,7 +443,7 @@ export default function DashboardAurea() {
           <div className="grid grid-cols-4 gap-3">
             <Link to="/aurea/roupa" className="flex flex-col items-center p-3 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-md" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
               <span className="text-2xl mb-1">👗</span>
-              <span className="text-xs font-medium" style={{ color: CORES.text }}>Espelho</span>
+              <span className="text-xs font-medium" style={{ color: CORES.text }}>{t('aurea.menu.mirror')}</span>
             </Link>
             <Link to="/aurea/carteira" className="flex flex-col items-center p-3 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-md" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
               <span className="text-2xl mb-1">💰</span>
@@ -479,7 +481,7 @@ export default function DashboardAurea() {
           <div className="p-4 rounded-2xl" style={{ backgroundColor: CORES.bgCard, boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: CORES.textLight }}>
-                Evolução
+                {t('aurea.dashboard.weekly_evolution')}
               </h3>
               <Link to="/aurea/insights" className="text-xs" style={{ color: CORES.goldDark }}>
                 Ver mais →
@@ -573,13 +575,13 @@ export default function DashboardAurea() {
             <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: CORES.gold }}>
               <span className="text-white text-lg">🏠</span>
             </div>
-            <span className="text-[10px] mt-1 font-medium" style={{ color: CORES.goldDark}}>Início</span>
+            <span className="text-[10px] mt-1 font-medium" style={{ color: CORES.goldDark}}>{t('nav.home')}</span>
           </Link>
           <Link to="/aurea/praticas" className="flex flex-col items-center">
             <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: CORES.accent }}>
               <span className="text-lg">💎</span>
             </div>
-            <span className="text-[10px] mt-1" style={{ color: CORES.textLight }}>Práticas</span>
+            <span className="text-[10px] mt-1" style={{ color: CORES.textLight }}>{t('aurea.dashboard.practices')}</span>
           </Link>
           <Link to="/aurea/chat" className="flex flex-col items-center -mt-4">
             <div className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg" style={{ background: `linear-gradient(135deg, ${CORES.rose} 0%, ${CORES.roseDark} 100%)`, boxShadow: `0 4px 15px ${CORES.rose}50` }}>
@@ -591,13 +593,13 @@ export default function DashboardAurea() {
             <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: CORES.accent }}>
               <span className="text-lg">👗</span>
             </div>
-            <span className="text-[10px] mt-1" style={{ color: CORES.textLight }}>Espelho</span>
+            <span className="text-[10px] mt-1" style={{ color: CORES.textLight }}>{t('aurea.menu.mirror')}</span>
           </Link>
           <Link to="/aurea/perfil" className="flex flex-col items-center">
             <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: CORES.accent }}>
               <span className="text-lg">⚙️</span>
             </div>
-            <span className="text-[10px] mt-1" style={{ color: CORES.textLight }}>Perfil</span>
+            <span className="text-[10px] mt-1" style={{ color: CORES.textLight }}>{t('nav.profile')}</span>
           </Link>
         </div>
       </nav>

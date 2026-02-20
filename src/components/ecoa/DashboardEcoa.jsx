@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import { g } from '../../utils/genero'
 import { ECOA_GAMIFICATION } from '../../lib/ecoa/gamificacao'
 import ModuleDashboardShell from '../shared/ModuleDashboardShell'
@@ -23,6 +24,7 @@ const ECOA_DARK = '#1a2a34'
 export default function DashboardEcoa() {
   const navigate = useNavigate()
   const { session } = useAuth()
+  const { t } = useI18n()
 
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState(null)
@@ -141,7 +143,7 @@ export default function DashboardEcoa() {
   // ===== Saudacao contextual — tematica de voz/silencio =====
   function getSaudacao() {
     const hora = new Date().getHours()
-    if (hora < 12) return 'Bom dia. Que voz acorda contigo hoje?'
+    if (hora < 12) return t('ecoa.dashboard.greeting_morning')
     if (hora < 18) return 'A tarde e um bom momento para falar verdade'
     return 'A noite guarda espaco para o que nao foi dito'
   }
@@ -157,7 +159,7 @@ export default function DashboardEcoa() {
           <div className="text-6xl mb-4" style={{ animation: 'pulse 2s ease-in-out infinite, ecoaSway 3s ease-in-out infinite' }}>
             {'\u{1F50A}'}
           </div>
-          <p className="text-white/60 text-sm">A ouvir a tua voz...</p>
+          <p className="text-white/60 text-sm">{t('ecoa.dashboard.loading')}</p>
           <style>{`
             @keyframes ecoaSway {
               0% { transform: scale(1); }
@@ -172,23 +174,23 @@ export default function DashboardEcoa() {
 
   // ===== Quick Actions =====
   const quickActions = [
-    { label: 'Mapa', to: '/ecoa/mapa', icon: '\u{1F5FA}\uFE0F', subtitle: 'Mapa de silenciamento' },
-    { label: 'Micro-Voz', to: '/ecoa/micro-voz', icon: '\u{1F5E3}\uFE0F', subtitle: 'Exercicios de voz' },
-    { label: 'Biblioteca', to: '/ecoa/biblioteca', icon: '\u{1F4DA}', subtitle: 'Frases dificeis' },
-    { label: 'Voz Recuperada', to: '/ecoa/voz-recuperada', icon: '\u{1F4AC}', subtitle: 'Registar momentos' },
-    { label: 'Diario', to: '/ecoa/diario', icon: '\u{1F4D6}', subtitle: 'Diario de voz' },
-    { label: 'Cartas', to: '/ecoa/cartas', icon: '\u{2709}\uFE0F', subtitle: 'Cartas nao enviadas' },
-    { label: 'Afirmacoes', to: '/ecoa/afirmacoes', icon: '\u{2728}', subtitle: 'Afirmacoes de voz' },
-    { label: 'Exercicios', to: '/ecoa/exercicios', icon: '\u{270D}\uFE0F', subtitle: 'Exercicios de expressao' },
-    { label: 'Comunicacao', to: '/ecoa/comunicacao', icon: '\u{1F4CE}', subtitle: 'Comunicacao assertiva' },
-    { label: 'Coach Ecoa', to: '/ecoa/chat', icon: '\u{1F4AC}', subtitle: 'Fala comigo' }
+    { label: t('ecoa.menu.map'), to: '/ecoa/mapa', icon: '\u{1F5FA}\uFE0F', subtitle: t('ecoa.menu.map_sub') },
+    { label: t('ecoa.menu.micro_voice'), to: '/ecoa/micro-voz', icon: '\u{1F5E3}\uFE0F', subtitle: t('ecoa.menu.micro_voice_sub') },
+    { label: t('ecoa.menu.library'), to: '/ecoa/biblioteca', icon: '\u{1F4DA}', subtitle: t('ecoa.menu.library_sub') },
+    { label: t('ecoa.menu.recovered_voice'), to: '/ecoa/voz-recuperada', icon: '\u{1F4AC}', subtitle: t('ecoa.menu.recovered_voice_sub') },
+    { label: t('ecoa.menu.diary'), to: '/ecoa/diario', icon: '\u{1F4D6}', subtitle: t('ecoa.menu.diary_sub') },
+    { label: t('ecoa.menu.letters'), to: '/ecoa/cartas', icon: '\u{2709}\uFE0F', subtitle: t('ecoa.menu.letters_sub') },
+    { label: t('ecoa.menu.affirmations'), to: '/ecoa/afirmacoes', icon: '\u{2728}', subtitle: t('ecoa.menu.affirmations_sub') },
+    { label: t('ecoa.menu.exercises'), to: '/ecoa/exercicios', icon: '\u{270D}\uFE0F', subtitle: t('ecoa.menu.exercises_sub') },
+    { label: t('ecoa.menu.communication'), to: '/ecoa/comunicacao', icon: '\u{1F4CE}', subtitle: t('ecoa.menu.communication_sub') },
+    { label: t('ecoa.menu.coach'), to: '/ecoa/chat', icon: '\u{1F4AC}', subtitle: t('ecoa.menu.coach_sub') }
   ]
 
   // ===== Stats =====
   const stats = [
-    { label: 'Vozes Recuperadas', value: vozesRecuperadas, icon: '\u{1F5E3}\uFE0F' },
-    { label: 'Cartas Escritas', value: cartasEscritas, icon: '\u{2709}\uFE0F' },
-    { label: 'Exercicios', value: exerciciosTotal, icon: '\u{270D}\uFE0F' }
+    { label: t('ecoa.stats.recovered_voices'), value: vozesRecuperadas, icon: '\u{1F5E3}\uFE0F' },
+    { label: t('ecoa.stats.letters_written'), value: cartasEscritas, icon: '\u{2709}\uFE0F' },
+    { label: t('ecoa.stats.exercises'), value: exerciciosTotal, icon: '\u{270D}\uFE0F' }
   ]
 
   // ===== Render =====
@@ -203,7 +205,7 @@ export default function DashboardEcoa() {
         icon: ECOA_GAMIFICATION.currency.icon,
         total: ecos,
         currency: ECOA_GAMIFICATION.currency.plural,
-        level: nivel || 'Sussurro',
+        level: nivel || t('ecoa.level.sussurro'),
         streak: streak
       }}
     >
@@ -290,7 +292,7 @@ export default function DashboardEcoa() {
             </p>
             <p className="text-white/50 text-xs">
               {semanaMicroVoz === 0
-                ? 'Ainda nao comecaste — cada voz conta'
+                ? t('ecoa.dashboard.not_started')
                 : semanaMicroVoz >= 8
                   ? g('Programa completo! Es um exemplo de coragem.', 'Programa completo! Es um exemplo de coragem.')
                   : `${g('Continua focado', 'Continua focada')} — a tua voz fica mais forte a cada semana`
@@ -321,7 +323,7 @@ export default function DashboardEcoa() {
           className="block text-center text-sm px-4 py-2.5 rounded-lg transition-colors font-medium"
           style={{ color: '#fff', background: ECOA_COLOR }}
         >
-          {semanaMicroVoz === 0 ? 'Comecar Micro-Voz' : 'Continuar exercicios'}
+          {semanaMicroVoz === 0 ? t('ecoa.dashboard.start_micro_voice') : t('ecoa.dashboard.continue_exercises')}
         </Link>
       </div>
 

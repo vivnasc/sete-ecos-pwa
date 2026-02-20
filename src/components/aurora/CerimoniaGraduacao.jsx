@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import { g } from '../../utils/genero'
 import ModuleHeader from '../shared/ModuleHeader'
 
@@ -96,6 +97,7 @@ const ECOS_CONFIG = [
 export default function CerimoniaGraduacao() {
   const navigate = useNavigate()
   const { session } = useAuth()
+  const { t } = useI18n()
 
   // Estado da cerimónia
   const [etapa, setEtapa] = useState('boas-vindas') // boas-vindas, revisão, momentos, mensagem, certificado, conclusão
@@ -199,7 +201,7 @@ export default function CerimoniaGraduacao() {
       }
     } catch (err) {
       console.error('Erro ao carregar cerimónia:', err)
-      setError('Ocorreu um erro ao carregar os dados. Tenta novamente.')
+      setError(t('aurora.ceremony.load_error'))
     } finally {
       setLoading(false)
     }
@@ -308,7 +310,7 @@ export default function CerimoniaGraduacao() {
             className="w-16 h-16 mx-auto mb-4 rounded-full animate-pulse"
             style={{ background: `${AURORA_COLOR}40` }}
           />
-          <p className="text-white/60">A preparar a cerimónia...</p>
+          <p className="text-white/60">{t('aurora.ceremony.preparing')}</p>
         </div>
       </div>
     )
@@ -349,16 +351,15 @@ export default function CerimoniaGraduacao() {
               className="text-4xl font-bold text-white mb-4"
               style={{ fontFamily: 'var(--font-titulos)' }}
             >
-              Cerimónia de Graduação
+              {t('aurora.ceremony.title')}
             </h1>
 
             <p className="text-white/80 text-lg mb-2">
-              {g('Bem-vindo', 'Bem-vinda')} a esta celebração, {userName || g('querido', 'querida')}.
+              {t('aurora.ceremony.welcome', { name: userName || g('querido', 'querida') })}
             </p>
 
             <p className="text-white/60 mb-8 px-4">
-              Este e um momento especial. Vamos percorrer {g('juntos', 'juntas')} cada passo da tua
-              jornada pelos Sete Ecos e celebrar tudo o que conquistaste.
+              {t('aurora.ceremony.special_moment')}
             </p>
 
             {/* Info sobre ecos completados */}
@@ -368,8 +369,8 @@ export default function CerimoniaGraduacao() {
             >
               <p className="text-white/90 text-sm">
                 {totalEcos > 0
-                  ? `${totalEcos} ${totalEcos === 1 ? 'eco percorrido' : 'ecos percorridos'} na tua jornada`
-                  : 'A tua jornada será celebrada aqui'
+                  ? t('aurora.ceremony.ecos_in_journey', { count: totalEcos })
+                  : t('aurora.ceremony.celebrated_here')
                 }
               </p>
             </div>
@@ -393,14 +394,14 @@ export default function CerimoniaGraduacao() {
                 className="w-full py-4 rounded-2xl font-semibold text-white transition-all hover:scale-[1.02]"
                 style={{ background: `linear-gradient(135deg, ${AURORA_COLOR}, ${AURORA_COLOR}cc)` }}
               >
-                {jaGraduou ? 'Reviver a cerimónia' : 'Iniciar cerimónia'} →
+                {jaGraduou ? t('aurora.ceremony.relive') : t('aurora.ceremony.begin')} →
               </button>
 
               <button
                 onClick={() => navigate('/aurora/dashboard')}
                 className="w-full py-3 text-white/50 hover:text-white/80 transition-colors"
               >
-                ← Voltar ao dashboard
+                {t('aurora.ceremony.back_dashboard')}
               </button>
             </div>
           </div>
@@ -415,8 +416,8 @@ export default function CerimoniaGraduacao() {
       <div className="min-h-screen" style={{ background: AURORA_DARK }}>
         <ModuleHeader
           eco="aurora"
-          title="Cerimónia de Graduação"
-          subtitle="Celebra a tua jornada"
+          title={t('aurora.ceremony.title')}
+          subtitle={t('aurora.ceremony.celebrate_journey')}
           backTo={ecoRevisaoIndex === 0 ? undefined : 'history'}
           showHomeButton={false}
           rightAction={
@@ -516,7 +517,7 @@ export default function CerimoniaGraduacao() {
                 className="flex-1 py-4 rounded-2xl font-semibold text-white/70 transition-all"
                 style={{ background: 'rgba(255,255,255,0.1)' }}
               >
-                ← Anterior
+                {t('aurora.ceremony.previous')}
               </button>
             )}
             <button
@@ -530,7 +531,7 @@ export default function CerimoniaGraduacao() {
               className="flex-1 py-4 rounded-2xl font-semibold text-white transition-all hover:scale-[1.02]"
               style={{ background: AURORA_COLOR }}
             >
-              {ecoRevisaoIndex < totalEcos - 1 ? 'Próximo eco →' : 'Continuar →'}
+              {ecoRevisaoIndex < totalEcos - 1 ? t('aurora.ceremony.next_eco') : t('aurora.ceremony.continue')}
             </button>
           </div>
         </div>
@@ -544,8 +545,8 @@ export default function CerimoniaGraduacao() {
       <div className="min-h-screen" style={{ background: AURORA_DARK }}>
         <ModuleHeader
           eco="aurora"
-          title="Cerimónia de Graduação"
-          subtitle="Celebra a tua jornada"
+          title={t('aurora.ceremony.title')}
+          subtitle={t('aurora.ceremony.celebrate_journey')}
           showHomeButton={false}
         />
 
@@ -558,11 +559,10 @@ export default function CerimoniaGraduacao() {
               className="text-2xl font-bold text-white mb-2"
               style={{ fontFamily: 'var(--font-titulos)' }}
             >
-              Momentos Transformadores
+              {t('aurora.ceremony.transformative_moments')}
             </h2>
             <p className="text-white/60">
-              Quais foram os momentos mais marcantes da tua jornada?
-              Escreve até 7 — um por cada eco.
+              {t('aurora.ceremony.moments_desc')}
             </p>
           </div>
 
@@ -600,7 +600,7 @@ export default function CerimoniaGraduacao() {
               <textarea
                 value={novoMomento}
                 onChange={(e) => setNovoMomento(e.target.value)}
-                placeholder="Descreve um momento que te transformou..."
+                placeholder={t('aurora.ceremony.describe_moment')}
                 rows={3}
                 maxLength={300}
                 className="w-full p-4 rounded-xl border text-white placeholder-white/30 focus:outline-none resize-none"
@@ -620,7 +620,7 @@ export default function CerimoniaGraduacao() {
                   className="px-5 py-2 rounded-full text-sm font-semibold text-white transition-all disabled:opacity-30"
                   style={{ background: novoMomento.trim() ? AURORA_COLOR : 'rgba(255,255,255,0.1)' }}
                 >
-                  + Adicionar
+                  {t('aurora.ceremony.add')}
                 </button>
               </div>
             </div>
@@ -629,11 +629,11 @@ export default function CerimoniaGraduacao() {
           {/* Sugestoes */}
           {momentosChave.length === 0 && (
             <div className="mb-8 space-y-2">
-              <p className="text-white/40 text-xs mb-3">Sugestões para te inspirar:</p>
+              <p className="text-white/40 text-xs mb-3">{t('aurora.ceremony.suggestions')}</p>
               {[
-                'O dia em que percebi que merecia cuidar de mim',
-                'Quando senti orgulho de mim pela primeira vez',
-                'O momento em que escolhi diferente'
+                t('aurora.ceremony.suggestion_1'),
+                t('aurora.ceremony.suggestion_2'),
+                t('aurora.ceremony.suggestion_3')
               ].map((sugestao, i) => (
                 <button
                   key={i}
@@ -663,14 +663,14 @@ export default function CerimoniaGraduacao() {
               className="flex-1 py-4 rounded-2xl font-semibold text-white/70 transition-all"
               style={{ background: 'rgba(255,255,255,0.1)' }}
             >
-              ← Voltar
+              {t('aurora.ceremony.previous')}
             </button>
             <button
               onClick={() => setEtapa('mensagem')}
               className="flex-1 py-4 rounded-2xl font-semibold text-white transition-all hover:scale-[1.02]"
               style={{ background: AURORA_COLOR }}
             >
-              Continuar →
+              {t('aurora.ceremony.continue')}
             </button>
           </div>
         </div>
@@ -689,8 +689,8 @@ export default function CerimoniaGraduacao() {
       >
         <ModuleHeader
           eco="aurora"
-          title="Cerimónia de Graduação"
-          subtitle="Celebra a tua jornada"
+          title={t('aurora.ceremony.title')}
+          subtitle={t('aurora.ceremony.celebrate_journey')}
           showHomeButton={false}
           compact
         />
@@ -707,7 +707,7 @@ export default function CerimoniaGraduacao() {
               </span>
             </div>
 
-            <p className="text-white/50 text-sm mb-4">Uma mensagem da Vivianne</p>
+            <p className="text-white/50 text-sm mb-4">{t('aurora.ceremony.vivianne_message')}</p>
 
             {/* Mensagem */}
             <div
@@ -721,9 +721,7 @@ export default function CerimoniaGraduacao() {
                 className="text-white text-xl leading-relaxed italic"
                 style={{ fontFamily: 'var(--font-titulos)' }}
               >
-                "Chegaste aqui porque escolheste. Cada passo foi teu.
-                Cada eco, cada reflexão, cada momento de coragem — {g('foste tu', 'foste tu')}.
-                {' '}{g('Celebra-te', 'Celebra-te')}. Mereces."
+                "{t('aurora.ceremony.vivianne_quote')}"
               </p>
 
               <div className="mt-6 flex items-center justify-center gap-2 text-white/40 text-sm">
@@ -739,14 +737,14 @@ export default function CerimoniaGraduacao() {
                 className="flex-1 py-4 rounded-2xl font-semibold text-white/70 transition-all"
                 style={{ background: 'rgba(255,255,255,0.1)' }}
               >
-                ← Voltar
+                {t('aurora.ceremony.previous')}
               </button>
               <button
                 onClick={() => setEtapa('certificado')}
                 className="flex-1 py-4 rounded-2xl font-semibold text-white transition-all hover:scale-[1.02]"
                 style={{ background: AURORA_COLOR }}
               >
-                Ver certificado →
+                {t('aurora.ceremony.view_certificate')}
               </button>
             </div>
           </div>
@@ -764,8 +762,8 @@ export default function CerimoniaGraduacao() {
       >
         <ModuleHeader
           eco="aurora"
-          title="Cerimónia de Graduação"
-          subtitle="Celebra a tua jornada"
+          title={t('aurora.ceremony.title')}
+          subtitle={t('aurora.ceremony.celebrate_journey')}
           showHomeButton={false}
           compact
         />
@@ -800,7 +798,7 @@ export default function CerimoniaGraduacao() {
                   className="text-sm tracking-[0.3em] uppercase mb-4"
                   style={{ color: `${AURORA_COLOR}cc` }}
                 >
-                  Certificado de Conclusão
+                  {t('aurora.ceremony.certificate_label')}
                 </p>
 
                 <div
@@ -819,14 +817,14 @@ export default function CerimoniaGraduacao() {
                     color: AURORA_DARK
                   }}
                 >
-                  Sete Ecos
+                  {t('aurora.ceremony.seven_ecos')}
                 </h2>
                 <p className="text-sm mb-6" style={{ color: '#8a7a6a' }}>
-                  Sistema de Transmutação
+                  {t('aurora.ceremony.transmutation_system')}
                 </p>
 
                 <p className="text-sm mb-1" style={{ color: '#8a7a6a' }}>
-                  Este certificado é {g('atribuído', 'atribuída')} a
+                  {t('aurora.ceremony.awarded_to')}
                 </p>
                 <h3
                   className="text-2xl font-bold mb-4"
@@ -835,7 +833,7 @@ export default function CerimoniaGraduacao() {
                     color: AURORA_DARK
                   }}
                 >
-                  {userName || g('Graduado', 'Graduada')}
+                  {userName || t('aurora.ceremony.graduate')}
                 </h3>
 
                 {/* Ecos completados como icones */}
@@ -853,7 +851,7 @@ export default function CerimoniaGraduacao() {
                 </div>
 
                 <p className="text-sm mb-1" style={{ color: '#8a7a6a' }}>
-                  {totalEcos} {totalEcos === 1 ? 'eco completado' : 'ecos completados'}
+                  {t('aurora.ceremony.ecos_completed', { count: totalEcos })}
                 </p>
 
                 <div
@@ -869,7 +867,7 @@ export default function CerimoniaGraduacao() {
                   className="text-xs mt-4 italic"
                   style={{ color: `${AURORA_COLOR}aa` }}
                 >
-                  "Cada eco é um reflexo de quem és."
+                  "{t('aurora.ceremony.eco_reflection_quote')}"
                 </p>
               </div>
             </div>
@@ -889,7 +887,7 @@ export default function CerimoniaGraduacao() {
                   className="w-full py-4 rounded-2xl font-semibold text-white transition-all hover:scale-[1.02] disabled:opacity-50"
                   style={{ background: AURORA_COLOR }}
                 >
-                  {saving ? 'A guardar...' : `Concluir cerimónia (+50 Raios 🌅)`}
+                  {saving ? t('aurora.antes_depois.saving') : t('aurora.ceremony.complete_ceremony')}
                 </button>
               ) : (
                 <button
@@ -897,7 +895,7 @@ export default function CerimoniaGraduacao() {
                   className="w-full py-4 rounded-2xl font-semibold text-white transition-all hover:scale-[1.02]"
                   style={{ background: AURORA_COLOR }}
                 >
-                  Continuar →
+                  {t('aurora.ceremony.continue')}
                 </button>
               )}
 
@@ -905,7 +903,7 @@ export default function CerimoniaGraduacao() {
                 onClick={() => setEtapa('mensagem')}
                 className="w-full py-3 text-white/50 hover:text-white/80 transition-colors"
               >
-                ← Voltar
+                {t('aurora.ceremony.previous')}
               </button>
             </div>
           </div>
@@ -940,15 +938,14 @@ export default function CerimoniaGraduacao() {
             className="text-3xl font-bold text-white mb-4"
             style={{ fontFamily: 'var(--font-titulos)' }}
           >
-            {g('Graduado', 'Graduada')}!
+            {t('aurora.ceremony.graduated')}
           </h2>
 
           <p className="text-white/80 text-lg mb-2">
-            A cerimónia está completa.
+            {t('aurora.ceremony.ceremony_complete')}
           </p>
           <p className="text-white/60 mb-8">
-            Recebeste <strong className="text-white">+50 Raios de Aurora</strong> 🌅
-            pela tua dedicação.
+            {t('aurora.ceremony.rays_earned')}
           </p>
 
           {/* Resumo */}
@@ -956,22 +953,22 @@ export default function CerimoniaGraduacao() {
             className="rounded-2xl p-6 mb-8 border text-left"
             style={{ background: 'rgba(255,255,255,0.06)', borderColor: `${AURORA_COLOR}25` }}
           >
-            <h3 className="text-white font-semibold mb-3 text-center">A tua jornada</h3>
+            <h3 className="text-white font-semibold mb-3 text-center">{t('aurora.ceremony.your_journey')}</h3>
 
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div className="text-center">
                 <p className="text-3xl font-bold text-white">{totalEcos}</p>
-                <p className="text-white/50 text-sm">{totalEcos === 1 ? 'Eco' : 'Ecos'}</p>
+                <p className="text-white/50 text-sm">{totalEcos === 1 ? t('aurora.ceremony.eco_singular') : t('aurora.ceremony.eco_plural')}</p>
               </div>
               <div className="text-center">
                 <p className="text-3xl font-bold text-white">{momentosChave.length}</p>
-                <p className="text-white/50 text-sm">{momentosChave.length === 1 ? 'Momento' : 'Momentos'}</p>
+                <p className="text-white/50 text-sm">{momentosChave.length === 1 ? t('aurora.ceremony.moment_singular') : t('aurora.ceremony.moment_plural')}</p>
               </div>
             </div>
 
             {momentosChave.length > 0 && (
               <div className="pt-3 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
-                <p className="text-white/40 text-xs mb-2">Os teus momentos:</p>
+                <p className="text-white/40 text-xs mb-2">{t('aurora.ceremony.your_moments')}</p>
                 {momentosChave.map((momento, i) => (
                   <p key={i} className="text-white/70 text-sm mb-1">
                     • {momento}
@@ -988,14 +985,14 @@ export default function CerimoniaGraduacao() {
               className="w-full py-4 rounded-2xl font-semibold text-white transition-all hover:scale-[1.02]"
               style={{ background: AURORA_COLOR }}
             >
-              Voltar ao Aurora →
+              {t('aurora.ceremony.back_aurora')}
             </button>
 
             <button
               onClick={() => setEtapa('boas-vindas')}
               className="w-full py-3 text-white/50 hover:text-white/80 transition-colors"
             >
-              Reviver a cerimónia
+              {t('aurora.ceremony.relive')}
             </button>
           </div>
         </div>

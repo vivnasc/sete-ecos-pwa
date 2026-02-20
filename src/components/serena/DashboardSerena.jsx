@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import { g } from '../../utils/genero'
 import { SERENA_GAMIFICATION, EMOCOES } from '../../lib/serena/gamificacao'
 import ModuleDashboardShell from '../shared/ModuleDashboardShell'
@@ -20,6 +21,7 @@ const SERENA_DARK = '#1a2e3a'
 export default function DashboardSerena() {
   const navigate = useNavigate()
   const { session } = useAuth()
+  const { t } = useI18n()
 
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState(null)
@@ -179,9 +181,9 @@ export default function DashboardSerena() {
   // Saudacao contextual baseada na hora
   function getSaudacao() {
     const hora = new Date().getHours()
-    if (hora < 12) return 'Como te sentes esta manhã?'
-    if (hora < 18) return 'Como está a tua tarde?'
-    return 'Como te sentes esta noite?'
+    if (hora < 12) return t('serena.dashboard.greeting_morning')
+    if (hora < 18) return t('serena.dashboard.greeting_afternoon')
+    return t('serena.dashboard.greeting_evening')
   }
 
   // ===== Loading state =====
@@ -193,7 +195,7 @@ export default function DashboardSerena() {
       >
         <div className="text-center">
           <div className="text-6xl mb-4 animate-pulse">💧</div>
-          <p className="text-white/60 text-sm">A preparar o teu espaço...</p>
+          <p className="text-white/60 text-sm">{t('serena.dashboard.loading')}</p>
         </div>
       </div>
     )
@@ -204,23 +206,23 @@ export default function DashboardSerena() {
 
   // ===== Quick Actions =====
   const quickActions = [
-    { label: 'Diário Emocional', to: '/serena/diario', icon: '\u{1F4D6}', subtitle: 'Registar emoções' },
-    { label: 'Respiração Guiada', to: '/serena/respiracao', icon: '\u{1FAC1}', subtitle: 'Acalmar a mente' },
-    { label: 'Mapa Emocional', to: '/serena/mapa', icon: '\u{1F5FA}\u{FE0F}', subtitle: 'Calendário visual' },
-    { label: 'Ciclo Emocional', to: '/serena/ciclo', icon: '\u{1F300}', subtitle: 'Fases emocionais' },
-    { label: 'Detector Padrões', to: '/serena/padroes', icon: '\u{1F50D}', subtitle: 'Padrões ocultos' },
-    { label: 'Ciclo Menstrual', to: '/serena/ciclo-menstrual', icon: '\u{1F319}', subtitle: 'Corpo e emoção' },
-    { label: 'SOS Emocional', to: '/serena/sos', icon: '\u{1F198}', subtitle: 'Ajuda imediata' },
-    { label: 'Práticas de Fluidez', to: '/serena/praticas', icon: '\u{1F4A7}', subtitle: 'Elemento água' },
-    { label: 'Rituais de Libertação', to: '/serena/rituais', icon: '\u{1F513}', subtitle: 'Soltar e fluir' },
-    { label: 'Coach Serena', to: '/serena/chat', icon: '\u{1F4AC}', subtitle: 'Fala comigo' }
+    { label: t('serena.menu.emotional_journal'), to: '/serena/diario', icon: '\u{1F4D6}', subtitle: t('serena.menu.emotional_journal_sub') },
+    { label: t('serena.menu.guided_breathing'), to: '/serena/respiracao', icon: '\u{1FAC1}', subtitle: t('serena.menu.guided_breathing_sub') },
+    { label: t('serena.menu.emotional_map'), to: '/serena/mapa', icon: '\u{1F5FA}\u{FE0F}', subtitle: t('serena.menu.emotional_map_sub') },
+    { label: t('serena.menu.emotional_cycle'), to: '/serena/ciclo', icon: '\u{1F300}', subtitle: t('serena.menu.emotional_cycle_sub') },
+    { label: t('serena.menu.pattern_detector'), to: '/serena/padroes', icon: '\u{1F50D}', subtitle: t('serena.menu.pattern_detector_sub') },
+    { label: t('serena.menu.menstrual_cycle'), to: '/serena/ciclo-menstrual', icon: '\u{1F319}', subtitle: t('serena.menu.menstrual_cycle_sub') },
+    { label: t('serena.menu.emotional_sos'), to: '/serena/sos', icon: '\u{1F198}', subtitle: t('serena.menu.emotional_sos_sub') },
+    { label: t('serena.menu.fluidity_practices'), to: '/serena/praticas', icon: '\u{1F4A7}', subtitle: t('serena.menu.fluidity_practices_sub') },
+    { label: t('serena.menu.release_rituals'), to: '/serena/rituais', icon: '\u{1F513}', subtitle: t('serena.menu.release_rituals_sub') },
+    { label: t('serena.menu.coach'), to: '/serena/chat', icon: '\u{1F4AC}', subtitle: t('serena.menu.coach_sub') }
   ]
 
   // ===== Stats =====
   const stats = [
-    { label: 'Emoções', value: emocoesEstaSemana, icon: '\u{1F4D6}' },
-    { label: 'Respiração', value: sessoesRespiracao, icon: '\u{1FAC1}' },
-    { label: 'Streak', value: `${streak}d`, icon: '\u{1F525}' }
+    { label: t('serena.stats.emotions'), value: emocoesEstaSemana, icon: '\u{1F4D6}' },
+    { label: t('serena.stats.breathing'), value: sessoesRespiracao, icon: '\u{1FAC1}' },
+    { label: t('serena.stats.streak'), value: `${streak}d`, icon: '\u{1F525}' }
   ]
 
   // ===== Render =====
@@ -235,7 +237,7 @@ export default function DashboardSerena() {
         icon: SERENA_GAMIFICATION.currency.icon,
         total: gotas,
         currency: SERENA_GAMIFICATION.currency.plural,
-        level: nivel || 'Nascente',
+        level: nivel || t('serena.level.nascente'),
         streak: streak
       }}
     >
@@ -354,7 +356,7 @@ export default function DashboardSerena() {
           <span className="text-xl flex-shrink-0">🌊</span>
           <div>
             <p className="text-white/80 text-sm italic leading-relaxed">
-              "As emoções são como ondas. Não as podes impedir de vir, mas podes aprender a surfar."
+              "{t('serena.dashboard.quote')}"
             </p>
             <p className="text-white/30 text-xs mt-2">
               — O teu espaço seguro para sentir

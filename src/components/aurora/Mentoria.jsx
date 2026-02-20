@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import { g } from '../../utils/genero'
 import ModuleHeader from '../shared/ModuleHeader'
 
@@ -95,6 +96,7 @@ const FraseCard = ({ frase, isOwn, onLike }) => {
 export default function Mentoria() {
   const navigate = useNavigate()
   const { userRecord } = useAuth()
+  const { t } = useI18n()
   const userId = userRecord?.id || null
 
   // Form
@@ -208,7 +210,7 @@ export default function Mentoria() {
       fetchFrases()
     } catch (err) {
       console.error('Erro ao partilhar frase:', err)
-      alert('Nao foi possivel partilhar. Tenta novamente.')
+      alert(t('aurora.mentoria.share_error'))
     } finally {
       setSaving(false)
     }
@@ -244,8 +246,8 @@ export default function Mentoria() {
     <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${ACCENT_DARK} 0%, #111318 30%, #0d0f13 100%)` }}>
       <ModuleHeader
         eco="aurora"
-        title="Mentoria"
-        subtitle="Partilhar sabedoria anonimamente"
+        title={t('aurora.mentoria.title')}
+        subtitle={t('aurora.mentoria.subtitle')}
       />
 
       <div className="max-w-lg mx-auto px-4 pb-24">
@@ -265,7 +267,7 @@ export default function Mentoria() {
             style={view === 'partilhar' ? { background: `${ACCENT}33` } : undefined}
             aria-pressed={view === 'partilhar'}
           >
-            Partilhar
+            {t('aurora.mentoria.tab_share')}
           </button>
           <button
             onClick={() => setView('minhas')}
@@ -273,7 +275,7 @@ export default function Mentoria() {
             style={view === 'minhas' ? { background: `${ACCENT}33` } : undefined}
             aria-pressed={view === 'minhas'}
           >
-            Minhas ({minhasFrases.length})
+            {t('aurora.mentoria.tab_mine', { count: minhasFrases.length })}
           </button>
         </div>
 
@@ -294,23 +296,23 @@ export default function Mentoria() {
                   className="text-lg font-semibold text-white"
                   style={{ fontFamily: 'var(--font-titulos)' }}
                 >
-                  Nenhuma sabedoria partilhada ainda
+                  {t('aurora.mentoria.no_wisdom_yet')}
                 </h3>
                 <p className="text-sm text-gray-400 max-w-xs mx-auto">
-                  {g('Se o primeiro', 'Se a primeira')} a partilhar uma frase de sabedoria com a comunidade.
+                  {t('aurora.mentoria.be_first')}
                 </p>
                 <button
                   onClick={() => setView('partilhar')}
                   className="px-6 py-3 rounded-xl font-medium text-sm text-white shadow-lg transition-all duration-200"
                   style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
                 >
-                  Partilhar Sabedoria
+                  {t('aurora.mentoria.share_wisdom')}
                 </button>
               </div>
             ) : (
               <>
                 <p className="text-sm text-gray-400">
-                  Sabedoria da comunidade Aurora — anonima e {g('inspirado', 'inspirada')} nos 7 ecos.
+                  {t('aurora.mentoria.community_wisdom')}
                 </p>
                 <div className="space-y-3">
                   {frases.map(frase => (
@@ -336,22 +338,22 @@ export default function Mentoria() {
                 className="text-lg font-semibold text-white"
                 style={{ fontFamily: 'var(--font-titulos)' }}
               >
-                Partilhar Sabedoria
+                {t('aurora.mentoria.share_wisdom')}
               </h2>
               <p className="text-sm text-gray-400">
-                Partilha uma frase que aprendeste na tua jornada. Sera {g('anonimo', 'anonima')}.
+                {t('aurora.mentoria.share_desc')}
               </p>
             </div>
 
             {/* Frase input */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-300 block">
-                A tua frase de sabedoria
+                {t('aurora.mentoria.your_phrase')}
               </label>
               <textarea
                 value={novaFrase}
                 onChange={(e) => setNovaFrase(e.target.value)}
-                placeholder="Partilha algo que aprendeste, uma reflexao, um conselho que te ajudou..."
+                placeholder={t('aurora.mentoria.phrase_placeholder')}
                 rows={4}
                 maxLength={500}
                 className="w-full p-4 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
@@ -364,7 +366,7 @@ export default function Mentoria() {
             {/* Eco reference selector */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-300 block">
-                De qual eco vem esta sabedoria?
+                {t('aurora.mentoria.which_eco')}
               </label>
               <div className="grid grid-cols-4 gap-2">
                 {ECOS_REFERENCIA.map(eco => (
@@ -393,7 +395,7 @@ export default function Mentoria() {
                 className="p-4 rounded-xl animate-fadeIn"
                 style={{ background: `${ACCENT}11`, border: `1px solid ${ACCENT}22` }}
               >
-                <p className="text-xs text-gray-500 mb-2">Pre-visualizacao:</p>
+                <p className="text-xs text-gray-500 mb-2">{t('aurora.mentoria.preview')}</p>
                 <p
                   className="text-white leading-relaxed italic"
                   style={{ fontFamily: 'var(--font-titulos)' }}
@@ -414,7 +416,7 @@ export default function Mentoria() {
               className="w-full py-4 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl active:scale-[0.97] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
             >
-              {saving ? 'A partilhar...' : 'Partilhar (+8 Raios)'}
+              {saving ? t('aurora.mentoria.sharing') : t('aurora.mentoria.share_button')}
             </button>
           </div>
         )}
@@ -445,17 +447,17 @@ export default function Mentoria() {
                   className="text-lg font-semibold text-white"
                   style={{ fontFamily: 'var(--font-titulos)' }}
                 >
-                  Ainda nao partilhaste sabedoria
+                  {t('aurora.mentoria.no_wisdom_shared')}
                 </h3>
                 <p className="text-sm text-gray-400 max-w-xs mx-auto">
-                  A tua experiencia pode ajudar alguem. Partilha uma frase!
+                  {t('aurora.mentoria.experience_helps')}
                 </p>
                 <button
                   onClick={() => setView('partilhar')}
                   className="px-6 py-3 rounded-xl font-medium text-sm text-white shadow-lg transition-all duration-200"
                   style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
                 >
-                  Partilhar Sabedoria
+                  {t('aurora.mentoria.share_wisdom')}
                 </button>
               </div>
             ) : (

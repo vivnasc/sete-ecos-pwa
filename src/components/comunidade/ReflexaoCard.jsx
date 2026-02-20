@@ -17,6 +17,7 @@ import {
   getGhostEspelhos
 } from '../../lib/ghost-users'
 import { Avatar } from './HubComunidade'
+import { useI18n } from '../../contexts/I18nContext'
 
 const RESSONANCIA_KEYS = Object.keys(RESSONANCIA_TIPOS)
 
@@ -41,6 +42,7 @@ export default function ReflexaoCard({
   const [showMenu, setShowMenu] = useState(false)
   const [imagemExpandida, setImagemExpandida] = useState(false)
 
+  const { t } = useI18n()
   const isGhost = isGhostPost(post)
 
   const perfil = post.community_profiles
@@ -137,7 +139,7 @@ export default function ReflexaoCard({
           created_at: new Date().toISOString(),
           community_profiles: {
             user_id: userId,
-            display_name: 'Tu',
+            display_name: t('comunidade.card.you'),
             avatar_emoji: '🌸'
           }
         }])
@@ -149,7 +151,7 @@ export default function ReflexaoCard({
           ...espelho,
           community_profiles: {
             user_id: userId,
-            display_name: 'Tu',
+            display_name: t('comunidade.card.you'),
             avatar_emoji: '🌸'
           }
         }])
@@ -217,7 +219,7 @@ export default function ReflexaoCard({
           {renderAvatar(perfil, 40)}
           <div className="text-left">
             <p className="font-semibold text-sm text-gray-800" style={{ fontFamily: 'var(--font-corpo)' }}>
-              {isAnonymous ? 'Alma Anónima' : (perfil?.display_name || 'Utilizadora')}
+              {isAnonymous ? t('comunidade.card.anonymous_soul') : (perfil?.display_name || t('comunidade.card.user_default'))}
             </p>
             <div className="flex items-center gap-1.5">
               <span className="text-xs text-gray-400">{tempoRelativo(post.created_at)}</span>
@@ -256,13 +258,13 @@ export default function ReflexaoCard({
               {showMenu && (
                 <div className="absolute right-0 top-8 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-20 min-w-[140px]">
                   <button onClick={handleShare} className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">
-                    Partilhar
+                    {t('comunidade.card.share')}
                   </button>
                   <button
                     onClick={() => { setShowMenu(false); onPostDeleted?.(post.id) }}
                     className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50"
                   >
-                    Apagar
+                    {t('comunidade.card.delete')}
                   </button>
                 </div>
               )}
@@ -337,7 +339,7 @@ export default function ReflexaoCard({
               : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
           }`}
         >
-          Espelhos{espelhosCount > 0 ? ` (${espelhosCount})` : ''}
+          {t('comunidade.card.mirrors')}{espelhosCount > 0 ? ` (${espelhosCount})` : ''}
         </button>
       </div>
 
@@ -345,7 +347,7 @@ export default function ReflexaoCard({
       {ressonanciaCount > 0 && (
         <div className="px-4 pb-2">
           <p className="text-xs text-gray-400">
-            {ressonanciaCount} {ressonanciaCount === 1 ? 'ressonância' : 'ressonâncias'}
+            {ressonanciaCount} {ressonanciaCount === 1 ? t('comunidade.card.resonance_one') : t('comunidade.card.resonance_other')}
           </p>
         </div>
       )}
@@ -357,11 +359,11 @@ export default function ReflexaoCard({
           <div className="p-4 space-y-3 max-h-72 overflow-y-auto">
             {loadingEspelhos ? (
               <div className="text-center py-3">
-                <span className="text-sm text-gray-400">A carregar espelhos...</span>
+                <span className="text-sm text-gray-400">{t('comunidade.card.loading')}</span>
               </div>
             ) : espelhos.length === 0 ? (
               <div className="text-center py-3">
-                <span className="text-sm text-gray-400">Sê a primeira a espelhar esta reflexão</span>
+                <span className="text-sm text-gray-400">{t('comunidade.card.be_first_mirror')}</span>
               </div>
             ) : (
               espelhos.map(e => (
@@ -373,7 +375,7 @@ export default function ReflexaoCard({
                         onClick={() => onPerfilClick?.(e.community_profiles?.user_id)}
                         className="text-xs font-bold text-gray-700 hover:underline"
                       >
-                        {e.community_profiles?.display_name || 'Utilizadora'}
+                        {e.community_profiles?.display_name || t('comunidade.card.user_default')}
                       </button>
                       <span className="text-xs text-gray-300">{tempoRelativo(e.created_at)}</span>
                     </div>
@@ -405,7 +407,7 @@ export default function ReflexaoCard({
               type="text"
               value={novoEspelho}
               onChange={(e) => setNovoEspelho(e.target.value)}
-              placeholder="Espelha esta reflexão..."
+              placeholder={t('comunidade.card.mirror_placeholder')}
               className="flex-1 text-sm py-2 px-3 rounded-full border border-gray-200 focus:border-purple-300 focus:outline-none"
               style={{ fontFamily: 'var(--font-corpo)' }}
               maxLength={500}
@@ -416,7 +418,7 @@ export default function ReflexaoCard({
               className="text-sm font-bold px-3 rounded-full transition-all disabled:opacity-30"
               style={{ color: '#8B5CF6' }}
             >
-              {enviandoEspelho ? '...' : 'Enviar'}
+              {enviandoEspelho ? '...' : t('comunidade.card.send')}
             </button>
           </form>
         </div>

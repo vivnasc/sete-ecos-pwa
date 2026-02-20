@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import { g } from '../../utils/genero'
 import { VENTIS_GAMIFICATION } from '../../lib/ventis/gamificacao'
 import ModuleDashboardShell from '../shared/ModuleDashboardShell'
@@ -23,6 +24,7 @@ const VENTIS_DARK = '#1a2e24'
 export default function DashboardVentis() {
   const navigate = useNavigate()
   const { session } = useAuth()
+  const { t } = useI18n()
 
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState(null)
@@ -201,7 +203,7 @@ export default function DashboardVentis() {
           <div className="text-6xl mb-4" style={{ animation: 'pulse 2s ease-in-out infinite, spin 4s linear infinite' }}>
             {'\u{1F343}'}
           </div>
-          <p className="text-white/60 text-sm">A sentir a brisa...</p>
+          <p className="text-white/60 text-sm">{t('ventis.dashboard.loading')}</p>
           <style>{`
             @keyframes spin {
               0% { transform: rotate(0deg); }
@@ -221,28 +223,28 @@ export default function DashboardVentis() {
 
   // Periodos do dia para display
   const periodos = [
-    { id: 'manha', label: 'Manha', icon: '\u{1F305}' },
-    { id: 'tarde', label: 'Tarde', icon: '\u{2600}\uFE0F' },
-    { id: 'noite', label: 'Noite', icon: '\u{1F319}' }
+    { id: 'manha', label: t('ventis.time.morning'), icon: '\u{1F305}' },
+    { id: 'tarde', label: t('ventis.time.afternoon'), icon: '\u{2600}\uFE0F' },
+    { id: 'noite', label: t('ventis.time.evening'), icon: '\u{1F319}' }
   ]
 
   // ===== Quick Actions =====
   const quickActions = [
-    { label: 'Energia', to: '/ventis/energia', icon: '\u{26A1}', subtitle: 'Check-in de energia' },
-    { label: 'Rotinas', to: '/ventis/rotinas', icon: '\u{1F504}', subtitle: 'Rotinas do dia' },
-    { label: 'Pausas', to: '/ventis/pausas', icon: '\u{1F9D8}', subtitle: 'Pausas conscientes' },
-    { label: 'Movimento', to: '/ventis/movimento', icon: '\u{1F3C3}', subtitle: 'Corpo em movimento' },
-    { label: 'Natureza', to: '/ventis/natureza', icon: '\u{1F33F}', subtitle: 'Conexao natural' },
-    { label: 'Ritmo', to: '/ventis/ritmo', icon: '\u{1F3B5}', subtitle: 'Mapa de ritmo' },
-    { label: 'Picos & Vales', to: '/ventis/picos', icon: '\u{1F4C8}', subtitle: 'Padroes de energia' },
-    { label: 'Coach Ventis', to: '/ventis/chat', icon: '\u{1F4AC}', subtitle: 'Fala comigo' }
+    { label: t('ventis.menu.energy'), to: '/ventis/energia', icon: '\u{26A1}', subtitle: t('ventis.menu.energy_sub') },
+    { label: t('ventis.menu.routines'), to: '/ventis/rotinas', icon: '\u{1F504}', subtitle: t('ventis.menu.routines_sub') },
+    { label: t('ventis.menu.breaks'), to: '/ventis/pausas', icon: '\u{1F9D8}', subtitle: t('ventis.menu.breaks_sub') },
+    { label: t('ventis.menu.movement'), to: '/ventis/movimento', icon: '\u{1F3C3}', subtitle: t('ventis.menu.movement_sub') },
+    { label: t('ventis.menu.nature'), to: '/ventis/natureza', icon: '\u{1F33F}', subtitle: t('ventis.menu.nature_sub') },
+    { label: t('ventis.menu.rhythm'), to: '/ventis/ritmo', icon: '\u{1F3B5}', subtitle: t('ventis.menu.rhythm_sub') },
+    { label: t('ventis.menu.peaks'), to: '/ventis/picos', icon: '\u{1F4C8}', subtitle: t('ventis.menu.peaks_sub') },
+    { label: t('ventis.menu.coach'), to: '/ventis/chat', icon: '\u{1F4AC}', subtitle: t('ventis.menu.coach_sub') }
   ]
 
   // ===== Stats =====
   const stats = [
-    { label: 'Check-ins', value: checkinsEnergia, icon: '\u{26A1}' },
-    { label: 'Rotinas', value: rotinasCompletadas, icon: '\u{1F504}' },
-    { label: 'Pausas', value: pausasFeitas, icon: '\u{1F9D8}' }
+    { label: t('ventis.stats.checkins'), value: checkinsEnergia, icon: '\u{26A1}' },
+    { label: t('ventis.stats.routines'), value: rotinasCompletadas, icon: '\u{1F504}' },
+    { label: t('ventis.stats.breaks'), value: pausasFeitas, icon: '\u{1F9D8}' }
   ]
 
   // ===== Render =====
@@ -257,7 +259,7 @@ export default function DashboardVentis() {
         icon: VENTIS_GAMIFICATION.currency.icon,
         total: folhas,
         currency: VENTIS_GAMIFICATION.currency.plural,
-        level: nivel || 'Semente',
+        level: nivel || t('ventis.level.semente'),
         streak: streak
       }}
     >
@@ -308,7 +310,7 @@ export default function DashboardVentis() {
                   renderBateria(nivelEnergia)
                 ) : (
                   <p className="text-white/30 text-[10px]">
-                    {isActual ? 'Agora' : '---'}
+                    {isActual ? t('ventis.dashboard.now') : '---'}
                   </p>
                 )}
               </div>
@@ -380,7 +382,7 @@ export default function DashboardVentis() {
           className="text-sm transition-colors"
           style={{ color: `${VENTIS_COLOR}aa` }}
         >
-          {g('Ver padroes de energia e ritmo', 'Ver padroes de energia e ritmo')} {'\u{2192}'}
+          {t('ventis.dashboard.see_patterns')} {'\u{2192}'}
         </Link>
       </div>
     </ModuleDashboardShell>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import { g } from '../../utils/genero'
 import ModuleHeader from '../shared/ModuleHeader'
 import { RITUAL_COMPONENTES } from '../../lib/aurora/gamificacao'
@@ -161,6 +162,7 @@ const LogEntry = ({ entry }) => {
 export default function RitualAurora() {
   const navigate = useNavigate()
   const { userRecord } = useAuth()
+  const { t } = useI18n()
   const userId = userRecord?.id || null
 
   // Ritual state
@@ -373,8 +375,8 @@ export default function RitualAurora() {
       {fase !== 'ritual' && (
         <ModuleHeader
           eco="aurora"
-          title="Ritual Aurora"
-          subtitle="O teu ritual matinal integrado"
+          title={t('aurora.ritual.title')}
+          subtitle={t('aurora.ritual.subtitle')}
         />
       )}
 
@@ -410,16 +412,16 @@ export default function RitualAurora() {
                 className="text-xl font-semibold text-white"
                 style={{ fontFamily: 'var(--font-titulos)' }}
               >
-                Bom dia, {g('querido', 'querida')}
+                {t('aurora.ritual.good_morning')}
               </h2>
               <p className="text-sm text-gray-400 max-w-xs mx-auto">
-                O teu ritual matinal Aurora integra elementos dos 7 ecos. ~{totalDuracao} minutos de presença.
+                {t('aurora.ritual.intro', { minutes: totalDuracao })}
               </p>
             </div>
 
             {/* Preview of components */}
             <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-300">Hoje vais praticar:</p>
+              <p className="text-sm font-medium text-gray-300">{t('aurora.ritual.today_practice')}</p>
               {RITUAL_COMPONENTES.map(comp => (
                 <div
                   key={comp.id}
@@ -446,7 +448,7 @@ export default function RitualAurora() {
               className="w-full py-4 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl active:scale-[0.97] transition-all duration-200"
               style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
             >
-              Iniciar Ritual
+              {t('aurora.ritual.start')}
             </button>
           </div>
         )}
@@ -468,17 +470,17 @@ export default function RitualAurora() {
                   className="text-lg font-semibold text-white"
                   style={{ fontFamily: 'var(--font-titulos)' }}
                 >
-                  Nenhum ritual registado
+                  {t('aurora.ritual.no_rituals')}
                 </h3>
                 <p className="text-sm text-gray-400 max-w-xs mx-auto">
-                  O ritual matinal Aurora integra todos os ecos numa prática diária.
+                  {t('aurora.ritual.rituals_desc')}
                 </p>
                 <button
                   onClick={() => setView('ritual')}
                   className="px-6 py-3 rounded-xl font-medium text-sm text-white shadow-lg transition-all duration-200"
                   style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
                 >
-                  Fazer o primeiro ritual
+                  {t('aurora.ritual.first_ritual')}
                 </button>
               </div>
             ) : (
@@ -495,7 +497,7 @@ export default function RitualAurora() {
                     <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                       {logEntries.reduce((sum, e) => sum + (e.duracao_minutos || 0), 0)}
                     </p>
-                    <p className="text-xs text-gray-400">min totais</p>
+                    <p className="text-xs text-gray-400">{t('aurora.ritual.total_min')}</p>
                   </div>
                 </div>
 
@@ -522,7 +524,7 @@ export default function RitualAurora() {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4" aria-hidden="true">
                   <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
-                Sair
+                {t('aurora.ritual.exit')}
               </button>
               <div className="text-right">
                 <p className="text-lg font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
@@ -576,21 +578,21 @@ export default function RitualAurora() {
                 className="text-xl font-semibold text-white mb-2"
                 style={{ fontFamily: 'var(--font-titulos)' }}
               >
-                Ritual completo!
+                {t('aurora.ritual.complete')}
               </h2>
               <p className="text-sm text-gray-400">
-                {completados.length} componentes em {formatTime(tempoDecorrido)}. {g('Obrigado', 'Obrigada')} por este momento.
+                {t('aurora.ritual.complete_desc', { count: completados.length, time: formatTime(tempoDecorrido) })}
               </p>
             </div>
 
             <div className="w-full max-w-md space-y-3">
               <label className="text-sm font-medium text-gray-300 text-left block">
-                Como te sentes agora? <span className="text-gray-500">(opcional)</span>
+                {t('aurora.ritual.how_feel')}
               </label>
               <textarea
                 value={reflexao}
                 onChange={(e) => setReflexao(e.target.value)}
-                placeholder="O que ficou deste ritual? Como te sentes?"
+                placeholder={t('aurora.ritual.reflection_placeholder')}
                 rows={4}
                 maxLength={2000}
                 className="w-full p-4 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
@@ -605,7 +607,7 @@ export default function RitualAurora() {
                 disabled={saving}
                 className="flex-1 py-3 rounded-xl font-medium text-sm bg-white/10 text-gray-300 hover:bg-white/15 border border-white/10 transition-all duration-200 disabled:opacity-40"
               >
-                {saving && !reflexao.trim() ? 'A guardar...' : 'Saltar'}
+                {saving && !reflexao.trim() ? t('aurora.antes_depois.saving') : t('aurora.ritual.skip')}
               </button>
               <button
                 onClick={handleSave}
@@ -613,7 +615,7 @@ export default function RitualAurora() {
                 className="flex-1 py-3 rounded-xl font-medium text-sm text-white shadow-lg hover:shadow-xl active:scale-[0.97] transition-all duration-200 disabled:opacity-40"
                 style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
               >
-                {saving && reflexao.trim() ? 'A guardar...' : 'Guardar (+5 Raios)'}
+                {saving && reflexao.trim() ? t('aurora.antes_depois.saving') : t('aurora.ritual.save_rays')}
               </button>
             </div>
           </div>
@@ -635,10 +637,10 @@ export default function RitualAurora() {
                 className="text-xl font-semibold text-white mb-2"
                 style={{ fontFamily: 'var(--font-titulos)' }}
               >
-                {g('Renovado', 'Renovada')} pela Aurora
+                {t('aurora.ritual.renewed')}
               </h2>
               <p className="text-sm text-gray-400 max-w-xs">
-                O teu ritual matinal foi registado. +5 Raios de Aurora
+                {t('aurora.ritual.registered')}
               </p>
             </div>
 
@@ -677,14 +679,14 @@ export default function RitualAurora() {
                 className="w-full py-3 rounded-xl font-semibold text-white transition-all duration-200 hover:brightness-110 active:scale-95"
                 style={{ background: ACCENT }}
               >
-                Novo ritual
+                {t('aurora.ritual.new_ritual')}
               </button>
               <button
                 onClick={() => navigate('/aurora/dashboard')}
                 className="w-full py-3 rounded-xl font-medium transition-all duration-200 active:scale-95"
                 style={{ color: '#c8a0a0', background: `${ACCENT}11` }}
               >
-                Voltar ao dashboard
+                {t('aurora.ritual.back_dashboard')}
               </button>
             </div>
           </div>

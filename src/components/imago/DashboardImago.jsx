@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import { g } from '../../utils/genero'
 import { IMAGO_GAMIFICATION } from '../../lib/imago/gamificacao'
 import ModuleDashboardShell from '../shared/ModuleDashboardShell'
@@ -20,6 +21,7 @@ const IMAGO_DARK = '#1a1a2e'
 export default function DashboardImago() {
   const navigate = useNavigate()
   const { session } = useAuth()
+  const { t } = useI18n()
 
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState(null)
@@ -137,7 +139,7 @@ export default function DashboardImago() {
   // Saudacao contextual baseada na hora
   function getSaudacao() {
     const hora = new Date().getHours()
-    if (hora < 12) return 'Quem és tu esta manhã?'
+    if (hora < 12) return t('imago.dashboard.greeting_morning')
     if (hora < 18) return 'O que te define nesta tarde?'
     return 'O que descobriste sobre ti hoje?'
   }
@@ -151,7 +153,7 @@ export default function DashboardImago() {
       >
         <div className="text-center">
           <div className="text-6xl mb-4 animate-pulse">⭐</div>
-          <p className="text-white/60 text-sm">A preparar o teu espelho...</p>
+          <p className="text-white/60 text-sm">{t('imago.dashboard.loading')}</p>
         </div>
       </div>
     )
@@ -159,23 +161,23 @@ export default function DashboardImago() {
 
   // ===== Quick Actions =====
   const quickActions = [
-    { label: 'Espelho Triplo', to: '/imago/espelho', icon: '\u{1FA9E}', subtitle: 'Quem sou vs. quem mostro' },
-    { label: 'Arqueologia de Si', to: '/imago/arqueologia', icon: '\u26CF\uFE0F', subtitle: 'Escavar camadas de identidade' },
-    { label: 'Nomeação', to: '/imago/nomeacao', icon: '\u{1F4DC}', subtitle: 'Como me nomeio agora' },
-    { label: 'Mapa de Identidade', to: '/imago/mapa', icon: '\u{1F5FA}\uFE0F', subtitle: '7 dimensões do meu ser' },
-    { label: 'Valores Essenciais', to: '/imago/valores', icon: '\u{1F4A0}', subtitle: 'Os meus 3 valores fundamentais' },
-    { label: 'Roupa como Identidade', to: '/imago/roupa', icon: '\u{1F457}', subtitle: 'O que visto comunica quem?' },
-    { label: 'Meditações', to: '/imago/meditacoes', icon: '\u{1F9D8}', subtitle: 'Meditações de essência' },
-    { label: 'Visão Futuro', to: '/imago/visao', icon: '\u{1F52E}', subtitle: 'Quadro de visão digital' },
-    { label: 'Timeline', to: '/imago/timeline', icon: '\u{1F4CA}', subtitle: 'A minha jornada completa' },
-    { label: 'Integração', to: '/imago/integracao', icon: '\u{1F300}', subtitle: 'Conexões entre os ecos' }
+    { label: t('imago.menu.triple_mirror'), to: '/imago/espelho', icon: '\u{1FA9E}', subtitle: t('imago.menu.triple_mirror_sub') },
+    { label: t('imago.menu.archaeology'), to: '/imago/arqueologia', icon: '\u26CF\uFE0F', subtitle: t('imago.menu.archaeology_sub') },
+    { label: t('imago.menu.naming'), to: '/imago/nomeacao', icon: '\u{1F4DC}', subtitle: t('imago.menu.naming_sub') },
+    { label: t('imago.menu.identity_map'), to: '/imago/mapa', icon: '\u{1F5FA}\uFE0F', subtitle: t('imago.menu.identity_map_sub') },
+    { label: t('imago.menu.core_values'), to: '/imago/valores', icon: '\u{1F4A0}', subtitle: t('imago.menu.core_values_sub') },
+    { label: t('imago.menu.clothing'), to: '/imago/roupa', icon: '\u{1F457}', subtitle: t('imago.menu.clothing_sub') },
+    { label: t('imago.menu.meditations'), to: '/imago/meditacoes', icon: '\u{1F9D8}', subtitle: t('imago.menu.meditations_sub') },
+    { label: t('imago.menu.future_vision'), to: '/imago/visao', icon: '\u{1F52E}', subtitle: t('imago.menu.future_vision_sub') },
+    { label: t('imago.menu.timeline'), to: '/imago/timeline', icon: '\u{1F4CA}', subtitle: t('imago.menu.timeline_sub') },
+    { label: t('imago.menu.integration'), to: '/imago/integracao', icon: '\u{1F300}', subtitle: t('imago.menu.integration_sub') }
   ]
 
   // ===== Stats =====
   const stats = [
-    { label: 'Reflexões', value: reflexoesEstaSemana, icon: '\u{1FA9E}' },
-    { label: 'Meditações', value: meditacoesEstaSemana, icon: '\u{1F9D8}' },
-    { label: 'Streak', value: `${streak}d`, icon: '\u{1F525}' }
+    { label: t('imago.stats.reflections'), value: reflexoesEstaSemana, icon: '\u{1FA9E}' },
+    { label: t('imago.stats.meditations'), value: meditacoesEstaSemana, icon: '\u{1F9D8}' },
+    { label: t('imago.stats.streak'), value: `${streak}d`, icon: '\u{1F525}' }
   ]
 
   // ===== Render =====
@@ -190,7 +192,7 @@ export default function DashboardImago() {
         icon: IMAGO_GAMIFICATION.currency.icon,
         total: estrelas,
         currency: IMAGO_GAMIFICATION.currency.plural,
-        level: nivel || 'Reflexo',
+        level: nivel || t('imago.level.reflexo'),
         streak: streak
       }}
     >

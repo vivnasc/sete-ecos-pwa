@@ -4,6 +4,7 @@ import {
   toggleLike, toggleBookmark, toggleReaction,
   getComentarios, criarComentario, criarNotificacao
 } from '../../lib/comunidade'
+import { useI18n } from '../../contexts/I18nContext'
 
 export default function PostCard({
   post, userId, onPerfilClick, onPostDeleted,
@@ -25,6 +26,7 @@ export default function PostCard({
   const [showMenu, setShowMenu] = useState(false)
   const [doubleTapLike, setDoubleTapLike] = useState(false)
 
+  const { t } = useI18n()
   const perfil = post.community_profiles
   const tipoInfo = TIPOS_POST[post.tipo] || TIPOS_POST.progresso
   const ecoInfo = post.eco ? ECOS_INFO[post.eco] : null
@@ -96,7 +98,7 @@ export default function PostCard({
       const comentario = await criarComentario(post.id, userId, novoComentario.trim())
       setComentarios(prev => [...prev, {
         ...comentario,
-        community_profiles: { display_name: 'Tu', avatar_emoji: '🌸' }
+        community_profiles: { display_name: t('comunidade.card.you'), avatar_emoji: '🌸' }
       }])
       setCommentsCount(prev => prev + 1)
       setNovoComentario('')
@@ -143,7 +145,7 @@ export default function PostCard({
           {renderAvatar(perfil)}
           <div className="text-left">
             <p className="font-semibold text-sm text-gray-800">
-              {perfil?.display_name || 'Utilizadora'}
+              {perfil?.display_name || t('comunidade.card.user_default')}
             </p>
             <div className="flex items-center gap-1.5">
               <p className="text-xs text-gray-400">{tempoRelativo(post.created_at)}</p>
@@ -173,14 +175,14 @@ export default function PostCard({
             {showMenu && (
               <div className="absolute right-0 top-8 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-20 min-w-[140px] animate-fadeIn">
                 <button onClick={handleShare} className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">
-                  Partilhar
+                  {t('comunidade.card.share')}
                 </button>
                 {isOwner && (
                   <button
                     onClick={() => { setShowMenu(false); onPostDeleted?.(post.id) }}
                     className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50"
                   >
-                    Apagar
+                    {t('comunidade.card.delete')}
                   </button>
                 )}
               </div>
@@ -310,7 +312,7 @@ export default function PostCard({
       <div className="px-4 pb-2">
         {likesCount > 0 && (
           <p className="text-xs font-semibold text-gray-800">
-            {likesCount} {likesCount === 1 ? 'gosto' : 'gostos'}
+            {likesCount} {likesCount === 1 ? t('comunidade.card.like_one') : t('comunidade.card.like_other')}
           </p>
         )}
       </div>
@@ -320,9 +322,9 @@ export default function PostCard({
         <div className="border-t border-gray-50 bg-gray-50/50">
           <div className="p-4 space-y-3 max-h-72 overflow-y-auto">
             {loadingComentarios ? (
-              <p className="text-center text-gray-400 text-sm py-2">A carregar...</p>
+              <p className="text-center text-gray-400 text-sm py-2">{t('comunidade.card.loading')}</p>
             ) : comentarios.length === 0 ? (
-              <p className="text-center text-gray-400 text-sm py-2">Sê a primeira a comentar</p>
+              <p className="text-center text-gray-400 text-sm py-2">{t('comunidade.card.be_first_comment')}</p>
             ) : (
               comentarios.map(c => (
                 <div key={c.id} className="flex gap-2.5">
@@ -333,7 +335,7 @@ export default function PostCard({
                         onClick={() => onPerfilClick?.(c.community_profiles?.user_id)}
                         className="text-xs font-bold text-gray-800 hover:underline"
                       >
-                        {c.community_profiles?.display_name || 'Utilizadora'}
+                        {c.community_profiles?.display_name || t('comunidade.card.user_default')}
                       </button>
                       <span className="text-xs text-gray-300">{tempoRelativo(c.created_at)}</span>
                     </div>
@@ -349,7 +351,7 @@ export default function PostCard({
               type="text"
               value={novoComentario}
               onChange={(e) => setNovoComentario(e.target.value)}
-              placeholder="Adiciona um comentário..."
+              placeholder={t('comunidade.card.comment_placeholder')}
               className="flex-1 text-sm py-2 px-3 rounded-full border border-gray-200 focus:border-purple-300 focus:ring-0"
               maxLength={500}
             />
@@ -359,7 +361,7 @@ export default function PostCard({
               className="text-sm font-bold px-3 rounded-full transition-all disabled:opacity-30"
               style={{ color: '#8B5CF6' }}
             >
-              {enviandoComentario ? '...' : 'Publicar'}
+              {enviandoComentario ? '...' : t('comunidade.card.publish')}
             </button>
           </form>
         </div>

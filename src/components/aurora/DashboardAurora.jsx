@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import { g } from '../../utils/genero'
 import { AURORA_GAMIFICATION } from '../../lib/aurora/gamificacao'
 import ModuleDashboardShell from '../shared/ModuleDashboardShell'
@@ -20,6 +21,7 @@ const AURORA_DARK = '#2e1a1a'
 export default function DashboardAurora() {
   const navigate = useNavigate()
   const { session } = useAuth()
+  const { t } = useI18n()
 
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState(null)
@@ -86,9 +88,9 @@ export default function DashboardAurora() {
   // Saudação contextual baseada na hora
   function getSaudacao() {
     const hora = new Date().getHours()
-    if (hora < 12) return 'Uma nova aurora começa agora'
-    if (hora < 18) return 'A tua luz continua a brilhar'
-    return 'Que esta noite traga renovação'
+    if (hora < 12) return t('aurora.dashboard.greeting_morning')
+    if (hora < 18) return t('aurora.dashboard.greeting_afternoon')
+    return t('aurora.dashboard.greeting_evening')
   }
 
   // Icones dos ecos completados
@@ -111,7 +113,7 @@ export default function DashboardAurora() {
       >
         <div className="text-center">
           <div className="text-6xl mb-4 animate-pulse">🌅</div>
-          <p className="text-white/60 text-sm">A preparar a tua aurora...</p>
+          <p className="text-white/60 text-sm">{t('aurora.dashboard.loading')}</p>
         </div>
       </div>
     )
@@ -119,20 +121,20 @@ export default function DashboardAurora() {
 
   // ===== Quick Actions =====
   const quickActions = [
-    { label: 'Cerimónia de Graduação', to: '/aurora/cerimonia', icon: '🌅', subtitle: 'Celebrar a tua jornada' },
-    { label: 'Antes & Depois', to: '/aurora/antes-depois', icon: '\u{1F4D6}', subtitle: 'A tua história' },
-    { label: 'Resumo da Jornada', to: '/aurora/resumo', icon: '\u{1F4CA}', subtitle: 'Relatório completo' },
-    { label: 'Modo Manutenção', to: '/aurora/manutencao', icon: '\u{1F6E1}\uFE0F', subtitle: 'Check-ins mensais' },
-    { label: 'Mentoria', to: '/aurora/mentoria', icon: '\u{1F31F}', subtitle: 'Partilhar sabedoria' },
-    { label: 'Ritual Aurora', to: '/aurora/ritual', icon: '\u2600\uFE0F', subtitle: 'Ritual matinal' },
-    { label: 'Renovação Anual', to: '/aurora/renovacao', icon: '\u{1F504}', subtitle: 'Renovar intenções' }
+    { label: t('aurora.dashboard.graduation'), to: '/aurora/cerimonia', icon: '🌅', subtitle: t('aurora.dashboard.graduation_sub') },
+    { label: t('aurora.dashboard.before_after'), to: '/aurora/antes-depois', icon: '\u{1F4D6}', subtitle: t('aurora.dashboard.before_after_sub') },
+    { label: t('aurora.dashboard.summary'), to: '/aurora/resumo', icon: '\u{1F4CA}', subtitle: t('aurora.dashboard.summary_sub') },
+    { label: t('aurora.dashboard.maintenance'), to: '/aurora/manutencao', icon: '\u{1F6E1}\uFE0F', subtitle: t('aurora.dashboard.maintenance_sub') },
+    { label: t('aurora.dashboard.mentorship'), to: '/aurora/mentoria', icon: '\u{1F31F}', subtitle: t('aurora.dashboard.mentorship_sub') },
+    { label: t('aurora.dashboard.ritual'), to: '/aurora/ritual', icon: '\u2600\uFE0F', subtitle: t('aurora.dashboard.ritual_sub') },
+    { label: t('aurora.dashboard.renewal'), to: '/aurora/renovacao', icon: '\u{1F504}', subtitle: t('aurora.dashboard.renewal_sub') }
   ]
 
   // ===== Stats =====
   const stats = [
-    { label: 'Raios', value: raios, icon: '🌅' },
-    { label: 'Ecos', value: ecosCompletados, icon: '💫' },
-    { label: 'Status', value: graduacaoData ? g('Graduado', 'Graduada') : 'Em curso', icon: '🎓' }
+    { label: t('aurora.dashboard.stat_rays'), value: raios, icon: '🌅' },
+    { label: t('aurora.dashboard.stat_ecos'), value: ecosCompletados, icon: '💫' },
+    { label: t('aurora.dashboard.stat_status'), value: graduacaoData ? t('aurora.dashboard.status_graduated') : t('aurora.dashboard.status_in_progress'), icon: '🎓' }
   ]
 
   // ===== Render =====
@@ -163,7 +165,7 @@ export default function DashboardAurora() {
           className="text-white text-lg font-semibold mb-3"
           style={{ fontFamily: 'var(--font-titulos)' }}
         >
-          Ecos Completados
+          {t('aurora.dashboard.ecos_completed')}
         </h2>
 
         <div className="flex flex-wrap gap-3">
@@ -192,7 +194,7 @@ export default function DashboardAurora() {
 
         {ecosCompletados >= 7 && (
           <p className="text-white/60 text-sm mt-3">
-            Todos os ecos completados! {g('És um verdadeiro mestre', 'És uma verdadeira mestra')} da tua jornada.
+            {t('aurora.dashboard.all_completed')}
           </p>
         )}
       </div>
@@ -210,7 +212,7 @@ export default function DashboardAurora() {
             <span className="text-xl flex-shrink-0">🎓</span>
             <div>
               <p className="text-white/80 text-sm font-medium">
-                Cerimónia de Graduação {g('completado', 'completada')}
+                {t('aurora.dashboard.graduation_done')}
               </p>
               <p className="text-white/40 text-xs mt-0.5">
                 {new Date(graduacaoData).toLocaleDateString('pt-PT')}
@@ -221,7 +223,7 @@ export default function DashboardAurora() {
               className="ml-auto text-xs px-3 py-1.5 rounded-lg transition-colors"
               style={{ color: AURORA_COLOR, background: `${AURORA_COLOR}15` }}
             >
-              Rever
+              {t('aurora.dashboard.review')}
             </Link>
           </div>
         </div>
@@ -237,10 +239,10 @@ export default function DashboardAurora() {
             <span className="text-xl flex-shrink-0">🌅</span>
             <div>
               <p className="text-white/80 text-sm font-medium">
-                A tua cerimónia de graduação espera por ti
+                {t('aurora.dashboard.ceremony_awaits')}
               </p>
               <p className="text-white/40 text-xs mt-1">
-                Celebra tudo o que conquistaste nesta jornada
+                {t('aurora.dashboard.celebrate')}
               </p>
             </div>
             <Link
@@ -248,7 +250,7 @@ export default function DashboardAurora() {
               className="ml-auto text-xs px-3 py-1.5 rounded-lg transition-colors flex-shrink-0"
               style={{ color: AURORA_COLOR, background: `${AURORA_COLOR}15` }}
             >
-              Iniciar
+              {t('aurora.dashboard.start')}
             </Link>
           </div>
         </div>
@@ -265,9 +267,9 @@ export default function DashboardAurora() {
         >
           <span className="text-xl block mb-1">{modoManutencao ? '\u{1F6E1}\uFE0F' : '\u{1F512}'}</span>
           <p className="text-white/70 text-xs">
-            {modoManutencao ? g('Activo', 'Activa') : g('Inactivo', 'Inactiva')}
+            {modoManutencao ? t('aurora.dashboard.active') : t('aurora.dashboard.inactive')}
           </p>
-          <p className="text-white/40 text-[10px]">Manutenção</p>
+          <p className="text-white/40 text-[10px]">{t('aurora.dashboard.maintenance')}</p>
         </div>
         <div
           className="rounded-xl border p-3 text-center"
@@ -278,9 +280,9 @@ export default function DashboardAurora() {
         >
           <span className="text-xl block mb-1">{mentora ? '\u{1F31F}' : '\u{1F512}'}</span>
           <p className="text-white/70 text-xs">
-            {mentora ? g('Activo', 'Activa') : g('Inactivo', 'Inactiva')}
+            {mentora ? t('aurora.dashboard.active') : t('aurora.dashboard.inactive')}
           </p>
-          <p className="text-white/40 text-[10px]">Mentoria</p>
+          <p className="text-white/40 text-[10px]">{t('aurora.dashboard.mentorship')}</p>
         </div>
       </div>
 
@@ -296,10 +298,10 @@ export default function DashboardAurora() {
           <span className="text-xl flex-shrink-0">☀️</span>
           <div>
             <p className="text-white/80 text-sm italic leading-relaxed">
-              "Não é o fim da jornada — é o início de uma vida {g('vivido', 'vivida')} com consciência. Tu já sabes quem és. Agora vive isso."
+              "{t('aurora.dashboard.quote')}"
             </p>
             <p className="text-white/30 text-xs mt-2">
-              — O teu espaço de integração
+              {t('aurora.dashboard.quote_attribution')}
             </p>
           </div>
         </div>
@@ -322,21 +324,21 @@ export default function DashboardAurora() {
           className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
         >
           <span className="text-xl">💬</span>
-          <span className="text-white/70 text-xs">Chat</span>
+          <span className="text-white/70 text-xs">{t('aurora.dashboard.chat')}</span>
         </Link>
         <Link
           to="/aurora/insights"
           className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
         >
           <span className="text-xl">💡</span>
-          <span className="text-white/70 text-xs">Insights</span>
+          <span className="text-white/70 text-xs">{t('aurora.dashboard.insights')}</span>
         </Link>
         <Link
           to="/aurora/perfil"
           className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
         >
           <span className="text-xl">👤</span>
-          <span className="text-white/70 text-xs">Perfil</span>
+          <span className="text-white/70 text-xs">{t('aurora.dashboard.profile')}</span>
         </Link>
       </div>
 
@@ -347,7 +349,7 @@ export default function DashboardAurora() {
           className="text-sm transition-colors"
           style={{ color: `${AURORA_COLOR}aa` }}
         >
-          Ver perfil completo e conquistas →
+          {t('aurora.dashboard.view_profile')}
         </Link>
       </div>
     </ModuleDashboardShell>

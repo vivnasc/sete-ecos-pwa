@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import InsightEngine from '../shared/InsightEngine'
 import ModuleHeader from '../shared/ModuleHeader'
 import { g } from '../../utils/genero'
@@ -92,6 +93,7 @@ const AURORA_INSIGHTS_CONFIG = {
 
 export default function InsightsAurora() {
   const { user } = useAuth()
+  const { t } = useI18n()
   const [userId, setUserId] = useState(null)
 
   useEffect(() => {
@@ -109,7 +111,7 @@ export default function InsightsAurora() {
 
   return (
     <div className="min-h-screen" style={{ background: '#2e1a1a' }}>
-      <ModuleHeader eco="aurora" title="Insights" subtitle="A tua aurora interior" compact />
+      <ModuleHeader eco="aurora" title={t('aurora.insights.title')} subtitle={t('aurora.insights.subtitle')} compact />
       <div className="max-w-lg mx-auto px-5 py-6">
         {userId ? (
           <InsightEngine eco="aurora" userId={userId} config={AURORA_INSIGHTS_CONFIG} />

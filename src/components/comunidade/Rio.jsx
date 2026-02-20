@@ -32,6 +32,7 @@ import ReflexaoImersiva from './ReflexaoImersiva'
 import CriarReflexao from './CriarReflexao'
 import EditarJornada from './EditarJornada'
 import { Avatar } from './HubComunidade'
+import { useI18n } from '../../contexts/I18nContext'
 
 const PAGE_SIZE = 20
 const ECOS_FILTRO = ['vitalis', 'aurea', 'lumina', 'serena']
@@ -41,6 +42,7 @@ const RESSONANCIA_KEYS = Object.keys(RESSONANCIA_TIPOS)
 
 export default function Rio() {
   const navigate = useNavigate()
+  const { t } = useI18n()
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState(null)
   const [perfil, setPerfil] = useState(null)
@@ -231,7 +233,7 @@ export default function Rio() {
       const newEspelho = {
         id: `user_espelho_${Date.now()}`, post_id: espelhosPost.id, user_id: userId,
         conteudo: novoEspelho.trim(), created_at: new Date().toISOString(),
-        community_profiles: { user_id: userId, display_name: 'Tu', avatar_emoji: '🌸' }
+        community_profiles: { user_id: userId, display_name: t('comunidade.card.you'), avatar_emoji: '🌸' }
       }
       if (isGhostPost(espelhosPost)) {
         setEspelhos(prev => [...prev, newEspelho])
@@ -281,7 +283,7 @@ export default function Rio() {
           🌊
         </div>
         <p className="text-gray-400 text-sm" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
-          A fluir para o rio...
+          {t('comunidade.rio.loading')}
         </p>
       </div>
     )
@@ -309,7 +311,7 @@ export default function Rio() {
                   <span className="text-lg">{promptDoDia.emoji}</span>
                   <span className="text-[10px] font-semibold tracking-[0.15em] uppercase text-purple-400"
                     style={{ fontFamily: 'var(--font-corpo)' }}>
-                    Prompt do Dia
+                    {t('comunidade.rio.prompt_of_day')}
                   </span>
                 </div>
                 <p className="text-lg text-gray-700 leading-relaxed mb-3"
@@ -318,7 +320,7 @@ export default function Rio() {
                 </p>
                 <span className="text-xs font-semibold px-4 py-2 rounded-full text-white inline-block"
                   style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)' }}>
-                  Reflectir
+                  {t('comunidade.rio.reflect')}
                 </span>
               </div>
             </button>
@@ -345,7 +347,7 @@ export default function Rio() {
                   <div className="w-10 h-10 rounded-full animate-breathe-in mb-3"
                     style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%)' }} />
                   <p className="text-xs text-gray-300" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
-                    Respira. O rio continua.
+                    {t('comunidade.rio.breathe')}
                   </p>
                 </div>
               )}
@@ -382,7 +384,7 @@ export default function Rio() {
                       )}
                       <div>
                         <p className="text-sm font-medium text-gray-700" style={{ fontFamily: 'var(--font-corpo)' }}>
-                          {post.is_anonymous ? 'Alma Anónima' : (perfilPost?.display_name || 'Utilizadora')}
+                          {post.is_anonymous ? t('comunidade.card.anonymous_soul') : (perfilPost?.display_name || t('comunidade.card.user_default'))}
                         </p>
                         <p className="text-[10px] text-gray-300">{tempoRelativo(post.created_at)}</p>
                       </div>
@@ -409,7 +411,7 @@ export default function Rio() {
                   </p>
                   {conteudo.length > 200 && (
                     <p className="text-xs text-gray-300 mt-1" style={{ fontFamily: 'var(--font-corpo)' }}>
-                      toca para ler tudo
+                      {t('comunidade.rio.tap_read_all')}
                     </p>
                   )}
                 </button>
@@ -436,12 +438,12 @@ export default function Rio() {
                     style={{ background: 'rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.05)' }}
                   >
                     <span className="text-sm">🪞</span>
-                    <span className="text-xs text-gray-400">Espelhos</span>
+                    <span className="text-xs text-gray-400">{t('comunidade.card.mirrors')}</span>
                   </button>
 
                   {/* Immerse hint */}
                   <span className="text-[10px] text-gray-300" style={{ fontFamily: 'var(--font-corpo)' }}>
-                    toca para imergir
+                    {t('comunidade.rio.tap_immerse')}
                   </span>
                 </div>
               </div>
@@ -463,7 +465,7 @@ export default function Rio() {
           <div className="text-center py-12">
             <span className="text-3xl block mb-3 animate-breathe">🌊</span>
             <p className="text-xs text-gray-300" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
-              Chegaste ao remanso do rio
+              {t('comunidade.rio.end_of_river')}
             </p>
           </div>
         )}
@@ -473,12 +475,12 @@ export default function Rio() {
           <div className="text-center py-20">
             <span className="text-4xl block mb-4">🌱</span>
             <p className="text-sm text-gray-400 mb-6" style={{ fontFamily: 'var(--font-titulos)' }}>
-              O rio está quieto... Sê a primeira a reflectir.
+              {t('comunidade.rio.empty_river')}
             </p>
             <button onClick={() => setShowCriarReflexao(true)}
               className="px-6 py-3 rounded-full text-sm font-semibold text-white active:scale-95"
               style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)' }}>
-              Criar reflexão
+              {t('comunidade.rio.create_reflection')}
             </button>
           </div>
         )}
@@ -502,7 +504,7 @@ export default function Rio() {
               color: filtroEco ? ECOS_INFO[filtroEco]?.cor : '#6B7280',
               border: showFilters ? '1px solid rgba(139,92,246,0.2)' : '1px solid rgba(0,0,0,0.06)'
             }}>
-            {filtroEco ? `${ECOS_INFO[filtroEco]?.emoji} ${ECOS_INFO[filtroEco]?.label}` : 'O Rio'}
+            {filtroEco ? `${ECOS_INFO[filtroEco]?.emoji} ${ECOS_INFO[filtroEco]?.label}` : t('comunidade.rio.the_river')}
           </button>
 
           <button onClick={() => navigate(`/comunidade/jornada/${userId}`)}
@@ -523,7 +525,7 @@ export default function Rio() {
                 <button onClick={() => { setFiltroEco(null); setFiltroTema(null); setShowFilters(false) }}
                   className={`text-xs px-3 py-1.5 rounded-full font-medium ${!filtroEco ? 'text-white' : 'text-gray-500'}`}
                   style={!filtroEco ? { backgroundColor: '#8B5CF6' } : { backgroundColor: '#F3F4F6' }}>
-                  Todas
+                  {t('comunidade.rio.filter_all')}
                 </button>
                 {ECOS_FILTRO.map(eco => {
                   const info = ECOS_INFO[eco]
@@ -594,7 +596,7 @@ export default function Rio() {
             <div className="flex-shrink-0 p-4 pb-2 border-b border-gray-100">
               <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-3" />
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-semibold" style={{ fontFamily: 'var(--font-titulos)', color: '#1E1B4B' }}>Espelhos</h3>
+                <h3 className="text-base font-semibold" style={{ fontFamily: 'var(--font-titulos)', color: '#1E1B4B' }}>{t('comunidade.card.mirrors')}</h3>
                 <button onClick={() => { setEspelhosPost(null); setNovoEspelho('') }} className="text-gray-400 p-1">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -610,14 +612,14 @@ export default function Rio() {
               ) : espelhos.length === 0 ? (
                 <div className="text-center py-8">
                   <span className="text-3xl block mb-2">🪞</span>
-                  <p className="text-sm text-gray-400">Sê a primeira a espelhar esta reflexão</p>
+                  <p className="text-sm text-gray-400">{t('comunidade.card.be_first_mirror')}</p>
                 </div>
               ) : espelhos.map(e => (
                 <div key={e.id} className="flex gap-3">
                   <Avatar perfil={e.community_profiles} size={32} className="flex-shrink-0" />
                   <div>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-xs font-bold text-gray-700">{e.community_profiles?.display_name || 'Utilizadora'}</span>
+                      <span className="text-xs font-bold text-gray-700">{e.community_profiles?.display_name || t('comunidade.card.user_default')}</span>
                       <span className="text-xs text-gray-300">{tempoRelativo(e.created_at)}</span>
                     </div>
                     <p className="text-sm text-gray-600 leading-relaxed mt-0.5" style={{ fontFamily: 'var(--font-corpo)' }}>{e.conteudo}</p>
@@ -635,11 +637,11 @@ export default function Rio() {
             </div>
             <form onSubmit={handleEnviarEspelho} className="flex-shrink-0 flex gap-2 p-3 pb-6 border-t border-gray-100 bg-white">
               <input type="text" value={novoEspelho} onChange={(e) => setNovoEspelho(e.target.value)}
-                placeholder="Espelha esta reflexão..." maxLength={500} autoFocus
+                placeholder={t('comunidade.card.mirror_placeholder')} maxLength={500} autoFocus
                 className="flex-1 text-sm py-2.5 px-4 rounded-full border border-gray-200 focus:border-purple-300 focus:outline-none" />
               <button type="submit" disabled={!novoEspelho.trim() || enviandoEspelho}
                 className="text-sm font-bold px-4 rounded-full disabled:opacity-30" style={{ color: '#8B5CF6' }}>
-                {enviandoEspelho ? '...' : 'Enviar'}
+                {enviandoEspelho ? '...' : t('comunidade.card.send')}
               </button>
             </form>
           </div>

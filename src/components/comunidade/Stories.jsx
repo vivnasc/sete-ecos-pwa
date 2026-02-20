@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { criarStory, getStoriesAtivos, marcarStoryVista, uploadImagem, STORY_COLORS, tempoRelativo } from '../../lib/comunidade'
 import { supabase } from '../../lib/supabase'
+import { useI18n } from '../../contexts/I18nContext'
 
 // ============================================================
 // StoriesBar — Barra horizontal de stories no topo do feed
@@ -14,6 +15,7 @@ export function StoriesBar({ userId, perfil, onStoryCriada }) {
   const [grupoAtivo, setGrupoAtivo] = useState(0)
   const [showCriar, setShowCriar] = useState(false)
   const scrollRef = useRef(null)
+  const { t } = useI18n()
 
   useEffect(() => {
     if (userId) carregarStories()
@@ -110,7 +112,7 @@ export function StoriesBar({ userId, perfil, onStoryCriada }) {
             </div>
           </div>
           <span className="text-[10px] text-gray-500 font-medium w-16 text-center truncate">
-            A tua story
+            {t('comunidade.stories.your_story')}
           </span>
         </button>
 
@@ -155,7 +157,7 @@ export function StoriesBar({ userId, perfil, onStoryCriada }) {
         {grupos.length === 0 && (
           <div className="flex items-center h-16 pl-2">
             <p className="text-xs text-gray-300 italic" style={{ fontFamily: 'var(--font-titulos)' }}>
-              Sem stories de momento...
+              {t('comunidade.stories.no_stories')}
             </p>
           </div>
         )}
@@ -403,6 +405,7 @@ export function CriarStory({ userId, onStoryCriada, onFechar }) {
   const [imagemPreview, setImagemPreview] = useState(null)
   const [enviando, setEnviando] = useState(false)
   const fileInputRef = useRef(null)
+  const { t } = useI18n()
 
   const handleImagemChange = (e) => {
     const file = e.target.files?.[0]
@@ -410,7 +413,7 @@ export function CriarStory({ userId, onStoryCriada, onFechar }) {
 
     // Validar tamanho (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Imagem demasiado grande. Maximo 5MB.')
+      alert(t('comunidade.stories.image_too_large'))
       return
     }
 
@@ -443,7 +446,7 @@ export function CriarStory({ userId, onStoryCriada, onFechar }) {
       onStoryCriada?.(novaStory)
     } catch (error) {
       console.error('Erro ao criar story:', error)
-      alert('Erro ao publicar story. Tenta novamente.')
+      alert(t('comunidade.stories.error_publishing'))
     }
     setEnviando(false)
   }
@@ -463,10 +466,10 @@ export function CriarStory({ userId, onStoryCriada, onFechar }) {
             onClick={onFechar}
             className="text-gray-400 hover:text-gray-600 text-sm font-medium"
           >
-            Cancelar
+            {t('comunidade.stories.cancel')}
           </button>
           <h3 className="font-semibold text-gray-800" style={{ fontFamily: 'var(--font-titulos)' }}>
-            Nova Story
+            {t('comunidade.stories.new_story')}
           </h3>
           <button
             onClick={handlePublicar}
@@ -474,7 +477,7 @@ export function CriarStory({ userId, onStoryCriada, onFechar }) {
             className="text-sm font-bold px-4 py-1.5 rounded-full text-white transition-all disabled:opacity-40"
             style={{ backgroundColor: '#8B5CF6' }}
           >
-            {enviando ? 'A publicar...' : 'Publicar'}
+            {enviando ? t('comunidade.stories.publishing') : t('comunidade.stories.publish')}
           </button>
         </div>
 
@@ -489,7 +492,7 @@ export function CriarStory({ userId, onStoryCriada, onFechar }) {
             }`}
             style={tipo === 'texto' ? { backgroundColor: '#8B5CF6' } : {}}
           >
-            Texto
+            {t('comunidade.stories.text')}
           </button>
           <button
             onClick={() => setTipo('imagem')}
@@ -500,7 +503,7 @@ export function CriarStory({ userId, onStoryCriada, onFechar }) {
             }`}
             style={tipo === 'imagem' ? { backgroundColor: '#8B5CF6' } : {}}
           >
-            Imagem
+            {t('comunidade.stories.image')}
           </button>
         </div>
 
@@ -525,7 +528,7 @@ export function CriarStory({ userId, onStoryCriada, onFechar }) {
                   opacity: conteudo ? 1 : 0.5
                 }}
               >
-                {conteudo || 'A tua mensagem aparece aqui...'}
+                {conteudo || t('comunidade.stories.preview_placeholder')}
               </p>
             ) : imagemPreview ? (
               <div className="relative w-full h-full">
@@ -551,7 +554,7 @@ export function CriarStory({ userId, onStoryCriada, onFechar }) {
                 <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span className="text-sm font-medium">Toca para escolher imagem</span>
+                <span className="text-sm font-medium">{t('comunidade.stories.tap_choose_image')}</span>
               </button>
             )}
           </div>
@@ -563,7 +566,7 @@ export function CriarStory({ userId, onStoryCriada, onFechar }) {
             <textarea
               value={conteudo}
               onChange={(e) => setConteudo(e.target.value)}
-              placeholder="Escreve a tua mensagem..."
+              placeholder={t('comunidade.stories.write_message')}
               className="w-full min-h-[80px] text-sm text-gray-700 placeholder-gray-300 rounded-xl p-3 border border-gray-200 focus:border-purple-300 resize-none"
               maxLength={500}
               autoFocus
@@ -592,7 +595,7 @@ export function CriarStory({ userId, onStoryCriada, onFechar }) {
                   onClick={() => fileInputRef.current?.click()}
                   className="w-full py-3 rounded-xl bg-gray-100 text-gray-500 text-sm font-medium hover:bg-gray-200 transition-colors"
                 >
-                  Escolher imagem da galeria
+                  {t('comunidade.stories.choose_from_gallery')}
                 </button>
               </div>
             )}
@@ -601,7 +604,7 @@ export function CriarStory({ userId, onStoryCriada, onFechar }) {
 
         {/* Selector de cor de fundo */}
         <div className="px-4 pb-5 pt-1">
-          <p className="text-xs text-gray-400 mb-2.5 font-medium">COR DE FUNDO</p>
+          <p className="text-xs text-gray-400 mb-2.5 font-medium">{t('comunidade.stories.background_color')}</p>
           <div className="flex items-center gap-2 flex-wrap">
             {STORY_COLORS.map((cor) => (
               <button

@@ -4,9 +4,11 @@ import { supabase } from '../../lib/supabase'
 import { getNotificacoes, marcarNotificacoesLidas, tempoRelativo } from '../../lib/comunidade'
 import { getGhostNotificationsForPosts, getGhostNotifsLidas, marcarGhostNotifsLidas } from '../../lib/ghost-users'
 import { Avatar } from './HubComunidade'
+import { useI18n } from '../../contexts/I18nContext'
 
 export default function Notificacoes() {
   const navigate = useNavigate()
+  const { t } = useI18n()
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState(null)
   const [notificacoes, setNotificacoes] = useState([])
@@ -90,24 +92,24 @@ export default function Notificacoes() {
     switch (notif.tipo) {
       case 'ressonancia': {
         const emoji = RESSO_EMOJIS[notif.conteudo] || '🫧'
-        return `ressoou ${emoji} com a tua reflexão`
+        return t('comunidade.notificacoes.resonated', { emoji })
       }
       case 'espelho':
         return notif.conteudo
-          ? `espelhou: "${notif.conteudo.length > 40 ? notif.conteudo.slice(0, 40) + '...' : notif.conteudo}"`
-          : 'espelhou a tua reflexão'
+          ? `${t('comunidade.notificacoes.mirrored_content')} "${notif.conteudo.length > 40 ? notif.conteudo.slice(0, 40) + '...' : notif.conteudo}"`
+          : t('comunidade.notificacoes.mirrored')
       case 'like':
-        return 'gostou da tua publicação'
+        return t('comunidade.notificacoes.liked')
       case 'comment':
         return notif.conteudo
-          ? `comentou: ${notif.conteudo.length > 50 ? notif.conteudo.slice(0, 50) + '...' : notif.conteudo}`
-          : 'comentou na tua publicação'
+          ? `${t('comunidade.notificacoes.commented_content')} ${notif.conteudo.length > 50 ? notif.conteudo.slice(0, 50) + '...' : notif.conteudo}`
+          : t('comunidade.notificacoes.commented')
       case 'follow':
-        return 'começou a seguir-te'
+        return t('comunidade.notificacoes.followed')
       case 'mention':
-        return 'mencionou-te numa publicação'
+        return t('comunidade.notificacoes.mentioned')
       default:
-        return 'interagiu contigo'
+        return t('comunidade.notificacoes.generic')
     }
   }
 
@@ -137,7 +139,7 @@ export default function Notificacoes() {
         <div>
           {lista.map(notif => {
             const actorProfile = notif.actor_profile
-            const nome = actorProfile?.display_name || 'Alguem'
+            const nome = actorProfile?.display_name || t('comunidade.notificacoes.someone')
             const avatar = actorProfile?.avatar_emoji || '🌸'
             const avatarUrl = actorProfile?.avatar_url
 
@@ -196,7 +198,7 @@ export default function Notificacoes() {
           🔔
         </div>
         <p className="text-gray-400" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
-          A carregar notificacoes...
+          {t('comunidade.notificacoes.loading')}
         </p>
       </div>
     )
@@ -222,7 +224,7 @@ export default function Notificacoes() {
             className="text-lg font-semibold text-gray-800"
             style={{ fontFamily: 'var(--font-titulos)' }}
           >
-            Notificacoes
+            {t('comunidade.notificacoes.title')}
           </h1>
         </div>
       </div>
@@ -241,25 +243,25 @@ export default function Notificacoes() {
               className="text-lg font-semibold text-gray-700 mb-2"
               style={{ fontFamily: 'var(--font-titulos)' }}
             >
-              Sem notificacoes
+              {t('comunidade.notificacoes.empty_title')}
             </h2>
             <p className="text-sm text-gray-400 max-w-xs">
-              Quando alguem interagir com as tuas publicacoes ou comecar a seguir-te, vais ver aqui.
+              {t('comunidade.notificacoes.empty_desc')}
             </p>
             <button
               onClick={() => navigate('/comunidade')}
               className="mt-6 text-sm font-medium px-5 py-2.5 rounded-full text-white transition-all hover:shadow-lg active:scale-95"
               style={{ backgroundColor: '#8B5CF6' }}
             >
-              Explorar comunidade
+              {t('comunidade.notificacoes.explore')}
             </button>
           </div>
         ) : (
           /* Lista de notificacoes agrupadas */
           <div className="pt-2">
-            {renderGrupo('Hoje', grupos.hoje)}
-            {renderGrupo('Esta semana', grupos.semana)}
-            {renderGrupo('Antes', grupos.antes)}
+            {renderGrupo(t('comunidade.notificacoes.today'), grupos.hoje)}
+            {renderGrupo(t('comunidade.notificacoes.this_week'), grupos.semana)}
+            {renderGrupo(t('comunidade.notificacoes.earlier'), grupos.antes)}
           </div>
         )}
       </div>

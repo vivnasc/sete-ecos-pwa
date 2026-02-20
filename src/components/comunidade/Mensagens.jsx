@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { getConversas, getOuCriarConversa, getMensagens, enviarMensagem, tempoRelativo } from '../../lib/comunidade'
+import { useI18n } from '../../contexts/I18nContext'
 
 // ============================================================
 // ConversasList — Lista de conversas (inbox)
@@ -9,6 +10,7 @@ import { getConversas, getOuCriarConversa, getMensagens, enviarMensagem, tempoRe
 
 function ConversasList({ userId, onAbrirConversa }) {
   const navigate = useNavigate()
+  const { t } = useI18n()
   const [loading, setLoading] = useState(true)
   const [conversas, setConversas] = useState([])
 
@@ -41,7 +43,7 @@ function ConversasList({ userId, onAbrirConversa }) {
           💬
         </div>
         <p className="text-gray-400" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
-          A carregar mensagens...
+          {t('comunidade.mensagens.loading')}
         </p>
       </div>
     )
@@ -58,7 +60,7 @@ function ConversasList({ userId, onAbrirConversa }) {
             </svg>
           </button>
           <h1 className="text-xl font-bold" style={{ fontFamily: 'var(--font-titulos)', color: '#1A1A4E' }}>
-            Mensagens
+            {t('comunidade.mensagens.title')}
           </h1>
         </div>
       </div>
@@ -69,10 +71,10 @@ function ConversasList({ userId, onAbrirConversa }) {
           <div className="text-center py-16 px-6">
             <span className="text-5xl block mb-4">💬</span>
             <h3 className="text-lg font-semibold text-gray-700 mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
-              Sem mensagens ainda
+              {t('comunidade.mensagens.empty_title')}
             </h3>
             <p className="text-sm text-gray-400">
-              Quando iniciares uma conversa, ela aparece aqui.
+              {t('comunidade.mensagens.empty_desc')}
             </p>
           </div>
         ) : (
@@ -145,6 +147,7 @@ function ConversasList({ userId, onAbrirConversa }) {
 
 function ChatView({ userId, conversaId }) {
   const navigate = useNavigate()
+  const { t } = useI18n()
   const [loading, setLoading] = useState(true)
   const [mensagens, setMensagens] = useState([])
   const [conversa, setConversa] = useState(null)
@@ -279,7 +282,7 @@ function ChatView({ userId, conversaId }) {
           💬
         </div>
         <p className="text-gray-400" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
-          A abrir conversa...
+          {t('comunidade.mensagens.opening')}
         </p>
       </div>
     )
@@ -326,7 +329,7 @@ function ChatView({ userId, conversaId }) {
             <div className="text-center py-12">
               <span className="text-4xl block mb-3">👋</span>
               <p className="text-sm text-gray-400">
-                Envia a primeira mensagem para iniciar a conversa.
+                {t('comunidade.mensagens.first_message')}
               </p>
             </div>
           )}
@@ -398,7 +401,7 @@ function ChatView({ userId, conversaId }) {
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Escreve uma mensagem..."
+            placeholder={t('comunidade.mensagens.placeholder')}
             className="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 outline-none focus:ring-2 focus:ring-purple-200 transition-all"
           />
           <button
@@ -457,6 +460,7 @@ export default function Mensagens() {
   const [userId, setUserId] = useState(null)
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+  const { t } = useI18n()
 
   useEffect(() => {
     inicializar()
@@ -493,7 +497,7 @@ export default function Mensagens() {
           💬
         </div>
         <p className="text-gray-400" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
-          A carregar...
+          {t('comunidade.mensagens.loading')}
         </p>
       </div>
     )
@@ -503,13 +507,13 @@ export default function Mensagens() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6" style={{ background: 'linear-gradient(180deg, #FCFCFF 0%, #F8F8FC 100%)' }}>
         <span className="text-5xl block mb-2">🔒</span>
-        <p className="text-gray-500 text-center">Precisas de iniciar sessao para ver as mensagens.</p>
+        <p className="text-gray-500 text-center">{t('comunidade.mensagens.login_required')}</p>
         <button
           onClick={() => navigate('/comunidade')}
           className="text-sm font-medium px-4 py-2 rounded-full"
           style={{ color: '#8B5CF6' }}
         >
-          Voltar
+          {t('comunidade.mensagens.back')}
         </button>
       </div>
     )

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import { g } from '../../utils/genero'
 import ModuleHeader from '../shared/ModuleHeader'
 
@@ -133,6 +134,7 @@ const ECO_DEFINITIONS = [
 export default function ResumoJornada() {
   const navigate = useNavigate()
   const { session } = useAuth()
+  const { t } = useI18n()
 
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState(null)
@@ -215,7 +217,7 @@ export default function ResumoJornada() {
             className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
             style={{ borderColor: `${AURORA_COLOR}40`, borderTopColor: AURORA_COLOR }}
           />
-          <p className="text-gray-500">A carregar a tua jornada...</p>
+          <p className="text-gray-500">{t('aurora.resumo.loading')}</p>
         </div>
       </div>
     )
@@ -225,8 +227,8 @@ export default function ResumoJornada() {
     <div className="min-h-screen bg-gray-50 pb-24">
       <ModuleHeader
         eco="aurora"
-        title="Resumo da Jornada"
-        subtitle="Relatório completo da tua transformação"
+        title={t('aurora.resumo.title')}
+        subtitle={t('aurora.resumo.subtitle')}
       />
 
       <div className="max-w-3xl mx-auto px-4 py-6">
@@ -239,7 +241,7 @@ export default function ResumoJornada() {
             className="text-xl font-bold mb-4 text-center"
             style={{ fontFamily: 'var(--font-titulos)' }}
           >
-            A Tua Jornada
+            {t('aurora.resumo.your_journey')}
           </h2>
 
           <div className="grid grid-cols-3 gap-4 text-center">
@@ -258,7 +260,7 @@ export default function ResumoJornada() {
             <div>
               <p className="text-3xl font-bold">7</p>
               <p className="text-white/70 text-xs mt-1">
-                ecos {g('disponiveis', 'disponiveis')}
+                {t('aurora.resumo.ecos_available')}
               </p>
             </div>
           </div>
@@ -266,7 +268,7 @@ export default function ResumoJornada() {
           {/* Progress bar */}
           <div className="mt-5">
             <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs text-white/70">Progresso geral</span>
+              <span className="text-xs text-white/70">{t('aurora.resumo.overall_progress')}</span>
               <span className="text-xs text-white/70">{totalEcos}/7 ecos</span>
             </div>
             <div className="h-2 bg-white/20 rounded-full overflow-hidden">
@@ -289,11 +291,10 @@ export default function ResumoJornada() {
               className="text-lg font-bold text-gray-800 mb-2"
               style={{ fontFamily: 'var(--font-titulos)' }}
             >
-              A tua jornada está a começar
+              {t('aurora.resumo.journey_starting')}
             </h3>
             <p className="text-sm text-gray-500 max-w-md mx-auto">
-              Ainda não tens ecos activos. Quando {g('começares', 'começares')} a explorar os diferentes ecos,
-              o teu resumo aparecerá aqui.
+              {t('aurora.resumo.no_ecos_yet')}
             </p>
           </div>
         ) : (
@@ -302,7 +303,7 @@ export default function ResumoJornada() {
               className="text-lg font-bold text-gray-800"
               style={{ fontFamily: 'var(--font-titulos)' }}
             >
-              Os Teus Ecos
+              {t('aurora.resumo.your_ecos')}
             </h3>
 
             {ECO_DEFINITIONS.map(eco => {
@@ -353,7 +354,7 @@ export default function ResumoJornada() {
                       }`}
                       style={isActive ? { backgroundColor: eco.color } : undefined}
                     >
-                      {isActive ? g('Activo', 'Activa') : data.subscription_status || 'N/A'}
+                      {isActive ? t('aurora.resumo.active') : data.subscription_status || 'N/A'}
                     </span>
                   </div>
 
@@ -430,7 +431,7 @@ export default function ResumoJornada() {
               className="text-lg font-bold text-gray-800 mb-4"
               style={{ fontFamily: 'var(--font-titulos)' }}
             >
-              Evolução Global
+              {t('aurora.resumo.global_evolution')}
             </h3>
 
             <div className="space-y-4">
@@ -493,7 +494,7 @@ export default function ResumoJornada() {
           className="w-full py-4 rounded-xl text-white font-semibold text-lg transition-all shadow-lg"
           style={{ backgroundColor: AURORA_COLOR }}
         >
-          Exportar como PDF
+          {t('aurora.resumo.export_pdf')}
         </button>
 
         {showPdfMsg && (
@@ -502,17 +503,14 @@ export default function ResumoJornada() {
             style={{ backgroundColor: `${AURORA_COLOR}15`, border: `1px solid ${AURORA_COLOR}30` }}
           >
             <p className="text-sm font-medium" style={{ color: AURORA_COLOR }}>
-              A exportação em PDF está a ser desenvolvida e estará {g('disponível', 'disponível')} em breve.
+              {t('aurora.resumo.pdf_soon')}
             </p>
           </div>
         )}
 
         {/* Motivational footer */}
         <p className="text-center text-xs text-gray-400 mt-6 px-4">
-          {g(
-            'Cada eco que percorres é um passo na tua transformação.',
-            'Cada eco que percorres é um passo na tua transformação.'
-          )}
+          {t('aurora.resumo.footer')}
         </p>
       </div>
     </div>

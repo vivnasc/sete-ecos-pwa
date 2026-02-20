@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import AICoach from '../shared/AICoach'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import { supabase } from '../../lib/supabase'
 import { g } from '../../utils/genero'
 
@@ -87,6 +88,7 @@ const getAuroraPersonality = () => ({
 
 export default function ChatAurora() {
   const { session } = useAuth()
+  const { t } = useI18n()
   const [userId, setUserId] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -127,7 +129,7 @@ export default function ChatAurora() {
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#2e1a1a' }}>
         <div className="text-center">
           <div className="text-4xl mb-3 animate-pulse" aria-hidden="true">🌅</div>
-          <p className="text-white/60 text-sm">A carregar...</p>
+          <p className="text-white/60 text-sm">{t('aurora.chat.loading')}</p>
         </div>
       </div>
     )
