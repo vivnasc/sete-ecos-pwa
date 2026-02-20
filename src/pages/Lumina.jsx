@@ -28,7 +28,9 @@ import {
 } from '../lib/genero';
 import { setSexo } from '../utils/genero';
 import { useAuth } from '../contexts/AuthContext';
+import { useI18n } from '../contexts/I18nContext';
 import UpsellCard from '../components/UpsellCard';
+import LanguageSelector from '../components/LanguageSelector';
 import './Lumina.css';
 
 // ============================================================
@@ -155,6 +157,8 @@ const PERGUNTAS = [
 // COMPONENTE PRINCIPAL
 // ============================================================
 export default function Lumina() {
+  // i18n
+  const { t, locale } = useI18n();
   // Acesso a subscricoes (para upsell contextual)
   const { vitalisAccess, aureaAccess } = useAuth();
   const [upsellDismissed, setUpsellDismissed] = useState(false);
@@ -302,16 +306,16 @@ export default function Lumina() {
     let phase, message;
     if (day <= 5) {
       phase = 'menstrual';
-      message = 'Estás na menstruação – o recolhimento que sentes é natural, não resistência.';
+      message = t('lumina.cycle.menstrual_msg');
     } else if (day <= 13) {
       phase = 'folicular';
-      message = 'Estás na fase folicular – a energia está a subir naturalmente.';
+      message = t('lumina.cycle.folicular_msg');
     } else if (day <= 16) {
       phase = 'ovulacao';
-      message = 'Estás na ovulação – este é o teu pico natural de energia e clareza.';
+      message = t('lumina.cycle.ovulacao_msg');
     } else {
       phase = 'lutea';
-      message = 'Estás na fase lútea – o cansaço ou irritabilidade que sentes é fisiológico, não falha tua.';
+      message = t('lumina.cycle.lutea_msg');
     }
 
     setFaseCiclo({ phase, day, message });
@@ -370,16 +374,19 @@ export default function Lumina() {
   
   function gerarLeitura() {
     const padraoDetectado = detectarPadrao(respostas);
-    const textoLeituraOriginal = obterLeitura(padraoDetectado);
-    const textoLeitura = adaptarTextoGenero(textoLeituraOriginal, genero || profile?.genero);
-    const recomendacao = obterRecomendacaoEco(respostas);
-    const padraoSem = analisarPadroesSemanais(historico);
+    const textoLeituraOriginal = obterLeitura(padraoDetectado, locale);
+    // Gender adaptation only for Portuguese (en/fr already use neutral forms)
+    const textoLeitura = locale === 'pt'
+      ? adaptarTextoGenero(textoLeituraOriginal, genero || profile?.genero)
+      : textoLeituraOriginal;
+    const recomendacao = obterRecomendacaoEco(respostas, locale);
+    const padraoSem = analisarPadroesSemanais(historico, locale);
 
     // Insights personalizados baseados no histórico e fase do ciclo
     const faseActual = faseCiclo?.phase || null;
-    const insightsPersonais = obterInsightsPersonalizados(historico, faseActual);
-    const recCiclo = obterRecomendacaoCicloEco(respostas, faseActual, historico);
-    const tendencias = analisarTendenciasMensais(historico);
+    const insightsPersonais = obterInsightsPersonalizados(historico, faseActual, locale);
+    const recCiclo = obterRecomendacaoCicloEco(respostas, faseActual, historico, locale);
+    const tendencias = analisarTendenciasMensais(historico, locale);
 
     setPadrao(padraoDetectado);
     setLeitura(textoLeitura);
@@ -491,7 +498,7 @@ export default function Lumina() {
   
   async function saveOnboarding() {
     if (!nome.trim()) {
-      alert('Por favor, insere o teu nome.');
+      alert(t('lumina.onboarding.name_required'));
       return;
     }
 
@@ -562,17 +569,18 @@ export default function Lumina() {
   }
 
   function renderHistorico() {
-    const weeklyInsights = obterInsightsSemanais(historico);
+    const weeklyInsights = obterInsightsSemanais(historico, locale);
     const patterns14 = analisarPadroesPeriodo(historico, 14);
     const patterns30 = analisarPadroesPeriodo(historico, 30);
+    const dateLocale = locale === 'fr' ? 'fr-FR' : locale === 'en' ? 'en-GB' : 'pt-PT';
 
     return (
       <div className="history-container">
-        <h2 className="history-title">Histórico</h2>
-        
+        <h2 className="history-title">{t('lumina.history.title')}</h2>
+
         {weeklyInsights && weeklyInsights.length > 0 && (
           <div className="weekly-summary">
-            <div className="weekly-title">Esta semana</div>
+            <div className="weekly-title">{t('lumina.history.this_week')}</div>
             {weeklyInsights.map((insight, i) => (
               <div key={i} className="weekly-insight">{insight}</div>
             ))}
@@ -581,20 +589,21 @@ export default function Lumina() {
 
         {historico.length === 0 ? (
           <div className="history-empty">
-            Ainda não tens registos.<br /><br />
-            Usa a LUMINA diariamente para descobrires os teus padrões.
+            {t('lumina.history.empty').split('\n').map((line, i) => (
+              <span key={i}>{line}{i === 0 && <><br /><br /></>}</span>
+            ))}
           </div>
         ) : (
           historico.slice(0, 10).map((entry, i) => (
             <div key={i} className="history-item">
               <div className="history-date">
-                {new Date(entry.created_at).toLocaleDateString('pt-PT')}
-                {entry.dia_ciclo && ` · Dia ${entry.dia_ciclo} do ciclo`}
+                {new Date(entry.created_at).toLocaleDateString(dateLocale)}
+                {entry.dia_ciclo && ` · ${t('lumina.history.cycle_day', { day: entry.dia_ciclo })}`}
               </div>
               <div className="history-tags">
-                <span className="history-tag">{entry.energia}</span>
-                <span className="history-tag">{entry.corpo}</span>
-                <span className="history-tag">{entry.mente}</span>
+                <span className="history-tag">{locale === 'pt' ? entry.energia : t(`lumina.opt.${entry.energia}`)}</span>
+                <span className="history-tag">{locale === 'pt' ? entry.corpo : t(`lumina.opt.${entry.corpo}`)}</span>
+                <span className="history-tag">{locale === 'pt' ? entry.mente : t(`lumina.opt.${entry.mente}`)}</span>
               </div>
             </div>
           ))
@@ -602,20 +611,20 @@ export default function Lumina() {
 
         {patterns14 && (
           <div className="patterns-section">
-            <div className="patterns-title">últimos 14 dias</div>
+            <div className="patterns-title">{t('lumina.history.last_14')}</div>
             {renderPatternItems(patterns14, 3)}
           </div>
         )}
 
         {patterns30 && (
           <div className="patterns-section">
-            <div className="patterns-title">últimos 30 dias</div>
+            <div className="patterns-title">{t('lumina.history.last_30')}</div>
             {renderPatternItems(patterns30, 7)}
           </div>
         )}
 
         <button className="back-btn" onClick={() => setScreen('splash')}>
-          voltar
+          {t('lumina.history.back')}
         </button>
       </div>
     );
@@ -628,11 +637,11 @@ export default function Lumina() {
     if (counts.energiaBaixa >= threshold) {
       items.push(
         <div key="energia" className="pattern-item">
-          <div className="pattern-stat">Energia baixa: {counts.energiaBaixa}x</div>
+          <div className="pattern-stat">{t('lumina.pattern.low_energy', { count: counts.energiaBaixa })}</div>
           <div className="pattern-insight">
-            {threshold >= 7 
-              ? 'Padrão consolidado. O teu corpo está a precisar de atenção séria.'
-              : 'Atenção ao cansaço acumulado'}
+            {threshold >= 7
+              ? t('lumina.pattern.low_energy_long')
+              : t('lumina.pattern.low_energy_short')}
           </div>
         </div>
       );
@@ -641,11 +650,11 @@ export default function Lumina() {
     if (counts.corpoFechado >= threshold) {
       items.push(
         <div key="corpo" className="pattern-item">
-          <div className="pattern-stat">Corpo fechado: {counts.corpoFechado}x</div>
+          <div className="pattern-stat">{t('lumina.pattern.closed_body', { count: counts.corpoFechado })}</div>
           <div className="pattern-insight">
-            {threshold >= 7 
-              ? 'Tensão crónica. Considera movimento, massagem, ou descanso real.'
-              : 'O corpo está a pedir abertura'}
+            {threshold >= 7
+              ? t('lumina.pattern.closed_body_long')
+              : t('lumina.pattern.closed_body_short')}
           </div>
         </div>
       );
@@ -654,11 +663,11 @@ export default function Lumina() {
     if (counts.menteRuidosa >= threshold) {
       items.push(
         <div key="mente" className="pattern-item">
-          <div className="pattern-stat">Mente agitada: {counts.menteRuidosa}x</div>
+          <div className="pattern-stat">{t('lumina.pattern.noisy_mind', { count: counts.menteRuidosa })}</div>
           <div className="pattern-insight">
-            {threshold >= 7 
-              ? 'Ruído mental persistente. O que está a ocupar espaço?'
-              : 'Precisa de mais silêncio'}
+            {threshold >= 7
+              ? t('lumina.pattern.noisy_mind_long')
+              : t('lumina.pattern.noisy_mind_short')}
           </div>
         </div>
       );
@@ -668,9 +677,9 @@ export default function Lumina() {
       items.push(
         <div key="none" className="pattern-item">
           <div className="pattern-insight">
-            {threshold >= 7 
-              ? 'Sem padrões negativos consolidados. Bom sinal.'
-              : 'Sem padrões negativos detectados.'}
+            {threshold >= 7
+              ? t('lumina.pattern.none_long')
+              : t('lumina.pattern.none_short')}
           </div>
         </div>
       );
@@ -686,6 +695,9 @@ export default function Lumina() {
   function renderSplash() {
     return (
       <div className={`screen ${screen === 'splash' ? 'active' : ''}`}>
+        <div style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 10 }}>
+          <LanguageSelector size="sm" />
+        </div>
         <img src="/logos/lumina-logo_v2.png" alt="LUMINA" className="splash-eye" style={{
           width: '120px',
           height: '120px',
@@ -695,7 +707,7 @@ export default function Lumina() {
 
         <div className="splash-title">LUMINA</div>
         <div className="splash-subtitle">
-          Diagnóstico Interior
+          {t('lumina.subtitle')}
         </div>
         <div style={{
           fontSize: '13px',
@@ -706,16 +718,17 @@ export default function Lumina() {
           lineHeight: 1.6,
           textAlign: 'center'
         }}>
-          "Antes de agires, vê-te.<br/>
-          Antes de decidires, conhece-te."
+          {t('lumina.quote').split('\n').map((line, i) => (
+            <span key={i}>{line}{i === 0 && <br/>}</span>
+          ))}
         </div>
 
         <button className="splash-tap" onClick={handleSplashTap}>
-          ENTRAR
+          {t('lumina.enter')}
         </button>
 
         <button className="splash-history" onClick={showHistory}>
-          ver histórico ({diasCount} {diasCount === 1 ? 'dia' : 'dias'})
+          {t('lumina.history_link_simple')} ({diasCount} {diasCount === 1 ? t('lumina.day') : t('lumina.days')})
         </button>
       </div>
     );
@@ -730,24 +743,24 @@ export default function Lumina() {
 
     return (
       <div className={`screen ${screen === 'onboarding' ? 'active' : ''}`}>
-        <div className="onboarding-title">{bemVindo(genero)} à LUMINA</div>
-        <div className="onboarding-subtitle">Vê-te antes de agir</div>
+        <div className="onboarding-title">{bemVindo(genero)} {locale === 'fr' ? 'à' : locale === 'en' ? 'to' : 'à'} LUMINA</div>
+        <div className="onboarding-subtitle">{t('lumina.onboarding.subtitle')}</div>
 
         <div className="form-group">
-          <label className="form-label">Como te chamas?</label>
+          <label className="form-label">{t('lumina.onboarding.name_label')}</label>
           <input
             type="text"
             className="form-input"
-            placeholder="O teu nome"
+            placeholder={t('lumina.onboarding.name_placeholder')}
             value={nome}
             onChange={(e) => setNome(e.target.value)}
           />
         </div>
 
         <div className="form-group">
-          <label className="form-label">Como te identificas?</label>
+          <label className="form-label">{t('lumina.onboarding.gender_label')}</label>
           <p style={{ fontSize: '12px', color: '#5A5A8F', marginBottom: '12px', lineHeight: 1.4 }}>
-            Isto ajuda a LUMINA a personalizar a tua experiência.
+            {t('lumina.onboarding.gender_help')}
           </p>
           <div className="radio-group">
             {GENEROS.map(g => (
@@ -770,29 +783,28 @@ export default function Lumina() {
 
         {showCycleSection && (
           <div className="form-group">
-            <label className="form-label">Acompanhas o teu ciclo menstrual?</label>
+            <label className="form-label">{t('lumina.onboarding.cycle_label')}</label>
             <p style={{ fontSize: '12px', color: '#5A5A8F', marginBottom: '12px', lineHeight: 1.4 }}>
-              O ciclo menstrual influencia energia, emoções e clareza mental.
-              Se acompanhares, a LUMINA ajusta a leitura à tua fase.
+              {t('lumina.onboarding.cycle_help')}
             </p>
             <div className="radio-group">
               <div
                 className={`radio-option ${tracksCycle === 'sim' ? 'selected' : ''}`}
                 onClick={() => setTracksCycle('sim')}
               >
-                Sim, acompanho
+                {t('lumina.onboarding.cycle_yes')}
               </div>
               <div
                 className={`radio-option ${tracksCycle === 'nao' ? 'selected' : ''}`}
                 onClick={() => setTracksCycle('nao')}
               >
-                Não acompanho
+                {t('lumina.onboarding.cycle_no')}
               </div>
               <div
                 className={`radio-option ${tracksCycle === 'menopausa' ? 'selected' : ''}`}
                 onClick={() => setTracksCycle('menopausa')}
               >
-                Menopausa / Não se aplica
+                {t('lumina.onboarding.cycle_na')}
               </div>
             </div>
           </div>
@@ -800,9 +812,9 @@ export default function Lumina() {
 
         <div className={`cycle-section ${tracksCycle === 'sim' ? 'visible' : ''}`}>
           <div className="form-group">
-            <label className="form-label">Quando começou a última menstruação?</label>
+            <label className="form-label">{t('lumina.onboarding.period_label')}</label>
             <p style={{ fontSize: '11px', color: '#6B6B9D', marginBottom: '8px' }}>
-              O 1º dia em que veio sangue
+              {t('lumina.onboarding.period_help')}
             </p>
             <input
               type="date"
@@ -812,12 +824,12 @@ export default function Lumina() {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Quantos dias dura o teu ciclo?</label>
+            <label className="form-label">{t('lumina.onboarding.cycle_length_label')}</label>
             <p style={{ fontSize: '11px', color: '#6B6B9D', marginBottom: '8px' }}>
-              Do 1º dia de uma menstruação até ao 1º dia da seguinte (normalmente 21-35 dias)
+              {t('lumina.onboarding.cycle_length_help')}
             </p>
             <div className="slider-value">
-              <span style={{ fontSize: '24px' }}>{cycleLength}</span> <span>dias</span>
+              <span style={{ fontSize: '24px' }}>{cycleLength}</span> <span>{t('lumina.days')}</span>
             </div>
             <input
               type="range"
@@ -830,7 +842,7 @@ export default function Lumina() {
         </div>
 
         <button className="start-button" onClick={saveOnboarding} style={{ marginTop: '20px' }}>
-          COMEÇAR
+          {t('lumina.onboarding.start')}
         </button>
       </div>
     );
@@ -847,10 +859,10 @@ export default function Lumina() {
     const getCycleDescription = () => {
       if (!faseCiclo) return null;
       const descriptions = {
-        menstrual: { emoji: '🌑', nome: 'Menstruação', desc: 'Tempo de recolhimento e descanso' },
-        folicular: { emoji: '🌒', nome: 'Fase Folicular', desc: 'Energia a subir, boa altura para iniciar' },
-        ovulacao: { emoji: '🌕', nome: 'Ovulação', desc: 'Pico de energia e clareza' },
-        lutea: { emoji: '🌘', nome: 'Fase Lútea', desc: 'Energia a descer, tempo de completar' }
+        menstrual: { emoji: '🌑', nome: t('lumina.cycle.menstrual'), desc: t('lumina.cycle.menstrual_desc') },
+        folicular: { emoji: '🌒', nome: t('lumina.cycle.folicular'), desc: t('lumina.cycle.folicular_desc') },
+        ovulacao: { emoji: '🌕', nome: t('lumina.cycle.ovulacao'), desc: t('lumina.cycle.ovulacao_desc') },
+        lutea: { emoji: '🌘', nome: t('lumina.cycle.lutea'), desc: t('lumina.cycle.lutea_desc') }
       };
       return descriptions[faseCiclo.phase];
     };
@@ -864,11 +876,11 @@ export default function Lumina() {
         </div>
 
         <div className="intro-text" style={{ fontSize: '18px', lineHeight: 1.6 }}>
-          Antes de agires,<br />
-          <em style={{ fontSize: '22px' }}>vê-te</em>.<br /><br />
+          {t('lumina.intro.before_acting')}<br />
+          <em style={{ fontSize: '22px' }}>{t('lumina.intro.see_yourself')}</em>.<br /><br />
           <span style={{ color: '#3A3A6F', fontSize: '15px' }}>
-            8 perguntas sobre o teu estado.<br />
-            1 leitura que revela o que precisas saber.
+            {t('lumina.intro.questions_desc')}<br />
+            {t('lumina.intro.reading_desc')}
           </span>
         </div>
 
@@ -882,14 +894,14 @@ export default function Lumina() {
           }}>
             <div style={{ fontSize: '24px', marginBottom: '4px' }}>{cycleDesc.emoji}</div>
             <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
-              Dia {faseCiclo.day} · {cycleDesc.nome}
+              {t('lumina.reading.cycle_day', { day: faseCiclo.day, phase: cycleDesc.nome })}
             </div>
             <div style={{ fontSize: '13px', color: '#3A3A6F' }}>{cycleDesc.desc}</div>
           </div>
         )}
 
         <button className="start-button" onClick={startJourney} style={{ marginTop: '24px' }}>
-          COMEÇAR LEITURA
+          {t('lumina.intro.start_reading')}
         </button>
       </div>
     );
@@ -923,10 +935,17 @@ export default function Lumina() {
 
         <div className="question-container">
           <p className={`question ${ecoClass}`}>
-            <span className="i">{pergunta.inicial}</span>
-            {pergunta.titulo.slice(1)}
+            {(() => {
+              const titulo = t(`lumina.q.${pergunta.id}.title`);
+              return <><span className="i">{titulo[0]}</span>{titulo.slice(1)}</>;
+            })()}
           </p>
-          <p className="question-explanation">{explicacaoAdaptada(pergunta.id, pergunta.explicacao, userGenero)}</p>
+          <p className="question-explanation">
+            {locale === 'pt'
+              ? explicacaoAdaptada(pergunta.id, pergunta.explicacao, userGenero)
+              : t(`lumina.q.${pergunta.id}.explain`)
+            }
+          </p>
         </div>
 
         <div className="options">
@@ -937,7 +956,7 @@ export default function Lumina() {
                 className="option"
                 onClick={() => handleAnswer(pergunta.id, opcao.valor)}
               >
-                {opcaoLabel(opcao.valor, userGenero)}
+                {locale === 'pt' ? opcaoLabel(opcao.valor, userGenero) : t(`lumina.opt.${opcao.valor}`)}
               </button>
             ))}
           </div>
@@ -948,7 +967,7 @@ export default function Lumina() {
                 className="option"
                 onClick={() => handleAnswer(pergunta.id, neutro.valor)}
               >
-                {opcaoLabel(neutro.valor, userGenero)}
+                {locale === 'pt' ? opcaoLabel(neutro.valor, userGenero) : t(`lumina.opt.${neutro.valor}`)}
               </button>
             )}
           </div>
@@ -960,7 +979,7 @@ export default function Lumina() {
                 className="option"
                 onClick={() => handleAnswer(pergunta.id, opcao.valor)}
               >
-                {opcaoLabel(opcao.valor, userGenero)}
+                {locale === 'pt' ? opcaoLabel(opcao.valor, userGenero) : t(`lumina.opt.${opcao.valor}`)}
               </button>
             ))}
           </div>
@@ -977,7 +996,7 @@ export default function Lumina() {
     return (
       <div className={`screen pause-screen ${screen === 'pause' ? 'active' : ''}`}>
         <img src="/logos/lumina-logo_v2.png" alt="LUMINA" className="pause-eye" />
-        <p className="pause-text">a ler-te...</p>
+        <p className="pause-text">{t('lumina.pause')}</p>
       </div>
     );
   }
@@ -989,13 +1008,13 @@ export default function Lumina() {
   function renderReading() {
     // Os 7 Ecos - LUMINA NÃO É UM ECO, ela observa e guia
     const SETE_ECOS = [
-      { nome: 'Vitalis', foco: 'Corpo & Nutrição', cor: '#7C8B6F', disponivel: true, link: '/vitalis' },
-      { nome: 'Áurea', foco: 'Auto-Valor & Merecimento', cor: '#C9A227', disponivel: true, link: '/aurea' },
-      { nome: 'Serena', foco: 'Emoção & Fluidez', cor: '#6B8E9B', disponivel: true, link: '/serena' },
-      { nome: 'Ignis', foco: 'Vontade & Foco', cor: '#C1634A', disponivel: true, link: '/ignis' },
-      { nome: 'Ventis', foco: 'Ritmo & Energia', cor: '#5D9B84', disponivel: true, link: '/ventis' },
-      { nome: 'Ecoa', foco: 'Voz & Expressão', cor: '#4A90A4', disponivel: true, link: '/ecoa' },
-      { nome: 'Imago', foco: 'Identidade & Essência', cor: '#8B7BA5', disponivel: true, link: '/imago' }
+      { nome: 'Vitalis', foco: t('lumina.ecos.vitalis_focus'), cor: '#7C8B6F', disponivel: true, link: '/vitalis' },
+      { nome: 'Áurea', foco: t('lumina.ecos.aurea_focus'), cor: '#C9A227', disponivel: true, link: '/aurea' },
+      { nome: 'Serena', foco: t('lumina.ecos.serena_focus'), cor: '#6B8E9B', disponivel: true, link: '/serena' },
+      { nome: 'Ignis', foco: t('lumina.ecos.ignis_focus'), cor: '#C1634A', disponivel: true, link: '/ignis' },
+      { nome: 'Ventis', foco: t('lumina.ecos.ventis_focus'), cor: '#5D9B84', disponivel: true, link: '/ventis' },
+      { nome: 'Ecoa', foco: t('lumina.ecos.ecoa_focus'), cor: '#4A90A4', disponivel: true, link: '/ecoa' },
+      { nome: 'Imago', foco: t('lumina.ecos.imago_focus'), cor: '#8B7BA5', disponivel: true, link: '/imago' }
     ];
 
     // Informação do ciclo para mostrar
@@ -1007,10 +1026,10 @@ export default function Lumina() {
 
     return (
       <div className={`screen ${screen === 'reading' ? 'active' : ''}`} style={{ overflowY: 'auto', paddingBottom: '100px' }}>
-        <div className="logo-small">A TUA LEITURA</div>
+        <div className="logo-small">{t('lumina.reading.title')}</div>
 
         {diasCount > 0 && (
-          <div className="days-badge">{diasCount} dias contigo</div>
+          <div className="days-badge">{t('lumina.reading.days_with_you', { count: diasCount })}</div>
         )}
 
         <div className="reading-container">
@@ -1037,18 +1056,18 @@ export default function Lumina() {
                 <span style={{ fontSize: '24px' }}>{cicloInfo.lua}</span>
                 <div>
                   <div style={{ fontWeight: 'bold', fontSize: '14px' }}>
-                    Dia {faseCiclo.day} · {cicloInfo.fase}
+                    {t('lumina.reading.cycle_day', { day: faseCiclo.day, phase: t('lumina.cycle.' + faseCiclo.phase) })}
                   </div>
                   <div style={{ fontSize: '11px', color: '#5A5A8F' }}>
-                    Dias {cicloInfo.dias} · Energia {cicloInfo.energia}
+                    {t('lumina.reading.cycle_days', { range: cicloInfo.dias, energy: t('lumina.cycle.energy.' + faseCiclo.phase) })}
                   </div>
                 </div>
               </div>
               <div style={{ fontSize: '13px', lineHeight: 1.5, marginBottom: '10px' }}>
-                {cicloInfo.mensagem}
+                {t('lumina.cycle.' + faseCiclo.phase + '_msg')}
               </div>
               <div style={{ fontSize: '11px', color: '#6B6B9D' }}>
-                Estados comuns: {cicloInfo.estadosComuns.join(', ')}
+                {t('lumina.reading.common_states', { states: t('lumina.cycle.states.' + faseCiclo.phase) })}
               </div>
             </div>
           )}
@@ -1063,7 +1082,7 @@ export default function Lumina() {
               borderLeft: `4px solid ${INDIGO}`
             }}>
               <div style={{ fontSize: '12px', letterSpacing: '1px', color: '#5A5A8F', marginBottom: '10px' }}>
-                A LUMINA APRENDEU CONTIGO
+                {t('lumina.reading.learned')}
               </div>
               {insightsPersonalizados.map((insight, i) => (
                 <div key={i} style={{
@@ -1107,7 +1126,7 @@ export default function Lumina() {
                   fontSize: '14px',
                   color: recomendacaoCiclo.eco === 'Áurea' ? '#7A6200' : 'inherit'
                 }}>
-                  {recomendacaoCiclo.eco} para esta fase
+                  {t('lumina.reading.eco_for_phase', { eco: recomendacaoCiclo.eco })}
                 </span>
               </div>
               <div style={{ fontSize: '13px', lineHeight: 1.5, marginBottom: '8px' }}>
@@ -1131,7 +1150,7 @@ export default function Lumina() {
                   fontWeight: 'bold',
                   boxShadow: recomendacaoCiclo.eco === 'Áurea' ? '0 4px 15px rgba(201, 162, 39, 0.3)' : 'none'
                 }}>
-                  Explorar {recomendacaoCiclo.eco} →
+                  {t('lumina.reading.explore_eco', { eco: recomendacaoCiclo.eco })}
                 </a>
               )}
             </div>
@@ -1172,7 +1191,7 @@ export default function Lumina() {
                 color: ecoRecomendado.eco === 'Áurea' ? '#7A6200' : 'inherit',
                 textAlign: ecoRecomendado.eco === 'Áurea' ? 'center' : 'left'
               }}>
-                {ecoRecomendado.eco === 'Áurea' ? 'Parece que precisas de ÁUREA' : `Sugestão: ${ecoRecomendado.eco}`}
+                {ecoRecomendado.eco === 'Áurea' ? t('lumina.reading.needs_aurea') : t('lumina.reading.suggestion', { eco: ecoRecomendado.eco })}
               </div>
               <div style={{
                 fontSize: '14px',
@@ -1180,7 +1199,7 @@ export default function Lumina() {
                 textAlign: ecoRecomendado.eco === 'Áurea' ? 'center' : 'left'
               }}>
                 {ecoRecomendado.eco === 'Áurea'
-                  ? 'ÁUREA trabalha o valor próprio encarnado. Ajuda-te a existir para ti — sem culpa.'
+                  ? t('lumina.reading.aurea_desc')
                   : ecoRecomendado.msg
                 }
               </div>
@@ -1200,11 +1219,11 @@ export default function Lumina() {
                   textAlign: 'center',
                   boxShadow: ecoRecomendado.eco === 'Áurea' ? '0 4px 15px rgba(201, 162, 39, 0.3)' : 'none'
                 }}>
-                  Explorar {ecoRecomendado.eco} →
+                  {t('lumina.reading.explore_eco', { eco: ecoRecomendado.eco })}
                 </a>
               ) : (
                 <div style={{ marginTop: '8px', fontSize: '12px', color: '#6B6B9D', fontStyle: 'italic' }}>
-                  Em breve disponível
+                  {t('lumina.reading.coming_soon')}
                 </div>
               )}
             </div>
@@ -1213,7 +1232,7 @@ export default function Lumina() {
           {/* Padrão Semanal */}
           {padraoSemanal && (
             <div className="pattern-alert" style={{ marginTop: '16px' }}>
-              <div className="pattern-alert-title">Padrão Detectado</div>
+              <div className="pattern-alert-title">{t('lumina.reading.pattern_detected')}</div>
               <div className="pattern-alert-text">{padraoSemanal.message}</div>
             </div>
           )}
@@ -1228,7 +1247,7 @@ export default function Lumina() {
               borderLeft: `3px solid ${INDIGO}`
             }}>
               <div style={{ fontSize: '12px', letterSpacing: '1px', color: '#5A5A8F', marginBottom: '8px' }}>
-                TENDÊNCIA MENSAL
+                {t('lumina.reading.monthly_trend')}
               </div>
               {tendenciasMensais.insights.map((insight, i) => (
                 <div key={i} style={{ fontSize: '13px', lineHeight: 1.5, marginBottom: i < tendenciasMensais.insights.length - 1 ? '6px' : 0 }}>
@@ -1270,8 +1289,8 @@ export default function Lumina() {
             const eco = needsAurea ? 'aurea' : 'vitalis';
             const ecoNome = needsAurea ? 'ÁUREA' : 'VITALIS';
             const ecoMsg = needsAurea
-              ? 'Os teus padrões mostram que a tua relação contigo pode precisar de atenção. A ÁUREA trabalha o valor próprio — sem culpa, sem pressão.'
-              : 'O teu corpo está a pedir atenção. O VITALIS combina nutrição científica com apoio emocional para uma transformação real e sustentável.';
+              ? t('lumina.reading.aurea_upsell')
+              : t('lumina.reading.vitalis_upsell');
             const ecoCor = needsAurea ? '#C9A227' : '#7C8B6F';
             const ecoBg = needsAurea
               ? 'linear-gradient(135deg, rgba(201, 162, 39, 0.12) 0%, rgba(212, 175, 55, 0.06) 100%)'
@@ -1287,10 +1306,10 @@ export default function Lumina() {
                 textAlign: 'center'
               }}>
                 <div style={{ fontSize: '11px', letterSpacing: '2px', color: '#6B6B9D', marginBottom: '8px' }}>
-                  O PRÓXIMO PASSO
+                  {t('lumina.reading.next_step')}
                 </div>
                 <div style={{ fontSize: '15px', fontWeight: 'bold', color: ecoCor, marginBottom: '8px' }}>
-                  {ecoNome} pode ajudar-te
+                  {t('lumina.reading.can_help', { eco: ecoNome })}
                 </div>
                 <div style={{ fontSize: '13px', lineHeight: 1.6, color: '#3A3A6F', marginBottom: '16px' }}>
                   {ecoMsg}
@@ -1305,10 +1324,10 @@ export default function Lumina() {
                   fontSize: '13px',
                   fontWeight: 'bold'
                 }}>
-                  Conhecer {ecoNome} →
+                  {t('lumina.reading.know_eco', { eco: ecoNome })}
                 </a>
                 <div style={{ fontSize: '11px', color: '#6B6B9D', marginTop: '10px' }}>
-                  {needsAurea ? 'Desde 975 MT/mês · 7 dias de garantia' : 'Desde 2.500 MT/mês · 7 dias de garantia'}
+                  {needsAurea ? t('lumina.reading.price_aurea') : t('lumina.reading.price_vitalis')}
                 </div>
               </div>
             );
@@ -1326,17 +1345,17 @@ export default function Lumina() {
             }}>
               <div style={{ fontSize: '24px', marginBottom: '8px' }}>✉️</div>
               <div style={{ fontSize: '15px', fontWeight: 'bold', marginBottom: '6px' }}>
-                Queres receber os teus padrões por email?
+                {t('lumina.email.title')}
               </div>
               <div style={{ fontSize: '13px', color: '#5A5A8F', marginBottom: '16px', lineHeight: 1.5 }}>
-                Recebe a tua leitura + dicas personalizadas baseadas nos teus resultados. Grátis.
+                {t('lumina.email.desc')}
               </div>
               <div style={{ display: 'flex', gap: '8px', maxWidth: '320px', margin: '0 auto' }}>
                 <input
                   type="email"
                   value={captureEmail}
                   onChange={(e) => setCaptureEmail(e.target.value)}
-                  placeholder="O teu email"
+                  placeholder={t('lumina.email.placeholder')}
                   style={{
                     flex: 1,
                     padding: '12px 16px',
@@ -1377,11 +1396,11 @@ export default function Lumina() {
                     whiteSpace: 'nowrap'
                   }}
                 >
-                  {captureLoading ? '...' : 'Enviar'}
+                  {captureLoading ? '...' : t('lumina.email.send')}
                 </button>
               </div>
               <div style={{ fontSize: '11px', color: '#8888B0', marginTop: '10px' }}>
-                Sem spam. Podes cancelar quando quiseres.
+                {t('lumina.email.no_spam')}
               </div>
             </div>
           )}
@@ -1398,7 +1417,7 @@ export default function Lumina() {
             }}>
               <div style={{ fontSize: '24px', marginBottom: '6px' }}>✓</div>
               <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#059669' }}>
-                {bemVindo(genero || profile?.genero) === 'Bem-vindo' ? 'Obrigado' : 'Obrigada'}! Vais receber os teus resultados em breve.
+                {t('lumina.email.thanks')}
               </div>
               <a href="/login" style={{
                 display: 'inline-block',
@@ -1411,7 +1430,7 @@ export default function Lumina() {
                 fontSize: '13px',
                 fontWeight: 'bold'
               }}>
-                Criar conta para guardar historico →
+                {t('lumina.email.create_account')}
               </a>
             </div>
           )}
@@ -1419,9 +1438,9 @@ export default function Lumina() {
           {/* Os 7 Ecos - LUMINA observa, não faz parte */}
           <div style={{ marginTop: '30px' }}>
             <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-              <div style={{ fontSize: '13px', letterSpacing: '2px', color: '#6B6B9D' }}>OS SETE ECOS</div>
+              <div style={{ fontSize: '13px', letterSpacing: '2px', color: '#6B6B9D' }}>{t('lumina.ecos.title')}</div>
               <div style={{ fontSize: '11px', color: '#6B6B9D', marginTop: '4px' }}>
-                A LUMINA observa e guia-te para o Eco certo
+                {t('lumina.ecos.subtitle')}
               </div>
             </div>
 
@@ -1470,7 +1489,7 @@ export default function Lumina() {
               }}>
                 <div style={{ fontWeight: 'bold', marginBottom: '4px', fontSize: '13px' }}>VITALIS</div>
                 <div style={{ fontSize: '10px', opacity: 0.9, lineHeight: 1.3 }}>
-                  Corpo & Nutrição
+                  {t('lumina.ecos.vitalis_focus')}
                 </div>
               </a>
 
@@ -1487,7 +1506,7 @@ export default function Lumina() {
               }}>
                 <div style={{ fontWeight: 'bold', marginBottom: '4px', fontSize: '13px' }}>ÁUREA</div>
                 <div style={{ fontSize: '10px', opacity: 0.9, lineHeight: 1.3 }}>
-                  Valor Próprio
+                  {t('lumina.ecos.self_worth')}
                 </div>
               </a>
             </div>
@@ -1501,7 +1520,7 @@ export default function Lumina() {
                 textAlign: 'center',
                 fontSize: '11px'
               }}>
-                Vitalis → <span style={{ fontWeight: 'bold' }}>Entrar</span>
+                Vitalis → <span style={{ fontWeight: 'bold' }}>{t('lumina.ecos.login')}</span>
               </a>
               <a href="/aurea/login" style={{
                 padding: '10px',
@@ -1510,7 +1529,7 @@ export default function Lumina() {
                 textAlign: 'center',
                 fontSize: '11px'
               }}>
-                Áurea → <span style={{ fontWeight: 'bold' }}>Entrar</span>
+                Áurea → <span style={{ fontWeight: 'bold' }}>{t('lumina.ecos.login')}</span>
               </a>
             </div>
           </div>
@@ -1531,7 +1550,7 @@ export default function Lumina() {
               marginTop: '20px',
               padding: '14px 35px'
             }}>
-              Guardar e Fechar
+              {t('lumina.save_close')}
             </button>
           </div>
         </div>

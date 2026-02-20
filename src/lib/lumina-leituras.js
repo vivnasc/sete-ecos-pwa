@@ -3,6 +3,8 @@
 // Sete Ecos © Vivianne dos Santos
 // ============================================================
 
+import { LEITURAS_I18N } from './i18n/lumina-leituras.js';
+
 export const LEITURAS = {
   // CRÍTICOS (3 padrões de alerta máximo)
   crit_vid: [
@@ -254,12 +256,22 @@ export function detectarPadrao(respostas) {
 // OBTER LEITURA ALEATÓRIA DO PADRÃO
 // ============================================================
 
-export function obterLeitura(padrao) {
-  const leituras = LEITURAS[padrao];
-  if (!leituras || leituras.length === 0) {
-    return "Hoje és mistério. E está bem assim.";
+export function obterLeitura(padrao, locale = 'pt') {
+  // Para pt, usar as leituras originais (que são a fonte de verdade)
+  if (locale === 'pt' || !LEITURAS_I18N[locale]) {
+    const leituras = LEITURAS[padrao];
+    if (!leituras || leituras.length === 0) {
+      return "Hoje és mistério. E está bem assim.";
+    }
+    return leituras[Math.floor(Math.random() * leituras.length)];
   }
-  return leituras[Math.floor(Math.random() * leituras.length)];
+
+  // Para en/fr, usar as traduções
+  const leiturasLocale = LEITURAS_I18N[locale][padrao];
+  if (!leiturasLocale || leiturasLocale.length === 0) {
+    return LEITURAS_I18N[locale]._fallback || "Today you are mystery. And that's fine.";
+  }
+  return leiturasLocale[Math.floor(Math.random() * leiturasLocale.length)];
 }
 
 // ============================================================
@@ -278,15 +290,48 @@ const ECOS_DISPONIVEIS = {
   Imago: { link: '/imago', disponivel: true }
 };
 
-export function obterRecomendacaoEco(respostas) {
+export function obterRecomendacaoEco(respostas, locale = 'pt') {
   const { corpo, passado, impulso, futuro, mente, espelho, cuidado } = respostas;
   const recs = [];
+
+  // Mensagens por locale (importadas do i18n/lumina.js via translate())
+  // Aqui usamos inline para manter a lógica auto-contida
+  const MSGS = {
+    pt: {
+      aurea: 'Parece que precisas de ÁUREA. Trabalha o valor próprio encarnado — ajuda-te a existir para ti, sem culpa.',
+      vitalis: 'O corpo precisa de atenção. O Vitalis pode ajudar-te a nutrir e cuidar do teu corpo.',
+      serena: 'Há emoção por fluir. O Serena ajuda-te a processar o passado com fluidez.',
+      ignis: 'A vontade precisa de direcção. O Ignis ajuda-te a agir com propósito e foco.',
+      ventis: 'Precisas de ar, de ritmo. O Ventis traz leveza e energia ao teu dia.',
+      ecoa: 'Há ruído por expressar. O Ecoa ajuda-te a encontrar e libertar a tua voz.',
+      imago: 'Não te estás a ver. O Imago ajuda-te a reconhecer a tua essência.'
+    },
+    en: {
+      aurea: 'It looks like you need ÁUREA. It works on embodied self-worth — it helps you exist for yourself, without guilt.',
+      vitalis: 'Your body needs attention. Vitalis can help you nourish and care for your body.',
+      serena: 'There\'s emotion to process. Serena helps you process the past with fluidity.',
+      ignis: 'Your will needs direction. Ignis helps you act with purpose and focus.',
+      ventis: 'You need air, rhythm. Ventis brings lightness and energy to your day.',
+      ecoa: 'There\'s noise to express. Ecoa helps you find and free your voice.',
+      imago: 'You can\'t see yourself. Imago helps you recognise your essence.'
+    },
+    fr: {
+      aurea: 'Il semble que tu aies besoin d\'ÁUREA. Elle travaille la valeur de soi incarnée — elle t\'aide à exister pour toi, sans culpabilité.',
+      vitalis: 'Ton corps a besoin d\'attention. Vitalis peut t\'aider à nourrir et prendre soin de ton corps.',
+      serena: 'Il y a des émotions à traverser. Serena t\'aide à traiter le passé avec fluidité.',
+      ignis: 'Ta volonté a besoin de direction. Ignis t\'aide à agir avec intention et focus.',
+      ventis: 'Tu as besoin d\'air, de rythme. Ventis apporte légèreté et énergie à ta journée.',
+      ecoa: 'Il y a du bruit à exprimer. Ecoa t\'aide à trouver et libérer ta voix.',
+      imago: 'Tu ne te vois pas. Imago t\'aide à reconnaître ton essence.'
+    }
+  };
+  const msg = MSGS[locale] || MSGS['pt'];
 
   // ÁUREA - auto-sacrifício/valor próprio - PRIORIDADE
   if (['esquecida', 'por ultimo'].includes(cuidado)) {
     recs.push({
       eco: 'Áurea',
-      msg: 'Parece que precisas de ÁUREA. Trabalha o valor próprio encarnado — ajuda-te a existir para ti, sem culpa.',
+      msg: msg.aurea,
       link: '/aurea',
       disponivel: true,
       prioridade: true
@@ -297,7 +342,7 @@ export function obterRecomendacaoEco(respostas) {
   if (['pesado', 'tenso'].includes(corpo)) {
     recs.push({
       eco: 'Vitalis',
-      msg: 'O corpo precisa de atenção. O Vitalis pode ajudar-te a nutrir e cuidar do teu corpo.',
+      msg: msg.vitalis,
       link: '/vitalis',
       disponivel: true
     });
@@ -307,7 +352,7 @@ export function obterRecomendacaoEco(respostas) {
   if (['preso', 'apesar'].includes(passado)) {
     recs.push({
       eco: 'Serena',
-      msg: 'Há emoção por fluir. O Serena ajuda-te a processar o passado com fluidez.',
+      msg: msg.serena,
       link: '/serena',
       disponivel: true
     });
@@ -317,7 +362,7 @@ export function obterRecomendacaoEco(respostas) {
   if (['esconder', 'parar'].includes(impulso)) {
     recs.push({
       eco: 'Ignis',
-      msg: 'A vontade precisa de direcção. O Ignis ajuda-te a agir com propósito e foco.',
+      msg: msg.ignis,
       link: '/ignis',
       disponivel: true
     });
@@ -327,7 +372,7 @@ export function obterRecomendacaoEco(respostas) {
   if (['escuro', 'pesado'].includes(futuro)) {
     recs.push({
       eco: 'Ventis',
-      msg: 'Precisas de ar, de ritmo. O Ventis traz leveza e energia ao teu dia.',
+      msg: msg.ventis,
       link: '/ventis',
       disponivel: true
     });
@@ -337,7 +382,7 @@ export function obterRecomendacaoEco(respostas) {
   if (['caotica', 'barulhenta'].includes(mente)) {
     recs.push({
       eco: 'Ecoa',
-      msg: 'Há ruído por expressar. O Ecoa ajuda-te a encontrar e libertar a tua voz.',
+      msg: msg.ecoa,
       link: '/ecoa',
       disponivel: true
     });
@@ -347,7 +392,7 @@ export function obterRecomendacaoEco(respostas) {
   if (['invisivel', 'apagada'].includes(espelho)) {
     recs.push({
       eco: 'Imago',
-      msg: 'Não te estás a ver. O Imago ajuda-te a reconhecer a tua essência.',
+      msg: msg.imago,
       link: '/imago',
       disponivel: true
     });
@@ -365,10 +410,10 @@ export function obterRecomendacaoEco(respostas) {
 // ANÁLISE DE PADRÕES SEMANAIS
 // ============================================================
 
-export function analisarPadroesSemanais(historico) {
+export function analisarPadroesSemanais(historico, locale = 'pt') {
   const weekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
   const thisWeek = historico.filter(e => new Date(e.created_at).getTime() > weekAgo);
-  
+
   if (thisWeek.length < 3) return null;
 
   const patterns = {
@@ -377,14 +422,33 @@ export function analisarPadroesSemanais(historico) {
     mente: thisWeek.filter(e => ['caotica', 'barulhenta'].includes(e.mente)).length
   };
 
+  const msgs = {
+    pt: {
+      energia: 'A energia tem estado baixa. O que te está a drenar?',
+      corpo: 'O corpo tem estado fechado. Precisas de movimento ou descanso?',
+      mente: 'A mente tem estado agitada. O que precisas de processar?'
+    },
+    en: {
+      energia: 'Energy has been low. What\'s draining you?',
+      corpo: 'Your body has been closed off. Do you need movement or rest?',
+      mente: 'Your mind has been restless. What do you need to process?'
+    },
+    fr: {
+      energia: 'L\'énergie a été basse. Qu\'est-ce qui te draine ?',
+      corpo: 'Le corps a été fermé. Tu as besoin de mouvement ou de repos ?',
+      mente: 'L\'esprit a été agité. Qu\'as-tu besoin de traiter ?'
+    }
+  };
+  const m = msgs[locale] || msgs['pt'];
+
   if (patterns.energia >= 3) {
-    return { type: 'energia', message: 'A energia tem estado baixa. O que te está a drenar?' };
+    return { type: 'energia', message: m.energia };
   }
   if (patterns.corpo >= 3) {
-    return { type: 'corpo', message: 'O corpo tem estado fechado. Precisas de movimento ou descanso?' };
+    return { type: 'corpo', message: m.corpo };
   }
   if (patterns.mente >= 3) {
-    return { type: 'mente', message: 'A mente tem estado agitada. O que precisas de processar?' };
+    return { type: 'mente', message: m.mente };
   }
 
   return null;
@@ -394,25 +458,33 @@ export function analisarPadroesSemanais(historico) {
 // INSIGHTS SEMANAIS
 // ============================================================
 
-export function obterInsightsSemanais(historico) {
+export function obterInsightsSemanais(historico, locale = 'pt') {
   const weekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
   const thisWeek = historico.filter(e => new Date(e.created_at).getTime() > weekAgo);
-  
+
   if (thisWeek.length < 3) return null;
 
   const insights = [];
   const lowEnergy = thisWeek.filter(e => ['vazia', 'baixa'].includes(e.energia)).length;
   const closedBody = thisWeek.filter(e => ['pesado', 'tenso'].includes(e.corpo)).length;
   const noisyMind = thisWeek.filter(e => ['caotica', 'barulhenta'].includes(e.mente)).length;
+  const total = thisWeek.length;
 
-  if (lowEnergy >= Math.ceil(thisWeek.length * 0.5)) {
-    insights.push(`A energia esteve baixa ${lowEnergy} de ${thisWeek.length} dias.`);
+  const fmts = {
+    pt: { energia: (n, t) => `A energia esteve baixa ${n} de ${t} dias.`, corpo: (n, t) => `O corpo esteve fechado ${n} de ${t} dias.`, mente: (n, t) => `A mente esteve agitada ${n} de ${t} dias.` },
+    en: { energia: (n, t) => `Energy was low ${n} out of ${t} days.`, corpo: (n, t) => `Body was closed ${n} out of ${t} days.`, mente: (n, t) => `Mind was restless ${n} out of ${t} days.` },
+    fr: { energia: (n, t) => `L'énergie a été basse ${n} jours sur ${t}.`, corpo: (n, t) => `Le corps a été fermé ${n} jours sur ${t}.`, mente: (n, t) => `L'esprit a été agité ${n} jours sur ${t}.` }
+  };
+  const f = fmts[locale] || fmts['pt'];
+
+  if (lowEnergy >= Math.ceil(total * 0.5)) {
+    insights.push(f.energia(lowEnergy, total));
   }
-  if (closedBody >= Math.ceil(thisWeek.length * 0.5)) {
-    insights.push(`O corpo esteve fechado ${closedBody} de ${thisWeek.length} dias.`);
+  if (closedBody >= Math.ceil(total * 0.5)) {
+    insights.push(f.corpo(closedBody, total));
   }
-  if (noisyMind >= Math.ceil(thisWeek.length * 0.5)) {
-    insights.push(`A mente esteve agitada ${noisyMind} de ${thisWeek.length} dias.`);
+  if (noisyMind >= Math.ceil(total * 0.5)) {
+    insights.push(f.mente(noisyMind, total));
   }
 
   return insights.length > 0 ? insights : null;
@@ -569,7 +641,7 @@ export function analisarPadroesPorFase(historico) {
 // INSIGHTS PERSONALIZADOS BASEADOS NO HISTÓRICO
 // ============================================================
 
-export function obterInsightsPersonalizados(historico, faseActual) {
+export function obterInsightsPersonalizados(historico, faseActual, locale = 'pt') {
   const tendencias = analisarPadroesPorFase(historico);
   if (!tendencias || !faseActual || !tendencias[faseActual]) return null;
 
@@ -582,11 +654,40 @@ export function obterInsightsPersonalizados(historico, faseActual) {
   const percentCorpoFechado = (dadosFase.corpoFechado / dadosFase.totalRegistos) * 100;
   const percentMenteAgitada = (dadosFase.menteAgitada / dadosFase.totalRegistos) * 100;
 
+  // Templates por locale
+  const tpls = {
+    pt: {
+      menstrual: (p) => `Nos teus registos, ${p}% das vezes tens energia baixa nesta fase. Isto é normal e esperado.`,
+      folicular: (p) => `A tua energia na fase folicular costuma estar baixa (${p}%). Algo pode estar a drenar-te quando devias estar a subir.`,
+      ovulacao: (p) => `Na ovulação costumas ter o corpo fechado (${p}%). Esta fase devia ser de abertura máxima.`,
+      lutea: (p) => `A tua mente costuma ficar agitada na fase lútea (${p}%). Isto é comum - não te culpes.`,
+      strongest: (label) => `O teu padrão mais forte nesta fase é ${label}. A LUMINA vai lembrar-te disto.`,
+      labels: { energia: 'energia baixa', corpo: 'corpo fechado', mente: 'mente agitada' }
+    },
+    en: {
+      menstrual: (p) => `In your records, ${p}% of the time you have low energy in this phase. This is normal and expected.`,
+      folicular: (p) => `Your energy in the follicular phase tends to be low (${p}%). Something may be draining you when you should be rising.`,
+      ovulacao: (p) => `During ovulation your body tends to be closed (${p}%). This phase should be one of maximum openness.`,
+      lutea: (p) => `Your mind tends to be restless in the luteal phase (${p}%). This is common — don't blame yourself.`,
+      strongest: (label) => `Your strongest pattern in this phase is ${label}. LUMINA will remind you of this.`,
+      labels: { energia: 'low energy', corpo: 'closed body', mente: 'restless mind' }
+    },
+    fr: {
+      menstrual: (p) => `Dans tes données, ${p}% du temps tu as une énergie basse dans cette phase. C'est normal et attendu.`,
+      folicular: (p) => `Ton énergie en phase folliculaire est souvent basse (${p}%). Quelque chose te draine alors que tu devrais monter.`,
+      ovulacao: (p) => `Pendant l'ovulation ton corps est souvent fermé (${p}%). Cette phase devrait être d'ouverture maximale.`,
+      lutea: (p) => `Ton esprit est souvent agité en phase lutéale (${p}%). C'est courant — ne te culpabilise pas.`,
+      strongest: (label) => `Ton pattern le plus fort dans cette phase est ${label}. LUMINA te le rappellera.`,
+      labels: { energia: 'énergie basse', corpo: 'corps fermé', mente: 'esprit agité' }
+    }
+  };
+  const tpl = tpls[locale] || tpls['pt'];
+
   if (faseActual === 'menstrual') {
     if (percentEnergiaBaixa > 70) {
       insights.push({
         tipo: 'confirmacao',
-        msg: `Nos teus registos, ${Math.round(percentEnergiaBaixa)}% das vezes tens energia baixa nesta fase. Isto é normal e esperado.`,
+        msg: tpl.menstrual(Math.round(percentEnergiaBaixa)),
         eco: 'Vitalis'
       });
     }
@@ -594,7 +695,7 @@ export function obterInsightsPersonalizados(historico, faseActual) {
     if (percentEnergiaBaixa > 50) {
       insights.push({
         tipo: 'atencao',
-        msg: `A tua energia na fase folicular costuma estar baixa (${Math.round(percentEnergiaBaixa)}%). Algo pode estar a drenar-te quando devias estar a subir.`,
+        msg: tpl.folicular(Math.round(percentEnergiaBaixa)),
         eco: 'Vitalis'
       });
     }
@@ -602,7 +703,7 @@ export function obterInsightsPersonalizados(historico, faseActual) {
     if (percentCorpoFechado > 40) {
       insights.push({
         tipo: 'atencao',
-        msg: `Na ovulação costumas ter o corpo fechado (${Math.round(percentCorpoFechado)}%). Esta fase devia ser de abertura máxima.`,
+        msg: tpl.ovulacao(Math.round(percentCorpoFechado)),
         eco: 'Ventis'
       });
     }
@@ -610,7 +711,7 @@ export function obterInsightsPersonalizados(historico, faseActual) {
     if (percentMenteAgitada > 60) {
       insights.push({
         tipo: 'confirmacao',
-        msg: `A tua mente costuma ficar agitada na fase lútea (${Math.round(percentMenteAgitada)}%). Isto é comum - não te culpes.`,
+        msg: tpl.lutea(Math.round(percentMenteAgitada)),
         eco: 'Serena'
       });
     }
@@ -618,15 +719,15 @@ export function obterInsightsPersonalizados(historico, faseActual) {
 
   // Insight geral sobre o padrão mais forte
   const maisProblemático = [
-    { tipo: 'energia', pct: percentEnergiaBaixa, msg: 'energia baixa' },
-    { tipo: 'corpo', pct: percentCorpoFechado, msg: 'corpo fechado' },
-    { tipo: 'mente', pct: percentMenteAgitada, msg: 'mente agitada' }
+    { tipo: 'energia', pct: percentEnergiaBaixa, msg: tpl.labels.energia },
+    { tipo: 'corpo', pct: percentCorpoFechado, msg: tpl.labels.corpo },
+    { tipo: 'mente', pct: percentMenteAgitada, msg: tpl.labels.mente }
   ].sort((a, b) => b.pct - a.pct)[0];
 
   if (maisProblemático.pct > 50) {
     insights.push({
       tipo: 'padrao',
-      msg: `O teu padrão mais forte nesta fase é ${maisProblemático.msg}. A LUMINA vai lembrar-te disto.`,
+      msg: tpl.strongest(maisProblemático.msg),
       eco: cicloInfo.ecosPrioritarios[0]
     });
   }
@@ -638,7 +739,7 @@ export function obterInsightsPersonalizados(historico, faseActual) {
 // RECOMENDAÇÃO CONTEXTUAL - CICLO + ESTADO + ECO
 // ============================================================
 
-export function obterRecomendacaoCicloEco(respostas, faseActual, historico) {
+export function obterRecomendacaoCicloEco(respostas, faseActual, historico, locale = 'pt') {
   if (!faseActual) return null;
 
   const cicloInfo = CICLO_ECO_MAP[faseActual];
@@ -647,31 +748,60 @@ export function obterRecomendacaoCicloEco(respostas, faseActual, historico) {
   // Identifica o Eco mais necessário com base no estado actual
   const { corpo, energia, mente, espelho, passado, futuro, cuidado } = respostas;
 
+  // Razões por locale
+  const razoes = {
+    pt: { aurea: 'Não te colocas em primeiro lugar. ÁUREA ajuda-te a existir para ti.', body: 'O corpo precisa de atenção primeiro.', emotion: 'Há emoção a processar.', will: 'A vontade precisa de direcção.', identity: 'Precisas de te reconectar contigo.', fallback: 'Cuida de ti nesta fase.' },
+    en: { aurea: 'You\'re not putting yourself first. ÁUREA helps you exist for yourself.', body: 'The body needs attention first.', emotion: 'There\'s emotion to process.', will: 'Your will needs direction.', identity: 'You need to reconnect with yourself.', fallback: 'Take care of yourself in this phase.' },
+    fr: { aurea: 'Tu ne te mets pas en premier. ÁUREA t\'aide à exister pour toi.', body: 'Le corps a besoin d\'attention en premier.', emotion: 'Il y a des émotions à traiter.', will: 'Ta volonté a besoin de direction.', identity: 'Tu as besoin de te reconnecter à toi-même.', fallback: 'Prends soin de toi dans cette phase.' }
+  };
+  const r = razoes[locale] || razoes['pt'];
+
   let ecoSugerido = cicloInfo.ecosPrioritarios[0];
   let razao = '';
 
   // ÁUREA tem PRIORIDADE quando auto-sacrifício é detectado
   if (['esquecida', 'por ultimo'].includes(cuidado)) {
     ecoSugerido = 'Áurea';
-    razao = 'Não te colocas em primeiro lugar. ÁUREA ajuda-te a existir para ti.';
+    razao = r.aurea;
   }
   // Prioriza baseado no estado actual
   else if (['pesado', 'tenso'].includes(corpo) || ['vazia', 'baixa'].includes(energia)) {
     ecoSugerido = 'Vitalis';
-    razao = 'O corpo precisa de atenção primeiro.';
+    razao = r.body;
   } else if (['preso', 'apesar'].includes(passado) || ['caotica', 'barulhenta'].includes(mente)) {
     ecoSugerido = 'Serena';
-    razao = 'Há emoção a processar.';
+    razao = r.emotion;
   } else if (['esconder', 'parar'].includes(respostas.impulso)) {
     ecoSugerido = 'Ignis';
-    razao = 'A vontade precisa de direcção.';
+    razao = r.will;
   } else if (['invisivel', 'apagada'].includes(espelho)) {
     ecoSugerido = 'Imago';
-    razao = 'Precisas de te reconectar contigo.';
+    razao = r.identity;
   }
 
+  // Recomendações por fase por locale
+  const RECS_I18N = {
+    en: {
+      menstrual: { Vitalis: 'Nutritive and comforting food. Avoid restrictions.', Áurea: 'Time to receive. Let others take care of you.', Serena: 'Allow yourself to feel without judgement. Honour the emotions.', Ignis: 'Pause from action. Conserve energy.', Ventis: 'Slow rhythm. Little intense movement.', Ecoa: 'Silence and inner listening.', Imago: 'Don\'t judge yourself. The mirror lies in this phase.' },
+      folicular: { Vitalis: 'Try new foods. Your body welcomes changes.', Áurea: 'Good time to invest in yourself. What do you want for yourself?', Serena: 'Lighter emotions. Take the chance to process what remained.', Ignis: 'Excellent for starting new things. Act.', Ventis: 'Gradually increase movement.', Ecoa: 'Clear voice. Good time to communicate.', Imago: 'Reconnect with yourself. You see yourself more clearly.' },
+      ovulacao: { Vitalis: 'Strong body. You can be bolder with food.', Áurea: 'Your peak of worth. Celebrate who you are and what you deserve.', Serena: 'Balanced emotions. Time for deep connections.', Ignis: 'Maximum action. Decide, lead, create.', Ventis: 'Intense movement welcome.', Ecoa: 'Your voice is clearer. Speak, present, communicate.', Imago: 'You see yourself at your best. Trust the reflection.' },
+      lutea: { Vitalis: 'Avoid sugar and processed food. Your body needs stability.', Áurea: 'Honour what you did for yourself. Don\'t demand more.', Serena: 'Intense emotions are normal. Don\'t judge yourself.', Ignis: 'Complete tasks. Avoid starting new things.', Ventis: 'Gentle movement. Don\'t force intensity.', Ecoa: 'Careful with impulsive words. Wait before speaking.', Imago: 'Self-criticism is amplified. What you see isn\'t real.' }
+    },
+    fr: {
+      menstrual: { Vitalis: 'Alimentation nutritive et réconfortante. Évite les restrictions.', Áurea: 'Temps de recevoir. Permets aux autres de prendre soin de toi.', Serena: 'Permets-toi de ressentir sans jugement. Honore les émotions.', Ignis: 'Pause dans l\'action. Conserve ton énergie.', Ventis: 'Rythme lent. Peu de mouvement intense.', Ecoa: 'Silence et écoute intérieure.', Imago: 'Ne te juge pas. Le miroir ment dans cette phase.' },
+      folicular: { Vitalis: 'Essaie de nouveaux aliments. Le corps accueille bien les changements.', Áurea: 'Bon moment pour investir en toi. Que veux-tu pour toi-même ?', Serena: 'Émotions plus légères. Profite pour traiter ce qui est resté.', Ignis: 'Excellent pour commencer des choses nouvelles. Agis.', Ventis: 'Augmente progressivement le mouvement.', Ecoa: 'Voix claire. Bon moment pour communiquer.', Imago: 'Reconnecte-toi à toi-même. Tu te vois plus clairement.' },
+      ovulacao: { Vitalis: 'Corps fort. Tu peux être plus audacieuse dans l\'alimentation.', Áurea: 'Ton pic de valeur. Célèbre qui tu es et ce que tu mérites.', Serena: 'Émotions équilibrées. Moment pour des connexions profondes.', Ignis: 'Action maximale. Décide, dirige, crée.', Ventis: 'Mouvement intense bienvenu.', Ecoa: 'Ta voix est plus claire. Parle, présente, communique.', Imago: 'Tu te vois au mieux. Fais confiance au reflet.' },
+      lutea: { Vitalis: 'Évite le sucre et les aliments transformés. Le corps a besoin de stabilité.', Áurea: 'Honore ce que tu as fait pour toi. N\'exige pas plus.', Serena: 'Les émotions intenses sont normales. Ne te juge pas.', Ignis: 'Termine les tâches. Évite de commencer de nouvelles choses.', Ventis: 'Mouvement doux. Ne force pas l\'intensité.', Ecoa: 'Attention aux mots impulsifs. Attends avant de parler.', Imago: 'L\'auto-critique est amplifiée. Ce que tu vois n\'est pas réel.' }
+    }
+  };
+
   // Adiciona contexto do ciclo
-  const recomendacaoFase = cicloInfo.recomendacoes[ecoSugerido] || 'Cuida de ti nesta fase.';
+  let recomendacaoFase;
+  if (locale === 'pt' || !RECS_I18N[locale]) {
+    recomendacaoFase = cicloInfo.recomendacoes[ecoSugerido] || r.fallback;
+  } else {
+    recomendacaoFase = RECS_I18N[locale]?.[faseActual]?.[ecoSugerido] || r.fallback;
+  }
 
   return {
     eco: ecoSugerido,
@@ -688,13 +818,20 @@ export function obterRecomendacaoCicloEco(respostas, faseActual, historico) {
 // TENDÊNCIAS MENSAIS COM APRENDIZAGEM
 // ============================================================
 
-export function analisarTendenciasMensais(historico) {
+export function analisarTendenciasMensais(historico, locale = 'pt') {
   if (!historico || historico.length < 14) return null;
 
   const mes = Date.now() - (30 * 24 * 60 * 60 * 1000);
   const registosMes = historico.filter(e => new Date(e.created_at).getTime() > mes);
 
   if (registosMes.length < 10) return null;
+
+  const msgs = {
+    pt: { up: 'A energia tem subido esta semana. Bom sinal.', down: 'A energia tem descido. Algo pode estar a mudar.', consistent: 'Tens usado a LUMINA com consistência. Isso ajuda a ver padrões.' },
+    en: { up: 'Energy has been rising this week. Good sign.', down: 'Energy has been dropping. Something may be changing.', consistent: 'You\'ve been using LUMINA consistently. That helps see patterns.' },
+    fr: { up: 'L\'énergie monte cette semaine. Bon signe.', down: 'L\'énergie descend. Quelque chose est peut-être en train de changer.', consistent: 'Tu utilises LUMINA régulièrement. Ça aide à voir les patterns.' }
+  };
+  const m = msgs[locale] || msgs['pt'];
 
   // Agrupa por semana
   const semanas = [[], [], [], []];
@@ -727,10 +864,10 @@ export function analisarTendenciasMensais(historico) {
   if (semanaActual && semanaPassada) {
     if (semanaActual > semanaPassada + 0.5) {
       tendencia.direcao = 'subir';
-      tendencia.insights.push('A energia tem subido esta semana. Bom sinal.');
+      tendencia.insights.push(m.up);
     } else if (semanaActual < semanaPassada - 0.5) {
       tendencia.direcao = 'descer';
-      tendencia.insights.push('A energia tem descido. Algo pode estar a mudar.');
+      tendencia.insights.push(m.down);
     }
   }
 
@@ -742,7 +879,7 @@ export function analisarTendenciasMensais(historico) {
   }).length;
 
   if (diasConsecutivos >= 7) {
-    tendencia.insights.push(`Tens usado a LUMINA com consistência. Isso ajuda a ver padrões.`);
+    tendencia.insights.push(m.consistent);
   }
 
   return tendencia;
