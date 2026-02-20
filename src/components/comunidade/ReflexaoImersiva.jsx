@@ -17,6 +17,7 @@ import {
   getGhostEspelhos
 } from '../../lib/ghost-users'
 import { Avatar } from './HubComunidade'
+import { useI18n } from '../../contexts/I18nContext'
 
 const RESSONANCIA_KEYS = Object.keys(RESSONANCIA_TIPOS)
 
@@ -67,6 +68,7 @@ export default function ReflexaoImersiva({
   const lastTapRef = useRef(0)
   const tapTimerRef = useRef(null)
 
+  const { t } = useI18n()
   const isGhost = isGhostPost(post)
   const perfil = post.community_profiles
   const temaInfo = TEMAS_REFLEXAO[post.tipo] || TEMAS_REFLEXAO.livre
@@ -243,7 +245,7 @@ export default function ReflexaoImersiva({
             )}
             <div>
               <p className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'var(--font-corpo)' }}>
-                {isAnonymous ? 'Alma Anónima' : (perfil?.display_name || 'Utilizadora')}
+                {isAnonymous ? t('comunidade.card.anonymous_soul') : (perfil?.display_name || t('comunidade.card.user_default'))}
               </p>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-400">{tempoRelativo(post.created_at)}</span>
@@ -251,7 +253,7 @@ export default function ReflexaoImersiva({
                   <>
                     <span className="text-gray-300">·</span>
                     <span className="text-xs text-gray-400">
-                      {ressonanciaCount} {ressonanciaCount === 1 ? 'ressonância' : 'ressonâncias'}
+                      {ressonanciaCount} {ressonanciaCount === 1 ? t('comunidade.card.resonance_one') : t('comunidade.card.resonance_other')}
                     </span>
                   </>
                 )}

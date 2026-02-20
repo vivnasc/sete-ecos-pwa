@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase'
 import { checkAuroraAccess, AURORA_CONFIG } from '../../lib/aurora/subscriptions'
 import { isCoach } from '../../lib/coach'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import { g } from '../../utils/genero'
 
 /**
@@ -15,6 +16,7 @@ const AuroraAccessGuard = ({ children }) => {
   const [hasAccess, setHasAccess] = useState(false)
   const [accessInfo, setAccessInfo] = useState(null)
   const { user, userRecord } = useAuth()
+  const { t } = useI18n()
 
   useEffect(() => {
     verifyAccess()
@@ -75,7 +77,7 @@ const AuroraAccessGuard = ({ children }) => {
             className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
             style={{ borderColor: '#D4A5A588', borderTopColor: 'transparent' }}
           />
-          <p style={{ color: '#D4A5A5cc' }}>A verificar acesso...</p>
+          <p style={{ color: '#D4A5A5cc' }}>{t('aurora.access.checking')}</p>
         </div>
       </div>
     )
@@ -108,11 +110,10 @@ const AuroraAccessGuard = ({ children }) => {
             <span className="text-4xl">☀️</span>
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-3">
-            Aurora — A Tua Recompensa
+            {t('aurora.access.title')}
           </h2>
           <p className="text-gray-600 mb-6 leading-relaxed">
-            A Aurora é <strong>gratuita</strong> e desbloqueia automaticamente quando completares todos os 7 ecos.
-            Já completaste <strong>{count} de {total}</strong>.
+            {t('aurora.access.description', { count, total })}
           </p>
 
           {/* Barra de progresso */}
@@ -156,7 +157,7 @@ const AuroraAccessGuard = ({ children }) => {
               className="block w-full py-3 px-6 text-white rounded-xl font-semibold hover:shadow-lg transition-all mb-3"
               style={{ background: `linear-gradient(135deg, ${ecoNames[ecosRemaining[0]]?.color || '#D4A5A5'}, #333)` }}
             >
-              Continuar com {ecoNames[ecosRemaining[0]]?.name || ecosRemaining[0]}
+              {t('aurora.access.continue_with', { eco: ecoNames[ecosRemaining[0]]?.name || ecosRemaining[0] })}
             </Link>
           )}
 
@@ -164,7 +165,7 @@ const AuroraAccessGuard = ({ children }) => {
             to="/landing"
             className="block w-full py-3 px-6 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all"
           >
-            Ver todos os ecos
+            {t('aurora.access.view_all')}
           </Link>
         </div>
       </div>

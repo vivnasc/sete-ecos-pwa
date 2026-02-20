@@ -182,6 +182,8 @@ export const comunidadeTranslations = {
     'comunidade.card.resonance_one': 'ressonância',
     'comunidade.card.resonance_other': 'ressonâncias',
     'comunidade.card.send': 'Enviar',
+    'comunidade.card.loading': 'A carregar...',
+    'comunidade.card.you': 'Tu',
 
     // === CRIAR ===
     'comunidade.criar.image_too_large': 'Imagem demasiado grande. Máximo 5MB.',
@@ -211,6 +213,8 @@ export const comunidadeTranslations = {
     'comunidade.criar.placeholder_motivation': 'Inspira a comunidade',
     'comunidade.criar.placeholder_transformation': 'Mostra a tua transformação...',
     'comunidade.criar.placeholder_question': 'Qual é a tua pergunta?',
+    'comunidade.criar.prompt_label': 'Prompt',
+    'comunidade.criar.new_prompt': 'Novo prompt',
 
     // === JORNADA ===
     'comunidade.jornada.loading': 'A carregar jornada...',
@@ -232,6 +236,7 @@ export const comunidadeTranslations = {
     'comunidade.jornada.empty_own': 'Ainda não partilhaste reflexões. Começa a tua jornada!',
     'comunidade.jornada.empty_other': 'Ainda sem reflexões partilhadas.',
     'comunidade.jornada.share_reflection': 'Partilhar reflexão',
+    'comunidade.jornada.follow': 'Seguir',
 
     // === EDITAR ===
     'comunidade.editar.cancel': 'Cancelar',
@@ -246,6 +251,7 @@ export const comunidadeTranslations = {
     'comunidade.editar.active_ecos': 'Ecos que estás a explorar',
     'comunidade.editar.anonymous_default': 'Partilha anónima por padrão',
     'comunidade.editar.anonymous_desc': 'As tuas reflexões serão anónimas por padrão',
+    'comunidade.editar.name_placeholder_journey': 'Como queres ser conhecida neste caminho?',
 
     // === NOTIFICAÇÕES ===
     'comunidade.notificacoes.loading': 'A carregar notificações...',
@@ -294,6 +300,8 @@ export const comunidadeTranslations = {
     'comunidade.stories.choose_image': 'Escolher imagem da galeria',
     'comunidade.stories.bg_color': 'COR DE FUNDO',
     'comunidade.stories.cancel': 'Cancelar',
+    'comunidade.stories.error_publish': 'Erro ao publicar story. Tenta novamente.',
+    'comunidade.stories.story_alt': 'Story',
   },
 
   en: {
@@ -471,6 +479,8 @@ export const comunidadeTranslations = {
     'comunidade.card.resonance_one': 'resonance',
     'comunidade.card.resonance_other': 'resonances',
     'comunidade.card.send': 'Send',
+    'comunidade.card.loading': 'Loading...',
+    'comunidade.card.you': 'You',
 
     // === CRIAR ===
     'comunidade.criar.image_too_large': 'Image too large. Maximum 5MB.',
@@ -500,6 +510,8 @@ export const comunidadeTranslations = {
     'comunidade.criar.placeholder_motivation': 'Inspire the community',
     'comunidade.criar.placeholder_transformation': 'Show your transformation...',
     'comunidade.criar.placeholder_question': 'What\'s your question?',
+    'comunidade.criar.prompt_label': 'Prompt',
+    'comunidade.criar.new_prompt': 'New prompt',
 
     // === JORNADA ===
     'comunidade.jornada.loading': 'Loading journey...',
@@ -521,6 +533,7 @@ export const comunidadeTranslations = {
     'comunidade.jornada.empty_own': 'You haven\'t shared any reflections yet. Start your journey!',
     'comunidade.jornada.empty_other': 'No reflections shared yet.',
     'comunidade.jornada.share_reflection': 'Share reflection',
+    'comunidade.jornada.follow': 'Follow',
 
     // === EDITAR ===
     'comunidade.editar.cancel': 'Cancel',
@@ -535,6 +548,7 @@ export const comunidadeTranslations = {
     'comunidade.editar.active_ecos': 'Ecos you\'re exploring',
     'comunidade.editar.anonymous_default': 'Anonymous sharing by default',
     'comunidade.editar.anonymous_desc': 'Your reflections will be anonymous by default',
+    'comunidade.editar.name_placeholder_journey': 'How do you want to be known on this path?',
 
     // === NOTIFICAÇÕES ===
     'comunidade.notificacoes.loading': 'Loading notifications...',
@@ -583,6 +597,8 @@ export const comunidadeTranslations = {
     'comunidade.stories.choose_image': 'Choose image from gallery',
     'comunidade.stories.bg_color': 'BACKGROUND COLOUR',
     'comunidade.stories.cancel': 'Cancel',
+    'comunidade.stories.error_publish': 'Error publishing story. Try again.',
+    'comunidade.stories.story_alt': 'Story',
   },
 
   fr: {
@@ -760,6 +776,8 @@ export const comunidadeTranslations = {
     'comunidade.card.resonance_one': 'résonance',
     'comunidade.card.resonance_other': 'résonances',
     'comunidade.card.send': 'Envoyer',
+    'comunidade.card.loading': 'Chargement...',
+    'comunidade.card.you': 'Toi',
 
     // === CRIAR ===
     'comunidade.criar.image_too_large': 'Image trop grande. Maximum 5 Mo.',
@@ -789,6 +807,8 @@ export const comunidadeTranslations = {
     'comunidade.criar.placeholder_motivation': 'Inspire la communauté',
     'comunidade.criar.placeholder_transformation': 'Montre ta transformation...',
     'comunidade.criar.placeholder_question': 'Quelle est ta question ?',
+    'comunidade.criar.prompt_label': 'Prompt',
+    'comunidade.criar.new_prompt': 'Nouveau prompt',
 
     // === JORNADA ===
     'comunidade.jornada.loading': 'Chargement du parcours...',
@@ -810,6 +830,7 @@ export const comunidadeTranslations = {
     'comunidade.jornada.empty_own': 'Tu n\'as pas encore partagé de réflexions. Commence ton parcours !',
     'comunidade.jornada.empty_other': 'Pas encore de réflexions partagées.',
     'comunidade.jornada.share_reflection': 'Partager une réflexion',
+    'comunidade.jornada.follow': 'Suivre',
 
     // === EDITAR ===
     'comunidade.editar.cancel': 'Annuler',
@@ -824,6 +845,7 @@ export const comunidadeTranslations = {
     'comunidade.editar.active_ecos': 'Ecos que tu explores',
     'comunidade.editar.anonymous_default': 'Partage anonyme par défaut',
     'comunidade.editar.anonymous_desc': 'Tes réflexions seront anonymes par défaut',
+    'comunidade.editar.name_placeholder_journey': 'Comment veux-tu être connu(e) sur ce chemin ?',
 
     // === NOTIFICAÇÕES ===
     'comunidade.notificacoes.loading': 'Chargement des notifications...',
@@ -872,5 +894,7 @@ export const comunidadeTranslations = {
     'comunidade.stories.choose_image': 'Choisir une image de la galerie',
     'comunidade.stories.bg_color': 'COULEUR DE FOND',
     'comunidade.stories.cancel': 'Annuler',
+    'comunidade.stories.error_publish': 'Erreur lors de la publication de la story. Réessaie.',
+    'comunidade.stories.story_alt': 'Story',
   }
 };

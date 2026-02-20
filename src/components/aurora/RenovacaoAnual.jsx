@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import { g } from '../../utils/genero'
 import ModuleHeader from '../shared/ModuleHeader'
 
@@ -140,6 +141,7 @@ const RenovacaoCard = ({ renovacao, isLatest }) => {
 export default function RenovacaoAnual() {
   const navigate = useNavigate()
   const { userRecord } = useAuth()
+  const { t } = useI18n()
   const userId = userRecord?.id || null
 
   // Form
@@ -286,8 +288,8 @@ export default function RenovacaoAnual() {
     <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${ACCENT_DARK} 0%, #111318 30%, #0d0f13 100%)` }}>
       <ModuleHeader
         eco="aurora"
-        title="Renovação Anual"
-        subtitle="O que mudou num ano?"
+        title={t('aurora.renovacao.title')}
+        subtitle={t('aurora.renovacao.subtitle')}
       />
 
       <div className="max-w-lg mx-auto px-4 pb-24">
@@ -299,7 +301,7 @@ export default function RenovacaoAnual() {
             style={view === 'nova' ? { background: `${ACCENT}33` } : undefined}
             aria-pressed={view === 'nova'}
           >
-            Nova Renovação
+            {t('aurora.renovacao.tab_new')}
           </button>
           <button
             onClick={() => setView('historico')}
@@ -307,7 +309,7 @@ export default function RenovacaoAnual() {
             style={view === 'historico' ? { background: `${ACCENT}33` } : undefined}
             aria-pressed={view === 'historico'}
           >
-            Histórico ({renovacoes.length})
+            {t('aurora.renovacao.tab_history', { count: renovacoes.length })}
           </button>
         </div>
 
@@ -321,7 +323,7 @@ export default function RenovacaoAnual() {
                 style={{ background: '#4ade8022', border: '1px solid #4ade8044' }}
               >
                 <p className="text-sm font-medium text-emerald-300">
-                  Renovação guardada com sucesso! +40 Raios de Aurora
+                  {t('aurora.renovacao.saved_success')}
                 </p>
               </div>
             )}
@@ -333,10 +335,10 @@ export default function RenovacaoAnual() {
                 className="text-xl font-semibold text-white"
                 style={{ fontFamily: 'var(--font-titulos)' }}
               >
-                1 ano depois — o que mudou?
+                {t('aurora.renovacao.one_year_later')}
               </h2>
               <p className="text-sm text-gray-400 max-w-xs mx-auto">
-                {g('Querido', 'Querida')}, este é o momento de olhar para trás e reconhecer a tua transformação.
+                {t('aurora.renovacao.look_back')}
               </p>
             </div>
 
@@ -380,12 +382,12 @@ export default function RenovacaoAnual() {
             {/* O que mudou */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-300 block">
-                O que mudou em ti este ano?
+                {t('aurora.renovacao.what_changed')}
               </label>
               <textarea
                 value={oQueMudou}
                 onChange={(e) => setOQueMudou(e.target.value)}
-                placeholder="Reflecte sobre as mudanças que aconteceram... O que ganhou força? O que deixaste ir? O que descobriste?"
+                placeholder={t('aurora.renovacao.changes_placeholder')}
                 rows={5}
                 maxLength={3000}
                 className="w-full p-4 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
@@ -397,10 +399,10 @@ export default function RenovacaoAnual() {
             {/* Novas intencoes */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-300 block">
-                Novas intenções para {anoActual}
+                {t('aurora.renovacao.new_intentions', { year: anoActual })}
               </label>
               <p className="text-xs text-gray-500">
-                Define até 10 intenções para o próximo ciclo.
+                {t('aurora.renovacao.intentions_desc')}
               </p>
               <div className="space-y-2">
                 {intencoes.map((int, idx) => (
@@ -419,7 +421,7 @@ export default function RenovacaoAnual() {
                   className="w-full py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-white/5 active:scale-[0.98]"
                   style={{ color: ACCENT, border: `1px dashed ${ACCENT}44` }}
                 >
-                  + Adicionar intenção
+                  {t('aurora.renovacao.add_intention')}
                 </button>
               )}
             </div>
@@ -431,7 +433,7 @@ export default function RenovacaoAnual() {
               className="w-full py-4 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl active:scale-[0.97] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
             >
-              {saving ? 'A guardar...' : 'Iniciar Renovação (+40 Raios)'}
+              {saving ? t('aurora.antes_depois.saving') : t('aurora.renovacao.start_renewal')}
             </button>
           </div>
         )}
@@ -453,17 +455,17 @@ export default function RenovacaoAnual() {
                   className="text-lg font-semibold text-white"
                   style={{ fontFamily: 'var(--font-titulos)' }}
                 >
-                  Nenhuma renovação registada
+                  {t('aurora.renovacao.no_renewals')}
                 </h3>
                 <p className="text-sm text-gray-400 max-w-xs mx-auto">
-                  A renovação anual é um momento de reconhecer a tua transformação e definir novas intenções.
+                  {t('aurora.renovacao.renewals_desc')}
                 </p>
                 <button
                   onClick={() => setView('nova')}
                   className="px-6 py-3 rounded-xl font-medium text-sm text-white shadow-lg transition-all duration-200"
                   style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
                 >
-                  Fazer a primeira renovação
+                  {t('aurora.renovacao.first_renewal')}
                 </button>
               </div>
             ) : (
@@ -480,7 +482,7 @@ export default function RenovacaoAnual() {
                     <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                       {renovacoes.reduce((sum, r) => sum + (r.intencoes_novas || []).length, 0)}
                     </p>
-                    <p className="text-xs text-gray-400">intenções totais</p>
+                    <p className="text-xs text-gray-400">{t('aurora.renovacao.total_intentions')}</p>
                   </div>
                 </div>
 

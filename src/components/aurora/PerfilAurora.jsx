@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import ModuleHeader from '../shared/ModuleHeader'
 import { GamificationPanel } from '../shared/GamificationSystem'
 import { AURORA_GAMIFICATION } from '../../lib/aurora/gamificacao'
@@ -17,6 +18,7 @@ const AURORA_DARK = '#2e1a1a'
 
 export default function PerfilAurora() {
   const { user } = useAuth()
+  const { t } = useI18n()
   const [userId, setUserId] = useState(null)
   const [clientData, setClientData] = useState(null)
   const [stats, setStats] = useState({})
@@ -117,7 +119,7 @@ export default function PerfilAurora() {
 
   return (
     <div className="min-h-screen pb-24" style={{ background: AURORA_DARK }}>
-      <ModuleHeader eco="aurora" title="Perfil Aurora" compact />
+      <ModuleHeader eco="aurora" title={t('aurora.perfil.title')} compact />
 
       <div className="max-w-lg mx-auto px-5 py-6 space-y-6">
         {/* Resumo */}
@@ -129,10 +131,10 @@ export default function PerfilAurora() {
             className="text-xl font-bold text-white"
             style={{ fontFamily: 'var(--font-titulos)' }}
           >
-            {clientData?.graduacao_data ? g('Graduado', 'Graduada') : 'Em jornada'}
+            {clientData?.graduacao_data ? t('aurora.perfil.graduated') : t('aurora.perfil.in_journey')}
           </h2>
           <p className="text-white/40 text-sm mt-1">
-            {clientData?.raios_total || 0} Raios de Aurora
+            {t('aurora.perfil.rays_count', { count: clientData?.raios_total || 0 })}
           </p>
         </div>
 
@@ -163,10 +165,10 @@ export default function PerfilAurora() {
               className="text-white font-semibold text-lg mb-1"
               style={{ fontFamily: 'var(--font-titulos)' }}
             >
-              Certificado de Graduacao
+              {t('aurora.perfil.graduation_cert')}
             </h3>
             <p className="text-white/50 text-sm">
-              {g('Graduado', 'Graduada')} em {new Date(clientData.graduacao_data).toLocaleDateString('pt-PT')}
+              {t('aurora.perfil.graduated_on', { date: new Date(clientData.graduacao_data).toLocaleDateString('pt-PT') })}
             </p>
             <p className="text-white/30 text-xs mt-2">
               {clientData.ecos_completados || 0} ecos completados
@@ -185,22 +187,22 @@ export default function PerfilAurora() {
 
         {/* Info da subscricao */}
         <div className="bg-white/5 rounded-2xl border border-white/10 p-5">
-          <h3 className="text-white font-semibold text-sm mb-3">Subscricao</h3>
+          <h3 className="text-white font-semibold text-sm mb-3">{t('aurora.perfil.subscription')}</h3>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-white/40">Estado</span>
+              <span className="text-white/40">{t('aurora.perfil.status')}</span>
               <span className="text-white capitalize">{clientData?.subscription_status || 'Nenhuma'}</span>
             </div>
             {clientData?.subscription_expires && (
               <div className="flex justify-between">
-                <span className="text-white/40">Expira</span>
+                <span className="text-white/40">{t('aurora.perfil.expires')}</span>
                 <span className="text-white">
                   {new Date(clientData.subscription_expires).toLocaleDateString('pt-PT')}
                 </span>
               </div>
             )}
             <div className="flex justify-between">
-              <span className="text-white/40">Membro desde</span>
+              <span className="text-white/40">{t('aurora.perfil.member_since')}</span>
               <span className="text-white">
                 {clientData?.created_at ? new Date(clientData.created_at).toLocaleDateString('pt-PT') : '\u2014'}
               </span>
@@ -213,7 +215,7 @@ export default function PerfilAurora() {
           onClick={handleExport}
           className="w-full py-3 rounded-xl text-white/70 font-medium text-sm bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
         >
-          Exportar os meus dados
+          {t('aurora.perfil.export_data')}
         </button>
       </div>
     </div>

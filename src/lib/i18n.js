@@ -16,6 +16,13 @@
 import { luminaTranslations } from './i18n/lumina.js';
 import { comunidadeTranslations } from './i18n/comunidade.js';
 import { auroraTranslations } from './i18n/aurora.js';
+import { aureaTranslations } from './i18n/aurea.js';
+import { serenaTranslations } from './i18n/serena.js';
+import { ignisTranslations } from './i18n/ignis.js';
+import { ventisTranslations } from './i18n/ventis.js';
+import { ecoaTranslations } from './i18n/ecoa.js';
+import { imagoTranslations } from './i18n/imago.js';
+import { vitalisTranslations } from './i18n/vitalis.js';
 
 // Traduções base organizadas por namespace
 const baseTranslations = {
@@ -649,6 +656,13 @@ for (const locale of ['pt', 'en', 'fr']) {
     ...(luminaTranslations[locale] || {}),
     ...(comunidadeTranslations[locale] || {}),
     ...(auroraTranslations[locale] || {}),
+    ...(aureaTranslations[locale] || {}),
+    ...(serenaTranslations[locale] || {}),
+    ...(ignisTranslations[locale] || {}),
+    ...(ventisTranslations[locale] || {}),
+    ...(ecoaTranslations[locale] || {}),
+    ...(imagoTranslations[locale] || {}),
+    ...(vitalisTranslations[locale] || {}),
   }
 }
 

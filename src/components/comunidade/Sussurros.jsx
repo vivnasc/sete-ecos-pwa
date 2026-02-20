@@ -9,6 +9,7 @@ import {
   SUSSURRO_MODELOS,
   tempoRelativo
 } from '../../lib/comunidade'
+import { useI18n } from '../../contexts/I18nContext'
 
 // ============================================================
 // Sussurros — Palavras que aquecem em silêncio
@@ -51,6 +52,7 @@ function formatarHora(dataStr) {
 
 function ConversasSussurrosList({ userId, conversas, loading, onAbrirConversa }) {
   const navigate = useNavigate()
+  const { t } = useI18n()
 
   const getOutroPerfil = (conversa) => {
     if (conversa.user1_profile?.user_id === userId) {
@@ -66,7 +68,7 @@ function ConversasSussurrosList({ userId, conversas, loading, onAbrirConversa })
           🌸
         </div>
         <p className="text-gray-400 text-sm" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
-          A carregar sussurros...
+          {t('comunidade.sussurros.loading')}
         </p>
       </div>
     )
@@ -85,10 +87,10 @@ function ConversasSussurrosList({ userId, conversas, loading, onAbrirConversa })
             </button>
             <div>
               <h1 className="text-xl font-bold" style={{ fontFamily: 'var(--font-titulos)', color: '#1A1A4E' }}>
-                Sussurros
+                {t('comunidade.sussurros.title')}
               </h1>
               <p className="text-xs text-purple-400" style={{ fontFamily: 'var(--font-corpo)', fontStyle: 'italic' }}>
-                Palavras que aquecem em silêncio
+                {t('comunidade.sussurros.subtitle')}
               </p>
             </div>
           </div>
@@ -103,10 +105,10 @@ function ConversasSussurrosList({ userId, conversas, loading, onAbrirConversa })
               🕊️
             </div>
             <h3 className="text-lg font-semibold text-gray-600 mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
-              Ainda sem sussurros
+              {t('comunidade.sussurros.empty_title')}
             </h3>
             <p className="text-sm text-gray-400 max-w-xs mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-corpo)' }}>
-              Envia uma palavra de apoio a alguém da comunidade. Cada sussurro aquece o caminho de quem o recebe.
+              {t('comunidade.sussurros.empty_desc')}
             </p>
           </div>
         ) : (
@@ -182,6 +184,7 @@ function SussurroView({ userId, conversa, onVoltar }) {
 
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
+  const { t } = useI18n()
 
   useEffect(() => {
     if (userId && conversa?.id) carregarSussurros()
@@ -283,7 +286,7 @@ function SussurroView({ userId, conversa, onVoltar }) {
           🌸
         </div>
         <p className="text-gray-400 text-sm" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
-          A abrir sussurro...
+          {t('comunidade.sussurros.opening')}
         </p>
       </div>
     )
@@ -330,7 +333,7 @@ function SussurroView({ userId, conversa, onVoltar }) {
                 🕊️
               </div>
               <p className="text-sm text-gray-400 leading-relaxed" style={{ fontFamily: 'var(--font-corpo)' }}>
-                Envia o primeiro sussurro.{'\n'}Uma palavra gentil pode mudar um dia inteiro.
+                {t('comunidade.sussurros.first_whisper')}
               </p>
             </div>
           )}
@@ -409,7 +412,7 @@ function SussurroView({ userId, conversa, onVoltar }) {
                 if (e.target.value.length <= 500) setTexto(e.target.value)
               }}
               onKeyDown={handleKeyDown}
-              placeholder="Sussurra algo..."
+              placeholder={t('comunidade.sussurros.placeholder')}
               maxLength={500}
               className="flex-1 rounded-full border border-gray-200 focus:border-purple-300 px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 outline-none focus:ring-2 focus:ring-purple-100 transition-all"
               style={{ fontFamily: 'var(--font-corpo)' }}
@@ -442,6 +445,7 @@ function SussurroView({ userId, conversa, onVoltar }) {
 export default function Sussurros() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { t } = useI18n()
 
   const [userId, setUserId] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -541,14 +545,14 @@ export default function Sussurros() {
           🔒
         </div>
         <p className="text-gray-500 text-center text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>
-          Precisas de iniciar sessão para ver os teus sussurros.
+          {t('comunidade.sussurros.login_required')}
         </p>
         <button
           onClick={() => navigate('/comunidade')}
           className="text-sm font-medium px-5 py-2 rounded-full transition-colors hover:bg-purple-50"
           style={{ color: '#8B5CF6', fontFamily: 'var(--font-titulos)' }}
         >
-          Voltar
+          {t('comunidade.sussurros.back')}
         </button>
       </div>
     )

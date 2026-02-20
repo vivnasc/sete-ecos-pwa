@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useI18n } from '../../contexts/I18nContext'
 import { supabase } from '../../lib/supabase'
 import { getFogueiraAtiva, getPromptDoDia, getPerfilPublico, contarReflexoes, contarRessonanciaRecebida, getMeusCirculos, ECOS_INFO } from '../../lib/comunidade'
 import { getGhostCommunityStats, getGhostPostsForRange, GHOST_PROFILES } from '../../lib/ghost-users'
@@ -33,6 +34,7 @@ function Avatar({ perfil, size = 40, className = '' }) {
 
 export default function HubComunidade() {
   const navigate = useNavigate()
+  const { t } = useI18n()
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState(null)
   const [perfil, setPerfil] = useState(null)
@@ -118,7 +120,7 @@ export default function HubComunidade() {
           <span className="text-white text-2xl font-bold" style={{ fontFamily: 'var(--font-titulos)' }}>C</span>
         </div>
         <p className="mt-4 text-amber-800/50 text-sm" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
-          A preparar o espaço...
+          {t('comunidade.hub.loading')}
         </p>
       </div>
     )
@@ -143,11 +145,11 @@ export default function HubComunidade() {
             <div>
               <h1 className="text-3xl font-semibold tracking-tight"
                 style={{ fontFamily: 'var(--font-titulos)', color: '#292524' }}>
-                Comunidade
+                {t('comunidade.hub.title')}
               </h1>
               <p className="text-sm mt-1"
                 style={{ color: '#A8A29E', fontFamily: 'var(--font-corpo)' }}>
-                Onde a transformação se encontra
+                {t('comunidade.hub.subtitle')}
               </p>
             </div>
 
@@ -178,7 +180,7 @@ export default function HubComunidade() {
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 <span className="text-xs" style={{ color: '#A8A29E', fontFamily: 'var(--font-corpo)' }}>
-                  Comunidade activa
+                  {t('comunidade.hub.active_community')}
                 </span>
               </div>
             </div>
@@ -187,9 +189,9 @@ export default function HubComunidade() {
           {/* Stats — gradient accent cards */}
           <div className="grid grid-cols-3 gap-3">
             {[
-              { n: stats.reflexoes, label: 'Reflexões', cor: '#D97706', grad: 'linear-gradient(135deg, #FEF3C7, #FDE68A)' },
-              { n: stats.ressonancia, label: 'Ressonância', cor: '#EA580C', grad: 'linear-gradient(135deg, #FFEDD5, #FED7AA)' },
-              { n: stats.circulos, label: 'Círculos', cor: '#059669', grad: 'linear-gradient(135deg, #D1FAE5, #A7F3D0)' }
+              { n: stats.reflexoes, label: t('comunidade.hub.reflections'), cor: '#D97706', grad: 'linear-gradient(135deg, #FEF3C7, #FDE68A)' },
+              { n: stats.ressonancia, label: t('comunidade.hub.resonance'), cor: '#EA580C', grad: 'linear-gradient(135deg, #FFEDD5, #FED7AA)' },
+              { n: stats.circulos, label: t('comunidade.hub.circles'), cor: '#059669', grad: 'linear-gradient(135deg, #D1FAE5, #A7F3D0)' }
             ].map(s => (
               <div key={s.label} className="rounded-2xl px-3 py-4 text-center shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
                 style={{ background: s.grad, borderBottom: `3px solid ${s.cor}` }}>
@@ -221,10 +223,10 @@ export default function HubComunidade() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-xl font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
-                  O Rio
+                  {t('comunidade.hub.rio_title')}
                 </h2>
                 <p className="text-xs text-white/50 mt-0.5" style={{ fontFamily: 'var(--font-corpo)' }}>
-                  {stats.reflexoes} reflexões a fluir
+                  {t('comunidade.hub.rio_flowing', { count: stats.reflexoes })}
                 </p>
               </div>
               <div className="w-12 h-12 rounded-2xl flex items-center justify-center backdrop-blur-sm"
@@ -239,7 +241,7 @@ export default function HubComunidade() {
                 style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.06)' }}>
                 <p className="text-[10px] font-semibold tracking-wider uppercase text-amber-400/80 mb-1.5"
                   style={{ fontFamily: 'var(--font-corpo)' }}>
-                  {promptDoDia.emoji} Prompt do dia
+                  {promptDoDia.emoji} {t('comunidade.hub.prompt_of_day')}
                 </p>
                 <p className="text-sm text-white/80 leading-relaxed" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
                   "{promptDoDia.texto}"
@@ -255,13 +257,13 @@ export default function HubComunidade() {
                 ))}
                 {trendingPosts.length > 0 && (
                   <span className="text-[10px] text-white/40 ml-3" style={{ fontFamily: 'var(--font-corpo)' }}>
-                    A partilhar agora
+                    {t('comunidade.hub.sharing_now')}
                   </span>
                 )}
               </div>
               <span className="text-sm font-semibold px-5 py-2 rounded-full text-gray-900 transition-all group-hover:shadow-lg"
                 style={{ background: 'linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%)' }}>
-                Mergulhar
+                {t('comunidade.hub.dive')}
               </span>
             </div>
           </div>
@@ -283,15 +285,15 @@ export default function HubComunidade() {
               <span className="text-2xl animate-pulse">🔥</span>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-amber-900 truncate" style={{ fontFamily: 'var(--font-corpo)' }}>
-                  Fogueira Acesa — {fogueira.tema}
+                  {t('comunidade.hub.fire_lit', { tema: fogueira.tema })}
                 </p>
                 <p className="text-xs text-amber-700/60 mt-0.5" style={{ fontFamily: 'var(--font-corpo)' }}>
-                  {tempoRestante()} restantes
+                  {t('comunidade.hub.time_remaining', { tempo: tempoRestante() })}
                 </p>
               </div>
               <span className="text-xs font-bold text-amber-900 px-3 py-1.5 rounded-full"
                 style={{ background: 'rgba(217,119,6,0.15)' }}>
-                Entrar
+                {t('comunidade.hub.enter')}
               </span>
             </div>
           </button>
@@ -314,11 +316,11 @@ export default function HubComunidade() {
               <div className="flex items-center gap-2">
                 <Avatar perfil={trendingPosts[0].community_profiles} size={24} />
                 <span className="text-xs text-gray-400" style={{ fontFamily: 'var(--font-corpo)' }}>
-                  {trendingPosts[0].is_anonymous ? 'Alma Anónima' : trendingPosts[0].community_profiles?.display_name}
+                  {trendingPosts[0].is_anonymous ? t('comunidade.hub.anonymous_soul') : trendingPosts[0].community_profiles?.display_name}
                 </span>
               </div>
               <span className="text-xs font-medium" style={{ color: '#D97706' }}>
-                Ver mais no Rio
+                {t('comunidade.hub.see_more_rio')}
               </span>
             </div>
           </button>
@@ -329,16 +331,16 @@ export default function HubComunidade() {
       <div className="px-5 mb-5">
         <div className="flex items-center gap-2 mb-4">
           <h2 className="text-sm font-bold tracking-widest uppercase" style={{ fontFamily: 'var(--font-titulos)', color: '#78716C' }}>
-            Explorar
+            {t('comunidade.hub.explore')}
           </h2>
           <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, #D97706, transparent)' }} />
         </div>
         <div className="grid grid-cols-2 gap-3">
           {[
-            { id: 'circulos', emoji: '👥', titulo: 'Círculos', desc: 'Grupos de transformação', rota: '/comunidade/circulos', cor: '#059669', bgGrad: 'linear-gradient(145deg, #ECFDF5 0%, #D1FAE5 100%)' },
-            { id: 'fogueira', emoji: '🔥', titulo: 'Fogueira', desc: 'Espaço efémero 24h', rota: '/comunidade/fogueira', cor: '#D97706', bgGrad: 'linear-gradient(145deg, #FFFBEB 0%, #FEF3C7 100%)' },
-            { id: 'sussurros', emoji: '💜', titulo: 'Sussurros', desc: 'Mensagens privadas', rota: '/comunidade/sussurros', cor: '#9333EA', bgGrad: 'linear-gradient(145deg, #FAF5FF 0%, #F3E8FF 100%)' },
-            { id: 'jornada', emoji: '🦋', titulo: 'Minha Jornada', desc: 'O teu caminho', rota: userId ? `/comunidade/jornada/${userId}` : '/comunidade/rio', cor: '#EA580C', bgGrad: 'linear-gradient(145deg, #FFF7ED 0%, #FFEDD5 100%)' }
+            { id: 'circulos', emoji: '👥', titulo: t('comunidade.hub.space_circles'), desc: t('comunidade.hub.space_circles_desc'), rota: '/comunidade/circulos', cor: '#059669', bgGrad: 'linear-gradient(145deg, #ECFDF5 0%, #D1FAE5 100%)' },
+            { id: 'fogueira', emoji: '🔥', titulo: t('comunidade.hub.space_fire'), desc: t('comunidade.hub.space_fire_desc'), rota: '/comunidade/fogueira', cor: '#D97706', bgGrad: 'linear-gradient(145deg, #FFFBEB 0%, #FEF3C7 100%)' },
+            { id: 'sussurros', emoji: '💜', titulo: t('comunidade.hub.space_whispers'), desc: t('comunidade.hub.space_whispers_desc'), rota: '/comunidade/sussurros', cor: '#9333EA', bgGrad: 'linear-gradient(145deg, #FAF5FF 0%, #F3E8FF 100%)' },
+            { id: 'jornada', emoji: '🦋', titulo: t('comunidade.hub.space_journey'), desc: t('comunidade.hub.space_journey_desc'), rota: userId ? `/comunidade/jornada/${userId}` : '/comunidade/rio', cor: '#EA580C', bgGrad: 'linear-gradient(145deg, #FFF7ED 0%, #FFEDD5 100%)' }
           ].map(esp => (
             <button
               key={esp.id}
@@ -366,15 +368,15 @@ export default function HubComunidade() {
         <div className="flex items-center gap-2 mb-4">
           <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, transparent, #D97706, transparent)' }} />
           <h2 className="text-sm font-bold tracking-widest uppercase" style={{ fontFamily: 'var(--font-titulos)', color: '#78716C' }}>
-            Como Funciona
+            {t('comunidade.hub.how_it_works')}
           </h2>
           <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, transparent, #D97706, transparent)' }} />
         </div>
         <div className="space-y-2.5">
           {[
-            { emoji: '🫧', titulo: 'Ressonância', desc: 'Cinco formas de reconhecer em vez de "likes"', cor: '#D97706' },
-            { emoji: '🪞', titulo: 'Espelhos', desc: 'Devoluções de presença e escuta profunda', cor: '#9333EA' },
-            { emoji: '🦋', titulo: 'Jornada', desc: 'O teu caminho, não os teus seguidores', cor: '#EA580C' }
+            { emoji: '🫧', titulo: t('comunidade.hub.resonance_label'), desc: t('comunidade.hub.resonance_desc'), cor: '#D97706' },
+            { emoji: '🪞', titulo: t('comunidade.hub.mirrors_label'), desc: t('comunidade.hub.mirrors_desc'), cor: '#9333EA' },
+            { emoji: '🦋', titulo: t('comunidade.hub.journey_label'), desc: t('comunidade.hub.journey_desc'), cor: '#EA580C' }
           ].map(c => (
             <div key={c.titulo} className="rounded-xl p-3.5 flex items-center gap-3 shadow-sm transition-all duration-300 hover:shadow-md"
               style={{ background: 'white', borderLeft: `3px solid ${c.cor}` }}>

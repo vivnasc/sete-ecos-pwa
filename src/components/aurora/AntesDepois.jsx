@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import { g } from '../../utils/genero'
 import ModuleHeader from '../shared/ModuleHeader'
 import { ANTES_DEPOIS_PERGUNTAS } from '../../lib/aurora/gamificacao'
@@ -60,6 +61,7 @@ const StepIndicator = ({ currentStep, steps, answers }) => (
 export default function AntesDepois() {
   const navigate = useNavigate()
   const { session } = useAuth()
+  const { t } = useI18n()
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -182,11 +184,11 @@ export default function AntesDepois() {
 
       if (error) throw error
 
-      setSaveMsg(g('Guardado com sucesso!', 'Guardado com sucesso!'))
+      setSaveMsg(t('aurora.antes_depois.saved'))
       setTimeout(() => setSaveMsg(''), 3000)
     } catch (error) {
       console.error('Erro ao guardar Antes & Depois:', error)
-      setSaveMsg('Erro ao guardar. Tenta novamente.')
+      setSaveMsg(t('aurora.antes_depois.save_error'))
       setTimeout(() => setSaveMsg(''), 4000)
     } finally {
       setSaving(false)
@@ -204,7 +206,7 @@ export default function AntesDepois() {
             className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
             style={{ borderColor: `${AURORA_COLOR}40`, borderTopColor: AURORA_COLOR }}
           />
-          <p className="text-gray-500">A carregar...</p>
+          <p className="text-gray-500">{t('aurora.antes_depois.loading')}</p>
         </div>
       </div>
     )
@@ -214,8 +216,8 @@ export default function AntesDepois() {
     <div className="min-h-screen bg-gray-50 pb-24">
       <ModuleHeader
         eco="aurora"
-        title="Antes & Depois"
-        subtitle="A tua história de transformação"
+        title={t('aurora.antes_depois.title')}
+        subtitle={t('aurora.antes_depois.subtitle')}
       />
 
       <div className="max-w-3xl mx-auto px-4 py-6">
@@ -231,7 +233,7 @@ export default function AntesDepois() {
             }`}
             style={view === 'steps' ? { backgroundColor: AURORA_COLOR } : undefined}
           >
-            Narrativa
+            {t('aurora.antes_depois.tab_narrative')}
           </button>
           <button
             onClick={() => setView('cartas')}
@@ -240,7 +242,7 @@ export default function AntesDepois() {
             }`}
             style={view === 'cartas' ? { backgroundColor: AURORA_COLOR } : undefined}
           >
-            Cartas
+            {t('aurora.antes_depois.tab_letters')}
           </button>
           <button
             onClick={() => setView('comparacao')}
@@ -250,7 +252,7 @@ export default function AntesDepois() {
             } disabled:opacity-40 disabled:cursor-not-allowed`}
             style={view === 'comparacao' ? { backgroundColor: AURORA_COLOR } : undefined}
           >
-            Comparação
+            {t('aurora.antes_depois.tab_comparison')}
           </button>
         </div>
 
@@ -276,7 +278,7 @@ export default function AntesDepois() {
                       className="text-xs font-medium uppercase tracking-wider mb-2"
                       style={{ color: AURORA_COLOR }}
                     >
-                      Passo {currentStep + 1} de {STEPS.length}
+                      {t('aurora.antes_depois.step_of', { current: currentStep + 1, total: STEPS.length })}
                     </p>
                     <h2
                       className="text-2xl font-bold text-gray-800 mb-3"
@@ -293,10 +295,7 @@ export default function AntesDepois() {
                   <textarea
                     value={value}
                     onChange={(e) => updateAnswer(stepKey, e.target.value)}
-                    placeholder={g(
-                      'Escreve aqui, no teu ritmo...',
-                      'Escreve aqui, no teu ritmo...'
-                    )}
+                    placeholder={t('aurora.antes_depois.write_here')}
                     rows={8}
                     className="w-full p-4 border rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none resize-none transition-all leading-relaxed"
                     style={{ borderColor: `${AURORA_COLOR}30` }}
@@ -314,8 +313,8 @@ export default function AntesDepois() {
                   <div className="flex justify-between items-center mt-3">
                     <p className="text-xs text-gray-400">
                       {value.length > 0
-                        ? `${value.length} caracteres`
-                        : g('Toma o teu tempo.', 'Toma o teu tempo.')}
+                        ? t('aurora.antes_depois.characters', { count: value.length })
+                        : t('aurora.antes_depois.take_time')}
                     </p>
                   </div>
 
@@ -327,7 +326,7 @@ export default function AntesDepois() {
                         className="flex-1 py-3 rounded-xl border text-sm font-medium transition-all hover:bg-gray-50"
                         style={{ borderColor: `${AURORA_COLOR}40`, color: AURORA_COLOR }}
                       >
-                        &larr; Anterior
+                        {t('aurora.antes_depois.previous')}
                       </button>
                     )}
                     <button
@@ -337,8 +336,8 @@ export default function AntesDepois() {
                       style={{ backgroundColor: AURORA_COLOR }}
                     >
                       {currentStep < STEPS.length - 1
-                        ? 'Próximo \u2192'
-                        : 'Ver Cartas \u2192'}
+                        ? t('aurora.antes_depois.next')
+                        : t('aurora.antes_depois.view_letters')}
                     </button>
                   </div>
                 </div>
@@ -352,7 +351,7 @@ export default function AntesDepois() {
               className="w-full py-3 rounded-xl text-sm font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               style={{ color: AURORA_COLOR, backgroundColor: `${AURORA_COLOR}15` }}
             >
-              {saving ? 'A guardar...' : 'Guardar rascunho'}
+              {saving ? t('aurora.antes_depois.saving') : t('aurora.antes_depois.save_draft')}
             </button>
           </div>
         )}
@@ -365,10 +364,10 @@ export default function AntesDepois() {
                 className="text-xl font-bold text-gray-800"
                 style={{ fontFamily: 'var(--font-titulos)' }}
               >
-                Carta para ti {g('mesmo', 'mesma')}
+                {t('aurora.antes_depois.letter_to_self')}
               </h2>
               <p className="text-sm text-gray-500 mt-1">
-                Opcional — mas profundamente {g('transformador', 'transformadora')}
+                {t('aurora.antes_depois.optional_transformative')}
               </p>
             </div>
 
@@ -384,10 +383,10 @@ export default function AntesDepois() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-800">
-                    Carta do teu eu do passado
+                    {t('aurora.antes_depois.past_letter_title')}
                   </h3>
                   <p className="text-xs text-gray-500">
-                    O que {g('dirias', 'dirias')} a ti {g('mesmo', 'mesma')} quando começaste esta jornada?
+                    {t('aurora.antes_depois.past_letter_desc')}
                   </p>
                 </div>
               </div>
@@ -395,10 +394,7 @@ export default function AntesDepois() {
               <textarea
                 value={cartaAntes}
                 onChange={(e) => setCartaAntes(e.target.value)}
-                placeholder={g(
-                  'Querido eu do passado, quando comecei esta jornada...',
-                  'Querida eu do passado, quando comecei esta jornada...'
-                )}
+                placeholder={t('aurora.antes_depois.past_letter_placeholder')}
                 rows={6}
                 className="w-full p-4 border rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none resize-none transition-all leading-relaxed text-sm"
                 style={{ borderColor: `${AURORA_COLOR}30` }}
@@ -426,10 +422,10 @@ export default function AntesDepois() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-800">
-                    Carta do teu eu de agora
+                    {t('aurora.antes_depois.present_letter_title')}
                   </h3>
                   <p className="text-xs text-gray-500">
-                    O que {g('dirias', 'dirias')} a ti {g('mesmo', 'mesma')} hoje, com tudo o que aprendeste?
+                    {t('aurora.antes_depois.present_letter_desc')}
                   </p>
                 </div>
               </div>
@@ -437,10 +433,7 @@ export default function AntesDepois() {
               <textarea
                 value={cartaAgora}
                 onChange={(e) => setCartaAgora(e.target.value)}
-                placeholder={g(
-                  'Querido eu de agora, olhando para o caminho que percorri...',
-                  'Querida eu de agora, olhando para o caminho que percorri...'
-                )}
+                placeholder={t('aurora.antes_depois.present_letter_placeholder')}
                 rows={6}
                 className="w-full p-4 border rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none resize-none transition-all leading-relaxed text-sm"
                 style={{ borderColor: `${AURORA_COLOR}30` }}
@@ -463,7 +456,7 @@ export default function AntesDepois() {
                 className="flex-1 py-3 rounded-xl border text-sm font-medium transition-all hover:bg-gray-50"
                 style={{ borderColor: `${AURORA_COLOR}40`, color: AURORA_COLOR }}
               >
-                &larr; Voltar
+                {t('aurora.antes_depois.back')}
               </button>
               {allNarrativeFilled && (
                 <button
@@ -471,7 +464,7 @@ export default function AntesDepois() {
                   className="flex-1 py-3 rounded-xl text-white text-sm font-medium transition-all shadow-md"
                   style={{ backgroundColor: AURORA_COLOR }}
                 >
-                  Ver Comparação &rarr;
+                  {t('aurora.antes_depois.view_comparison')}
                 </button>
               )}
             </div>
@@ -483,7 +476,7 @@ export default function AntesDepois() {
               className="w-full py-4 rounded-xl text-white font-semibold text-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
               style={{ backgroundColor: AURORA_COLOR }}
             >
-              {saving ? 'A guardar...' : 'Guardar Tudo'}
+              {saving ? t('aurora.antes_depois.saving') : t('aurora.antes_depois.save_all')}
             </button>
           </div>
         )}
@@ -496,10 +489,10 @@ export default function AntesDepois() {
                 className="text-2xl font-bold text-gray-800"
                 style={{ fontFamily: 'var(--font-titulos)' }}
               >
-                A Tua Transformação
+                {t('aurora.antes_depois.your_transformation')}
               </h2>
               <p className="text-sm text-gray-500 mt-1">
-                {g('Olha para o caminho que percorreste.', 'Olha para o caminho que percorreste.')}
+                {t('aurora.antes_depois.look_at_path')}
               </p>
             </div>
 
@@ -511,7 +504,7 @@ export default function AntesDepois() {
                   className="text-center py-3 rounded-xl font-bold text-white"
                   style={{ backgroundColor: `${AURORA_DARK}` }}
                 >
-                  Antes
+                  {t('aurora.antes_depois.before')}
                 </div>
 
                 {/* Quem eras */}
@@ -526,7 +519,7 @@ export default function AntesDepois() {
                     {ANTES_DEPOIS_PERGUNTAS.quem_eras.titulo}
                   </h4>
                   <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    {answers.quem_eras || <span className="text-gray-400 italic">Ainda não respondeste.</span>}
+                    {answers.quem_eras || <span className="text-gray-400 italic">{t('aurora.antes_depois.not_answered')}</span>}
                   </p>
                 </div>
 
@@ -542,7 +535,7 @@ export default function AntesDepois() {
                     {ANTES_DEPOIS_PERGUNTAS.que_feridas.titulo}
                   </h4>
                   <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    {answers.que_feridas || <span className="text-gray-400 italic">Ainda não respondeste.</span>}
+                    {answers.que_feridas || <span className="text-gray-400 italic">{t('aurora.antes_depois.not_answered')}</span>}
                   </p>
                 </div>
 
@@ -553,7 +546,7 @@ export default function AntesDepois() {
                     style={{ borderColor: `${AURORA_COLOR}40`, backgroundColor: `${AURORA_COLOR}08` }}
                   >
                     <p className="text-xs font-medium text-gray-500 mb-2">
-                      Carta do teu eu do passado
+                      {t('aurora.antes_depois.past_letter_title')}
                     </p>
                     <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap italic">
                       {cartaAntes}
@@ -568,7 +561,7 @@ export default function AntesDepois() {
                   className="text-center py-3 rounded-xl font-bold text-white"
                   style={{ backgroundColor: AURORA_COLOR }}
                 >
-                  Agora
+                  {t('aurora.antes_depois.after')}
                 </div>
 
                 {/* O que soltaste */}
@@ -583,7 +576,7 @@ export default function AntesDepois() {
                     {ANTES_DEPOIS_PERGUNTAS.o_que_soltaste.titulo}
                   </h4>
                   <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    {answers.o_que_soltaste || <span className="text-gray-400 italic">Ainda não respondeste.</span>}
+                    {answers.o_que_soltaste || <span className="text-gray-400 italic">{t('aurora.antes_depois.not_answered')}</span>}
                   </p>
                 </div>
 
@@ -599,7 +592,7 @@ export default function AntesDepois() {
                     {ANTES_DEPOIS_PERGUNTAS.quem_es_agora.titulo}
                   </h4>
                   <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    {answers.quem_es_agora || <span className="text-gray-400 italic">Ainda não respondeste.</span>}
+                    {answers.quem_es_agora || <span className="text-gray-400 italic">{t('aurora.antes_depois.not_answered')}</span>}
                   </p>
                 </div>
 
@@ -610,7 +603,7 @@ export default function AntesDepois() {
                     style={{ borderColor: `${AURORA_COLOR}40`, backgroundColor: `${AURORA_COLOR}08` }}
                   >
                     <p className="text-xs font-medium text-gray-500 mb-2">
-                      Carta do teu eu de agora
+                      {t('aurora.antes_depois.present_letter_title')}
                     </p>
                     <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap italic">
                       {cartaAgora}
@@ -627,14 +620,14 @@ export default function AntesDepois() {
                 className="flex-1 py-3 rounded-xl border text-sm font-medium transition-all hover:bg-gray-50"
                 style={{ borderColor: `${AURORA_COLOR}40`, color: AURORA_COLOR }}
               >
-                Editar Narrativa
+                {t('aurora.antes_depois.edit_narrative')}
               </button>
               <button
                 onClick={() => setView('cartas')}
                 className="flex-1 py-3 rounded-xl border text-sm font-medium transition-all hover:bg-gray-50"
                 style={{ borderColor: `${AURORA_COLOR}40`, color: AURORA_COLOR }}
               >
-                Editar Cartas
+                {t('aurora.antes_depois.edit_letters')}
               </button>
             </div>
 
@@ -644,7 +637,7 @@ export default function AntesDepois() {
               className="w-full py-4 rounded-xl text-white font-semibold text-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
               style={{ backgroundColor: AURORA_COLOR }}
             >
-              {saving ? 'A guardar...' : 'Guardar Tudo'}
+              {saving ? t('aurora.antes_depois.saving') : t('aurora.antes_depois.save_all')}
             </button>
           </div>
         )}
@@ -660,10 +653,7 @@ export default function AntesDepois() {
 
         {/* Motivational footer */}
         <p className="text-center text-xs text-gray-400 mt-6 px-4">
-          {g(
-            'A tua história é única. Cada passo que deste trouxe-te até aqui.',
-            'A tua história é única. Cada passo que deste trouxe-te até aqui.'
-          )}
+          {t('aurora.antes_depois.footer')}
         </p>
       </div>
 

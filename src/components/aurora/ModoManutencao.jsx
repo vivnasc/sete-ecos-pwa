@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { useI18n } from '../../contexts/I18nContext'
 import { g } from '../../utils/genero'
 import ModuleHeader from '../shared/ModuleHeader'
 import { PADROES_ALERTA } from '../../lib/aurora/gamificacao'
@@ -167,6 +168,7 @@ const HistoricoEntry = ({ entry, onExpand, expanded }) => {
 export default function ModoManutencao() {
   const navigate = useNavigate()
   const { userRecord } = useAuth()
+  const { t } = useI18n()
   const userId = userRecord?.id || null
 
   // Form state
@@ -286,7 +288,7 @@ export default function ModoManutencao() {
       setTimeout(() => setShowSuccess(false), 4000)
     } catch (err) {
       console.error('Erro ao guardar check-in:', err)
-      alert('Nao foi possivel guardar. Tenta novamente.')
+      alert(t('aurora.manutencao.save_error'))
     } finally {
       setSaving(false)
     }
@@ -302,8 +304,8 @@ export default function ModoManutencao() {
     <div className="min-h-screen" style={{ background: `linear-gradient(180deg, ${ACCENT_DARK} 0%, #111318 30%, #0d0f13 100%)` }}>
       <ModuleHeader
         eco="aurora"
-        title="Modo Manutencao"
-        subtitle="Check-ins mensais de cuidado"
+        title={t('aurora.manutencao.title')}
+        subtitle={t('aurora.manutencao.subtitle')}
       />
 
       <div className="max-w-lg mx-auto px-4 pb-24">
@@ -315,7 +317,7 @@ export default function ModoManutencao() {
             style={view === 'checkin' ? { background: `${ACCENT}33` } : undefined}
             aria-pressed={view === 'checkin'}
           >
-            Check-in Mensal
+            {t('aurora.manutencao.tab_checkin')}
           </button>
           <button
             onClick={() => setView('historico')}
@@ -323,7 +325,7 @@ export default function ModoManutencao() {
             style={view === 'historico' ? { background: `${ACCENT}33` } : undefined}
             aria-pressed={view === 'historico'}
           >
-            Historico ({historico.length})
+            {t('aurora.manutencao.tab_history', { count: historico.length })}
           </button>
         </div>
 
@@ -337,7 +339,7 @@ export default function ModoManutencao() {
                 style={{ background: '#4ade8022', border: '1px solid #4ade8044' }}
               >
                 <p className="text-sm font-medium text-emerald-300">
-                  Check-in guardado com sucesso! +10 Raios de Aurora
+                  {t('aurora.manutencao.saved_success')}
                 </p>
               </div>
             )}
@@ -349,17 +351,17 @@ export default function ModoManutencao() {
                 className="text-lg font-semibold text-white"
                 style={{ fontFamily: 'var(--font-titulos)' }}
               >
-                Como foi o teu mes?
+                {t('aurora.manutencao.how_was_month')}
               </h2>
               <p className="text-sm text-gray-400">
-                {mesReferencia} — {g('Querido', 'Querida')}, faz o teu check-in mensal.
+                {mesReferencia} — {t('aurora.manutencao.do_checkin')}
               </p>
             </div>
 
             {/* Estado geral */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-300 block">
-                Estado geral do mes
+                {t('aurora.manutencao.general_state')}
               </label>
               <div className="flex gap-3 justify-center">
                 {ESTADOS_GERAIS.map(estado => (
@@ -376,10 +378,10 @@ export default function ModoManutencao() {
             {/* Padroes de regressao */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-300 block">
-                Notaste algum destes padroes?
+                {t('aurora.manutencao.patterns_label')}
               </label>
               <p className="text-xs text-gray-500">
-                Marca os que sentiste reaparecer este mes.
+                {t('aurora.manutencao.patterns_desc')}
               </p>
               <div className="space-y-2">
                 {PADROES_ALERTA.map(padrao => (
@@ -400,7 +402,7 @@ export default function ModoManutencao() {
                 style={{ background: `${ACCENT}11`, border: `1px solid ${ACCENT}33` }}
               >
                 <h3 className="text-sm font-semibold text-rose-200">
-                  Accoes recomendadas
+                  {t('aurora.manutencao.recommended_actions')}
                 </h3>
                 <div className="space-y-2">
                   {padroesSeleccionados.map(pid => {
@@ -430,12 +432,12 @@ export default function ModoManutencao() {
             {/* Conquistas do mes */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-300 block">
-                Conquistas do mes <span className="text-gray-500">(opcional)</span>
+                {t('aurora.manutencao.achievements_label')}
               </label>
               <textarea
                 value={conquistasMes}
                 onChange={(e) => setConquistasMes(e.target.value)}
-                placeholder="O que conquistaste este mes? Uma conquista por linha..."
+                placeholder={t('aurora.manutencao.achievements_placeholder')}
                 rows={3}
                 maxLength={1000}
                 className="w-full p-4 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
@@ -447,12 +449,12 @@ export default function ModoManutencao() {
             {/* Reflexao */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-300 block">
-                Reflexao <span className="text-gray-500">(opcional)</span>
+                {t('aurora.manutencao.reflection_label')}
               </label>
               <textarea
                 value={reflexao}
                 onChange={(e) => setReflexao(e.target.value)}
-                placeholder="Como te sentes em relacao a este mes? O que aprendeste?"
+                placeholder={t('aurora.manutencao.reflection_placeholder')}
                 rows={4}
                 maxLength={2000}
                 className="w-full p-4 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
@@ -468,7 +470,7 @@ export default function ModoManutencao() {
               className="w-full py-4 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl active:scale-[0.97] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
             >
-              {saving ? 'A guardar...' : 'Guardar Check-in (+10 Raios)'}
+              {saving ? t('aurora.antes_depois.saving') : t('aurora.manutencao.save_checkin')}
             </button>
           </div>
         )}
@@ -490,17 +492,17 @@ export default function ModoManutencao() {
                   className="text-lg font-semibold text-white"
                   style={{ fontFamily: 'var(--font-titulos)' }}
                 >
-                  Nenhum check-in registado
+                  {t('aurora.manutencao.no_checkins')}
                 </h3>
                 <p className="text-sm text-gray-400 max-w-xs mx-auto">
-                  Os check-ins mensais ajudam-te a manter a tua transformacao {g('vivo', 'viva')}.
+                  {t('aurora.manutencao.checkins_help')}
                 </p>
                 <button
                   onClick={() => setView('checkin')}
                   className="px-6 py-3 rounded-xl font-medium text-sm text-white shadow-lg transition-all duration-200"
                   style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
                 >
-                  Fazer o primeiro check-in
+                  {t('aurora.manutencao.first_checkin')}
                 </button>
               </div>
             ) : (
@@ -517,7 +519,7 @@ export default function ModoManutencao() {
                     <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
                       {historico.filter(h => (h.padroes_regressao || []).length === 0).length}
                     </p>
-                    <p className="text-xs text-gray-400">meses limpos</p>
+                    <p className="text-xs text-gray-400">{t('aurora.manutencao.clean_months')}</p>
                   </div>
                 </div>
 

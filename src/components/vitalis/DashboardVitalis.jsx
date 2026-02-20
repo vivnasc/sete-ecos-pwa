@@ -9,6 +9,7 @@ import { isCoach } from '../../lib/coach';
 import { g, setSexo } from '../../utils/genero';
 import { isNearRamadan, setObservaRamadao, observaRamadao } from '../../utils/ramadao';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useI18n } from '../../contexts/I18nContext';
 import { temPermissao, activarLembretes, pedirPermissao, contarLembretesHoje } from '../../utils/notifications';
 import { checkVitalisAccess } from '../../lib/subscriptions';
 import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
@@ -58,6 +59,7 @@ const enviarNotificacao = (titulo, opcoes = {}) => {
 
 export default function DashboardVitalis() {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
   const [userEmail, setUserEmail] = useState('');
@@ -808,7 +810,7 @@ export default function DashboardVitalis() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
         <div className="text-center">
           <div className="text-6xl mb-4 animate-pulse">🌱</div>
-          <p className="text-[#6B5C4C]">A carregar o teu dia...</p>
+          <p className="text-[#6B5C4C]">{t('vitalis.dashboard.loading')}</p>
         </div>
       </div>
     );
@@ -1159,7 +1161,7 @@ export default function DashboardVitalis() {
                 <p className="text-gray-800 font-medium text-sm md:text-base" style={{ fontFamily: 'var(--font-titulos)' }}>"Cada escolha consciente te aproxima da melhor versão de ti."</p>
                 <p className="text-xs text-gray-500 mt-1">
                   Dia {Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / (1000 * 60 * 60 * 24)) + 1} da tua jornada •
-                  Semana {Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / (7 * 24 * 60 * 60 * 1000)) + 1} •
+                  {t('vitalis.dashboard.week')} {Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / (7 * 24 * 60 * 60 * 1000)) + 1} •
                   Fase {plano?.fase || 'Inicial'}
                 </p>
               </div>
@@ -1176,13 +1178,13 @@ export default function DashboardVitalis() {
         {/* Quick Actions - Navegação Principal */}
         <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
           {[
-            { to: '/vitalis/plano', emoji: '📋', label: 'Meu Plano', cor: '#7C8B6F', bg: 'linear-gradient(145deg, #F0FDF4, #DCFCE7)' },
-            { to: '/vitalis/checkin', emoji: '✅', label: 'Check-in', cor: '#059669', bg: 'linear-gradient(145deg, #ECFDF5, #D1FAE5)' },
+            { to: '/vitalis/plano', emoji: '📋', label: t('vitalis.dashboard.meal_plan'), cor: '#7C8B6F', bg: 'linear-gradient(145deg, #F0FDF4, #DCFCE7)' },
+            { to: '/vitalis/checkin', emoji: '✅', label: t('vitalis.dashboard.daily_checkin'), cor: '#059669', bg: 'linear-gradient(145deg, #ECFDF5, #D1FAE5)' },
             { to: '/vitalis/meals', emoji: '🍽️', label: 'Refeições', cor: '#D97706', bg: 'linear-gradient(145deg, #FFFBEB, #FEF3C7)' },
-            { to: '/vitalis/receitas', emoji: '🍳', label: 'Receitas', cor: '#EA580C', bg: 'linear-gradient(145deg, #FFF7ED, #FFEDD5)' },
+            { to: '/vitalis/receitas', emoji: '🍳', label: t('vitalis.dashboard.recipes'), cor: '#EA580C', bg: 'linear-gradient(145deg, #FFF7ED, #FFEDD5)' },
             { to: '/vitalis/espaco-retorno', emoji: '💜', label: 'Espaço Retorno', cor: '#9333EA', bg: 'linear-gradient(145deg, #FAF5FF, #F3E8FF)' },
             { to: '/vitalis/relatorios', emoji: '📊', label: 'Relatórios', cor: '#0891B2', bg: 'linear-gradient(145deg, #ECFEFF, #CFFAFE)' },
-            { to: '/vitalis/treinos', emoji: '💪', label: 'Treinos', cor: '#DC2626', bg: 'linear-gradient(145deg, #FEF2F2, #FECACA)' },
+            { to: '/vitalis/treinos', emoji: '💪', label: t('vitalis.workouts.title'), cor: '#DC2626', bg: 'linear-gradient(145deg, #FEF2F2, #FECACA)' },
           ].map(item => (
             <Link key={item.to} to={item.to} className="group rounded-2xl p-4 shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl text-center"
               style={{ background: item.bg, borderBottom: `3px solid ${item.cor}` }}>
@@ -1201,7 +1203,7 @@ export default function DashboardVitalis() {
             {/* Círculo de Progresso */}
             <div className="rounded-3xl shadow-xl p-5 transition-all duration-300 hover:shadow-2xl"
               style={{ background: 'linear-gradient(180deg, #FFFFFF 0%, #F5F0EB 100%)', borderTop: '3px solid #7C8B6F' }}>
-              <h3 className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#7C8B6F' }}>Progresso Hoje</h3>
+              <h3 className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#7C8B6F' }}>{t('vitalis.dashboard.progress')} Hoje</h3>
               
               <div className="relative w-44 h-44 mx-auto mb-4">
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
@@ -1430,7 +1432,7 @@ export default function DashboardVitalis() {
             {/* Chat Coach */}
             <Link to="/vitalis/chat" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
               <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">💬</div>
-              <p className="font-semibold text-white text-sm">Chat Coach</p>
+              <p className="font-semibold text-white text-sm">{t('vitalis.dashboard.coach_chat')}</p>
               <p className="text-white/70 text-xs mt-1">Fala com a coach</p>
             </Link>
 
@@ -1444,7 +1446,7 @@ export default function DashboardVitalis() {
             {/* Lista de Compras */}
             <Link to="/vitalis/lista-compras" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
               <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🛒</div>
-              <p className="font-semibold text-white text-sm">Compras</p>
+              <p className="font-semibold text-white text-sm">{t('vitalis.dashboard.shopping_list')}</p>
               <p className="text-white/70 text-xs mt-1">Lista automática</p>
             </Link>
 

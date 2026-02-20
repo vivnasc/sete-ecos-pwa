@@ -14,9 +14,11 @@ import {
 import PostCard from './PostCard'
 import CriarPost from './CriarPost'
 import EditarPerfil from './EditarPerfil'
+import { useI18n } from '../../contexts/I18nContext'
 
 export default function FeedComunidade() {
   const navigate = useNavigate()
+  const { t } = useI18n()
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState(null)
   const [perfil, setPerfil] = useState(null)
@@ -166,7 +168,7 @@ export default function FeedComunidade() {
           🌸
         </div>
         <p className="text-gray-400" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
-          A entrar na comunidade...
+          {t('comunidade.feed.loading')}
         </p>
       </div>
     )
@@ -180,9 +182,9 @@ export default function FeedComunidade() {
           <div className="flex items-center justify-between p-4">
             <div>
               <h1 className="text-xl font-bold" style={{ fontFamily: 'var(--font-titulos)', color: '#1A1A4E' }}>
-                Comunidade
+                {t('comunidade.feed.title')}
               </h1>
-              <p className="text-xs text-gray-400">Partilha, inspira e cresce em conjunto</p>
+              <p className="text-xs text-gray-400">{t('comunidade.feed.subtitle')}</p>
             </div>
             <div className="flex items-center gap-2">
               {/* Meu perfil */}
@@ -205,7 +207,7 @@ export default function FeedComunidade() {
                   : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
               }`}
             >
-              Todos
+              {t('comunidade.feed.all')}
             </button>
             <button
               onClick={() => { setTab('seguindo'); setFiltroEco(null) }}
@@ -215,7 +217,7 @@ export default function FeedComunidade() {
                   : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
               }`}
             >
-              A seguir
+              {t('comunidade.feed.following')}
             </button>
             <div className="w-px h-4 bg-gray-200 mx-1" />
             {['vitalis', 'aurea', 'lumina'].map(eco => {
@@ -250,8 +252,8 @@ export default function FeedComunidade() {
             <div className="flex items-center gap-3">
               <span className="text-2xl">{perfil.avatar_emoji || '🌸'}</span>
               <div>
-                <p className="text-sm font-semibold text-gray-700">Completa o teu perfil</p>
-                <p className="text-xs text-gray-400">Adiciona uma bio e escolhe os teus Ecos</p>
+                <p className="text-sm font-semibold text-gray-700">{t('comunidade.feed.complete_profile')}</p>
+                <p className="text-xs text-gray-400">{t('comunidade.feed.add_bio')}</p>
               </div>
               <svg className="w-5 h-5 text-gray-300 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -265,12 +267,12 @@ export default function FeedComunidade() {
           <div className="text-center py-16">
             <span className="text-5xl block mb-4">🌿</span>
             <h3 className="text-lg font-semibold text-gray-700 mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
-              {tab === 'seguindo' ? 'Segue alguém para ver partilhas aqui' : 'A comunidade está a começar'}
+              {tab === 'seguindo' ? t('comunidade.feed.follow_to_see') : t('comunidade.feed.community_starting')}
             </h3>
             <p className="text-sm text-gray-400 mb-6">
               {tab === 'seguindo'
-                ? 'Explora o feed geral para encontrar pessoas inspiradoras'
-                : 'Sê a primeira a partilhar algo com a comunidade!'
+                ? t('comunidade.feed.explore_general')
+                : t('comunidade.feed.be_first_share')
               }
             </p>
             {tab === 'seguindo' && (
@@ -279,7 +281,7 @@ export default function FeedComunidade() {
                 className="text-sm font-medium px-4 py-2 rounded-full text-white"
                 style={{ backgroundColor: '#8B5CF6' }}
               >
-                Ver feed geral
+                {t('comunidade.feed.see_general')}
               </button>
             )}
           </div>
@@ -304,7 +306,7 @@ export default function FeedComunidade() {
                   disabled={loadingMore}
                   className="text-sm text-purple-500 font-medium hover:text-purple-700 transition-colors"
                 >
-                  {loadingMore ? 'A carregar...' : 'Carregar mais'}
+                  {loadingMore ? t('comunidade.feed.loading_more') : t('comunidade.feed.load_more')}
                 </button>
               </div>
             )}

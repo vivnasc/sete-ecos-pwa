@@ -12,10 +12,12 @@ import {
 } from '../../lib/comunidade'
 import { isGhostUser, getGhostProfile, getGhostPostsForRange } from '../../lib/ghost-users'
 import PostCard from './PostCard'
+import { useI18n } from '../../contexts/I18nContext'
 
 export default function PerfilPublico() {
   const { userId: perfilUserId } = useParams()
   const navigate = useNavigate()
+  const { t } = useI18n()
 
   const [loading, setLoading] = useState(true)
   const [meusId, setMeusId] = useState(null)
@@ -103,7 +105,7 @@ export default function PerfilPublico() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-gray-400" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
-          A carregar perfil...
+          {t('comunidade.perfil.loading')}
         </p>
       </div>
     )
@@ -113,13 +115,13 @@ export default function PerfilPublico() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6">
         <span className="text-5xl">🌸</span>
-        <p className="text-gray-500 text-center">Este perfil ainda não está configurado.</p>
+        <p className="text-gray-500 text-center">{t('comunidade.perfil.not_configured')}</p>
         <button
           onClick={() => navigate('/comunidade')}
           className="text-sm font-medium px-4 py-2 rounded-full"
           style={{ color: '#8B5CF6' }}
         >
-          Voltar ao Feed
+          {t('comunidade.perfil.back_to_feed')}
         </button>
       </div>
     )
@@ -176,15 +178,15 @@ export default function PerfilPublico() {
           <div className="flex justify-center gap-8 mt-4">
             <div className="text-center">
               <p className="text-lg font-bold text-gray-800">{posts.length}</p>
-              <p className="text-xs text-gray-400">Partilhas</p>
+              <p className="text-xs text-gray-400">{t('comunidade.perfil.shares')}</p>
             </div>
             <div className="text-center">
               <p className="text-lg font-bold text-gray-800">{contadores.seguidores}</p>
-              <p className="text-xs text-gray-400">Seguidoras</p>
+              <p className="text-xs text-gray-400">{t('comunidade.perfil.followers')}</p>
             </div>
             <div className="text-center">
               <p className="text-lg font-bold text-gray-800">{contadores.seguindo}</p>
-              <p className="text-xs text-gray-400">A seguir</p>
+              <p className="text-xs text-gray-400">{t('comunidade.perfil.following')}</p>
             </div>
           </div>
 
@@ -200,7 +202,7 @@ export default function PerfilPublico() {
               }`}
               style={!estouSeguindo ? { backgroundColor: '#8B5CF6' } : {}}
             >
-              {acaoEmCurso ? '...' : estouSeguindo ? 'A seguir' : 'Seguir'}
+              {acaoEmCurso ? '...' : estouSeguindo ? t('comunidade.perfil.following_badge') : t('comunidade.perfil.follow_btn')}
             </button>
           )}
         </div>
@@ -208,12 +210,12 @@ export default function PerfilPublico() {
         {/* Posts do utilizador */}
         <div className="px-4">
           <h3 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wide">
-            Partilhas
+            {t('comunidade.perfil.shares')}
           </h3>
           {posts.length === 0 ? (
             <div className="text-center py-8">
               <span className="text-3xl block mb-2">📝</span>
-              <p className="text-sm text-gray-400">Ainda sem partilhas</p>
+              <p className="text-sm text-gray-400">{t('comunidade.perfil.no_shares')}</p>
             </div>
           ) : (
             posts.map(post => (
