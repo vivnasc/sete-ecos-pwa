@@ -5,12 +5,22 @@
  * - POST { mensagem, para? }           → Enviar mensagem WhatsApp
  * - POST { action: "perfil" }           → Configurar perfil Business
  * - GET  ?action=perfil&key=CRON_SECRET → Configurar perfil (browser)
+ * - GET  ?action=templates              → Listar templates definidos (dry-run)
+ * - GET  ?action=templates-criar        → Criar TODOS os templates na Meta
+ * - GET  ?action=templates-criar&nome=boas_vindas → Criar 1 template
+ * - GET  ?action=templates-status       → Ver estado dos templates na Meta
+ * - GET  ?action=templates-apagar&nome=boas_vindas → Apagar 1 template
  *
  * Configuração no Vercel:
  * - WHATSAPP_ACCESS_TOKEN: Token de acesso Meta Business
  * - WHATSAPP_PHONE_NUMBER_ID: ID do número WhatsApp Business
+ * - WHATSAPP_BUSINESS_ACCOUNT_ID: WABA ID (para templates)
  * - VIVIANNE_PERSONAL_NUMBER: Número pessoal da coach (ex: 258851006473)
  */
+
+import { META_TEMPLATES } from './_lib/whatsapp-broadcast.js';
+
+const GRAPH_API = 'https://graph.facebook.com/v22.0';
 
 export default async function handler(req, res) {
   // CORS
@@ -40,6 +50,11 @@ export default async function handler(req, res) {
 
   if (action === 'perfil') {
     return handlePerfil(req, res, WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID);
+  }
+
+  // Templates management
+  if (action && action.startsWith('templates')) {
+    return handleTemplates(req, res, action, WHATSAPP_ACCESS_TOKEN);
   }
 
   // Ação default: enviar mensagem
@@ -239,4 +254,168 @@ async function handlePerfil(req, res, token, phoneId) {
     success: sucesso,
     ...resultados,
   });
+}
+
+// ═══════════════════════════════════════════
+// Message Templates — criar/listar/apagar
+// ═══════════════════════════════════════════
+
+function converterParaMeta(key, tmpl) {
+  const components = [];
+
+  if (tmpl.header) {
+    components.push({ type: 'HEADER', format: 'TEXT', text: tmpl.header });
+  }
+
+  const bodyParams = tmpl.body.match(/\{\{\d+\}\}/g) || [];
+  const bodyComponent = { type: 'BODY', text: tmpl.body };
+
+  if (bodyParams.length > 0) {
+    const exemplos = { '{{1}}': 'Maria', '{{2}}': '7', '{{3}}': '1.5L' };
+    bodyComponent.example = {
+      body_text: [bodyParams.map(p => exemplos[p] || 'exemplo')],
+    };
+  }
+  components.push(bodyComponent);
+
+  if (tmpl.footer) {
+    components.push({ type: 'FOOTER', text: tmpl.footer });
+  }
+
+  if (tmpl.buttons && tmpl.buttons.length > 0) {
+    components.push({
+      type: 'BUTTONS',
+      buttons: tmpl.buttons.map(btn => btn.type === 'URL'
+        ? { type: 'URL', text: btn.text, url: btn.url }
+        : btn),
+    });
+  }
+
+  return { name: tmpl.name, language: tmpl.language, category: tmpl.category, components };
+}
+
+async function criarTemplateMeta(token, wabaId, metaPayload) {
+  const response = await fetch(`${GRAPH_API}/${wabaId}/message_templates`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(metaPayload),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    return { ok: false, name: metaPayload.name, error: data.error?.message || JSON.stringify(data), code: data.error?.code };
+  }
+  return { ok: true, name: metaPayload.name, id: data.id, status: data.status };
+}
+
+async function listarTemplatesMeta(token, wabaId) {
+  const response = await fetch(`${GRAPH_API}/${wabaId}/message_templates?limit=100`, {
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+  if (!response.ok) {
+    const data = await response.json();
+    return { ok: false, error: data.error?.message || `HTTP ${response.status}` };
+  }
+  const data = await response.json();
+  return { ok: true, templates: data.data || [] };
+}
+
+async function handleTemplates(req, res, action, token) {
+  const wabaId = (process.env.WHATSAPP_BUSINESS_ACCOUNT_ID || process.env.WHATSAPP_WABA_ID || '').trim();
+  const nomeFilter = req.query.nome || null;
+
+  if (!wabaId) {
+    return res.status(500).json({
+      error: 'WHATSAPP_BUSINESS_ACCOUNT_ID não configurado no Vercel',
+      instrucoes: 'business.facebook.com > Definições > Contas do WhatsApp > copia o ID > adiciona como WHATSAPP_BUSINESS_ACCOUNT_ID no Vercel',
+    });
+  }
+
+  // Listar (dry-run)
+  if (action === 'templates') {
+    const templates = Object.entries(META_TEMPLATES).map(([key, tmpl]) => ({
+      chave: key, nome_meta: tmpl.name, categoria: tmpl.category,
+      tem_botoes: !!(tmpl.buttons && tmpl.buttons.length),
+      params: (tmpl.body.match(/\{\{\d+\}\}/g) || []).length,
+    }));
+    return res.status(200).json({
+      message: `${templates.length} templates definidos. Usa ?action=templates-criar para os registar na Meta.`,
+      templates,
+    });
+  }
+
+  // Status
+  if (action === 'templates-status') {
+    const result = await listarTemplatesMeta(token, wabaId);
+    if (!result.ok) return res.status(500).json({ error: result.error });
+
+    const nossos = result.templates.filter(t => t.name.startsWith('sete_ecos_'));
+    const nossosNomes = new Set(nossos.map(t => t.name));
+    const definidos = Object.values(META_TEMPLATES).map(t => t.name);
+    const faltam = definidos.filter(n => !nossosNomes.has(n));
+
+    return res.status(200).json({
+      message: `${nossos.length}/${definidos.length} templates registados na Meta`,
+      registados: nossos.map(t => ({ nome: t.name, estado: t.status, categoria: t.category, id: t.id })),
+      faltam,
+    });
+  }
+
+  // Apagar
+  if (action === 'templates-apagar') {
+    if (!nomeFilter) return res.status(400).json({ error: 'Especifica: ?action=templates-apagar&nome=boas_vindas', disponiveis: Object.keys(META_TEMPLATES) });
+    const tmpl = META_TEMPLATES[nomeFilter];
+    if (!tmpl) return res.status(400).json({ error: `Template "${nomeFilter}" não encontrado`, disponiveis: Object.keys(META_TEMPLATES) });
+
+    const response = await fetch(`${GRAPH_API}/${wabaId}/message_templates?name=${encodeURIComponent(tmpl.name)}`, {
+      method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` },
+    });
+    const data = await response.json();
+    return res.status(response.ok ? 200 : 500).json({
+      message: response.ok ? `Template ${tmpl.name} apagado` : 'Erro ao apagar',
+      ok: response.ok, error: data.error?.message,
+    });
+  }
+
+  // Criar
+  if (action === 'templates-criar') {
+    const existentes = await listarTemplatesMeta(token, wabaId);
+    const nomeExistentes = new Set();
+    if (existentes.ok) {
+      for (const t of existentes.templates) nomeExistentes.add(t.name);
+    }
+
+    let templatesPorCriar = Object.entries(META_TEMPLATES);
+    if (nomeFilter) {
+      if (!META_TEMPLATES[nomeFilter]) return res.status(400).json({ error: `Template "${nomeFilter}" não encontrado`, disponiveis: Object.keys(META_TEMPLATES) });
+      templatesPorCriar = [[nomeFilter, META_TEMPLATES[nomeFilter]]];
+    }
+
+    const resultados = { criados: [], ja_existiam: [], erros: [] };
+
+    for (const [key, tmpl] of templatesPorCriar) {
+      if (!nomeFilter && nomeExistentes.has(tmpl.name)) {
+        resultados.ja_existiam.push(tmpl.name);
+        continue;
+      }
+      const result = await criarTemplateMeta(token, wabaId, converterParaMeta(key, tmpl));
+      if (result.ok) {
+        resultados.criados.push({ nome: tmpl.name, id: result.id, estado: result.status });
+      } else if (result.code === 2388093) {
+        resultados.ja_existiam.push(tmpl.name);
+      } else {
+        resultados.erros.push({ nome: tmpl.name, erro: result.error, codigo: result.code });
+      }
+      await new Promise(r => setTimeout(r, 500));
+    }
+
+    return res.status(200).json({
+      message: `${resultados.criados.length} criados, ${resultados.ja_existiam.length} já existiam, ${resultados.erros.length} erros`,
+      ...resultados,
+      proximo_passo: resultados.criados.length > 0
+        ? 'Templates submetidos para aprovação. PENDING → APPROVED (minutos a horas). Verifica com ?action=templates-status'
+        : null,
+    });
+  }
+
+  return res.status(400).json({ error: `Acção "${action}" inválida` });
 }
