@@ -319,16 +319,102 @@ async function listarTemplatesMeta(token, wabaId) {
   return { ok: true, templates: data.data || [] };
 }
 
+// Auto-detectar WABA ID (tenta env var, depois descobre via API)
+async function resolverWabaId(token) {
+  const envId = (process.env.WHATSAPP_BUSINESS_ACCOUNT_ID || process.env.WHATSAPP_WABA_ID || '').trim();
+  const businessId = (process.env.META_BUSINESS_ID || '').trim();
+  const tentativas = [];
+
+  // Método 1: Testar env var
+  if (envId) {
+    try {
+      const res = await fetch(`${GRAPH_API}/${envId}/message_templates?limit=1`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (res.ok) return { wabaId: envId, metodo: 'env var WHATSAPP_BUSINESS_ACCOUNT_ID' };
+      tentativas.push({ metodo: 'env var', id: envId, erro: 'ID inválido ou sem permissões' });
+    } catch (e) {
+      tentativas.push({ metodo: 'env var', id: envId, erro: e.message });
+    }
+  }
+
+  // Método 2: A partir do META_BUSINESS_ID
+  if (businessId) {
+    try {
+      const res = await fetch(`${GRAPH_API}/${businessId}/owned_whatsapp_business_accounts`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.data && data.data.length > 0) {
+          return { wabaId: data.data[0].id, metodo: 'META_BUSINESS_ID → owned_whatsapp_business_accounts', nome: data.data[0].name };
+        }
+      }
+      tentativas.push({ metodo: 'META_BUSINESS_ID', id: businessId, erro: 'Sem WABA associado' });
+    } catch (e) {
+      tentativas.push({ metodo: 'META_BUSINESS_ID', erro: e.message });
+    }
+  }
+
+  // Método 3: Descobrir negócios via /me/businesses
+  try {
+    const res = await fetch(`${GRAPH_API}/me/businesses`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      for (const biz of (data.data || [])) {
+        try {
+          const wabaRes = await fetch(`${GRAPH_API}/${biz.id}/owned_whatsapp_business_accounts`, {
+            headers: { 'Authorization': `Bearer ${token}` },
+          });
+          if (wabaRes.ok) {
+            const wabaData = await wabaRes.json();
+            if (wabaData.data && wabaData.data.length > 0) {
+              return { wabaId: wabaData.data[0].id, metodo: `auto-detect via negócio "${biz.name}" (${biz.id})`, nome: wabaData.data[0].name };
+            }
+          }
+        } catch (_) {}
+      }
+      tentativas.push({ metodo: '/me/businesses', negocios: (data.data || []).map(b => ({ id: b.id, nome: b.name })), erro: 'Nenhum WABA encontrado' });
+    }
+  } catch (e) {
+    tentativas.push({ metodo: '/me/businesses', erro: e.message });
+  }
+
+  // Método 4: Tentar via env var como business ID (caso o user tenha confundido)
+  if (envId && envId !== businessId) {
+    try {
+      const res = await fetch(`${GRAPH_API}/${envId}/owned_whatsapp_business_accounts`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.data && data.data.length > 0) {
+          return { wabaId: data.data[0].id, metodo: `ID ${envId} é o Business ID, não o WABA ID — correcto é ${data.data[0].id}`, nome: data.data[0].name, corrigir: data.data[0].id };
+        }
+      }
+    } catch (_) {}
+  }
+
+  return { wabaId: null, tentativas };
+}
+
 async function handleTemplates(req, res, action, token) {
-  const wabaId = (process.env.WHATSAPP_BUSINESS_ACCOUNT_ID || process.env.WHATSAPP_WABA_ID || '').trim();
   const nomeFilter = req.query.nome || null;
 
-  if (!wabaId) {
+  // Auto-detectar WABA ID
+  const waba = await resolverWabaId(token);
+
+  if (!waba.wabaId) {
     return res.status(500).json({
-      error: 'WHATSAPP_BUSINESS_ACCOUNT_ID não configurado no Vercel',
-      instrucoes: 'business.facebook.com > Definições > Contas do WhatsApp > copia o ID > adiciona como WHATSAPP_BUSINESS_ACCOUNT_ID no Vercel',
+      error: 'Não consegui encontrar o WABA ID (WhatsApp Business Account ID)',
+      tentativas: waba.tentativas,
+      instrucoes: 'O WABA ID é diferente do Business ID. Para encontrá-lo: business.facebook.com > WhatsApp Manager > Definições da conta > o ID numérico na barra de endereço.',
     });
   }
+
+  const wabaId = waba.wabaId;
 
   // Listar (dry-run)
   if (action === 'templates') {
@@ -339,6 +425,7 @@ async function handleTemplates(req, res, action, token) {
     }));
     return res.status(200).json({
       message: `${templates.length} templates definidos. Usa ?action=templates-criar para os registar na Meta.`,
+      waba: { id: wabaId, metodo: waba.metodo, nome: waba.nome, corrigir: waba.corrigir },
       templates,
     });
   }
