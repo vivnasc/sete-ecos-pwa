@@ -322,17 +322,19 @@ async function listarTemplatesMeta(token, wabaId) {
 // Auto-detectar WABA ID (tenta env var, depois descobre via API)
 async function resolverWabaId(token) {
   const envId = (process.env.WHATSAPP_BUSINESS_ACCOUNT_ID || process.env.WHATSAPP_WABA_ID || '').trim();
+  const phoneId = (process.env.WHATSAPP_PHONE_NUMBER_ID || '').trim();
   const businessId = (process.env.META_BUSINESS_ID || '').trim();
   const tentativas = [];
 
-  // Método 1: Testar env var
+  // Método 1: Testar env var directamente
   if (envId) {
     try {
       const res = await fetch(`${GRAPH_API}/${envId}/message_templates?limit=1`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (res.ok) return { wabaId: envId, metodo: 'env var WHATSAPP_BUSINESS_ACCOUNT_ID' };
-      tentativas.push({ metodo: 'env var', id: envId, erro: 'ID inválido ou sem permissões' });
+      const data = await res.json().catch(() => ({}));
+      tentativas.push({ metodo: 'env var', id: envId, erro: data?.error?.message || 'ID inválido ou sem permissões' });
     } catch (e) {
       tentativas.push({ metodo: 'env var', id: envId, erro: e.message });
     }
@@ -394,6 +396,58 @@ async function resolverWabaId(token) {
           return { wabaId: data.data[0].id, metodo: `ID ${envId} é o Business ID, não o WABA ID — correcto é ${data.data[0].id}`, nome: data.data[0].name, corrigir: data.data[0].id };
         }
       }
+      const errData = await res.json().catch(() => ({}));
+      tentativas.push({ metodo: 'env var como Business ID', id: envId, erro: errData?.error?.message || `HTTP ${res.status}` });
+    } catch (_) {}
+  }
+
+  // Método 5: debug_token para descobrir app_id, depois verificar WABAs da app
+  try {
+    const debugRes = await fetch(`${GRAPH_API}/debug_token?input_token=${token}`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    if (debugRes.ok) {
+      const debugData = await debugRes.json();
+      const appId = debugData?.data?.app_id;
+      const granularScopes = debugData?.data?.granular_scopes || [];
+      const wabaScope = granularScopes.find(s => s.scope === 'whatsapp_business_management');
+      if (wabaScope && wabaScope.target_ids && wabaScope.target_ids.length > 0) {
+        const candidateId = wabaScope.target_ids[0];
+        // Verificar se este ID é um WABA válido
+        const checkRes = await fetch(`${GRAPH_API}/${candidateId}/message_templates?limit=1`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (checkRes.ok) {
+          return { wabaId: candidateId, metodo: 'auto-detect via debug_token granular_scopes' };
+        }
+      }
+      tentativas.push({
+        metodo: 'debug_token',
+        app_id: appId,
+        scopes: granularScopes.map(s => ({ scope: s.scope, targets: s.target_ids?.length || 0 })),
+        erro: wabaScope ? 'WABA target_id não funciona' : 'Sem scope whatsapp_business_management',
+      });
+    }
+  } catch (e) {
+    tentativas.push({ metodo: 'debug_token', erro: e.message });
+  }
+
+  // Método 6: Verificar o phone number e buscar campos disponíveis
+  if (phoneId) {
+    try {
+      const phoneRes = await fetch(`${GRAPH_API}/${phoneId}?fields=id,display_phone_number,verified_name,quality_rating`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (phoneRes.ok) {
+        const phoneData = await phoneRes.json();
+        tentativas.push({
+          metodo: 'phone_number_info',
+          phone_id: phoneId,
+          numero: phoneData.display_phone_number,
+          nome_verificado: phoneData.verified_name,
+          nota: 'Número válido mas não consegui extrair WABA ID a partir dele',
+        });
+      }
     } catch (_) {}
   }
 
@@ -410,7 +464,12 @@ async function handleTemplates(req, res, action, token) {
     return res.status(500).json({
       error: 'Não consegui encontrar o WABA ID (WhatsApp Business Account ID)',
       tentativas: waba.tentativas,
-      instrucoes: 'O WABA ID é diferente do Business ID. Para encontrá-lo: business.facebook.com > WhatsApp Manager > Definições da conta > o ID numérico na barra de endereço.',
+      como_encontrar: [
+        '1. Vai a developers.facebook.com > a tua App > WhatsApp > API Setup',
+        '2. O "WhatsApp Business Account ID" aparece no topo da página',
+        '3. Copia esse número e mete como WHATSAPP_BUSINESS_ACCOUNT_ID no Vercel',
+        'NOTA: O WABA ID é DIFERENTE do Business ID e do Phone Number ID',
+      ],
     });
   }
 
