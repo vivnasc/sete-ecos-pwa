@@ -14,6 +14,8 @@
  */
 
 import { luminaTranslations } from './i18n/lumina.js';
+import { comunidadeTranslations } from './i18n/comunidade.js';
+import { auroraTranslations } from './i18n/aurora.js';
 
 // Traduções base organizadas por namespace
 const baseTranslations = {
@@ -178,6 +180,62 @@ const baseTranslations = {
     'coach.dashboard': 'Painel da Coach',
     'coach.clients': 'Clientes',
     'coach.all_ecos': 'Todos os Ecos',
+
+    // Home
+    'home.loading': 'A preparar o teu espaço...',
+    'home.greeting_morning': 'Bom dia',
+    'home.greeting_afternoon': 'Boa tarde',
+    'home.greeting_evening': 'Boa noite',
+    'home.transformation_space': 'O teu espaço de transformação',
+    'home.your_ecos': 'Os teus Ecos',
+    'home.daily_diagnosis': 'Diagnóstico diário',
+    'home.body_nutrition': 'Corpo & Nutrição',
+    'home.selfcare_beauty': 'Autocuidado & Beleza',
+    'home.reflection_sharing': 'Reflexão & Partilha',
+    'home.active': 'Ativo',
+    'home.start': 'Começar',
+    'home.open_access': 'Aberto',
+    'home.quick_access': 'Acesso Rápido',
+    'home.daily_checkin': 'Check-in Diário',
+    'home.record_your_day': 'Registar o teu dia',
+    'home.recipes': 'Receitas',
+    'home.explore_recipes': 'Explorar receitas saudáveis',
+    'home.meal_plan': 'Plano Alimentar',
+    'home.your_plan': 'O teu plano personalizado',
+    'home.discover': 'Descobrir',
+    'home.discover_desc': 'Explora os 7 Ecos e descobre todo o sistema de transformação integral.',
+    'home.see_all_ecos': 'Ver todos os Ecos',
+
+    // Minha Conta
+    'account.title': 'Minha Conta',
+    'account.member_since': 'Membro desde {date}',
+    'account.my_ecos': 'Os meus Ecos',
+    'account.status_active': 'Activo',
+    'account.status_tester': 'Tester',
+    'account.status_trial': 'Trial',
+    'account.status_pending': 'Pendente',
+    'account.status_expired': 'Expirado',
+    'account.status_cancelled': 'Cancelado',
+    'account.expires': 'Expira: {date}',
+    'account.no_subscription': 'Sem subscrição',
+    'account.open': 'Abrir',
+    'account.subscribe': 'Subscrever',
+    'account.settings': 'Definições',
+    'account.language': 'Idioma',
+    'account.edit_profile': 'Editar Perfil',
+    'account.change_password': 'Alterar Password',
+    'account.logout': 'Terminar Sessão',
+    'account.need_help': 'Precisas de ajuda?',
+
+    // Navigation
+    'nav.hub': 'Hub',
+    'nav.rio': 'Rio',
+    'nav.circles': 'Círculos',
+    'nav.fire': 'Fogueira',
+    'nav.whispers': 'Sussurros',
+    'nav.navigate_to': 'Navegar para {label}',
+    'nav.talk_to_vivianne': 'Falar com Vivianne',
+    'nav.talk_to_coach': 'Falar com Coach {name}',
   },
 
   'en': {
@@ -333,6 +391,62 @@ const baseTranslations = {
     'coach.dashboard': 'Coach Dashboard',
     'coach.clients': 'Clients',
     'coach.all_ecos': 'All Ecos',
+
+    // Home
+    'home.loading': 'Preparing your space...',
+    'home.greeting_morning': 'Good morning',
+    'home.greeting_afternoon': 'Good afternoon',
+    'home.greeting_evening': 'Good evening',
+    'home.transformation_space': 'Your transformation space',
+    'home.your_ecos': 'Your Ecos',
+    'home.daily_diagnosis': 'Daily diagnosis',
+    'home.body_nutrition': 'Body & Nutrition',
+    'home.selfcare_beauty': 'Self-care & Beauty',
+    'home.reflection_sharing': 'Reflection & Sharing',
+    'home.active': 'Active',
+    'home.start': 'Start',
+    'home.open_access': 'Open',
+    'home.quick_access': 'Quick Access',
+    'home.daily_checkin': 'Daily Check-in',
+    'home.record_your_day': 'Record your day',
+    'home.recipes': 'Recipes',
+    'home.explore_recipes': 'Explore healthy recipes',
+    'home.meal_plan': 'Meal Plan',
+    'home.your_plan': 'Your personalised plan',
+    'home.discover': 'Discover',
+    'home.discover_desc': 'Explore the 7 Ecos and discover the full integral transformation system.',
+    'home.see_all_ecos': 'See all Ecos',
+
+    // Account
+    'account.title': 'My Account',
+    'account.member_since': 'Member since {date}',
+    'account.my_ecos': 'My Ecos',
+    'account.status_active': 'Active',
+    'account.status_tester': 'Tester',
+    'account.status_trial': 'Trial',
+    'account.status_pending': 'Pending',
+    'account.status_expired': 'Expired',
+    'account.status_cancelled': 'Cancelled',
+    'account.expires': 'Expires: {date}',
+    'account.no_subscription': 'No subscription',
+    'account.open': 'Open',
+    'account.subscribe': 'Subscribe',
+    'account.settings': 'Settings',
+    'account.language': 'Language',
+    'account.edit_profile': 'Edit Profile',
+    'account.change_password': 'Change Password',
+    'account.logout': 'Log Out',
+    'account.need_help': 'Need help?',
+
+    // Navigation
+    'nav.hub': 'Hub',
+    'nav.rio': 'Stream',
+    'nav.circles': 'Circles',
+    'nav.fire': 'Bonfire',
+    'nav.whispers': 'Whispers',
+    'nav.navigate_to': 'Navigate to {label}',
+    'nav.talk_to_vivianne': 'Talk to Vivianne',
+    'nav.talk_to_coach': 'Talk to Coach {name}',
   },
 
   'fr': {
@@ -468,6 +582,62 @@ const baseTranslations = {
     'coach.dashboard': 'Tableau du Coach',
     'coach.clients': 'Clients',
     'coach.all_ecos': 'Tous les Ecos',
+
+    // Home
+    'home.loading': 'Préparation de ton espace...',
+    'home.greeting_morning': 'Bonjour',
+    'home.greeting_afternoon': 'Bon après-midi',
+    'home.greeting_evening': 'Bonsoir',
+    'home.transformation_space': 'Ton espace de transformation',
+    'home.your_ecos': 'Tes Ecos',
+    'home.daily_diagnosis': 'Diagnostic quotidien',
+    'home.body_nutrition': 'Corps & Nutrition',
+    'home.selfcare_beauty': 'Bien-être & Beauté',
+    'home.reflection_sharing': 'Réflexion & Partage',
+    'home.active': 'Actif',
+    'home.start': 'Commencer',
+    'home.open_access': 'Ouvert',
+    'home.quick_access': 'Accès Rapide',
+    'home.daily_checkin': 'Check-in Quotidien',
+    'home.record_your_day': 'Enregistre ta journée',
+    'home.recipes': 'Recettes',
+    'home.explore_recipes': 'Explorer des recettes saines',
+    'home.meal_plan': 'Plan Alimentaire',
+    'home.your_plan': 'Ton plan personnalisé',
+    'home.discover': 'Découvrir',
+    'home.discover_desc': 'Explore les 7 Ecos et découvre le système complet de transformation intégrale.',
+    'home.see_all_ecos': 'Voir tous les Ecos',
+
+    // Account
+    'account.title': 'Mon Compte',
+    'account.member_since': 'Membre depuis {date}',
+    'account.my_ecos': 'Mes Ecos',
+    'account.status_active': 'Actif',
+    'account.status_tester': 'Testeur',
+    'account.status_trial': 'Essai',
+    'account.status_pending': 'En attente',
+    'account.status_expired': 'Expiré',
+    'account.status_cancelled': 'Annulé',
+    'account.expires': 'Expire : {date}',
+    'account.no_subscription': 'Pas d\'abonnement',
+    'account.open': 'Ouvrir',
+    'account.subscribe': 'S\'abonner',
+    'account.settings': 'Paramètres',
+    'account.language': 'Langue',
+    'account.edit_profile': 'Modifier le Profil',
+    'account.change_password': 'Changer le Mot de passe',
+    'account.logout': 'Déconnexion',
+    'account.need_help': 'Besoin d\'aide ?',
+
+    // Navigation
+    'nav.hub': 'Hub',
+    'nav.rio': 'Fleuve',
+    'nav.circles': 'Cercles',
+    'nav.fire': 'Feu de camp',
+    'nav.whispers': 'Murmures',
+    'nav.navigate_to': 'Naviguer vers {label}',
+    'nav.talk_to_vivianne': 'Parler à Vivianne',
+    'nav.talk_to_coach': 'Parler au Coach {name}',
   }
 }
 
@@ -477,6 +647,8 @@ for (const locale of ['pt', 'en', 'fr']) {
   translations[locale] = {
     ...(baseTranslations[locale] || {}),
     ...(luminaTranslations[locale] || {}),
+    ...(comunidadeTranslations[locale] || {}),
+    ...(auroraTranslations[locale] || {}),
   }
 }
 

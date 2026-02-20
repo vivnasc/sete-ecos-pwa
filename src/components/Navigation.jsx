@@ -1,10 +1,12 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useI18n } from '../contexts/I18nContext'
 
 export default function Navigation({ variant = 'default' }) {
   const navigate = useNavigate()
   const location = useLocation()
   const { session, vitalisAccess: hasVitalisAccess, aureaAccess: hasAureaAccess, isCoachUser } = useAuth()
+  const { t } = useI18n()
   const isAuthenticated = !!session
 
   const isActive = (path) => {
@@ -68,7 +70,7 @@ export default function Navigation({ variant = 'default' }) {
         <button
           onClick={() => navigate('/vitalis/chat')}
           className="fixed bottom-24 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[#7C8B6F] to-[#5D6B4F] shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-2 border-white/30"
-          aria-label="Falar com Vivianne"
+          aria-label={t('nav.talk_to_vivianne')}
         >
           <span className="text-white font-bold text-lg">V</span>
         </button>
@@ -84,7 +86,7 @@ export default function Navigation({ variant = 'default' }) {
     const isAnalytics = location.pathname === '/coach/analytics'
 
     return (
-      <nav role="navigation" aria-label="Navegacao Coach" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/50 shadow-2xl z-50">
+      <nav role="navigation" aria-label="Coach Navigation" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/50 shadow-2xl z-50">
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
           <div className="bg-gradient-to-r from-gray-800 to-gray-700 px-4 py-1 rounded-t-lg shadow-md">
             <span className="text-white text-[10px] font-semibold tracking-[0.2em]">COACH</span>
@@ -93,7 +95,7 @@ export default function Navigation({ variant = 'default' }) {
         <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
           <NavItem
             icon="clientes"
-            label="Clientes"
+            label={t('coach.clients')}
             active={isClientes}
             onClick={() => navigate('/coach')}
             color="#1F2937"
@@ -121,14 +123,14 @@ export default function Navigation({ variant = 'default' }) {
           />
           <NavItem
             icon="community"
-            label="Comunidade"
+            label={t('nav.community')}
             active={isCommunitySection}
             onClick={() => navigate('/comunidade')}
             color="#8B5CF6"
           />
           <NavItem
             icon="account"
-            label="Conta"
+            label={t('nav.account')}
             active={isAccountSection}
             onClick={() => navigate('/conta')}
             color="#6B5C4C"
@@ -141,7 +143,7 @@ export default function Navigation({ variant = 'default' }) {
   // Aurea-specific navigation
   if (isAureaSection) {
     return (
-      <nav role="navigation" aria-label="Navegacao Aurea" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-[#E8D5A3]/30 shadow-2xl z-50">
+      <nav role="navigation" aria-label="Aurea Navigation" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-[#E8D5A3]/30 shadow-2xl z-50">
         {/* Current Eco indicator */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
           <div className="bg-gradient-to-r from-[#C9A227] to-[#B8911E] px-4 py-1 rounded-t-lg shadow-md">
@@ -152,7 +154,7 @@ export default function Navigation({ variant = 'default' }) {
         <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
           <NavItem
             logo="/logos/CENTRO_7ECOS.png"
-            label="Hub"
+            label={t('nav.hub')}
             active={isActive('/')}
             onClick={() => navigate('/')}
             color="#4A3728"
@@ -167,7 +169,7 @@ export default function Navigation({ variant = 'default' }) {
           {isAuthenticated && (
             <NavItem
               icon="community"
-              label="Rio"
+              label={t('nav.rio')}
               active={isCommunitySection}
               onClick={() => navigate('/comunidade')}
               color="#8B5CF6"
@@ -176,7 +178,7 @@ export default function Navigation({ variant = 'default' }) {
           {isAuthenticated && (
             <NavItem
               icon="account"
-              label="Conta"
+              label={t('nav.account')}
               active={isAccountSection}
               onClick={() => navigate('/conta')}
               color="#6B5344"
@@ -198,13 +200,13 @@ export default function Navigation({ variant = 'default' }) {
           <button
             onClick={() => navigate('/vitalis/chat')}
             className="fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[#7C8B6F] to-[#5D6B4F] shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-2 border-white/30"
-            aria-label="Falar com Vivianne"
+            aria-label={t('nav.talk_to_vivianne')}
           >
             <span className="text-white font-bold text-lg">V</span>
           </button>
         )}
 
-        <nav role="navigation" aria-label="Navegacao Vitalis" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-[#E8E2D9]/30 shadow-2xl z-50">
+        <nav role="navigation" aria-label="Vitalis Navigation" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-[#E8E2D9]/30 shadow-2xl z-50">
         {/* Current Eco indicator */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
           <div className="bg-gradient-to-r from-[#7C8B6F] to-[#5D6B4F] px-4 py-1 rounded-t-lg shadow-md">
@@ -215,7 +217,7 @@ export default function Navigation({ variant = 'default' }) {
         <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
           <NavItem
             logo="/logos/CENTRO_7ECOS.png"
-            label="Hub"
+            label={t('nav.hub')}
             active={isActive('/')}
             onClick={() => navigate('/')}
             color="#4A4035"
@@ -237,7 +239,7 @@ export default function Navigation({ variant = 'default' }) {
           {isAuthenticated && (
             <NavItem
               icon="community"
-              label="Rio"
+              label={t('nav.rio')}
               active={isCommunitySection}
               onClick={() => navigate('/comunidade')}
               color="#8B5CF6"
@@ -246,7 +248,7 @@ export default function Navigation({ variant = 'default' }) {
           {isAuthenticated && (
             <NavItem
               icon="account"
-              label="Conta"
+              label={t('nav.account')}
               active={isAccountSection}
               onClick={() => navigate('/conta')}
               color="#6B5C4C"
@@ -271,13 +273,13 @@ export default function Navigation({ variant = 'default' }) {
             onClick={() => navigate(eco.chatPath)}
             className="fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-2 border-white/30"
             style={{ background: `linear-gradient(135deg, ${eco.color}, ${eco.colorDark})` }}
-            aria-label={`Falar com Coach ${eco.name}`}
+            aria-label={t('nav.talk_to_coach', { name: eco.name })}
           >
             <span className="text-white font-bold text-lg">{eco.name[0]}</span>
           </button>
         )}
 
-        <nav role="navigation" aria-label={`Navegacao ${eco.name}`} className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50" style={{ borderColor: `${eco.borderColor}40` }}>
+        <nav role="navigation" aria-label={`${eco.name} Navigation`} className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50" style={{ borderColor: `${eco.borderColor}40` }}>
           {/* Current Eco indicator */}
           <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
             <div className="px-4 py-1 rounded-t-lg shadow-md" style={{ background: `linear-gradient(to right, ${eco.color}, ${eco.colorDark})` }}>
@@ -288,7 +290,7 @@ export default function Navigation({ variant = 'default' }) {
           <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
             <NavItem
               logo="/logos/CENTRO_7ECOS.png"
-              label="Hub"
+              label={t('nav.hub')}
               active={isActive('/')}
               onClick={() => navigate('/')}
               color="#4A4035"
@@ -303,7 +305,7 @@ export default function Navigation({ variant = 'default' }) {
             {isAuthenticated && (
               <NavItem
                 icon="community"
-                label="Rio"
+                label={t('nav.rio')}
                 active={isCommunitySection}
                 onClick={() => navigate('/comunidade')}
                 color="#8B5CF6"
@@ -312,7 +314,7 @@ export default function Navigation({ variant = 'default' }) {
             {isAuthenticated && (
               <NavItem
                 icon="account"
-                label="Conta"
+                label={t('nav.account')}
                 active={isAccountSection}
                 onClick={() => navigate('/conta')}
                 color="#6B5C4C"
@@ -327,7 +329,7 @@ export default function Navigation({ variant = 'default' }) {
   // Lumina navigation
   if (isLuminaSection) {
     return (
-      <nav role="navigation" aria-label="Navegacao Lumina" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/30 shadow-2xl z-50">
+      <nav role="navigation" aria-label="Lumina Navigation" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/30 shadow-2xl z-50">
         {/* Current Eco indicator */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
           <div className="bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] px-4 py-1 rounded-t-lg shadow-md">
@@ -338,7 +340,7 @@ export default function Navigation({ variant = 'default' }) {
         <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
           <NavItem
             logo="/logos/CENTRO_7ECOS.png"
-            label="Hub"
+            label={t('nav.hub')}
             active={isActive('/')}
             onClick={() => navigate('/')}
             color="#1A1A4E"
@@ -360,7 +362,7 @@ export default function Navigation({ variant = 'default' }) {
           {isAuthenticated && (
             <NavItem
               icon="community"
-              label="Rio"
+              label={t('nav.rio')}
               active={isCommunitySection}
               onClick={() => navigate('/comunidade')}
               color="#8B5CF6"
@@ -369,7 +371,7 @@ export default function Navigation({ variant = 'default' }) {
           {isAuthenticated && (
             <NavItem
               icon="account"
-              label="Conta"
+              label={t('nav.account')}
               active={isAccountSection}
               onClick={() => navigate('/conta')}
               color="#6B5C4C"
@@ -388,46 +390,46 @@ export default function Navigation({ variant = 'default' }) {
     const isSussurros = location.pathname === '/comunidade/sussurros'
 
     return (
-      <nav role="navigation" aria-label="Navegacao Comunidade" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-purple-100/30 shadow-2xl z-50">
+      <nav role="navigation" aria-label="Community Navigation" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-purple-100/30 shadow-2xl z-50">
         {/* Current section indicator — clickable to go to community hub */}
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
           <button onClick={() => navigate('/comunidade')} className="bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] px-4 py-1 rounded-t-lg shadow-md cursor-pointer hover:opacity-90 transition-opacity">
-            <span className="text-white text-[10px] font-semibold tracking-[0.2em]">COMUNIDADE</span>
+            <span className="text-white text-[10px] font-semibold tracking-[0.2em]">{t('nav.community').toUpperCase()}</span>
           </button>
         </div>
 
         <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
           <NavItem
             logo="/logos/CENTRO_7ECOS.png"
-            label="Hub"
+            label={t('nav.hub')}
             active={false}
             onClick={() => navigate('/')}
             color="#1A1A4E"
           />
           <NavItem
             icon="rio"
-            label="Rio"
+            label={t('nav.rio')}
             active={isRio}
             onClick={() => navigate('/comunidade/rio')}
             color="#8B5CF6"
           />
           <NavItem
             icon="circulos"
-            label="Circulos"
+            label={t('nav.circles')}
             active={isCirculos}
             onClick={() => navigate('/comunidade/circulos')}
             color="#8B5CF6"
           />
           <NavItem
             icon="fogueira"
-            label="Fogueira"
+            label={t('nav.fire')}
             active={isFogueira}
             onClick={() => navigate('/comunidade/fogueira')}
             color="#F97316"
           />
           <NavItem
             icon="sussurros"
-            label="Sussurros"
+            label={t('nav.whispers')}
             active={isSussurros}
             onClick={() => navigate('/comunidade/sussurros')}
             color="#EC4899"
@@ -439,11 +441,11 @@ export default function Navigation({ variant = 'default' }) {
 
   // Default navigation (Home)
   return (
-    <nav role="navigation" aria-label="Navegacao principal" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/30 shadow-2xl z-50">
+    <nav role="navigation" aria-label="Main Navigation" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/30 shadow-2xl z-50">
       <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
         <NavItem
           logo="/logos/CENTRO_7ECOS.png"
-          label="Hub"
+          label={t('nav.hub')}
           active={isActive('/')}
           onClick={() => navigate('/')}
           color="#1A1A4E"
@@ -465,7 +467,7 @@ export default function Navigation({ variant = 'default' }) {
         {isAuthenticated && (
           <NavItem
             icon="community"
-            label="Comunidade"
+            label={t('nav.community')}
             active={isCommunitySection}
             onClick={() => navigate('/comunidade')}
             color="#8B5CF6"
@@ -474,7 +476,7 @@ export default function Navigation({ variant = 'default' }) {
         {isAuthenticated && (
           <NavItem
             icon="account"
-            label="Conta"
+            label={t('nav.account')}
             active={isAccountSection}
             onClick={() => navigate('/conta')}
             color="#6B5C4C"

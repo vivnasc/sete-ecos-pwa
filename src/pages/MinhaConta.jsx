@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
 import { isCoach } from '../lib/coach';
 import { useTheme } from '../contexts/ThemeContext';
+import { useI18n } from '../contexts/I18nContext';
 import LanguageSelector from '../components/LanguageSelector';
 
 /**
@@ -13,6 +14,7 @@ import LanguageSelector from '../components/LanguageSelector';
 export default function MinhaConta() {
   const navigate = useNavigate();
   const { isDark } = useTheme();
+  const { t, locale } = useI18n();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [subscriptions, setSubscriptions] = useState({
@@ -81,19 +83,20 @@ export default function MinhaConta() {
 
   const getStatusBadge = (status) => {
     const badges = {
-      active: { bg: 'bg-emerald-500/15', text: 'text-emerald-700 dark:text-emerald-400', label: 'Activo', dot: 'bg-emerald-500' },
-      tester: { bg: 'bg-violet-500/15', text: 'text-violet-700 dark:text-violet-400', label: 'Tester', dot: 'bg-violet-500' },
-      trial: { bg: 'bg-sky-500/15', text: 'text-sky-700 dark:text-sky-400', label: 'Trial', dot: 'bg-sky-500' },
-      pending: { bg: 'bg-amber-500/15', text: 'text-amber-700 dark:text-amber-400', label: 'Pendente', dot: 'bg-amber-500' },
-      expired: { bg: 'bg-red-500/15', text: 'text-red-700 dark:text-red-400', label: 'Expirado', dot: 'bg-red-500' },
-      cancelled: { bg: 'bg-gray-500/15', text: 'text-gray-600 dark:text-gray-400', label: 'Cancelado', dot: 'bg-gray-400' }
+      active: { bg: 'bg-emerald-500/15', text: 'text-emerald-700 dark:text-emerald-400', label: t('account.status_active'), dot: 'bg-emerald-500' },
+      tester: { bg: 'bg-violet-500/15', text: 'text-violet-700 dark:text-violet-400', label: t('account.status_tester'), dot: 'bg-violet-500' },
+      trial: { bg: 'bg-sky-500/15', text: 'text-sky-700 dark:text-sky-400', label: t('account.status_trial'), dot: 'bg-sky-500' },
+      pending: { bg: 'bg-amber-500/15', text: 'text-amber-700 dark:text-amber-400', label: t('account.status_pending'), dot: 'bg-amber-500' },
+      expired: { bg: 'bg-red-500/15', text: 'text-red-700 dark:text-red-400', label: t('account.status_expired'), dot: 'bg-red-500' },
+      cancelled: { bg: 'bg-gray-500/15', text: 'text-gray-600 dark:text-gray-400', label: t('account.status_cancelled'), dot: 'bg-gray-400' }
     };
     return badges[status] || badges.pending;
   };
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleDateString('pt-PT', {
+    const dateLocale = locale === 'fr' ? 'fr-FR' : locale === 'en' ? 'en-GB' : 'pt-PT';
+    return new Date(dateStr).toLocaleDateString(dateLocale, {
       day: 'numeric',
       month: 'long',
       year: 'numeric'
@@ -140,17 +143,17 @@ export default function MinhaConta() {
             )}
           </div>
           {sub?.subscription_expires && (
-            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-[#6B5344]/40'}`}>Expira: {formatDate(sub.subscription_expires)}</p>
+            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-[#6B5344]/40'}`}>{t('account.expires', { date: formatDate(sub.subscription_expires) })}</p>
           )}
-          {!sub && <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-[#6B5344]/40'}`}>Sem subscrição</p>}
+          {!sub && <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-[#6B5344]/40'}`}>{t('account.no_subscription')}</p>}
         </div>
         {hasAccess ? (
           <Link to={link} className="text-xs font-semibold px-3 py-1.5 rounded-xl text-white flex-shrink-0" style={{ background: `linear-gradient(135deg, ${colors[0]}, ${colors[1]})` }}>
-            Abrir
+            {t('account.open')}
           </Link>
         ) : (
           <Link to={payLink || link} className="text-xs font-semibold text-[#C9A227] px-3 py-1.5 rounded-xl bg-[#C9A227]/10 flex-shrink-0">
-            Subscrever
+            {t('account.subscribe')}
           </Link>
         )}
       </div>
@@ -180,7 +183,7 @@ export default function MinhaConta() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <p className="premium-label" style={{ color: '#C9A227' }}>Minha Conta</p>
+            <p className="premium-label" style={{ color: '#C9A227' }}>{t('account.title')}</p>
             <div className="w-10" />
           </div>
         </header>
@@ -200,7 +203,7 @@ export default function MinhaConta() {
                 </h1>
                 <p className={`text-xs truncate ${isDark ? 'text-gray-400' : 'text-[#6B5344]/50'}`}>{user?.email}</p>
                 <p className={`text-[10px] mt-1 ${isDark ? 'text-gray-500' : 'text-[#6B5344]/30'}`}>
-                  Membro desde {formatDate(user?.created_at)}
+                  {t('account.member_since', { date: formatDate(user?.created_at) })}
                 </p>
               </div>
               <Link to="/perfil" className="w-9 h-9 bg-[#C9A227]/10 rounded-xl flex items-center justify-center flex-shrink-0 hover:bg-[#C9A227]/20 transition-colors">
@@ -216,7 +219,7 @@ export default function MinhaConta() {
         <section className="px-5 mb-6">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-1 h-5 bg-gradient-to-b from-[#C9A227] to-[#C9A227]/30 rounded-full" />
-            <h2 className={`text-sm font-semibold tracking-widest uppercase ${isDark ? 'text-gray-200' : 'text-[#4A3728]'}`}>Os meus Ecos</h2>
+            <h2 className={`text-sm font-semibold tracking-widest uppercase ${isDark ? 'text-gray-200' : 'text-[#4A3728]'}`}>{t('account.my_ecos')}</h2>
           </div>
 
           <div className={`backdrop-blur-xl rounded-3xl border shadow-2xl overflow-hidden ${isDark ? 'bg-white/10 border-white/15 divide-y divide-white/10' : 'bg-white/50 border-white/60 divide-y divide-[#E8D5A3]/15'}`}>
@@ -236,12 +239,12 @@ export default function MinhaConta() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className={`font-semibold text-sm ${isDark ? 'text-gray-100' : 'text-[#4A3728]'}`}>LUMINA</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-violet-500/15 text-violet-700 dark:text-violet-400">Gratuito</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-violet-500/15 text-violet-700 dark:text-violet-400">{t('common.free')}</span>
                 </div>
-                <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-[#6B5344]/40'}`}>Diagnóstico diário</p>
+                <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-[#6B5344]/40'}`}>{t('home.daily_diagnosis')}</p>
               </div>
               <Link to="/lumina" className="text-xs font-semibold px-3 py-1.5 rounded-xl text-white flex-shrink-0" style={{ background: 'linear-gradient(135deg, #8B5CF6, #5B21B6)' }}>
-                Abrir
+                {t('account.open')}
               </Link>
             </div>
           </div>
@@ -251,7 +254,7 @@ export default function MinhaConta() {
         <section className="px-5 mb-6">
           <div className="flex items-center gap-2 mb-3">
             <div className={`w-1 h-5 bg-gradient-to-b rounded-full ${isDark ? 'from-gray-400 to-gray-400/30' : 'from-[#6B5344] to-[#6B5344]/30'}`} />
-            <h2 className={`text-sm font-semibold tracking-widest uppercase ${isDark ? 'text-gray-200' : 'text-[#4A3728]'}`}>Definições</h2>
+            <h2 className={`text-sm font-semibold tracking-widest uppercase ${isDark ? 'text-gray-200' : 'text-[#4A3728]'}`}>{t('account.settings')}</h2>
           </div>
 
           <div className={`backdrop-blur-xl rounded-3xl border shadow-2xl overflow-hidden ${isDark ? 'bg-white/10 border-white/15 divide-y divide-white/10' : 'bg-white/50 border-white/60 divide-y divide-[#E8D5A3]/15'}`}>
@@ -279,7 +282,7 @@ export default function MinhaConta() {
                 </svg>
               </div>
               <div className="flex-1">
-                <span className={`font-medium text-sm ${isDark ? 'text-gray-200' : 'text-[#4A3728]'}`}>Idioma</span>
+                <span className={`font-medium text-sm ${isDark ? 'text-gray-200' : 'text-[#4A3728]'}`}>{t('account.language')}</span>
               </div>
               <LanguageSelector size="sm" />
             </div>
@@ -291,7 +294,7 @@ export default function MinhaConta() {
                 </svg>
               </div>
               <div className="flex-1">
-                <span className={`font-medium text-sm ${isDark ? 'text-gray-200' : 'text-[#4A3728]'}`}>Editar Perfil</span>
+                <span className={`font-medium text-sm ${isDark ? 'text-gray-200' : 'text-[#4A3728]'}`}>{t('account.edit_profile')}</span>
               </div>
               <svg className={`w-4 h-4 ${isDark ? 'text-gray-500' : 'text-[#6B5344]/25'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -305,7 +308,7 @@ export default function MinhaConta() {
                 </svg>
               </div>
               <div className="flex-1">
-                <span className={`font-medium text-sm ${isDark ? 'text-gray-200' : 'text-[#4A3728]'}`}>Alterar Password</span>
+                <span className={`font-medium text-sm ${isDark ? 'text-gray-200' : 'text-[#4A3728]'}`}>{t('account.change_password')}</span>
               </div>
               <svg className={`w-4 h-4 ${isDark ? 'text-gray-500' : 'text-[#6B5344]/25'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -319,7 +322,7 @@ export default function MinhaConta() {
                 </svg>
               </div>
               <div className="flex-1 text-left">
-                <span className="text-red-400 font-medium text-sm">Terminar Sessão</span>
+                <span className="text-red-400 font-medium text-sm">{t('account.logout')}</span>
               </div>
             </button>
           </div>
@@ -327,7 +330,7 @@ export default function MinhaConta() {
 
         {/* Support */}
         <div className="text-center px-5 pb-4">
-          <p className={`text-xs mb-1 ${isDark ? 'text-gray-500' : 'text-[#6B5344]/30'}`}>Precisas de ajuda?</p>
+          <p className={`text-xs mb-1 ${isDark ? 'text-gray-500' : 'text-[#6B5344]/30'}`}>{t('account.need_help')}</p>
           <a href="mailto:suporte@seteecos.com" className={`text-xs font-medium transition-colors ${isDark ? 'text-[#C9A227]/80 hover:text-[#C9A227]' : 'text-[#C9A227]/60 hover:text-[#C9A227]'}`}>
             suporte@seteecos.com
           </a>

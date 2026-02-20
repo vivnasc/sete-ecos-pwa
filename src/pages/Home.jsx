@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useI18n } from '../contexts/I18nContext'
 import { g } from '../utils/genero'
 import { isRamadan, observaRamadao } from '../utils/ramadao'
 import ScrollReveal from '../components/ScrollReveal'
@@ -14,15 +15,16 @@ import LandingGeral from './LandingGeral'
 export default function Home() {
   const navigate = useNavigate()
   const { session, loading, userRecord, vitalisAccess, aureaAccess } = useAuth()
+  const { t } = useI18n()
 
   const userName = userRecord?.nome || session?.user?.email?.split('@')[0] || ''
 
   const getGreeting = () => {
     const hour = new Date().getHours()
     if (isRamadan() && observaRamadao()) return 'Ramadan Mubarak'
-    if (hour < 12) return 'Bom dia'
-    if (hour < 18) return 'Boa tarde'
-    return 'Boa noite'
+    if (hour < 12) return t('home.greeting_morning')
+    if (hour < 18) return t('home.greeting_afternoon')
+    return t('home.greeting_evening')
   }
 
   if (loading) {
@@ -33,7 +35,7 @@ export default function Home() {
             <div className="w-16 h-16 border-4 border-[#C9A227]/20 rounded-full"></div>
             <div className="w-16 h-16 border-4 border-transparent border-t-[#C9A227] rounded-full animate-spin absolute inset-0"></div>
           </div>
-          <p className="text-[#6B5344] text-sm animate-pulse" style={{ fontFamily: 'var(--font-titulos)' }}>A preparar o teu espaço...</p>
+          <p className="text-[#6B5344] text-sm animate-pulse" style={{ fontFamily: 'var(--font-titulos)' }}>{t('home.loading')}</p>
         </div>
       </div>
     )
@@ -81,7 +83,7 @@ export default function Home() {
                 <img src="/logos/CENTRO_7ECOS.png" alt="Sete Ecos" className="w-24 h-24 mx-auto relative animate-float" />
               </div>
               <p className="text-[#6B5344]/70 text-sm mt-4 tracking-[0.12em]" style={{ fontFamily: 'var(--font-titulos)', fontStyle: 'italic' }}>
-                O teu espaço de transformação
+                {t('home.transformation_space')}
               </p>
             </div>
           </ScrollReveal>
@@ -92,7 +94,7 @@ export default function Home() {
           <ScrollReveal variant="fadeUp" delay={0.1}>
             <div className="flex items-center gap-2 mb-5">
               <div className="w-1 h-6 bg-gradient-to-b from-[#C9A227] to-[#C9A227]/30 rounded-full" />
-              <h2 className="text-sm font-semibold text-[#4A3728] tracking-[0.2em] uppercase" style={{ fontFamily: 'var(--font-corpo)' }}>Os teus Ecos</h2>
+              <h2 className="text-sm font-semibold text-[#4A3728] tracking-[0.2em] uppercase" style={{ fontFamily: 'var(--font-corpo)' }}>{t('home.your_ecos')}</h2>
             </div>
           </ScrollReveal>
           <div className="grid grid-cols-2 gap-4">
@@ -110,8 +112,8 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-white font-bold tracking-[0.15em] text-sm">LUMINA</h3>
-                    <p className="text-white/60 text-xs mt-1">Diagnóstico diário</p>
-                    <span className="inline-block mt-3 text-[10px] text-white/40 bg-white/10 px-2.5 py-0.5 rounded-full tracking-wide">Gratuito</span>
+                    <p className="text-white/60 text-xs mt-1">{t('home.daily_diagnosis')}</p>
+                    <span className="inline-block mt-3 text-[10px] text-white/40 bg-white/10 px-2.5 py-0.5 rounded-full tracking-wide">{t('common.free')}</span>
                   </div>
                 </div>
               </button>
@@ -131,9 +133,9 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-white font-bold tracking-[0.15em] text-sm">VITALIS</h3>
-                    <p className="text-white/60 text-xs mt-1">Corpo & Nutrição</p>
+                    <p className="text-white/60 text-xs mt-1">{t('home.body_nutrition')}</p>
                     <span className="inline-block mt-3 text-[10px] text-white/40 bg-white/10 px-2.5 py-0.5 rounded-full tracking-wide">
-                      {vitalisAccess ? 'Ativo' : 'Começar'}
+                      {vitalisAccess ? t('home.active') : t('home.start')}
                     </span>
                   </div>
                 </div>
@@ -154,9 +156,9 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-white font-bold tracking-[0.15em] text-sm">AUREA</h3>
-                    <p className="text-white/60 text-xs mt-1">Autocuidado & Beleza</p>
+                    <p className="text-white/60 text-xs mt-1">{t('home.selfcare_beauty')}</p>
                     <span className="inline-block mt-3 text-[10px] text-white/40 bg-white/10 px-2.5 py-0.5 rounded-full tracking-wide">
-                      {aureaAccess ? 'Ativo' : 'Começar'}
+                      {aureaAccess ? t('home.active') : t('home.start')}
                     </span>
                   </div>
                 </div>
@@ -179,8 +181,8 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-white font-bold tracking-[0.15em] text-sm">COMUNIDADE</h3>
-                    <p className="text-white/60 text-xs mt-1">Reflexão & Partilha</p>
-                    <span className="inline-block mt-3 text-[10px] text-white/40 bg-white/10 px-2.5 py-0.5 rounded-full tracking-wide">Aberto</span>
+                    <p className="text-white/60 text-xs mt-1">{t('home.reflection_sharing')}</p>
+                    <span className="inline-block mt-3 text-[10px] text-white/40 bg-white/10 px-2.5 py-0.5 rounded-full tracking-wide">{t('home.open_access')}</span>
                   </div>
                 </div>
               </button>
@@ -194,7 +196,7 @@ export default function Home() {
             <section className="px-5 mb-10">
               <div className="flex items-center gap-2 mb-5">
                 <div className="w-1 h-6 bg-gradient-to-b from-[#7C8B6F] to-[#7C8B6F]/30 rounded-full" />
-                <h2 className="text-sm font-semibold text-[#4A3728] tracking-[0.2em] uppercase" style={{ fontFamily: 'var(--font-corpo)' }}>Acesso Rápido</h2>
+                <h2 className="text-sm font-semibold text-[#4A3728] tracking-[0.2em] uppercase" style={{ fontFamily: 'var(--font-corpo)' }}>{t('home.quick_access')}</h2>
               </div>
               <div className="bg-white/50 backdrop-blur-md rounded-3xl border border-white/60 shadow-lg overflow-hidden">
                 <Link to="/vitalis/checkin" className="flex items-center gap-4 p-4 hover:bg-white/50 transition-colors duration-300 border-b border-[#E8D5A3]/20">
@@ -204,8 +206,8 @@ export default function Home() {
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-[#4A3728] text-sm">Check-in Diário</p>
-                    <p className="text-xs text-[#6B5344]/60 mt-0.5">Registar o teu dia</p>
+                    <p className="font-semibold text-[#4A3728] text-sm">{t('home.daily_checkin')}</p>
+                    <p className="text-xs text-[#6B5344]/60 mt-0.5">{t('home.record_your_day')}</p>
                   </div>
                   <svg className="w-4 h-4 text-[#6B5344]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -218,8 +220,8 @@ export default function Home() {
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-[#4A3728] text-sm">Receitas</p>
-                    <p className="text-xs text-[#6B5344]/60 mt-0.5">Explorar receitas saudáveis</p>
+                    <p className="font-semibold text-[#4A3728] text-sm">{t('home.recipes')}</p>
+                    <p className="text-xs text-[#6B5344]/60 mt-0.5">{t('home.explore_recipes')}</p>
                   </div>
                   <svg className="w-4 h-4 text-[#6B5344]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -232,8 +234,8 @@ export default function Home() {
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-[#4A3728] text-sm">Plano Alimentar</p>
-                    <p className="text-xs text-[#6B5344]/60 mt-0.5">O teu plano personalizado</p>
+                    <p className="font-semibold text-[#4A3728] text-sm">{t('home.meal_plan')}</p>
+                    <p className="text-xs text-[#6B5344]/60 mt-0.5">{t('home.your_plan')}</p>
                   </div>
                   <svg className="w-4 h-4 text-[#6B5344]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -250,15 +252,15 @@ export default function Home() {
             <div className="relative overflow-hidden rounded-3xl" style={{ background: 'linear-gradient(135deg, #4A3728 0%, #2A1F18 100%)' }}>
               <div className="absolute top-0 right-0 w-32 h-32 opacity-10" style={{ background: 'radial-gradient(circle, #C9A227 0%, transparent 70%)' }} />
               <div className="relative p-7">
-                <p className="text-[#C9A227] text-xs font-semibold tracking-[0.2em] uppercase mb-3">Descobrir</p>
+                <p className="text-[#C9A227] text-xs font-semibold tracking-[0.2em] uppercase mb-3">{t('home.discover')}</p>
                 <p className="text-white/80 text-sm mb-5 leading-relaxed">
-                  Explora os 7 Ecos e descobre todo o sistema de transformação integral.
+                  {t('home.discover_desc')}
                 </p>
                 <button
                   onClick={() => navigate('/landing')}
                   className="flex items-center gap-2 text-[#C9A227] font-semibold text-sm group animate-pulse-glow rounded-lg px-4 py-2 -ml-4"
                 >
-                  Ver todos os Ecos
+                  {t('home.see_all_ecos')}
                   <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>

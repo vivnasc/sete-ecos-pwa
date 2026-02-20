@@ -21,7 +21,7 @@ export function I18nProvider({ children }) {
       locale,
       setLocale,
       t,
-      availableLocales: AVAILABLE_LOCALES,
+      availableLocales: AVAILABLE_LOCALES.map(l => l.code),
       defaultLocale: DEFAULT_LOCALE,
     }}>
       {children}
