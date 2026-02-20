@@ -30,6 +30,7 @@ import { setSexo } from '../utils/genero';
 import { useAuth } from '../contexts/AuthContext';
 import { useI18n } from '../contexts/I18nContext';
 import UpsellCard from '../components/UpsellCard';
+import LanguageSelector from '../components/LanguageSelector';
 import './Lumina.css';
 
 // ============================================================
@@ -694,6 +695,9 @@ export default function Lumina() {
   function renderSplash() {
     return (
       <div className={`screen ${screen === 'splash' ? 'active' : ''}`}>
+        <div style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 10 }}>
+          <LanguageSelector size="sm" />
+        </div>
         <img src="/logos/lumina-logo_v2.png" alt="LUMINA" className="splash-eye" style={{
           width: '120px',
           height: '120px',
