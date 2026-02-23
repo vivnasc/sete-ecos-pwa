@@ -550,7 +550,7 @@ function NavItem({ icon, logo, label, active, onClick, color }) {
       onClick={onClick}
       aria-label={`Navegar para ${label}`}
       aria-current={active ? 'page' : undefined}
-      className={`flex flex-col items-center justify-center px-4 py-1.5 rounded-xl transition-all duration-300 ${
+      className={`flex flex-col items-center justify-center px-4 py-1.5 rounded-xl transition-all duration-300 active:scale-90 ${
         active
           ? 'bg-gray-100/80 scale-105'
           : 'hover:bg-gray-50 hover:scale-105'

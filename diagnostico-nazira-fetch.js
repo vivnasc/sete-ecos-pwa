@@ -171,7 +171,7 @@ async function diagnosticarUsuaria(user) {
           status: c.subscription_status,
           type: c.subscription_type,
           start: c.subscription_start,
-          end: c.subscription_end
+          end: c.subscription_expires
         }, null, 2));
         
         if (c.subscription_status === 'active') {

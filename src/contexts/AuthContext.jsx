@@ -49,7 +49,7 @@ export function AuthProvider({ children }) {
       return
     }
 
-    const activeStatuses = ['active', 'trial', 'tester', 'pending']
+    const activeStatuses = ['active', 'trial', 'tester']
 
     try {
       // Check Vitalis

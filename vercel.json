@@ -33,9 +33,6 @@
     },
     "api/whatsapp-webhook.js": {
       "maxDuration": 30
-    },
-    "api/whatsapp-chatbot.js": {
-      "maxDuration": 30
     }
   },
   "crons": [

@@ -277,13 +277,13 @@ async function processarTrialsExpirando() {
     .from('vitalis_clients')
     .select('*, users(id, nome, email)')
     .eq('subscription_status', 'trial')
-    .not('subscription_end', 'is', null);
+    .not('subscription_expires', 'is', null);
 
   const { data: aureaClients } = await supabase
     .from('aurea_clients')
     .select('*, users(id, nome, email)')
     .eq('subscription_status', 'trial')
-    .not('subscription_end', 'is', null);
+    .not('subscription_expires', 'is', null);
 
   const todosClients = [
     ...(vitalisClients || []).map((c) => ({ ...c, eco: 'Vitalis' })),
@@ -293,11 +293,11 @@ async function processarTrialsExpirando() {
   let enviados = { dia3: 0, dia1: 0, expirado: 0, winback: 0 };
 
   for (const client of todosClients) {
-    const { users, subscription_end, eco } = client;
-    if (!users || !subscription_end) continue;
+    const { users, subscription_expires, eco } = client;
+    if (!users || !subscription_expires) continue;
 
     const { nome, email } = users;
-    const endDate = new Date(subscription_end);
+    const endDate = new Date(subscription_expires);
     const endDateStr = formatDate(endDate);
 
     // Verificar se já enviámos email hoje para este cliente

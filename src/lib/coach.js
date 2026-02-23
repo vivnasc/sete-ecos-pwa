@@ -47,7 +47,6 @@ export function isCoach(email) {
 export function isSessionCoach(session) {
   const email = session?.user?.email;
   const result = isCoach(email);
-  console.log('🔍 Coach Check:', { email, result, coachEmails: getCoachEmails() });
   return result;
 }
 
