@@ -1154,7 +1154,8 @@ async function handleTemplates(req, res, action, token) {
         if (del.ok) {
           resultados.apagados.push(tmpl.name);
           nomeExistentes.delete(tmpl.name);
-          await new Promise(r => setTimeout(r, 1000)); // esperar 1s após apagar
+          // Meta precisa ~60s para concluir a eliminação antes de aceitar recriação
+          await new Promise(r => setTimeout(r, 60000));
         }
       }
 
