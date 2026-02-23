@@ -192,7 +192,7 @@ const VitalisAccessGuard = ({ children }) => {
 
           {/* What they get */}
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-5 mb-8">
-            <h3 className="text-white font-semibold text-sm mb-4">Com a subscricao completa, desbloqueia:</h3>
+            <h3 className="text-white font-semibold text-sm mb-4">Com a subscrição completa, desbloqueia:</h3>
             <div className="space-y-3">
               {[
                 { icon: '🍽️', text: 'Plano alimentar 100% personalizado' },
@@ -259,7 +259,7 @@ const VitalisAccessGuard = ({ children }) => {
               </>
             ) : (
               <>
-                A tua subscricao expira em {Math.ceil((new Date(accessInfo.expiresAt) - new Date()) / (24 * 60 * 60 * 1000))} dias.{' '}
+                A tua subscrição expira em {Math.ceil((new Date(accessInfo.expiresAt) - new Date()) / (24 * 60 * 60 * 1000))} dias.{' '}
                 <Link to="/vitalis/pagamento" className="underline font-medium">Renovar agora</Link>
               </>
             )}

@@ -381,13 +381,13 @@ export default function CoachDashboard() {
 
   // Quick activate
   const handleActivate = async (client, planKey = 'MONTHLY') => {
-    if (!confirm(`Activar subscricao ${SUBSCRIPTION_PLANS[planKey].name} para ${client.nome}?`)) return;
+    if (!confirm(`Activar subscrição ${SUBSCRIPTION_PLANS[planKey].name} para ${client.nome}?`)) return;
     try {
       const result = await coachApi.activarSubscricao(client.user_id, planKey);
       const validoAte = new Date(result.expiresAt).toLocaleDateString('pt-PT');
-      alert(`Subscricao activada ate ${validoAte}`);
+      alert(`Subscrição activada até ${validoAte}`);
 
-      // Enviar emails de boas-vindas e confirmacao a cliente
+      // Enviar emails de boas-vindas e confirmação à cliente
       const plan = SUBSCRIPTION_PLANS[planKey];
       enviarBoasVindas(client.email, client.nome, client.sexo).catch(() => {});
       enviarConfirmacaoPagamento(client.email, {

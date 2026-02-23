@@ -174,11 +174,11 @@ export function getMpesaWhatsappLink(eco, planKey, reference) {
 
   const plan = config[planKey] || config.monthly
   const msg = encodeURIComponent(
-    `Ola! Fiz o pagamento para o ${config.name}.\n` +
+    `Olá! Fiz o pagamento para o ${config.name}.\n` +
     `Plano: ${plan.name}\n` +
     `Valor: ${plan.price_mzn.toLocaleString()} MZN\n` +
-    `Referencia M-Pesa: ${reference}\n` +
-    `Por favor, confirme a minha subscricao.`
+    `Referência M-Pesa: ${reference}\n` +
+    `Por favor, confirme a minha subscrição.`
   )
   return `https://wa.me/${GLOBAL_CONFIG.WHATSAPP_COACH}?text=${msg}`
 }

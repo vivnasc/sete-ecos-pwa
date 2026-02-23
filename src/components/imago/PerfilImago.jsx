@@ -168,9 +168,9 @@ export default function PerfilImago() {
           userData={stats}
         />
 
-        {/* Info da subscricao */}
+        {/* Info da subscrição */}
         <div className="bg-white/5 rounded-2xl border border-white/10 p-5">
-          <h3 className="text-white font-semibold text-sm mb-3">Subscricao</h3>
+          <h3 className="text-white font-semibold text-sm mb-3">Subscrição</h3>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-white/40">Estado</span>
