@@ -23,7 +23,6 @@ import { ventisTranslations } from './i18n/ventis.js';
 import { ecoaTranslations } from './i18n/ecoa.js';
 import { imagoTranslations } from './i18n/imago.js';
 import { vitalisTranslations } from './i18n/vitalis.js';
-import { messengerTranslations } from './i18n/messenger.js';
 
 // Traduções base organizadas por namespace
 const baseTranslations = {
@@ -664,7 +663,6 @@ for (const locale of ['pt', 'en', 'fr']) {
     ...(ecoaTranslations[locale] || {}),
     ...(imagoTranslations[locale] || {}),
     ...(vitalisTranslations[locale] || {}),
-    ...(messengerTranslations[locale] || {}),
   }
 }
 
