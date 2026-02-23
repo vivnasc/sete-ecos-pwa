@@ -125,39 +125,7 @@ CREATE POLICY "vitalis_subscription_log_select_own" ON vitalis_subscription_log
   FOR SELECT USING (user_id IN (SELECT id FROM users WHERE auth_id = auth.uid()));
 
 -- =====================================================================
--- 6. CREATE VITALIS_INVITE_CODES TABLE
--- =====================================================================
-CREATE TABLE IF NOT EXISTS vitalis_invite_codes (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  code TEXT NOT NULL UNIQUE,
-  type TEXT NOT NULL CHECK (type IN ('tester', 'trial', 'promo')),
-  max_uses INTEGER DEFAULT 1 CHECK (max_uses > 0),
-  uses_count INTEGER DEFAULT 0 CHECK (uses_count >= 0),
-  notes TEXT,
-  active BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  expires_at TIMESTAMPTZ
-);
-
-CREATE INDEX IF NOT EXISTS idx_vitalis_invite_codes_code ON vitalis_invite_codes(code);
-CREATE INDEX IF NOT EXISTS idx_vitalis_invite_codes_active ON vitalis_invite_codes(active);
-
--- =====================================================================
--- 7. CREATE VITALIS_INVITE_USES TABLE
--- =====================================================================
-CREATE TABLE IF NOT EXISTS vitalis_invite_uses (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  code_id UUID NOT NULL REFERENCES vitalis_invite_codes(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  used_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(code_id, user_id)
-);
-
-CREATE INDEX IF NOT EXISTS idx_vitalis_invite_uses_code ON vitalis_invite_uses(code_id);
-CREATE INDEX IF NOT EXISTS idx_vitalis_invite_uses_user ON vitalis_invite_uses(user_id);
-
--- =====================================================================
--- 8. CREATE CHATBOT_MENSAGENS TABLE
+-- 6. CREATE CHATBOT_MENSAGENS TABLE
 -- =====================================================================
 CREATE TABLE IF NOT EXISTS chatbot_mensagens (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -177,7 +145,7 @@ CREATE INDEX IF NOT EXISTS idx_chatbot_mensagens_created ON chatbot_mensagens(cr
 CREATE INDEX IF NOT EXISTS idx_chatbot_mensagens_sessao ON chatbot_mensagens(sessao_id);
 
 -- =====================================================================
--- 9. UPDATE PUSH_SUBSCRIPTIONS WITH RLS POLICIES
+-- 7. UPDATE PUSH_SUBSCRIPTIONS WITH RLS POLICIES
 -- =====================================================================
 DO $$
 BEGIN
@@ -209,10 +177,8 @@ END $$;
 -- 3. subscription_expires column on vitalis_clients
 -- 4. vitalis_alerts table
 -- 5. vitalis_subscription_log table
--- 6. vitalis_invite_codes table
--- 7. vitalis_invite_uses table
--- 8. chatbot_mensagens table
--- 9. push_subscriptions RLS policies
+-- 6. chatbot_mensagens table
+-- 7. push_subscriptions RLS policies
 --
 -- All operations are idempotent (safe to re-run).
 -- Execute in Supabase SQL Editor.
