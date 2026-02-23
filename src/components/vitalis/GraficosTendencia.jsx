@@ -206,6 +206,12 @@ export default function GraficosTendencia() {
   const [clienteInfo, setClienteInfo] = useState(null);
   const [estatisticas, setEstatisticas] = useState({});
 
+  // Form de medidas
+  const [mostrarFormMedidas, setMostrarFormMedidas] = useState(false);
+  const [novaCintura, setNovaCintura] = useState('');
+  const [novaAnca, setNovaAnca] = useState('');
+  const [salvandoMedidas, setSalvandoMedidas] = useState(false);
+
   useEffect(() => {
     carregarDados();
   }, [periodo]);
@@ -366,6 +372,63 @@ export default function GraficosTendencia() {
       console.error('Erro ao carregar dados:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const salvarMedidas = async () => {
+    if (!novaCintura && !novaAnca) return;
+    setSalvandoMedidas(true);
+    try {
+      const hoje = new Date().toISOString().split('T')[0];
+      const dados = {
+        user_id: userId,
+        data: hoje,
+      };
+      if (novaCintura) dados.cintura_cm = parseFloat(novaCintura);
+      if (novaAnca) dados.anca_cm = parseFloat(novaAnca);
+
+      // Verificar se já existe registo para hoje
+      const { data: existente } = await supabase
+        .from('vitalis_medidas_log')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('data', hoje)
+        .maybeSingle();
+
+      let error;
+      if (existente) {
+        // Actualizar registo existente
+        ({ error } = await supabase
+          .from('vitalis_medidas_log')
+          .update(dados)
+          .eq('id', existente.id));
+      } else {
+        // Criar novo registo
+        ({ error } = await supabase
+          .from('vitalis_medidas_log')
+          .insert(dados));
+      }
+
+      if (error) throw error;
+
+      // Actualizar intake com medidas mais recentes
+      const updateIntake = {};
+      if (novaCintura) updateIntake.cintura_cm = parseFloat(novaCintura);
+      if (novaAnca) updateIntake.anca_cm = parseFloat(novaAnca);
+      await supabase
+        .from('vitalis_intake')
+        .update(updateIntake)
+        .eq('user_id', userId);
+
+      setNovaCintura('');
+      setNovaAnca('');
+      setMostrarFormMedidas(false);
+      carregarDados(); // Recarregar gráficos
+    } catch (error) {
+      console.error('Erro ao salvar medidas:', error);
+      alert('Erro ao salvar medidas. Tenta novamente.');
+    } finally {
+      setSalvandoMedidas(false);
     }
   };
 
@@ -605,12 +668,70 @@ export default function GraficosTendencia() {
               )}
             </div>
 
-            {/* Dica para registar medidas */}
-            {(dadosCintura.length <= 1 || dadosAnca.length <= 1) && (
-              <p className="text-xs text-gray-500 text-center mt-4 bg-gray-50 rounded-lg p-3">
-                💡 Regista as tuas medidas semanalmente no check-in para acompanhar a evolução
-              </p>
-            )}
+            {/* Botão e formulário para registar medidas */}
+            <div className="mt-4">
+              {!mostrarFormMedidas ? (
+                <button
+                  onClick={() => setMostrarFormMedidas(true)}
+                  className="w-full py-3 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-dashed border-amber-300 rounded-xl text-amber-700 font-semibold text-sm hover:border-amber-400 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                >
+                  <span className="text-lg">📏</span>
+                  Registar medidas de hoje
+                </button>
+              ) : (
+                <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200">
+                  <h4 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
+                    <span>📏</span> Registar medidas
+                  </h4>
+                  <p className="text-xs text-gray-500 mb-3">
+                    Mede semanalmente, sempre no mesmo dia e hora (de manhã, em jejum).
+                  </p>
+                  <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div>
+                      <label className="text-xs text-gray-600 font-medium mb-1 block">Cintura (cm)</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="40"
+                        max="200"
+                        value={novaCintura}
+                        onChange={e => setNovaCintura(e.target.value)}
+                        placeholder={estatisticas.cinturaActual ? `Última: ${estatisticas.cinturaActual}` : 'ex: 78'}
+                        className="w-full px-3 py-2.5 rounded-lg border border-amber-200 text-sm focus:ring-2 focus:ring-amber-300 focus:border-amber-300 bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-600 font-medium mb-1 block">Anca (cm)</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="50"
+                        max="200"
+                        value={novaAnca}
+                        onChange={e => setNovaAnca(e.target.value)}
+                        placeholder={estatisticas.ancaActual ? `Última: ${estatisticas.ancaActual}` : 'ex: 95'}
+                        className="w-full px-3 py-2.5 rounded-lg border border-amber-200 text-sm focus:ring-2 focus:ring-amber-300 focus:border-amber-300 bg-white"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={salvarMedidas}
+                      disabled={salvandoMedidas || (!novaCintura && !novaAnca)}
+                      className="flex-1 py-2.5 bg-amber-500 text-white rounded-lg font-semibold text-sm hover:bg-amber-600 disabled:opacity-50 active:scale-[0.98] transition-all"
+                    >
+                      {salvandoMedidas ? 'A salvar...' : 'Salvar'}
+                    </button>
+                    <button
+                      onClick={() => { setMostrarFormMedidas(false); setNovaCintura(''); setNovaAnca(''); }}
+                      className="px-4 py-2.5 bg-white text-gray-600 rounded-lg text-sm border border-gray-200 hover:bg-gray-50"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
