@@ -96,8 +96,9 @@ sete-ecos-pwa/
 ├── src/
 │   ├── App.jsx                     # 70+ routes, lazy loading, ErrorBoundary
 │   ├── main.jsx                    # React entry point
-│   ├── components/                 # 190 JSX files total
+│   ├── components/                 # 195 JSX files total
 │   │   ├── (19 root components)    # Auth, Navigation, Toast, UpdateBanner, etc.
+│   │   ├── shared/                 # 11 components (cross-eco reusable)
 │   │   ├── vitalis/                # 36 components
 │   │   ├── aurea/                  # 15 components
 │   │   ├── serena/                 # 17 components
@@ -117,6 +118,7 @@ sete-ecos-pwa/
 │   │   ├── lumina-leituras.js      # 23 diagnostic patterns (4 categories)
 │   │   ├── i18n.js                 # Translation system (pt, en, fr)
 │   │   ├── coach.js                # Coach email whitelist + access control
+│   │   ├── coachApi.js             # Coach API integration
 │   │   ├── comunidade.js           # Community social logic (75+ prompts, resonance)
 │   │   ├── ghost-users.js          # 23 simulated Mozambican profiles
 │   │   ├── validacao.js            # Form validation + ARIA props
@@ -124,6 +126,13 @@ sete-ecos-pwa/
 │   │   ├── marketing-engine.js     # Marketing hooks + content (1000+ lines)
 │   │   ├── referrals.js            # "Convida & Ganha" system (+7 days per conversion)
 │   │   ├── whatsapp.js             # WhatsApp alerts (Meta Cloud API)
+│   │   ├── emails.js               # Email utilities
+│   │   ├── pushSubscription.js     # Web Push subscription management
+│   │   ├── relatorios-pdf.js       # PDF report generation (client-side)
+│   │   ├── broadcast-api.js        # Broadcast message API
+│   │   ├── facebook-api.js         # Facebook API integration
+│   │   ├── instagram-api.js        # Instagram API integration
+│   │   ├── i18n/                   # Per-eco translations (11 files)
 │   │   ├── shared/                 # Cross-module infrastructure
 │   │   │   ├── subscriptionPlans.js # Centralized pricing (all Ecos + bundles)
 │   │   │   ├── moduleFactory.js     # Subscription, gamification, chat factories
@@ -244,6 +253,24 @@ Home, Login, RecuperarPassword, MinhaConta, Perfil, Lumina, LandingVitalis, Land
 - `/coach/chatbot-teste` — Chatbot simulator
 - `/coach/social` — Social media scheduler (Instagram + Facebook)
 - `/coach/broadcast` — Email/WA broadcast tool
+
+## Shared Components (11)
+
+Cross-eco reusable components in `src/components/shared/`:
+
+| Component | Purpose |
+|-----------|---------|
+| AICoach.jsx | AI coach chat interface (used by all eco chat screens) |
+| CheckInSystem.jsx | Generic check-in form builder |
+| GamificationSystem.jsx | Points, levels, badges display |
+| InsightEngine.jsx | Weekly insights generator |
+| ModuleAccessGuard.jsx | Generic subscription guard for any eco |
+| ModuleDashboardShell.jsx | Standard dashboard layout wrapper |
+| ModuleHeader.jsx | Standard eco header with navigation |
+| NotificacoesModule.jsx | Generic notification settings per eco |
+| OnboardingShell.jsx | Onboarding flow wrapper |
+| PagamentoEco.jsx | Generic payment page for any eco |
+| PaymentPage.jsx | Payment page with plan selection |
 
 ## Root-Level Components (19)
 
@@ -683,6 +710,37 @@ gx(intake?.sexo, 'Bem-vindo', 'Bem-vinda')
 8. **Community features**: Logic in `src/lib/comunidade.js`, components in `src/components/comunidade/`
 9. **Adding cron task**: Add case in `api/cron.js`, create handler in `api/_lib/`, add schedule in `vercel.json`
 10. **Social media publishing**: Schedule via `scheduled_posts` table, published by `api/_lib/instagram-schedule.js`
+
+## i18n Translation Files
+
+Per-eco translations in `src/lib/i18n/` (11 files):
+aurea.js, aurora.js, comunidade.js, ecoa.js, ignis.js, imago.js, lumina.js, lumina-leituras.js, serena.js, ventis.js, vitalis.js
+
+Main translation system: `src/lib/i18n.js` — supports `pt`, `en`, `fr`
+
+## Additional Project Directories
+
+The repository contains two secondary projects (separate from the main PWA):
+- `os-7-veus-site/` — Next.js marketing site for Sete Ecos
+- `escola-breno/` — Education sub-project (language learning)
+
+**Do not modify** these unless explicitly asked.
+
+## Scripts & Utilities
+
+`scripts/` directory contains SQL and JS utilities for data maintenance:
+- `CREATE_SCHEDULED_POSTS.sql` — Post scheduling setup
+- `FIX_EXISTING_CLIENTS.sql` — Client data fixes
+- `create-promo-20.js` — Promo code creation
+- `criar-usuario-teste-vitalis.js` — Test user creation
+- `limpar-users-teste.js/.sql` — Clean test users
+- `VERIFICAR-DADOS-INVALIDOS.sql` — Data validation
+
+`database/` directory contains seed data:
+- `calendario-refeicoes.sql` — Meal calendar seeds
+- `receitas-mocambicanas.sql` — Mozambican recipes
+- `comunidade-social.sql` — Community social data (v1)
+- `comunidade-v2.sql` — Community data (v2: sussurros, fogueira)
 
 ## Referral System
 
