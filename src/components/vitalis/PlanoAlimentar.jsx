@@ -377,13 +377,18 @@ export default function PlanoAlimentar() {
     // Porções diárias — função partilhada (PDF + dashboard + cliente)
     const porcoesDiarias = calcularPorcoesDiarias(mealPlan);
 
+    // Nomes de fase adaptados à abordagem
+    const abordagem = mealPlan.abordagem || 'equilibrado';
+    const faseNomesPorAbordagem = {
+      keto_if: { inducao: 'Indução', transicao: 'Transição', recomposicao: 'Recomposição', manutencao: 'Manutenção' },
+      low_carb: { inducao: 'Adaptação', transicao: 'Transição', recomposicao: 'Recomposição', manutencao: 'Manutenção' },
+      equilibrado: { inducao: 'Arranque', transicao: 'Progressão', recomposicao: 'Consolidação', manutencao: 'Manutenção' }
+    };
+    const nomeFase = (faseNomesPorAbordagem[abordagem] || faseNomesPorAbordagem.equilibrado)[mealPlan.fase] || mealPlan.fase || 'Fase Inicial';
+
     return {
       fase: {
-        nome: mealPlan.fase === 'inducao' ? 'Indução'
-            : mealPlan.fase === 'transicao' ? 'Transição'
-            : mealPlan.fase === 'recomposicao' ? 'Recomposição'
-            : mealPlan.fase === 'manutencao' ? 'Manutenção'
-            : mealPlan.fase || 'Fase Inicial',
+        nome: nomeFase,
         semana: 1,
         duracao_semanas: 4
       },

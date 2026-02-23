@@ -597,7 +597,7 @@ export default function PerfilVitalis() {
           ) : (
             <div className="text-center py-4">
               <p className="text-gray-500 text-sm mb-4">
-                Convida amigas para o Vitalis e ganha dias gratis na tua subscricao!
+                Convida amigas para o Vitalis e ganha dias grátis na tua subscrição!
               </p>
               <button
                 onClick={handleGenerateReferral}

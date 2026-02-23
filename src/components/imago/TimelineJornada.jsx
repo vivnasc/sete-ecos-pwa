@@ -194,7 +194,7 @@ export default function TimelineJornada() {
             ecoName: eco.name,
             color: eco.color,
             icon: eco.icon,
-            description: `Subscricao ${g('activo', 'activa')} no ${eco.name}`,
+            description: `Subscrição ${g('activo', 'activa')} no ${eco.name}`,
             detail: null,
             sortKey: new Date(data.created_at).getTime() + 3
           })

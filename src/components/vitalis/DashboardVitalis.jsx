@@ -1162,7 +1162,16 @@ export default function DashboardVitalis() {
                 <p className="text-xs text-gray-500 mt-1">
                   Dia {Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / (1000 * 60 * 60 * 24)) + 1} da tua jornada •
                   {t('vitalis.dashboard.week')} {Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / (7 * 24 * 60 * 60 * 1000)) + 1} •
-                  Fase {plano?.fase || 'Inicial'}
+                  {(() => {
+                    const abordagem = plano?.abordagem || intake?.abordagem_preferida || 'equilibrado';
+                    const faseNomes = {
+                      keto_if: { inducao: 'Indução', transicao: 'Transição', recomposicao: 'Recomposição', manutencao: 'Manutenção' },
+                      low_carb: { inducao: 'Adaptação', transicao: 'Transição', recomposicao: 'Recomposição', manutencao: 'Manutenção' },
+                      equilibrado: { inducao: 'Arranque', transicao: 'Progressão', recomposicao: 'Consolidação', manutencao: 'Manutenção' }
+                    };
+                    const nomes = faseNomes[abordagem] || faseNomes.equilibrado;
+                    return nomes[plano?.fase] || plano?.fase || 'Inicial';
+                  })()}
                 </p>
               </div>
             </div>

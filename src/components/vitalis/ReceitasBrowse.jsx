@@ -197,11 +197,17 @@ export const ReceitasBrowse = () => {
         // Se receita não tem fases_recomendadas, é considerada universal (mostrar sempre)
       }
 
-      // Se abordagem é keto, priorizar receitas keto
+      // Filtrar receitas por abordagem
       if (userIntake.abordagem_preferida === 'keto_if') {
         const faseActual = getFaseNome(userPlano?.fase);
-        // Em fase de indução, só mostrar keto
+        // Em fase de indução keto, só mostrar receitas keto
         if (faseActual === 'inducao' && !receita.tags?.includes('keto')) {
+          return false;
+        }
+      } else if (userIntake.abordagem_preferida === 'equilibrado') {
+        // Para abordagem equilibrada, excluir receitas exclusivamente keto
+        // (receitas que são keto mas NÃO têm outras tags alimentares relevantes)
+        if (receita.tags?.includes('keto') && !receita.tags?.some(t => ['vegetariano', 'rapido', 'economico', 'sem_gluten'].includes(t))) {
           return false;
         }
       }

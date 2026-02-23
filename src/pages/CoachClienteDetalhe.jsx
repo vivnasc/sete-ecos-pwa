@@ -22,15 +22,22 @@ const OBJECTIVO_LABELS = {
   perder_peso: 'Perder peso',
   ganhar_massa: 'Ganhar massa',
   ganhar_energia: 'Ganhar energia',
-  melhorar_saude: 'Melhorar saude',
-  controlar_emocoes: 'Controlar emocoes'
+  melhorar_saude: 'Melhorar saúde',
+  controlar_emocoes: 'Controlar emoções'
 };
 
 const FASE_LABELS = {
-  inducao: 'Inducao',
-  transicao: 'Transicao',
-  recomposicao: 'Recomposicao',
-  manutencao: 'Manutencao'
+  inducao: 'Indução',
+  transicao: 'Transição',
+  recomposicao: 'Recomposição',
+  manutencao: 'Manutenção'
+};
+
+// Nomes de fase adaptados à abordagem
+const FASE_NOMES_POR_ABORDAGEM = {
+  keto_if: { inducao: 'Indução', transicao: 'Transição', recomposicao: 'Recomposição', manutencao: 'Manutenção' },
+  low_carb: { inducao: 'Adaptação', transicao: 'Transição', recomposicao: 'Recomposição', manutencao: 'Manutenção' },
+  equilibrado: { inducao: 'Arranque', transicao: 'Progressão', recomposicao: 'Consolidação', manutencao: 'Manutenção' }
 };
 
 // ==========================================
@@ -38,15 +45,15 @@ const FASE_LABELS = {
 // ==========================================
 const HAND_CONFIG = {
   proteina: {
-    gesto: '\u{1FAF2}', nome: 'Proteina', medida: 'palma', medidaPlural: 'palmas',
+    gesto: '\u{1FAF2}', nome: 'Proteína', medida: 'palma', medidaPlural: 'palmas',
     cor: 'from-rose-50 to-red-50', corTexto: 'text-rose-700', corBorda: 'border-rose-200',
     explicacao: 'Tamanho e espessura da palma (sem dedos) \u2248 100g',
     equivalencias: [
       { icon: '\u{1F357}', texto: '1 peito de frango (~100g)' },
       { icon: '\u{1F41F}', texto: '1 lata de atum escorrida' },
       { icon: '\u{1F95A}', texto: '2-3 ovos inteiros' },
-      { icon: '\u{1F969}', texto: '1 bife medio (~100g)' },
-      { icon: '\u{1F990}', texto: '6-8 camaroes ou 1 posta de peixe' },
+      { icon: '\u{1F969}', texto: '1 bife médio (~100g)' },
+      { icon: '\u{1F990}', texto: '6-8 camarões ou 1 posta de peixe' },
       { icon: '\u{1F95B}', texto: '\u00BD palma = 1 iogurte grego' },
     ]
   },
@@ -55,25 +62,25 @@ const HAND_CONFIG = {
     cor: 'from-green-50 to-emerald-50', corTexto: 'text-green-700', corBorda: 'border-green-200',
     explicacao: 'Tamanho do punho fechado \u2248 150g de legumes cozidos',
     equivalencias: [
-      { icon: '\u{1F957}', texto: '2 maos cheias de salada crua' },
-      { icon: '\u{1F966}', texto: '1 chavena de brocolos' },
-      { icon: '\u{1F96C}', texto: '1 chavena de espinafres/couve' },
-      { icon: '\u{1F345}', texto: '1 tomate medio + pepino' },
+      { icon: '\u{1F957}', texto: '2 mãos cheias de salada crua' },
+      { icon: '\u{1F966}', texto: '1 chávena de brócolos' },
+      { icon: '\u{1F96C}', texto: '1 chávena de espinafres/couve' },
+      { icon: '\u{1F345}', texto: '1 tomate médio + pepino' },
       { icon: '\u{1F955}', texto: '1 cenoura grande' },
-      { icon: '\u{1F344}', texto: '1 chavena de cogumelos' },
+      { icon: '\u{1F344}', texto: '1 chávena de cogumelos' },
     ]
   },
   hidratos: {
-    gesto: '\u{1F932}', nome: 'Hidratos', medida: 'mao concha', medidaPlural: 'maos concha',
+    gesto: '\u{1F932}', nome: 'Hidratos', medida: 'mão concha', medidaPlural: 'mãos concha',
     cor: 'from-amber-50 to-orange-50', corTexto: 'text-amber-700', corBorda: 'border-amber-200',
-    explicacao: 'O que cabe na mao em concha \u2248 30g de hidratos',
+    explicacao: 'O que cabe na mão em concha \u2248 30g de hidratos',
     equivalencias: [
       { icon: '\u{1F35A}', texto: '3 col. sopa de arroz cozido' },
-      { icon: '\u{1F954}', texto: '1 batata pequena ou \u00BD batata doce' },
-      { icon: '\u{1F35D}', texto: '\u00BD chavena de massa cozida' },
-      { icon: '\u{1F35E}', texto: '1 fatia de pao' },
-      { icon: '\u{1F34E}', texto: '1 fruta media (maca, banana, laranja)' },
-      { icon: '\u{1FAD0}', texto: '\u00BD chavena de mandioca cozida' },
+      { icon: '\u{1F954}', texto: '1 batata pequena ou \u00BD batata-doce' },
+      { icon: '\u{1F35D}', texto: '\u00BD chávena de massa cozida' },
+      { icon: '\u{1F35E}', texto: '1 fatia de pão' },
+      { icon: '\u{1F34E}', texto: '1 fruta média (maçã, banana, laranja)' },
+      { icon: '\u{1FAD0}', texto: '\u00BD chávena de mandioca cozida' },
     ]
   },
   gordura: {
@@ -91,34 +98,97 @@ const HAND_CONFIG = {
   }
 };
 
-const FASES_DICAS = {
-  inducao: {
-    nome: 'Fase 1: Inducao', duracao: '3-4 semanas',
-    descricao: 'Fase de arranque. Foco em proteina, gorduras saudaveis e vegetais.',
-    priorizar: ['Proteina em todas as refeicoes', 'Vegetais verdes em abundancia (4+ punhos/dia)', 'Gorduras saudaveis (azeite, abacate, nozes)', 'Agua minimo 2.5L/dia', 'Sono 7-9 horas', 'Electrolitos (sal marinho, magnesio)'],
-    evitar: ['Acucar e adocantes', 'Graos e cereais (pao, massa, arroz)', 'Frutas doces (banana, manga, uvas)', 'Leguminosas (feijao, grao)', 'Alcool', 'Alimentos processados'],
-    dicas: ['Prepara refeicoes ao domingo', 'Tem snacks keto a mao (ovos cozidos, queijo, nozes)', 'Podes sentir "keto flu" dias 2-4 \u2014 e temporario', 'Adiciona 1 colher de sal na agua 2x/dia', 'Pesa-te as sextas em jejum']
+// Dicas de fase adaptadas à abordagem do cliente
+const FASES_DICAS_POR_ABORDAGEM = {
+  keto_if: {
+    inducao: {
+      nome: 'Fase 1: Indução', duracao: '3-4 semanas',
+      descricao: 'Fase de arranque cetogénico. Foco em proteína, gorduras saudáveis e vegetais.',
+      priorizar: ['Proteína em todas as refeições', 'Vegetais verdes em abundância (4+ punhos/dia)', 'Gorduras saudáveis (azeite, abacate, nozes)', 'Água mínimo 2.5L/dia', 'Sono 7-9 horas', 'Electrólitos (sal marinho, magnésio)'],
+      evitar: ['Açúcar e adoçantes', 'Grãos e cereais (pão, massa, arroz)', 'Frutas doces (banana, manga, uvas)', 'Leguminosas (feijão, grão)', 'Álcool', 'Alimentos processados'],
+      dicas: ['Prepara refeições ao domingo', 'Tem snacks keto à mão (ovos cozidos, queijo, nozes)', 'Podes sentir "keto flu" dias 2-4 — é temporário', 'Adiciona 1 colher de sal na água 2x/dia', 'Pesa-te às sextas em jejum']
+    },
+    transicao: {
+      nome: 'Fase 2: Transição', duracao: '4-6 semanas',
+      descricao: 'Reintrodução gradual de hidratos complexos mantendo perda de gordura.',
+      priorizar: ['Manter proteína elevada', 'Hidratos complexos pós-treino (batata-doce, arroz integral)', 'Fruta de baixo índice glicémico', 'Leguminosas em moderação', 'Água mínimo 2L/dia'],
+      evitar: ['Açúcar refinado', 'Farinhas brancas e pão branco', 'Ultra-processados', 'Bebidas açucaradas', 'Refeições sem proteína'],
+      dicas: ['Introduz UM hidrato novo por semana', 'Observa como o corpo reage nas 48h', 'Mantém o diário alimentar', 'Hidratos funcionam melhor perto do treino']
+    },
+    recomposicao: {
+      nome: 'Fase 3: Recomposição', duracao: '6-8 semanas',
+      descricao: 'Ganho de massa muscular com manutenção de gordura baixa.',
+      priorizar: ['Proteína alta (2g/kg)', 'Hidratos em volta do treino', 'Treino de força 3-4x/semana', 'Sono reparador'],
+      evitar: ['Déficit calórico excessivo', 'Cardio em excesso', 'Saltar refeições pós-treino'],
+      dicas: ['Come mais nos dias de treino', 'Menos hidratos nos dias de descanso', 'Prioriza alimentos inteiros']
+    },
+    manutencao: {
+      nome: 'Fase 4: Manutenção', duracao: 'Contínua',
+      descricao: 'Manutenção dos resultados com hábitos sustentáveis.',
+      priorizar: ['Manter proteína elevada', 'Variedade alimentar', 'Rotina de refeições consistente', 'Movimento regular'],
+      evitar: ['Voltar aos velhos padrões', 'Dietas extremas', 'Saltar refeições'],
+      dicas: ['1-2 refeições livres por semana', 'Celebra vitórias não-balança', 'O processo é individual']
+    }
   },
-  transicao: {
-    nome: 'Fase 2: Transicao', duracao: '4-6 semanas',
-    descricao: 'Reintroducao gradual de hidratos complexos mantendo perda de gordura.',
-    priorizar: ['Manter proteina elevada', 'Hidratos complexos pos-treino (batata-doce, arroz integral)', 'Fruta de baixo indice glicemico', 'Leguminosas em moderacao', 'Agua minimo 2L/dia'],
-    evitar: ['Acucar refinado', 'Farinhas brancas e pao branco', 'Ultra-processados', 'Bebidas acucaradas', 'Refeicoes sem proteina'],
-    dicas: ['Introduz UM hidrato novo por semana', 'Observa como o corpo reage nas 48h', 'Mantem o diario alimentar', 'Hidratos funcionam melhor perto do treino']
+  low_carb: {
+    inducao: {
+      nome: 'Fase 1: Adaptação', duracao: '3-4 semanas',
+      descricao: 'Fase de adaptação. Redução gradual de hidratos, foco em proteína e vegetais.',
+      priorizar: ['Proteína em todas as refeições', 'Vegetais variados em abundância (4+ punhos/dia)', 'Gorduras saudáveis (azeite, abacate, nozes)', 'Água mínimo 2L/dia', 'Sono 7-9 horas', 'Hidratos complexos em pequenas porções'],
+      evitar: ['Açúcar refinado e adoçantes', 'Pão branco, massa branca, arroz branco', 'Bebidas açucaradas', 'Ultra-processados', 'Álcool em excesso', 'Snacks embalados'],
+      dicas: ['Prepara refeições ao domingo', 'Tem snacks saudáveis à mão (ovos cozidos, nozes, queijo)', 'Substitui hidratos refinados por integrais', 'Fruta com baixo açúcar (frutos vermelhos, maçã verde)', 'Pesa-te às sextas em jejum']
+    },
+    transicao: {
+      nome: 'Fase 2: Transição', duracao: '4-6 semanas',
+      descricao: 'Optimização dos hidratos — manter baixo mas com mais variedade.',
+      priorizar: ['Manter proteína elevada', 'Hidratos complexos pós-treino (batata-doce, arroz integral)', 'Fruta de baixo índice glicémico', 'Leguminosas em moderação', 'Água mínimo 2L/dia'],
+      evitar: ['Açúcar refinado', 'Farinhas brancas', 'Ultra-processados', 'Bebidas açucaradas', 'Refeições sem proteína'],
+      dicas: ['Ajusta porções de hidratos conforme actividade', 'Observa como o corpo reage', 'Mantém o diário alimentar', 'Hidratos funcionam melhor perto do treino']
+    },
+    recomposicao: {
+      nome: 'Fase 3: Recomposição', duracao: '6-8 semanas',
+      descricao: 'Ganho de massa muscular com manutenção de gordura baixa.',
+      priorizar: ['Proteína alta (2g/kg)', 'Hidratos em volta do treino', 'Treino de força 3-4x/semana', 'Sono reparador'],
+      evitar: ['Déficit calórico excessivo', 'Cardio em excesso', 'Saltar refeições pós-treino'],
+      dicas: ['Come mais nos dias de treino', 'Menos hidratos nos dias de descanso', 'Prioriza alimentos inteiros']
+    },
+    manutencao: {
+      nome: 'Fase 4: Manutenção', duracao: 'Contínua',
+      descricao: 'Manutenção dos resultados com hábitos sustentáveis.',
+      priorizar: ['Manter proteína elevada', 'Variedade alimentar', 'Rotina de refeições consistente', 'Movimento regular'],
+      evitar: ['Voltar aos velhos padrões', 'Dietas extremas', 'Saltar refeições'],
+      dicas: ['1-2 refeições livres por semana', 'Celebra vitórias não-balança', 'O processo é individual']
+    }
   },
-  recomposicao: {
-    nome: 'Fase 3: Recomposicao', duracao: '6-8 semanas',
-    descricao: 'Ganho de massa muscular com manutencao de gordura baixa.',
-    priorizar: ['Proteina alta (2g/kg)', 'Hidratos em volta do treino', 'Treino de forca 3-4x/semana', 'Sono reparador'],
-    evitar: ['Deficit calorico excessivo', 'Cardio em excesso', 'Saltar refeicoes pos-treino'],
-    dicas: ['Come mais nos dias de treino', 'Menos hidratos nos dias de descanso', 'Prioriza alimentos inteiros']
-  },
-  manutencao: {
-    nome: 'Fase 4: Manutencao', duracao: 'Continua',
-    descricao: 'Manutencao dos resultados com habitos sustentaveis.',
-    priorizar: ['Manter proteina elevada', 'Variedade alimentar', 'Rotina de refeicoes consistente', 'Movimento regular'],
-    evitar: ['Voltar aos velhos padroes', 'Dietas extremas', 'Saltar refeicoes'],
-    dicas: ['1-2 refeicoes livres por semana', 'Celebra vitorias nao-balanca', 'O processo e individual']
+  equilibrado: {
+    inducao: {
+      nome: 'Fase 1: Arranque', duracao: '3-4 semanas',
+      descricao: 'Fase de criação de hábitos. Refeições equilibradas e regulares com todos os grupos alimentares.',
+      priorizar: ['Proteína em todas as refeições', 'Vegetais variados em abundância (4+ punhos/dia)', 'Hidratos complexos (arroz integral, batata-doce, aveia)', 'Gorduras saudáveis (azeite, abacate, nozes)', 'Água mínimo 2L/dia', 'Horários regulares de refeição'],
+      evitar: ['Açúcar refinado e ultra-processados', 'Refeições sem proteína', 'Saltar refeições', 'Bebidas açucaradas', 'Álcool em excesso', 'Comer por stress ou emoção'],
+      dicas: ['Prepara refeições ao domingo', 'Tem snacks saudáveis à mão (fruta, iogurte, nozes)', 'Come devagar e com atenção', 'Não elimines nenhum grupo alimentar', 'Pesa-te às sextas em jejum']
+    },
+    transicao: {
+      nome: 'Fase 2: Progressão', duracao: '4-6 semanas',
+      descricao: 'Aprofundamento dos hábitos e optimização das porções.',
+      priorizar: ['Manter proteína elevada', 'Variedade de hidratos complexos', 'Fruta e vegetais variados', 'Leguminosas 2-3x/semana', 'Água mínimo 2L/dia'],
+      evitar: ['Açúcar refinado', 'Farinhas brancas em excesso', 'Ultra-processados', 'Bebidas açucaradas', 'Refeições sem vegetais'],
+      dicas: ['Experimenta novos alimentos saudáveis', 'Ajusta porções conforme a fome e actividade', 'Mantém o diário alimentar', 'Inclui hidratos complexos em cada refeição principal']
+    },
+    recomposicao: {
+      nome: 'Fase 3: Consolidação', duracao: '6-8 semanas',
+      descricao: 'Consolidação dos resultados e melhoria da composição corporal.',
+      priorizar: ['Proteína alta (1.6-2g/kg)', 'Hidratos em volta do treino', 'Treino de força 3-4x/semana', 'Sono reparador'],
+      evitar: ['Déficit calórico excessivo', 'Cardio em excesso', 'Saltar refeições pós-treino'],
+      dicas: ['Come mais nos dias de treino', 'Menos hidratos nos dias de descanso', 'Prioriza alimentos inteiros']
+    },
+    manutencao: {
+      nome: 'Fase 4: Manutenção', duracao: 'Contínua',
+      descricao: 'Manutenção dos resultados com hábitos sustentáveis.',
+      priorizar: ['Manter proteína elevada', 'Variedade alimentar', 'Rotina de refeições consistente', 'Movimento regular'],
+      evitar: ['Voltar aos velhos padrões', 'Dietas extremas', 'Saltar refeições'],
+      dicas: ['1-2 refeições livres por semana', 'Celebra vitórias não-balança', 'O processo é individual']
+    }
   }
 };
 
@@ -204,8 +274,8 @@ export default function CoachClienteDetalhe() {
   // Delete client
   const handleDeleteClient = async () => {
     const nome = user?.nome || user?.email || 'este cliente';
-    if (!confirm(`APAGAR "${nome}" e TODOS os seus dados?\n\nIsto e irreversivel!`)) return;
-    if (!confirm('Ultima chance. Confirmas?')) return;
+    if (!confirm(`APAGAR "${nome}" e TODOS os seus dados?\n\nIsto é irreversível!`)) return;
+    if (!confirm('Última chance. Confirmas?')) return;
     try {
       await coachApi.apagarCliente(userId);
       alert('Cliente apagado.');
@@ -259,14 +329,16 @@ export default function CoachClienteDetalhe() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-500">Cliente nao encontrado.</p>
+          <p className="text-gray-500">Cliente não encontrado.</p>
           <Link to="/coach" className="text-blue-600 text-sm mt-2 block">Voltar</Link>
         </div>
       </div>
     );
   }
 
-  const faseDicas = FASES_DICAS[activePlan?.fase] || null;
+  const abordagemCliente = activePlan?.abordagem || intake?.abordagem_preferida || 'equilibrado';
+  const faseDicasAbordagem = FASES_DICAS_POR_ABORDAGEM[abordagemCliente] || FASES_DICAS_POR_ABORDAGEM.equilibrado;
+  const faseDicas = faseDicasAbordagem[activePlan?.fase] || null;
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
@@ -313,7 +385,7 @@ export default function CoachClienteDetalhe() {
             { key: 'plano', label: 'Plano completo' },
             { key: 'intake', label: 'Intake' },
             { key: 'progresso', label: 'Progresso' },
-            { key: 'gestao', label: 'Gestao' },
+            { key: 'gestao', label: 'Gestão' },
           ].map(t => (
             <button
               key={t.key}
@@ -394,7 +466,7 @@ export default function CoachClienteDetalhe() {
                 <div className="flex items-start gap-3">
                   <span className="text-xl mt-0.5">&#x26A0;&#xFE0F;</span>
                   <div className="flex-1">
-                    <p className="text-sm text-red-800 font-semibold mb-1">Erro na geracao do plano</p>
+                    <p className="text-sm text-red-800 font-semibold mb-1">Erro na geração do plano</p>
                     <p className="text-sm text-red-700">{planErroMsg || 'Erro desconhecido'}</p>
                     <p className="text-xs text-red-400 mt-1">
                       {errorPlan.created_at ? new Date(errorPlan.created_at).toLocaleString('pt-PT') : ''}
@@ -468,14 +540,14 @@ export default function CoachClienteDetalhe() {
                   ))}
                   {aguaLogs.length > 0 && (
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Agua (ultimo)</span>
+                      <span className="text-gray-600">Água (último)</span>
                       <span className="text-gray-400">{aguaLogs[0].data}</span>
                       <span className="font-medium text-blue-600">{aguaLogs[0].quantidade_ml}ml</span>
                     </div>
                   )}
                   {mealsLogs.length > 0 && (
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Refeicao (ultimo)</span>
+                      <span className="text-gray-600">Refeição (último)</span>
                       <span className="text-gray-400">{mealsLogs[0].data}</span>
                       <span className={`font-medium ${mealsLogs[0].seguiu_plano === 'sim' ? 'text-green-600' : 'text-amber-600'}`}>
                         {mealsLogs[0].seguiu_plano}
@@ -544,18 +616,18 @@ export default function CoachClienteDetalhe() {
                     </div>
                     <div className="bg-blue-50 rounded-lg p-3">
                       <p className="text-2xl font-bold text-blue-700">{numRefeicoes}</p>
-                      <p className="text-xs text-gray-500">Refeicoes</p>
+                      <p className="text-xs text-gray-500">Refeições</p>
                     </div>
                   </div>
                   {horarios.length > 0 && (
-                    <p className="text-center text-sm text-gray-500 mt-2">Horarios: {horarios.join(' | ')}</p>
+                    <p className="text-center text-sm text-gray-500 mt-2">Horários: {horarios.join(' | ')}</p>
                   )}
                 </div>
 
                 {/* Hand method hero */}
                 <div className="bg-gradient-to-br from-[#7C8B6F] to-[#5A6B4D] rounded-xl p-4 text-white">
-                  <h3 className="font-bold mb-2">Metodo da Mao — Porcoes diarias</h3>
-                  <p className="text-white/70 text-sm mb-3">Sem balanca, proporcional ao corpo {intake?.sexo === 'masculino' ? 'do cliente' : 'da cliente'}</p>
+                  <h3 className="font-bold mb-2">Método da Mão — Porções diárias</h3>
+                  <p className="text-white/70 text-sm mb-3">Sem balança, proporcional ao corpo {intake?.sexo === 'masculino' ? 'do cliente' : 'da cliente'}</p>
                   <div className="grid grid-cols-4 gap-2">
                     <div className="bg-white/15 rounded-lg p-2 text-center">
                       <div className="text-2xl">{HAND_CONFIG.proteina.gesto}</div>
@@ -570,7 +642,7 @@ export default function CoachClienteDetalhe() {
                     <div className="bg-white/15 rounded-lg p-2 text-center">
                       <div className="text-2xl">{HAND_CONFIG.hidratos.gesto}</div>
                       <div className="text-xs font-bold">{porcoesHidratos}</div>
-                      <div className="text-[10px] text-white/70">maos</div>
+                      <div className="text-[10px] text-white/70">mãos</div>
                     </div>
                     <div className="bg-white/15 rounded-lg p-2 text-center">
                       <div className="text-2xl">{HAND_CONFIG.gordura.gesto}</div>
@@ -582,7 +654,7 @@ export default function CoachClienteDetalhe() {
 
                 {/* Portion cards with food equivalences */}
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-gray-900">O que conta como 1 porcao</h3>
+                  <h3 className="font-semibold text-gray-900">O que conta como 1 porção</h3>
                   {['proteina', 'legumes', 'hidratos', 'gordura'].map(tipo => {
                     const h = HAND_CONFIG[tipo];
                     const qtd = tipo === 'proteina' ? porcoesProteina
@@ -655,7 +727,7 @@ export default function CoachClienteDetalhe() {
                     <h3 className="font-semibold text-gray-900 mb-3">Progresso de peso</h3>
                     <div className="grid grid-cols-3 gap-3 text-center mb-3">
                       <div>
-                        <p className="text-xs text-gray-500">Inicio</p>
+                        <p className="text-xs text-gray-500">Início</p>
                         <p className="text-lg font-bold text-gray-400">{client.peso_inicial} kg</p>
                       </div>
                       <div>
@@ -679,7 +751,7 @@ export default function CoachClienteDetalhe() {
                     </div>
                     {client.peso_inicial > client.peso_actual && (
                       <p className="text-center text-sm text-green-600 mt-2">
-                        Ja perdeu {(client.peso_inicial - client.peso_actual).toFixed(1)} kg
+                        Já perdeu {(client.peso_inicial - client.peso_actual).toFixed(1)} kg
                       </p>
                     )}
                   </div>
@@ -691,7 +763,7 @@ export default function CoachClienteDetalhe() {
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">{'\u{1F355}'}</span>
                       <div>
-                        <p className="font-semibold text-gray-800">Refeicao livre</p>
+                        <p className="font-semibold text-gray-800">Refeição livre</p>
                         <p className="text-sm text-gray-600">
                           {activePlan.fase === 'transicao' ? '1x' : '2x'} por semana nesta fase
                         </p>
@@ -703,7 +775,7 @@ export default function CoachClienteDetalhe() {
                 {/* Plan history */}
                 {plano.length > 1 && (
                   <div className="bg-white rounded-xl border border-gray-100 p-4">
-                    <h3 className="font-semibold text-gray-900 mb-3">Historico de planos ({plano.length})</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3">Histórico de planos ({plano.length})</h3>
                     <div className="space-y-2">
                       {plano.map((p, index) => (
                         <div key={p.id} className="flex items-center justify-between text-sm py-2 border-b border-gray-50 last:border-0">
@@ -729,7 +801,7 @@ export default function CoachClienteDetalhe() {
           <>
             {!intake ? (
               <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
-                <p className="text-gray-500">Intake nao preenchido.</p>
+                <p className="text-gray-500">Intake não preenchido.</p>
               </div>
             ) : (
               <div className="bg-white rounded-xl border border-gray-100 p-4">
@@ -741,13 +813,13 @@ export default function CoachClienteDetalhe() {
                   <IntakeField label="Altura" value={intake.altura_cm ? `${intake.altura_cm} cm` : null} />
                   <IntakeField label="Peso meta" value={intake.peso_meta ? `${intake.peso_meta} kg` : null} />
                   <IntakeField label="Objectivo" value={OBJECTIVO_LABELS[intake.objectivo_principal] || intake.objectivo_principal} />
-                  <IntakeField label="Nivel actividade" value={intake.nivel_actividade} />
+                  <IntakeField label="Nível actividade" value={intake.nivel_actividade} />
                   <IntakeField label="Abordagem" value={ABORDAGEM_LABELS[intake.abordagem_preferida] || intake.abordagem_preferida} />
-                  <IntakeField label="Jejum" value={intake.aceita_jejum ? 'Sim' : 'Nao'} />
-                  <IntakeField label="Refeicoes/dia" value={intake.num_refeicoes_dia} />
-                  <IntakeField label="Pequeno almoco" value={intake.pequeno_almoco} />
+                  <IntakeField label="Jejum" value={intake.aceita_jejum ? 'Sim' : 'Não'} />
+                  <IntakeField label="Refeições/dia" value={intake.num_refeicoes_dia} />
+                  <IntakeField label="Pequeno-almoço" value={intake.pequeno_almoco} />
                   <IntakeField label="Emoção dominante" value={intake.emocao_dominante} />
-                  <IntakeField label="Prontidao (1-10)" value={intake.prontidao_1a10} />
+                  <IntakeField label="Prontidão (1-10)" value={intake.prontidao_1a10} />
                 </div>
                 {intake.restricoes_alimentares && (
                   <div className="mt-4">
@@ -802,7 +874,7 @@ export default function CoachClienteDetalhe() {
             </div>
 
             <div className="bg-white rounded-xl border border-gray-100 p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Agua (30 dias)</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">Água (30 dias)</h3>
               {aguaLogs.length === 0 ? (
                 <p className="text-sm text-gray-500">Sem registos.</p>
               ) : (
@@ -822,7 +894,7 @@ export default function CoachClienteDetalhe() {
             </div>
 
             <div className="bg-white rounded-xl border border-gray-100 p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Refeicoes (30 dias)</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">Refeições (30 dias)</h3>
               {mealsLogs.length === 0 ? (
                 <p className="text-sm text-gray-500">Sem registos.</p>
               ) : (
@@ -851,15 +923,15 @@ export default function CoachClienteDetalhe() {
               <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4">
                 <h3 className="font-bold text-yellow-800 mb-3 flex items-center gap-2">
                   <span className="text-lg">💰</span>
-                  Pagamento pendente de verificacao
+                  Pagamento pendente de verificação
                 </h3>
                 <div className="grid grid-cols-2 gap-3 text-sm mb-4">
                   <div>
-                    <p className="text-yellow-700 text-xs">Metodo</p>
+                    <p className="text-yellow-700 text-xs">Método</p>
                     <p className="font-semibold text-gray-900">📱 {client.payment_method || 'M-Pesa'}</p>
                   </div>
                   <div>
-                    <p className="text-yellow-700 text-xs">Referencia / Codigo</p>
+                    <p className="text-yellow-700 text-xs">Referência / Código</p>
                     <p className="font-mono font-bold text-gray-900 bg-white px-2 py-1 rounded border border-yellow-200">{client.payment_reference}</p>
                   </div>
                   <div>
@@ -873,7 +945,7 @@ export default function CoachClienteDetalhe() {
                     <p className="font-semibold text-gray-900">{client.subscription_plan || 'N/A'}</p>
                   </div>
                 </div>
-                <p className="text-xs text-yellow-700 mb-3">Verifica a transaccao no M-Pesa e depois activa:</p>
+                <p className="text-xs text-yellow-700 mb-3">Verifica a transacção no M-Pesa e depois activa:</p>
                 <div className="grid grid-cols-3 gap-2">
                   {['MONTHLY', 'SEMESTRAL', 'ANNUAL'].map(key => (
                     <button key={key} onClick={() => handleActivate(key)}
@@ -891,15 +963,15 @@ export default function CoachClienteDetalhe() {
                 <div><p className="text-gray-500">Estado</p><p className="font-medium">{STATUS_LABELS_TEXT[client?.subscription_status] || 'N/A'}</p></div>
                 <div><p className="text-gray-500">Plano</p><p className="font-medium">{client?.subscription_plan || 'N/A'}</p></div>
                 <div><p className="text-gray-500">Expira</p><p className="font-medium">{client?.subscription_expires ? new Date(client.subscription_expires).toLocaleDateString('pt-PT') : 'N/A'}</p></div>
-                <div><p className="text-gray-500">Metodo pagamento</p><p className="font-medium">{client?.payment_method || 'N/A'}</p></div>
+                <div><p className="text-gray-500">Método pagamento</p><p className="font-medium">{client?.payment_method || 'N/A'}</p></div>
                 {client?.payment_reference && (
-                  <div><p className="text-gray-500">Referencia</p><p className="font-mono font-medium text-sm">{client.payment_reference}</p></div>
+                  <div><p className="text-gray-500">Referência</p><p className="font-mono font-medium text-sm">{client.payment_reference}</p></div>
                 )}
                 {client?.payment_amount && (
                   <div><p className="text-gray-500">Valor pago</p><p className="font-medium">{Number(client.payment_amount).toLocaleString('pt-MZ')} {client.payment_currency || 'MZN'}</p></div>
                 )}
               </div>
-              <p className="text-xs text-gray-500 mb-2">Activar subscricao:</p>
+              <p className="text-xs text-gray-500 mb-2">Activar subscrição:</p>
               <div className="grid grid-cols-3 gap-2">
                 {['MONTHLY', 'SEMESTRAL', 'ANNUAL'].map(key => (
                   <button key={key} onClick={() => handleActivate(key)}
@@ -934,9 +1006,9 @@ export default function CoachClienteDetalhe() {
                   const bemVindo = isMasc ? 'Bem-vindo' : 'Bem-vinda';
                   const querido = isMasc ? 'querido' : 'querida';
                   const perfeito = isMasc ? 'perfeito' : 'perfeita';
-                  const msgBoasVindas = `Ola ${nome || querido}! 🌿\n\n${bemVindo} ao Vitalis! O teu acesso esta activo.\n\nProximos passos:\n1. Abre a app: app.seteecos.com\n2. Preenche o questionario inicial\n3. Vou criar o teu plano personalizado\n\nQualquer duvida estou aqui para ti! 💚`;
-                  const msgLembrete = `Ola ${nome || querido}! 💚\n\nSo a verificar como estas. Ja conseguiste preencher o questionario inicial?\n\nSe tiveres alguma duvida, diz-me! Estou aqui para te ajudar.\n\napp.seteecos.com/vitalis/intake`;
-                  const msgReactivar = `Ola ${nome || querido}! 🌱\n\nSentimos a tua falta no Vitalis!\n\nLembra-te: cada dia e uma nova oportunidade. Nao precisas ser ${perfeito}, so precisas de aparecer.\n\nO teu plano esta a tua espera: app.seteecos.com\n\nEstou aqui se precisares de conversar. 💚`;
+                  const msgBoasVindas = `Olá ${nome || querido}! 🌿\n\n${bemVindo} ao Vitalis! O teu acesso está activo.\n\nPróximos passos:\n1. Abre a app: app.seteecos.com\n2. Preenche o questionário inicial\n3. Vou criar o teu plano personalizado\n\nQualquer dúvida estou aqui para ti! 💚`;
+                  const msgLembrete = `Olá ${nome || querido}! 💚\n\nSó a verificar como estás. Já conseguiste preencher o questionário inicial?\n\nSe tiveres alguma dúvida, diz-me! Estou aqui para te ajudar.\n\napp.seteecos.com/vitalis/intake`;
+                  const msgReactivar = `Olá ${nome || querido}! 🌱\n\nSentimos a tua falta no Vitalis!\n\nLembra-te: cada dia é uma nova oportunidade. Não precisas ser ${perfeito}, só precisas de aparecer.\n\nO teu plano está à tua espera: app.seteecos.com\n\nEstou aqui se precisares de conversar. 💚`;
 
                   const handleCopy = async (msg, id) => {
                     try {
@@ -960,7 +1032,7 @@ export default function CoachClienteDetalhe() {
                     <>
                       <div className="bg-green-50 rounded-lg p-3 border border-green-100">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-semibold text-green-700">{isMasc ? 'BEM-VINDO' : 'BEM-VINDA'} (apos activar)</span>
+                          <span className="text-xs font-semibold text-green-700">{isMasc ? 'BEM-VINDO' : 'BEM-VINDA'} (após activar)</span>
                           <button
                             onClick={() => handleCopy(msgBoasVindas, 'bv')}
                             className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${
@@ -977,7 +1049,7 @@ export default function CoachClienteDetalhe() {
 
                       <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-semibold text-blue-700">FOLLOW-UP (se nao fez intake)</span>
+                          <span className="text-xs font-semibold text-blue-700">LEMBRETE INTAKE (se não preencheu)</span>
                           <button
                             onClick={() => handleCopy(msgLembrete, 'fu')}
                             className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${
@@ -1032,7 +1104,7 @@ export default function CoachClienteDetalhe() {
                 className="w-full py-2 text-sm font-medium bg-red-100 text-red-700 rounded-lg hover:bg-red-200">
                 Apagar cliente e todos os dados
               </button>
-              <p className="text-xs text-red-400 mt-2">Irreversivel. Remove todos os dados.</p>
+              <p className="text-xs text-red-400 mt-2">Irreversível. Remove todos os dados.</p>
             </div>
           </div>
         )}
