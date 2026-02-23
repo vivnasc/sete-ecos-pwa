@@ -443,7 +443,118 @@ async function handleDiagnostico(req, res, token, phoneId) {
     }
   }
 
-  // 5. Tentar /me/businesses para descobrir Business IDs
+  // 5. Identificar o que é o ID errado (que tipo de objecto é?)
+  if (envWabaId && !resultado.waba_encontrado) {
+    try {
+      const idRes = await fetch(`${GRAPH_API}/${envWabaId}?fields=id,name`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (idRes.ok) {
+        const idData = await idRes.json();
+        resultado.testes.push({
+          teste: `Identificar o que é o ID ${envWabaId}`,
+          resultado: 'OBJECTO ENCONTRADO',
+          dados: idData,
+          nota: 'Este ID existe mas NÃO é um WABA. Pode ser Page ID, Ad Account, etc.',
+        });
+      } else {
+        const errData = await idRes.json().catch(() => ({}));
+        resultado.testes.push({
+          teste: `Identificar o que é o ID ${envWabaId}`,
+          resultado: 'NÃO EXISTE ou SEM PERMISSÃO',
+          erro: errData?.error?.message,
+        });
+      }
+    } catch (_) {}
+  }
+
+  // 6. Buscar info do system user: /me com business
+  if (!resultado.waba_encontrado) {
+    try {
+      const meRes = await fetch(`${GRAPH_API}/me?fields=id,name,business`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (meRes.ok) {
+        const meData = await meRes.json();
+        resultado.testes.push({
+          teste: '/me — info do system user',
+          resultado: 'OK',
+          dados: meData,
+        });
+
+        // Se tem business, buscar WABAs desse business
+        const bizId = meData.business?.id;
+        if (bizId) {
+          try {
+            const wabaRes = await fetch(`${GRAPH_API}/${bizId}/owned_whatsapp_business_accounts?fields=id,name,currency,message_template_namespace`, {
+              headers: { 'Authorization': `Bearer ${token}` },
+            });
+            if (wabaRes.ok) {
+              const wabaData = await wabaRes.json();
+              const wabas = wabaData.data || [];
+              resultado.testes.push({
+                teste: `Business "${meData.business.name || bizId}" → owned WABAs`,
+                resultado: wabas.length > 0 ? 'ENCONTROU' : 'SEM WABAs',
+                wabas: wabas.map(w => ({ id: w.id, nome: w.name, namespace: w.message_template_namespace })),
+              });
+              if (wabas.length > 0) {
+                // Testar cada WABA
+                for (const w of wabas) {
+                  try {
+                    const checkRes = await fetch(`${GRAPH_API}/${w.id}/message_templates?limit=1`, {
+                      headers: { 'Authorization': `Bearer ${token}` },
+                    });
+                    if (checkRes.ok) {
+                      resultado.waba_encontrado = {
+                        id: w.id,
+                        nome: w.name,
+                        metodo: `Descoberto via Business Manager "${meData.business.name}"`,
+                        corrigir: `Mete WHATSAPP_BUSINESS_ACCOUNT_ID=${w.id} no Vercel`,
+                      };
+                      resultado.testes.push({
+                        teste: `WABA ${w.id} (${w.name}) → templates`,
+                        resultado: 'FUNCIONA',
+                      });
+                      break;
+                    }
+                  } catch (_) {}
+                }
+              }
+            } else {
+              const errData = await wabaRes.json().catch(() => ({}));
+              resultado.testes.push({
+                teste: `Business ${bizId} → owned WABAs`,
+                resultado: 'FALHOU',
+                erro: errData?.error?.message,
+              });
+            }
+          } catch (_) {}
+        }
+      }
+    } catch (e) {
+      resultado.testes.push({ teste: '/me', resultado: 'ERRO', erro: e.message });
+    }
+  }
+
+  // 7. Tentar via App ID → buscar WABAs associados à app
+  if (!resultado.waba_encontrado && resultado.token_info?.app_id) {
+    const appId = resultado.token_info.app_id;
+    try {
+      const appRes = await fetch(`${GRAPH_API}/${appId}?fields=id,name`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (appRes.ok) {
+        const appData = await appRes.json();
+        resultado.testes.push({
+          teste: `App ${appId} info`,
+          resultado: 'OK',
+          dados: appData,
+        });
+      }
+    } catch (_) {}
+  }
+
+  // 8. Tentar /me/businesses
   if (!resultado.waba_encontrado) {
     try {
       const meRes = await fetch(`${GRAPH_API}/me/businesses`, {
@@ -494,7 +605,7 @@ async function handleDiagnostico(req, res, token, phoneId) {
     }
   }
 
-  // 6. Tentar granular_scopes target_ids como WABA IDs
+  // 9. Tentar granular_scopes target_ids como WABA IDs
   if (!resultado.waba_encontrado && resultado.token_info?.granular_scopes) {
     for (const scope of resultado.token_info.granular_scopes) {
       if ((scope.scope === 'whatsapp_business_management' || scope.scope === 'whatsapp_business_messaging') && scope.target_ids) {
@@ -519,7 +630,7 @@ async function handleDiagnostico(req, res, token, phoneId) {
     }
   }
 
-  // 7. Último recurso: o phone number pertence a algum WABA?
+  // 10. Último recurso: o phone number pertence a algum WABA?
   if (!resultado.waba_encontrado) {
     try {
       // Tentar buscar WABA via phone number edge
