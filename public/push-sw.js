@@ -1,8 +1,15 @@
 /**
  * SETE ECOS — Push Notification Handler (Service Worker)
  * Loaded via importScripts by the Workbox-generated SW.
- * Handles push events and notification clicks.
+ * Handles push events, notification clicks, and auto-update.
  */
+
+// Quando o banner pede SKIP_WAITING, activar o novo SW imediatamente
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting()
+  }
+})
 
 self.addEventListener('push', (event) => {
   let data = { title: 'Sete Ecos', body: '', tag: 'default' }
