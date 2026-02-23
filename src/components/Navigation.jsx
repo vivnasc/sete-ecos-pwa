@@ -25,6 +25,7 @@ export default function Navigation({ variant = 'default' }) {
   const isLuminaSection = location.pathname === '/lumina'
   const isAccountSection = location.pathname === '/conta' || location.pathname === '/perfil'
   const isCommunitySection = location.pathname.startsWith('/comunidade')
+  const isMessengerSection = location.pathname.startsWith('/messenger')
   const isCoachSection = location.pathname.startsWith('/coach')
 
   // New module config for DRY navigation
@@ -382,6 +383,50 @@ export default function Navigation({ variant = 'default' }) {
     )
   }
 
+  // Messenger section navigation
+  if (isMessengerSection) {
+    return (
+      <nav role="navigation" aria-label="Messenger Navigation" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-purple-100/30 shadow-2xl z-50">
+        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+          <div className="bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] px-4 py-1 rounded-t-lg shadow-md">
+            <span className="text-white text-[10px] font-semibold tracking-[0.2em]">MESSENGER</span>
+          </div>
+        </div>
+
+        <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
+          <NavItem
+            logo="/logos/CENTRO_7ECOS.png"
+            label={t('nav.hub')}
+            active={false}
+            onClick={() => navigate('/')}
+            color="#1A1A4E"
+          />
+          <NavItem
+            icon="messenger"
+            label={t('nav.messenger')}
+            active={true}
+            onClick={() => navigate('/messenger')}
+            color="#8B5CF6"
+          />
+          <NavItem
+            icon="community"
+            label={t('nav.community')}
+            active={false}
+            onClick={() => navigate('/comunidade')}
+            color="#8B5CF6"
+          />
+          <NavItem
+            icon="account"
+            label={t('nav.account')}
+            active={isAccountSection}
+            onClick={() => navigate('/conta')}
+            color="#6B5C4C"
+          />
+        </div>
+      </nav>
+    )
+  }
+
   // Community section navigation
   if (isCommunitySection) {
     const isRio = location.pathname === '/comunidade/rio'
@@ -441,49 +486,64 @@ export default function Navigation({ variant = 'default' }) {
 
   // Default navigation (Home)
   return (
-    <nav role="navigation" aria-label="Main Navigation" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/30 shadow-2xl z-50">
-      <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
-        <NavItem
-          logo="/logos/CENTRO_7ECOS.png"
-          label={t('nav.hub')}
-          active={isActive('/')}
-          onClick={() => navigate('/')}
-          color="#1A1A4E"
-        />
-        <NavItem
-          logo="/logos/lumina-logo_v2.png"
-          label="Lumina"
-          active={isLuminaSection}
-          onClick={() => navigate('/lumina')}
-          color="#8B5CF6"
-        />
-        <NavItem
-          logo="/logos/VITALIS_LOGO_V3.png"
-          label="Vitalis"
-          active={isVitalisSection}
-          onClick={() => navigate(hasVitalisAccess ? '/vitalis/dashboard' : '/vitalis')}
-          color="#7C8B6F"
-        />
-        {isAuthenticated && (
+    <>
+      {/* Floating messenger button */}
+      {isAuthenticated && (
+        <button
+          onClick={() => navigate('/messenger')}
+          className="fixed bottom-20 right-4 z-50 w-12 h-12 rounded-xl bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-2 border-white/30"
+          aria-label={t('nav.messenger')}
+        >
+          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+          </svg>
+        </button>
+      )}
+
+      <nav role="navigation" aria-label="Main Navigation" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/30 shadow-2xl z-50">
+        <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
           <NavItem
-            icon="community"
-            label={t('nav.community')}
-            active={isCommunitySection}
-            onClick={() => navigate('/comunidade')}
+            logo="/logos/CENTRO_7ECOS.png"
+            label={t('nav.hub')}
+            active={isActive('/')}
+            onClick={() => navigate('/')}
+            color="#1A1A4E"
+          />
+          <NavItem
+            logo="/logos/lumina-logo_v2.png"
+            label="Lumina"
+            active={isLuminaSection}
+            onClick={() => navigate('/lumina')}
             color="#8B5CF6"
           />
-        )}
-        {isAuthenticated && (
           <NavItem
-            icon="account"
-            label={t('nav.account')}
-            active={isAccountSection}
-            onClick={() => navigate('/conta')}
-            color="#6B5C4C"
+            logo="/logos/VITALIS_LOGO_V3.png"
+            label="Vitalis"
+            active={isVitalisSection}
+            onClick={() => navigate(hasVitalisAccess ? '/vitalis/dashboard' : '/vitalis')}
+            color="#7C8B6F"
           />
-        )}
-      </div>
-    </nav>
+          {isAuthenticated && (
+            <NavItem
+              icon="community"
+              label={t('nav.community')}
+              active={isCommunitySection}
+              onClick={() => navigate('/comunidade')}
+              color="#8B5CF6"
+            />
+          )}
+          {isAuthenticated && (
+            <NavItem
+              icon="account"
+              label={t('nav.account')}
+              active={isAccountSection}
+              onClick={() => navigate('/conta')}
+              color="#6B5C4C"
+            />
+          )}
+        </div>
+      </nav>
+    </>
   )
 }
 
@@ -534,6 +594,13 @@ function NavItem({ icon, logo, label, active, onClick, color }) {
     }
     if (icon === 'fogueira') {
       return <span className="text-xl mb-0.5" style={{ opacity: active ? 1 : 0.5 }}>🔥</span>
+    }
+    if (icon === 'messenger') {
+      return (
+        <svg className="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ opacity: active ? 1 : 0.5 }}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+        </svg>
+      )
     }
     if (icon === 'sussurros') {
       return (
