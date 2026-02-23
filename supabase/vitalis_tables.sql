@@ -364,7 +364,27 @@ CREATE TRIGGER update_vitalis_habitos_updated_at
   EXECUTE FUNCTION update_updated_at_column();
 
 -- =====================================================
--- 8. VERIFICAÇÃO FINAL
+-- 8. TABELA: vitalis_medidas_log (Registo semanal de medidas corporais)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS vitalis_medidas_log (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  data DATE NOT NULL DEFAULT CURRENT_DATE,
+  cintura_cm NUMERIC(5,1),
+  anca_cm NUMERIC(5,1),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+
+  UNIQUE(user_id, data)
+);
+
+ALTER TABLE vitalis_medidas_log ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can manage own medidas"
+  ON vitalis_medidas_log FOR ALL
+  USING (auth.uid() = user_id);
+
+-- =====================================================
+-- 9. VERIFICAÇÃO FINAL
 -- =====================================================
 
 SELECT
