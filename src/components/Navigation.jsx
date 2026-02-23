@@ -85,6 +85,7 @@ export default function Navigation({ variant = 'default' }) {
     const isClientes = location.pathname === '/coach' || location.pathname.startsWith('/coach/cliente')
     const isMarketing = location.pathname === '/coach/marketing'
     const isAnalytics = location.pathname === '/coach/analytics'
+    const isCoachMessenger = location.pathname.startsWith('/coach/messenger')
 
     return (
       <nav role="navigation" aria-label="Coach Navigation" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/50 shadow-2xl z-50">
@@ -102,6 +103,13 @@ export default function Navigation({ variant = 'default' }) {
             color="#1F2937"
           />
           <NavItem
+            icon="messenger"
+            label="Msgs"
+            active={isCoachMessenger}
+            onClick={() => navigate('/coach/messenger')}
+            color="#8B5CF6"
+          />
+          <NavItem
             icon="marketing"
             label="Marketing"
             active={isMarketing}
@@ -114,20 +122,6 @@ export default function Navigation({ variant = 'default' }) {
             active={isAnalytics}
             onClick={() => navigate('/coach/analytics')}
             color="#4F46E5"
-          />
-          <NavItem
-            logo="/logos/VITALIS_LOGO_V3.png"
-            label="Vitalis"
-            active={isVitalisSection}
-            onClick={() => navigate('/vitalis/dashboard')}
-            color="#7C8B6F"
-          />
-          <NavItem
-            icon="community"
-            label={t('nav.community')}
-            active={isCommunitySection}
-            onClick={() => navigate('/comunidade')}
-            color="#8B5CF6"
           />
           <NavItem
             icon="account"

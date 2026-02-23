@@ -91,6 +91,13 @@ export default async function handler(req, res) {
     if (action === 'push-subscribe') return await pushSubscribe(req, params, res);
     if (action === 'push-unsubscribe') return await pushUnsubscribe(req, params, res);
 
+    // ── Messenger notify (any authenticated user can trigger) ──
+    if (action === 'messenger-notify-coach') {
+      const user = await verifyUser(req);
+      if (!user) return res.status(401).json({ error: 'Autenticação necessária' });
+      return await messengerNotifyCoach(user, params.preview, res);
+    }
+
     // ── All other actions require coach auth ──
     const coach = await verifyCoach(req);
     if (!coach) return res.status(403).json({ error: 'Acesso negado. Apenas coaches autorizadas.' });
@@ -175,6 +182,16 @@ export default async function handler(req, res) {
         };
         return await broadcastInteressados(fakeReq, res);
       }
+
+      // ── Messenger — Coach vê/responde a todas as conversas ──
+      case 'messenger-conversas':
+        return await messengerConversas(res);
+      case 'messenger-mensagens':
+        return await messengerMensagens(params.conversaId, params.limite, params.antes, res);
+      case 'messenger-enviar':
+        return await messengerEnviar(params.conversaId, params.conteudo, params.tipo, params.mediaUrl, res);
+      case 'messenger-lidas':
+        return await messengerMarcarLidas(params.conversaId, res);
 
       default:
         return res.status(400).json({ error: 'Accao desconhecida: ' + action });
@@ -1126,4 +1143,233 @@ async function pushNotify(params, res) {
   }
 
   return res.status(200).json({ sent, failed });
+}
+
+// ==========================================
+// MESSENGER — Coach vê e responde mensagens
+// ==========================================
+
+/**
+ * Listar todas as conversas activas (com dados do utilizador)
+ */
+async function messengerConversas(res) {
+  try {
+    const { data: conversas, error } = await supabase
+      .from('messenger_conversations')
+      .select('*')
+      .eq('status', 'activa')
+      .order('last_message_at', { ascending: false });
+
+    if (error) throw error;
+
+    // Buscar dados dos utilizadores (nome, email)
+    const userIds = [...new Set((conversas || []).map(c => c.user_id))];
+    let usersMap = {};
+
+    if (userIds.length > 0) {
+      const { data: users } = await supabase
+        .from('users')
+        .select('id, nome, email')
+        .in('id', userIds);
+
+      const { data: intakes } = await supabase
+        .from('vitalis_intake')
+        .select('user_id, nome, email, sexo')
+        .in('user_id', userIds);
+
+      for (const u of (users || [])) {
+        usersMap[u.id] = { nome: u.nome, email: u.email };
+      }
+      // Enriquecer com intake (tem nome mais completo)
+      for (const i of (intakes || [])) {
+        if (i.nome) usersMap[i.user_id] = { ...usersMap[i.user_id], nome: i.nome, email: i.email || usersMap[i.user_id]?.email, sexo: i.sexo };
+      }
+    }
+
+    const resultado = (conversas || []).map(c => ({
+      ...c,
+      user_nome: usersMap[c.user_id]?.nome || usersMap[c.user_id]?.email || 'Utilizador',
+      user_email: usersMap[c.user_id]?.email || '',
+      user_sexo: usersMap[c.user_id]?.sexo || 'feminino',
+    }));
+
+    return res.status(200).json({ conversas: resultado });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
+
+/**
+ * Obter mensagens de uma conversa (paginadas)
+ */
+async function messengerMensagens(conversaId, limite, antes, res) {
+  if (!conversaId) return res.status(400).json({ error: 'conversaId obrigatório' });
+
+  try {
+    let query = supabase
+      .from('messenger_messages')
+      .select('*')
+      .eq('conversation_id', conversaId)
+      .order('created_at', { ascending: false })
+      .limit(limite || 50);
+
+    if (antes) {
+      query = query.lt('created_at', antes);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    return res.status(200).json({ mensagens: (data || []).reverse() });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
+
+/**
+ * Coach envia mensagem
+ */
+async function messengerEnviar(conversaId, conteudo, tipo, mediaUrl, res) {
+  if (!conversaId || !conteudo) return res.status(400).json({ error: 'conversaId e conteudo obrigatórios' });
+
+  try {
+    // Inserir mensagem como coach
+    const { data: msg, error } = await supabase
+      .from('messenger_messages')
+      .insert([{
+        conversation_id: conversaId,
+        sender_type: 'coach',
+        conteudo,
+        tipo: tipo || 'texto',
+        media_url: mediaUrl || null,
+        lida: false
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Actualizar conversa
+    const { data: conv } = await supabase
+      .from('messenger_conversations')
+      .select('unread_user, user_id')
+      .eq('id', conversaId)
+      .single();
+
+    await supabase
+      .from('messenger_conversations')
+      .update({
+        last_message: conteudo.slice(0, 100),
+        last_message_at: new Date().toISOString(),
+        last_sender_type: 'coach',
+        unread_user: (conv?.unread_user || 0) + 1,
+        unread_coach: 0
+      })
+      .eq('id', conversaId);
+
+    // Push notification para o utilizador (se tiver subscription)
+    if (conv?.user_id) {
+      try {
+        const { data: userAuth } = await supabase
+          .from('users')
+          .select('auth_id, email')
+          .eq('id', conv.user_id)
+          .single();
+
+        if (userAuth?.email) {
+          const { data: subs } = await supabase
+            .from('push_subscriptions')
+            .select('endpoint, keys_p256dh, keys_auth')
+            .eq('user_email', userAuth.email.toLowerCase());
+
+          if (subs?.length > 0) {
+            const payload = JSON.stringify({
+              title: '💬 Nova mensagem da Vivianne',
+              body: conteudo.slice(0, 100),
+              url: '/messenger',
+              tag: 'messenger',
+              vibrate: [200, 100, 200],
+            });
+
+            for (const sub of subs) {
+              try {
+                await webpush.sendNotification({
+                  endpoint: sub.endpoint,
+                  keys: { p256dh: sub.keys_p256dh, auth: sub.keys_auth }
+                }, payload);
+              } catch (pushErr) {
+                if (pushErr.statusCode === 410 || pushErr.statusCode === 404) {
+                  await supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
+                }
+              }
+            }
+          }
+        }
+      } catch (_) { /* push is best-effort */ }
+    }
+
+    return res.status(200).json({ mensagem: msg });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
+
+/**
+ * Coach marca mensagens como lidas
+ */
+async function messengerMarcarLidas(conversaId, res) {
+  if (!conversaId) return res.status(400).json({ error: 'conversaId obrigatório' });
+
+  try {
+    // Marcar mensagens do user como lidas
+    await supabase
+      .from('messenger_messages')
+      .update({ lida: true })
+      .eq('conversation_id', conversaId)
+      .eq('sender_type', 'user')
+      .eq('lida', false);
+
+    // Reset unread_coach
+    await supabase
+      .from('messenger_conversations')
+      .update({ unread_coach: 0 })
+      .eq('id', conversaId);
+
+    return res.status(200).json({ ok: true });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
+
+/**
+ * Notificar coach quando utilizador envia mensagem (não requer coach auth)
+ */
+async function messengerNotifyCoach(user, preview, res) {
+  try {
+    // Buscar nome do user
+    const { data: userData } = await supabase
+      .from('users')
+      .select('nome')
+      .eq('auth_id', user.id)
+      .maybeSingle();
+
+    const { data: intakeData } = await supabase
+      .from('vitalis_intake')
+      .select('nome')
+      .eq('user_id', userData?.id || user.id)
+      .maybeSingle();
+
+    const nome = intakeData?.nome || userData?.nome || user.email?.split('@')[0] || 'Utilizador';
+
+    await pushCoachNotification({
+      title: `💬 ${nome}`,
+      body: (preview || 'Nova mensagem').slice(0, 100),
+      url: '/coach/messenger',
+      tag: 'messenger-new',
+    });
+
+    return res.status(200).json({ ok: true });
+  } catch (err) {
+    return res.status(200).json({ ok: false, error: err.message });
+  }
 }

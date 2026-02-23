@@ -39,4 +39,10 @@ export const coachApi = {
   apagarCliente: (userId) => coachRequest('apagar-cliente', { userId }),
   activarSubscricao: (userId, planKey) => coachRequest('activar-subscricao', { userId, planKey }),
   setTester: (userId) => coachRequest('set-tester', { userId }),
+
+  // ── Messenger ──
+  messengerConversas: () => coachRequest('messenger-conversas'),
+  messengerMensagens: (conversaId, limite, antes) => coachRequest('messenger-mensagens', { conversaId, limite, antes }),
+  messengerEnviar: (conversaId, conteudo, tipo, mediaUrl) => coachRequest('messenger-enviar', { conversaId, conteudo, tipo, mediaUrl }),
+  messengerLidas: (conversaId) => coachRequest('messenger-lidas', { conversaId }),
 };
