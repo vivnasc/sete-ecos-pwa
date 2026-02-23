@@ -110,7 +110,7 @@ export const META_TEMPLATES = {
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'Última oportunidade',
-    body: 'Olá {{1}}!\n\nJá passou um mês. Nesse tempo, quem começou o VITALIS já:\n\n• Perderam 2-4kg na primeira semana\n• Aprenderam a medir porções sem balança (método da mão)\n• Descobriram o Espaço de Retorno para momentos difíceis\n• Construíram hábitos que duram — com comida moçambicana\n\nA única diferença entre elas e tu? *Elas começaram.*\n\n*ÚLTIMA OPORTUNIDADE*\nCódigo: *VEMVITALIS20* — 20% desconto\nDe 2.500 por *2.000 MZN/mês*\n7 dias de garantia total. Zero risco.\n\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\nPreferes falar comigo primeiro? Responde aqui.\n\n— Vivianne',
+    body: 'Olá {{1}}!\n\nJá passou um mês. Nesse tempo, quem começou o VITALIS já:\n\n• Perdeu 2-4kg na primeira semana\n• Aprendeu a medir porções sem balança (método da mão)\n• Descobriu o Espaço de Retorno para momentos difíceis\n• Construiu hábitos que duram — com comida moçambicana\n\nA única diferença entre quem já está a transformar o corpo e tu? *Começaram.*\n\n*ÚLTIMA OPORTUNIDADE*\nCódigo: *VEMVITALIS20* — 20% desconto\nDe 2.500 por *2.000 MZN/mês*\n7 dias de garantia total. Zero risco.\n\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\nPreferes falar comigo primeiro? Responde aqui.\n\n— Vivianne',
     footer: 'Sete Ecos',
     buttons: [{ type: 'URL', text: 'Começar Agora — 20% Off', url: 'https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20' }],
     params: (nome) => [nome || ''],
