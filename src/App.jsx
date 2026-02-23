@@ -41,7 +41,6 @@ const LandingBundle = lazy(() => import('./pages/LandingBundle'))
 const LandingGeral = lazy(() => import('./pages/LandingGeral'))
 const SocialScheduler = lazy(() => import('./pages/SocialScheduler'))
 const CoachBroadcast = lazy(() => import('./pages/CoachBroadcast'))
-const CoachMessenger = lazy(() => import('./pages/CoachMessenger'))
 
 // ECO 1: VITALIS (Nutrição) — ~800KB separado
 const LandingVitalis = lazy(() => import('./pages/LandingVitalis'))
@@ -527,17 +526,6 @@ function AppRoutes() {
             <Route path="/coach/social" element={
               isSessionCoach(session)
                 ? <SocialScheduler />
-                : <Navigate to="/" />
-            } />
-
-            <Route path="/coach/messenger" element={
-              isSessionCoach(session)
-                ? <CoachMessenger />
-                : <Navigate to="/" />
-            } />
-            <Route path="/coach/messenger/:conversaId" element={
-              isSessionCoach(session)
-                ? <CoachMessenger />
                 : <Navigate to="/" />
             } />
 

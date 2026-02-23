@@ -116,6 +116,7 @@ export async function enviarMensagem(conversaId, senderId, conteudo, tipo = 'tex
       last_message: conteudo?.slice(0, 100),
       last_message_at: new Date().toISOString(),
       last_sender_type: 'user',
+      unread_coach: supabase.rpc ? undefined : 1 // incrementar unread para coach
     })
     .eq('id', conversaId)
 
@@ -133,32 +134,7 @@ export async function enviarMensagem(conversaId, senderId, conteudo, tipo = 'tex
       .eq('id', conversaId)
   }
 
-  // Notificar coach via push (best-effort, não bloqueia)
-  notificarCoach(conteudo).catch(() => {})
-
   return data?.[0]
-}
-
-/**
- * Enviar push notification à coach quando utilizador envia mensagem
- */
-async function notificarCoach(preview) {
-  try {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.access_token) return
-
-    await fetch('/api/coach', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`
-      },
-      body: JSON.stringify({
-        action: 'messenger-notify-coach',
-        preview: preview?.slice(0, 100)
-      })
-    })
-  } catch (_) { /* push é best-effort */ }
 }
 
 /**
