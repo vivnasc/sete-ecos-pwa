@@ -10,7 +10,8 @@ import { g, setSexo } from '../../utils/genero';
 import { isNearRamadan, setObservaRamadao, observaRamadao } from '../../utils/ramadao';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useI18n } from '../../contexts/I18nContext';
-import { temPermissao, activarLembretes, pedirPermissao, contarLembretesHoje } from '../../utils/notifications';
+import { temPermissao, activarLembretes, contarLembretesHoje } from '../../utils/notifications';
+import { pedirPermissaoERegistar } from '../../lib/pushSubscription';
 import { checkVitalisAccess } from '../../lib/subscriptions';
 import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
 import QuickTrackers from './QuickTrackers';
@@ -1024,12 +1025,12 @@ export default function DashboardVitalis() {
                 {!notificacoesAtivas && (
                   <button
                     onClick={async () => {
-                      const resultado = await pedirPermissao();
+                      const resultado = await pedirPermissaoERegistar();
                       setNotificacoesAtivas(resultado);
                       if (resultado) {
                         const timeouts = activarLembretes();
                         enviarNotificacao('Notificações activadas!', {
-                          body: `${timeouts?.length || 0} lembretes agendados. Vais receber alertas de água, refeições e check-in!`
+                          body: 'Vais receber lembretes mesmo com a app fechada!'
                         });
                       }
                     }}

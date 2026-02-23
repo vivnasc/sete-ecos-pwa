@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { isCoach } from '../lib/coach'
+import { registarPushSubscription } from '../lib/pushSubscription'
 
 const AuthContext = createContext()
 
@@ -91,6 +92,10 @@ export function AuthProvider({ children }) {
       const userData = await ensureUserRecord(user)
       setUserRecord(userData)
       await checkModuleAccess(userData?.id, user.email)
+      // Registar push subscription se já tem permissão (não bloqueia)
+      if ('Notification' in window && Notification.permission === 'granted') {
+        registarPushSubscription().catch(() => {})
+      }
     } catch (error) {
       console.error('Erro ao carregar dados do utilizador:', error)
     }

@@ -14,7 +14,7 @@ self.addEventListener('push', (event) => {
       icon: '/logos/VITALIS_LOGO_V3.png',
       badge: '/logos/sete-ecos-192.png',
       tag: data.tag || 'sete-ecos',
-      data: { url: data.url || '/coach' },
+      data: { url: data.url || '/' },
       requireInteraction: data.requireInteraction || false,
       vibrate: data.vibrate || [200, 100, 200],
     })
@@ -23,7 +23,7 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
-  const url = event.notification.data?.url || '/coach'
+  const url = event.notification.data?.url || '/'
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
