@@ -160,7 +160,7 @@ export const META_TEMPLATES = {
     name: 'sete_ecos_marco',
     language: 'pt_BR',
     category: 'UTILITY',
-    header: 'Parabéns! 🎉',
+    header: 'Parabéns pelo teu marco!',
     body: 'Olá {{1}}! 🎉\n\n*{{2}} dias consecutivos de check-in!*\n\nIsto é enorme. A maioria das pessoas desiste antes de chegar aqui.\n\nTu não. Tu estás a construir hábitos que duram.\n\nContinua assim — cada dia conta, e o teu corpo está a agradecer.\n\nhttps://app.seteecos.com/vitalis/dashboard\n\n— Vivianne',
     footer: 'Sete Ecos',
     buttons: [{ type: 'URL', text: 'Ver Progresso', url: 'https://app.seteecos.com/vitalis/dashboard' }],
