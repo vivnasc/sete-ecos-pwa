@@ -1,26 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { supabase } from '../../lib/supabase'
 import { getEcoTheme } from '../../lib/shared/subscriptionPlans'
-import { g } from '../../utils/genero'
+import { pedirPermissaoERegistar, guardarPreferencias } from '../../lib/pushSubscription'
 import ModuleHeader from './ModuleHeader'
 
 /**
  * NOTIFICACOES MODULE — Config de notificacoes generico para qualquer eco
- *
- * Cada eco pode definir os seus tipos de lembretes.
- *
- * Uso:
- * <NotificacoesModule
- *   eco="serena"
- *   userId={userId}
- *   config={{
- *     title: 'Lembretes Serena',
- *     reminders: [
- *       { id: 'checkin_manha', label: 'Check-in da Manha', defaultTime: '08:00', defaultEnabled: true },
- *       { id: 'respiracao', label: 'Lembrete de Respiracao', defaultTime: '15:00', defaultEnabled: false },
- *     ]
- *   }}
- * />
+ * Agora com push real (server-side) + fallback localStorage.
  */
 
 export default function NotificacoesModule({ eco, userId, config }) {
@@ -55,10 +40,8 @@ export default function NotificacoesModule({ eco, userId, config }) {
   }, [eco, config.reminders])
 
   const requestPermission = async () => {
-    if ('Notification' in window) {
-      const permission = await Notification.requestPermission()
-      setPermissionStatus(permission)
-    }
+    const granted = await pedirPermissaoERegistar()
+    setPermissionStatus(granted ? 'granted' : 'denied')
   }
 
   const toggleReminder = (id) => {
@@ -79,6 +62,17 @@ export default function NotificacoesModule({ eco, userId, config }) {
 
   const handleSave = () => {
     localStorage.setItem(`${eco}_notification_settings`, JSON.stringify(settings))
+
+    // Converter settings para o formato de lembretes do push
+    const lembretes = config.reminders.map(r => ({
+      tipo: r.id,
+      hora: settings[r.id]?.time || r.defaultTime || '09:00',
+      activo: settings[r.id]?.enabled ?? false,
+      label: r.label,
+      eco,
+    }))
+    guardarPreferencias(lembretes).catch(() => {})
+
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
@@ -92,13 +86,13 @@ export default function NotificacoesModule({ eco, userId, config }) {
         {permissionStatus !== 'granted' && (
           <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4">
             <p className="text-amber-200 text-sm mb-3">
-              Para receberes lembretes, precisas de activar as notificacoes.
+              Para receberes lembretes mesmo com a app fechada, activa as notificações.
             </p>
             <button
               onClick={requestPermission}
               className="w-full py-2.5 rounded-lg bg-amber-500/20 text-amber-200 text-sm font-medium hover:bg-amber-500/30 transition-colors"
             >
-              Activar Notificacoes
+              Activar Notificações
             </button>
           </div>
         )}
@@ -158,7 +152,7 @@ export default function NotificacoesModule({ eco, userId, config }) {
           className="w-full py-3 rounded-xl text-white font-semibold text-sm transition-all"
           style={{ background: saved ? '#22c55e' : theme.color }}
         >
-          {saved ? 'Guardado!' : 'Guardar Preferencias'}
+          {saved ? 'Guardado!' : 'Guardar Preferências'}
         </button>
       </div>
     </div>

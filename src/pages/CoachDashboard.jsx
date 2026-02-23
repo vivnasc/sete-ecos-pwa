@@ -122,13 +122,11 @@ export default function CoachDashboard() {
   }, []);
 
   const registerPushSubscription = async () => {
-    // Check support
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
       setPushStatus('unsupported');
       return;
     }
 
-    // Request notification permission
     if (Notification.permission === 'default') {
       const result = await Notification.requestPermission();
       if (result !== 'granted') { setPushStatus('denied'); return; }
@@ -138,51 +136,9 @@ export default function CoachDashboard() {
     }
 
     try {
-      const reg = await navigator.serviceWorker.ready;
-
-      // Check existing subscription
-      let subscription = await reg.pushManager.getSubscription();
-
-      if (!subscription) {
-        // Fetch VAPID public key
-        const vapidRes = await fetch('/api/coach', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'push-vapid-public' })
-        });
-        const { key } = await vapidRes.json();
-        if (!key) { setPushStatus('unsupported'); return; }
-
-        // Convert VAPID key to Uint8Array
-        const padding = '='.repeat((4 - key.length % 4) % 4);
-        const base64 = (key + padding).replace(/-/g, '+').replace(/_/g, '/');
-        const rawData = atob(base64);
-        const applicationServerKey = new Uint8Array(rawData.length);
-        for (let i = 0; i < rawData.length; i++) applicationServerKey[i] = rawData.charCodeAt(i);
-
-        subscription = await reg.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey,
-        });
-      }
-
-      // Send subscription to server
-      const { data: { session } } = await (await import('../lib/supabase')).supabase.auth.getSession();
-      if (session?.access_token) {
-        await fetch('/api/coach', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            action: 'push-subscribe',
-            subscription: subscription.toJSON(),
-          }),
-        });
-      }
-
-      setPushStatus('subscribed');
+      const { registarPushSubscription: registar } = await import('../lib/pushSubscription');
+      const result = await registar();
+      setPushStatus(result.ok ? 'subscribed' : 'unsupported');
     } catch (err) {
       console.error('[Push] Erro ao registar:', err);
       setPushStatus('unsupported');

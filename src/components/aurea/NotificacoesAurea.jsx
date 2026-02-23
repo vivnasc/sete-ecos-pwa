@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { g } from '../../utils/genero';
+import { pedirPermissaoERegistar, guardarPreferencias } from '../../lib/pushSubscription';
 
 /**
  * ÁUREA - Notificações e Lembretes WhatsApp
@@ -128,12 +129,12 @@ export default function NotificacoesAurea() {
       return;
     }
 
-    const result = await Notification.requestPermission();
-    setPermissaoPush(result === 'granted');
+    const granted = await pedirPermissaoERegistar();
+    setPermissaoPush(granted);
 
-    if (result === 'granted') {
+    if (granted) {
       new Notification('ÁUREA', {
-        body: 'Notificações activadas! Vais receber lembretes gentis.',
+        body: 'Notificações activadas! Vais receber lembretes mesmo com a app fechada.',
         icon: '/logos/aurea-logo.png'
       });
     }
@@ -163,6 +164,16 @@ export default function NotificacoesAurea() {
           whatsapp_activo: whatsappActivo
         })
         .eq('user_id', userId);
+
+      // Sincronizar com push preferences (server-side)
+      const pushLembretes = lembretes.map(l => ({
+        tipo: l.id,
+        hora: l.hora,
+        activo: l.activo,
+        label: l.titulo,
+        eco: 'aurea',
+      }));
+      guardarPreferencias(pushLembretes).catch(() => {});
 
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);

@@ -71,9 +71,6 @@ const GuiaRamadao = lazy(() => import('./components/vitalis/GuiaRamadao'))
 const TreinosVitalis = lazy(() => import('./components/vitalis/TreinosVitalis'))
 const PlanoHTML = lazy(() => import('./pages/PlanoHTML'))
 
-// MESSENGER — Canal directo com Vivianne
-const Messenger = lazy(() => import('./components/messenger/Messenger'))
-
 // COMUNIDADE — Espaço de Autoconhecimento
 const HubComunidade = lazy(() => import('./components/comunidade/HubComunidade'))
 const Rio = lazy(() => import('./components/comunidade/Rio'))
@@ -370,10 +367,6 @@ function AppRoutes() {
             <Route path="/aurea/audios" element={<AureaRoute><AudioMeditacoes /></AureaRoute>} />
             <Route path="/aurea/meditacoes" element={<AureaRoute><AudioMeditacoes /></AureaRoute>} />
             <Route path="/aurea/notificacoes" element={<AureaRoute><NotificacoesAurea /></AureaRoute>} />
-
-            {/* ===== MESSENGER — Canal directo com Vivianne ===== */}
-            <Route path="/messenger" element={<AuthRoute from="/messenger"><Messenger /></AuthRoute>} />
-            <Route path="/messenger/:conversaId" element={<AuthRoute from="/messenger"><Messenger /></AuthRoute>} />
 
             {/* ===== COMUNIDADE ===== */}
             <Route path="/comunidade" element={<AuthRoute from="/comunidade"><HubComunidade /></AuthRoute>} />

@@ -1,11 +1,10 @@
 // src/components/vitalis/NotificacoesConfig.jsx
-// Componente para configurar notificações e lembretes
+// Componente para configurar notificações e lembretes (com push real)
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   notificacoesSuportadas,
-  pedirPermissao,
   temPermissao,
   enviarNotificacao,
   NOTIFICACOES,
@@ -15,6 +14,7 @@ import {
   contarLembretesHoje,
   LEMBRETES_DEFAULT
 } from '../../utils/notifications.js';
+import { pedirPermissaoERegistar, guardarPreferencias } from '../../lib/pushSubscription.js';
 
 export default function NotificacoesConfig() {
   const [permissao, setPermissao] = useState(temPermissao());
@@ -22,12 +22,19 @@ export default function NotificacoesConfig() {
   const [saved, setSaved] = useState(false);
   const [aPedir, setAPedir] = useState(false);
   const [lembretesAgendados, setLembretesAgendados] = useState(0);
+  const [pushRegistado, setPushRegistado] = useState(false);
 
   const suportado = 'Notification' in window;
 
   useEffect(() => {
     if (permissao) {
       setLembretesAgendados(contarLembretesHoje());
+      // Verificar se push já está registado
+      if ('serviceWorker' in navigator && 'PushManager' in window) {
+        navigator.serviceWorker.ready.then(reg =>
+          reg.pushManager.getSubscription().then(sub => setPushRegistado(!!sub))
+        ).catch(() => {});
+      }
     }
   }, [permissao]);
 
@@ -36,17 +43,21 @@ export default function NotificacoesConfig() {
     setAPedir(true);
 
     try {
-      const resultado = await pedirPermissao();
+      const resultado = await pedirPermissaoERegistar();
       setPermissao(resultado);
 
       if (resultado) {
-        // Activar lembretes e enviar confirmação
+        setPushRegistado(true);
+        // Activar lembretes locais como fallback + enviar confirmação
         const timeouts = activarLembretes();
         setLembretesAgendados(timeouts.length);
 
+        // Guardar preferências no servidor para push real
+        guardarPreferencias(lembretes).catch(() => {});
+
         setTimeout(() => {
           enviarNotificacao('Notificações activadas!', {
-            body: `${timeouts.length} lembretes agendados para hoje. Vais receber alertas!`,
+            body: 'Vais receber lembretes mesmo com a app fechada.',
             tag: 'vitalis-welcome'
           });
         }, 500);
@@ -75,9 +86,11 @@ export default function NotificacoesConfig() {
 
   const guardar = () => {
     guardarLembretes(lembretes);
-    // CRITICAL: Actually activate the reminders after saving
+    // Activar lembretes locais como fallback
     const timeouts = activarLembretes();
     setLembretesAgendados(timeouts.length);
+    // Guardar no servidor para push real
+    guardarPreferencias(lembretes).catch(() => {});
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
@@ -87,6 +100,7 @@ export default function NotificacoesConfig() {
     guardarLembretes(LEMBRETES_DEFAULT);
     const timeouts = activarLembretes();
     setLembretesAgendados(timeouts.length);
+    guardarPreferencias(LEMBRETES_DEFAULT).catch(() => {});
   };
 
   const adicionarLembrete = (tipo) => {
@@ -226,8 +240,8 @@ export default function NotificacoesConfig() {
                   {!suportado
                     ? 'O teu browser não suporta notificações'
                     : permissao
-                      ? `${activos} lembretes activos · ${lembretesAgendados} agendados para hoje`
-                      : 'Activa para receber lembretes de água, refeições e check-in'
+                      ? `${activos} lembretes activos${pushRegistado ? ' · Push activo' : ''}`
+                      : 'Activa para receber lembretes mesmo com a app fechada'
                   }
                 </p>
               </div>
@@ -257,7 +271,7 @@ export default function NotificacoesConfig() {
                 onClick={guardar}
                 className="flex-1 py-3 bg-[#7C8B6F] text-white rounded-xl font-semibold hover:bg-[#6B7A5D] transition-colors"
               >
-                {saved ? `✓ Guardado! ${lembretesAgendados} agendados` : 'Guardar e Activar'}
+                {saved ? '✓ Guardado!' : 'Guardar e Activar'}
               </button>
               <button
                 onClick={resetar}
@@ -287,16 +301,16 @@ export default function NotificacoesConfig() {
             <div>
               <p className="font-medium text-blue-800 mb-1">Como funcionam</p>
               <p className="text-sm text-blue-700 mb-2">
-                Os lembretes são agendados sempre que abres a app. Para receberes notificações mesmo em segundo plano:
+                Quando activas as notificações, o teu browser regista-se para receber alertas. Os lembretes são enviados pelo servidor nas horas que configurares.
               </p>
               <ul className="text-sm text-blue-700 space-y-1">
                 <li className="flex items-start gap-1.5">
                   <span className="mt-0.5">📱</span>
-                  <span><strong>Instala como app</strong> — toca "Adicionar ao ecrã inicial" (a app fica activa em background)</span>
+                  <span><strong>Instala como app</strong> — toca "Adicionar ao ecrã inicial" para melhor experiência</span>
                 </li>
                 <li className="flex items-start gap-1.5">
-                  <span className="mt-0.5">🔋</span>
-                  <span><strong>Não feches a app</strong> — minimiza em vez de fechar para os lembretes continuarem</span>
+                  <span className="mt-0.5">🔔</span>
+                  <span><strong>Push real</strong> — recebes notificações mesmo com a app fechada</span>
                 </li>
               </ul>
             </div>

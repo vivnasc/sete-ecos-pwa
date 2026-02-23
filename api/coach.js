@@ -22,11 +22,13 @@ const COACH_EMAILS = [
 ];
 
 // ─── Push notification helper (server-side) ───
-const VAPID_PUBLIC = process.env.VAPID_PUBLIC_KEY || 'BNTM9kj9OsZ_KBBsO-zVG3pX6WHFwyqPtBMQyW6_Woy89rjXFJe9yE3UJw2E8c-TQx8dkQ-6cSLOFkleuQi_qPs';
-const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY || 'd89K6ckTanOlUwJ-6xEaNna5pL1e6yKPQhqu6Hq0L6A';
+const VAPID_PUBLIC = process.env.VAPID_PUBLIC_KEY;
+const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY;
 const VAPID_EMAIL = process.env.VAPID_EMAIL || 'mailto:viv.saraiva@gmail.com';
 
-try { webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE); } catch (e) { /* ok */ }
+if (VAPID_PUBLIC && VAPID_PRIVATE) {
+  try { webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE); } catch (e) { /* ok */ }
+}
 
 async function pushCoachNotification({ title, body, url, tag }) {
   try {
@@ -90,6 +92,8 @@ export default async function handler(req, res) {
     if (action === 'push-vapid-public') return res.status(200).json({ key: VAPID_PUBLIC });
     if (action === 'push-subscribe') return await pushSubscribe(req, params, res);
     if (action === 'push-unsubscribe') return await pushUnsubscribe(req, params, res);
+    if (action === 'push-save-prefs') return await pushSavePrefs(req, params, res);
+    if (action === 'push-get-prefs') return await pushGetPrefs(req, res);
 
     // ── All other actions require coach auth ──
     const coach = await verifyCoach(req);
@@ -1047,19 +1051,28 @@ async function coachAlertasRT(desde, res) {
 async function pushSubscribe(req, params, res) {
   const user = await verifyUser(req);
   if (!user) return res.status(401).json({ error: 'Nao autenticado' });
-  if (!COACH_EMAILS.includes(user.email.toLowerCase())) {
-    return res.status(403).json({ error: 'Apenas coaches podem subscrever push' });
-  }
+
+  const isCoachUser = COACH_EMAILS.includes(user.email.toLowerCase());
+  const role = isCoachUser ? 'coach' : 'client';
 
   const { subscription } = params;
   if (!subscription?.endpoint || !subscription?.keys) {
     return res.status(400).json({ error: 'Subscription invalida' });
   }
 
+  // Buscar user_id na tabela users
+  const { data: userData } = await supabase
+    .from('users')
+    .select('id')
+    .eq('auth_id', user.id)
+    .maybeSingle();
+
   const { error } = await supabase
     .from('push_subscriptions')
     .upsert({
       user_email: user.email.toLowerCase(),
+      user_id: userData?.id?.toString() || user.id,
+      role,
       endpoint: subscription.endpoint,
       keys_p256dh: subscription.keys.p256dh,
       keys_auth: subscription.keys.auth,
@@ -1071,7 +1084,7 @@ async function pushSubscribe(req, params, res) {
     return res.status(500).json({ error: 'Erro ao guardar. Tabela push_subscriptions existe?' });
   }
 
-  return res.status(200).json({ ok: true });
+  return res.status(200).json({ ok: true, role });
 }
 
 async function pushUnsubscribe(req, params, res) {
@@ -1126,4 +1139,108 @@ async function pushNotify(params, res) {
   }
 
   return res.status(200).json({ sent, failed });
+}
+
+// ==========================================
+// PUSH PREFERENCES — Save / Get user notification preferences
+// ==========================================
+
+async function pushSavePrefs(req, params, res) {
+  const user = await verifyUser(req);
+  if (!user) return res.status(401).json({ error: 'Nao autenticado' });
+
+  const { data: userData } = await supabase
+    .from('users')
+    .select('id')
+    .eq('auth_id', user.id)
+    .maybeSingle();
+
+  const userId = userData?.id?.toString() || user.id;
+  const { lembretes, timezone } = params;
+
+  const { error } = await supabase
+    .from('push_preferences')
+    .upsert({
+      user_id: userId,
+      lembretes: lembretes || [],
+      timezone: timezone || 'Africa/Maputo',
+      activo: true,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id' });
+
+  if (error) {
+    console.error('[Push] Erro ao guardar preferências:', error);
+    return res.status(500).json({ error: 'Erro ao guardar preferências' });
+  }
+
+  return res.status(200).json({ ok: true });
+}
+
+async function pushGetPrefs(req, res) {
+  const user = await verifyUser(req);
+  if (!user) return res.status(401).json({ error: 'Nao autenticado' });
+
+  const { data: userData } = await supabase
+    .from('users')
+    .select('id')
+    .eq('auth_id', user.id)
+    .maybeSingle();
+
+  const userId = userData?.id?.toString() || user.id;
+
+  const { data, error } = await supabase
+    .from('push_preferences')
+    .select('lembretes, timezone, activo')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error) {
+    console.error('[Push] Erro ao buscar preferências:', error);
+    return res.status(500).json({ error: 'Erro ao buscar preferências' });
+  }
+
+  return res.status(200).json({ prefs: data || null });
+}
+
+// ==========================================
+// PUSH TO USER — Send push notification to a specific user
+// Used by cron and internal functions
+// ==========================================
+
+export async function sendPushToUser(userId, { title, body, url, tag }) {
+  try {
+    const { data: subs } = await supabase
+      .from('push_subscriptions')
+      .select('endpoint, keys_p256dh, keys_auth')
+      .eq('user_id', userId.toString());
+
+    if (!subs || subs.length === 0) return 0;
+
+    const payload = JSON.stringify({
+      title,
+      body: body || '',
+      url: url || '/',
+      tag: tag || 'sete-ecos',
+      vibrate: [200, 100, 200],
+    });
+
+    let sent = 0;
+    for (const sub of subs) {
+      try {
+        await webpush.sendNotification(
+          { endpoint: sub.endpoint, keys: { p256dh: sub.keys_p256dh, auth: sub.keys_auth } },
+          payload
+        );
+        sent++;
+      } catch (err) {
+        if (err.statusCode === 410 || err.statusCode === 404) {
+          await supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
+        }
+      }
+    }
+    return sent;
+  } catch (e) {
+    console.error('[Push] Erro ao enviar para user:', e.message);
+    return 0;
+  }
 }
