@@ -132,12 +132,22 @@ async function enviarLembretes(supabase, resultados) {
 
         const hoje = new Date().toISOString().split('T')[0];
 
+        // Motivação intensa: limitar a 1x a cada 3 dias (evitar spam diário)
+        // Lembrete check-in: manter 1x por dia
+        const tipoVerificacao = diasInactiva >= 5 ? 'motivacao-intensa' : 'lembrete-checkin';
+        let dedupDesde = hoje;
+        if (diasInactiva >= 5) {
+          const tresDiasAtrasDedup = new Date();
+          tresDiasAtrasDedup.setDate(tresDiasAtrasDedup.getDate() - 3);
+          dedupDesde = tresDiasAtrasDedup.toISOString();
+        }
+
         const { data: jaEnviado } = await supabase
           .from('vitalis_email_log')
           .select('id')
           .eq('user_id', cliente.user_id)
-          .eq('tipo', diasInactiva >= 5 ? 'motivacao-intensa' : 'lembrete-checkin')
-          .gte('created_at', hoje)
+          .eq('tipo', tipoVerificacao)
+          .gte('created_at', dedupDesde)
           .limit(1);
 
         if (!jaEnviado || jaEnviado.length === 0) {
@@ -613,11 +623,35 @@ async function enviarWinback(supabase, resultados) {
 
   for (const cliente of clientes) {
     try {
+      // Limitar win-back a 1x por semana (evitar spam diário)
+      const seteDiasAtras = new Date();
+      seteDiasAtras.setDate(seteDiasAtras.getDate() - 7);
+      const { data: jaEnviado } = await supabase
+        .from('vitalis_email_log')
+        .select('id')
+        .eq('user_id', cliente.user_id)
+        .eq('tipo', 'winback')
+        .gte('created_at', seteDiasAtras.toISOString())
+        .limit(1);
+
+      if (jaEnviado && jaEnviado.length > 0) continue;
+
+      const waAntes = resultados.wa_enviados;
       await enviarWACliente(supabase, cliente.user_id, 'winback', {
         nome: cliente.users.nome || '',
       }, resultados);
 
-      if (resultados.wa_enviados > 0) resultados.winback++;
+      if (resultados.wa_enviados > waAntes) {
+        resultados.winback++;
+        // Registar para deduplicação semanal
+        try {
+          await supabase.from('vitalis_email_log').insert({
+            user_id: cliente.user_id,
+            tipo: 'winback',
+            destinatario: cliente.users.email || 'whatsapp'
+          });
+        } catch (_) { /* tabela pode não ter estas colunas */ }
+      }
     } catch (_) {
       // Skip individual errors
     }
@@ -625,7 +659,7 @@ async function enviarWinback(supabase, resultados) {
 }
 
 /**
- * Enviar email de curiosidade insana a utilizadoras registadas sem subscrição
+ * Enviar email de curiosidade insana a utilizadores registados sem subscrição
  * Targeteia users que fizeram Lumina mas nunca subscreveram Vitalis
  * Envia 1x por semana (quartas-feiras)
  */
@@ -643,12 +677,12 @@ async function enviarCuriosidadeInsana(supabase, resultados) {
     {
       assunto: 'Comes por fome ou por emoção? (faz este teste mental)',
       hook: 'Faz este exercício: antes de comeres algo, põe a mão no peito e pergunta "estou mesmo com fome ou estou a sentir algo?"',
-      corpo: 'Se a resposta for "estou a sentir algo" - parabéns, acabaste de descobrir o padrão que 87% das mulheres moçambicanas ignoram. É este padrão que faz o efeito ioiô. Não é a comida. É a emoção.',
+      corpo: 'Se a resposta for "estou a sentir algo" - parabéns, acabaste de descobrir o padrão que 87% das pessoas ignoram. É este padrão que faz o efeito ioiô. Não é a comida. É a emoção.',
       cta: 'O VITALIS tem uma ferramenta única chamada Espaço de Retorno — feita exatamente para estes momentos. Nenhum outro programa no mundo tem isto.'
     },
     {
       assunto: 'A verdade sobre a xima que ninguém te diz',
-      hook: 'Disseram-te a vida inteira que a xima engorda. É mentira. O que engorda é o desequilíbrio no prato — e a maioria das mulheres não sabe como equilibrar.',
+      hook: 'Disseram-te a vida inteira que a xima engorda. É mentira. O que engorda é o desequilíbrio no prato — e a maioria das pessoas não sabe como equilibrar.',
       corpo: 'Uma mão fechada de xima + uma palma de caril de peixe + um punho de matapa = a refeição perfeita. Sem contar calorias. Sem apps complicadas. Só as tuas mãos.',
       cta: 'No VITALIS ensinamos-te o Método da Mão — medir porções com o que já tens. Simples, científico e feito para a comida moçambicana.'
     },
@@ -711,7 +745,7 @@ async function enviarCuriosidadeInsana(supabase, resultados) {
         if (jaEnviado && jaEnviado.length > 0) continue;
 
         // Enviar email de curiosidade
-        const nome = user.nome || 'amiga';
+        const nome = user.nome || '';
 
         await enviarEmail('curiosidade-insana', user.email, {
           nome,
