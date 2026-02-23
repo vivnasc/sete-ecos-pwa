@@ -57,6 +57,11 @@ export default async function handler(req, res) {
     return handleDiagnostico(req, res, WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID);
   }
 
+  // Teste rápido — envia template boas_vindas para o número da Vivianne
+  if (action === 'teste') {
+    return handleTeste(req, res, WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID);
+  }
+
   // Templates management
   if (action && action.startsWith('templates')) {
     return handleTemplates(req, res, action, WHATSAPP_ACCESS_TOKEN);
@@ -123,6 +128,85 @@ async function handleEnviarMensagem(req, res, token, phoneId) {
   } catch (error) {
     console.error('Erro ao enviar WhatsApp:', error);
     return res.status(500).json({ error: 'Erro interno ao enviar WhatsApp' });
+  }
+}
+
+// ═══════════════════════════════════════════
+// Teste rápido — envia template para confirmar que funciona
+// ═══════════════════════════════════════════
+async function handleTeste(req, res, token, phoneId) {
+  const personalNumber = (process.env.VIVIANNE_PERSONAL_NUMBER || '').trim();
+  const destino = req.query?.para
+    ? req.query.para.replace(/[^0-9]/g, '')
+    : personalNumber
+      ? personalNumber.replace(/[^0-9]/g, '')
+      : '258851006473';
+
+  const template = req.query?.template || 'boas_vindas';
+  const tmpl = META_TEMPLATES[template];
+  if (!tmpl) {
+    return res.status(400).json({
+      error: `Template "${template}" não existe`,
+      disponiveis: Object.keys(META_TEMPLATES),
+    });
+  }
+
+  const nome = req.query?.nome || 'Vivianne';
+
+  // Montar payload do template
+  const components = [];
+  const params = tmpl.params ? tmpl.params(nome) : [nome];
+  if (params.length > 0) {
+    components.push({
+      type: 'body',
+      parameters: params.map(p => ({ type: 'text', text: p })),
+    });
+  }
+
+  const payload = {
+    messaging_product: 'whatsapp',
+    recipient_type: 'individual',
+    to: destino,
+    type: 'template',
+    template: {
+      name: tmpl.name,
+      language: { code: tmpl.language || 'pt_BR' },
+      components,
+    },
+  };
+
+  try {
+    const response = await fetch(`${GRAPH_API}/${phoneId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      return res.status(response.status).json({
+        error: result?.error?.message || 'Erro ao enviar',
+        code: result?.error?.code,
+        destino,
+        template: tmpl.name,
+        payload_enviado: payload,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Template "${tmpl.name}" enviado para +${destino}`,
+      messageId: result.messages?.[0]?.id,
+      destino,
+      template: tmpl.name,
+      nome_usado: nome,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 }
 
@@ -325,6 +409,106 @@ async function listarTemplatesMeta(token, wabaId) {
 }
 
 // ═══════════════════════════════════════════
+// HTML renderer para diagnóstico (legível no browser)
+// ═══════════════════════════════════════════
+function renderDiagnosticoHtml(resultado) {
+  const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const badge = (text, color) => `<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:bold;color:white;background:${color}">${esc(text)}</span>`;
+  const ok = (t) => badge(t, '#22c55e');
+  const fail = (t) => badge(t, '#ef4444');
+  const warn = (t) => badge(t, '#f59e0b');
+  const info = (t) => badge(t, '#3b82f6');
+
+  let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WhatsApp Diagnóstico — Sete Ecos</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0f172a;color:#e2e8f0;padding:16px;max-width:800px;margin:0 auto}
+h1{color:#a78bfa;margin-bottom:8px;font-size:20px}h2{color:#818cf8;margin:16px 0 8px;font-size:16px;border-bottom:1px solid #334155;padding-bottom:4px}
+.card{background:#1e293b;border-radius:8px;padding:12px;margin:8px 0;border-left:4px solid #334155}
+.card.ok{border-left-color:#22c55e}.card.fail{border-left-color:#ef4444}.card.warn{border-left-color:#f59e0b}.card.info{border-left-color:#3b82f6}
+.label{color:#94a3b8;font-size:12px;text-transform:uppercase;letter-spacing:0.5px}.value{color:#f1f5f9;font-size:14px;word-break:break-all}
+pre{background:#0f172a;padding:8px;border-radius:4px;font-size:12px;overflow-x:auto;margin:4px 0;color:#cbd5e1}
+.action{background:#7c3aed;color:white;padding:12px 16px;border-radius:8px;margin:12px 0;font-size:14px}
+.action strong{display:block;margin-bottom:4px}ol{padding-left:20px}ol li{margin:4px 0}
+</style></head><body>`;
+
+  // Header
+  const found = resultado.waba_encontrado;
+  html += `<h1>WhatsApp Diagnóstico</h1>`;
+  html += found
+    ? `<div class="card ok"><strong>WABA Encontrado: ${esc(found.id)}</strong>${found.corrigir ? `<br>${esc(found.corrigir)}` : ''}</div>`
+    : `<div class="card fail"><strong>WABA ID NÃO encontrado</strong> — vê as instruções abaixo</div>`;
+
+  // Env vars
+  html += `<h2>Variáveis de ambiente</h2>`;
+  for (const [key, val] of Object.entries(resultado.env_vars)) {
+    const isOk = val && !val.startsWith('(');
+    html += `<div class="card ${isOk ? 'ok' : 'warn'}"><span class="label">${esc(key)}</span><br><span class="value">${esc(val)}</span></div>`;
+  }
+
+  // Token info
+  if (resultado.token_info) {
+    html += `<h2>Token</h2>`;
+    const t = resultado.token_info;
+    html += `<div class="card ${t.is_valid ? 'ok' : 'fail'}">`;
+    html += `<span class="label">Tipo</span> ${esc(t.type)} &nbsp; ${t.is_valid ? ok('VÁLIDO') : fail('INVÁLIDO')}`;
+    html += `<br><span class="label">App ID</span> ${esc(t.app_id)}`;
+    html += `<br><span class="label">Expira</span> ${esc(t.expires_at)}`;
+    if (t.scopes) html += `<br><span class="label">Scopes</span> <span style="font-size:11px">${esc(t.scopes.join(', '))}</span>`;
+    html += `</div>`;
+  }
+
+  // Phone info
+  if (resultado.phone_info) {
+    html += `<h2>Telefone</h2>`;
+    const p = resultado.phone_info;
+    if (p.erro) {
+      html += `<div class="card fail">${fail('ERRO')} ${esc(p.erro)}</div>`;
+    } else {
+      html += `<div class="card ok">`;
+      html += `<span class="value" style="font-size:18px">${esc(p.display_phone_number)}</span>`;
+      html += ` — ${esc(p.verified_name)}`;
+      if (p.account_mode) html += ` ${p.account_mode === 'LIVE' ? ok('LIVE') : warn(p.account_mode)}`;
+      if (p.quality_rating) html += ` ${p.quality_rating === 'GREEN' ? ok(p.quality_rating) : warn(p.quality_rating)}`;
+      html += `</div>`;
+    }
+  }
+
+  // Tests
+  html += `<h2>Testes (${resultado.testes.length})</h2>`;
+  for (const t of resultado.testes) {
+    const isOk = t.resultado === 'FUNCIONA' || t.resultado === 'OK' || t.resultado === 'ENCONTROU';
+    const isFail = t.resultado === 'FALHOU' || t.resultado === 'ERRO' || t.resultado?.includes('NÃO EXISTE');
+    const isWarn = t.resultado?.includes('SEM') || t.resultado?.includes('0 negócio');
+    const cls = isOk ? 'ok' : isFail ? 'fail' : isWarn ? 'warn' : 'info';
+    html += `<div class="card ${cls}">`;
+    html += `<strong>${esc(t.teste)}</strong> ${isOk ? ok(t.resultado) : isFail ? fail(t.resultado) : isWarn ? warn(t.resultado) : info(t.resultado)}`;
+    if (t.erro) html += `<br><span style="color:#fca5a5;font-size:12px">${esc(t.erro)}</span>`;
+    if (t.nota) html += `<br><span style="color:#fcd34d;font-size:12px">${esc(t.nota)}</span>`;
+    if (t.dados) html += `<pre>${esc(JSON.stringify(t.dados, null, 2))}</pre>`;
+    if (t.wabas) html += `<pre>${esc(JSON.stringify(t.wabas, null, 2))}</pre>`;
+    if (t.negocios) html += `<pre>${esc(JSON.stringify(t.negocios, null, 2))}</pre>`;
+    if (t.scopes_encontrados) html += `<pre>${esc(t.scopes_encontrados.join(', '))}</pre>`;
+    html += `</div>`;
+  }
+
+  // Manual instructions
+  if (resultado.instrucoes_manuais) {
+    html += `<h2>Como resolver</h2>`;
+    const m = resultado.instrucoes_manuais;
+    html += `<div class="action"><strong>${esc(m.problema)}</strong><ol>`;
+    for (const step of m.como_resolver) {
+      html += `<li>${esc(step.replace(/^\d+\.\s*/, ''))}</li>`;
+    }
+    html += `</ol></div>`;
+    if (m.alternativa) html += `<div class="card info">${esc(m.alternativa)}</div>`;
+  }
+
+  html += `<p style="margin-top:24px;color:#475569;font-size:11px">Gerado em ${new Date().toISOString()}</p>`;
+  html += `</body></html>`;
+  return html;
+}
+
+// ═══════════════════════════════════════════
 // Diagnóstico — descobre WABA ID e mostra tudo
 // ═══════════════════════════════════════════
 async function handleDiagnostico(req, res, token, phoneId) {
@@ -484,6 +668,13 @@ async function handleDiagnostico(req, res, token, phoneId) {
 
         // Se tem business, buscar WABAs desse business
         const bizId = meData.business?.id;
+        if (!bizId) {
+          resultado.testes.push({
+            teste: '/me — business associado',
+            resultado: 'SEM BUSINESS',
+            nota: 'O system user não tem business associado. Precisa ser atribuído ao Business Manager.',
+          });
+        }
         if (bizId) {
           try {
             const wabaRes = await fetch(`${GRAPH_API}/${bizId}/owned_whatsapp_business_accounts?fields=id,name,currency,message_template_namespace`, {
@@ -531,6 +722,16 @@ async function handleDiagnostico(req, res, token, phoneId) {
           } catch (_) {}
         }
       }
+    } else {
+      const errData = await meRes.json().catch(() => ({}));
+      resultado.testes.push({
+        teste: '/me — info do system user',
+        resultado: 'FALHOU',
+        http: meRes.status,
+        erro: errData?.error?.message || `HTTP ${meRes.status}`,
+        nota: 'O token pode não ter permissão para /me. Verifica as permissões do system user.',
+      });
+    }
     } catch (e) {
       resultado.testes.push({ teste: '/me', resultado: 'ERRO', erro: e.message });
     }
@@ -607,26 +808,44 @@ async function handleDiagnostico(req, res, token, phoneId) {
 
   // 9. Tentar granular_scopes target_ids como WABA IDs
   if (!resultado.waba_encontrado && resultado.token_info?.granular_scopes) {
-    for (const scope of resultado.token_info.granular_scopes) {
-      if ((scope.scope === 'whatsapp_business_management' || scope.scope === 'whatsapp_business_messaging') && scope.target_ids) {
-        for (const targetId of scope.target_ids) {
-          try {
-            const checkRes = await fetch(`${GRAPH_API}/${targetId}/message_templates?limit=1`, {
-              headers: { 'Authorization': `Bearer ${token}` },
-            });
-            if (checkRes.ok) {
-              resultado.testes.push({ teste: `scope ${scope.scope} target ${targetId} → templates`, resultado: 'FUNCIONA' });
-              resultado.waba_encontrado = {
-                id: targetId,
-                metodo: `Descoberto via granular_scopes (${scope.scope})`,
-                corrigir: `Mete WHATSAPP_BUSINESS_ACCOUNT_ID=${targetId} no Vercel`,
-              };
-              break;
-            }
-          } catch (_) {}
+    const waScopes = resultado.token_info.granular_scopes.filter(
+      s => s.scope === 'whatsapp_business_management' || s.scope === 'whatsapp_business_messaging'
+    );
+    if (waScopes.length > 0) {
+      for (const scope of waScopes) {
+        if (scope.target_ids && scope.target_ids.length > 0) {
+          for (const targetId of scope.target_ids) {
+            try {
+              const checkRes = await fetch(`${GRAPH_API}/${targetId}/message_templates?limit=1`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+              });
+              if (checkRes.ok) {
+                resultado.testes.push({ teste: `scope ${scope.scope} target ${targetId} → templates`, resultado: 'FUNCIONA' });
+                resultado.waba_encontrado = {
+                  id: targetId,
+                  metodo: `Descoberto via granular_scopes (${scope.scope})`,
+                  corrigir: `Mete WHATSAPP_BUSINESS_ACCOUNT_ID=${targetId} no Vercel`,
+                };
+                break;
+              }
+            } catch (_) {}
+          }
+          if (resultado.waba_encontrado) break;
+        } else {
+          resultado.testes.push({
+            teste: `granular_scopes: ${scope.scope}`,
+            resultado: 'SEM TARGET_IDS',
+            nota: 'O scope WhatsApp não tem target_ids — o system user precisa ser atribuído à conta WhatsApp no Business Manager.',
+          });
         }
-        if (resultado.waba_encontrado) break;
       }
+    } else {
+      resultado.testes.push({
+        teste: 'granular_scopes — scopes WhatsApp',
+        resultado: 'NÃO ENCONTRADOS',
+        nota: 'O token não tem scopes whatsapp_business_management/whatsapp_business_messaging granulares.',
+        scopes_encontrados: resultado.token_info.granular_scopes.map(s => s.scope),
+      });
     }
   }
 
@@ -658,6 +877,12 @@ async function handleDiagnostico(req, res, token, phoneId) {
       ],
       alternativa: 'Ou acede a https://business.facebook.com/latest/whatsapp_account/overview e vê o WABA ID no topo',
     };
+  }
+
+  // Se pedido com Accept: text/html (browser), devolver HTML legível
+  const wantHtml = (req.headers.accept || '').includes('text/html');
+  if (wantHtml) {
+    return res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').send(renderDiagnosticoHtml(resultado));
   }
 
   return res.status(200).json({
