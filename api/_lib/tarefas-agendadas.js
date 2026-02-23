@@ -10,7 +10,7 @@
  * {
  *   "crons": [{
  *     "path": "/api/tarefas-agendadas",
- *     "schedule": "0 9 * * *"  // 9h todos os dias
+ *     "schedule": "0 19 * * *"  // 19h UTC = 21h Moçambique
  *   }]
  * }
  */
@@ -20,7 +20,7 @@ import { enviarMensagemWA } from './whatsapp-broadcast.js';
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 // Coach email - configurável via Vercel ENV
 const COACH_EMAIL = process.env.COACH_EMAIL || 'viv.saraiva@gmail.com';
 
@@ -61,6 +61,9 @@ export default async function handler(req, res) {
 
     // 3. MARCOS — celebração de streaks (WhatsApp)
     await enviarMarcos(supabase, resultados);
+
+    // 3b. MARCOS DE PESO — celebrar perda de peso significativa
+    await enviarMarcosPeso(supabase, resultados);
 
     // 4. WIN-BACK — clientes com subscrição expirada (WhatsApp)
     await enviarWinback(supabase, resultados);
@@ -236,48 +239,95 @@ async function enviarAvisosExpiracao(supabase, resultados) {
 
 /**
  * Enviar resumo diário para a coach
+ * Inclui: clientes activas, quem fez check-in, quem não fez, alertas, novas
  */
 async function enviarResumoDiario(supabase, resultados) {
   const hoje = new Date().toISOString().split('T')[0];
   const ontem = new Date();
   ontem.setDate(ontem.getDate() - 1);
+  const ontemStr = ontem.toISOString().split('T')[0];
 
   try {
-    // Contar métricas do dia anterior
+    // Buscar dados completos para um relatório útil
     const [
-      { count: totalClientes },
-      { count: checkinsOntem },
-      { count: espacoRetornoOntem },
-      { data: novasClientes }
+      { data: clientesActivas, count: totalClientes },
+      { data: checkinsHoje },
+      { count: espacoRetornoHoje },
+      { data: novasClientes },
+      { data: todosClientes }
     ] = await Promise.all([
-      supabase.from('vitalis_clients').select('id', { count: 'exact' }).eq('subscription_status', 'active'),
-      supabase.from('vitalis_registos').select('id', { count: 'exact' }).gte('created_at', ontem.toISOString()),
-      supabase.from('vitalis_espaco_retorno').select('id', { count: 'exact' }).gte('created_at', ontem.toISOString()),
+      // Clientes com subscrição activa (com nome)
+      supabase.from('vitalis_clients')
+        .select('user_id, users!inner(nome, email)', { count: 'exact' })
+        .in('subscription_status', ['active', 'tester', 'trial']),
+      // Check-ins de hoje
+      supabase.from('vitalis_registos')
+        .select('user_id, aderencia_1a10, users!inner(nome)')
+        .eq('data', hoje),
+      // Alertas espaço retorno hoje
+      supabase.from('vitalis_espaco_retorno')
+        .select('id', { count: 'exact' })
+        .gte('created_at', ontem.toISOString()),
+      // Novas clientes (últimas 24h)
       supabase.from('vitalis_clients')
         .select('users!inner(nome, email)')
-        .gte('created_at', ontem.toISOString())
+        .gte('created_at', ontem.toISOString()),
+      // Todos os clientes activos para cruzar com check-ins (inclui peso)
+      supabase.from('vitalis_clients')
+        .select('user_id, peso_inicial, peso_actual, peso_meta, users!inner(nome)')
+        .in('subscription_status', ['active', 'tester', 'trial'])
     ]);
 
+    // Determinar quem fez e quem não fez check-in
+    const userIdsComCheckin = new Set((checkinsHoje || []).map(c => c.user_id));
+    const fizeram = (checkinsHoje || []).map(c => {
+      const nome = c.users?.nome?.split(' ')[0] || '?';
+      return `${nome} (${c.aderencia_1a10}/10)`;
+    });
+    const naoFizeram = (todosClientes || [])
+      .filter(c => !userIdsComCheckin.has(c.user_id))
+      .map(c => c.users?.nome?.split(' ')[0] || '?');
+
+    // Progresso de peso de cada cliente
+    const progressoPeso = (todosClientes || [])
+      .filter(c => c.peso_inicial && c.peso_actual && c.peso_inicial > c.peso_actual)
+      .map(c => {
+        const nome = c.users?.nome?.split(' ')[0] || '?';
+        const perdido = (c.peso_inicial - c.peso_actual).toFixed(1);
+        const restante = c.peso_meta ? (c.peso_actual - c.peso_meta).toFixed(1) : '?';
+        return { nome, perdido, restante, actual: c.peso_actual, meta: c.peso_meta };
+      });
+
     const dadosResumo = {
-      data: new Date().toLocaleDateString('pt-PT'),
+      data: new Date().toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' }),
       totalClientes: totalClientes || 0,
-      checkinsOntem: checkinsOntem || 0,
-      alertasOntem: espacoRetornoOntem || 0,
+      checkinsHoje: checkinsHoje?.length || 0,
+      alertasHoje: espacoRetornoHoje || 0,
       novasClientes: novasClientes?.length || 0,
-      clientesLista: novasClientes?.map(c => c.users?.nome || c.users?.email).join(', ') || 'Nenhuma'
+      clientesLista: novasClientes?.map(c => c.users?.nome || c.users?.email).join(', ') || '',
+      fizeramCheckin: fizeram,
+      naoFizeramCheckin: naoFizeram,
+      progressoPeso
     };
 
     await enviarEmail('coach-resumo-diario', COACH_EMAIL, dadosResumo);
 
-    // WhatsApp resumo diário para número pessoal
+    // WhatsApp resumo diário
+    const linhasFizeram = fizeram.length > 0 ? `\n✅ *Fizeram check-in:*\n${fizeram.join('\n')}` : '\n❌ Ninguém fez check-in hoje';
+    const linhasNaoFizeram = naoFizeram.length > 0 ? `\n⏳ *Sem check-in:*\n${naoFizeram.join(', ')}` : '';
+    const linhasPeso = progressoPeso.length > 0
+      ? `\n⚖️ *Progresso de peso:*\n${progressoPeso.map(p => `${p.nome}: -${p.perdido}kg (actual: ${p.actual}kg${p.meta ? ` → meta: ${p.meta}kg` : ''})`).join('\n')}`
+      : '';
+
     await enviarWhatsAppCoach(`📊 *RESUMO VITALIS* — ${dadosResumo.data}
 
 👥 Clientes activas: ${dadosResumo.totalClientes}
-✅ Check-ins ontem: ${dadosResumo.checkinsOntem}
-⚠️ Alertas: ${dadosResumo.alertasOntem}
-🆕 Novas: ${dadosResumo.novasClientes}${dadosResumo.novasClientes > 0 ? `\n🌟 ${dadosResumo.clientesLista}` : ''}
+✅ Check-ins hoje: ${dadosResumo.checkinsHoje}/${dadosResumo.totalClientes}
+⚠️ Alertas: ${dadosResumo.alertasHoje}
+🆕 Novas: ${dadosResumo.novasClientes}${dadosResumo.novasClientes > 0 ? ` (${dadosResumo.clientesLista})` : ''}
+${linhasFizeram}${linhasNaoFizeram}${linhasPeso}
 
-Bom dia! 🌱`);
+Boa noite! 🌙`);
 
     resultados.resumo = true;
   } catch (err) {
@@ -431,6 +481,109 @@ async function enviarMarcos(supabase, resultados) {
     } catch (_) {
       // Skip individual errors
     }
+  }
+}
+
+/**
+ * Celebrar marcos de perda de peso
+ * Verifica peso_inicial vs peso_actual e envia WA + notifica coach
+ */
+async function enviarMarcosPeso(supabase, resultados) {
+  const MARCOS_PESO = [
+    { kg: 1, id: 'peso_1kg', emoji: '⚖️', msg: 'Perdeste o teu primeiro quilo' },
+    { kg: 5, id: 'peso_5kg', emoji: '🎯', msg: 'Perdeste 5kg — estás em transformação' },
+    { kg: 10, id: 'peso_10kg', emoji: '🦋', msg: 'Perdeste 10kg — és uma nova pessoa' },
+  ];
+
+  const { data: clientes, error } = await supabase
+    .from('vitalis_clients')
+    .select(`
+      id,
+      user_id,
+      peso_inicial,
+      peso_actual,
+      peso_meta,
+      users!inner(id, nome, email)
+    `)
+    .in('subscription_status', ['active', 'trial', 'tester'])
+    .not('peso_inicial', 'is', null)
+    .not('peso_actual', 'is', null);
+
+  if (error || !clientes) return;
+
+  const alertasCoach = [];
+
+  for (const cliente of clientes) {
+    try {
+      if (!cliente.peso_inicial || !cliente.peso_actual) continue;
+      const pesoPerdido = cliente.peso_inicial - cliente.peso_actual;
+      if (pesoPerdido < 1) continue;
+
+      const nome = cliente.users?.nome?.split(' ')[0] || '?';
+
+      // Verificar se atingiu peso meta
+      if (cliente.peso_meta && cliente.peso_actual <= cliente.peso_meta) {
+        const marcoId = `peso_meta_${cliente.user_id}`;
+        const jaNotificado = await verificarMarcoNotificado(supabase, cliente.user_id, 'peso_meta');
+        if (!jaNotificado) {
+          alertasCoach.push(`🎉 *${nome}* ATINGIU O PESO META! (${cliente.peso_actual}kg — objectivo era ${cliente.peso_meta}kg)`);
+          await registarMarcoNotificado(supabase, cliente.user_id, 'peso_meta');
+          await enviarWACliente(supabase, cliente.user_id, 'marco_celebracao', {
+            nome: cliente.users.nome || '',
+            dias: 0,
+          }, resultados);
+        }
+      }
+
+      // Verificar marcos de kg perdidos
+      for (const marco of MARCOS_PESO) {
+        if (pesoPerdido >= marco.kg) {
+          const jaNotificado = await verificarMarcoNotificado(supabase, cliente.user_id, marco.id);
+          if (!jaNotificado) {
+            alertasCoach.push(`${marco.emoji} *${nome}* perdeu ${pesoPerdido.toFixed(1)}kg (marco: ${marco.kg}kg)`);
+            await registarMarcoNotificado(supabase, cliente.user_id, marco.id);
+            await enviarWACliente(supabase, cliente.user_id, 'marco_celebracao', {
+              nome: cliente.users.nome || '',
+              dias: marco.kg,
+            }, resultados);
+          }
+        }
+      }
+    } catch (_) {
+      // Skip individual errors
+    }
+  }
+
+  // Notificar coach sobre marcos de peso do dia
+  if (alertasCoach.length > 0) {
+    await enviarWhatsAppCoach(`🏆 *MARCOS DE PESO HOJE*\n\n${alertasCoach.join('\n')}\n\nParabéns às tuas clientes! 🎉`);
+    resultados.marcos += alertasCoach.length;
+  }
+}
+
+async function verificarMarcoNotificado(supabase, userId, marcoId) {
+  try {
+    const { data } = await supabase
+      .from('vitalis_email_log')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('tipo', `marco-peso-${marcoId}`)
+      .limit(1);
+    return data && data.length > 0;
+  } catch (_) {
+    return false;
+  }
+}
+
+async function registarMarcoNotificado(supabase, userId, marcoId) {
+  try {
+    await supabase.from('vitalis_email_log').insert({
+      user_id: userId,
+      tipo: `marco-peso-${marcoId}`,
+      destinatario: 'coach-notification'
+    });
+  } catch (_) {
+    // Tabela pode não ter estas colunas
   }
 }
 
@@ -773,7 +926,7 @@ async function enviarEmail(tipo, destinatario, dados) {
       `
     },
     'coach-resumo-diario': {
-      assunto: `📊 Resumo Vitalis - ${dados.data}`,
+      assunto: `📊 Resumo Vitalis — ${dados.data}`,
       html: `
         <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
           <h1 style="color: #7C8B6F; font-size: 24px;">Resumo Diário Vitalis 📊</h1>
@@ -783,16 +936,16 @@ async function enviarEmail(tipo, destinatario, dados) {
             <h3 style="color: #4A4035; margin-bottom: 15px;">Métricas</h3>
             <table style="width: 100%; font-size: 14px;">
               <tr>
-                <td style="padding: 8px 0; color: #6B5C4C;">👥 Clientes ativas</td>
+                <td style="padding: 8px 0; color: #6B5C4C;">👥 Clientes activas</td>
                 <td style="padding: 8px 0; color: #7C8B6F; font-weight: bold; text-align: right;">${dados.totalClientes}</td>
               </tr>
               <tr>
-                <td style="padding: 8px 0; color: #6B5C4C;">✅ Check-ins ontem</td>
-                <td style="padding: 8px 0; color: #7C8B6F; font-weight: bold; text-align: right;">${dados.checkinsOntem}</td>
+                <td style="padding: 8px 0; color: #6B5C4C;">✅ Check-ins hoje</td>
+                <td style="padding: 8px 0; color: ${dados.checkinsHoje > 0 ? '#7C8B6F' : '#C1634A'}; font-weight: bold; text-align: right;">${dados.checkinsHoje}/${dados.totalClientes}</td>
               </tr>
               <tr>
                 <td style="padding: 8px 0; color: #6B5C4C;">⚠️ Alertas (Espaço Retorno)</td>
-                <td style="padding: 8px 0; color: ${dados.alertasOntem > 0 ? '#C1634A' : '#7C8B6F'}; font-weight: bold; text-align: right;">${dados.alertasOntem}</td>
+                <td style="padding: 8px 0; color: ${dados.alertasHoje > 0 ? '#C1634A' : '#7C8B6F'}; font-weight: bold; text-align: right;">${dados.alertasHoje}</td>
               </tr>
               <tr>
                 <td style="padding: 8px 0; color: #6B5C4C;">🆕 Novas clientes</td>
@@ -801,11 +954,32 @@ async function enviarEmail(tipo, destinatario, dados) {
             </table>
           </div>
 
-          ${dados.novasClientes > 0 ? `
+          ${dados.fizeramCheckin && dados.fizeramCheckin.length > 0 ? `
           <div style="background: #E8F5E9; border-radius: 12px; padding: 15px; margin: 20px 0;">
-            <p style="color: #2E7D32; font-size: 14px; margin: 0;">
-              <strong>Novas:</strong> ${dados.clientesLista}
+            <p style="color: #2E7D32; font-size: 13px; font-weight: bold; margin: 0 0 8px 0;">✅ Fizeram check-in:</p>
+            <p style="color: #2E7D32; font-size: 13px; margin: 0;">${dados.fizeramCheckin.join(' · ')}</p>
+          </div>
+          ` : ''}
+
+          ${dados.naoFizeramCheckin && dados.naoFizeramCheckin.length > 0 ? `
+          <div style="background: #FFF3E0; border-radius: 12px; padding: 15px; margin: 20px 0;">
+            <p style="color: #E65100; font-size: 13px; font-weight: bold; margin: 0 0 8px 0;">⏳ Sem check-in hoje:</p>
+            <p style="color: #BF360C; font-size: 13px; margin: 0;">${dados.naoFizeramCheckin.join(' · ')}</p>
+          </div>
+          ` : ''}
+
+          ${dados.novasClientes > 0 ? `
+          <div style="background: #E3F2FD; border-radius: 12px; padding: 15px; margin: 20px 0;">
+            <p style="color: #1565C0; font-size: 13px; margin: 0;">
+              <strong>🆕 Novas:</strong> ${dados.clientesLista}
             </p>
+          </div>
+          ` : ''}
+
+          ${dados.progressoPeso && dados.progressoPeso.length > 0 ? `
+          <div style="background: #F3E5F5; border-radius: 12px; padding: 15px; margin: 20px 0;">
+            <p style="color: #6A1B9A; font-size: 13px; font-weight: bold; margin: 0 0 8px 0;">⚖️ Progresso de peso:</p>
+            ${dados.progressoPeso.map(p => `<p style="color: #4A148C; font-size: 13px; margin: 2px 0;">${p.nome}: <strong>-${p.perdido}kg</strong> (actual: ${p.actual}kg${p.meta ? ` → meta: ${p.meta}kg` : ''})</p>`).join('')}
           </div>
           ` : ''}
 

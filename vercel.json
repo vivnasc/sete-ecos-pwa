@@ -45,7 +45,7 @@
     },
     {
       "path": "/api/cron?task=tarefas",
-      "schedule": "0 9 * * *"
+      "schedule": "0 19 * * *"
     },
     {
       "path": "/api/cron?task=email-sequencia",
