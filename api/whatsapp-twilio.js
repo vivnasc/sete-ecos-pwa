@@ -57,6 +57,11 @@ export default async function handler(req, res) {
     return handleDiagnostico(req, res, WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID);
   }
 
+  // Teste rápido — envia template boas_vindas para o número da Vivianne
+  if (action === 'teste') {
+    return handleTeste(req, res, WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID);
+  }
+
   // Templates management
   if (action && action.startsWith('templates')) {
     return handleTemplates(req, res, action, WHATSAPP_ACCESS_TOKEN);
@@ -123,6 +128,85 @@ async function handleEnviarMensagem(req, res, token, phoneId) {
   } catch (error) {
     console.error('Erro ao enviar WhatsApp:', error);
     return res.status(500).json({ error: 'Erro interno ao enviar WhatsApp' });
+  }
+}
+
+// ═══════════════════════════════════════════
+// Teste rápido — envia template para confirmar que funciona
+// ═══════════════════════════════════════════
+async function handleTeste(req, res, token, phoneId) {
+  const personalNumber = (process.env.VIVIANNE_PERSONAL_NUMBER || '').trim();
+  const destino = req.query?.para
+    ? req.query.para.replace(/[^0-9]/g, '')
+    : personalNumber
+      ? personalNumber.replace(/[^0-9]/g, '')
+      : '258851006473';
+
+  const template = req.query?.template || 'boas_vindas';
+  const tmpl = META_TEMPLATES[template];
+  if (!tmpl) {
+    return res.status(400).json({
+      error: `Template "${template}" não existe`,
+      disponiveis: Object.keys(META_TEMPLATES),
+    });
+  }
+
+  const nome = req.query?.nome || 'Vivianne';
+
+  // Montar payload do template
+  const components = [];
+  const params = tmpl.params ? tmpl.params(nome) : [nome];
+  if (params.length > 0) {
+    components.push({
+      type: 'body',
+      parameters: params.map(p => ({ type: 'text', text: p })),
+    });
+  }
+
+  const payload = {
+    messaging_product: 'whatsapp',
+    recipient_type: 'individual',
+    to: destino,
+    type: 'template',
+    template: {
+      name: tmpl.name,
+      language: { code: tmpl.language || 'pt_BR' },
+      components,
+    },
+  };
+
+  try {
+    const response = await fetch(`${GRAPH_API}/${phoneId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      return res.status(response.status).json({
+        error: result?.error?.message || 'Erro ao enviar',
+        code: result?.error?.code,
+        destino,
+        template: tmpl.name,
+        payload_enviado: payload,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Template "${tmpl.name}" enviado para +${destino}`,
+      messageId: result.messages?.[0]?.id,
+      destino,
+      template: tmpl.name,
+      nome_usado: nome,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 }
 
