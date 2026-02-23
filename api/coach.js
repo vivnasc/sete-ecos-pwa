@@ -22,11 +22,13 @@ const COACH_EMAILS = [
 ];
 
 // ─── Push notification helper (server-side) ───
-const VAPID_PUBLIC = process.env.VAPID_PUBLIC_KEY || 'BNTM9kj9OsZ_KBBsO-zVG3pX6WHFwyqPtBMQyW6_Woy89rjXFJe9yE3UJw2E8c-TQx8dkQ-6cSLOFkleuQi_qPs';
-const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY || 'd89K6ckTanOlUwJ-6xEaNna5pL1e6yKPQhqu6Hq0L6A';
+const VAPID_PUBLIC = process.env.VAPID_PUBLIC_KEY;
+const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY;
 const VAPID_EMAIL = process.env.VAPID_EMAIL || 'mailto:viv.saraiva@gmail.com';
 
-try { webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE); } catch (e) { /* ok */ }
+if (VAPID_PUBLIC && VAPID_PRIVATE) {
+  try { webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE); } catch (e) { /* ok */ }
+}
 
 async function pushCoachNotification({ title, body, url, tag }) {
   try {

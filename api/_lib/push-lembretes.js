@@ -1,13 +1,12 @@
 /**
  * Push Lembretes Cron — Envia push notifications reais aos clientes
  *
- * Chamado a cada hora pelo cron dispatcher.
- * Verifica as preferências de cada user e envia push nas horas certas.
+ * Chamado 3x/dia pelo cron (manhã, tarde, noite) em blocos:
+ *   manha  (8h CAT)  → lembretes agendados entre 05:00-10:59
+ *   tarde  (13h CAT) → lembretes agendados entre 11:00-16:59
+ *   noite  (19h CAT) → lembretes agendados entre 17:00-23:59
  *
- * Fluxo:
- * 1. Buscar todos os users com push_preferences activas
- * 2. Para cada user, verificar que lembretes estão agendados para a hora actual
- * 3. Enviar push notification via web-push
+ * Cada bloco envia os lembretes daquela janela temporal.
  */
 
 import { createClient } from '@supabase/supabase-js'
@@ -16,11 +15,20 @@ import webpush from 'web-push'
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY
 
-const VAPID_PUBLIC = process.env.VAPID_PUBLIC_KEY || 'BNTM9kj9OsZ_KBBsO-zVG3pX6WHFwyqPtBMQyW6_Woy89rjXFJe9yE3UJw2E8c-TQx8dkQ-6cSLOFkleuQi_qPs'
-const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY || 'd89K6ckTanOlUwJ-6xEaNna5pL1e6yKPQhqu6Hq0L6A'
+const VAPID_PUBLIC = process.env.VAPID_PUBLIC_KEY
+const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY
 const VAPID_EMAIL = process.env.VAPID_EMAIL || 'mailto:viv.saraiva@gmail.com'
 
-try { webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE) } catch (e) { /* ok */ }
+if (VAPID_PUBLIC && VAPID_PRIVATE) {
+  try { webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE) } catch (e) { /* ok */ }
+}
+
+// Blocos horários (horas CAT)
+const BLOCOS = {
+  manha: { min: 5, max: 10 },   // 05:00 - 10:59
+  tarde: { min: 11, max: 16 },  // 11:00 - 16:59
+  noite: { min: 17, max: 23 },  // 17:00 - 23:59
+}
 
 // Mensagens de push por tipo de lembrete
 const MENSAGENS = {
@@ -36,7 +44,7 @@ const MENSAGENS = {
   },
   prepAlmoco: {
     titulo: 'Começa a preparar o almoço',
-    corpo: 'Daqui a 30 min é hora de almoçar. Prepara agora para não sair do plano!',
+    corpo: 'Daqui a pouco é hora de almoçar. Prepara agora para não sair do plano!',
     url: '/vitalis/dashboard',
   },
   almoco: {
@@ -46,7 +54,7 @@ const MENSAGENS = {
   },
   prepJantar: {
     titulo: 'Começa a preparar o jantar',
-    corpo: 'Daqui a 30 min é hora de jantar. Prepara agora!',
+    corpo: 'Daqui a pouco é hora de jantar. Prepara agora!',
     url: '/vitalis/dashboard',
   },
   jantar: {
@@ -84,6 +92,33 @@ const MENSAGENS = {
     corpo: 'Não quebre a sequência. Regista algo hoje!',
     url: '/vitalis/dashboard',
   },
+  // Áurea lembretes
+  quota_manha: {
+    titulo: 'Lembrete da Quota',
+    corpo: 'Já reservaste o teu tempo hoje? A tua quota de presença espera por ti.',
+    url: '/aurea/dashboard',
+  },
+  pratica_tarde: {
+    titulo: 'Micro-Prática',
+    corpo: 'Que tal 2 minutos para ti? Uma pequena prática pode mudar o teu dia.',
+    url: '/aurea/praticas',
+  },
+  reflexao_noite: {
+    titulo: 'Reflexão da Noite',
+    corpo: 'Antes de dormir: celebra um pequeno "sim" a ti mesma. Boa noite.',
+    url: '/aurea/dashboard',
+  },
+  // Genéricos para outros ecos
+  checkin_manha: {
+    titulo: 'Check-in da manhã',
+    corpo: 'Como te sentes hoje? Começa o dia com consciência.',
+    url: '/',
+  },
+  respiracao: {
+    titulo: 'Lembrete de Respiração',
+    corpo: 'Pausa. 3 respirações profundas. Estás presente.',
+    url: '/',
+  },
 }
 
 /**
@@ -91,8 +126,25 @@ const MENSAGENS = {
  */
 async function enviarPush(supabase, userId, tipo) {
   const msg = MENSAGENS[tipo]
-  if (!msg) return 0
+  if (!msg) {
+    // Fallback genérico para tipos não mapeados
+    return enviarPushRaw(supabase, userId, {
+      title: 'Lembrete Sete Ecos',
+      body: 'Tens algo agendado agora. Abre a app!',
+      url: '/',
+      tag: `lembrete-${tipo}`,
+    })
+  }
 
+  return enviarPushRaw(supabase, userId, {
+    title: msg.titulo,
+    body: msg.corpo,
+    url: msg.url || '/',
+    tag: `lembrete-${tipo}`,
+  })
+}
+
+async function enviarPushRaw(supabase, userId, { title, body, url, tag }) {
   const { data: subs } = await supabase
     .from('push_subscriptions')
     .select('endpoint, keys_p256dh, keys_auth')
@@ -101,10 +153,10 @@ async function enviarPush(supabase, userId, tipo) {
   if (!subs || subs.length === 0) return 0
 
   const payload = JSON.stringify({
-    title: msg.titulo,
-    body: msg.corpo,
-    url: msg.url || '/',
-    tag: `lembrete-${tipo}`,
+    title,
+    body: body || '',
+    url: url || '/',
+    tag: tag || 'sete-ecos',
     vibrate: [200, 100, 200],
   })
 
@@ -126,29 +178,29 @@ async function enviarPush(supabase, userId, tipo) {
 }
 
 /**
- * Handler principal — chamado pelo cron dispatcher
+ * Handler principal — chamado pelo cron dispatcher 3x/dia
  */
 export default async function handler(req, res) {
+  if (!VAPID_PUBLIC || !VAPID_PRIVATE) {
+    return res.status(500).json({ error: 'VAPID keys em falta. Adiciona VAPID_PUBLIC_KEY e VAPID_PRIVATE_KEY nas env vars.' })
+  }
+
   if (!SUPABASE_URL || !SUPABASE_KEY) {
     return res.status(500).json({ error: 'Configuração Supabase em falta' })
   }
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-  // Hora actual no timezone de Moçambique (CAT = UTC+2)
-  const agora = new Date()
-  const catOffset = 2 * 60 // UTC+2
-  const catTime = new Date(agora.getTime() + catOffset * 60000)
-  const horaActual = catTime.getUTCHours().toString().padStart(2, '0')
-  const minActual = catTime.getUTCMinutes()
+  // Determinar bloco a partir do query param
+  const url = new URL(req.url, `http://${req.headers.host}`)
+  const bloco = url.searchParams.get('bloco') || req.query?.bloco || 'manha'
+  const janela = BLOCOS[bloco]
 
-  // Janela de tolerância: enviar se minuto está entre 0-29 (primeira meia hora)
-  // Isto permite que o cron corra 1x por hora e cubra lembretes nessa hora
-  // Ex: cron às 09:00 UTC+2, envia tudo agendado para 09:00-09:29
-  const janelaMin = 0
-  const janelaMax = 59
+  if (!janela) {
+    return res.status(400).json({ error: `Bloco desconhecido: ${bloco}`, opcoes: Object.keys(BLOCOS) })
+  }
 
-  console.log(`[Push Lembretes] Hora CAT: ${horaActual}:${minActual.toString().padStart(2, '0')}`)
+  console.log(`[Push Lembretes] Bloco: ${bloco} (${janela.min}h - ${janela.max}h CAT)`)
 
   // Buscar todas as preferências activas
   const { data: prefs, error } = await supabase
@@ -162,7 +214,7 @@ export default async function handler(req, res) {
   }
 
   if (!prefs || prefs.length === 0) {
-    return res.status(200).json({ message: 'Sem preferências activas', enviados: 0 })
+    return res.status(200).json({ bloco, message: 'Sem preferências activas', enviados: 0 })
   }
 
   let totalEnviados = 0
@@ -174,24 +226,29 @@ export default async function handler(req, res) {
     const lembretesActivos = pref.lembretes.filter(l => l.activo)
     if (lembretesActivos.length === 0) continue
 
+    let userEnviou = false
+
     for (const lembrete of lembretesActivos) {
       if (!lembrete.hora) continue
 
       const [h] = lembrete.hora.split(':').map(Number)
 
-      // Enviar se a hora do lembrete coincide com a hora actual
-      if (h === parseInt(horaActual)) {
+      // Enviar se a hora do lembrete cai dentro da janela do bloco
+      if (h >= janela.min && h <= janela.max) {
         const enviados = await enviarPush(supabase, pref.user_id, lembrete.tipo)
         totalEnviados += enviados
-        if (enviados > 0) totalUsers++
+        if (enviados > 0) userEnviou = true
       }
     }
+
+    if (userEnviou) totalUsers++
   }
 
-  console.log(`[Push Lembretes] ${totalEnviados} notificações enviadas a ${totalUsers} users`)
+  console.log(`[Push Lembretes] Bloco ${bloco}: ${totalEnviados} notificações a ${totalUsers} users`)
 
   return res.status(200).json({
-    hora: `${horaActual}:${minActual.toString().padStart(2, '0')} CAT`,
+    bloco,
+    janela: `${janela.min}h - ${janela.max}h CAT`,
     prefsActivas: prefs.length,
     notificacoesEnviadas: totalEnviados,
     usersNotificados: totalUsers,
