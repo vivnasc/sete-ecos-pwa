@@ -721,17 +721,16 @@ async function handleDiagnostico(req, res, token, phoneId) {
             }
           } catch (_) {}
         }
+      } else {
+        const errData = await meRes.json().catch(() => ({}));
+        resultado.testes.push({
+          teste: '/me — info do system user',
+          resultado: 'FALHOU',
+          http: meRes.status,
+          erro: errData?.error?.message || `HTTP ${meRes.status}`,
+          nota: 'O token pode não ter permissão para /me. Verifica as permissões do system user.',
+        });
       }
-    } else {
-      const errData = await meRes.json().catch(() => ({}));
-      resultado.testes.push({
-        teste: '/me — info do system user',
-        resultado: 'FALHOU',
-        http: meRes.status,
-        erro: errData?.error?.message || `HTTP ${meRes.status}`,
-        nota: 'O token pode não ter permissão para /me. Verifica as permissões do system user.',
-      });
-    }
     } catch (e) {
       resultado.testes.push({ teste: '/me', resultado: 'ERRO', erro: e.message });
     }
