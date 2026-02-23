@@ -7,6 +7,7 @@ import { ThemeProvider } from './contexts/ThemeContext'
 import { ToastProvider } from './components/Toast'
 import ErrorBoundary from './components/ErrorBoundary'
 import Navigation from './components/Navigation'
+import UpdateBanner from './components/UpdateBanner'
 
 // ===== PÁGINAS PRINCIPAIS (eager — carregam sempre) =====
 import Home from './pages/Home'
@@ -546,6 +547,7 @@ function App() {
           <AuthProvider>
             <ToastProvider>
               <ErrorBoundary>
+            <UpdateBanner />
             <div className="app">
               <AppRoutes />
             </div>
