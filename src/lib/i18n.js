@@ -683,15 +683,11 @@ export const DEFAULT_LOCALE = 'pt'
  * Detectar locale preferido do utilizador
  */
 export function detectLocale() {
-  // 1. Preferência guardada
+  // 1. Preferência guardada pelo utilizador (única forma de mudar idioma)
   const saved = localStorage.getItem('sete-ecos-locale')
   if (saved && translations[saved]) return saved
 
-  // 2. Preferência do browser
-  const browserLang = navigator.language?.split('-')[0]
-  if (browserLang && translations[browserLang]) return browserLang
-
-  // 3. Default
+  // 2. Default é sempre PT (plataforma portuguesa)
   return DEFAULT_LOCALE
 }
 
