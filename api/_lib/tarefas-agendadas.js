@@ -62,6 +62,9 @@ export default async function handler(req, res) {
     // 3. MARCOS — celebração de streaks (WhatsApp)
     await enviarMarcos(supabase, resultados);
 
+    // 3b. MARCOS DE PESO — celebrar perda de peso significativa
+    await enviarMarcosPeso(supabase, resultados);
+
     // 4. WIN-BACK — clientes com subscrição expirada (WhatsApp)
     await enviarWinback(supabase, resultados);
 
@@ -269,9 +272,9 @@ async function enviarResumoDiario(supabase, resultados) {
       supabase.from('vitalis_clients')
         .select('users!inner(nome, email)')
         .gte('created_at', ontem.toISOString()),
-      // Todos os clientes activos para cruzar com check-ins
+      // Todos os clientes activos para cruzar com check-ins (inclui peso)
       supabase.from('vitalis_clients')
-        .select('user_id, users!inner(nome)')
+        .select('user_id, peso_inicial, peso_actual, peso_meta, users!inner(nome)')
         .in('subscription_status', ['active', 'tester', 'trial'])
     ]);
 
@@ -285,6 +288,16 @@ async function enviarResumoDiario(supabase, resultados) {
       .filter(c => !userIdsComCheckin.has(c.user_id))
       .map(c => c.users?.nome?.split(' ')[0] || '?');
 
+    // Progresso de peso de cada cliente
+    const progressoPeso = (todosClientes || [])
+      .filter(c => c.peso_inicial && c.peso_actual && c.peso_inicial > c.peso_actual)
+      .map(c => {
+        const nome = c.users?.nome?.split(' ')[0] || '?';
+        const perdido = (c.peso_inicial - c.peso_actual).toFixed(1);
+        const restante = c.peso_meta ? (c.peso_actual - c.peso_meta).toFixed(1) : '?';
+        return { nome, perdido, restante, actual: c.peso_actual, meta: c.peso_meta };
+      });
+
     const dadosResumo = {
       data: new Date().toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' }),
       totalClientes: totalClientes || 0,
@@ -293,7 +306,8 @@ async function enviarResumoDiario(supabase, resultados) {
       novasClientes: novasClientes?.length || 0,
       clientesLista: novasClientes?.map(c => c.users?.nome || c.users?.email).join(', ') || '',
       fizeramCheckin: fizeram,
-      naoFizeramCheckin: naoFizeram
+      naoFizeramCheckin: naoFizeram,
+      progressoPeso
     };
 
     await enviarEmail('coach-resumo-diario', COACH_EMAIL, dadosResumo);
@@ -301,6 +315,9 @@ async function enviarResumoDiario(supabase, resultados) {
     // WhatsApp resumo diário
     const linhasFizeram = fizeram.length > 0 ? `\n✅ *Fizeram check-in:*\n${fizeram.join('\n')}` : '\n❌ Ninguém fez check-in hoje';
     const linhasNaoFizeram = naoFizeram.length > 0 ? `\n⏳ *Sem check-in:*\n${naoFizeram.join(', ')}` : '';
+    const linhasPeso = progressoPeso.length > 0
+      ? `\n⚖️ *Progresso de peso:*\n${progressoPeso.map(p => `${p.nome}: -${p.perdido}kg (actual: ${p.actual}kg${p.meta ? ` → meta: ${p.meta}kg` : ''})`).join('\n')}`
+      : '';
 
     await enviarWhatsAppCoach(`📊 *RESUMO VITALIS* — ${dadosResumo.data}
 
@@ -308,7 +325,7 @@ async function enviarResumoDiario(supabase, resultados) {
 ✅ Check-ins hoje: ${dadosResumo.checkinsHoje}/${dadosResumo.totalClientes}
 ⚠️ Alertas: ${dadosResumo.alertasHoje}
 🆕 Novas: ${dadosResumo.novasClientes}${dadosResumo.novasClientes > 0 ? ` (${dadosResumo.clientesLista})` : ''}
-${linhasFizeram}${linhasNaoFizeram}
+${linhasFizeram}${linhasNaoFizeram}${linhasPeso}
 
 Boa noite! 🌙`);
 
@@ -464,6 +481,109 @@ async function enviarMarcos(supabase, resultados) {
     } catch (_) {
       // Skip individual errors
     }
+  }
+}
+
+/**
+ * Celebrar marcos de perda de peso
+ * Verifica peso_inicial vs peso_actual e envia WA + notifica coach
+ */
+async function enviarMarcosPeso(supabase, resultados) {
+  const MARCOS_PESO = [
+    { kg: 1, id: 'peso_1kg', emoji: '⚖️', msg: 'Perdeste o teu primeiro quilo' },
+    { kg: 5, id: 'peso_5kg', emoji: '🎯', msg: 'Perdeste 5kg — estás em transformação' },
+    { kg: 10, id: 'peso_10kg', emoji: '🦋', msg: 'Perdeste 10kg — és uma nova pessoa' },
+  ];
+
+  const { data: clientes, error } = await supabase
+    .from('vitalis_clients')
+    .select(`
+      id,
+      user_id,
+      peso_inicial,
+      peso_actual,
+      peso_meta,
+      users!inner(id, nome, email)
+    `)
+    .in('subscription_status', ['active', 'trial', 'tester'])
+    .not('peso_inicial', 'is', null)
+    .not('peso_actual', 'is', null);
+
+  if (error || !clientes) return;
+
+  const alertasCoach = [];
+
+  for (const cliente of clientes) {
+    try {
+      if (!cliente.peso_inicial || !cliente.peso_actual) continue;
+      const pesoPerdido = cliente.peso_inicial - cliente.peso_actual;
+      if (pesoPerdido < 1) continue;
+
+      const nome = cliente.users?.nome?.split(' ')[0] || '?';
+
+      // Verificar se atingiu peso meta
+      if (cliente.peso_meta && cliente.peso_actual <= cliente.peso_meta) {
+        const marcoId = `peso_meta_${cliente.user_id}`;
+        const jaNotificado = await verificarMarcoNotificado(supabase, cliente.user_id, 'peso_meta');
+        if (!jaNotificado) {
+          alertasCoach.push(`🎉 *${nome}* ATINGIU O PESO META! (${cliente.peso_actual}kg — objectivo era ${cliente.peso_meta}kg)`);
+          await registarMarcoNotificado(supabase, cliente.user_id, 'peso_meta');
+          await enviarWACliente(supabase, cliente.user_id, 'marco_celebracao', {
+            nome: cliente.users.nome || '',
+            dias: 0,
+          }, resultados);
+        }
+      }
+
+      // Verificar marcos de kg perdidos
+      for (const marco of MARCOS_PESO) {
+        if (pesoPerdido >= marco.kg) {
+          const jaNotificado = await verificarMarcoNotificado(supabase, cliente.user_id, marco.id);
+          if (!jaNotificado) {
+            alertasCoach.push(`${marco.emoji} *${nome}* perdeu ${pesoPerdido.toFixed(1)}kg (marco: ${marco.kg}kg)`);
+            await registarMarcoNotificado(supabase, cliente.user_id, marco.id);
+            await enviarWACliente(supabase, cliente.user_id, 'marco_celebracao', {
+              nome: cliente.users.nome || '',
+              dias: marco.kg,
+            }, resultados);
+          }
+        }
+      }
+    } catch (_) {
+      // Skip individual errors
+    }
+  }
+
+  // Notificar coach sobre marcos de peso do dia
+  if (alertasCoach.length > 0) {
+    await enviarWhatsAppCoach(`🏆 *MARCOS DE PESO HOJE*\n\n${alertasCoach.join('\n')}\n\nParabéns às tuas clientes! 🎉`);
+    resultados.marcos += alertasCoach.length;
+  }
+}
+
+async function verificarMarcoNotificado(supabase, userId, marcoId) {
+  try {
+    const { data } = await supabase
+      .from('vitalis_email_log')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('tipo', `marco-peso-${marcoId}`)
+      .limit(1);
+    return data && data.length > 0;
+  } catch (_) {
+    return false;
+  }
+}
+
+async function registarMarcoNotificado(supabase, userId, marcoId) {
+  try {
+    await supabase.from('vitalis_email_log').insert({
+      user_id: userId,
+      tipo: `marco-peso-${marcoId}`,
+      destinatario: 'coach-notification'
+    });
+  } catch (_) {
+    // Tabela pode não ter estas colunas
   }
 }
 
@@ -853,6 +973,13 @@ async function enviarEmail(tipo, destinatario, dados) {
             <p style="color: #1565C0; font-size: 13px; margin: 0;">
               <strong>🆕 Novas:</strong> ${dados.clientesLista}
             </p>
+          </div>
+          ` : ''}
+
+          ${dados.progressoPeso && dados.progressoPeso.length > 0 ? `
+          <div style="background: #F3E5F5; border-radius: 12px; padding: 15px; margin: 20px 0;">
+            <p style="color: #6A1B9A; font-size: 13px; font-weight: bold; margin: 0 0 8px 0;">⚖️ Progresso de peso:</p>
+            ${dados.progressoPeso.map(p => `<p style="color: #4A148C; font-size: 13px; margin: 2px 0;">${p.nome}: <strong>-${p.perdido}kg</strong> (actual: ${p.actual}kg${p.meta ? ` → meta: ${p.meta}kg` : ''})</p>`).join('')}
           </div>
           ` : ''}
 

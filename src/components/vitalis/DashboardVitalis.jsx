@@ -459,6 +459,20 @@ export default function DashboardVitalis() {
       if ((mealsCount.count || 0) >= 10) { conquistas.push('refeicoes_10'); xp += 100; }
       if ((mealsCount.count || 0) >= 50) { conquistas.push('refeicoes_50'); xp += 250; }
 
+      // Conquistas de peso — comparar peso actual vs peso inicial
+      if (client?.peso_inicial && client?.peso_actual && client.peso_inicial > client.peso_actual) {
+        const pesoPerdido = client.peso_inicial - client.peso_actual;
+
+        if (pesoPerdido >= 1) { conquistas.push('peso_1kg'); xp += CONQUISTAS.peso_1kg?.xp || 150; }
+        if (pesoPerdido >= 5) { conquistas.push('peso_5kg'); xp += CONQUISTAS.peso_5kg?.xp || 300; }
+        if (pesoPerdido >= 10) { conquistas.push('peso_10kg'); xp += CONQUISTAS.peso_10kg?.xp || 500; }
+
+        // Atingiu peso meta
+        if (client.peso_meta && client.peso_actual <= client.peso_meta) {
+          conquistas.push('peso_meta'); xp += CONQUISTAS.peso_meta?.xp || 1000;
+        }
+      }
+
       // Verificar novas conquistas para enviar email
       const conquistasNotificadas = JSON.parse(localStorage.getItem('vitalis-conquistas-notificadas') || '[]');
       const novasConquistas = conquistas.filter(c => !conquistasNotificadas.includes(c));

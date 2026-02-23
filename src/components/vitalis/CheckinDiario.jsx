@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
+import { CONQUISTAS, CelebracaoModal } from './Gamificacao';
 
 export const CheckinDiario = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [milestoneConquista, setMilestoneConquista] = useState(null);
   
   const [formData, setFormData] = useState({
     peso_kg: '',
@@ -68,6 +70,13 @@ export const CheckinDiario = () => {
 
       if (error) throw error;
 
+      // Buscar peso_inicial e peso_meta para detectar marcos
+      const { data: clientFull } = await supabase
+        .from('vitalis_clients')
+        .select('peso_inicial, peso_meta')
+        .eq('user_id', userData.id)
+        .single();
+
       // Atualizar peso actual no cliente
       await supabase
         .from('vitalis_clients')
@@ -76,6 +85,31 @@ export const CheckinDiario = () => {
           ultimo_registo: new Date().toISOString()
         })
         .eq('user_id', userData.id);
+
+      // Detectar marcos de peso atingidos AGORA
+      let novoMarcoDetectado = null;
+      if (clientFull?.peso_inicial) {
+        const novoPeso = parseFloat(formData.peso_kg);
+        const pesoPerdido = clientFull.peso_inicial - novoPeso;
+        const conquistasNotificadas = JSON.parse(localStorage.getItem('vitalis-conquistas-notificadas') || '[]');
+
+        // Verificar qual é o maior marco atingido que ainda não foi notificado
+        if (pesoPerdido >= 10 && !conquistasNotificadas.includes('peso_10kg')) {
+          novoMarcoDetectado = 'peso_10kg';
+        } else if (pesoPerdido >= 5 && !conquistasNotificadas.includes('peso_5kg')) {
+          novoMarcoDetectado = 'peso_5kg';
+        } else if (pesoPerdido >= 1 && !conquistasNotificadas.includes('peso_1kg')) {
+          novoMarcoDetectado = 'peso_1kg';
+        }
+        // Peso meta atingido
+        if (clientFull.peso_meta && novoPeso <= clientFull.peso_meta && !conquistasNotificadas.includes('peso_meta')) {
+          novoMarcoDetectado = 'peso_meta';
+        }
+
+        if (novoMarcoDetectado) {
+          setMilestoneConquista(novoMarcoDetectado);
+        }
+      }
 
       // Notificar coach se é o primeiro check-in
       if (semanaPrograma <= 1) {
@@ -94,11 +128,11 @@ export const CheckinDiario = () => {
       }
 
       setSuccess(true);
-      
-      // Redirecionar após 2 segundos
+
+      // Se há marco de peso, dar mais tempo para ver a celebração
       setTimeout(() => {
         navigate('/vitalis/dashboard');
-      }, 2000);
+      }, novoMarcoDetectado ? 5000 : 2000);
 
     } catch (error) {
       console.error('Erro ao salvar check-in:', error);
@@ -141,6 +175,17 @@ export const CheckinDiario = () => {
           <h2 className="text-3xl font-bold text-[#7C8B6F] mb-2">Check-in Registado!</h2>
           <p className="text-[#6B5C4C]">A redirecionar para o dashboard...</p>
         </div>
+
+        {milestoneConquista && (
+          <CelebracaoModal
+            conquista={milestoneConquista}
+            show={true}
+            onClose={() => {
+              setMilestoneConquista(null);
+              navigate('/vitalis/dashboard');
+            }}
+          />
+        )}
       </div>
     );
   }
