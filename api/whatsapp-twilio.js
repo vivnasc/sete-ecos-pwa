@@ -8,6 +8,7 @@
  * - GET  ?action=templates              → Listar templates definidos (dry-run)
  * - GET  ?action=templates-criar        → Criar TODOS os templates na Meta
  * - GET  ?action=templates-criar&nome=boas_vindas → Criar 1 template
+ * - GET  ?action=templates-criar&nome=boas_vindas&force=1 → Apagar e recriar 1 template
  * - GET  ?action=templates-status       → Ver estado dos templates na Meta
  * - GET  ?action=templates-apagar&nome=boas_vindas → Apagar 1 template
  *
@@ -380,7 +381,7 @@ function converterParaMeta(key, tmpl) {
     });
   }
 
-  return { name: tmpl.name, language: tmpl.language, category: tmpl.category, components };
+  return { name: tmpl.name, language: tmpl.language, category: tmpl.category, allow_category_change: true, components };
 }
 
 async function criarTemplateMeta(token, wabaId, metaPayload) {
@@ -391,9 +392,26 @@ async function criarTemplateMeta(token, wabaId, metaPayload) {
   });
   const data = await response.json();
   if (!response.ok) {
-    return { ok: false, name: metaPayload.name, error: data.error?.message || JSON.stringify(data), code: data.error?.code };
+    return {
+      ok: false,
+      name: metaPayload.name,
+      error: data.error?.message || JSON.stringify(data),
+      code: data.error?.code,
+      error_subcode: data.error?.error_subcode,
+      error_detail: data.error?.error_data?.details || data.error?.error_user_msg || null,
+      fbtrace_id: data.error?.fbtrace_id,
+      payload_enviado: metaPayload,
+    };
   }
   return { ok: true, name: metaPayload.name, id: data.id, status: data.status };
+}
+
+async function apagarTemplateMeta(token, wabaId, name) {
+  const response = await fetch(`${GRAPH_API}/${wabaId}/message_templates?name=${encodeURIComponent(name)}`, {
+    method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` },
+  });
+  const data = await response.json();
+  return { ok: response.ok, name, error: data.error?.message };
 }
 
 async function listarTemplatesMeta(token, wabaId) {
@@ -1072,8 +1090,25 @@ async function handleTemplates(req, res, action, token) {
     const definidos = Object.values(META_TEMPLATES).map(t => t.name);
     const faltam = definidos.filter(n => !nossosNomes.has(n));
 
+    // Contagem por estado
+    const porEstado = {};
+    for (const t of nossos) {
+      porEstado[t.status] = (porEstado[t.status] || 0) + 1;
+    }
+
+    const aprovados = nossos.filter(t => t.status === 'APPROVED').length;
+    const pendentes = nossos.filter(t => t.status === 'PENDING').length;
+    const rejeitados = nossos.filter(t => t.status === 'REJECTED').length;
+
     return res.status(200).json({
       message: `${nossos.length}/${definidos.length} templates registados na Meta`,
+      resumo: {
+        aprovados,
+        pendentes,
+        rejeitados,
+        faltam: faltam.length,
+        prontos: aprovados === definidos.length ? 'Todos prontos!' : `Faltam aprovar ${definidos.length - aprovados}`,
+      },
       registados: nossos.map(t => ({ nome: t.name, estado: t.status, categoria: t.category, id: t.id })),
       faltam,
     });
@@ -1097,6 +1132,7 @@ async function handleTemplates(req, res, action, token) {
 
   // Criar
   if (action === 'templates-criar') {
+    const force = req.query.force === '1';
     const existentes = await listarTemplatesMeta(token, wabaId);
     const nomeExistentes = new Set();
     if (existentes.ok) {
@@ -1109,26 +1145,44 @@ async function handleTemplates(req, res, action, token) {
       templatesPorCriar = [[nomeFilter, META_TEMPLATES[nomeFilter]]];
     }
 
-    const resultados = { criados: [], ja_existiam: [], erros: [] };
+    const resultados = { criados: [], ja_existiam: [], apagados: [], erros: [] };
 
     for (const [key, tmpl] of templatesPorCriar) {
-      if (!nomeFilter && nomeExistentes.has(tmpl.name)) {
+      // Se force=1 e o template existe, apagar primeiro para recriar
+      if (force && nomeExistentes.has(tmpl.name)) {
+        const del = await apagarTemplateMeta(token, wabaId, tmpl.name);
+        if (del.ok) {
+          resultados.apagados.push(tmpl.name);
+          nomeExistentes.delete(tmpl.name);
+          await new Promise(r => setTimeout(r, 1000)); // esperar 1s após apagar
+        }
+      }
+
+      if (!nomeFilter && !force && nomeExistentes.has(tmpl.name)) {
         resultados.ja_existiam.push(tmpl.name);
         continue;
       }
-      const result = await criarTemplateMeta(token, wabaId, converterParaMeta(key, tmpl));
+      const metaPayload = converterParaMeta(key, tmpl);
+      const result = await criarTemplateMeta(token, wabaId, metaPayload);
       if (result.ok) {
         resultados.criados.push({ nome: tmpl.name, id: result.id, estado: result.status });
       } else if (result.code === 2388093) {
         resultados.ja_existiam.push(tmpl.name);
       } else {
-        resultados.erros.push({ nome: tmpl.name, erro: result.error, codigo: result.code });
+        resultados.erros.push({
+          nome: tmpl.name,
+          erro: result.error,
+          codigo: result.code,
+          detalhe: result.error_detail,
+          payload: result.payload_enviado,
+        });
       }
       await new Promise(r => setTimeout(r, 500));
     }
 
     return res.status(200).json({
-      message: `${resultados.criados.length} criados, ${resultados.ja_existiam.length} já existiam, ${resultados.erros.length} erros`,
+      message: `${resultados.criados.length} criados, ${resultados.ja_existiam.length} já existiam, ${resultados.apagados.length} apagados (force), ${resultados.erros.length} erros`,
+      dica_force: resultados.erros.length > 0 ? 'Se um template falhou, tenta com &force=1 para apagar e recriar' : undefined,
       ...resultados,
       proximo_passo: resultados.criados.length > 0
         ? 'Templates submetidos para aprovação. PENDING → APPROVED (minutos a horas). Verifica com ?action=templates-status'
