@@ -424,11 +424,13 @@ export default function DashboardVitalis() {
   const calcularConquistas = async (userId, userName, email) => {
     try {
       // Buscar dados para verificar conquistas
-      const [aguaCount, mealsCount, treinoCount, checkinCount] = await Promise.all([
+      const [aguaCount, mealsCount, treinoCount, checkinCount, sonoBoasNoites, receitasVistas] = await Promise.all([
         supabase.from('vitalis_agua_log').select('id', { count: 'exact' }).eq('user_id', userId),
         supabase.from('vitalis_meals_log').select('id', { count: 'exact' }).eq('user_id', userId),
         supabase.from('vitalis_workouts_log').select('id', { count: 'exact' }).eq('user_id', userId),
-        supabase.from('vitalis_registos').select('id', { count: 'exact' }).eq('user_id', userId)
+        supabase.from('vitalis_registos').select('id', { count: 'exact' }).eq('user_id', userId),
+        supabase.from('vitalis_sono_log').select('id', { count: 'exact' }).eq('user_id', userId).gte('duracao_min', 420),
+        supabase.from('vitalis_meals_log').select('receita_id', { count: 'exact' }).eq('user_id', userId).not('receita_id', 'is', null)
       ]);
 
       const conquistas = [];
@@ -446,6 +448,30 @@ export default function DashboardVitalis() {
       if (streakAtual >= 7) { conquistas.push('streak_7'); xp += 200; }
       if (streakAtual >= 14) { conquistas.push('streak_14'); xp += 350; }
       if (streakAtual >= 30) { conquistas.push('streak_30'); xp += 500; }
+      if (streakAtual >= 60) { conquistas.push('streak_60'); xp += CONQUISTAS.streak_60?.xp || 1000; }
+
+      // Conquistas de check-in
+      if ((checkinCount.count || 0) >= 7) { conquistas.push('checkin_7'); xp += CONQUISTAS.checkin_7?.xp || 75; }
+      if ((checkinCount.count || 0) >= 30) { conquistas.push('checkin_30'); xp += CONQUISTAS.checkin_30?.xp || 200; }
+
+      // Conquista sono perfeito (7+ noites com 7+ horas = 420min)
+      if ((sonoBoasNoites.count || 0) >= 7) { conquistas.push('sono_perfeito'); xp += CONQUISTAS.sono_perfeito?.xp || 125; }
+
+      // Conquista receitas (usou receita em pelo menos 5 refeições)
+      if ((receitasVistas.count || 0) >= 5) { conquistas.push('receita_5'); xp += CONQUISTAS.receita_5?.xp || 50; }
+
+      // Conquistas de fase (baseado na fase actual do cliente)
+      const faseActual = client?.fase_actual;
+      const fasesCompletadas = {
+        transicao: ['fase_inducao'],
+        recomposicao: ['fase_inducao', 'fase_estabilizacao'],
+        manutencao: ['fase_inducao', 'fase_estabilizacao', 'fase_reeducacao']
+      };
+      const fasesDesbloqueadas = fasesCompletadas[faseActual] || [];
+      for (const faseId of fasesDesbloqueadas) {
+        conquistas.push(faseId);
+        xp += CONQUISTAS[faseId]?.xp || 250;
+      }
 
       // Conquistas de água
       if ((aguaCount.count || 0) >= 1) { conquistas.push('agua_1'); xp += 50; }
@@ -1210,7 +1236,7 @@ export default function DashboardVitalis() {
             { to: '/vitalis/relatorios', emoji: '📊', label: 'Relatórios', cor: '#0891B2', bg: 'linear-gradient(145deg, #ECFEFF, #CFFAFE)' },
             { to: '/vitalis/treinos', emoji: '💪', label: t('vitalis.workouts.title'), cor: '#DC2626', bg: 'linear-gradient(145deg, #FEF2F2, #FECACA)' },
           ].map(item => (
-            <Link key={item.to} to={item.to} className="group rounded-2xl p-4 shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl text-center"
+            <Link key={item.to} to={item.to} className="group rounded-2xl p-4 shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 text-center"
               style={{ background: item.bg, borderBottom: `3px solid ${item.cor}` }}>
               <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">{item.emoji}</div>
               <p className="font-semibold text-[#4A4035] text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>{item.label}</p>

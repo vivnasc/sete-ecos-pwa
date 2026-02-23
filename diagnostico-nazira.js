@@ -204,7 +204,7 @@ async function diagnosticarUsuaria(user) {
         subscription_status: client.subscription_status,
         subscription_type: client.subscription_type,
         subscription_start: client.subscription_start,
-        subscription_end: client.subscription_end,
+        subscription_expires: client.subscription_expires,
         payment_method: client.payment_method,
         created_at: client.created_at
       }, null, 2));

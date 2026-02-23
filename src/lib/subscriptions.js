@@ -256,7 +256,7 @@ export const startTrial = async (userId) => {
       user_id: userId,
       subscription_status: SUBSCRIPTION_STATUS.TRIAL,
       trial_started: now.toISOString(),
-      subscription_end: trialEnd.toISOString(), // NOVO: Para sistema de emails funcionar
+      subscription_expires: trialEnd.toISOString(), // Corrigido: mesmo nome da coluna usada em checkVitalisAccess e trial-expiring-emails
       subscription_updated: now.toISOString(),
       status: 'novo',
       created_at: now.toISOString()

@@ -4,9 +4,8 @@
  * A voz da Vivianne: calorosa, directa, motivadora, vendedora natural.
  * Conhece TODOS os 7 Ecos, bundles, promos e a Comunidade.
  *
- * Módulo reutilizável por ambos os webhooks:
+ * Módulo reutilizável pelo webhook:
  * - Meta Cloud API (whatsapp-webhook.js)
- * - Twilio (whatsapp-chatbot.js)
  */
 
 const COACH_NUMERO = '258851006473';

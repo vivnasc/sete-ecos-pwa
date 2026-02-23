@@ -27,10 +27,13 @@ export default async function handler(req, res) {
   const authHeader = req.headers.authorization;
   const cronSecret = process.env.CRON_SECRET;
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    if (!req.headers['x-vercel-cron']) {
-      return res.status(401).json({ error: 'Não autorizado' });
-    }
+  if (!cronSecret) {
+    console.error('CRON_SECRET não definida — cron jobs bloqueados por segurança');
+    return res.status(500).json({ error: 'CRON_SECRET não configurada no Vercel' });
+  }
+
+  if (authHeader !== `Bearer ${cronSecret}` && !req.headers['x-vercel-cron']) {
+    return res.status(401).json({ error: 'Não autorizado' });
   }
 
   const task = req.query?.task;
