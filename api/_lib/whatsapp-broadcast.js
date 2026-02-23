@@ -157,7 +157,7 @@ export const META_TEMPLATES = {
 
   // Celebração de marco (7, 30, 90 dias)
   marco_celebracao: {
-    name: 'sete_ecos_marco',
+    name: 'sete_ecos_marco_v2',
     language: 'pt_BR',
     category: 'UTILITY',
     header: 'Parabéns pelo teu marco!',
