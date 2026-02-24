@@ -10,6 +10,13 @@ import {
   tempoRelativo
 } from '../../lib/comunidade'
 import { useI18n } from '../../contexts/I18nContext'
+import {
+  isGhostUser,
+  getGhostProfile,
+  getGhostConversations,
+  getGhostConversationMessages,
+  sendMessageToGhost
+} from '../../lib/ghost-users'
 
 // ============================================================
 // Sussurros — Palavras que aquecem em silêncio
@@ -190,9 +197,9 @@ function SussurroView({ userId, conversa, onVoltar }) {
     if (userId && conversa?.id) carregarSussurros()
   }, [userId, conversa?.id])
 
-  // Real-time: escutar novos sussurros
+  // Real-time: escutar novos sussurros (apenas conversas reais)
   useEffect(() => {
-    if (!conversa?.id) return
+    if (!conversa?.id || conversa._ghost) return
 
     const channel = supabase
       .channel(`sussurros-${conversa.id}`)
@@ -235,8 +242,15 @@ function SussurroView({ userId, conversa, onVoltar }) {
         setOutroPerfil(conversa.user1_profile)
       }
 
-      const msgs = await getSussurros(conversa.id)
-      setMensagens(msgs)
+      if (conversa._ghost) {
+        // Ghost conversation — mensagens do localStorage
+        const ghostId = conversa.user1_profile?.user_id || conversa.user1_id
+        const msgs = getGhostConversationMessages(userId, ghostId)
+        setMensagens(msgs)
+      } else {
+        const msgs = await getSussurros(conversa.id)
+        setMensagens(msgs)
+      }
     } catch (error) {
       console.error('Erro ao carregar sussurros:', error)
     }
@@ -251,13 +265,24 @@ function SussurroView({ userId, conversa, onVoltar }) {
     setTexto('')
 
     try {
-      const novoSussurro = await enviarSussurro(conversa.id, userId, conteudo)
-      if (novoSussurro) {
-        setMensagens(prev => {
-          const jaExiste = prev.some(m => m.id === novoSussurro.id)
-          if (jaExiste) return prev
-          return [...prev, novoSussurro]
-        })
+      if (conversa._ghost) {
+        // Ghost conversation — localStorage + resposta automática
+        const ghostId = conversa.user1_profile?.user_id || conversa.user1_id
+        const { userMsg, ghostReply } = sendMessageToGhost(userId, ghostId, conteudo)
+        setMensagens(prev => [...prev, userMsg])
+        // Simular resposta do ghost após 2s
+        setTimeout(() => {
+          setMensagens(prev => [...prev, ghostReply])
+        }, 2000)
+      } else {
+        const novoSussurro = await enviarSussurro(conversa.id, userId, conteudo)
+        if (novoSussurro) {
+          setMensagens(prev => {
+            const jaExiste = prev.some(m => m.id === novoSussurro.id)
+            if (jaExiste) return prev
+            return [...prev, novoSussurro]
+          })
+        }
       }
     } catch (error) {
       console.error('Erro ao enviar sussurro:', error)
@@ -477,13 +502,33 @@ export default function Sussurros() {
 
       setUserId(userData.id)
 
-      // Carregar conversas
+      // Carregar conversas reais + ghost
       const conversasData = await getConversasSussurros(userData.id)
-      setConversas(conversasData)
+      const ghostConvs = getGhostConversations(userData.id)
+      const merged = [...conversasData, ...ghostConvs]
+        .sort((a, b) => new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0))
+      setConversas(merged)
 
       // Verificar se ha param `para` para abrir conversa directamente
       const paraUserId = searchParams.get('para')
-      if (paraUserId && paraUserId !== userData.id) {
+      if (paraUserId && paraUserId !== userData.id && isGhostUser(paraUserId)) {
+        // Ghost conversation — abrir directamente
+        const ghostPerfil = getGhostProfile(paraUserId)
+        const ghostConv = {
+          id: `ghost_conv_${paraUserId}`,
+          user1_id: paraUserId,
+          user2_id: userData.id,
+          _ghost: true,
+          user1_profile: {
+            user_id: paraUserId,
+            display_name: ghostPerfil?.display_name || 'Utilizadora',
+            avatar_emoji: ghostPerfil?.avatar_emoji || '🌸',
+            avatar_url: null,
+          },
+          user2_profile: null,
+        }
+        setConversaAberta(ghostConv)
+      } else if (paraUserId && paraUserId !== userData.id) {
         try {
           const conversa = await getOuCriarSussurro(userData.id, paraUserId)
           if (conversa) {
@@ -530,7 +575,10 @@ export default function Sussurros() {
     if (userId) {
       try {
         const conversasData = await getConversasSussurros(userId)
-        setConversas(conversasData)
+        const ghostConvs = getGhostConversations(userId)
+        const merged = [...conversasData, ...ghostConvs]
+          .sort((a, b) => new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0))
+        setConversas(merged)
       } catch (error) {
         console.error('Erro ao recarregar conversas:', error)
       }

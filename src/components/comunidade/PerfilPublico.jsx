@@ -11,7 +11,15 @@ import {
   contarConexoes,
   ECOS_INFO
 } from '../../lib/comunidade'
-import { isGhostUser, getGhostProfile, getGhostPostsForRange } from '../../lib/ghost-users'
+import {
+  isGhostUser,
+  getGhostProfile,
+  getGhostPostsForRange,
+  getGhostConnectionState,
+  acceptGhostConnection,
+  rejectGhostConnection,
+  countGhostConnections
+} from '../../lib/ghost-users'
 import PostCard from './PostCard'
 import { useI18n } from '../../contexts/I18nContext'
 
@@ -58,8 +66,8 @@ export default function PerfilPublico() {
           const allGhostPosts = getGhostPostsForRange(30)
           const ghostUserPosts = allGhostPosts.filter(p => p.user_id === perfilUserId)
           setPosts(ghostUserPosts)
-          setNumConexoes(0)
-          setEstadoConexao('none')
+          setNumConexoes(3 + countGhostConnections(userData.id))
+          setEstadoConexao(getGhostConnectionState(userData.id, perfilUserId))
         } else {
           // Carregar dados em paralelo
           const [perfilData, postsData, conexoesCount, conexaoEstado] = await Promise.all([
@@ -84,20 +92,32 @@ export default function PerfilPublico() {
   const isGhost = isGhostUser(perfilUserId)
 
   const handleConexao = async () => {
-    if (acaoEmCurso || isOwnProfile || isGhost) return
+    if (acaoEmCurso || isOwnProfile) return
     setAcaoEmCurso(true)
     try {
-      if (estadoConexao === 'none') {
-        await pedirConexao(meusId, perfilUserId)
-        setEstadoConexao('pending_sent')
-      } else if (estadoConexao === 'pending_received') {
-        await aceitarConexao(meusId, perfilUserId)
-        setEstadoConexao('connected')
-        setNumConexoes(prev => prev + 1)
-      } else if (estadoConexao === 'connected' || estadoConexao === 'pending_sent') {
-        await recusarConexao(meusId, perfilUserId)
-        if (estadoConexao === 'connected') setNumConexoes(prev => Math.max(0, prev - 1))
-        setEstadoConexao('none')
+      if (isGhost) {
+        if (estadoConexao === 'pending_received') {
+          acceptGhostConnection(meusId, perfilUserId)
+          setEstadoConexao('connected')
+          setNumConexoes(prev => prev + 1)
+        } else if (estadoConexao === 'connected') {
+          rejectGhostConnection(meusId, perfilUserId)
+          setNumConexoes(prev => Math.max(0, prev - 1))
+          setEstadoConexao('none')
+        }
+      } else {
+        if (estadoConexao === 'none') {
+          await pedirConexao(meusId, perfilUserId)
+          setEstadoConexao('pending_sent')
+        } else if (estadoConexao === 'pending_received') {
+          await aceitarConexao(meusId, perfilUserId)
+          setEstadoConexao('connected')
+          setNumConexoes(prev => prev + 1)
+        } else if (estadoConexao === 'connected' || estadoConexao === 'pending_sent') {
+          await recusarConexao(meusId, perfilUserId)
+          if (estadoConexao === 'connected') setNumConexoes(prev => Math.max(0, prev - 1))
+          setEstadoConexao('none')
+        }
       }
     } catch (error) {
       console.error('Erro na conexão:', error)
@@ -191,7 +211,7 @@ export default function PerfilPublico() {
           </div>
 
           {/* Botão conexão */}
-          {!isOwnProfile && !isGhost && (
+          {!isOwnProfile && (
             <button
               onClick={handleConexao}
               disabled={acaoEmCurso}

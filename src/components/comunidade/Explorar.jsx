@@ -9,9 +9,16 @@ import {
   pesquisarPorHashtag,
   pedirConexao,
   verificarConexao,
+  aceitarConexao,
   ECOS_INFO,
   tempoRelativo
 } from '../../lib/comunidade'
+import {
+  isGhostUser,
+  getGhostConnectionState,
+  acceptGhostConnection,
+  getGhostConnectionRequests
+} from '../../lib/ghost-users'
 
 export default function Explorar() {
   const navigate = useNavigate()
@@ -77,15 +84,28 @@ export default function Explorar() {
       setTrending(trendingData)
 
       // Verificar estado de conexão (para as sugestoes)
+      const mapa = {}
       if (sugestoesData.length > 0) {
-        const mapa = {}
         await Promise.all(
           sugestoesData.map(async (s) => {
-            mapa[s.user_id] = await verificarConexao(uid, s.user_id)
+            if (isGhostUser(s.user_id)) {
+              mapa[s.user_id] = getGhostConnectionState(uid, s.user_id)
+            } else {
+              mapa[s.user_id] = await verificarConexao(uid, s.user_id)
+            }
           })
         )
-        setConexaoMap(mapa)
       }
+
+      // Adicionar ghosts que enviaram pedidos de conexão
+      const ghostRequests = getGhostConnectionRequests(uid)
+      ghostRequests.forEach(r => {
+        if (!mapa[r.ghostId]) {
+          mapa[r.ghostId] = getGhostConnectionState(uid, r.ghostId)
+        }
+      })
+
+      setConexaoMap(mapa)
     } catch (error) {
       console.error('Erro ao carregar conteudo inicial:', error)
     }
@@ -166,10 +186,26 @@ export default function Explorar() {
     if (!userId || acaoEmCurso[targetUserId]) return
     setAcaoEmCurso(prev => ({ ...prev, [targetUserId]: true }))
     try {
-      await pedirConexao(userId, targetUserId)
-      setConexaoMap(prev => ({ ...prev, [targetUserId]: 'pending_sent' }))
+      const estado = conexaoMap[targetUserId] || 'none'
+
+      if (isGhostUser(targetUserId)) {
+        // Ghost — aceitar pedido (pending_received → connected)
+        if (estado === 'pending_received') {
+          acceptGhostConnection(userId, targetUserId)
+          setConexaoMap(prev => ({ ...prev, [targetUserId]: 'connected' }))
+        }
+      } else {
+        // Real user
+        if (estado === 'pending_received') {
+          await aceitarConexao(userId, targetUserId)
+          setConexaoMap(prev => ({ ...prev, [targetUserId]: 'connected' }))
+        } else {
+          await pedirConexao(userId, targetUserId)
+          setConexaoMap(prev => ({ ...prev, [targetUserId]: 'pending_sent' }))
+        }
+      }
     } catch (error) {
-      console.error('Erro ao pedir conexão:', error)
+      console.error('Erro ao conectar:', error)
     }
     setAcaoEmCurso(prev => ({ ...prev, [targetUserId]: false }))
   }
@@ -431,9 +467,11 @@ export default function Explorar() {
                             onClick={() => handleConectar(perfil.user_id)}
                             disabled={acaoEmCurso[perfil.user_id]}
                             className="w-full py-1.5 rounded-lg text-center text-xs font-semibold text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
-                            style={{ backgroundColor: '#8B5CF6' }}
+                            style={{ backgroundColor: conexaoMap[perfil.user_id] === 'pending_received' ? '#D97706' : '#8B5CF6' }}
                           >
-                            {acaoEmCurso[perfil.user_id] ? '...' : 'Conectar'}
+                            {acaoEmCurso[perfil.user_id] ? '...'
+                              : conexaoMap[perfil.user_id] === 'pending_received' ? 'Aceitar'
+                              : 'Conectar'}
                           </button>
                         )}
                       </div>

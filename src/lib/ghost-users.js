@@ -1223,3 +1223,285 @@ export function getGhostRessonanciaBatch(postIds) {
   })
   return map
 }
+
+// ============================================================
+// GHOST PROACTIVE — Conexões e Conversas Iniciadas por Ghosts
+// Ghosts "enviam" pedidos de conexão e iniciam conversas.
+// Tudo determinístico e armazenado no localStorage.
+// ============================================================
+
+// ---------- MENSAGENS INICIAIS (ghosts a iniciar conversa) ----------
+
+const GHOST_MENSAGENS_INICIAIS = [
+  'Olá! Vi a tua reflexão no Rio e tocou-me muito. A comunidade precisa de mais partilhas assim. 🌸',
+  'Oi! Somos do mesmo caminho no Vitalis e quis enviar-te uma palavra de força. O Rio está mais bonito com a tua presença! 🌿',
+  'Olá! A tua partilha na comunidade deu-me coragem para continuar a minha jornada nos Ecos. ✨',
+  'Oi! Reparei que também estás no Vitalis. As tuas reflexões na comunidade são inspiradoras. 💪',
+  'Olá! A tua presença na comunidade faz diferença. Obrigada por partilhares a tua jornada connosco. 🕊️',
+  'Oi! Vi que partilhaste algo lindo na comunidade. Continua a reflectir — inspiras quem te lê. 🌱',
+  'Olá! Sou nova na comunidade mas as tuas reflexões no Rio foram das primeiras que ressoaram comigo. 🌺',
+  'Oi! A tua reflexão sobre o caminho de transformação fez-me pensar no meu próprio percurso nos Ecos. 💜',
+  'Olá! As tuas partilhas na comunidade mostram tanta autenticidade. O Rio precisa disso. 🌙',
+  'Oi! Bem-vinda à comunidade! Vi as tuas reflexões e quis conectar. Estamos juntas nesta jornada. 🤝',
+]
+
+// ---------- RESPOSTAS GHOST (quando o user envia mensagem) ----------
+
+const GHOST_RESPOSTAS = [
+  'Obrigada pela partilha! A comunidade precisa desta autenticidade. 🌸',
+  'Ressoo com isso! A jornada nos Ecos tem destas descobertas bonitas. 💜',
+  'Que reflexão tão bonita. Vou levar isto para o meu próximo check-in no Vitalis. ✨',
+  'É exactamente para isto que a comunidade serve — partilhar e crescer juntas. 🕊️',
+  'Adorei ler isto. As reflexões no Rio também me ajudam a pensar. 🌿',
+  'Que força! A transformação acontece mesmo quando partilhamos assim. 🌱',
+  'Sim! A comunidade é mais bonita quando caminhamos juntas nos Ecos. 🌺',
+  'Obrigada por partilhares a tua jornada. Inspiras toda a comunidade. 💛',
+]
+
+/**
+ * Selecciona 2-3 ghosts que "enviaram" pedido de conexão a este user.
+ * Determinístico baseado no userId + data (muda a cada 3 dias).
+ */
+export function getGhostConnectionRequests(userId) {
+  if (!userId) return []
+  // Muda a cada 3 dias para não ser sempre os mesmos
+  const dayBlock = Math.floor(dateSeed() / 3)
+  const seed = hashStr(userId + '_ghost_conexoes_' + dayBlock)
+  const rng = seededRandom(seed)
+
+  const numRequests = 2 + Math.floor(rng() * 2) // 2-3
+  const shuffled = shuffle(GHOST_PROFILES, rng)
+
+  return shuffled.slice(0, numRequests).map((perfil, i) => ({
+    ghostId: perfil.id,
+    perfil: {
+      user_id: perfil.id,
+      display_name: perfil.display_name,
+      avatar_emoji: perfil.avatar_emoji,
+      avatar_color: perfil.avatar_color,
+      iniciais: perfil.iniciais,
+      avatar_url: null,
+      bio: perfil.bio,
+      ecos_activos: perfil.ecos_activos,
+      cidade: perfil.cidade,
+    },
+    // Timestamp: entre 2h e 48h atrás
+    created_at: new Date(Date.now() - (2 + rng() * 46) * 3600000).toISOString()
+  }))
+}
+
+/**
+ * Verifica o estado de conexão com um ghost.
+ * Retorna: 'pending_received' (ghost enviou pedido) | 'connected' (user aceitou) | 'none'
+ */
+export function getGhostConnectionState(userId, ghostId) {
+  // Verificar se o user já aceitou/recusou
+  const stored = JSON.parse(localStorage.getItem('ghost_connections') || '{}')
+  const key = `${userId}_${ghostId}`
+  if (stored[key] === 'connected') return 'connected'
+  if (stored[key] === 'rejected') return 'none'
+
+  // Verificar se este ghost faz parte dos pedidos activos
+  const requests = getGhostConnectionRequests(userId)
+  const hasRequest = requests.some(r => r.ghostId === ghostId)
+  return hasRequest ? 'pending_received' : 'none'
+}
+
+/**
+ * Aceitar conexão ghost — guarda no localStorage.
+ */
+export function acceptGhostConnection(userId, ghostId) {
+  const stored = JSON.parse(localStorage.getItem('ghost_connections') || '{}')
+  stored[`${userId}_${ghostId}`] = 'connected'
+  localStorage.setItem('ghost_connections', JSON.stringify(stored))
+}
+
+/**
+ * Recusar/cancelar conexão ghost.
+ */
+export function rejectGhostConnection(userId, ghostId) {
+  const stored = JSON.parse(localStorage.getItem('ghost_connections') || '{}')
+  stored[`${userId}_${ghostId}`] = 'rejected'
+  localStorage.setItem('ghost_connections', JSON.stringify(stored))
+}
+
+/**
+ * Contar conexões ghost aceites.
+ */
+export function countGhostConnections(userId) {
+  const stored = JSON.parse(localStorage.getItem('ghost_connections') || '{}')
+  return Object.keys(stored).filter(k => k.startsWith(userId + '_') && stored[k] === 'connected').length
+}
+
+/**
+ * Retorna conversas ghost iniciadas proactivamente.
+ * 1-2 ghosts "enviam" mensagem inicial ao user.
+ */
+export function getGhostConversations(userId) {
+  if (!userId) return []
+  const dayBlock = Math.floor(dateSeed() / 2) // Muda a cada 2 dias
+  const seed = hashStr(userId + '_ghost_convs_' + dayBlock)
+  const rng = seededRandom(seed)
+
+  const numConvs = 1 + Math.floor(rng() * 2) // 1-2
+  const shuffled = shuffle(GHOST_PROFILES, rng)
+  const msgs = shuffle(GHOST_MENSAGENS_INICIAIS, rng)
+
+  return shuffled.slice(0, numConvs).map((perfil, i) => {
+    const horasAtras = 1 + rng() * 24
+    const created = new Date(Date.now() - horasAtras * 3600000).toISOString()
+
+    return {
+      id: `ghost_conv_${perfil.id}`,
+      user1_id: perfil.id,
+      user2_id: userId,
+      last_message: msgs[i % msgs.length],
+      last_message_at: created,
+      _ghost: true,
+      user1_profile: {
+        user_id: perfil.id,
+        display_name: perfil.display_name,
+        avatar_emoji: perfil.avatar_emoji,
+        avatar_color: perfil.avatar_color,
+        iniciais: perfil.iniciais,
+        avatar_url: null,
+      },
+      user2_profile: null // Será preenchido pelo componente
+    }
+  })
+}
+
+/**
+ * Retorna mensagens de uma conversa ghost (pré-geradas + user-enviadas do localStorage).
+ */
+export function getGhostConversationMessages(userId, ghostId) {
+  const perfil = GHOST_PROFILES.find(p => p.id === ghostId)
+  if (!perfil) return []
+
+  // Mensagem inicial do ghost
+  const seed = hashStr(userId + '_ghost_msgs_' + ghostId)
+  const rng = seededRandom(seed)
+  const msgs = shuffle(GHOST_MENSAGENS_INICIAIS, rng)
+  const horasAtras = 1 + rng() * 24
+
+  const initialMsg = {
+    id: `ghost_msg_init_${ghostId}`,
+    conversation_id: `ghost_conv_${ghostId}`,
+    sender_id: ghostId,
+    conteudo: msgs[0],
+    created_at: new Date(Date.now() - horasAtras * 3600000).toISOString(),
+    _ghost: true,
+  }
+
+  // Mensagens do user (do localStorage)
+  const stored = JSON.parse(localStorage.getItem('ghost_chat_messages') || '{}')
+  const userMsgs = stored[`${userId}_${ghostId}`] || []
+
+  // Combinar e ordenar
+  const all = [initialMsg, ...userMsgs]
+  all.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+  return all
+}
+
+/**
+ * Enviar mensagem para um ghost — guarda no localStorage e gera resposta.
+ */
+export function sendMessageToGhost(userId, ghostId, conteudo) {
+  const stored = JSON.parse(localStorage.getItem('ghost_chat_messages') || '{}')
+  const key = `${userId}_${ghostId}`
+  if (!stored[key]) stored[key] = []
+
+  const now = new Date().toISOString()
+
+  // Mensagem do user
+  const userMsg = {
+    id: `ghost_user_msg_${Date.now()}`,
+    conversation_id: `ghost_conv_${ghostId}`,
+    sender_id: userId,
+    conteudo,
+    created_at: now,
+    _ghost: true,
+  }
+  stored[key].push(userMsg)
+
+  // Resposta automática do ghost (após 1-3 segundos simulados)
+  const seed = hashStr(ghostId + '_resp_' + Date.now())
+  const rng = seededRandom(seed)
+  const respostas = shuffle(GHOST_RESPOSTAS, rng)
+
+  const ghostReply = {
+    id: `ghost_reply_${Date.now()}`,
+    conversation_id: `ghost_conv_${ghostId}`,
+    sender_id: ghostId,
+    conteudo: respostas[0],
+    created_at: new Date(Date.now() + 2000).toISOString(), // 2s "depois"
+    _ghost: true,
+  }
+  stored[key].push(ghostReply)
+
+  localStorage.setItem('ghost_chat_messages', JSON.stringify(stored))
+  return { userMsg, ghostReply }
+}
+
+/**
+ * Gera notificações ghost de pedidos de conexão.
+ */
+export function getGhostConnectionNotifications(userId) {
+  const requests = getGhostConnectionRequests(userId)
+  const stored = JSON.parse(localStorage.getItem('ghost_connections') || '{}')
+
+  return requests
+    .filter(r => {
+      const key = `${userId}_${r.ghostId}`
+      return stored[key] !== 'connected' && stored[key] !== 'rejected'
+    })
+    .map(r => ({
+      id: `ghost_notif_conexao_${r.ghostId}`,
+      user_id: userId,
+      actor_id: r.ghostId,
+      tipo: 'conexao',
+      post_id: null,
+      conteudo: '',
+      lida: false,
+      created_at: r.created_at,
+      _ghost: true,
+      actor_profile: {
+        display_name: r.perfil.display_name,
+        avatar_emoji: r.perfil.avatar_emoji,
+        avatar_url: null,
+        avatar_color: r.perfil.avatar_color,
+        iniciais: r.perfil.iniciais,
+      }
+    }))
+}
+
+/**
+ * Gera notificações ghost de mensagens recebidas.
+ */
+export function getGhostMessageNotifications(userId) {
+  const convs = getGhostConversations(userId)
+  const readKey = 'ghost_msg_notifs_read'
+  const readIds = JSON.parse(localStorage.getItem(readKey) || '[]')
+
+  return convs.map(conv => {
+    const ghostProfile = conv.user1_profile
+    return {
+      id: `ghost_notif_msg_${ghostProfile.user_id}`,
+      user_id: userId,
+      actor_id: ghostProfile.user_id,
+      tipo: 'sussurro',
+      post_id: null,
+      conteudo: (conv.last_message || '').slice(0, 50),
+      lida: readIds.includes(`ghost_notif_msg_${ghostProfile.user_id}`),
+      created_at: conv.last_message_at,
+      _ghost: true,
+      actor_profile: {
+        display_name: ghostProfile.display_name,
+        avatar_emoji: ghostProfile.avatar_emoji,
+        avatar_url: null,
+        avatar_color: ghostProfile.avatar_color,
+        iniciais: ghostProfile.iniciais,
+      }
+    }
+  })
+}

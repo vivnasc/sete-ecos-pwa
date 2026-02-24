@@ -3,6 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { getConversas, getOuCriarConversa, getMensagens, enviarMensagem, tempoRelativo } from '../../lib/comunidade'
 import { useI18n } from '../../contexts/I18nContext'
+import {
+  isGhostUser,
+  getGhostProfile,
+  getGhostConversations,
+  getGhostConversationMessages,
+  sendMessageToGhost
+} from '../../lib/ghost-users'
 
 // ============================================================
 // ConversasList — Lista de conversas (inbox)
@@ -22,7 +29,10 @@ function ConversasList({ userId, onAbrirConversa }) {
     setLoading(true)
     try {
       const data = await getConversas(userId)
-      setConversas(data)
+      const ghostConvs = getGhostConversations(userId)
+      const merged = [...data, ...ghostConvs]
+        .sort((a, b) => new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0))
+      setConversas(merged)
     } catch (error) {
       console.error('Erro ao carregar conversas:', error)
     }
@@ -86,7 +96,7 @@ function ConversasList({ userId, onAbrirConversa }) {
               return (
                 <button
                   key={conversa.id}
-                  onClick={() => onAbrirConversa(conversa.id)}
+                  onClick={() => onAbrirConversa(conversa.id, conversa._ghost)}
                   className="w-full flex items-center gap-3 p-4 hover:bg-purple-50/50 transition-colors text-left"
                 >
                   {/* Avatar */}
@@ -155,6 +165,7 @@ function ChatView({ userId, conversaId }) {
   const [texto, setTexto] = useState('')
   const [enviando, setEnviando] = useState(false)
 
+  const isGhostConv = conversaId?.startsWith('ghost_conv_')
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
 
@@ -162,9 +173,9 @@ function ChatView({ userId, conversaId }) {
     if (userId && conversaId) carregarChat()
   }, [userId, conversaId])
 
-  // Real-time: escutar novas mensagens
+  // Real-time: escutar novas mensagens (apenas conversas reais)
   useEffect(() => {
-    if (!conversaId) return
+    if (!conversaId || isGhostConv) return
 
     const channel = supabase
       .channel(`mensagens-${conversaId}`)
@@ -178,7 +189,6 @@ function ChatView({ userId, conversaId }) {
         },
         (payload) => {
           const nova = payload.new
-          // Evitar duplicar se foi o proprio utilizador a enviar
           setMensagens(prev => {
             const jaExiste = prev.some(m => m.id === nova.id)
             if (jaExiste) return prev
@@ -205,34 +215,47 @@ function ChatView({ userId, conversaId }) {
   const carregarChat = async () => {
     setLoading(true)
     try {
-      // Carregar conversa com perfis
-      const { data: conversaData, error: conversaError } = await supabase
-        .from('community_conversations')
-        .select(`
-          *,
-          user1_profile:community_profiles!community_conversations_user1_id_fkey (
-            user_id, display_name, avatar_emoji, avatar_url
-          ),
-          user2_profile:community_profiles!community_conversations_user2_id_fkey (
-            user_id, display_name, avatar_emoji, avatar_url
-          )
-        `)
-        .eq('id', conversaId)
-        .single()
-
-      if (conversaError) throw conversaError
-      setConversa(conversaData)
-
-      // Determinar o outro perfil
-      if (conversaData.user1_profile?.user_id === userId) {
-        setOutroPerfil(conversaData.user2_profile)
+      if (isGhostConv) {
+        // Ghost conversation — tudo local
+        const ghostId = conversaId.replace('ghost_conv_', '')
+        const ghostPerfil = getGhostProfile(ghostId)
+        setConversa({ id: conversaId, _ghost: true })
+        setOutroPerfil(ghostPerfil ? {
+          user_id: ghostId,
+          display_name: ghostPerfil.display_name,
+          avatar_emoji: ghostPerfil.avatar_emoji,
+          avatar_url: null,
+        } : null)
+        const msgs = getGhostConversationMessages(userId, ghostId)
+        setMensagens(msgs)
       } else {
-        setOutroPerfil(conversaData.user1_profile)
-      }
+        // Conversa real — Supabase
+        const { data: conversaData, error: conversaError } = await supabase
+          .from('community_conversations')
+          .select(`
+            *,
+            user1_profile:community_profiles!community_conversations_user1_id_fkey (
+              user_id, display_name, avatar_emoji, avatar_url
+            ),
+            user2_profile:community_profiles!community_conversations_user2_id_fkey (
+              user_id, display_name, avatar_emoji, avatar_url
+            )
+          `)
+          .eq('id', conversaId)
+          .single()
 
-      // Carregar mensagens
-      const msgs = await getMensagens(conversaId)
-      setMensagens(msgs)
+        if (conversaError) throw conversaError
+        setConversa(conversaData)
+
+        if (conversaData.user1_profile?.user_id === userId) {
+          setOutroPerfil(conversaData.user2_profile)
+        } else {
+          setOutroPerfil(conversaData.user1_profile)
+        }
+
+        const msgs = await getMensagens(conversaId)
+        setMensagens(msgs)
+      }
     } catch (error) {
       console.error('Erro ao carregar chat:', error)
     }
@@ -247,17 +270,27 @@ function ChatView({ userId, conversaId }) {
     setTexto('')
 
     try {
-      const novaMensagem = await enviarMensagem(conversaId, userId, conteudo)
-      if (novaMensagem) {
-        setMensagens(prev => {
-          const jaExiste = prev.some(m => m.id === novaMensagem.id)
-          if (jaExiste) return prev
-          return [...prev, novaMensagem]
-        })
+      if (isGhostConv) {
+        const ghostId = conversaId.replace('ghost_conv_', '')
+        const { userMsg, ghostReply } = sendMessageToGhost(userId, ghostId, conteudo)
+        setMensagens(prev => [...prev, userMsg])
+        // Simular resposta do ghost após 2s
+        setTimeout(() => {
+          setMensagens(prev => [...prev, ghostReply])
+        }, 2000)
+      } else {
+        const novaMensagem = await enviarMensagem(conversaId, userId, conteudo)
+        if (novaMensagem) {
+          setMensagens(prev => {
+            const jaExiste = prev.some(m => m.id === novaMensagem.id)
+            if (jaExiste) return prev
+            return [...prev, novaMensagem]
+          })
+        }
       }
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error)
-      setTexto(conteudo) // Restaurar texto em caso de erro
+      setTexto(conteudo)
     }
     setEnviando(false)
     inputRef.current?.focus()
@@ -486,7 +519,7 @@ export default function Mensagens() {
     setLoading(false)
   }
 
-  const handleAbrirConversa = (id) => {
+  const handleAbrirConversa = (id, isGhost) => {
     navigate(`/comunidade/mensagens/${id}`)
   }
 
