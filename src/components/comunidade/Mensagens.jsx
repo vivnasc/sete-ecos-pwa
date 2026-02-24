@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { getConversas, getOuCriarConversa, getMensagens, enviarMensagem, tempoRelativo } from '../../lib/comunidade'
+import { getConversas, getOuCriarConversa, getMensagens, enviarMensagem, tempoRelativo, getConexoesIds } from '../../lib/comunidade'
 import { useI18n } from '../../contexts/I18nContext'
 import {
   isGhostUser,
@@ -20,6 +20,10 @@ function ConversasList({ userId, onAbrirConversa }) {
   const { t } = useI18n()
   const [loading, setLoading] = useState(true)
   const [conversas, setConversas] = useState([])
+  const [mostrarContactos, setMostrarContactos] = useState(false)
+  const [contactos, setContactos] = useState([])
+  const [loadingContactos, setLoadingContactos] = useState(false)
+  const [criandoConversa, setCriandoConversa] = useState(null)
 
   useEffect(() => {
     if (userId) carregarConversas()
@@ -37,6 +41,97 @@ function ConversasList({ userId, onAbrirConversa }) {
       console.error('Erro ao carregar conversas:', error)
     }
     setLoading(false)
+  }
+
+  const carregarContactos = async () => {
+    setLoadingContactos(true)
+    try {
+      // Conexoes reais
+      const ids = await getConexoesIds(userId)
+      let perfisReais = []
+      if (ids.length > 0) {
+        const { data } = await supabase
+          .from('community_profiles')
+          .select('user_id, display_name, avatar_emoji, avatar_url')
+          .in('user_id', ids)
+        perfisReais = data || []
+      }
+
+      // Conexoes ghost aceites
+      const stored = JSON.parse(localStorage.getItem('ghost_connections') || '{}')
+      const ghostConectados = Object.keys(stored)
+        .filter(k => k.startsWith(userId + '_') && stored[k] === 'connected')
+        .map(k => {
+          const ghostId = k.replace(userId + '_', '')
+          const perfil = getGhostProfile(ghostId)
+          return perfil ? {
+            user_id: ghostId,
+            display_name: perfil.display_name,
+            avatar_emoji: perfil.avatar_emoji,
+            avatar_url: null,
+            _ghost: true,
+          } : null
+        })
+        .filter(Boolean)
+
+      // Ghosts com conversas activas
+      const ghostConvs = getGhostConversations(userId)
+      const ghostConvIds = ghostConvs.map(c => c.user1_profile?.user_id).filter(Boolean)
+      const ghostComConversa = ghostConvIds
+        .filter(id => !ghostConectados.find(g => g.user_id === id))
+        .map(id => {
+          const perfil = getGhostProfile(id)
+          return perfil ? {
+            user_id: id,
+            display_name: perfil.display_name,
+            avatar_emoji: perfil.avatar_emoji,
+            avatar_url: null,
+            _ghost: true,
+          } : null
+        })
+        .filter(Boolean)
+
+      // Filtrar quem ja tem conversa aberta
+      const idsComConversa = new Set(
+        conversas.map(c => {
+          if (c.user1_profile?.user_id === userId) return c.user2_profile?.user_id
+          return c.user1_profile?.user_id
+        }).filter(Boolean)
+      )
+
+      const todos = [...perfisReais, ...ghostConectados, ...ghostComConversa]
+        .filter(p => !idsComConversa.has(p.user_id))
+
+      setContactos(todos)
+    } catch (error) {
+      console.error('Erro ao carregar contactos:', error)
+    }
+    setLoadingContactos(false)
+  }
+
+  const handleNovaConversa = () => {
+    setMostrarContactos(true)
+    carregarContactos()
+  }
+
+  const handleEscolherContacto = async (contacto) => {
+    setCriandoConversa(contacto.user_id)
+    try {
+      if (contacto._ghost || isGhostUser(contacto.user_id)) {
+        // Ghost — abrir conversa ghost directamente
+        onAbrirConversa(`ghost_conv_${contacto.user_id}`, true)
+      } else {
+        // Real — criar ou abrir conversa
+        const conversa = await getOuCriarConversa(userId, contacto.user_id)
+        if (conversa) {
+          onAbrirConversa(conversa.id, false)
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao criar conversa:', error)
+    }
+    setCriandoConversa(null)
+    setMostrarContactos(false)
   }
 
   const getOutroPerfil = (conversa) => {
@@ -64,16 +159,71 @@ function ConversasList({ userId, onAbrirConversa }) {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-gray-100">
         <div className="max-w-lg mx-auto flex items-center gap-3 p-4">
-          <button onClick={() => navigate(-1)} className="text-gray-400 hover:text-gray-600">
+          <button onClick={() => navigate(-1)} className="text-gray-400 hover:text-gray-600 flex-shrink-0">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h1 className="text-xl font-bold" style={{ fontFamily: 'var(--font-titulos)', color: '#1A1A4E' }}>
+          <h1 className="text-xl font-bold flex-1" style={{ fontFamily: 'var(--font-titulos)', color: '#1A1A4E' }}>
             {t('comunidade.mensagens.title')}
           </h1>
+          <button
+            onClick={handleNovaConversa}
+            className="w-9 h-9 rounded-full flex items-center justify-center text-white flex-shrink-0 transition-all active:scale-95"
+            style={{ backgroundColor: '#8B5CF6' }}
+            aria-label="Nova conversa"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
         </div>
       </div>
+
+      {/* Picker de contactos */}
+      {mostrarContactos && (
+        <div className="max-w-lg mx-auto bg-white border-b border-gray-100 animate-fadeIn">
+          <div className="flex items-center justify-between px-4 pt-3 pb-2">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Nova conversa</p>
+            <button
+              onClick={() => setMostrarContactos(false)}
+              className="text-xs text-gray-400"
+            >
+              Cancelar
+            </button>
+          </div>
+          {loadingContactos ? (
+            <div className="flex items-center justify-center py-6">
+              <div className="w-5 h-5 border-2 border-purple-300 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : contactos.length === 0 ? (
+            <div className="text-center py-6 px-4">
+              <p className="text-xs text-gray-400">Todas as tuas conexoes ja tem conversa aberta</p>
+            </div>
+          ) : (
+            <div className="max-h-48 overflow-y-auto divide-y divide-gray-50">
+              {contactos.map(c => (
+                <button
+                  key={c.user_id}
+                  onClick={() => handleEscolherContacto(c)}
+                  disabled={criandoConversa === c.user_id}
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-purple-50/50 transition-colors text-left disabled:opacity-50"
+                >
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center text-lg flex-shrink-0">
+                    {c.avatar_emoji || '🌸'}
+                  </div>
+                  <p className="text-sm font-medium text-gray-700 truncate flex-1">
+                    {c.display_name}
+                  </p>
+                  {criandoConversa === c.user_id && (
+                    <div className="w-4 h-4 border-2 border-purple-300 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Lista de conversas */}
       <div className="max-w-lg mx-auto">
@@ -83,9 +233,16 @@ function ConversasList({ userId, onAbrirConversa }) {
             <h3 className="text-lg font-semibold text-gray-700 mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
               {t('comunidade.mensagens.empty_title')}
             </h3>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-400 mb-5">
               {t('comunidade.mensagens.empty_desc')}
             </p>
+            <button
+              onClick={handleNovaConversa}
+              className="text-sm font-semibold px-5 py-2.5 rounded-full text-white transition-all active:scale-95"
+              style={{ backgroundColor: '#8B5CF6' }}
+            >
+              Nova conversa
+            </button>
           </div>
         ) : (
           <div className="divide-y divide-gray-50">
@@ -540,7 +697,7 @@ export default function Mensagens() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6" style={{ background: 'linear-gradient(180deg, #FCFCFF 0%, #F8F8FC 100%)' }}>
         <span className="text-5xl block mb-2">🔒</span>
-        <p className="text-gray-500 text-center">{t('comunidade.mensagens.login_required')}</p>
+        <p className="text-gray-500 text-center">{t('comunidade.mensagens.auth_required')}</p>
         <button
           onClick={() => navigate('/comunidade')}
           className="text-sm font-medium px-4 py-2 rounded-full"
