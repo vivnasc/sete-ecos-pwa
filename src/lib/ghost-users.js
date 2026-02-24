@@ -1233,29 +1233,29 @@ export function getGhostRessonanciaBatch(postIds) {
 // ---------- MENSAGENS INICIAIS (ghosts a iniciar conversa) ----------
 
 const GHOST_MENSAGENS_INICIAIS = [
-  'Olá! Vi a tua reflexão no Rio e tocou-me muito. A comunidade precisa de mais partilhas assim. 🌸',
-  'Oi! Somos do mesmo caminho no Vitalis e quis enviar-te uma palavra de força. O Rio está mais bonito com a tua presença! 🌿',
-  'Olá! A tua partilha na comunidade deu-me coragem para continuar a minha jornada nos Ecos. ✨',
-  'Oi! Reparei que também estás no Vitalis. As tuas reflexões na comunidade são inspiradoras. 💪',
-  'Olá! A tua presença na comunidade faz diferença. Obrigada por partilhares a tua jornada connosco. 🕊️',
-  'Oi! Vi que partilhaste algo lindo na comunidade. Continua a reflectir — inspiras quem te lê. 🌱',
-  'Olá! Sou nova na comunidade mas as tuas reflexões no Rio foram das primeiras que ressoaram comigo. 🌺',
-  'Oi! A tua reflexão sobre o caminho de transformação fez-me pensar no meu próprio percurso nos Ecos. 💜',
-  'Olá! As tuas partilhas na comunidade mostram tanta autenticidade. O Rio precisa disso. 🌙',
-  'Oi! Bem-vinda à comunidade! Vi as tuas reflexões e quis conectar. Estamos juntas nesta jornada. 🤝',
+  'oi! tb estas no vitalis ne? como esta a correr? eu comecei ha pouco e estou a gostar 🌿',
+  'ola! vi q tb andas aqui na comunidade, quis so mandar um ola 😊',
+  'oi! sou nova aqui e estou a tentar conhecer pessoas. como estas?',
+  'ola! tambem estas nos ecos? eu ando no vitalis, tu?',
+  'oi 👋 tudo bem? vi o teu perfil e quis conectar',
+  'ola! como esta a ser a tua experiencia aqui? eu estou a adorar',
+  'oi! tb es de mocambique? que bom encontrar pessoas daqui 🇲🇿',
+  'ola! ha quanto tempo andas aqui na comunidade? eu cheguei agora',
+  'oi! quis so dizer ola e conectar. estamos juntas nesta jornada 💪',
+  'ola! andas no vitalis tb? eu comecei a semana passada',
 ]
 
 // ---------- RESPOSTAS GHOST (quando o user envia mensagem) ----------
 
 const GHOST_RESPOSTAS = [
-  'Obrigada pela partilha! A comunidade precisa desta autenticidade. 🌸',
-  'Ressoo com isso! A jornada nos Ecos tem destas descobertas bonitas. 💜',
-  'Que reflexão tão bonita. Vou levar isto para o meu próximo check-in no Vitalis. ✨',
-  'É exactamente para isto que a comunidade serve — partilhar e crescer juntas. 🕊️',
-  'Adorei ler isto. As reflexões no Rio também me ajudam a pensar. 🌿',
-  'Que força! A transformação acontece mesmo quando partilhamos assim. 🌱',
-  'Sim! A comunidade é mais bonita quando caminhamos juntas nos Ecos. 🌺',
-  'Obrigada por partilhares a tua jornada. Inspiras toda a comunidade. 💛',
+  'sim sim! tb sinto isso. e bom partilhar com alguem q percebe 😊',
+  'ahhh q fixe!! obrigada por dizeres isso 🌸',
+  'mesmo! eu tb penso nisso. a comunidade ajuda muito ne',
+  'q bom! vamos continuar juntas nisto 💪',
+  'obrigada! precisava de ouvir isso hoje',
+  'exacto! e isso mesmo. passo a passo ne',
+  'haha sim! eu tb ando assim. mas vai ficar melhor 🌿',
+  'q bonito 💛 obrigada pela mensagem',
 ]
 
 /**
