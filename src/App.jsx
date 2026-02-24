@@ -79,6 +79,7 @@ const Jornada = lazy(() => import('./components/comunidade/Jornada'))
 const Circulos = lazy(() => import('./components/comunidade/Circulos'))
 const Fogueira = lazy(() => import('./components/comunidade/Fogueira'))
 const Sussurros = lazy(() => import('./components/comunidade/Sussurros'))
+const Mensagens = lazy(() => import('./components/comunidade/Mensagens'))
 
 // ECO 3: SERENA (Emoção & Fluidez)
 const LandingSerena = lazy(() => import('./pages/LandingSerena'))
@@ -376,6 +377,8 @@ function AppRoutes() {
             <Route path="/comunidade/circulos" element={<AuthRoute from="/comunidade"><Circulos /></AuthRoute>} />
             <Route path="/comunidade/fogueira" element={<AuthRoute from="/comunidade"><Fogueira /></AuthRoute>} />
             <Route path="/comunidade/sussurros" element={<AuthRoute from="/comunidade"><Sussurros /></AuthRoute>} />
+            <Route path="/comunidade/mensagens" element={<AuthRoute from="/comunidade"><Mensagens /></AuthRoute>} />
+            <Route path="/comunidade/mensagens/:conversaId" element={<AuthRoute from="/comunidade"><Mensagens /></AuthRoute>} />
 
             {/* ===== ECO 3: SERENA - Emoção & Fluidez ===== */}
             <Route path="/serena" element={<LandingSerena />} />

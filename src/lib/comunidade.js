@@ -562,6 +562,19 @@ export async function enviarSussurro(conversaId, senderId, conteudo) {
 }
 
 // ============================================================
+// MENSAGENS (aliases para o componente Mensagens.jsx)
+// Mesmas tabelas que Sussurros, nomes diferentes para clareza
+// ============================================================
+
+export const getConversas = getConversasSussurros
+
+export const getOuCriarConversa = getOuCriarSussurro
+
+export const getMensagens = getSussurros
+
+export const enviarMensagem = enviarSussurro
+
+// ============================================================
 // FOLLOWS (sistema de conexão)
 // ============================================================
 
