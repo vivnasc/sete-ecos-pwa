@@ -340,6 +340,7 @@ export default function HubComunidade() {
             { id: 'circulos', emoji: '👥', titulo: t('comunidade.hub.space_circles'), desc: t('comunidade.hub.space_circles_desc'), rota: '/comunidade/circulos', cor: '#059669', bgGrad: 'linear-gradient(145deg, #ECFDF5 0%, #D1FAE5 100%)' },
             { id: 'fogueira', emoji: '🔥', titulo: t('comunidade.hub.space_fire'), desc: t('comunidade.hub.space_fire_desc'), rota: '/comunidade/fogueira', cor: '#D97706', bgGrad: 'linear-gradient(145deg, #FFFBEB 0%, #FEF3C7 100%)' },
             { id: 'sussurros', emoji: '💜', titulo: t('comunidade.hub.space_whispers'), desc: t('comunidade.hub.space_whispers_desc'), rota: '/comunidade/sussurros', cor: '#9333EA', bgGrad: 'linear-gradient(145deg, #FAF5FF 0%, #F3E8FF 100%)' },
+            { id: 'mensagens', emoji: '💬', titulo: t('comunidade.hub.space_messages'), desc: t('comunidade.hub.space_messages_desc'), rota: '/comunidade/mensagens', cor: '#6366F1', bgGrad: 'linear-gradient(145deg, #EEF2FF 0%, #E0E7FF 100%)' },
             { id: 'jornada', emoji: '🦋', titulo: t('comunidade.hub.space_journey'), desc: t('comunidade.hub.space_journey_desc'), rota: userId ? `/comunidade/jornada/${userId}` : '/comunidade/rio', cor: '#EA580C', bgGrad: 'linear-gradient(145deg, #FFF7ED 0%, #FFEDD5 100%)' }
           ].map(esp => (
             <button
