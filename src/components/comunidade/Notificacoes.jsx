@@ -105,6 +105,7 @@ export default function Notificacoes() {
           ? `${t('comunidade.notificacoes.commented_content')} ${notif.conteudo.length > 50 ? notif.conteudo.slice(0, 50) + '...' : notif.conteudo}`
           : t('comunidade.notificacoes.commented')
       case 'follow':
+      case 'conexao':
         return t('comunidade.notificacoes.followed')
       case 'mention':
         return t('comunidade.notificacoes.mentioned')
@@ -114,7 +115,7 @@ export default function Notificacoes() {
   }
 
   const handleClick = (notif) => {
-    if (notif.tipo === 'follow') {
+    if (notif.tipo === 'follow' || notif.tipo === 'conexao') {
       navigate(`/comunidade/jornada/${notif.actor_id}`)
     } else if (notif._ghost) {
       // Ghost notification — go to Rio where the post is

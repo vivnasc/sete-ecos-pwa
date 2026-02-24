@@ -4,10 +4,11 @@ import { supabase } from '../../lib/supabase'
 import {
   getPerfilPublico,
   getPostsDoUtilizador,
-  contarSeguidoresESeguindo,
-  verificarSeguindo,
-  seguirUtilizador,
-  deixarDeSeguir,
+  verificarConexao,
+  pedirConexao,
+  aceitarConexao,
+  recusarConexao,
+  contarConexoes,
   ECOS_INFO
 } from '../../lib/comunidade'
 import { isGhostUser, getGhostProfile, getGhostPostsForRange } from '../../lib/ghost-users'
@@ -23,8 +24,9 @@ export default function PerfilPublico() {
   const [meusId, setMeusId] = useState(null)
   const [perfil, setPerfil] = useState(null)
   const [posts, setPosts] = useState([])
-  const [contadores, setContadores] = useState({ seguidores: 0, seguindo: 0 })
-  const [estouSeguindo, setEstouSeguindo] = useState(false)
+  const [numConexoes, setNumConexoes] = useState(0)
+  // 'none' | 'pending_sent' | 'pending_received' | 'connected'
+  const [estadoConexao, setEstadoConexao] = useState('none')
   const [acaoEmCurso, setAcaoEmCurso] = useState(false)
 
   const isOwnProfile = meusId === perfilUserId
@@ -53,25 +55,24 @@ export default function PerfilPublico() {
         if (isGhostUser(perfilUserId)) {
           const ghostPerfil = getGhostProfile(perfilUserId)
           setPerfil(ghostPerfil)
-          // Get ghost posts that belong to this user
           const allGhostPosts = getGhostPostsForRange(30)
           const ghostUserPosts = allGhostPosts.filter(p => p.user_id === perfilUserId)
           setPosts(ghostUserPosts)
-          setContadores({ seguidores: Math.floor(Math.random() * 8) + 3, seguindo: Math.floor(Math.random() * 5) + 1 })
-          setEstouSeguindo(false)
+          setNumConexoes(0)
+          setEstadoConexao('none')
         } else {
           // Carregar dados em paralelo
-          const [perfilData, postsData, contadoresData, seguindoData] = await Promise.all([
+          const [perfilData, postsData, conexoesCount, conexaoEstado] = await Promise.all([
             getPerfilPublico(perfilUserId),
             getPostsDoUtilizador(perfilUserId),
-            contarSeguidoresESeguindo(perfilUserId),
-            verificarSeguindo(userData.id, perfilUserId)
+            contarConexoes(perfilUserId),
+            verificarConexao(userData.id, perfilUserId)
           ])
 
           setPerfil(perfilData)
           setPosts(postsData)
-          setContadores(contadoresData)
-          setEstouSeguindo(seguindoData)
+          setNumConexoes(conexoesCount)
+          setEstadoConexao(conexaoEstado)
         }
       }
     } catch (error) {
@@ -82,21 +83,24 @@ export default function PerfilPublico() {
 
   const isGhost = isGhostUser(perfilUserId)
 
-  const handleToggleSeguir = async () => {
+  const handleConexao = async () => {
     if (acaoEmCurso || isOwnProfile || isGhost) return
     setAcaoEmCurso(true)
     try {
-      if (estouSeguindo) {
-        await deixarDeSeguir(meusId, perfilUserId)
-        setEstouSeguindo(false)
-        setContadores(prev => ({ ...prev, seguidores: prev.seguidores - 1 }))
-      } else {
-        await seguirUtilizador(meusId, perfilUserId)
-        setEstouSeguindo(true)
-        setContadores(prev => ({ ...prev, seguidores: prev.seguidores + 1 }))
+      if (estadoConexao === 'none') {
+        await pedirConexao(meusId, perfilUserId)
+        setEstadoConexao('pending_sent')
+      } else if (estadoConexao === 'pending_received') {
+        await aceitarConexao(meusId, perfilUserId)
+        setEstadoConexao('connected')
+        setNumConexoes(prev => prev + 1)
+      } else if (estadoConexao === 'connected' || estadoConexao === 'pending_sent') {
+        await recusarConexao(meusId, perfilUserId)
+        if (estadoConexao === 'connected') setNumConexoes(prev => Math.max(0, prev - 1))
+        setEstadoConexao('none')
       }
     } catch (error) {
-      console.error('Erro ao seguir/desseguir:', error)
+      console.error('Erro na conexão:', error)
     }
     setAcaoEmCurso(false)
   }
@@ -181,28 +185,34 @@ export default function PerfilPublico() {
               <p className="text-xs text-gray-400">{t('comunidade.perfil.shares')}</p>
             </div>
             <div className="text-center">
-              <p className="text-lg font-bold text-gray-800">{contadores.seguidores}</p>
-              <p className="text-xs text-gray-400">{t('comunidade.perfil.followers')}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-lg font-bold text-gray-800">{contadores.seguindo}</p>
-              <p className="text-xs text-gray-400">{t('comunidade.perfil.following')}</p>
+              <p className="text-lg font-bold text-gray-800">{numConexoes}</p>
+              <p className="text-xs text-gray-400">Conexões</p>
             </div>
           </div>
 
-          {/* Botão seguir */}
-          {!isOwnProfile && (
+          {/* Botão conexão */}
+          {!isOwnProfile && !isGhost && (
             <button
-              onClick={handleToggleSeguir}
+              onClick={handleConexao}
               disabled={acaoEmCurso}
               className={`mt-4 px-6 py-2 rounded-full text-sm font-semibold transition-all ${
-                estouSeguindo
-                  ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  : 'text-white shadow-md hover:shadow-lg'
+                estadoConexao === 'connected'
+                  ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                  : estadoConexao === 'pending_sent'
+                    ? 'bg-gray-100 text-gray-500'
+                    : 'text-white shadow-md hover:shadow-lg'
               }`}
-              style={!estouSeguindo ? { backgroundColor: '#8B5CF6' } : {}}
+              style={
+                estadoConexao === 'none' || estadoConexao === 'pending_received'
+                  ? { backgroundColor: '#8B5CF6' }
+                  : {}
+              }
             >
-              {acaoEmCurso ? '...' : estouSeguindo ? t('comunidade.perfil.following_badge') : t('comunidade.perfil.follow_btn')}
+              {acaoEmCurso ? '...'
+                : estadoConexao === 'connected' ? 'Conectados'
+                : estadoConexao === 'pending_sent' ? 'Pendente'
+                : estadoConexao === 'pending_received' ? 'Aceitar conexão'
+                : 'Conectar'}
             </button>
           )}
         </div>

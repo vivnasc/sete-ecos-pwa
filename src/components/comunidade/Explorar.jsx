@@ -7,8 +7,8 @@ import {
   pesquisarUtilizadores,
   pesquisarPosts,
   pesquisarPorHashtag,
-  seguirUtilizador,
-  verificarSeguindo,
+  pedirConexao,
+  verificarConexao,
   ECOS_INFO,
   tempoRelativo
 } from '../../lib/comunidade'
@@ -33,8 +33,8 @@ export default function Explorar() {
   const [loadingSugestoes, setLoadingSugestoes] = useState(true)
   const [loadingTrending, setLoadingTrending] = useState(true)
 
-  // Follow state
-  const [seguindoMap, setSeguindoMap] = useState({})
+  // Connection state: { [userId]: 'none'|'pending_sent'|'pending_received'|'connected' }
+  const [conexaoMap, setConexaoMap] = useState({})
   const [acaoEmCurso, setAcaoEmCurso] = useState({})
 
   const debounceRef = useRef(null)
@@ -76,15 +76,15 @@ export default function Explorar() {
       setSugestoes(sugestoesData)
       setTrending(trendingData)
 
-      // Verificar quem já segue (para as sugestoes)
+      // Verificar estado de conexão (para as sugestoes)
       if (sugestoesData.length > 0) {
         const mapa = {}
         await Promise.all(
           sugestoesData.map(async (s) => {
-            mapa[s.user_id] = await verificarSeguindo(uid, s.user_id)
+            mapa[s.user_id] = await verificarConexao(uid, s.user_id)
           })
         )
-        setSeguindoMap(mapa)
+        setConexaoMap(mapa)
       }
     } catch (error) {
       console.error('Erro ao carregar conteudo inicial:', error)
@@ -130,17 +130,17 @@ export default function Explorar() {
         const pessoas = await pesquisarUtilizadores(termo)
         setResultadosPessoas(pessoas)
 
-        // Verificar follow status
+        // Verificar estado de conexão
         if (pessoas.length > 0 && userId) {
-          const mapa = { ...seguindoMap }
+          const mapa = { ...conexaoMap }
           await Promise.all(
             pessoas.map(async (p) => {
               if (mapa[p.user_id] === undefined) {
-                mapa[p.user_id] = await verificarSeguindo(userId, p.user_id)
+                mapa[p.user_id] = await verificarConexao(userId, p.user_id)
               }
             })
           )
-          setSeguindoMap(mapa)
+          setConexaoMap(mapa)
         }
       } else {
         const posts = await pesquisarPosts(termo)
@@ -160,16 +160,16 @@ export default function Explorar() {
     }
   }, [tabPesquisa])
 
-  // ---------- Follow / Unfollow ----------
+  // ---------- Conexão ----------
 
-  const handleSeguir = async (targetUserId) => {
+  const handleConectar = async (targetUserId) => {
     if (!userId || acaoEmCurso[targetUserId]) return
     setAcaoEmCurso(prev => ({ ...prev, [targetUserId]: true }))
     try {
-      await seguirUtilizador(userId, targetUserId)
-      setSeguindoMap(prev => ({ ...prev, [targetUserId]: true }))
+      await pedirConexao(userId, targetUserId)
+      setConexaoMap(prev => ({ ...prev, [targetUserId]: 'pending_sent' }))
     } catch (error) {
-      console.error('Erro ao seguir:', error)
+      console.error('Erro ao pedir conexão:', error)
     }
     setAcaoEmCurso(prev => ({ ...prev, [targetUserId]: false }))
   }
@@ -304,10 +304,10 @@ export default function Explorar() {
                           key={pessoa.user_id}
                           perfil={pessoa}
                           userId={userId}
-                          seguindo={seguindoMap[pessoa.user_id] || false}
+                          estadoConexao={conexaoMap[pessoa.user_id] || 'none'}
                           emCurso={acaoEmCurso[pessoa.user_id] || false}
                           onPerfilClick={() => navigate(`/comunidade/perfil/${pessoa.user_id}`)}
-                          onSeguir={() => handleSeguir(pessoa.user_id)}
+                          onConectar={() => handleConectar(pessoa.user_id)}
                         />
                       ))}
                     </div>
@@ -416,22 +416,24 @@ export default function Explorar() {
                         </div>
                       )}
 
-                      {/* Follow button */}
+                      {/* Connection button */}
                       <div className="px-3 pb-3">
-                        {seguindoMap[perfil.user_id] ? (
-                          <div
-                            className="w-full py-1.5 rounded-lg text-center text-xs font-medium bg-gray-100 text-gray-500"
-                          >
-                            A seguir
+                        {conexaoMap[perfil.user_id] === 'connected' ? (
+                          <div className="w-full py-1.5 rounded-lg text-center text-xs font-medium bg-amber-50 text-amber-700">
+                            Conectados
+                          </div>
+                        ) : conexaoMap[perfil.user_id] === 'pending_sent' ? (
+                          <div className="w-full py-1.5 rounded-lg text-center text-xs font-medium bg-gray-100 text-gray-500">
+                            Pendente
                           </div>
                         ) : (
                           <button
-                            onClick={() => handleSeguir(perfil.user_id)}
+                            onClick={() => handleConectar(perfil.user_id)}
                             disabled={acaoEmCurso[perfil.user_id]}
                             className="w-full py-1.5 rounded-lg text-center text-xs font-semibold text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
                             style={{ backgroundColor: '#8B5CF6' }}
                           >
-                            {acaoEmCurso[perfil.user_id] ? '...' : 'Seguir'}
+                            {acaoEmCurso[perfil.user_id] ? '...' : 'Conectar'}
                           </button>
                         )}
                       </div>
@@ -480,8 +482,15 @@ export default function Explorar() {
 
 // ===== Sub-components =====
 
-function CartaoPerfil({ perfil, userId, seguindo, emCurso, onPerfilClick, onSeguir }) {
+function CartaoPerfil({ perfil, userId, estadoConexao, emCurso, onPerfilClick, onConectar }) {
   const isOwn = perfil.user_id === userId
+
+  const labelConexao = estadoConexao === 'connected' ? 'Conectados'
+    : estadoConexao === 'pending_sent' ? 'Pendente'
+    : estadoConexao === 'pending_received' ? 'Aceitar'
+    : 'Conectar'
+
+  const isPassivo = estadoConexao === 'connected' || estadoConexao === 'pending_sent'
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-3 animate-fadeIn">
@@ -518,18 +527,20 @@ function CartaoPerfil({ perfil, userId, seguindo, emCurso, onPerfilClick, onSegu
       </button>
 
       {!isOwn && (
-        seguindo ? (
-          <span className="flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full bg-gray-100 text-gray-500">
-            A seguir
+        isPassivo ? (
+          <span className={`flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full ${
+            estadoConexao === 'connected' ? 'bg-amber-50 text-amber-700' : 'bg-gray-100 text-gray-500'
+          }`}>
+            {labelConexao}
           </span>
         ) : (
           <button
-            onClick={onSeguir}
+            onClick={onConectar}
             disabled={emCurso}
             className="flex-shrink-0 text-xs font-semibold px-4 py-1.5 rounded-full text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
             style={{ backgroundColor: '#8B5CF6' }}
           >
-            {emCurso ? '...' : 'Seguir'}
+            {emCurso ? '...' : labelConexao}
           </button>
         )
       )}

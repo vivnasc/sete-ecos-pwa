@@ -31,7 +31,7 @@ export default function FeedComunidade() {
   // UI state
   const [showCriarPost, setShowCriarPost] = useState(false)
   const [showEditarPerfil, setShowEditarPerfil] = useState(false)
-  const [tab, setTab] = useState('todos') // 'todos', 'seguindo', eco key
+  const [tab, setTab] = useState('todos') // 'todos', 'conexoes', eco key
   const [filtroEco, setFiltroEco] = useState(null)
 
   useEffect(() => {
@@ -94,7 +94,7 @@ export default function FeedComunidade() {
       let data
       if (filtroEco) {
         data = await getFeedPorEco(filtroEco, pageNum)
-      } else if (tab === 'seguindo') {
+      } else if (tab === 'conexoes') {
         data = await getFeedSeguidos(uid, pageNum)
       } else {
         data = await getFeed(pageNum)
@@ -210,14 +210,14 @@ export default function FeedComunidade() {
               {t('comunidade.feed.all')}
             </button>
             <button
-              onClick={() => { setTab('seguindo'); setFiltroEco(null) }}
+              onClick={() => { setTab('conexoes'); setFiltroEco(null) }}
               className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all ${
-                tab === 'seguindo'
+                tab === 'conexoes'
                   ? 'bg-purple-600 text-white'
                   : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
               }`}
             >
-              {t('comunidade.feed.following')}
+              Conexões
             </button>
             <div className="w-px h-4 bg-gray-200 mx-1" />
             {['vitalis', 'aurea', 'lumina'].map(eco => {
@@ -267,15 +267,15 @@ export default function FeedComunidade() {
           <div className="text-center py-16">
             <span className="text-5xl block mb-4">🌿</span>
             <h3 className="text-lg font-semibold text-gray-700 mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
-              {tab === 'seguindo' ? t('comunidade.feed.follow_to_see') : t('comunidade.feed.community_starting')}
+              {tab === 'conexoes' ? t('comunidade.feed.follow_to_see') : t('comunidade.feed.community_starting')}
             </h3>
             <p className="text-sm text-gray-400 mb-6">
-              {tab === 'seguindo'
+              {tab === 'conexoes'
                 ? t('comunidade.feed.explore_general')
                 : t('comunidade.feed.be_first_share')
               }
             </p>
-            {tab === 'seguindo' && (
+            {tab === 'conexoes' && (
               <button
                 onClick={() => { setTab('todos'); setFiltroEco(null) }}
                 className="text-sm font-medium px-4 py-2 rounded-full text-white"
