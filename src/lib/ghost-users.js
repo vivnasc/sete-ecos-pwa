@@ -76,8 +76,6 @@ export const GHOST_PROFILES = [
     cidade: 'Maputo',
     ecos_activos: ['vitalis'],
     personalidade: 'calorosa',
-    seguidores: 23,
-    seguindo: 15,
     membro_desde: '2025-09-14'
   },
   {
@@ -90,8 +88,6 @@ export const GHOST_PROFILES = [
     cidade: 'Matola',
     ecos_activos: ['vitalis', 'lumina'],
     personalidade: 'reflexiva',
-    seguidores: 18,
-    seguindo: 22,
     membro_desde: '2025-10-02'
   },
   {
@@ -104,8 +100,6 @@ export const GHOST_PROFILES = [
     cidade: 'Beira',
     ecos_activos: ['vitalis'],
     personalidade: 'empática',
-    seguidores: 31,
-    seguindo: 19,
     membro_desde: '2025-08-20'
   },
   {
@@ -118,8 +112,6 @@ export const GHOST_PROFILES = [
     cidade: 'Nampula',
     ecos_activos: ['vitalis'],
     personalidade: 'sabia',
-    seguidores: 27,
-    seguindo: 12,
     membro_desde: '2025-07-15'
   },
   {
@@ -132,8 +124,6 @@ export const GHOST_PROFILES = [
     cidade: 'Maputo',
     ecos_activos: ['vitalis', 'lumina'],
     personalidade: 'determinada',
-    seguidores: 42,
-    seguindo: 28,
     membro_desde: '2025-06-10'
   },
   {
@@ -146,8 +136,6 @@ export const GHOST_PROFILES = [
     cidade: 'Ilha de Moçambique',
     ecos_activos: ['vitalis'],
     personalidade: 'calorosa',
-    seguidores: 19,
-    seguindo: 16,
     membro_desde: '2025-11-05'
   },
   {
@@ -160,8 +148,6 @@ export const GHOST_PROFILES = [
     cidade: 'Inhambane',
     ecos_activos: ['vitalis'],
     personalidade: 'sabia',
-    seguidores: 35,
-    seguindo: 10,
     membro_desde: '2025-05-22'
   },
   {
@@ -174,8 +160,6 @@ export const GHOST_PROFILES = [
     cidade: 'Maputo',
     ecos_activos: ['vitalis', 'lumina'],
     personalidade: 'curiosa',
-    seguidores: 24,
-    seguindo: 31,
     membro_desde: '2025-09-28'
   },
   {
@@ -188,8 +172,6 @@ export const GHOST_PROFILES = [
     cidade: 'Pemba',
     ecos_activos: ['vitalis'],
     personalidade: 'determinada',
-    seguidores: 16,
-    seguindo: 20,
     membro_desde: '2025-12-01'
   },
   {
@@ -202,8 +184,6 @@ export const GHOST_PROFILES = [
     cidade: 'Angoche',
     ecos_activos: ['vitalis', 'lumina'],
     personalidade: 'poetica',
-    seguidores: 20,
-    seguindo: 17,
     membro_desde: '2025-10-18'
   },
   {
@@ -216,8 +196,6 @@ export const GHOST_PROFILES = [
     cidade: 'Maputo',
     ecos_activos: ['vitalis'],
     personalidade: 'vulneravel',
-    seguidores: 14,
-    seguindo: 25,
     membro_desde: '2026-01-08'
   },
   {
@@ -230,8 +208,6 @@ export const GHOST_PROFILES = [
     cidade: 'Xai-Xai',
     ecos_activos: ['vitalis', 'lumina'],
     personalidade: 'criativa',
-    seguidores: 38,
-    seguindo: 22,
     membro_desde: '2025-08-03'
   },
   {
@@ -244,8 +220,6 @@ export const GHOST_PROFILES = [
     cidade: 'Maputo',
     ecos_activos: ['vitalis'],
     personalidade: 'pratica',
-    seguidores: 29,
-    seguindo: 18,
     membro_desde: '2025-07-20'
   },
   {
@@ -258,8 +232,6 @@ export const GHOST_PROFILES = [
     cidade: 'Chimoio',
     ecos_activos: ['vitalis', 'lumina'],
     personalidade: 'corajosa',
-    seguidores: 22,
-    seguindo: 14,
     membro_desde: '2025-11-12'
   },
   {
@@ -272,8 +244,6 @@ export const GHOST_PROFILES = [
     cidade: 'Maputo',
     ecos_activos: ['lumina'],
     personalidade: 'curiosa',
-    seguidores: 33,
-    seguindo: 27,
     membro_desde: '2025-09-05'
   },
   {
@@ -286,8 +256,6 @@ export const GHOST_PROFILES = [
     cidade: 'Matola',
     ecos_activos: ['vitalis'],
     personalidade: 'energetica',
-    seguidores: 26,
-    seguindo: 21,
     membro_desde: '2025-10-30'
   },
   {
@@ -300,8 +268,6 @@ export const GHOST_PROFILES = [
     cidade: 'Maputo',
     ecos_activos: ['vitalis', 'lumina'],
     personalidade: 'articulada',
-    seguidores: 41,
-    seguindo: 19,
     membro_desde: '2025-06-28'
   },
   {
@@ -314,8 +280,6 @@ export const GHOST_PROFILES = [
     cidade: 'Vilankulo',
     ecos_activos: ['vitalis', 'lumina'],
     personalidade: 'espiritual',
-    seguidores: 30,
-    seguindo: 13,
     membro_desde: '2025-08-15'
   },
   {
@@ -328,8 +292,6 @@ export const GHOST_PROFILES = [
     cidade: 'Quelimane',
     ecos_activos: ['vitalis'],
     personalidade: 'pratica',
-    seguidores: 17,
-    seguindo: 23,
     membro_desde: '2025-12-20'
   },
   {
@@ -342,8 +304,6 @@ export const GHOST_PROFILES = [
     cidade: 'Maputo',
     ecos_activos: ['vitalis'],
     personalidade: 'reflexiva',
-    seguidores: 21,
-    seguindo: 16,
     membro_desde: '2025-11-25'
   },
   // ──── Perfis masculinos ────
@@ -357,8 +317,6 @@ export const GHOST_PROFILES = [
     cidade: 'Maputo',
     ecos_activos: ['vitalis'],
     personalidade: 'determinada',
-    seguidores: 19,
-    seguindo: 14,
     membro_desde: '2025-10-10'
   },
   {
@@ -371,8 +329,6 @@ export const GHOST_PROFILES = [
     cidade: 'Matola',
     ecos_activos: ['vitalis', 'lumina'],
     personalidade: 'pratica',
-    seguidores: 15,
-    seguindo: 11,
     membro_desde: '2025-12-15'
   }
 ]
@@ -1093,8 +1049,6 @@ export function getGhostProfile(ghostId) {
     avatar_url: null,
     ecos_activos: profile.ecos_activos,
     cidade: profile.cidade,
-    seguidores: profile.seguidores,
-    seguindo: profile.seguindo,
     membro_desde: profile.membro_desde,
     _ghost: true
   }

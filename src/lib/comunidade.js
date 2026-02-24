@@ -221,6 +221,37 @@ export async function getRioPorEco(eco, page = 0, limit = 20) {
   return data || []
 }
 
+// Feed de conexões — posts de pessoas com quem estás conectado
+export async function getFeedConexoes(userId, page = 0, limit = 20) {
+  const ids = await getConexoesIds(userId)
+  if (ids.length === 0) return []
+
+  const from = page * limit
+  const to = from + limit - 1
+
+  const { data, error } = await supabase
+    .from('community_posts')
+    .select(`
+      *,
+      community_profiles!community_posts_user_id_fkey (
+        display_name,
+        avatar_emoji,
+        avatar_url,
+        ecos_activos
+      )
+    `)
+    .in('user_id', ids)
+    .order('created_at', { ascending: false })
+    .range(from, to)
+  if (error) throw error
+  return data || []
+}
+
+// Aliases para FeedComunidade.jsx
+export const getFeed = getRio
+export const getFeedPorEco = getRioPorEco
+export const getFeedSeguidos = getFeedConexoes
+
 export async function getReflexoesDoUtilizador(userId, page = 0, limit = 20) {
   const from = page * limit
   const to = from + limit - 1
@@ -575,47 +606,99 @@ export const getMensagens = getSussurros
 export const enviarMensagem = enviarSussurro
 
 // ============================================================
-// FOLLOWS (sistema de conexão)
+// CONEXÕES (sistema de conexão mútua — substitui follows)
 // ============================================================
 
-export async function seguirUtilizador(seguidorId, seguidoId) {
+// Pedir conexão — cria registo com status='pending'
+export async function pedirConexao(userId, targetId) {
   const { error } = await supabase
     .from('community_follows')
-    .insert([{ follower_id: seguidorId, following_id: seguidoId }])
+    .insert([{ follower_id: userId, following_id: targetId, status: 'pending' }])
   if (error) throw error
 }
 
-export async function deixarDeSeguir(seguidorId, seguidoId) {
+// Aceitar conexão — actualiza o pedido para 'accepted'
+export async function aceitarConexao(userId, fromUserId) {
+  const { error } = await supabase
+    .from('community_follows')
+    .update({ status: 'accepted' })
+    .eq('follower_id', fromUserId)
+    .eq('following_id', userId)
+    .eq('status', 'pending')
+  if (error) throw error
+}
+
+// Recusar ou cancelar pedido — apaga o registo
+export async function recusarConexao(userId, otherUserId) {
   const { error } = await supabase
     .from('community_follows')
     .delete()
-    .eq('follower_id', seguidorId)
-    .eq('following_id', seguidoId)
+    .or(`and(follower_id.eq.${userId},following_id.eq.${otherUserId}),and(follower_id.eq.${otherUserId},following_id.eq.${userId})`)
   if (error) throw error
 }
 
-export async function verificarSeguindo(seguidorId, seguidoId) {
+// Verificar estado da conexão entre dois utilizadores
+// Retorna: 'none' | 'pending_sent' | 'pending_received' | 'connected'
+export async function verificarConexao(userId, targetId) {
   const { data } = await supabase
     .from('community_follows')
-    .select('id')
-    .eq('follower_id', seguidorId)
-    .eq('following_id', seguidoId)
+    .select('follower_id, following_id, status')
+    .or(`and(follower_id.eq.${userId},following_id.eq.${targetId}),and(follower_id.eq.${targetId},following_id.eq.${userId})`)
     .maybeSingle()
-  return !!data
+
+  if (!data) return 'none'
+  if (data.status === 'accepted') return 'connected'
+  if (data.follower_id === userId) return 'pending_sent'
+  return 'pending_received'
 }
 
-export async function contarSeguidoresESeguindo(userId) {
-  const { count: seguidores } = await supabase
-    .from('community_follows')
-    .select('id', { count: 'exact', head: true })
-    .eq('following_id', userId)
-
-  const { count: seguindo } = await supabase
+// Contar conexões aceites
+export async function contarConexoes(userId) {
+  const { count: como_follower } = await supabase
     .from('community_follows')
     .select('id', { count: 'exact', head: true })
     .eq('follower_id', userId)
+    .eq('status', 'accepted')
 
-  return { seguidores: seguidores || 0, seguindo: seguindo || 0 }
+  const { count: como_following } = await supabase
+    .from('community_follows')
+    .select('id', { count: 'exact', head: true })
+    .eq('following_id', userId)
+    .eq('status', 'accepted')
+
+  return (como_follower || 0) + (como_following || 0)
+}
+
+// Obter IDs das conexões aceites (para filtrar feed)
+export async function getConexoesIds(userId) {
+  const { data: como_follower } = await supabase
+    .from('community_follows')
+    .select('following_id')
+    .eq('follower_id', userId)
+    .eq('status', 'accepted')
+
+  const { data: como_following } = await supabase
+    .from('community_follows')
+    .select('follower_id')
+    .eq('following_id', userId)
+    .eq('status', 'accepted')
+
+  const ids = new Set()
+  ;(como_follower || []).forEach(r => ids.add(r.following_id))
+  ;(como_following || []).forEach(r => ids.add(r.follower_id))
+  return [...ids]
+}
+
+// Legacy aliases (backwards compatibility para código que ainda use os nomes antigos)
+export const seguirUtilizador = pedirConexao
+export const deixarDeSeguir = recusarConexao
+export async function verificarSeguindo(userId, targetId) {
+  const estado = await verificarConexao(userId, targetId)
+  return estado === 'connected'
+}
+export async function contarSeguidoresESeguindo(userId) {
+  const total = await contarConexoes(userId)
+  return { seguidores: total, seguindo: 0 }
 }
 
 // ============================================================

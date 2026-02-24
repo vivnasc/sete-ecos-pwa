@@ -4,10 +4,11 @@ import { supabase } from '../../lib/supabase'
 import {
   getPerfilPublico,
   getReflexoesDoUtilizador,
-  contarSeguidoresESeguindo,
-  verificarSeguindo,
-  seguirUtilizador,
-  deixarDeSeguir,
+  verificarConexao,
+  pedirConexao,
+  aceitarConexao,
+  recusarConexao,
+  contarConexoes,
   contarReflexoes,
   contarRessonanciaRecebida,
   ECOS_INFO,
@@ -29,10 +30,11 @@ export default function Jornada() {
   const [meusId, setMeusId] = useState(null)
   const [perfil, setPerfil] = useState(null)
   const [reflexoes, setReflexoes] = useState([])
-  const [contadores, setContadores] = useState({ seguidores: 0, seguindo: 0 })
+  const [numConexoes, setNumConexoes] = useState(0)
   const [numReflexoes, setNumReflexoes] = useState(0)
   const [numRessonancia, setNumRessonancia] = useState(0)
-  const [estouSeguindo, setEstouSeguindo] = useState(false)
+  // 'none' | 'pending_sent' | 'pending_received' | 'connected'
+  const [estadoConexao, setEstadoConexao] = useState('none')
   const [acaoEmCurso, setAcaoEmCurso] = useState(false)
 
   const isGhost = isGhostUser(perfilUserId)
@@ -66,37 +68,30 @@ export default function Jornada() {
           setReflexoes(ghostReflexoes)
           setNumReflexoes(ghostReflexoes.length)
           setNumRessonancia(ghostReflexoes.reduce((sum, r) => sum + (r.ressonancia_count || 0), 0))
-          setContadores({
-            seguidores: ghostPerfil?.seguidores || 0,
-            seguindo: ghostPerfil?.seguindo || 0
-          })
-
-          // Check if user follows this ghost
-          const followKey = 'ghost_follows'
-          const follows = JSON.parse(localStorage.getItem(followKey) || '[]')
-          setEstouSeguindo(follows.includes(perfilUserId))
+          setNumConexoes(0)
+          setEstadoConexao('none')
         } else {
           // Real profile
           const [
             perfilData,
             reflexoesData,
-            contadoresData,
-            seguindoData,
+            conexoesCount,
+            conexaoEstado,
             reflexoesCount,
             ressonanciaCount
           ] = await Promise.all([
             getPerfilPublico(perfilUserId),
             getReflexoesDoUtilizador(perfilUserId, 0, 50),
-            contarSeguidoresESeguindo(perfilUserId),
-            verificarSeguindo(userData.id, perfilUserId),
+            contarConexoes(perfilUserId),
+            verificarConexao(userData.id, perfilUserId),
             contarReflexoes(perfilUserId),
             contarRessonanciaRecebida(perfilUserId)
           ])
 
           setPerfil(perfilData)
           setReflexoes(reflexoesData)
-          setContadores(contadoresData)
-          setEstouSeguindo(seguindoData)
+          setNumConexoes(conexoesCount)
+          setEstadoConexao(conexaoEstado)
           setNumReflexoes(reflexoesCount)
           setNumRessonancia(ressonanciaCount)
         }
@@ -107,37 +102,24 @@ export default function Jornada() {
     setLoading(false)
   }
 
-  const handleToggleSeguir = async () => {
-    if (acaoEmCurso || isOwnProfile) return
+  const handleConexao = async () => {
+    if (acaoEmCurso || isOwnProfile || isGhost) return
     setAcaoEmCurso(true)
     try {
-      if (isGhost) {
-        // Ghost follow — localStorage
-        const followKey = 'ghost_follows'
-        const follows = JSON.parse(localStorage.getItem(followKey) || '[]')
-        if (estouSeguindo) {
-          localStorage.setItem(followKey, JSON.stringify(follows.filter(id => id !== perfilUserId)))
-          setEstouSeguindo(false)
-          setContadores(prev => ({ ...prev, seguidores: prev.seguidores - 1 }))
-        } else {
-          follows.push(perfilUserId)
-          localStorage.setItem(followKey, JSON.stringify(follows))
-          setEstouSeguindo(true)
-          setContadores(prev => ({ ...prev, seguidores: prev.seguidores + 1 }))
-        }
-      } else {
-        if (estouSeguindo) {
-          await deixarDeSeguir(meusId, perfilUserId)
-          setEstouSeguindo(false)
-          setContadores(prev => ({ ...prev, seguidores: prev.seguidores - 1 }))
-        } else {
-          await seguirUtilizador(meusId, perfilUserId)
-          setEstouSeguindo(true)
-          setContadores(prev => ({ ...prev, seguidores: prev.seguidores + 1 }))
-        }
+      if (estadoConexao === 'none') {
+        await pedirConexao(meusId, perfilUserId)
+        setEstadoConexao('pending_sent')
+      } else if (estadoConexao === 'pending_received') {
+        await aceitarConexao(meusId, perfilUserId)
+        setEstadoConexao('connected')
+        setNumConexoes(prev => prev + 1)
+      } else if (estadoConexao === 'connected' || estadoConexao === 'pending_sent') {
+        await recusarConexao(meusId, perfilUserId)
+        if (estadoConexao === 'connected') setNumConexoes(prev => Math.max(0, prev - 1))
+        setEstadoConexao('none')
       }
     } catch (error) {
-      console.error('Erro ao seguir/desseguir:', error)
+      console.error('Erro na conexão:', error)
     }
     setAcaoEmCurso(false)
   }
@@ -276,7 +258,7 @@ export default function Jornada() {
             </div>
             <div className="text-center">
               <p className="text-xl font-bold" style={{ fontFamily: 'var(--font-titulos)', color: '#292524' }}>
-                {contadores.seguidores}
+                {numConexoes}
               </p>
               <p className="text-xs" style={{ color: '#A8A29E', fontFamily: 'var(--font-corpo)' }}>
                 Conexões
@@ -287,18 +269,32 @@ export default function Jornada() {
           {/* ===== ACTION BUTTONS ===== */}
           {!isOwnProfile && (
             <div className="flex justify-center gap-3 mt-5">
-              <button
-                onClick={handleToggleSeguir}
-                disabled={acaoEmCurso}
-                className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all active:scale-95 ${
-                  estouSeguindo
-                    ? 'bg-gray-100 text-gray-600'
-                    : 'text-white shadow-md'
-                }`}
-                style={!estouSeguindo ? { background: 'linear-gradient(135deg, #D97706 0%, #EA580C 100%)' } : {}}
-              >
-                {acaoEmCurso ? '...' : estouSeguindo ? 'A seguir' : 'Seguir'}
-              </button>
+              {!isGhost && (
+                <button
+                  onClick={handleConexao}
+                  disabled={acaoEmCurso}
+                  className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all active:scale-95 ${
+                    estadoConexao === 'connected'
+                      ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                      : estadoConexao === 'pending_sent'
+                        ? 'bg-gray-100 text-gray-500'
+                        : estadoConexao === 'pending_received'
+                          ? 'text-white shadow-md'
+                          : 'text-white shadow-md'
+                  }`}
+                  style={
+                    estadoConexao === 'none' || estadoConexao === 'pending_received'
+                      ? { background: 'linear-gradient(135deg, #D97706 0%, #EA580C 100%)' }
+                      : {}
+                  }
+                >
+                  {acaoEmCurso ? '...'
+                    : estadoConexao === 'connected' ? 'Conectados'
+                    : estadoConexao === 'pending_sent' ? 'Pendente'
+                    : estadoConexao === 'pending_received' ? 'Aceitar conexão'
+                    : 'Conectar'}
+                </button>
+              )}
 
               {!isGhost && (
                 <button
