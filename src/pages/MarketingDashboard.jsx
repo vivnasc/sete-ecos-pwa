@@ -13,7 +13,9 @@ import {
   getSemana2,
   getCarrosseisProntos,
   gerarConteudoHoje,
+  gerarConteudoSemana,
   gerarMensagemWhatsApp,
+  gerarStatusWhatsApp,
   gerarCaptionInstagram,
   getConteudosMockupVitalis,
   getMensagensWhatsAppMockups,
@@ -290,10 +292,49 @@ function wrapText(ctx, text, maxWidth) {
 // MAIN DASHBOARD
 // ============================================================
 
+// ============================================================
+// PROGRESS TRACKING (localStorage)
+// ============================================================
+
+const STORAGE_KEY = 'sete-ecos-marketing-progress';
+
+function loadProgress() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  } catch { return {}; }
+}
+
+function saveProgress(data) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch { /* ignore */ }
+}
+
+function useProgress() {
+  const [progress, setProgress] = useState(loadProgress);
+
+  const toggle = useCallback((key) => {
+    setProgress(prev => {
+      const next = { ...prev, [key]: prev[key] ? null : new Date().toISOString() };
+      saveProgress(next);
+      return next;
+    });
+  }, []);
+
+  const isDone = useCallback((key) => !!progress[key], [progress]);
+
+  const countDone = useCallback((prefix) => {
+    return Object.keys(progress).filter(k => k.startsWith(prefix) && progress[k]).length;
+  }, [progress]);
+
+  return { progress, toggle, isDone, countDone };
+}
+
 export default function MarketingDashboard() {
   const { session } = useAuth();
-  const [tab, setTab] = useState('vitalis');
+  const [tab, setTab] = useState('revisao');
   const [copiado, setCopied] = useState('');
+  const prog = useProgress();
 
   const copiar = async (texto, label) => {
     try {
@@ -318,7 +359,12 @@ export default function MarketingDashboard() {
     );
   }
 
+  const totalTarefas = 24; // total trackable tasks across revisao
+  const tarefasFeitas = prog.countDone('rev-');
+  const percentagem = Math.round((tarefasFeitas / totalTarefas) * 100);
+
   const tabs = [
+    { id: 'revisao', label: `Revisão ${tarefasFeitas > 0 ? `(${percentagem}%)` : ''}`, icon: '🧭' },
     { id: 'vitalis', label: 'VITALIS (12)', icon: '📱' },
     { id: 'wabusiness', label: 'WA Business', icon: '💼' },
     { id: 'hoje', label: 'Hoje', icon: '⚡' },
@@ -336,21 +382,35 @@ export default function MarketingDashboard() {
           <div className="flex items-center justify-between mb-2">
             <Link to="/coach" className="text-white/60 hover:text-white text-sm">&larr; Coach</Link>
             <div className="flex gap-2">
-              <Link to="/catalogo" className="text-[10px] bg-green-500/20 text-green-300 px-3 py-1 rounded-full border border-green-400/30 hover:bg-green-500/30 transition-colors">📄 Catálogo PDF</Link>
-              <span className="text-[10px] bg-white/10 px-3 py-1 rounded-full border border-white/20">LANÇAMENTO</span>
+              <Link to="/catalogo" className="text-[10px] bg-green-500/20 text-green-300 px-3 py-1 rounded-full border border-green-400/30 hover:bg-green-500/30 transition-colors">Catálogo PDF</Link>
+              <Link to="/coach/social" className="text-[10px] bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full border border-purple-400/30 hover:bg-purple-500/30 transition-colors">Agendar Posts</Link>
             </div>
           </div>
           <h1 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-titulos)' }}>
-            Plano de Lançamento
+            Marketing Coach
           </h1>
-          <p className="text-white/50 text-sm mt-1">8-21 Fevereiro 2026 &middot; Semana 1: Aquecer &middot; Semana 2: Lançar</p>
+          <p className="text-white/50 text-sm mt-1">Tudo pronto. Só precisas de seguir os passos.</p>
+
+          {/* Progress bar */}
+          {tarefasFeitas > 0 && (
+            <div className="mt-3">
+              <div className="flex items-center justify-between text-xs mb-1">
+                <span className="text-white/50">{tarefasFeitas}/{totalTarefas} tarefas concluídas</span>
+                <span className="text-white/70 font-bold">{percentagem}%</span>
+              </div>
+              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full transition-all duration-500" style={{ width: `${percentagem}%` }} />
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-5 gap-2 mt-4">
             {[
               { v: '12', l: 'Mockups' },
               { v: '12', l: 'Posts Grid' },
               { v: '4', l: 'Anúncios' },
               { v: String(getCarrosseisProntos().length), l: 'Carrosséis' },
-              { v: '14', l: 'Dias' },
+              { v: '12', l: 'Msgs WA' },
             ].map(s => (
               <div key={s.l} className="bg-white/5 border border-white/10 rounded-xl p-2 text-center">
                 <p className="text-xl font-bold">{s.v}</p>
@@ -379,6 +439,7 @@ export default function MarketingDashboard() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 mt-4 space-y-4">
+        {tab === 'revisao' && <RevisaoTab copiar={copiar} copiado={copiado} prog={prog} />}
         {tab === 'vitalis' && <VitalisTab copiar={copiar} copiado={copiado} />}
         {tab === 'wabusiness' && <WABusinessTab copiar={copiar} copiado={copiado} />}
         {tab === 'hoje' && <HojeTab copiar={copiar} copiado={copiado} />}
@@ -387,6 +448,397 @@ export default function MarketingDashboard() {
         {tab === 'anuncios' && <AnunciosTab copiar={copiar} copiado={copiado} />}
         {tab === 'carrosseis' && <CarrosseisTab copiar={copiar} copiado={copiado} />}
       </div>
+    </div>
+  );
+}
+
+// ============================================================
+// TAB: REVISÃO - Coach de marketing pessoal
+// ============================================================
+
+function RevisaoTab({ copiar, copiado, prog }) {
+  const { toggle, isDone, countDone } = prog;
+  const hoje = gerarConteudoHoje();
+  const semana = gerarConteudoSemana();
+  const statusWA = gerarStatusWhatsApp();
+  const [semanaAberta, setSemanaAberta] = useState(0);
+
+  // Calculate current week number since start
+  const dataHoje = new Date();
+  const dataHojeStr = dataHoje.toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  // Phase logic: which phase is she in?
+  const fase1Done = countDone('rev-f1-');
+  const fase1Total = 6;
+  const fase2Done = countDone('rev-f2-');
+  const fase2Total = 6;
+  const fase3Done = countDone('rev-f3-');
+  const fase3Total = 6;
+  const fase4Done = countDone('rev-f4-');
+  const fase4Total = 6;
+
+  const faseActual = fase1Done >= fase1Total ? (fase2Done >= fase2Total ? (fase3Done >= fase3Total ? 3 : 2) : 1) : 0;
+
+  const fases = [
+    {
+      num: 1,
+      titulo: 'ARRANCAR',
+      subtitulo: 'Setup + primeiros 6 posts',
+      cor: 'from-amber-500 to-orange-600',
+      corBg: 'bg-amber-50 border-amber-200',
+      corText: 'text-amber-700',
+      done: fase1Done,
+      total: fase1Total,
+      tarefas: [
+        { key: 'rev-f1-bio', texto: 'Configurar perfil Instagram (bio, foto, link)', tab: 'vitalis', secao: 'Setup Instagram', accao: 'Vai ao tab VITALIS > Setup Instagram. Copia a bio, mete a foto, configura o link.' },
+        { key: 'rev-f1-wa', texto: 'Configurar WhatsApp Business (perfil + mensagens auto)', tab: 'wabusiness', accao: 'Vai ao tab WA Business. Copia o perfil, a saudação e a mensagem de ausência.' },
+        { key: 'rev-f1-post1', texto: 'Publicar Post #1 no Instagram (lançamento)', tab: 'vitalis', secao: 'Posts (12)', accao: 'Vai ao tab VITALIS > Posts (12). Abre o Post #1. Descarrega a imagem + copia a caption. Publica e fixa no topo.' },
+        { key: 'rev-f1-post2', texto: 'Publicar Post #7 no Instagram (carrossel 5 razões)', tab: 'carrosseis', accao: 'Vai ao tab Carrosséis. Descarrega "5 Razões". Publica com a caption.' },
+        { key: 'rev-f1-wa1', texto: 'Enviar 1.ª mensagem WhatsApp (tipo Lumina)', tab: 'hoje', accao: 'Vai ao tab Hoje > WhatsApp. Escolhe "Lumina". Copia e envia para os teus contactos.' },
+        { key: 'rev-f1-status1', texto: 'Publicar 1 status no WhatsApp', tab: 'hoje', accao: 'Vai ao tab Hoje. Copia o hook do dia e publica como status no WhatsApp.' },
+      ],
+    },
+    {
+      num: 2,
+      titulo: 'RITMO',
+      subtitulo: 'Rotina diária: 1 post + 1 status + 1 WA',
+      cor: 'from-blue-500 to-indigo-600',
+      corBg: 'bg-blue-50 border-blue-200',
+      corText: 'text-blue-700',
+      done: fase2Done,
+      total: fase2Total,
+      tarefas: [
+        { key: 'rev-f2-post3', texto: 'Publicar Post #12 (reel orgulho MZ)', tab: 'vitalis', secao: 'Posts (12)', accao: 'Vai a Posts (12), post #12. Grava o reel seguindo o roteiro. Publica.' },
+        { key: 'rev-f2-post4', texto: 'Publicar Post #5 (espaço emocional)', tab: 'vitalis', secao: 'Posts (12)', accao: 'Post #5 com mockup + caption. Formato emocional.' },
+        { key: 'rev-f2-post5', texto: 'Publicar Post #8 (carrossel Dietas vs VITALIS)', tab: 'carrosseis', accao: 'Descarrega o carrossel "Dietas vs VITALIS". Polémico = mais alcance.' },
+        { key: 'rev-f2-post6', texto: 'Publicar Post #4 (98 receitas)', tab: 'vitalis', secao: 'Posts (12)', accao: 'Post #4: receitas do mercado. Prático e local.' },
+        { key: 'rev-f2-stories', texto: 'Publicar stories 3 dias seguidos (usar tab Hoje)', tab: 'hoje', accao: 'Cada dia, vai ao tab Hoje > Stories. Copia a sequência de 5 stories.' },
+        { key: 'rev-f2-wa-rotina', texto: 'Enviar 3 mensagens WA em 3 dias diferentes', tab: 'hoje', accao: 'Cada dia, vai ao tab Hoje > WhatsApp. Alterna entre Dica, Provocação e Pessoal.' },
+      ],
+    },
+    {
+      num: 3,
+      titulo: 'CRESCER',
+      subtitulo: 'Engagement + últimos posts do grid',
+      cor: 'from-green-500 to-emerald-600',
+      corBg: 'bg-green-50 border-green-200',
+      corText: 'text-green-700',
+      done: fase3Done,
+      total: fase3Total,
+      tarefas: [
+        { key: 'rev-f3-post7', texto: 'Publicar Post #11 (reel POV)', tab: 'vitalis', secao: 'Posts (12)', accao: 'Reel #11: POV trending. Grava seguindo o roteiro.' },
+        { key: 'rev-f3-post8', texto: 'Publicar Post #3 (coach 24h)', tab: 'vitalis', secao: 'Posts (12)', accao: 'Post #3: diferencial da coach IA.' },
+        { key: 'rev-f3-post9', texto: 'Publicar Post #9 (carrossel tour)', tab: 'carrosseis', accao: 'Carrossel tour da app. Educativo.' },
+        { key: 'rev-f3-post10', texto: 'Publicar Post #6 (treinos + ciclo)', tab: 'vitalis', secao: 'Posts (12)', accao: 'Post #6: treinos que se adaptam ao ciclo. Nicho.' },
+        { key: 'rev-f3-engage', texto: 'Responder a 10 comentários/DMs no Instagram', accao: 'Dedica 15 minutos a responder e interagir. Cada comentário respondido = mais alcance.' },
+        { key: 'rev-f3-grupo', texto: 'Enviar mensagem para 1 grupo de mulheres no WA', tab: 'hoje', accao: 'Tab Hoje > WhatsApp > tom "Lumina". Adapta para grupo.' },
+      ],
+    },
+    {
+      num: 4,
+      titulo: 'CONVERTER',
+      subtitulo: 'Vendas directas + anúncios',
+      cor: 'from-purple-500 to-pink-600',
+      corBg: 'bg-purple-50 border-purple-200',
+      corText: 'text-purple-700',
+      done: fase4Done,
+      total: fase4Total,
+      tarefas: [
+        { key: 'rev-f4-post11', texto: 'Publicar Post #10 (reel dia com VITALIS)', tab: 'vitalis', secao: 'Posts (12)', accao: 'Reel #10: "Um dia com VITALIS". Relatable.' },
+        { key: 'rev-f4-post12', texto: 'Publicar Post #2 (dashboard profissional)', tab: 'vitalis', secao: 'Posts (12)', accao: 'Post #2: mostra o interior da app. Profissionalismo.' },
+        { key: 'rev-f4-promo', texto: 'Enviar mensagem WA com código VEMVITALIS20', tab: 'hoje', accao: 'Tab Hoje > WhatsApp > tom "Urgência" ou "Promo". Inclui o código de 20% desconto.' },
+        { key: 'rev-f4-testemunho', texto: 'Publicar 1 testemunho (story ou post)', accao: 'Pede feedback a um/a utilizador/a. Publica como story com a permissão.' },
+        { key: 'rev-f4-ad1', texto: 'Activar 1 anúncio no Meta (Lumina grátis)', tab: 'anuncios', accao: 'Tab Anúncios. Copia o anúncio "Lumina Diagnóstico". Cria no Meta Business Suite.' },
+        { key: 'rev-f4-recap', texto: 'Enviar mensagem de recap/urgência final no WA', tab: 'hoje', accao: 'Tab Hoje > WhatsApp > tom "Urgência". Última chance do mês.' },
+      ],
+    },
+  ];
+
+  // Find today's micro-tasks (3 quick wins)
+  const getMicroTarefasHoje = () => {
+    const diaKey = dataHoje.toISOString().split('T')[0];
+    const dayOfWeek = dataHoje.getDay();
+
+    const tarefas = [];
+
+    // 1. Always: post or content task based on phase
+    const faseActiva = fases[faseActual];
+    if (faseActiva) {
+      const proxTarefa = faseActiva.tarefas.find(t => !isDone(t.key));
+      if (proxTarefa) {
+        tarefas.push({ ...proxTarefa, key: proxTarefa.key, micro: true, tipo: 'conteudo' });
+      }
+    }
+
+    // 2. Always: WA status
+    tarefas.push({
+      key: `micro-status-${diaKey}`,
+      texto: 'Publicar 1 status no WhatsApp',
+      accao: `Copia o texto abaixo e publica como status no WhatsApp.`,
+      conteudo: statusWA.mensagem,
+      tipo: 'whatsapp',
+    });
+
+    // 3. Rotating: engagement / stories / DM
+    if (dayOfWeek % 3 === 0) {
+      tarefas.push({
+        key: `micro-engage-${diaKey}`,
+        texto: 'Responder a 3 comentários ou DMs no Instagram',
+        accao: 'Abre o Instagram, responde a comentários ou mensagens. 5 minutos.',
+        tipo: 'engage',
+      });
+    } else if (dayOfWeek % 3 === 1) {
+      tarefas.push({
+        key: `micro-stories-${diaKey}`,
+        texto: 'Publicar 1 story no Instagram',
+        accao: 'Usa o hook do dia como texto no story. Adiciona sticker de enquete para engagement.',
+        conteudo: hoje.hook,
+        tipo: 'stories',
+      });
+    } else {
+      tarefas.push({
+        key: `micro-dm-${diaKey}`,
+        texto: 'Enviar 1 DM pessoal a alguém que interagiu',
+        accao: 'Escolhe alguém que reagiu ao teu conteúdo. Envia uma mensagem curta e genuína.',
+        tipo: 'engage',
+      });
+    }
+
+    return tarefas;
+  };
+
+  const microTarefas = getMicroTarefasHoje();
+
+  return (
+    <div className="space-y-4">
+      {/* Estado actual - honest assessment */}
+      <div className="bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] text-white rounded-2xl p-5">
+        <h3 className="font-bold text-lg">Onde estás agora</h3>
+        <p className="text-white/60 text-sm mt-1 leading-relaxed">
+          Tens imenso conteúdo pronto — 12 mockups, 8 carrosséis, 7 mensagens WA, captions escritas, roteiros de reels. Não te falta material. Falta-te uma rotina simples e saber por onde começar.
+        </p>
+        <div className="grid grid-cols-2 gap-2 mt-4">
+          <div className="bg-white/5 border border-white/10 rounded-xl p-3">
+            <p className="text-[10px] text-white/40 uppercase font-bold">Pronto a usar</p>
+            <p className="text-2xl font-bold mt-1">42+</p>
+            <p className="text-[10px] text-white/50">peças de conteúdo</p>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-xl p-3">
+            <p className="text-[10px] text-white/40 uppercase font-bold">Teu progresso</p>
+            <p className="text-2xl font-bold mt-1">{fase1Done + fase2Done + fase3Done + fase4Done}/24</p>
+            <p className="text-[10px] text-white/50">tarefas concluídas</p>
+          </div>
+        </div>
+      </div>
+
+      {/* HOJE: 3 MICRO-TAREFAS */}
+      <div className="bg-white rounded-2xl border-2 border-[#1a1a2e] overflow-hidden shadow-lg">
+        <div className="bg-[#1a1a2e] text-white px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-bold text-base">Hoje faz APENAS isto</h3>
+              <p className="text-white/50 text-xs mt-0.5">{dataHojeStr}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold">{microTarefas.filter(t => isDone(t.key)).length}/{microTarefas.length}</p>
+              <p className="text-[9px] text-white/40">feitas hoje</p>
+            </div>
+          </div>
+        </div>
+        <div className="p-4 space-y-3">
+          {microTarefas.map((tarefa, i) => {
+            const done = isDone(tarefa.key);
+            const tipoIcon = tarefa.tipo === 'whatsapp' ? '💬' : tarefa.tipo === 'stories' ? '📱' : tarefa.tipo === 'engage' ? '💬' : '📸';
+            const tipoCor = tarefa.tipo === 'whatsapp' ? 'border-l-green-400 bg-green-50/50' : tarefa.tipo === 'stories' ? 'border-l-purple-400 bg-purple-50/50' : tarefa.tipo === 'engage' ? 'border-l-amber-400 bg-amber-50/50' : 'border-l-pink-400 bg-pink-50/50';
+            return (
+              <div key={tarefa.key} className={`border-l-4 rounded-xl p-3 transition-all ${done ? 'border-l-green-400 bg-green-50/30 opacity-60' : tipoCor}`}>
+                <div className="flex items-start gap-3">
+                  <button
+                    onClick={() => toggle(tarefa.key)}
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${
+                      done ? 'bg-green-500 border-green-500 text-white' : 'border-[#C8BFB6] hover:border-[#1a1a2e]'
+                    }`}
+                  >
+                    {done && <span className="text-xs">✓</span>}
+                  </button>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="text-xs">{tipoIcon}</span>
+                      <p className={`text-sm font-bold ${done ? 'line-through text-[#A09888]' : 'text-[#4A4035]'}`}>{tarefa.texto}</p>
+                    </div>
+                    <p className="text-xs text-[#6B5C4C] leading-relaxed">{tarefa.accao}</p>
+                    {tarefa.conteudo && !done && (
+                      <div className="mt-2 bg-white rounded-lg p-2.5 border border-[#E8E2D9]">
+                        <pre className="text-[11px] text-[#4A4035] whitespace-pre-wrap leading-relaxed max-h-24 overflow-y-auto">{tarefa.conteudo}</pre>
+                        <CopyBtn onClick={() => copiar(tarefa.conteudo, `micro-${i}`)} copiado={copiado === `micro-${i}`} label="Copiar" small />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {microTarefas.every(t => isDone(t.key)) && (
+            <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl p-4 text-center">
+              <p className="text-lg font-bold">Parabéns! Dia concluído.</p>
+              <p className="text-sm text-white/80 mt-1">Volta amanhã para novas micro-tarefas.</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* PLANO DE 4 FASES */}
+      <Card titulo="Plano de 4 Fases" badge="24 tarefas no total">
+        <p className="text-xs text-[#6B5C4C] mb-3 leading-relaxed">
+          Segue na ordem. Cada fase tem 6 tarefas. Não passes à próxima sem acabar a anterior.
+          Ao teu ritmo — sem pressão de datas.
+        </p>
+        <div className="grid grid-cols-4 gap-1.5 mb-4">
+          {fases.map((fase, i) => {
+            const isActive = i === faseActual;
+            const isComplete = fase.done >= fase.total;
+            return (
+              <button
+                key={fase.num}
+                onClick={() => setSemanaAberta(i)}
+                className={`p-2 rounded-xl text-center transition-all border-2 ${
+                  semanaAberta === i ? 'border-[#1a1a2e] shadow-md' :
+                  isComplete ? 'border-green-300 bg-green-50' :
+                  isActive ? 'border-amber-300 bg-amber-50' :
+                  'border-[#E8E2D9] bg-white'
+                }`}
+              >
+                <p className={`text-xs font-bold ${isComplete ? 'text-green-600' : isActive ? 'text-amber-700' : 'text-[#6B5C4C]'}`}>
+                  {isComplete ? '✓' : ''} Fase {fase.num}
+                </p>
+                <p className="text-[9px] text-[#A09888] mt-0.5">{fase.done}/{fase.total}</p>
+              </button>
+            );
+          })}
+        </div>
+      </Card>
+
+      {/* Fase aberta - detalhe */}
+      {(() => {
+        const fase = fases[semanaAberta];
+        const isComplete = fase.done >= fase.total;
+        return (
+          <div className={`rounded-2xl border overflow-hidden ${isComplete ? 'border-green-300' : 'border-[#E8E2D9]'}`}>
+            <div className={`bg-gradient-to-r ${fase.cor} text-white px-4 py-3`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-base">Fase {fase.num}: {fase.titulo}</h3>
+                  <p className="text-white/80 text-xs">{fase.subtitulo}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xl font-bold">{fase.done}/{fase.total}</p>
+                </div>
+              </div>
+              {/* Mini progress */}
+              <div className="h-1.5 bg-white/20 rounded-full mt-2 overflow-hidden">
+                <div className="h-full bg-white rounded-full transition-all duration-500" style={{ width: `${(fase.done / fase.total) * 100}%` }} />
+              </div>
+            </div>
+            <div className="bg-white p-4 space-y-2">
+              {fase.tarefas.map((tarefa, i) => {
+                const done = isDone(tarefa.key);
+                return (
+                  <div
+                    key={tarefa.key}
+                    className={`flex items-start gap-3 p-3 rounded-xl transition-all ${
+                      done ? 'bg-green-50/50' : 'bg-[#FAFAF8] hover:bg-[#F5F2ED]'
+                    }`}
+                  >
+                    <button
+                      onClick={() => toggle(tarefa.key)}
+                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${
+                        done ? 'bg-green-500 border-green-500 text-white' : 'border-[#C8BFB6] hover:border-[#1a1a2e]'
+                      }`}
+                    >
+                      {done && <span className="text-xs">✓</span>}
+                    </button>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-semibold ${done ? 'line-through text-[#A09888]' : 'text-[#4A4035]'}`}>
+                        {i + 1}. {tarefa.texto}
+                      </p>
+                      {!done && (
+                        <p className="text-xs text-[#6B5C4C] mt-1 leading-relaxed">{tarefa.accao}</p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ESTA SEMANA - conteúdo dinâmico */}
+      <Card titulo="Conteúdo desta semana" badge="gerado automaticamente">
+        <p className="text-xs text-[#6B5C4C] mb-3">
+          Cada dia tem um tema diferente. O conteúdo renova-se automaticamente.
+        </p>
+        <div className="space-y-2">
+          {semana.map((dia, i) => {
+            const isPast = i < dataHoje.getDay();
+            const isToday = i === dataHoje.getDay();
+            return (
+              <div
+                key={i}
+                className={`flex items-center gap-3 p-2.5 rounded-xl transition-all ${
+                  isToday ? 'bg-[#1a1a2e] text-white' :
+                  isPast ? 'bg-gray-50 opacity-50' :
+                  'bg-[#FAFAF8]'
+                }`}
+              >
+                <span className={`text-xs font-bold w-14 shrink-0 ${isToday ? 'text-white' : 'text-[#A09888]'}`}>
+                  {dia.diaSemana.slice(0, 3)}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-xs font-bold truncate ${isToday ? 'text-white' : 'text-[#4A4035]'}`}>{dia.hook}</p>
+                </div>
+                <div className="flex gap-1.5 shrink-0">
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${
+                    isToday ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-600'
+                  }`}>{dia.formato}</span>
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${
+                    isToday ? 'bg-white/20 text-white' : 'bg-orange-100 text-orange-600'
+                  }`}>{dia.tipo}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+
+      {/* Quick links to other tabs */}
+      <div className="grid grid-cols-2 gap-2">
+        <QuickLink icon="📱" titulo="12 Mockups Prontos" desc="Imagens + captions + WA" tab="vitalis" />
+        <QuickLink icon="📑" titulo="Carrosséis" desc="Descarrega e publica" tab="carrosseis" />
+        <QuickLink icon="⚡" titulo="Conteúdo de Hoje" desc="Post + stories + WA" tab="hoje" />
+        <QuickLink icon="💼" titulo="Setup WA Business" desc="Perfil + respostas auto" tab="wabusiness" />
+      </div>
+
+      {/* Motivational note */}
+      <div className="bg-[#1a1a2e] text-white rounded-2xl p-4">
+        <p className="text-sm leading-relaxed">
+          Não tens de fazer tudo de uma vez. <strong>3 micro-tarefas por dia</strong> é o suficiente.
+          Em 4 semanas, vais ter um Instagram profissional, uma presença activa no WhatsApp,
+          e pessoas a descobrirem o SETE ECOS todos os dias.
+        </p>
+        <p className="text-white/50 text-xs mt-2">— O teu marketing coach digital</p>
+      </div>
+    </div>
+  );
+}
+
+function QuickLink({ icon, titulo, desc }) {
+  return (
+    <div className="bg-white rounded-xl border border-[#E8E2D9] p-3 hover:shadow-md transition-all cursor-pointer">
+      <span className="text-lg">{icon}</span>
+      <p className="text-xs font-bold text-[#4A4035] mt-1">{titulo}</p>
+      <p className="text-[10px] text-[#A09888]">{desc}</p>
     </div>
   );
 }
