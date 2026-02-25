@@ -474,6 +474,69 @@ const LandingImago = () => {
         </div>
       </section>
 
+      {/* ===== VÊ A PLATAFORMA ===== */}
+      <section className="py-20 px-4" style={{ background: '#12121e' }}>
+        <div className="max-w-5xl mx-auto">
+          <ScrollReveal variant="fadeUp">
+            <div className="text-center mb-14">
+              <span className="inline-block px-4 py-2 bg-[#8B7BA5]/20 text-[#8B7BA5] rounded-full text-sm font-semibold mb-4">
+                VÊ POR DENTRO
+              </span>
+              <h2
+                className="text-3xl md:text-4xl font-bold text-white mb-4"
+                style={{ fontFamily: 'var(--font-titulos)' }}
+              >
+                O Imago na palma da tua mão
+              </h2>
+              <p className="text-[#8B7BA5]/70 max-w-xl mx-auto">
+                Descobre quem és por baixo de tudo o que construíste.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+            <ScrollReveal variant="fadeLeft">
+              <div className="relative mx-auto max-w-[280px]">
+                <div className="absolute -inset-4 bg-[#8B7BA5]/10 rounded-[2.5rem] blur-xl" />
+                <img
+                  src="/mockups/Imago-dash-portrait.png"
+                  alt="Imago Dashboard — espelho triplo, valores e meditações"
+                  className="relative rounded-[2rem] shadow-2xl border border-[#8B7BA5]/20 w-full"
+                  loading="lazy"
+                />
+                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#8B7BA5]/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
+                  Dashboard principal
+                </div>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal variant="fadeRight">
+              <div className="relative mx-auto max-w-[280px]">
+                <div className="absolute -inset-4 bg-[#8B7BA5]/10 rounded-[2.5rem] blur-xl" />
+                <img
+                  src="/mockups/Imago-arqueologia-portrait.png"
+                  alt="Arqueologia de Si — escavar camadas da tua identidade"
+                  className="relative rounded-[2rem] shadow-2xl border border-[#8B7BA5]/20 w-full"
+                  loading="lazy"
+                />
+                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#8B7BA5]/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
+                  Arqueologia de Si
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          <div className="text-center mt-12">
+            <button
+              onClick={handleComecar}
+              className="px-8 py-4 bg-[#8B7BA5] text-white rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
+            >
+              Experimentar 7 dias grátis
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* ===== COMO FUNCIONA ===== */}
       <section id="como-funciona" className="py-20 px-4" style={{ background: 'linear-gradient(to bottom, #12121e, #1a1a2e)' }}>
         <div className="max-w-4xl mx-auto">

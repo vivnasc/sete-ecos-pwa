@@ -147,9 +147,9 @@ const CONTEUDO_PROVOCACAO = [
     cta: 'Começa grátis pelo LUMINA. Leva 2 minutos.',
   },
   {
-    hook: 'Investir 2.500 MT na tua saúde é "caro". Mas o hospital é grátis, né?',
-    corpo: 'Prevenir custa menos que tratar. 2.500 MT/mês é menos que o que gastas em comida processada. A diferença é que um te destrói e o outro te transforma.',
-    cta: 'VITALIS: desde 2.500 MT. Garantia de 7 dias.',
+    hook: 'Investir na tua saúde é "caro". Mas o hospital é grátis, né?',
+    corpo: 'Prevenir custa menos que tratar. Gastas mais em comida processada por mês do que num acompanhamento real. A diferença é que um te destrói e o outro te transforma.',
+    cta: 'VITALIS: coaching nutricional real. Link na bio.',
   },
 ];
 
@@ -202,11 +202,12 @@ function getConteudoByTema(tema, seed) {
   return pickFromArray(CONTEUDO_PROVOCACAO, seed);
 }
 
-export function gerarConteudoHoje(date = new Date()) {
+export function gerarConteudoHoje(date = new Date(), variante = 0) {
   const dayOfWeek = date.getDay();
   const dayOfYear = getDayOfYear(date);
+  const seed = dayOfYear + variante;
   const { tema, titulo, formato, tipo } = TEMAS_SEMANA[dayOfWeek];
-  const conteudo = getConteudoByTema(tema, dayOfYear);
+  const conteudo = getConteudoByTema(tema, seed);
 
   const hashBase = HASHTAGS_BASE.slice(0, 4);
   const hashTema = (HASHTAGS_TEMATICOS[tema] || []).slice(0, 4);
@@ -226,6 +227,12 @@ export function gerarConteudoHoje(date = new Date()) {
   };
 }
 
+export function totalVariantes(tema) {
+  if (tema === 'corpo') return CONTEUDO_CORPO.length;
+  if (tema === 'emocional') return CONTEUDO_EMOCIONAL.length;
+  return CONTEUDO_PROVOCACAO.length;
+}
+
 export function gerarConteudoSemana(startDate = new Date()) {
   const semana = [];
   for (let i = 0; i < 7; i++) {
@@ -240,8 +247,8 @@ export function gerarConteudoSemana(startDate = new Date()) {
 // WHATSAPP - Mensagens que soam como a Vivianne a falar
 // ============================================================
 
-export function gerarMensagemWhatsApp(tipo = 'dica', campanha = '') {
-  const hoje = gerarConteudoHoje();
+export function gerarMensagemWhatsApp(tipo = 'dica', campanha = '', variante = 0) {
+  const hoje = gerarConteudoHoje(new Date(), variante);
   const camp = campanha || `whatsapp-${hoje.data}`;
   const linkVitalis = buildUTMUrl(`${BASE_URL}/vitalis`, UTM_TEMPLATES.whatsappBroadcast(camp));
   const linkLumina = buildUTMUrl(`${BASE_URL}/lumina`, UTM_TEMPLATES.whatsappBroadcast(camp + '-lumina'));
@@ -260,7 +267,7 @@ export function gerarMensagemWhatsApp(tipo = 'dica', campanha = '') {
     urgencia: `⚡ Pergunta honesta:\n\nHá quanto tempo dizes "vou começar na segunda"?\n\nSemanas? Meses? Anos?\n\nEnquanto esperas pelo "momento certo", o teu corpo continua a pedir ajuda.\n\nDeixa de esperar.\n\n2 minutos. Gratuito. Agora:\n${linkLumina}`,
 
     // Promo directa
-    promo: `*Isto não é uma dieta. É o fim das dietas.* 💥\n\nO VITALIS é coaching nutricional REAL:\n\n🍽 Plano feito para TI (não copiado da internet)\n📱 Coach IA que te responde às 3 da manhã\n💚 Espaço emocional para os dias difíceis\n📊 Dashboard que mostra o teu progresso real\n📖 Receitas com comida real e acessível\n\nDesde 2.500 MT/mês\n7 dias de garantia (não gostas = reembolso)\n\n👉 ${linkVitalis}`,
+    promo: `*Isto não é uma dieta. É o fim das dietas.* 💥\n\nO VITALIS é coaching nutricional REAL:\n\n🍽 Plano feito para TI (não copiado da internet)\n📱 Coach IA que te responde às 3 da manhã\n💚 Espaço emocional para os dias difíceis\n📊 Dashboard que mostra o teu progresso real\n📖 Receitas com comida real e acessível\n\nEnvia-me DM para saber como começar 🌿\n\n👉 ${linkVitalis}`,
 
     // Testemunho cru
     testemunho: `*"Chorei quando vi os meus resultados."*\n\nNão porque perdi peso.\n\nMas porque pela primeira vez em anos, comi sem culpa.\n\nPassei a vida inteira a fazer dieta. A sentir-me falhada. O VITALIS não me deu uma lista de alimentos. Deu-me uma nova relação com a comida.\n\n_- Cliente VITALIS_\n\nQueres saber como?\n👉 ${linkVitalis}`,
@@ -292,8 +299,8 @@ export function gerarMensagemWhatsApp(tipo = 'dica', campanha = '') {
   };
 }
 
-export function gerarStatusWhatsApp(campanha = '') {
-  const hoje = gerarConteudoHoje();
+export function gerarStatusWhatsApp(campanha = '', variante = 0) {
+  const hoje = gerarConteudoHoje(new Date(), variante);
   const camp = campanha || `status-${hoje.data}`;
   const link = buildUTMUrl(`${BASE_URL}/lumina`, UTM_TEMPLATES.whatsappStatus(camp));
   return {
@@ -306,8 +313,8 @@ export function gerarStatusWhatsApp(campanha = '') {
 // INSTAGRAM - Captions que param o scroll
 // ============================================================
 
-export function gerarCaptionInstagram(tipo = 'post') {
-  const hoje = gerarConteudoHoje();
+export function gerarCaptionInstagram(tipo = 'post', variante = 0) {
+  const hoje = gerarConteudoHoje(new Date(), variante);
   const hashtagStr = hoje.hashtags.join(' ');
 
   const templates = {
@@ -390,7 +397,7 @@ export function getCampanhaLancamento() {
     {
       dia: 6,
       titulo: 'OBJECOES - Porque não',
-      whatsapp: '*"Não tenho dinheiro."*\n\n2.500 MT = menos que um café por dia.\nMenos que a comida processada que compras por mês.\nMenos que a próxima consulta quando a saúde piorar.\n\n*"Não tenho tempo."*\n\nO check-in diário demora 2 minutos.\nAs receitas são rápidas.\nA app está no teu telemóvel.\n\n*"Já tentei tudo."*\n\nMas nunca tentaste algo que cuida da tua EMOÇÃO ao mesmo tempo que cuida da tua COMIDA.\n\nÉ isso que o VITALIS faz.\n\n7 dias de garantia. Sem risco.\n\n',
+      whatsapp: '*"Não tenho tempo."*\n\nO check-in diário demora 2 minutos.\nAs receitas são rápidas.\nA app está no teu telemóvel.\n\n*"Já tentei tudo."*\n\nMas nunca tentaste algo que cuida da tua EMOÇÃO ao mesmo tempo que cuida da tua COMIDA.\n\nÉ isso que o VITALIS faz.\n\n7 dias de garantia. Sem risco. Envia-me DM para saber mais.\n\n',
       instagram: '"Já tentei tudo."\n\nMas nunca tentaste algo que cuida da tua EMOÇÃO ao mesmo tempo.\n\n90% dos problemas com comida são emocionais.\n\nO VITALIS é o primeiro programa que trata os dois.\n\nLink na bio.',
       stories: 'Q&A: Responder às dúvidas mais comuns sobre o VITALIS',
     },
@@ -480,9 +487,9 @@ export function getCarrosseisProntos() {
         { titulo: 'Coach IA disponível 24h', texto: 'Pergunta o que quiseres. A qualquer hora. Sem julgamento.' },
         { titulo: 'Espaço emocional para dias difíceis', texto: 'Recaíste? Sem problema. Há um espaço para isso. Sem culpa.' },
         { titulo: 'Dashboard + Receitas + Desafios', texto: 'Tudo no teu telemóvel. Progresso real que podes ver.' },
-        { titulo: 'Desde 2.500 MT/mês. 7 dias de garantia.', texto: 'app.seteecos.com/vitalis' },
+        { titulo: 'Queres saber mais? Envia-me DM.', texto: 'VITALIS — app.seteecos.com' },
       ],
-      caption: 'O VITALIS não é mais uma dieta. É o único programa que cuida da tua COMIDA e da tua EMOÇÃO ao mesmo tempo. 🌿\n\nDesliza para ver tudo o que inclui.\n\nDesde 2.500 MT/mês. 7 dias de garantia.\n\nLink na bio.\n\n#seteecos #vitalis #coachingnutricional #saudereal #bemestar #transformacao',
+      caption: 'O VITALIS não é mais uma dieta. É o único programa que cuida da tua COMIDA e da tua EMOÇÃO ao mesmo tempo. 🌿\n\nDesliza para ver tudo o que inclui.\n\nEnvia DM para saber como começar.\n\nLink na bio.\n\n#seteecos #vitalis #coachingnutricional #saudereal #bemestar #transformacao',
     },
     {
       id: 'ciclo-dieta',
@@ -508,9 +515,9 @@ export function getCarrosseisProntos() {
         { titulo: 'Foste ensinada a duvidar de ti.', texto: 'Pela escola. Pela TV. Pelas redes. Pelo espelho. Mas isso é uma mentira.' },
         { titulo: '7 semanas de reconexão.', texto: 'Exercícios, reflexões e ferramentas para reconstruir a relação contigo mesma.' },
         { titulo: 'O teu corpo é a tua casa. Não um projecto.', texto: 'Para de tentar arranja-lo. Começa a habita-lo.' },
-        { titulo: 'AUREA: desde 975 MT/mês.', texto: 'app.seteecos.com/aurea' },
+        { titulo: 'ÁUREA: envia DM para saber mais.', texto: 'app.seteecos.com/aurea' },
       ],
-      caption: 'O teu valor não depende do que veste, pesas ou aparentas. 🤍\n\nO AUREA é um programa de 7 semanas para reconstruir a relação contigo mesma.\n\nPorque antes de mudar o corpo, precisas de mudar o olhar.\n\nLink na bio.\n\n#seteecos #aurea #autovalor #autoestima #mulherreal #empoderamento #wellness',
+      caption: 'O teu valor não depende do que vestes, pesas ou aparentas. 🤍\n\nO ÁUREA é um programa de 7 semanas para reconstruir a relação contigo.\n\nPorque antes de mudar o corpo, precisas de mudar o olhar.\n\nLink na bio.\n\n#seteecos #aurea #autovalor #autoestima #mulherreal #empoderamento #wellness',
     },
     {
       id: 'testemunhos-reais',
@@ -806,8 +813,8 @@ export function getSemana2() {
       dia: 8, data: 'Domingo 15 Fev', titulo: 'LANÇAMENTO!',
       stories: 'Video pessoal: "Hoje é o dia! O VITALIS está aberto!" + Countdown a zero.',
       whatsapp: {
-        mensagem: `*O VITALIS está ABERTO.* 🌿\n\nDepois de meses a construir, finalmente está aqui.\n\nCoaching nutricional que cuida de TI - comida E emoção.\n\n🍽 Plano alimentar personalizado (com comida moçambicana)\n📱 Coach IA disponível 24h\n💚 Espaço emocional para dias difíceis\n📊 Dashboard com o teu progresso\n🎯 Desafios semanais\n📖 Receitas com ingredientes locais\n\nDesde 2.500 MT/mês. 7 dias de garantia.\n\nInscreve-te agora:\n${linkVitalis}\n\nPara as primeiras 10: surpresa especial! 🤍`,
-        imagem: { template: 'cta', eco: 'vitalis', formato: 'stories', texto: 'VITALIS está ABERTO.', subtitulo: 'Coaching Nutricional | Desde 2.500 MT/mês' },
+        mensagem: `*O VITALIS está ABERTO.* 🌿\n\nDepois de meses a construir, finalmente está aqui.\n\nCoaching nutricional que cuida de TI - comida E emoção.\n\n🍽 Plano alimentar personalizado (com comida moçambicana)\n📱 Coach IA disponível 24h\n💚 Espaço emocional para dias difíceis\n📊 Dashboard com o teu progresso\n🎯 Desafios semanais\n📖 Receitas com ingredientes locais\n\n7 dias de garantia. Envia DM para saber mais.\n\n${linkVitalis}\n\nPara as primeiras 10: surpresa especial! 🤍`,
+        imagem: { template: 'cta', eco: 'vitalis', formato: 'stories', texto: 'VITALIS está ABERTO.', subtitulo: 'Coaching Nutricional | Envia DM' },
       },
       ads: 'Adicionar Ad "Testemunho". Retarget: quem visitou Lumina mas não converteu.',
       notas: 'DIA DE LANCAMENTO! Publica post de lançamento. Envia WA a todos. Stories o dia todo.',
@@ -836,7 +843,7 @@ export function getSemana2() {
       dia: 11, data: 'Quarta 18 Fev', titulo: 'OBJEÇÕES',
       stories: 'Q&A: Responder dúvidas sobre preço, tempo, funcionamento.',
       whatsapp: {
-        mensagem: `Sei que talvez estejas a pensar:\n\n*"Não tenho dinheiro."*\n2.500 MT = menos que 1 café por dia. Menos que comida processada por mês.\n\n*"Não tenho tempo."*\nCheck-in: 2 min. Receitas: rápidas. App no telemóvel.\n\n*"Já tentei tudo."*\nMas nunca tentaste algo que cuida da emoção ao mesmo tempo.\n\n*"E se não gostar?"*\n7 dias de garantia. Sem risco.\n\nSe alguma destas era a tua dúvida, já tens a resposta.\n\n${linkVitalis} 🌿`,
+        mensagem: `Sei que talvez estejas a pensar:\n\n*"Não tenho tempo."*\nCheck-in: 2 min. Receitas: rápidas. App no telemóvel.\n\n*"Já tentei tudo."*\nMas nunca tentaste algo que cuida da emoção ao mesmo tempo.\n\n*"E se não gostar?"*\n7 dias de garantia. Sem risco.\n\nSe alguma destas era a tua dúvida, já tens a resposta.\n\n${linkVitalis} 🌿`,
         imagem: { template: 'dica', eco: 'vitalis', formato: 'stories', texto: '"Já tentei tudo." Mas nunca tentaste algo que cuida da tua EMOÇÃO.', subtitulo: 'VITALIS - 7 dias de garantia' },
       },
       ads: 'Manter. Considerar ad de retargeting com objeções.',
@@ -866,8 +873,8 @@ export function getSemana2() {
       dia: 14, data: 'Sábado 21 Fev', titulo: 'ENCERRAR SEMANA',
       stories: 'Resumo da semana. Agradecimento. Resultados até agora.',
       whatsapp: {
-        mensagem: `Esta semana foi especial 🤍\n\nLançámos o VITALIS e a resposta superou tudo.\n\nSe ainda não entraste, esta é a tua última oportunidade esta semana.\n\nLembra-te: 7 dias de garantia. Sem risco.\n\n🍽 Plano alimentar personalizado\n📱 Coach IA 24h\n💚 Espaço emocional\n📊 Dashboard de progresso\n\nDesde 2.500 MT/mês.\n\n${linkVitalis}\n\nDaqui a 3 meses, vais agradecer-te. 🌿`,
-        imagem: { template: 'cta', eco: 'vitalis', formato: 'stories', texto: 'O VITALIS está aberto. Desde 2.500 MT/mês.', subtitulo: '7 dias de garantia. A decisão é tua.' },
+        mensagem: `Esta semana foi especial 🤍\n\nLançámos o VITALIS e a resposta superou tudo.\n\nSe ainda não entraste, esta é a tua última oportunidade esta semana.\n\nLembra-te: 7 dias de garantia. Sem risco.\n\n🍽 Plano alimentar personalizado\n📱 Coach IA 24h\n💚 Espaço emocional\n📊 Dashboard de progresso\n\nEnvia-me DM para saber como começar.\n\n${linkVitalis}\n\nDaqui a 3 meses, vais agradecer-te. 🌿`,
+        imagem: { template: 'cta', eco: 'vitalis', formato: 'stories', texto: 'O VITALIS está aberto. Envia DM.', subtitulo: '7 dias de garantia. A decisão é tua.' },
       },
       ads: 'Avaliar resultados da semana. Pausar ads com mau desempenho. Manter os melhores.',
       notas: 'Último push da semana. Avaliar métricas totais. Planear semana 3.',
@@ -991,7 +998,7 @@ Não é uma lista genérica.
 
 Tudo num só lugar. Tudo feito para TI.
 
-Desde 2.500 MT/mês. Link na bio. 🌿
+Link na bio. Envia DM para saber mais. 🌿
 
 #vitalis #seteecos #appsaude #dashboard #planoalimentar #coachingnutricional #saudereal #bemestar #tecnologia #wellness`,
       whatsapp: `📱 *Já viste o VITALIS por dentro?*
@@ -1004,7 +1011,7 @@ Olha o que tens quando entras:
 📊 Relatórios
 💪 Treinos
 
-Tudo no teu telemóvel. Desde 2.500 MT/mês.
+Tudo no teu telemóvel. Envia-me mensagem para saber como começar 🌿
 
 👉 ${linkVitalis}`,
       melhorHora: '12h-14h (pausa do almoço)',
@@ -1212,7 +1219,7 @@ Desliza para ver cada uma →
 
 Isto não é uma dieta. É um sistema inteiro de cuidado.
 
-Desde 2.500 MT/mês. 7 dias de garantia.
+Envia DM para saber como começar. 7 dias de garantia.
 
 Link na bio 🤍
 
@@ -1225,7 +1232,7 @@ Link na bio 🤍
 4️⃣ Espaço emocional
 5️⃣ Dashboard completo
 
-Desde 2.500 MT/mês. 7 dias de garantia.
+Envia DM para saber como começar. 7 dias de garantia.
 
 👉 ${linkVitalis}`,
       melhorHora: '12h-14h',
@@ -1318,7 +1325,7 @@ Desliza para ver o que recebes →
 
 Isto é coaching nutricional de verdade. No teu telemóvel.
 
-Desde 2.500 MT/mês. Link na bio. 🌿
+Link na bio. Envia DM para saber mais. 🌿
 
 #vitalis #seteecos #tourapp #plataforma #saudedigital #nutricao #coachingnutricional #saudereal #bemestar #bemestar #tecnologia`,
       whatsapp: `📱 *Queres ver o VITALIS por dentro?*
@@ -1566,7 +1573,7 @@ Não é dieta. Não é restrição. É ciência + emoção.
 💪 Treinos adaptados ao teu ciclo
 💜 Espaço emocional para os dias difíceis
 
-Desde 2.500 MT/mês. 7 dias de garantia.
+Envia DM para saber como começar. 7 dias de garantia.
 
 👉 ${linkVitalis}
 
@@ -1587,7 +1594,7 @@ Se te identificas, experimenta. Se conheces alguém que precisa, encaminha esta 
 📊 Relatórios de evolução
 💪 Treinos por fase do ciclo
 
-Tudo isto no teu telemóvel. Desde 2.500 MT/mês.
+Tudo isto no teu telemóvel. Envia DM para saber como começar.
 
 Não é um PDF. Não é um grupo. É uma app COMPLETA.
 
@@ -1683,7 +1690,7 @@ Plataforma profissional. Acessível. Inteligente.
 
 Método Precision Nutrition adaptado a ti.
 
-Desde 2.500 MT/mês.
+Envia DM para saber como começar.
 
 Vê a plataforma: ${linkVitalis} 🌿`,
     },
@@ -2384,7 +2391,7 @@ const ECO_CONTEUDO = {
           { titulo: '2. Comparas-te constantemente', texto: 'O feed dos outros parece perfeito. O teu parece insuficiente.' },
           { titulo: '3. Compras para te sentires melhor', texto: 'Roupa nova, maquilhagem, sapatos. O vazio volta no dia seguinte.' },
           { titulo: '4. Precisas de validação para decidir', texto: '"Achas que me fica bem?" — A pergunta que escondes todos os dias.' },
-          { titulo: 'O ÁUREA ajuda-te a mudar isto.', texto: '7 semanas. 100+ micro-práticas. Desde 975 MT.\napp.seteecos.com/aurea' },
+          { titulo: 'O ÁUREA ajuda-te a mudar isto.', texto: '7 semanas. 100+ micro-práticas.\napp.seteecos.com/aurea' },
         ],
         caption: '5 sinais de que o teu autovalor precisa de atenção ✨\n\nReconheces algum? Desliza.\n\nSalva e partilha com quem precisa.\n\n#seteecos #aurea #autovalor #autoestima #mulherreal #empoderamento',
       },
@@ -2396,7 +2403,7 @@ const ECO_CONTEUDO = {
       },
     ],
     mensagensWA: [
-      `✨ *ÁUREA — Programa de Autovalor*\n\nSabes aquela sensação de nunca seres suficiente?\n\nO ÁUREA é um programa de 7 semanas com 100+ micro-práticas para reconstruir a tua relação contigo.\n\n• Dinheiro: como gastas reflecte como te valorizas\n• Tempo: a quem dás e de quem recebes\n• Roupa: o espelho como aliado, não inimigo\n• Prazer: reconectar com o que te faz sentir viva\n\nDesde 975 MT/mês. 7 dias de garantia.\n\n👉 `,
+      `✨ *ÁUREA — Programa de Autovalor*\n\nSabes aquela sensação de nunca seres suficiente?\n\nO ÁUREA é um programa de 7 semanas com 100+ micro-práticas para reconstruir a tua relação contigo.\n\n• Dinheiro: como gastas reflecte como te valorizas\n• Tempo: a quem dás e de quem recebes\n• Roupa: o espelho como aliado, não inimigo\n• Prazer: reconectar com o que te faz sentir viva\n\nEnvia-me mensagem para saber como começar 🤍\n\n👉 `,
       `🤍 *Quando foi a última vez que fizeste algo SÓ para ti?*\n\nSem culpa. Sem justificação.\n\nO ÁUREA ensina-te a colocar-te em primeiro lugar — não por egoísmo, mas por sobrevivência emocional.\n\n7 semanas. Uma prática por dia. A mudança começa no olhar.\n\n👉 `,
     ],
     scriptTikTok: {
@@ -2438,7 +2445,7 @@ const ECO_CONTEUDO = {
           { titulo: '2. Respiração Box (Quadrada)', texto: 'Inspira 4s → Segura 4s → Expira 4s → Segura 4s. Usada por militares para controlo.' },
           { titulo: '3. Respiração Oceânica', texto: 'Inspira pelo nariz → Expira pela boca como se soprasses uma vela ao longe. Suave e profunda.' },
           { titulo: '4. Suspiro Fisiológico', texto: 'Duas inspirações curtas pelo nariz + uma expiração longa pela boca. A forma mais rápida de acalmar.' },
-          { titulo: 'Pratica no SERENA com guia áudio.', texto: 'app.seteecos.com/serena\nDesde 750 MT/mês' },
+          { titulo: 'Pratica no SERENA com guia áudio.', texto: 'app.seteecos.com/serena\nEnvia DM para saber mais' },
         ],
         caption: '4 respirações que te acalmam em minutos 💧\n\nGuarda este post. Vai ser útil.\n\nQual vais experimentar primeiro?\n\n#seteecos #serena #respiracao #ansiedade #calma #saudeemocional #bemestar',
       },
@@ -2450,7 +2457,7 @@ const ECO_CONTEUDO = {
       },
     ],
     mensagensWA: [
-      `💧 *SERENA — Emoção & Fluidez*\n\nSentes tudo com intensidade? Depois culpas-te por ser "demais"?\n\nO SERENA ajuda-te a:\n\n🎯 Mapear 16 emoções diferentes\n🌊 6 técnicas de respiração guiadas\n📖 Diário emocional com padrões\n🔥 Rituais de libertação\n💆 Integração com o ciclo menstrual\n\nPara de reprimir. Começa a fluir.\n\nDesde 750 MT/mês.\n\n👉 `,
+      `💧 *SERENA — Emoção & Fluidez*\n\nSentes tudo com intensidade? Depois culpas-te por ser "demais"?\n\nO SERENA ajuda-te a:\n\n🎯 Mapear 16 emoções diferentes\n🌊 6 técnicas de respiração guiadas\n📖 Diário emocional com padrões\n🔥 Rituais de libertação\n💆 Integração com o ciclo menstrual\n\nPara de reprimir. Começa a fluir.\n\nEnvia-me mensagem para saber mais 💧\n\n👉 `,
       `🤍 *Quantas vezes disseste "estou bem" quando não estavas?*\n\nO SERENA é o único espaço onde as tuas emoções são bem-vindas. Todas.\n\nSem julgamento. Sem "tens de ser forte". Só observação e fluidez.\n\n👉 `,
     ],
     scriptTikTok: {
@@ -2504,7 +2511,7 @@ const ECO_CONTEUDO = {
       },
     ],
     mensagensWA: [
-      `🔥 *IGNIS — Vontade & Foco*\n\nTens projectos que nunca acabas? Ideias que morrem no "amanhã começo"?\n\nO IGNIS treina a tua vontade:\n\n🎯 16 desafios de fogo (coragem, corte, alinhamento, iniciativa)\n⏱ Sessões de foco cronometradas\n🔍 Detector de distracções\n🧭 Bússola de valores\n📋 Plano de acção concreto\n\nDesde 750 MT/mês.\n\n👉 `,
+      `🔥 *IGNIS — Vontade & Foco*\n\nTens projectos que nunca acabas? Ideias que morrem no "amanhã começo"?\n\nO IGNIS treina a tua vontade:\n\n🎯 16 desafios de fogo (coragem, corte, alinhamento, iniciativa)\n⏱ Sessões de foco cronometradas\n🔍 Detector de distracções\n🧭 Bússola de valores\n📋 Plano de acção concreto\n\nEnvia-me mensagem para saber mais 🔥\n\n👉 `,
       `🤍 *Dizes que não tens tempo. Mas tens — não tens foco.*\n\nO IGNIS ajuda-te a separar o urgente do importante. A dizer não ao que não serve. A transformar vontade em acção.\n\n👉 `,
     ],
     scriptTikTok: {
@@ -2546,7 +2553,7 @@ const ECO_CONTEUDO = {
           { titulo: '2. Irritas-te por tudo', texto: 'Não é mau feitio. É esgotamento emocional disfarçado.' },
           { titulo: '3. Café o dia todo', texto: 'Se precisas de estimulantes para funcionar, estás a pedir emprestado ao futuro.' },
           { titulo: '4. Zero vontade de socializar', texto: 'Isolamento é o último sinal antes do burnout completo.' },
-          { titulo: 'O VENTIS detecta isto por ti.', texto: 'Monitor de energia. Detector de burnout.\napp.seteecos.com/ventis\nDesde 750 MT/mês' },
+          { titulo: 'O VENTIS detecta isto por ti.', texto: 'Monitor de energia. Detector de burnout.\napp.seteecos.com/ventis' },
         ],
         caption: 'O teu corpo está a pedir pausa? 🍃\n\nDesliza. Reconhece. Age.\n\n#seteecos #ventis #burnout #energia #pausa #saudemental #bemestar',
       },
@@ -2558,7 +2565,7 @@ const ECO_CONTEUDO = {
       },
     ],
     mensagensWA: [
-      `🍃 *VENTIS — Energia & Ritmo*\n\nAcordas cansada? Adormeces exausta? O dia é uma maratona sem fim?\n\nO VENTIS ajuda-te a:\n\n📊 Monitorizar a tua energia real\n🧘 8 tipos de pausas conscientes\n🏃 Movimento: yoga, tai chi, dança\n🌿 10 actividades de conexão com a natureza\n🔥 Detector de burnout\n⚡ Mapeamento de picos e vales\n\nDesde 750 MT/mês.\n\n👉 `,
+      `🍃 *VENTIS — Energia & Ritmo*\n\nAcordas cansada? Adormeces exausta? O dia é uma maratona sem fim?\n\nO VENTIS ajuda-te a:\n\n📊 Monitorizar a tua energia real\n🧘 8 tipos de pausas conscientes\n🏃 Movimento: yoga, tai chi, dança\n🌿 10 actividades de conexão com a natureza\n🔥 Detector de burnout\n⚡ Mapeamento de picos e vales\n\nEnvia-me mensagem para saber mais 🍃\n\n👉 `,
       `🤍 *O teu corpo tem um ritmo natural. Ignora-lo é o que te cansa.*\n\nO VENTIS ensina-te a trabalhar COM o teu corpo, não contra ele.\n\nRotinas conscientes. Pausas estratégicas. Energia real.\n\n👉 `,
     ],
     scriptTikTok: {
@@ -2600,7 +2607,7 @@ const ECO_CONTEUDO = {
           { titulo: '2. Silêncio por hábito', texto: '"Sempre fui assim." — Cresceste a ouvir que crianças boas não respondem.' },
           { titulo: '3. Silêncio por vergonha', texto: '"A minha opinião não é importante." — Aprendeste que a tua voz não conta.' },
           { titulo: '4. Silêncio por exaustão', texto: '"Não vale a pena." — Desististe de ser ouvida. E isso dói.' },
-          { titulo: 'O ECOA devolve-te a voz.', texto: '8 semanas. Programa Micro-Voz.\napp.seteecos.com/ecoa\nDesde 750 MT/mês' },
+          { titulo: 'O ECOA devolve-te a voz.', texto: '8 semanas. Programa Micro-Voz.\napp.seteecos.com/ecoa' },
         ],
         caption: 'Estás a silenciar-te sem saber? 🔊\n\nDesliza e descobre.\n\n#seteecos #ecoa #voz #silencio #expressao #assertividade #bemestar',
       },
@@ -2612,7 +2619,7 @@ const ECO_CONTEUDO = {
       },
     ],
     mensagensWA: [
-      `🔊 *ECOA — Expressão & Voz*\n\nEngoles o que queres dizer? Dizes sim quando queres dizer não?\n\nO ECOA ajuda-te a:\n\n🗺 Mapear os teus silenciamentos\n🎙 Programa Micro-Voz de 8 semanas\n✉️ Cartas não enviadas (5 categorias)\n💬 Templates de comunicação assertiva\n📖 Diário de voz recuperada\n\nDesde 750 MT/mês.\n\n👉 `,
+      `🔊 *ECOA — Expressão & Voz*\n\nEngoles o que queres dizer? Dizes sim quando queres dizer não?\n\nO ECOA ajuda-te a:\n\n🗺 Mapear os teus silenciamentos\n🎙 Programa Micro-Voz de 8 semanas\n✉️ Cartas não enviadas (5 categorias)\n💬 Templates de comunicação assertiva\n📖 Diário de voz recuperada\n\nEnvia-me mensagem para saber mais 🔊\n\n👉 `,
       `🤍 *Ser assertiva não é ser agressiva. É ser honesta.*\n\nO ECOA ensina-te 4 padrões de comunicação assertiva:\n• Sentimento • Sanduíche • Disco riscado • Pedido claro\n\nRecupera a tua voz. Uma palavra de cada vez.\n\n👉 `,
     ],
     scriptTikTok: {
@@ -2653,7 +2660,7 @@ const ECO_CONTEUDO = {
           { titulo: 'Essência', texto: 'Quem és quando ninguém vê. Os teus valores reais. O que te move sem aplausos.' },
           { titulo: 'Máscara', texto: 'Quem mostras ao mundo. O papel que representas. A armadura que construíste.' },
           { titulo: 'Aspiração', texto: 'Quem queres ser. A versão que imaginas. O futuro que te chama.' },
-          { titulo: 'Quando os 3 estão alinhados, encontras paz.', texto: 'IMAGO — Identidade Essencial\napp.seteecos.com/imago\nDesde 975 MT/mês' },
+          { titulo: 'Quando os 3 estão alinhados, encontras paz.', texto: 'IMAGO — Identidade Essencial\napp.seteecos.com/imago' },
         ],
         caption: 'Quem és? Quem mostras? Quem queres ser? ⭐\n\nQuando os 3 estão alinhados, encontras paz.\n\nDesliza para entender o Espelho Triplo.\n\n#seteecos #imago #identidade #espelho #autoconhecimento #bemestar',
       },
@@ -2665,7 +2672,7 @@ const ECO_CONTEUDO = {
       },
     ],
     mensagensWA: [
-      `⭐ *IMAGO — Identidade Essencial*\n\nSabes quem és? Ou sabes quem te disseram para ser?\n\nO IMAGO é uma viagem à tua essência:\n\n🪞 Espelho Triplo (essência, máscara, aspiração)\n🏛 Arqueologia pessoal (5 camadas: infância → presente)\n🎯 Selecção de 50 valores fundamentais\n🗺 Mapa de identidade em 7 dimensões\n🧘 5 meditações de essência guiadas\n\nDesde 975 MT/mês.\n\n👉 `,
+      `⭐ *IMAGO — Identidade Essencial*\n\nSabes quem és? Ou sabes quem te disseram para ser?\n\nO IMAGO é uma viagem à tua essência:\n\n🪞 Espelho Triplo (essência, máscara, aspiração)\n🏛 Arqueologia pessoal (5 camadas: infância → presente)\n🎯 Selecção de 50 valores fundamentais\n🗺 Mapa de identidade em 7 dimensões\n🧘 5 meditações de essência guiadas\n\nEnvia-me mensagem para saber mais ⭐\n\n👉 `,
       `🤍 *A roupa que vestes conta mais sobre ti do que pensas.*\n\nNo IMAGO, exploramos a roupa como identidade — não como moda, mas como espelho.\n\nQuem és quando escolhes o que vestir? O que escondes? O que mostras?\n\n👉 `,
     ],
     scriptTikTok: {
@@ -2720,9 +2727,85 @@ const ECO_CONTEUDO = {
     linkPagamento: '/vitalis/pagamento',
     preco: '2.500 MT/mês',
     hooks: HOOKS_PROVOCADORES,
-    conteudoIG: [],
-    mensagensWA: [],
-    scriptTikTok: null,
+    conteudoIG: [
+      {
+        tipo: 'carrossel',
+        titulo: '5 Mitos sobre Alimentação',
+        slides: [
+          { titulo: '5 Mitos que Destroem a tua Saúde', texto: 'Quantos destes já acreditaste?' },
+          { titulo: 'Mito 1: Hidratos engordam', texto: 'Falso. O que importa é a porção e o acompanhamento. Hidratos são energia essencial.' },
+          { titulo: 'Mito 2: Preciso de suplementos caros', texto: 'Feijão, ovo, amendoim, lentilhas. Proteína acessível em qualquer mercado.' },
+          { titulo: 'Mito 3: Comer menos = emagrecer', texto: 'Quando comes de menos, o metabolismo abranda. Comer MELHOR é o segredo.' },
+          { titulo: 'Mito 4: Salada todos os dias', texto: 'Comida saudável tem sabor. Caril de coco, piri-piri. Porção certa = saúde.' },
+          { titulo: 'Para de acreditar em mitos.', texto: 'VITALIS - Coaching Nutricional\napp.seteecos.com' },
+        ],
+        caption: '5 mitos que provavelmente já acreditaste (eu também!) 🌿\n\nDesliza e descobre a verdade.\n\nSalva este post. Partilha com alguém que precisa.\n\n#seteecos #vitalis #nutricaointeligente #mitos #comidadereal #saudereal',
+      },
+      {
+        tipo: 'carrossel',
+        titulo: '4 Sinais de Fome Emocional',
+        slides: [
+          { titulo: 'Tens fome ou tens medo?', texto: '4 sinais de que comes por emoção, não por necessidade.' },
+          { titulo: 'Sinal 1: Comes sem fome', texto: 'Quando a boca quer mas o estômago não pede. É emoção disfarçada.' },
+          { titulo: 'Sinal 2: Comes escondida', texto: 'Se precisas de esconder o que comes, o problema não é a comida.' },
+          { titulo: 'Sinal 3: Culpa depois de comer', texto: 'Comer não é crime. Se sentes culpa, alguém te ensinou a ter medo.' },
+          { titulo: 'Sinal 4: Comer acalma a ansiedade', texto: 'A comida virou anestesia. O corpo encontrou uma forma de lidar com a dor.' },
+          { titulo: 'Há uma saída. E não é mais uma dieta.', texto: 'VITALIS - Espaço de Retorno Emocional\napp.seteecos.com' },
+        ],
+        caption: 'Tens fome... ou algo dentro de ti precisa de atenção? 🤍\n\nDesliza e descobre os 4 sinais de fome emocional.\n\nPartilha com alguém que precisa de ouvir isto.\n\n#seteecos #vitalis #fomeemocional #saudeemocional #comerconsciente #bemestar',
+      },
+      {
+        tipo: 'carrossel',
+        titulo: 'Guia de Porções com as Mãos',
+        slides: [
+          { titulo: 'Esquece a balança. Usa as mãos.', texto: 'O guia mais simples para porções correctas.' },
+          { titulo: 'Palma aberta = Proteína', texto: 'Frango, peixe, carne, ovo. Uma palma por refeição.' },
+          { titulo: 'Punho fechado = Hidratos', texto: 'Arroz, massa, batata, pão. Um punho por refeição. É suficiente.' },
+          { titulo: 'Polegar = Gorduras', texto: 'Óleo, amendoim, abacate. Um polegar. Pouco mas essencial.' },
+          { titulo: 'Duas mãos = Legumes', texto: 'Quanto mais legumes, melhor. Sem limite. Enche o prato.' },
+          { titulo: 'Sem balança. Sem apps. Só as tuas mãos.', texto: 'VITALIS - Coaching Nutricional\napp.seteecos.com' },
+        ],
+        caption: 'A forma mais simples de medir porções que já vi 🤲\n\nNão precisa de balança. Não precisa de app de calorias. Só as tuas mãos.\n\nSalva e usa na tua próxima refeição.\n\n#seteecos #vitalis #porcoes #nutricao #comidadereal #dicasdesaude',
+      },
+      {
+        tipo: 'dica',
+        texto: 'A comida que a tua avó fazia é mais saudável que qualquer suplemento importado.',
+        caption: 'A comida que a tua avó fazia é mais saudável que qualquer suplemento importado. 🌿\n\nFerro, vitaminas, proteína vegetal. Tudo na comida real que já conheces.\n\nNão precisas de comprar nada caro. Precisas de voltar ao que é teu.\n\nO VITALIS ensina-te a usar o que já tens.\n\n#seteecos #vitalis #comidadeverdade #nutricao #comidadereal #bemestar',
+      },
+      {
+        tipo: 'dica',
+        texto: 'Dormes 5 horas e depois perguntas porque não emagreces?',
+        caption: 'Dormes 5 horas e depois perguntas porque não emagreces? 😴\n\nO sono regula as hormonas da fome. Se dormes mal, o corpo pede açúcar para compensar.\n\nNão é falta de disciplina. É falta de descanso.\n\nO VITALIS rastreia sono, stress e alimentação juntos.\n\n#seteecos #vitalis #sono #nutricao #saudereal #metabolismo #bemestar',
+      },
+      {
+        tipo: 'testemunho',
+        texto: 'Perdi 8kg mas o melhor foi parar de chorar depois de comer.',
+        subtitulo: '- Cliente VITALIS',
+        caption: '"Perdi 8kg mas o melhor foi parar de chorar depois de comer." 🤍\n\nIsto é o que acontece quando paras de fazer dieta e começas a OUVIR o teu corpo.\n\nO VITALIS não é uma dieta. É uma mudança de relação.\n\n#seteecos #vitalis #transformacao #resultadosreais #semfiltro #bemestar',
+      },
+      {
+        tipo: 'carrossel',
+        titulo: 'O Ciclo Vicioso da Dieta',
+        slides: [
+          { titulo: '80% dos problemas com comida são emocionais.', texto: 'Conhece o ciclo que te prende.' },
+          { titulo: 'STRESS → Comes demais', texto: 'O corpo procura conforto rápido. Açúcar. Hidratos. Comida processada.' },
+          { titulo: 'CULPA → Restringes', texto: '"Amanhã não como nada." A punição começa.' },
+          { titulo: 'RESTRIÇÃO → Compulsão', texto: 'O corpo não aguenta. Comes tudo. A culpa volta. Repete.' },
+          { titulo: 'A saída não é mais disciplina. É compreensão.', texto: 'VITALIS - Coaching Nutricional\napp.seteecos.com' },
+        ],
+        caption: 'Já estiveste presa neste ciclo? Eu também. 🔄\n\nStress → Comida → Culpa → Restrição → Compulsão → Mais culpa.\n\nA saída não é mais força de vontade. É entender PORQUE acontece.\n\nDesliza.\n\n#seteecos #vitalis #ciclovicioso #saudeemocional #semdieta #bemestar',
+      },
+    ],
+    mensagensWA: [
+      `🌿 *VITALIS — Inteligência Nutricional*\n\nNão é mais uma dieta. É o fim das dietas.\n\n🍽 Plano alimentar feito para TI (comida real, acessível)\n📱 Coach disponível 24h\n💚 Espaço emocional para dias difíceis\n📊 Dashboard com o teu progresso\n🎯 Desafios semanais\n📖 Receitas com ingredientes locais\n\nEnvia-me mensagem para saber como começar 🌿\n\n👉 `,
+      `🤍 *A comida não é o problema. É a anestesia.*\n\nQuando comes sem fome, não é gula. É dor.\n\nO VITALIS tem um Espaço de Retorno para esses momentos. Sem julgamento. Sem culpa.\n\nExperimenta o diagnóstico gratuito LUMINA primeiro:\n👉 `,
+    ],
+    scriptTikTok: {
+      titulo: 'POV: Descobres que o problema nunca foi a comida',
+      duracao: '15-30s',
+      roteiro: `*CENA 1 (0-5s)* — HOOK\nTexto: "O problema não é o que comes. É o que te come por dentro."\n\n*CENA 2 (5-15s)* — DOR\nTexto: "80% dos problemas com comida são emocionais. Dietas não resolvem emoções."\n\n*CENA 3 (15-25s)* — SOLUÇÃO\nTexto: "VITALIS: coaching nutricional que cuida da comida E da emoção."\n\n*CENA 4 (25-30s)* — CTA\nTexto: "Link na bio. O fim das dietas. 🌿"`,
+      caption: 'O problema não é o que comes. É o que te come por dentro. 🌿\n\n#seteecos #vitalis #nutricao #fomeemocional #semdieta #tiktok #fyp',
+    },
   },
 };
 
@@ -2807,6 +2890,126 @@ export function getRotacaoSemanal() {
 // ============================================================
 // FORMATOS POR CANAL — IG, FB, WA, TikTok
 // ============================================================
+
+// ============================================================
+// GERADOR DE CONTEUDO DIÁRIO — 4 plataformas × 2 ecos
+// Vitalis SEMPRE + eco do dia em rotação
+// ============================================================
+
+const HASHTAGS_IG_BASE = ['#seteecos', '#vitalis', '#transformacao', '#bemestar'];
+const HASHTAGS_TIKTOK_BASE = ['#seteecos', '#fyp', '#tiktok'];
+
+function formatarParaFacebook(hook, corpo, cta, ecoNome) {
+  // Facebook: mais curto, sem hashtags pesados, tom conversacional
+  return `${hook}\n\n${corpo}\n\n${cta}\n\n— Vivianne | ${ecoNome}`;
+}
+
+function formatarParaTikTok(hook, corpo, cta, eco, hashtagsExtra) {
+  const hashtags = [...HASHTAGS_TIKTOK_BASE, ...(hashtagsExtra || [])].slice(0, 6).join(' ');
+  return {
+    ideia: `HOOK (0-3s): "${hook}"\n\nDESENVOLVIMENTO: ${corpo}\n\nCTA: ${cta}`,
+    caption: `${hook} ${ECO_CONTEUDO[eco]?.emoji || '🌿'}\n\n${hashtags}`,
+  };
+}
+
+function formatarParaInstagram(hook, corpo, cta, hashtagsTematicos) {
+  const hashtags = [...HASHTAGS_IG_BASE, ...(hashtagsTematicos || [])].slice(0, 12).join(' ');
+  return {
+    caption: `${hook}\n\n${corpo}\n\n${cta}\n\nLink na bio.\n.\n.\n.\n${hashtags}`,
+    hashtags,
+  };
+}
+
+function formatarParaWhatsApp(hook, corpo, cta, linkEco) {
+  return `${hook}\n\n${corpo}\n\n${cta}\n\n👉 ${linkEco}`;
+}
+
+function gerarConteudoEcoDia(eco, seed) {
+  const ecoData = ECO_CONTEUDO[eco];
+  if (!ecoData) return null;
+
+  const hooks = ecoData.hooks || [];
+  const conteudoIG = ecoData.conteudoIG || [];
+  const mensagensWA = ecoData.mensagensWA || [];
+  const script = ecoData.scriptTikTok;
+
+  const hookIndex = seed % (hooks.length || 1);
+  const igIndex = seed % (conteudoIG.length || 1);
+  const waIndex = seed % (mensagensWA.length || 1);
+
+  const hook = hooks[hookIndex] || '';
+  const igContent = conteudoIG[igIndex] || null;
+  const waMsg = mensagensWA[waIndex] || '';
+
+  // Build corpo from TODO_CONTEUDO for vitalis, or from IG content for others
+  let corpo = '';
+  let cta = '';
+  if (eco === 'vitalis') {
+    const conteudo = getConteudoByTema(['corpo', 'emocional', 'provocacao'][seed % 3], seed);
+    corpo = conteudo.corpo;
+    cta = conteudo.cta;
+  } else {
+    corpo = igContent?.texto || hook;
+    cta = `Descobre mais sobre o ${ecoData.nome}. Link na bio.`;
+  }
+
+  const linkEco = `${BASE_URL}${ecoData.link}`;
+  const hashExtra = HASHTAGS_TEMATICOS[eco === 'vitalis' ? ['corpo', 'emocional', 'provocacao'][seed % 3] : eco] || [];
+
+  return {
+    eco,
+    nome: ecoData.nome,
+    emoji: ecoData.emoji,
+    cor: ecoData.cor,
+    link: linkEco,
+    hook,
+    corpo,
+    cta,
+    // Conteúdo IG (carrossel ou dica)
+    conteudoIG: igContent,
+    // 4 plataformas formatadas
+    instagram: formatarParaInstagram(hook, corpo, cta, hashExtra),
+    facebook: formatarParaFacebook(hook, corpo, cta, ecoData.nome),
+    tiktok: script ? {
+      ideia: script.roteiro,
+      caption: script.caption,
+    } : formatarParaTikTok(hook, corpo, cta, eco, hashExtra),
+    whatsapp: waMsg || formatarParaWhatsApp(hook, corpo, cta, linkEco),
+  };
+}
+
+export function gerarConteudoDiario(date = new Date(), variante = 0) {
+  const dayOfWeek = date.getDay();
+  const dayOfYear = getDayOfYear(date);
+  const seed = dayOfYear + variante;
+
+  // Vitalis SEMPRE
+  const vitalis = gerarConteudoEcoDia('vitalis', seed);
+
+  // Eco do dia em rotação (exclui vitalis da rotação)
+  const ecosRotacao = ['aurea', 'serena', 'ignis', 'ventis', 'ecoa', 'imago', 'lumina'];
+  const ecoHoje = ecosRotacao[dayOfWeek % ecosRotacao.length];
+  const ecoDoDia = gerarConteudoEcoDia(ecoHoje, seed);
+
+  const diaSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][dayOfWeek];
+
+  return {
+    data: date.toISOString().split('T')[0],
+    diaSemana,
+    vitalis,
+    ecoDoDia,
+  };
+}
+
+export function gerarSemanaCompleta(startDate = new Date(), variante = 0) {
+  const semana = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(startDate);
+    d.setDate(d.getDate() + i);
+    semana.push(gerarConteudoDiario(d, variante));
+  }
+  return semana;
+}
 
 export function getFormatosCanal() {
   return {

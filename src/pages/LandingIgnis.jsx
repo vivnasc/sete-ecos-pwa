@@ -447,6 +447,84 @@ const LandingIgnis = () => {
         </div>
       </section>
 
+      {/* ===== VÊ A PLATAFORMA ===== */}
+      <section className="py-20 px-4" style={{ background: '#1a0f0a' }}>
+        <div className="max-w-5xl mx-auto">
+          <ScrollReveal variant="fadeUp">
+            <div className="text-center mb-14">
+              <span className="inline-block px-4 py-2 bg-[#C1634A]/20 text-[#C1634A] rounded-full text-sm font-semibold mb-4">
+                VÊ POR DENTRO
+              </span>
+              <h2
+                className="text-3xl md:text-4xl font-bold text-white mb-4"
+                style={{ fontFamily: 'var(--font-titulos)' }}
+              >
+                O Ignis na palma da tua mão
+              </h2>
+              <p className="text-[#C1634A]/70 max-w-xl mx-auto">
+                Ferramentas de foco e disciplina consciente, sempre contigo.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 items-start">
+            <ScrollReveal variant="fadeUp" delay={0}>
+              <div className="relative mx-auto max-w-[260px]">
+                <div className="absolute -inset-4 bg-[#C1634A]/10 rounded-[2.5rem] blur-xl" />
+                <img
+                  src="/mockups/Ignis-dash-portrait.png"
+                  alt="Ignis Dashboard — escolhas, foco e conquistas"
+                  className="relative rounded-[2rem] shadow-2xl border border-[#C1634A]/20 w-full"
+                  loading="lazy"
+                />
+                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#C1634A]/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
+                  Dashboard
+                </div>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal variant="fadeUp" delay={0.1}>
+              <div className="relative mx-auto max-w-[260px]">
+                <div className="absolute -inset-4 bg-[#C1634A]/10 rounded-[2.5rem] blur-xl" />
+                <img
+                  src="/mockups/Ignis-escolhas-portrait.png"
+                  alt="Escolhas Conscientes — decisões alinhadas"
+                  className="relative rounded-[2rem] shadow-2xl border border-[#C1634A]/20 w-full"
+                  loading="lazy"
+                />
+                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#C1634A]/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
+                  Escolhas Conscientes
+                </div>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal variant="fadeUp" delay={0.2}>
+              <div className="relative mx-auto max-w-[260px]">
+                <div className="absolute -inset-4 bg-[#C1634A]/10 rounded-[2.5rem] blur-xl" />
+                <img
+                  src="/mockups/Ingis-bussula-portrait.png"
+                  alt="Bússola de Valores — identifica o que te guia"
+                  className="relative rounded-[2rem] shadow-2xl border border-[#C1634A]/20 w-full"
+                  loading="lazy"
+                />
+                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#C1634A]/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
+                  Bússola de Valores
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          <div className="text-center mt-12">
+            <button
+              onClick={handleComecar}
+              className="px-8 py-4 bg-[#C1634A] text-white rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
+            >
+              Experimentar 7 dias grátis
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* ===== COMO FUNCIONA ===== */}
       <section id="como-funciona" className="py-20 px-4" style={{ background: 'linear-gradient(to bottom, #2e1a14, #1a0f0a)' }}>
         <div className="max-w-4xl mx-auto">

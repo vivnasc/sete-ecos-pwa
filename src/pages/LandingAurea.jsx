@@ -417,6 +417,63 @@ const LandingAurea = () => {
         </div>
       </section>
 
+      {/* ===== VÊ A PLATAFORMA ===== */}
+      <section className="py-20 px-4" style={{ background: 'linear-gradient(to bottom, #1a1200, #0f0a00)' }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-14">
+            <span className="inline-block px-4 py-2 bg-amber-500/20 text-amber-400 rounded-full text-sm font-semibold mb-4">
+              VÊ POR DENTRO
+            </span>
+            <h2
+              className="text-3xl md:text-4xl font-bold text-amber-100 mb-4"
+              style={{ fontFamily: 'var(--font-titulos)' }}
+            >
+              O Áurea na palma da tua mão
+            </h2>
+            <p className="text-amber-300/70 max-w-xl mx-auto">
+              Auto-valor, práticas diárias e jóias de ouro — tudo num só lugar.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+            <div className="relative mx-auto max-w-[280px]">
+              <div className="absolute -inset-4 bg-amber-500/10 rounded-[2.5rem] blur-xl" />
+              <img
+                src="/mockups/Aurea-Dash-portrait.png"
+                alt="Áurea Dashboard — jóias, quota e prática do dia"
+                className="relative rounded-[2rem] shadow-2xl border border-amber-500/20 w-full"
+                loading="lazy"
+              />
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-amber-600/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
+                Dashboard principal
+              </div>
+            </div>
+
+            <div className="relative mx-auto max-w-[280px]">
+              <div className="absolute -inset-4 bg-amber-500/10 rounded-[2.5rem] blur-xl" />
+              <img
+                src="/mockups/Aurea-praticas-portrait.png"
+                alt="Micro-práticas — 100 exercícios de auto-valor"
+                className="relative rounded-[2rem] shadow-2xl border border-amber-500/20 w-full"
+                loading="lazy"
+              />
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-amber-600/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
+                Micro-Práticas
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <button
+              onClick={handleComecar}
+              className="px-8 py-4 bg-amber-500 text-white rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
+            >
+              Experimentar 7 dias grátis
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* Testemunhos */}
       <section id="testemunhos" className="py-20 px-4">
         <div className="max-w-5xl mx-auto">
