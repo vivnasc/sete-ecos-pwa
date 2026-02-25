@@ -496,14 +496,20 @@ function ModoSimples({ copiar, copiado, onVerTudo }) {
         <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
           <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-3">
             <p className="font-bold text-base">Instagram</p>
-            <p className="text-white/80 text-xs">Post de hoje</p>
+            <p className="text-white/80 text-xs">Imagem + caption prontas</p>
           </div>
           <div className="p-4 space-y-3">
-            <div className="bg-[#1a1a2e] text-white rounded-xl p-4">
-              <p className="text-sm font-bold leading-relaxed">{hoje.hook}</p>
+            {/* Imagem pronta para descarregar */}
+            <div className="flex justify-center">
+              <AutoImage
+                template="dica" eco="vitalis" formato="post"
+                texto={hoje.hook} subtitulo={hoje.corpo ? hoje.corpo.slice(0, 80) + '...' : '@seteecos'}
+                scale={0.32} filename={`ig-post-${hoje.data || 'hoje'}.png`}
+              />
             </div>
+            <p className="text-[10px] text-center text-[#A09888]">Carrega na imagem para descarregar</p>
             <div>
-              <p className="text-[10px] font-bold text-[#A09888] mb-1 uppercase">Caption completa:</p>
+              <p className="text-[10px] font-bold text-[#A09888] mb-1 uppercase">Caption:</p>
               <pre className="text-xs text-[#4A4035] whitespace-pre-wrap leading-relaxed max-h-40 overflow-y-auto bg-[#FAFAF8] rounded-xl p-3">{captionPost.caption}</pre>
             </div>
             <div className="flex gap-2">
@@ -513,14 +519,39 @@ function ModoSimples({ copiar, copiado, onVerTudo }) {
           </div>
         </div>
 
-        {/* 2. WHATSAPP */}
+        {/* 2. STORIES */}
+        <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+          <div className="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-4 py-3">
+            <p className="font-bold text-base">Stories</p>
+            <p className="text-white/80 text-xs">Imagem para story</p>
+          </div>
+          <div className="p-4 space-y-3">
+            <div className="flex justify-center">
+              <AutoImage
+                template="cta" eco="vitalis" formato="stories"
+                texto={hoje.hook} subtitulo="app.seteecos.com"
+                scale={0.18} filename={`story-${hoje.data || 'hoje'}.png`}
+              />
+            </div>
+            <p className="text-[10px] text-center text-[#A09888]">Carrega na imagem para descarregar</p>
+          </div>
+        </div>
+
+        {/* 3. WHATSAPP */}
         <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
           <div className="bg-[#25D366] text-white px-4 py-3">
             <p className="font-bold text-base">WhatsApp</p>
-            <p className="text-white/80 text-xs">Envia aos teus contactos</p>
+            <p className="text-white/80 text-xs">Imagem + mensagem</p>
           </div>
           <div className="p-4 space-y-3">
-            <pre className="text-xs text-[#4A4035] whitespace-pre-wrap leading-relaxed bg-green-50 rounded-xl p-3 max-h-40 overflow-y-auto">{wa.mensagem}</pre>
+            <div className="flex gap-3 items-start">
+              <AutoImage
+                template="dica" eco="vitalis" formato="stories"
+                texto={hoje.hook} subtitulo="@seteecos"
+                scale={0.1} filename={`wa-${hoje.data || 'hoje'}.png`}
+              />
+              <pre className="flex-1 text-xs text-[#4A4035] whitespace-pre-wrap leading-relaxed bg-green-50 rounded-xl p-3 max-h-40 overflow-y-auto">{wa.mensagem}</pre>
+            </div>
             <div className="flex gap-2">
               <CopyBtn onClick={() => copiar(wa.mensagem, 'simple-wa')} copiado={copiado === 'simple-wa'} label="Copiar mensagem" />
               <a
@@ -531,18 +562,6 @@ function ModoSimples({ copiar, copiado, onVerTudo }) {
                 Enviar
               </a>
             </div>
-          </div>
-        </div>
-
-        {/* 3. STATUS WA */}
-        <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
-          <div className="bg-[#4A4035] text-white px-4 py-3">
-            <p className="font-bold text-base">Status WhatsApp</p>
-            <p className="text-white/80 text-xs">Copia e publica como status</p>
-          </div>
-          <div className="p-4 space-y-3">
-            <pre className="text-xs text-[#4A4035] whitespace-pre-wrap leading-relaxed bg-[#FAFAF8] rounded-xl p-3">{statusWA.mensagem}</pre>
-            <CopyBtn onClick={() => copiar(statusWA.mensagem, 'simple-status')} copiado={copiado === 'simple-status'} label="Copiar status" />
           </div>
         </div>
 
