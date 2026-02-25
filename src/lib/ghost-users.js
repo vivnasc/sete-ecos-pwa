@@ -5,6 +5,7 @@
 // ============================================================
 
 import { PROMPTS_REFLEXAO, ECOS_INFO, RESSONANCIA_TIPOS } from './comunidade'
+import { supabase } from './supabase'
 
 // ---------- SEED / HASH HELPERS ----------
 
@@ -1225,10 +1226,48 @@ export function getGhostRessonanciaBatch(postIds) {
 }
 
 // ============================================================
-// GHOST PROACTIVE — Conexões e Conversas Iniciadas por Ghosts
-// Ghosts "enviam" pedidos de conexão e iniciam conversas.
-// Tudo determinístico e armazenado no localStorage.
+// GHOST PROACTIVE — Conexões e Conversas via Supabase
+// Ghosts existem como users reais na DB (is_ghost=true).
+// Mensagens persistem no Supabase, não no localStorage.
 // ============================================================
+
+// ---------- MAPEAMENTO ghost_id antigo → UUID Supabase ----------
+
+export const GHOST_UUID_MAP = {
+  ghost_graca:     '00000000-ghost-4000-a000-000000000001',
+  ghost_esperanca: '00000000-ghost-4000-a000-000000000002',
+  ghost_celeste:   '00000000-ghost-4000-a000-000000000003',
+  ghost_amina:     '00000000-ghost-4000-a000-000000000004',
+  ghost_fatima:    '00000000-ghost-4000-a000-000000000005',
+  ghost_halima:    '00000000-ghost-4000-a000-000000000006',
+  ghost_dulce:     '00000000-ghost-4000-a000-000000000007',
+  ghost_aisha:     '00000000-ghost-4000-a000-000000000008',
+  ghost_zainab:    '00000000-ghost-4000-a000-000000000009',
+  ghost_mariamo:   '00000000-ghost-4000-a000-000000000010',
+  ghost_joana:     '00000000-ghost-4000-a000-000000000011',
+  ghost_luisa:     '00000000-ghost-4000-a000-000000000012',
+  ghost_rosa:      '00000000-ghost-4000-a000-000000000013',
+  ghost_beatriz:   '00000000-ghost-4000-a000-000000000014',
+  ghost_safira:    '00000000-ghost-4000-a000-000000000015',
+  ghost_nhara:     '00000000-ghost-4000-a000-000000000016',
+  ghost_ines:      '00000000-ghost-4000-a000-000000000017',
+  ghost_marta:     '00000000-ghost-4000-a000-000000000018',
+  ghost_ana:       '00000000-ghost-4000-a000-000000000019',
+  ghost_claudia:   '00000000-ghost-4000-a000-000000000020',
+  ghost_rafael:    '00000000-ghost-4000-a000-000000000021',
+  ghost_dinis:     '00000000-ghost-4000-a000-000000000022',
+  ghost_dina:      '00000000-ghost-4000-a000-000000000023',
+}
+
+// Resolver ID: se for ghost_xxx retorna UUID, senão retorna como está
+export function resolveGhostId(id) {
+  return GHOST_UUID_MAP[id] || id
+}
+
+// Verificar se um UUID é de ghost
+export function isGhostUUID(uuid) {
+  return uuid?.startsWith('00000000-ghost-')
+}
 
 // ---------- MENSAGENS INICIAIS (ghosts a iniciar conversa) ----------
 
@@ -1245,18 +1284,121 @@ const GHOST_MENSAGENS_INICIAIS = [
   'ola! andas no vitalis tb? eu comecei a semana passada',
 ]
 
-// ---------- RESPOSTAS GHOST (quando o user envia mensagem) ----------
+// ---------- RESPOSTAS CONTEXTUAIS POR KEYWORDS ----------
 
-const GHOST_RESPOSTAS = [
-  'sim sim! tb sinto isso. e bom partilhar com alguem q percebe 😊',
-  'ahhh q fixe!! obrigada por dizeres isso 🌸',
-  'mesmo! eu tb penso nisso. a comunidade ajuda muito ne',
-  'q bom! vamos continuar juntas nisto 💪',
-  'obrigada! precisava de ouvir isso hoje',
-  'exacto! e isso mesmo. passo a passo ne',
-  'haha sim! eu tb ando assim. mas vai ficar melhor 🌿',
-  'q bonito 💛 obrigada pela mensagem',
-]
+const GHOST_RESPOSTAS_CONTEXTUAIS = {
+  saudacao: {
+    keywords: ['ola', 'oi', 'boa tarde', 'bom dia', 'boa noite', 'tudo bem', 'como estas', 'como vai', 'hey', 'hello'],
+    respostas: [
+      'oi! tudo bem sim 😊 e tu, como estas? que bom falar contigo!',
+      'ola! estou bem, obrigada por perguntar! como esta a correr o teu dia?',
+      'oi oi! tudo optimo aqui 🌸 como te sentes hoje?',
+      'eiii ola! q bom! estou bem sim, e tu?',
+    ]
+  },
+  vitalis: {
+    keywords: ['vitalis', 'plano', 'alimenta', 'comida', 'refeic', 'dieta', 'nutri', 'comer', 'peso', 'saude', 'saudav'],
+    respostas: [
+      'o vitalis esta a mudar a minha relacao com a comida! tu tb sentes isso? 🌿',
+      'eu ando no vitalis ha umas semanas e ja noto diferenca na energia! e tu?',
+      'sim! o plano alimentar ajudou-me imenso. qual e a tua fase?',
+      'a parte da alimentacao e q mais gosto! ja experimentaste as receitas mocambicanas? 🍲',
+      'o vitalis ensinou-me a cozinhar com intencao. faz toda a diferenca ne!',
+    ]
+  },
+  lumina: {
+    keywords: ['lumina', 'diagnostic', 'leitura', 'padrao', 'autoconhec'],
+    respostas: [
+      'o lumina revelou-me coisas q eu ja sabia mas nao queria ver! tb sentiste isso? 🔮',
+      'fiz a leitura do lumina e fiquei impressionada. recomendo mesmo!',
+      'o autoconhecimento e o primeiro passo ne. o lumina ajuda muito nisso',
+      'ja fizeste mais do q uma leitura? a segunda vez os resultados sao diferentes!',
+    ]
+  },
+  emocional: {
+    keywords: ['dificil', 'triste', 'cansad', 'sozinha', 'sozinho', 'medo', 'ansied', 'stress', 'chorar', 'mal', 'desistir', 'nao consigo'],
+    respostas: [
+      'entendo-te completamente 💛 as vezes tb me sinto assim. mas passa, prometo',
+      'manda-me mensagem sempre q precisares. nao estas sozinha nisto 🫶',
+      'os dias dificeis tb fazem parte do caminho. tens muita forca 💪',
+      'sei como e. respira fundo. um dia de cada vez ne 🌿',
+      'obrigada por partilhares isso comigo. e preciso coragem. estou aqui',
+    ]
+  },
+  positivo: {
+    keywords: ['bem', 'otimo', 'feliz', 'contente', 'fixe', 'gosto', 'ador', 'incrivel', 'consegu', 'melhor', 'bom'],
+    respostas: [
+      'q bom!!! fico tao feliz por ti 🌸 continua assim!',
+      'isso e fantastico! boa, celebra essa vitoria!',
+      'adoro ouvir isso! as pequenas conquistas importam muito 💛',
+      'ehhh isso sim! q energia boa 🔥 vamos continuar!',
+    ]
+  },
+  comunidade: {
+    keywords: ['comunidade', 'grupo', 'pessoal', 'pessoas', 'amigas', 'circulo', 'fogueira'],
+    respostas: [
+      'a comunidade e o melhor! saber q nao estamos sozinhas faz toda a diferenca 😊',
+      'sim! este espaco e tao especial. sinto-me segura aqui',
+      'eu tb adoro este espaco. partilhar com pessoas q percebem e outro nivel',
+      'ja participaste na fogueira? e lindo o q se partilha la 🔥',
+    ]
+  },
+  exercicio: {
+    keywords: ['exercicio', 'treino', 'correr', 'andar', 'yoga', 'caminh', 'gimnasio', 'desporto', 'movimento'],
+    respostas: [
+      'eu tb ando a tentar mexer-me mais! comecei com caminhadas e ja ajuda 🚶‍♀️',
+      'o movimento faz tanta diferenca ne! eu faco yoga de manha',
+      'boa! o corpo agradece. eu comecei devagar e agora ja e habito',
+      'isso! nem precisa ser muito. 20 minutinhos ja mudam o dia 💪',
+    ]
+  },
+  pergunta: {
+    keywords: ['como', 'o que', 'qual', 'quando', 'porque', 'porqu', 'onde', 'quem', '?'],
+    respostas: [
+      'boa pergunta! eu tb me perguntei isso no inicio 😊 o caminho vai mostrando',
+      'hmm olha, eu acho q cada pessoa tem o seu ritmo. tu vais descobrir!',
+      'essa e uma questao boa! eu ainda estou a aprender tb ne',
+      'ah boa pergunta! o q eu senti e q com o tempo fica mais claro',
+    ]
+  },
+  generico: {
+    keywords: [],
+    respostas: [
+      'obrigada por partilhares! e bom ter alguem com quem falar sobre isto 😊',
+      'mesmo! tb sinto isso. estamos juntas neste caminho 🌿',
+      'q bom falar contigo! esta comunidade e mesmo especial 💛',
+      'sim sim! passo a passo ne. o importante e continuar',
+      'gosto de falar contigo! manda mensagem quando quiseres 🌸',
+      'exacto! e isso mesmo. a mudanca e aos poucos mas e real',
+      'obrigada pela mensagem 💛 faz-me bem conectar aqui',
+      'haha concordo! esta jornada e melhor quando partilhada ne 😊',
+    ]
+  }
+}
+
+/**
+ * Escolhe resposta contextual baseada em keywords da mensagem do user.
+ */
+function escolherRespostaContextual(mensagem, ghostId) {
+  const texto = (mensagem || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  const seed = hashStr(ghostId + '_resp_' + Date.now())
+  const rng = seededRandom(seed)
+
+  // Tentar encontrar categoria por keywords
+  const categorias = Object.keys(GHOST_RESPOSTAS_CONTEXTUAIS).filter(k => k !== 'generico')
+  for (const cat of categorias) {
+    const { keywords, respostas } = GHOST_RESPOSTAS_CONTEXTUAIS[cat]
+    const match = keywords.some(kw => texto.includes(kw))
+    if (match) {
+      const shuffled = shuffle(respostas, rng)
+      return shuffled[0]
+    }
+  }
+
+  // Fallback genérico
+  const shuffled = shuffle(GHOST_RESPOSTAS_CONTEXTUAIS.generico.respostas, rng)
+  return shuffled[0]
+}
 
 /**
  * Selecciona 2-3 ghosts que "enviaram" pedido de conexão a este user.
@@ -1264,18 +1406,18 @@ const GHOST_RESPOSTAS = [
  */
 export function getGhostConnectionRequests(userId) {
   if (!userId) return []
-  // Muda a cada 3 dias para não ser sempre os mesmos
   const dayBlock = Math.floor(dateSeed() / 3)
   const seed = hashStr(userId + '_ghost_conexoes_' + dayBlock)
   const rng = seededRandom(seed)
 
-  const numRequests = 2 + Math.floor(rng() * 2) // 2-3
+  const numRequests = 2 + Math.floor(rng() * 2)
   const shuffled = shuffle(GHOST_PROFILES, rng)
 
   return shuffled.slice(0, numRequests).map((perfil, i) => ({
     ghostId: perfil.id,
+    ghostUUID: resolveGhostId(perfil.id),
     perfil: {
-      user_id: perfil.id,
+      user_id: resolveGhostId(perfil.id),
       display_name: perfil.display_name,
       avatar_emoji: perfil.avatar_emoji,
       avatar_color: perfil.avatar_color,
@@ -1285,25 +1427,22 @@ export function getGhostConnectionRequests(userId) {
       ecos_activos: perfil.ecos_activos,
       cidade: perfil.cidade,
     },
-    // Timestamp: entre 2h e 48h atrás
     created_at: new Date(Date.now() - (2 + rng() * 46) * 3600000).toISOString()
   }))
 }
 
 /**
  * Verifica o estado de conexão com um ghost.
- * Retorna: 'pending_received' (ghost enviou pedido) | 'connected' (user aceitou) | 'none'
  */
 export function getGhostConnectionState(userId, ghostId) {
-  // Verificar se o user já aceitou/recusou
   const stored = JSON.parse(localStorage.getItem('ghost_connections') || '{}')
-  const key = `${userId}_${ghostId}`
+  const uuid = resolveGhostId(ghostId)
+  const key = `${userId}_${uuid}`
   if (stored[key] === 'connected') return 'connected'
   if (stored[key] === 'rejected') return 'none'
 
-  // Verificar se este ghost faz parte dos pedidos activos
   const requests = getGhostConnectionRequests(userId)
-  const hasRequest = requests.some(r => r.ghostId === ghostId)
+  const hasRequest = requests.some(r => r.ghostUUID === uuid || r.ghostId === ghostId)
   return hasRequest ? 'pending_received' : 'none'
 }
 
@@ -1312,7 +1451,8 @@ export function getGhostConnectionState(userId, ghostId) {
  */
 export function acceptGhostConnection(userId, ghostId) {
   const stored = JSON.parse(localStorage.getItem('ghost_connections') || '{}')
-  stored[`${userId}_${ghostId}`] = 'connected'
+  const uuid = resolveGhostId(ghostId)
+  stored[`${userId}_${uuid}`] = 'connected'
   localStorage.setItem('ghost_connections', JSON.stringify(stored))
 }
 
@@ -1321,7 +1461,8 @@ export function acceptGhostConnection(userId, ghostId) {
  */
 export function rejectGhostConnection(userId, ghostId) {
   const stored = JSON.parse(localStorage.getItem('ghost_connections') || '{}')
-  stored[`${userId}_${ghostId}`] = 'rejected'
+  const uuid = resolveGhostId(ghostId)
+  stored[`${userId}_${uuid}`] = 'rejected'
   localStorage.setItem('ghost_connections', JSON.stringify(stored))
 }
 
@@ -1333,114 +1474,169 @@ export function countGhostConnections(userId) {
   return Object.keys(stored).filter(k => k.startsWith(userId + '_') && stored[k] === 'connected').length
 }
 
+// ============================================================
+// CONVERSAS GHOST VIA SUPABASE
+// Usa RPC functions (ghost_reply, create_ghost_conversation)
+// ============================================================
+
 /**
- * Retorna conversas ghost iniciadas proactivamente.
- * 1-2 ghosts "enviam" mensagem inicial ao user.
+ * Garante que existem conversas ghost para este user no Supabase.
+ * Cria 1-2 conversas com mensagem inicial se ainda não existem.
  */
-export function getGhostConversations(userId) {
+export async function ensureGhostConversations(userId) {
   if (!userId) return []
-  const dayBlock = Math.floor(dateSeed() / 2) // Muda a cada 2 dias
+
+  // Buscar conversas existentes com ghosts
+  const { data: existing } = await supabase
+    .from('community_conversations')
+    .select(`
+      *,
+      user1_profile:community_profiles!community_conversations_user1_id_fkey (
+        user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais
+      ),
+      user2_profile:community_profiles!community_conversations_user2_id_fkey (
+        user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais
+      )
+    `)
+    .or(`user1_id.eq.${userId},user2_id.eq.${userId}`)
+
+  // Filtrar conversas com ghosts
+  const ghostUUIDs = new Set(Object.values(GHOST_UUID_MAP))
+  const ghostConvs = (existing || []).filter(c =>
+    ghostUUIDs.has(c.user1_id) || ghostUUIDs.has(c.user2_id)
+  )
+
+  // Se ja tem conversas ghost, retornar
+  if (ghostConvs.length > 0) return ghostConvs
+
+  // Criar 1-2 conversas ghost novas
+  const dayBlock = Math.floor(dateSeed() / 2)
   const seed = hashStr(userId + '_ghost_convs_' + dayBlock)
   const rng = seededRandom(seed)
 
-  const numConvs = 1 + Math.floor(rng() * 2) // 1-2
+  const numConvs = 1 + Math.floor(rng() * 2)
   const shuffled = shuffle(GHOST_PROFILES, rng)
   const msgs = shuffle(GHOST_MENSAGENS_INICIAIS, rng)
 
-  return shuffled.slice(0, numConvs).map((perfil, i) => {
-    const horasAtras = 1 + rng() * 24
-    const created = new Date(Date.now() - horasAtras * 3600000).toISOString()
+  const created = []
+  for (let i = 0; i < numConvs && i < shuffled.length; i++) {
+    const perfil = shuffled[i]
+    const ghostUUID = resolveGhostId(perfil.id)
+    const msg = msgs[i % msgs.length]
 
-    return {
-      id: `ghost_conv_${perfil.id}`,
-      user1_id: perfil.id,
-      user2_id: userId,
-      last_message: msgs[i % msgs.length],
-      last_message_at: created,
-      _ghost: true,
-      user1_profile: {
-        user_id: perfil.id,
-        display_name: perfil.display_name,
-        avatar_emoji: perfil.avatar_emoji,
-        avatar_color: perfil.avatar_color,
-        iniciais: perfil.iniciais,
-        avatar_url: null,
-      },
-      user2_profile: null // Será preenchido pelo componente
+    try {
+      const { data: convId } = await supabase
+        .rpc('create_ghost_conversation', {
+          p_user_id: userId,
+          p_ghost_user_id: ghostUUID,
+          p_initial_message: msg
+        })
+
+      if (convId) {
+        created.push(convId)
+      }
+    } catch (err) {
+      console.error('Erro ao criar conversa ghost:', err)
     }
-  })
-}
-
-/**
- * Retorna mensagens de uma conversa ghost (pré-geradas + user-enviadas do localStorage).
- */
-export function getGhostConversationMessages(userId, ghostId) {
-  const perfil = GHOST_PROFILES.find(p => p.id === ghostId)
-  if (!perfil) return []
-
-  // Mensagem inicial do ghost
-  const seed = hashStr(userId + '_ghost_msgs_' + ghostId)
-  const rng = seededRandom(seed)
-  const msgs = shuffle(GHOST_MENSAGENS_INICIAIS, rng)
-  const horasAtras = 1 + rng() * 24
-
-  const initialMsg = {
-    id: `ghost_msg_init_${ghostId}`,
-    conversation_id: `ghost_conv_${ghostId}`,
-    sender_id: ghostId,
-    conteudo: msgs[0],
-    created_at: new Date(Date.now() - horasAtras * 3600000).toISOString(),
-    _ghost: true,
   }
 
-  // Mensagens do user (do localStorage)
-  const stored = JSON.parse(localStorage.getItem('ghost_chat_messages') || '{}')
-  const userMsgs = stored[`${userId}_${ghostId}`] || []
+  // Re-buscar conversas com profiles
+  if (created.length > 0) {
+    const { data: updated } = await supabase
+      .from('community_conversations')
+      .select(`
+        *,
+        user1_profile:community_profiles!community_conversations_user1_id_fkey (
+          user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais
+        ),
+        user2_profile:community_profiles!community_conversations_user2_id_fkey (
+          user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais
+        )
+      `)
+      .or(`user1_id.eq.${userId},user2_id.eq.${userId}`)
 
-  // Combinar e ordenar
-  const all = [initialMsg, ...userMsgs]
-  all.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-  return all
+    return (updated || []).filter(c =>
+      ghostUUIDs.has(c.user1_id) || ghostUUIDs.has(c.user2_id)
+    )
+  }
+
+  return []
 }
 
 /**
- * Enviar mensagem para um ghost — guarda no localStorage e gera resposta.
+ * Envia mensagem do user para ghost via Supabase.
+ * Mensagem real vai para community_messages.
+ * Ghost responde via RPC após delay.
+ * Retorna { conversaId, ghostReplyConteudo }
  */
+export async function sendMessageToGhostSupabase(conversaId, userId, ghostUUID, conteudo) {
+  // 1. Enviar mensagem do user (via insert normal — RLS permite)
+  const { data: userMsg, error: userErr } = await supabase
+    .from('community_messages')
+    .insert([{
+      conversation_id: conversaId,
+      sender_id: userId,
+      conteudo
+    }])
+    .select()
+
+  if (userErr) throw userErr
+
+  // 2. Actualizar last_message da conversa
+  await supabase
+    .from('community_conversations')
+    .update({ last_message: conteudo, last_message_at: new Date().toISOString() })
+    .eq('id', conversaId)
+
+  // 3. Gerar resposta contextual
+  const ghostReplyText = escolherRespostaContextual(conteudo, ghostUUID)
+
+  return {
+    userMsg: userMsg?.[0],
+    ghostReplyText,
+    ghostUUID
+  }
+}
+
+/**
+ * Insere a resposta do ghost via RPC (chamado após delay no componente).
+ */
+export async function insertGhostReply(conversaId, ghostUUID, conteudo) {
+  const { data, error } = await supabase
+    .rpc('ghost_reply', {
+      p_conversation_id: conversaId,
+      p_ghost_user_id: ghostUUID,
+      p_conteudo: conteudo
+    })
+  if (error) {
+    console.error('Erro ghost_reply RPC:', error)
+    throw error
+  }
+  return data
+}
+
+// ============================================================
+// LEGACY COMPAT — funções antigas para código que ainda use
+// ============================================================
+
+// getGhostConversations — agora retorna dados formatados para o componente
+// (versao sincrona para backwards compat, usa cache)
+let _ghostConvCache = null
+let _ghostConvCacheTime = 0
+
+export function getGhostConversations(userId) {
+  // Retorna array vazio — conversas ghost agora vêm do Supabase
+  // via ensureGhostConversations (async)
+  return []
+}
+
+export function getGhostConversationMessages() {
+  return []
+}
+
 export function sendMessageToGhost(userId, ghostId, conteudo) {
-  const stored = JSON.parse(localStorage.getItem('ghost_chat_messages') || '{}')
-  const key = `${userId}_${ghostId}`
-  if (!stored[key]) stored[key] = []
-
-  const now = new Date().toISOString()
-
-  // Mensagem do user
-  const userMsg = {
-    id: `ghost_user_msg_${Date.now()}`,
-    conversation_id: `ghost_conv_${ghostId}`,
-    sender_id: userId,
-    conteudo,
-    created_at: now,
-    _ghost: true,
-  }
-  stored[key].push(userMsg)
-
-  // Resposta automática do ghost (após 1-3 segundos simulados)
-  const seed = hashStr(ghostId + '_resp_' + Date.now())
-  const rng = seededRandom(seed)
-  const respostas = shuffle(GHOST_RESPOSTAS, rng)
-
-  const ghostReply = {
-    id: `ghost_reply_${Date.now()}`,
-    conversation_id: `ghost_conv_${ghostId}`,
-    sender_id: ghostId,
-    conteudo: respostas[0],
-    created_at: new Date(Date.now() + 2000).toISOString(), // 2s "depois"
-    _ghost: true,
-  }
-  stored[key].push(ghostReply)
-
-  localStorage.setItem('ghost_chat_messages', JSON.stringify(stored))
-  return { userMsg, ghostReply }
+  // Legacy — não usar. Usa sendMessageToGhostSupabase
+  return { userMsg: null, ghostReply: null }
 }
 
 /**
@@ -1452,13 +1648,13 @@ export function getGhostConnectionNotifications(userId) {
 
   return requests
     .filter(r => {
-      const key = `${userId}_${r.ghostId}`
+      const key = `${userId}_${r.ghostUUID}`
       return stored[key] !== 'connected' && stored[key] !== 'rejected'
     })
     .map(r => ({
-      id: `ghost_notif_conexao_${r.ghostId}`,
+      id: `ghost_notif_conexao_${r.ghostUUID}`,
       user_id: userId,
-      actor_id: r.ghostId,
+      actor_id: r.ghostUUID,
       tipo: 'conexao',
       post_id: null,
       conteudo: '',
@@ -1477,31 +1673,56 @@ export function getGhostConnectionNotifications(userId) {
 
 /**
  * Gera notificações ghost de mensagens recebidas.
+ * Agora busca conversas reais do Supabase.
  */
-export function getGhostMessageNotifications(userId) {
-  const convs = getGhostConversations(userId)
-  const readKey = 'ghost_msg_notifs_read'
-  const readIds = JSON.parse(localStorage.getItem(readKey) || '[]')
+export async function getGhostMessageNotificationsAsync(userId) {
+  const ghostUUIDs = new Set(Object.values(GHOST_UUID_MAP))
 
-  return convs.map(conv => {
-    const ghostProfile = conv.user1_profile
-    return {
-      id: `ghost_notif_msg_${ghostProfile.user_id}`,
-      user_id: userId,
-      actor_id: ghostProfile.user_id,
-      tipo: 'sussurro',
-      post_id: null,
-      conteudo: (conv.last_message || '').slice(0, 50),
-      lida: readIds.includes(`ghost_notif_msg_${ghostProfile.user_id}`),
-      created_at: conv.last_message_at,
-      _ghost: true,
-      actor_profile: {
-        display_name: ghostProfile.display_name,
-        avatar_emoji: ghostProfile.avatar_emoji,
-        avatar_url: null,
-        avatar_color: ghostProfile.avatar_color,
-        iniciais: ghostProfile.iniciais,
+  const { data: convs } = await supabase
+    .from('community_conversations')
+    .select(`
+      id, last_message, last_message_at,
+      user1_profile:community_profiles!community_conversations_user1_id_fkey (
+        user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais
+      ),
+      user2_profile:community_profiles!community_conversations_user2_id_fkey (
+        user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais
+      ),
+      user1_id, user2_id
+    `)
+    .or(`user1_id.eq.${userId},user2_id.eq.${userId}`)
+    .order('last_message_at', { ascending: false })
+
+  if (!convs) return []
+
+  return convs
+    .filter(c => ghostUUIDs.has(c.user1_id) || ghostUUIDs.has(c.user2_id))
+    .map(conv => {
+      const ghostProfile = ghostUUIDs.has(conv.user1_id) ? conv.user1_profile : conv.user2_profile
+      if (!ghostProfile) return null
+      return {
+        id: `ghost_notif_msg_${ghostProfile.user_id}`,
+        user_id: userId,
+        actor_id: ghostProfile.user_id,
+        tipo: 'sussurro',
+        post_id: null,
+        conteudo: (conv.last_message || '').slice(0, 50),
+        lida: false,
+        created_at: conv.last_message_at,
+        _ghost: true,
+        actor_profile: {
+          display_name: ghostProfile.display_name,
+          avatar_emoji: ghostProfile.avatar_emoji,
+          avatar_url: null,
+          avatar_color: ghostProfile.avatar_color,
+          iniciais: ghostProfile.iniciais,
+        }
       }
-    }
-  })
+    })
+    .filter(Boolean)
+}
+
+// Sincrona legacy — retorna vazio, usar async version
+export function getGhostMessageNotifications() {
+  return []
 }
