@@ -5,6 +5,7 @@
 // ============================================================
 
 import { PROMPTS_REFLEXAO, ECOS_INFO, RESSONANCIA_TIPOS } from './comunidade'
+import { supabase } from './supabase'
 
 // ---------- SEED / HASH HELPERS ----------
 
@@ -1225,10 +1226,48 @@ export function getGhostRessonanciaBatch(postIds) {
 }
 
 // ============================================================
-// GHOST PROACTIVE — Conexões e Conversas Iniciadas por Ghosts
-// Ghosts "enviam" pedidos de conexão e iniciam conversas.
-// Tudo determinístico e armazenado no localStorage.
+// GHOST PROACTIVE — Conexões e Conversas via Supabase
+// Ghosts existem como users reais na DB (is_ghost=true).
+// Mensagens persistem no Supabase, não no localStorage.
 // ============================================================
+
+// ---------- MAPEAMENTO ghost_id antigo → UUID Supabase ----------
+
+export const GHOST_UUID_MAP = {
+  ghost_graca:     '00000000-ghost-4000-a000-000000000001',
+  ghost_esperanca: '00000000-ghost-4000-a000-000000000002',
+  ghost_celeste:   '00000000-ghost-4000-a000-000000000003',
+  ghost_amina:     '00000000-ghost-4000-a000-000000000004',
+  ghost_fatima:    '00000000-ghost-4000-a000-000000000005',
+  ghost_halima:    '00000000-ghost-4000-a000-000000000006',
+  ghost_dulce:     '00000000-ghost-4000-a000-000000000007',
+  ghost_aisha:     '00000000-ghost-4000-a000-000000000008',
+  ghost_zainab:    '00000000-ghost-4000-a000-000000000009',
+  ghost_mariamo:   '00000000-ghost-4000-a000-000000000010',
+  ghost_joana:     '00000000-ghost-4000-a000-000000000011',
+  ghost_luisa:     '00000000-ghost-4000-a000-000000000012',
+  ghost_rosa:      '00000000-ghost-4000-a000-000000000013',
+  ghost_beatriz:   '00000000-ghost-4000-a000-000000000014',
+  ghost_safira:    '00000000-ghost-4000-a000-000000000015',
+  ghost_nhara:     '00000000-ghost-4000-a000-000000000016',
+  ghost_ines:      '00000000-ghost-4000-a000-000000000017',
+  ghost_marta:     '00000000-ghost-4000-a000-000000000018',
+  ghost_ana:       '00000000-ghost-4000-a000-000000000019',
+  ghost_claudia:   '00000000-ghost-4000-a000-000000000020',
+  ghost_rafael:    '00000000-ghost-4000-a000-000000000021',
+  ghost_dinis:     '00000000-ghost-4000-a000-000000000022',
+  ghost_dina:      '00000000-ghost-4000-a000-000000000023',
+}
+
+// Resolver ID: se for ghost_xxx retorna UUID, senão retorna como está
+export function resolveGhostId(id) {
+  return GHOST_UUID_MAP[id] || id
+}
+
+// Verificar se um UUID é de ghost
+export function isGhostUUID(uuid) {
+  return uuid?.startsWith('00000000-ghost-')
+}
 
 // ---------- MENSAGENS INICIAIS (ghosts a iniciar conversa) ----------
 
@@ -1245,18 +1284,258 @@ const GHOST_MENSAGENS_INICIAIS = [
   'ola! andas no vitalis tb? eu comecei a semana passada',
 ]
 
-// ---------- RESPOSTAS GHOST (quando o user envia mensagem) ----------
+// ---------- RESPOSTAS CONTEXTUAIS — Multi-frase, com personalidade ----------
 
-const GHOST_RESPOSTAS = [
-  'sim sim! tb sinto isso. e bom partilhar com alguem q percebe 😊',
-  'ahhh q fixe!! obrigada por dizeres isso 🌸',
-  'mesmo! eu tb penso nisso. a comunidade ajuda muito ne',
-  'q bom! vamos continuar juntas nisto 💪',
-  'obrigada! precisava de ouvir isso hoje',
-  'exacto! e isso mesmo. passo a passo ne',
-  'haha sim! eu tb ando assim. mas vai ficar melhor 🌿',
-  'q bonito 💛 obrigada pela mensagem',
-]
+// Cada resposta: array de frases (1-3) para parecer conversa natural.
+// {frases} + {followUp} opcional (pergunta para manter conversa).
+const GHOST_RESPOSTAS_CONTEXTUAIS = {
+  saudacao: {
+    keywords: ['ola', 'oi', 'boa tarde', 'bom dia', 'boa noite', 'tudo bem', 'como estas', 'como vai', 'hey', 'hello'],
+    respostas: [
+      { frases: ['oi! tudo bem sim 😊', 'estava mesmo agora a pensar em escrever-te!'], followUp: 'como esta a correr a tua semana?' },
+      { frases: ['ola! que bom receber a tua mensagem.', 'hoje tive um dia cheio mas bom.'], followUp: 'e tu, como te sentes?' },
+      { frases: ['eiii ola! 🌸', 'fiquei contente por ver a tua mensagem.'], followUp: 'como estas? conta-me novidades!' },
+      { frases: ['oi oi! tudo optimo aqui, obrigada por perguntar!', 'ando cheia de energia esta semana.'], followUp: 'e contigo, como vai?' },
+      { frases: ['ola! que saudade de falar contigo 😊', 'esta tudo bem por aqui.'], followUp: 'o que tens andado a fazer?' },
+    ]
+  },
+  vitalis: {
+    keywords: ['vitalis', 'plano', 'alimenta', 'comida', 'refeic', 'dieta', 'nutri', 'comer', 'peso', 'saude', 'saudav', 'receita'],
+    respostas: [
+      { frases: ['o vitalis esta a mudar completamente a minha relacao com a comida!', 'antes comia sem pensar, agora cada refeicao tem intencao. 🌿'], followUp: 'tu tb sentes essa diferenca?' },
+      { frases: ['sim! eu ando no vitalis ha umas semanas e a diferenca na energia e incrivel.', 'ate durmo melhor.'], followUp: 'em que fase estas tu?' },
+      { frases: ['o plano alimentar ajudou-me imenso.', 'comecei a incluir mais legumes e feijao nhemba, e o corpo agradeceu.'], followUp: 'ja experimentaste as receitas mocambicanas do vitalis? 🍲' },
+      { frases: ['sabes o que mais gosto no vitalis? e que nao e so dieta.', 'e uma forma diferente de olhar para a comida e para nos mesmas.'], followUp: 'qual parte do plano estas a gostar mais?' },
+      { frases: ['ontem fiz um caril de amendoim com legumes do mercado e ficou incrivel!', 'o vitalis ensinou-me que cozinhar com intencao muda tudo. ate o sabor e diferente.'], followUp: 'tu gostas de cozinhar?' },
+      { frases: ['eu tb tinha muita dificuldade com a alimentacao.', 'o que me ajudou foi ir devagar, sem pressao. o vitalis ensina isso.'], followUp: 'como estas a lidar com essa parte?' },
+    ]
+  },
+  lumina: {
+    keywords: ['lumina', 'diagnostic', 'leitura', 'padrao', 'autoconhec'],
+    respostas: [
+      { frases: ['o lumina revelou-me coisas que eu ja sabia la no fundo mas nao queria ver!', 'foi desconfortavel no inicio mas depois sentiu-se como liberdade. 🔮'], followUp: 'tu tb sentiste isso quando fizeste a leitura?' },
+      { frases: ['fiz a leitura do lumina e fiquei impressionada com a precisao.', 'mostrou-me padroes que repito ha anos sem perceber.'], followUp: 'ja fizeste mais do que uma leitura? os resultados mudam!' },
+      { frases: ['o autoconhecimento e o primeiro passo para tudo ne.', 'eu antes fugia de olhar para dentro. agora percebo que e la que esta a forca.'], followUp: 'o que e que o lumina te mostrou?' },
+      { frases: ['sabes, eu voltei a fazer a leitura depois de 2 meses e os resultados mudaram.', 'e bonito ver a prova de que estamos a mudar, mesmo quando nao sentimos.'], followUp: 'quando foi a ultima vez que fizeste a tua?' },
+    ]
+  },
+  emocional: {
+    keywords: ['dificil', 'triste', 'cansad', 'sozinha', 'sozinho', 'medo', 'ansied', 'stress', 'chorar', 'mal', 'desistir', 'nao consigo'],
+    respostas: [
+      { frases: ['entendo-te completamente 💛', 'eu tb tive dias assim. as vezes o corpo e a alma pedem para parar.', 'e esta tudo bem nao estar bem.'], followUp: 'queres contar-me mais sobre o que sentes?' },
+      { frases: ['obrigada por partilhares isso comigo. e preciso muita coragem.', 'quero que saibas que nao estas sozinha nisto. 🫶'], followUp: 'o que achas que te ajudaria agora?' },
+      { frases: ['os dias dificeis fazem parte do caminho, mas isso nao significa que temos de os enfrentar sozinhas.', 'eu estou aqui. 💪'], followUp: 'ja experimentaste escrever o que sentes? a mim ajuda-me muito.' },
+      { frases: ['sei como e esse peso. ja passei por algo parecido.', 'o que me ajudou foi respirar fundo e lembrar que um dia de cada vez e suficiente. 🌿'], followUp: 'queres que falemos mais sobre isso?' },
+      { frases: ['manda-me mensagem sempre que precisares, a serio.', 'as vezes so ter alguem que ouve ja faz diferenca.', 'estou aqui para ti. 💛'], followUp: null },
+    ]
+  },
+  positivo: {
+    keywords: ['bem', 'otimo', 'feliz', 'contente', 'fixe', 'gosto', 'ador', 'incrivel', 'consegu', 'melhor', 'bom'],
+    respostas: [
+      { frases: ['q bom!!! fico tao feliz por ti! 🌸', 'celebra essa vitoria, por mais pequena que pareca. tu mereces.'], followUp: 'conta-me mais! o que aconteceu?' },
+      { frases: ['isso e fantastico!', 'as pequenas conquistas sao as que mais importam, porque sao as que nos transformam no dia a dia. 💛'], followUp: 'o que e que te fez sentir assim?' },
+      { frases: ['ehhh isso sim! que energia boa! 🔥', 'adoro ver pessoas a brilhar. e contagioso.'], followUp: 'como vais manter esse momentum?' },
+      { frases: ['adoro ouvir isso!', 'lembro-me de quando eu tb comecei a sentir essa mudanca. e so o inicio, vai ficar ainda melhor! 🌿'], followUp: 'o que mudou para ti ultimamente?' },
+    ]
+  },
+  comunidade: {
+    keywords: ['comunidade', 'grupo', 'pessoal', 'pessoas', 'amigas', 'circulo', 'fogueira', 'rio'],
+    respostas: [
+      { frases: ['a comunidade e o melhor mesmo!', 'saber que nao estamos sozinhas neste caminho faz toda a diferenca. 😊', 'eu antes achava que tinha de fazer tudo sozinha.'], followUp: 'qual parte da comunidade gostas mais?' },
+      { frases: ['sim! este espaco e tao especial.', 'as pessoas aqui percebem mesmo o que estamos a passar.'], followUp: 'ja participaste na fogueira? e lindo o que se partilha la 🔥' },
+      { frases: ['eu tb adoro este espaco.', 'partilhar com pessoas que percebem e outro nivel de conexao.'], followUp: 'ha quanto tempo andas aqui?' },
+    ]
+  },
+  exercicio: {
+    keywords: ['exercicio', 'treino', 'correr', 'andar', 'yoga', 'caminh', 'gimnasio', 'desporto', 'movimento', 'corpo'],
+    respostas: [
+      { frases: ['eu tb ando a tentar mexer-me mais!', 'comecei com caminhadas de 20 minutos e ja sinto a diferenca na energia e no humor. 🚶‍♀️'], followUp: 'que tipo de exercicio gostas de fazer?' },
+      { frases: ['o movimento faz tanta diferenca ne!', 'eu faco yoga de manha, 15 minutinhos. comecou como obrigacao e agora e o melhor momento do dia.'], followUp: 'ja experimentaste yoga?' },
+      { frases: ['boa! o corpo agradece tanto.', 'eu comecei devagar e agora ja e habito. o segredo e nao ter pressa. 💪'], followUp: 'como esta a ser a tua rotina de exercicio?' },
+    ]
+  },
+  pergunta: {
+    keywords: ['como', 'o que', 'qual', 'quando', 'porque', 'porqu', 'onde', 'quem', '?'],
+    respostas: [
+      { frases: ['boa pergunta!', 'eu tb me perguntei isso no inicio. o que descobri e que o caminho vai mostrando as respostas. 😊'], followUp: 'o que e que te levou a pensar nisso?' },
+      { frases: ['hmm olha, eu acho que cada pessoa tem o seu ritmo.', 'o que funciona para mim pode nao funcionar para ti, e esta tudo bem com isso.'], followUp: 'tu vais descobrir o teu caminho! queres trocar ideias?' },
+      { frases: ['essa e uma questao boa! eu ainda estou a aprender tb.', 'o que eu notei e que com o tempo as coisas ficam mais claras.'], followUp: 'ja falaste sobre isso com mais alguem aqui na comunidade?' },
+    ]
+  },
+  generico: {
+    keywords: [],
+    respostas: [
+      { frases: ['obrigada por partilhares!', 'e bom ter alguem com quem falar sobre estas coisas. nem toda a gente percebe. 😊'], followUp: 'o que mais tens andado a pensar?' },
+      { frases: ['mesmo! tb sinto isso.', 'estamos juntas neste caminho e isso da-me forca. 🌿'], followUp: 'como esta a correr a tua jornada?' },
+      { frases: ['q bom falar contigo!', 'esta comunidade e mesmo especial. encontrei aqui pessoas que me percebem de verdade. 💛'], followUp: null },
+      { frases: ['sim sim! passo a passo ne.', 'o importante e nao desistir. os dias em que temos menos vontade sao os mais importantes.'], followUp: 'como te sentes hoje?' },
+      { frases: ['gosto muito de falar contigo! 🌸', 'e bom sentir que temos companhia nesta jornada.'], followUp: 'manda mensagem quando quiseres, estou aqui!' },
+      { frases: ['exacto! e isso mesmo.', 'a mudanca e aos poucos mas quando olhamos para tras, ja andamos tanto.'], followUp: 'o que mudou mais em ti desde que comecaste?' },
+      { frases: ['obrigada pela mensagem! 💛', 'faz-me bem conectar aqui. as vezes um bocadinho de conversa muda o dia.'], followUp: null },
+      { frases: ['concordo completamente!', 'esta jornada e melhor quando partilhada. sozinhas e mais dificil. 😊'], followUp: 'tens sentido diferenca desde que comecaste?' },
+    ]
+  }
+}
+
+// ---------- TRAÇOS DE PERSONALIDADE (afectam o estilo das respostas) ----------
+
+const PERSONALIDADE_PREFIXOS = {
+  calorosa: ['ai querida! ', 'ohhh ', 'mana! ', ''],
+  reflexiva: ['sabes... ', 'penso que ', 'tenho reflectido sobre isso. ', ''],
+  empática: ['sinto o que dizes. ', 'percebo perfeitamente. ', '', ''],
+  sabia: ['aprendi que ', 'a vida ensinou-me que ', 'com o tempo percebi que ', ''],
+  determinada: ['forca! ', 'vamos a isto! ', 'nao desistas! ', ''],
+  curiosa: ['que interessante! ', 'conta-me mais! ', 'isso fascina-me. ', ''],
+  poetica: ['', '', '', ''],
+  vulneravel: ['obrigada por isso. ', 'isso toca-me. ', '', ''],
+  criativa: ['adoro essa perspectiva! ', 'que lindo! ', '', ''],
+  pratica: ['olha, ', 'concretamente, ', '', ''],
+  energetica: ['boa!! ', 'isso mesmo! ', 'vamos! ', ''],
+  corajosa: ['isso e coragem! ', 'admiro-te. ', '', ''],
+  articulada: ['', '', '', ''],
+  espiritual: ['que bonito. ', 'sinto isso no coracao. ', '', ''],
+}
+
+const PERSONALIDADE_SUFIXOS = {
+  calorosa: [' 💛', ' 🫶', ' 🌸', ''],
+  reflexiva: ['', '', '', ''],
+  empática: [' estou aqui.', ' nao estas sozinha.', '', ''],
+  sabia: ['', '', '', ''],
+  determinada: [' 💪', ' tu consegues!', '', ''],
+  curiosa: [' 🔮', '', '', ''],
+  poetica: [' ✨', '', '', ''],
+  vulneravel: [' 💛', '', '', ''],
+  criativa: [' 🎨', ' ✨', '', ''],
+  pratica: ['', '', '', ''],
+  energetica: [' 🔥', ' 💪', '', ''],
+  corajosa: ['', '', '', ''],
+  articulada: ['', '', '', ''],
+  espiritual: [' 🙏', ' 🕊️', '', ''],
+}
+
+/**
+ * Constrói resposta multi-frase com personalidade do ghost.
+ * Retorna string formatada (1-3 frases + follow-up opcional).
+ */
+function construirResposta(respostaObj, ghostProfile, rng) {
+  const personalidade = ghostProfile?.personalidade || 'generico'
+  const prefixos = PERSONALIDADE_PREFIXOS[personalidade] || ['']
+  const sufixos = PERSONALIDADE_SUFIXOS[personalidade] || ['']
+
+  const prefixo = prefixos[Math.floor(rng() * prefixos.length)]
+  const sufixo = sufixos[Math.floor(rng() * sufixos.length)]
+
+  // Juntar frases
+  let texto = respostaObj.frases.join(' ')
+
+  // Adicionar prefixo de personalidade (50% chance, para nao ser repetitivo)
+  if (prefixo && rng() < 0.5) {
+    texto = prefixo + texto
+  }
+
+  // Adicionar sufixo de personalidade (40% chance)
+  if (sufixo && rng() < 0.4) {
+    texto = texto + sufixo
+  }
+
+  // Adicionar follow-up (70% chance, se existir)
+  if (respostaObj.followUp && rng() < 0.7) {
+    texto = texto + '\n' + respostaObj.followUp
+  }
+
+  return texto
+}
+
+/**
+ * Conta mensagens ghost nesta conversa hoje (para limite).
+ * Retorna count via localStorage (rápido, sem query).
+ */
+function getGhostReplyCountToday(conversaId) {
+  const key = `ghost_replies_${conversaId}`
+  const stored = JSON.parse(localStorage.getItem(key) || '{}')
+  const hoje = new Date().toDateString()
+  if (stored.date !== hoje) return 0
+  return stored.count || 0
+}
+
+function incrementGhostReplyCount(conversaId) {
+  const key = `ghost_replies_${conversaId}`
+  const hoje = new Date().toDateString()
+  const stored = JSON.parse(localStorage.getItem(key) || '{}')
+  if (stored.date !== hoje) {
+    localStorage.setItem(key, JSON.stringify({ date: hoje, count: 1 }))
+  } else {
+    localStorage.setItem(key, JSON.stringify({ date: hoje, count: (stored.count || 0) + 1 }))
+  }
+}
+
+/** Limite máximo de respostas ghost por conversa/dia */
+const GHOST_MAX_REPLIES_PER_DAY = 4
+
+/** Chance do ghost não responder (simula estar "ocupada") — 15% */
+const GHOST_BUSY_CHANCE = 0.15
+
+/**
+ * Escolhe resposta contextual baseada em keywords, personalidade e limites.
+ * Retorna { texto, shouldReply, delay } onde:
+ *   - texto: string da resposta (ou null)
+ *   - shouldReply: boolean (false se ocupada ou limite atingido)
+ *   - delay: ms de espera antes de responder (baseado no tamanho)
+ */
+function escolherRespostaContextual(mensagem, ghostId, conversaId) {
+  const texto = (mensagem || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  const seed = hashStr(ghostId + '_resp_' + Date.now())
+  const rng = seededRandom(seed)
+
+  // Verificar limite diário
+  const replyCount = getGhostReplyCountToday(conversaId)
+  if (replyCount >= GHOST_MAX_REPLIES_PER_DAY) {
+    return { texto: null, shouldReply: false, delay: 0, reason: 'limit' }
+  }
+
+  // Chance de estar "ocupada" (mas não na primeira mensagem da conversa)
+  if (replyCount > 0 && rng() < GHOST_BUSY_CHANCE) {
+    return { texto: null, shouldReply: false, delay: 0, reason: 'busy' }
+  }
+
+  // Encontrar perfil ghost para personalidade
+  const ghostProfile = GHOST_PROFILES.find(p =>
+    resolveGhostId(p.id) === ghostId || p.id === ghostId
+  )
+
+  // Tentar encontrar categoria por keywords
+  let respostaObj = null
+  const categorias = Object.keys(GHOST_RESPOSTAS_CONTEXTUAIS).filter(k => k !== 'generico')
+  for (const cat of categorias) {
+    const { keywords, respostas } = GHOST_RESPOSTAS_CONTEXTUAIS[cat]
+    const match = keywords.some(kw => texto.includes(kw))
+    if (match) {
+      const shuffled = shuffle(respostas, rng)
+      respostaObj = shuffled[0]
+      break
+    }
+  }
+
+  // Fallback genérico
+  if (!respostaObj) {
+    const shuffled = shuffle(GHOST_RESPOSTAS_CONTEXTUAIS.generico.respostas, rng)
+    respostaObj = shuffled[0]
+  }
+
+  // Construir texto com personalidade
+  const respostaTexto = construirResposta(respostaObj, ghostProfile, rng)
+
+  // Delay baseado no tamanho da resposta (mais longa = mais tempo a "escrever")
+  const baseDelay = 2000
+  const charDelay = Math.min(respostaTexto.length * 15, 4000)
+  const randomExtra = Math.floor(rng() * 2000)
+  const delay = baseDelay + charDelay + randomExtra // 2s-8s
+
+  // Incrementar contador
+  incrementGhostReplyCount(conversaId)
+
+  return { texto: respostaTexto, shouldReply: true, delay, reason: null }
+}
 
 /**
  * Selecciona 2-3 ghosts que "enviaram" pedido de conexão a este user.
@@ -1264,18 +1543,18 @@ const GHOST_RESPOSTAS = [
  */
 export function getGhostConnectionRequests(userId) {
   if (!userId) return []
-  // Muda a cada 3 dias para não ser sempre os mesmos
   const dayBlock = Math.floor(dateSeed() / 3)
   const seed = hashStr(userId + '_ghost_conexoes_' + dayBlock)
   const rng = seededRandom(seed)
 
-  const numRequests = 2 + Math.floor(rng() * 2) // 2-3
+  const numRequests = 2 + Math.floor(rng() * 2)
   const shuffled = shuffle(GHOST_PROFILES, rng)
 
   return shuffled.slice(0, numRequests).map((perfil, i) => ({
     ghostId: perfil.id,
+    ghostUUID: resolveGhostId(perfil.id),
     perfil: {
-      user_id: perfil.id,
+      user_id: resolveGhostId(perfil.id),
       display_name: perfil.display_name,
       avatar_emoji: perfil.avatar_emoji,
       avatar_color: perfil.avatar_color,
@@ -1285,25 +1564,22 @@ export function getGhostConnectionRequests(userId) {
       ecos_activos: perfil.ecos_activos,
       cidade: perfil.cidade,
     },
-    // Timestamp: entre 2h e 48h atrás
     created_at: new Date(Date.now() - (2 + rng() * 46) * 3600000).toISOString()
   }))
 }
 
 /**
  * Verifica o estado de conexão com um ghost.
- * Retorna: 'pending_received' (ghost enviou pedido) | 'connected' (user aceitou) | 'none'
  */
 export function getGhostConnectionState(userId, ghostId) {
-  // Verificar se o user já aceitou/recusou
   const stored = JSON.parse(localStorage.getItem('ghost_connections') || '{}')
-  const key = `${userId}_${ghostId}`
+  const uuid = resolveGhostId(ghostId)
+  const key = `${userId}_${uuid}`
   if (stored[key] === 'connected') return 'connected'
   if (stored[key] === 'rejected') return 'none'
 
-  // Verificar se este ghost faz parte dos pedidos activos
   const requests = getGhostConnectionRequests(userId)
-  const hasRequest = requests.some(r => r.ghostId === ghostId)
+  const hasRequest = requests.some(r => r.ghostUUID === uuid || r.ghostId === ghostId)
   return hasRequest ? 'pending_received' : 'none'
 }
 
@@ -1312,7 +1588,8 @@ export function getGhostConnectionState(userId, ghostId) {
  */
 export function acceptGhostConnection(userId, ghostId) {
   const stored = JSON.parse(localStorage.getItem('ghost_connections') || '{}')
-  stored[`${userId}_${ghostId}`] = 'connected'
+  const uuid = resolveGhostId(ghostId)
+  stored[`${userId}_${uuid}`] = 'connected'
   localStorage.setItem('ghost_connections', JSON.stringify(stored))
 }
 
@@ -1321,7 +1598,8 @@ export function acceptGhostConnection(userId, ghostId) {
  */
 export function rejectGhostConnection(userId, ghostId) {
   const stored = JSON.parse(localStorage.getItem('ghost_connections') || '{}')
-  stored[`${userId}_${ghostId}`] = 'rejected'
+  const uuid = resolveGhostId(ghostId)
+  stored[`${userId}_${uuid}`] = 'rejected'
   localStorage.setItem('ghost_connections', JSON.stringify(stored))
 }
 
@@ -1333,114 +1611,172 @@ export function countGhostConnections(userId) {
   return Object.keys(stored).filter(k => k.startsWith(userId + '_') && stored[k] === 'connected').length
 }
 
+// ============================================================
+// CONVERSAS GHOST VIA SUPABASE
+// Usa RPC functions (ghost_reply, create_ghost_conversation)
+// ============================================================
+
 /**
- * Retorna conversas ghost iniciadas proactivamente.
- * 1-2 ghosts "enviam" mensagem inicial ao user.
+ * Garante que existem conversas ghost para este user no Supabase.
+ * Cria 1-2 conversas com mensagem inicial se ainda não existem.
  */
-export function getGhostConversations(userId) {
+export async function ensureGhostConversations(userId) {
   if (!userId) return []
-  const dayBlock = Math.floor(dateSeed() / 2) // Muda a cada 2 dias
+
+  // Buscar conversas existentes com ghosts
+  const { data: existing } = await supabase
+    .from('community_conversations')
+    .select(`
+      *,
+      user1_profile:community_profiles!community_conversations_user1_id_fkey (
+        user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais
+      ),
+      user2_profile:community_profiles!community_conversations_user2_id_fkey (
+        user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais
+      )
+    `)
+    .or(`user1_id.eq.${userId},user2_id.eq.${userId}`)
+
+  // Filtrar conversas com ghosts
+  const ghostUUIDs = new Set(Object.values(GHOST_UUID_MAP))
+  const ghostConvs = (existing || []).filter(c =>
+    ghostUUIDs.has(c.user1_id) || ghostUUIDs.has(c.user2_id)
+  )
+
+  // Se ja tem conversas ghost, retornar
+  if (ghostConvs.length > 0) return ghostConvs
+
+  // Criar 1-2 conversas ghost novas
+  const dayBlock = Math.floor(dateSeed() / 2)
   const seed = hashStr(userId + '_ghost_convs_' + dayBlock)
   const rng = seededRandom(seed)
 
-  const numConvs = 1 + Math.floor(rng() * 2) // 1-2
+  const numConvs = 1 + Math.floor(rng() * 2)
   const shuffled = shuffle(GHOST_PROFILES, rng)
   const msgs = shuffle(GHOST_MENSAGENS_INICIAIS, rng)
 
-  return shuffled.slice(0, numConvs).map((perfil, i) => {
-    const horasAtras = 1 + rng() * 24
-    const created = new Date(Date.now() - horasAtras * 3600000).toISOString()
+  const created = []
+  for (let i = 0; i < numConvs && i < shuffled.length; i++) {
+    const perfil = shuffled[i]
+    const ghostUUID = resolveGhostId(perfil.id)
+    const msg = msgs[i % msgs.length]
 
-    return {
-      id: `ghost_conv_${perfil.id}`,
-      user1_id: perfil.id,
-      user2_id: userId,
-      last_message: msgs[i % msgs.length],
-      last_message_at: created,
-      _ghost: true,
-      user1_profile: {
-        user_id: perfil.id,
-        display_name: perfil.display_name,
-        avatar_emoji: perfil.avatar_emoji,
-        avatar_color: perfil.avatar_color,
-        iniciais: perfil.iniciais,
-        avatar_url: null,
-      },
-      user2_profile: null // Será preenchido pelo componente
+    try {
+      const { data: convId } = await supabase
+        .rpc('create_ghost_conversation', {
+          p_user_id: userId,
+          p_ghost_user_id: ghostUUID,
+          p_initial_message: msg
+        })
+
+      if (convId) {
+        created.push(convId)
+      }
+    } catch (err) {
+      console.error('Erro ao criar conversa ghost:', err)
     }
-  })
-}
-
-/**
- * Retorna mensagens de uma conversa ghost (pré-geradas + user-enviadas do localStorage).
- */
-export function getGhostConversationMessages(userId, ghostId) {
-  const perfil = GHOST_PROFILES.find(p => p.id === ghostId)
-  if (!perfil) return []
-
-  // Mensagem inicial do ghost
-  const seed = hashStr(userId + '_ghost_msgs_' + ghostId)
-  const rng = seededRandom(seed)
-  const msgs = shuffle(GHOST_MENSAGENS_INICIAIS, rng)
-  const horasAtras = 1 + rng() * 24
-
-  const initialMsg = {
-    id: `ghost_msg_init_${ghostId}`,
-    conversation_id: `ghost_conv_${ghostId}`,
-    sender_id: ghostId,
-    conteudo: msgs[0],
-    created_at: new Date(Date.now() - horasAtras * 3600000).toISOString(),
-    _ghost: true,
   }
 
-  // Mensagens do user (do localStorage)
-  const stored = JSON.parse(localStorage.getItem('ghost_chat_messages') || '{}')
-  const userMsgs = stored[`${userId}_${ghostId}`] || []
+  // Re-buscar conversas com profiles
+  if (created.length > 0) {
+    const { data: updated } = await supabase
+      .from('community_conversations')
+      .select(`
+        *,
+        user1_profile:community_profiles!community_conversations_user1_id_fkey (
+          user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais
+        ),
+        user2_profile:community_profiles!community_conversations_user2_id_fkey (
+          user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais
+        )
+      `)
+      .or(`user1_id.eq.${userId},user2_id.eq.${userId}`)
 
-  // Combinar e ordenar
-  const all = [initialMsg, ...userMsgs]
-  all.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-  return all
+    return (updated || []).filter(c =>
+      ghostUUIDs.has(c.user1_id) || ghostUUIDs.has(c.user2_id)
+    )
+  }
+
+  return []
 }
 
 /**
- * Enviar mensagem para um ghost — guarda no localStorage e gera resposta.
+ * Envia mensagem do user para ghost via Supabase.
+ * Mensagem real vai para community_messages.
+ * Ghost responde via RPC após delay (se shouldReply=true).
+ * Retorna { userMsg, ghostReplyText, ghostUUID, shouldReply, delay, busyReason }
  */
+export async function sendMessageToGhostSupabase(conversaId, userId, ghostUUID, conteudo) {
+  // 1. Enviar mensagem do user (via insert normal — RLS permite)
+  const { data: userMsg, error: userErr } = await supabase
+    .from('community_messages')
+    .insert([{
+      conversation_id: conversaId,
+      sender_id: userId,
+      conteudo
+    }])
+    .select()
+
+  if (userErr) throw userErr
+
+  // 2. Actualizar last_message da conversa
+  await supabase
+    .from('community_conversations')
+    .update({ last_message: conteudo, last_message_at: new Date().toISOString() })
+    .eq('id', conversaId)
+
+  // 3. Gerar resposta contextual (com limites e personalidade)
+  const { texto: ghostReplyText, shouldReply, delay, reason } = escolherRespostaContextual(conteudo, ghostUUID, conversaId)
+
+  return {
+    userMsg: userMsg?.[0],
+    ghostReplyText,
+    ghostUUID,
+    shouldReply,
+    delay,
+    busyReason: reason
+  }
+}
+
+/**
+ * Insere a resposta do ghost via RPC (chamado após delay no componente).
+ */
+export async function insertGhostReply(conversaId, ghostUUID, conteudo) {
+  const { data, error } = await supabase
+    .rpc('ghost_reply', {
+      p_conversation_id: conversaId,
+      p_ghost_user_id: ghostUUID,
+      p_conteudo: conteudo
+    })
+  if (error) {
+    console.error('Erro ghost_reply RPC:', error)
+    throw error
+  }
+  return data
+}
+
+// ============================================================
+// LEGACY COMPAT — funções antigas para código que ainda use
+// ============================================================
+
+// getGhostConversations — agora retorna dados formatados para o componente
+// (versao sincrona para backwards compat, usa cache)
+let _ghostConvCache = null
+let _ghostConvCacheTime = 0
+
+export function getGhostConversations(userId) {
+  // Retorna array vazio — conversas ghost agora vêm do Supabase
+  // via ensureGhostConversations (async)
+  return []
+}
+
+export function getGhostConversationMessages() {
+  return []
+}
+
 export function sendMessageToGhost(userId, ghostId, conteudo) {
-  const stored = JSON.parse(localStorage.getItem('ghost_chat_messages') || '{}')
-  const key = `${userId}_${ghostId}`
-  if (!stored[key]) stored[key] = []
-
-  const now = new Date().toISOString()
-
-  // Mensagem do user
-  const userMsg = {
-    id: `ghost_user_msg_${Date.now()}`,
-    conversation_id: `ghost_conv_${ghostId}`,
-    sender_id: userId,
-    conteudo,
-    created_at: now,
-    _ghost: true,
-  }
-  stored[key].push(userMsg)
-
-  // Resposta automática do ghost (após 1-3 segundos simulados)
-  const seed = hashStr(ghostId + '_resp_' + Date.now())
-  const rng = seededRandom(seed)
-  const respostas = shuffle(GHOST_RESPOSTAS, rng)
-
-  const ghostReply = {
-    id: `ghost_reply_${Date.now()}`,
-    conversation_id: `ghost_conv_${ghostId}`,
-    sender_id: ghostId,
-    conteudo: respostas[0],
-    created_at: new Date(Date.now() + 2000).toISOString(), // 2s "depois"
-    _ghost: true,
-  }
-  stored[key].push(ghostReply)
-
-  localStorage.setItem('ghost_chat_messages', JSON.stringify(stored))
-  return { userMsg, ghostReply }
+  // Legacy — não usar. Usa sendMessageToGhostSupabase
+  return { userMsg: null, ghostReply: null }
 }
 
 /**
@@ -1452,13 +1788,13 @@ export function getGhostConnectionNotifications(userId) {
 
   return requests
     .filter(r => {
-      const key = `${userId}_${r.ghostId}`
+      const key = `${userId}_${r.ghostUUID}`
       return stored[key] !== 'connected' && stored[key] !== 'rejected'
     })
     .map(r => ({
-      id: `ghost_notif_conexao_${r.ghostId}`,
+      id: `ghost_notif_conexao_${r.ghostUUID}`,
       user_id: userId,
-      actor_id: r.ghostId,
+      actor_id: r.ghostUUID,
       tipo: 'conexao',
       post_id: null,
       conteudo: '',
@@ -1477,31 +1813,56 @@ export function getGhostConnectionNotifications(userId) {
 
 /**
  * Gera notificações ghost de mensagens recebidas.
+ * Agora busca conversas reais do Supabase.
  */
-export function getGhostMessageNotifications(userId) {
-  const convs = getGhostConversations(userId)
-  const readKey = 'ghost_msg_notifs_read'
-  const readIds = JSON.parse(localStorage.getItem(readKey) || '[]')
+export async function getGhostMessageNotificationsAsync(userId) {
+  const ghostUUIDs = new Set(Object.values(GHOST_UUID_MAP))
 
-  return convs.map(conv => {
-    const ghostProfile = conv.user1_profile
-    return {
-      id: `ghost_notif_msg_${ghostProfile.user_id}`,
-      user_id: userId,
-      actor_id: ghostProfile.user_id,
-      tipo: 'sussurro',
-      post_id: null,
-      conteudo: (conv.last_message || '').slice(0, 50),
-      lida: readIds.includes(`ghost_notif_msg_${ghostProfile.user_id}`),
-      created_at: conv.last_message_at,
-      _ghost: true,
-      actor_profile: {
-        display_name: ghostProfile.display_name,
-        avatar_emoji: ghostProfile.avatar_emoji,
-        avatar_url: null,
-        avatar_color: ghostProfile.avatar_color,
-        iniciais: ghostProfile.iniciais,
+  const { data: convs } = await supabase
+    .from('community_conversations')
+    .select(`
+      id, last_message, last_message_at,
+      user1_profile:community_profiles!community_conversations_user1_id_fkey (
+        user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais
+      ),
+      user2_profile:community_profiles!community_conversations_user2_id_fkey (
+        user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais
+      ),
+      user1_id, user2_id
+    `)
+    .or(`user1_id.eq.${userId},user2_id.eq.${userId}`)
+    .order('last_message_at', { ascending: false })
+
+  if (!convs) return []
+
+  return convs
+    .filter(c => ghostUUIDs.has(c.user1_id) || ghostUUIDs.has(c.user2_id))
+    .map(conv => {
+      const ghostProfile = ghostUUIDs.has(conv.user1_id) ? conv.user1_profile : conv.user2_profile
+      if (!ghostProfile) return null
+      return {
+        id: `ghost_notif_msg_${ghostProfile.user_id}`,
+        user_id: userId,
+        actor_id: ghostProfile.user_id,
+        tipo: 'sussurro',
+        post_id: null,
+        conteudo: (conv.last_message || '').slice(0, 50),
+        lida: false,
+        created_at: conv.last_message_at,
+        _ghost: true,
+        actor_profile: {
+          display_name: ghostProfile.display_name,
+          avatar_emoji: ghostProfile.avatar_emoji,
+          avatar_url: null,
+          avatar_color: ghostProfile.avatar_color,
+          iniciais: ghostProfile.iniciais,
+        }
       }
-    }
-  })
+    })
+    .filter(Boolean)
+}
+
+// Sincrona legacy — retorna vazio, usar async version
+export function getGhostMessageNotifications() {
+  return []
 }

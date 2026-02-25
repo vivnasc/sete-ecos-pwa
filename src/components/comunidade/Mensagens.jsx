@@ -5,10 +5,13 @@ import { getConversas, getOuCriarConversa, getMensagens, enviarMensagem, tempoRe
 import { useI18n } from '../../contexts/I18nContext'
 import {
   isGhostUser,
+  isGhostUUID,
   getGhostProfile,
-  getGhostConversations,
-  getGhostConversationMessages,
-  sendMessageToGhost
+  resolveGhostId,
+  GHOST_UUID_MAP,
+  ensureGhostConversations,
+  sendMessageToGhostSupabase,
+  insertGhostReply
 } from '../../lib/ghost-users'
 
 // ============================================================
@@ -32,11 +35,13 @@ function ConversasList({ userId, onAbrirConversa }) {
   const carregarConversas = async () => {
     setLoading(true)
     try {
+      // Garantir que existem conversas ghost no Supabase
+      await ensureGhostConversations(userId)
+
+      // Buscar TODAS as conversas (reais + ghost) do Supabase
       const data = await getConversas(userId)
-      const ghostConvs = getGhostConversations(userId)
-      const merged = [...data, ...ghostConvs]
-        .sort((a, b) => new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0))
-      setConversas(merged)
+      const sorted = data.sort((a, b) => new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0))
+      setConversas(sorted)
     } catch (error) {
       console.error('Erro ao carregar conversas:', error)
     }
@@ -52,55 +57,37 @@ function ConversasList({ userId, onAbrirConversa }) {
       if (ids.length > 0) {
         const { data } = await supabase
           .from('community_profiles')
-          .select('user_id, display_name, avatar_emoji, avatar_url')
+          .select('user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais, is_ghost')
           .in('user_id', ids)
         perfisReais = data || []
       }
 
-      // Conexoes ghost aceites
-      const stored = JSON.parse(localStorage.getItem('ghost_connections') || '{}')
-      const ghostConectados = Object.keys(stored)
-        .filter(k => k.startsWith(userId + '_') && stored[k] === 'connected')
-        .map(k => {
-          const ghostId = k.replace(userId + '_', '')
-          const perfil = getGhostProfile(ghostId)
-          return perfil ? {
-            user_id: ghostId,
-            display_name: perfil.display_name,
-            avatar_emoji: perfil.avatar_emoji,
-            avatar_url: null,
-            _ghost: true,
-          } : null
-        })
-        .filter(Boolean)
+      // Ghost profiles — buscar do Supabase
+      const { data: ghostProfiles } = await supabase
+        .from('community_profiles')
+        .select('user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais, is_ghost')
+        .eq('is_ghost', true)
 
-      // Ghosts com conversas activas
-      const ghostConvs = getGhostConversations(userId)
-      const ghostConvIds = ghostConvs.map(c => c.user1_profile?.user_id).filter(Boolean)
-      const ghostComConversa = ghostConvIds
-        .filter(id => !ghostConectados.find(g => g.user_id === id))
-        .map(id => {
-          const perfil = getGhostProfile(id)
-          return perfil ? {
-            user_id: id,
-            display_name: perfil.display_name,
-            avatar_emoji: perfil.avatar_emoji,
-            avatar_url: null,
-            _ghost: true,
-          } : null
-        })
-        .filter(Boolean)
+      // Conexoes ghost aceites (do localStorage)
+      const stored = JSON.parse(localStorage.getItem('ghost_connections') || '{}')
+      const ghostConectados = (ghostProfiles || []).filter(gp => {
+        const key = `${userId}_${gp.user_id}`
+        return stored[key] === 'connected'
+      })
 
       // Filtrar quem ja tem conversa aberta
       const idsComConversa = new Set(
         conversas.map(c => {
-          if (c.user1_profile?.user_id === userId) return c.user2_profile?.user_id
-          return c.user1_profile?.user_id
+          const u1 = c.user1_profile?.user_id || c.user1_id
+          const u2 = c.user2_profile?.user_id || c.user2_id
+          return u1 === userId ? u2 : u1
         }).filter(Boolean)
       )
 
-      const todos = [...perfisReais, ...ghostConectados, ...ghostComConversa]
-        .filter(p => !idsComConversa.has(p.user_id))
+      const todos = [...perfisReais, ...ghostConectados]
+        .filter(p => p.user_id !== userId && !idsComConversa.has(p.user_id))
+        // Deduplicar por user_id
+        .filter((p, i, arr) => arr.findIndex(x => x.user_id === p.user_id) === i)
 
       setContactos(todos)
     } catch (error) {
@@ -117,15 +104,10 @@ function ConversasList({ userId, onAbrirConversa }) {
   const handleEscolherContacto = async (contacto) => {
     setCriandoConversa(contacto.user_id)
     try {
-      if (contacto._ghost || isGhostUser(contacto.user_id)) {
-        // Ghost — abrir conversa ghost directamente
-        onAbrirConversa(`ghost_conv_${contacto.user_id}`, true)
-      } else {
-        // Real — criar ou abrir conversa
-        const conversa = await getOuCriarConversa(userId, contacto.user_id)
-        if (conversa) {
-          onAbrirConversa(conversa.id, false)
-        }
+      // Tudo vai para o Supabase — ghosts e reais tratados igual
+      const conversa = await getOuCriarConversa(userId, contacto.user_id)
+      if (conversa) {
+        onAbrirConversa(conversa.id)
       }
     } catch (error) {
       console.error('Erro ao criar conversa:', error)
@@ -198,7 +180,7 @@ function ConversasList({ userId, onAbrirConversa }) {
             </div>
           ) : contactos.length === 0 ? (
             <div className="text-center py-6 px-4">
-              <p className="text-xs text-gray-400">Todas as tuas conexoes ja tem conversa aberta</p>
+              <p className="text-xs text-gray-400">Todas as tuas conexões já têm conversa aberta</p>
             </div>
           ) : (
             <div className="max-h-48 overflow-y-auto divide-y divide-gray-50">
@@ -253,7 +235,7 @@ function ConversasList({ userId, onAbrirConversa }) {
               return (
                 <button
                   key={conversa.id}
-                  onClick={() => onAbrirConversa(conversa.id, conversa._ghost)}
+                  onClick={() => onAbrirConversa(conversa.id)}
                   className="w-full flex items-center gap-3 p-4 hover:bg-purple-50/50 transition-colors text-left"
                 >
                   {/* Avatar */}
@@ -264,12 +246,21 @@ function ConversasList({ userId, onAbrirConversa }) {
                         alt={outro.display_name}
                         className="w-12 h-12 rounded-full object-cover"
                       />
+                    ) : outro.avatar_color ? (
+                      <div
+                        className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold"
+                        style={{
+                          backgroundColor: typeof outro.avatar_color === 'object' ? outro.avatar_color.bg : '#8B5CF6',
+                          color: typeof outro.avatar_color === 'object' ? outro.avatar_color.text : '#FFF'
+                        }}
+                      >
+                        {outro.iniciais || outro.avatar_emoji || '🌸'}
+                      </div>
                     ) : (
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center text-xl">
                         {outro.avatar_emoji || '🌸'}
                       </div>
                     )}
-                    {/* Indicador de nao lida */}
                     {conversa.unread && (
                       <div className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white" style={{ backgroundColor: '#8B5CF6' }} />
                     )}
@@ -309,7 +300,7 @@ function ConversasList({ userId, onAbrirConversa }) {
 }
 
 // ============================================================
-// ChatView — Conversa individual
+// ChatView — Conversa individual (tudo via Supabase)
 // ============================================================
 
 function ChatView({ userId, conversaId }) {
@@ -321,8 +312,15 @@ function ChatView({ userId, conversaId }) {
   const [outroPerfil, setOutroPerfil] = useState(null)
   const [texto, setTexto] = useState('')
   const [enviando, setEnviando] = useState(false)
+  const [ghostTyping, setGhostTyping] = useState(false)
 
-  const isGhostConv = conversaId?.startsWith('ghost_conv_')
+  // Detectar se o outro user é ghost
+  const ghostUUIDs = new Set(Object.values(GHOST_UUID_MAP))
+  const outroId = conversa
+    ? (conversa.user1_id === userId ? conversa.user2_id : conversa.user1_id)
+    : null
+  const isGhostConv = outroId ? ghostUUIDs.has(outroId) || isGhostUUID(outroId) : false
+
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
 
@@ -330,9 +328,9 @@ function ChatView({ userId, conversaId }) {
     if (userId && conversaId) carregarChat()
   }, [userId, conversaId])
 
-  // Real-time: escutar novas mensagens (apenas conversas reais)
+  // Real-time: escutar novas mensagens (funciona para TODAS as conversas)
   useEffect(() => {
-    if (!conversaId || isGhostConv) return
+    if (!conversaId) return
 
     const channel = supabase
       .channel(`mensagens-${conversaId}`)
@@ -363,7 +361,7 @@ function ChatView({ userId, conversaId }) {
   // Auto-scroll ao fundo quando chegam mensagens
   useEffect(() => {
     scrollParaFundo()
-  }, [mensagens])
+  }, [mensagens, ghostTyping])
 
   const scrollParaFundo = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -372,47 +370,32 @@ function ChatView({ userId, conversaId }) {
   const carregarChat = async () => {
     setLoading(true)
     try {
-      if (isGhostConv) {
-        // Ghost conversation — tudo local
-        const ghostId = conversaId.replace('ghost_conv_', '')
-        const ghostPerfil = getGhostProfile(ghostId)
-        setConversa({ id: conversaId, _ghost: true })
-        setOutroPerfil(ghostPerfil ? {
-          user_id: ghostId,
-          display_name: ghostPerfil.display_name,
-          avatar_emoji: ghostPerfil.avatar_emoji,
-          avatar_url: null,
-        } : null)
-        const msgs = getGhostConversationMessages(userId, ghostId)
-        setMensagens(msgs)
+      // Tudo via Supabase — sem branching ghost/real
+      const { data: conversaData, error: conversaError } = await supabase
+        .from('community_conversations')
+        .select(`
+          *,
+          user1_profile:community_profiles!community_conversations_user1_id_fkey (
+            user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais
+          ),
+          user2_profile:community_profiles!community_conversations_user2_id_fkey (
+            user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais
+          )
+        `)
+        .eq('id', conversaId)
+        .single()
+
+      if (conversaError) throw conversaError
+      setConversa(conversaData)
+
+      if (conversaData.user1_profile?.user_id === userId) {
+        setOutroPerfil(conversaData.user2_profile)
       } else {
-        // Conversa real — Supabase
-        const { data: conversaData, error: conversaError } = await supabase
-          .from('community_conversations')
-          .select(`
-            *,
-            user1_profile:community_profiles!community_conversations_user1_id_fkey (
-              user_id, display_name, avatar_emoji, avatar_url
-            ),
-            user2_profile:community_profiles!community_conversations_user2_id_fkey (
-              user_id, display_name, avatar_emoji, avatar_url
-            )
-          `)
-          .eq('id', conversaId)
-          .single()
-
-        if (conversaError) throw conversaError
-        setConversa(conversaData)
-
-        if (conversaData.user1_profile?.user_id === userId) {
-          setOutroPerfil(conversaData.user2_profile)
-        } else {
-          setOutroPerfil(conversaData.user1_profile)
-        }
-
-        const msgs = await getMensagens(conversaId)
-        setMensagens(msgs)
+        setOutroPerfil(conversaData.user1_profile)
       }
+
+      const msgs = await getMensagens(conversaId)
+      setMensagens(msgs)
     } catch (error) {
       console.error('Erro ao carregar chat:', error)
     }
@@ -427,15 +410,36 @@ function ChatView({ userId, conversaId }) {
     setTexto('')
 
     try {
-      if (isGhostConv) {
-        const ghostId = conversaId.replace('ghost_conv_', '')
-        const { userMsg, ghostReply } = sendMessageToGhost(userId, ghostId, conteudo)
-        setMensagens(prev => [...prev, userMsg])
-        // Simular resposta do ghost após 2s
-        setTimeout(() => {
-          setMensagens(prev => [...prev, ghostReply])
-        }, 2000)
+      if (isGhostConv && outroId) {
+        // Ghost: enviar mensagem + gerar resposta contextual
+        const result = await sendMessageToGhostSupabase(
+          conversaId, userId, outroId, conteudo
+        )
+
+        if (result.userMsg) {
+          setMensagens(prev => {
+            const jaExiste = prev.some(m => m.id === result.userMsg.id)
+            if (jaExiste) return prev
+            return [...prev, result.userMsg]
+          })
+        }
+
+        // Ghost responde? (pode estar "ocupada" ou ter atingido limite)
+        if (result.shouldReply && result.ghostReplyText) {
+          setGhostTyping(true)
+          setTimeout(async () => {
+            try {
+              await insertGhostReply(conversaId, result.ghostUUID, result.ghostReplyText)
+              // A mensagem vai chegar via real-time subscription
+            } catch (err) {
+              console.error('Erro ao inserir ghost reply:', err)
+            }
+            setGhostTyping(false)
+          }, result.delay || 3000)
+        }
+        // Se não responde, fica em silêncio (natural)
       } else {
+        // User real — enviar via Supabase normal
         const novaMensagem = await enviarMensagem(conversaId, userId, conteudo)
         if (novaMensagem) {
           setMensagens(prev => {
@@ -497,6 +501,16 @@ function ChatView({ userId, conversaId }) {
                   alt={outroPerfil.display_name}
                   className="w-9 h-9 rounded-full object-cover flex-shrink-0"
                 />
+              ) : outroPerfil.avatar_color ? (
+                <div
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                  style={{
+                    backgroundColor: typeof outroPerfil.avatar_color === 'object' ? outroPerfil.avatar_color.bg : '#8B5CF6',
+                    color: typeof outroPerfil.avatar_color === 'object' ? outroPerfil.avatar_color.text : '#FFF'
+                  }}
+                >
+                  {outroPerfil.iniciais || outroPerfil.avatar_emoji || '🌸'}
+                </div>
               ) : (
                 <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center text-lg flex-shrink-0">
                   {outroPerfil.avatar_emoji || '🌸'}
@@ -506,6 +520,9 @@ function ChatView({ userId, conversaId }) {
                 <p className="text-sm font-semibold text-gray-800 truncate" style={{ fontFamily: 'var(--font-titulos)' }}>
                   {outroPerfil.display_name}
                 </p>
+                {ghostTyping && (
+                  <p className="text-xs text-purple-400 animate-pulse">a escrever...</p>
+                )}
               </div>
             </div>
           )}
@@ -577,6 +594,17 @@ function ChatView({ userId, conversaId }) {
               </React.Fragment>
             )
           })}
+
+          {/* Typing indicator */}
+          {ghostTyping && (
+            <div className="flex justify-start">
+              <div className="bg-gray-100 rounded-2xl rounded-bl-md px-4 py-3 flex items-center gap-1.5">
+                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+            </div>
+          )}
 
           <div ref={messagesEndRef} />
         </div>
@@ -676,7 +704,7 @@ export default function Mensagens() {
     setLoading(false)
   }
 
-  const handleAbrirConversa = (id, isGhost) => {
+  const handleAbrirConversa = (id) => {
     navigate(`/comunidade/mensagens/${id}`)
   }
 
@@ -709,7 +737,6 @@ export default function Mensagens() {
     )
   }
 
-  // Se tem conversaId no URL, mostra o chat; senao, mostra a lista
   if (conversaId) {
     return <ChatView userId={userId} conversaId={conversaId} />
   }

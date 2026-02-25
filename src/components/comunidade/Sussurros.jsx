@@ -12,10 +12,13 @@ import {
 import { useI18n } from '../../contexts/I18nContext'
 import {
   isGhostUser,
+  isGhostUUID,
   getGhostProfile,
-  getGhostConversations,
-  getGhostConversationMessages,
-  sendMessageToGhost
+  resolveGhostId,
+  GHOST_UUID_MAP,
+  ensureGhostConversations,
+  sendMessageToGhostSupabase,
+  insertGhostReply
 } from '../../lib/ghost-users'
 
 // ============================================================
@@ -188,6 +191,13 @@ function SussurroView({ userId, conversa, onVoltar }) {
   const [outroPerfil, setOutroPerfil] = useState(null)
   const [texto, setTexto] = useState('')
   const [enviando, setEnviando] = useState(false)
+  const [ghostTyping, setGhostTyping] = useState(false)
+
+  const ghostUUIDs = new Set(Object.values(GHOST_UUID_MAP))
+  const outroId = conversa
+    ? (conversa.user1_id === userId ? conversa.user2_id : conversa.user1_id)
+    : null
+  const isGhostConv = outroId ? (ghostUUIDs.has(outroId) || isGhostUUID(outroId)) : false
 
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
@@ -197,9 +207,9 @@ function SussurroView({ userId, conversa, onVoltar }) {
     if (userId && conversa?.id) carregarSussurros()
   }, [userId, conversa?.id])
 
-  // Real-time: escutar novos sussurros (apenas conversas reais)
+  // Real-time: escutar novos sussurros (TODAS as conversas)
   useEffect(() => {
-    if (!conversa?.id || conversa._ghost) return
+    if (!conversa?.id) return
 
     const channel = supabase
       .channel(`sussurros-${conversa.id}`)
@@ -230,7 +240,7 @@ function SussurroView({ userId, conversa, onVoltar }) {
   // Auto-scroll quando chegam mensagens
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [mensagens])
+  }, [mensagens, ghostTyping])
 
   const carregarSussurros = async () => {
     setLoading(true)
@@ -242,15 +252,9 @@ function SussurroView({ userId, conversa, onVoltar }) {
         setOutroPerfil(conversa.user1_profile)
       }
 
-      if (conversa._ghost) {
-        // Ghost conversation — mensagens do localStorage
-        const ghostId = conversa.user1_profile?.user_id || conversa.user1_id
-        const msgs = getGhostConversationMessages(userId, ghostId)
-        setMensagens(msgs)
-      } else {
-        const msgs = await getSussurros(conversa.id)
-        setMensagens(msgs)
-      }
+      // Tudo via Supabase — sem branching ghost/real
+      const msgs = await getSussurros(conversa.id)
+      setMensagens(msgs)
     } catch (error) {
       console.error('Erro ao carregar sussurros:', error)
     }
@@ -265,15 +269,31 @@ function SussurroView({ userId, conversa, onVoltar }) {
     setTexto('')
 
     try {
-      if (conversa._ghost) {
-        // Ghost conversation — localStorage + resposta automática
-        const ghostId = conversa.user1_profile?.user_id || conversa.user1_id
-        const { userMsg, ghostReply } = sendMessageToGhost(userId, ghostId, conteudo)
-        setMensagens(prev => [...prev, userMsg])
-        // Simular resposta do ghost após 2s
-        setTimeout(() => {
-          setMensagens(prev => [...prev, ghostReply])
-        }, 2000)
+      if (isGhostConv && outroId) {
+        // Ghost: enviar + resposta contextual via Supabase
+        const result = await sendMessageToGhostSupabase(
+          conversa.id, userId, outroId, conteudo
+        )
+        if (result.userMsg) {
+          setMensagens(prev => {
+            const jaExiste = prev.some(m => m.id === result.userMsg.id)
+            if (jaExiste) return prev
+            return [...prev, result.userMsg]
+          })
+        }
+        // Ghost responde? (pode estar "ocupada" ou ter atingido limite)
+        if (result.shouldReply && result.ghostReplyText) {
+          setGhostTyping(true)
+          setTimeout(async () => {
+            try {
+              await insertGhostReply(conversa.id, result.ghostUUID, result.ghostReplyText)
+            } catch (err) {
+              console.error('Erro ghost reply:', err)
+            }
+            setGhostTyping(false)
+          }, result.delay || 3000)
+        }
+        // Se não responde, fica em silêncio (natural)
       } else {
         const novoSussurro = await enviarSussurro(conversa.id, userId, conteudo)
         if (novoSussurro) {
@@ -341,9 +361,14 @@ function SussurroView({ userId, conversa, onVoltar }) {
                   {outroPerfil.avatar_emoji || '🌸'}
                 </div>
               )}
-              <p className="text-sm font-semibold text-gray-800 truncate" style={{ fontFamily: 'var(--font-titulos)' }}>
-                {outroPerfil.display_name}
-              </p>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-gray-800 truncate" style={{ fontFamily: 'var(--font-titulos)' }}>
+                  {outroPerfil.display_name}
+                </p>
+                {ghostTyping && (
+                  <p className="text-xs text-purple-400 animate-pulse">a escrever...</p>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -403,6 +428,17 @@ function SussurroView({ userId, conversa, onVoltar }) {
               </React.Fragment>
             )
           })}
+
+          {/* Typing indicator */}
+          {ghostTyping && (
+            <div className="flex justify-start">
+              <div className="bg-gray-100 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-1.5">
+                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+            </div>
+          )}
 
           <div ref={messagesEndRef} />
         </div>
@@ -502,32 +538,38 @@ export default function Sussurros() {
 
       setUserId(userData.id)
 
-      // Carregar conversas reais + ghost
+      // Garantir conversas ghost no Supabase + carregar todas
+      await ensureGhostConversations(userData.id)
       const conversasData = await getConversasSussurros(userData.id)
-      const ghostConvs = getGhostConversations(userData.id)
-      const merged = [...conversasData, ...ghostConvs]
-        .sort((a, b) => new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0))
-      setConversas(merged)
+      const sorted = conversasData.sort((a, b) => new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0))
+      setConversas(sorted)
 
       // Verificar se ha param `para` para abrir conversa directamente
       const paraUserId = searchParams.get('para')
-      if (paraUserId && paraUserId !== userData.id && isGhostUser(paraUserId)) {
-        // Ghost conversation — abrir directamente
-        const ghostPerfil = getGhostProfile(paraUserId)
-        const ghostConv = {
-          id: `ghost_conv_${paraUserId}`,
-          user1_id: paraUserId,
-          user2_id: userData.id,
-          _ghost: true,
-          user1_profile: {
-            user_id: paraUserId,
-            display_name: ghostPerfil?.display_name || 'Utilizadora',
-            avatar_emoji: ghostPerfil?.avatar_emoji || '🌸',
-            avatar_url: null,
-          },
-          user2_profile: null,
+      if (paraUserId && paraUserId !== userData.id && (isGhostUser(paraUserId) || isGhostUUID(paraUserId))) {
+        // Ghost — resolver UUID e abrir via Supabase
+        const ghostUUID = resolveGhostId(paraUserId)
+        try {
+          const conversa = await getOuCriarSussurro(userData.id, ghostUUID)
+          if (conversa) {
+            const { data: conversaCompleta } = await supabase
+              .from('community_conversations')
+              .select(`
+                *,
+                user1_profile:community_profiles!community_conversations_user1_id_fkey (
+                  user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais
+                ),
+                user2_profile:community_profiles!community_conversations_user2_id_fkey (
+                  user_id, display_name, avatar_emoji, avatar_url, avatar_color, iniciais
+                )
+              `)
+              .eq('id', conversa.id)
+              .single()
+            if (conversaCompleta) setConversaAberta(conversaCompleta)
+          }
+        } catch (err) {
+          console.error('Erro ao abrir conversa ghost:', err)
         }
-        setConversaAberta(ghostConv)
       } else if (paraUserId && paraUserId !== userData.id) {
         try {
           const conversa = await getOuCriarSussurro(userData.id, paraUserId)
@@ -571,14 +613,11 @@ export default function Sussurros() {
 
   const handleVoltarParaLista = async () => {
     setConversaAberta(null)
-    // Recarregar conversas para actualizar ultima mensagem
     if (userId) {
       try {
         const conversasData = await getConversasSussurros(userId)
-        const ghostConvs = getGhostConversations(userId)
-        const merged = [...conversasData, ...ghostConvs]
-          .sort((a, b) => new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0))
-        setConversas(merged)
+        const sorted = conversasData.sort((a, b) => new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0))
+        setConversas(sorted)
       } catch (error) {
         console.error('Erro ao recarregar conversas:', error)
       }
