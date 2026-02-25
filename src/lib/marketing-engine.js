@@ -2348,8 +2348,8 @@ export function getSetupWhatsAppBusiness() {
 }
 
 // ============================================================
-// CONTEÚDO MULTI-ECO - Todos os 7 Ecos
-// Hooks, carrosséis, captions IG, mensagens WA, scripts TikTok
+// CONTEÚDO MULTI-ECO — Todos os 7 Ecos + Lumina
+// Hooks, carrosséis, posts IG, mensagens WA, scripts TikTok
 // ============================================================
 
 const ECO_CONTEUDO = {
@@ -2357,70 +2357,53 @@ const ECO_CONTEUDO = {
     nome: 'ÁUREA',
     subtitulo: 'Programa de Autovalor',
     emoji: '✨',
+    moeda: 'Jóias de Ouro',
     cor: '#C9A227',
     link: '/aurea',
+    linkPagamento: '/aurea/pagamento',
     preco: '975 MT/mês',
     hooks: [
       'O teu valor não cabe numa calça tamanho S.',
-      'Gastas dinheiro em tudo menos em ti. Porquê?',
-      'Quando foi a última vez que te olhaste ao espelho e disseste algo gentil?',
-      'A roupa que vestes diz mais sobre como te sentes do que sobre o teu estilo.',
-      'Se te pedissem para listar 5 qualidades tuas, conseguias sem hesitar?',
+      'Gastas horas a escolher roupa e 0 minutos a cuidar de como te vês ao espelho.',
+      'Se precisas de validação externa para te sentires suficiente, este post é para ti.',
+      'Quando foi a última vez que te olhaste ao espelho sem te criticares?',
+      'Compras coisas para preencher um vazio que só o autovalor resolve.',
     ],
-    carrosseis: [
-      {
-        id: 'aurea-espelho',
-        titulo: '5 Sinais de que o teu Autovalor precisa de atenção',
-        slides: [
-          { titulo: '5 sinais de autovalor em baixo', texto: 'Reconheces algum?' },
-          { titulo: '1. Dizes "desculpa" por tudo', texto: 'Pedes desculpa por existir, por ocupar espaço, por ter opinião.' },
-          { titulo: '2. Não consegues aceitar elogios', texto: 'Quando te dizem algo bom, a tua reacção é minimizar.' },
-          { titulo: '3. Cuidas de todos menos de ti', texto: 'Dás tudo à família e não guardas nada para ti.' },
-          { titulo: '4. A roupa esconde mais do que protege', texto: 'Vestes para desaparecer. Não para te expressar.' },
-          { titulo: 'O ÁUREA reconstrói a tua relação contigo.', texto: 'Desde 975 MT/mês · app.seteecos.com/aurea' },
-        ],
-        caption: '5 sinais de que o teu autovalor precisa de atenção. Reconheces algum? 🤍\n\nDesliza para ver os sinais — e descobre o que podes fazer.\n\n#seteecos #aurea #autovalor #autoestima #bemestar #mulherreal',
-      },
-      {
-        id: 'aurea-praticas',
-        titulo: '4 Micro-Práticas de Autovalor',
-        slides: [
-          { titulo: '4 práticas que cabem no teu dia', texto: '5 minutos. Todos os dias. Muda tudo.' },
-          { titulo: '1. Espelho consciente', texto: 'Olha para ti 30 segundos sem julgamento. Só observação.' },
-          { titulo: '2. Quota de prazer', texto: 'Uma coisa por dia SÓ para ti. Sem culpa.' },
-          { titulo: '3. Diário de valor', texto: 'Escreve 3 coisas que fizeste bem hoje.' },
-          { titulo: 'ÁUREA: 100+ práticas como estas.', texto: 'app.seteecos.com/aurea' },
-        ],
-        caption: '4 micro-práticas para reconectar com o teu valor. Leva 5 minutos. 🤍\n\n#seteecos #aurea #autocuidado #micropraticas #autovalor #bemestar',
-      },
-    ],
-    postsIG: [
+    conteudoIG: [
       {
         tipo: 'dica',
-        texto: 'O teu valor não cabe numa calça tamanho S.',
-        caption: 'Foste ensinada que só mereces respeito se fores magra. Que só és bonita se a roupa for pequena. Isso é mentira.\n\nO teu corpo não é um projecto. É a tua casa.\n\nO ÁUREA ensina-te a morar bem em ti mesma. 🤍\n\n#seteecos #aurea #autovalor #corpopositivo #bemestar',
+        texto: 'O teu valor não depende do que vestes, pesas ou aparentas.',
+        caption: 'O teu valor não depende do que vestes, pesas ou aparentas. 🤍\n\nO ÁUREA é um programa de 7 semanas para reconstruir a relação contigo.\n\nPorque antes de mudar o corpo, precisas de mudar o olhar.\n\n#seteecos #aurea #autovalor #autoestima #bemestar #transformacaopessoal',
+      },
+      {
+        tipo: 'carrossel',
+        titulo: '5 sinais de que o teu autovalor precisa de atenção',
+        slides: [
+          { titulo: '5 sinais de baixo autovalor', texto: 'Quantos reconheces em ti?' },
+          { titulo: '1. Dizes sim quando queres dizer não', texto: 'O medo de rejeição controla as tuas decisões.' },
+          { titulo: '2. Comparas-te constantemente', texto: 'O feed dos outros parece perfeito. O teu parece insuficiente.' },
+          { titulo: '3. Compras para te sentires melhor', texto: 'Roupa nova, maquilhagem, sapatos. O vazio volta no dia seguinte.' },
+          { titulo: '4. Precisas de validação para decidir', texto: '"Achas que me fica bem?" — A pergunta que escondes todos os dias.' },
+          { titulo: 'O ÁUREA ajuda-te a mudar isto.', texto: '7 semanas. 100+ micro-práticas. Desde 975 MT.\napp.seteecos.com/aurea' },
+        ],
+        caption: '5 sinais de que o teu autovalor precisa de atenção ✨\n\nReconheces algum? Desliza.\n\nSalva e partilha com quem precisa.\n\n#seteecos #aurea #autovalor #autoestima #mulherreal #empoderamento',
       },
       {
         tipo: 'testemunho',
-        texto: 'Pela primeira vez olhei-me ao espelho e não quis mudar nada.',
-        subtitulo: '- Cliente ÁUREA',
-        caption: 'Isto é o que acontece quando paras de te julgar e começas a observar. 🤍\n\n#seteecos #aurea #transformacao #autovalor',
-      },
-      {
-        tipo: 'cta',
-        texto: 'O teu corpo é a tua casa. Para de arranjá-lo. Começa a habitá-lo.',
-        caption: 'O ÁUREA é um programa de 7 semanas para reconstruir a relação contigo mesma.\n\nDesde 975 MT/mês. Link na bio.\n\n#seteecos #aurea #autovalor #bemestar',
+        texto: 'Pela primeira vez em anos, olhei para o espelho e não me critiquei.',
+        subtitulo: '- Participante ÁUREA',
+        caption: '"Pela primeira vez em anos, olhei para o espelho e não me critiquei."\n\nIsto é possível. 7 semanas. Uma prática por dia.\n\nO ÁUREA não muda o teu corpo. Muda o teu olhar.\n\n#seteecos #aurea #transformacao #autoestima #bemestar',
       },
     ],
     mensagensWA: [
-      `✨ *ÁUREA - Programa de Autovalor*\n\nQuando foi a última vez que fizeste algo SÓ para ti?\n\nO ÁUREA tem 100+ micro-práticas para reconectares com o teu valor:\n\n🪞 Espelho consciente\n💰 Quota de prazer\n👗 Roupa como expressão\n📖 Diário de valor\n\nDesde 975 MT/mês.\n\n👉 `,
-      `🤍 *O teu valor não depende do que vestes, pesas ou aparentas.*\n\nO ÁUREA é um programa de 7 semanas para reconstruir a relação contigo mesma.\n\n21 badges. 4 níveis. 100+ práticas.\n\n👉 `,
+      `✨ *ÁUREA — Programa de Autovalor*\n\nSabes aquela sensação de nunca seres suficiente?\n\nO ÁUREA é um programa de 7 semanas com 100+ micro-práticas para reconstruir a tua relação contigo.\n\n• Dinheiro: como gastas reflecte como te valorizas\n• Tempo: a quem dás e de quem recebes\n• Roupa: o espelho como aliado, não inimigo\n• Prazer: reconectar com o que te faz sentir viva\n\nDesde 975 MT/mês. 7 dias de garantia.\n\n👉 `,
+      `🤍 *Quando foi a última vez que fizeste algo SÓ para ti?*\n\nSem culpa. Sem justificação.\n\nO ÁUREA ensina-te a colocar-te em primeiro lugar — não por egoísmo, mas por sobrevivência emocional.\n\n7 semanas. Uma prática por dia. A mudança começa no olhar.\n\n👉 `,
     ],
-    tiktok: {
-      titulo: 'POV: Descobres que o teu valor não depende do espelho',
-      roteiro: 'HOOK (0-3s): "O teu valor não cabe numa calça tamanho S."\nCENA: Espelho → fechar os olhos → abrir com expressão diferente\nTEXTO: "ÁUREA — Programa de Autovalor"\nCTA: "Link na bio 🤍"',
-      duracao: '15-20s',
-      musica: 'Lo-fi suave ou piano instrumental',
+    scriptTikTok: {
+      titulo: 'POV: Descobres que o teu valor não depende de ninguém',
+      duracao: '15-30s',
+      roteiro: `*CENA 1 (0-5s)* — HOOK\nTexto: "Quando foi a última vez que te olhaste ao espelho sem te criticares?"\n\n*CENA 2 (5-15s)* — DOR\nTexto: "Passas a vida a dar. Aos filhos. Ao trabalho. A toda a gente. E a ti?"\n\n*CENA 3 (15-25s)* — SOLUÇÃO\nTexto: "O ÁUREA: 7 semanas para reconstruir a relação contigo. 100+ micro-práticas."\n\n*CENA 4 (25-30s)* — CTA\nTexto: "Link na bio. Começa hoje. ✨"`,
+      caption: 'Quando foi a última vez que te olhaste ao espelho e sorriste? ✨\n\n#seteecos #aurea #autovalor #autoestima #selflove #tiktok #fyp',
     },
   },
 
@@ -2428,69 +2411,53 @@ const ECO_CONTEUDO = {
     nome: 'SERENA',
     subtitulo: 'Emoção & Fluidez',
     emoji: '💧',
+    moeda: 'Gotas',
     cor: '#6B8E9B',
     link: '/serena',
+    linkPagamento: '/serena/pagamento',
     preco: '750 MT/mês',
     hooks: [
-      'Sentes tudo ou não sentes nada. Não há meio-termo.',
-      'A última vez que choraste sem motivo, era o corpo a falar.',
-      'Não é "ser sensível demais". É não saber o que fazer com o que sentes.',
-      'Reprimes tanto que quando explodes, achas que o problema és tu.',
-      'A ansiedade não é o teu inimigo. É o teu corpo a pedir atenção.',
+      'Sentes tudo com intensidade e depois culpas-te por ser "demasiado".',
+      'A ansiedade não é fraqueza. É o teu corpo a pedir atenção.',
+      'Quantas vezes disseste "estou bem" quando não estavas?',
+      'Se choras sem razão aparente, há uma razão. Só não a vês ainda.',
+      'Reprimir emoções não é força. É uma bomba-relógio.',
     ],
-    carrosseis: [
-      {
-        id: 'serena-emocoes',
-        titulo: 'A Roda das 16 Emoções',
-        slides: [
-          { titulo: 'Sabes MESMO o que estás a sentir?', texto: 'A maioria diz "estou bem" ou "estou mal". Há 16 emoções entre esses dois extremos.' },
-          { titulo: 'Zona Vermelha', texto: 'Raiva · Frustração · Irritação · Ansiedade — o corpo em modo de ataque.' },
-          { titulo: 'Zona Azul', texto: 'Tristeza · Solidão · Vazio · Apatia — o corpo em modo de recolha.' },
-          { titulo: 'Zona Verde', texto: 'Calma · Gratidão · Serenidade · Conexão — o corpo em equilíbrio.' },
-          { titulo: 'SERENA: aprende a navegar as tuas emoções.', texto: 'Desde 750 MT/mês · app.seteecos.com/serena' },
-        ],
-        caption: 'Sabes MESMO o que estás a sentir? Ou dizes sempre "estou bem"? 💧\n\nDesliza para conhecer a roda das 16 emoções.\n\n#seteecos #serena #emocoes #saudeemocional #autoconhecimento #bemestar',
-      },
-      {
-        id: 'serena-respiracao',
-        titulo: '3 Técnicas de Respiração para Acalmar',
-        slides: [
-          { titulo: 'Ansiedade? Respira antes de reagir.', texto: '3 técnicas que funcionam em menos de 2 minutos.' },
-          { titulo: '4-7-8', texto: 'Inspira 4s → Segura 7s → Expira 8s. Repete 3x. Acalma o sistema nervoso.' },
-          { titulo: 'Respiração Box', texto: '4s inspira → 4s segura → 4s expira → 4s segura. Clareza mental.' },
-          { titulo: 'Suspiro Fisiológico', texto: '2 inspirações curtas pelo nariz + 1 expiração longa pela boca. Alívio imediato.' },
-          { titulo: 'SERENA tem 6 técnicas guiadas.', texto: 'app.seteecos.com/serena' },
-        ],
-        caption: 'Ansiedade não se resolve com "calma". Resolve-se com técnica. 💧\n\n3 respirações que funcionam em 2 minutos.\n\n#seteecos #serena #respiracao #ansiedade #calma #saudemental',
-      },
-    ],
-    postsIG: [
+    conteudoIG: [
       {
         tipo: 'dica',
-        texto: 'Sentes tudo ou não sentes nada. Não há meio-termo.',
-        caption: 'Se te identificas, não estás só. O problema não é sentir demais. É não ter ferramentas para navegar o que sentes.\n\nO SERENA ensina-te. 💧\n\n#seteecos #serena #emocoes #saudeemocional',
+        texto: 'A ansiedade não é fraqueza. É o teu corpo a pedir atenção.',
+        caption: 'A ansiedade não é fraqueza. É o teu corpo a pedir atenção. 💧\n\nO SERENA tem 16 emoções mapeadas, 6 técnicas de respiração e um diário emocional que te ajuda a entender padrões.\n\nPara de fugir do que sentes. Começa a fluir.\n\n#seteecos #serena #saudeemocional #ansiedade #respiracao #bemestar',
       },
       {
-        tipo: 'stats',
-        texto: '80%',
-        subtitulo: 'dos problemas com comida são emocionais',
-        caption: 'Antes de mudar o que COMES, precisas de entender o que SENTES.\n\nO SERENA é o primeiro passo. 💧\n\n#seteecos #serena #saudeemocional #bemestar',
+        tipo: 'carrossel',
+        titulo: '4 técnicas de respiração para ansiedade',
+        slides: [
+          { titulo: '4 respirações que acalmam em minutos', texto: 'Guarda este post. Vais precisar.' },
+          { titulo: '1. Respiração 4-7-8', texto: 'Inspira 4s → Segura 7s → Expira 8s. Repete 4x. Acalma o sistema nervoso em 2 minutos.' },
+          { titulo: '2. Respiração Box (Quadrada)', texto: 'Inspira 4s → Segura 4s → Expira 4s → Segura 4s. Usada por militares para controlo.' },
+          { titulo: '3. Respiração Oceânica', texto: 'Inspira pelo nariz → Expira pela boca como se soprasses uma vela ao longe. Suave e profunda.' },
+          { titulo: '4. Suspiro Fisiológico', texto: 'Duas inspirações curtas pelo nariz + uma expiração longa pela boca. A forma mais rápida de acalmar.' },
+          { titulo: 'Pratica no SERENA com guia áudio.', texto: 'app.seteecos.com/serena\nDesde 750 MT/mês' },
+        ],
+        caption: '4 respirações que te acalmam em minutos 💧\n\nGuarda este post. Vai ser útil.\n\nQual vais experimentar primeiro?\n\n#seteecos #serena #respiracao #ansiedade #calma #saudeemocional #bemestar',
       },
       {
-        tipo: 'cta',
-        texto: 'Não é "ser sensível demais". É não ter ferramentas.',
-        caption: 'O SERENA dá-te as ferramentas. 16 emoções mapeadas. 6 técnicas de respiração. Diário emocional.\n\nDesde 750 MT/mês. Link na bio. 💧\n\n#seteecos #serena #bemestar #emocoes',
+        tipo: 'testemunho',
+        texto: 'Aprendi que sentir não é fraqueza. É informação.',
+        subtitulo: '- Participante SERENA',
+        caption: '"Aprendi que sentir não é fraqueza. É informação."\n\nO SERENA ensina-te a ouvir as tuas emoções em vez de as calar.\n\n16 emoções mapeadas. Diário emocional. Técnicas de respiração. Rituais de libertação.\n\n#seteecos #serena #emocoes #saudeemocional #transformacao',
       },
     ],
     mensagensWA: [
-      `💧 *SERENA - Emoção & Fluidez*\n\nQuando foi a última vez que alguém te perguntou "como te sentes?" a sério?\n\nO SERENA ensina-te a navegar as emoções:\n\n🎯 Roda de 16 emoções\n🫁 6 técnicas de respiração\n📖 Diário emocional\n🌊 Rituais de libertação\n🆘 SOS emocional\n\nDesde 750 MT/mês.\n\n👉 `,
-      `🤍 *80% dos problemas com comida são emocionais.*\n\nAntes de mudar o que comes, entende o que sentes.\n\nO SERENA é o módulo de emoção e fluidez do Sete Ecos.\n\n👉 `,
+      `💧 *SERENA — Emoção & Fluidez*\n\nSentes tudo com intensidade? Depois culpas-te por ser "demais"?\n\nO SERENA ajuda-te a:\n\n🎯 Mapear 16 emoções diferentes\n🌊 6 técnicas de respiração guiadas\n📖 Diário emocional com padrões\n🔥 Rituais de libertação\n💆 Integração com o ciclo menstrual\n\nPara de reprimir. Começa a fluir.\n\nDesde 750 MT/mês.\n\n👉 `,
+      `🤍 *Quantas vezes disseste "estou bem" quando não estavas?*\n\nO SERENA é o único espaço onde as tuas emoções são bem-vindas. Todas.\n\nSem julgamento. Sem "tens de ser forte". Só observação e fluidez.\n\n👉 `,
     ],
-    tiktok: {
-      titulo: 'POV: Aprendes a respirar quando a ansiedade aperta',
-      roteiro: 'HOOK (0-3s): "Sentes tudo ou não sentes nada?"\nCENA: Demonstrar técnica 4-7-8 com cronómetro visual\nTEXTO: "SERENA — 6 técnicas de respiração guiadas"\nCTA: "Experimenta agora. Link na bio 💧"',
-      duracao: '15-25s',
-      musica: 'Ambiente calmo / sons de água',
+    scriptTikTok: {
+      titulo: 'POV: Aprendes a sentir sem culpa',
+      duracao: '15-30s',
+      roteiro: `*CENA 1 (0-5s)* — HOOK\nTexto: "Quantas vezes disseste 'estou bem' quando não estavas?"\n\n*CENA 2 (5-15s)* — DOR\nTexto: "Reprimir emoções não é força. É uma bomba-relógio."\n\n*CENA 3 (15-25s)* — SOLUÇÃO\nTexto: "SERENA: 16 emoções mapeadas. Respiração guiada. Diário emocional."\n\n*CENA 4 (25-30s)* — CTA\nTexto: "Link na bio. Começa a fluir. 💧"`,
+      caption: 'Reprimir emoções não é força. É uma bomba-relógio. 💧\n\n#seteecos #serena #emocoes #ansiedade #saudeemocional #tiktok #fyp',
     },
   },
 
@@ -2498,63 +2465,53 @@ const ECO_CONTEUDO = {
     nome: 'IGNIS',
     subtitulo: 'Vontade & Foco',
     emoji: '🔥',
+    moeda: 'Chamas',
     cor: '#C1634A',
     link: '/ignis',
+    linkPagamento: '/ignis/pagamento',
     preco: '750 MT/mês',
     hooks: [
-      'Procrastinas porque tens medo de falhar, não porque és preguiçosa/o.',
-      'Quantas vezes disseste "vou começar amanhã" esta semana?',
-      'Foco não é talento. É músculo. E podes treiná-lo.',
-      'Dispersão crónica não é falta de disciplina. É excesso de opções.',
-      'Se não escolhes, a vida escolhe por ti. E raramente escolhe bem.',
+      'Tens 47 separadores abertos e nenhum projecto acabado.',
+      'A procrastinação não é preguiça. É medo disfarçado.',
+      'Se esperas pela motivação para agir, vais esperar para sempre.',
+      'Dizes que não tens tempo. Tens. Não tens foco.',
+      'A disciplina não vem de gritar contigo. Vem de te conheceres.',
     ],
-    carrosseis: [
-      {
-        id: 'ignis-foco',
-        titulo: '4 Tipos de Distracção que Te Roubam o Dia',
-        slides: [
-          { titulo: 'Onde se foi o teu dia?', texto: '4 tipos de distracção que reconheces.' },
-          { titulo: '1. Scroll infinito', texto: 'Abres o telemóvel para ver a hora. 45 minutos depois estás no TikTok.' },
-          { titulo: '2. Multi-tarefa falsa', texto: 'Fazes 5 coisas ao mesmo tempo. Nenhuma bem.' },
-          { titulo: '3. Procrastinação produtiva', texto: 'Limpas a casa inteira para não fazer o que realmente importa.' },
-          { titulo: 'IGNIS: treina o teu foco.', texto: 'Desde 750 MT/mês · app.seteecos.com/ignis' },
-        ],
-        caption: 'Onde se foi o teu dia? 🔥\n\nDesliza para identificar os 4 ladrões de foco.\n\n#seteecos #ignis #foco #produtividade #disciplina #bemestar',
-      },
-      {
-        id: 'ignis-desafios',
-        titulo: 'Desafio IGNIS: 7 Dias de Foco',
-        slides: [
-          { titulo: '7 dias. 1 acção por dia. Foco real.', texto: 'Aceitas o desafio?' },
-          { titulo: 'Dia 1: Elimina uma distracção', texto: 'Escolhe UMA coisa que te rouba tempo. Elimina-a por 24h.' },
-          { titulo: 'Dia 3: Sessão de foco de 25 min', texto: 'Timer. Uma tarefa. Zero interrupções.' },
-          { titulo: 'Dia 7: Reflecte', texto: 'O que mudou? O que descobriste sobre ti?' },
-          { titulo: 'IGNIS tem 16 desafios de fogo.', texto: 'app.seteecos.com/ignis' },
-        ],
-        caption: '7 dias de foco real. Aceitas? 🔥\n\n#seteecos #ignis #desafio #foco #disciplina #vontade',
-      },
-    ],
-    postsIG: [
+    conteudoIG: [
       {
         tipo: 'dica',
-        texto: 'Procrastinas porque tens medo de falhar, não porque és preguiçosa/o.',
-        caption: 'Lê outra vez. Devagar.\n\nA procrastinação é medo disfarçado de preguiça. O IGNIS ajuda-te a ver isso. 🔥\n\n#seteecos #ignis #procrastinacao #foco #coragem',
+        texto: 'A procrastinação não é preguiça. É medo disfarçado.',
+        caption: 'A procrastinação não é preguiça. É medo disfarçado. 🔥\n\nMedo de falhar. Medo de não ser suficiente. Medo de começar.\n\nO IGNIS ajuda-te a identificar os teus padrões de dispersão e a transformar vontade em acção.\n\n16 desafios de fogo. Sessões de foco. Detector de distracções.\n\n#seteecos #ignis #foco #produtividade #disciplina #motivacao #bemestar',
       },
       {
-        tipo: 'cta',
-        texto: 'Foco não é talento. É músculo. E podes treiná-lo.',
-        caption: 'O IGNIS tem 16 desafios de fogo, sessões de foco, detector de dispersão e diário de conquistas.\n\nDesde 750 MT/mês. Link na bio. 🔥\n\n#seteecos #ignis #foco #vontade',
+        tipo: 'carrossel',
+        titulo: '4 tipos de procrastinação (e como vencer cada um)',
+        slides: [
+          { titulo: 'Porque procrastinas?', texto: 'Não é preguiça. É um padrão. Descobre o teu.' },
+          { titulo: '1. Procrastinação por medo', texto: '"E se não for suficiente?" — O perfeccionismo paralisa. A acção imperfeita é melhor que a inacção perfeita.' },
+          { titulo: '2. Procrastinação por sobrecarga', texto: '"Tenho tanto para fazer..." — O cérebro bloqueia. Começa por UMA coisa. Só uma.' },
+          { titulo: '3. Procrastinação por recompensa', texto: '"Amanhã faço" — O cérebro prefere o prazer imediato. Precisa de micro-recompensas.' },
+          { titulo: '4. Procrastinação por valores', texto: '"Não me apetece" — Talvez o que adias não esteja alinhado com o que realmente importa.' },
+          { titulo: 'O IGNIS treina a tua vontade.', texto: '16 desafios. Sessões de foco. Bússola de valores.\napp.seteecos.com/ignis' },
+        ],
+        caption: 'Porque procrastinas? Não é o que pensas. 🔥\n\nDesliza para descobrir o teu padrão.\n\n#seteecos #ignis #procrastinacao #foco #produtividade #mindset #bemestar',
+      },
+      {
+        tipo: 'testemunho',
+        texto: 'Finalmente percebi que não me faltava disciplina. Faltava-me direcção.',
+        subtitulo: '- Participante IGNIS',
+        caption: '"Não me faltava disciplina. Faltava-me direcção."\n\nO IGNIS não te obriga a ser produtivo. Ajuda-te a perceber O QUE realmente importa.\n\n#seteecos #ignis #foco #proposito #transformacao #bemestar',
       },
     ],
     mensagensWA: [
-      `🔥 *IGNIS - Vontade & Foco*\n\nQuantas vezes disseste "vou começar amanhã" esta semana?\n\nO IGNIS treina o teu foco:\n\n🎯 16 desafios de fogo\n⏱ Sessões de foco cronometradas\n📊 Detector de dispersão\n📖 Diário de conquistas\n🧭 Bússola de valores\n\nDesde 750 MT/mês.\n\n👉 `,
-      `🤍 *Foco não é talento. É músculo.*\n\nE como qualquer músculo, podes treiná-lo.\n\nO IGNIS é o módulo de vontade e foco do Sete Ecos.\n\n👉 `,
+      `🔥 *IGNIS — Vontade & Foco*\n\nTens projectos que nunca acabas? Ideias que morrem no "amanhã começo"?\n\nO IGNIS treina a tua vontade:\n\n🎯 16 desafios de fogo (coragem, corte, alinhamento, iniciativa)\n⏱ Sessões de foco cronometradas\n🔍 Detector de distracções\n🧭 Bússola de valores\n📋 Plano de acção concreto\n\nDesde 750 MT/mês.\n\n👉 `,
+      `🤍 *Dizes que não tens tempo. Mas tens — não tens foco.*\n\nO IGNIS ajuda-te a separar o urgente do importante. A dizer não ao que não serve. A transformar vontade em acção.\n\n👉 `,
     ],
-    tiktok: {
-      titulo: 'POV: Descobres que procrastinar é medo, não preguiça',
-      roteiro: 'HOOK (0-3s): "Procrastinas? Não é preguiça. É medo."\nCENA: Timer de 25 min a começar → foco → satisfação\nTEXTO: "IGNIS — Treina o teu foco"\nCTA: "16 desafios de fogo. Link na bio 🔥"',
-      duracao: '15-20s',
-      musica: 'Batida motivacional / lo-fi energético',
+    scriptTikTok: {
+      titulo: 'POV: Descobres que não te falta disciplina, falta-te foco',
+      duracao: '15-30s',
+      roteiro: `*CENA 1 (0-5s)* — HOOK\nTexto: "47 separadores abertos. 0 projectos acabados."\n\n*CENA 2 (5-15s)* — DOR\nTexto: "Procrastinação não é preguiça. É medo disfarçado."\n\n*CENA 3 (15-25s)* — SOLUÇÃO\nTexto: "IGNIS: 16 desafios de fogo. Sessões de foco. Detector de distracções."\n\n*CENA 4 (25-30s)* — CTA\nTexto: "Link na bio. Acende o fogo. 🔥"`,
+      caption: '47 separadores. 0 projectos acabados. Conheces? 🔥\n\n#seteecos #ignis #foco #produtividade #procrastinacao #tiktok #fyp',
     },
   },
 
@@ -2562,50 +2519,53 @@ const ECO_CONTEUDO = {
     nome: 'VENTIS',
     subtitulo: 'Energia & Ritmo',
     emoji: '🍃',
+    moeda: 'Folhas',
     cor: '#5D9B84',
     link: '/ventis',
+    linkPagamento: '/ventis/pagamento',
     preco: '750 MT/mês',
     hooks: [
-      'Acordas cansada/o e adormeces ansiosa/o. Quando é que descansas?',
-      'A tua energia tem ritmo. Se o ignoras, o corpo cobra.',
-      'Burnout não é badge de honra. É o corpo a desistir de ti.',
-      'Tens rotina ou tens prisão? Há uma diferença enorme.',
-      'A natureza cura mais do que qualquer suplemento. Sai de casa.',
+      'Acordas cansada e adormeces exausta. Onde foi parar a tua energia?',
+      'Tens uma rotina ou tens um modo de sobrevivência?',
+      'Burnout não é medalha de honra. É o corpo a desistir de ti.',
+      'Se precisas de café para funcionar, não é energia. É dívida.',
+      'O teu corpo tem um ritmo natural. Ignora-lo é o que te cansa.',
     ],
-    carrosseis: [
-      {
-        id: 'ventis-energia',
-        titulo: 'Mapa de Energia: Onde Estás?',
-        slides: [
-          { titulo: 'A tua energia tem padrão. Conheces o teu?', texto: 'Desliza para descobrir.' },
-          { titulo: '🔴 Pico (manhã)', texto: 'Energia alta. Faz o que exige mais foco aqui.' },
-          { titulo: '🟡 Vale (14h-16h)', texto: 'Energia baixa natural. Pausas, não café.' },
-          { titulo: '🟢 Segundo pico (17h-19h)', texto: 'Energia regressa. Movimento, criatividade.' },
-          { titulo: 'VENTIS mapeia o teu ritmo pessoal.', texto: 'Desde 750 MT/mês · app.seteecos.com/ventis' },
-        ],
-        caption: 'A tua energia tem padrão. Se o ignoras, vives em modo sobrevivência. 🍃\n\n#seteecos #ventis #energia #ritmo #burnout #bemestar',
-      },
-    ],
-    postsIG: [
+    conteudoIG: [
       {
         tipo: 'dica',
-        texto: 'Burnout não é badge de honra. É o corpo a desistir de ti.',
-        caption: 'Se estás em modo automático, o VENTIS ajuda-te a parar, mapear e reconstruir o teu ritmo. 🍃\n\n#seteecos #ventis #burnout #energia #bemestar',
+        texto: 'Burnout não é medalha de honra. É o corpo a desistir de ti.',
+        caption: 'Burnout não é medalha de honra. É o corpo a desistir de ti. 🍃\n\nO VENTIS monitoriza a tua energia, constrói rotinas conscientes e detecta sinais de burnout antes que seja tarde.\n\nMovimento. Natureza. Pausas. Ritmo.\n\n#seteecos #ventis #energia #burnout #rotina #bemestar #saudemental',
       },
       {
-        tipo: 'cta',
-        texto: 'A tua energia tem ritmo. Se o ignoras, o corpo cobra.',
-        caption: 'Monitor de energia. Pausas conscientes. Movimentos. Conexão com a natureza. Detector de burnout.\n\nDesde 750 MT/mês. Link na bio. 🍃\n\n#seteecos #ventis #energia #ritmo',
+        tipo: 'carrossel',
+        titulo: '5 sinais de que o teu corpo precisa de pausa',
+        slides: [
+          { titulo: 'O teu corpo está a pedir pausa?', texto: '5 sinais que ignoras todos os dias.' },
+          { titulo: '1. Acordas já cansada', texto: '8 horas de sono e mesmo assim exausta. O corpo está a gritar.' },
+          { titulo: '2. Irritas-te por tudo', texto: 'Não é mau feitio. É esgotamento emocional disfarçado.' },
+          { titulo: '3. Café o dia todo', texto: 'Se precisas de estimulantes para funcionar, estás a pedir emprestado ao futuro.' },
+          { titulo: '4. Zero vontade de socializar', texto: 'Isolamento é o último sinal antes do burnout completo.' },
+          { titulo: 'O VENTIS detecta isto por ti.', texto: 'Monitor de energia. Detector de burnout.\napp.seteecos.com/ventis\nDesde 750 MT/mês' },
+        ],
+        caption: 'O teu corpo está a pedir pausa? 🍃\n\nDesliza. Reconhece. Age.\n\n#seteecos #ventis #burnout #energia #pausa #saudemental #bemestar',
+      },
+      {
+        tipo: 'testemunho',
+        texto: 'Descobri que não precisava de fazer mais. Precisava de parar melhor.',
+        subtitulo: '- Participante VENTIS',
+        caption: '"Não precisava de fazer mais. Precisava de parar melhor."\n\nO VENTIS ensina-te a respeitar o teu ritmo natural.\n\n#seteecos #ventis #energia #ritmo #pausa #transformacao',
       },
     ],
     mensagensWA: [
-      `🍃 *VENTIS - Energia & Ritmo*\n\nAcordas cansada/o? Adormeces ansiosa/o?\n\nO VENTIS ajuda-te a encontrar o teu ritmo:\n\n📊 Monitor de energia\n⏸ 8 tipos de pausa consciente\n🧘 Movimentos (yoga, tai chi, dança)\n🌿 10 actividades de natureza\n🔥 Detector de burnout\n\nDesde 750 MT/mês.\n\n👉 `,
+      `🍃 *VENTIS — Energia & Ritmo*\n\nAcordas cansada? Adormeces exausta? O dia é uma maratona sem fim?\n\nO VENTIS ajuda-te a:\n\n📊 Monitorizar a tua energia real\n🧘 8 tipos de pausas conscientes\n🏃 Movimento: yoga, tai chi, dança\n🌿 10 actividades de conexão com a natureza\n🔥 Detector de burnout\n⚡ Mapeamento de picos e vales\n\nDesde 750 MT/mês.\n\n👉 `,
+      `🤍 *O teu corpo tem um ritmo natural. Ignora-lo é o que te cansa.*\n\nO VENTIS ensina-te a trabalhar COM o teu corpo, não contra ele.\n\nRotinas conscientes. Pausas estratégicas. Energia real.\n\n👉 `,
     ],
-    tiktok: {
-      titulo: 'POV: Descobres que o cansaço não é normal',
-      roteiro: 'HOOK (0-3s): "Acordas cansada/o? O corpo está a falar."\nCENA: Alarme → arrastar-se → descobrir o VENTIS → pausa consciente\nTEXTO: "VENTIS — Encontra o teu ritmo"\nCTA: "Link na bio 🍃"',
-      duracao: '15-20s',
-      musica: 'Sons de natureza / lo-fi calmo',
+    scriptTikTok: {
+      titulo: 'POV: Descobres que não precisas de mais café, precisas de ritmo',
+      duracao: '15-30s',
+      roteiro: `*CENA 1 (0-5s)* — HOOK\nTexto: "Acordas cansada. Adormeces exausta. Onde foi a tua energia?"\n\n*CENA 2 (5-15s)* — DOR\nTexto: "Burnout não é medalha de honra. É o corpo a desistir de ti."\n\n*CENA 3 (15-25s)* — SOLUÇÃO\nTexto: "VENTIS: Monitor de energia. Pausas conscientes. Detector de burnout."\n\n*CENA 4 (25-30s)* — CTA\nTexto: "Link na bio. Encontra o teu ritmo. 🍃"`,
+      caption: 'Burnout não é medalha de honra. 🍃\n\n#seteecos #ventis #energia #burnout #ritmo #tiktok #fyp',
     },
   },
 
@@ -2613,50 +2573,53 @@ const ECO_CONTEUDO = {
     nome: 'ECOA',
     subtitulo: 'Expressão & Voz',
     emoji: '🔊',
+    moeda: 'Ecos',
     cor: '#4A90A4',
     link: '/ecoa',
+    linkPagamento: '/ecoa/pagamento',
     preco: '750 MT/mês',
     hooks: [
       'Quantas vezes engoliste o que querias dizer para não incomodar?',
-      'O teu silêncio protege quem te silenciou.',
-      'Dizer "não" não é ser difícil. É ter limites.',
-      'A voz que mais precisas de ouvir é a tua.',
-      'Se não dizes o que sentes, o corpo fala por ti. E não é gentil.',
+      'O silêncio que te protegeu em criança está a sufocar-te agora.',
+      'Se a tua voz treme quando pedes algo, o problema não é timidez.',
+      'Tens uma opinião sobre tudo mas nunca a dizes em voz alta.',
+      'Ser assertiva não é ser agressiva. É ser honesta.',
     ],
-    carrosseis: [
-      {
-        id: 'ecoa-silencio',
-        titulo: '4 Formas de Silenciamento',
-        slides: [
-          { titulo: 'Foste silenciada/o. Reconheces como?', texto: 'Desliza.' },
-          { titulo: '1. Silenciamento familiar', texto: '"Cala-te." "Crianças não falam." "Não dramatizes."' },
-          { titulo: '2. Silenciamento social', texto: '"Não é o momento." "És muito intensa/o." A sociedade premia quem se cala.' },
-          { titulo: '3. Auto-silenciamento', texto: 'Já nem percebes que te calas. Tornou-se automático.' },
-          { titulo: 'ECOA: recupera a tua voz.', texto: 'Desde 750 MT/mês · app.seteecos.com/ecoa' },
-        ],
-        caption: 'Foste silenciada/o e nem te apercebeste. 🔊\n\nDesliza para reconhecer as formas de silenciamento.\n\n#seteecos #ecoa #voz #expressao #silencio #bemestar',
-      },
-    ],
-    postsIG: [
+    conteudoIG: [
       {
         tipo: 'dica',
-        texto: 'O teu silêncio protege quem te silenciou.',
-        caption: 'Lê outra vez. O ECOA ajuda-te a mapear os teus silenciamentos e a recuperar a tua voz. 🔊\n\n#seteecos #ecoa #voz #limites #expressao',
+        texto: 'O silêncio que te protegeu em criança está a sufocar-te agora.',
+        caption: 'O silêncio que te protegeu em criança está a sufocar-te agora. 🔊\n\nO ECOA é um programa de 8 semanas para recuperar a tua voz.\n\nMapa de silenciamento. Programa Micro-Voz. Cartas não enviadas. Comunicação assertiva.\n\n#seteecos #ecoa #voz #expressao #assertividade #comunicacao #bemestar',
       },
       {
-        tipo: 'cta',
-        texto: 'Dizer "não" não é ser difícil. É ter limites.',
-        caption: 'O ECOA tem: mapa de silenciamentos, programa Micro-Voz de 8 semanas, cartas não enviadas, comunicação assertiva.\n\nDesde 750 MT/mês. Link na bio. 🔊\n\n#seteecos #ecoa #comunicacao #assertividade',
+        tipo: 'carrossel',
+        titulo: '4 formas de silenciamento que não reconheces',
+        slides: [
+          { titulo: 'Estás a silenciar-te?', texto: 'Talvez sem saber. Descobre.' },
+          { titulo: '1. Silêncio por medo', texto: '"Se eu disser, vão ficar chateados." — Priorizas o conforto dos outros acima da tua verdade.' },
+          { titulo: '2. Silêncio por hábito', texto: '"Sempre fui assim." — Cresceste a ouvir que crianças boas não respondem.' },
+          { titulo: '3. Silêncio por vergonha', texto: '"A minha opinião não é importante." — Aprendeste que a tua voz não conta.' },
+          { titulo: '4. Silêncio por exaustão', texto: '"Não vale a pena." — Desististe de ser ouvida. E isso dói.' },
+          { titulo: 'O ECOA devolve-te a voz.', texto: '8 semanas. Programa Micro-Voz.\napp.seteecos.com/ecoa\nDesde 750 MT/mês' },
+        ],
+        caption: 'Estás a silenciar-te sem saber? 🔊\n\nDesliza e descobre.\n\n#seteecos #ecoa #voz #silencio #expressao #assertividade #bemestar',
+      },
+      {
+        tipo: 'testemunho',
+        texto: 'Pela primeira vez disse "não" sem sentir culpa.',
+        subtitulo: '- Participante ECOA',
+        caption: '"Pela primeira vez disse não sem sentir culpa."\n\nIsto é o poder de recuperar a tua voz.\n\nO ECOA. 8 semanas. Um passo de cada vez.\n\n#seteecos #ecoa #assertividade #voz #transformacao',
       },
     ],
     mensagensWA: [
-      `🔊 *ECOA - Expressão & Voz*\n\nQuantas vezes engoliste o que querias dizer?\n\nO ECOA ajuda-te a recuperar a tua voz:\n\n🗺 Mapa de silenciamentos\n🎤 Programa Micro-Voz (8 semanas)\n✉️ Cartas não enviadas\n💬 Comunicação assertiva\n📖 Diário de voz\n\nDesde 750 MT/mês.\n\n👉 `,
+      `🔊 *ECOA — Expressão & Voz*\n\nEngoles o que queres dizer? Dizes sim quando queres dizer não?\n\nO ECOA ajuda-te a:\n\n🗺 Mapear os teus silenciamentos\n🎙 Programa Micro-Voz de 8 semanas\n✉️ Cartas não enviadas (5 categorias)\n💬 Templates de comunicação assertiva\n📖 Diário de voz recuperada\n\nDesde 750 MT/mês.\n\n👉 `,
+      `🤍 *Ser assertiva não é ser agressiva. É ser honesta.*\n\nO ECOA ensina-te 4 padrões de comunicação assertiva:\n• Sentimento • Sanduíche • Disco riscado • Pedido claro\n\nRecupera a tua voz. Uma palavra de cada vez.\n\n👉 `,
     ],
-    tiktok: {
-      titulo: 'POV: "Calar para não incomodar" é silenciamento',
-      roteiro: 'HOOK (0-3s): "Quantas vezes engoliste o que querias dizer?"\nCENA: Boca a abrir → fechar → abrir com voz\nTEXTO: "ECOA — Recupera a tua voz"\nCTA: "8 semanas para falar. Link na bio 🔊"',
-      duracao: '15-20s',
-      musica: 'Piano emocional / spoken word beat',
+    scriptTikTok: {
+      titulo: 'POV: Descobres que calares-te não é ser educada',
+      duracao: '15-30s',
+      roteiro: `*CENA 1 (0-5s)* — HOOK\nTexto: "Quantas vezes engoliste o que querias dizer?"\n\n*CENA 2 (5-15s)* — DOR\nTexto: "O silêncio que te protegeu em criança está a sufocar-te agora."\n\n*CENA 3 (15-25s)* — SOLUÇÃO\nTexto: "ECOA: 8 semanas para recuperar a tua voz. Mapa de silêncio. Comunicação assertiva."\n\n*CENA 4 (25-30s)* — CTA\nTexto: "Link na bio. Faz-te ouvir. 🔊"`,
+      caption: 'Quantas vezes engoliste o que querias dizer? 🔊\n\n#seteecos #ecoa #voz #assertividade #comunicacao #tiktok #fyp',
     },
   },
 
@@ -2664,117 +2627,216 @@ const ECO_CONTEUDO = {
     nome: 'IMAGO',
     subtitulo: 'Identidade Essencial',
     emoji: '⭐',
+    moeda: 'Estrelas',
     cor: '#8B7BA5',
     link: '/imago',
+    linkPagamento: '/imago/pagamento',
     preco: '975 MT/mês',
     hooks: [
-      'Quem és tu quando ninguém está a ver?',
-      'A máscara que usas para o mundo não és tu. Mas já esqueceste a diferença.',
-      'Se te pedissem para te descrever sem falar do trabalho ou da família, conseguias?',
-      'Vives a vida de alguém. Só não sabes de quem.',
-      'Os teus valores guiam as tuas decisões. Se não os conheces, outra pessoa decide por ti.',
+      'Sabes quem és quando ninguém está a ver?',
+      'A máscara que usas para o mundo está a sufocar quem realmente és.',
+      'Tens 30 anos e ainda vives segundo as expectativas dos teus pais.',
+      'Se te pedissem para te descreveres em 3 palavras, conseguias?',
+      'A roupa que vestes conta mais sobre ti do que pensas.',
     ],
-    carrosseis: [
-      {
-        id: 'imago-espelho',
-        titulo: 'O Espelho Triplo',
-        slides: [
-          { titulo: 'Quem és tu? 3 versões.', texto: 'O que mostras ao mundo nem sempre é o que és.' },
-          { titulo: 'Essência', texto: 'Quem realmente és. Sem filtros. Sem performance. A versão crua.' },
-          { titulo: 'Máscara', texto: 'O que mostras ao mundo. O papel que aprendeste a representar.' },
-          { titulo: 'Aspiração', texto: 'Quem queres ser. O potencial que sentes mas ainda não vives.' },
-          { titulo: 'IMAGO: encontra a tua essência.', texto: 'Desde 975 MT/mês · app.seteecos.com/imago' },
-        ],
-        caption: 'Quem és tu? A essência, a máscara, ou a aspiração? ⭐\n\nO IMAGO ajuda-te a descobrir.\n\n#seteecos #imago #identidade #autoconhecimento #essencia #bemestar',
-      },
-    ],
-    postsIG: [
+    conteudoIG: [
       {
         tipo: 'dica',
-        texto: 'Quem és tu quando ninguém está a ver?',
-        caption: 'Não o teu emprego. Não o teu papel na família. TU.\n\nO IMAGO é uma jornada de identidade com espelho triplo, arqueologia pessoal e mais.\n\nDesde 975 MT/mês. ⭐\n\n#seteecos #imago #identidade #essencia',
+        texto: 'Sabes quem és quando ninguém está a ver?',
+        caption: 'Sabes quem és quando ninguém está a ver? ⭐\n\nO IMAGO é uma viagem à tua essência. Espelho triplo. Arqueologia pessoal. 50 valores. Mapa de identidade.\n\nDescobre quem és para além dos papéis que representas.\n\n#seteecos #imago #identidade #autoconhecimento #essencia #bemestar',
       },
       {
-        tipo: 'cta',
-        texto: 'Os teus valores guiam as tuas decisões. Se não os conheces, outra pessoa decide por ti.',
-        caption: 'O IMAGO tem: selecção de 50 valores, mapa de identidade em 7 dimensões, 5 meditações guiadas.\n\nDesde 975 MT/mês. Link na bio. ⭐\n\n#seteecos #imago #valores #identidade',
+        tipo: 'carrossel',
+        titulo: 'O Espelho Triplo: Essência, Máscara, Aspiração',
+        slides: [
+          { titulo: 'Quem és? Quem mostras? Quem queres ser?', texto: 'O Espelho Triplo do IMAGO.' },
+          { titulo: 'Essência', texto: 'Quem és quando ninguém vê. Os teus valores reais. O que te move sem aplausos.' },
+          { titulo: 'Máscara', texto: 'Quem mostras ao mundo. O papel que representas. A armadura que construíste.' },
+          { titulo: 'Aspiração', texto: 'Quem queres ser. A versão que imaginas. O futuro que te chama.' },
+          { titulo: 'Quando os 3 estão alinhados, encontras paz.', texto: 'IMAGO — Identidade Essencial\napp.seteecos.com/imago\nDesde 975 MT/mês' },
+        ],
+        caption: 'Quem és? Quem mostras? Quem queres ser? ⭐\n\nQuando os 3 estão alinhados, encontras paz.\n\nDesliza para entender o Espelho Triplo.\n\n#seteecos #imago #identidade #espelho #autoconhecimento #bemestar',
+      },
+      {
+        tipo: 'testemunho',
+        texto: 'Descobri que estava a viver a vida que os meus pais queriam, não a minha.',
+        subtitulo: '- Participante IMAGO',
+        caption: '"Estava a viver a vida que os meus pais queriam, não a minha."\n\nO IMAGO ajuda-te a separar quem TU és de quem te disseram para ser.\n\n#seteecos #imago #identidade #autoconhecimento #transformacao',
       },
     ],
     mensagensWA: [
-      `⭐ *IMAGO - Identidade Essencial*\n\nQuem és tu quando ninguém está a ver?\n\nO IMAGO é uma jornada profunda de identidade:\n\n🪞 Espelho triplo (essência/máscara/aspiração)\n🏛 Arqueologia pessoal (5 camadas)\n📜 Cerimónia de nomeação\n🧭 50 valores essenciais\n🧘 5 meditações guiadas\n\nDesde 975 MT/mês.\n\n👉 `,
+      `⭐ *IMAGO — Identidade Essencial*\n\nSabes quem és? Ou sabes quem te disseram para ser?\n\nO IMAGO é uma viagem à tua essência:\n\n🪞 Espelho Triplo (essência, máscara, aspiração)\n🏛 Arqueologia pessoal (5 camadas: infância → presente)\n🎯 Selecção de 50 valores fundamentais\n🗺 Mapa de identidade em 7 dimensões\n🧘 5 meditações de essência guiadas\n\nDesde 975 MT/mês.\n\n👉 `,
+      `🤍 *A roupa que vestes conta mais sobre ti do que pensas.*\n\nNo IMAGO, exploramos a roupa como identidade — não como moda, mas como espelho.\n\nQuem és quando escolhes o que vestir? O que escondes? O que mostras?\n\n👉 `,
     ],
-    tiktok: {
-      titulo: 'POV: Percebes que vives a vida de outra pessoa',
-      roteiro: 'HOOK (0-3s): "Quem és tu quando ninguém está a ver?"\nCENA: Espelho → reflexão → 3 versões (essência/máscara/aspiração)\nTEXTO: "IMAGO — Encontra a tua essência"\nCTA: "Espelho triplo. Link na bio ⭐"',
-      duracao: '15-20s',
-      musica: 'Cinematográfico / introspectivo',
+    scriptTikTok: {
+      titulo: 'POV: Percebes que não sabes quem és',
+      duracao: '15-30s',
+      roteiro: `*CENA 1 (0-5s)* — HOOK\nTexto: "Se te pedissem para te descreveres em 3 palavras, conseguias?"\n\n*CENA 2 (5-15s)* — DOR\nTexto: "Vives segundo as expectativas de todos. Menos as tuas."\n\n*CENA 3 (15-25s)* — SOLUÇÃO\nTexto: "IMAGO: Espelho triplo. 50 valores. Mapa de identidade em 7 dimensões."\n\n*CENA 4 (25-30s)* — CTA\nTexto: "Link na bio. Descobre quem és. ⭐"`,
+      caption: 'Sabes quem és quando ninguém está a ver? ⭐\n\n#seteecos #imago #identidade #autoconhecimento #essencia #tiktok #fyp',
     },
+  },
+
+  lumina: {
+    nome: 'LUMINA',
+    subtitulo: 'Diagnóstico Gratuito',
+    emoji: '🔮',
+    moeda: null,
+    cor: '#5C6BC0',
+    link: '/lumina',
+    linkPagamento: null,
+    preco: 'Gratuito',
+    hooks: [
+      '7 perguntas. 23 padrões. O diagnóstico que ninguém te fez.',
+      'Em 2 minutos sabes mais sobre ti do que em 2 anos de terapia.',
+      'O teu corpo está a falar. Tu não estás a ouvir.',
+      'A última vez que alguém te perguntou como te sentes foi quando?',
+      'Não é horóscopo. É ciência emocional em 2 minutos.',
+    ],
+    conteudoIG: [
+      {
+        tipo: 'cta',
+        texto: '7 perguntas. 23 padrões. 2 minutos. Gratuito.',
+        caption: '7 perguntas. 23 padrões possíveis. 2 minutos. Gratuito. 🔮\n\nO LUMINA é o diagnóstico que ninguém te fez. Não mede peso. Mede como TE SENTES.\n\nEnergia. Tensão. Imagem. Clareza. Conexão.\n\nExperimenta: link na bio.\n\n#seteecos #lumina #diagnostico #autoconhecimento #saudeemocional #gratuito #bemestar',
+      },
+    ],
+    mensagensWA: [
+      `🔮 *LUMINA — O diagnóstico que ninguém te fez.*\n\n7 perguntas sobre:\n• Energia\n• Tensão no corpo\n• Imagem no espelho\n• Passado e futuro\n• Clareza mental\n• Conexão\n\n23 leituras possíveis. Resultado personalizado.\n\n100% gratuito. 2 minutos. Sem registo.\n\n👉 `,
+    ],
+    scriptTikTok: {
+      titulo: 'POV: Fazes um diagnóstico e ficas em choque',
+      duracao: '15-30s',
+      roteiro: `*CENA 1 (0-5s)* — HOOK\nTexto: "Fiz um diagnóstico emocional gratuito e..."\n\n*CENA 2 (5-15s)* — REACÇÃO\n[Cara de surpresa ao ver resultado]\nTexto: "7 perguntas. 23 padrões possíveis. E acertou em TUDO."\n\n*CENA 3 (15-25s)* — CTA\nTexto: "LUMINA. Gratuito. 2 minutos. Link na bio."\n\n*CENA 4 (25-30s)*\nTexto: "Experimenta e diz-me nos comentários o que deu 🔮"`,
+      caption: 'Fiz um diagnóstico emocional gratuito e... 🔮\n\n#seteecos #lumina #diagnostico #autoconhecimento #gratuit #tiktok #fyp',
+    },
+  },
+
+  vitalis: {
+    nome: 'VITALIS',
+    subtitulo: 'Inteligência Nutricional & Desportiva',
+    emoji: '🌿',
+    moeda: null,
+    cor: '#7C8B6F',
+    link: '/vitalis',
+    linkPagamento: '/vitalis/pagamento',
+    preco: '2.500 MT/mês',
+    hooks: HOOKS_PROVOCADORES,
+    conteudoIG: [],
+    mensagensWA: [],
+    scriptTikTok: null,
   },
 };
 
-/**
- * Retorna conteúdo multi-eco: hooks, carrosséis, posts IG, mensagens WA, scripts TikTok.
- * @param {string|null} ecoKey - Filtrar por eco ou null para todos
- */
-export function getConteudoMultiEco(ecoKey = null) {
-  const linkBase = BASE_URL;
-
-  if (ecoKey && ECO_CONTEUDO[ecoKey]) {
-    const eco = ECO_CONTEUDO[ecoKey];
-    const link = buildUTMUrl(`${linkBase}${eco.link}`, UTM_TEMPLATES.instagramBio(ecoKey));
-    return {
-      ...eco,
-      linkCompleto: link,
-      mensagensWA: eco.mensagensWA.map(m => m + link),
-    };
-  }
-
-  return Object.entries(ECO_CONTEUDO).map(([key, eco]) => {
-    const link = buildUTMUrl(`${linkBase}${eco.link}`, UTM_TEMPLATES.instagramBio(key));
-    return {
-      key,
-      ...eco,
-      linkCompleto: link,
-      mensagensWA: eco.mensagensWA.map(m => m + link),
-    };
-  });
+export function getConteudoMultiEco() {
+  return ECO_CONTEUDO;
 }
 
-/**
- * Calendário semanal multi-eco com rotação por dia.
- * Lumina intercalado como anzol gratuito.
- */
-export function getCalendarioMultiEco() {
-  const linkLumina = buildUTMUrl(`${BASE_URL}/lumina`, UTM_TEMPLATES.instagramBio('lumina'));
+export function getConteudoEco(eco) {
+  return ECO_CONTEUDO[eco] || null;
+}
 
+export function getHooksEco(eco) {
+  return ECO_CONTEUDO[eco]?.hooks || [];
+}
+
+export function getTodosHooksMultiEco() {
+  const todos = [];
+  for (const [eco, dados] of Object.entries(ECO_CONTEUDO)) {
+    for (const hook of (dados.hooks || [])) {
+      todos.push({ eco, hook, cor: dados.cor, emoji: dados.emoji, nome: dados.nome });
+    }
+  }
+  return todos;
+}
+
+// ============================================================
+// CALENDÁRIO MULTI-ECO — Rotação semanal entre todos os Ecos
+// ============================================================
+
+const ROTACAO_SEMANAL = {
+  0: { eco: 'serena', tema: 'Reflexão emocional', formato: 'carrossel', razao: 'Domingo = introspecção' },
+  1: { eco: 'ignis', tema: 'Foco e acção', formato: 'dica', razao: 'Segunda = motivação para a semana' },
+  2: { eco: 'vitalis', tema: 'Corpo e nutrição', formato: 'carrossel', razao: 'Terça = prático e útil' },
+  3: { eco: 'ecoa', tema: 'Voz e expressão', formato: 'dica', razao: 'Quarta = meio da semana, coragem' },
+  4: { eco: 'ventis', tema: 'Energia e ritmo', formato: 'carrossel', razao: 'Quinta = pausa consciente' },
+  5: { eco: 'aurea', tema: 'Autovalor e presença', formato: 'testemunho', razao: 'Sexta = celebração pessoal' },
+  6: { eco: 'imago', tema: 'Identidade e essência', formato: 'dica', razao: 'Sábado = autoconhecimento profundo' },
+};
+
+export function getCalendarioMultiEco(semanas = 4) {
+  const baseUrl = BASE_URL;
+  const calendario = [];
+
+  for (let semana = 1; semana <= semanas; semana++) {
+    const dias = [];
+    for (let diaSemana = 0; diaSemana <= 6; diaSemana++) {
+      const rotacao = ROTACAO_SEMANAL[diaSemana];
+      const ecoData = ECO_CONTEUDO[rotacao.eco];
+      if (!ecoData) continue;
+
+      const hookIndex = (semana - 1 + diaSemana) % (ecoData.hooks?.length || 1);
+      const hook = ecoData.hooks?.[hookIndex] || '';
+      const linkEco = `${baseUrl}${ecoData.link}`;
+      const linkLumina = `${baseUrl}/lumina`;
+
+      dias.push({
+        diaSemana,
+        eco: rotacao.eco,
+        ecoNome: ecoData.nome,
+        ecoEmoji: ecoData.emoji,
+        ecoCor: ecoData.cor,
+        tema: rotacao.tema,
+        formato: rotacao.formato,
+        hook,
+        linkEco,
+        linkLumina,
+        // A cada 3 dias, intercalar com um post LUMINA (gratuito como anzol)
+        intercalarLumina: diaSemana % 3 === 0,
+        conteudoIG: ecoData.conteudoIG?.[hookIndex % (ecoData.conteudoIG?.length || 1)] || null,
+      });
+    }
+    calendario.push({ semana, dias });
+  }
+
+  return calendario;
+}
+
+export function getRotacaoSemanal() {
+  return ROTACAO_SEMANAL;
+}
+
+// ============================================================
+// FORMATOS POR CANAL — IG, FB, WA, TikTok
+// ============================================================
+
+export function getFormatosCanal() {
   return {
-    rotacao: [
-      { dia: 'Domingo', eco: 'serena', tema: 'Reflexão emocional', emoji: '💧', formato: 'carrossel ou dica' },
-      { dia: 'Segunda', eco: 'ignis', tema: 'Foco e motivação', emoji: '🔥', formato: 'reel ou dica' },
-      { dia: 'Terça', eco: 'vitalis', tema: 'Corpo e nutrição', emoji: '🌿', formato: 'carrossel educativo' },
-      { dia: 'Quarta', eco: 'ecoa', tema: 'Voz e expressão', emoji: '🔊', formato: 'dica provocadora' },
-      { dia: 'Quinta', eco: 'ventis', tema: 'Energia e ritmo', emoji: '🍃', formato: 'stats ou carrossel' },
-      { dia: 'Sexta', eco: 'aurea', tema: 'Autovalor e prazer', emoji: '✨', formato: 'testemunho ou CTA' },
-      { dia: 'Sábado', eco: 'imago', tema: 'Identidade e reflexão', emoji: '⭐', formato: 'dica introspectiva' },
-    ],
-    luminaIntercalado: {
-      frequencia: '2x por semana (Terça Stories + Quinta Stories)',
-      mensagem: `O LUMINA é gratuito. 2 minutos. 23 padrões.\n\nFaz o teu diagnóstico:\n${linkLumina}`,
+    instagram: {
+      formatos: ['post (1:1)', 'stories (9:16)', 'reels (9:16)', 'carrossel (1:1, até 10 slides)'],
+      melhorHora: '8h-9h, 12h-13h, 18h-20h',
+      hashtags: 15,
+      maxCaption: 2200,
+      dica: 'Reels têm o maior alcance orgânico. Carrosséis o maior engagement.',
     },
-    regras: [
-      'Máximo 1 post de feed por dia',
-      '3-5 Stories por dia (mix de ecos)',
-      '1 Reel por semana (rotação de eco)',
-      '1 TikTok por semana (adaptar reel)',
-      'WhatsApp Status: 2-3 por dia com eco do dia',
-      'Facebook: republicar post do IG com caption adaptada',
-      'Lumina como CTA gratuito em todos os posts pagos',
-    ],
-    canais: {
-      instagram: { posts: 7, stories: '21-35', reels: 1, formato: '1:1 e 9:16' },
-      facebook: { posts: 7, stories: '7-14', reels: 1, formato: '1:1 e 9:16' },
-      whatsapp: { status: '14-21', broadcasts: '2-3', formato: 'texto + imagem' },
-      tiktok: { videos: '1-2', formato: '9:16 vertical, 15-30s', musica: 'trending sounds' },
+    facebook: {
+      formatos: ['post com imagem', 'vídeo', 'reels', 'link com preview'],
+      melhorHora: '9h-11h, 14h-16h',
+      hashtags: 3,
+      maxCaption: 63206,
+      dica: 'Facebook prefere vídeos nativos. Evita links no texto (reduz alcance).',
+    },
+    whatsapp: {
+      formatos: ['mensagem directa', 'broadcast', 'status (24h)', 'catálogo'],
+      melhorHora: '8h-9h, 12h-13h, 19h-20h',
+      maxMensagem: 1024,
+      dica: 'Mensagens pessoais têm 5x mais abertura que broadcasts. Status = visibilidade gratuita.',
+    },
+    tiktok: {
+      formatos: ['vídeo curto (15-60s)', 'vídeo médio (1-3min)', 'carousel (fotos)'],
+      melhorHora: '7h-9h, 12h-15h, 19h-23h',
+      hashtags: 5,
+      maxCaption: 2200,
+      dica: 'Primeiros 3 segundos são tudo. Hook forte. Texto em ecrã. Trending audio.',
     },
   };
 }
+
