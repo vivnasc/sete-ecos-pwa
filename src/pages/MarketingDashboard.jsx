@@ -822,7 +822,9 @@ function BlocoEco({ eco, copiar, copiado, prefixo }) {
                   plataforma="TikTok / Reels"
                   icone="🎬"
                   cor="text-gray-700"
-                  texto={typeof eco.tiktok === 'object' ? `ROTEIRO:\n${eco.tiktok.ideia}\n\n---\nCAPTION:\n${eco.tiktok.caption}` : eco.tiktok}
+                  texto={typeof eco.tiktok === 'object'
+                    ? `COMO GRAVAR:\nUsa o CapCut (grátis) ou grava directo no TikTok/Instagram.\nPode ser só texto em ecrã + a tua voz por cima. Não precisas de aparecer.\nAs imagens de story acima servem como fundo.\n\n---\nROTEIRO:\n${eco.tiktok.ideia}\n\n---\nCAPTION:\n${eco.tiktok.caption}`
+                    : eco.tiktok}
                   aberto={textoAberto === 'tt'}
                   onToggle={() => setTextoAberto(v => v === 'tt' ? null : 'tt')}
                   copiar={copiar}
