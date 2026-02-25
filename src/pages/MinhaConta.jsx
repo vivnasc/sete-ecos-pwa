@@ -122,10 +122,12 @@ export default function MinhaConta() {
   const displayName = user?.user_metadata?.name || user?.email?.split('@')[0] || '';
   const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
+  const userIsCoach = isCoach(user?.email);
+
   const renderSubscriptionRow = (key, name, logo, colors, link, payLink) => {
     const sub = subscriptions[key];
     const badge = sub ? getStatusBadge(sub.subscription_status) : null;
-    const hasAccess = sub && ['active', 'tester', 'trial'].includes(sub.subscription_status);
+    const hasAccess = userIsCoach || (sub && ['active', 'tester', 'trial'].includes(sub.subscription_status));
 
     return (
       <div className="flex items-center gap-3 p-3">
@@ -135,7 +137,12 @@ export default function MinhaConta() {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className={`font-semibold text-sm ${isDark ? 'text-gray-100' : 'text-[#4A3728]'}`}>{name}</span>
-            {badge && (
+            {userIsCoach && !sub ? (
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-700 dark:text-emerald-400">
+                <span className="w-1 h-1 rounded-full bg-emerald-500" />
+                Coach
+              </span>
+            ) : badge && (
               <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${badge.bg} ${badge.text}`}>
                 <span className={`w-1 h-1 rounded-full ${badge.dot}`} />
                 {badge.label}
@@ -145,7 +152,7 @@ export default function MinhaConta() {
           {sub?.subscription_expires && (
             <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-[#6B5344]/40'}`}>{t('account.expires', { date: formatDate(sub.subscription_expires) })}</p>
           )}
-          {!sub && <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-[#6B5344]/40'}`}>{t('account.no_subscription')}</p>}
+          {!sub && !userIsCoach && <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-[#6B5344]/40'}`}>{t('account.no_subscription')}</p>}
         </div>
         {hasAccess ? (
           <Link to={link} className="text-xs font-semibold px-3 py-1.5 rounded-xl text-white flex-shrink-0" style={{ background: `linear-gradient(135deg, ${colors[0]}, ${colors[1]})` }}>
