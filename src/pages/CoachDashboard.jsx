@@ -121,13 +121,15 @@ export default function CoachDashboard() {
     registerPushSubscription();
   }, []);
 
-  const registerPushSubscription = async () => {
+  const registerPushSubscription = async (userInitiated = false) => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
       setPushStatus('unsupported');
       return;
     }
 
+    // Se permissão não foi dada, pedir (só se user clicou no botão)
     if (Notification.permission === 'default') {
+      if (!userInitiated) { setPushStatus('denied'); return; }
       const result = await Notification.requestPermission();
       if (result !== 'granted') { setPushStatus('denied'); return; }
     } else if (Notification.permission !== 'granted') {
@@ -142,12 +144,12 @@ export default function CoachDashboard() {
         setPushStatus('subscribed');
         console.log('[Coach Push] Subscription registada com sucesso');
       } else {
-        setPushStatus('unsupported');
+        setPushStatus('failed');
         console.warn('[Coach Push] Falha ao registar:', result.reason || result.error);
       }
     } catch (err) {
       console.error('[Coach Push] Erro ao registar:', err);
-      setPushStatus('unsupported');
+      setPushStatus('failed');
     }
   };
 
@@ -436,7 +438,15 @@ export default function CoachDashboard() {
                 <p className="text-xs text-gray-500 flex items-center gap-1.5">
                   Gestao de clientes Vitalis
                   {pushStatus === 'subscribed' && <span title="Push activo" className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />}
-                  {pushStatus === 'denied' && <span title="Push bloqueado" className="text-[10px] text-red-400">(push off)</span>}
+                  {(pushStatus === 'denied' || pushStatus === 'failed' || pushStatus === null) && pushStatus !== 'subscribed' && (
+                    <button
+                      onClick={() => registerPushSubscription(true)}
+                      className="text-[10px] text-red-500 hover:text-red-700 underline"
+                      title="Clica para activar notificações push"
+                    >
+                      push off — activar
+                    </button>
+                  )}
                 </p>
               </div>
             </div>

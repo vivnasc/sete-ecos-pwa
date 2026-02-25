@@ -106,7 +106,9 @@ export default function DashboardVitalis() {
   // Estados para PWA install e notificações
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isPWAInstalled, setIsPWAInstalled] = useState(false);
-  const [notificacoesAtivas, setNotificacoesAtivas] = useState(false);
+  const [notificacoesAtivas, setNotificacoesAtivas] = useState(
+    () => 'Notification' in window && Notification.permission === 'granted'
+  );
   const [mostrarBannerPWA, setMostrarBannerPWA] = useState(false);
 
   // Estados para Trial e Intake
@@ -143,10 +145,14 @@ export default function DashboardVitalis() {
       setMostrarBannerPWA(!isStandalone);
     }
 
-    // CRITICAL: Activate saved notification reminders on every app open
+    // CRITICAL: Activate saved notification reminders + re-register push on every app open
     if (temPermissao()) {
       const count = activarLembretes();
       console.log('Dashboard: lembretes re-activados', count?.length || 0);
+      // Re-registar push subscription silenciosamente (garante que está na DB)
+      import('../../lib/pushSubscription').then(({ registarPushSubscription }) => {
+        registarPushSubscription().catch(() => {});
+      });
     }
 
     // Capturar evento de instalação PWA
