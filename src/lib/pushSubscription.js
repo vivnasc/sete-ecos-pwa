@@ -42,8 +42,12 @@ export async function registarPushSubscription() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'push-vapid-public' })
       })
-      const { key } = await vapidRes.json()
-      if (!key) return { ok: false, reason: 'no-vapid-key' }
+      const vapidData = await vapidRes.json()
+      const key = vapidData?.key
+      if (!key) {
+        console.warn('[Push] VAPID key não configurada no servidor. Configura VAPID_PUBLIC_KEY nas env vars do Vercel.')
+        return { ok: false, reason: 'no-vapid-key' }
+      }
 
       // Converter VAPID key para Uint8Array
       const padding = '='.repeat((4 - key.length % 4) % 4)
@@ -78,6 +82,8 @@ export async function registarPushSubscription() {
     if (result.ok) {
       subscribed = true
       console.log('[Push] Subscription registada com sucesso, role:', result.role)
+    } else {
+      console.warn('[Push] Falha ao registar subscription:', result.error || result)
     }
     return result
   } catch (err) {

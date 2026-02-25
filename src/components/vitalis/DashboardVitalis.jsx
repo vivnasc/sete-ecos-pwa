@@ -11,7 +11,7 @@ import { isNearRamadan, setObservaRamadao, observaRamadao } from '../../utils/ra
 import { useTheme } from '../../contexts/ThemeContext';
 import { useI18n } from '../../contexts/I18nContext';
 import { temPermissao, activarLembretes, contarLembretesHoje } from '../../utils/notifications';
-import { pedirPermissaoERegistar } from '../../lib/pushSubscription';
+import { pedirPermissaoERegistar, guardarPreferencias } from '../../lib/pushSubscription';
 import { checkVitalisAccess } from '../../lib/subscriptions';
 import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
 import QuickTrackers from './QuickTrackers';
@@ -1029,6 +1029,9 @@ export default function DashboardVitalis() {
                       setNotificacoesAtivas(resultado);
                       if (resultado) {
                         const timeouts = activarLembretes();
+                        // Guardar preferências default no servidor para push real via cron
+                        const { carregarLembretes } = await import('../../utils/notifications');
+                        guardarPreferencias(carregarLembretes()).catch(() => {});
                         enviarNotificacao('Notificações activadas!', {
                           body: 'Vais receber lembretes mesmo com a app fechada!'
                         });

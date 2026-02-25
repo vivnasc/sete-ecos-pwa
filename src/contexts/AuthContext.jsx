@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { isCoach } from '../lib/coach'
-import { registarPushSubscription } from '../lib/pushSubscription'
+import { registarPushSubscription, guardarPreferencias, buscarPreferencias } from '../lib/pushSubscription'
 
 const AuthContext = createContext()
 
@@ -94,7 +94,18 @@ export function AuthProvider({ children }) {
       await checkModuleAccess(userData?.id, user.email)
       // Registar push subscription se já tem permissão (não bloqueia)
       if ('Notification' in window && Notification.permission === 'granted') {
-        registarPushSubscription().catch(() => {})
+        registarPushSubscription()
+          .then(async (result) => {
+            if (result?.ok) {
+              // Garantir que existem preferências no servidor (para o cron enviar push)
+              const prefs = await buscarPreferencias()
+              if (!prefs) {
+                const { LEMBRETES_DEFAULT } = await import('../utils/notifications')
+                await guardarPreferencias(LEMBRETES_DEFAULT)
+              }
+            }
+          })
+          .catch(() => {})
       }
     } catch (error) {
       console.error('Erro ao carregar dados do utilizador:', error)
