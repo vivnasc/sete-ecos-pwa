@@ -115,7 +115,8 @@ export default function CoachDashboard() {
   const pollRef = useRef(null);
 
   // ─── Push Notification subscription ───
-  const [pushStatus, setPushStatus] = useState(null); // null | 'subscribed' | 'denied' | 'unsupported'
+  const [pushStatus, setPushStatus] = useState(null); // null | 'subscribed' | 'denied' | 'unsupported' | 'failed'
+  const [pushActivando, setPushActivando] = useState(false);
 
   useEffect(() => {
     registerPushSubscription();
@@ -127,13 +128,21 @@ export default function CoachDashboard() {
       return;
     }
 
+    if (userInitiated) setPushActivando(true);
+
     // Se permissão não foi dada, pedir (só se user clicou no botão)
     if (Notification.permission === 'default') {
-      if (!userInitiated) { setPushStatus('denied'); return; }
-      const result = await Notification.requestPermission();
-      if (result !== 'granted') { setPushStatus('denied'); return; }
-    } else if (Notification.permission !== 'granted') {
+      if (!userInitiated) { setPushStatus('failed'); return; }
+      try {
+        const result = await Notification.requestPermission();
+        if (result !== 'granted') { setPushStatus('denied'); setPushActivando(false); return; }
+      } catch (e) {
+        console.error('[Coach Push] Erro ao pedir permissão:', e);
+        setPushStatus('failed'); setPushActivando(false); return;
+      }
+    } else if (Notification.permission === 'denied') {
       setPushStatus('denied');
+      setPushActivando(false);
       return;
     }
 
@@ -143,6 +152,17 @@ export default function CoachDashboard() {
       if (result.ok) {
         setPushStatus('subscribed');
         console.log('[Coach Push] Subscription registada com sucesso');
+        // Enviar notificação de teste imediata para confirmar
+        if (userInitiated) {
+          try {
+            const reg = await navigator.serviceWorker.ready;
+            reg.showNotification('Push activado!', {
+              body: 'Vais receber alertas de clientes a partir de agora.',
+              icon: '/logos/VITALIS_LOGO_V3.png',
+              tag: 'coach-push-activado',
+            });
+          } catch {}
+        }
       } else {
         setPushStatus('failed');
         console.warn('[Coach Push] Falha ao registar:', result.reason || result.error);
@@ -150,6 +170,8 @@ export default function CoachDashboard() {
     } catch (err) {
       console.error('[Coach Push] Erro ao registar:', err);
       setPushStatus('failed');
+    } finally {
+      setPushActivando(false);
     }
   };
 
@@ -428,29 +450,19 @@ export default function CoachDashboard() {
       )}
 
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-4">
-        <div className="max-w-6xl mx-auto">
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-8 h-8 object-contain" />
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Painel Coach</h1>
-                <p className="text-xs text-gray-500 flex items-center gap-1.5">
-                  Gestao de clientes Vitalis
-                  {pushStatus === 'subscribed' && <span title="Push activo" className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />}
-                  {(pushStatus === 'denied' || pushStatus === 'failed' || pushStatus === null) && pushStatus !== 'subscribed' && (
-                    <button
-                      onClick={() => registerPushSubscription(true)}
-                      className="text-[10px] text-red-500 hover:text-red-700 underline"
-                      title="Clica para activar notificações push"
-                    >
-                      push off — activar
-                    </button>
-                  )}
-                </p>
+            <div className="flex items-center gap-3 min-w-0">
+              <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-8 h-8 object-contain flex-shrink-0" />
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-1.5">
+                  Painel Coach
+                  {pushStatus === 'subscribed' && <span title="Push activo" className="w-2 h-2 rounded-full bg-green-400 inline-block flex-shrink-0" />}
+                </h1>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setShowNotifs(!showNotifs)}
                 className={`relative p-2 rounded-lg transition-colors ${showNotifs ? 'bg-amber-100 text-amber-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}
@@ -474,42 +486,63 @@ export default function CoachDashboard() {
                   <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
               </button>
-              <Link
-                to="/coach/marketing"
-                className="px-3 py-1.5 text-sm bg-pink-50 text-pink-700 rounded-lg hover:bg-pink-100 transition-colors"
-              >
-                Marketing
-              </Link>
-              <Link
-                to="/coach/analytics"
-                className="px-3 py-1.5 text-sm bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors"
-              >
-                Analytics
-              </Link>
-              <Link
-                to="/coach/chatbot-teste"
-                className="px-3 py-1.5 text-sm bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors"
-              >
-                Chatbot
-              </Link>
-              <Link
-                to="/coach/broadcast"
-                className="px-3 py-1.5 text-sm bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors"
-              >
-                Broadcast
-              </Link>
-              <Link
-                to="/vitalis/dashboard"
-                className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Vitalis
-              </Link>
             </div>
+          </div>
+        </div>
+        {/* Navigation tabs — scroll horizontal no mobile */}
+        <div className="max-w-6xl mx-auto px-4 pb-2">
+          <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
+            <Link to="/coach/marketing" className="px-3 py-1.5 text-xs sm:text-sm bg-pink-50 text-pink-700 rounded-lg hover:bg-pink-100 transition-colors whitespace-nowrap flex-shrink-0">
+              Marketing
+            </Link>
+            <Link to="/coach/analytics" className="px-3 py-1.5 text-xs sm:text-sm bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors whitespace-nowrap flex-shrink-0">
+              Analytics
+            </Link>
+            <Link to="/coach/chatbot-teste" className="px-3 py-1.5 text-xs sm:text-sm bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors whitespace-nowrap flex-shrink-0">
+              Chatbot
+            </Link>
+            <Link to="/coach/broadcast" className="px-3 py-1.5 text-xs sm:text-sm bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors whitespace-nowrap flex-shrink-0">
+              Broadcast
+            </Link>
+            <Link to="/coach/social" className="px-3 py-1.5 text-xs sm:text-sm bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors whitespace-nowrap flex-shrink-0">
+              Social
+            </Link>
+            <Link to="/vitalis/dashboard" className="px-3 py-1.5 text-xs sm:text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors whitespace-nowrap flex-shrink-0">
+              Vitalis
+            </Link>
           </div>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-4 space-y-4">
+        {/* ═══════ PUSH ACTIVATION BANNER ═══════ */}
+        {pushStatus && pushStatus !== 'subscribed' && (
+          <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-xl p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                <span className="text-xl">🔕</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-red-800 text-sm">Notificações push desactivadas</h3>
+                <p className="text-red-700 text-xs mt-0.5">
+                  {pushStatus === 'denied'
+                    ? 'Permissão bloqueada. Vai às definições do browser para permitir notificações.'
+                    : 'Não vais receber alertas de clientes (pagamentos, espaço retorno, etc.)'}
+                </p>
+              </div>
+              {pushStatus !== 'denied' && (
+                <button
+                  onClick={() => registerPushSubscription(true)}
+                  disabled={pushActivando}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-semibold hover:bg-red-700 transition-colors flex-shrink-0 active:scale-95 disabled:opacity-60"
+                >
+                  {pushActivando ? 'A activar...' : 'Activar'}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* ═══════ NOTIFICATION FEED ═══════ */}
         {showNotifs && (
           <div className="bg-white rounded-xl border border-amber-200 overflow-hidden">
