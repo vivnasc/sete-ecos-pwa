@@ -27,6 +27,7 @@ import {
   gerarConteudoDiario,
   gerarSemanaCompleta,
   getMockupsEco,
+  getCampanhaLancamentoZero,
 } from '../lib/marketing-engine';
 import { RENDER_MAP, CORES, FORMATOS } from '../components/TemplateVisual';
 
@@ -879,12 +880,304 @@ function TextoPlataforma({ plataforma, icone, cor, texto, aberto, onToggle, copi
 }
 
 // ============================================================
+// CAMPANHA DE LANÇAMENTO — 10 posts para conta sem conteúdo
+// Sem exposição pessoal: texto em ecrã, imagens, screen recordings
+// ============================================================
+
+function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo }) {
+  const [faseAberta, setFaseAberta] = useState(1);
+  const posts = getCampanhaLancamentoZero();
+
+  // Agrupar por fase
+  const fases = [
+    { num: 1, titulo: 'Quem somos', subtitulo: 'Apresentar a marca (posts 1-3)', emoji: '🌱', cor: 'from-emerald-500 to-teal-600', posts: posts.filter(p => p.fase === 1) },
+    { num: 2, titulo: 'Os 7 Ecos', subtitulo: 'Lumina + Vitalis + Serena (posts 4-6)', emoji: '🌿', cor: 'from-blue-500 to-indigo-600', posts: posts.filter(p => p.fase === 2) },
+    { num: 3, titulo: 'Apresentar e conectar', subtitulo: 'Mais ecos + primeiro CTA (posts 7-10)', emoji: '🌳', cor: 'from-purple-500 to-pink-600', posts: posts.filter(p => p.fase === 3) },
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#F5F2ED] pb-24">
+      {/* Header */}
+      <div className="bg-gradient-to-br from-[#0f3460] via-[#1a1a2e] to-[#533483] text-white px-4 pt-5 pb-5">
+        <div className="max-w-lg mx-auto">
+          <div className="flex items-center justify-between mb-3">
+            <Link to="/coach" className="text-white/60 hover:text-white text-sm">&larr; Coach</Link>
+            <button
+              onClick={onDiario}
+              className="px-3 py-1.5 bg-white/10 rounded-full text-[11px] font-bold text-white/80 hover:bg-white/20 active:scale-95 transition-all"
+            >
+              Conteúdo diário →
+            </button>
+          </div>
+          <h1 className="text-xl font-bold" style={{ fontFamily: 'var(--font-titulos)' }}>
+            Campanha de Lançamento
+          </h1>
+          <p className="text-white/60 text-sm mt-1">
+            10 posts para começar do zero — sem precisares de aparecer
+          </p>
+          <div className="flex gap-1.5 mt-3">
+            <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">Sem cara</span>
+            <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">Sem voz</span>
+            <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">Texto + imagem</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Dica geral */}
+      <div className="max-w-lg mx-auto px-4 mt-3">
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3">
+          <p className="text-xs text-amber-800 font-bold mb-1">Como usar esta campanha</p>
+          <p className="text-[11px] text-amber-700 leading-relaxed">
+            Publica 1 post por dia (ou 1 a cada 2 dias). Segue a ordem: primeiro apresenta-te, depois mostra os Ecos, por último convida a experimentar o Lumina grátis. Descarrega as imagens e copia os textos directamente.
+          </p>
+        </div>
+      </div>
+
+      {/* Fases */}
+      <div className="max-w-lg mx-auto px-4 mt-3 space-y-3">
+        {fases.map(fase => (
+          <div key={fase.num}>
+            {/* Header da fase */}
+            <button
+              onClick={() => setFaseAberta(f => f === fase.num ? null : fase.num)}
+              className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-2xl border border-[#E8E2D9] shadow-sm active:scale-[0.99] transition-all mb-2"
+            >
+              <div className="flex items-center gap-2.5">
+                <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${fase.cor} flex items-center justify-center text-white text-sm font-bold`}>
+                  {fase.num}
+                </div>
+                <div className="text-left">
+                  <p className="font-bold text-sm text-[#4A4035]">{fase.emoji} {fase.titulo}</p>
+                  <p className="text-[10px] text-[#A09888]">{fase.subtitulo}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[9px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold">{fase.posts.length} posts</span>
+                <span className="text-[#A09888] text-sm">{faseAberta === fase.num ? '▲' : '▼'}</span>
+              </div>
+            </button>
+
+            {/* Posts da fase */}
+            {faseAberta === fase.num && (
+              <div className="space-y-4 pl-1">
+                {fase.posts.map(post => (
+                  <PostLancamento key={post.dia} post={post} copiar={copiar} copiado={copiado} />
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+
+        {/* Depois da campanha */}
+        <div className="bg-white rounded-2xl border border-[#E8E2D9] p-4 shadow-sm">
+          <p className="font-bold text-sm text-[#4A4035] mb-1">Depois dos 10 posts?</p>
+          <p className="text-xs text-[#6B5C4C] leading-relaxed mb-3">
+            Passa para o conteúdo diário — o sistema gera posts novos todos os dias com rotação automática entre os Ecos. Nunca ficas sem conteúdo.
+          </p>
+          <button
+            onClick={onDiario}
+            className="w-full py-2.5 bg-gradient-to-r from-[#1a1a2e] to-[#0f3460] text-white rounded-xl text-xs font-bold active:scale-[0.98] transition-all"
+          >
+            Ver conteúdo diário →
+          </button>
+        </div>
+
+        <button
+          onClick={onVerTudo}
+          className="w-full py-3 rounded-2xl text-xs text-[#A09888] hover:text-[#6B5C4C] transition-colors"
+        >
+          Ver dashboard completo
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Post individual da campanha de lançamento
+function PostLancamento({ post, copiar, copiado }) {
+  const [aberto, setAberto] = useState(false);
+  const [textoAberto, setTextoAberto] = useState(null);
+  const mockups = getMockupsEco(post.eco === 'seteEcos' ? 'vitalis' : post.eco);
+  const mockupPrincipal = mockups[0];
+
+  return (
+    <div className="space-y-2">
+      {/* Header do post */}
+      <button
+        onClick={() => setAberto(v => !v)}
+        className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-2xl border border-[#E8E2D9] shadow-sm active:scale-[0.99] transition-all"
+      >
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-full bg-[#1a1a2e] flex items-center justify-center text-white text-xs font-bold">
+            {post.dia}
+          </div>
+          <div className="text-left min-w-0">
+            <p className="font-bold text-sm text-[#4A4035] truncate">{post.titulo}</p>
+            <p className="text-[10px] text-[#A09888] truncate">{post.hook?.slice(0, 50)}{post.hook?.length > 50 ? '...' : ''}</p>
+          </div>
+        </div>
+        <span className="text-[#A09888] text-sm shrink-0 ml-2">{aberto ? '▲' : '▼'}</span>
+      </button>
+
+      {aberto && (
+        <div className="space-y-3 pl-1">
+          {/* Dica de formato */}
+          {post.dica && (
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-2.5">
+              <p className="text-[10px] text-blue-700 font-bold mb-0.5">Dica</p>
+              <p className="text-[10px] text-blue-600 leading-relaxed">{post.dica}</p>
+            </div>
+          )}
+
+          {/* Imagem colorida (AutoImage) */}
+          <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+            <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+              <div>
+                <p className="font-bold text-xs text-[#4A4035]">Imagem pronta</p>
+                <p className="text-[10px] text-[#A09888]">Descarrega e publica</p>
+              </div>
+              <span className="text-[9px] bg-pink-100 text-pink-700 font-bold px-2 py-0.5 rounded-full">1:1</span>
+            </div>
+            <div className="p-3 flex justify-center">
+              <AutoImage
+                template={post.template || 'dica'}
+                eco={post.eco === 'seteEcos' ? 'vitalis' : post.eco}
+                formato="post"
+                texto={post.conteudoIG?.texto || post.hook}
+                subtitulo={post.conteudoIG?.subtitulo || ''}
+                scale={0.28}
+                filename={`lancamento-${post.dia}-post.png`}
+              />
+            </div>
+          </div>
+
+          {/* Carrossel (se for carrossel) */}
+          {post.conteudoIG?.tipo === 'carrossel' && post.conteudoIG?.slides && (
+            <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+              <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+                <div>
+                  <p className="font-bold text-xs text-[#4A4035]">Carrossel: {post.conteudoIG.titulo}</p>
+                  <p className="text-[10px] text-[#A09888]">{post.conteudoIG.slides.length} slides — desliza e descarrega</p>
+                </div>
+                <span className="text-[9px] bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-full">Slides</span>
+              </div>
+              <div className="p-3">
+                <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x">
+                  {post.conteudoIG.slides.map((slide, i) => (
+                    <AutoImage
+                      key={i}
+                      template="carrossel"
+                      eco={post.eco === 'seteEcos' ? 'vitalis' : post.eco}
+                      formato="post"
+                      texto={slide.titulo}
+                      subtitulo={slide.texto}
+                      slideNum={i + 1}
+                      totalSlides={post.conteudoIG.slides.length}
+                      bgIndex={i}
+                      scale={0.24}
+                      filename={`lancamento-${post.dia}-slide-${i + 1}.png`}
+                      className="shrink-0"
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Story */}
+          <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+            <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+              <div>
+                <p className="font-bold text-xs text-[#4A4035]">Story</p>
+                <p className="text-[10px] text-[#A09888]">IG, FB e WA Status</p>
+              </div>
+              <span className="text-[9px] bg-gradient-to-r from-orange-400 to-pink-500 text-white font-bold px-2 py-0.5 rounded-full">9:16</span>
+            </div>
+            <div className="p-3 flex gap-3 justify-center">
+              <AutoImage
+                template={post.template || 'dica'}
+                eco={post.eco === 'seteEcos' ? 'vitalis' : post.eco}
+                formato="stories"
+                texto={post.conteudoIG?.texto || post.hook}
+                subtitulo="app.seteecos.com"
+                scale={0.16}
+                filename={`lancamento-${post.dia}-story.png`}
+              />
+            </div>
+          </div>
+
+          {/* Legendas por plataforma */}
+          <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+            <div className="px-4 py-2.5 border-b border-[#E8E2D9]">
+              <p className="font-bold text-xs text-[#4A4035]">Legendas prontas</p>
+              <p className="text-[10px] text-[#A09888]">Toca para copiar o texto de cada rede</p>
+            </div>
+            <div className="divide-y divide-[#E8E2D9]">
+              <TextoPlataforma
+                plataforma="Instagram"
+                icone="📸"
+                cor="text-pink-600"
+                texto={post.instagram?.caption || ''}
+                aberto={textoAberto === 'ig'}
+                onToggle={() => setTextoAberto(v => v === 'ig' ? null : 'ig')}
+                copiar={copiar}
+                copiado={copiado}
+                idCopia={`lanc-${post.dia}-ig`}
+              />
+              <TextoPlataforma
+                plataforma="Facebook"
+                icone="👤"
+                cor="text-blue-600"
+                texto={post.facebook || ''}
+                aberto={textoAberto === 'fb'}
+                onToggle={() => setTextoAberto(v => v === 'fb' ? null : 'fb')}
+                copiar={copiar}
+                copiado={copiado}
+                idCopia={`lanc-${post.dia}-fb`}
+              />
+              <TextoPlataforma
+                plataforma="WhatsApp"
+                icone="💬"
+                cor="text-green-600"
+                texto={post.whatsapp || ''}
+                aberto={textoAberto === 'wa'}
+                onToggle={() => setTextoAberto(v => v === 'wa' ? null : 'wa')}
+                copiar={copiar}
+                copiado={copiado}
+                idCopia={`lanc-${post.dia}-wa`}
+                linkEnviar={post.whatsapp ? `https://wa.me/?text=${encodeURIComponent(post.whatsapp)}` : null}
+              />
+              {post.tiktok && (
+                <TextoPlataforma
+                  plataforma="TikTok / Reels"
+                  icone="🎬"
+                  cor="text-gray-700"
+                  texto={typeof post.tiktok === 'object'
+                    ? `COMO FAZER (sem aparecer):\nTexto em ecrã + música trending. Usa o CapCut (grátis).\nAs imagens de story acima servem como fundo.\n\n---\nROTEIRO:\n${post.tiktok.ideia}\n\n---\nCAPTION:\n${post.tiktok.caption}`
+                    : post.tiktok}
+                  aberto={textoAberto === 'tt'}
+                  onToggle={() => setTextoAberto(v => v === 'tt' ? null : 'tt')}
+                  copiar={copiar}
+                  copiado={copiado}
+                  idCopia={`lanc-${post.dia}-tt`}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
 // MODO SIMPLES — Vista principal com 4 redes + 2 ecos por dia
 // ============================================================
 
 function ModoSimples({ copiar, copiado, onVerTudo }) {
   const [variante, setVariante] = useState(0);
   const [diaOffset, setDiaOffset] = useState(0);
+  const [subModo, setSubModo] = useState('lancamento'); // 'lancamento' ou 'diario'
 
   const dataAlvo = new Date();
   dataAlvo.setDate(dataAlvo.getDate() + diaOffset);
@@ -898,6 +1191,10 @@ function ModoSimples({ copiar, copiado, onVerTudo }) {
   inicioSemana.setDate(inicioSemana.getDate() - inicioSemana.getDay());
   const semana = gerarSemanaCompleta(inicioSemana, variante);
 
+  if (subModo === 'lancamento') {
+    return <CampanhaLancamento copiar={copiar} copiado={copiado} onDiario={() => setSubModo('diario')} onVerTudo={onVerTudo} />;
+  }
+
   return (
     <div className="min-h-screen bg-[#F5F2ED] pb-24">
       {/* Header */}
@@ -905,12 +1202,20 @@ function ModoSimples({ copiar, copiado, onVerTudo }) {
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-2">
             <Link to="/coach" className="text-white/60 hover:text-white text-sm">&larr; Coach</Link>
-            <button
-              onClick={() => setVariante(v => v + 1)}
-              className="px-3 py-1.5 bg-white/10 rounded-full text-[11px] font-bold text-white/80 hover:bg-white/20 active:scale-95 transition-all"
-            >
-              Outro conteúdo
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSubModo('lancamento')}
+                className="px-3 py-1.5 bg-white/10 rounded-full text-[11px] font-bold text-white/80 hover:bg-white/20 active:scale-95 transition-all"
+              >
+                Lançamento
+              </button>
+              <button
+                onClick={() => setVariante(v => v + 1)}
+                className="px-3 py-1.5 bg-white/10 rounded-full text-[11px] font-bold text-white/80 hover:bg-white/20 active:scale-95 transition-all"
+              >
+                Outro conteúdo
+              </button>
+            </div>
           </div>
           <p className="text-white/50 text-xs uppercase tracking-wider">{dataFormatada}</p>
           <h1 className="text-xl font-bold mt-1" style={{ fontFamily: 'var(--font-titulos)' }}>
