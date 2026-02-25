@@ -880,8 +880,8 @@ function TextoPlataforma({ plataforma, icone, cor, texto, aberto, onToggle, copi
 }
 
 // ============================================================
-// CAMPANHA DE LANÇAMENTO — 10 posts para conta sem conteúdo
-// Sem exposição pessoal: texto em ecrã, imagens, screen recordings
+// CAMPANHA DE LANÇAMENTO — 17 posts para conta com ZERO seguidores
+// Reels only + Destaques IG + Mockups reais + 1 eco por post
 // ============================================================
 
 function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo, prog }) {
@@ -896,9 +896,9 @@ function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo, prog }) {
 
   // Agrupar por fase
   const fases = [
-    { num: 1, titulo: 'Quem somos', subtitulo: 'Apresentar a marca (posts 1-3)', emoji: '🌱', cor: 'from-emerald-500 to-teal-600', posts: posts.filter(p => p.fase === 1) },
-    { num: 2, titulo: 'Os 7 Ecos', subtitulo: 'Lumina + Vitalis + Serena (posts 4-6)', emoji: '🌿', cor: 'from-blue-500 to-indigo-600', posts: posts.filter(p => p.fase === 2) },
-    { num: 3, titulo: 'Apresentar e conectar', subtitulo: 'Mais ecos + primeiro CTA (posts 7-10)', emoji: '🌳', cor: 'from-purple-500 to-pink-600', posts: posts.filter(p => p.fase === 3) },
+    { num: 1, titulo: 'Marca & Destaques', subtitulo: 'Identidade visual + Destaques IG (posts 1-4)', emoji: '🌱', cor: 'from-indigo-500 to-purple-600', posts: posts.filter(p => p.fase === 1) },
+    { num: 2, titulo: 'Lumina + Vitalis', subtitulo: 'Isca gratuita + produto herói com mockups (posts 5-10)', emoji: '🌿', cor: 'from-emerald-500 to-teal-600', posts: posts.filter(p => p.fase === 2) },
+    { num: 3, titulo: 'Cada Eco', subtitulo: '1 eco por post, cor e mockup próprias (posts 11-17)', emoji: '🌳', cor: 'from-amber-500 to-orange-600', posts: posts.filter(p => p.fase === 3) },
   ];
 
   // Abrir automaticamente a primeira fase não completa
@@ -922,7 +922,7 @@ function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo, prog }) {
             Campanha de Lançamento
           </h1>
           <p className="text-white/60 text-sm mt-1">
-            10 posts para começar do zero — sem precisares de aparecer
+            17 Reels para construir audiência do zero — sem precisares de aparecer
           </p>
 
           {/* Barra de progresso */}
@@ -940,9 +940,10 @@ function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo, prog }) {
           </div>
 
           <div className="flex gap-1.5 mt-3">
-            <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">Sem cara</span>
-            <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">Sem voz</span>
-            <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">Texto + imagem</span>
+            <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">Reels only</span>
+            <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">Mockups reais</span>
+            <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">1 eco = 1 cor</span>
+            <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">Zero stories</span>
           </div>
         </div>
       </div>
@@ -953,7 +954,7 @@ function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo, prog }) {
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3">
             <p className="text-xs text-amber-800 font-bold mb-1">Como usar esta campanha</p>
             <p className="text-[11px] text-amber-700 leading-relaxed">
-              Publica 1 post por dia (ou 1 a cada 2 dias). Segue a ordem: primeiro apresenta-te, depois mostra os Ecos, por último convida a experimentar o Lumina grátis. Descarrega as imagens e copia os textos directamente.
+              Publica 1 Reel por dia (Reels são o ÚNICO formato que chega a quem não te segue). Fase 1: monta o perfil e os destaques. Fase 2: mostra Lumina grátis + Vitalis com mockups. Fase 3: cada eco com a sua cor e mockup. NUNCA stories (ninguém as vê com zero seguidores).
             </p>
           </div>
         </div>
@@ -965,7 +966,7 @@ function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo, prog }) {
           <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center">
             <p className="text-2xl mb-1">🎉</p>
             <p className="text-sm font-bold text-emerald-800">Campanha completa!</p>
-            <p className="text-[11px] text-emerald-700 mt-1">Os 10 posts de lançamento estão publicados. Agora passa para o conteúdo diário.</p>
+            <p className="text-[11px] text-emerald-700 mt-1">Os 17 posts de lançamento estão publicados. Agora passa para o conteúdo diário.</p>
           </div>
         </div>
       )}
@@ -1021,7 +1022,7 @@ function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo, prog }) {
 
         {/* Depois da campanha */}
         <div className="bg-white rounded-2xl border border-[#E8E2D9] p-4 shadow-sm">
-          <p className="font-bold text-sm text-[#4A4035] mb-1">Depois dos 10 posts?</p>
+          <p className="font-bold text-sm text-[#4A4035] mb-1">Depois dos 17 posts?</p>
           <p className="text-xs text-[#6B5C4C] leading-relaxed mb-3">
             Passa para o conteúdo diário — o sistema gera posts novos todos os dias com rotação automática entre os Ecos. Nunca ficas sem conteúdo.
           </p>
