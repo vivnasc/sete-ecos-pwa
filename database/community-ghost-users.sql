@@ -26,30 +26,30 @@ ALTER TABLE community_profiles ADD COLUMN IF NOT EXISTS membro_desde DATE;
 
 -- 6. Inserir ghost users
 -- Usando UUIDs deterministicos para referencia no codigo
-INSERT INTO users (id, auth_id, email, nome, genero, is_ghost) VALUES
-  ('00000000-ghost-4000-a000-000000000001', NULL, 'ghost_graca@seteecos.ghost', 'Graça Mondlane', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000002', NULL, 'ghost_esperanca@seteecos.ghost', 'Esperança Nhaca', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000003', NULL, 'ghost_celeste@seteecos.ghost', 'Celeste Macuácua', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000004', NULL, 'ghost_amina@seteecos.ghost', 'Amina Hassane', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000005', NULL, 'ghost_fatima@seteecos.ghost', 'Fátima Sitoe', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000006', NULL, 'ghost_halima@seteecos.ghost', 'Halima Januário', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000007', NULL, 'ghost_dulce@seteecos.ghost', 'Dulce Cossa', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000008', NULL, 'ghost_aisha@seteecos.ghost', 'Aisha Momade', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000009', NULL, 'ghost_zainab@seteecos.ghost', 'Zainab Mussá', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000010', NULL, 'ghost_mariamo@seteecos.ghost', 'Mariamo Abdala', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000011', NULL, 'ghost_joana@seteecos.ghost', 'Joana Tembe', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000012', NULL, 'ghost_luisa@seteecos.ghost', 'Luísa Cumbane', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000013', NULL, 'ghost_rosa@seteecos.ghost', 'Rosa Mabjaia', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000014', NULL, 'ghost_beatriz@seteecos.ghost', 'Beatriz Nhambi', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000015', NULL, 'ghost_safira@seteecos.ghost', 'Safira Langa', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000016', NULL, 'ghost_nhara@seteecos.ghost', 'Nhara Guambe', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000017', NULL, 'ghost_ines@seteecos.ghost', 'Inês Chissano', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000018', NULL, 'ghost_marta@seteecos.ghost', 'Marta Chiziane', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000019', NULL, 'ghost_ana@seteecos.ghost', 'Ana Macie', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000020', NULL, 'ghost_claudia@seteecos.ghost', 'Cláudia Dzucula', 'feminino', TRUE),
-  ('00000000-ghost-4000-a000-000000000021', NULL, 'ghost_rafael@seteecos.ghost', 'Rafael Tembe', 'masculino', TRUE),
-  ('00000000-ghost-4000-a000-000000000022', NULL, 'ghost_dinis@seteecos.ghost', 'Dinis Machanguana', 'masculino', TRUE),
-  ('00000000-ghost-4000-a000-000000000023', NULL, 'ghost_dina@seteecos.ghost', 'Dina Matsombe', 'feminino', TRUE)
+INSERT INTO users (id, auth_id, email, nome, is_ghost) VALUES
+  ('00000000-ghost-4000-a000-000000000001', NULL, 'ghost_graca@seteecos.ghost', 'Graça Mondlane', TRUE),
+  ('00000000-ghost-4000-a000-000000000002', NULL, 'ghost_esperanca@seteecos.ghost', 'Esperança Nhaca', TRUE),
+  ('00000000-ghost-4000-a000-000000000003', NULL, 'ghost_celeste@seteecos.ghost', 'Celeste Macuácua', TRUE),
+  ('00000000-ghost-4000-a000-000000000004', NULL, 'ghost_amina@seteecos.ghost', 'Amina Hassane', TRUE),
+  ('00000000-ghost-4000-a000-000000000005', NULL, 'ghost_fatima@seteecos.ghost', 'Fátima Sitoe', TRUE),
+  ('00000000-ghost-4000-a000-000000000006', NULL, 'ghost_halima@seteecos.ghost', 'Halima Januário', TRUE),
+  ('00000000-ghost-4000-a000-000000000007', NULL, 'ghost_dulce@seteecos.ghost', 'Dulce Cossa', TRUE),
+  ('00000000-ghost-4000-a000-000000000008', NULL, 'ghost_aisha@seteecos.ghost', 'Aisha Momade', TRUE),
+  ('00000000-ghost-4000-a000-000000000009', NULL, 'ghost_zainab@seteecos.ghost', 'Zainab Mussá', TRUE),
+  ('00000000-ghost-4000-a000-000000000010', NULL, 'ghost_mariamo@seteecos.ghost', 'Mariamo Abdala', TRUE),
+  ('00000000-ghost-4000-a000-000000000011', NULL, 'ghost_joana@seteecos.ghost', 'Joana Tembe', TRUE),
+  ('00000000-ghost-4000-a000-000000000012', NULL, 'ghost_luisa@seteecos.ghost', 'Luísa Cumbane', TRUE),
+  ('00000000-ghost-4000-a000-000000000013', NULL, 'ghost_rosa@seteecos.ghost', 'Rosa Mabjaia', TRUE),
+  ('00000000-ghost-4000-a000-000000000014', NULL, 'ghost_beatriz@seteecos.ghost', 'Beatriz Nhambi', TRUE),
+  ('00000000-ghost-4000-a000-000000000015', NULL, 'ghost_safira@seteecos.ghost', 'Safira Langa', TRUE),
+  ('00000000-ghost-4000-a000-000000000016', NULL, 'ghost_nhara@seteecos.ghost', 'Nhara Guambe', TRUE),
+  ('00000000-ghost-4000-a000-000000000017', NULL, 'ghost_ines@seteecos.ghost', 'Inês Chissano', TRUE),
+  ('00000000-ghost-4000-a000-000000000018', NULL, 'ghost_marta@seteecos.ghost', 'Marta Chiziane', TRUE),
+  ('00000000-ghost-4000-a000-000000000019', NULL, 'ghost_ana@seteecos.ghost', 'Ana Macie', TRUE),
+  ('00000000-ghost-4000-a000-000000000020', NULL, 'ghost_claudia@seteecos.ghost', 'Cláudia Dzucula', TRUE),
+  ('00000000-ghost-4000-a000-000000000021', NULL, 'ghost_rafael@seteecos.ghost', 'Rafael Tembe', TRUE),
+  ('00000000-ghost-4000-a000-000000000022', NULL, 'ghost_dinis@seteecos.ghost', 'Dinis Machanguana', TRUE),
+  ('00000000-ghost-4000-a000-000000000023', NULL, 'ghost_dina@seteecos.ghost', 'Dina Matsombe', TRUE)
 ON CONFLICT (id) DO NOTHING;
 
 -- 7. Inserir community_profiles para ghost users
