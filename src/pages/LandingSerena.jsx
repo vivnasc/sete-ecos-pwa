@@ -445,8 +445,71 @@ const LandingSerena = () => {
         </div>
       </section>
 
+      {/* ===== VÊ A PLATAFORMA ===== */}
+      <section className="py-20 px-4" style={{ background: '#0f1f28' }}>
+        <div className="max-w-5xl mx-auto">
+          <ScrollReveal variant="fadeUp">
+            <div className="text-center mb-14">
+              <span className="inline-block px-4 py-2 bg-[#6B8E9B]/20 text-[#6B8E9B] rounded-full text-sm font-semibold mb-4">
+                VÊ POR DENTRO
+              </span>
+              <h2
+                className="text-3xl md:text-4xl font-bold text-white mb-4"
+                style={{ fontFamily: 'var(--font-titulos)' }}
+              >
+                O Serena na palma da tua mão
+              </h2>
+              <p className="text-[#6B8E9B]/70 max-w-xl mx-auto">
+                Uma plataforma pensada para acolher as tuas emoções, onde estiveres.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+            <ScrollReveal variant="fadeLeft">
+              <div className="relative mx-auto max-w-[280px]">
+                <div className="absolute -inset-4 bg-[#6B8E9B]/10 rounded-[2.5rem] blur-xl" />
+                <img
+                  src="/mockups/Serena-dash-portrait.png"
+                  alt="Serena Dashboard — diário emocional, respiração guiada e mais"
+                  className="relative rounded-[2rem] shadow-2xl border border-[#6B8E9B]/20 w-full"
+                  loading="lazy"
+                />
+                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#6B8E9B]/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
+                  Dashboard principal
+                </div>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal variant="fadeRight">
+              <div className="relative mx-auto max-w-[280px]">
+                <div className="absolute -inset-4 bg-[#6B8E9B]/10 rounded-[2.5rem] blur-xl" />
+                <img
+                  src="/mockups/Serena-praticas-portrait.png"
+                  alt="Práticas de Fluidez — exercícios do elemento água"
+                  className="relative rounded-[2rem] shadow-2xl border border-[#6B8E9B]/20 w-full"
+                  loading="lazy"
+                />
+                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#6B8E9B]/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
+                  Práticas de Fluidez
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          <div className="text-center mt-12">
+            <button
+              onClick={handleComecar}
+              className="px-8 py-4 bg-[#6B8E9B] text-white rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
+            >
+              Experimentar 7 dias grátis
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* ===== COMO FUNCIONA ===== */}
-      <section id="como-funciona" className="py-20 px-4" style={{ background: '#0f1f28' }}>
+      <section id="como-funciona" className="py-20 px-4" style={{ background: 'linear-gradient(to bottom, #0f1f28, #1a2e3a)' }}>
         <div className="max-w-4xl mx-auto">
           <ScrollReveal variant="fadeUp">
             <div className="text-center mb-14">

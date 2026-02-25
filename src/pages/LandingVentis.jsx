@@ -460,6 +460,69 @@ const LandingVentis = () => {
         </div>
       </section>
 
+      {/* ===== VÊ A PLATAFORMA ===== */}
+      <section className="py-20 px-4" style={{ background: '#0f1f18' }}>
+        <div className="max-w-5xl mx-auto">
+          <ScrollReveal variant="fadeUp">
+            <div className="text-center mb-14">
+              <span className="inline-block px-4 py-2 bg-[#5D9B84]/20 text-[#5D9B84] rounded-full text-sm font-semibold mb-4">
+                VÊ POR DENTRO
+              </span>
+              <h2
+                className="text-3xl md:text-4xl font-bold text-white mb-4"
+                style={{ fontFamily: 'var(--font-titulos)' }}
+              >
+                O Ventis na palma da tua mão
+              </h2>
+              <p className="text-[#5D9B84]/70 max-w-xl mx-auto">
+                Energia, ritmo e equilíbrio — tudo num só lugar.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+            <ScrollReveal variant="fadeLeft">
+              <div className="relative mx-auto max-w-[280px]">
+                <div className="absolute -inset-4 bg-[#5D9B84]/10 rounded-[2.5rem] blur-xl" />
+                <img
+                  src="/mockups/Ventis-dash-portrait.png"
+                  alt="Ventis Dashboard — energia, rotinas e pausas conscientes"
+                  className="relative rounded-[2rem] shadow-2xl border border-[#5D9B84]/20 w-full"
+                  loading="lazy"
+                />
+                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#5D9B84]/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
+                  Dashboard principal
+                </div>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal variant="fadeRight">
+              <div className="relative mx-auto max-w-[280px]">
+                <div className="absolute -inset-4 bg-[#5D9B84]/10 rounded-[2.5rem] blur-xl" />
+                <img
+                  src="/mockups/Ventis-praticas-portrait.png"
+                  alt="Movimento & Flow — yoga, tai chi, dança"
+                  className="relative rounded-[2rem] shadow-2xl border border-[#5D9B84]/20 w-full"
+                  loading="lazy"
+                />
+                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#5D9B84]/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
+                  Movimento & Flow
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          <div className="text-center mt-12">
+            <button
+              onClick={handleComecar}
+              className="px-8 py-4 bg-[#5D9B84] text-white rounded-full font-semibold text-lg hover:translate-y-[-3px] hover:shadow-lg transition-all"
+            >
+              Experimentar 7 dias grátis
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* ===== COMO FUNCIONA ===== */}
       <section id="como-funciona" className="py-20 px-4" style={{ background: 'linear-gradient(to bottom, #1a2e24, #0f1f18)' }}>
         <div className="max-w-4xl mx-auto">
