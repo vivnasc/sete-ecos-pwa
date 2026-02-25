@@ -2,7 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { getNotificacoes, marcarNotificacoesLidas, tempoRelativo } from '../../lib/comunidade'
-import { getGhostNotificationsForPosts, getGhostNotifsLidas, marcarGhostNotifsLidas } from '../../lib/ghost-users'
+import {
+  getGhostNotificationsForPosts,
+  getGhostNotifsLidas,
+  marcarGhostNotifsLidas,
+  getGhostConnectionNotifications,
+  getGhostMessageNotifications
+} from '../../lib/ghost-users'
 import { Avatar } from './HubComunidade'
 import { useI18n } from '../../contexts/I18nContext'
 
@@ -46,11 +52,24 @@ export default function Notificacoes() {
           lida: ghostRead.includes(n.id)
         }))
 
+        // Ghost connection requests + message notifications
+        const ghostConexaoNotifs = getGhostConnectionNotifications(userData.id)
+        const ghostMsgNotifs = getGhostMessageNotifications(userData.id)
+        const allGhostExtra = [...ghostConexaoNotifs, ...ghostMsgNotifs].map(n => ({
+          ...n,
+          lida: ghostRead.includes(n.id)
+        }))
+
         // Mark ghost notifs as read now
-        marcarGhostNotifsLidas(ghostNotifs.map(n => n.id))
+        const allGhostIds = [
+          ...ghostNotifs.map(n => n.id),
+          ...ghostConexaoNotifs.map(n => n.id),
+          ...ghostMsgNotifs.map(n => n.id)
+        ]
+        marcarGhostNotifsLidas(allGhostIds)
 
         // Merge and sort by date
-        const all = [...(dados || []), ...ghostNotifsMarked]
+        const all = [...(dados || []), ...ghostNotifsMarked, ...allGhostExtra]
         all.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
         setNotificacoes(all)
       }

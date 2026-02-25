@@ -18,7 +18,11 @@ import {
 import {
   isGhostUser,
   getGhostProfile,
-  getGhostUserReflexoes
+  getGhostUserReflexoes,
+  getGhostConnectionState,
+  acceptGhostConnection,
+  rejectGhostConnection,
+  countGhostConnections
 } from '../../lib/ghost-users'
 import { Avatar } from './HubComunidade'
 
@@ -68,8 +72,8 @@ export default function Jornada() {
           setReflexoes(ghostReflexoes)
           setNumReflexoes(ghostReflexoes.length)
           setNumRessonancia(ghostReflexoes.reduce((sum, r) => sum + (r.ressonancia_count || 0), 0))
-          setNumConexoes(0)
-          setEstadoConexao('none')
+          setNumConexoes(3 + countGhostConnections(userData.id))
+          setEstadoConexao(getGhostConnectionState(userData.id, perfilUserId))
         } else {
           // Real profile
           const [
@@ -103,20 +107,34 @@ export default function Jornada() {
   }
 
   const handleConexao = async () => {
-    if (acaoEmCurso || isOwnProfile || isGhost) return
+    if (acaoEmCurso || isOwnProfile) return
     setAcaoEmCurso(true)
     try {
-      if (estadoConexao === 'none') {
-        await pedirConexao(meusId, perfilUserId)
-        setEstadoConexao('pending_sent')
-      } else if (estadoConexao === 'pending_received') {
-        await aceitarConexao(meusId, perfilUserId)
-        setEstadoConexao('connected')
-        setNumConexoes(prev => prev + 1)
-      } else if (estadoConexao === 'connected' || estadoConexao === 'pending_sent') {
-        await recusarConexao(meusId, perfilUserId)
-        if (estadoConexao === 'connected') setNumConexoes(prev => Math.max(0, prev - 1))
-        setEstadoConexao('none')
+      if (isGhost) {
+        // Ghost connections — localStorage only
+        if (estadoConexao === 'pending_received') {
+          acceptGhostConnection(meusId, perfilUserId)
+          setEstadoConexao('connected')
+          setNumConexoes(prev => prev + 1)
+        } else if (estadoConexao === 'connected') {
+          rejectGhostConnection(meusId, perfilUserId)
+          setNumConexoes(prev => Math.max(0, prev - 1))
+          setEstadoConexao('none')
+        }
+      } else {
+        // Real connections — Supabase
+        if (estadoConexao === 'none') {
+          await pedirConexao(meusId, perfilUserId)
+          setEstadoConexao('pending_sent')
+        } else if (estadoConexao === 'pending_received') {
+          await aceitarConexao(meusId, perfilUserId)
+          setEstadoConexao('connected')
+          setNumConexoes(prev => prev + 1)
+        } else if (estadoConexao === 'connected' || estadoConexao === 'pending_sent') {
+          await recusarConexao(meusId, perfilUserId)
+          if (estadoConexao === 'connected') setNumConexoes(prev => Math.max(0, prev - 1))
+          setEstadoConexao('none')
+        }
       }
     } catch (error) {
       console.error('Erro na conexão:', error)
@@ -269,46 +287,42 @@ export default function Jornada() {
           {/* ===== ACTION BUTTONS ===== */}
           {!isOwnProfile && (
             <div className="flex justify-center gap-3 mt-5">
-              {!isGhost && (
-                <button
-                  onClick={handleConexao}
-                  disabled={acaoEmCurso}
-                  className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all active:scale-95 ${
-                    estadoConexao === 'connected'
-                      ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                      : estadoConexao === 'pending_sent'
-                        ? 'bg-gray-100 text-gray-500'
-                        : estadoConexao === 'pending_received'
-                          ? 'text-white shadow-md'
-                          : 'text-white shadow-md'
-                  }`}
-                  style={
-                    estadoConexao === 'none' || estadoConexao === 'pending_received'
-                      ? { background: 'linear-gradient(135deg, #D97706 0%, #EA580C 100%)' }
-                      : {}
-                  }
-                >
-                  {acaoEmCurso ? '...'
-                    : estadoConexao === 'connected' ? 'Conectados'
-                    : estadoConexao === 'pending_sent' ? 'Pendente'
-                    : estadoConexao === 'pending_received' ? 'Aceitar conexão'
-                    : 'Conectar'}
-                </button>
-              )}
+              <button
+                onClick={handleConexao}
+                disabled={acaoEmCurso}
+                className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all active:scale-95 ${
+                  estadoConexao === 'connected'
+                    ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                    : estadoConexao === 'pending_sent'
+                      ? 'bg-gray-100 text-gray-500'
+                      : estadoConexao === 'pending_received'
+                        ? 'text-white shadow-md'
+                        : 'text-white shadow-md'
+                }`}
+                style={
+                  estadoConexao === 'none' || estadoConexao === 'pending_received'
+                    ? { background: 'linear-gradient(135deg, #D97706 0%, #EA580C 100%)' }
+                    : {}
+                }
+              >
+                {acaoEmCurso ? '...'
+                  : estadoConexao === 'connected' ? 'Conectados'
+                  : estadoConexao === 'pending_sent' ? 'Pendente'
+                  : estadoConexao === 'pending_received' ? 'Aceitar conexão'
+                  : 'Conectar'}
+              </button>
 
-              {!isGhost && (
-                <button
-                  onClick={handleSussurrar}
-                  className="px-5 py-2.5 rounded-full text-sm font-semibold border border-gray-200 text-gray-600 transition-all active:scale-95 flex items-center gap-1.5"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                    />
-                  </svg>
-                  Sussurrar
-                </button>
-              )}
+              <button
+                onClick={handleSussurrar}
+                className="px-5 py-2.5 rounded-full text-sm font-semibold border border-gray-200 text-gray-600 transition-all active:scale-95 flex items-center gap-1.5"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  />
+                </svg>
+                Sussurrar
+              </button>
             </div>
           )}
 
