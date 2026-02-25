@@ -1284,120 +1284,257 @@ const GHOST_MENSAGENS_INICIAIS = [
   'ola! andas no vitalis tb? eu comecei a semana passada',
 ]
 
-// ---------- RESPOSTAS CONTEXTUAIS POR KEYWORDS ----------
+// ---------- RESPOSTAS CONTEXTUAIS — Multi-frase, com personalidade ----------
 
+// Cada resposta: array de frases (1-3) para parecer conversa natural.
+// {frases} + {followUp} opcional (pergunta para manter conversa).
 const GHOST_RESPOSTAS_CONTEXTUAIS = {
   saudacao: {
     keywords: ['ola', 'oi', 'boa tarde', 'bom dia', 'boa noite', 'tudo bem', 'como estas', 'como vai', 'hey', 'hello'],
     respostas: [
-      'oi! tudo bem sim 😊 e tu, como estas? que bom falar contigo!',
-      'ola! estou bem, obrigada por perguntar! como esta a correr o teu dia?',
-      'oi oi! tudo optimo aqui 🌸 como te sentes hoje?',
-      'eiii ola! q bom! estou bem sim, e tu?',
+      { frases: ['oi! tudo bem sim 😊', 'estava mesmo agora a pensar em escrever-te!'], followUp: 'como esta a correr a tua semana?' },
+      { frases: ['ola! que bom receber a tua mensagem.', 'hoje tive um dia cheio mas bom.'], followUp: 'e tu, como te sentes?' },
+      { frases: ['eiii ola! 🌸', 'fiquei contente por ver a tua mensagem.'], followUp: 'como estas? conta-me novidades!' },
+      { frases: ['oi oi! tudo optimo aqui, obrigada por perguntar!', 'ando cheia de energia esta semana.'], followUp: 'e contigo, como vai?' },
+      { frases: ['ola! que saudade de falar contigo 😊', 'esta tudo bem por aqui.'], followUp: 'o que tens andado a fazer?' },
     ]
   },
   vitalis: {
-    keywords: ['vitalis', 'plano', 'alimenta', 'comida', 'refeic', 'dieta', 'nutri', 'comer', 'peso', 'saude', 'saudav'],
+    keywords: ['vitalis', 'plano', 'alimenta', 'comida', 'refeic', 'dieta', 'nutri', 'comer', 'peso', 'saude', 'saudav', 'receita'],
     respostas: [
-      'o vitalis esta a mudar a minha relacao com a comida! tu tb sentes isso? 🌿',
-      'eu ando no vitalis ha umas semanas e ja noto diferenca na energia! e tu?',
-      'sim! o plano alimentar ajudou-me imenso. qual e a tua fase?',
-      'a parte da alimentacao e q mais gosto! ja experimentaste as receitas mocambicanas? 🍲',
-      'o vitalis ensinou-me a cozinhar com intencao. faz toda a diferenca ne!',
+      { frases: ['o vitalis esta a mudar completamente a minha relacao com a comida!', 'antes comia sem pensar, agora cada refeicao tem intencao. 🌿'], followUp: 'tu tb sentes essa diferenca?' },
+      { frases: ['sim! eu ando no vitalis ha umas semanas e a diferenca na energia e incrivel.', 'ate durmo melhor.'], followUp: 'em que fase estas tu?' },
+      { frases: ['o plano alimentar ajudou-me imenso.', 'comecei a incluir mais legumes e feijao nhemba, e o corpo agradeceu.'], followUp: 'ja experimentaste as receitas mocambicanas do vitalis? 🍲' },
+      { frases: ['sabes o que mais gosto no vitalis? e que nao e so dieta.', 'e uma forma diferente de olhar para a comida e para nos mesmas.'], followUp: 'qual parte do plano estas a gostar mais?' },
+      { frases: ['ontem fiz um caril de amendoim com legumes do mercado e ficou incrivel!', 'o vitalis ensinou-me que cozinhar com intencao muda tudo. ate o sabor e diferente.'], followUp: 'tu gostas de cozinhar?' },
+      { frases: ['eu tb tinha muita dificuldade com a alimentacao.', 'o que me ajudou foi ir devagar, sem pressao. o vitalis ensina isso.'], followUp: 'como estas a lidar com essa parte?' },
     ]
   },
   lumina: {
     keywords: ['lumina', 'diagnostic', 'leitura', 'padrao', 'autoconhec'],
     respostas: [
-      'o lumina revelou-me coisas q eu ja sabia mas nao queria ver! tb sentiste isso? 🔮',
-      'fiz a leitura do lumina e fiquei impressionada. recomendo mesmo!',
-      'o autoconhecimento e o primeiro passo ne. o lumina ajuda muito nisso',
-      'ja fizeste mais do q uma leitura? a segunda vez os resultados sao diferentes!',
+      { frases: ['o lumina revelou-me coisas que eu ja sabia la no fundo mas nao queria ver!', 'foi desconfortavel no inicio mas depois sentiu-se como liberdade. 🔮'], followUp: 'tu tb sentiste isso quando fizeste a leitura?' },
+      { frases: ['fiz a leitura do lumina e fiquei impressionada com a precisao.', 'mostrou-me padroes que repito ha anos sem perceber.'], followUp: 'ja fizeste mais do que uma leitura? os resultados mudam!' },
+      { frases: ['o autoconhecimento e o primeiro passo para tudo ne.', 'eu antes fugia de olhar para dentro. agora percebo que e la que esta a forca.'], followUp: 'o que e que o lumina te mostrou?' },
+      { frases: ['sabes, eu voltei a fazer a leitura depois de 2 meses e os resultados mudaram.', 'e bonito ver a prova de que estamos a mudar, mesmo quando nao sentimos.'], followUp: 'quando foi a ultima vez que fizeste a tua?' },
     ]
   },
   emocional: {
     keywords: ['dificil', 'triste', 'cansad', 'sozinha', 'sozinho', 'medo', 'ansied', 'stress', 'chorar', 'mal', 'desistir', 'nao consigo'],
     respostas: [
-      'entendo-te completamente 💛 as vezes tb me sinto assim. mas passa, prometo',
-      'manda-me mensagem sempre q precisares. nao estas sozinha nisto 🫶',
-      'os dias dificeis tb fazem parte do caminho. tens muita forca 💪',
-      'sei como e. respira fundo. um dia de cada vez ne 🌿',
-      'obrigada por partilhares isso comigo. e preciso coragem. estou aqui',
+      { frases: ['entendo-te completamente 💛', 'eu tb tive dias assim. as vezes o corpo e a alma pedem para parar.', 'e esta tudo bem nao estar bem.'], followUp: 'queres contar-me mais sobre o que sentes?' },
+      { frases: ['obrigada por partilhares isso comigo. e preciso muita coragem.', 'quero que saibas que nao estas sozinha nisto. 🫶'], followUp: 'o que achas que te ajudaria agora?' },
+      { frases: ['os dias dificeis fazem parte do caminho, mas isso nao significa que temos de os enfrentar sozinhas.', 'eu estou aqui. 💪'], followUp: 'ja experimentaste escrever o que sentes? a mim ajuda-me muito.' },
+      { frases: ['sei como e esse peso. ja passei por algo parecido.', 'o que me ajudou foi respirar fundo e lembrar que um dia de cada vez e suficiente. 🌿'], followUp: 'queres que falemos mais sobre isso?' },
+      { frases: ['manda-me mensagem sempre que precisares, a serio.', 'as vezes so ter alguem que ouve ja faz diferenca.', 'estou aqui para ti. 💛'], followUp: null },
     ]
   },
   positivo: {
     keywords: ['bem', 'otimo', 'feliz', 'contente', 'fixe', 'gosto', 'ador', 'incrivel', 'consegu', 'melhor', 'bom'],
     respostas: [
-      'q bom!!! fico tao feliz por ti 🌸 continua assim!',
-      'isso e fantastico! boa, celebra essa vitoria!',
-      'adoro ouvir isso! as pequenas conquistas importam muito 💛',
-      'ehhh isso sim! q energia boa 🔥 vamos continuar!',
+      { frases: ['q bom!!! fico tao feliz por ti! 🌸', 'celebra essa vitoria, por mais pequena que pareca. tu mereces.'], followUp: 'conta-me mais! o que aconteceu?' },
+      { frases: ['isso e fantastico!', 'as pequenas conquistas sao as que mais importam, porque sao as que nos transformam no dia a dia. 💛'], followUp: 'o que e que te fez sentir assim?' },
+      { frases: ['ehhh isso sim! que energia boa! 🔥', 'adoro ver pessoas a brilhar. e contagioso.'], followUp: 'como vais manter esse momentum?' },
+      { frases: ['adoro ouvir isso!', 'lembro-me de quando eu tb comecei a sentir essa mudanca. e so o inicio, vai ficar ainda melhor! 🌿'], followUp: 'o que mudou para ti ultimamente?' },
     ]
   },
   comunidade: {
-    keywords: ['comunidade', 'grupo', 'pessoal', 'pessoas', 'amigas', 'circulo', 'fogueira'],
+    keywords: ['comunidade', 'grupo', 'pessoal', 'pessoas', 'amigas', 'circulo', 'fogueira', 'rio'],
     respostas: [
-      'a comunidade e o melhor! saber q nao estamos sozinhas faz toda a diferenca 😊',
-      'sim! este espaco e tao especial. sinto-me segura aqui',
-      'eu tb adoro este espaco. partilhar com pessoas q percebem e outro nivel',
-      'ja participaste na fogueira? e lindo o q se partilha la 🔥',
+      { frases: ['a comunidade e o melhor mesmo!', 'saber que nao estamos sozinhas neste caminho faz toda a diferenca. 😊', 'eu antes achava que tinha de fazer tudo sozinha.'], followUp: 'qual parte da comunidade gostas mais?' },
+      { frases: ['sim! este espaco e tao especial.', 'as pessoas aqui percebem mesmo o que estamos a passar.'], followUp: 'ja participaste na fogueira? e lindo o que se partilha la 🔥' },
+      { frases: ['eu tb adoro este espaco.', 'partilhar com pessoas que percebem e outro nivel de conexao.'], followUp: 'ha quanto tempo andas aqui?' },
     ]
   },
   exercicio: {
-    keywords: ['exercicio', 'treino', 'correr', 'andar', 'yoga', 'caminh', 'gimnasio', 'desporto', 'movimento'],
+    keywords: ['exercicio', 'treino', 'correr', 'andar', 'yoga', 'caminh', 'gimnasio', 'desporto', 'movimento', 'corpo'],
     respostas: [
-      'eu tb ando a tentar mexer-me mais! comecei com caminhadas e ja ajuda 🚶‍♀️',
-      'o movimento faz tanta diferenca ne! eu faco yoga de manha',
-      'boa! o corpo agradece. eu comecei devagar e agora ja e habito',
-      'isso! nem precisa ser muito. 20 minutinhos ja mudam o dia 💪',
+      { frases: ['eu tb ando a tentar mexer-me mais!', 'comecei com caminhadas de 20 minutos e ja sinto a diferenca na energia e no humor. 🚶‍♀️'], followUp: 'que tipo de exercicio gostas de fazer?' },
+      { frases: ['o movimento faz tanta diferenca ne!', 'eu faco yoga de manha, 15 minutinhos. comecou como obrigacao e agora e o melhor momento do dia.'], followUp: 'ja experimentaste yoga?' },
+      { frases: ['boa! o corpo agradece tanto.', 'eu comecei devagar e agora ja e habito. o segredo e nao ter pressa. 💪'], followUp: 'como esta a ser a tua rotina de exercicio?' },
     ]
   },
   pergunta: {
     keywords: ['como', 'o que', 'qual', 'quando', 'porque', 'porqu', 'onde', 'quem', '?'],
     respostas: [
-      'boa pergunta! eu tb me perguntei isso no inicio 😊 o caminho vai mostrando',
-      'hmm olha, eu acho q cada pessoa tem o seu ritmo. tu vais descobrir!',
-      'essa e uma questao boa! eu ainda estou a aprender tb ne',
-      'ah boa pergunta! o q eu senti e q com o tempo fica mais claro',
+      { frases: ['boa pergunta!', 'eu tb me perguntei isso no inicio. o que descobri e que o caminho vai mostrando as respostas. 😊'], followUp: 'o que e que te levou a pensar nisso?' },
+      { frases: ['hmm olha, eu acho que cada pessoa tem o seu ritmo.', 'o que funciona para mim pode nao funcionar para ti, e esta tudo bem com isso.'], followUp: 'tu vais descobrir o teu caminho! queres trocar ideias?' },
+      { frases: ['essa e uma questao boa! eu ainda estou a aprender tb.', 'o que eu notei e que com o tempo as coisas ficam mais claras.'], followUp: 'ja falaste sobre isso com mais alguem aqui na comunidade?' },
     ]
   },
   generico: {
     keywords: [],
     respostas: [
-      'obrigada por partilhares! e bom ter alguem com quem falar sobre isto 😊',
-      'mesmo! tb sinto isso. estamos juntas neste caminho 🌿',
-      'q bom falar contigo! esta comunidade e mesmo especial 💛',
-      'sim sim! passo a passo ne. o importante e continuar',
-      'gosto de falar contigo! manda mensagem quando quiseres 🌸',
-      'exacto! e isso mesmo. a mudanca e aos poucos mas e real',
-      'obrigada pela mensagem 💛 faz-me bem conectar aqui',
-      'haha concordo! esta jornada e melhor quando partilhada ne 😊',
+      { frases: ['obrigada por partilhares!', 'e bom ter alguem com quem falar sobre estas coisas. nem toda a gente percebe. 😊'], followUp: 'o que mais tens andado a pensar?' },
+      { frases: ['mesmo! tb sinto isso.', 'estamos juntas neste caminho e isso da-me forca. 🌿'], followUp: 'como esta a correr a tua jornada?' },
+      { frases: ['q bom falar contigo!', 'esta comunidade e mesmo especial. encontrei aqui pessoas que me percebem de verdade. 💛'], followUp: null },
+      { frases: ['sim sim! passo a passo ne.', 'o importante e nao desistir. os dias em que temos menos vontade sao os mais importantes.'], followUp: 'como te sentes hoje?' },
+      { frases: ['gosto muito de falar contigo! 🌸', 'e bom sentir que temos companhia nesta jornada.'], followUp: 'manda mensagem quando quiseres, estou aqui!' },
+      { frases: ['exacto! e isso mesmo.', 'a mudanca e aos poucos mas quando olhamos para tras, ja andamos tanto.'], followUp: 'o que mudou mais em ti desde que comecaste?' },
+      { frases: ['obrigada pela mensagem! 💛', 'faz-me bem conectar aqui. as vezes um bocadinho de conversa muda o dia.'], followUp: null },
+      { frases: ['concordo completamente!', 'esta jornada e melhor quando partilhada. sozinhas e mais dificil. 😊'], followUp: 'tens sentido diferenca desde que comecaste?' },
     ]
   }
 }
 
+// ---------- TRAÇOS DE PERSONALIDADE (afectam o estilo das respostas) ----------
+
+const PERSONALIDADE_PREFIXOS = {
+  calorosa: ['ai querida! ', 'ohhh ', 'mana! ', ''],
+  reflexiva: ['sabes... ', 'penso que ', 'tenho reflectido sobre isso. ', ''],
+  empática: ['sinto o que dizes. ', 'percebo perfeitamente. ', '', ''],
+  sabia: ['aprendi que ', 'a vida ensinou-me que ', 'com o tempo percebi que ', ''],
+  determinada: ['forca! ', 'vamos a isto! ', 'nao desistas! ', ''],
+  curiosa: ['que interessante! ', 'conta-me mais! ', 'isso fascina-me. ', ''],
+  poetica: ['', '', '', ''],
+  vulneravel: ['obrigada por isso. ', 'isso toca-me. ', '', ''],
+  criativa: ['adoro essa perspectiva! ', 'que lindo! ', '', ''],
+  pratica: ['olha, ', 'concretamente, ', '', ''],
+  energetica: ['boa!! ', 'isso mesmo! ', 'vamos! ', ''],
+  corajosa: ['isso e coragem! ', 'admiro-te. ', '', ''],
+  articulada: ['', '', '', ''],
+  espiritual: ['que bonito. ', 'sinto isso no coracao. ', '', ''],
+}
+
+const PERSONALIDADE_SUFIXOS = {
+  calorosa: [' 💛', ' 🫶', ' 🌸', ''],
+  reflexiva: ['', '', '', ''],
+  empática: [' estou aqui.', ' nao estas sozinha.', '', ''],
+  sabia: ['', '', '', ''],
+  determinada: [' 💪', ' tu consegues!', '', ''],
+  curiosa: [' 🔮', '', '', ''],
+  poetica: [' ✨', '', '', ''],
+  vulneravel: [' 💛', '', '', ''],
+  criativa: [' 🎨', ' ✨', '', ''],
+  pratica: ['', '', '', ''],
+  energetica: [' 🔥', ' 💪', '', ''],
+  corajosa: ['', '', '', ''],
+  articulada: ['', '', '', ''],
+  espiritual: [' 🙏', ' 🕊️', '', ''],
+}
+
 /**
- * Escolhe resposta contextual baseada em keywords da mensagem do user.
+ * Constrói resposta multi-frase com personalidade do ghost.
+ * Retorna string formatada (1-3 frases + follow-up opcional).
  */
-function escolherRespostaContextual(mensagem, ghostId) {
+function construirResposta(respostaObj, ghostProfile, rng) {
+  const personalidade = ghostProfile?.personalidade || 'generico'
+  const prefixos = PERSONALIDADE_PREFIXOS[personalidade] || ['']
+  const sufixos = PERSONALIDADE_SUFIXOS[personalidade] || ['']
+
+  const prefixo = prefixos[Math.floor(rng() * prefixos.length)]
+  const sufixo = sufixos[Math.floor(rng() * sufixos.length)]
+
+  // Juntar frases
+  let texto = respostaObj.frases.join(' ')
+
+  // Adicionar prefixo de personalidade (50% chance, para nao ser repetitivo)
+  if (prefixo && rng() < 0.5) {
+    texto = prefixo + texto
+  }
+
+  // Adicionar sufixo de personalidade (40% chance)
+  if (sufixo && rng() < 0.4) {
+    texto = texto + sufixo
+  }
+
+  // Adicionar follow-up (70% chance, se existir)
+  if (respostaObj.followUp && rng() < 0.7) {
+    texto = texto + '\n' + respostaObj.followUp
+  }
+
+  return texto
+}
+
+/**
+ * Conta mensagens ghost nesta conversa hoje (para limite).
+ * Retorna count via localStorage (rápido, sem query).
+ */
+function getGhostReplyCountToday(conversaId) {
+  const key = `ghost_replies_${conversaId}`
+  const stored = JSON.parse(localStorage.getItem(key) || '{}')
+  const hoje = new Date().toDateString()
+  if (stored.date !== hoje) return 0
+  return stored.count || 0
+}
+
+function incrementGhostReplyCount(conversaId) {
+  const key = `ghost_replies_${conversaId}`
+  const hoje = new Date().toDateString()
+  const stored = JSON.parse(localStorage.getItem(key) || '{}')
+  if (stored.date !== hoje) {
+    localStorage.setItem(key, JSON.stringify({ date: hoje, count: 1 }))
+  } else {
+    localStorage.setItem(key, JSON.stringify({ date: hoje, count: (stored.count || 0) + 1 }))
+  }
+}
+
+/** Limite máximo de respostas ghost por conversa/dia */
+const GHOST_MAX_REPLIES_PER_DAY = 4
+
+/** Chance do ghost não responder (simula estar "ocupada") — 15% */
+const GHOST_BUSY_CHANCE = 0.15
+
+/**
+ * Escolhe resposta contextual baseada em keywords, personalidade e limites.
+ * Retorna { texto, shouldReply, delay } onde:
+ *   - texto: string da resposta (ou null)
+ *   - shouldReply: boolean (false se ocupada ou limite atingido)
+ *   - delay: ms de espera antes de responder (baseado no tamanho)
+ */
+function escolherRespostaContextual(mensagem, ghostId, conversaId) {
   const texto = (mensagem || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   const seed = hashStr(ghostId + '_resp_' + Date.now())
   const rng = seededRandom(seed)
 
+  // Verificar limite diário
+  const replyCount = getGhostReplyCountToday(conversaId)
+  if (replyCount >= GHOST_MAX_REPLIES_PER_DAY) {
+    return { texto: null, shouldReply: false, delay: 0, reason: 'limit' }
+  }
+
+  // Chance de estar "ocupada" (mas não na primeira mensagem da conversa)
+  if (replyCount > 0 && rng() < GHOST_BUSY_CHANCE) {
+    return { texto: null, shouldReply: false, delay: 0, reason: 'busy' }
+  }
+
+  // Encontrar perfil ghost para personalidade
+  const ghostProfile = GHOST_PROFILES.find(p =>
+    resolveGhostId(p.id) === ghostId || p.id === ghostId
+  )
+
   // Tentar encontrar categoria por keywords
+  let respostaObj = null
   const categorias = Object.keys(GHOST_RESPOSTAS_CONTEXTUAIS).filter(k => k !== 'generico')
   for (const cat of categorias) {
     const { keywords, respostas } = GHOST_RESPOSTAS_CONTEXTUAIS[cat]
     const match = keywords.some(kw => texto.includes(kw))
     if (match) {
       const shuffled = shuffle(respostas, rng)
-      return shuffled[0]
+      respostaObj = shuffled[0]
+      break
     }
   }
 
   // Fallback genérico
-  const shuffled = shuffle(GHOST_RESPOSTAS_CONTEXTUAIS.generico.respostas, rng)
-  return shuffled[0]
+  if (!respostaObj) {
+    const shuffled = shuffle(GHOST_RESPOSTAS_CONTEXTUAIS.generico.respostas, rng)
+    respostaObj = shuffled[0]
+  }
+
+  // Construir texto com personalidade
+  const respostaTexto = construirResposta(respostaObj, ghostProfile, rng)
+
+  // Delay baseado no tamanho da resposta (mais longa = mais tempo a "escrever")
+  const baseDelay = 2000
+  const charDelay = Math.min(respostaTexto.length * 15, 4000)
+  const randomExtra = Math.floor(rng() * 2000)
+  const delay = baseDelay + charDelay + randomExtra // 2s-8s
+
+  // Incrementar contador
+  incrementGhostReplyCount(conversaId)
+
+  return { texto: respostaTexto, shouldReply: true, delay, reason: null }
 }
 
 /**
@@ -1566,8 +1703,8 @@ export async function ensureGhostConversations(userId) {
 /**
  * Envia mensagem do user para ghost via Supabase.
  * Mensagem real vai para community_messages.
- * Ghost responde via RPC após delay.
- * Retorna { conversaId, ghostReplyConteudo }
+ * Ghost responde via RPC após delay (se shouldReply=true).
+ * Retorna { userMsg, ghostReplyText, ghostUUID, shouldReply, delay, busyReason }
  */
 export async function sendMessageToGhostSupabase(conversaId, userId, ghostUUID, conteudo) {
   // 1. Enviar mensagem do user (via insert normal — RLS permite)
@@ -1588,13 +1725,16 @@ export async function sendMessageToGhostSupabase(conversaId, userId, ghostUUID, 
     .update({ last_message: conteudo, last_message_at: new Date().toISOString() })
     .eq('id', conversaId)
 
-  // 3. Gerar resposta contextual
-  const ghostReplyText = escolherRespostaContextual(conteudo, ghostUUID)
+  // 3. Gerar resposta contextual (com limites e personalidade)
+  const { texto: ghostReplyText, shouldReply, delay, reason } = escolherRespostaContextual(conteudo, ghostUUID, conversaId)
 
   return {
     userMsg: userMsg?.[0],
     ghostReplyText,
-    ghostUUID
+    ghostUUID,
+    shouldReply,
+    delay,
+    busyReason: reason
   }
 }
 

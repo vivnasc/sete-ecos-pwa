@@ -271,27 +271,29 @@ function SussurroView({ userId, conversa, onVoltar }) {
     try {
       if (isGhostConv && outroId) {
         // Ghost: enviar + resposta contextual via Supabase
-        const { userMsg, ghostReplyText, ghostUUID } = await sendMessageToGhostSupabase(
+        const result = await sendMessageToGhostSupabase(
           conversa.id, userId, outroId, conteudo
         )
-        if (userMsg) {
+        if (result.userMsg) {
           setMensagens(prev => {
-            const jaExiste = prev.some(m => m.id === userMsg.id)
+            const jaExiste = prev.some(m => m.id === result.userMsg.id)
             if (jaExiste) return prev
-            return [...prev, userMsg]
+            return [...prev, result.userMsg]
           })
         }
-        // Typing indicator + ghost reply após delay
-        setGhostTyping(true)
-        const delay = 2000 + Math.random() * 3000
-        setTimeout(async () => {
-          try {
-            await insertGhostReply(conversa.id, ghostUUID, ghostReplyText)
-          } catch (err) {
-            console.error('Erro ghost reply:', err)
-          }
-          setGhostTyping(false)
-        }, delay)
+        // Ghost responde? (pode estar "ocupada" ou ter atingido limite)
+        if (result.shouldReply && result.ghostReplyText) {
+          setGhostTyping(true)
+          setTimeout(async () => {
+            try {
+              await insertGhostReply(conversa.id, result.ghostUUID, result.ghostReplyText)
+            } catch (err) {
+              console.error('Erro ghost reply:', err)
+            }
+            setGhostTyping(false)
+          }, result.delay || 3000)
+        }
+        // Se não responde, fica em silêncio (natural)
       } else {
         const novoSussurro = await enviarSussurro(conversa.id, userId, conteudo)
         if (novoSussurro) {

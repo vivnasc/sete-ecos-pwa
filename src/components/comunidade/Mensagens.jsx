@@ -412,30 +412,32 @@ function ChatView({ userId, conversaId }) {
     try {
       if (isGhostConv && outroId) {
         // Ghost: enviar mensagem + gerar resposta contextual
-        const { userMsg, ghostReplyText, ghostUUID } = await sendMessageToGhostSupabase(
+        const result = await sendMessageToGhostSupabase(
           conversaId, userId, outroId, conteudo
         )
 
-        if (userMsg) {
+        if (result.userMsg) {
           setMensagens(prev => {
-            const jaExiste = prev.some(m => m.id === userMsg.id)
+            const jaExiste = prev.some(m => m.id === result.userMsg.id)
             if (jaExiste) return prev
-            return [...prev, userMsg]
+            return [...prev, result.userMsg]
           })
         }
 
-        // Mostrar "a escrever..." e inserir resposta após delay
-        setGhostTyping(true)
-        const delay = 2000 + Math.random() * 3000 // 2-5 segundos
-        setTimeout(async () => {
-          try {
-            await insertGhostReply(conversaId, ghostUUID, ghostReplyText)
-            // A mensagem vai chegar via real-time subscription
-          } catch (err) {
-            console.error('Erro ao inserir ghost reply:', err)
-          }
-          setGhostTyping(false)
-        }, delay)
+        // Ghost responde? (pode estar "ocupada" ou ter atingido limite)
+        if (result.shouldReply && result.ghostReplyText) {
+          setGhostTyping(true)
+          setTimeout(async () => {
+            try {
+              await insertGhostReply(conversaId, result.ghostUUID, result.ghostReplyText)
+              // A mensagem vai chegar via real-time subscription
+            } catch (err) {
+              console.error('Erro ao inserir ghost reply:', err)
+            }
+            setGhostTyping(false)
+          }, result.delay || 3000)
+        }
+        // Se não responde, fica em silêncio (natural)
       } else {
         // User real — enviar via Supabase normal
         const novaMensagem = await enviarMensagem(conversaId, userId, conteudo)
