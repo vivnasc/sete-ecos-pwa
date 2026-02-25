@@ -26,6 +26,7 @@ import {
   getSetupWhatsAppBusiness,
   gerarConteudoDiario,
   gerarSemanaCompleta,
+  getMockupsEco,
 } from '../lib/marketing-engine';
 import { RENDER_MAP, CORES, FORMATOS } from '../components/TemplateVisual';
 
@@ -273,6 +274,166 @@ function MockupSlide({ mockupSrc, texto, subtitulo, slideLabel, isCover, slideNu
   );
 }
 
+// ============================================================
+// STORY SLIDE — Imagem 9:16 (1080×1920) com mockup real
+// Para IG Stories, FB Stories e WA Status
+// ============================================================
+
+function StorySlide({ mockupSrc, texto, subtitulo, eco, filename }) {
+  const [dataUrl, setDataUrl] = useState(null);
+  const W = 1080;
+  const H = 1920;
+
+  // Cores por eco
+  const ecoCores = {
+    vitalis: { start: '#2d4a2d', mid: '#3d5a3d', end: '#1a2e1a' },
+    aurea: { start: '#4a3a10', mid: '#6a5520', end: '#2e2008' },
+    serena: { start: '#1a3a4a', mid: '#2a4a5a', end: '#0e2430' },
+    ignis: { start: '#4a1a10', mid: '#6a2a1a', end: '#2e0e08' },
+    ventis: { start: '#1a4a3a', mid: '#2a5a4a', end: '#0e302a' },
+    ecoa: { start: '#1a3050', mid: '#2a4060', end: '#0e2035' },
+    imago: { start: '#3a2a4a', mid: '#4a3a5a', end: '#20182e' },
+    lumina: { start: '#2a2a50', mid: '#3a3a60', end: '#181835' },
+  };
+  const cores = ecoCores[eco] || ecoCores.vitalis;
+
+  useEffect(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      // Gradient background
+      const grad = ctx.createLinearGradient(0, 0, 0, H);
+      grad.addColorStop(0, cores.start);
+      grad.addColorStop(0.5, cores.mid);
+      grad.addColorStop(1, cores.end);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Subtle texture overlay
+      ctx.fillStyle = 'rgba(255,255,255,0.02)';
+      for (let i = 0; i < 20; i++) {
+        ctx.beginPath();
+        ctx.arc(Math.random() * W, Math.random() * H, Math.random() * 100 + 50, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Mockup image — large, centered
+      const mockupMaxW = W * 0.85;
+      const aspectRatio = img.height / img.width;
+      let mockupW = mockupMaxW;
+      let mockupH = mockupW * aspectRatio;
+      const maxMockupH = H * 0.50;
+      if (mockupH > maxMockupH) {
+        mockupH = maxMockupH;
+        mockupW = mockupH / aspectRatio;
+      }
+      const mockupX = (W - mockupW) / 2;
+      const mockupY = H * 0.30;
+
+      // Shadow
+      ctx.shadowColor = 'rgba(0,0,0,0.5)';
+      ctx.shadowBlur = 40;
+      ctx.shadowOffsetY = 15;
+
+      // Draw mockup with rounded corners
+      const r = 20;
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(mockupX, mockupY, mockupW, mockupH, r);
+      ctx.clip();
+      ctx.drawImage(img, mockupX, mockupY, mockupW, mockupH);
+      ctx.restore();
+
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+
+      // Top text (hook)
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 48px -apple-system, BlinkMacSystemFont, sans-serif';
+      const lines = wrapText(ctx, texto, W * 0.8);
+      let textY = 140;
+      lines.forEach(line => {
+        ctx.fillText(line, W / 2, textY);
+        textY += 60;
+      });
+
+      // Subtitle below mockup
+      if (subtitulo) {
+        const subY = mockupY + mockupH + 80;
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.font = 'bold 28px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.fillText(subtitulo.toUpperCase(), W / 2, subY);
+      }
+
+      // Swipe up CTA at bottom
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = '22px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.fillText('app.seteecos.com', W / 2, H - 100);
+
+      // Brand watermark
+      ctx.fillStyle = 'rgba(255,255,255,0.2)';
+      ctx.font = 'bold 20px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.fillText('@seteecos', W / 2, H - 60);
+
+      setDataUrl(canvas.toDataURL('image/jpeg', 0.92));
+    };
+    img.onerror = () => {
+      // Fallback: text-only story
+      const grad = ctx.createLinearGradient(0, 0, 0, H);
+      grad.addColorStop(0, cores.start);
+      grad.addColorStop(1, cores.end);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 52px -apple-system, BlinkMacSystemFont, sans-serif';
+      const lines = wrapText(ctx, texto, W * 0.8);
+      let y = H / 2 - (lines.length * 64) / 2;
+      lines.forEach(line => { ctx.fillText(line, W / 2, y); y += 64; });
+
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.fillText('@seteecos', W / 2, H - 80);
+
+      setDataUrl(canvas.toDataURL('image/jpeg', 0.92));
+    };
+    img.src = mockupSrc;
+  }, [mockupSrc, texto, subtitulo, eco, cores]);
+
+  const download = () => {
+    if (!dataUrl) return;
+    const a = document.createElement('a');
+    a.download = filename || `story-${eco}.jpg`;
+    a.href = dataUrl;
+    a.click();
+  };
+
+  // Preview dimensions (aspect ratio 9:16)
+  const displayW = 180;
+  const displayH = 320;
+
+  if (!dataUrl) {
+    return <div style={{ width: displayW, height: displayH }} className="bg-gray-200 rounded-xl animate-pulse" />;
+  }
+
+  return (
+    <div className="relative group">
+      <img src={dataUrl} style={{ width: displayW, height: displayH }} className="rounded-xl shadow-md object-cover" alt={texto} />
+      <button onClick={download} className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-[10px] font-bold text-[#4A4035] shadow opacity-0 group-hover:opacity-100 transition-opacity">
+        ⬇ JPG
+      </button>
+    </div>
+  );
+}
+
 // Utility: wrap text to fit canvas width
 function wrapText(ctx, text, maxWidth) {
   const words = text.split(' ');
@@ -467,46 +628,22 @@ export default function MarketingDashboard() {
 // ============================================================
 
 // ============================================================
-// BLOCO DE CONTEÚDO POR PLATAFORMA — componente reutilizável
-// ============================================================
-
-function BlocoPlataforma({ plataforma, cor, gradiente, icone, caption, hashtags, copiar, copiado, idCopia, linkEnviar }) {
-  return (
-    <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
-      <div className={`${gradiente} text-white px-4 py-2.5 flex items-center justify-between`}>
-        <div className="flex items-center gap-2">
-          <span className="text-base">{icone}</span>
-          <p className="font-bold text-sm">{plataforma}</p>
-        </div>
-        <CopyBtn onClick={() => copiar(caption, idCopia)} copiado={copiado === idCopia} label="Copiar" small />
-      </div>
-      <div className="p-3">
-        <pre className="text-xs text-[#4A4035] whitespace-pre-wrap leading-relaxed max-h-32 overflow-y-auto bg-[#FAFAF8] rounded-xl p-3">{caption}</pre>
-        {linkEnviar && (
-          <div className="mt-2">
-            <a
-              href={linkEnviar}
-              target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#25D366] text-white rounded-full text-[11px] font-bold"
-            >
-              Enviar no WhatsApp
-            </a>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ============================================================
-// BLOCO DE ECO — todo o conteúdo de 1 eco para as 4 plataformas
+// BLOCO DE ECO — todo o conteúdo visual de 1 eco (imagens + legendas)
 // ============================================================
 
 function BlocoEco({ eco, copiar, copiado, prefixo }) {
   if (!eco) return null;
   const [aberto, setAberto] = useState(true);
+  const [textoAberto, setTextoAberto] = useState(null);
   const ig = eco.conteudoIG;
   const temCarrossel = ig && ig.tipo === 'carrossel' && ig.slides;
+  const mockups = getMockupsEco(eco.eco);
+
+  const mockupPrincipal = mockups[0];
+  const mockupSecundario = mockups.length > 1 ? mockups[1] : mockups[0];
+
+  // Template: testemunho usa 'testemunho', CTA usa 'cta', resto usa 'dica'
+  const templateTipo = ig?.tipo === 'testemunho' ? 'testemunho' : ig?.tipo === 'cta' ? 'cta' : 'dica';
 
   return (
     <div className="space-y-3">
@@ -527,88 +664,212 @@ function BlocoEco({ eco, copiar, copiado, prefixo }) {
 
       {aberto && (
         <div className="space-y-3 pl-1">
-          {/* Imagem do carrossel (se houver) */}
+
+          {/* ===== 1. IMAGEM COLORIDA DO ECO (AutoImage) — post principal ===== */}
+          <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+            <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+              <div>
+                <p className="font-bold text-xs text-[#4A4035]">
+                  {templateTipo === 'testemunho' ? 'Testemunho' : templateTipo === 'cta' ? 'CTA' : 'Post do dia'}
+                </p>
+                <p className="text-[10px] text-[#A09888]">Imagem pronta — descarrega e publica</p>
+              </div>
+              <span className="text-[9px] bg-pink-100 text-pink-700 font-bold px-2 py-0.5 rounded-full">1:1</span>
+            </div>
+            <div className="p-3 flex justify-center">
+              <AutoImage
+                template={templateTipo}
+                eco={eco.eco} formato="post"
+                texto={eco.hook}
+                subtitulo={ig?.subtitulo || ig?.texto || eco.corpo?.slice(0, 80) || ''}
+                scale={0.28} filename={`${eco.eco}-post-${prefixo}.png`}
+              />
+            </div>
+          </div>
+
+          {/* ===== 2. CARROSSEL (se houver) com AutoImage colorido ===== */}
           {temCarrossel && (
             <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
-              <div className="px-4 py-2.5 border-b border-[#E8E2D9]">
-                <p className="font-bold text-xs text-[#4A4035]">Carrossel: {ig.titulo}</p>
-                <p className="text-[10px] text-[#A09888]">{ig.slides.length} slides — descarrega imagens abaixo</p>
+              <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+                <div>
+                  <p className="font-bold text-xs text-[#4A4035]">Carrossel: {ig.titulo}</p>
+                  <p className="text-[10px] text-[#A09888]">{ig.slides.length} slides coloridos — desliza e descarrega</p>
+                </div>
+                <span className="text-[9px] bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-full">Slides</span>
               </div>
-              <div className="p-3 space-y-2">
-                {ig.slides.map((slide, i) => (
-                  <div key={i} className="flex gap-2">
+              <div className="p-3">
+                <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x">
+                  {ig.slides.map((slide, i) => (
                     <AutoImage
-                      template="dica" eco={eco.eco} formato="post"
+                      key={i}
+                      template="carrossel" eco={eco.eco} formato="post"
                       texto={slide.titulo} subtitulo={slide.texto}
                       slideNum={i + 1} totalSlides={ig.slides.length}
                       bgIndex={i}
-                      scale={0.18} filename={`${eco.eco}-carrossel-${i + 1}.png`}
+                      scale={0.24} filename={`${eco.eco}-carrossel-${i + 1}.png`}
                       className="shrink-0"
                     />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[11px] font-bold text-[#4A4035] truncate">{slide.titulo}</p>
-                      <p className="text-[10px] text-[#6B5C4C] line-clamp-2">{slide.texto}</p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           )}
 
-          {/* Imagem principal (para posts/dicas) */}
-          {!temCarrossel && (
-            <div className="flex justify-center">
+          {/* ===== 3. MOCKUP COMPOSTO (screenshot da app + texto) ===== */}
+          <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+            <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+              <div>
+                <p className="font-bold text-xs text-[#4A4035]">Mockup da app</p>
+                <p className="text-[10px] text-[#A09888]">Imagem profissional com screenshot real</p>
+              </div>
+              <span className="text-[9px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full">Mockup</span>
+            </div>
+            <div className="p-3">
+              <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+                <MockupSlide
+                  mockupSrc={mockupPrincipal}
+                  texto={eco.hook}
+                  subtitulo={ig?.subtitulo || ig?.texto || eco.corpo?.slice(0, 60) || ''}
+                  isCover={true}
+                  filename={`${eco.eco}-mockup-${prefixo}.jpg`}
+                />
+                {mockupSecundario !== mockupPrincipal && (
+                  <MockupSlide
+                    mockupSrc={mockupSecundario}
+                    texto={eco.nome}
+                    subtitulo={eco.hook?.slice(0, 60) || ''}
+                    isCover={false}
+                    filename={`${eco.eco}-mockup2-${prefixo}.jpg`}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* ===== 4. STORIES — duas versões: colorida + mockup ===== */}
+          <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+            <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+              <div>
+                <p className="font-bold text-xs text-[#4A4035]">Stories</p>
+                <p className="text-[10px] text-[#A09888]">IG, FB e WA Status — 2 versões</p>
+              </div>
+              <span className="text-[9px] bg-gradient-to-r from-orange-400 to-pink-500 text-white font-bold px-2 py-0.5 rounded-full">9:16</span>
+            </div>
+            <div className="p-3 flex gap-3 justify-center overflow-x-auto">
+              {/* Story colorido */}
               <AutoImage
-                template={ig?.tipo === 'testemunho' ? 'testemunho' : 'dica'}
-                eco={eco.eco} formato="post"
+                template={templateTipo}
+                eco={eco.eco} formato="stories"
                 texto={eco.hook}
-                subtitulo={ig?.subtitulo || eco.corpo?.slice(0, 80)}
-                scale={0.28} filename={`${eco.eco}-post.png`}
+                subtitulo="app.seteecos.com"
+                scale={0.16} filename={`${eco.eco}-story-colorido-${prefixo}.png`}
+              />
+              {/* Story com mockup */}
+              <StorySlide
+                mockupSrc={mockupPrincipal}
+                texto={eco.hook}
+                subtitulo={eco.nome}
+                eco={eco.eco}
+                filename={`${eco.eco}-story-mockup-${prefixo}.jpg`}
               />
             </div>
+          </div>
+
+          {/* ===== 5. TEXTOS POR PLATAFORMA (collapsible) ===== */}
+          <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+            <div className="px-4 py-2.5 border-b border-[#E8E2D9]">
+              <p className="font-bold text-xs text-[#4A4035]">Legendas prontas</p>
+              <p className="text-[10px] text-[#A09888]">Toca para copiar o texto de cada rede</p>
+            </div>
+            <div className="divide-y divide-[#E8E2D9]">
+              <TextoPlataforma
+                plataforma="Instagram"
+                icone="📸"
+                cor="text-pink-600"
+                texto={ig?.caption || eco.instagram?.caption || ''}
+                aberto={textoAberto === 'ig'}
+                onToggle={() => setTextoAberto(v => v === 'ig' ? null : 'ig')}
+                copiar={copiar}
+                copiado={copiado}
+                idCopia={`${prefixo}-ig`}
+              />
+              <TextoPlataforma
+                plataforma="Facebook"
+                icone="👤"
+                cor="text-blue-600"
+                texto={eco.facebook || ''}
+                aberto={textoAberto === 'fb'}
+                onToggle={() => setTextoAberto(v => v === 'fb' ? null : 'fb')}
+                copiar={copiar}
+                copiado={copiado}
+                idCopia={`${prefixo}-fb`}
+              />
+              <TextoPlataforma
+                plataforma="WhatsApp"
+                icone="💬"
+                cor="text-green-600"
+                texto={eco.whatsapp || ''}
+                aberto={textoAberto === 'wa'}
+                onToggle={() => setTextoAberto(v => v === 'wa' ? null : 'wa')}
+                copiar={copiar}
+                copiado={copiado}
+                idCopia={`${prefixo}-wa`}
+                linkEnviar={eco.whatsapp ? `https://wa.me/?text=${encodeURIComponent(eco.whatsapp)}` : null}
+              />
+              {/* TikTok / Reels — script para gravar */}
+              {eco.tiktok && (
+                <TextoPlataforma
+                  plataforma="TikTok / Reels"
+                  icone="🎬"
+                  cor="text-gray-700"
+                  texto={typeof eco.tiktok === 'object' ? `ROTEIRO:\n${eco.tiktok.ideia}\n\n---\nCAPTION:\n${eco.tiktok.caption}` : eco.tiktok}
+                  aberto={textoAberto === 'tt'}
+                  onToggle={() => setTextoAberto(v => v === 'tt' ? null : 'tt')}
+                  copiar={copiar}
+                  copiado={copiado}
+                  idCopia={`${prefixo}-tt`}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Linha de texto por plataforma (dentro do bloco de legendas)
+function TextoPlataforma({ plataforma, icone, cor, texto, aberto, onToggle, copiar, copiado, idCopia, linkEnviar }) {
+  if (!texto) return null;
+  return (
+    <div>
+      <button onClick={onToggle} className="w-full flex items-center justify-between px-4 py-2.5 active:bg-[#FAFAF8] transition-colors">
+        <div className="flex items-center gap-2">
+          <span className="text-sm">{icone}</span>
+          <span className={`text-xs font-bold ${cor}`}>{plataforma}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={(e) => { e.stopPropagation(); copiar(texto, idCopia); }}
+            className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${copiado === idCopia ? 'bg-green-100 text-green-700' : 'bg-[#F5F2ED] text-[#6B5C4C] hover:bg-[#E8E2D9]'}`}
+          >
+            {copiado === idCopia ? '✓ Copiado' : 'Copiar'}
+          </button>
+          <span className="text-[#A09888] text-xs">{aberto ? '▲' : '▼'}</span>
+        </div>
+      </button>
+      {aberto && (
+        <div className="px-4 pb-3">
+          <pre className="text-[11px] text-[#4A4035] whitespace-pre-wrap leading-relaxed max-h-40 overflow-y-auto bg-[#FAFAF8] rounded-xl p-3">{texto}</pre>
+          {linkEnviar && (
+            <a
+              href={linkEnviar}
+              target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 mt-2 px-3 py-1.5 bg-[#25D366] text-white rounded-full text-[10px] font-bold"
+            >
+              Enviar no WhatsApp
+            </a>
           )}
-
-          {/* 4 PLATAFORMAS */}
-          <BlocoPlataforma
-            plataforma="Instagram"
-            gradiente="bg-gradient-to-r from-pink-500 to-purple-600"
-            icone="📸"
-            caption={ig?.caption || eco.instagram?.caption || ''}
-            copiar={copiar}
-            copiado={copiado}
-            idCopia={`${prefixo}-ig`}
-          />
-
-          <BlocoPlataforma
-            plataforma="Facebook"
-            gradiente="bg-gradient-to-r from-blue-600 to-blue-700"
-            icone="👤"
-            caption={eco.facebook || ''}
-            copiar={copiar}
-            copiado={copiado}
-            idCopia={`${prefixo}-fb`}
-          />
-
-          <BlocoPlataforma
-            plataforma="TikTok"
-            gradiente="bg-gradient-to-r from-gray-900 to-gray-800"
-            icone="🎵"
-            caption={typeof eco.tiktok === 'object' ? `${eco.tiktok.ideia}\n\n---\nCAPTION:\n${eco.tiktok.caption}` : eco.tiktok || ''}
-            copiar={copiar}
-            copiado={copiado}
-            idCopia={`${prefixo}-tt`}
-          />
-
-          <BlocoPlataforma
-            plataforma="WhatsApp"
-            gradiente="bg-[#25D366]"
-            icone="💬"
-            caption={eco.whatsapp || ''}
-            copiar={copiar}
-            copiado={copiado}
-            idCopia={`${prefixo}-wa`}
-            linkEnviar={eco.whatsapp ? `https://wa.me/?text=${encodeURIComponent(eco.whatsapp)}` : null}
-          />
         </div>
       )}
     </div>
@@ -705,21 +966,6 @@ function ModoSimples({ copiar, copiado, onVerTudo }) {
             {conteudo.ecoDoDia?.nome} — eco do dia
           </p>
           <BlocoEco eco={conteudo.ecoDoDia} copiar={copiar} copiado={copiado} prefixo="e" />
-        </div>
-
-        {/* Story image (bonus) */}
-        <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
-          <div className="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-4 py-2.5">
-            <p className="font-bold text-sm">Story do dia</p>
-            <p className="text-white/80 text-[10px]">Funciona para IG, FB e WA Status</p>
-          </div>
-          <div className="p-4 flex justify-center">
-            <AutoImage
-              template="cta" eco={conteudo.vitalis?.eco || 'vitalis'} formato="stories"
-              texto={conteudo.vitalis?.hook || ''} subtitulo="app.seteecos.com"
-              scale={0.2} filename={`story-${conteudo.data || 'hoje'}.png`}
-            />
-          </div>
         </div>
 
         {/* Link para dashboard completo */}
