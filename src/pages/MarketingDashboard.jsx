@@ -24,6 +24,8 @@ import {
   getCalendario6Dias,
   getGuiaMetaDeveloper,
   getSetupWhatsAppBusiness,
+  gerarConteudoDiario,
+  gerarSemanaCompleta,
 } from '../lib/marketing-engine';
 import { RENDER_MAP, CORES, FORMATOS } from '../components/TemplateVisual';
 
@@ -464,114 +466,261 @@ export default function MarketingDashboard() {
 // MODO SIMPLES - Só o conteúdo de hoje, copiar e pronto
 // ============================================================
 
+// ============================================================
+// BLOCO DE CONTEÚDO POR PLATAFORMA — componente reutilizável
+// ============================================================
+
+function BlocoPlataforma({ plataforma, cor, gradiente, icone, caption, hashtags, copiar, copiado, idCopia, linkEnviar }) {
+  return (
+    <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+      <div className={`${gradiente} text-white px-4 py-2.5 flex items-center justify-between`}>
+        <div className="flex items-center gap-2">
+          <span className="text-base">{icone}</span>
+          <p className="font-bold text-sm">{plataforma}</p>
+        </div>
+        <CopyBtn onClick={() => copiar(caption, idCopia)} copiado={copiado === idCopia} label="Copiar" small />
+      </div>
+      <div className="p-3">
+        <pre className="text-xs text-[#4A4035] whitespace-pre-wrap leading-relaxed max-h-32 overflow-y-auto bg-[#FAFAF8] rounded-xl p-3">{caption}</pre>
+        {linkEnviar && (
+          <div className="mt-2">
+            <a
+              href={linkEnviar}
+              target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#25D366] text-white rounded-full text-[11px] font-bold"
+            >
+              Enviar no WhatsApp
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// BLOCO DE ECO — todo o conteúdo de 1 eco para as 4 plataformas
+// ============================================================
+
+function BlocoEco({ eco, copiar, copiado, prefixo }) {
+  if (!eco) return null;
+  const [aberto, setAberto] = useState(true);
+  const ig = eco.conteudoIG;
+  const temCarrossel = ig && ig.tipo === 'carrossel' && ig.slides;
+
+  return (
+    <div className="space-y-3">
+      {/* Header do eco */}
+      <button
+        onClick={() => setAberto(v => !v)}
+        className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-2xl border border-[#E8E2D9] shadow-sm active:scale-[0.99] transition-all"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-xl">{eco.emoji}</span>
+          <div className="text-left">
+            <p className="font-bold text-sm text-[#4A4035]">{eco.nome}</p>
+            <p className="text-[11px] text-[#A09888]">{eco.hook?.slice(0, 60)}{eco.hook?.length > 60 ? '...' : ''}</p>
+          </div>
+        </div>
+        <span className="text-[#A09888] text-sm">{aberto ? '▲' : '▼'}</span>
+      </button>
+
+      {aberto && (
+        <div className="space-y-3 pl-1">
+          {/* Imagem do carrossel (se houver) */}
+          {temCarrossel && (
+            <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+              <div className="px-4 py-2.5 border-b border-[#E8E2D9]">
+                <p className="font-bold text-xs text-[#4A4035]">Carrossel: {ig.titulo}</p>
+                <p className="text-[10px] text-[#A09888]">{ig.slides.length} slides — descarrega imagens abaixo</p>
+              </div>
+              <div className="p-3 space-y-2">
+                {ig.slides.map((slide, i) => (
+                  <div key={i} className="flex gap-2">
+                    <AutoImage
+                      template="dica" eco={eco.eco} formato="post"
+                      texto={slide.titulo} subtitulo={slide.texto}
+                      slideNum={i + 1} totalSlides={ig.slides.length}
+                      bgIndex={i}
+                      scale={0.18} filename={`${eco.eco}-carrossel-${i + 1}.png`}
+                      className="shrink-0"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[11px] font-bold text-[#4A4035] truncate">{slide.titulo}</p>
+                      <p className="text-[10px] text-[#6B5C4C] line-clamp-2">{slide.texto}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Imagem principal (para posts/dicas) */}
+          {!temCarrossel && (
+            <div className="flex justify-center">
+              <AutoImage
+                template={ig?.tipo === 'testemunho' ? 'testemunho' : 'dica'}
+                eco={eco.eco} formato="post"
+                texto={eco.hook}
+                subtitulo={ig?.subtitulo || eco.corpo?.slice(0, 80)}
+                scale={0.28} filename={`${eco.eco}-post.png`}
+              />
+            </div>
+          )}
+
+          {/* 4 PLATAFORMAS */}
+          <BlocoPlataforma
+            plataforma="Instagram"
+            gradiente="bg-gradient-to-r from-pink-500 to-purple-600"
+            icone="📸"
+            caption={ig?.caption || eco.instagram?.caption || ''}
+            copiar={copiar}
+            copiado={copiado}
+            idCopia={`${prefixo}-ig`}
+          />
+
+          <BlocoPlataforma
+            plataforma="Facebook"
+            gradiente="bg-gradient-to-r from-blue-600 to-blue-700"
+            icone="👤"
+            caption={eco.facebook || ''}
+            copiar={copiar}
+            copiado={copiado}
+            idCopia={`${prefixo}-fb`}
+          />
+
+          <BlocoPlataforma
+            plataforma="TikTok"
+            gradiente="bg-gradient-to-r from-gray-900 to-gray-800"
+            icone="🎵"
+            caption={typeof eco.tiktok === 'object' ? `${eco.tiktok.ideia}\n\n---\nCAPTION:\n${eco.tiktok.caption}` : eco.tiktok || ''}
+            copiar={copiar}
+            copiado={copiado}
+            idCopia={`${prefixo}-tt`}
+          />
+
+          <BlocoPlataforma
+            plataforma="WhatsApp"
+            gradiente="bg-[#25D366]"
+            icone="💬"
+            caption={eco.whatsapp || ''}
+            copiar={copiar}
+            copiado={copiado}
+            idCopia={`${prefixo}-wa`}
+            linkEnviar={eco.whatsapp ? `https://wa.me/?text=${encodeURIComponent(eco.whatsapp)}` : null}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
+// MODO SIMPLES — Vista principal com 4 redes + 2 ecos por dia
+// ============================================================
+
 function ModoSimples({ copiar, copiado, onVerTudo }) {
   const [variante, setVariante] = useState(0);
-  const hoje = gerarConteudoHoje(new Date(), variante);
-  const maxVar = totalVariantes(hoje.tema);
-  const captionPost = gerarCaptionInstagram('post', variante);
-  const wa = gerarMensagemWhatsApp('dica', '', variante);
-  const statusWA = gerarStatusWhatsApp();
+  const [diaOffset, setDiaOffset] = useState(0);
 
-  const dataHoje = new Date().toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' });
+  const dataAlvo = new Date();
+  dataAlvo.setDate(dataAlvo.getDate() + diaOffset);
+  const conteudo = gerarConteudoDiario(dataAlvo, variante);
+
+  const dataFormatada = dataAlvo.toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' });
+  const isHoje = diaOffset === 0;
+
+  // Semana completa para preview
+  const inicioSemana = new Date();
+  inicioSemana.setDate(inicioSemana.getDate() - inicioSemana.getDay());
+  const semana = gerarSemanaCompleta(inicioSemana, variante);
 
   return (
     <div className="min-h-screen bg-[#F5F2ED] pb-24">
-      {/* Header simples */}
-      <div className="bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] text-white px-4 pt-5 pb-6">
+      {/* Header */}
+      <div className="bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] text-white px-4 pt-5 pb-4">
         <div className="max-w-lg mx-auto">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2">
             <Link to="/coach" className="text-white/60 hover:text-white text-sm">&larr; Coach</Link>
+            <button
+              onClick={() => setVariante(v => v + 1)}
+              className="px-3 py-1.5 bg-white/10 rounded-full text-[11px] font-bold text-white/80 hover:bg-white/20 active:scale-95 transition-all"
+            >
+              Outro conteúdo
+            </button>
           </div>
-          <p className="text-white/50 text-xs uppercase tracking-wider">{dataHoje}</p>
+          <p className="text-white/50 text-xs uppercase tracking-wider">{dataFormatada}</p>
           <h1 className="text-xl font-bold mt-1" style={{ fontFamily: 'var(--font-titulos)' }}>
-            Publica hoje
+            {isHoje ? 'Publica hoje' : `Conteúdo — ${conteudo.diaSemana}`}
           </h1>
-          <p className="text-white/60 text-sm mt-1">Copia, cola, publica. Nada mais.</p>
+          <p className="text-white/60 text-sm mt-1">
+            {conteudo.vitalis?.emoji} VITALIS + {conteudo.ecoDoDia?.emoji} {conteudo.ecoDoDia?.nome}
+          </p>
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-4 mt-4 space-y-4">
-
-        {/* 1. INSTAGRAM POST */}
-        <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
-          <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-3">
-            <p className="font-bold text-base">Instagram</p>
-            <p className="text-white/80 text-xs">Imagem + caption prontas</p>
-          </div>
-          <div className="p-4 space-y-3">
-            {/* Imagem pronta para descarregar */}
-            <div className="flex justify-center">
-              <AutoImage
-                template="dica" eco="vitalis" formato="post"
-                texto={hoje.hook} subtitulo={hoje.corpo ? hoje.corpo.slice(0, 80) + '...' : '@seteecos'}
-                scale={0.32} filename={`ig-post-${hoje.data || 'hoje'}.png`}
-              />
-            </div>
-            <p className="text-[10px] text-center text-[#A09888]">Carrega na imagem para descarregar</p>
-            <div>
-              <p className="text-[10px] font-bold text-[#A09888] mb-1 uppercase">Caption:</p>
-              <pre className="text-xs text-[#4A4035] whitespace-pre-wrap leading-relaxed max-h-40 overflow-y-auto bg-[#FAFAF8] rounded-xl p-3">{captionPost.caption}</pre>
-            </div>
-            <div className="flex gap-2">
-              <CopyBtn onClick={() => copiar(captionPost.caption, 'simple-ig')} copiado={copiado === 'simple-ig'} label="Copiar caption" />
-              <CopyBtn onClick={() => copiar(captionPost.hashtags, 'simple-hash')} copiado={copiado === 'simple-hash'} label="Hashtags" small />
-            </div>
-          </div>
-        </div>
-
-        {/* 2. STORIES */}
-        <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
-          <div className="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-4 py-3">
-            <p className="font-bold text-base">Stories</p>
-            <p className="text-white/80 text-xs">Imagem para story</p>
-          </div>
-          <div className="p-4 space-y-3">
-            <div className="flex justify-center">
-              <AutoImage
-                template="cta" eco="vitalis" formato="stories"
-                texto={hoje.hook} subtitulo="app.seteecos.com"
-                scale={0.18} filename={`story-${hoje.data || 'hoje'}.png`}
-              />
-            </div>
-            <p className="text-[10px] text-center text-[#A09888]">Carrega na imagem para descarregar</p>
-          </div>
-        </div>
-
-        {/* 3. WHATSAPP */}
-        <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
-          <div className="bg-[#25D366] text-white px-4 py-3">
-            <p className="font-bold text-base">WhatsApp</p>
-            <p className="text-white/80 text-xs">Imagem + mensagem</p>
-          </div>
-          <div className="p-4 space-y-3">
-            <div className="flex gap-3 items-start">
-              <AutoImage
-                template="dica" eco="vitalis" formato="stories"
-                texto={hoje.hook} subtitulo="@seteecos"
-                scale={0.1} filename={`wa-${hoje.data || 'hoje'}.png`}
-              />
-              <pre className="flex-1 text-xs text-[#4A4035] whitespace-pre-wrap leading-relaxed bg-green-50 rounded-xl p-3 max-h-40 overflow-y-auto">{wa.mensagem}</pre>
-            </div>
-            <div className="flex gap-2">
-              <CopyBtn onClick={() => copiar(wa.mensagem, 'simple-wa')} copiado={copiado === 'simple-wa'} label="Copiar mensagem" />
-              <a
-                href={`https://wa.me/?text=${encodeURIComponent(wa.mensagem)}`}
-                target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-1 px-4 py-2 bg-[#25D366] text-white rounded-full text-xs font-bold"
+      {/* Navegação semanal */}
+      <div className="max-w-lg mx-auto px-4 mt-3">
+        <div className="flex gap-1.5 overflow-x-auto pb-2 -mx-1 px-1">
+          {semana.map((dia, i) => {
+            const dData = new Date(inicioSemana);
+            dData.setDate(dData.getDate() + i);
+            const isSelected = dData.toISOString().split('T')[0] === dataAlvo.toISOString().split('T')[0];
+            const isToday = dData.toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
+            const diaSemanaAbrev = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][i];
+            return (
+              <button
+                key={i}
+                onClick={() => setDiaOffset(Math.round((dData - new Date(new Date().toISOString().split('T')[0])) / 86400000))}
+                className={`flex-shrink-0 flex flex-col items-center gap-0.5 px-2.5 py-2 rounded-xl text-[10px] font-bold transition-all active:scale-95 ${
+                  isSelected
+                    ? 'bg-[#1a1a2e] text-white shadow-lg'
+                    : isToday
+                      ? 'bg-white border-2 border-[#1a1a2e] text-[#1a1a2e]'
+                      : 'bg-white border border-[#E8E2D9] text-[#6B5C4C]'
+                }`}
               >
-                Enviar
-              </a>
-            </div>
-          </div>
+                <span>{diaSemanaAbrev}</span>
+                <span className="text-[9px]">{dData.getDate()}</span>
+                <span className="text-[9px]">{dia.ecoDoDia?.emoji}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="max-w-lg mx-auto px-4 mt-3 space-y-4">
+
+        {/* VITALIS (sempre) */}
+        <div>
+          <p className="text-[10px] font-bold text-[#A09888] uppercase tracking-wider mb-2 px-1">
+            Vitalis — todos os dias
+          </p>
+          <BlocoEco eco={conteudo.vitalis} copiar={copiar} copiado={copiado} prefixo="v" />
         </div>
 
-        {/* Botão gerar outro conteúdo */}
-        <button
-          onClick={() => setVariante(v => v + 1)}
-          className="w-full py-3 rounded-2xl text-sm font-bold text-[#6B5C4C] bg-white border border-[#E8E2D9] active:scale-[0.98] transition-all"
-        >
-          Gerar outro conteúdo ({(variante % maxVar) + 1}/{maxVar})
-        </button>
+        {/* ECO DO DIA */}
+        <div>
+          <p className="text-[10px] font-bold text-[#A09888] uppercase tracking-wider mb-2 px-1">
+            {conteudo.ecoDoDia?.nome} — eco do dia
+          </p>
+          <BlocoEco eco={conteudo.ecoDoDia} copiar={copiar} copiado={copiado} prefixo="e" />
+        </div>
+
+        {/* Story image (bonus) */}
+        <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+          <div className="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-4 py-2.5">
+            <p className="font-bold text-sm">Story do dia</p>
+            <p className="text-white/80 text-[10px]">Funciona para IG, FB e WA Status</p>
+          </div>
+          <div className="p-4 flex justify-center">
+            <AutoImage
+              template="cta" eco={conteudo.vitalis?.eco || 'vitalis'} formato="stories"
+              texto={conteudo.vitalis?.hook || ''} subtitulo="app.seteecos.com"
+              scale={0.2} filename={`story-${conteudo.data || 'hoje'}.png`}
+            />
+          </div>
+        </div>
 
         {/* Link para dashboard completo */}
         <button
