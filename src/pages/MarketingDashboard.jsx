@@ -542,7 +542,7 @@ export default function MarketingDashboard() {
 
   // ---- MODO SIMPLES: conteúdo de hoje, copiar e pronto ----
   if (modo === 'simples') {
-    return <ModoSimples copiar={copiar} copiado={copiado} onVerTudo={() => setModo('completo')} />;
+    return <ModoSimples copiar={copiar} copiado={copiado} onVerTudo={() => setModo('completo')} prog={prog} />;
   }
 
   // ---- MODO COMPLETO: dashboard original com todos os tabs ----
@@ -884,9 +884,15 @@ function TextoPlataforma({ plataforma, icone, cor, texto, aberto, onToggle, copi
 // Sem exposição pessoal: texto em ecrã, imagens, screen recordings
 // ============================================================
 
-function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo }) {
+function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo, prog }) {
   const [faseAberta, setFaseAberta] = useState(1);
   const posts = getCampanhaLancamentoZero();
+  const { toggle, isDone, countDone } = prog;
+
+  // Contagem de progresso
+  const totalPublicados = posts.filter(p => isDone(`lanc-post-${p.dia}`)).length;
+  const totalPosts = posts.length;
+  const percentagem = Math.round((totalPublicados / totalPosts) * 100);
 
   // Agrupar por fase
   const fases = [
@@ -894,6 +900,9 @@ function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo }) {
     { num: 2, titulo: 'Os 7 Ecos', subtitulo: 'Lumina + Vitalis + Serena (posts 4-6)', emoji: '🌿', cor: 'from-blue-500 to-indigo-600', posts: posts.filter(p => p.fase === 2) },
     { num: 3, titulo: 'Apresentar e conectar', subtitulo: 'Mais ecos + primeiro CTA (posts 7-10)', emoji: '🌳', cor: 'from-purple-500 to-pink-600', posts: posts.filter(p => p.fase === 3) },
   ];
+
+  // Abrir automaticamente a primeira fase não completa
+  const primeiraFaseIncompleta = fases.find(f => f.posts.some(p => !isDone(`lanc-post-${p.dia}`)));
 
   return (
     <div className="min-h-screen bg-[#F5F2ED] pb-24">
@@ -915,6 +924,21 @@ function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo }) {
           <p className="text-white/60 text-sm mt-1">
             10 posts para começar do zero — sem precisares de aparecer
           </p>
+
+          {/* Barra de progresso */}
+          <div className="mt-3">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[10px] text-white/50">Progresso</span>
+              <span className="text-[10px] text-white/70 font-bold">{totalPublicados}/{totalPosts} publicados</span>
+            </div>
+            <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-emerald-400 to-teal-300 rounded-full transition-all duration-500"
+                style={{ width: `${percentagem}%` }}
+              />
+            </div>
+          </div>
+
           <div className="flex gap-1.5 mt-3">
             <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">Sem cara</span>
             <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">Sem voz</span>
@@ -923,50 +947,77 @@ function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo }) {
         </div>
       </div>
 
-      {/* Dica geral */}
-      <div className="max-w-lg mx-auto px-4 mt-3">
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3">
-          <p className="text-xs text-amber-800 font-bold mb-1">Como usar esta campanha</p>
-          <p className="text-[11px] text-amber-700 leading-relaxed">
-            Publica 1 post por dia (ou 1 a cada 2 dias). Segue a ordem: primeiro apresenta-te, depois mostra os Ecos, por último convida a experimentar o Lumina grátis. Descarrega as imagens e copia os textos directamente.
-          </p>
+      {/* Dica geral — esconde quando já publicou pelo menos 3 */}
+      {totalPublicados < 3 && (
+        <div className="max-w-lg mx-auto px-4 mt-3">
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3">
+            <p className="text-xs text-amber-800 font-bold mb-1">Como usar esta campanha</p>
+            <p className="text-[11px] text-amber-700 leading-relaxed">
+              Publica 1 post por dia (ou 1 a cada 2 dias). Segue a ordem: primeiro apresenta-te, depois mostra os Ecos, por último convida a experimentar o Lumina grátis. Descarrega as imagens e copia os textos directamente.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Parabéns quando completar tudo */}
+      {totalPublicados === totalPosts && (
+        <div className="max-w-lg mx-auto px-4 mt-3">
+          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center">
+            <p className="text-2xl mb-1">🎉</p>
+            <p className="text-sm font-bold text-emerald-800">Campanha completa!</p>
+            <p className="text-[11px] text-emerald-700 mt-1">Os 10 posts de lançamento estão publicados. Agora passa para o conteúdo diário.</p>
+          </div>
+        </div>
+      )}
 
       {/* Fases */}
       <div className="max-w-lg mx-auto px-4 mt-3 space-y-3">
-        {fases.map(fase => (
-          <div key={fase.num}>
-            {/* Header da fase */}
-            <button
-              onClick={() => setFaseAberta(f => f === fase.num ? null : fase.num)}
-              className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-2xl border border-[#E8E2D9] shadow-sm active:scale-[0.99] transition-all mb-2"
-            >
-              <div className="flex items-center gap-2.5">
-                <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${fase.cor} flex items-center justify-center text-white text-sm font-bold`}>
-                  {fase.num}
-                </div>
-                <div className="text-left">
-                  <p className="font-bold text-sm text-[#4A4035]">{fase.emoji} {fase.titulo}</p>
-                  <p className="text-[10px] text-[#A09888]">{fase.subtitulo}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[9px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold">{fase.posts.length} posts</span>
-                <span className="text-[#A09888] text-sm">{faseAberta === fase.num ? '▲' : '▼'}</span>
-              </div>
-            </button>
+        {fases.map(fase => {
+          const fasePublicados = fase.posts.filter(p => isDone(`lanc-post-${p.dia}`)).length;
+          const faseCompleta = fasePublicados === fase.posts.length;
 
-            {/* Posts da fase */}
-            {faseAberta === fase.num && (
-              <div className="space-y-4 pl-1">
-                {fase.posts.map(post => (
-                  <PostLancamento key={post.dia} post={post} copiar={copiar} copiado={copiado} />
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+          return (
+            <div key={fase.num}>
+              {/* Header da fase */}
+              <button
+                onClick={() => setFaseAberta(f => f === fase.num ? null : fase.num)}
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl border shadow-sm active:scale-[0.99] transition-all mb-2 ${faseCompleta ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-[#E8E2D9]'}`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className={`w-8 h-8 rounded-full ${faseCompleta ? 'bg-emerald-500' : `bg-gradient-to-br ${fase.cor}`} flex items-center justify-center text-white text-sm font-bold`}>
+                    {faseCompleta ? '✓' : fase.num}
+                  </div>
+                  <div className="text-left">
+                    <p className={`font-bold text-sm ${faseCompleta ? 'text-emerald-700' : 'text-[#4A4035]'}`}>{fase.emoji} {fase.titulo}</p>
+                    <p className="text-[10px] text-[#A09888]">{fase.subtitulo}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${faseCompleta ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}`}>
+                    {fasePublicados}/{fase.posts.length}
+                  </span>
+                  <span className="text-[#A09888] text-sm">{faseAberta === fase.num ? '▲' : '▼'}</span>
+                </div>
+              </button>
+
+              {/* Posts da fase */}
+              {faseAberta === fase.num && (
+                <div className="space-y-4 pl-1">
+                  {fase.posts.map(post => (
+                    <PostLancamento
+                      key={post.dia}
+                      post={post}
+                      copiar={copiar}
+                      copiado={copiado}
+                      publicado={isDone(`lanc-post-${post.dia}`)}
+                      onTogglePublicado={() => toggle(`lanc-post-${post.dia}`)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
 
         {/* Depois da campanha */}
         <div className="bg-white rounded-2xl border border-[#E8E2D9] p-4 shadow-sm">
@@ -994,30 +1045,45 @@ function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo }) {
 }
 
 // Post individual da campanha de lançamento
-function PostLancamento({ post, copiar, copiado }) {
+function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado }) {
   const [aberto, setAberto] = useState(false);
   const [textoAberto, setTextoAberto] = useState(null);
-  const mockups = getMockupsEco(post.eco === 'seteEcos' ? 'vitalis' : post.eco);
-  const mockupPrincipal = mockups[0];
 
   return (
     <div className="space-y-2">
       {/* Header do post */}
-      <button
-        onClick={() => setAberto(v => !v)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-2xl border border-[#E8E2D9] shadow-sm active:scale-[0.99] transition-all"
-      >
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-full bg-[#1a1a2e] flex items-center justify-center text-white text-xs font-bold">
-            {post.dia}
+      <div className={`flex items-center gap-2 px-1 ${publicado ? 'opacity-70' : ''}`}>
+        {/* Checkbox publicado */}
+        <button
+          onClick={onTogglePublicado}
+          className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all active:scale-90 ${
+            publicado ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-[#C8C0B4] hover:border-[#A09888]'
+          }`}
+          aria-label={publicado ? 'Marcar como não publicado' : 'Marcar como publicado'}
+        >
+          {publicado && <span className="text-xs font-bold">✓</span>}
+        </button>
+
+        <button
+          onClick={() => setAberto(v => !v)}
+          className={`flex-1 flex items-center justify-between px-3 py-3 rounded-2xl border shadow-sm active:scale-[0.99] transition-all ${
+            publicado ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-[#E8E2D9]'
+          }`}
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 ${
+              publicado ? 'bg-emerald-500' : 'bg-[#1a1a2e]'
+            }`}>
+              {post.dia}
+            </div>
+            <div className="text-left min-w-0">
+              <p className={`font-bold text-sm truncate ${publicado ? 'text-emerald-700 line-through' : 'text-[#4A4035]'}`}>{post.titulo}</p>
+              <p className="text-[10px] text-[#A09888] truncate">{post.hook?.slice(0, 50)}{post.hook?.length > 50 ? '...' : ''}</p>
+            </div>
           </div>
-          <div className="text-left min-w-0">
-            <p className="font-bold text-sm text-[#4A4035] truncate">{post.titulo}</p>
-            <p className="text-[10px] text-[#A09888] truncate">{post.hook?.slice(0, 50)}{post.hook?.length > 50 ? '...' : ''}</p>
-          </div>
-        </div>
-        <span className="text-[#A09888] text-sm shrink-0 ml-2">{aberto ? '▲' : '▼'}</span>
-      </button>
+          <span className="text-[#A09888] text-sm shrink-0 ml-2">{aberto ? '▲' : '▼'}</span>
+        </button>
+      </div>
 
       {aberto && (
         <div className="space-y-3 pl-1">
@@ -1174,7 +1240,7 @@ function PostLancamento({ post, copiar, copiado }) {
 // MODO SIMPLES — Vista principal com 4 redes + 2 ecos por dia
 // ============================================================
 
-function ModoSimples({ copiar, copiado, onVerTudo }) {
+function ModoSimples({ copiar, copiado, onVerTudo, prog }) {
   const [variante, setVariante] = useState(0);
   const [diaOffset, setDiaOffset] = useState(0);
   const [subModo, setSubModo] = useState('lancamento'); // 'lancamento' ou 'diario'
@@ -1192,7 +1258,7 @@ function ModoSimples({ copiar, copiado, onVerTudo }) {
   const semana = gerarSemanaCompleta(inicioSemana, variante);
 
   if (subModo === 'lancamento') {
-    return <CampanhaLancamento copiar={copiar} copiado={copiado} onDiario={() => setSubModo('diario')} onVerTudo={onVerTudo} />;
+    return <CampanhaLancamento copiar={copiar} copiado={copiado} onDiario={() => setSubModo('diario')} onVerTudo={onVerTudo} prog={prog} />;
   }
 
   return (
@@ -1319,7 +1385,7 @@ function RevisaoTab({ copiar, copiado, prog }) {
     {
       num: 1,
       titulo: 'ARRANCAR',
-      subtitulo: 'Setup + primeiros 6 posts',
+      subtitulo: 'Setup + campanha de lançamento (10 posts)',
       cor: 'from-amber-500 to-orange-600',
       corBg: 'bg-amber-50 border-amber-200',
       corText: 'text-amber-700',
@@ -1328,10 +1394,10 @@ function RevisaoTab({ copiar, copiado, prog }) {
       tarefas: [
         { key: 'rev-f1-bio', texto: 'Configurar perfil Instagram (bio, foto, link)', tab: 'vitalis', secao: 'Setup Instagram', accao: 'Vai ao tab VITALIS > Setup Instagram. Copia a bio, mete a foto, configura o link.' },
         { key: 'rev-f1-wa', texto: 'Configurar WhatsApp Business (perfil + mensagens auto)', tab: 'wabusiness', accao: 'Vai ao tab WA Business. Copia o perfil, a saudação e a mensagem de ausência.' },
-        { key: 'rev-f1-post1', texto: 'Publicar Post #1 no Instagram (lançamento)', tab: 'vitalis', secao: 'Posts (12)', accao: 'Vai ao tab VITALIS > Posts (12). Abre o Post #1. Descarrega a imagem + copia a caption. Publica e fixa no topo.' },
-        { key: 'rev-f1-post2', texto: 'Publicar Post #7 no Instagram (carrossel 5 razões)', tab: 'carrosseis', accao: 'Vai ao tab Carrosséis. Descarrega "5 Razões". Publica com a caption.' },
-        { key: 'rev-f1-wa1', texto: 'Enviar 1.ª mensagem WhatsApp (tipo Lumina)', tab: 'hoje', accao: 'Vai ao tab Hoje > WhatsApp. Escolhe "Lumina". Copia e envia para os teus contactos.' },
-        { key: 'rev-f1-status1', texto: 'Publicar 1 status no WhatsApp', tab: 'hoje', accao: 'Vai ao tab Hoje. Copia o hook do dia e publica como status no WhatsApp.' },
+        { key: 'rev-f1-lanc-f1', texto: 'Publicar posts 1-3 da Campanha de Lançamento (Fase 1: Quem somos)', accao: 'Vai à Vista Simples > Lançamento. Abre a Fase 1. Descarrega imagens, copia legendas e publica 1 por dia. Marca cada post como publicado.' },
+        { key: 'rev-f1-lanc-f2', texto: 'Publicar posts 4-6 da Campanha (Fase 2: Lumina + Vitalis + Serena)', accao: 'Continua na Campanha de Lançamento > Fase 2. Publica 1 post por dia. O post do Lumina é o mais importante — é o teu anzol gratuito.' },
+        { key: 'rev-f1-lanc-f3', texto: 'Publicar posts 7-10 da Campanha (Fase 3: Mais ecos + CTA)', accao: 'Campanha de Lançamento > Fase 3. Publica os últimos 4 posts. O post 10 é o CTA final — convida a experimentar o Lumina grátis.' },
+        { key: 'rev-f1-wa1', texto: 'Enviar posts 1, 5 e 10 no WhatsApp (versão WA)', accao: 'Na Campanha de Lançamento, cada post tem versão WhatsApp. Envia pelo menos o post 1 (apresentação), 5 (Vitalis) e 10 (CTA Lumina) para os teus contactos.' },
       ],
     },
     {
