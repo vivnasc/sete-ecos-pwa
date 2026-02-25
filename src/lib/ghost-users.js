@@ -1234,29 +1234,29 @@ export function getGhostRessonanciaBatch(postIds) {
 // ---------- MAPEAMENTO ghost_id antigo → UUID Supabase ----------
 
 export const GHOST_UUID_MAP = {
-  ghost_graca:     '00000000-ghost-4000-a000-000000000001',
-  ghost_esperanca: '00000000-ghost-4000-a000-000000000002',
-  ghost_celeste:   '00000000-ghost-4000-a000-000000000003',
-  ghost_amina:     '00000000-ghost-4000-a000-000000000004',
-  ghost_fatima:    '00000000-ghost-4000-a000-000000000005',
-  ghost_halima:    '00000000-ghost-4000-a000-000000000006',
-  ghost_dulce:     '00000000-ghost-4000-a000-000000000007',
-  ghost_aisha:     '00000000-ghost-4000-a000-000000000008',
-  ghost_zainab:    '00000000-ghost-4000-a000-000000000009',
-  ghost_mariamo:   '00000000-ghost-4000-a000-000000000010',
-  ghost_joana:     '00000000-ghost-4000-a000-000000000011',
-  ghost_luisa:     '00000000-ghost-4000-a000-000000000012',
-  ghost_rosa:      '00000000-ghost-4000-a000-000000000013',
-  ghost_beatriz:   '00000000-ghost-4000-a000-000000000014',
-  ghost_safira:    '00000000-ghost-4000-a000-000000000015',
-  ghost_nhara:     '00000000-ghost-4000-a000-000000000016',
-  ghost_ines:      '00000000-ghost-4000-a000-000000000017',
-  ghost_marta:     '00000000-ghost-4000-a000-000000000018',
-  ghost_ana:       '00000000-ghost-4000-a000-000000000019',
-  ghost_claudia:   '00000000-ghost-4000-a000-000000000020',
-  ghost_rafael:    '00000000-ghost-4000-a000-000000000021',
-  ghost_dinis:     '00000000-ghost-4000-a000-000000000022',
-  ghost_dina:      '00000000-ghost-4000-a000-000000000023',
+  ghost_graca:     '00000000-0000-4000-a000-000000000001',
+  ghost_esperanca: '00000000-0000-4000-a000-000000000002',
+  ghost_celeste:   '00000000-0000-4000-a000-000000000003',
+  ghost_amina:     '00000000-0000-4000-a000-000000000004',
+  ghost_fatima:    '00000000-0000-4000-a000-000000000005',
+  ghost_halima:    '00000000-0000-4000-a000-000000000006',
+  ghost_dulce:     '00000000-0000-4000-a000-000000000007',
+  ghost_aisha:     '00000000-0000-4000-a000-000000000008',
+  ghost_zainab:    '00000000-0000-4000-a000-000000000009',
+  ghost_mariamo:   '00000000-0000-4000-a000-000000000010',
+  ghost_joana:     '00000000-0000-4000-a000-000000000011',
+  ghost_luisa:     '00000000-0000-4000-a000-000000000012',
+  ghost_rosa:      '00000000-0000-4000-a000-000000000013',
+  ghost_beatriz:   '00000000-0000-4000-a000-000000000014',
+  ghost_safira:    '00000000-0000-4000-a000-000000000015',
+  ghost_nhara:     '00000000-0000-4000-a000-000000000016',
+  ghost_ines:      '00000000-0000-4000-a000-000000000017',
+  ghost_marta:     '00000000-0000-4000-a000-000000000018',
+  ghost_ana:       '00000000-0000-4000-a000-000000000019',
+  ghost_claudia:   '00000000-0000-4000-a000-000000000020',
+  ghost_rafael:    '00000000-0000-4000-a000-000000000021',
+  ghost_dinis:     '00000000-0000-4000-a000-000000000022',
+  ghost_dina:      '00000000-0000-4000-a000-000000000023',
 }
 
 // Resolver ID: se for ghost_xxx retorna UUID, senão retorna como está
@@ -1266,7 +1266,7 @@ export function resolveGhostId(id) {
 
 // Verificar se um UUID é de ghost
 export function isGhostUUID(uuid) {
-  return uuid?.startsWith('00000000-ghost-')
+  return uuid?.startsWith('00000000-0000-4000-a000-')
 }
 
 // ---------- MENSAGENS INICIAIS (ghosts a iniciar conversa) ----------
