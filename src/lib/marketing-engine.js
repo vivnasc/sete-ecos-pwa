@@ -930,6 +930,58 @@ const MOCKUP_IMAGES = {
   mozproud: '/mockups/mozproud-vitalis.jpeg',
 };
 
+// Mockups por eco — imagens reais criadas pela Vivianne
+const ECO_MOCKUPS = {
+  vitalis: [
+    '/mockups/Vitalis-dashboard_mb-mockup.jpeg',
+    '/mockups/Vitalis-receitas_mb-mockup.jpeg',
+    '/mockups/Vitalis-coach_mb-mockup.jpeg',
+    '/mockups/Vitalis-treinos_mb-mockup.jpeg',
+    '/mockups/Vitalis-espaçoretorno_mb-mockup.jpeg',
+    '/mockups/mozproud-vitalis.jpeg',
+  ],
+  aurea: [
+    '/mockups/Aurea-Dash-portrait.png',
+    '/mockups/Aurea-praticas-portrait.png',
+    '/mockups/Aurea-Dash-left.png',
+    '/mockups/Aurea-praticas-left.png',
+  ],
+  serena: [
+    '/mockups/Serena-dash-portrait.png',
+    '/mockups/Serena-praticas-portrait.png',
+    '/mockups/Serena-dash-left.png',
+    '/mockups/Serena-praticas-left.png',
+  ],
+  ignis: [
+    '/mockups/Ignis-dash-portrait.png',
+    '/mockups/Ignis-escolhas-portrait.png',
+    '/mockups/Ignis-dash-left.png',
+    '/mockups/Ingis-bussula-left.png',
+  ],
+  ventis: [
+    '/mockups/Ventis-dash-portrait.png',
+    '/mockups/Ventis-praticas-portrait.png',
+    '/mockups/Ventis-dash-left.png',
+    '/mockups/Ventis-praticas-left.png',
+  ],
+  ecoa: [
+    '/mockups/Ecoa-dash-portrait.png',
+    '/mockups/Ecoa-praticas-portrait.png',
+    '/mockups/Ecoa-dash-left.png',
+    '/mockups/Ecoa-praticas-left.png',
+  ],
+  imago: [
+    '/mockups/Imago-dash-portrait.png',
+    '/mockups/Imago-arqueologia-portrait.png',
+    '/mockups/Imago-dash-left.png',
+    '/mockups/Imago-arqueologia-left.png',
+  ],
+};
+
+export function getMockupsEco(eco) {
+  return ECO_MOCKUPS[eco] || ECO_MOCKUPS.vitalis;
+}
+
 export function getConteudosMockupVitalis() {
   const linkVitalis = buildUTMUrl(`${BASE_URL}/vitalis`, UTM_TEMPLATES.instagramBio());
   const linkLumina = buildUTMUrl(`${BASE_URL}/lumina`, UTM_TEMPLATES.instagramBio('lumina'));
