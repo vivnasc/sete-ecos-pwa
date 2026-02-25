@@ -333,6 +333,7 @@ function useProgress() {
 
 export default function MarketingDashboard() {
   const { session } = useAuth();
+  const [modo, setModo] = useState('simples'); // 'simples' ou 'completo'
   const [tab, setTab] = useState('revisao');
   const [copiado, setCopied] = useState('');
   const prog = useProgress();
@@ -375,6 +376,12 @@ export default function MarketingDashboard() {
     { id: 'carrosseis', label: 'Carrosséis', icon: '📑' },
   ];
 
+  // ---- MODO SIMPLES: conteúdo de hoje, copiar e pronto ----
+  if (modo === 'simples') {
+    return <ModoSimples copiar={copiar} copiado={copiado} onVerTudo={() => setModo('completo')} />;
+  }
+
+  // ---- MODO COMPLETO: dashboard original com todos os tabs ----
   return (
     <div className="min-h-screen bg-[#F5F2ED] pb-24">
       {/* Header */}
@@ -383,7 +390,7 @@ export default function MarketingDashboard() {
           <div className="flex items-center justify-between mb-2">
             <Link to="/coach" className="text-white/60 hover:text-white text-sm">&larr; Coach</Link>
             <div className="flex gap-2">
-              <Link to="/catalogo" className="text-[10px] bg-green-500/20 text-green-300 px-3 py-1 rounded-full border border-green-400/30 hover:bg-green-500/30 transition-colors">Catálogo PDF</Link>
+              <button onClick={() => setModo('simples')} className="text-[10px] bg-white/10 text-white/70 px-3 py-1 rounded-full border border-white/20 hover:bg-white/20 transition-colors">Vista simples</button>
               <Link to="/coach/social" className="text-[10px] bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full border border-purple-400/30 hover:bg-purple-500/30 transition-colors">Agendar Posts</Link>
             </div>
           </div>
@@ -448,6 +455,113 @@ export default function MarketingDashboard() {
         {tab === 'grid' && <GridTab copiar={copiar} copiado={copiado} />}
         {tab === 'anuncios' && <AnunciosTab copiar={copiar} copiado={copiado} />}
         {tab === 'carrosseis' && <CarrosseisTab copiar={copiar} copiado={copiado} />}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// MODO SIMPLES - Só o conteúdo de hoje, copiar e pronto
+// ============================================================
+
+function ModoSimples({ copiar, copiado, onVerTudo }) {
+  const [variante, setVariante] = useState(0);
+  const hoje = gerarConteudoHoje(new Date(), variante);
+  const maxVar = totalVariantes(hoje.tema);
+  const captionPost = gerarCaptionInstagram('post', variante);
+  const wa = gerarMensagemWhatsApp('dica', '', variante);
+  const statusWA = gerarStatusWhatsApp();
+
+  const dataHoje = new Date().toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  return (
+    <div className="min-h-screen bg-[#F5F2ED] pb-24">
+      {/* Header simples */}
+      <div className="bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] text-white px-4 pt-5 pb-6">
+        <div className="max-w-lg mx-auto">
+          <div className="flex items-center justify-between mb-3">
+            <Link to="/coach" className="text-white/60 hover:text-white text-sm">&larr; Coach</Link>
+          </div>
+          <p className="text-white/50 text-xs uppercase tracking-wider">{dataHoje}</p>
+          <h1 className="text-xl font-bold mt-1" style={{ fontFamily: 'var(--font-titulos)' }}>
+            Publica hoje
+          </h1>
+          <p className="text-white/60 text-sm mt-1">Copia, cola, publica. Nada mais.</p>
+        </div>
+      </div>
+
+      <div className="max-w-lg mx-auto px-4 mt-4 space-y-4">
+
+        {/* 1. INSTAGRAM POST */}
+        <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+          <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-3">
+            <p className="font-bold text-base">Instagram</p>
+            <p className="text-white/80 text-xs">Post de hoje</p>
+          </div>
+          <div className="p-4 space-y-3">
+            <div className="bg-[#1a1a2e] text-white rounded-xl p-4">
+              <p className="text-sm font-bold leading-relaxed">{hoje.hook}</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold text-[#A09888] mb-1 uppercase">Caption completa:</p>
+              <pre className="text-xs text-[#4A4035] whitespace-pre-wrap leading-relaxed max-h-40 overflow-y-auto bg-[#FAFAF8] rounded-xl p-3">{captionPost.caption}</pre>
+            </div>
+            <div className="flex gap-2">
+              <CopyBtn onClick={() => copiar(captionPost.caption, 'simple-ig')} copiado={copiado === 'simple-ig'} label="Copiar caption" />
+              <CopyBtn onClick={() => copiar(captionPost.hashtags, 'simple-hash')} copiado={copiado === 'simple-hash'} label="Hashtags" small />
+            </div>
+          </div>
+        </div>
+
+        {/* 2. WHATSAPP */}
+        <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+          <div className="bg-[#25D366] text-white px-4 py-3">
+            <p className="font-bold text-base">WhatsApp</p>
+            <p className="text-white/80 text-xs">Envia aos teus contactos</p>
+          </div>
+          <div className="p-4 space-y-3">
+            <pre className="text-xs text-[#4A4035] whitespace-pre-wrap leading-relaxed bg-green-50 rounded-xl p-3 max-h-40 overflow-y-auto">{wa.mensagem}</pre>
+            <div className="flex gap-2">
+              <CopyBtn onClick={() => copiar(wa.mensagem, 'simple-wa')} copiado={copiado === 'simple-wa'} label="Copiar mensagem" />
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(wa.mensagem)}`}
+                target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-1 px-4 py-2 bg-[#25D366] text-white rounded-full text-xs font-bold"
+              >
+                Enviar
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* 3. STATUS WA */}
+        <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+          <div className="bg-[#4A4035] text-white px-4 py-3">
+            <p className="font-bold text-base">Status WhatsApp</p>
+            <p className="text-white/80 text-xs">Copia e publica como status</p>
+          </div>
+          <div className="p-4 space-y-3">
+            <pre className="text-xs text-[#4A4035] whitespace-pre-wrap leading-relaxed bg-[#FAFAF8] rounded-xl p-3">{statusWA.mensagem}</pre>
+            <CopyBtn onClick={() => copiar(statusWA.mensagem, 'simple-status')} copiado={copiado === 'simple-status'} label="Copiar status" />
+          </div>
+        </div>
+
+        {/* Botão gerar outro conteúdo */}
+        <button
+          onClick={() => setVariante(v => v + 1)}
+          className="w-full py-3 rounded-2xl text-sm font-bold text-[#6B5C4C] bg-white border border-[#E8E2D9] active:scale-[0.98] transition-all"
+        >
+          Gerar outro conteúdo ({(variante % maxVar) + 1}/{maxVar})
+        </button>
+
+        {/* Link para dashboard completo */}
+        <button
+          onClick={onVerTudo}
+          className="w-full py-3 rounded-2xl text-xs text-[#A09888] hover:text-[#6B5C4C] transition-colors"
+        >
+          Ver dashboard completo (mockups, carrosséis, anúncios...)
+        </button>
+
       </div>
     </div>
   );
