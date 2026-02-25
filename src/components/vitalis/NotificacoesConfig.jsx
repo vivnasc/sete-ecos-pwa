@@ -14,7 +14,8 @@ import {
   contarLembretesHoje,
   LEMBRETES_DEFAULT
 } from '../../utils/notifications.js';
-import { pedirPermissaoERegistar, guardarPreferencias } from '../../lib/pushSubscription.js';
+import { pedirPermissaoERegistar, guardarPreferencias, registarPushSubscription, buscarPreferencias } from '../../lib/pushSubscription.js';
+import { supabase } from '../../lib/supabase.js';
 
 export default function NotificacoesConfig() {
   const [permissao, setPermissao] = useState(temPermissao());
@@ -23,6 +24,8 @@ export default function NotificacoesConfig() {
   const [aPedir, setAPedir] = useState(false);
   const [lembretesAgendados, setLembretesAgendados] = useState(0);
   const [pushRegistado, setPushRegistado] = useState(false);
+  const [diagnostico, setDiagnostico] = useState(null);
+  const [aDiagnosticar, setADiagnosticar] = useState(false);
 
   const suportado = 'Notification' in window;
 
@@ -37,6 +40,122 @@ export default function NotificacoesConfig() {
       }
     }
   }, [permissao]);
+
+  const correrDiagnostico = async () => {
+    setADiagnosticar(true);
+    const resultado = [];
+
+    // 1. Browser suporta push?
+    const suportaPush = 'serviceWorker' in navigator && 'PushManager' in window;
+    resultado.push({ passo: 'Browser suporta push', ok: suportaPush });
+
+    // 2. Permissão de notificações
+    const perm = 'Notification' in window ? Notification.permission : 'unsupported';
+    resultado.push({ passo: 'Permissão de notificações', ok: perm === 'granted', detalhe: perm });
+
+    // 3. Service Worker registado?
+    let swRegistado = false;
+    try {
+      if ('serviceWorker' in navigator) {
+        const reg = await navigator.serviceWorker.ready;
+        swRegistado = !!reg;
+      }
+    } catch {}
+    resultado.push({ passo: 'Service Worker activo', ok: swRegistado });
+
+    // 4. Push subscription no browser?
+    let temSub = false;
+    try {
+      if (swRegistado) {
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.getSubscription();
+        temSub = !!sub;
+      }
+    } catch {}
+    resultado.push({ passo: 'Push subscription (browser)', ok: temSub });
+
+    // 5. VAPID key disponível no servidor?
+    let vapidOk = false;
+    try {
+      const vapidRes = await fetch('/api/coach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'push-vapid-public' })
+      });
+      const vapidData = await vapidRes.json();
+      vapidOk = !!vapidData?.key;
+      resultado.push({ passo: 'VAPID key no servidor', ok: vapidOk, detalhe: vapidOk ? 'Configurada' : 'EM FALTA' });
+    } catch (e) {
+      resultado.push({ passo: 'VAPID key no servidor', ok: false, detalhe: e.message });
+    }
+
+    // 6. Sessão autenticada?
+    let sessaoOk = false;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      sessaoOk = !!session?.access_token;
+      resultado.push({ passo: 'Sessão autenticada', ok: sessaoOk });
+    } catch {
+      resultado.push({ passo: 'Sessão autenticada', ok: false });
+    }
+
+    // 7. Tentar registar subscription no servidor
+    if (perm === 'granted' && vapidOk && sessaoOk) {
+      try {
+        const regResult = await registarPushSubscription();
+        resultado.push({
+          passo: 'Subscription guardada no servidor',
+          ok: regResult?.ok === true,
+          detalhe: regResult?.ok ? `role: ${regResult.role}` : (regResult?.reason || regResult?.error || 'Falhou')
+        });
+      } catch (e) {
+        resultado.push({ passo: 'Subscription guardada no servidor', ok: false, detalhe: e.message });
+      }
+    }
+
+    // 8. Preferências guardadas no servidor?
+    try {
+      const prefs = await buscarPreferencias();
+      resultado.push({
+        passo: 'Preferências no servidor',
+        ok: !!prefs,
+        detalhe: prefs ? `${(prefs.lembretes || []).length} lembretes, activo: ${prefs.activo}` : 'Sem preferências guardadas'
+      });
+    } catch (e) {
+      resultado.push({ passo: 'Preferências no servidor', ok: false, detalhe: e.message });
+    }
+
+    // 9. Enviar push de teste via servidor
+    if (perm === 'granted' && sessaoOk) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const testRes = await fetch('/api/coach', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            action: 'push-notify',
+            title: 'Teste push do servidor',
+            body: 'Se vês isto, o push funciona de ponta a ponta!',
+            tag: 'push-diagnostico',
+          })
+        });
+        const testData = await testRes.json();
+        resultado.push({
+          passo: 'Push de teste enviado pelo servidor',
+          ok: (testData.sent || 0) > 0,
+          detalhe: `${testData.sent || 0} enviados, ${testData.failed || 0} falharam`
+        });
+      } catch (e) {
+        resultado.push({ passo: 'Push de teste enviado pelo servidor', ok: false, detalhe: e.message });
+      }
+    }
+
+    setDiagnostico(resultado);
+    setADiagnosticar(false);
+  };
 
   const handlePedirPermissao = async () => {
     if (aPedir) return;
@@ -293,6 +412,48 @@ export default function NotificacoesConfig() {
             </button>
           </>
         )}
+
+        {/* Diagnóstico Push */}
+        <div className="bg-white rounded-2xl p-5 shadow-lg">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🔧</span>
+              <h3 className="font-bold text-gray-800">Diagnóstico Push</h3>
+            </div>
+            <button
+              onClick={correrDiagnostico}
+              disabled={aDiagnosticar}
+              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors disabled:opacity-50"
+            >
+              {aDiagnosticar ? 'A testar...' : 'Correr diagnóstico'}
+            </button>
+          </div>
+          {diagnostico && (
+            <div className="space-y-1.5">
+              {diagnostico.map((item, i) => (
+                <div key={i} className={`flex items-start gap-2 p-2 rounded-lg text-sm ${item.ok ? 'bg-green-50' : 'bg-red-50'}`}>
+                  <span className="mt-0.5">{item.ok ? '✅' : '❌'}</span>
+                  <div className="min-w-0">
+                    <span className={item.ok ? 'text-green-800' : 'text-red-800'}>{item.passo}</span>
+                    {item.detalhe && (
+                      <span className="text-gray-500 ml-1.5 text-xs">({item.detalhe})</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {diagnostico.every(d => d.ok) && (
+                <p className="text-green-700 font-medium text-sm mt-2 p-2 bg-green-50 rounded-lg">
+                  Tudo a funcionar! Deves ter recebido uma notificação de teste.
+                </p>
+              )}
+              {diagnostico.some(d => !d.ok) && (
+                <p className="text-red-700 text-sm mt-2 p-2 bg-red-50 rounded-lg">
+                  Alguns passos falharam. Resolve os itens com ❌ para as notificações funcionarem.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Info */}
         <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
