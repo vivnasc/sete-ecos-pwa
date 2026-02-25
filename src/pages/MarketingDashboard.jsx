@@ -17,6 +17,7 @@ import {
   gerarMensagemWhatsApp,
   gerarStatusWhatsApp,
   gerarCaptionInstagram,
+  totalVariantes,
   getConteudosMockupVitalis,
   getMensagensWhatsAppMockups,
   getSetupInstagram,
@@ -1454,13 +1455,15 @@ function VitalisTab({ copiar, copiado }) {
 // ============================================================
 
 function HojeTab({ copiar, copiado }) {
-  const hoje = gerarConteudoHoje();
-  const captionPost = gerarCaptionInstagram('post');
-  const captionReel = gerarCaptionInstagram('reelScript');
-  const captionStories = gerarCaptionInstagram('stories');
+  const [variante, setVariante] = useState(0);
+  const hoje = gerarConteudoHoje(new Date(), variante);
+  const maxVar = totalVariantes(hoje.tema);
+  const captionPost = gerarCaptionInstagram('post', variante);
+  const captionReel = gerarCaptionInstagram('reelScript', variante);
+  const captionStories = gerarCaptionInstagram('stories', variante);
   const waTypes = ['dica', 'provocacao', 'pessoal', 'urgencia', 'lumina'];
   const [waTipo, setWaTipo] = useState('dica');
-  const wa = gerarMensagemWhatsApp(waTipo);
+  const wa = gerarMensagemWhatsApp(waTipo, '', variante);
 
   const dataHoje = new Date().toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -1485,6 +1488,17 @@ function HojeTab({ copiar, copiado }) {
         <div className="p-3 bg-gradient-to-r from-[#1a1a2e] to-[#16213e] rounded-xl text-white">
           <p className="text-[10px] font-bold text-white/50 mb-1">HOOK DO DIA</p>
           <p className="text-sm font-bold leading-relaxed">{hoje.hook}</p>
+        </div>
+        <div className="flex items-center justify-between mt-3">
+          <p className="text-[10px] text-[#6B5C4C]">
+            Variante {(variante % maxVar) + 1} de {maxVar}
+          </p>
+          <button
+            onClick={() => setVariante(v => v + 1)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg text-xs font-bold hover:bg-purple-200 transition-colors active:scale-95"
+          >
+            <span className="text-sm">&#x21bb;</span> Gerar novo conteúdo
+          </button>
         </div>
       </Card>
 
@@ -1568,9 +1582,8 @@ function HojeTab({ copiar, copiado }) {
       <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
         <p className="text-[11px] font-bold text-amber-700">💡 CONTEÚDO AUTOMÁTICO</p>
         <p className="text-xs text-amber-800 mt-1">
-          Este conteúdo é gerado automaticamente todos os dias com base no calendário de temas.
-          Cada dia tem um tema diferente (reflexão, provocação, educação, valor, etc.) para manter variedade.
-          Volta amanhã para conteúdo novo!
+          Cada dia tem um tema diferente (reflexão, provocação, educação, etc.).
+          Carrega em "Gerar novo conteúdo" para ver outras variantes do mesmo tema.
         </p>
       </div>
     </>

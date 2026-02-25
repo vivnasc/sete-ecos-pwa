@@ -202,11 +202,12 @@ function getConteudoByTema(tema, seed) {
   return pickFromArray(CONTEUDO_PROVOCACAO, seed);
 }
 
-export function gerarConteudoHoje(date = new Date()) {
+export function gerarConteudoHoje(date = new Date(), variante = 0) {
   const dayOfWeek = date.getDay();
   const dayOfYear = getDayOfYear(date);
+  const seed = dayOfYear + variante;
   const { tema, titulo, formato, tipo } = TEMAS_SEMANA[dayOfWeek];
-  const conteudo = getConteudoByTema(tema, dayOfYear);
+  const conteudo = getConteudoByTema(tema, seed);
 
   const hashBase = HASHTAGS_BASE.slice(0, 4);
   const hashTema = (HASHTAGS_TEMATICOS[tema] || []).slice(0, 4);
@@ -226,6 +227,12 @@ export function gerarConteudoHoje(date = new Date()) {
   };
 }
 
+export function totalVariantes(tema) {
+  if (tema === 'corpo') return CONTEUDO_CORPO.length;
+  if (tema === 'emocional') return CONTEUDO_EMOCIONAL.length;
+  return CONTEUDO_PROVOCACAO.length;
+}
+
 export function gerarConteudoSemana(startDate = new Date()) {
   const semana = [];
   for (let i = 0; i < 7; i++) {
@@ -240,8 +247,8 @@ export function gerarConteudoSemana(startDate = new Date()) {
 // WHATSAPP - Mensagens que soam como a Vivianne a falar
 // ============================================================
 
-export function gerarMensagemWhatsApp(tipo = 'dica', campanha = '') {
-  const hoje = gerarConteudoHoje();
+export function gerarMensagemWhatsApp(tipo = 'dica', campanha = '', variante = 0) {
+  const hoje = gerarConteudoHoje(new Date(), variante);
   const camp = campanha || `whatsapp-${hoje.data}`;
   const linkVitalis = buildUTMUrl(`${BASE_URL}/vitalis`, UTM_TEMPLATES.whatsappBroadcast(camp));
   const linkLumina = buildUTMUrl(`${BASE_URL}/lumina`, UTM_TEMPLATES.whatsappBroadcast(camp + '-lumina'));
@@ -292,8 +299,8 @@ export function gerarMensagemWhatsApp(tipo = 'dica', campanha = '') {
   };
 }
 
-export function gerarStatusWhatsApp(campanha = '') {
-  const hoje = gerarConteudoHoje();
+export function gerarStatusWhatsApp(campanha = '', variante = 0) {
+  const hoje = gerarConteudoHoje(new Date(), variante);
   const camp = campanha || `status-${hoje.data}`;
   const link = buildUTMUrl(`${BASE_URL}/lumina`, UTM_TEMPLATES.whatsappStatus(camp));
   return {
@@ -306,8 +313,8 @@ export function gerarStatusWhatsApp(campanha = '') {
 // INSTAGRAM - Captions que param o scroll
 // ============================================================
 
-export function gerarCaptionInstagram(tipo = 'post') {
-  const hoje = gerarConteudoHoje();
+export function gerarCaptionInstagram(tipo = 'post', variante = 0) {
+  const hoje = gerarConteudoHoje(new Date(), variante);
   const hashtagStr = hoje.hashtags.join(' ');
 
   const templates = {
