@@ -11,7 +11,7 @@ import { isNearRamadan, setObservaRamadao, observaRamadao } from '../../utils/ra
 import { useTheme } from '../../contexts/ThemeContext';
 import { useI18n } from '../../contexts/I18nContext';
 import { temPermissao, activarLembretes, contarLembretesHoje } from '../../utils/notifications';
-import { pedirPermissaoERegistar } from '../../lib/pushSubscription';
+import { pedirPermissaoERegistar, guardarPreferencias } from '../../lib/pushSubscription';
 import { checkVitalisAccess } from '../../lib/subscriptions';
 import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
 import QuickTrackers from './QuickTrackers';
@@ -106,7 +106,9 @@ export default function DashboardVitalis() {
   // Estados para PWA install e notificações
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isPWAInstalled, setIsPWAInstalled] = useState(false);
-  const [notificacoesAtivas, setNotificacoesAtivas] = useState(false);
+  const [notificacoesAtivas, setNotificacoesAtivas] = useState(
+    () => 'Notification' in window && Notification.permission === 'granted'
+  );
   const [mostrarBannerPWA, setMostrarBannerPWA] = useState(false);
 
   // Estados para Trial e Intake
@@ -143,10 +145,14 @@ export default function DashboardVitalis() {
       setMostrarBannerPWA(!isStandalone);
     }
 
-    // CRITICAL: Activate saved notification reminders on every app open
+    // CRITICAL: Activate saved notification reminders + re-register push on every app open
     if (temPermissao()) {
       const count = activarLembretes();
       console.log('Dashboard: lembretes re-activados', count?.length || 0);
+      // Re-registar push subscription silenciosamente (garante que está na DB)
+      import('../../lib/pushSubscription').then(({ registarPushSubscription }) => {
+        registarPushSubscription().catch(() => {});
+      });
     }
 
     // Capturar evento de instalação PWA
@@ -1029,6 +1035,9 @@ export default function DashboardVitalis() {
                       setNotificacoesAtivas(resultado);
                       if (resultado) {
                         const timeouts = activarLembretes();
+                        // Guardar preferências default no servidor para push real via cron
+                        const { carregarLembretes } = await import('../../utils/notifications');
+                        guardarPreferencias(carregarLembretes()).catch(() => {});
                         enviarNotificacao('Notificações activadas!', {
                           body: 'Vais receber lembretes mesmo com a app fechada!'
                         });

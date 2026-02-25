@@ -20,6 +20,11 @@ CREATE INDEX IF NOT EXISTS idx_push_subs_role ON push_subscriptions(role);
 
 ALTER TABLE push_subscriptions ENABLE ROW LEVEL SECURITY;
 
+-- RLS policies para push_subscriptions (service_role bypassa, mas por segurança)
+DROP POLICY IF EXISTS "push_subs_service_all" ON push_subscriptions;
+CREATE POLICY "push_subs_service_all" ON push_subscriptions
+  FOR ALL TO service_role USING (true) WITH CHECK (true);
+
 -- 2. Tabela de preferências de notificação dos clientes
 CREATE TABLE IF NOT EXISTS push_preferences (
   id SERIAL PRIMARY KEY,
@@ -36,3 +41,8 @@ CREATE INDEX IF NOT EXISTS idx_push_prefs_user ON push_preferences(user_id);
 CREATE INDEX IF NOT EXISTS idx_push_prefs_activo ON push_preferences(activo);
 
 ALTER TABLE push_preferences ENABLE ROW LEVEL SECURITY;
+
+-- RLS policies para push_preferences
+DROP POLICY IF EXISTS "push_prefs_service_all" ON push_preferences;
+CREATE POLICY "push_prefs_service_all" ON push_preferences
+  FOR ALL TO service_role USING (true) WITH CHECK (true);
