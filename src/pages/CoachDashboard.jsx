@@ -138,9 +138,15 @@ export default function CoachDashboard() {
     try {
       const { registarPushSubscription: registar } = await import('../lib/pushSubscription');
       const result = await registar();
-      setPushStatus(result.ok ? 'subscribed' : 'unsupported');
+      if (result.ok) {
+        setPushStatus('subscribed');
+        console.log('[Coach Push] Subscription registada com sucesso');
+      } else {
+        setPushStatus('unsupported');
+        console.warn('[Coach Push] Falha ao registar:', result.reason || result.error);
+      }
     } catch (err) {
-      console.error('[Push] Erro ao registar:', err);
+      console.error('[Coach Push] Erro ao registar:', err);
       setPushStatus('unsupported');
     }
   };
