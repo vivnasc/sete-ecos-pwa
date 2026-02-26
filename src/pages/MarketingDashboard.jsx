@@ -1096,12 +1096,38 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
             </div>
           )}
 
-          {/* Imagem colorida (AutoImage) */}
+          {/* Mockups reais da app (quando disponíveis) */}
+          {post.mockups && post.mockups.length > 0 && (
+            <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+              <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+                <div>
+                  <p className="font-bold text-xs text-[#4A4035]">Mockup real da app</p>
+                  <p className="text-[10px] text-[#A09888]">Imagem real — usa no Reel como fundo ou slide</p>
+                </div>
+                <span className="text-[9px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full">Mockup</span>
+              </div>
+              <div className="p-3 flex gap-3 overflow-x-auto">
+                {post.mockups.map((src, i) => (
+                  <a key={i} href={src} download className="shrink-0 block">
+                    <img
+                      src={src}
+                      alt={`Mockup ${post.eco} ${i + 1}`}
+                      className="h-48 rounded-xl shadow-md object-cover"
+                      loading="lazy"
+                    />
+                    <p className="text-[9px] text-center text-[#A09888] mt-1">Toca para descarregar</p>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Imagem gerada (AutoImage) */}
           <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
             <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
               <div>
-                <p className="font-bold text-xs text-[#4A4035]">Imagem pronta</p>
-                <p className="text-[10px] text-[#A09888]">Descarrega e publica</p>
+                <p className="font-bold text-xs text-[#4A4035]">Imagem com texto</p>
+                <p className="text-[10px] text-[#A09888]">Gerada automaticamente — alternativa ao mockup</p>
               </div>
               <span className="text-[9px] bg-pink-100 text-pink-700 font-bold px-2 py-0.5 rounded-full">1:1</span>
             </div>
@@ -1129,52 +1155,77 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
                 <span className="text-[9px] bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-full">Slides</span>
               </div>
               <div className="p-3">
-                <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x">
-                  {post.conteudoIG.slides.map((slide, i) => (
-                    <AutoImage
-                      key={i}
-                      template="carrossel"
-                      eco={post.eco === 'seteEcos' ? 'vitalis' : post.eco}
-                      formato="post"
-                      texto={slide.titulo}
-                      subtitulo={slide.texto}
-                      slideNum={i + 1}
-                      totalSlides={post.conteudoIG.slides.length}
-                      bgIndex={i}
-                      scale={0.24}
-                      filename={`lancamento-${post.dia}-slide-${i + 1}.png`}
-                      className="shrink-0"
-                    />
-                  ))}
-                </div>
+                {/* Destaques IG: cada slide é um eco com a sua cor */}
+                {post.formato === 'destaques' ? (
+                  <div className="grid grid-cols-3 gap-2">
+                    {post.conteudoIG.slides.map((slide, i) => {
+                      // Extrair cor hex do texto do slide (formato "Cor: ... (#XXXXXX)")
+                      const corMatch = slide.texto?.match(/#[0-9A-Fa-f]{6}/);
+                      const corEco = corMatch ? corMatch[0] : '#7C8B6F';
+                      return (
+                        <div key={i} className="text-center">
+                          <div
+                            className="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-white text-lg shadow-md"
+                            style={{ backgroundColor: corEco }}
+                          >
+                            {slide.titulo?.split(' ')[0] || ''}
+                          </div>
+                          <p className="text-[9px] font-bold text-[#4A4035] mt-1">{slide.titulo?.replace(/^[^\s]+\s/, '') || ''}</p>
+                          <p className="text-[8px] text-[#A09888] leading-tight">{slide.texto?.split('\n')[1] || ''}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x">
+                    {post.conteudoIG.slides.map((slide, i) => (
+                      <AutoImage
+                        key={i}
+                        template="carrossel"
+                        eco={post.eco === 'seteEcos' ? 'vitalis' : post.eco}
+                        formato="post"
+                        texto={slide.titulo}
+                        subtitulo={slide.texto}
+                        slideNum={i + 1}
+                        totalSlides={post.conteudoIG.slides.length}
+                        bgIndex={i}
+                        scale={0.24}
+                        filename={`lancamento-${post.dia}-slide-${i + 1}.png`}
+                        className="shrink-0"
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}
 
-          {/* Story */}
-          <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
-            <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
-              <div>
-                <p className="font-bold text-xs text-[#4A4035]">Story</p>
-                <p className="text-[10px] text-[#A09888]">IG, FB e WA Status</p>
+          {/* Reel 9:16 — só para posts com formato reel (não para destaques) */}
+          {post.formato !== 'destaques' && (
+            <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+              <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+                <div>
+                  <p className="font-bold text-xs text-[#4A4035]">Reel (9:16)</p>
+                  <p className="text-[10px] text-[#A09888]">Formato principal — maior alcance com zero seguidores</p>
+                </div>
+                <span className="text-[9px] bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold px-2 py-0.5 rounded-full">Reel</span>
               </div>
-              <span className="text-[9px] bg-gradient-to-r from-orange-400 to-pink-500 text-white font-bold px-2 py-0.5 rounded-full">9:16</span>
+              <div className="p-3 flex gap-3 justify-center">
+                <AutoImage
+                  template={post.template || 'dica'}
+                  eco={post.eco === 'seteEcos' ? 'vitalis' : post.eco}
+                  formato="stories"
+                  texto={post.conteudoIG?.texto || post.hook}
+                  subtitulo="app.seteecos.com"
+                  scale={0.16}
+                  filename={`lancamento-${post.dia}-reel.png`}
+                />
+              </div>
             </div>
-            <div className="p-3 flex gap-3 justify-center">
-              <AutoImage
-                template={post.template || 'dica'}
-                eco={post.eco === 'seteEcos' ? 'vitalis' : post.eco}
-                formato="stories"
-                texto={post.conteudoIG?.texto || post.hook}
-                subtitulo="app.seteecos.com"
-                scale={0.16}
-                filename={`lancamento-${post.dia}-story.png`}
-              />
-            </div>
-          </div>
+          )}
 
-          {/* Legendas por plataforma */}
-          <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+          {/* Legendas por plataforma — esconde se não há captions (destaques) */}
+          {post.formato !== 'destaques' && <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
             <div className="px-4 py-2.5 border-b border-[#E8E2D9]">
               <p className="font-bold text-xs text-[#4A4035]">Legendas prontas</p>
               <p className="text-[10px] text-[#A09888]">Toca para copiar o texto de cada rede</p>
@@ -1230,7 +1281,7 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
                 />
               )}
             </div>
-          </div>
+          </div>}
         </div>
       )}
     </div>
