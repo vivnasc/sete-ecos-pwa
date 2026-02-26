@@ -201,14 +201,7 @@ async function gerarPlano(userId, res) {
   // Instead, log the error for debugging.
   const saveError = async (errorMsg) => {
     console.error(`[Coach API] Erro ao gerar plano para ${userId}: ${errorMsg}`);
-    // Push notification para coach
-    const { data: userData } = await supabase.from('users').select('nome').eq('id', userId).maybeSingle();
-    pushCoachNotification({
-      title: '❌ Erro ao gerar plano',
-      body: `${userData?.nome || 'Cliente'}: ${errorMsg.slice(0, 80)}`,
-      url: `/coach/cliente/${userId}`,
-      tag: 'plano-erro',
-    }).catch(() => {});
+    // Push desactivado — coach já recebe WhatsApp + consulta o dashboard
   };
 
   // 1. Fetch intake

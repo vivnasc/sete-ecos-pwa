@@ -133,21 +133,17 @@ async function enviarWhatsAppCoach(mensagem) {
 }
 
 // ===== PUSH NOTIFICATIONS (Web Push para coach) =====
+// DESACTIVADO: Coach já recebe WhatsApp para todos estes eventos.
+// Push era redundante e ruidoso. Se quiser reactivar, descomentar.
 
 /**
  * Envia push notification para o telemóvel/browser da coach.
  * Funciona mesmo com app fechada (via Service Worker).
  */
 async function pushCoach({ title, body, url, tag, requireInteraction }) {
-  try {
-    await fetch('/api/coach', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'push-notify', title, body, url, tag, requireInteraction })
-    });
-  } catch (err) {
-    console.error('Push coach falhou:', err);
-  }
+  // Desactivado — WhatsApp já cobre todos os alertas de coach.
+  // Reactivar se a coach quiser push novamente.
+  return;
 }
 
 // ===== TRIGGERS AUTOMÁTICOS =====

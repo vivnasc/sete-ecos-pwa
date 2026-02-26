@@ -98,8 +98,16 @@ export default function DashboardVitalis() {
   const notificacaoJejumEnviada = useRef(false);
   const jejumTimerRef = useRef(null);
 
-  // Ref para controlar conquistas já mostradas nesta sessão
-  const conquistasMostradasRef = useRef(new Set());
+  // Conquistas já celebradas — persistente via localStorage (não useRef que reseta a cada mount)
+  const getConquistasCelebradas = () => {
+    try { return new Set(JSON.parse(localStorage.getItem('vitalis-conquistas-celebradas') || '[]')); }
+    catch { return new Set(); }
+  };
+  const marcarConquistaCelebrada = (id) => {
+    const set = getConquistasCelebradas();
+    set.add(id);
+    localStorage.setItem('vitalis-conquistas-celebradas', JSON.stringify([...set]));
+  };
 
   // Estados de sono interactivo movidos para QuickTrackers
 
@@ -512,22 +520,20 @@ export default function DashboardVitalis() {
 
       // Se há novas conquistas, notificar por email
       if (novasConquistas.length > 0 && email) {
-        // Guardar conquistas já notificadas PRIMEIRO para evitar duplicados
-        localStorage.setItem('vitalis-conquistas-notificadas', JSON.stringify(conquistas));
+        // UNION: juntar antigas + novas (nunca perder conquistas já notificadas)
+        const todasNotificadas = [...new Set([...conquistasNotificadas, ...conquistas])];
+        localStorage.setItem('vitalis-conquistas-notificadas', JSON.stringify(todasNotificadas));
+
+        const celebradas = getConquistasCelebradas();
 
         for (const conquistaId of novasConquistas) {
           const conquista = CONQUISTAS[conquistaId];
           if (conquista) {
-            // Verificar se já mostramos esta conquista nesta sessão
-            if (!conquistasMostradasRef.current.has(conquistaId)) {
-              // Marcar como mostrada nesta sessão
-              conquistasMostradasRef.current.add(conquistaId);
-
-              // Mostrar celebração para a primeira nova conquista não mostrada
-              if (!showCelebracao) {
-                setConquistaActual(conquistaId);
-                setShowCelebracao(true);
-              }
+            // Verificar se já celebrámos esta conquista (persistente entre sessões)
+            if (!celebradas.has(conquistaId) && !showCelebracao) {
+              marcarConquistaCelebrada(conquistaId);
+              setConquistaActual(conquistaId);
+              setShowCelebracao(true);
             }
 
             // Enviar email (async, não bloqueia)
