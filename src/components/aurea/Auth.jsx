@@ -233,27 +233,12 @@ export default function AureaAuth() {
 
           {isLogin && (
             <div className="mt-4 text-center">
-              <button
-                onClick={async () => {
-                  if (!email) {
-                    setError('Insere o teu email primeiro');
-                    return;
-                  }
-                  setLoading(true);
-                  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: `${window.location.origin}/aurea/login`
-                  });
-                  setLoading(false);
-                  if (error) {
-                    setError('Erro ao enviar email. Tenta novamente.');
-                  } else {
-                    setMessage('Email enviado! Verifica a tua caixa de correio.');
-                  }
-                }}
+              <a
+                href="/recuperar-password"
                 className="text-amber-400/70 hover:text-amber-300 text-sm"
               >
                 Esqueceste a palavra-passe?
-              </button>
+              </a>
             </div>
           )}
         </div>

@@ -11,8 +11,16 @@ export default function RecuperarPassword() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Check if this is a reset callback (user clicked email link)
-  const isResetCallback = searchParams.get('type') === 'recovery' || window.location.hash.includes('type=recovery');
+  // Detectar se é callback de recovery (user clicou no link do email)
+  // O Supabase pode redirecionar com:
+  // 1. Hash fragment: /recuperar-password#access_token=...&type=recovery (implicit flow)
+  // 2. Query param code: /recuperar-password?code=xxx (PKCE flow)
+  // 3. Query param type: /recuperar-password?type=recovery (do AuthContext redirect)
+  const urlHash = window.location.hash || '';
+  const hasRecoveryHash = urlHash.includes('type=recovery');
+  const hasRecoveryQuery = searchParams.get('type') === 'recovery';
+  const hasPKCECode = searchParams.has('code');
+  const isResetCallback = hasRecoveryHash || hasRecoveryQuery || hasPKCECode;
 
   const [mode, setMode] = useState(isResetCallback ? 'set-new' : 'request');
   const [email, setEmail] = useState('');
@@ -24,8 +32,8 @@ export default function RecuperarPassword() {
   const [sessionReady, setSessionReady] = useState(false);
 
   useEffect(() => {
-    // Handle the recovery token from URL hash
-    if (window.location.hash.includes('type=recovery')) {
+    // Actualizar modo se detectado recovery no hash (pode chegar depois do render inicial)
+    if (hasRecoveryHash || hasPKCECode) {
       setMode('set-new');
     }
 
@@ -33,8 +41,8 @@ export default function RecuperarPassword() {
     if (isResetCallback) {
       const waitForSession = async () => {
         // O Supabase processa o token do hash automaticamente (detectSessionInUrl)
-        // Esperar até que a sessão esteja disponível (máx 10s)
-        for (let i = 0; i < 20; i++) {
+        // Esperar até que a sessão esteja disponível (máx 15s)
+        for (let i = 0; i < 30; i++) {
           const { data: { session } } = await supabase.auth.getSession();
           if (session) {
             setSessionReady(true);
@@ -42,7 +50,7 @@ export default function RecuperarPassword() {
           }
           await new Promise(r => setTimeout(r, 500));
         }
-        // Se não conseguiu sessão após 10s, mostrar erro
+        // Se não conseguiu sessão após 15s, mostrar erro
         setMessage({
           type: 'error',
           text: 'O link expirou ou é inválido. Pede um novo link de recuperação.'
@@ -50,7 +58,7 @@ export default function RecuperarPassword() {
       };
       waitForSession();
     }
-  }, [isResetCallback]);
+  }, [isResetCallback, hasRecoveryHash, hasPKCECode]);
 
   const handleRequestReset = async (e) => {
     e.preventDefault();
@@ -64,12 +72,14 @@ export default function RecuperarPassword() {
 
     try {
       // Usar endpoint próprio que envia email pelo Resend (personalizado Sete Ecos)
+      // IMPORTANTE: redirectTo SEM query params — o wildcard do Supabase
+      // não faz match a URLs com query strings, e redireciona para o Site URL (home).
       const response = await fetch('/api/recuperar-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: email.trim(),
-          redirectTo: `${window.location.origin}/recuperar-password?type=recovery`
+          redirectTo: `${window.location.origin}/recuperar-password`
         })
       });
 
