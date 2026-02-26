@@ -119,10 +119,20 @@ export function AuthProvider({ children }) {
     }, 3000)
 
     // onAuthStateChange fires INITIAL_SESSION immediately on setup
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       clearTimeout(safetyTimeout)
       setSession(session)
       setLoading(false)
+
+      // PASSWORD_RECOVERY: redirecionar para a página de nova password
+      if (event === 'PASSWORD_RECOVERY') {
+        // Usar setTimeout para garantir que o state do React já actualizou
+        setTimeout(() => {
+          window.location.replace('/recuperar-password?type=recovery')
+        }, 100)
+        return
+      }
+
       if (session?.user) {
         loadUserData(session.user)
       } else {
