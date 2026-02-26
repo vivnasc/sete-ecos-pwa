@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { g } from '../utils/genero';
 
 /**
  * RECUPERAR PASSWORD - Dedicated Password Recovery Page
@@ -20,13 +21,36 @@ export default function RecuperarPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  const [sessionReady, setSessionReady] = useState(false);
 
   useEffect(() => {
     // Handle the recovery token from URL hash
     if (window.location.hash.includes('type=recovery')) {
       setMode('set-new');
     }
-  }, []);
+
+    // Quando em modo set-new, esperar que a sessão do Supabase esteja pronta
+    if (isResetCallback) {
+      const waitForSession = async () => {
+        // O Supabase processa o token do hash automaticamente (detectSessionInUrl)
+        // Esperar até que a sessão esteja disponível (máx 10s)
+        for (let i = 0; i < 20; i++) {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            setSessionReady(true);
+            return;
+          }
+          await new Promise(r => setTimeout(r, 500));
+        }
+        // Se não conseguiu sessão após 10s, mostrar erro
+        setMessage({
+          type: 'error',
+          text: 'O link expirou ou é inválido. Pede um novo link de recuperação.'
+        });
+      };
+      waitForSession();
+    }
+  }, [isResetCallback]);
 
   const handleRequestReset = async (e) => {
     e.preventDefault();
@@ -73,6 +97,16 @@ export default function RecuperarPassword() {
       return;
     }
 
+    // Verificar que a sessão está pronta antes de tentar alterar
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      setMessage({
+        type: 'error',
+        text: 'Sessão expirada. Pede um novo link de recuperação.'
+      });
+      return;
+    }
+
     setLoading(true);
     setMessage(null);
 
@@ -85,12 +119,12 @@ export default function RecuperarPassword() {
 
       setMessage({
         type: 'success',
-        text: 'Password alterada com sucesso! Vais ser redirecionada...'
+        text: `Password alterada com sucesso! Vais ser ${g('redireccionado', 'redireccionada')}...`
       });
 
-      // Redirect after success
+      // Redirect to login after success
       setTimeout(() => {
-        navigate('/conta');
+        navigate('/login');
       }, 2000);
     } catch (error) {
       console.error('Erro ao alterar password:', error);
@@ -191,7 +225,29 @@ export default function RecuperarPassword() {
             )}
 
             {/* Set New Password Form */}
-            {mode === 'set-new' && (
+            {mode === 'set-new' && !sessionReady && !message && (
+              <div className="text-center py-6">
+                <div className="w-8 h-8 border-3 border-[#C9A227]/30 border-t-[#C9A227] rounded-full animate-spin mx-auto mb-3"></div>
+                <p className="text-sm text-[#6B5344]">A preparar... Um momento.</p>
+              </div>
+            )}
+
+            {mode === 'set-new' && !sessionReady && message && (
+              <div className={`p-3 rounded-xl text-sm ${
+                message.type === 'success'
+                  ? 'bg-green-50 border border-green-200 text-green-700'
+                  : 'bg-red-50 border border-red-200 text-red-700'
+              }`}>
+                {message.text}
+                <div className="mt-3">
+                  <Link to="/recuperar-password" className="text-[#C9A227] hover:underline text-sm font-medium">
+                    Pedir novo link
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {mode === 'set-new' && sessionReady && (
               <form onSubmit={handleSetNewPassword} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-[#4A3728] mb-1.5">
