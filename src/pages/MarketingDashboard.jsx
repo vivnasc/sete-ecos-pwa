@@ -1134,7 +1134,7 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
             <div className="p-3 flex justify-center">
               <AutoImage
                 template={post.template || 'dica'}
-                eco={post.eco === 'seteEcos' ? 'vitalis' : post.eco}
+                eco={post.eco}
                 formato="post"
                 texto={post.conteudoIG?.texto || post.hook}
                 subtitulo={post.conteudoIG?.subtitulo || ''}
@@ -1159,18 +1159,20 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
                 {post.formato === 'destaques' ? (
                   <div className="grid grid-cols-3 gap-2">
                     {post.conteudoIG.slides.map((slide, i) => {
-                      // Extrair cor hex do texto do slide (formato "Cor: ... (#XXXXXX)")
-                      const corMatch = slide.texto?.match(/#[0-9A-Fa-f]{6}/);
-                      const corEco = corMatch ? corMatch[0] : '#7C8B6F';
+                      // Mapear nome do slide ao eco key em CORES
+                      const nomeEco = slide.titulo?.replace(/^[^\s]+\s/, '').trim().toUpperCase();
+                      const ecoMap = { LUMINA: 'lumina', VITALIS: 'vitalis', 'ÁUREA': 'aurea', SERENA: 'serena', IGNIS: 'ignis', VENTIS: 'ventis', ECOA: 'ecoa', IMAGO: 'imago', AURORA: 'aurora' };
+                      const ecoKey = ecoMap[nomeEco] || 'seteEcos';
+                      const eco = CORES[ecoKey] || CORES.seteEcos;
                       return (
                         <div key={i} className="text-center">
                           <div
-                            className="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-white text-lg shadow-md"
-                            style={{ backgroundColor: corEco }}
+                            className="w-16 h-16 mx-auto rounded-full flex items-center justify-center shadow-md overflow-hidden"
+                            style={{ backgroundColor: eco.primary }}
                           >
-                            {slide.titulo?.split(' ')[0] || ''}
+                            <img src={eco.logo} alt={eco.nome} className="w-10 h-10 object-contain" />
                           </div>
-                          <p className="text-[9px] font-bold text-[#4A4035] mt-1">{slide.titulo?.replace(/^[^\s]+\s/, '') || ''}</p>
+                          <p className="text-[9px] font-bold text-[#4A4035] mt-1">{eco.nome}</p>
                           <p className="text-[8px] text-[#A09888] leading-tight">{slide.texto?.split('\n')[1] || ''}</p>
                         </div>
                       );
@@ -1182,7 +1184,7 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
                       <AutoImage
                         key={i}
                         template="carrossel"
-                        eco={post.eco === 'seteEcos' ? 'vitalis' : post.eco}
+                        eco={post.eco}
                         formato="post"
                         texto={slide.titulo}
                         subtitulo={slide.texto}
@@ -1213,7 +1215,7 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
               <div className="p-3 flex gap-3 justify-center">
                 <AutoImage
                   template={post.template || 'dica'}
-                  eco={post.eco === 'seteEcos' ? 'vitalis' : post.eco}
+                  eco={post.eco}
                   formato="stories"
                   texto={post.conteudoIG?.texto || post.hook}
                   subtitulo="app.seteecos.com"
