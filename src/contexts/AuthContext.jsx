@@ -118,6 +118,12 @@ export function AuthProvider({ children }) {
       setLoading(false)
     }, 3000)
 
+    // Detectar recovery token no URL ANTES do onAuthStateChange
+    // para saber que estamos num fluxo de recovery
+    const urlHash = window.location.hash || ''
+    const urlSearch = window.location.search || ''
+    const isRecoveryUrl = urlHash.includes('type=recovery') || urlSearch.includes('type=recovery')
+
     // onAuthStateChange fires INITIAL_SESSION immediately on setup
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       clearTimeout(safetyTimeout)
@@ -126,10 +132,17 @@ export function AuthProvider({ children }) {
 
       // PASSWORD_RECOVERY: redirecionar para a página de nova password
       if (event === 'PASSWORD_RECOVERY') {
-        // Usar setTimeout para garantir que o state do React já actualizou
-        setTimeout(() => {
-          window.location.replace('/recuperar-password?type=recovery')
-        }, 100)
+        // Redirecionar imediatamente — não esperar
+        window.location.replace('/recuperar-password?type=recovery')
+        return
+      }
+
+      // Se o URL tem token de recovery, não processar SIGNED_IN/INITIAL_SESSION
+      // como login normal — o evento PASSWORD_RECOVERY virá a seguir.
+      // Sem isto, o utilizador seria redireccionado para home/dashboard
+      // antes do PASSWORD_RECOVERY ter chance de redirecionar.
+      if (isRecoveryUrl && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
+        // Não carregar dados de utilizador nem redirecionar — esperar PASSWORD_RECOVERY
         return
       }
 

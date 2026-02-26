@@ -45,11 +45,19 @@ export default async function handler(req, res) {
     })
 
     // Gerar link de recuperação via Admin API
+    // IMPORTANTE: redirectTo SEM query params — o wildcard ** do Supabase
+    // só corresponde ao path, não a query strings. Com ?type=recovery,
+    // o Supabase não faz match e redireciona para o Site URL (home).
+    // A detecção do modo recovery é feita pelo hash fragment (#type=recovery)
+    // que o Supabase adiciona automaticamente.
+    const cleanRedirect = (redirectTo || 'https://app.seteecos.com/recuperar-password')
+      .split('?')[0] // Remover qualquer query param
+
     const { data, error } = await supabaseAdmin.auth.admin.generateLink({
       type: 'recovery',
       email: email.trim(),
       options: {
-        redirectTo: redirectTo || 'https://app.seteecos.com/recuperar-password?type=recovery'
+        redirectTo: cleanRedirect
       }
     })
 
