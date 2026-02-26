@@ -63,11 +63,20 @@ export default function RecuperarPassword() {
     setMessage(null);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${window.location.origin}/recuperar-password?type=recovery`
+      // Usar endpoint próprio que envia email pelo Resend (personalizado Sete Ecos)
+      const response = await fetch('/api/recuperar-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim(),
+          redirectTo: `${window.location.origin}/recuperar-password?type=recovery`
+        })
       });
 
-      if (error) throw error;
+      if (!response.ok) {
+        const result = await response.json();
+        throw new Error(result.error || 'Erro ao enviar email');
+      }
 
       setMessage({
         type: 'success',
