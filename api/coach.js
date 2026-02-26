@@ -744,7 +744,7 @@ async function coachNotificacoes(res) {
       .limit(50),
     // Meals logged (last 7 days)
     supabase.from('vitalis_meals_log')
-      .select('user_id, tipo_refeicao, data, created_at')
+      .select('user_id, refeicao, data, created_at')
       .in('user_id', userIds)
       .gte('created_at', desdeISO)
       .order('created_at', { ascending: false })
