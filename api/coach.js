@@ -95,6 +95,9 @@ export default async function handler(req, res) {
     if (action === 'push-save-prefs') return await pushSavePrefs(req, params, res);
     if (action === 'push-get-prefs') return await pushGetPrefs(req, res);
 
+    // ── Telegram ──
+    if (action === 'telegram-send') return await telegramSend(params, res);
+
     // ── All other actions require coach auth ──
     const coach = await verifyCoach(req);
     if (!coach) return res.status(403).json({ error: 'Acesso negado. Apenas coaches autorizadas.' });
@@ -1242,5 +1245,48 @@ export async function sendPushToUser(userId, { title, body, url, tag }) {
   } catch (e) {
     console.error('[Push] Erro ao enviar para user:', e.message);
     return 0;
+  }
+}
+
+// ==========================================
+// TELEGRAM — notificações para a coach
+// ==========================================
+
+async function telegramSend(params, res) {
+  const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+  const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+    return res.status(200).json({ ok: false, error: 'Telegram não configurado. Adiciona TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_ID no Vercel.' });
+  }
+
+  const { mensagem } = params;
+  if (!mensagem) {
+    return res.status(400).json({ ok: false, error: 'Mensagem obrigatória' });
+  }
+
+  try {
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: mensagem,
+        parse_mode: 'Markdown',
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!result.ok) {
+      console.error('[Telegram] Erro:', result.description);
+      return res.status(200).json({ ok: false, error: result.description });
+    }
+
+    return res.status(200).json({ ok: true, messageId: result.result?.message_id });
+  } catch (err) {
+    console.error('[Telegram] Erro de rede:', err.message);
+    return res.status(500).json({ ok: false, error: err.message });
   }
 }

@@ -32,6 +32,10 @@ const COACH_WHATSAPP_NUMBER = VIVIANNE_PERSONAL_NUMBER
   ? VIVIANNE_PERSONAL_NUMBER.replace(/[^0-9]/g, '')
   : '258851006473';
 
+// Telegram config para notificações da coach
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+
 export default async function handler(req, res) {
   // Auth centralizada no api/cron.js dispatcher
 
@@ -770,15 +774,36 @@ async function enviarCuriosidadeInsana(supabase, resultados) {
 }
 
 /**
- * Envia WhatsApp para a coach via Meta Cloud API (produção)
+ * Envia notificação para a coach via Telegram (preferido) ou WhatsApp (fallback)
  */
 async function enviarWhatsAppCoach(mensagem) {
-  if (!WHATSAPP_ACCESS_TOKEN || !WHATSAPP_PHONE_NUMBER_ID) {
-    console.log('Meta WhatsApp API não configurada — WhatsApp não enviado');
-    return false;
+  // 1. Tentar Telegram primeiro (mais fiável, sem tokens que expiram)
+  if (TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID) {
+    try {
+      const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text: mensagem,
+          parse_mode: 'Markdown',
+        }),
+      });
+      if (response.ok) {
+        console.log('[Telegram] Mensagem enviada à coach');
+        return true;
+      }
+      const err = await response.json();
+      console.error('[Telegram] Erro:', err?.description || JSON.stringify(err));
+    } catch (err) {
+      console.error('[Telegram] Erro de rede:', err.message);
+    }
   }
-  if (!COACH_WHATSAPP_NUMBER) {
-    console.log('VIVIANNE_PERSONAL_NUMBER não configurado — WhatsApp não enviado');
+
+  // 2. Fallback: WhatsApp Meta
+  if (!WHATSAPP_ACCESS_TOKEN || !WHATSAPP_PHONE_NUMBER_ID || !COACH_WHATSAPP_NUMBER) {
+    console.log('Nem Telegram nem WhatsApp configurados — notificação não enviada');
     return false;
   }
   try {
