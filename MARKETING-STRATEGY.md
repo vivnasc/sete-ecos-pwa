@@ -116,40 +116,57 @@ public/mockups/
 
 ---
 
-## 2. Estratégia da Campanha de Lançamento
+## 2. Posição da Marca (DEFINITIVO)
 
-### 2.1 Objectivo
+### 2.1 A verdade da Sete Ecos
 
-Lançar o perfil Instagram da Sete Ecos do zero (0 seguidores) e construir uma audiência orgânica que converta em utilizadores do Lumina (gratuito) e eventualmente do Vitalis e outros ecos (pago).
+A Sete Ecos **nasceu de excesso, não de falta.**
 
-### 2.2 Formato único: REELS
+Não nasceu porque alguém precisava de emagrecer ou estava perdida. Nasceu porque a Vivianne vivia muitas camadas ao mesmo tempo — intelectual, espiritual, profissional, criativa, corporal — e tudo estava **separado**.
+
+Tinha profundidade. Tinha disciplina. Tinha visão. Mas não tinha **integração**. E essa fragmentação cansa.
+
+**Frase-âncora**: "A Sete Ecos não nasceu para te melhorar. Nasceu para integrar o que já és."
+
+### 2.2 O que esta campanha comunica
+
+1. Isto não é mais uma app
+2. Nasceu de uma necessidade real de integração
+3. Comunicar inteligência, não fragilidade
+4. Atrair pessoas que já perceberam que soluções isoladas não funcionam
+5. Criar respeito antes de criar empatia
+
+### 2.3 O que NÃO é
+
+- Não é wellness estético
+- Não é motivação superficial
+- Não é guru nem coach milagrosa
+- Não é frases bonitas que não dizem nada
+- Não é clickbait emocional
+
+### 2.4 Formato: REELS
 
 - **100% Reels** — único formato que chega a não-seguidores
-- Reels têm 10x mais alcance que posts estáticos com zero seguidores
 - NUNCA publicar como post estático na fase de lançamento
-- NUNCA publicar Stories (ninguém vê Stories de contas com 0 seguidores)
 - Os Reels podem ser reutilizados como TikTok
 
-### 2.3 Princípio fundamental: UMA HISTÓRIA
+### 2.5 Narrativa em 3 actos
 
-A campanha conta uma história em 3 actos:
+**ACTO 1 — "Porque isto existe" (Marca & Identidade)**
+- Post 1: A Sete Ecos nasceu de excesso (cor roxo `#6B5B95`)
+- Post 2: 7 dimensões que conversam entre si
+- Post 3: O ponto de partida (LUMINA gratuito)
+- Post 4: Destaques do Instagram (9 capas)
 
-**ACTO 1 — "Quem sou eu?" (Marca & Identidade)**
-- Post 1: Sete Ecos apresenta-se (cor roxo `#6B5B95`, logo Sete Ecos)
-- Post 2: Revela as 7 dimensões (cada eco com a SUA cor)
-- Post 3: Lumina — a porta de entrada gratuita
-- Post 4: Destaques do Instagram (9 capas, cada uma com a cor do eco)
+**ACTO 2 — "O corpo é a raiz, não a totalidade" (Lumina + Vitalis)**
+- Posts 5-10: LUMINA como mapa + VITALIS como primeira dimensão com profundidade
+- Cada post mostra a app REAL (mockups)
+- Mensagem: o corpo é UMA dimensão de sete
 
-**ACTO 2 — "O que resolvo?" (Lumina + Vitalis)**
-- Posts 5-10: Produto herói com mockups reais
-- Foco no Lumina (gratuito, gera leads) e Vitalis (pago, maior receita)
-- Cada post mostra a app REAL (mockups, não texto genérico)
-
-**ACTO 3 — "O que mais existe?" (Cada Eco Individual)**
+**ACTO 3 — "Cada dimensão é essencial" (Cada Eco Individual)**
 - Posts 11-17: Um eco por dia, na SUA cor, com o SEU mockup
-- NUNCA misturar ecos no mesmo post
-- Cada eco tem identidade visual própria (cor + logo + mockup)
-- Último post: CTA para o Lumina (fechar o ciclo)
+- Cada eco apresentado como dimensão do sistema (não produto isolado)
+- Último post: fecha o ciclo, CTA para LUMINA
 
 ### 2.4 Regras de ouro
 
@@ -165,118 +182,84 @@ A campanha conta uma história em 3 actos:
 
 ## 3. Os 17 Posts da Campanha (Plano Detalhado)
 
-### FASE 1: Marca & Destaques (Dias 1-4)
+### FASE 1: Porque isto existe (Dias 1-4)
 
-#### Dia 1 — SETE ECOS: "A pergunta que ninguém te faz"
-- **Eco**: seteEcos (NÃO lumina)
-- **Cor**: Roxo `#6B5B95`
-- **Logo**: `/logos/seteecos_logo_v2.png`
-- **Hook**: "Quando foi a última vez que alguém te perguntou 'como te sentes de verdade?'"
-- **Corpo**: Não o que queres comer. Não quanto pesas. Como TE SENTES. Este perfil nasceu para mudar isso.
-- **CTA**: Segue para mais. Isto é só o começo.
-- **Dica de criação**: Texto animado palavra a palavra, fundo escuro roxo, música calma trending. Sem cara, sem voz. REEL obrigatório.
+#### Dia 1 — "Nasceu de excesso. Não de falta."
+- **Eco**: seteEcos | **Cor**: Roxo `#6B5B95`
+- **Hook**: "Isto nasceu de excesso. Não de falta."
+- **Corpo**: A história real: vivia muitas camadas separadas, recusei-me a continuar
+- **Dica**: Texto palavra a palavra, fundo escuro roxo, música calma. Sem cara.
 
-#### Dia 2 — SETE ECOS: "7 dimensões. 1 sistema."
-- **Eco**: seteEcos
-- **Cor**: Roxo `#6B5B95` (fundo base), depois cada eco aparece com a SUA cor
-- **Logo**: `/logos/seteecos_logo_v2.png`
-- **Hook**: "Isto não é mais uma app de dieta. São 7 dimensões de transformação."
-- **Corpo**: Lista os 7 ecos com as suas cores
-- **Dica de criação**: REEL com transição de cores — cada eco aparece com o SEU fundo colorido em sequência. Efeito visual forte.
+#### Dia 2 — "7 dimensões que finalmente conversam."
+- **Eco**: seteEcos | **Cor**: Roxo + transição de cores
+- **Hook**: "Resolver só o corpo não muda identidade. Resolver só emoção não muda disciplina."
+- **Dica**: REEL com transição de cores — cada eco com o SEU fundo.
 
-#### Dia 3 — LUMINA: "O diagnóstico que ninguém te fez"
-- **Eco**: lumina
-- **Cor**: Indigo `#5C6BC0`
-- **Logo**: `/logos/lumina-logo_v2.png`
-- **Hook**: "7 perguntas. 2 minutos. 23 leituras possíveis. E é grátis."
-- **CTA**: Experimenta: app.seteecos.com/lumina
-- **Dica de criação**: Screen recording do Lumina no telemóvel. Grava o ecrã a fazer o teste e mostrar o resultado.
+#### Dia 3 — "O ponto de partida."
+- **Eco**: lumina | **Cor**: Indigo `#5C6BC0`
+- **Hook**: "8 dimensões da tua vida. 7 perguntas. 2 minutos. Grátis."
+- **Dica**: Screen recording real do Lumina.
 
 #### Dia 4 — TAREFA: Criar 9 Destaques do Instagram
-- **NÃO É UM POST para publicar** — é uma tarefa de preparação do perfil
-- **9 capas de destaque**, cada uma com:
-  - Fundo na cor do eco
-  - Logo do eco (PNG, não emoji)
-  - Nome do eco
-- O resultado: 9 anéis coloridos no topo do perfil. Visitantes veem o sistema todo de relance.
+- **NÃO É UM POST** — preparação do perfil
+- 9 capas com cor + logo de cada eco
 
-### FASE 2: Lumina + Vitalis (Dias 5-10)
+### FASE 2: O corpo é a raiz (Dias 5-10)
 
-#### Dia 5 — LUMINA: "Fiz o teste e fiquei de boca aberta"
-- **Eco**: lumina | **Cor**: `#5C6BC0` | **Logo**: lumina-logo_v2.png
-- **Mockup**: (não disponível — usar screen recording ou texto animado)
-- **Hook**: "Fiz um teste de 2 minutos e descobri coisas sobre mim que não sabia."
-- **Dica**: Formato POV (muito popular). Screen recording do Lumina se possível.
+#### Dia 5 — "O que o LUMINA revela sobre ti."
+- **Eco**: lumina | **Cor**: `#5C6BC0`
+- **Hook**: "Energia baixa pode ser desconexão emocional. Tensão no corpo pode ser palavras engolidas."
 
-#### Dia 6 — VITALIS: "Saúde real. Feita para ti."
-- **Eco**: vitalis | **Cor**: `#7C8B6F` | **Logo**: VITALIS_LOGO_V3.png
-- **Mockup**: `/mockups/mozproud-vitalis.jpeg`
-- **Hook**: "Não é mais um app de dieta genérico. É inteligência nutricional real."
-- **Dica**: Mockup como fundo do Reel. Texto animado por cima.
+#### Dia 6 — "O corpo é a primeira dimensão. Não a única."
+- **Eco**: vitalis | **Cor**: `#7C8B6F` | **Mockup**: mozproud-vitalis.jpeg
+- **Hook**: "A maioria das apps resolve o corpo e ignora tudo o resto."
 
-#### Dia 7 — VITALIS: "Isto é o VITALIS por dentro."
-- **Eco**: vitalis | **Cor**: `#7C8B6F` | **Logo**: VITALIS_LOGO_V3.png
-- **Mockup**: `/mockups/Vitalis-dashboard_mb-mockup.jpeg`
-- **Hook**: "Isto é o VITALIS por dentro. Não é um PDF. Não é um grupo de WhatsApp."
-- **Dica**: Mostrar o mockup do dashboard. Provar que é uma app real.
+#### Dia 7 — "Isto é real. Não é um PDF."
+- **Eco**: vitalis | **Cor**: `#7C8B6F` | **Mockup**: dashboard
+- **Hook**: "Isto é o que recebes. Não é um PDF. Não é um grupo de WhatsApp."
 
-#### Dia 8 — VITALIS: "Uma coach que nunca dorme."
-- **Eco**: vitalis | **Cor**: `#7C8B6F` | **Logo**: VITALIS_LOGO_V3.png
-- **Mockup**: `/mockups/Vitalis-coach_mb-mockup.jpeg`
-- **Hook**: "3 da manhã. Ansiedade. Abres o frigorífico. E se abrires uma conversa?"
-- **Dica**: O cenário "3 da manhã + ansiedade + frigorífico" toca na dor REAL.
+#### Dia 8 — "Acompanhamento real."
+- **Eco**: vitalis | **Cor**: `#7C8B6F` | **Mockup**: coach
+- **Hook**: "Quando precisas de orientação, a resposta está a uma mensagem."
 
-#### Dia 9 — VITALIS: "98 receitas. Nenhuma pede quinoa."
-- **Eco**: vitalis | **Cor**: `#7C8B6F` | **Logo**: VITALIS_LOGO_V3.png
-- **Mockup**: `/mockups/Vitalis-receitas_mb-mockup.jpeg`
-- **Hook**: "98 receitas e nenhuma te pede quinoa ou abacate importado."
-- **Dica**: Argumento "comida real e acessível" é o mais forte.
+#### Dia 9 — "Comida real. Do mercado."
+- **Eco**: vitalis | **Cor**: `#7C8B6F` | **Mockup**: receitas
+- **Hook**: "98 receitas. Ingredientes que encontras em qualquer mercado."
 
-#### Dia 10 — VITALIS: "O espaço para quando a emoção pesa."
-- **Eco**: vitalis | **Cor**: `#7C8B6F` | **Logo**: VITALIS_LOGO_V3.png
-- **Mockup**: `/mockups/Vitalis-espaçoretorno_mb-mockup.jpeg`
-- **Hook**: "O que estás a sentir agora? Cansaço. Ansiedade. Tristeza. Vazio."
-- **Dica**: Diferencial ÚNICO do VITALIS — nenhum app de nutrição tem espaço emocional.
+#### Dia 10 — "O corpo e a emoção não são departamentos separados."
+- **Eco**: vitalis | **Cor**: `#7C8B6F` | **Mockup**: espaço retorno
+- **Hook**: "O corpo e a emoção não são departamentos separados. No VITALIS, também não."
 
-### FASE 3: Cada Eco Individual (Dias 11-17)
+### FASE 3: Cada dimensão (Dias 11-17)
 
-#### Dia 11 — ÁUREA: "O teu valor não cabe numa calça."
-- **Eco**: aurea | **Cor**: `#C9A227` (DOURADO, nunca verde) | **Logo**: AUREA_LOGO_V3.png
-- **Mockups**: Aurea-Dash-portrait.png, Aurea-praticas-portrait.png
-- **Hook**: "O teu valor não cabe numa calça tamanho S."
+#### Dia 11 — ÁUREA: "Onde mora o teu valor?"
+- **Eco**: aurea | **Cor**: `#C9A227` | **Mockups**: Aurea-Dash, Aurea-praticas
+- **Hook**: "Cuidas do corpo mas não cuidas de como te vês ao espelho."
 
-#### Dia 12 — SERENA: "Choras sem saber porquê?"
-- **Eco**: serena | **Cor**: `#6B8E9B` (AZUL, nunca verde) | **Logo**: SERENA_LOGO_V3.png
-- **Mockups**: Serena-dash-portrait.png, Serena-praticas-portrait.png
-- **Hook**: "Choras sem saber porquê? Não é fraqueza. É o teu corpo a pedir atenção."
+#### Dia 12 — SERENA: "Sentir não é o problema."
+- **Eco**: serena | **Cor**: `#6B8E9B` | **Mockups**: Serena-dash, Serena-praticas
+- **Hook**: "Sentir intensamente não é o problema. O problema é não saber o que fazer com isso."
 
-#### Dia 13 — IGNIS: "Onde está o teu foco?"
-- **Eco**: ignis | **Cor**: `#C1634A` (TERRACOTA, nunca verde) | **Logo**: IGNIS-LOGO-V3.png
-- **Mockups**: Ignis-dash-portrait.png, Ignis-escolhas-portrait.png
-- **Hook**: "Pegas no telemóvel para ver as horas e 40 minutos depois estás no Instagram."
+#### Dia 13 — IGNIS: "A vontade sem direcção dispersa-se."
+- **Eco**: ignis | **Cor**: `#C1634A` | **Mockups**: Ignis-dash, Ignis-escolhas
+- **Hook**: "Tens vontade de mudar tudo. Mas sem direcção, a vontade dispersa-se."
 
-#### Dia 14 — VENTIS: "Estás cansada. Não é preguiça."
-- **Eco**: ventis | **Cor**: `#5D9B84` (TEAL, nunca verde) | **Logo**: VENTIS_LOGO_V3.png
-- **Mockups**: Ventis-dash-portrait.png, Ventis-praticas-portrait.png
-- **Hook**: "Estás cansada e não sabes porquê. Não é preguiça. É falta de ritmo."
+#### Dia 14 — VENTIS: "Não é energia. É dívida."
+- **Eco**: ventis | **Cor**: `#5D9B84` | **Mockups**: Ventis-dash, Ventis-praticas
+- **Hook**: "Se precisas de café para funcionar, não é energia. É dívida."
 
-#### Dia 15 — ECOA: "Quantas vezes engoliste?"
-- **Eco**: ecoa | **Cor**: `#4A90A4` (AZUL OCEANO, nunca verde) | **Logo**: ECOA_LOGO_V3.png
-- **Mockups**: Ecoa-dash-portrait.png, Ecoa-praticas-portrait.png
-- **Hook**: "Quantas vezes engoliste o que querias dizer? Isso acumula no corpo."
+#### Dia 15 — ECOA: "O corpo guarda tudo."
+- **Eco**: ecoa | **Cor**: `#4A90A4` | **Mockups**: Ecoa-dash, Ecoa-praticas
+- **Hook**: "Há coisas que nunca disseste. E o corpo guarda tudo."
 
-#### Dia 16 — IMAGO: "Quem és tu sem a máscara?"
-- **Eco**: imago | **Cor**: `#8B7BA5` (ROXO LAVANDA, nunca verde) | **Logo**: IMAGO_LOGO_V3.png
-- **Mockups**: Imago-dash-portrait.png, Imago-arqueologia-portrait.png
-- **Hook**: "Quem és tu quando ninguém está a ver? A maioria de nós não sabe."
+#### Dia 16 — IMAGO: "Para além dos papéis."
+- **Eco**: imago | **Cor**: `#8B7BA5` | **Mockups**: Imago-dash, Imago-arqueologia
+- **Hook**: "Mãe. Profissional. Filha. Amiga. E tu? Quem és para além dos papéis?"
 
-#### Dia 17 — SETE ECOS: "Agora é a tua vez."
-- **Eco**: seteEcos (volta à marca-mãe, fecha o ciclo)
-- **Cor**: Roxo `#6B5B95`
-- **Logo**: `/logos/seteecos_logo_v2.png`
-- **Hook**: "Nos últimos dias mostrei-te 7 dimensões. Agora é a tua vez."
-- **CTA**: Lumina gratuito: app.seteecos.com/lumina
-- **Dica**: Recap de todas as cores (cada eco aparece com a SUA cor, 1 segundo cada). Termina com CTA forte.
+#### Dia 17 — SETE ECOS: "O passo é teu."
+- **Eco**: seteEcos | **Cor**: Roxo `#6B5B95`
+- **Hook**: "7 dimensões. 1 sistema. As partes conversam. O primeiro passo é grátis."
+- **Dica**: Recap de todas as cores. Fecha o ciclo com CTA LUMINA.
 
 ---
 
@@ -426,9 +409,11 @@ Cada eco precisa de pelo menos 8-10 hooks + 5-8 blocos de corpo + 2 carrosseis.
 - Assinar sempre com "— Vivianne"
 - Máximo 1-2 emojis por mensagem
 - Máximo 1 exclamação por parágrafo
-- Falar de dor real: culpa, solidão, dietas falhadas, pressão social
-- Ciência acessível, comida real, sem restrição
+- **Falar de integração, fragmentação, coerência** — não de culpa alimentar ou dietas falhadas
+- **Comunicar inteligência, não fragilidade** — respeito antes de empatia
+- **NUNCA**: slogans motivacionais vazios, frases de Instagram genéricas, clickbait emocional
 - Cada peça tem um HOOK (3 primeiros segundos) e um CTA claro
+- O conteúdo deve fazer parar e pensar "isto foi pensado por alguém que sabe do que fala"
 
 ---
 
