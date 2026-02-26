@@ -81,6 +81,43 @@ function AutoImage({ template, eco, formato, texto, subtitulo, slideNum, totalSl
 }
 
 // ============================================================
+// REEL FRAMES - Extrai frames do script tiktok para sequência
+// Cada frame = 1 imagem 1080×1920 pronta para juntar num vídeo
+// ============================================================
+
+function parseReelFrames(post) {
+  const script = post.tiktok?.ideia || '';
+  if (!script) return [];
+
+  // Post 2: transição de cores — frames especiais com cada eco
+  if (post.dia === 2) {
+    return [
+      { texto: 'Resolver só o corpo\nnão muda identidade.', eco: 'seteEcos', num: 1 },
+      { texto: '7 dimensões.', eco: 'seteEcos', num: 2 },
+      { texto: 'VITALIS\nCorpo & Nutrição', eco: 'vitalis', num: 3 },
+      { texto: 'ÁUREA\nValor & Presença', eco: 'aurea', num: 4 },
+      { texto: 'SERENA\nEmoção & Fluidez', eco: 'serena', num: 5 },
+      { texto: 'IGNIS\nVontade & Foco', eco: 'ignis', num: 6 },
+      { texto: 'VENTIS\nEnergia & Ritmo', eco: 'ventis', num: 7 },
+      { texto: 'ECOA\nExpressão & Voz', eco: 'ecoa', num: 8 },
+      { texto: 'IMAGO\nIdentidade & Essência', eco: 'imago', num: 9 },
+      { texto: '1 sistema.\nAs partes conversam.', eco: 'seteEcos', num: 10 },
+      { texto: 'Sete Ecos.', eco: 'seteEcos', num: 11 },
+    ];
+  }
+
+  // Extrair texto entre aspas — cada um é um frame
+  const quoted = script.match(/"([^"]+)"/g);
+  if (!quoted || quoted.length === 0) return [];
+
+  return quoted.map((q, i) => ({
+    texto: q.replace(/^"|"$/g, ''),
+    eco: post.eco,
+    num: i + 1,
+  }));
+}
+
+// ============================================================
 // MOCKUP SLIDE - Imagem composta: mockup + texto sobreposto
 // Gera slides de carrossel PRONTOS a publicar no Instagram
 // ============================================================
@@ -1202,29 +1239,60 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
             </div>
           )}
 
-          {/* Reel 9:16 — só para posts com formato reel (não para destaques) */}
-          {post.formato !== 'destaques' && (
-            <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
-              <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
-                <div>
-                  <p className="font-bold text-xs text-[#4A4035]">Reel (9:16)</p>
-                  <p className="text-[10px] text-[#A09888]">Formato principal — maior alcance com zero seguidores</p>
+          {/* Reel 9:16 — sequência de frames para montar vídeo */}
+          {post.formato !== 'destaques' && (() => {
+            const frames = parseReelFrames(post);
+            return frames.length > 0 ? (
+              <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+                <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-xs text-[#4A4035]">Frames do Reel ({frames.length} imagens)</p>
+                    <p className="text-[10px] text-[#A09888]">Descarrega todas → junta no CapCut/InShot → Reel pronto</p>
+                  </div>
+                  <span className="text-[9px] bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold px-2 py-0.5 rounded-full">{frames.length} frames</span>
                 </div>
-                <span className="text-[9px] bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold px-2 py-0.5 rounded-full">Reel</span>
+                <div className="p-3">
+                  <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 snap-x">
+                    {frames.map((frame, i) => (
+                      <AutoImage
+                        key={i}
+                        template="dica"
+                        eco={frame.eco}
+                        formato="stories"
+                        texto={frame.texto}
+                        subtitulo={i === frames.length - 1 ? 'app.seteecos.com' : ''}
+                        scale={0.13}
+                        filename={`reel-${post.dia}-frame-${frame.num}.png`}
+                        className="snap-start"
+                      />
+                    ))}
+                  </div>
+                  <p className="text-[9px] text-[#A09888] mt-2 text-center">Cada frame = 1080×1920px. Descarrega (toca ⬇ em cada), junta no CapCut com 2-3s por frame + transição fade.</p>
+                </div>
               </div>
-              <div className="p-3 flex gap-3 justify-center">
-                <AutoImage
-                  template={post.template || 'dica'}
-                  eco={post.eco}
-                  formato="stories"
-                  texto={post.conteudoIG?.texto || post.hook}
-                  subtitulo="app.seteecos.com"
-                  scale={0.16}
-                  filename={`lancamento-${post.dia}-reel.png`}
-                />
+            ) : (
+              <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+                <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-xs text-[#4A4035]">Reel (9:16)</p>
+                    <p className="text-[10px] text-[#A09888]">Imagem de capa + grava seguindo o roteiro</p>
+                  </div>
+                  <span className="text-[9px] bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold px-2 py-0.5 rounded-full">Reel</span>
+                </div>
+                <div className="p-3 flex gap-3 justify-center">
+                  <AutoImage
+                    template={post.template || 'dica'}
+                    eco={post.eco}
+                    formato="stories"
+                    texto={post.conteudoIG?.texto || post.hook}
+                    subtitulo="app.seteecos.com"
+                    scale={0.16}
+                    filename={`lancamento-${post.dia}-reel.png`}
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Legendas por plataforma — esconde se não há captions (destaques) */}
           {post.formato !== 'destaques' && <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
