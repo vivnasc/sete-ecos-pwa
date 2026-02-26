@@ -1159,12 +1159,13 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
             </div>
           )}
 
-          {/* Imagem gerada (AutoImage) */}
+          {/* Imagem gerada (AutoImage) — só para posts sem frames de reel */}
+          {(post.formato === 'destaques' || !parseReelFrames(post).length) && (
           <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
             <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
               <div>
                 <p className="font-bold text-xs text-[#4A4035]">Imagem com texto</p>
-                <p className="text-[10px] text-[#A09888]">Gerada automaticamente — alternativa ao mockup</p>
+                <p className="text-[10px] text-[#A09888]">Pronta a publicar como post</p>
               </div>
               <span className="text-[9px] bg-pink-100 text-pink-700 font-bold px-2 py-0.5 rounded-full">1:1</span>
             </div>
@@ -1180,40 +1181,48 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
               />
             </div>
           </div>
+          )}
 
-          {/* Carrossel (se for carrossel) */}
+          {/* Carrossel / Destaques */}
           {post.conteudoIG?.tipo === 'carrossel' && post.conteudoIG?.slides && (
             <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
               <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
                 <div>
-                  <p className="font-bold text-xs text-[#4A4035]">Carrossel: {post.conteudoIG.titulo}</p>
-                  <p className="text-[10px] text-[#A09888]">{post.conteudoIG.slides.length} slides — desliza e descarrega</p>
+                  <p className="font-bold text-xs text-[#4A4035]">
+                    {post.formato === 'destaques' ? `Capas de Destaques (${post.conteudoIG.slides.length} imagens)` : `Carrossel: ${post.conteudoIG.titulo}`}
+                  </p>
+                  <p className="text-[10px] text-[#A09888]">
+                    {post.formato === 'destaques' ? '1 imagem por eco — descarrega e usa como capa do Highlight' : `${post.conteudoIG.slides.length} slides — desliza e descarrega`}
+                  </p>
                 </div>
-                <span className="text-[9px] bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-full">Slides</span>
+                <span className="text-[9px] bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-full">
+                  {post.formato === 'destaques' ? `${post.conteudoIG.slides.length} capas` : 'Slides'}
+                </span>
               </div>
               <div className="p-3">
-                {/* Destaques IG: cada slide é um eco com a sua cor */}
                 {post.formato === 'destaques' ? (
+                  /* Destaques: 9 imagens individuais 9:16, cada eco com a sua cor */
                   <div className="grid grid-cols-3 gap-2">
-                    {post.conteudoIG.slides.map((slide, i) => {
-                      // Mapear nome do slide ao eco key em CORES
-                      const nomeEco = slide.titulo?.replace(/^[^\s]+\s/, '').trim().toUpperCase();
+                    {(() => {
                       const ecoMap = { LUMINA: 'lumina', VITALIS: 'vitalis', 'ÁUREA': 'aurea', SERENA: 'serena', IGNIS: 'ignis', VENTIS: 'ventis', ECOA: 'ecoa', IMAGO: 'imago', AURORA: 'aurora' };
-                      const ecoKey = ecoMap[nomeEco] || 'seteEcos';
-                      const eco = CORES[ecoKey] || CORES.seteEcos;
-                      return (
-                        <div key={i} className="text-center">
-                          <div
-                            className="w-16 h-16 mx-auto rounded-full flex items-center justify-center shadow-md overflow-hidden"
-                            style={{ backgroundColor: eco.primary }}
-                          >
-                            <img src={eco.logo} alt={eco.nome} className="w-10 h-10 object-contain" />
-                          </div>
-                          <p className="text-[9px] font-bold text-[#4A4035] mt-1">{eco.nome}</p>
-                          <p className="text-[8px] text-[#A09888] leading-tight">{slide.texto?.split('\n')[1] || ''}</p>
-                        </div>
-                      );
-                    })}
+                      return post.conteudoIG.slides.map((slide, i) => {
+                        const nomeEco = slide.titulo?.replace(/^[^\s]+\s/, '').trim().toUpperCase();
+                        const ecoKey = ecoMap[nomeEco] || 'seteEcos';
+                        const conteudo = slide.texto?.match(/Conteúdo:\s*"([^"]+)"/)?.[1] || '';
+                        return (
+                          <AutoImage
+                            key={i}
+                            template="dica"
+                            eco={ecoKey}
+                            formato="stories"
+                            texto={CORES[ecoKey]?.nome || nomeEco}
+                            subtitulo={conteudo}
+                            scale={0.15}
+                            filename={`destaque-${ecoKey}.png`}
+                          />
+                        );
+                      });
+                    })()}
                   </div>
                 ) : (
                   <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x">
@@ -1239,58 +1248,66 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
             </div>
           )}
 
-          {/* Reel 9:16 — sequência de frames para montar vídeo */}
+          {/* Frames — Reel 9:16 + Feed 1:1 */}
           {post.formato !== 'destaques' && (() => {
             const frames = parseReelFrames(post);
-            return frames.length > 0 ? (
-              <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
-                <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
-                  <div>
-                    <p className="font-bold text-xs text-[#4A4035]">Frames do Reel ({frames.length} imagens)</p>
-                    <p className="text-[10px] text-[#A09888]">Descarrega todas → junta no CapCut/InShot → Reel pronto</p>
+            if (frames.length === 0) return null;
+            return (
+              <>
+                {/* Frames 9:16 para Reel */}
+                <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+                  <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+                    <div>
+                      <p className="font-bold text-xs text-[#4A4035]">Reel — {frames.length} frames (9:16)</p>
+                      <p className="text-[10px] text-[#A09888]">Descarrega → CapCut → 2-3s por frame + fade → Reel</p>
+                    </div>
+                    <span className="text-[9px] bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold px-2 py-0.5 rounded-full">9:16</span>
                   </div>
-                  <span className="text-[9px] bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold px-2 py-0.5 rounded-full">{frames.length} frames</span>
-                </div>
-                <div className="p-3">
-                  <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 snap-x">
-                    {frames.map((frame, i) => (
-                      <AutoImage
-                        key={i}
-                        template="dica"
-                        eco={frame.eco}
-                        formato="stories"
-                        texto={frame.texto}
-                        subtitulo={i === frames.length - 1 ? 'app.seteecos.com' : ''}
-                        scale={0.13}
-                        filename={`reel-${post.dia}-frame-${frame.num}.png`}
-                        className="snap-start"
-                      />
-                    ))}
+                  <div className="p-3">
+                    <div className="grid grid-cols-2 gap-2">
+                      {frames.map((frame, i) => (
+                        <AutoImage
+                          key={i}
+                          template="dica"
+                          eco={frame.eco}
+                          formato="stories"
+                          texto={frame.texto}
+                          subtitulo={i === frames.length - 1 ? 'app.seteecos.com' : ''}
+                          scale={0.22}
+                          filename={`reel-${post.dia}-frame-${frame.num}.png`}
+                        />
+                      ))}
+                    </div>
                   </div>
-                  <p className="text-[9px] text-[#A09888] mt-2 text-center">Cada frame = 1080×1920px. Descarrega (toca ⬇ em cada), junta no CapCut com 2-3s por frame + transição fade.</p>
                 </div>
-              </div>
-            ) : (
-              <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
-                <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
-                  <div>
-                    <p className="font-bold text-xs text-[#4A4035]">Reel (9:16)</p>
-                    <p className="text-[10px] text-[#A09888]">Imagem de capa + grava seguindo o roteiro</p>
+
+                {/* Mesmos frames em 1:1 para Feed */}
+                <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+                  <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+                    <div>
+                      <p className="font-bold text-xs text-[#4A4035]">Feed — {frames.length} imagens (1:1)</p>
+                      <p className="text-[10px] text-[#A09888]">Mesmo conteúdo em formato quadrado para carrossel ou post</p>
+                    </div>
+                    <span className="text-[9px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full">1:1</span>
                   </div>
-                  <span className="text-[9px] bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold px-2 py-0.5 rounded-full">Reel</span>
+                  <div className="p-3">
+                    <div className="grid grid-cols-2 gap-2">
+                      {frames.map((frame, i) => (
+                        <AutoImage
+                          key={`feed-${i}`}
+                          template="dica"
+                          eco={frame.eco}
+                          formato="post"
+                          texto={frame.texto}
+                          subtitulo={i === frames.length - 1 ? 'app.seteecos.com' : ''}
+                          scale={0.22}
+                          filename={`feed-${post.dia}-frame-${frame.num}.png`}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="p-3 flex gap-3 justify-center">
-                  <AutoImage
-                    template={post.template || 'dica'}
-                    eco={post.eco}
-                    formato="stories"
-                    texto={post.conteudoIG?.texto || post.hook}
-                    subtitulo="app.seteecos.com"
-                    scale={0.16}
-                    filename={`lancamento-${post.dia}-reel.png`}
-                  />
-                </div>
-              </div>
+              </>
             );
           })()}
 
