@@ -1,16 +1,33 @@
 /**
- * WhatsApp Notifications via Meta Cloud API
+ * Notificações para a Coach via Telegram (preferido) ou WhatsApp (fallback)
  *
  * Configuração no Vercel:
- * - WHATSAPP_ACCESS_TOKEN: Token Meta Business
- * - WHATSAPP_PHONE_NUMBER_ID: ID do número WhatsApp Business
- * - VIVIANNE_PERSONAL_NUMBER: Número pessoal da coach
+ * - TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID: Telegram (recomendado)
+ * - WHATSAPP_ACCESS_TOKEN + WHATSAPP_PHONE_NUMBER_ID: WhatsApp (fallback)
  */
 
 /**
+ * Envia mensagem para a coach via Telegram
+ */
+async function enviarTelegram(mensagem) {
+  try {
+    const response = await fetch('/api/coach', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'telegram-send', mensagem })
+    });
+
+    const result = await response.json();
+    if (result.ok) return { success: true };
+    return { success: false, error: result.error };
+  } catch (error) {
+    console.error('Erro Telegram:', error);
+    return { success: false, error: 'Erro de rede' };
+  }
+}
+
+/**
  * Envia mensagem WhatsApp via Meta Cloud API
- * @param {string} mensagem - Texto da mensagem
- * @param {string} para - Número de destino (opcional, usa coach por defeito)
  */
 export async function enviarWhatsApp(mensagem, para = null) {
   try {
@@ -38,9 +55,14 @@ export async function enviarWhatsApp(mensagem, para = null) {
 }
 
 /**
- * Envia WhatsApp para a coach
+ * Envia notificação para a coach: Telegram primeiro, WhatsApp como fallback
  */
 export async function enviarWhatsAppCoach(mensagem) {
+  // Tentar Telegram primeiro
+  const telegramResult = await enviarTelegram(mensagem);
+  if (telegramResult.success) return telegramResult;
+
+  // Fallback: WhatsApp
   return enviarWhatsApp(mensagem);
 }
 

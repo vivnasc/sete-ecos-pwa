@@ -133,7 +133,7 @@ async function enviarWhatsAppCoach(mensagem) {
 }
 
 // ===== PUSH NOTIFICATIONS (Web Push para coach) =====
-
+// DESACTIVADO: Coach já recebe WhatsApp para todos estes eventos.
 /**
  * Envia push notification para o telemóvel/browser da coach.
  * Funciona mesmo com app fechada (via Service Worker).
