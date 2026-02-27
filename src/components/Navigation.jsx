@@ -47,7 +47,7 @@ export default function Navigation({ variant = 'default' }) {
   // Get current Eco info for header badge
   const getCurrentEco = () => {
     if (isVitalisSection) return { name: 'Vitalis', color: '#7C8B6F', logo: '/logos/VITALIS_LOGO_V3.png' }
-    if (isAureaSection) return { name: 'Aurea', color: '#C9A227', logo: '/logos/logo_aurea.png' }
+    if (isAureaSection) return { name: 'Aurea', color: '#C9A227', logo: '/logos/AUREA_LOGO_V3.png' }
     if (isLuminaSection) return { name: 'Lumina', color: '#8B5CF6', logo: '/logos/lumina-logo_v2.png' }
     if (activeNewEco) return { name: ecoNavConfig[activeNewEco].name, color: ecoNavConfig[activeNewEco].color, logo: ecoNavConfig[activeNewEco].logo }
     return null
@@ -160,7 +160,7 @@ export default function Navigation({ variant = 'default' }) {
             color="#4A3728"
           />
           <NavItem
-            logo="/logos/logo_aurea.png"
+            logo="/logos/AUREA_LOGO_V3.png"
             label="Aurea"
             active={isAureaSection}
             onClick={() => navigate(hasAureaAccess ? '/aurea/dashboard' : '/aurea')}
