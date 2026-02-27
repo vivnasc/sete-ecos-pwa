@@ -110,7 +110,7 @@ export async function pesquisarAlimentos(query, opcoes = {}) {
 }
 
 /**
- * Pesquisar na Open Food Facts API via proxy
+ * Pesquisar na Open Food Facts API directamente (CORS permitido)
  * @param {string} query
  * @param {number} limite
  * @returns {Promise<Array>}
@@ -121,7 +121,11 @@ async function pesquisarOpenFoodFacts(query, limite = 10) {
   if (cached) return cached;
 
   try {
-    const res = await fetch(`/api/food-search?q=${encodeURIComponent(query)}&limit=${limite}`);
+    const numLimit = Math.min(limite, 20);
+    const res = await fetch(
+      `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=${numLimit}&fields=code,product_name,product_name_pt,generic_name,brands,nutriments,serving_size,categories_tags,labels_tags,image_front_small_url&lc=pt`,
+      { headers: { 'User-Agent': 'SeteEcos-Vitalis/2.0' } }
+    );
     if (!res.ok) return [];
 
     const data = await res.json();
@@ -145,16 +149,22 @@ async function pesquisarOpenFoodFacts(query, limite = 10) {
 export async function pesquisarPorBarcode(barcode) {
   if (!barcode) return null;
 
-  const cacheKey = `barcode:${barcode}`;
+  const cleanBarcode = barcode.replace(/[^0-9]/g, '');
+  if (cleanBarcode.length < 8) return null;
+
+  const cacheKey = `barcode:${cleanBarcode}`;
   const cached = getCached(cacheKey);
   if (cached) return cached;
 
   try {
-    const res = await fetch(`/api/food-search?barcode=${encodeURIComponent(barcode)}`);
+    const res = await fetch(
+      `https://world.openfoodfacts.org/api/v2/product/${cleanBarcode}.json?fields=code,product_name,product_name_pt,generic_name,brands,nutriments,serving_size,categories_tags,labels_tags,image_front_small_url`,
+      { headers: { 'User-Agent': 'SeteEcos-Vitalis/2.0' } }
+    );
     if (!res.ok) return null;
 
     const data = await res.json();
-    if (!data.product || !data.product.product_name) return null;
+    if (data.status === 0 || !data.product || !data.product.product_name) return null;
 
     const resultado = normalizarProdutoOFF(data.product);
     setCache(cacheKey, resultado);
