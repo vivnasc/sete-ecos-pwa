@@ -1,12 +1,15 @@
 /**
  * Push Lembretes Cron — Envia push notifications reais aos clientes
  *
- * Chamado 3x/dia pelo cron (manhã, tarde, noite) em blocos:
- *   manha  (8h CAT)  → lembretes agendados entre 05:00-10:59
- *   tarde  (13h CAT) → lembretes agendados entre 11:00-16:59
- *   noite  (19h CAT) → lembretes agendados entre 17:00-23:59
+ * Chamado 9x/dia por crons diários a cada 2h no vercel.json:
+ *   UTC 4,6,8,10,12,14,16,18,20 = CAT 6,8,10,12,14,16,18,20,22
  *
- * Cada bloco envia os lembretes daquela janela temporal.
+ * Cada execução obtém a hora actual em Africa/Maputo (CAT) e envia
+ * os lembretes cuja hora configurada é a hora actual OU a hora anterior.
+ * Esta janela de 2h garante que QUALQUER hora escolhida pelo utilizador
+ * (ex: 15:00, 20:30) é coberta, mesmo com horas personalizadas.
+ *
+ * Tags alinhadas com o cliente para evitar duplicados via Service Worker.
  */
 
 import { createClient } from '@supabase/supabase-js'
@@ -23,11 +26,24 @@ if (VAPID_PUBLIC && VAPID_PRIVATE) {
   try { webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE) } catch (e) { /* ok */ }
 }
 
-// Blocos horários (horas CAT)
+// Obter hora actual em Africa/Maputo (CAT = UTC+2)
+function horaActualCAT() {
+  const now = new Date()
+  // Intl garante conversão correcta mesmo com DST
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Africa/Maputo',
+    hour: 'numeric',
+    hour12: false,
+  }).formatToParts(now)
+  const hourPart = parts.find(p => p.type === 'hour')
+  return parseInt(hourPart.value, 10)
+}
+
+// Manter compatibilidade com chamadas antigas por bloco
 const BLOCOS = {
-  manha: { min: 5, max: 10 },   // 05:00 - 10:59
-  tarde: { min: 11, max: 16 },  // 11:00 - 16:59
-  noite: { min: 17, max: 23 },  // 17:00 - 23:59
+  manha: { min: 5, max: 10 },
+  tarde: { min: 11, max: 16 },
+  noite: { min: 17, max: 23 },
 }
 
 // Mensagens de push por tipo de lembrete
@@ -121,18 +137,36 @@ const MENSAGENS = {
   },
 }
 
+// Tags alinhadas com o cliente (src/utils/notifications.js NOTIFICACOES)
+// para que a mesma tag evite notificações duplicadas via Service Worker
+const TAGS = {
+  agua: 'vitalis-agua',
+  pequenoAlmoco: 'vitalis-refeicao-pa',
+  almoco: 'vitalis-refeicao-almoco',
+  jantar: 'vitalis-refeicao-jantar',
+  prepAlmoco: 'vitalis-prep-almoco',
+  prepJantar: 'vitalis-prep-jantar',
+  checkin: 'vitalis-checkin',
+  treino: 'vitalis-treino',
+  jejumFim: 'vitalis-jejum',
+  jejumInicio: 'vitalis-jejum',
+  motivacao: 'vitalis-motivacao',
+  streak: 'vitalis-streak',
+}
+
 /**
  * Envia push para um user_id específico
  */
 async function enviarPush(supabase, userId, tipo) {
   const msg = MENSAGENS[tipo]
+  const tag = TAGS[tipo] || `lembrete-${tipo}`
+
   if (!msg) {
-    // Fallback genérico para tipos não mapeados
     return enviarPushRaw(supabase, userId, {
       title: 'Lembrete Sete Ecos',
       body: 'Tens algo agendado agora. Abre a app!',
       url: '/',
-      tag: `lembrete-${tipo}`,
+      tag,
     })
   }
 
@@ -140,7 +174,7 @@ async function enviarPush(supabase, userId, tipo) {
     title: msg.titulo,
     body: msg.corpo,
     url: msg.url || '/',
-    tag: `lembrete-${tipo}`,
+    tag,
   })
 }
 
@@ -191,16 +225,28 @@ export default async function handler(req, res) {
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-  // Determinar bloco a partir do query param
-  const url = new URL(req.url, `http://${req.headers.host}`)
-  const bloco = url.searchParams.get('bloco') || req.query?.bloco || 'manha'
-  const janela = BLOCOS[bloco]
+  // Determinar hora actual em CAT
+  const horaCAT = horaActualCAT()
 
-  if (!janela) {
-    return res.status(400).json({ error: `Bloco desconhecido: ${bloco}`, opcoes: Object.keys(BLOCOS) })
+  // Suportar bloco legacy (mas agora filtra só pela hora actual)
+  const url = new URL(req.url, `http://${req.headers.host}`)
+  const bloco = url.searchParams.get('bloco') || req.query?.bloco || null
+
+  // Se chamado com bloco antigo, verificar se a hora actual cai nesse bloco
+  // para evitar enviar fora de horas durante migração
+  if (bloco && BLOCOS[bloco]) {
+    const janela = BLOCOS[bloco]
+    if (horaCAT < janela.min || horaCAT > janela.max) {
+      return res.status(200).json({
+        bloco,
+        horaCAT,
+        message: `Hora actual (${horaCAT}h) fora do bloco ${bloco} — nada a enviar`,
+        enviados: 0,
+      })
+    }
   }
 
-  console.log(`[Push Lembretes] Bloco: ${bloco} (${janela.min}h - ${janela.max}h CAT)`)
+  console.log(`[Push Lembretes] Hora CAT: ${horaCAT}h — enviando lembretes para ${horaCAT - 1}h-${horaCAT}h`)
 
   // Buscar todas as preferências activas
   const { data: prefs, error } = await supabase
@@ -214,7 +260,7 @@ export default async function handler(req, res) {
   }
 
   if (!prefs || prefs.length === 0) {
-    return res.status(200).json({ bloco, message: 'Sem preferências activas', enviados: 0 })
+    return res.status(200).json({ horaCAT, message: 'Sem preferências activas', enviados: 0 })
   }
 
   let totalEnviados = 0
@@ -233,8 +279,9 @@ export default async function handler(req, res) {
 
       const [h] = lembrete.hora.split(':').map(Number)
 
-      // Enviar se a hora do lembrete cai dentro da janela do bloco
-      if (h >= janela.min && h <= janela.max) {
+      // Enviar se a hora do lembrete é a hora actual OU a hora anterior
+      // (janela de 2h para cobrir horas personalizadas entre crons)
+      if (h === horaCAT || h === horaCAT - 1) {
         const enviados = await enviarPush(supabase, pref.user_id, lembrete.tipo)
         totalEnviados += enviados
         if (enviados > 0) userEnviou = true
@@ -244,11 +291,10 @@ export default async function handler(req, res) {
     if (userEnviou) totalUsers++
   }
 
-  console.log(`[Push Lembretes] Bloco ${bloco}: ${totalEnviados} notificações a ${totalUsers} users`)
+  console.log(`[Push Lembretes] ${horaCAT}h CAT: ${totalEnviados} notificações a ${totalUsers} users`)
 
   return res.status(200).json({
-    bloco,
-    janela: `${janela.min}h - ${janela.max}h CAT`,
+    horaCAT,
     prefsActivas: prefs.length,
     notificacoesEnviadas: totalEnviados,
     usersNotificados: totalUsers,

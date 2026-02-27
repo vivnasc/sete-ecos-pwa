@@ -167,12 +167,13 @@ export default function NotificacoesConfig() {
 
       if (resultado) {
         setPushRegistado(true);
-        // Activar lembretes locais como fallback + enviar confirmação
-        const timeouts = activarLembretes();
-        setLembretesAgendados(timeouts.length);
 
         // Guardar preferências no servidor para push real
         guardarPreferencias(lembretes).catch(() => {});
+
+        // Activar lembretes locais só como fallback (push trata o resto)
+        const timeouts = await activarLembretes();
+        setLembretesAgendados(timeouts.length);
 
         setTimeout(() => {
           enviarNotificacao('Notificações activadas!', {
@@ -203,23 +204,23 @@ export default function NotificacoesConfig() {
     setLembretes(novos);
   };
 
-  const guardar = () => {
+  const guardar = async () => {
     guardarLembretes(lembretes);
-    // Activar lembretes locais como fallback
-    const timeouts = activarLembretes();
-    setLembretesAgendados(timeouts.length);
     // Guardar no servidor para push real
     guardarPreferencias(lembretes).catch(() => {});
+    // Activar lembretes locais só como fallback
+    const timeouts = await activarLembretes();
+    setLembretesAgendados(timeouts.length);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
 
-  const resetar = () => {
+  const resetar = async () => {
     setLembretes(LEMBRETES_DEFAULT);
     guardarLembretes(LEMBRETES_DEFAULT);
-    const timeouts = activarLembretes();
-    setLembretesAgendados(timeouts.length);
     guardarPreferencias(LEMBRETES_DEFAULT).catch(() => {});
+    const timeouts = await activarLembretes();
+    setLembretesAgendados(timeouts.length);
   };
 
   const adicionarLembrete = (tipo) => {
