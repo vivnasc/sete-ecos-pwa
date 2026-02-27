@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { isSessionCoach } from './lib/coach'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
@@ -297,9 +297,28 @@ function AuthRoute({ children, from }) {
   return <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
 }
 
+// ===== NOTIFICAÇÕES GLOBAIS =====
+// Activa agendamento local de lembretes quando a app abre (qualquer página).
+// Funciona em conjunto com o push do servidor — tags iguais evitam duplicados.
+function useGlobalNotifications(session) {
+  useEffect(() => {
+    if (!session) return
+    if (!('Notification' in window) || Notification.permission !== 'granted') return
+
+    // Importar dinamicamente para não aumentar o bundle inicial
+    import('./utils/notifications').then(({ activarLembretes, activarReagendamentoAutomatico }) => {
+      activarLembretes().catch(() => {})
+      activarReagendamentoAutomatico()
+    }).catch(() => {})
+  }, [session])
+}
+
 // ===== ROTAS =====
 function AppRoutes() {
   const { session, loading, isCoachUser } = useAuth()
+
+  // Activar notificações locais ao nível global (não só no dashboard Vitalis)
+  useGlobalNotifications(session)
 
   if (loading) return <LoadingFallback />
 

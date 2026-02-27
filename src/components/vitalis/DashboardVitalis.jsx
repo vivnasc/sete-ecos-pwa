@@ -10,7 +10,7 @@ import { g, setSexo } from '../../utils/genero';
 import { isNearRamadan, setObservaRamadao, observaRamadao } from '../../utils/ramadao';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useI18n } from '../../contexts/I18nContext';
-import { temPermissao, activarLembretes, contarLembretesHoje } from '../../utils/notifications';
+import { temPermissao, contarLembretesHoje } from '../../utils/notifications';
 import { pedirPermissaoERegistar, guardarPreferencias } from '../../lib/pushSubscription';
 import { checkVitalisAccess } from '../../lib/subscriptions';
 import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
@@ -153,16 +153,12 @@ export default function DashboardVitalis() {
       setMostrarBannerPWA(!isStandalone);
     }
 
-    // Re-registar push e activar lembretes locais (só como fallback se push não estiver activo)
+    // Re-registar push subscription silenciosamente (garante que está na DB)
+    // Lembretes locais são agora activados globalmente no App.jsx
     if (temPermissao()) {
-      // Re-registar push subscription silenciosamente (garante que está na DB)
       import('../../lib/pushSubscription').then(({ registarPushSubscription }) => {
         registarPushSubscription().catch(() => {});
       });
-      // activarLembretes é async — verifica se push está activo e só agenda localmente se não
-      activarLembretes().then(ids => {
-        if (ids.length > 0) console.log('Dashboard: lembretes locais (fallback):', ids.length);
-      }).catch(() => {});
     }
 
     // Capturar evento de instalação PWA
@@ -1059,7 +1055,8 @@ export default function DashboardVitalis() {
                         // Guardar preferências no servidor para push real via cron
                         const { carregarLembretes } = await import('../../utils/notifications');
                         guardarPreferencias(carregarLembretes()).catch(() => {});
-                        // activarLembretes verifica push e só agenda localmente se necessário
+                        // Activar lembretes locais imediatamente
+                        const { activarLembretes } = await import('../../utils/notifications');
                         await activarLembretes();
                         enviarNotificacao('Notificações activadas!', {
                           body: 'Vais receber lembretes mesmo com a app fechada!'
