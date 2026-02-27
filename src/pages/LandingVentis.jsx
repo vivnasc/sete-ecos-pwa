@@ -209,7 +209,7 @@ const LandingVentis = () => {
     <div className="min-h-screen" style={{ fontFamily: 'var(--font-corpo)' }}>
       <SEOHead
         title="VENTIS - Energia & Ritmo | Sete Ecos"
-        description="Gestão de energia sustentável, ritmo natural e prevenção de burnout. Monitor de energia, pausas conscientes e Detector de Burnout. Desde 750 MZN/mês."
+        description="Gestão de energia sustentável, ritmo natural e prevenção de burnout. Monitor de energia, pausas conscientes e Detector de Burnout. Desde 499 MZN/mês."
         url="https://app.seteecos.com/ventis"
         image="https://app.seteecos.com/og-image.png"
         jsonLd={{
@@ -219,9 +219,9 @@ const LandingVentis = () => {
           "description": "Programa de gestão energética com Monitor de Energia, Detector de Burnout, pausas conscientes e coaching personalizado.",
           "brand": { "@type": "Brand", "name": "Sete Ecos" },
           "offers": [
-            { "@type": "Offer", "name": "Mensal", "price": "750", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Semestral", "price": "3825", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Anual", "price": "7200", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" }
+            { "@type": "Offer", "name": "Mensal", "price": "499", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Semestral", "price": "2395", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Anual", "price": "4190", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" }
           ]
         }}
       />
@@ -490,6 +490,7 @@ const LandingVentis = () => {
                   className="relative rounded-[2rem] shadow-2xl border border-[#5D9B84]/20 w-full"
                   loading="lazy"
                 />
+                <div className="absolute top-0 left-0 right-0 h-[18%] bg-gradient-to-b from-black/70 via-black/40 to-transparent rounded-t-[2rem] z-10 pointer-events-none" />
                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#5D9B84]/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
                   Dashboard principal
                 </div>
@@ -505,6 +506,7 @@ const LandingVentis = () => {
                   className="relative rounded-[2rem] shadow-2xl border border-[#5D9B84]/20 w-full"
                   loading="lazy"
                 />
+                <div className="absolute top-0 left-0 right-0 h-[18%] bg-gradient-to-b from-black/70 via-black/40 to-transparent rounded-t-[2rem] z-10 pointer-events-none" />
                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#5D9B84]/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
                   Movimento & Flow
                 </div>

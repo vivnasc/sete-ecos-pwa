@@ -20,36 +20,14 @@ export const SUBSCRIPTION_STATUS = {
   NONE: null                  // Sem subscricao
 };
 
-// Planos de subscricao ÁUREA
+// Planos de subscricao ÁUREA — importados da fonte central
+import { ECO_PLANS } from '../shared/subscriptionPlans'
+
+const aureaConfig = ECO_PLANS.aurea
 export const AUREA_PLANS = {
-  MONTHLY: {
-    id: 'monthly',
-    name: 'Mensal',
-    duration: 1, // meses
-    price_mzn: 975,
-    price_usd: 15,
-    discount: 0
-  },
-  SEMESTRAL: {
-    id: 'semestral',
-    name: 'Semestral',
-    duration: 6, // meses
-    price_mzn: 5265,
-    price_usd: 81,
-    discount: 10,
-    savings_mzn: 585,
-    savings_usd: 9
-  },
-  ANNUAL: {
-    id: 'annual',
-    name: 'Anual',
-    duration: 12, // meses
-    price_mzn: 9945,
-    price_usd: 153,
-    discount: 15,
-    savings_mzn: 1755,
-    savings_usd: 27
-  }
+  MONTHLY: aureaConfig.monthly,
+  SEMESTRAL: aureaConfig.semestral,
+  ANNUAL: aureaConfig.annual
 };
 
 // Configurações gerais

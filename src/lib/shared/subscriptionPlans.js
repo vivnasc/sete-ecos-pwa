@@ -44,54 +44,54 @@ export const ECO_PLANS = {
     table: 'aurea_clients',
     color: '#C4A265',
     colorDark: '#2D2A24',
-    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 975, price_usd: 15, discount: 0 },
-    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 5265, price_usd: 81, discount: 10, savings_mzn: 585 },
-    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 9945, price_usd: 153, discount: 15, savings_mzn: 1755 }
+    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 499, price_usd: 9.90, discount: 0 },
+    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 2395, price_usd: 47.50, discount: 20, savings_mzn: 599 },
+    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 4190, price_usd: 83, discount: 30, savings_mzn: 1798 }
   },
   serena: {
     name: 'Serena',
     table: 'serena_clients',
     color: '#6B8E9B',
     colorDark: '#1a2e3a',
-    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 750, price_usd: 12, discount: 0 },
-    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 3825, price_usd: 58, discount: 15, savings_mzn: 675 },
-    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 7200, price_usd: 110, discount: 20, savings_mzn: 1800 }
+    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 499, price_usd: 9.90, discount: 0 },
+    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 2395, price_usd: 47.50, discount: 20, savings_mzn: 599 },
+    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 4190, price_usd: 83, discount: 30, savings_mzn: 1798 }
   },
   ignis: {
     name: 'Ignis',
     table: 'ignis_clients',
     color: '#C1634A',
     colorDark: '#2e1a14',
-    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 750, price_usd: 12, discount: 0 },
-    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 3825, price_usd: 58, discount: 15, savings_mzn: 675 },
-    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 7200, price_usd: 110, discount: 20, savings_mzn: 1800 }
+    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 499, price_usd: 9.90, discount: 0 },
+    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 2395, price_usd: 47.50, discount: 20, savings_mzn: 599 },
+    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 4190, price_usd: 83, discount: 30, savings_mzn: 1798 }
   },
   ventis: {
     name: 'Ventis',
     table: 'ventis_clients',
     color: '#5D9B84',
     colorDark: '#1a2e24',
-    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 750, price_usd: 12, discount: 0 },
-    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 3825, price_usd: 58, discount: 15, savings_mzn: 675 },
-    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 7200, price_usd: 110, discount: 20, savings_mzn: 1800 }
+    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 499, price_usd: 9.90, discount: 0 },
+    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 2395, price_usd: 47.50, discount: 20, savings_mzn: 599 },
+    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 4190, price_usd: 83, discount: 30, savings_mzn: 1798 }
   },
   ecoa: {
     name: 'Ecoa',
     table: 'ecoa_clients',
     color: '#4A90A4',
     colorDark: '#1a2a34',
-    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 750, price_usd: 12, discount: 0 },
-    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 3825, price_usd: 58, discount: 15, savings_mzn: 675 },
-    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 7200, price_usd: 110, discount: 20, savings_mzn: 1800 }
+    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 499, price_usd: 9.90, discount: 0 },
+    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 2395, price_usd: 47.50, discount: 20, savings_mzn: 599 },
+    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 4190, price_usd: 83, discount: 30, savings_mzn: 1798 }
   },
   imago: {
     name: 'Imago',
     table: 'imago_clients',
     color: '#8B7BA5',
     colorDark: '#1a1a2e',
-    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 975, price_usd: 15, discount: 0 },
-    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 4972, price_usd: 76, discount: 15, savings_mzn: 878 },
-    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 9360, price_usd: 144, discount: 20, savings_mzn: 2340 }
+    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 499, price_usd: 9.90, discount: 0 },
+    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 2395, price_usd: 47.50, discount: 20, savings_mzn: 599 },
+    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 4190, price_usd: 83, discount: 30, savings_mzn: 1798 }
   },
   aurora: {
     name: 'Aurora',
@@ -103,6 +103,7 @@ export const ECO_PLANS = {
 }
 
 // ===== BUNDLES (PACOTES DE DESCONTO) =====
+// Precos calculados dinamicamente por calculateBundlePrice() com base nos ecos seleccionados
 export const BUNDLE_PLANS = {
   duo: {
     id: 'duo',
@@ -110,10 +111,7 @@ export const BUNDLE_PLANS = {
     description: 'Escolhe 2 ecos a tua escolha',
     discount: 15,
     minEcos: 2,
-    maxEcos: 2,
-    monthly: { price_mzn: 1275, price_usd: 20 },
-    semestral: { price_mzn: 6502, price_usd: 100 },
-    annual: { price_mzn: 12240, price_usd: 187 }
+    maxEcos: 2
   },
   trio: {
     id: 'trio',
@@ -121,10 +119,7 @@ export const BUNDLE_PLANS = {
     description: 'Escolhe 3 ecos a tua escolha',
     discount: 25,
     minEcos: 3,
-    maxEcos: 3,
-    monthly: { price_mzn: 1687, price_usd: 27 },
-    semestral: { price_mzn: 8606, price_usd: 132 },
-    annual: { price_mzn: 16200, price_usd: 248 }
+    maxEcos: 3
   },
   jornada: {
     id: 'jornada',
@@ -132,21 +127,15 @@ export const BUNDLE_PLANS = {
     description: 'Acesso a 5 ou mais ecos com desconto maximo',
     discount: 35,
     minEcos: 5,
-    maxEcos: 7,
-    monthly: { price_mzn: 2437, price_usd: 39 },
-    semestral: { price_mzn: 12431, price_usd: 190 },
-    annual: { price_mzn: 23400, price_usd: 358 }
+    maxEcos: 7
   },
   tudo: {
     id: 'tudo',
     name: 'Tudo — Todos os 7 Ecos',
-    description: 'Acesso completo a todos os 7 ecos (Aurora desbloqueia grátis ao completar todos)',
+    description: 'Acesso completo a todos os 7 ecos (Aurora desbloqueia gratis ao completar todos)',
     discount: 40,
     minEcos: 7,
-    maxEcos: 7,
-    monthly: { price_mzn: 2800, price_usd: 44 },
-    semestral: { price_mzn: 14280, price_usd: 219 },
-    annual: { price_mzn: 26880, price_usd: 412 }
+    maxEcos: 7
   }
 }
 
@@ -158,29 +147,37 @@ export function calculateBundlePrice(ecoKeys, period = 'monthly') {
 
   // Encontrar bundle aplicavel
   let bundle = null
-  if (ecoKeys.length >= 8) bundle = BUNDLE_PLANS.tudo
+  if (ecoKeys.length >= 7) bundle = BUNDLE_PLANS.tudo
   else if (ecoKeys.length >= 5) bundle = BUNDLE_PLANS.jornada
   else if (ecoKeys.length >= 3) bundle = BUNDLE_PLANS.trio
   else if (ecoKeys.length >= 2) bundle = BUNDLE_PLANS.duo
 
   if (!bundle) return null
 
-  // Calcular preco individual total
-  const individualTotal = ecoKeys.reduce((total, eco) => {
+  // Calcular preco individual total (MZN e USD)
+  let individualTotal = 0
+  let individualTotalUsd = 0
+  ecoKeys.forEach(eco => {
     const config = ECO_PLANS[eco]
-    if (!config) return total
+    if (!config) return
     const plan = config[period]
-    return total + (plan?.price_mzn || 0)
-  }, 0)
+    individualTotal += plan?.price_mzn || 0
+    individualTotalUsd += plan?.price_usd || 0
+  })
 
-  const bundlePrice = bundle[period]?.price_mzn || Math.round(individualTotal * (1 - bundle.discount / 100))
+  const bundlePrice = Math.round(individualTotal * (1 - bundle.discount / 100))
+  const bundlePriceUsd = Math.round(individualTotalUsd * (1 - bundle.discount / 100))
   const savings = individualTotal - bundlePrice
+  const savingsUsd = individualTotalUsd - bundlePriceUsd
 
   return {
     bundle,
     individualTotal,
+    individualTotalUsd,
     bundlePrice,
+    bundlePriceUsd,
     savings,
+    savingsUsd,
     discount: bundle.discount,
     period
   }

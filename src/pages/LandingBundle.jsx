@@ -5,10 +5,11 @@ import { g } from '../utils/genero';
 import SEOHead from '../components/SEOHead';
 import PartilharSocial from '../components/PartilharSocial';
 import ScrollReveal from '../components/ScrollReveal';
+import { ECO_PLANS, BUNDLE_PLANS } from '../lib/shared/subscriptionPlans';
 
 /**
  * Landing Page do Bundle Vitalis + Áurea
- * Página dedicada para promover o pacote combinado com 25% de desconto
+ * Página dedicada para promover o pacote combinado com 15% de desconto
  */
 
 export default function LandingBundle() {
@@ -28,10 +29,19 @@ export default function LandingBundle() {
     }
   };
 
+  // Precos calculados dinamicamente a partir da fonte central
+  const vitalis = ECO_PLANS.vitalis;
+  const aurea = ECO_PLANS.aurea;
+  const duoDiscount = BUNDLE_PLANS.duo.discount / 100; // 0.15
+  const calcBundle = (period) => {
+    const individual = (vitalis[period]?.price_mzn || 0) + (aurea[period]?.price_mzn || 0);
+    const bundle = Math.round(individual * (1 - duoDiscount));
+    return { individual, bundle, economia: individual - bundle };
+  };
   const precos = {
-    mensal: { individual: 3475, bundle: 2600, economia: 875 },
-    semestral: { individual: 17765, bundle: 13300, economia: 4465 },
-    anual: { individual: 30945, bundle: 23200, economia: 7745 },
+    mensal: calcBundle('monthly'),
+    semestral: calcBundle('semestral'),
+    anual: calcBundle('annual'),
   };
 
   const beneficios = [
@@ -89,7 +99,7 @@ export default function LandingBundle() {
     {
       nome: 'Cleide',
       foto: null,
-      texto: 'Poupar 25% e ter acesso aos dois programas? Foi óbvio. Estou na minha melhor versão em todos os sentidos.',
+      texto: 'Poupar 15% e ter acesso aos dois programas? Foi óbvio. Estou na minha melhor versão em todos os sentidos.',
       eco: 'Bundle',
     },
   ];
@@ -105,7 +115,7 @@ export default function LandingBundle() {
     },
     {
       q: 'Quanto poupo com o Bundle vs comprar separado?',
-      a: 'Poupas 25% em todos os planos. No plano anual, por exemplo, poupas 7.745 MZN ($118 USD) vs comprar Vitalis e Áurea separadamente.',
+      a: 'Poupas 15% em todos os planos. No plano anual, por exemplo, poupas significativamente vs comprar Vitalis e Áurea separadamente.',
     },
     {
       q: 'Preciso usar os dois ao mesmo tempo?',
@@ -117,7 +127,7 @@ export default function LandingBundle() {
     },
     {
       q: 'Como funciona o pagamento?',
-      a: 'Aceitas M-Pesa, transferência bancária e PayPal/cartão. O pagamento é processado de forma segura e recebes acesso imediato.',
+      a: 'Aceitas M-Pesa e PayPal/cartão. O pagamento é processado de forma segura e recebes acesso imediato.',
     },
     {
       q: 'Posso cancelar a qualquer momento?',
@@ -132,8 +142,8 @@ export default function LandingBundle() {
   return (
     <>
       <SEOHead
-        title="Bundle Vitalis + Áurea - Poupa 25% | Sete Ecos"
-        description="Transformação completa: Nutrição + Autovalor. Vitalis + Áurea juntos com 25% de desconto. Coaching personalizado para mulheres em Moçambique."
+        title="Bundle Vitalis + Áurea - Poupa 15% | Sete Ecos"
+        description="Transformação completa: Nutrição + Autovalor. Vitalis + Áurea juntos com 15% de desconto. Coaching personalizado para mulheres em Moçambique."
         path="/bundle"
         imageUrl="https://app.seteecos.com/logos/bundle-social.png"
         type="website"
@@ -162,7 +172,7 @@ export default function LandingBundle() {
               <div>
                 <div className="inline-block mb-4">
                   <span className="bg-gradient-to-r from-[#7C8B6F] to-[#C9A227] text-white text-sm font-semibold px-4 py-2 rounded-full">
-                    ✨ Poupa 25% com o Bundle
+                    ✨ Poupa 15% com o Bundle
                   </span>
                 </div>
 
@@ -227,7 +237,7 @@ export default function LandingBundle() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    25% desconto
+                    15% desconto
                   </div>
                 </div>
               </div>
@@ -243,7 +253,7 @@ export default function LandingBundle() {
 
                   <div className="text-center mb-6">
                     <p className="text-sm text-[#6B5C4C] mb-2">Poupa até</p>
-                    <p className="text-4xl font-bold text-[#C9A227] mb-1">7.745 MZN</p>
+                    <p className="text-4xl font-bold text-[#C9A227] mb-1">{precos.anual.economia.toLocaleString('pt-MZ')} MZN</p>
                     <p className="text-sm text-[#6B5C4C]">no plano anual</p>
                   </div>
 
@@ -269,7 +279,7 @@ export default function LandingBundle() {
 
                 {/* Floating badge */}
                 <div className="absolute -top-4 -right-4 bg-[#C9A227] text-white px-6 py-3 rounded-full shadow-lg transform rotate-12">
-                  <p className="font-bold text-lg">-25%</p>
+                  <p className="font-bold text-lg">-15%</p>
                 </div>
               </div>
             </div>
@@ -377,7 +387,7 @@ export default function LandingBundle() {
             </div>
 
             <p className="text-center text-white/60 mt-8 text-sm">
-              💳 M-Pesa | Transferência Bancária | PayPal/Cartão • 🔒 Pagamento 100% seguro
+              💳 M-Pesa | PayPal/Cartão • 🔒 Pagamento 100% seguro
             </p>
           </div>
         </section>
@@ -503,7 +513,7 @@ export default function LandingBundle() {
           <div className="max-w-4xl mx-auto px-4">
             <PartilharSocial
               url="https://app.seteecos.com/bundle"
-              titulo="Vitalis + Áurea Bundle - Poupa 25%"
+              titulo="Vitalis + Áurea Bundle - Poupa 15%"
               descricao="Transformação completa: Nutrição + Autovalor. Coaching personalizado para mulheres."
             />
           </div>

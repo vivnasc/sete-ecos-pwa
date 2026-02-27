@@ -6,6 +6,7 @@ import SEOHead from '../components/SEOHead';
 import PartilharSocial from '../components/PartilharSocial';
 import WhatsAppMockup from '../components/WhatsAppMockup';
 import ScrollReveal from '../components/ScrollReveal';
+import { ECO_PLANS } from '../lib/shared/subscriptionPlans';
 
 /**
  * ÁUREA - Landing Page
@@ -58,10 +59,11 @@ const LandingAurea = () => {
     }
   }, [session, aureaAccess, navigate]);
 
+  const aurea = ECO_PLANS.aurea;
   const planos = {
-    mensal: { id: 'monthly', nome: 'Mensal', meses: 1, preco: 975, precoUSD: 15, desconto: 0 },
-    semestral: { id: 'semestral', nome: 'Semestral', meses: 6, preco: 5265, precoUSD: 81, desconto: 10 },
-    anual: { id: 'annual', nome: 'Anual', meses: 12, preco: 9945, precoUSD: 153, desconto: 15 }
+    mensal: { id: 'monthly', nome: 'Mensal', meses: 1, preco: aurea.monthly.price_mzn, precoUSD: aurea.monthly.price_usd, desconto: aurea.monthly.discount },
+    semestral: { id: 'semestral', nome: 'Semestral', meses: 6, preco: aurea.semestral.price_mzn, precoUSD: aurea.semestral.price_usd, desconto: aurea.semestral.discount },
+    anual: { id: 'annual', nome: 'Anual', meses: 12, preco: aurea.annual.price_mzn, precoUSD: aurea.annual.price_usd, desconto: aurea.annual.discount }
   };
 
   // Pilares agrupados - atualizado com novas features
@@ -207,9 +209,9 @@ const LandingAurea = () => {
           "description": "Programa de autoestima e presença para mulheres com micro-práticas diárias e coaching personalizado.",
           "brand": { "@type": "Brand", "name": "Sete Ecos" },
           "offers": [
-            { "@type": "Offer", "name": "Mensal", "price": "975", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Semestral", "price": "5265", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Anual", "price": "9945", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" }
+            { "@type": "Offer", "name": "Mensal", "price": "499", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Semestral", "price": "2395", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Anual", "price": "4190", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" }
           ]
         }}
       />
@@ -444,6 +446,7 @@ const LandingAurea = () => {
                 className="relative rounded-[2rem] shadow-2xl border border-amber-500/20 w-full"
                 loading="lazy"
               />
+              <div className="absolute top-0 left-0 right-0 h-[18%] bg-gradient-to-b from-black/70 via-black/40 to-transparent rounded-t-[2rem] z-10 pointer-events-none" />
               <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-amber-600/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
                 Dashboard principal
               </div>
@@ -457,6 +460,7 @@ const LandingAurea = () => {
                 className="relative rounded-[2rem] shadow-2xl border border-amber-500/20 w-full"
                 loading="lazy"
               />
+              <div className="absolute top-0 left-0 right-0 h-[18%] bg-gradient-to-b from-black/70 via-black/40 to-transparent rounded-t-[2rem] z-10 pointer-events-none" />
               <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-amber-600/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
                 Micro-Práticas
               </div>

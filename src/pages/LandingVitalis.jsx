@@ -7,6 +7,7 @@ import SEOHead from '../components/SEOHead';
 import PartilharSocial from '../components/PartilharSocial';
 import WhatsAppMockup from '../components/WhatsAppMockup';
 import ScrollReveal from '../components/ScrollReveal';
+import { ECO_PLANS } from '../lib/shared/subscriptionPlans';
 
 /**
  * VITALIS - Landing Page
@@ -53,10 +54,11 @@ const LandingVitalis = () => {
     }
   }, [session, vitalisAccess, navigate]);
 
+  const vitalis = ECO_PLANS.vitalis;
   const planos = {
-    mensal: { id: 'monthly', nome: 'Mensal', meses: 1, preco: 2500, precoUSD: 38, desconto: 0 },
-    semestral: { id: 'semestral', nome: 'Semestral', meses: 6, preco: 12500, precoUSD: 190, desconto: 17 },
-    anual: { id: 'annual', nome: 'Anual', meses: 12, preco: 21000, precoUSD: 320, desconto: 30 }
+    mensal: { id: 'monthly', nome: 'Mensal', meses: 1, preco: vitalis.monthly.price_mzn, precoUSD: vitalis.monthly.price_usd, desconto: vitalis.monthly.discount },
+    semestral: { id: 'semestral', nome: 'Semestral', meses: 6, preco: vitalis.semestral.price_mzn, precoUSD: vitalis.semestral.price_usd, desconto: vitalis.semestral.discount },
+    anual: { id: 'annual', nome: 'Anual', meses: 12, preco: vitalis.annual.price_mzn, precoUSD: vitalis.annual.price_usd, desconto: vitalis.annual.discount }
   };
 
   const fases = [

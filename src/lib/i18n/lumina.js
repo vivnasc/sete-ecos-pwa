@@ -119,7 +119,7 @@ export const luminaTranslations = {
     'lumina.reading.vitalis_upsell': 'O teu corpo está a pedir atenção. O VITALIS combina nutrição científica com apoio emocional para uma transformação real e sustentável.',
     'lumina.reading.aurea_upsell': 'Os teus padrões mostram que a tua relação contigo pode precisar de atenção. A ÁUREA trabalha o valor próprio — sem culpa, sem pressão.',
     'lumina.reading.know_eco': 'Conhecer {eco} →',
-    'lumina.reading.price_aurea': 'Desde 975 MT/mês · 7 dias de garantia',
+    'lumina.reading.price_aurea': 'Desde 499 MT/mês · 7 dias de garantia',
     'lumina.reading.price_vitalis': 'Desde 2.500 MT/mês · 7 dias de garantia',
 
     // === EMAIL CAPTURE ===
@@ -321,7 +321,7 @@ export const luminaTranslations = {
     'lumina.reading.vitalis_upsell': 'Your body is asking for attention. VITALIS combines scientific nutrition with emotional support for a real and sustainable transformation.',
     'lumina.reading.aurea_upsell': 'Your patterns show that your relationship with yourself may need attention. ÁUREA works on self-worth — no guilt, no pressure.',
     'lumina.reading.know_eco': 'Discover {eco} →',
-    'lumina.reading.price_aurea': 'From 975 MT/month · 7-day guarantee',
+    'lumina.reading.price_aurea': 'From 499 MT/month · 7-day guarantee',
     'lumina.reading.price_vitalis': 'From 2,500 MT/month · 7-day guarantee',
 
     // === EMAIL CAPTURE ===
@@ -523,7 +523,7 @@ export const luminaTranslations = {
     'lumina.reading.vitalis_upsell': 'Ton corps demande de l\'attention. VITALIS combine nutrition scientifique et soutien émotionnel pour une transformation réelle et durable.',
     'lumina.reading.aurea_upsell': 'Tes patterns montrent que ta relation avec toi-même a peut-être besoin d\'attention. ÁUREA travaille la valeur de soi — sans culpabilité, sans pression.',
     'lumina.reading.know_eco': 'Découvrir {eco} →',
-    'lumina.reading.price_aurea': 'À partir de 975 MT/mois · Garantie 7 jours',
+    'lumina.reading.price_aurea': 'À partir de 499 MT/mois · Garantie 7 jours',
     'lumina.reading.price_vitalis': 'À partir de 2 500 MT/mois · Garantie 7 jours',
 
     // === EMAIL CAPTURE ===
