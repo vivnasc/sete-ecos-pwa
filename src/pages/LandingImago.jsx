@@ -661,7 +661,7 @@ const LandingImago = () => {
               </div>
               <div className="flex items-center gap-4 justify-center md:justify-start mt-6">
                 <img
-                  src="/logos/SETE_ECOS_LOGO.png"
+                  src="/logos/seteecos_logo_v2.png"
                   alt="Sete Ecos"
                   className="w-10 h-10 opacity-70"
                 />
