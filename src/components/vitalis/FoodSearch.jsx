@@ -16,6 +16,7 @@ export default function FoodSearch({ onSelect, onScanRequest, placeholder }) {
   const [searching, setSearching] = useState(false);
   const [tab, setTab] = useState('recentes'); // recentes, favoritos, categorias
   const [categoriaFiltro, setCategoriaFiltro] = useState(null);
+  const [categoryResults, setCategoryResults] = useState(null); // resultados de categoria selecionada
   const inputRef = useRef(null);
   const debounceRef = useRef(null);
 
@@ -66,8 +67,9 @@ export default function FoodSearch({ onSelect, onScanRequest, placeholder }) {
     onSelect(alimento);
   };
 
-  const temResultados = query.length >= 2;
+  const temPesquisa = query.length >= 2;
   const totalResultados = resultados.locais.length + resultados.api.length;
+  const mostrandoCategoria = !temPesquisa && categoryResults && categoryResults.length > 0;
 
   return (
     <div className="flex flex-col h-full">
@@ -108,7 +110,7 @@ export default function FoodSearch({ onSelect, onScanRequest, placeholder }) {
       </div>
 
       {/* Resultados da pesquisa */}
-      {temResultados ? (
+      {temPesquisa ? (
         <div className="flex-1 overflow-y-auto px-4 pb-4">
           {searching && totalResultados === 0 && (
             <div className="text-center py-8 text-gray-400">
@@ -152,6 +154,25 @@ export default function FoodSearch({ onSelect, onScanRequest, placeholder }) {
               </div>
             </div>
           )}
+        </div>
+      ) : mostrandoCategoria ? (
+        <div className="flex-1 overflow-y-auto px-4 pb-4">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs text-gray-400 font-medium px-1">
+              {CATEGORIAS_ALIMENTOS[categoriaFiltro]?.emoji} {CATEGORIAS_ALIMENTOS[categoriaFiltro]?.label} ({categoryResults.length})
+            </p>
+            <button
+              onClick={() => { setCategoryResults(null); setCategoriaFiltro(null); }}
+              className="text-xs text-[#7C8B6F] font-medium px-2 py-1 hover:bg-[#7C8B6F]/10 rounded-lg"
+            >
+              ← Voltar
+            </button>
+          </div>
+          <div className="space-y-1">
+            {categoryResults.map(alimento => (
+              <FoodItem key={alimento.id} alimento={alimento} onSelect={handleSelect} />
+            ))}
+          </div>
         </div>
       ) : (
         <>
@@ -208,14 +229,9 @@ export default function FoodSearch({ onSelect, onScanRequest, placeholder }) {
                     key={key}
                     onClick={() => {
                       setCategoriaFiltro(key);
-                      setQuery(' '); // Trigger search com categoria
-                      setTimeout(() => {
-                        setQuery('');
-                        pesquisar('');
-                      }, 0);
-                      // Mostrar todos da categoria
-                      pesquisarAlimentos('', { categoria: key, limite: 50 }).then(res => {
-                        setResultados(res);
+                      // Pesquisar todos os alimentos desta categoria
+                      pesquisarAlimentos('', { categoria: key, limite: 50, incluirApi: false }).then(res => {
+                        setCategoryResults(res.locais);
                       });
                     }}
                     className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all active:scale-95 ${

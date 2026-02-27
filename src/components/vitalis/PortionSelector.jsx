@@ -102,7 +102,7 @@ export default function PortionSelector({ alimento, onChange, initialG }) {
                 onClick={() => handlePorcoes(p.valor)}
                 className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${
                   porcoes === p.valor
-                    ? `bg-${conv?.cor || 'amber'}-100 border-2 border-${conv?.cor || 'amber'}-400 text-${conv?.cor || 'amber'}-700`
+                    ? 'bg-[#7C8B6F]/20 border-2 border-[#7C8B6F] text-[#5A6B4D]'
                     : 'bg-gray-50 border-2 border-gray-200 text-gray-600 hover:border-gray-300'
                 }`}
               >
