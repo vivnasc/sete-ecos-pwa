@@ -1,14 +1,15 @@
 /**
  * Push Lembretes Cron — Envia push notifications reais aos clientes
  *
- * Chamado 8x/dia por crons diários no vercel.json, um por cada hora
- * de lembrete default (UTC 5,7,9,10,12,14,17,19 = CAT 7,9,11,12,14,16,19,21).
+ * Chamado 9x/dia por crons diários a cada 2h no vercel.json:
+ *   UTC 4,6,8,10,12,14,16,18,20 = CAT 6,8,10,12,14,16,18,20,22
  *
  * Cada execução obtém a hora actual em Africa/Maputo (CAT) e envia
- * APENAS os lembretes cuja hora configurada corresponde à hora actual.
+ * os lembretes cuja hora configurada é a hora actual OU a hora anterior.
+ * Esta janela de 2h garante que QUALQUER hora escolhida pelo utilizador
+ * (ex: 15:00, 20:30) é coberta, mesmo com horas personalizadas.
  *
- * Nota: Vercel Hobby tem ~59min de imprecisão, mas o handler usa a hora
- * real no momento da execução, portanto funciona correctamente.
+ * Tags alinhadas com o cliente para evitar duplicados via Service Worker.
  */
 
 import { createClient } from '@supabase/supabase-js'
@@ -245,7 +246,7 @@ export default async function handler(req, res) {
     }
   }
 
-  console.log(`[Push Lembretes] Hora CAT: ${horaCAT}h — enviando lembretes para esta hora`)
+  console.log(`[Push Lembretes] Hora CAT: ${horaCAT}h — enviando lembretes para ${horaCAT - 1}h-${horaCAT}h`)
 
   // Buscar todas as preferências activas
   const { data: prefs, error } = await supabase
@@ -278,8 +279,9 @@ export default async function handler(req, res) {
 
       const [h] = lembrete.hora.split(':').map(Number)
 
-      // Enviar APENAS se a hora do lembrete corresponde à hora actual CAT
-      if (h === horaCAT) {
+      // Enviar se a hora do lembrete é a hora actual OU a hora anterior
+      // (janela de 2h para cobrir horas personalizadas entre crons)
+      if (h === horaCAT || h === horaCAT - 1) {
         const enviados = await enviarPush(supabase, pref.user_id, lembrete.tipo)
         totalEnviados += enviados
         if (enviados > 0) userEnviou = true
