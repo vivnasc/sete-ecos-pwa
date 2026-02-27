@@ -52,6 +52,8 @@ export default async function handler(req, res) {
     marcos: 0,
     winback: 0,
     wa_enviados: 0,
+    trial_alertas: 0,
+    super_engajadas: 0,
     resumo: false,
     erros: []
   };
@@ -75,7 +77,13 @@ export default async function handler(req, res) {
     // 5. CURIOSIDADE INSANA - users registados sem subscrição
     await enviarCuriosidadeInsana(supabase, resultados);
 
-    // 6. RESUMO DIÁRIO PARA COACH
+    // 6. TRIALS A EXPIRAR AMANHÃ — alerta Telegram para coach
+    await alertarTrialsExpirando(supabase, resultados);
+
+    // 7. CLIENTES SUPER-ENGAJADAS — 90%+ aderência semanal
+    await alertarSuperEngajadas(supabase, resultados);
+
+    // 8. RESUMO DIÁRIO PARA COACH
     await enviarResumoDiario(supabase, resultados);
 
     return res.status(200).json({
@@ -770,6 +778,128 @@ async function enviarCuriosidadeInsana(supabase, resultados) {
     }
   } catch (err) {
     resultados.erros.push('Erro curiosidade insana: ' + err.message);
+  }
+}
+
+/**
+ * Alertar coach sobre trials que expiram amanhã
+ * Para a coach ter tempo de enviar mensagem pessoal de retenção
+ */
+async function alertarTrialsExpirando(supabase, resultados) {
+  try {
+    const amanha = new Date();
+    amanha.setDate(amanha.getDate() + 1);
+    const amanhaStr = amanha.toISOString().split('T')[0];
+
+    // Buscar todos os ecos com trials
+    const ecoTables = [
+      { table: 'vitalis_clients', eco: 'Vitalis' },
+      { table: 'aurea_clients', eco: 'Áurea' },
+      { table: 'serena_clients', eco: 'Serena' },
+      { table: 'ignis_clients', eco: 'Ignis' },
+      { table: 'ventis_clients', eco: 'Ventis' },
+      { table: 'ecoa_clients', eco: 'Ecoa' },
+      { table: 'imago_clients', eco: 'Imago' },
+    ];
+
+    const trialsAmanha = [];
+
+    for (const { table, eco } of ecoTables) {
+      try {
+        const { data } = await supabase
+          .from(table)
+          .select('user_id, subscription_expires, trial_started, users!inner(nome, email)')
+          .eq('subscription_status', 'trial')
+          .not('subscription_expires', 'is', null);
+
+        for (const c of (data || [])) {
+          if (!c.subscription_expires) continue;
+          const expiresStr = new Date(c.subscription_expires).toISOString().split('T')[0];
+          if (expiresStr === amanhaStr) {
+            const nome = c.users?.nome?.split(' ')[0] || '?';
+            // Calcular dias de uso
+            const diasUso = c.trial_started
+              ? Math.floor((Date.now() - new Date(c.trial_started).getTime()) / 86400000)
+              : '?';
+            trialsAmanha.push({ nome, eco, diasUso });
+          }
+        }
+      } catch (_) {
+        // Tabela pode não existir ainda
+      }
+    }
+
+    if (trialsAmanha.length > 0) {
+      const linhas = trialsAmanha.map(t =>
+        `👤 *${t.nome}* — ${t.eco} (${t.diasUso} dias de uso)`
+      ).join('\n');
+
+      await enviarWhatsAppCoach(`📅 *TRIALS EXPIRAM AMANHÃ*\n\n${linhas}\n\nBoa altura para enviar mensagem pessoal de retenção! 💬`);
+      resultados.trial_alertas = trialsAmanha.length;
+    }
+  } catch (err) {
+    resultados.erros.push('Erro alertar trials: ' + err.message);
+  }
+}
+
+/**
+ * Alertar coach sobre clientes com aderência excepcional (90%+)
+ * Identifica candidatas a testemunhos e celebrações
+ */
+async function alertarSuperEngajadas(supabase, resultados) {
+  try {
+    const seteDiasAtras = new Date();
+    seteDiasAtras.setDate(seteDiasAtras.getDate() - 7);
+
+    // Buscar check-ins dos últimos 7 dias
+    const { data: checkins } = await supabase
+      .from('vitalis_registos')
+      .select('user_id, aderencia_1a10, data')
+      .gte('created_at', seteDiasAtras.toISOString());
+
+    if (!checkins || checkins.length === 0) return;
+
+    // Agrupar por user_id
+    const porUser = {};
+    for (const c of checkins) {
+      if (!porUser[c.user_id]) porUser[c.user_id] = [];
+      porUser[c.user_id].push(c);
+    }
+
+    const superEngajadas = [];
+
+    for (const [userId, registos] of Object.entries(porUser)) {
+      // Precisa de pelo menos 6 check-ins em 7 dias (86%+)
+      if (registos.length < 6) continue;
+
+      // Média de aderência >= 8/10 (80%+)
+      const mediaAderencia = registos.reduce((sum, r) => sum + (r.aderencia_1a10 || 0), 0) / registos.length;
+      if (mediaAderencia < 8) continue;
+
+      // Buscar nome
+      const { data: user } = await supabase
+        .from('users')
+        .select('nome')
+        .eq('id', userId)
+        .maybeSingle();
+
+      superEngajadas.push({
+        nome: user?.nome?.split(' ')[0] || '?',
+        checkins: registos.length,
+        media: mediaAderencia.toFixed(1),
+      });
+    }
+
+    if (superEngajadas.length > 0) {
+      const linhas = superEngajadas.map(s =>
+        `💪 *${s.nome}* — ${s.checkins}/7 check-ins, aderência ${s.media}/10`
+      ).join('\n');
+
+      await enviarWhatsAppCoach(`🌟 *CLIENTES SUPER-ENGAJADAS ESTA SEMANA*\n\n${linhas}\n\nConsidera celebrar ou pedir testemunho! 🎉`);
+      resultados.super_engajadas = superEngajadas.length;
+    }
+  } catch (err) {
+    resultados.erros.push('Erro super-engajadas: ' + err.message);
   }
 }
 

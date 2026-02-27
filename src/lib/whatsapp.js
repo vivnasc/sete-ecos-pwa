@@ -83,7 +83,7 @@ export const WhatsAppAlertas = {
 
 Boas-vindas à comunidade! 🌱`;
 
-    return enviarWhatsApp(msg);
+    return enviarWhatsAppCoach(msg);
   },
 
   /**
@@ -98,7 +98,7 @@ Boas-vindas à comunidade! 🌱`;
 
 A cliente pode precisar de apoio. 💚`;
 
-    return enviarWhatsApp(msg);
+    return enviarWhatsAppCoach(msg);
   },
 
   /**
@@ -112,7 +112,7 @@ A cliente pode precisar de apoio. 💚`;
 
 Considera enviar uma mensagem de apoio. 🌱`;
 
-    return enviarWhatsApp(msg);
+    return enviarWhatsAppCoach(msg);
   },
 
   /**
@@ -128,7 +128,7 @@ Considera enviar uma mensagem de apoio. 🌱`;
 
 ✅ Email enviado com sucesso!`;
 
-    return enviarWhatsApp(msg);
+    return enviarWhatsAppCoach(msg);
   },
 
   /**
@@ -144,7 +144,38 @@ Considera enviar uma mensagem de apoio. 🌱`;
 
 Bom dia! 🌱`;
 
-    return enviarWhatsApp(msg);
+    return enviarWhatsAppCoach(msg);
+  },
+
+  /**
+   * Novo diagnóstico Lumina completo
+   */
+  async diagnosticoLumina(nome, padrao) {
+    const msg = `🔮 *DIAGNÓSTICO LUMINA COMPLETO*
+
+👤 ${nome}
+📊 Padrão: ${padrao || 'Geral'}
+🕐 ${new Date().toLocaleTimeString('pt-PT')}
+
+Novo potencial lead! 🌱`;
+
+    return enviarWhatsAppCoach(msg);
+  },
+
+  /**
+   * Novo lead na waitlist
+   */
+  async novoLeadWaitlist(nome, email, produto) {
+    const msg = `📧 *NOVO LEAD NA WAITLIST*
+
+👤 ${nome || 'Anónimo'}
+📧 ${email}
+📦 Produto: ${produto}
+🕐 ${new Date().toLocaleTimeString('pt-PT')}
+
+Nova pessoa interessada! 🌱`;
+
+    return enviarWhatsAppCoach(msg);
   }
 };
 

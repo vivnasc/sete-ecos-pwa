@@ -50,6 +50,22 @@ async function pushCoachNotification({ title, body, url, tag }) {
   } catch (e) { console.error('[Push] Erro:', e.message); }
 }
 
+// ─── Fire-and-forget Telegram notification (no res needed) ───
+async function enviarTelegramCoach(mensagem) {
+  const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+  const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+  if (!BOT_TOKEN || !CHAT_ID) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: CHAT_ID, text: mensagem, parse_mode: 'Markdown' }),
+    });
+  } catch (err) {
+    console.error('[Telegram coach.js] Erro:', err.message);
+  }
+}
+
 // Env override for coach emails
 if (process.env.VITE_COACH_EMAILS) {
   const envEmails = process.env.VITE_COACH_EMAILS.split(',').map(e => e.trim().toLowerCase());
@@ -204,14 +220,16 @@ async function gerarPlano(userId, res) {
   // Instead, log the error for debugging.
   const saveError = async (errorMsg) => {
     console.error(`[Coach API] Erro ao gerar plano para ${userId}: ${errorMsg}`);
-    // Push notification para coach
+    // Push + Telegram notification para coach
     const { data: userData } = await supabase.from('users').select('nome').eq('id', userId).maybeSingle();
+    const nomeCliente = userData?.nome || 'Cliente';
     pushCoachNotification({
       title: '❌ Erro ao gerar plano',
-      body: `${userData?.nome || 'Cliente'}: ${errorMsg.slice(0, 80)}`,
+      body: `${nomeCliente}: ${errorMsg.slice(0, 80)}`,
       url: `/coach/cliente/${userId}`,
       tag: 'plano-erro',
     }).catch(() => {});
+    enviarTelegramCoach(`❌ *ERRO AO GERAR PLANO*\n\n👤 ${nomeCliente}\n📋 ${errorMsg.slice(0, 200)}`).catch(() => {});
   };
 
   // 1. Fetch intake
@@ -1043,6 +1061,20 @@ async function coachAlertasRT(desde, res) {
   }
 
   alertas.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+  // Enviar alertas críticos via Telegram (fire-and-forget, não bloqueia resposta)
+  const alertasCriticos = alertas.filter(a => a.prioridade === 'critica');
+  if (alertasCriticos.length > 0) {
+    // Deduplicação: só alertar se criados nos últimos 60s (evita re-alertar em polls seguintes)
+    const agora = Date.now();
+    const novos = alertasCriticos.filter(a => (agora - new Date(a.created_at).getTime()) < 60000);
+    for (const alerta of novos) {
+      const emoji = alerta.emoji || '🔔';
+      const msg = `${emoji} *${alerta.titulo}*${alerta.detalhe ? `\n${alerta.detalhe}` : ''}`;
+      enviarTelegramCoach(msg).catch(() => {});
+    }
+  }
+
   return res.status(200).json({ alertas });
 }
 

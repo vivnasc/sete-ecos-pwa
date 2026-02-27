@@ -27,6 +27,7 @@ import {
   mostrarCicloMenstrual
 } from '../lib/genero';
 import { setSexo } from '../utils/genero';
+import { WhatsAppAlertas } from '../lib/whatsapp';
 import { useAuth } from '../contexts/AuthContext';
 import { useI18n } from '../contexts/I18nContext';
 import UpsellCard from '../components/UpsellCard';
@@ -459,6 +460,12 @@ export default function Lumina() {
           console.error('Erro ao guardar leitura:', leituraError);
         }
       }
+
+      // Notificar coach sobre novo diagnóstico (fire-and-forget)
+      WhatsAppAlertas.diagnosticoLumina(
+        profile?.nome || 'Utilizador',
+        padrao
+      ).catch(() => {});
 
       // Recarregar histórico
       await loadHistorico();
@@ -1378,6 +1385,10 @@ export default function Lumina() {
                         whatsapp: null,
                         produto: 'lumina-checkin'
                       });
+                      // Notificar coach (fire-and-forget)
+                      WhatsAppAlertas.novoLeadWaitlist(
+                        profile?.nome || '', captureEmail.trim(), 'lumina-checkin'
+                      ).catch(() => {});
                     } catch (err) {
                       // Duplicado ou erro, ignorar silenciosamente
                     }
