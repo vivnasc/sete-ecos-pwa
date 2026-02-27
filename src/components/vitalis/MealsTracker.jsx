@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
+import { somarMacros, calcularMacrosPorcaoMao, CONVERSOES_MAO } from '../../lib/vitalis/porcoesConverter.js';
+import AddFoodModal from './AddFoodModal.jsx';
 
 export default function MealsTracker() {
   const navigate = useNavigate();
@@ -10,9 +12,11 @@ export default function MealsTracker() {
   const [userId, setUserId] = useState(null);
   const [refeicoes, setRefeicoes] = useState([]);
   const [registosHoje, setRegistosHoje] = useState({});
+  const [itemsPorRefeicao, setItemsPorRefeicao] = useState({}); // { refeicaoNome: [items] }
   const [dataSeleccionada, setDataSeleccionada] = useState(new Date().toISOString().split('T')[0]);
   const [expandido, setExpandido] = useState(null);
   const [plano, setPlano] = useState(null);
+  const [addFoodModal, setAddFoodModal] = useState(null); // nome da refeição ou null
 
   useEffect(() => {
     loadData();
@@ -21,71 +25,54 @@ export default function MealsTracker() {
   const loadData = async () => {
     setLoading(true);
     try {
-      // 1. Buscar user autenticado
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate('/auth');
-        return;
-      }
+      if (!user) { navigate('/auth'); return; }
 
-      // 2. Converter auth_id → users.id
       const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_id', user.id)
-        .single();
-
-      if (userError || !userData) {
-        throw new Error('Utilizador não encontrado');
-      }
-
+        .from('users').select('id').eq('auth_id', user.id).single();
+      if (userError || !userData) throw new Error('Utilizador não encontrado');
       setUserId(userData.id);
 
-      // 3. Buscar configuração de refeições
-      const { data: refeicoesCofig, error: refError } = await supabase
-        .from('vitalis_refeicoes_config')
-        .select('*')
-        .eq('user_id', userData.id)
-        .eq('activo', true)
-        .order('ordem', { ascending: true });
+      // Buscar configs, registos e plano em paralelo
+      const [configRes, registosRes, clientRes] = await Promise.all([
+        supabase.from('vitalis_refeicoes_config').select('*')
+          .eq('user_id', userData.id).eq('activo', true).order('ordem', { ascending: true }),
+        supabase.from('vitalis_meals_log').select('*')
+          .eq('user_id', userData.id).eq('data', dataSeleccionada),
+        supabase.from('vitalis_clients').select('id').eq('user_id', userData.id).single()
+      ]);
 
-      if (refError) throw refError;
+      if (configRes.error) throw configRes.error;
+      setRefeicoes(configRes.data || []);
 
-      setRefeicoes(refeicoesCofig || []);
-
-      // 4. Buscar registos do dia seleccionado
-      const { data: registos, error: regError } = await supabase
-        .from('vitalis_meals_log')
-        .select('*')
-        .eq('user_id', userData.id)
-        .eq('data', dataSeleccionada);
-
-      if (regError) throw regError;
-
-      // Converter para objecto por refeicao
+      // Registos: converter para map
       const registosMap = {};
-      (registos || []).forEach(r => {
-        registosMap[r.refeicao] = r;
-      });
+      (registosRes.data || []).forEach(r => { registosMap[r.refeicao] = r; });
       setRegistosHoje(registosMap);
 
-      // 5. Buscar plano (para mostrar porções alvo)
-      const { data: clientData } = await supabase
-        .from('vitalis_clients')
-        .select('id')
-        .eq('user_id', userData.id)
-        .single();
+      // Items por refeição: ler do JSONB notas (backward compatible)
+      const itemsMap = {};
+      (registosRes.data || []).forEach(r => {
+        try {
+          const parsed = r.notas ? JSON.parse(r.notas) : null;
+          if (parsed && Array.isArray(parsed.items)) {
+            itemsMap[r.refeicao] = parsed.items;
+          }
+        } catch {
+          // Notas é texto livre, não JSON — manter vazio
+        }
+      });
+      setItemsPorRefeicao(itemsMap);
 
-      if (clientData) {
+      // Plano
+      if (clientRes.data) {
         let planoData = null;
         const { data: planoView } = await supabase
           .from('vitalis_plano')
           .select('porcoes_proteina, porcoes_hidratos, porcoes_gordura, porcoes_legumes')
-          .eq('client_id', clientData.id)
-          .maybeSingle();
+          .eq('client_id', clientRes.data.id).maybeSingle();
         planoData = planoView;
 
-        // Fallback: vitalis_meal_plans
         if (!planoData) {
           const { data: mealPlan } = await supabase
             .from('vitalis_meal_plans').select('proteina_g, carboidratos_g, gordura_g')
@@ -103,7 +90,6 @@ export default function MealsTracker() {
         }
         setPlano(planoData);
       }
-
     } catch (err) {
       console.error('Erro ao carregar:', err);
     } finally {
@@ -111,123 +97,147 @@ export default function MealsTracker() {
     }
   };
 
-  const registarRefeicao = async (refeicaoNome, status, detalhes = {}) => {
+  // Calcular macros alvo diários a partir do plano (porções-mão)
+  const macrosAlvoDiario = useMemo(() => {
+    if (!plano) return null;
+    const macrosP = calcularMacrosPorcaoMao(plano.porcoes_proteina || 0, 'palma');
+    const macrosH = calcularMacrosPorcaoMao(plano.porcoes_hidratos || 0, 'concha');
+    const macrosG = calcularMacrosPorcaoMao(plano.porcoes_gordura || 0, 'polegar');
+    const macrosL = calcularMacrosPorcaoMao(plano.porcoes_legumes || 0, 'punho');
+    return somarMacros([macrosP, macrosH, macrosG, macrosL]);
+  }, [plano]);
+
+  // Somar macros de todos os items registados hoje
+  const macrosHoje = useMemo(() => {
+    const allItems = Object.values(itemsPorRefeicao).flat();
+    if (allItems.length === 0) return { calorias: 0, proteina: 0, carboidratos: 0, gordura: 0 };
+    return somarMacros(allItems.map(item => item.macros || { calorias: 0, proteina: 0, carboidratos: 0, gordura: 0 }));
+  }, [itemsPorRefeicao]);
+
+  // Adicionar item a uma refeição
+  const adicionarItem = async (refeicaoNome, itemData) => {
+    const currentItems = itemsPorRefeicao[refeicaoNome] || [];
+    const novoItem = {
+      id: Date.now().toString(),
+      nome: itemData.nome_display,
+      icon: itemData.alimento?.icon || '🍽️',
+      quantidade_g: itemData.quantidade_g,
+      quantidade_porcao: itemData.quantidade_porcao,
+      tipo_porcao: itemData.tipo_porcao,
+      macros: itemData.macros,
+      alimento_id: itemData.alimento?.id
+    };
+    const novosItems = [...currentItems, novoItem];
+    const novoMap = { ...itemsPorRefeicao, [refeicaoNome]: novosItems };
+    setItemsPorRefeicao(novoMap);
+
+    // Calcular totais para salvar no registo
+    await salvarRegisto(refeicaoNome, novosItems);
+  };
+
+  // Remover item de uma refeição
+  const removerItem = async (refeicaoNome, itemId) => {
+    const currentItems = itemsPorRefeicao[refeicaoNome] || [];
+    const novosItems = currentItems.filter(i => i.id !== itemId);
+    const novoMap = { ...itemsPorRefeicao, [refeicaoNome]: novosItems };
+    setItemsPorRefeicao(novoMap);
+
+    await salvarRegisto(refeicaoNome, novosItems);
+  };
+
+  // Salvar registo no Supabase
+  const salvarRegisto = async (refeicaoNome, items) => {
     setSaving(true);
     try {
-      const registoExistente = registosHoje[refeicaoNome];
+      const macros = somarMacros(items.map(i => i.macros || { calorias: 0, proteina: 0, carboidratos: 0, gordura: 0 }));
+      const nRef = refeicoes.length || 3;
+      const alvoPorRefeicao = plano ? {
+        proteina: (plano.porcoes_proteina || 0) / nRef,
+        hidratos: (plano.porcoes_hidratos || 0) / nRef,
+        gordura: (plano.porcoes_gordura || 0) / nRef,
+        legumes: (plano.porcoes_legumes || 0) / nRef,
+      } : null;
+
+      // Calcular porções-mão a partir dos macros reais
+      const porcoes_proteina = macros.proteina ? Math.round(macros.proteina / 25 * 10) / 10 : 0;
+      const porcoes_hidratos = macros.carboidratos ? Math.round(macros.carboidratos / 30 * 10) / 10 : 0;
+      const porcoes_gordura = macros.gordura ? Math.round(macros.gordura / 10 * 10) / 10 : 0;
+      // Legumes: contar items com tipo_porcao punho
+      const porcoes_legumes = items
+        .filter(i => i.tipo_porcao === 'punho')
+        .reduce((sum, i) => sum + (i.quantidade_porcao || 1), 0);
+
+      // Determinar status (seguiu_plano)
+      let seguiu_plano = 'sim';
+      if (items.length === 0) {
+        seguiu_plano = null;
+      } else if (alvoPorRefeicao) {
+        const excessoP = porcoes_proteina > alvoPorRefeicao.proteina * 1.3;
+        const excessoH = porcoes_hidratos > alvoPorRefeicao.hidratos * 1.3;
+        const excessoG = porcoes_gordura > alvoPorRefeicao.gordura * 1.3;
+        if (excessoP || excessoH || excessoG) seguiu_plano = 'parcial';
+      }
 
       const dados = {
         user_id: userId,
         data: dataSeleccionada,
         refeicao: refeicaoNome,
-        seguiu_plano: status,
-        hora: detalhes.hora || new Date().toLocaleTimeString('pt', { hour: '2-digit', minute: '2-digit' }),
-        porcoes_proteina: detalhes.porcoes_proteina || null,
-        porcoes_hidratos: detalhes.porcoes_hidratos || null,
-        porcoes_gordura: detalhes.porcoes_gordura || null,
-        porcoes_legumes: detalhes.porcoes_legumes || null,
-        notas: detalhes.notas || null
+        seguiu_plano: items.length > 0 ? seguiu_plano : null,
+        hora: new Date().toLocaleTimeString('pt', { hour: '2-digit', minute: '2-digit' }),
+        porcoes_proteina,
+        porcoes_hidratos,
+        porcoes_gordura,
+        porcoes_legumes,
+        notas: JSON.stringify({ items, macros_total: macros })
       };
 
+      const registoExistente = registosHoje[refeicaoNome];
       if (registoExistente) {
-        // Actualizar
-        const { error } = await supabase
-          .from('vitalis_meals_log')
-          .update(dados)
-          .eq('id', registoExistente.id);
-
+        const { error } = await supabase.from('vitalis_meals_log').update(dados).eq('id', registoExistente.id);
         if (error) throw error;
-
-        setRegistosHoje({
-          ...registosHoje,
-          [refeicaoNome]: { ...registoExistente, ...dados }
-        });
+        setRegistosHoje(prev => ({ ...prev, [refeicaoNome]: { ...registoExistente, ...dados } }));
       } else {
-        // Inserir
-        const { data, error } = await supabase
-          .from('vitalis_meals_log')
-          .insert([dados])
-          .select()
-          .single();
-
+        const { data, error } = await supabase.from('vitalis_meals_log').insert([dados]).select().single();
         if (error) throw error;
-
-        setRegistosHoje({
-          ...registosHoje,
-          [refeicaoNome]: data
-        });
+        setRegistosHoje(prev => ({ ...prev, [refeicaoNome]: data }));
       }
-
-      setExpandido(null);
-
     } catch (err) {
-      console.error('Erro ao registar:', err);
-      alert('Erro ao registar: ' + err.message);
+      console.error('Erro ao guardar:', err);
     } finally {
       setSaving(false);
     }
   };
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'sim': return '✅';
-      case 'parcial': return '⚠️';
-      case 'nao': return '❌';
-      default: return '○';
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'sim': return 'bg-green-100 border-green-400';
-      case 'parcial': return 'bg-yellow-100 border-yellow-400';
-      case 'nao': return 'bg-red-100 border-red-400';
-      default: return 'bg-gray-50 border-gray-200';
-    }
-  };
-
-  // Calcular resumo do dia
-  const calcularResumo = () => {
+  // Calcular resumo
+  const resumo = useMemo(() => {
     const total = refeicoes.length;
     const registadas = Object.keys(registosHoje).length;
-    const completas = Object.values(registosHoje).filter(r => r.seguiu_plano === 'sim').length;
-    const parciais = Object.values(registosHoje).filter(r => r.seguiu_plano === 'parcial').length;
-    
-    return { total, registadas, completas, parciais };
-  };
+    const comItems = Object.entries(itemsPorRefeicao).filter(([, items]) => items.length > 0).length;
+    return { total, registadas, comItems };
+  }, [refeicoes, registosHoje, itemsPorRefeicao]);
 
-  const resumo = calcularResumo();
+  // Progresso calorias
+  const progressoCalorias = macrosAlvoDiario && macrosAlvoDiario.calorias > 0
+    ? Math.min(100, Math.round((macrosHoje.calorias / macrosAlvoDiario.calorias) * 100))
+    : 0;
 
+  // Loading
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
         <div className="text-center">
-          <div className="text-6xl mb-4">🍽️</div>
-          <p className="text-gray-600">A carregar...</p>
+          <div className="text-6xl mb-4 animate-pulse">🍽️</div>
+          <p className="text-gray-600" role="status" aria-live="polite">A carregar...</p>
         </div>
       </div>
     );
   }
 
-  // Se não tem refeições configuradas
+  // Sem refeições configuradas
   if (refeicoes.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3]">
-        <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] shadow-lg">
-          <div className="max-w-2xl mx-auto px-4 py-6">
-            <button
-              onClick={() => navigate('/vitalis/dashboard')}
-              className="text-white/80 hover:text-white mb-4 flex items-center gap-2"
-            >
-              ← Voltar
-            </button>
-            <div className="flex items-center gap-3">
-              <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-12 h-12 object-contain drop-shadow-lg" />
-              <h1 className="text-3xl font-bold text-white" style={{ fontFamily: 'Playfair Display, serif' }}>Registo de Refeições</h1>
-            </div>
-          </div>
-        </div>
-
+        <HeaderBar navigate={navigate} />
         <div className="max-w-2xl mx-auto px-4 py-12">
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg p-8 text-center border border-[#D2B48C]/30">
             <div className="text-6xl mb-4">🍽️</div>
@@ -237,9 +247,9 @@ export default function MealsTracker() {
             </p>
             <button
               onClick={() => navigate('/vitalis/refeicoes-config')}
-              className="px-8 py-4 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white rounded-xl font-semibold text-lg hover:shadow-lg transition-all"
+              className="px-8 py-4 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white rounded-xl font-semibold text-lg hover:shadow-lg transition-all active:scale-95"
             >
-              Configurar Refeições →
+              Configurar Refeições
             </button>
           </div>
         </div>
@@ -247,506 +257,350 @@ export default function MealsTracker() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3] pb-20">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] shadow-lg">
-        <div className="max-w-2xl mx-auto px-4 py-6">
-          <button
-            onClick={() => navigate('/vitalis/dashboard')}
-            className="text-white/80 hover:text-white mb-4 flex items-center gap-2"
-          >
-            ← Voltar
-          </button>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img
-                src="/logos/VITALIS_LOGO_V3.png"
-                alt="Vitalis"
-                className="w-12 h-12 object-contain drop-shadow-lg"
-              />
-              <h1 className="text-3xl font-bold text-white" style={{ fontFamily: 'Playfair Display, serif' }}>
-                Refeições
-              </h1>
-            </div>
-            <button
-              onClick={() => navigate('/vitalis/refeicoes-config')}
-              className="text-sm text-white/80 hover:text-white bg-white/20 px-3 py-2 rounded-lg"
-            >
-              ⚙️ Configurar
-            </button>
-          </div>
-        </div>
-      </div>
+  const isHoje = dataSeleccionada === new Date().toISOString().split('T')[0];
 
-      <div className="max-w-2xl mx-auto px-4 py-6">
-        {/* Selector de Data */}
-        <div className="bg-white rounded-xl shadow p-4 mb-6">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => {
-                const d = new Date(dataSeleccionada);
-                d.setDate(d.getDate() - 1);
-                setDataSeleccionada(d.toISOString().split('T')[0]);
-              }}
-              className="p-2 text-[#C1634A] hover:bg-[#C1634A]/10 rounded-lg"
-            >
-              ←
-            </button>
-            <div className="text-center">
-              <input
-                type="date"
-                value={dataSeleccionada}
-                onChange={(e) => setDataSeleccionada(e.target.value)}
-                className="text-lg font-semibold text-gray-800 border-none text-center bg-transparent cursor-pointer"
-              />
-              {dataSeleccionada === new Date().toISOString().split('T')[0] && (
-                <p className="text-sm text-[#C1634A]">Hoje</p>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3] pb-24">
+      <HeaderBar navigate={navigate} />
+
+      <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
+        {/* Date selector */}
+        <div className="bg-white rounded-xl shadow-sm p-3 flex items-center justify-between">
+          <button
+            onClick={() => {
+              const d = new Date(dataSeleccionada);
+              d.setDate(d.getDate() - 1);
+              setDataSeleccionada(d.toISOString().split('T')[0]);
+            }}
+            className="p-2 text-[#7C8B6F] hover:bg-[#7C8B6F]/10 rounded-lg active:scale-95"
+            aria-label="Dia anterior"
+          >
+            ←
+          </button>
+          <div className="text-center">
+            <input
+              type="date"
+              value={dataSeleccionada}
+              onChange={(e) => setDataSeleccionada(e.target.value)}
+              className="text-base font-semibold text-gray-800 border-none text-center bg-transparent cursor-pointer"
+            />
+            {isHoje && <p className="text-xs text-[#7C8B6F] font-medium">Hoje</p>}
+          </div>
+          <button
+            onClick={() => {
+              const d = new Date(dataSeleccionada);
+              d.setDate(d.getDate() + 1);
+              if (d <= new Date()) setDataSeleccionada(d.toISOString().split('T')[0]);
+            }}
+            disabled={isHoje}
+            className="p-2 text-[#7C8B6F] hover:bg-[#7C8B6F]/10 rounded-lg disabled:opacity-30 active:scale-95"
+            aria-label="Dia seguinte"
+          >
+            →
+          </button>
+        </div>
+
+        {/* Macro summary */}
+        <div className="bg-white rounded-2xl shadow-sm p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-gray-700">Resumo do Dia</h3>
+            <span className="text-xs text-gray-400">{resumo.comItems}/{resumo.total} refeições</span>
+          </div>
+
+          {/* Calorie bar */}
+          <div className="mb-3">
+            <div className="flex items-end justify-between mb-1">
+              <span className="text-2xl font-bold text-gray-800">{macrosHoje.calorias}</span>
+              {macrosAlvoDiario && (
+                <span className="text-sm text-gray-400">/ {macrosAlvoDiario.calorias} kcal</span>
               )}
             </div>
-            <button
-              onClick={() => {
-                const d = new Date(dataSeleccionada);
-                d.setDate(d.getDate() + 1);
-                if (d <= new Date()) {
-                  setDataSeleccionada(d.toISOString().split('T')[0]);
-                }
-              }}
-              disabled={dataSeleccionada === new Date().toISOString().split('T')[0]}
-              className="p-2 text-[#C1634A] hover:bg-[#C1634A]/10 rounded-lg disabled:opacity-30"
-            >
-              →
-            </button>
+            {macrosAlvoDiario && (
+              <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${
+                    progressoCalorias > 100 ? 'bg-orange-400' : 'bg-[#7C8B6F]'
+                  }`}
+                  style={{ width: `${Math.min(progressoCalorias, 100)}%` }}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Macro breakdown */}
+          <div className="grid grid-cols-4 gap-2">
+            <MacroCard
+              label="Proteína"
+              valor={macrosHoje.proteina}
+              alvo={macrosAlvoDiario?.proteina}
+              cor="rose"
+              unidade="g"
+            />
+            <MacroCard
+              label="Hidratos"
+              valor={macrosHoje.carboidratos}
+              alvo={macrosAlvoDiario?.carboidratos}
+              cor="amber"
+              unidade="g"
+            />
+            <MacroCard
+              label="Gordura"
+              valor={macrosHoje.gordura}
+              alvo={macrosAlvoDiario?.gordura}
+              cor="purple"
+              unidade="g"
+            />
+            <MacroCard
+              label="Legumes"
+              valor={Object.values(itemsPorRefeicao).flat().filter(i => i.tipo_porcao === 'punho').reduce((s, i) => s + (i.quantidade_porcao || 0), 0)}
+              alvo={plano?.porcoes_legumes}
+              cor="green"
+              unidade="p"
+            />
           </div>
         </div>
 
-        {/* Resumo do Dia */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="bg-white rounded-xl shadow p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">{resumo.completas}</div>
-            <div className="text-xs text-gray-500">Completas</div>
-          </div>
-          <div className="bg-white rounded-xl shadow p-4 text-center">
-            <div className="text-2xl font-bold text-yellow-600">{resumo.parciais}</div>
-            <div className="text-xs text-gray-500">Parciais</div>
-          </div>
-          <div className="bg-white rounded-xl shadow p-4 text-center">
-            <div className="text-2xl font-bold text-gray-600">{resumo.registadas}/{resumo.total}</div>
-            <div className="text-xs text-gray-500">Registadas</div>
-          </div>
-        </div>
-
-        {/* Lista de Refeições */}
+        {/* Meals list */}
         <div className="space-y-3">
           {refeicoes.map((ref) => {
+            const items = itemsPorRefeicao[ref.nome] || [];
             const registo = registosHoje[ref.nome];
             const isExpanded = expandido === ref.nome;
+            const mealMacros = items.length > 0
+              ? somarMacros(items.map(i => i.macros || { calorias: 0, proteina: 0, carboidratos: 0, gordura: 0 }))
+              : null;
 
             return (
-              <div 
+              <div
                 key={ref.id}
-                className={`bg-white rounded-xl shadow overflow-hidden border-2 transition-all ${getStatusColor(registo?.seguiu_plano)}`}
+                className={`bg-white rounded-2xl shadow-sm overflow-hidden transition-all ${
+                  items.length > 0 ? 'border-2 border-green-200' : 'border border-gray-100'
+                }`}
               >
-                {/* Linha Principal */}
-                <div className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{getStatusIcon(registo?.seguiu_plano)}</span>
-                      <div>
-                        <h3 className="font-semibold text-gray-800">{ref.nome}</h3>
-                        {ref.hora_habitual && (
-                          <p className="text-sm text-gray-500">{ref.hora_habitual}</p>
-                        )}
-                      </div>
+                {/* Meal header */}
+                <button
+                  onClick={() => setExpandido(isExpanded ? null : ref.nome)}
+                  className="w-full p-4 flex items-center justify-between text-left"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${
+                      items.length > 0 ? 'bg-green-100' : 'bg-gray-100'
+                    }`}>
+                      {items.length > 0 ? '✅' : getMealEmoji(ref.nome)}
                     </div>
-
-                    {/* Botões Rápidos */}
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => registarRefeicao(ref.nome, 'sim')}
-                        disabled={saving}
-                        className={`p-2 rounded-lg transition-all ${
-                          registo?.seguiu_plano === 'sim' 
-                            ? 'bg-green-500 text-white' 
-                            : 'bg-green-100 text-green-700 hover:bg-green-200'
-                        }`}
-                      >
-                        ✓
-                      </button>
-                      <button
-                        onClick={() => registarRefeicao(ref.nome, 'parcial')}
-                        disabled={saving}
-                        className={`p-2 rounded-lg transition-all ${
-                          registo?.seguiu_plano === 'parcial' 
-                            ? 'bg-yellow-500 text-white' 
-                            : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
-                        }`}
-                      >
-                        ~
-                      </button>
-                      <button
-                        onClick={() => registarRefeicao(ref.nome, 'nao')}
-                        disabled={saving}
-                        className={`p-2 rounded-lg transition-all ${
-                          registo?.seguiu_plano === 'nao' 
-                            ? 'bg-red-500 text-white' 
-                            : 'bg-red-100 text-red-700 hover:bg-red-200'
-                        }`}
-                      >
-                        ✕
-                      </button>
-                      <button
-                        onClick={() => setExpandido(isExpanded ? null : ref.nome)}
-                        className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg ml-2"
-                      >
-                        {isExpanded ? '▲' : '▼'}
-                      </button>
+                    <div>
+                      <h4 className="font-semibold text-gray-800 text-sm">{ref.nome}</h4>
+                      <p className="text-xs text-gray-400">
+                        {ref.hora_habitual || ''}
+                        {items.length > 0 && ` · ${items.length} ${items.length === 1 ? 'item' : 'items'}`}
+                      </p>
                     </div>
                   </div>
-                </div>
+                  <div className="flex items-center gap-3">
+                    {mealMacros && (
+                      <span className="text-sm font-bold text-gray-600">{mealMacros.calorias} kcal</span>
+                    )}
+                    <span className={`text-gray-400 text-xs transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
+                      ▼
+                    </span>
+                  </div>
+                </button>
 
-                {/* Detalhes Expandidos */}
+                {/* Expanded content */}
                 {isExpanded && (
-                  <DetalheRefeicao
-                    refeicao={ref.nome}
-                    registo={registo}
-                    plano={plano}
-                    numRefeicoes={refeicoes.length}
-                    onSave={(detalhes) => registarRefeicao(ref.nome, detalhes.seguiu_plano || registo?.seguiu_plano || 'sim', detalhes)}
-                    saving={saving}
-                  />
+                  <div className="px-4 pb-4 border-t border-gray-50">
+                    {/* Items list */}
+                    {items.length > 0 && (
+                      <div className="py-3 space-y-2">
+                        {items.map((item) => (
+                          <div
+                            key={item.id}
+                            className="flex items-center gap-2 group"
+                          >
+                            <span className="text-base flex-shrink-0">{item.icon || '🍽️'}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm text-gray-700 truncate">{item.nome}</p>
+                              <p className="text-[10px] text-gray-400">
+                                {item.quantidade_g}g · {item.macros?.calorias || 0} kcal
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => removerItem(ref.nome, item.id)}
+                              className="p-1 text-gray-300 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                              aria-label={`Remover ${item.nome}`}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ))}
+
+                        {/* Meal totals */}
+                        {mealMacros && (
+                          <div className="mt-2 pt-2 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                            <span>Total:</span>
+                            <span>
+                              <strong className="text-gray-700">{mealMacros.calorias}</strong> kcal
+                              {' · '}
+                              <span className="text-rose-500">{mealMacros.proteina}P</span>
+                              {' '}
+                              <span className="text-amber-500">{mealMacros.carboidratos}C</span>
+                              {' '}
+                              <span className="text-purple-500">{mealMacros.gordura}G</span>
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Add food button */}
+                    <button
+                      onClick={() => setAddFoodModal(ref.nome)}
+                      className="w-full py-3 mt-1 border-2 border-dashed border-gray-200 hover:border-[#7C8B6F] rounded-xl text-sm text-gray-500 hover:text-[#7C8B6F] font-medium transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                    >
+                      <span className="text-lg">+</span>
+                      Adicionar alimento
+                    </button>
+
+                    {/* Quick note */}
+                    {registo?.notas && (() => {
+                      try {
+                        JSON.parse(registo.notas);
+                        return null; // É JSON de items, não mostrar
+                      } catch {
+                        return (
+                          <p className="mt-2 text-xs text-gray-400 italic">
+                            {registo.notas}
+                          </p>
+                        );
+                      }
+                    })()}
+                  </div>
+                )}
+
+                {/* Quick add button (when collapsed and no items) */}
+                {!isExpanded && items.length === 0 && (
+                  <div className="px-4 pb-3">
+                    <button
+                      onClick={() => setAddFoodModal(ref.nome)}
+                      className="w-full py-2.5 bg-gray-50 hover:bg-[#7C8B6F]/10 rounded-xl text-xs text-gray-500 hover:text-[#7C8B6F] font-medium transition-all active:scale-[0.98]"
+                    >
+                      + Registar
+                    </button>
+                  </div>
                 )}
               </div>
             );
           })}
         </div>
 
-        {/* Método da Mão - mini referência */}
-        <div className="mt-6 bg-gradient-to-r from-[#7C8B6F] to-[#5A6B4D] rounded-2xl p-4 text-white">
+        {/* Hand method reference */}
+        <div className="bg-gradient-to-r from-[#7C8B6F] to-[#5A6B4D] rounded-2xl p-4 text-white">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xl">🤚</span>
-            <span className="font-bold text-sm">A tua mão é a medida</span>
+            <span className="font-bold text-sm">Guia rápido — Método da Mão</span>
           </div>
           <div className="grid grid-cols-4 gap-2 text-center text-[10px]">
-            <div><span className="text-lg">🫲</span><br/><span className="font-semibold">Palma</span><br/>Proteína</div>
-            <div><span className="text-lg">✊</span><br/><span className="font-semibold">Punho</span><br/>Legumes</div>
-            <div><span className="text-lg">🤲</span><br/><span className="font-semibold">Concha</span><br/>Hidratos</div>
-            <div><span className="text-lg">👍</span><br/><span className="font-semibold">Polegar</span><br/>Gordura</div>
+            {Object.entries(CONVERSOES_MAO).map(([key, conv]) => (
+              <div key={key}>
+                <span className="text-lg">{conv.emoji}</span>
+                <br />
+                <span className="font-semibold">{conv.desc}</span>
+                <br />
+                <span className="opacity-80">≈ {conv.g}g</span>
+              </div>
+            ))}
           </div>
         </div>
+      </div>
 
-        {/* Dica */}
-        <div className="mt-3 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
-          <div className="flex gap-3">
-            <span className="text-2xl">💡</span>
-            <div>
-              <p className="text-blue-800 text-sm">
-                Clica ✓ ~ ✕ para registo rápido, ou expande (▼) para selecionar alimentos e ver as porções.
-              </p>
-            </div>
+      {/* Add food modal */}
+      {addFoodModal && (
+        <AddFoodModal
+          refeicao={addFoodModal}
+          onAdd={(itemData) => {
+            adicionarItem(addFoodModal, itemData);
+            setAddFoodModal(null);
+          }}
+          onClose={() => setAddFoodModal(null)}
+        />
+      )}
+
+      {/* Saving indicator */}
+      {saving && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 bg-black/80 text-white text-sm px-4 py-2 rounded-full">
+          A guardar...
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Header bar component
+function HeaderBar({ navigate }) {
+  return (
+    <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] shadow-lg">
+      <div className="max-w-2xl mx-auto px-4 py-4">
+        <button
+          onClick={() => navigate('/vitalis/dashboard')}
+          className="text-white/80 hover:text-white mb-3 flex items-center gap-1 text-sm"
+        >
+          ← Voltar
+        </button>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-10 h-10 object-contain drop-shadow-lg" />
+            <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'Playfair Display, serif' }}>
+              Refeições
+            </h1>
           </div>
+          <button
+            onClick={() => navigate('/vitalis/refeicoes-config')}
+            className="text-xs text-white/80 hover:text-white bg-white/20 px-3 py-2 rounded-lg active:scale-95"
+          >
+            Configurar
+          </button>
         </div>
       </div>
     </div>
   );
 }
 
-// Alimentos comuns com equivalências em porções-mão
-// dica = quantidade prática para quem não sabe medir "a olho"
-const ALIMENTOS_COMUNS = {
-  proteina: [
-    { nome: 'Frango (1 palma)', porcao: 1, icon: '🍗', dica: '~120g peito grelhado' },
-    { nome: 'Peixe (1 palma)', porcao: 1, icon: '🐟', dica: '~120g filete' },
-    { nome: 'Bife/Carne (1 palma)', porcao: 1, icon: '🥩', dica: '~120g, espessura do dedo mínimo' },
-    { nome: 'Atum (1 lata)', porcao: 1, icon: '🐠', dica: '~80-100g escorrido' },
-    { nome: 'Ovos (2-3)', porcao: 1, icon: '🥚', dica: '2 inteiros ou 3 claras + 1 gema' },
-    { nome: 'Iogurte grego (170g)', porcao: 0.5, icon: '🥛', dica: '1 copo individual' },
-    { nome: 'Queijo (2 fatias)', porcao: 0.5, icon: '🧀', dica: '~40g, tamanho do polegar' },
-    { nome: 'Whey (1 scoop)', porcao: 1, icon: '🥤', dica: '~30g pó com água/leite' },
-    { nome: 'Camarão/Marisco (1 palma)', porcao: 1, icon: '🦐', dica: '~8-10 camarões médios descascados' },
-    { nome: 'Feijão nhemba (1 concha)', porcao: 1, icon: '🫘', dica: '~150g cozido, rica em proteína vegetal' },
-    { nome: 'Tofu (1 palma)', porcao: 1, icon: '🫘', dica: '~120g, fatia de ~2cm' },
-  ],
-  hidratos: [
-    { nome: 'Xima (1 mão fechada)', porcao: 1, icon: '🍛', dica: '~150g, tamanho do punho' },
-    { nome: 'Arroz (1 mão concha)', porcao: 1, icon: '🍚', dica: '~4 col. sopa cozido' },
-    { nome: 'Massa (1 mão concha)', porcao: 1, icon: '🍝', dica: '~4 col. sopa cozida' },
-    { nome: 'Batata (1 punho)', porcao: 1, icon: '🥔', dica: '1 batata média cozida' },
-    { nome: 'Batata doce (1 punho)', porcao: 1, icon: '🍠', dica: '1 batata doce média' },
-    { nome: 'Mandioca (1 punho)', porcao: 1, icon: '🫚', dica: '~150g cozida, 2-3 pedaços' },
-    { nome: 'Pão (1 fatia)', porcao: 1, icon: '🍞', dica: '1 fatia normal ou ½ pão' },
-    { nome: 'Aveia (3 col. sopa)', porcao: 1, icon: '🥣', dica: '~30g seco' },
-    { nome: 'Fruta (1 peça média)', porcao: 1, icon: '🍎', dica: '1 maçã, banana, manga ou papaia' },
-    { nome: 'Mapira/Mexoeira (1 mão concha)', porcao: 1, icon: '🌾', dica: '~150g, cereal tradicional cozido' },
-  ],
-  gordura: [
-    { nome: 'Azeite (1 col. sopa)', porcao: 1, icon: '🫒', dica: '~15ml, ponta do polegar' },
-    { nome: '¼ abacate', porcao: 1, icon: '🥑', dica: '~50g, tamanho do polegar' },
-    { nome: 'Amendoim (1 col. sopa)', porcao: 1, icon: '🥜', dica: '~15g, ~12 amendoins' },
-    { nome: 'Leite de coco (2 col. sopa)', porcao: 1, icon: '🥥', dica: '~30ml, usado em carís e matapa' },
-    { nome: 'Coco ralado (2 col. sopa)', porcao: 1, icon: '🥥', dica: '~20g' },
-    { nome: 'Cajus (1 punhado)', porcao: 1, icon: '🥜', dica: '~15 cajus, produção moçambicana' },
-    { nome: 'Amêndoas/Nozes (1 punhado)', porcao: 1, icon: '🥜', dica: '~15 amêndoas ou ~7 nozes' },
-    { nome: 'Manteiga (1 col. chá)', porcao: 1, icon: '🧈', dica: '~5g, ponta do polegar' },
-  ],
-  legumes: [
-    { nome: 'Matapa/Folha de mandioca (1 punho)', porcao: 1, icon: '🥬', dica: 'folhas de mandioca cozidas' },
-    { nome: 'Cacana (1 punho)', porcao: 1, icon: '🥬', dica: 'verdura tradicional moçambicana' },
-    { nome: 'Couve (1 punho)', porcao: 1, icon: '🥬', dica: '~3 folhas grandes' },
-    { nome: 'Salada mista (1 punho)', porcao: 1, icon: '🥗', dica: '1 tigela pequena' },
-    { nome: 'Espinafres (1 punho)', porcao: 1, icon: '🥬', dica: '2 mãos cheias cru, ½ cozido' },
-    { nome: 'Tomate (1 punho)', porcao: 1, icon: '🍅', dica: '1 tomate médio' },
-    { nome: 'Cenoura (1 punho)', porcao: 1, icon: '🥕', dica: '1 cenoura grande' },
-    { nome: 'Brócolos (1 punho)', porcao: 1, icon: '🥦', dica: '~5-6 ramalhetes' },
-    { nome: 'Cogumelos (1 punho)', porcao: 1, icon: '🍄', dica: '~5-6 cogumelos médios' },
-  ]
-};
-
-const CATEGORIAS = [
-  { key: 'proteina', label: 'Proteína', emoji: '🫲', medida: 'palma', medidaPlural: 'palmas', corFundo: 'bg-rose-50', corBorda: 'border-rose-300', corTexto: 'text-rose-700' },
-  { key: 'hidratos', label: 'Hidratos', emoji: '🤲', medida: 'mão', medidaPlural: 'mãos', corFundo: 'bg-amber-50', corBorda: 'border-amber-300', corTexto: 'text-amber-700' },
-  { key: 'gordura', label: 'Gordura', emoji: '👍', medida: 'polegar', medidaPlural: 'polegares', corFundo: 'bg-purple-50', corBorda: 'border-purple-300', corTexto: 'text-purple-700' },
-  { key: 'legumes', label: 'Legumes', emoji: '✊', medida: 'punho', medidaPlural: 'punhos', corFundo: 'bg-green-50', corBorda: 'border-green-300', corTexto: 'text-green-700' },
-];
-
-// Componente de Detalhe
-function DetalheRefeicao({ refeicao, registo, plano, numRefeicoes, onSave, saving }) {
-  const [detalhes, setDetalhes] = useState({
-    seguiu_plano: registo?.seguiu_plano || 'sim',
-    hora: registo?.hora || '',
-    porcoes_proteina: registo?.porcoes_proteina || 0,
-    porcoes_hidratos: registo?.porcoes_hidratos || 0,
-    porcoes_gordura: registo?.porcoes_gordura || 0,
-    porcoes_legumes: registo?.porcoes_legumes || 0,
-    notas: registo?.notas || ''
-  });
-  const [categoriaAberta, setCategoriaAberta] = useState(null);
-  const [alimentosSelecionados, setAlimentosSelecionados] = useState([]);
-
-  // Calcular alvo por refeição (total do dia / nº refeições)
-  const nRef = numRefeicoes || 3;
-  const alvoPorRefeicao = plano ? {
-    proteina: Math.ceil(plano.porcoes_proteina / nRef),
-    hidratos: Math.ceil(plano.porcoes_hidratos / nRef),
-    gordura: Math.ceil(plano.porcoes_gordura / nRef),
-    legumes: Math.ceil(plano.porcoes_legumes / nRef),
-  } : null;
-
-  const adicionarAlimento = (categoria, alimento) => {
-    const campo = `porcoes_${categoria}`;
-    const novoValor = parseFloat(detalhes[campo] || 0) + alimento.porcao;
-    setDetalhes({ ...detalhes, [campo]: novoValor });
-    setAlimentosSelecionados([...alimentosSelecionados, { ...alimento, categoria }]);
+// Macro card component
+function MacroCard({ label, valor, alvo, cor, unidade }) {
+  const percent = alvo && alvo > 0 ? Math.min(100, Math.round((valor / alvo) * 100)) : 0;
+  const colorMap = {
+    rose: { bg: 'bg-rose-50', text: 'text-rose-600', bar: 'bg-rose-400' },
+    amber: { bg: 'bg-amber-50', text: 'text-amber-600', bar: 'bg-amber-400' },
+    purple: { bg: 'bg-purple-50', text: 'text-purple-600', bar: 'bg-purple-400' },
+    green: { bg: 'bg-green-50', text: 'text-green-600', bar: 'bg-green-400' },
   };
-
-  const removerAlimento = (index) => {
-    const item = alimentosSelecionados[index];
-    const campo = `porcoes_${item.categoria}`;
-    const novoValor = Math.max(0, parseFloat(detalhes[campo] || 0) - item.porcao);
-    setDetalhes({ ...detalhes, [campo]: novoValor });
-    setAlimentosSelecionados(alimentosSelecionados.filter((_, i) => i !== index));
-  };
-
-  const verificarExcesso = (categoria) => {
-    if (!alvoPorRefeicao) return null;
-    const actual = parseFloat(detalhes[`porcoes_${categoria}`] || 0);
-    const alvo = alvoPorRefeicao[categoria];
-    if (actual > alvo) return { excesso: actual - alvo, alvo };
-    return null;
-  };
+  const c = colorMap[cor] || colorMap.amber;
 
   return (
-    <div className="border-t border-gray-200 p-4 bg-gray-50">
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        {/* Status */}
-        <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-1">Estado</label>
-          <select
-            value={detalhes.seguiu_plano}
-            onChange={(e) => setDetalhes({ ...detalhes, seguiu_plano: e.target.value })}
-            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none"
-          >
-            <option value="sim">Seguiu o plano</option>
-            <option value="parcial">Parcialmente</option>
-            <option value="nao">Não seguiu</option>
-          </select>
-        </div>
-
-        {/* Hora */}
-        <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-1">Hora</label>
-          <input
-            type="time"
-            value={detalhes.hora}
-            onChange={(e) => setDetalhes({ ...detalhes, hora: e.target.value })}
-            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none"
+    <div className={`${c.bg} rounded-xl p-2 text-center`}>
+      <div className={`text-base font-bold ${c.text}`}>
+        {Math.round(valor * 10) / 10}
+        <span className="text-[10px] font-normal">{unidade}</span>
+      </div>
+      <div className="text-[10px] text-gray-500 mb-1">{label}</div>
+      {alvo != null && (
+        <div className="w-full h-1 bg-gray-200 rounded-full overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all ${c.bar}`}
+            style={{ width: `${percent}%` }}
           />
         </div>
-      </div>
-
-      {/* Alimentos selecionados */}
-      {alimentosSelecionados.length > 0 && (
-        <div className="mb-3">
-          <label className="block text-xs font-semibold text-gray-600 mb-1">O que comeste:</label>
-          <div className="flex flex-wrap gap-1.5">
-            {alimentosSelecionados.map((item, i) => (
-              <button
-                key={i}
-                onClick={() => removerAlimento(i)}
-                className="flex items-center gap-1 px-2 py-1 bg-white border border-gray-300 rounded-full text-xs hover:bg-red-50 hover:border-red-300 transition-all"
-                title="Clica para remover"
-              >
-                <span>{item.icon}</span>
-                <span className="text-gray-700">{item.nome}</span>
-                <span className="text-gray-400 ml-0.5">×</span>
-              </button>
-            ))}
-          </div>
-        </div>
       )}
-
-      {/* Seleção rápida de alimentos por categoria — hand-centric */}
-      <div className="mb-4">
-        <label className="block text-xs font-semibold text-gray-600 mb-2">
-          O que comeste? Toca no gesto da mão:
-        </label>
-        <div className="grid grid-cols-4 gap-2 mb-2">
-          {CATEGORIAS.map(cat => {
-            const valor = parseFloat(detalhes[`porcoes_${cat.key}`] || 0);
-            const excesso = verificarExcesso(cat.key);
-            const isActive = categoriaAberta === cat.key;
-            return (
-              <button
-                key={cat.key}
-                onClick={() => setCategoriaAberta(isActive ? null : cat.key)}
-                className={`relative rounded-xl border-2 text-center transition-all overflow-hidden ${
-                  isActive
-                    ? `${cat.corBorda} ${cat.corFundo} shadow-md scale-[1.03]`
-                    : excesso ? 'border-orange-400 bg-orange-50' : 'border-gray-200 bg-white hover:border-gray-300'
-                }`}
-              >
-                <div className="py-2 px-1">
-                  <div className="text-2xl leading-none">{cat.emoji}</div>
-                  <div className={`text-[10px] font-bold mt-1 ${isActive ? cat.corTexto : 'text-gray-600'}`}>
-                    {cat.label}
-                  </div>
-                  <div className={`text-lg font-bold ${excesso ? 'text-orange-600' : 'text-gray-800'}`}>
-                    {valor}
-                    {alvoPorRefeicao && (
-                      <span className="text-gray-400 font-normal text-xs">/{alvoPorRefeicao[cat.key]}</span>
-                    )}
-                  </div>
-                  <div className="text-[9px] text-gray-400">
-                    {valor === 1 ? cat.medida : cat.medidaPlural}
-                  </div>
-                </div>
-                {isActive && (
-                  <div className={`h-1 ${cat.corBorda.replace('border', 'bg')}`} />
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Alertas de excesso */}
-        {CATEGORIAS.map(cat => {
-          const excesso = verificarExcesso(cat.key);
-          if (!excesso) return null;
-          return (
-            <div key={`alerta-${cat.key}`} className="flex items-center gap-2 px-3 py-1.5 mb-1 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-700">
-              <span>{cat.emoji}</span>
-              <span><strong>{cat.label}</strong>: +{excesso.excesso} {excesso.excesso === 1 ? cat.medida : cat.medidaPlural} acima do alvo desta refeição ({excesso.alvo})</span>
-            </div>
-          );
-        })}
-
-        {/* Lista de alimentos da categoria aberta */}
-        {categoriaAberta && (() => {
-          const cat = CATEGORIAS.find(c => c.key === categoriaAberta);
-          return (
-            <div className={`${cat.corFundo} border-2 ${cat.corBorda} rounded-xl p-3 mt-2`}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">{cat.emoji}</span>
-                  <span className={`text-xs font-bold ${cat.corTexto}`}>
-                    Cada item = porções em {cat.medidaPlural}. Toca para adicionar:
-                  </span>
-                </div>
-                <button
-                  onClick={() => setCategoriaAberta(null)}
-                  className="text-gray-400 hover:text-gray-600 text-sm px-1"
-                >✕</button>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {ALIMENTOS_COMUNS[categoriaAberta].map((alimento, i) => (
-                  <button
-                    key={i}
-                    onClick={() => adicionarAlimento(categoriaAberta, alimento)}
-                    className={`flex items-center gap-1.5 px-3 py-2 bg-white hover:shadow-md border ${cat.corBorda.replace('-300', '-200')} hover:${cat.corBorda} rounded-2xl text-xs transition-all active:scale-95`}
-                    title={alimento.dica}
-                  >
-                    <span className="text-base">{alimento.icon}</span>
-                    <div className="text-left">
-                      <span className="text-gray-800 font-medium">{alimento.nome}</span>
-                      {alimento.dica && (
-                        <span className="block text-[9px] text-gray-400 leading-tight">{alimento.dica}</span>
-                      )}
-                    </div>
-                    <span className={`${cat.corTexto} font-bold text-[10px] bg-white rounded-full px-1.5 py-0.5 border ${cat.corBorda.replace('-300', '-200')}`}>
-                      +{alimento.porcao}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          );
-        })()}
-      </div>
-
-      {/* Ajuste manual de porções */}
-      <details className="mb-4">
-        <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
-          Ajustar porções manualmente
-        </summary>
-        <div className="grid grid-cols-4 gap-2 mt-2">
-          {CATEGORIAS.map(cat => (
-            <div key={cat.key}>
-              <label className="block text-xs text-gray-500 mb-1">
-                {cat.emoji} {cat.label}
-              </label>
-              <input
-                type="number"
-                step="0.5"
-                min="0"
-                value={detalhes[`porcoes_${cat.key}`]}
-                onChange={(e) => setDetalhes({ ...detalhes, [`porcoes_${cat.key}`]: parseFloat(e.target.value) || 0 })}
-                className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none text-center"
-              />
-            </div>
-          ))}
-        </div>
-      </details>
-
-      {/* Notas */}
-      <div className="mb-4">
-        <label className="block text-xs font-semibold text-gray-600 mb-1">Notas (opcional)</label>
-        <textarea
-          value={detalhes.notas}
-          onChange={(e) => setDetalhes({ ...detalhes, notas: e.target.value })}
-          placeholder="Ex: Comi fora, escolhi grelhados..."
-          rows={2}
-          className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C1634A] focus:outline-none"
-        />
-      </div>
-
-      {/* Guardar */}
-      <button
-        onClick={() => onSave(detalhes)}
-        disabled={saving}
-        className="w-full py-3 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
-      >
-        {saving ? 'A guardar...' : '✓ Guardar Detalhes'}
-      </button>
     </div>
   );
+}
+
+// Emoji por tipo de refeição
+function getMealEmoji(nome) {
+  const n = nome.toLowerCase();
+  if (n.includes('pequeno') || n.includes('café') || n.includes('manha')) return '🌅';
+  if (n.includes('almoço') || n.includes('almoco')) return '🍛';
+  if (n.includes('lanche') || n.includes('snack')) return '🍎';
+  if (n.includes('jantar') || n.includes('ceia')) return '🌙';
+  return '🍽️';
 }
