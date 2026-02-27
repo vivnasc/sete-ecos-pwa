@@ -1,11 +1,14 @@
 /**
  * Push Lembretes Cron — Envia push notifications reais aos clientes
  *
- * Chamado a cada hora pelo cron (0 * * * *).
- * Envia apenas os lembretes cuja hora configurada corresponde à hora
- * actual em Africa/Maputo (CAT, UTC+2).
+ * Chamado 8x/dia por crons diários no vercel.json, um por cada hora
+ * de lembrete default (UTC 5,7,9,10,12,14,17,19 = CAT 7,9,11,12,14,16,19,21).
  *
- * Ex: às 14:00 CAT envia só lembretes configurados para 14:xx.
+ * Cada execução obtém a hora actual em Africa/Maputo (CAT) e envia
+ * APENAS os lembretes cuja hora configurada corresponde à hora actual.
+ *
+ * Nota: Vercel Hobby tem ~59min de imprecisão, mas o handler usa a hora
+ * real no momento da execução, portanto funciona correctamente.
  */
 
 import { createClient } from '@supabase/supabase-js'
@@ -133,18 +136,36 @@ const MENSAGENS = {
   },
 }
 
+// Tags alinhadas com o cliente (src/utils/notifications.js NOTIFICACOES)
+// para que a mesma tag evite notificações duplicadas via Service Worker
+const TAGS = {
+  agua: 'vitalis-agua',
+  pequenoAlmoco: 'vitalis-refeicao-pa',
+  almoco: 'vitalis-refeicao-almoco',
+  jantar: 'vitalis-refeicao-jantar',
+  prepAlmoco: 'vitalis-prep-almoco',
+  prepJantar: 'vitalis-prep-jantar',
+  checkin: 'vitalis-checkin',
+  treino: 'vitalis-treino',
+  jejumFim: 'vitalis-jejum',
+  jejumInicio: 'vitalis-jejum',
+  motivacao: 'vitalis-motivacao',
+  streak: 'vitalis-streak',
+}
+
 /**
  * Envia push para um user_id específico
  */
 async function enviarPush(supabase, userId, tipo) {
   const msg = MENSAGENS[tipo]
+  const tag = TAGS[tipo] || `lembrete-${tipo}`
+
   if (!msg) {
-    // Fallback genérico para tipos não mapeados
     return enviarPushRaw(supabase, userId, {
       title: 'Lembrete Sete Ecos',
       body: 'Tens algo agendado agora. Abre a app!',
       url: '/',
-      tag: `lembrete-${tipo}`,
+      tag,
     })
   }
 
@@ -152,7 +173,7 @@ async function enviarPush(supabase, userId, tipo) {
     title: msg.titulo,
     body: msg.corpo,
     url: msg.url || '/',
-    tag: `lembrete-${tipo}`,
+    tag,
   })
 }
 

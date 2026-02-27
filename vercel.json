@@ -62,7 +62,35 @@
     },
     {
       "path": "/api/cron?task=push-lembretes",
-      "schedule": "0 * * * *"
+      "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/cron?task=push-lembretes",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron?task=push-lembretes",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron?task=push-lembretes",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron?task=push-lembretes",
+      "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/cron?task=push-lembretes",
+      "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/cron?task=push-lembretes",
+      "schedule": "0 17 * * *"
+    },
+    {
+      "path": "/api/cron?task=push-lembretes",
+      "schedule": "0 19 * * *"
     }
   ]
 }
