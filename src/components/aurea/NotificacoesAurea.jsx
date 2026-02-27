@@ -135,7 +135,7 @@ export default function NotificacoesAurea() {
     if (granted) {
       new Notification('ÁUREA', {
         body: 'Notificações activadas! Vais receber lembretes mesmo com a app fechada.',
-        icon: '/logos/aurea-logo.png'
+        icon: '/logos/AUREA_LOGO_V3.png'
       });
     }
   };
@@ -189,7 +189,7 @@ export default function NotificacoesAurea() {
       const msg = MENSAGENS_GENTIS.pratica[Math.floor(Math.random() * MENSAGENS_GENTIS.pratica.length)];
       new Notification('ÁUREA', {
         body: msg,
-        icon: '/logos/aurea-logo.png'
+        icon: '/logos/AUREA_LOGO_V3.png'
       });
     }
   };

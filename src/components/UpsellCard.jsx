@@ -114,7 +114,7 @@ const ECO_STYLES = {
     gradient: 'from-[#C9A227] to-[#8B6914]',
     accent: '#C9A227',
     link: '/aurea/pagamento',
-    logo: '/logos/logo_aurea.png'
+    logo: '/logos/AUREA_LOGO_V3.png'
   }
 };
 

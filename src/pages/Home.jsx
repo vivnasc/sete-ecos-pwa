@@ -152,7 +152,7 @@ export default function Home() {
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: 'radial-gradient(circle at 70% 30%, rgba(255,255,255,0.15) 0%, transparent 60%)' }} />
                 <div className="relative p-5 flex flex-col gap-4">
                   <div className="w-12 h-12 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                    <img src="/logos/logo_aurea.png" alt="Aurea" className="w-8 h-8" onError={(e) => { e.target.style.display = 'none' }} />
+                    <img src="/logos/AUREA_LOGO_V3.png" alt="Aurea" className="w-8 h-8" onError={(e) => { e.target.style.display = 'none' }} />
                   </div>
                   <div>
                     <h3 className="text-white font-bold tracking-[0.15em] text-sm">AUREA</h3>
