@@ -91,8 +91,8 @@ export default function DashboardVitalis() {
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const { isDark: isDarkMode, toggleTheme: toggleDarkMode } = useTheme();
 
-  // Hook do onboarding
-  const { mostrarOnboarding, completarOnboarding } = useOnboarding();
+  // Hook do onboarding — controla se o tutorial deve aparecer
+  const { showOnboarding: mostrarOnboarding, completeOnboarding: completarOnboarding } = useOnboarding();
 
   // Ref para controlar se já enviamos notificação do jejum
   const notificacaoJejumEnviada = useRef(false);
@@ -514,40 +514,52 @@ export default function DashboardVitalis() {
         }
       }
 
-      // Verificar novas conquistas para enviar email
+      // Verificar novas conquistas — usar celebradas como fonte de verdade
+      const celebradas = getConquistasCelebradas();
       const conquistasNotificadas = JSON.parse(localStorage.getItem('vitalis-conquistas-notificadas') || '[]');
-      const novasConquistas = conquistas.filter(c => !conquistasNotificadas.includes(c));
+      const novasConquistas = conquistas.filter(c => !celebradas.has(c) && !conquistasNotificadas.includes(c));
 
-      // Se há novas conquistas, notificar por email
-      if (novasConquistas.length > 0 && email) {
+      // Se há novas conquistas, notificar e celebrar
+      if (novasConquistas.length > 0) {
         // UNION: juntar antigas + novas (nunca perder conquistas já notificadas)
         const todasNotificadas = [...new Set([...conquistasNotificadas, ...conquistas])];
         localStorage.setItem('vitalis-conquistas-notificadas', JSON.stringify(todasNotificadas));
 
-        const celebradas = getConquistasCelebradas();
+        // Mostrar celebração apenas da PRIMEIRA nova conquista (1x por sessão)
+        const primeiraNovaId = novasConquistas[0];
+        const primeiraNovaConquista = CONQUISTAS[primeiraNovaId];
+        if (primeiraNovaConquista) {
+          marcarConquistaCelebrada(primeiraNovaId);
+          setConquistaActual(primeiraNovaId);
+          setShowCelebracao(true);
+        }
 
-        for (const conquistaId of novasConquistas) {
-          const conquista = CONQUISTAS[conquistaId];
-          if (conquista) {
-            // Verificar se já celebrámos esta conquista (persistente entre sessões)
-            if (!celebradas.has(conquistaId) && !showCelebracao) {
-              marcarConquistaCelebrada(conquistaId);
-              setConquistaActual(conquistaId);
-              setShowCelebracao(true);
+        // Marcar todas as novas como celebradas (para não mostrar nas próximas sessões)
+        for (const cId of novasConquistas) {
+          marcarConquistaCelebrada(cId);
+        }
+
+        // Enviar emails para todas as novas conquistas
+        if (email) {
+          for (const conquistaId of novasConquistas) {
+            const conquista = CONQUISTAS[conquistaId];
+            if (conquista) {
+              EmailTriggers.onConquista(
+                { nome: userName, email: email },
+                {
+                  nome: conquista.nome,
+                  emoji: conquista.icone,
+                  mensagem: conquista.descricao,
+                  xp: conquista.pontos || conquista.xp
+                }
+              ).catch(err => console.error('Erro ao enviar email conquista:', err));
             }
-
-            // Enviar email (async, não bloqueia)
-            EmailTriggers.onConquista(
-              { nome: userName, email: email },
-              {
-                nome: conquista.nome,
-                emoji: conquista.icone,
-                mensagem: conquista.descricao,
-                xp: conquista.pontos || conquista.xp
-              }
-            ).catch(err => console.error('Erro ao enviar email conquista:', err));
           }
         }
+      } else {
+        // Sem novas conquistas: sincronizar notificadas com celebradas
+        const todasNotificadas = [...new Set([...conquistasNotificadas, ...conquistas])];
+        localStorage.setItem('vitalis-conquistas-notificadas', JSON.stringify(todasNotificadas));
       }
 
       setConquistasDesbloqueadas(conquistas);
@@ -876,8 +888,10 @@ export default function DashboardVitalis() {
         : 'bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]'
     }`}>
 
-      {/* Tutorial de Boas-vindas - Primeira vez */}
-      <WelcomeTutorial eco="vitalis" />
+      {/* Tutorial de Boas-vindas - Apenas na primeira vez (controlado por useOnboarding) */}
+      {mostrarOnboarding && (
+        <WelcomeTutorial eco="vitalis" onComplete={completarOnboarding} />
+      )}
 
       {/* Header com Perfil — premium animated gradient */}
       <header className="relative overflow-hidden">
