@@ -153,14 +153,16 @@ export default function DashboardVitalis() {
       setMostrarBannerPWA(!isStandalone);
     }
 
-    // CRITICAL: Activate saved notification reminders + re-register push on every app open
+    // Re-registar push e activar lembretes locais (só como fallback se push não estiver activo)
     if (temPermissao()) {
-      const count = activarLembretes();
-      console.log('Dashboard: lembretes re-activados', count?.length || 0);
       // Re-registar push subscription silenciosamente (garante que está na DB)
       import('../../lib/pushSubscription').then(({ registarPushSubscription }) => {
         registarPushSubscription().catch(() => {});
       });
+      // activarLembretes é async — verifica se push está activo e só agenda localmente se não
+      activarLembretes().then(ids => {
+        if (ids.length > 0) console.log('Dashboard: lembretes locais (fallback):', ids.length);
+      }).catch(() => {});
     }
 
     // Capturar evento de instalação PWA
@@ -1040,10 +1042,11 @@ export default function DashboardVitalis() {
                       const resultado = await pedirPermissaoERegistar();
                       setNotificacoesAtivas(resultado);
                       if (resultado) {
-                        const timeouts = activarLembretes();
-                        // Guardar preferências default no servidor para push real via cron
+                        // Guardar preferências no servidor para push real via cron
                         const { carregarLembretes } = await import('../../utils/notifications');
                         guardarPreferencias(carregarLembretes()).catch(() => {});
+                        // activarLembretes verifica push e só agenda localmente se necessário
+                        await activarLembretes();
                         enviarNotificacao('Notificações activadas!', {
                           body: 'Vais receber lembretes mesmo com a app fechada!'
                         });

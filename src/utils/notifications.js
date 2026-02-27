@@ -150,6 +150,18 @@ export const cancelarLembretes = () => {
   timeoutsActivos = [];
 };
 
+// Verificar se push real está registado (servidor envia notificações via cron)
+export const pushRegistado = async () => {
+  try {
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      return !!sub;
+    }
+  } catch { /* fallback */ }
+  return false;
+};
+
 // Agendar notificação para uma hora específica hoje (ou amanhã se já passou)
 export const agendarNotificacao = (tipo, horaMinutos) => {
   if (!temPermissao()) return null;
@@ -166,7 +178,9 @@ export const agendarNotificacao = (tipo, horaMinutos) => {
   // Se já passou hoje, não agenda (será reagendado na próxima abertura da app)
   if (alvo <= agora) return null;
 
+  // Mínimo 60 segundos de delay para evitar disparos imediatos
   const delay = alvo - agora;
+  if (delay < 60000) return null;
 
   const timeoutId = setTimeout(() => {
     enviarNotificacao(notif.titulo, {
@@ -216,11 +230,20 @@ export const carregarLembretes = () => {
 };
 
 // Activar todos os lembretes configurados — chamar a cada abertura da app
-export const activarLembretes = () => {
+// Se push real está registado, o servidor envia as notificações via cron horário.
+// Nesse caso, NÃO agendar localmente para evitar duplicados.
+export const activarLembretes = async () => {
   // Cancelar anteriores para evitar duplicados
   cancelarLembretes();
 
   if (!temPermissao()) return [];
+
+  // Se push real está activo, o servidor trata dos lembretes — não duplicar
+  const temPush = await pushRegistado();
+  if (temPush) {
+    console.log('Vitalis: push real activo — lembretes geridos pelo servidor');
+    return [];
+  }
 
   const lembretes = carregarLembretes();
 
@@ -233,7 +256,7 @@ export const activarLembretes = () => {
 
   const count = timeoutsActivos.length;
   if (count > 0) {
-    console.log(`Vitalis: ${count} lembretes agendados para hoje`);
+    console.log(`Vitalis: ${count} lembretes agendados localmente (fallback sem push)`);
   }
 
   return timeoutsActivos;
@@ -265,8 +288,8 @@ export const useNotificacoes = () => {
     const resultado = await pedirPermissao();
     setPermissao(resultado ? 'granted' : 'denied');
     if (resultado) {
-      // Activar lembretes imediatamente após permissão concedida
-      activarLembretes();
+      // Activar lembretes (verifica push e só agenda localmente se necessário)
+      await activarLembretes();
     }
     return resultado;
   };
