@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { g } from '../../utils/genero'
-import { getPaymentConfig, startTrial, registerPendingPayment, getMpesaWhatsappLink } from '../../lib/shared/paymentFlow'
+import { getPaymentConfig, startTrial, registerPendingPayment, confirmPayPalPayment, getMpesaWhatsappLink } from '../../lib/shared/paymentFlow'
 import { getEcoTheme } from '../../lib/shared/subscriptionPlans'
 import ModuleHeader from './ModuleHeader'
+
+const PAYPAL_CLIENT_ID = typeof import.meta !== 'undefined' ? (import.meta.env?.VITE_PAYPAL_CLIENT_ID || 'sb') : 'sb'
+const PAYPAL_SDK_TIMEOUT = 15000
 
 /**
  * SETE ECOS — Página de Pagamento Genérica
@@ -27,6 +30,9 @@ export default function PaymentPage({ eco, features = [], testimonial = null }) 
   const [loading, setLoading] = useState(false)
   const [trialLoading, setTrialLoading] = useState(false)
   const [message, setMessage] = useState(null) // { type: 'success'|'error', text }
+  const [paypalLoaded, setPaypalLoaded] = useState(false)
+  const [paypalError, setPaypalError] = useState(null)
+  const paypalRef = useRef(null)
 
   const config = getPaymentConfig(eco)
   const theme = getEcoTheme(eco)
@@ -44,7 +50,104 @@ export default function PaymentPage({ eco, features = [], testimonial = null }) 
       if (userData) setUserId(userData.id)
     }
     loadUser()
+    loadPayPalScript()
   }, [session])
+
+  useEffect(() => {
+    if (paypalLoaded && userId && paymentMethod === 'paypal') {
+      renderPayPalButtons()
+    }
+  }, [selectedPlan, paypalLoaded, userId, paymentMethod])
+
+  // ===== PayPal SDK =====
+
+  function loadPayPalScript() {
+    if (window.paypal) {
+      setPaypalLoaded(true)
+      return
+    }
+    const script = document.createElement('script')
+    script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD&intent=capture`
+    script.async = true
+    const timeout = setTimeout(() => {
+      if (!window.paypal) {
+        setPaypalError('PayPal demorou muito a carregar. Usa M-Pesa.')
+      }
+    }, PAYPAL_SDK_TIMEOUT)
+    script.onload = () => {
+      clearTimeout(timeout)
+      if (window.paypal) setPaypalLoaded(true)
+      else setPaypalError('PayPal nao inicializou correctamente.')
+    }
+    script.onerror = () => {
+      clearTimeout(timeout)
+      setPaypalError('Erro ao carregar PayPal. Usa M-Pesa.')
+    }
+    document.body.appendChild(script)
+  }
+
+  function renderPayPalButtons() {
+    if (!paypalRef.current || !window.paypal) return
+    paypalRef.current.innerHTML = ''
+
+    const plan = config.plans.find(p => p.id === selectedPlan) || config.plans[0]
+    const amountValue = parseFloat(plan.price_usd).toFixed(2)
+
+    try {
+      window.paypal.Buttons({
+        style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay', height: 50 },
+        createOrder: (data, actions) => {
+          return actions.order.create({
+            intent: 'CAPTURE',
+            purchase_units: [{
+              description: `${config.name.toUpperCase()} ${plan.name} - ${session?.user?.email || ''}`,
+              amount: { currency_code: 'USD', value: amountValue }
+            }],
+            application_context: {
+              brand_name: `Sete Ecos - ${config.name.toUpperCase()}`,
+              shipping_preference: 'NO_SHIPPING'
+            }
+          })
+        },
+        onApprove: async (data, actions) => {
+          setLoading(true)
+          try {
+            const details = await actions.order.capture()
+            if (details.status !== 'COMPLETED') {
+              throw new Error(`Pagamento nao completado (status: ${details.status})`)
+            }
+            const result = await confirmPayPalPayment(eco, userId, {
+              planKey: selectedPlan,
+              orderId: details.id,
+              payerEmail: details.payer?.email_address
+            })
+            if (result.success) {
+              setMessage({ type: 'success', text: `Pagamento confirmado! ${g('Bem-vindo', 'Bem-vinda')} ao ${config.name}.` })
+              setTimeout(() => navigate(`/${eco}/dashboard`), 2000)
+            } else {
+              setMessage({ type: 'error', text: 'Erro ao processar. Contacta-nos via WhatsApp.' })
+            }
+          } catch (error) {
+            console.error(`PayPal ${config.name} onApprove error:`, error)
+            setMessage({ type: 'error', text: `Erro ao processar: ${error.message}. Contacta-nos via WhatsApp se o valor foi cobrado.` })
+          } finally {
+            setLoading(false)
+          }
+        },
+        onError: (err) => {
+          console.error(`PayPal ${config.name} button error:`, err)
+          setMessage({ type: 'error', text: 'Erro no PayPal. Tenta novamente ou usa M-Pesa.' })
+        },
+        onCancel: () => setMessage({ type: 'error', text: 'Pagamento cancelado. Podes tentar novamente.' })
+      }).render(paypalRef.current).catch((renderErr) => {
+        console.error(`PayPal ${config.name} render error:`, renderErr)
+        setPaypalError('Erro ao inicializar PayPal. Usa M-Pesa.')
+      })
+    } catch (err) {
+      console.error(`PayPal ${config.name} Buttons() error:`, err)
+      setPaypalError('Erro ao criar botoes PayPal.')
+    }
+  }
 
   if (!config) {
     return (
@@ -288,14 +391,36 @@ export default function PaymentPage({ eco, features = [], testimonial = null }) 
             </div>
           )}
 
-          {/* PayPal placeholder */}
+          {/* PayPal */}
           {paymentMethod === 'paypal' && (
-            <div className="mt-4 p-4 rounded-xl text-center" style={{ background: `${theme.color}10` }}>
-              <p className="text-white/60 text-sm">
-                PayPal em modo {config.paypal.mode}.
+            <div className="mt-4 space-y-3">
+              <p className="font-bold text-center text-sm" style={{ color: theme.color }}>
+                ${selectedPlanData.price_usd} USD
               </p>
-              <p className="text-white/40 text-xs mt-2">
-                O botão PayPal será carregado aqui.
+              <div ref={paypalRef} className="min-h-[60px] bg-white rounded-xl p-3">
+                {paypalError ? (
+                  <div className="text-center py-3">
+                    <p className="text-red-600 text-sm mb-3">{paypalError}</p>
+                    <button
+                      onClick={() => { setPaypalError(null); setPaymentMethod('mpesa'); }}
+                      className="px-4 py-2 text-white rounded-lg text-sm font-medium"
+                      style={{ background: theme.color }}
+                    >
+                      Pagar via M-Pesa
+                    </button>
+                  </div>
+                ) : !paypalLoaded ? (
+                  <div className="text-center py-2">
+                    <div
+                      className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin mx-auto mb-2"
+                      style={{ borderColor: `${theme.color} transparent ${theme.color} ${theme.color}` }}
+                    ></div>
+                    <p className="text-gray-500 text-sm">A carregar PayPal...</p>
+                  </div>
+                ) : null}
+              </div>
+              <p className="text-xs text-center" style={{ color: `${theme.color}80` }}>
+                Paga com cartao de credito/debito ou conta PayPal
               </p>
             </div>
           )}

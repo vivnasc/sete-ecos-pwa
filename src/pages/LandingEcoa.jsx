@@ -205,9 +205,9 @@ const LandingEcoa = () => {
           "description": "Programa de recuperação da voz silenciada com Micro-Voz progressivo, comunicação assertiva e ferramentas de expressão.",
           "brand": { "@type": "Brand", "name": "Sete Ecos" },
           "offers": [
-            { "@type": "Offer", "name": "Mensal", "price": "750", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Semestral", "price": "3825", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Anual", "price": "7200", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" }
+            { "@type": "Offer", "name": "Mensal", "price": "499", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Semestral", "price": "2395", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Anual", "price": "4190", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" }
           ]
         }}
       />

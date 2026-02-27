@@ -79,7 +79,7 @@ const BROADCAST_TEMPLATES = {
         <div style="background: linear-gradient(135deg, #C9A96E, #8B6914); border-radius: 12px; padding: 20px; margin: 16px 0; color: white;">
           <h2 style="margin: 0 0 8px; font-size: 20px;">AUREA — Auto-Valor e Presença</h2>
           <p style="margin: 0; opacity: 0.9; font-size: 14px;">100+ micro-práticas de auto-cuidado. Meditações. Diário de merecimento.</p>
-          <p style="margin: 8px 0 0; font-size: 16px; font-weight: bold;">Desde 975 MZN/mês</p>
+          <p style="margin: 8px 0 0; font-size: 16px; font-weight: bold;">Desde 699 MZN/mês</p>
           <div style="margin-top: 12px;">
             <a href="${BASE_URL}/aurea?utm_source=broadcast&utm_campaign=catalogo" style="display: inline-block; padding: 8px 20px; background: white; color: #C9A96E; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 13px;">Ver AUREA</a>
           </div>

@@ -2434,7 +2434,7 @@ const ECO_CONTEUDO = {
     cor: '#C9A227',
     link: '/aurea',
     linkPagamento: '/aurea/pagamento',
-    preco: '975 MT/mês',
+    preco: '699 MT/mês',
     hooks: [
       'O teu valor não cabe numa calça tamanho S.',
       'Gastas horas a escolher roupa e 0 minutos a cuidar de como te vês ao espelho.',
@@ -2488,7 +2488,7 @@ const ECO_CONTEUDO = {
     cor: '#6B8E9B',
     link: '/serena',
     linkPagamento: '/serena/pagamento',
-    preco: '750 MT/mês',
+    preco: '499 MT/mês',
     hooks: [
       'Sentes tudo com intensidade e depois culpas-te por ser "demasiado".',
       'A ansiedade não é fraqueza. É o teu corpo a pedir atenção.',
@@ -2542,7 +2542,7 @@ const ECO_CONTEUDO = {
     cor: '#C1634A',
     link: '/ignis',
     linkPagamento: '/ignis/pagamento',
-    preco: '750 MT/mês',
+    preco: '499 MT/mês',
     hooks: [
       'Tens 47 separadores abertos e nenhum projecto acabado.',
       'A procrastinação não é preguiça. É medo disfarçado.',
@@ -2596,7 +2596,7 @@ const ECO_CONTEUDO = {
     cor: '#5D9B84',
     link: '/ventis',
     linkPagamento: '/ventis/pagamento',
-    preco: '750 MT/mês',
+    preco: '499 MT/mês',
     hooks: [
       'Acordas cansada e adormeces exausta. Onde foi parar a tua energia?',
       'Tens uma rotina ou tens um modo de sobrevivência?',
@@ -2650,7 +2650,7 @@ const ECO_CONTEUDO = {
     cor: '#4A90A4',
     link: '/ecoa',
     linkPagamento: '/ecoa/pagamento',
-    preco: '750 MT/mês',
+    preco: '499 MT/mês',
     hooks: [
       'Quantas vezes engoliste o que querias dizer para não incomodar?',
       'O silêncio que te protegeu em criança está a sufocar-te agora.',
@@ -2704,7 +2704,7 @@ const ECO_CONTEUDO = {
     cor: '#8B7BA5',
     link: '/imago',
     linkPagamento: '/imago/pagamento',
-    preco: '975 MT/mês',
+    preco: '699 MT/mês',
     hooks: [
       'Sabes quem és quando ninguém está a ver?',
       'A máscara que usas para o mundo está a sufocar quem realmente és.',

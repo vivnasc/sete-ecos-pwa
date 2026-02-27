@@ -209,7 +209,7 @@ const LandingVentis = () => {
     <div className="min-h-screen" style={{ fontFamily: 'var(--font-corpo)' }}>
       <SEOHead
         title="VENTIS - Energia & Ritmo | Sete Ecos"
-        description="Gestão de energia sustentável, ritmo natural e prevenção de burnout. Monitor de energia, pausas conscientes e Detector de Burnout. Desde 750 MZN/mês."
+        description="Gestão de energia sustentável, ritmo natural e prevenção de burnout. Monitor de energia, pausas conscientes e Detector de Burnout. Desde 499 MZN/mês."
         url="https://app.seteecos.com/ventis"
         image="https://app.seteecos.com/og-image.png"
         jsonLd={{
@@ -219,9 +219,9 @@ const LandingVentis = () => {
           "description": "Programa de gestão energética com Monitor de Energia, Detector de Burnout, pausas conscientes e coaching personalizado.",
           "brand": { "@type": "Brand", "name": "Sete Ecos" },
           "offers": [
-            { "@type": "Offer", "name": "Mensal", "price": "750", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Semestral", "price": "3825", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Anual", "price": "7200", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" }
+            { "@type": "Offer", "name": "Mensal", "price": "499", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Semestral", "price": "2395", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Anual", "price": "4190", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" }
           ]
         }}
       />

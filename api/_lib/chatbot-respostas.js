@@ -124,9 +124,9 @@ Quanto tempo passas a cuidar dos outros e esqueces de cuidar de ti? O ÁUREA mud
 💎 Diamante (301+) — Integração
 
 *Preços:*
-Mensal — *975 MZN*/mês
-Semestral — *5.265 MZN* (poupas 585 MZN)
-Anual — *9.945 MZN* (poupas 1.755 MZN)
+Mensal — *699 MZN*/mês ($12.90 USD)
+Semestral — *3.355 MZN* (poupas 839 MZN — 20% desc.)
+Anual — *5.870 MZN* (poupas 2.518 MZN — 30% desc.)
 
 Experimenta *7 dias grátis* com acesso total.
 
@@ -154,9 +154,9 @@ Sentes que as emoções te controlam em vez de seres tu a controlá-las? O SEREN
 O SERENA conecta o que sentes com o teu ciclo, a lua, e os teus hábitos. Não é para "controlar" emoções — é para *entendê-las*.
 
 *Preços:*
-Mensal — *750 MZN*/mês
-Semestral — *3.825 MZN* (poupas 675 MZN)
-Anual — *7.200 MZN* (poupas 1.800 MZN)
+Mensal — *499 MZN*/mês ($9.90 USD)
+Semestral — *2.395 MZN* (poupas 599 MZN — 20% desc.)
+Anual — *4.190 MZN* (poupas 1.798 MZN — 30% desc.)
 
 Experimenta *7 dias grátis*.
 
@@ -184,9 +184,9 @@ Sabes aquela coisa que queres fazer mas nunca começas? O IGNIS acende esse fogo
 O IGNIS não é sobre produtividade. É sobre *clareza de vontade* — saber o que queres e ter coragem de ir buscar.
 
 *Preços:*
-Mensal — *750 MZN*/mês
-Semestral — *3.825 MZN* (poupas 675 MZN)
-Anual — *7.200 MZN* (poupas 1.800 MZN)
+Mensal — *499 MZN*/mês ($9.90 USD)
+Semestral — *2.395 MZN* (poupas 599 MZN — 20% desc.)
+Anual — *4.190 MZN* (poupas 1.798 MZN — 30% desc.)
 
 Experimenta *7 dias grátis*.
 
@@ -211,9 +211,9 @@ Cansada mesmo depois de dormir? A exaustão crónica tem solução. O VENTIS aju
 ✅ Acesso à Comunidade
 
 *Preços:*
-Mensal — *750 MZN*/mês
-Semestral — *3.825 MZN* (poupas 675 MZN)
-Anual — *7.200 MZN* (poupas 1.800 MZN)
+Mensal — *499 MZN*/mês ($9.90 USD)
+Semestral — *2.395 MZN* (poupas 599 MZN — 20% desc.)
+Anual — *4.190 MZN* (poupas 1.798 MZN — 30% desc.)
 
 Experimenta *7 dias grátis*.
 
@@ -239,9 +239,9 @@ Quantas vezes engoliste o que querias dizer? O ECOA devolve-te a voz.
 O ECOA é para todas as mulheres que foram silenciadas — pela cultura, pela família, por um parceiro. A tua voz importa.
 
 *Preços:*
-Mensal — *750 MZN*/mês
-Semestral — *3.825 MZN* (poupas 675 MZN)
-Anual — *7.200 MZN* (poupas 1.800 MZN)
+Mensal — *499 MZN*/mês ($9.90 USD)
+Semestral — *2.395 MZN* (poupas 599 MZN — 20% desc.)
+Anual — *4.190 MZN* (poupas 1.798 MZN — 30% desc.)
 
 Experimenta *7 dias grátis*.
 
@@ -267,9 +267,9 @@ Quem és tu quando ninguém está a ver? O IMAGO é o eco mais profundo — a in
 ✅ Acesso à Comunidade
 
 *Preços:*
-Mensal — *975 MZN*/mês
-Semestral — *4.972 MZN* (poupas 878 MZN)
-Anual — *9.360 MZN* (poupas 2.340 MZN)
+Mensal — *699 MZN*/mês ($12.90 USD)
+Semestral — *3.355 MZN* (poupas 839 MZN — 20% desc.)
+Anual — *5.870 MZN* (poupas 2.518 MZN — 30% desc.)
 
 Experimenta *7 dias grátis*.
 
@@ -301,23 +301,23 @@ R['precos'] = `*Planos e Preços — Sete Ecos 2026*
 ━━━━━━━━━━━━━━━━━━
 *VITALIS* (Nutrição) ⭐ Mais popular
 ━━━━━━━━━━━━━━━━━━
-Mensal — *2.500 MZN*/mês
+Mensal — *2.500 MZN*/mês ($38 USD)
 Semestral — *12.500 MZN* (poupas 2.500!)
 Anual — *21.000 MZN* (poupas 9.000!)
 
 ━━━━━━━━━━━━━━━━━━
 *ÁUREA* (Auto-Valor) · *IMAGO* (Identidade)
 ━━━━━━━━━━━━━━━━━━
-Mensal — *975 MZN*/mês cada
-Semestral — a partir de *4.972 MZN*
-Anual — a partir de *9.360 MZN*
+Mensal — *699 MZN*/mês cada ($12.90 USD)
+Semestral — *3.355 MZN* cada (20% desc.)
+Anual — *5.870 MZN* cada (30% desc.)
 
 ━━━━━━━━━━━━━━━━━━
 *SERENA · IGNIS · VENTIS · ECOA*
 ━━━━━━━━━━━━━━━━━━
-Mensal — *750 MZN*/mês cada
-Semestral — *3.825 MZN* cada
-Anual — *7.200 MZN* cada
+Mensal — *499 MZN*/mês cada ($9.90 USD)
+Semestral — *2.395 MZN* cada (20% desc.)
+Anual — *4.190 MZN* cada (30% desc.)
 
 ━━━━━━━━━━━━━━━━━━
 *BUNDLES* (Quanto mais, mais poupas!)
@@ -326,7 +326,6 @@ DUO (2 Ecos) — *15% desconto*
 TRIO (3 Ecos) — *25% desconto*
 JORNADA (5+ Ecos) — *35% desconto*
 TUDO (7 Ecos) — *40% desconto* 🔥
-Ex: Todos os 7 = *2.800 MZN/mês* (em vez de 7.400!)
 
 ━━━━━━━━━━━━━━━━━━
 *GRÁTIS*
@@ -335,6 +334,7 @@ LUMINA — Diagnóstico gratuito (sempre)
 AURORA — Desbloqueia ao completar os 7 Ecos
 
 Todos incluem: *7 dias grátis* + Comunidade + chat comigo.
+Internacional: pagamentos em USD via PayPal.
 
 Responde *pagar* para saber como pagar ou *bundle* para mais detalhes`;
 
@@ -411,28 +411,28 @@ A transformação é mais poderosa quando trabalhas várias dimensões juntas. E
 *DUO* — 2 Ecos (15% desc.)
 ━━━━━━━━━━━━━━━━━━
 Escolhe qualquer 2. Exemplo: Vitalis + Serena
-A partir de *1.275 MZN/mês*
+A partir de *849 MZN/mês*
 
 ━━━━━━━━━━━━━━━━━━
 *TRIO* — 3 Ecos (25% desc.)
 ━━━━━━━━━━━━━━━━━━
 Escolhe qualquer 3. Exemplo: Vitalis + Áurea + Ignis
-A partir de *1.687 MZN/mês*
+A partir de *1.124 MZN/mês*
 
 ━━━━━━━━━━━━━━━━━━
 *JORNADA* — 5+ Ecos (35% desc.)
 ━━━━━━━━━━━━━━━━━━
 Para quem quer transformação profunda.
-A partir de *2.437 MZN/mês*
+A partir de *1.624 MZN/mês*
 
 ━━━━━━━━━━━━━━━━━━
 *TUDO* — Todos os 7 Ecos (40% desc.) 🔥
 ━━━━━━━━━━━━━━━━━━
-*2.800 MZN/mês* (em vez de 7.400!)
-Poupas *4.600 MZN por mês*!
+A partir de *2.878 MZN/mês*
 + AURORA desbloqueia GRÁTIS ao completar tudo
 
 Todos os bundles incluem Comunidade + chat comigo.
+Internacional: todos os planos disponíveis em USD via PayPal.
 
 Responde *pagar* para saber como pagar, ou *vivianne* e monto o teu pacote à medida!`;
 
@@ -516,7 +516,7 @@ Sim! Eu, Vivianne, respondo pessoalmente. Não sou um bot (mas este WhatsApp é 
 Sim! M-Pesa, PayPal, cartão e transferência bancária.
 
 *Quanto custa tudo junto?*
-Com o Bundle TUDO (7 Ecos), pagas *2.800 MZN/mês* em vez de 7.400. São 40% de desconto!
+Com o Bundle TUDO (7 Ecos), tens *40% de desconto* sobre o preço individual. Responde *bundle* para ver detalhes!
 
 Mais dúvidas? Responde *vivianne* e eu esclareço tudo.`;
 

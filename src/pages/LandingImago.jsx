@@ -166,7 +166,7 @@ const LandingImago = () => {
 
       <SEOHead
         title="IMAGO - Identidade & Espelho | Sete Ecos"
-        description="Autoconhecimento profundo. Descobre quem és, quem mostras ao mundo e quem queres ser. Espelho Triplo, Arqueologia de Si, Mapa de Identidade e integração dos 7 Ecos. Desde 975 MZN/mês."
+        description="Autoconhecimento profundo. Descobre quem és, quem mostras ao mundo e quem queres ser. Espelho Triplo, Arqueologia de Si, Mapa de Identidade e integração dos 7 Ecos. Desde 699 MZN/mês."
         url="https://app.seteecos.com/imago"
         image="https://app.seteecos.com/og-image.png"
         jsonLd={{
@@ -176,9 +176,9 @@ const LandingImago = () => {
           "description": "Programa de autoconhecimento profundo com Espelho Triplo, Arqueologia de Si, Mapa de Identidade e integração dos 7 Ecos.",
           "brand": { "@type": "Brand", "name": "Sete Ecos" },
           "offers": [
-            { "@type": "Offer", "name": "Mensal", "price": "975", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Semestral", "price": "4972", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Anual", "price": "9360", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" }
+            { "@type": "Offer", "name": "Mensal", "price": "699", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Semestral", "price": "3355", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Anual", "price": "5870", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" }
           ]
         }}
       />
