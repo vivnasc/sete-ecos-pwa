@@ -166,7 +166,7 @@ const LandingImago = () => {
 
       <SEOHead
         title="IMAGO - Identidade & Espelho | Sete Ecos"
-        description="Autoconhecimento profundo. Descobre quem és, quem mostras ao mundo e quem queres ser. Espelho Triplo, Arqueologia de Si, Mapa de Identidade e integração dos 7 Ecos. Desde 699 MZN/mês."
+        description="Autoconhecimento profundo. Descobre quem és, quem mostras ao mundo e quem queres ser. Espelho Triplo, Arqueologia de Si, Mapa de Identidade e integração dos 7 Ecos. Desde 499 MZN/mês."
         url="https://app.seteecos.com/imago"
         image="https://app.seteecos.com/og-image.png"
         jsonLd={{
@@ -176,9 +176,9 @@ const LandingImago = () => {
           "description": "Programa de autoconhecimento profundo com Espelho Triplo, Arqueologia de Si, Mapa de Identidade e integração dos 7 Ecos.",
           "brand": { "@type": "Brand", "name": "Sete Ecos" },
           "offers": [
-            { "@type": "Offer", "name": "Mensal", "price": "699", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Semestral", "price": "3355", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Anual", "price": "5870", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" }
+            { "@type": "Offer", "name": "Mensal", "price": "499", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Semestral", "price": "2395", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Anual", "price": "4190", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" }
           ]
         }}
       />
@@ -504,6 +504,7 @@ const LandingImago = () => {
                   className="relative rounded-[2rem] shadow-2xl border border-[#8B7BA5]/20 w-full"
                   loading="lazy"
                 />
+                <div className="absolute top-0 left-0 right-0 h-[18%] bg-gradient-to-b from-black/70 via-black/40 to-transparent rounded-t-[2rem] z-10 pointer-events-none" />
                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#8B7BA5]/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
                   Dashboard principal
                 </div>
@@ -519,6 +520,7 @@ const LandingImago = () => {
                   className="relative rounded-[2rem] shadow-2xl border border-[#8B7BA5]/20 w-full"
                   loading="lazy"
                 />
+                <div className="absolute top-0 left-0 right-0 h-[18%] bg-gradient-to-b from-black/70 via-black/40 to-transparent rounded-t-[2rem] z-10 pointer-events-none" />
                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#8B7BA5]/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
                   Arqueologia de Si
                 </div>

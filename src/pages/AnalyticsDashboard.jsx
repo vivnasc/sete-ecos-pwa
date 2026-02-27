@@ -110,9 +110,9 @@ export default function AnalyticsDashboard() {
 
       const aureaMRR = (aureaAtivos || []).reduce((sum, c) => {
         if (c.subscription_status === 'tester') return sum;
-        if (c.subscription_plan === 'MENSAL') return sum + 699;
-        if (c.subscription_plan === 'SEMESTRAL') return sum + (3355 / 6);
-        if (c.subscription_plan === 'ANUAL') return sum + (5870 / 12);
+        if (c.subscription_plan === 'MENSAL') return sum + 499;
+        if (c.subscription_plan === 'SEMESTRAL') return sum + (2395 / 6);
+        if (c.subscription_plan === 'ANUAL') return sum + (4190 / 12);
         return sum;
       }, 0);
 
@@ -199,9 +199,9 @@ export default function AnalyticsDashboard() {
 
     const aureaReceita = (aurea || []).reduce((sum, c) => {
       if (c.subscription_status === 'tester') return sum;
-      if (c.subscription_plan === 'MENSAL') return sum + 699;
-      if (c.subscription_plan === 'SEMESTRAL') return sum + 3355;
-      if (c.subscription_plan === 'ANUAL') return sum + 5870;
+      if (c.subscription_plan === 'MENSAL') return sum + 499;
+      if (c.subscription_plan === 'SEMESTRAL') return sum + 2395;
+      if (c.subscription_plan === 'ANUAL') return sum + 4190;
       return sum;
     }, 0);
 

@@ -127,7 +127,7 @@ export default function LandingBundle() {
     },
     {
       q: 'Como funciona o pagamento?',
-      a: 'Aceitas M-Pesa, transferência bancária e PayPal/cartão. O pagamento é processado de forma segura e recebes acesso imediato.',
+      a: 'Aceitas M-Pesa e PayPal/cartão. O pagamento é processado de forma segura e recebes acesso imediato.',
     },
     {
       q: 'Posso cancelar a qualquer momento?',
@@ -387,7 +387,7 @@ export default function LandingBundle() {
             </div>
 
             <p className="text-center text-white/60 mt-8 text-sm">
-              💳 M-Pesa | Transferência Bancária | PayPal/Cartão • 🔒 Pagamento 100% seguro
+              💳 M-Pesa | PayPal/Cartão • 🔒 Pagamento 100% seguro
             </p>
           </div>
         </section>

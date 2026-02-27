@@ -44,9 +44,9 @@ export const ECO_PLANS = {
     table: 'aurea_clients',
     color: '#C4A265',
     colorDark: '#2D2A24',
-    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 699, price_usd: 12.90, discount: 0 },
-    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 3355, price_usd: 62, discount: 20, savings_mzn: 839 },
-    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 5870, price_usd: 108, discount: 30, savings_mzn: 2518 }
+    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 499, price_usd: 9.90, discount: 0 },
+    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 2395, price_usd: 47.50, discount: 20, savings_mzn: 599 },
+    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 4190, price_usd: 83, discount: 30, savings_mzn: 1798 }
   },
   serena: {
     name: 'Serena',
@@ -89,9 +89,9 @@ export const ECO_PLANS = {
     table: 'imago_clients',
     color: '#8B7BA5',
     colorDark: '#1a1a2e',
-    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 699, price_usd: 12.90, discount: 0 },
-    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 3355, price_usd: 62, discount: 20, savings_mzn: 839 },
-    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 5870, price_usd: 108, discount: 30, savings_mzn: 2518 }
+    monthly: { id: 'monthly', name: 'Mensal', duration: 1, price_mzn: 499, price_usd: 9.90, discount: 0 },
+    semestral: { id: 'semestral', name: 'Semestral', duration: 6, price_mzn: 2395, price_usd: 47.50, discount: 20, savings_mzn: 599 },
+    annual: { id: 'annual', name: 'Anual', duration: 12, price_mzn: 4190, price_usd: 83, discount: 30, savings_mzn: 1798 }
   },
   aurora: {
     name: 'Aurora',

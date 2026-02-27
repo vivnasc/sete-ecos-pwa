@@ -124,9 +124,9 @@ Quanto tempo passas a cuidar dos outros e esqueces de cuidar de ti? O ÁUREA mud
 💎 Diamante (301+) — Integração
 
 *Preços:*
-Mensal — *699 MZN*/mês ($12.90 USD)
-Semestral — *3.355 MZN* (poupas 839 MZN — 20% desc.)
-Anual — *5.870 MZN* (poupas 2.518 MZN — 30% desc.)
+Mensal — *499 MZN*/mês ($9.90 USD)
+Semestral — *2.395 MZN* (poupas 599 MZN — 20% desc.)
+Anual — *4.190 MZN* (poupas 1.798 MZN — 30% desc.)
 
 Experimenta *7 dias grátis* com acesso total.
 
@@ -267,9 +267,9 @@ Quem és tu quando ninguém está a ver? O IMAGO é o eco mais profundo — a in
 ✅ Acesso à Comunidade
 
 *Preços:*
-Mensal — *699 MZN*/mês ($12.90 USD)
-Semestral — *3.355 MZN* (poupas 839 MZN — 20% desc.)
-Anual — *5.870 MZN* (poupas 2.518 MZN — 30% desc.)
+Mensal — *499 MZN*/mês ($9.90 USD)
+Semestral — *2.395 MZN* (poupas 599 MZN — 20% desc.)
+Anual — *4.190 MZN* (poupas 1.798 MZN — 30% desc.)
 
 Experimenta *7 dias grátis*.
 
@@ -306,14 +306,7 @@ Semestral — *12.500 MZN* (poupas 2.500!)
 Anual — *21.000 MZN* (poupas 9.000!)
 
 ━━━━━━━━━━━━━━━━━━
-*ÁUREA* (Auto-Valor) · *IMAGO* (Identidade)
-━━━━━━━━━━━━━━━━━━
-Mensal — *699 MZN*/mês cada ($12.90 USD)
-Semestral — *3.355 MZN* cada (20% desc.)
-Anual — *5.870 MZN* cada (30% desc.)
-
-━━━━━━━━━━━━━━━━━━
-*SERENA · IGNIS · VENTIS · ECOA*
+*ÁUREA · IMAGO · SERENA · IGNIS · VENTIS · ECOA*
 ━━━━━━━━━━━━━━━━━━
 Mensal — *499 MZN*/mês cada ($9.90 USD)
 Semestral — *2.395 MZN* cada (20% desc.)
@@ -350,14 +343,9 @@ Envia para: *85 100 6473*
 Nome: Vivianne Santos
 Depois envia-me o comprovativo aqui neste chat!
 
-*3. Transferência Bancária*
-Contacta-me para os dados bancários.
-Depois envia o comprovativo aqui.
-
 *Prazos de activação:*
 ⚡ PayPal/cartão: acesso *imediato*
 📱 M-Pesa: activação em menos de *1 hora*
-🏦 Transferência: até 24 horas
 
 Já pagaste? Envia-me o comprovativo aqui que activo o teu acesso!
 
@@ -411,24 +399,24 @@ A transformação é mais poderosa quando trabalhas várias dimensões juntas. E
 *DUO* — 2 Ecos (15% desc.)
 ━━━━━━━━━━━━━━━━━━
 Escolhe qualquer 2. Exemplo: Vitalis + Serena
-A partir de *849 MZN/mês*
+A partir de *848 MZN/mês*
 
 ━━━━━━━━━━━━━━━━━━
 *TRIO* — 3 Ecos (25% desc.)
 ━━━━━━━━━━━━━━━━━━
 Escolhe qualquer 3. Exemplo: Vitalis + Áurea + Ignis
-A partir de *1.124 MZN/mês*
+A partir de *1.123 MZN/mês*
 
 ━━━━━━━━━━━━━━━━━━
 *JORNADA* — 5+ Ecos (35% desc.)
 ━━━━━━━━━━━━━━━━━━
 Para quem quer transformação profunda.
-A partir de *1.624 MZN/mês*
+A partir de *1.622 MZN/mês*
 
 ━━━━━━━━━━━━━━━━━━
 *TUDO* — Todos os 7 Ecos (40% desc.) 🔥
 ━━━━━━━━━━━━━━━━━━
-A partir de *2.878 MZN/mês*
+A partir de *3.296 MZN/mês*
 + AURORA desbloqueia GRÁTIS ao completar tudo
 
 Todos os bundles incluem Comunidade + chat comigo.
@@ -513,7 +501,7 @@ Sim, a qualquer momento.
 Sim! Eu, Vivianne, respondo pessoalmente. Não sou um bot (mas este WhatsApp é automático — para falar comigo responde *vivianne*).
 
 *Posso pagar por M-Pesa?*
-Sim! M-Pesa, PayPal, cartão e transferência bancária.
+Sim! M-Pesa, PayPal e cartão de crédito/débito.
 
 *Quanto custa tudo junto?*
 Com o Bundle TUDO (7 Ecos), tens *40% de desconto* sobre o preço individual. Responde *bundle* para ver detalhes!

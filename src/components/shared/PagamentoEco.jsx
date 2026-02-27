@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import {
   ECO_PLANS,
+  GLOBAL_CONFIG,
   checkEcoAccess,
   startEcoTrial,
   getEcoPlans,
@@ -15,18 +16,18 @@ const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || 'sb';
 const PAYPAL_SDK_TIMEOUT = 15000;
 
 /**
- * Features por eco — lista de funcionalidades incluidas em cada modulo
+ * Features por eco — lista de funcionalidades incluídas em cada módulo
  */
 const ECO_FEATURES = {
-  serena: ['Diario Emocional', 'Respiracao Guiada', 'SOS Emocional', 'Praticas de Fluidez', 'Rituais de Libertacao', 'Coach Serena'],
-  ignis: ['Escolhas Conscientes', 'Foco Consciente', 'Bussola de Valores', 'Diario de Conquistas', 'Desafios de Fogo', 'Coach Ignis'],
+  serena: ['Diário Emocional', 'Respiração Guiada', 'SOS Emocional', 'Práticas de Fluidez', 'Rituais de Libertação', 'Coach Serena'],
+  ignis: ['Escolhas Conscientes', 'Foco Consciente', 'Bússola de Valores', 'Diário de Conquistas', 'Desafios de Fogo', 'Coach Ignis'],
   ventis: ['Monitor de Energia', 'Rotinas Builder', 'Pausas Conscientes', 'Movimento Flow', 'Detector Burnout', 'Coach Ventis'],
-  ecoa: ['Mapa de Silenciamento', 'Programa Micro-Voz', 'Biblioteca de Frases', 'Diario de Voz', 'Cartas Nao Enviadas', 'Coach Ecoa'],
-  imago: ['Espelho Triplo', 'Arqueologia de Si', 'Mapa de Identidade', 'Valores Essenciais', 'Visao do Futuro', 'Coach Imago']
+  ecoa: ['Mapa de Silenciamento', 'Programa Micro-Voz', 'Biblioteca de Frases', 'Diário de Voz', 'Cartas Não Enviadas', 'Coach Ecoa'],
+  imago: ['Espelho Triplo', 'Arqueologia de Si', 'Mapa de Identidade', 'Valores Essenciais', 'Visão do Futuro', 'Coach Imago']
 };
 
 /**
- * Mapa de logos — Ignis usa hifen em vez de underscore
+ * Mapa de logos — Ignis usa hífen em vez de underscore
  */
 const getLogoPath = (eco) => {
   if (eco === 'ignis') return '/logos/IGNIS-LOGO-V3.png';
@@ -34,7 +35,7 @@ const getLogoPath = (eco) => {
 };
 
 /**
- * PagamentoEco — Pagina de pagamento generica para qualquer eco
+ * PagamentoEco — Página de pagamento genérica para qualquer eco
  *
  * Props:
  * - eco: string (serena, ignis, ventis, ecoa, imago)
@@ -48,7 +49,7 @@ export default function PagamentoEco({ eco }) {
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [paymentRef, setPaymentRef] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState(null); // { type: 'success'|'error', text }
   const [showAuthForm, setShowAuthForm] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -86,17 +87,17 @@ export default function PagamentoEco({ eco }) {
     script.async = true;
     const timeout = setTimeout(() => {
       if (!window.paypal) {
-        setPaypalError('PayPal demorou muito a carregar. Usa M-Pesa ou transferencia.');
+        setPaypalError('PayPal demorou muito a carregar. Usa M-Pesa.');
       }
     }, PAYPAL_SDK_TIMEOUT);
     script.onload = () => {
       clearTimeout(timeout);
       if (window.paypal) setPaypalLoaded(true);
-      else setPaypalError('PayPal nao inicializou correctamente.');
+      else setPaypalError('PayPal não inicializou correctamente.');
     };
     script.onerror = () => {
       clearTimeout(timeout);
-      setPaypalError('Erro ao carregar PayPal. Usa M-Pesa ou transferencia.');
+      setPaypalError('Erro ao carregar PayPal. Usa M-Pesa.');
     };
     document.body.appendChild(script);
   };
@@ -129,7 +130,7 @@ export default function PagamentoEco({ eco }) {
           try {
             const details = await actions.order.capture();
             if (details.status !== 'COMPLETED') {
-              throw new Error(`Pagamento nao completado (status: ${details.status})`);
+              throw new Error(`Pagamento não completado (status: ${details.status})`);
             }
 
             await registerEcoPendingPayment(eco, userId, {
@@ -139,26 +140,27 @@ export default function PagamentoEco({ eco }) {
               currency: 'USD',
               planId: selectedPlan
             });
-            navigate(`/${eco}/dashboard`);
+            setMessage({ type: 'success', text: `Pagamento confirmado! ${g('Bem-vindo', 'Bem-vinda')} ao ${theme.name}.` });
+            setTimeout(() => navigate(`/${eco}/dashboard`), 2000);
           } catch (error) {
             console.error(`PayPal ${theme.name} onApprove error:`, error);
-            setMessage(`Erro ao processar: ${error.message}. Contacta-nos via WhatsApp se o valor foi cobrado.`);
+            setMessage({ type: 'error', text: `Erro ao processar: ${error.message}. Contacta-nos via WhatsApp se o valor foi cobrado.` });
           } finally {
             setSubmitting(false);
           }
         },
         onError: (err) => {
           console.error(`PayPal ${theme.name} button error:`, err);
-          setMessage('Erro no PayPal. Tenta novamente ou usa M-Pesa/Transferencia.');
+          setMessage({ type: 'error', text: 'Erro no PayPal. Tenta novamente ou usa M-Pesa.' });
         },
-        onCancel: () => setMessage('Pagamento cancelado. Podes tentar novamente.')
+        onCancel: () => setMessage({ type: 'error', text: 'Pagamento cancelado. Podes tentar novamente.' })
       }).render(paypalRef.current).catch((renderErr) => {
         console.error(`PayPal ${theme.name} render error:`, renderErr);
-        setPaypalError('Erro ao inicializar PayPal. Usa M-Pesa ou transferencia.');
+        setPaypalError('Erro ao inicializar PayPal. Usa M-Pesa.');
       });
     } catch (err) {
       console.error(`PayPal ${theme.name} Buttons() error:`, err);
-      setPaypalError('Erro ao criar botoes PayPal.');
+      setPaypalError('Erro ao criar botões PayPal.');
     }
   };
 
@@ -179,7 +181,7 @@ export default function PagamentoEco({ eco }) {
         if (userData) {
           setUserId(userData.id);
 
-          // Verificar se ja tem acesso
+          // Verificar se já tem acesso
           const access = await checkEcoAccess(eco, userData.id);
           if (access.hasAccess) {
             navigate(`/${eco}/dashboard`);
@@ -188,7 +190,7 @@ export default function PagamentoEco({ eco }) {
         }
       }
     } catch (error) {
-      console.error('Erro ao verificar autenticacao:', error);
+      console.error('Erro ao verificar autenticação:', error);
     } finally {
       setLoading(false);
     }
@@ -242,23 +244,23 @@ export default function PagamentoEco({ eco }) {
     }
 
     setSubmitting(true);
-    setMessage('');
+    setMessage(null);
 
     try {
       const result = await startEcoTrial(eco, userId);
       if (result) {
         navigate(`/${eco}/dashboard`);
       } else {
-        setMessage('Erro ao iniciar trial. Tenta novamente.');
+        setMessage({ type: 'error', text: 'Erro ao iniciar trial. Tenta novamente.' });
       }
     } catch (err) {
-      setMessage('Erro ao processar. Tenta novamente.');
+      setMessage({ type: 'error', text: 'Erro ao processar. Tenta novamente.' });
     } finally {
       setSubmitting(false);
     }
   };
 
-  // ===== Pagamento Manual =====
+  // ===== Pagamento M-Pesa =====
 
   const handleSubmitPayment = async () => {
     if (!session) {
@@ -267,17 +269,17 @@ export default function PagamentoEco({ eco }) {
     }
 
     if (!paymentMethod) {
-      setMessage('Selecciona um metodo de pagamento.');
+      setMessage({ type: 'error', text: 'Seleciona um método de pagamento.' });
       return;
     }
 
-    if (paymentMethod !== 'paypal' && !paymentRef.trim()) {
-      setMessage('Insere a referencia do pagamento.');
+    if (paymentMethod === 'mpesa' && !paymentRef.trim()) {
+      setMessage({ type: 'error', text: 'Insere a referência do pagamento M-Pesa.' });
       return;
     }
 
     setSubmitting(true);
-    setMessage('');
+    setMessage(null);
 
     try {
       const plan = plans.find(p => p.id === selectedPlan) || plans[0];
@@ -291,15 +293,29 @@ export default function PagamentoEco({ eco }) {
       });
 
       if (result.success) {
-        navigate(`/${eco}/dashboard`);
+        setMessage({ type: 'success', text: 'Pagamento registado! A Vivianne vai confirmar em breve via WhatsApp.' });
       } else {
-        setMessage('Erro ao registar pagamento. Tenta novamente.');
+        setMessage({ type: 'error', text: 'Erro ao registar pagamento. Tenta novamente.' });
       }
     } catch (err) {
-      setMessage('Erro ao registar pagamento. Tenta novamente.');
+      setMessage({ type: 'error', text: 'Erro ao registar pagamento. Tenta novamente.' });
     } finally {
       setSubmitting(false);
     }
+  };
+
+  // ===== WhatsApp link para comprovativo =====
+
+  const getWhatsAppLink = () => {
+    const plan = plans.find(p => p.id === selectedPlan) || plans[0];
+    const msg = encodeURIComponent(
+      `Olá! Fiz o pagamento para o ${theme.name}.\n` +
+      `Plano: ${plan.name}\n` +
+      `Valor: ${plan.price_mzn.toLocaleString()} MZN\n` +
+      `Referência M-Pesa: ${paymentRef}\n` +
+      `Por favor, confirme a minha subscrição.`
+    );
+    return `https://wa.me/${GLOBAL_CONFIG.WHATSAPP_COACH}?text=${msg}`;
   };
 
   // ===== Loading =====
@@ -321,7 +337,7 @@ export default function PagamentoEco({ eco }) {
   if (!ecoConfig) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <p className="text-white/60">Eco nao encontrado: {eco}</p>
+        <p className="text-white/60">Eco não encontrado: {eco}</p>
       </div>
     );
   }
@@ -354,6 +370,33 @@ export default function PagamentoEco({ eco }) {
       </nav>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Mensagem de feedback */}
+        {message && (
+          <div
+            className={`mb-6 p-4 rounded-xl text-center text-sm ${
+              message.type === 'success' ? 'text-green-200' : 'text-red-200'
+            }`}
+            style={{
+              background: message.type === 'success'
+                ? 'rgba(34, 197, 94, 0.15)'
+                : 'rgba(239, 68, 68, 0.15)',
+              border: `1px solid ${message.type === 'success' ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`
+            }}
+          >
+            {message.text}
+            {message.type === 'success' && paymentRef.trim() && (
+              <a
+                href={getWhatsAppLink()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block mt-3 text-green-400 hover:text-green-300 font-medium transition-colors"
+              >
+                📱 Enviar comprovativo via WhatsApp
+              </a>
+            )}
+          </div>
+        )}
+
         {/* Trial Banner */}
         <div
           className="mb-8 p-6 rounded-2xl border text-center"
@@ -362,7 +405,7 @@ export default function PagamentoEco({ eco }) {
             borderColor: `${theme.color}4d`
           }}
         >
-          <h2 className="text-2xl font-bold text-white mb-2">7 Dias Gratis</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">7 Dias Grátis</h2>
           <p className="mb-4" style={{ color: `${theme.color}cc` }}>
             Experimenta {theme.name.toUpperCase()} sem compromisso. Acesso completo a todas as funcionalidades.
           </p>
@@ -375,7 +418,7 @@ export default function PagamentoEco({ eco }) {
               boxShadow: `0 4px 15px ${theme.color}4d`
             }}
           >
-            {submitting ? 'A processar...' : `Comecar Trial Gratuito`}
+            {submitting ? 'A processar...' : 'Começar Trial Gratuito'}
           </button>
         </div>
 
@@ -430,14 +473,13 @@ export default function PagamentoEco({ eco }) {
           ))}
         </div>
 
-        {/* Metodos de Pagamento */}
+        {/* Método de Pagamento */}
         <div className="mb-8">
-          <h3 className="text-lg font-bold text-white mb-4">Metodo de Pagamento</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <h3 className="text-lg font-bold text-white mb-4">Método de Pagamento</h3>
+          <div className="grid grid-cols-2 gap-3">
             {[
               { id: 'mpesa', nome: 'M-Pesa', icone: '📱' },
-              { id: 'transfer', nome: 'Transferencia', icone: '🏦' },
-              { id: 'paypal', nome: 'PayPal / Cartao', icone: '💳' }
+              { id: 'paypal', nome: 'PayPal / Cartão', icone: '💳' }
             ].map((method) => (
               <button
                 key={method.id}
@@ -455,42 +497,31 @@ export default function PagamentoEco({ eco }) {
           </div>
         </div>
 
-        {/* Instrucoes de Pagamento (M-Pesa / Transferencia) */}
-        {paymentMethod && paymentMethod !== 'paypal' && (
+        {/* Instruções de Pagamento M-Pesa */}
+        {paymentMethod === 'mpesa' && (
           <div
             className="mb-8 p-6 rounded-2xl border"
             style={{ background: 'rgba(255,255,255,0.05)', borderColor: `${theme.color}33` }}
           >
-            <h4 className="text-white font-bold mb-4">Instrucoes de Pagamento</h4>
+            <h4 className="text-white font-bold mb-4">Instruções de Pagamento</h4>
 
-            {paymentMethod === 'mpesa' && (
-              <div className="space-y-2" style={{ color: `${theme.color}cc` }}>
-                <p>1. Abre a app M-Pesa</p>
-                <p>2. Selecciona "Transferir"</p>
-                <p>3. Envia para: <span className="font-bold text-white">85 100 6473</span></p>
-                <p>4. Valor: <span className="font-bold text-white">{selectedPlanData.price_mzn.toLocaleString()} MZN</span></p>
-                <p>5. Copia o codigo de transaccao abaixo</p>
-              </div>
-            )}
-
-            {paymentMethod === 'transfer' && (
-              <div className="space-y-2" style={{ color: `${theme.color}cc` }}>
-                <p>1. Transfere para a conta bancaria fornecida</p>
-                <p>2. Valor: <span className="font-bold text-white">{selectedPlanData.price_mzn.toLocaleString()} MZN</span></p>
-                <p>3. Guarda a referencia da transferencia</p>
-                <p>4. Cola a referencia abaixo</p>
-              </div>
-            )}
+            <div className="space-y-2" style={{ color: `${theme.color}cc` }}>
+              <p>1. Abre a app M-Pesa</p>
+              <p>2. Seleciona "Transferir"</p>
+              <p>3. Envia para: <span className="font-bold text-white">85 100 6473</span></p>
+              <p>4. Valor: <span className="font-bold text-white">{selectedPlanData.price_mzn.toLocaleString()} MZN</span></p>
+              <p>5. Copia o código de transacção abaixo</p>
+            </div>
 
             <div className="mt-6">
               <label className="block text-sm mb-2" style={{ color: `${theme.color}cc` }}>
-                Referencia/Codigo de Transaccao
+                Referência / Código de Transacção
               </label>
               <input
                 type="text"
                 value={paymentRef}
                 onChange={(e) => setPaymentRef(e.target.value)}
-                placeholder="Cole aqui o codigo..."
+                placeholder="Cole aqui o código M-Pesa..."
                 className="w-full px-4 py-3 bg-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none"
                 style={{ borderColor: `${theme.color}4d`, border: `1px solid ${theme.color}4d` }}
               />
@@ -530,23 +561,16 @@ export default function PagamentoEco({ eco }) {
               ) : null}
             </div>
             <p className="text-xs text-center mt-2" style={{ color: `${theme.color}80` }}>
-              Paga com cartao de credito/debito ou conta PayPal
+              Paga com cartão de crédito/débito ou conta PayPal
             </p>
           </div>
         )}
 
-        {/* Mensagem de erro/sucesso */}
-        {message && (
-          <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-xl">
-            <p className="text-red-300 text-sm">{message}</p>
-          </div>
-        )}
-
-        {/* Botao de submissao (nao para PayPal) */}
-        {paymentMethod && paymentMethod !== 'paypal' && (
+        {/* Botão de submissão (só para M-Pesa) */}
+        {paymentMethod === 'mpesa' && (
           <button
             onClick={handleSubmitPayment}
-            disabled={submitting}
+            disabled={submitting || !paymentRef.trim()}
             className="w-full py-4 text-white rounded-xl font-semibold text-lg transition-all shadow-lg disabled:opacity-50"
             style={{
               background: `linear-gradient(135deg, ${theme.color}, ${theme.colorDark})`,
@@ -555,6 +579,18 @@ export default function PagamentoEco({ eco }) {
           >
             {submitting ? 'A processar...' : 'Confirmar Pagamento'}
           </button>
+        )}
+
+        {/* WhatsApp link para comprovativo (após M-Pesa) */}
+        {paymentMethod === 'mpesa' && paymentRef.trim() && !message?.type && (
+          <a
+            href={getWhatsAppLink()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-center text-sm py-3 mt-3 text-green-400 hover:text-green-300 transition-colors"
+          >
+            📱 Enviar comprovativo via WhatsApp
+          </a>
         )}
 
         {/* O que inclui */}
@@ -643,7 +679,7 @@ export default function PagamentoEco({ eco }) {
                 className="text-sm hover:opacity-80 transition-opacity"
                 style={{ color: theme.color }}
               >
-                {isLogin ? 'Nao tens conta? Criar' : 'Ja tens conta? Entrar'}
+                {isLogin ? 'Não tens conta? Criar' : 'Já tens conta? Entrar'}
               </button>
             </div>
 

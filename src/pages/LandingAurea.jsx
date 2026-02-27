@@ -209,9 +209,9 @@ const LandingAurea = () => {
           "description": "Programa de autoestima e presença para mulheres com micro-práticas diárias e coaching personalizado.",
           "brand": { "@type": "Brand", "name": "Sete Ecos" },
           "offers": [
-            { "@type": "Offer", "name": "Mensal", "price": "699", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Semestral", "price": "3355", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
-            { "@type": "Offer", "name": "Anual", "price": "5870", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" }
+            { "@type": "Offer", "name": "Mensal", "price": "499", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Semestral", "price": "2395", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Anual", "price": "4190", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" }
           ]
         }}
       />
@@ -446,6 +446,7 @@ const LandingAurea = () => {
                 className="relative rounded-[2rem] shadow-2xl border border-amber-500/20 w-full"
                 loading="lazy"
               />
+              <div className="absolute top-0 left-0 right-0 h-[18%] bg-gradient-to-b from-black/70 via-black/40 to-transparent rounded-t-[2rem] z-10 pointer-events-none" />
               <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-amber-600/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
                 Dashboard principal
               </div>
@@ -459,6 +460,7 @@ const LandingAurea = () => {
                 className="relative rounded-[2rem] shadow-2xl border border-amber-500/20 w-full"
                 loading="lazy"
               />
+              <div className="absolute top-0 left-0 right-0 h-[18%] bg-gradient-to-b from-black/70 via-black/40 to-transparent rounded-t-[2rem] z-10 pointer-events-none" />
               <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-amber-600/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
                 Micro-Práticas
               </div>

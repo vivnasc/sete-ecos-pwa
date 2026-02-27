@@ -2434,7 +2434,7 @@ const ECO_CONTEUDO = {
     cor: '#C9A227',
     link: '/aurea',
     linkPagamento: '/aurea/pagamento',
-    preco: '699 MT/mês',
+    preco: '499 MT/mês',
     hooks: [
       'O teu valor não cabe numa calça tamanho S.',
       'Gastas horas a escolher roupa e 0 minutos a cuidar de como te vês ao espelho.',
@@ -2704,7 +2704,7 @@ const ECO_CONTEUDO = {
     cor: '#8B7BA5',
     link: '/imago',
     linkPagamento: '/imago/pagamento',
-    preco: '699 MT/mês',
+    preco: '499 MT/mês',
     hooks: [
       'Sabes quem és quando ninguém está a ver?',
       'A máscara que usas para o mundo está a sufocar quem realmente és.',

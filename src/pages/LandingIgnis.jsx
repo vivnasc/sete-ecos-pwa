@@ -477,6 +477,7 @@ const LandingIgnis = () => {
                   className="relative rounded-[2rem] shadow-2xl border border-[#C1634A]/20 w-full"
                   loading="lazy"
                 />
+                <div className="absolute top-0 left-0 right-0 h-[18%] bg-gradient-to-b from-black/70 via-black/40 to-transparent rounded-t-[2rem] z-10 pointer-events-none" />
                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#C1634A]/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
                   Dashboard
                 </div>
@@ -492,6 +493,7 @@ const LandingIgnis = () => {
                   className="relative rounded-[2rem] shadow-2xl border border-[#C1634A]/20 w-full"
                   loading="lazy"
                 />
+                <div className="absolute top-0 left-0 right-0 h-[18%] bg-gradient-to-b from-black/70 via-black/40 to-transparent rounded-t-[2rem] z-10 pointer-events-none" />
                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#C1634A]/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
                   Escolhas Conscientes
                 </div>
@@ -507,6 +509,7 @@ const LandingIgnis = () => {
                   className="relative rounded-[2rem] shadow-2xl border border-[#C1634A]/20 w-full"
                   loading="lazy"
                 />
+                <div className="absolute top-0 left-0 right-0 h-[18%] bg-gradient-to-b from-black/70 via-black/40 to-transparent rounded-t-[2rem] z-10 pointer-events-none" />
                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#C1634A]/90 text-white text-xs font-semibold rounded-full whitespace-nowrap">
                   Bússola de Valores
                 </div>

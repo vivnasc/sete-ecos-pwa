@@ -505,9 +505,7 @@ const PagamentoVitalis = () => {
       });
 
       const result = await registerPendingPayment(userId, {
-        method: manualPaymentType === 'mpesa' ? 'M-Pesa' :
-                manualPaymentType === 'transfer' ? 'Transferência Bancária' :
-                'WhatsApp',
+        method: manualPaymentType === 'mpesa' ? 'M-Pesa' : 'WhatsApp',
         reference: manualReference,
         amount: amount,
         currency: manualCurrency,
@@ -529,9 +527,7 @@ const PagamentoVitalis = () => {
           email: userEmail,
           plano: plan.name,
           valor: `${amount.toLocaleString()} ${manualCurrency}`,
-          metodo: manualPaymentType === 'mpesa' ? 'M-Pesa' :
-                  manualPaymentType === 'transfer' ? 'Transferência Bancária' :
-                  'WhatsApp',
+          metodo: manualPaymentType === 'mpesa' ? 'M-Pesa' : 'WhatsApp',
           referencia: manualReference
         }).catch(console.error);
 
@@ -848,7 +844,7 @@ const PagamentoVitalis = () => {
                   Recebemos o teu registo de pagamento. A Coach Vivianne vai confirmar em até 24 horas.
                 </p>
                 <div className="bg-white/10 rounded-xl p-4 mb-4 text-left text-sm text-white/80">
-                  <p className="mb-2"><strong>Método:</strong> {manualPaymentType === 'mpesa' ? 'M-Pesa' : manualPaymentType === 'transfer' ? 'Transferência Bancária' : 'WhatsApp'}</p>
+                  <p className="mb-2"><strong>Método:</strong> {manualPaymentType === 'mpesa' ? 'M-Pesa' : 'WhatsApp'}</p>
                   <p className="mb-2"><strong>Referência:</strong> {manualReference}</p>
                   <p className="mb-2"><strong>Valor:</strong> {parseFloat(manualAmount).toLocaleString()} {manualCurrency}</p>
                   <p><strong>Plano:</strong> {getCurrentPlan()?.name}</p>
@@ -942,7 +938,6 @@ const PagamentoVitalis = () => {
                         <div className="grid grid-cols-3 gap-2">
                           {[
                             { value: 'mpesa', label: 'M-Pesa', icon: '📱' },
-                            { value: 'transfer', label: 'Transferência', icon: '🏦' },
                             { value: 'whatsapp', label: 'WhatsApp', icon: '💬' }
                           ].map((method) => (
                             <button
@@ -976,7 +971,6 @@ const PagamentoVitalis = () => {
                         />
                         <p className="text-white/50 text-xs mt-1">
                           {manualPaymentType === 'mpesa' ? 'Código de confirmação M-Pesa' :
-                           manualPaymentType === 'transfer' ? 'Referência bancária' :
                            'Número do comprovativo enviado via WhatsApp'}
                         </p>
                       </div>
@@ -1024,12 +1018,6 @@ const PagamentoVitalis = () => {
                               <li>1. Faz o pagamento via M-Pesa para <strong>+258 85 100 6473</strong></li>
                               <li>2. Copia o código de confirmação</li>
                               <li>3. Cola aqui em cima e submete</li>
-                            </>
-                          ) : manualPaymentType === 'transfer' ? (
-                            <>
-                              <li>1. Transfere para a conta bancária fornecida</li>
-                              <li>2. Guarda a referência da transferência</li>
-                              <li>3. Insere a referência aqui e submete</li>
                             </>
                           ) : (
                             <>

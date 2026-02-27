@@ -77,7 +77,7 @@ export default function PaymentPage({ eco, features = [], testimonial = null }) 
     script.onload = () => {
       clearTimeout(timeout)
       if (window.paypal) setPaypalLoaded(true)
-      else setPaypalError('PayPal nao inicializou correctamente.')
+      else setPaypalError('PayPal não inicializou correctamente.')
     }
     script.onerror = () => {
       clearTimeout(timeout)
@@ -145,7 +145,7 @@ export default function PaymentPage({ eco, features = [], testimonial = null }) 
       })
     } catch (err) {
       console.error(`PayPal ${config.name} Buttons() error:`, err)
-      setPaypalError('Erro ao criar botoes PayPal.')
+      setPaypalError('Erro ao criar botões PayPal.')
     }
   }
 
@@ -420,7 +420,7 @@ export default function PaymentPage({ eco, features = [], testimonial = null }) 
                 ) : null}
               </div>
               <p className="text-xs text-center" style={{ color: `${theme.color}80` }}>
-                Paga com cartao de credito/debito ou conta PayPal
+                Paga com cartão de crédito/débito ou conta PayPal
               </p>
             </div>
           )}
