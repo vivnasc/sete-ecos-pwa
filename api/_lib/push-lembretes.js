@@ -1,15 +1,16 @@
 /**
  * Push Lembretes Cron — Envia push notifications reais aos clientes
  *
- * Chamado 9x/dia por crons diários a cada 2h no vercel.json:
+ * Chamado a cada 2h por crons no vercel.json:
  *   UTC 4,6,8,10,12,14,16,18,20 = CAT 6,8,10,12,14,16,18,20,22
  *
- * Cada execução obtém a hora actual em Africa/Maputo (CAT) e envia
- * os lembretes cuja hora configurada é a hora actual OU a hora anterior.
- * Esta janela de 2h garante que QUALQUER hora escolhida pelo utilizador
- * (ex: 15:00, 20:30) é coberta, mesmo com horas personalizadas.
+ * Cada execução obtém hora+minuto em Africa/Maputo (CAT) e envia
+ * lembretes cuja hora configurada está dentro de uma janela de 2h
+ * antes da hora actual (para cobrir o intervalo desde o cron anterior).
  *
- * Tags alinhadas com o cliente para evitar duplicados via Service Worker.
+ * Notificações locais (client-side) tratam do timing exacto quando a app
+ * está aberta. O push do servidor é backup para quando a app está fechada.
+ * Tags alinhadas com o cliente evitam duplicados via Service Worker.
  */
 
 import { createClient } from '@supabase/supabase-js'
@@ -26,17 +27,28 @@ if (VAPID_PUBLIC && VAPID_PRIVATE) {
   try { webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE) } catch (e) { /* ok */ }
 }
 
-// Obter hora actual em Africa/Maputo (CAT = UTC+2)
-function horaActualCAT() {
+// Obter hora e minuto actuais em Africa/Maputo (CAT = UTC+2)
+function horaMinutoCAT() {
   const now = new Date()
-  // Intl garante conversão correcta mesmo com DST
   const parts = new Intl.DateTimeFormat('en-GB', {
     timeZone: 'Africa/Maputo',
     hour: 'numeric',
+    minute: 'numeric',
     hour12: false,
   }).formatToParts(now)
-  const hourPart = parts.find(p => p.type === 'hour')
-  return parseInt(hourPart.value, 10)
+  const h = parseInt(parts.find(p => p.type === 'hour')?.value || '0', 10)
+  const m = parseInt(parts.find(p => p.type === 'minute')?.value || '0', 10)
+  return { hora: h, minuto: m, totalMinutos: h * 60 + m }
+}
+
+// Verificar se um lembrete está dentro da janela de envio (últimas 2h)
+function lembreteNaJanela(lembreteHora, agoraMinutos) {
+  const [h, m] = lembreteHora.split(':').map(Number)
+  const lembreteMinutos = h * 60 + (m || 0)
+  // Janela: desde 120min atrás até agora (inclusive)
+  // Cobre o intervalo de 2h desde o cron anterior
+  const diff = agoraMinutos - lembreteMinutos
+  return diff >= 0 && diff < 120
 }
 
 // Manter compatibilidade com chamadas antigas por bloco
@@ -225,15 +237,13 @@ export default async function handler(req, res) {
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-  // Determinar hora actual em CAT
-  const horaCAT = horaActualCAT()
+  // Determinar hora e minuto actuais em CAT
+  const { hora: horaCAT, minuto: minutoCAT, totalMinutos } = horaMinutoCAT()
 
-  // Suportar bloco legacy (mas agora filtra só pela hora actual)
+  // Suportar bloco legacy (mas agora filtra pela hora actual)
   const url = new URL(req.url, `http://${req.headers.host}`)
   const bloco = url.searchParams.get('bloco') || req.query?.bloco || null
 
-  // Se chamado com bloco antigo, verificar se a hora actual cai nesse bloco
-  // para evitar enviar fora de horas durante migração
   if (bloco && BLOCOS[bloco]) {
     const janela = BLOCOS[bloco]
     if (horaCAT < janela.min || horaCAT > janela.max) {
@@ -246,7 +256,7 @@ export default async function handler(req, res) {
     }
   }
 
-  console.log(`[Push Lembretes] Hora CAT: ${horaCAT}h — enviando lembretes para ${horaCAT - 1}h-${horaCAT}h`)
+  console.log(`[Push Lembretes] ${horaCAT}:${String(minutoCAT).padStart(2, '0')} CAT — janela: ${horaCAT - 2}h-${horaCAT}:${String(minutoCAT).padStart(2, '0')}`)
 
   // Buscar todas as preferências activas
   const { data: prefs, error } = await supabase
@@ -277,11 +287,8 @@ export default async function handler(req, res) {
     for (const lembrete of lembretesActivos) {
       if (!lembrete.hora) continue
 
-      const [h] = lembrete.hora.split(':').map(Number)
-
-      // Enviar se a hora do lembrete é a hora actual OU a hora anterior
-      // (janela de 2h para cobrir horas personalizadas entre crons)
-      if (h === horaCAT || h === horaCAT - 1) {
+      // Enviar se o lembrete está dentro da janela de 2h (desde o cron anterior)
+      if (lembreteNaJanela(lembrete.hora, totalMinutos)) {
         const enviados = await enviarPush(supabase, pref.user_id, lembrete.tipo)
         totalEnviados += enviados
         if (enviados > 0) userEnviou = true

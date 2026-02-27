@@ -162,7 +162,7 @@ export const pushRegistado = async () => {
   return false;
 };
 
-// Agendar notificação para uma hora específica hoje (ou amanhã se já passou)
+// Agendar notificação para uma hora específica hoje
 export const agendarNotificacao = (tipo, horaMinutos) => {
   if (!temPermissao()) return null;
 
@@ -178,9 +178,9 @@ export const agendarNotificacao = (tipo, horaMinutos) => {
   // Se já passou hoje, não agenda (será reagendado na próxima abertura da app)
   if (alvo <= agora) return null;
 
-  // Mínimo 60 segundos de delay para evitar disparos imediatos
+  // Mínimo 30 segundos de delay para evitar disparos imediatos
   const delay = alvo - agora;
-  if (delay < 60000) return null;
+  if (delay < 30000) return null;
 
   const timeoutId = setTimeout(() => {
     enviarNotificacao(notif.titulo, {
@@ -229,21 +229,15 @@ export const carregarLembretes = () => {
   }
 };
 
-// Activar todos os lembretes configurados — chamar a cada abertura da app
-// Se push real está registado, o servidor envia as notificações via cron horário.
-// Nesse caso, NÃO agendar localmente para evitar duplicados.
+// Activar todos os lembretes configurados — chamar a cada abertura da app.
+// Agenda SEMPRE localmente para timing exacto (ao minuto).
+// O push do servidor serve como backup quando a app está fechada.
+// Tags iguais garantem que não há notificações duplicadas.
 export const activarLembretes = async () => {
   // Cancelar anteriores para evitar duplicados
   cancelarLembretes();
 
   if (!temPermissao()) return [];
-
-  // Se push real está activo, o servidor trata dos lembretes — não duplicar
-  const temPush = await pushRegistado();
-  if (temPush) {
-    console.log('Vitalis: push real activo — lembretes geridos pelo servidor');
-    return [];
-  }
 
   const lembretes = carregarLembretes();
 
@@ -254,12 +248,53 @@ export const activarLembretes = async () => {
     }
   });
 
+  // Enviar schedule ao Service Worker para backup quando app está em background
+  enviarScheduleAoSW(lembretes);
+
   const count = timeoutsActivos.length;
   if (count > 0) {
-    console.log(`Vitalis: ${count} lembretes agendados localmente (fallback sem push)`);
+    console.log(`Vitalis: ${count} lembretes agendados localmente (exactos)`);
   }
 
   return timeoutsActivos;
+};
+
+// Enviar horário de lembretes ao Service Worker para agendamento em background
+const enviarScheduleAoSW = async (lembretes) => {
+  try {
+    if (!('serviceWorker' in navigator)) return;
+    const reg = await navigator.serviceWorker.ready;
+    if (!reg.active) return;
+
+    const activos = lembretes
+      .filter(l => l.activo && NOTIFICACOES[l.tipo])
+      .map(l => ({
+        tipo: l.tipo,
+        hora: l.hora,
+        titulo: NOTIFICACOES[l.tipo].titulo,
+        corpo: NOTIFICACOES[l.tipo].corpo,
+        tag: NOTIFICACOES[l.tipo].tag,
+      }));
+
+    reg.active.postMessage({
+      type: 'SCHEDULE_NOTIFICATIONS',
+      lembretes: activos,
+    });
+  } catch { /* SW pode não estar disponível */ }
+};
+
+// Re-agendar quando a app volta ao foreground (visibility change)
+let visibilityListenerActive = false;
+export const activarReagendamentoAutomatico = () => {
+  if (visibilityListenerActive) return;
+  visibilityListenerActive = true;
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && temPermissao()) {
+      // App voltou ao foreground — re-agendar para cobrir tempos que possam ter sido perdidos
+      activarLembretes().catch(() => {});
+    }
+  });
 };
 
 // Contar lembretes activos restantes para hoje
@@ -316,5 +351,6 @@ export default {
   activarLembretes,
   cancelarLembretes,
   contarLembretesHoje,
+  activarReagendamentoAutomatico,
   useNotificacoes
 };
