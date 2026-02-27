@@ -58,6 +58,7 @@ export default function PagamentoEco({ eco }) {
   const [paypalLoaded, setPaypalLoaded] = useState(false);
   const [paypalError, setPaypalError] = useState(null);
   const paypalRef = useRef(null);
+  const pendingActionRef = useRef(null); // 'payment' | 'trial' — auto-executa após login
 
   const theme = getEcoTheme(eco);
   const plans = getEcoPlans(eco);
@@ -74,6 +75,18 @@ export default function PagamentoEco({ eco }) {
       renderPayPalButtons();
     }
   }, [selectedPlan, paypalLoaded, userId, paymentMethod]);
+
+  // Auto-executar acção pendente após login (M-Pesa submit ou trial)
+  useEffect(() => {
+    if (!userId || !pendingActionRef.current) return;
+    const action = pendingActionRef.current;
+    pendingActionRef.current = null;
+    if (action === 'payment') {
+      handleSubmitPayment();
+    } else if (action === 'trial') {
+      handleStartTrial();
+    }
+  }, [userId]);
 
   // ===== PayPal SDK =====
 
@@ -239,6 +252,7 @@ export default function PagamentoEco({ eco }) {
 
   const handleStartTrial = async () => {
     if (!session) {
+      pendingActionRef.current = 'trial';
       setShowAuthForm(true);
       return;
     }
@@ -264,6 +278,7 @@ export default function PagamentoEco({ eco }) {
 
   const handleSubmitPayment = async () => {
     if (!session) {
+      pendingActionRef.current = 'payment';
       setShowAuthForm(true);
       return;
     }
