@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { WhatsAppAlertas } from '../lib/whatsapp';
 import SEOHead from '../components/SEOHead';
 import PartilharSocial from '../components/PartilharSocial';
 import ScrollReveal from '../components/ScrollReveal';
@@ -132,6 +133,8 @@ const LandingGeral = () => {
         }
       } else {
         setSucesso(true);
+        // Notificar coach sobre novo lead (fire-and-forget)
+        WhatsAppAlertas.novoLeadWaitlist(nome, email, 'sete-ecos-geral').catch(() => {});
         setNome('');
         setEmail('');
       }
