@@ -1312,34 +1312,70 @@ async function testNotificacoes(res) {
 
   const agora = new Date().toLocaleString('pt-PT', { timeZone: 'Africa/Maputo' });
 
-  // 1. TELEGRAM
+  // 1. TELEGRAM — diagnóstico completo
   const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
   const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
   resultados.telegram.configurado = !!(BOT_TOKEN && CHAT_ID);
+  resultados.telegram.chat_id_configurado = CHAT_ID || 'N/A';
+  resultados.telegram.token_preview = BOT_TOKEN ? `${BOT_TOKEN.slice(0, 8)}...${BOT_TOKEN.slice(-4)}` : 'N/A';
+
   if (BOT_TOKEN && CHAT_ID) {
+    // 1a. Verificar se o token é válido (getMe)
     try {
-      const msg = `🧪 *TESTE DE NOTIFICAÇÕES*\n\n✅ Telegram está a funcionar!\n🕐 ${agora} (CAT)\n\nSe estás a ver esta mensagem, o canal Telegram está OK.`;
-      const resp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'Markdown' }),
-      });
-      const data = await resp.json();
-      if (data.ok) {
-        resultados.telegram.enviado = true;
+      const meResp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getMe`);
+      const meData = await meResp.json();
+      if (meData.ok) {
+        resultados.telegram.bot_nome = `@${meData.result.username}`;
+        resultados.telegram.bot_valido = true;
       } else {
-        // Retry sem Markdown
-        const resp2 = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chat_id: CHAT_ID, text: msg.replace(/\*/g, '') }),
-        });
-        const data2 = await resp2.json();
-        resultados.telegram.enviado = data2.ok;
-        resultados.telegram.erro = data2.ok ? 'Markdown falhou mas texto puro OK' : data2.description;
+        resultados.telegram.bot_valido = false;
+        resultados.telegram.erro = `Token inválido: ${meData.description}`;
       }
     } catch (err) {
-      resultados.telegram.erro = err.message;
+      resultados.telegram.bot_valido = false;
+      resultados.telegram.erro = `Erro de rede ao validar token: ${err.message}`;
+    }
+
+    // 1b. Verificar updates recentes (para descobrir chat_id correcto)
+    if (resultados.telegram.bot_valido) {
+      try {
+        const updResp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?limit=5`);
+        const updData = await updResp.json();
+        if (updData.ok && updData.result.length > 0) {
+          const chatIds = [...new Set(updData.result.map(u => u.message?.chat?.id).filter(Boolean))];
+          resultados.telegram.chats_encontrados = chatIds;
+          if (chatIds.length > 0 && !chatIds.includes(Number(CHAT_ID))) {
+            resultados.telegram.aviso = `CHAT_ID ${CHAT_ID} não corresponde aos chats encontrados: ${chatIds.join(', ')}. Actualiza TELEGRAM_CHAT_ID no Vercel!`;
+          }
+        } else {
+          resultados.telegram.chats_encontrados = [];
+          resultados.telegram.aviso = 'Nenhuma conversa encontrada. Envia /start ao bot e tenta outra vez.';
+        }
+      } catch (_) {}
+
+      // 1c. Tentar enviar mensagem
+      try {
+        const msg = `🧪 TESTE DE NOTIFICAÇÕES\n\n✅ Telegram está a funcionar!\n🕐 ${agora} (CAT)\n\nSe estás a ver esta mensagem, o canal Telegram está OK.`;
+        const resp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: CHAT_ID, text: msg }),
+        });
+        const data = await resp.json();
+        if (data.ok) {
+          resultados.telegram.enviado = true;
+        } else {
+          resultados.telegram.enviado = false;
+          resultados.telegram.erro = data.description;
+          // Se falhou com o CHAT_ID configurado, tentar com o primeiro chat encontrado
+          const chatIds = resultados.telegram.chats_encontrados || [];
+          if (chatIds.length > 0 && !chatIds.includes(Number(CHAT_ID))) {
+            resultados.telegram.sugestao = `Experimenta mudar TELEGRAM_CHAT_ID para: ${chatIds[0]}`;
+          }
+        }
+      } catch (err) {
+        resultados.telegram.erro = `Erro de rede: ${err.message}`;
+      }
     }
   }
 

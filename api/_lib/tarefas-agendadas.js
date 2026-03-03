@@ -59,32 +59,39 @@ export default async function handler(req, res) {
   };
 
   try {
-    // 1. LEMBRETES PARA CLIENTES INATIVAS (email + WhatsApp)
-    await enviarLembretes(supabase, resultados);
+    // ═══ PRIORIDADE 1: Notificações para a COACH (Telegram) ═══
+    // Correm PRIMEIRO para garantir que chegam mesmo que os emails
+    // a clientes demorem mais que o timeout do Vercel (60s)
 
-    // 2. AVISOS DE EXPIRAÇÃO (email + WhatsApp trial)
-    await enviarAvisosExpiracao(supabase, resultados);
+    // 1. RESUMO DIÁRIO PARA COACH (email + Telegram)
+    await enviarResumoDiario(supabase, resultados);
 
-    // 3. MARCOS — celebração de streaks (WhatsApp)
-    await enviarMarcos(supabase, resultados);
-
-    // 3b. MARCOS DE PESO — celebrar perda de peso significativa
-    await enviarMarcosPeso(supabase, resultados);
-
-    // 4. WIN-BACK — clientes com subscrição expirada (WhatsApp)
-    await enviarWinback(supabase, resultados);
-
-    // 5. CURIOSIDADE INSANA - users registados sem subscrição
-    await enviarCuriosidadeInsana(supabase, resultados);
-
-    // 6. TRIALS A EXPIRAR AMANHÃ — alerta Telegram para coach
+    // 2. TRIALS A EXPIRAR AMANHÃ — alerta Telegram para coach
     await alertarTrialsExpirando(supabase, resultados);
 
-    // 7. CLIENTES SUPER-ENGAJADAS — 90%+ aderência semanal
+    // 3. CLIENTES SUPER-ENGAJADAS — 90%+ aderência semanal
     await alertarSuperEngajadas(supabase, resultados);
 
-    // 8. RESUMO DIÁRIO PARA COACH
-    await enviarResumoDiario(supabase, resultados);
+    // ═══ PRIORIDADE 2: Comunicações com clientes ═══
+    // Estas podem demorar mais (emails + WA a múltiplos clientes)
+
+    // 4. LEMBRETES PARA CLIENTES INATIVAS (email + WhatsApp)
+    await enviarLembretes(supabase, resultados);
+
+    // 5. AVISOS DE EXPIRAÇÃO (email + WhatsApp trial)
+    await enviarAvisosExpiracao(supabase, resultados);
+
+    // 6. MARCOS — celebração de streaks (WhatsApp)
+    await enviarMarcos(supabase, resultados);
+
+    // 6b. MARCOS DE PESO — celebrar perda de peso significativa
+    await enviarMarcosPeso(supabase, resultados);
+
+    // 7. WIN-BACK — clientes com subscrição expirada (WhatsApp)
+    await enviarWinback(supabase, resultados);
+
+    // 8. CURIOSIDADE INSANA - users registados sem subscrição
+    await enviarCuriosidadeInsana(supabase, resultados);
 
     return res.status(200).json({
       success: true,
@@ -332,9 +339,7 @@ async function enviarResumoDiario(supabase, resultados) {
       progressoPeso
     };
 
-    await enviarEmail('coach-resumo-diario', COACH_EMAIL, dadosResumo);
-
-    // WhatsApp resumo diário
+    // Telegram/WhatsApp PRIMEIRO (prioridade — não bloquear se email falhar)
     const linhasFizeram = fizeram.length > 0 ? `\n✅ *Fizeram check-in:*\n${fizeram.join('\n')}` : '\n❌ Ninguém fez check-in hoje';
     const linhasNaoFizeram = naoFizeram.length > 0 ? `\n⏳ *Sem check-in:*\n${naoFizeram.join(', ')}` : '';
     const linhasPeso = progressoPeso.length > 0
@@ -350,6 +355,13 @@ async function enviarResumoDiario(supabase, resultados) {
 ${linhasFizeram}${linhasNaoFizeram}${linhasPeso}
 
 Boa noite! 🌙`);
+
+    // Email depois (se falhar, Telegram já foi)
+    try {
+      await enviarEmail('coach-resumo-diario', COACH_EMAIL, dadosResumo);
+    } catch (emailErr) {
+      resultados.erros.push('Email resumo falhou (Telegram já enviado): ' + emailErr.message);
+    }
 
     resultados.resumo = true;
   } catch (err) {
