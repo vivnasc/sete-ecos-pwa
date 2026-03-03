@@ -270,7 +270,7 @@ export default async function handler(req, res) {
     for (const lembrete of lembretesActivos) {
       if (!lembrete.hora) continue
 
-      // Enviar se o lembrete está dentro da janela de 2h (desde o cron anterior)
+      // Enviar se o lembrete está dentro da janela de 6min
       if (lembreteNaJanela(lembrete.hora, totalMinutos)) {
         const enviados = await enviarPush(supabase, pref.user_id, lembrete.tipo)
         totalEnviados += enviados
