@@ -51,18 +51,34 @@ async function pushCoachNotification({ title, body, url, tag }) {
 }
 
 // ─── Fire-and-forget Telegram notification (no res needed) ───
+// Tenta com Markdown, faz retry sem formatação se falhar (nomes com _ ou * crasham)
 async function enviarTelegramCoach(mensagem) {
   const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
   const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
   if (!BOT_TOKEN || !CHAT_ID) return;
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
   try {
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    // 1. Tentar com Markdown
+    const resp = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: CHAT_ID, text: mensagem, parse_mode: 'Markdown' }),
     });
+    if (resp.ok) return true;
+    // 2. Se Markdown falhar (caracteres especiais), retry sem formatação
+    const err = await resp.json().catch(() => ({}));
+    console.warn('[Telegram] Markdown falhou:', err?.description, '— retry sem formatação');
+    const resp2 = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: CHAT_ID, text: mensagem }),
+    });
+    if (resp2.ok) return true;
+    console.error('[Telegram] Falhou mesmo sem Markdown:', (await resp2.json().catch(() => ({}))).description);
+    return false;
   } catch (err) {
-    console.error('[Telegram coach.js] Erro:', err.message);
+    console.error('[Telegram coach.js] Erro de rede:', err.message);
+    return false;
   }
 }
 
@@ -119,6 +135,8 @@ export default async function handler(req, res) {
     if (!coach) return res.status(403).json({ error: 'Acesso negado. Apenas coaches autorizadas.' });
 
     switch (action) {
+      case 'test-notificacoes':
+        return await testNotificacoes(res);
       case 'listar-clientes':
         return await listarClientes(res);
       case 'coach-notificacoes':
@@ -1281,6 +1299,119 @@ export async function sendPushToUser(userId, { title, body, url, tag }) {
 }
 
 // ==========================================
+// TEST NOTIFICAÇÕES — testa todos os canais de notificação da coach
+// ==========================================
+
+async function testNotificacoes(res) {
+  const resultados = {
+    telegram: { configurado: false, enviado: false, erro: null },
+    push: { configurado: false, enviado: false, subscricoes: 0, erro: null },
+    whatsapp: { configurado: false, enviado: false, erro: null },
+    email: { configurado: false, erro: null },
+  };
+
+  const agora = new Date().toLocaleString('pt-PT', { timeZone: 'Africa/Maputo' });
+
+  // 1. TELEGRAM
+  const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+  const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+  resultados.telegram.configurado = !!(BOT_TOKEN && CHAT_ID);
+  if (BOT_TOKEN && CHAT_ID) {
+    try {
+      const msg = `🧪 *TESTE DE NOTIFICAÇÕES*\n\n✅ Telegram está a funcionar!\n🕐 ${agora} (CAT)\n\nSe estás a ver esta mensagem, o canal Telegram está OK.`;
+      const resp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'Markdown' }),
+      });
+      const data = await resp.json();
+      if (data.ok) {
+        resultados.telegram.enviado = true;
+      } else {
+        // Retry sem Markdown
+        const resp2 = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: CHAT_ID, text: msg.replace(/\*/g, '') }),
+        });
+        const data2 = await resp2.json();
+        resultados.telegram.enviado = data2.ok;
+        resultados.telegram.erro = data2.ok ? 'Markdown falhou mas texto puro OK' : data2.description;
+      }
+    } catch (err) {
+      resultados.telegram.erro = err.message;
+    }
+  }
+
+  // 2. PUSH
+  resultados.push.configurado = !!(VAPID_PUBLIC && VAPID_PRIVATE);
+  if (VAPID_PUBLIC && VAPID_PRIVATE) {
+    try {
+      const { data: subs } = await supabase
+        .from('push_subscriptions')
+        .select('endpoint, keys_p256dh, keys_auth')
+        .in('user_email', COACH_EMAILS.map(e => e.toLowerCase()));
+      resultados.push.subscricoes = subs?.length || 0;
+      if (subs && subs.length > 0) {
+        const payload = JSON.stringify({
+          title: '🧪 Teste Push',
+          body: `Push funciona! ${agora} CAT`,
+          url: '/coach',
+          tag: 'test-notificacoes',
+          requireInteraction: true,
+        });
+        let sent = 0;
+        for (const sub of subs) {
+          try {
+            await webpush.sendNotification(
+              { endpoint: sub.endpoint, keys: { p256dh: sub.keys_p256dh, auth: sub.keys_auth } },
+              payload
+            );
+            sent++;
+          } catch (err) {
+            if (err.statusCode === 410 || err.statusCode === 404) {
+              await supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
+            }
+            resultados.push.erro = `${err.statusCode || err.message}`;
+          }
+        }
+        resultados.push.enviado = sent > 0;
+      } else {
+        resultados.push.erro = 'Sem subscriptions. Vai ao /coach e clica "Activar Notificações".';
+      }
+    } catch (err) {
+      resultados.push.erro = err.message;
+    }
+  }
+
+  // 3. WHATSAPP
+  const WA_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
+  const WA_PHONE = process.env.WHATSAPP_PHONE_NUMBER_ID;
+  const VIV_NUM = (process.env.VIVIANNE_PERSONAL_NUMBER || '').replace(/[^0-9]/g, '');
+  resultados.whatsapp.configurado = !!(WA_TOKEN && WA_PHONE && VIV_NUM);
+  resultados.whatsapp.numero_destino = VIV_NUM ? `${VIV_NUM.slice(0, 3)}***${VIV_NUM.slice(-3)}` : 'N/A';
+  // WhatsApp requer janela de 24h para texto livre — não testamos para não falhar
+
+  // 4. EMAIL
+  resultados.email.configurado = !!process.env.RESEND_API_KEY;
+
+  // Resumo
+  const canais_ok = [
+    resultados.telegram.enviado && 'Telegram',
+    resultados.push.enviado && 'Push',
+  ].filter(Boolean);
+
+  return res.status(200).json({
+    ok: canais_ok.length > 0,
+    canais_funcionando: canais_ok,
+    resultados,
+    dica: canais_ok.length === 0
+      ? 'Nenhum canal funcionou. Verifica: 1) Telegram: enviaste /start ao bot? 2) Push: activaste no /coach?'
+      : null,
+  });
+}
+
+// ==========================================
 // TELEGRAM — notificações para a coach
 // ==========================================
 
@@ -1299,6 +1430,7 @@ async function telegramSend(params, res) {
 
   try {
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    // Tentar com Markdown
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1311,12 +1443,25 @@ async function telegramSend(params, res) {
 
     const result = await response.json();
 
-    if (!result.ok) {
-      console.error('[Telegram] Erro:', result.description);
-      return res.status(200).json({ ok: false, error: result.description });
+    if (result.ok) {
+      return res.status(200).json({ ok: true, messageId: result.result?.message_id });
     }
 
-    return res.status(200).json({ ok: true, messageId: result.result?.message_id });
+    // Markdown falhou — retry sem formatação
+    console.warn('[Telegram] Markdown falhou:', result.description, '— retry sem formatação');
+    const resp2 = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: mensagem }),
+    });
+    const result2 = await resp2.json();
+
+    if (result2.ok) {
+      return res.status(200).json({ ok: true, messageId: result2.result?.message_id, note: 'Enviado sem Markdown' });
+    }
+
+    console.error('[Telegram] Falhou mesmo sem Markdown:', result2.description);
+    return res.status(200).json({ ok: false, error: result2.description });
   } catch (err) {
     console.error('[Telegram] Erro de rede:', err.message);
     return res.status(500).json({ ok: false, error: err.message });

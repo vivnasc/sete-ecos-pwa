@@ -911,6 +911,7 @@ async function enviarWhatsAppCoach(mensagem) {
   if (TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID) {
     try {
       const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+      // Tentar com Markdown
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -924,8 +925,19 @@ async function enviarWhatsAppCoach(mensagem) {
         console.log('[Telegram] Mensagem enviada à coach');
         return true;
       }
-      const err = await response.json();
-      console.error('[Telegram] Erro:', err?.description || JSON.stringify(err));
+      // Markdown falhou (nomes com _ ou * crasham) — retry sem formatação
+      const errData = await response.json().catch(() => ({}));
+      console.warn('[Telegram] Markdown falhou:', errData?.description, '— retry sem formatação');
+      const resp2 = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: mensagem }),
+      });
+      if (resp2.ok) {
+        console.log('[Telegram] Mensagem enviada sem Markdown');
+        return true;
+      }
+      console.error('[Telegram] Falhou mesmo sem Markdown:', (await resp2.json().catch(() => ({}))).description);
     } catch (err) {
       console.error('[Telegram] Erro de rede:', err.message);
     }
