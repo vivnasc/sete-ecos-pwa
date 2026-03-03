@@ -1,15 +1,16 @@
 /**
  * Push Lembretes Cron — Envia push notifications reais aos clientes
  *
- * Chamado a cada 2h por crons no vercel.json:
- *   UTC 4,6,8,10,12,14,16,18,20 = CAT 6,8,10,12,14,16,18,20,22
+ * Chamado A CADA HORA por crons no vercel.json:
+ *   UTC 4-20 (cada hora) = CAT 6-22
  *
  * Cada execução obtém hora+minuto em Africa/Maputo (CAT) e envia
- * lembretes cuja hora configurada está dentro de uma janela de 2h
- * antes da hora actual (para cobrir o intervalo desde o cron anterior).
+ * lembretes cuja hora configurada está dentro de uma janela de 65min
+ * antes da hora actual (cobre o intervalo de 1h desde o cron anterior
+ * + 5min de margem para jitter do Vercel).
  *
  * Notificações locais (client-side) tratam do timing exacto quando a app
- * está aberta. O push do servidor é backup para quando a app está fechada.
+ * está aberta. O push do servidor é para quando a app está fechada.
  * Tags alinhadas com o cliente evitam duplicados via Service Worker.
  */
 
@@ -41,14 +42,14 @@ function horaMinutoCAT() {
   return { hora: h, minuto: m, totalMinutos: h * 60 + m }
 }
 
-// Verificar se um lembrete está dentro da janela de envio (últimas 2h)
+// Verificar se um lembrete está dentro da janela de envio (últimos 65min)
 function lembreteNaJanela(lembreteHora, agoraMinutos) {
   const [h, m] = lembreteHora.split(':').map(Number)
   const lembreteMinutos = h * 60 + (m || 0)
-  // Janela: desde 120min atrás até agora (inclusive)
-  // Cobre o intervalo de 2h desde o cron anterior
+  // Janela: desde 65min atrás até agora (inclusive)
+  // 60min = intervalo entre crons + 5min margem para jitter do Vercel
   const diff = agoraMinutos - lembreteMinutos
-  return diff >= 0 && diff < 120
+  return diff >= 0 && diff < 65
 }
 
 // Manter compatibilidade com chamadas antigas por bloco
@@ -224,7 +225,7 @@ async function enviarPushRaw(supabase, userId, { title, body, url, tag }) {
 }
 
 /**
- * Handler principal — chamado pelo cron dispatcher 3x/dia
+ * Handler principal — chamado pelo cron dispatcher 1x/hora
  */
 export default async function handler(req, res) {
   if (!VAPID_PUBLIC || !VAPID_PRIVATE) {
@@ -256,7 +257,11 @@ export default async function handler(req, res) {
     }
   }
 
-  console.log(`[Push Lembretes] ${horaCAT}:${String(minutoCAT).padStart(2, '0')} CAT — janela: ${horaCAT - 2}h-${horaCAT}:${String(minutoCAT).padStart(2, '0')}`)
+  // Calcular inicio da janela (65min atrás)
+  const inicioJanela = totalMinutos - 65
+  const jH = Math.floor(Math.max(0, inicioJanela) / 60)
+  const jM = Math.max(0, inicioJanela) % 60
+  console.log(`[Push Lembretes] ${horaCAT}:${String(minutoCAT).padStart(2, '0')} CAT — janela: ${jH}:${String(jM).padStart(2, '0')}-${horaCAT}:${String(minutoCAT).padStart(2, '0')}`)
 
   // Buscar todas as preferências activas
   const { data: prefs, error } = await supabase

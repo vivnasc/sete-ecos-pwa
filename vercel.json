@@ -66,7 +66,15 @@
     },
     {
       "path": "/api/cron?task=push-lembretes",
+      "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/cron?task=push-lembretes",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron?task=push-lembretes",
+      "schedule": "0 7 * * *"
     },
     {
       "path": "/api/cron?task=push-lembretes",
@@ -74,7 +82,15 @@
     },
     {
       "path": "/api/cron?task=push-lembretes",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron?task=push-lembretes",
       "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron?task=push-lembretes",
+      "schedule": "0 11 * * *"
     },
     {
       "path": "/api/cron?task=push-lembretes",
@@ -82,7 +98,15 @@
     },
     {
       "path": "/api/cron?task=push-lembretes",
+      "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron?task=push-lembretes",
       "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/cron?task=push-lembretes",
+      "schedule": "0 15 * * *"
     },
     {
       "path": "/api/cron?task=push-lembretes",
@@ -90,7 +114,15 @@
     },
     {
       "path": "/api/cron?task=push-lembretes",
+      "schedule": "0 17 * * *"
+    },
+    {
+      "path": "/api/cron?task=push-lembretes",
       "schedule": "0 18 * * *"
+    },
+    {
+      "path": "/api/cron?task=push-lembretes",
+      "schedule": "0 19 * * *"
     },
     {
       "path": "/api/cron?task=push-lembretes",
