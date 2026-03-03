@@ -1,15 +1,16 @@
 /**
  * Push Lembretes Cron — Envia push notifications reais aos clientes
  *
- * Chamado a cada 2h por crons no vercel.json:
- *   UTC 4,6,8,10,12,14,16,18,20 = CAT 6,8,10,12,14,16,18,20,22
+ * Chamado A CADA 5 MINUTOS pelo cron no vercel.json:
+ *   "*/5 * * * *" (Vercel Pro permite crons por minuto)
  *
- * Cada execução obtém hora+minuto em Africa/Maputo (CAT) e envia
- * lembretes cuja hora configurada está dentro de uma janela de 2h
- * antes da hora actual (para cobrir o intervalo desde o cron anterior).
+ * Cada execução verifica a hora em Africa/Maputo (CAT) e envia
+ * lembretes cuja hora configurada está dentro dos últimos 6 minutos.
+ * Só activo entre CAT 06:00-22:59 (fora disso faz early return).
  *
- * Notificações locais (client-side) tratam do timing exacto quando a app
- * está aberta. O push do servidor é backup para quando a app está fechada.
+ * Resultado: notificações chegam no máximo 5 minutos após a hora
+ * configurada — timing praticamente igual a apps nativas.
+ *
  * Tags alinhadas com o cliente evitam duplicados via Service Worker.
  */
 
@@ -41,21 +42,14 @@ function horaMinutoCAT() {
   return { hora: h, minuto: m, totalMinutos: h * 60 + m }
 }
 
-// Verificar se um lembrete está dentro da janela de envio (últimas 2h)
+// Verificar se um lembrete está dentro da janela de envio (últimos 6min)
 function lembreteNaJanela(lembreteHora, agoraMinutos) {
   const [h, m] = lembreteHora.split(':').map(Number)
   const lembreteMinutos = h * 60 + (m || 0)
-  // Janela: desde 120min atrás até agora (inclusive)
-  // Cobre o intervalo de 2h desde o cron anterior
+  // Janela: desde 6min atrás até agora (inclusive)
+  // 5min = intervalo entre crons + 1min margem para jitter
   const diff = agoraMinutos - lembreteMinutos
-  return diff >= 0 && diff < 120
-}
-
-// Manter compatibilidade com chamadas antigas por bloco
-const BLOCOS = {
-  manha: { min: 5, max: 10 },
-  tarde: { min: 11, max: 16 },
-  noite: { min: 17, max: 23 },
+  return diff >= 0 && diff < 6
 }
 
 // Mensagens de push por tipo de lembrete
@@ -224,7 +218,7 @@ async function enviarPushRaw(supabase, userId, { title, body, url, tag }) {
 }
 
 /**
- * Handler principal — chamado pelo cron dispatcher 3x/dia
+ * Handler principal — chamado pelo cron dispatcher a cada 5 minutos
  */
 export default async function handler(req, res) {
   if (!VAPID_PUBLIC || !VAPID_PRIVATE) {
@@ -240,23 +234,12 @@ export default async function handler(req, res) {
   // Determinar hora e minuto actuais em CAT
   const { hora: horaCAT, minuto: minutoCAT, totalMinutos } = horaMinutoCAT()
 
-  // Suportar bloco legacy (mas agora filtra pela hora actual)
-  const url = new URL(req.url, `http://${req.headers.host}`)
-  const bloco = url.searchParams.get('bloco') || req.query?.bloco || null
-
-  if (bloco && BLOCOS[bloco]) {
-    const janela = BLOCOS[bloco]
-    if (horaCAT < janela.min || horaCAT > janela.max) {
-      return res.status(200).json({
-        bloco,
-        horaCAT,
-        message: `Hora actual (${horaCAT}h) fora do bloco ${bloco} — nada a enviar`,
-        enviados: 0,
-      })
-    }
+  // Só enviar entre CAT 06:00 e 22:59 (não acordar ninguém de madrugada)
+  if (horaCAT < 6 || horaCAT > 22) {
+    return res.status(200).json({ horaCAT, message: 'Fora do horário (CAT 06-22)', enviados: 0 })
   }
 
-  console.log(`[Push Lembretes] ${horaCAT}:${String(minutoCAT).padStart(2, '0')} CAT — janela: ${horaCAT - 2}h-${horaCAT}:${String(minutoCAT).padStart(2, '0')}`)
+  console.log(`[Push Lembretes] ${horaCAT}:${String(minutoCAT).padStart(2, '0')} CAT — janela de 6min`)
 
   // Buscar todas as preferências activas
   const { data: prefs, error } = await supabase
@@ -287,7 +270,7 @@ export default async function handler(req, res) {
     for (const lembrete of lembretesActivos) {
       if (!lembrete.hora) continue
 
-      // Enviar se o lembrete está dentro da janela de 2h (desde o cron anterior)
+      // Enviar se o lembrete está dentro da janela de 6min
       if (lembreteNaJanela(lembrete.hora, totalMinutos)) {
         const enviados = await enviarPush(supabase, pref.user_id, lembrete.tipo)
         totalEnviados += enviados
