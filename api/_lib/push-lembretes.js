@@ -1,16 +1,16 @@
 /**
  * Push Lembretes Cron — Envia push notifications reais aos clientes
  *
- * Chamado A CADA HORA por crons no vercel.json:
- *   UTC 4-20 (cada hora) = CAT 6-22
+ * Chamado A CADA 5 MINUTOS pelo cron no vercel.json:
+ *   "*/5 * * * *" (Vercel Pro permite crons por minuto)
  *
- * Cada execução obtém hora+minuto em Africa/Maputo (CAT) e envia
- * lembretes cuja hora configurada está dentro de uma janela de 65min
- * antes da hora actual (cobre o intervalo de 1h desde o cron anterior
- * + 5min de margem para jitter do Vercel).
+ * Cada execução verifica a hora em Africa/Maputo (CAT) e envia
+ * lembretes cuja hora configurada está dentro dos últimos 6 minutos.
+ * Só activo entre CAT 06:00-22:59 (fora disso faz early return).
  *
- * Notificações locais (client-side) tratam do timing exacto quando a app
- * está aberta. O push do servidor é para quando a app está fechada.
+ * Resultado: notificações chegam no máximo 5 minutos após a hora
+ * configurada — timing praticamente igual a apps nativas.
+ *
  * Tags alinhadas com o cliente evitam duplicados via Service Worker.
  */
 
@@ -42,21 +42,14 @@ function horaMinutoCAT() {
   return { hora: h, minuto: m, totalMinutos: h * 60 + m }
 }
 
-// Verificar se um lembrete está dentro da janela de envio (últimos 65min)
+// Verificar se um lembrete está dentro da janela de envio (últimos 6min)
 function lembreteNaJanela(lembreteHora, agoraMinutos) {
   const [h, m] = lembreteHora.split(':').map(Number)
   const lembreteMinutos = h * 60 + (m || 0)
-  // Janela: desde 65min atrás até agora (inclusive)
-  // 60min = intervalo entre crons + 5min margem para jitter do Vercel
+  // Janela: desde 6min atrás até agora (inclusive)
+  // 5min = intervalo entre crons + 1min margem para jitter
   const diff = agoraMinutos - lembreteMinutos
-  return diff >= 0 && diff < 65
-}
-
-// Manter compatibilidade com chamadas antigas por bloco
-const BLOCOS = {
-  manha: { min: 5, max: 10 },
-  tarde: { min: 11, max: 16 },
-  noite: { min: 17, max: 23 },
+  return diff >= 0 && diff < 6
 }
 
 // Mensagens de push por tipo de lembrete
@@ -225,7 +218,7 @@ async function enviarPushRaw(supabase, userId, { title, body, url, tag }) {
 }
 
 /**
- * Handler principal — chamado pelo cron dispatcher 1x/hora
+ * Handler principal — chamado pelo cron dispatcher a cada 5 minutos
  */
 export default async function handler(req, res) {
   if (!VAPID_PUBLIC || !VAPID_PRIVATE) {
@@ -241,27 +234,12 @@ export default async function handler(req, res) {
   // Determinar hora e minuto actuais em CAT
   const { hora: horaCAT, minuto: minutoCAT, totalMinutos } = horaMinutoCAT()
 
-  // Suportar bloco legacy (mas agora filtra pela hora actual)
-  const url = new URL(req.url, `http://${req.headers.host}`)
-  const bloco = url.searchParams.get('bloco') || req.query?.bloco || null
-
-  if (bloco && BLOCOS[bloco]) {
-    const janela = BLOCOS[bloco]
-    if (horaCAT < janela.min || horaCAT > janela.max) {
-      return res.status(200).json({
-        bloco,
-        horaCAT,
-        message: `Hora actual (${horaCAT}h) fora do bloco ${bloco} — nada a enviar`,
-        enviados: 0,
-      })
-    }
+  // Só enviar entre CAT 06:00 e 22:59 (não acordar ninguém de madrugada)
+  if (horaCAT < 6 || horaCAT > 22) {
+    return res.status(200).json({ horaCAT, message: 'Fora do horário (CAT 06-22)', enviados: 0 })
   }
 
-  // Calcular inicio da janela (65min atrás)
-  const inicioJanela = totalMinutos - 65
-  const jH = Math.floor(Math.max(0, inicioJanela) / 60)
-  const jM = Math.max(0, inicioJanela) % 60
-  console.log(`[Push Lembretes] ${horaCAT}:${String(minutoCAT).padStart(2, '0')} CAT — janela: ${jH}:${String(jM).padStart(2, '0')}-${horaCAT}:${String(minutoCAT).padStart(2, '0')}`)
+  console.log(`[Push Lembretes] ${horaCAT}:${String(minutoCAT).padStart(2, '0')} CAT — janela de 6min`)
 
   // Buscar todas as preferências activas
   const { data: prefs, error } = await supabase
