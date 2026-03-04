@@ -59,32 +59,39 @@ export default async function handler(req, res) {
   };
 
   try {
-    // 1. LEMBRETES PARA CLIENTES INATIVAS (email + WhatsApp)
-    await enviarLembretes(supabase, resultados);
+    // ═══ PRIORIDADE 1: Notificações para a COACH (Telegram) ═══
+    // Correm PRIMEIRO para garantir que chegam mesmo que os emails
+    // a clientes demorem mais que o timeout do Vercel (60s)
 
-    // 2. AVISOS DE EXPIRAÇÃO (email + WhatsApp trial)
-    await enviarAvisosExpiracao(supabase, resultados);
+    // 1. RESUMO DIÁRIO PARA COACH (email + Telegram)
+    await enviarResumoDiario(supabase, resultados);
 
-    // 3. MARCOS — celebração de streaks (WhatsApp)
-    await enviarMarcos(supabase, resultados);
-
-    // 3b. MARCOS DE PESO — celebrar perda de peso significativa
-    await enviarMarcosPeso(supabase, resultados);
-
-    // 4. WIN-BACK — clientes com subscrição expirada (WhatsApp)
-    await enviarWinback(supabase, resultados);
-
-    // 5. CURIOSIDADE INSANA - users registados sem subscrição
-    await enviarCuriosidadeInsana(supabase, resultados);
-
-    // 6. TRIALS A EXPIRAR AMANHÃ — alerta Telegram para coach
+    // 2. TRIALS A EXPIRAR AMANHÃ — alerta Telegram para coach
     await alertarTrialsExpirando(supabase, resultados);
 
-    // 7. CLIENTES SUPER-ENGAJADAS — 90%+ aderência semanal
+    // 3. CLIENTES SUPER-ENGAJADAS — 90%+ aderência semanal
     await alertarSuperEngajadas(supabase, resultados);
 
-    // 8. RESUMO DIÁRIO PARA COACH
-    await enviarResumoDiario(supabase, resultados);
+    // ═══ PRIORIDADE 2: Comunicações com clientes ═══
+    // Estas podem demorar mais (emails + WA a múltiplos clientes)
+
+    // 4. LEMBRETES PARA CLIENTES INATIVAS (email + WhatsApp)
+    await enviarLembretes(supabase, resultados);
+
+    // 5. AVISOS DE EXPIRAÇÃO (email + WhatsApp trial)
+    await enviarAvisosExpiracao(supabase, resultados);
+
+    // 6. MARCOS — celebração de streaks (WhatsApp)
+    await enviarMarcos(supabase, resultados);
+
+    // 6b. MARCOS DE PESO — celebrar perda de peso significativa
+    await enviarMarcosPeso(supabase, resultados);
+
+    // 7. WIN-BACK — clientes com subscrição expirada (WhatsApp)
+    await enviarWinback(supabase, resultados);
+
+    // 8. CURIOSIDADE INSANA - users registados sem subscrição
+    await enviarCuriosidadeInsana(supabase, resultados);
 
     return res.status(200).json({
       success: true,
@@ -332,9 +339,7 @@ async function enviarResumoDiario(supabase, resultados) {
       progressoPeso
     };
 
-    await enviarEmail('coach-resumo-diario', COACH_EMAIL, dadosResumo);
-
-    // WhatsApp resumo diário
+    // Telegram/WhatsApp PRIMEIRO (prioridade — não bloquear se email falhar)
     const linhasFizeram = fizeram.length > 0 ? `\n✅ *Fizeram check-in:*\n${fizeram.join('\n')}` : '\n❌ Ninguém fez check-in hoje';
     const linhasNaoFizeram = naoFizeram.length > 0 ? `\n⏳ *Sem check-in:*\n${naoFizeram.join(', ')}` : '';
     const linhasPeso = progressoPeso.length > 0
@@ -350,6 +355,13 @@ async function enviarResumoDiario(supabase, resultados) {
 ${linhasFizeram}${linhasNaoFizeram}${linhasPeso}
 
 Boa noite! 🌙`);
+
+    // Email depois (se falhar, Telegram já foi)
+    try {
+      await enviarEmail('coach-resumo-diario', COACH_EMAIL, dadosResumo);
+    } catch (emailErr) {
+      resultados.erros.push('Email resumo falhou (Telegram já enviado): ' + emailErr.message);
+    }
 
     resultados.resumo = true;
   } catch (err) {
@@ -911,6 +923,7 @@ async function enviarWhatsAppCoach(mensagem) {
   if (TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID) {
     try {
       const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+      // Tentar com Markdown
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -924,8 +937,19 @@ async function enviarWhatsAppCoach(mensagem) {
         console.log('[Telegram] Mensagem enviada à coach');
         return true;
       }
-      const err = await response.json();
-      console.error('[Telegram] Erro:', err?.description || JSON.stringify(err));
+      // Markdown falhou (nomes com _ ou * crasham) — retry sem formatação
+      const errData = await response.json().catch(() => ({}));
+      console.warn('[Telegram] Markdown falhou:', errData?.description, '— retry sem formatação');
+      const resp2 = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: mensagem }),
+      });
+      if (resp2.ok) {
+        console.log('[Telegram] Mensagem enviada sem Markdown');
+        return true;
+      }
+      console.error('[Telegram] Falhou mesmo sem Markdown:', (await resp2.json().catch(() => ({}))).description);
     } catch (err) {
       console.error('[Telegram] Erro de rede:', err.message);
     }
