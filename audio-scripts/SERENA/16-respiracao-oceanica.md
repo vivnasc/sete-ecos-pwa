@@ -1,121 +1,43 @@
 # 16 — Respiração Oceânica
-**Módulo:** SERENA
-**Tipo:** Narração guiada de respiração
-**Duração:** ~4 minutos (6 ciclos)
-**Nível de acesso:** Bronze
-**ID no código:** `oceanica`
-**Para:** Calma, presença
+**Módulo:** SERENA | **Tipo:** Respiração guiada | **Duração:** ~4 min (6 ondas)
+**Nível:** Bronze | **ID:** `oceanica` | **Para:** Calma, presença
+
+**ElevenLabs:** Modelo V3 · Voz feminina portuguesa · Speed: 0.75 · Stability: 88
 
 ---
 
-## Notas para gravação
+## Script (colar directamente no ElevenLabs)
 
-- A mais suave e fluida das 6 técnicas — inspira pelo nariz, expira pela boca.
-- A metáfora das ondas deve estar presente na voz — ondulante, não quadrada.
-- Inspirar 5s | Expirar 7s — a expiração é mais longa, para induzir calma.
-- A contagem pode ser mais suave aqui — quase sussurrada.
-- Imaginar o som de ondas ao fundo (música opcional — decidir antes de gravar).
+[gently] Vamos praticar a Respiração Oceânica... [pause] Uma respiração que flui como ondas... [pause] Suave... [pause] Contínua... [pause] Sem esforço... [long pause]
 
----
+Inspira sempre pelo nariz... [pause] Expira sempre pela boca... [pause] Com um som suave, como o mar ao recuar... [long pause]
 
-## Script
+Começa. [long pause]
 
-Vamos praticar a Respiração Oceânica...
-Uma respiração que flui como ondas...
-Suave...
-Contínua...
-Sem esforço...
+[softly] Inspira... como a onda que sobe... [pause] um... dois... três... quatro... cinco... [long pause]
 
-*(pausa — 3 segundos)*
+Expira... como a onda que recua... [pause] um... dois... três... quatro... cinco... seis... sete... [long pause]
 
-Inspira sempre pelo nariz...
-Expira sempre pela boca...
-Com um som suave, como o mar ao recuar...
+Inspira... [pause] um... dois... três... quatro... cinco... [long pause]
 
-*(pausa — 3 segundos)*
+Expira, suavemente... [pause] um... dois... três... quatro... cinco... seis... sete... [long pause]
 
-Começa...
+Inspira... [pause] um... dois... três... quatro... cinco... [long pause]
 
----
+Expira... [pause] um... dois... três... quatro... cinco... seis... sete... [long pause]
 
-**ONDA 1**
+Inspira... [pause] um... dois... três... quatro... cinco... [long pause]
 
-Inspira... como a onda que sobe...
-1... 2... 3... 4... 5...
+Expira... [pause] um... dois... três... quatro... cinco... seis... sete... [long pause]
 
-Expira... como a onda que recua...
-1... 2... 3... 4... 5... 6... 7...
+Inspira... [pause] um... dois... três... quatro... cinco... [long pause]
 
-*(pausa — 1 segundo)*
+Expira... [pause] um... dois... três... quatro... cinco... seis... sete... [long pause]
 
----
+[softly] Última onda. Inspira lentamente... [pause] um... dois... três... quatro... cinco... [long pause]
 
-**ONDA 2**
+Expira completamente... [pause] um... dois... três... quatro... cinco... seis... sete... [long pause]
 
-Inspira...
-1... 2... 3... 4... 5...
+[gently] Regressa ao ritmo natural da tua respiração... [long pause]
 
-Expira, suavemente...
-1... 2... 3... 4... 5... 6... 7...
-
-*(pausa — 1 segundo)*
-
----
-
-**ONDA 3**
-
-Inspira...
-1... 2... 3... 4... 5...
-
-Expira...
-1... 2... 3... 4... 5... 6... 7...
-
-*(pausa — 1 segundo)*
-
----
-
-**ONDA 4**
-
-Inspira...
-1... 2... 3... 4... 5...
-
-Expira...
-1... 2... 3... 4... 5... 6... 7...
-
-*(pausa — 1 segundo)*
-
----
-
-**ONDA 5**
-
-Inspira...
-1... 2... 3... 4... 5...
-
-Expira...
-1... 2... 3... 4... 5... 6... 7...
-
-*(pausa — 1 segundo)*
-
----
-
-**ONDA 6 — a última**
-
-Inspira lentamente...
-1... 2... 3... 4... 5...
-
-Expira completamente...
-1... 2... 3... 4... 5... 6... 7...
-
-*(pausa longa — 5 segundos)*
-
----
-
-Regressa ao ritmo natural da tua respiração...
-
-Sente a calma que o oceano traz...
-Ela está dentro de ti...
-Sempre disponível...
-
----
-
-*Fim do áudio.*
+[warmly] Sente a calma que o oceano traz... [pause] Ela está dentro de ti... [pause] Sempre disponível...

@@ -1,112 +1,50 @@
 # 15 — Respiração Box
-**Módulo:** SERENA
-**Tipo:** Narração guiada de respiração
-**Duração:** ~4 minutos (4 ciclos)
-**Nível de acesso:** Bronze
-**ID no código:** `box`
-**Para:** Stress, foco
+**Módulo:** SERENA | **Tipo:** Respiração guiada | **Duração:** ~4 min (4 ciclos)
+**Nível:** Bronze | **ID:** `box` | **Para:** Stress, foco
+
+**ElevenLabs:** Modelo V3 · Voz feminina portuguesa · Speed: 0.80 · Stability: 85
+⚠️ Nota: Ritmo completamente regular — 1 número por segundo, sem variação emocional.
 
 ---
 
-## Notas para gravação
+## Script (colar directamente no ElevenLabs)
 
-- 4 fases de 4 segundos cada — ritmo completamente regular, como um quadrado.
-- A regularidade é o ponto — a voz deve refletir isso: constante, sem variação emocional.
-- Usada por Navy SEALs para controlar o stress em situações extremas — mencionar isso na intro dá credibilidade.
-- **Tempos:** Inspira 4s | Segura 4s | Expira 4s | Segura 4s | repete.
+[gently] Vamos praticar a Respiração Box... [pause] Esta é a técnica usada para controlar o stress em situações de alta pressão... [pause] Quatro lados, quatro fases, quatro segundos cada... [long pause]
 
----
+Começa a respirar comigo. [long pause]
 
-## Script
+Inspira pelo nariz... [pause] um... dois... três... quatro... [pause]
 
-Vamos praticar a Respiração Box...
-Esta é a técnica usada para controlar o stress em situações de alta pressão...
-Quatro lados, quatro fases, quatro segundos cada...
+Segura... [pause] um... dois... três... quatro... [pause]
 
-*(pausa — 3 segundos)*
+Expira pela boca... [pause] um... dois... três... quatro... [pause]
 
-Começa a respirar comigo...
+Segura... [pause] um... dois... três... quatro... [long pause]
 
----
+Inspira... [pause] um... dois... três... quatro... [pause]
 
-**CICLO 1**
+Segura... [pause] um... dois... três... quatro... [pause]
 
-Inspira pelo nariz...
-1... 2... 3... 4...
+Expira... [pause] um... dois... três... quatro... [pause]
 
-Segura...
-1... 2... 3... 4...
+Segura... [pause] um... dois... três... quatro... [long pause]
 
-Expira pela boca...
-1... 2... 3... 4...
+Inspira... [pause] um... dois... três... quatro... [pause]
 
-Segura...
-1... 2... 3... 4...
+Segura... [pause] um... dois... três... quatro... [pause]
 
-*(pausa — 1 segundo)*
+Expira... [pause] um... dois... três... quatro... [pause]
 
----
+Segura... [pause] um... dois... três... quatro... [long pause]
 
-**CICLO 2**
+Inspira... [pause] um... dois... três... quatro... [pause]
 
-Inspira...
-1... 2... 3... 4...
+Segura... [pause] um... dois... três... quatro... [pause]
 
-Segura...
-1... 2... 3... 4...
+Expira... [pause] um... dois... três... quatro... [pause]
 
-Expira...
-1... 2... 3... 4...
+Segura... [pause] um... dois... três... quatro... [long pause]
 
-Segura...
-1... 2... 3... 4...
+[warmly] Podes abrir os olhos... [long pause]
 
-*(pausa — 1 segundo)*
-
----
-
-**CICLO 3**
-
-Inspira...
-1... 2... 3... 4...
-
-Segura...
-1... 2... 3... 4...
-
-Expira...
-1... 2... 3... 4...
-
-Segura...
-1... 2... 3... 4...
-
-*(pausa — 1 segundo)*
-
----
-
-**CICLO 4**
-
-Inspira...
-1... 2... 3... 4...
-
-Segura...
-1... 2... 3... 4...
-
-Expira...
-1... 2... 3... 4...
-
-Segura...
-1... 2... 3... 4...
-
-*(pausa — 4 segundos)*
-
----
-
-Podes abrir os olhos...
-
-O teu sistema nervoso acabou de recalibrar...
-Quando precisares de foco ou de acalmar o stress...
-Esta caixa está sempre disponível...
-
----
-
-*Fim do áudio.*
+[gently] O teu sistema nervoso acabou de recalibrar... [pause] Quando precisares de foco ou de acalmar o stress... [pause] Esta caixa está sempre disponível...

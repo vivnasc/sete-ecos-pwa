@@ -1,90 +1,43 @@
 # 06 — Abundância e Merecimento
-**Módulo:** ÁUREA
-**Tipo:** Afirmações (reprogramação)
-**Duração:** 3–4 minutos
-**Nível de acesso:** Prata (desbloqueado com 51 jóias)
-**ID no código:** `abundancia_merecimento`
+**Módulo:** ÁUREA | **Tipo:** Afirmações | **Duração:** 3–4 min
+**Nível:** Prata (51 jóias) | **ID:** `abundancia_merecimento`
+
+**ElevenLabs:** Modelo V3 · Voz feminina portuguesa · Speed: 0.82 · Stability: 75
 
 ---
 
-## Notas para gravação
+## Script (colar directamente no ElevenLabs)
 
-- Afirmações sobre dinheiro e merecimento — tema sensível, tom sem culpa.
-- Ritmo firme mas não agressivo. Declarações que chegam ao corpo.
-- Pausa de 3–4 segundos entre cada afirmação.
-- "Eu mereço... Ponto final." deve ser a última linha dita com clareza total — sem hesitação.
-- Pode funcionar bem com música suave de fundo (opcional — decidir antes de gravar).
+[gently] Repete estas afirmações para reprogramar a tua relação com a abundância... [long pause]
 
----
+Respira. E começa. [long pause]
 
-## Script
+[warmly] Eu mereço abundância em todas as áreas da minha vida... [pause]
 
-Repete estas afirmações para reprogramar a tua relação com a abundância...
+O dinheiro que gasto comigo não é desperdício... [pause]
 
-Respira. E começa.
+Investir no meu bem-estar é sabedoria... [pause]
 
-*(pausa — 3 segundos)*
+Eu mereço coisas bonitas... [pause] Sem culpa... [pause]
 
-Eu mereço abundância em todas as áreas da minha vida...
+A minha prosperidade não tira nada a ninguém... [pause]
 
-*(pausa — 3 segundos)*
+Quando me cuido, tenho mais para partilhar... [pause]
 
-O dinheiro que gasto comigo não é desperdício...
+Eu sou digna de conforto... [pause]
 
-*(pausa — 3 segundos)*
+Eu sou digna de prazer... [pause]
 
-Investir no meu bem-estar é sabedoria...
+Eu sou digna de beleza... [pause]
 
-*(pausa — 3 segundos)*
+Deixo de pedir desculpa por querer mais... [pause]
 
-Eu mereço coisas bonitas...
-Sem culpa...
+Deixo de me contentar com menos do que mereço... [long pause]
 
-*(pausa — 3 segundos)*
+A abundância é o meu estado natural... [pause]
 
-A minha prosperidade não tira nada a ninguém...
+Recebo com gratidão tudo o que a vida me oferece... [pause]
 
-*(pausa — 3 segundos)*
+E ofereço-me a mim mesma com a mesma generosidade... [long pause]
 
-Quando me cuido, tenho mais para partilhar...
-
-*(pausa — 3 segundos)*
-
-Eu sou digna de conforto...
-
-*(pausa — 3 segundos)*
-
-Eu sou digna de prazer...
-
-*(pausa — 3 segundos)*
-
-Eu sou digna de beleza...
-
-*(pausa — 3 segundos)*
-
-Deixo de pedir desculpa por querer mais...
-
-*(pausa — 3 segundos)*
-
-Deixo de me contentar com menos do que mereço...
-
-*(pausa — 4 segundos)*
-
-A abundância é o meu estado natural...
-
-*(pausa — 3 segundos)*
-
-Recebo com gratidão tudo o que a vida me oferece...
-
-*(pausa — 3 segundos)*
-
-E ofereço-me a mim mesma com a mesma generosidade...
-
-*(pausa longa — 5 segundos)*
-
-Eu mereço.
-Ponto final.
-
----
-
-*Fim do áudio.*
+[confidently] Eu mereço. [pause] Ponto final.

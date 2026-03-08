@@ -1,101 +1,41 @@
 # 09 — Quem sou sem rótulos?
-**Módulo:** IMAGO
-**Tipo:** Meditação guiada
-**Duração:** 10 minutos
-**Nível de acesso:** Clareza (50 estrelas)
-**ID no código:** `sem_rotulos`
+**Módulo:** IMAGO | **Tipo:** Meditação | **Duração:** 10 min
+**Nível:** Clareza (50 estrelas) | **ID:** `sem_rotulos`
+
+**ElevenLabs:** Modelo V3 · Voz feminina portuguesa · Speed: 0.72 · Stability: 85
 
 ---
 
-## Notas para gravação
+## Script (colar directamente no ElevenLabs)
 
-- Meditação mais filosófica — explorar identidade além de papéis sociais.
-- As perguntas devem ser feitas com suavidade, não com urgência.
-- "O que resta?" — pausa longa aqui, mínimo 10 segundos.
-- "Esse espaço vazio não é nada — é tudo." — dizer com leveza e admiração.
-- Tom: contemplativo, calm, como uma pessoa que já encontrou paz.
+[gently] Fecha os olhos. Respira fundo três vezes. [long pause] [long pause] [long pause]
 
----
+Imagina que podes tirar todos os rótulos que carregas... [long pause]
 
-## Script
+Mãe... [pause] Filha... [pause] Profissional... [pause] Amiga... [pause] Parceira... [long pause]
 
-Fecha os olhos.
-Respira fundo três vezes.
+Tira cada um, como se fossem roupas... [pause] Um a um... [pause] Com cuidado... [long pause]
 
-*(pausa — 8 segundos para 3 respirações)*
+Tira o rótulo do teu trabalho... [long pause]
 
-Imagina que podes tirar todos os rótulos que carregas...
+Tira o rótulo do teu papel em família... [long pause]
 
-Mãe...
-Filha...
-Profissional...
-Amiga...
-Parceira...
+Tira as expectativas que outros têm de ti... [long pause]
 
-*(pausa — 3 segundos)*
+Tira até os rótulos que tu própria criaste para te definir... [long pause]
 
-Tira cada um, como se fossem roupas...
-Um a um...
-Com cuidado...
+O que resta quando não és nenhum desses papéis?... [long pause] [long pause]
 
-*(pausa — 6 segundos)*
+[gently] Fica nesse espaço... [pause] Observa o que sentes... [long pause]
 
-Tira o rótulo do teu trabalho...
+Talvez seja desconfortável... [pause] Ou talvez seja surpreendentemente livre... [long pause]
 
-*(pausa — 4 segundos)*
+[warmly] Esse espaço vazio não é nada... [pause] É tudo. É a tua essência. [long pause]
 
-Tira o rótulo do teu papel em família...
+A tua essência não tem nome... [pause] Não tem função... [pause] Não depende de ninguém... [long pause]
 
-*(pausa — 4 segundos)*
+Ela simplesmente... [pause] É. [long pause]
 
-Tira as expectativas que outros têm de ti...
+[gently] Respira nesse lugar... [pause] Ele sempre esteve aqui... [pause] Antes dos rótulos... [pause] Debaixo de todos eles... [long pause]
 
-*(pausa — 4 segundos)*
-
-Tira até os rótulos que tu própria criaste para te definir...
-
-*(pausa — 5 segundos)*
-
-O que resta quando não és nenhum desses papéis?...
-
-*(pausa longa — 12 segundos)*
-
-Fica nesse espaço...
-Observa o que sentes...
-
-*(pausa — 8 segundos)*
-
-Talvez seja desconfortável...
-Ou talvez seja surpreendentemente livre...
-
-*(pausa — 5 segundos)*
-
-Esse espaço vazio não é nada...
-É tudo.
-É a tua essência.
-
-*(pausa — 6 segundos)*
-
-A tua essência não tem nome...
-Não tem função...
-Não depende de ninguém...
-
-Ela simplesmente...
-É.
-
-*(pausa — 8 segundos)*
-
-Respira nesse lugar...
-Ele sempre esteve aqui...
-Antes dos rótulos...
-Debaixo de todos eles...
-
-*(pausa — 6 segundos)*
-
-Quando estiveres pronta, abre os olhos lentamente...
-Traz contigo a memória deste espaço...
-Podes regressar sempre que quiseres...
-
----
-
-*Fim do áudio.*
+Quando estiveres pronta, abre os olhos lentamente... [pause] Traz contigo a memória deste espaço... [pause] Podes regressar sempre que quiseres...

@@ -1,96 +1,43 @@
 # 02 — Eu Sou Prioridade
-**Módulo:** ÁUREA
-**Tipo:** Afirmações
-**Duração:** 3–4 minutos
-**Nível de acesso:** Bronze
-**ID no código:** `eu_sou_prioridade`
+**Módulo:** ÁUREA | **Tipo:** Afirmações | **Duração:** 3–4 min
+**Nível:** Bronze | **ID:** `eu_sou_prioridade`
+
+**ElevenLabs:** Modelo V3 · Voz feminina portuguesa · Speed: 0.80 · Stability: 75
 
 ---
 
-## Notas para gravação
+## Script (colar directamente no ElevenLabs)
 
-- Ritmo mais firme do que a meditação — afirmações têm mais peso.
-- Cada afirmação deve soar como uma declaração, não uma pergunta.
-- Pausa de 3–4 segundos entre cada afirmação (tempo para a pessoa repetir mentalmente).
-- Tom: decidido, carinhoso, convicto.
-- Pode ser ouvido de manhã ao acordar — energia de arranque de dia.
+[gently] Estas são afirmações para repetires... [pause] Podes ouvi-las de manhã, ou sempre que precisares de te lembrar... [long pause]
 
----
+Respira fundo. E começa. [long pause]
 
-## Script
+[warmly] Eu sou digna do meu próprio tempo... [pause]
 
-Estas são afirmações para repetires...
-Podes ouvi-las de manhã, ou sempre que precisares de te lembrar...
+O meu descanso não é preguiça... [pause] É manutenção... [pause]
 
-Respira fundo. E começa.
+Quando cuido de mim, tenho mais para dar... [pause]
 
-*(pausa — 3 segundos)*
+Dizer não é um acto de amor próprio... [pause]
 
-Eu sou digna do meu próprio tempo...
+Eu mereço espaço na minha própria vida... [pause]
 
-*(pausa — 3 segundos)*
+O meu corpo merece conforto... [pause]
 
-O meu descanso não é preguiça...
-É manutenção...
+Os meus sonhos merecem atenção... [pause]
 
-*(pausa — 3 segundos)*
+Os meus desejos são válidos... [pause]
 
-Quando cuido de mim, tenho mais para dar...
+Não preciso de justificar as minhas necessidades... [pause]
 
-*(pausa — 3 segundos)*
+Investir em mim não é egoísmo... [pause] É responsabilidade... [pause]
 
-Dizer não é um acto de amor próprio...
+Eu sou a pessoa mais importante da minha vida... [pause]
 
-*(pausa — 3 segundos)*
+Sem mim, nada do resto funciona... [long pause]
 
-Eu mereço espaço na minha própria vida...
+[warmly] Hoje, escolho colocar-me na lista... [pause] Não no fim... [pause] Junto com os outros... [pause] Com o mesmo peso... [long pause]
 
-*(pausa — 3 segundos)*
+[confidently] Eu sou prioridade... [pause] E isso não é negociável... [long pause]
 
-O meu corpo merece conforto...
-
-*(pausa — 3 segundos)*
-
-Os meus sonhos merecem atenção...
-
-*(pausa — 3 segundos)*
-
-Os meus desejos são válidos...
-
-*(pausa — 3 segundos)*
-
-Não preciso de justificar as minhas necessidades...
-
-*(pausa — 3 segundos)*
-
-Investir em mim não é egoísmo...
-É responsabilidade...
-
-*(pausa — 3 segundos)*
-
-Eu sou a pessoa mais importante da minha vida...
-
-*(pausa — 3 segundos)*
-
-Sem mim, nada do resto funciona...
-
-*(pausa — 4 segundos)*
-
-Hoje, escolho colocar-me na lista...
-Não no fim...
-Junto com os outros...
-Com o mesmo peso...
-
-*(pausa — 4 segundos)*
-
-Eu sou prioridade...
-E isso não é negociável...
-
-*(pausa — 5 segundos)*
-
-Leva estas palavras contigo...
-Repete-as até acreditares...
-
----
-
-*Fim do áudio.*
+[softly] Leva estas palavras contigo... [pause] Repete-as até acreditares...

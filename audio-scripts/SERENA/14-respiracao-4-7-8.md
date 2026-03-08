@@ -1,109 +1,46 @@
 # 14 — Respiração 4-7-8
-**Módulo:** SERENA
-**Tipo:** Narração guiada de respiração
-**Duração:** ~4 minutos (4 ciclos)
-**Nível de acesso:** Bronze
-**ID no código:** `4-7-8`
-**Para:** Ansiedade, insónia
+**Módulo:** SERENA | **Tipo:** Respiração guiada | **Duração:** ~4 min (4 ciclos)
+**Nível:** Bronze | **ID:** `4-7-8` | **Para:** Ansiedade, insónia
+
+**ElevenLabs:** Modelo V3 · Voz feminina portuguesa · Speed: 0.78 · Stability: 85
+⚠️ Nota: Gravar os números contados devagar — 1 número por segundo.
 
 ---
 
-## Notas para gravação
+## Script (colar directamente no ElevenLabs)
 
-- **Atenção:** Este áudio exige sincronização perfeita com os tempos.
-- Cada instrução deve coincidir exatamente com os segundos indicados.
-- Inspirar = 4 segundos | Segurar = 7 segundos | Expirar = 8 segundos
-- A narração deve ser contínua durante cada fase (não ficar em silêncio total).
-- Voz calm, quase monótona — é propositado, para induzir calma.
-- **Nota técnica para o dev:** Este áudio vai precisar de sincronização com o timer visual quando implementado.
+[gently] Vamos praticar a Respiração 4-7-8... [pause] Esta técnica acalma o sistema nervoso em minutos... [long pause]
 
----
+Encontra uma posição confortável... [pause] Coloca a ponta da língua atrás dos dentes superiores... [pause] E mantém-na lá durante toda a prática... [long pause]
 
-## Script
+Vamos fazer 4 ciclos juntas. [long pause]
 
-Vamos praticar a Respiração 4-7-8...
-Esta técnica acalma o sistema nervoso em minutos...
+[gently] Inspira pelo nariz... [pause] um... dois... três... quatro... [long pause]
 
-Encontra uma posição confortável...
-Coloca a ponta da língua atrás dos dentes superiores...
-E mantém-na lá durante toda a prática...
+Segura o ar... [pause] um... dois... três... quatro... cinco... seis... sete... [long pause]
 
-*(pausa — 3 segundos)*
+Expira completamente pela boca, com um som suave... [pause] um... dois... três... quatro... cinco... seis... sete... oito... [long pause]
 
-Vamos fazer 4 ciclos juntas...
+[gently] Inspira... [pause] um... dois... três... quatro... [long pause]
 
----
+Segura... [pause] um... dois... três... quatro... cinco... seis... sete... [long pause]
 
-**CICLO 1**
+Expira... [pause] um... dois... três... quatro... cinco... seis... sete... oito... [long pause]
 
-Inspira pelo nariz...
-1... 2... 3... 4...
+[gently] Inspira... [pause] um... dois... três... quatro... [long pause]
 
-Segura o ar...
-1... 2... 3... 4... 5... 6... 7...
+Segura... [pause] um... dois... três... quatro... cinco... seis... sete... [long pause]
 
-Expira completamente pela boca, com um som suave...
-1... 2... 3... 4... 5... 6... 7... 8...
+Expira... [pause] um... dois... três... quatro... cinco... seis... sete... oito... [long pause]
 
-*(pausa — 2 segundos)*
+[gently] Último ciclo. Inspira... [pause] um... dois... três... quatro... [long pause]
 
----
+Segura... [pause] um... dois... três... quatro... cinco... seis... sete... [long pause]
 
-**CICLO 2**
+Expira tudo... [pause] um... dois... três... quatro... cinco... seis... sete... oito... [long pause]
 
-Inspira pelo nariz...
-1... 2... 3... 4...
+[warmly] Muito bem... [long pause]
 
-Segura...
-1... 2... 3... 4... 5... 6... 7...
-
-Expira...
-1... 2... 3... 4... 5... 6... 7... 8...
-
-*(pausa — 2 segundos)*
-
----
-
-**CICLO 3**
-
-Inspira...
-1... 2... 3... 4...
-
-Segura...
-1... 2... 3... 4... 5... 6... 7...
-
-Expira...
-1... 2... 3... 4... 5... 6... 7... 8...
-
-*(pausa — 2 segundos)*
-
----
-
-**CICLO 4 — o último**
-
-Inspira...
-1... 2... 3... 4...
-
-Segura...
-1... 2... 3... 4... 5... 6... 7...
-
-Expira lentamente...
-1... 2... 3... 4... 5... 6... 7... 8...
-
-*(pausa — 4 segundos)*
-
----
-
-Muito bem...
-
-Volta ao ritmo normal da tua respiração...
-Nota como te sentes agora...
-
-Mais calma...
-Mais presente...
+[gently] Volta ao ritmo normal da tua respiração... [pause] Nota como te sentes agora... [pause] Mais calma... [pause] Mais presente... [long pause]
 
 Podes repetir sempre que precisares...
-
----
-
-*Fim do áudio.*

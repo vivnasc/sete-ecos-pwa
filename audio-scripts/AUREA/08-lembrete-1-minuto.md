@@ -1,52 +1,23 @@
 # 08 — Lembrete de 1 Minuto
-**Módulo:** ÁUREA
-**Tipo:** Quick reminder (micro-prática)
-**Duração:** 1 minuto
-**Nível de acesso:** Bronze
-**ID no código:** `lembrete_1_minuto`
+**Módulo:** ÁUREA | **Tipo:** Quick reminder | **Duração:** 1 min
+**Nível:** Bronze | **ID:** `lembrete_1_minuto`
+
+**ElevenLabs:** Modelo V3 · Voz feminina portuguesa · Speed: 0.85 · Stability: 75
 
 ---
 
-## Notas para gravação
+## Script (colar directamente no ElevenLabs)
 
-- O mais curto de todos — exactamente 1 minuto.
-- Tom: directo, afetuoso, como uma notificação de cuidado.
-- Ritmo moderado — não apressado, mas também não arrastado.
-- "Tu és suficiente..." — dizer devagar, com convicção total.
-- Este é o áudio que as pessoas podem ouvir no meio do dia, em 1 minuto.
+[gently] Pára um momento... [long pause]
 
----
+Respira... [long pause]
 
-## Script
+Tu estás aqui... [pause] Tu existes... [pause] Tu importas... [long pause]
 
-Pára um momento...
+Não precisas de fazer nada para merecer amor... [pause] Não precisas de provar nada a ninguém... [long pause]
 
-*(pausa — 2 segundos)*
+Só precisas de te lembrar... [long pause]
 
-Respira...
+[warmly] Tu és suficiente... [long pause]
 
-*(pausa — 3 segundos)*
-
-Tu estás aqui...
-Tu existes...
-Tu importas...
-
-*(pausa — 3 segundos)*
-
-Não precisas de fazer nada para merecer amor...
-Não precisas de provar nada a ninguém...
-
-*(pausa — 3 segundos)*
-
-Só precisas de te lembrar...
-
-Tu és suficiente...
-
-*(pausa — 4 segundos)*
-
-Agora, volta ao teu dia...
-Mas leva esta verdade contigo...
-
----
-
-*Fim do áudio.*
+[gently] Agora, volta ao teu dia... [pause] Mas leva esta verdade contigo...

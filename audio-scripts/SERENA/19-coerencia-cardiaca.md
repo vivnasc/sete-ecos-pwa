@@ -1,121 +1,49 @@
 # 19 — Coerência Cardíaca
-**Módulo:** SERENA
-**Tipo:** Narração guiada de respiração
-**Duração:** ~5 minutos (6 ciclos = 1 minuto de coerência)
-**Nível de acesso:** Bronze
-**ID no código:** `coerencia`
-**Para:** Regulação emocional, coerência
+**Módulo:** SERENA | **Tipo:** Respiração guiada | **Duração:** ~5 min (6 respirações)
+**Nível:** Bronze | **ID:** `coerencia` | **Para:** Regulação emocional
+
+**ElevenLabs:** Modelo V3 · Voz feminina portuguesa · Speed: 0.78 · Stability: 88
 
 ---
 
-## Notas para gravação
+## Script (colar directamente no ElevenLabs)
 
-- **Técnica cientificamente validada pelo HeartMath Institute.**
-- 5 segundos inspira + 5 segundos expira = 6 respirações/minuto = frequência de coerência cardíaca.
-- Ritmo absolutamente regular — como um metrónomo.
-- O foco é no coração — pode pedir para colocar a mão no peito desde o início.
-- Tom: sereno, regular, confiante na ciência por detrás.
-- Esta técnica pode ser praticada 3x por dia — mencionar no final.
+[gently] Vamos praticar a Coerência Cardíaca... [pause] Esta técnica coloca o coração e o cérebro em sincronia... [pause] Seis respirações por minuto é a frequência de coerência... [pause] É simples e muito poderosa... [long pause]
 
----
+Coloca uma mão sobre o coração... [pause] Sente-o bater... [long pause]
 
-## Script
+Agora, imagina que o teu coração respira... [pause] Que a respiração entra e sai directamente por ele... [long pause]
 
-Vamos praticar a Coerência Cardíaca...
-Esta técnica coloca o coração e o cérebro em sincronia...
-6 respirações por minuto é a frequência de coerência...
-É simples e muito poderosa...
+Começa. [long pause]
 
-*(pausa — 3 segundos)*
+[softly] Inspira pelo coração... [pause] um... dois... três... quatro... cinco... [long pause]
 
-Coloca uma mão sobre o coração...
-Sente-o bater...
+Expira pelo coração... [pause] um... dois... três... quatro... cinco... [long pause]
 
-*(pausa — 4 segundos)*
+Inspira... [pause] um... dois... três... quatro... cinco... [long pause]
 
-Agora, imagina que o teu coração respira...
-Que a respiração entra e sai directamente por ele...
+Expira... [pause] um... dois... três... quatro... cinco... [long pause]
 
-*(pausa — 3 segundos)*
+Inspira... [pause] um... dois... três... quatro... cinco... [long pause]
 
-Começa...
+Expira... [pause] um... dois... três... quatro... cinco... [long pause]
 
----
+Inspira... [pause] um... dois... três... quatro... cinco... [long pause]
 
-**RESPIRAÇÃO 1**
+Expira... [pause] um... dois... três... quatro... cinco... [long pause]
 
-Inspira pelo coração...
-1... 2... 3... 4... 5...
+Inspira... [pause] um... dois... três... quatro... cinco... [long pause]
 
-Expira pelo coração...
-1... 2... 3... 4... 5...
+Expira... [pause] um... dois... três... quatro... cinco... [long pause]
 
----
+[softly] Última respiração. Inspira lentamente... [pause] um... dois... três... quatro... cinco... [long pause]
 
-**RESPIRAÇÃO 2**
+Expira completamente... [pause] um... dois... três... quatro... cinco... [long pause]
 
-Inspira...
-1... 2... 3... 4... 5...
+[gently] Mantém a mão no coração por mais um momento... [long pause]
 
-Expira...
-1... 2... 3... 4... 5...
+[warmly] O teu coração e o teu cérebro estão agora em coerência... [pause] As tuas emoções estão mais reguladas... [pause] A tua clareza, maior... [long pause]
 
----
-
-**RESPIRAÇÃO 3**
-
-Inspira...
-1... 2... 3... 4... 5...
-
-Expira...
-1... 2... 3... 4... 5...
-
----
-
-**RESPIRAÇÃO 4**
-
-Inspira...
-1... 2... 3... 4... 5...
-
-Expira...
-1... 2... 3... 4... 5...
-
----
-
-**RESPIRAÇÃO 5**
-
-Inspira...
-1... 2... 3... 4... 5...
-
-Expira...
-1... 2... 3... 4... 5...
-
----
-
-**RESPIRAÇÃO 6 — última**
-
-Inspira lentamente...
-1... 2... 3... 4... 5...
-
-Expira completamente...
-1... 2... 3... 4... 5...
-
-*(pausa longa — 6 segundos)*
-
----
-
-Mantém a mão no coração por mais um momento...
-
-O teu coração e o teu cérebro estão agora em coerência...
-As tuas emoções estão mais reguladas...
-A tua clareza, maior...
-
-Podes praticar esta técnica 3 vezes por dia:
-De manhã, ao almoço, e ao final do dia...
-5 minutos cada vez...
+[gently] Podes praticar esta técnica três vezes por dia... [pause] De manhã, ao almoço, e ao final do dia... [pause] Cinco minutos cada vez... [long pause]
 
 O teu coração agradece...
-
----
-
-*Fim do áudio.*

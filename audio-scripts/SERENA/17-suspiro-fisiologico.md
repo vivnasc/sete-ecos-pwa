@@ -1,91 +1,38 @@
 # 17 — Suspiro Fisiológico
-**Módulo:** SERENA
-**Tipo:** Narração guiada de respiração (técnica de emergência)
-**Duração:** ~2 minutos (3 ciclos)
-**Nível de acesso:** Bronze
-**ID no código:** `suspiro`
-**Para:** Pânico, emergência emocional
+**Módulo:** SERENA | **Tipo:** Respiração de emergência | **Duração:** ~2 min (3 ciclos)
+**Nível:** Bronze | **ID:** `suspiro` | **Para:** Pânico, emergência emocional
+
+**ElevenLabs:** Modelo V3 · Voz feminina portuguesa · Speed: 0.85 · Stability: 80
+⚠️ Nota: O "sniff" do segundo inspira deve soar como uma inspiração curta e audível pelo nariz.
 
 ---
 
-## Notas para gravação
+## Script (colar directamente no ElevenLabs)
 
-- **Este é o reset mais rápido** — 2 inspirações curtas seguidas + expiração longa.
-- Tom deve ter urgência controlada — não entrar em pânico, mas transmitir que isto funciona JÁ.
-- A segunda inspiração curta é um "sniff" extra no topo — pode ser útil demonstrar com a voz.
-- Expiração de 6 segundos deve soar como alívio.
-- **Tempos:** Inspira 2s | Inspira (sniff extra) 1s | Expira 6s
+[gently] Esta técnica é para momentos de pânico ou sobrecarga... [pause] É o reset mais rápido que existe... [pause] Dois estudos de neurociência confirmam: funciona em segundos. [long pause]
 
----
+Vamos fazer 3 ciclos. [long pause]
 
-## Script
+Inspira pelo nariz... [pause] um... dois... [pause]
 
-Esta técnica é para momentos de pânico ou sobrecarga...
-É o reset mais rápido que existe...
-Dois estudos de neurociência confirmam: funciona em segundos.
+Mais um inspiro rápido pelo nariz, no topo... [pause] sniff... [pause]
 
-*(pausa — 2 segundos)*
+Agora expira completamente pela boca, longa... [pause] um... dois... três... quatro... cinco... seis... [long pause]
 
-Vamos fazer 3 ciclos...
+Inspira... [pause] um... dois... [pause]
 
----
+Sniff rápido... [pause]
 
-**CICLO 1**
+Expira... [pause] um... dois... três... quatro... cinco... seis... [long pause]
 
-Inspira pelo nariz...
-1... 2...
+Último ciclo. Inspira... [pause] um... dois... [pause]
 
-Mais um sniff rápido pelo nariz, no topo da inspiração...
-*(sniff curto)*
+Sniff... [pause]
 
-Agora expira completamente pela boca...
-Longa...
-1... 2... 3... 4... 5... 6...
+Expira tudo... [pause] um... dois... três... quatro... cinco... seis... [long pause]
 
-*(pausa — 2 segundos)*
+[warmly] Nota a diferença... [long pause]
 
----
-
-**CICLO 2**
-
-Inspira...
-1... 2...
-
-Sniff rápido...
-*(sniff curto)*
-
-Expira...
-1... 2... 3... 4... 5... 6...
-
-*(pausa — 2 segundos)*
-
----
-
-**CICLO 3 — o último**
-
-Inspira...
-1... 2...
-
-Sniff...
-*(sniff curto)*
-
-Expira tudo...
-1... 2... 3... 4... 5... 6...
-
-*(pausa — 4 segundos)*
-
----
-
-Nota a diferença...
-
-O teu sistema nervoso acaba de fazer o reset...
-Podes usar esta técnica em qualquer lugar...
-Num corredor...
-Numa casa de banho...
-Antes de entrar numa reunião difícil...
+[gently] O teu sistema nervoso acaba de fazer o reset... [pause] Podes usar esta técnica em qualquer lugar... [pause] Num corredor... [pause] Numa casa de banho... [pause] Antes de entrar numa situação difícil... [long pause]
 
 Ela está sempre contigo...
-
----
-
-*Fim do áudio.*
