@@ -63,56 +63,40 @@ export default async function handler(req, res) {
     erros: []
   };
 
-  try {
-    // ═══ PRIORIDADE 1: Notificações para a COACH (Telegram) ═══
-    // Correm PRIMEIRO para garantir que chegam mesmo que os emails
-    // a clientes demorem mais que o timeout do Vercel (60s)
+  // Cada tarefa corre de forma INDEPENDENTE — se uma falhar, as outras continuam.
+  // Isto previne que um erro numa sub-task (ex: tabela inexistente, API key expirada)
+  // bloqueie TODAS as comunicações do dia.
+  const tarefas = [
+    // Prioridade 1: Notificações para a COACH (Telegram)
+    { nome: 'resumo-diario', fn: () => enviarResumoDiario(supabase, resultados) },
+    { nome: 'trials-expirando', fn: () => alertarTrialsExpirando(supabase, resultados) },
+    { nome: 'super-engajadas', fn: () => alertarSuperEngajadas(supabase, resultados) },
+    { nome: 'clientes-inactivos', fn: () => alertarClientesInactivos(supabase, resultados) },
+    // Prioridade 2: Comunicações com clientes
+    { nome: 'lembretes', fn: () => enviarLembretes(supabase, resultados) },
+    { nome: 'avisos-expiracao', fn: () => enviarAvisosExpiracao(supabase, resultados) },
+    { nome: 'marcos', fn: () => enviarMarcos(supabase, resultados) },
+    { nome: 'marcos-peso', fn: () => enviarMarcosPeso(supabase, resultados) },
+    { nome: 'winback', fn: () => enviarWinback(supabase, resultados) },
+    { nome: 'curiosidade', fn: () => enviarCuriosidadeInsana(supabase, resultados) },
+  ];
 
-    // 1. RESUMO DIÁRIO PARA COACH (email + Telegram)
-    await enviarResumoDiario(supabase, resultados);
-
-    // 2. TRIALS A EXPIRAR AMANHÃ — alerta Telegram para coach
-    await alertarTrialsExpirando(supabase, resultados);
-
-    // 3. CLIENTES SUPER-ENGAJADAS — 90%+ aderência semanal
-    await alertarSuperEngajadas(supabase, resultados);
-
-    // 3b. CLIENTES INACTIVOS 7+ DIAS — alerta Telegram + Push para coach
-    await alertarClientesInactivos(supabase, resultados);
-
-    // ═══ PRIORIDADE 2: Comunicações com clientes ═══
-    // Estas podem demorar mais (emails + WA a múltiplos clientes)
-
-    // 4. LEMBRETES PARA CLIENTES INATIVAS (email + WhatsApp)
-    await enviarLembretes(supabase, resultados);
-
-    // 5. AVISOS DE EXPIRAÇÃO (email + WhatsApp trial)
-    await enviarAvisosExpiracao(supabase, resultados);
-
-    // 6. MARCOS — celebração de streaks (WhatsApp)
-    await enviarMarcos(supabase, resultados);
-
-    // 6b. MARCOS DE PESO — celebrar perda de peso significativa
-    await enviarMarcosPeso(supabase, resultados);
-
-    // 7. WIN-BACK — clientes com subscrição expirada (WhatsApp)
-    await enviarWinback(supabase, resultados);
-
-    // 8. CURIOSIDADE INSANA - users registados sem subscrição
-    await enviarCuriosidadeInsana(supabase, resultados);
-
-    return res.status(200).json({
-      success: true,
-      ...resultados
-    });
-
-  } catch (error) {
-    console.error('Erro nas tarefas agendadas:', error);
-    return res.status(500).json({
-      error: 'Erro ao executar tarefas',
-      detalhes: error.message
-    });
+  for (const tarefa of tarefas) {
+    try {
+      await tarefa.fn();
+    } catch (err) {
+      console.error(`[Tarefas] ERRO em "${tarefa.nome}":`, err.message || err);
+      resultados.erros.push(`${tarefa.nome}: ${err.message}`);
+    }
   }
+
+  const temErros = resultados.erros.length > 0;
+  return res.status(200).json({
+    success: !temErros,
+    tarefas_executadas: tarefas.length,
+    tarefas_falhadas: resultados.erros.length,
+    ...resultados
+  });
 }
 
 /**

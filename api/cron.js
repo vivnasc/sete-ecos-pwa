@@ -43,7 +43,11 @@ export default async function handler(req, res) {
   if (!task) {
     return res.status(400).json({
       error: 'Parâmetro task obrigatório',
-      opcoes: ['tarefas', 'trial-emails', 'email-sequencia', 'instagram', 'broadcast']
+      opcoes: ['tarefas', 'trial-emails', 'email-sequencia', 'instagram', 'broadcast', 'wa-leads', 'wa-sequencia', 'push-lembretes'],
+      health: 'OK',
+      timestamp: new Date().toISOString(),
+      cronSecret: cronSecret ? 'configurada' : 'FALTA',
+      vercelCron: !!req.headers['x-vercel-cron'],
     });
   }
 
