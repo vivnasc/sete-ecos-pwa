@@ -39,8 +39,8 @@ export const META_TEMPLATES = {
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'Bem-vindo(a) ao Sete Ecos!',
-    body: 'Olá {{1}}! 🌿\n\nObrigado(a) por te juntares ao Sete Ecos.\n\nO Sete Ecos é um ecossistema de transformação — sete caminhos que se complementam para te guiar numa jornada de autodescoberta, equilíbrio e plenitude.\n\nNos próximos dias vou partilhar contigo ferramentas que podem mudar a tua relação contigo.\n\nA começar pelo *Lumina* — um diagnóstico gratuito que revela padrões sobre a tua energia, emoção e corpo.\n\nExperimenta aqui: https://app.seteecos.com/lumina\n\n— Vivianne',
-    footer: 'Sete Ecos — Sistema de Transmutação',
+    body: 'Olá {{1}}! 🌿\n\nObrigado(a) por te juntares ao Sete Ecos.\n\nO Sete Ecos é um ecossistema de transformação — sete caminhos que se complementam para te guiar numa jornada de autodescoberta, equilíbrio e plenitude.\n\nNos próximos dias vou partilhar contigo ferramentas e conhecimento que podem mudar a tua relação contigo.\n\nA começar pelo *Lumina* — um diagnóstico gratuito que revela padrões sobre a tua energia, emoção e corpo.\n\nExperimenta aqui: https://app.seteecos.com/lumina\n\n— Vivianne',
+    footer: 'Sete Ecos — Sistema de Transmutação Integral',
     buttons: [{ type: 'URL', text: 'Experimentar Lumina', url: 'https://app.seteecos.com/lumina' }],
     params: (nome) => [nome || ''],
   },
@@ -63,56 +63,56 @@ export const META_TEMPLATES = {
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'O teu corpo fala. Estás a ouvir?',
-    body: 'Olá {{1}}! 💚\n\nHá 3 sinais que muitas pessoas ignoram:\n\n*1. Cansaço crónico* — Se dormes e acordas sem energia, pode ser o que comes (ou não comes).\n\n*2. Comer por emoção* — Se comes quando estás triste, com ansiedade ou tédio, o problema não é fome.\n\n*3. Efeito ioiô* — Se perdes peso e ganhas de volta, as dietas restritivas estão a sabotar o teu metabolismo.\n\nSe te identificas com pelo menos 1, o *VITALIS* foi criado exactamente para ti.\n\nhttps://app.seteecos.com/vitalis\n\n— Vivianne',
+    body: 'Olá {{1}}! 💚\n\nHá 3 sinais que muitas pessoas ignoram — e a ciência explica porquê:\n\n*1. Cansaço crónico* — Quando dormes e acordas sem energia, pode haver um desequilíbrio no cortisol. O cortisol elevado de forma crónica interfere com a qualidade do sono profundo.\n\n*2. Comer por emoção* — O cérebro usa comida como regulador emocional. Não é falta de disciplina — é neurobiologia. Aprender a distinguir fome física de fome emocional é uma competência que se treina.\n\n*3. Efeito ioiô* — Dietas restritivas reduzem a taxa metabólica basal. O corpo interpreta restrição como escassez e adapta-se, tornando cada dieta seguinte menos eficaz.\n\nSe te identificas com pelo menos 1, vale a pena aprofundar. Escrevi mais sobre isto aqui:\n\nhttps://app.seteecos.com/vitalis\n\n— Vivianne',
     footer: 'Sete Ecos',
-    buttons: [{ type: 'URL', text: 'Conhecer o VITALIS', url: 'https://app.seteecos.com/vitalis' }],
+    buttons: [{ type: 'URL', text: 'Saber Mais', url: 'https://app.seteecos.com/vitalis' }],
     params: (nome) => [nome || ''],
   },
 
-  // Dia 10 — Segredo / Curiosidade (= email dia 10)
+  // Dia 10 — Segredo / Educacional (= email dia 10)
   segredo: {
     name: 'sete_ecos_segredo',
     language: 'pt_BR',
     category: 'MARKETING',
-    header: 'Preciso de te contar uma coisa',
-    body: 'Olá {{1}}!\n\nTenho trabalhado com pessoas moçambicanas há anos. E há um padrão que vejo repetir-se:\n\n_"A maioria das pessoas que me procura não tem um problema de comida. Tem um problema de emoção disfarçado de fome."_\n\nLeste isto e sentiste algo?\n\nQuando comes por ansiedade, por solidão, por tédio — o teu corpo não precisa de comida. Precisa de *presença*. E nenhuma dieta resolve isso.\n\nFoi por isso que criei o *Espaço de Retorno* dentro do VITALIS — um lugar onde podes ir quando sentes vontade de comer por emoção. Sem culpa. Sem julgamento.\n\n*Isto não existe em mais nenhum programa — em lado nenhum do mundo.*\n\nQueres saber mais? Responde aqui.\n\n— Vivianne',
+    header: 'Fome emocional vs. fome física',
+    body: 'Olá {{1}}!\n\nHoje quero ensinar-te algo que aprendi ao longo de anos a trabalhar com pessoas:\n\n*Como distinguir fome física de fome emocional:*\n\n• *Fome física* aparece gradualmente, aceita vários alimentos, pára quando estás satisfeito(a)\n• *Fome emocional* aparece de repente, pede alimentos específicos (doces, salgados), e raramente se sacia\n\nUm exercício simples: antes de comeres, põe a mão no peito e pergunta _"estou mesmo com fome ou estou a sentir algo?"_\n\nSe a resposta for emoção — não precisas de comida. Precisas de *presença*. Respirar fundo 3 vezes, beber água, ou simplesmente reconhecer o que sentes já ajuda.\n\nNenhuma dieta ensina isto. Mas é aqui que a mudança real começa.\n\nQueres conversar sobre isto? Responde aqui.\n\n— Vivianne',
     footer: 'Sete Ecos',
     params: (nome) => [nome || ''],
   },
 
-  // Dia 14 — Convite VITALIS + código promo (= email dia 14)
+  // Dia 14 — Mitos da nutrição (= email dia 14)
   convite_trial: {
     name: 'sete_ecos_convite_trial',
     language: 'pt_BR',
     category: 'MARKETING',
-    header: 'VITALIS — 20% Desconto',
-    body: 'Olá {{1}}! 🌿\n\nImagina isto: daqui a 3 meses, acordas com mais energia. A roupa cabe melhor. Comes sem culpa.\n\nO que inclui o *VITALIS*:\n• Plano alimentar personalizado com comida moçambicana\n• Receitas com ingredientes que já tens em casa\n• Check-in diário em 30 segundos\n• Espaço de Retorno (apoio emocional único)\n• Chat directo com a Vivianne\n• 7 dias de garantia total\n\nCódigo exclusivo: *VEMVITALIS20*\nDe 2.500 por *2.000 MZN/mês*\n\nComeça aqui: https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\n— Vivianne',
-    footer: 'Sete Ecos — Sistema de Transmutação',
-    buttons: [{ type: 'URL', text: 'Começar com 20% Off', url: 'https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20' }],
+    header: '3 mitos sobre nutrição',
+    body: 'Olá {{1}}! 🌿\n\nHoje quero desmontar 3 mitos que ainda confundem muita gente:\n\n*Mito 1: "Comer gordura engorda"*\nO corpo precisa de gorduras saudáveis para absorver vitaminas (A, D, E, K) e produzir hormonas. O problema não é a gordura — é o excesso de açúcar processado.\n\n*Mito 2: "Preciso de contar calorias"*\nContar calorias ignora a qualidade nutricional. 200 calorias de amendoim não são iguais a 200 calorias de bolachas. O corpo processa-as de forma completamente diferente.\n\n*Mito 3: "Tenho que comer de 3 em 3 horas"*\nIsto depende de cada pessoa. Algumas pessoas funcionam melhor com menos refeições e mais substanciais. Ouvir o corpo é mais importante que seguir regras rígidas.\n\nA nutrição consciente começa por questionar o que nos ensinaram. Se quiseres explorar mais, tens recursos gratuitos aqui:\n\nhttps://app.seteecos.com/lumina\n\n— Vivianne',
+    footer: 'Sete Ecos — Sistema de Transmutação Integral',
+    buttons: [{ type: 'URL', text: 'Explorar', url: 'https://app.seteecos.com/lumina' }],
     params: (nome) => [nome || ''],
   },
 
-  // Dia 21 — Testemunho / Prova social (= email dia 21)
+  // Dia 21 — Metabolismo e ciclos (= email dia 21)
   testemunho: {
     name: 'sete_ecos_testemunho',
     language: 'pt_BR',
     category: 'MARKETING',
-    header: 'Isto é possível para ti também',
-    body: 'Olá {{1}}! 💚\n\n_"Finalmente um método que não me faz sentir em dieta. Perdi 8kg em 3 meses e aprendi a comer sem culpa. O Espaço de Retorno mudou tudo — percebi que comia por ansiedade, não por fome."_\n— M., Maputo\n\n_"A app é tão fácil de usar. Uso a comida que já tenho em casa — xima, matapa, feijão nhemba. Não preciso de comprar nada especial."_\n— A., Beira\n\nO teu código ainda está activo:\n*VEMVITALIS20* — 20% de desconto\n\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\n— Vivianne',
+    header: 'O que ninguém te ensinou sobre metabolismo',
+    body: 'Olá {{1}}! 💚\n\nSabias que o teu metabolismo não é fixo? Ele muda com:\n\n*Sono* — Dormir menos de 7h aumenta a grelina (hormona da fome) e reduz a leptina (hormona da saciedade). Resultado: mais fome, menos controlo.\n\n*Stress* — Cortisol elevado faz o corpo armazenar gordura abdominal como mecanismo de sobrevivência. Não é preguiça — é biologia.\n\n*Ciclos hormonais* — Se tens ciclo menstrual, a fase lútea (pré-menstrual) aumenta naturalmente o apetite em 200-300 calorias. É normal. Não é falta de disciplina.\n\n*Movimento* — Não precisa de ser ginásio. Caminhar 30 minutos por dia melhora a sensibilidade à insulina e regula o apetite.\n\nO corpo não é o inimigo. Quando o entendes, trabalhas com ele — não contra ele.\n\nhttps://app.seteecos.com/lumina\n\n— Vivianne',
     footer: 'Sete Ecos',
-    buttons: [{ type: 'URL', text: 'Quero o Mesmo Resultado', url: 'https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20' }],
+    buttons: [{ type: 'URL', text: 'Conhecer Melhor o Teu Corpo', url: 'https://app.seteecos.com/lumina' }],
     params: (nome) => [nome || ''],
   },
 
-  // Dia 30 — Última chance (= email dia 30)
+  // Dia 30 — Integração holística (= email dia 30)
   ultima_chance: {
     name: 'sete_ecos_ultima_chance',
     language: 'pt_BR',
     category: 'MARKETING',
-    header: 'Última oportunidade',
-    body: 'Olá {{1}}!\n\nJá passou um mês. Nesse tempo, quem começou o VITALIS já:\n\n• Perdeu 2-4kg na primeira semana\n• Aprendeu a medir porções sem balança (método da mão)\n• Descobriu o Espaço de Retorno para momentos difíceis\n• Construiu hábitos que duram — com comida moçambicana\n\nA única diferença entre quem já está a transformar o corpo e tu? *Começaram.*\n\n*ÚLTIMA OPORTUNIDADE*\nCódigo: *VEMVITALIS20* — 20% desconto\nDe 2.500 por *2.000 MZN/mês*\n7 dias de garantia total. Zero risco.\n\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\nPreferes falar comigo primeiro? Responde aqui.\n\n— Vivianne',
-    footer: 'Sete Ecos',
-    buttons: [{ type: 'URL', text: 'Começar Agora — 20% Off', url: 'https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20' }],
+    header: 'Os 7 Ecos da transformação',
+    body: 'Olá {{1}}!\n\nJá passou um mês desde que nos conhecemos. Hoje quero partilhar a visão completa do Sete Ecos.\n\nA transformação real não acontece numa só dimensão. São 7 que se complementam:\n\n🌿 *Corpo* — nutrição consciente, não dietas\n✨ *Valor próprio* — como te vês e te tratas\n💧 *Emoções* — fluir em vez de reprimir\n🔥 *Foco* — escolhas conscientes, não reactivas\n🍃 *Energia* — ritmos que respeitam o teu corpo\n🔊 *Voz* — expressar o que sentes sem medo\n⭐ *Identidade* — saber quem és, além dos papéis\n\nCada pessoa começa pela dimensão que mais precisa. O Lumina (gratuito) ajuda-te a descobrir qual é a tua:\n\nhttps://app.seteecos.com/lumina\n\nSe quiseres conversar sobre a tua jornada, responde aqui.\n\n— Vivianne',
+    footer: 'Sete Ecos — Sistema de Transmutação Integral',
+    buttons: [{ type: 'URL', text: 'Descobrir o Meu Caminho', url: 'https://app.seteecos.com/lumina' }],
     params: (nome) => [nome || ''],
   },
 
@@ -186,9 +186,9 @@ export const META_TEMPLATES = {
     language: 'pt_BR',
     category: 'UTILITY',
     header: 'O teu trial termina em breve',
-    body: 'Olá {{1}}!\n\nO teu período de experimentação no VITALIS termina em *3 dias*.\n\nPara continuares a ter acesso ao teu plano alimentar, receitas e check-in diário, subscreve agora:\n\nCódigo exclusivo: *VEMVITALIS20* — 20% desconto\nDe 2.500 por *2.000 MZN/mês*\n\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\nDúvidas? Responde aqui.\n\n— Vivianne',
+    body: 'Olá {{1}}!\n\nO teu período de experimentação no VITALIS termina em *3 dias*.\n\nSe a experiência tem sido útil para ti e quiseres continuar com acesso ao teu plano alimentar, receitas e check-in diário, podes subscrever aqui:\n\nhttps://app.seteecos.com/vitalis/pagamento\n\nSe tiveres dúvidas, responde aqui. Estou disponível para conversar.\n\n— Vivianne',
     footer: 'Sete Ecos',
-    buttons: [{ type: 'URL', text: 'Subscrever com 20% Off', url: 'https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20' }],
+    buttons: [{ type: 'URL', text: 'Ver Opções', url: 'https://app.seteecos.com/vitalis/pagamento' }],
     params: (nome) => [nome || ''],
   },
 
@@ -197,10 +197,10 @@ export const META_TEMPLATES = {
     name: 'sete_ecos_winback',
     language: 'pt_BR',
     category: 'MARKETING',
-    header: 'Sentimos a tua falta',
-    body: 'Olá {{1}}!\n\nA tua subscrição VITALIS expirou, mas quero que saibas: todo o teu progresso está guardado.\n\nSe voltares agora, retomas exactamente onde paraste — plano alimentar, receitas, histórico de check-ins. Tudo intacto.\n\nCódigo especial de regresso: *VEMVITALIS20* — 20% desconto\n\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\nEstou aqui se precisares de falar.\n\n— Vivianne',
+    header: 'O teu progresso está guardado',
+    body: 'Olá {{1}}!\n\nA tua subscrição VITALIS expirou, mas quero que saibas: todo o teu progresso está guardado.\n\nSe decidires voltar, retomas exactamente onde paraste — plano alimentar, receitas, histórico de check-ins. Tudo intacto.\n\nhttps://app.seteecos.com/vitalis/pagamento\n\nEstou aqui se precisares de falar.\n\n— Vivianne',
     footer: 'Sete Ecos',
-    buttons: [{ type: 'URL', text: 'Reactivar com 20% Off', url: 'https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20' }],
+    buttons: [{ type: 'URL', text: 'Voltar ao Vitalis', url: 'https://app.seteecos.com/vitalis/pagamento' }],
     params: (nome) => [nome || ''],
   },
 
@@ -211,19 +211,19 @@ export const META_TEMPLATES = {
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'Como estás?',
-    body: 'Olá {{1}}! 🤗\n\nPassaste por aqui há uns dias e quero saber como estás.\n\nO VITALIS tem ajudado muitas pessoas a encontrar o equilíbrio com a comida — sem dietas malucas, sem passar fome, com comida que já conheces.\n\nSe quiseres saber mais ou tiveres qualquer dúvida, responde aqui. Estou sempre disponível.\n\n— Vivianne',
-    footer: 'Sete Ecos — Transformação Feminina',
+    body: 'Olá {{1}}! 🤗\n\nPassaste por aqui há uns dias e quero saber como estás.\n\nSe tiveres alguma dúvida sobre nutrição, bem-estar ou qualquer tema que partilhei, responde aqui. Estou sempre disponível para conversar.\n\n— Vivianne',
+    footer: 'Sete Ecos — Transmutação Integral',
     params: (nome) => [nome || ''],
   },
 
-  promo: {
-    name: 'sete_ecos_promo',
+  dica_nutricional: {
+    name: 'sete_ecos_dica_nutricional',
     language: 'pt_BR',
     category: 'MARKETING',
-    header: '20% Desconto VITALIS',
-    body: 'Olá {{1}}!\n\nTenho um presente especial para ti: usa o código *VEMVITALIS20* e tens *20% de desconto* no VITALIS.\n\nPlano alimentar personalizado + check-in diário + apoio emocional + receitas moçambicanas. De 2.500 por *2.000 MZN/mês*.\n\nComeça aqui: https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\nSó até ao fim do mês!\n\n— Vivianne',
+    header: 'Dica de nutrição',
+    body: 'Olá {{1}}!\n\nSabias que o intestino produz cerca de 90% da serotonina do corpo? A serotonina é a hormona do bem-estar.\n\nIsto significa que o que comes afecta directamente como te sentes emocionalmente. Alimentos ricos em fibra (vegetais, leguminosas, fruta) alimentam as bactérias boas do intestino — e elas retribuem com mais equilíbrio emocional.\n\nUm passo simples: inclui uma porção de leguminosas (feijão, lentilha, grão) na tua refeição principal hoje.\n\nSe quiseres aprofundar este tema, tens o Lumina disponível:\nhttps://app.seteecos.com/lumina\n\n— Vivianne',
     footer: 'Sete Ecos',
-    buttons: [{ type: 'URL', text: 'Usar Código 20% Off', url: 'https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20' }],
+    buttons: [{ type: 'URL', text: 'Explorar Lumina', url: 'https://app.seteecos.com/lumina' }],
     params: (nome) => [nome || ''],
   },
 
@@ -232,21 +232,21 @@ export const META_TEMPLATES = {
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'Novidades Sete Ecos!',
-    body: 'Olá {{1}}!\n\nTemos novidades no Sete Ecos! Novos recursos e funcionalidades que vão tornar a tua jornada ainda melhor.\n\nPassa pela app para descobrir: https://app.seteecos.com\n\nSe tiveres dúvidas ou quiseres saber mais, responde aqui.\n\n— Vivianne',
+    body: 'Olá {{1}}!\n\nTemos novidades no Sete Ecos — novos recursos e conteúdos educativos que aprofundam a tua jornada de autoconhecimento.\n\nPassa pela app para explorar: https://app.seteecos.com\n\nSe tiveres dúvidas ou quiseres saber mais, responde aqui.\n\n— Vivianne',
     footer: 'Sete Ecos',
-    buttons: [{ type: 'URL', text: 'Ver Novidades', url: 'https://app.seteecos.com' }],
+    buttons: [{ type: 'URL', text: 'Explorar Novidades', url: 'https://app.seteecos.com' }],
     params: (nome) => [nome || ''],
   },
 
-  // Curiosidade semanal (= email curiosidade insana)
+  // Curiosidade semanal (exercício educativo)
   curiosidade: {
     name: 'sete_ecos_curiosidade',
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'Comes por fome ou por emoção?',
-    body: 'Olá {{1}}!\n\nFaz este exercício: antes de comeres algo, põe a mão no peito e pergunta _"estou mesmo com fome ou estou a sentir algo?"_\n\nSe a resposta for "estou a sentir algo" — parabéns, acabaste de descobrir o padrão que 87% das pessoas ignoram.\n\nÉ este padrão que faz o efeito ioiô. Não é a comida. É a emoção.\n\nO VITALIS tem uma ferramenta única chamada *Espaço de Retorno* — feita exactamente para estes momentos. Nenhum outro programa no mundo tem isto.\n\nCódigo: *VEMVITALIS20* — 20% desconto\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\n— Vivianne',
+    body: 'Olá {{1}}!\n\nFaz este exercício: antes de comeres algo, põe a mão no peito e pergunta _"estou mesmo com fome ou estou a sentir algo?"_\n\nSe a resposta for "estou a sentir algo" — parabéns, acabaste de desenvolver uma competência que a maioria das pessoas nunca treina: a consciência alimentar.\n\nÉ este padrão inconsciente que perpetua o efeito ioiô. Não é a comida. É a emoção por trás da comida.\n\nDa próxima vez que isto acontecer, experimenta: respira fundo 3 vezes, bebe um copo de água, e espera 5 minutos. Se a fome passar, era emocional. Se continuar, come com tranquilidade.\n\nSe quiseres aprofundar, o Lumina ajuda-te a mapear estes padrões:\nhttps://app.seteecos.com/lumina\n\n— Vivianne',
     footer: 'Sete Ecos',
-    buttons: [{ type: 'URL', text: 'Começar com 20% Off', url: 'https://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20' }],
+    buttons: [{ type: 'URL', text: 'Conhecer os Meus Padrões', url: 'https://app.seteecos.com/lumina' }],
     params: (nome) => [nome || ''],
   },
 };
