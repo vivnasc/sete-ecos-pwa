@@ -680,8 +680,8 @@ function BlocoEco({ eco, copiar, copiado, prefixo }) {
   const mockupPrincipal = mockups[0];
   const mockupSecundario = mockups.length > 1 ? mockups[1] : mockups[0];
 
-  // Template: testemunho usa 'testemunho', CTA usa 'cta', resto usa 'dica'
-  const templateTipo = ig?.tipo === 'testemunho' ? 'testemunho' : ig?.tipo === 'cta' ? 'cta' : 'dica';
+  // Template: reflexão usa 'reflexão', CTA usa 'cta', resto usa 'dica'
+  const templateTipo = ig?.tipo === 'reflexão' ? 'reflexão' : ig?.tipo === 'cta' ? 'cta' : 'dica';
 
   return (
     <div className="space-y-3">
@@ -708,7 +708,7 @@ function BlocoEco({ eco, copiar, copiado, prefixo }) {
             <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
               <div>
                 <p className="font-bold text-xs text-[#4A4035]">
-                  {templateTipo === 'testemunho' ? 'Testemunho' : templateTipo === 'cta' ? 'CTA' : 'Post do dia'}
+                  {templateTipo === 'reflexão' ? 'Reflexão' : templateTipo === 'cta' ? 'CTA' : 'Post do dia'}
                 </p>
                 <p className="text-[10px] text-[#A09888]">Imagem pronta — descarrega e publica</p>
               </div>
@@ -2447,9 +2447,9 @@ function HojeTab({ copiar, copiado }) {
   const hoje = gerarConteudoHoje(new Date(), variante);
   const maxVar = totalVariantes(hoje.tema);
   const captionPost = gerarCaptionInstagram('post', variante);
-  const captionReel = gerarCaptionInstagram('reelScript', variante);
+  const captionReel = gerarCaptionInstagram('reel', variante);
   const captionStories = gerarCaptionInstagram('stories', variante);
-  const waTypes = ['dica', 'provocacao', 'pessoal', 'urgencia', 'lumina'];
+  const waTypes = ['dica', 'provocacao', 'pessoal', 'educacao', 'reflexao', 'ciencia', 'lumina'];
   const [waTipo, setWaTipo] = useState('dica');
   const wa = gerarMensagemWhatsApp(waTipo, '', variante);
 
@@ -2536,7 +2536,7 @@ function HojeTab({ copiar, copiado }) {
                 waTipo === t ? 'bg-[#25D366] text-white' : 'bg-gray-100 text-[#6B5C4C]'
               }`}
             >
-              {t === 'dica' ? '💡 Dica' : t === 'provocacao' ? '🔥 Provocação' : t === 'pessoal' ? '🤍 Pessoal' : t === 'urgencia' ? '⚡ Urgência' : '🔮 Lumina'}
+              {t === 'dica' ? '💡 Dica' : t === 'provocacao' ? '🔥 Provocação' : t === 'pessoal' ? '🤍 Pessoal' : t === 'educacao' ? '📚 Educação' : t === 'reflexao' ? '💭 Reflexão' : t === 'ciencia' ? '🔬 Ciência' : '🔮 Lumina'}
             </button>
           ))}
         </div>
