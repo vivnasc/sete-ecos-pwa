@@ -4,7 +4,7 @@
  * Formato idêntico ao ÁUREA AudioMeditacoes.jsx
  */
 
-export const BIBLIOTECA_IGNIS = [
+export const MEDITACOES_IGNIS = [
   {
     id: 'acende_chama',
     titulo: 'Acende a Tua Chama Interior',
