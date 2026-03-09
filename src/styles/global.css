@@ -850,3 +850,54 @@
 .dark .to-pink-50 {
   --tw-gradient-to: rgba(236, 72, 153, 0.1);
 }
+
+/* ============================================================
+   COACH DASHBOARD — Premium Dark Theme
+   ============================================================ */
+
+.coach-dark {
+  background: #0a0a12;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.coach-glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.coach-glass:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.coach-gradient-text {
+  background: linear-gradient(135deg, #a78bfa 0%, #34d399 50%, #60a5fa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.coach-gradient-bar {
+  background: linear-gradient(90deg, #a78bfa, #34d399);
+}
+
+.coach-skeleton {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.03) 25%,
+    rgba(255,255,255,0.06) 50%,
+    rgba(255,255,255,0.03) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.coach-dark select,
+.coach-dark .coach-select {
+  color-scheme: dark;
+}
+
+.coach-dark select option {
+  background: #14141e;
+  color: rgba(255, 255, 255, 0.8);
+}
