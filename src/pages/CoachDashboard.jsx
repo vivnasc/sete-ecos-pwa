@@ -104,6 +104,10 @@ export default function CoachDashboard() {
   const [stats, setStats] = useState({ total: 0, active: 0, trial: 0, pending: 0, semPlano: 0, aguardaRevisao: 0, erros: 0 });
   const [multiEcoStats, setMultiEcoStats] = useState(null);
   const [showMultiEco, setShowMultiEco] = useState(false);
+  const [selectedEco, setSelectedEco] = useState(null);
+  const [ecoClients, setEcoClients] = useState([]);
+  const [loadingEcoClients, setLoadingEcoClients] = useState(false);
+  const [ecoAction, setEcoAction] = useState(null); // { userId, action, eco }
 
   // Coach notifications (static feed)
   const [notificacoes, setNotificacoes] = useState([]);
@@ -278,6 +282,36 @@ export default function CoachDashboard() {
     } catch (err) {
       console.error('Erro ao carregar stats multi-eco:', err);
     }
+  };
+
+  const loadEcoClients = async (eco) => {
+    setLoadingEcoClients(true);
+    try {
+      const data = await coachApi.listarClientesEco(eco);
+      setEcoClients(data.clients || []);
+      setSelectedEco(eco);
+    } catch (err) {
+      console.error('Erro ao carregar clientes ' + eco + ':', err);
+      setEcoClients([]);
+    }
+    setLoadingEcoClients(false);
+  };
+
+  const handleEcoAction = async (eco, userId, actionType) => {
+    setEcoAction({ userId, action: actionType, eco });
+    try {
+      if (actionType === 'tester') {
+        await coachApi.setTesterEco(eco, userId);
+      } else {
+        await coachApi.activarSubscricaoEco(eco, userId, actionType);
+      }
+      // Reload
+      await loadEcoClients(eco);
+      await loadMultiEcoStats();
+    } catch (err) {
+      console.error('Erro:', err);
+    }
+    setEcoAction(null);
   };
 
   const loadClients = async () => {
@@ -704,12 +738,18 @@ export default function CoachDashboard() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
                   {Object.entries(multiEcoStats).map(([eco, ecoStats]) => {
                     const config = ECO_PLANS[eco];
-                    if (!config || ecoStats.total === 0) return null;
+                    if (!config) return null;
+                    const isSelected = selectedEco === eco;
                     return (
-                      <div
+                      <button
                         key={eco}
-                        className="p-3 rounded-xl border"
-                        style={{ borderColor: `${config.color}30`, background: `${config.color}08` }}
+                        onClick={() => isSelected ? setSelectedEco(null) : loadEcoClients(eco)}
+                        className={`p-3 rounded-xl border text-left transition-all ${isSelected ? 'ring-2 ring-offset-1' : 'hover:shadow-md'}`}
+                        style={{
+                          borderColor: `${config.color}${isSelected ? '80' : '30'}`,
+                          background: `${config.color}${isSelected ? '15' : '08'}`,
+                          '--tw-ring-color': config.color,
+                        }}
                       >
                         <div className="flex items-center gap-2 mb-2">
                           <div
@@ -748,10 +788,87 @@ export default function CoachDashboard() {
                             </div>
                           )}
                         </div>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
+
+                {/* Eco Client List */}
+                {selectedEco && (
+                  <div className="mt-4 border-t border-gray-100 pt-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-medium text-gray-800 text-sm flex items-center gap-2">
+                        <span
+                          className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                          style={{ background: ECO_PLANS[selectedEco]?.color }}
+                        >
+                          {ECO_PLANS[selectedEco]?.name?.[0]}
+                        </span>
+                        Clientes {ECO_PLANS[selectedEco]?.name}
+                      </h3>
+                      <button
+                        onClick={() => setSelectedEco(null)}
+                        className="text-gray-400 hover:text-gray-600 text-sm"
+                      >
+                        Fechar
+                      </button>
+                    </div>
+
+                    {loadingEcoClients ? (
+                      <p className="text-gray-400 text-xs text-center py-4">A carregar...</p>
+                    ) : ecoClients.length === 0 ? (
+                      <p className="text-gray-400 text-xs text-center py-4">Sem clientes neste eco</p>
+                    ) : (
+                      <div className="space-y-2 max-h-[50vh] overflow-y-auto">
+                        {ecoClients.map(client => (
+                          <div key={client.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div className="min-w-0 flex-1">
+                              <p className="font-medium text-gray-800 text-sm truncate">{client.nome}</p>
+                              <p className="text-xs text-gray-500 truncate">{client.email}</p>
+                              <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                                client.subscription_status === 'active' ? 'bg-green-100 text-green-700' :
+                                client.subscription_status === 'trial' ? 'bg-blue-100 text-blue-700' :
+                                client.subscription_status === 'tester' ? 'bg-purple-100 text-purple-700' :
+                                client.subscription_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                                client.subscription_status === 'expired' ? 'bg-red-100 text-red-700' :
+                                'bg-gray-100 text-gray-600'
+                              }`}>
+                                {client.subscription_status || 'sem status'}
+                              </span>
+                              {client.subscription_expires && (
+                                <span className="text-xs text-gray-400 ml-2">
+                                  exp: {new Date(client.subscription_expires).toLocaleDateString('pt')}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex gap-1 ml-2 shrink-0">
+                              {client.subscription_status !== 'tester' && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleEcoAction(selectedEco, client.user_id, 'tester'); }}
+                                  disabled={ecoAction?.userId === client.user_id}
+                                  className="px-2 py-1.5 text-xs rounded-lg bg-purple-100 text-purple-700 hover:bg-purple-200 disabled:opacity-50 transition-colors"
+                                  title="Definir como tester"
+                                >
+                                  Tester
+                                </button>
+                              )}
+                              {client.subscription_status !== 'active' && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleEcoAction(selectedEco, client.user_id, 'MONTHLY'); }}
+                                  disabled={ecoAction?.userId === client.user_id}
+                                  className="px-2 py-1.5 text-xs rounded-lg bg-green-100 text-green-700 hover:bg-green-200 disabled:opacity-50 transition-colors"
+                                  title="Activar mensal"
+                                >
+                                  Activar
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>

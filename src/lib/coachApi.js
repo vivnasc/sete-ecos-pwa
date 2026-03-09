@@ -42,4 +42,9 @@ export const coachApi = {
   testNotificacoes: () => coachRequest('test-notificacoes'),
   historicoNotificacoes: (userId) => coachRequest('historico-notificacoes', { userId }),
   centroComunicacoes: (params = {}) => coachRequest('centro-comunicacoes', params),
+
+  // Multi-Eco
+  listarClientesEco: (eco) => coachRequest('listar-clientes-eco', { eco }),
+  activarSubscricaoEco: (eco, userId, planKey) => coachRequest('activar-subscricao-eco', { eco, userId, planKey }),
+  setTesterEco: (eco, userId) => coachRequest('set-tester-eco', { eco, userId }),
 };

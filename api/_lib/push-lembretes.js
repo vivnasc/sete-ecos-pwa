@@ -241,6 +241,13 @@ export default async function handler(req, res) {
 
   console.log(`[Push Lembretes] ${horaCAT}:${String(minutoCAT).padStart(2, '0')} CAT — janela de 6min`)
 
+  // Buscar user_ids de coaches (não devem receber lembretes de cliente)
+  const { data: coachSubs } = await supabase
+    .from('push_subscriptions')
+    .select('user_id')
+    .eq('role', 'coach')
+  const coachUserIds = new Set((coachSubs || []).map(s => s.user_id).filter(Boolean))
+
   // Buscar todas as preferências activas
   const { data: prefs, error } = await supabase
     .from('push_preferences')
@@ -260,6 +267,9 @@ export default async function handler(req, res) {
   let totalUsers = 0
 
   for (const pref of prefs) {
+    // Excluir coaches — só recebem notificações de coach, não de cliente
+    if (coachUserIds.has(pref.user_id)) continue
+
     if (!pref.lembretes || !Array.isArray(pref.lembretes)) continue
 
     const lembretesActivos = pref.lembretes.filter(l => l.activo)

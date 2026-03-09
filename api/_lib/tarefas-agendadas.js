@@ -24,6 +24,10 @@ const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABA
 // Coach email - configurável via Vercel ENV
 const COACH_EMAIL = process.env.COACH_EMAIL || 'viv.saraiva@gmail.com';
 
+// Lista completa de emails de coach (não recebem lembretes de cliente)
+const COACH_EMAILS_LIST = (process.env.VITE_COACH_EMAILS || 'viv.saraiva@gmail.com,vivnasc@gmail.com,vivianne.saraiva@outlook.com')
+  .split(',').map(e => e.trim().toLowerCase());
+
 // WhatsApp config via Meta Cloud API (produção)
 const WHATSAPP_ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
 const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
@@ -138,6 +142,9 @@ async function enviarLembretes(supabase, resultados) {
   }
 
   for (const cliente of clientes || []) {
+    // Excluir coaches — não enviar lembretes de cliente a contas de coach
+    if (cliente.users?.email && COACH_EMAILS_LIST.includes(cliente.users.email.toLowerCase())) continue;
+
     try {
       const { data: ultimoRegisto } = await supabase
         .from('vitalis_registos')
@@ -355,6 +362,9 @@ async function enviarAvisosExpiracao(supabase, resultados) {
   }
 
   for (const cliente of clientes || []) {
+    // Excluir coaches
+    if (cliente.users?.email && COACH_EMAILS_LIST.includes(cliente.users.email.toLowerCase())) continue;
+
     try {
       const hoje = new Date().toISOString().split('T')[0];
 
@@ -570,6 +580,9 @@ async function enviarMarcos(supabase, resultados) {
   if (error || !clientes) return;
 
   for (const cliente of clientes) {
+    // Excluir coaches
+    if (cliente.users?.email && COACH_EMAILS_LIST.includes(cliente.users.email.toLowerCase())) continue;
+
     try {
       // Contar check-ins consecutivos recentes
       const { data: registos } = await supabase
@@ -677,6 +690,9 @@ async function enviarMarcosPeso(supabase, resultados) {
   const alertasCoach = [];
 
   for (const cliente of clientes) {
+    // Excluir coaches
+    if (cliente.users?.email && COACH_EMAILS_LIST.includes(cliente.users.email.toLowerCase())) continue;
+
     try {
       if (!cliente.peso_inicial || !cliente.peso_actual) continue;
       const pesoPerdido = cliente.peso_inicial - cliente.peso_actual;
@@ -775,6 +791,9 @@ async function enviarWinback(supabase, resultados) {
   if (error || !clientes) return;
 
   for (const cliente of clientes) {
+    // Excluir coaches
+    if (cliente.users?.email && COACH_EMAILS_LIST.includes(cliente.users.email.toLowerCase())) continue;
+
     try {
       // Limitar win-back a 1x por semana (evitar spam diário)
       const seteDiasAtras = new Date();
@@ -865,6 +884,9 @@ async function enviarCuriosidadeInsana(supabase, resultados) {
 
     // Filtrar: tem Lumina mas não tem Vitalis ativo
     for (const user of users) {
+      // Excluir coaches
+      if (user.email && COACH_EMAILS_LIST.includes(user.email.toLowerCase())) continue;
+
       try {
         const { data: vitalisClient } = await supabase
           .from('vitalis_clients')
