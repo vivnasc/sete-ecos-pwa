@@ -1,18 +1,16 @@
-/**
- * Push Lembretes Cron — Envia push notifications reais aos clientes
- *
- * Chamado A CADA 5 MINUTOS pelo cron no vercel.json:
- *   "*/5 * * * *" (Vercel Pro permite crons por minuto)
- *
- * Cada execução verifica a hora em Africa/Maputo (CAT) e envia
- * lembretes cuja hora configurada está dentro dos últimos 6 minutos.
- * Só activo entre CAT 06:00-22:59 (fora disso faz early return).
- *
- * Resultado: notificações chegam no máximo 5 minutos após a hora
- * configurada — timing praticamente igual a apps nativas.
- *
- * Tags alinhadas com o cliente evitam duplicados via Service Worker.
- */
+// Push Lembretes Cron — Envia push notifications reais aos clientes
+//
+// Chamado A CADA 5 MINUTOS pelo cron no vercel.json:
+//   "star/5 * * * *" (Vercel Pro permite crons por minuto)
+//
+// Cada execução verifica a hora em Africa/Maputo (CAT) e envia
+// lembretes cuja hora configurada está dentro dos últimos 6 minutos.
+// Só activo entre CAT 06:00-22:59 (fora disso faz early return).
+//
+// Resultado: notificações chegam no máximo 5 minutos após a hora
+// configurada — timing praticamente igual a apps nativas.
+//
+// Tags alinhadas com o cliente evitam duplicados via Service Worker.
 
 import { createClient } from '@supabase/supabase-js'
 import webpush from 'web-push'
