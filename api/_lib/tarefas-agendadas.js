@@ -768,7 +768,7 @@ async function registarMarcoNotificado(supabase, userId, marcoId) {
 
 /**
  * Win-back: clientes com subscrição expirada há 3+ dias
- * Envia WA convidando a voltar com código de desconto
+ * Envia WA suave convidando a voltar (progresso guardado)
  */
 async function enviarWinback(supabase, resultados) {
   const tresDiasAtras = new Date();

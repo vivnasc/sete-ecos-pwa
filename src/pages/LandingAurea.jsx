@@ -143,8 +143,8 @@ const LandingAurea = () => {
 
   const faqs = [
     {
-      pergunta: 'Isto é para mulheres que não se miman?',
-      resposta: 'É para mulheres que funcionam bem para os outros mas não existem para si próprias. Que sentem culpa quando cuidam de si. Que trabalham, dão, produzem — mas quando chega a hora de gastar tempo, dinheiro ou energia consigo, travam.'
+      pergunta: 'Isto é para quem não se mima?',
+      resposta: 'É para quem funciona bem para os outros mas não existe para si. Que sente culpa quando cuida de si. Que trabalha, dá, produz — mas quando chega a hora de gastar tempo, dinheiro ou energia consigo, trava.'
     },
     {
       pergunta: 'Como é diferente de outras apps de auto-cuidado?',
@@ -199,14 +199,14 @@ const LandingAurea = () => {
     <div className="min-h-screen" style={{ fontFamily: 'var(--font-corpo)', background: 'linear-gradient(to bottom, #2D2A24, #3D3830, #2D2A24)' }}>
       <SEOHead
         title="ÁUREA - Valor & Presença | Sete Ecos"
-        description="Para mulheres que merecem mais. Micro-práticas diárias, Espelho de Roupa, Carteira de Merecimento e coaching personalizado. Desde 975 MZN/mês."
+        description="Para quem merece mais. Micro-práticas diárias, Espelho de Roupa, Carteira de Merecimento e coaching personalizado. Desde 499 MZN/mês."
         url="https://app.seteecos.com/aurea"
         image="https://app.seteecos.com/og-image.png"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Product",
           "name": "ÁUREA - Valor & Presença",
-          "description": "Programa de autoestima e presença para mulheres com micro-práticas diárias e coaching personalizado.",
+          "description": "Programa de autoestima e presença com micro-práticas diárias e coaching personalizado.",
           "brand": { "@type": "Brand", "name": "Sete Ecos" },
           "offers": [
             { "@type": "Offer", "name": "Mensal", "price": "499", "priceCurrency": "MZN", "availability": "https://schema.org/InStock" },
@@ -253,7 +253,7 @@ const LandingAurea = () => {
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <div className="inline-block px-4 py-2 bg-amber-500/20 rounded-full mb-6">
-            <span className="text-amber-300 text-sm font-medium">✨ Já ajudou +200 mulheres a priorizarem-se</span>
+            <span className="text-amber-300 text-sm font-medium">✨ Já ajudou +200 pessoas a priorizarem-se</span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold text-amber-100 mb-6" style={{ fontFamily: 'var(--font-titulos)' }}>
@@ -265,7 +265,7 @@ const LandingAurea = () => {
           </p>
 
           <p className="text-lg text-amber-100/60 max-w-2xl mx-auto mb-8">
-            Para mulheres que funcionam bem para os outros mas não existem para si próprias.
+            Para quem funciona bem para os outros mas não existe para si.
             ÁUREA trabalha a relação com dinheiro, roupa, prazer e mimo — sem culpa, sem justificação.
           </p>
 
@@ -288,7 +288,7 @@ const LandingAurea = () => {
           <div className="grid grid-cols-3 gap-8 max-w-lg mx-auto">
             <div>
               <div className="text-3xl font-bold text-amber-300">200+</div>
-              <div className="text-amber-200/60 text-sm">mulheres activas</div>
+              <div className="text-amber-200/60 text-sm">pessoas activas</div>
             </div>
             <div>
               <div className="text-3xl font-bold text-amber-300">100+</div>
@@ -514,10 +514,10 @@ const LandingAurea = () => {
               </h2>
               <p className="text-amber-200/80 mb-4">
                 <strong className="text-amber-100">Vivianne Santos</strong> é terapeuta, coach de desenvolvimento pessoal
-                e criadora do Sistema Sete Ecos — um caminho de transformação feminina que integra corpo, emoção e espírito.
+                e criadora do Sistema Sete Ecos — um caminho de transmutação integral que integra corpo, emoção e espírito.
               </p>
               <p className="text-amber-200/70 mb-4">
-                ÁUREA nasceu da observação de um padrão muito comum: mulheres que funcionam bem para todos,
+                ÁUREA nasceu da observação de um padrão muito comum: pessoas que funcionam bem para todos,
                 mas não existem para si próprias. Que trabalham, dão, produzem — mas quando chega a hora de
                 gastar tempo, dinheiro ou energia consigo, travam.
               </p>
@@ -663,7 +663,7 @@ const LandingAurea = () => {
             Quero começar HOJE
           </button>
           <p className="text-amber-300/50 text-sm mt-4">
-            +200 mulheres já começaram a priorizar-se
+            +200 pessoas já começaram a priorizar-se
           </p>
         </div>
       </section>
@@ -684,7 +684,7 @@ const LandingAurea = () => {
             compact
             url="https://app.seteecos.com/aurea"
             titulo="ÁUREA - Valor & Presença"
-            texto="Descobre a AUREA, um programa para mulheres que merecem mais."
+            texto="Descobre a ÁUREA, um programa para quem merece mais."
           />
           <div className="text-amber-200/50 text-sm">
             © 2026 Sete Ecos

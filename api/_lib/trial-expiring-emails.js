@@ -5,7 +5,7 @@
  * - Dia -3: "Faltam 3 dias - aproveita ao máximo!"
  * - Dia -1: "Última oportunidade - não percas o progresso"
  * - Dia 0: "O teu trial expirou - continua a jornada"
- * - Dia +3: "Sentimos a tua falta - 15% desconto para voltar"
+ * - Dia +3: "O teu progresso está guardado - volta quando quiseres"
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -182,38 +182,35 @@ const emailTrialExpirado = (nome, eco = 'Vitalis') => ({
 });
 
 const emailWinBack3Dias = (nome, eco = 'Vitalis') => ({
-  subject: `${nome}, sentimos a tua falta! Volta com 15% desconto 💚`,
-  preheader: 'Oferta especial para voltar à tua jornada',
+  subject: `${nome}, o teu progresso está guardado 🌿`,
+  preheader: 'Volta quando estiveres pronto/a — estamos aqui',
   html: emailTemplate(
     `
     <div class="header">
-      <h1>Sentimos a Tua Falta 💌</h1>
+      <h1>O Teu Caminho Continua 🌿</h1>
     </div>
     <div class="content">
       <p>Olá, <strong>${nome}</strong>,</p>
 
-      <p>Passaram 3 dias desde que o teu trial expirou, e queria passar para dizer: <strong>sentimos a tua falta!</strong> 🌿</p>
+      <p>Passaram alguns dias desde que o teu trial do ${eco} terminou. Queria só dizer-te uma coisa:</p>
 
-      <p>Sei que a vida acontece, e talvez não fosse o momento certo. Mas se ainda pensas em voltar, tenho uma oferta especial para ti:</p>
-
-      <div class="highlight" style="background: linear-gradient(135deg, #FFF9E6 0%, #FFF5D6 100%); border-left-color: #C9A227;">
-        <p style="font-size: 20px; font-weight: 700; color: #2D3A25; margin: 0 0 12px 0;">🎁 15% de Desconto Exclusivo</p>
-        <p style="margin: 0;">Válido nos próximos <strong>3 dias</strong>. Usa o código:</p>
-        <p style="font-size: 24px; font-weight: 700; color: #7C8B6F; letter-spacing: 2px; margin: 12px 0 0 0;">VOLTEI15</p>
+      <div class="highlight">
+        <p style="font-size: 18px; font-weight: 700; color: #2D3A25; margin: 0 0 12px 0;">O teu progresso está todo guardado.</p>
+        <p style="margin: 0;">Tudo o que registaste — check-ins, dados, evolução — continua à tua espera. Nada se perdeu.</p>
       </div>
+
+      <p>Sei que o timing nem sempre é o ideal. Não há pressa, não há pressão. Quando sentires que é a altura certa, é só voltar e continuar de onde paraste.</p>
 
       <div class="cta">
-        <a href="https://app.seteecos.com/vitalis/pagamento?code=VOLTEI15">Voltar com Desconto →</a>
+        <a href="https://app.seteecos.com/${eco.toLowerCase()}/pagamento">Ver Planos do ${eco} →</a>
       </div>
 
-      <p><strong>Mais:</strong> Se subscreveres o Bundle Vitalis + Áurea, o desconto aplica-se ao preço já reduzido (25% + 15% = 40% de poupança total vs preços individuais!).</p>
+      <p>Se tiveres alguma dúvida ou feedback sobre a experiência, <strong>responde a este email</strong>. Levo o teu feedback muito a sério.</p>
 
-      <p>Todo o teu progresso está guardado. É só voltar e continuar de onde paraste. 💪</p>
-
-      <p style="margin-top: 32px;">Estou aqui se precisares,<br><strong>Vivianne</strong><br><em>P.S.: Esta oferta expira em 3 dias.</em></p>
+      <p style="margin-top: 32px;">Estou aqui se precisares,<br><strong>Vivianne</strong></p>
     </div>
   `,
-    'Oferta exclusiva: 15% desconto para voltares!'
+    'O teu progresso está guardado — volta quando quiseres'
   ),
 });
 

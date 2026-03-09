@@ -172,7 +172,7 @@ const LandingSerena = () => {
     <div className="min-h-screen" style={{ fontFamily: 'var(--font-corpo)' }}>
       <SEOHead
         title="SERENA - Emoção & Fluidez | Sete Ecos"
-        description="Programa de gestão emocional para mulheres. Diário emocional, SOS Emocional, respiração guiada e coaching personalizado."
+        description="Programa de gestão emocional. Diário emocional, SOS Emocional, respiração guiada e coaching personalizado."
         url="https://app.seteecos.com/serena"
         image="https://app.seteecos.com/og-image.png"
         jsonLd={{
@@ -609,7 +609,7 @@ const LandingSerena = () => {
                 </h2>
                 <p className="text-white/80 mb-4">
                   <strong className="text-[#6B8E9B]">Vivianne Santos</strong> é terapeuta, coach de desenvolvimento pessoal
-                  e criadora do Sistema Sete Ecos &mdash; um caminho de transformação feminina que integra corpo, emoção e espírito.
+                  e criadora do Sistema Sete Ecos &mdash; um caminho de transmutação integral que integra corpo, emoção e espírito.
                 </p>
                 <p className="text-white/70 mb-4">
                   SERENA nasceu da observação de um padrão muito comum: pessoas que acumulam emoções

@@ -643,7 +643,7 @@ const LandingImago = () => {
               </p>
               <p className="text-white/70 mb-6" style={{ fontFamily: 'var(--font-corpo)' }}>
                 O Espelho Triplo, a Arqueologia de Si, a Nomeação — são ferramentas que nasceram de anos
-                de trabalho com mulheres que viviam a vida de toda a gente, menos a delas.
+                de trabalho com pessoas que viviam a vida de toda a gente, menos a delas.
               </p>
               <div
                 className="p-6 rounded-xl border-l-4 border-[#8B7BA5] italic"

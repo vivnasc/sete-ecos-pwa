@@ -1520,7 +1520,7 @@ function RevisaoTab({ copiar, copiado, prog }) {
         { key: 'rev-f3-post9', texto: 'Publicar Post #9 (carrossel tour)', tab: 'carrosseis', accao: 'Carrossel tour da app. Educativo.' },
         { key: 'rev-f3-post10', texto: 'Publicar Post #6 (treinos + ciclo)', tab: 'vitalis', secao: 'Posts (12)', accao: 'Post #6: treinos que se adaptam ao ciclo. Nicho.' },
         { key: 'rev-f3-engage', texto: 'Responder a 10 comentários/DMs no Instagram', accao: 'Dedica 15 minutos a responder e interagir. Cada comentário respondido = mais alcance.' },
-        { key: 'rev-f3-grupo', texto: 'Enviar mensagem para 1 grupo de mulheres no WA', tab: 'hoje', accao: 'Tab Hoje > WhatsApp > tom "Lumina". Adapta para grupo.' },
+        { key: 'rev-f3-grupo', texto: 'Enviar mensagem para 1 grupo no WA', tab: 'hoje', accao: 'Tab Hoje > WhatsApp > tom "Lumina". Adapta para grupo.' },
       ],
     },
     {
