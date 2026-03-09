@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { coachApi } from '../lib/coachApi';
 import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
@@ -1123,8 +1123,11 @@ export default function CoachClienteDetalhe() {
 function NotificacoesTab({ userId }) {
   const [notifs, setNotifs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [reenviando, setReenviando] = useState(null);
+  const [expandedErro, setExpandedErro] = useState(null);
+  const [filtro, setFiltro] = useState('todos'); // todos | erros | enviados
 
-  useEffect(() => {
+  const loadNotifs = useCallback(() => {
     if (!userId) return;
     setLoading(true);
     coachApi.historicoNotificacoes(userId)
@@ -1132,6 +1135,32 @@ function NotificacoesTab({ userId }) {
       .catch(() => setNotifs([]))
       .finally(() => setLoading(false));
   }, [userId]);
+
+  useEffect(() => { loadNotifs(); }, [loadNotifs]);
+
+  const errosCount = notifs.filter(n => n.status === 'erro').length;
+
+  const filteredNotifs = useMemo(() => {
+    if (filtro === 'erros') return notifs.filter(n => n.status === 'erro');
+    if (filtro === 'enviados') return notifs.filter(n => n.status !== 'erro');
+    return notifs;
+  }, [notifs, filtro]);
+
+  const handleReenviar = async (notif, index) => {
+    setReenviando(index);
+    try {
+      const result = await coachApi.reenviarNotificacao(userId, notif.canal, notif.tipo);
+      if (result.ok) {
+        loadNotifs();
+      } else {
+        alert(`Falhou: ${result.erro || 'Erro desconhecido'}`);
+      }
+    } catch (err) {
+      alert(`Erro: ${err.message}`);
+    } finally {
+      setReenviando(null);
+    }
+  };
 
   const formatData = (dateStr) => {
     if (!dateStr) return '';
@@ -1143,7 +1172,7 @@ function NotificacoesTab({ userId }) {
     if (diffH < 1) return 'há poucos minutos';
     if (diffH < 24) return `há ${diffH}h`;
     if (diffD < 7) return `há ${diffD}d`;
-    return d.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short', year: diffD > 365 ? 'numeric' : undefined });
+    return d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' });
   };
 
   if (loading) {
@@ -1166,23 +1195,100 @@ function NotificacoesTab({ userId }) {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-4">
-      <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-        <span>📬</span> Histórico de notificações ({notifs.length})
-      </h3>
-      <div className="space-y-2 max-h-[60vh] overflow-y-auto">
-        {notifs.map((n, i) => (
-          <div key={i} className="flex items-center justify-between py-2 px-3 rounded-lg bg-gray-50 text-sm">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="flex-shrink-0">{n.canal === 'whatsapp' ? '💬' : '📧'}</span>
-              <span className="text-gray-800 truncate">{n.label}</span>
-              {n.status === 'erro' && (
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-100 text-red-600">erro</span>
-              )}
-            </div>
-            <span className="text-xs text-gray-400 flex-shrink-0 ml-2">{formatData(n.data)}</span>
+    <div className="space-y-3">
+      {/* Erros summary — acção imediata */}
+      {errosCount > 0 && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-sm font-bold text-red-800 flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z" /><path d="M12 15.75h.007v.008H12v-.008z" /></svg>
+              {errosCount} notificação{errosCount > 1 ? 'ões' : ''} falhada{errosCount > 1 ? 's' : ''}
+            </h4>
+            <button
+              onClick={() => setFiltro(filtro === 'erros' ? 'todos' : 'erros')}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${filtro === 'erros' ? 'bg-red-600 text-white' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
+            >
+              {filtro === 'erros' ? 'Ver todas' : 'Ver erros'}
+            </button>
           </div>
-        ))}
+          <p className="text-xs text-red-600">
+            Podes reenviar cada uma individualmente com o botão "Reenviar".
+          </p>
+        </div>
+      )}
+
+      {/* Filter tabs */}
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
+          <span>📬</span> Histórico ({filteredNotifs.length}{filtro !== 'todos' ? ` de ${notifs.length}` : ''})
+        </h3>
+        <button onClick={loadNotifs} className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors" title="Actualizar">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" /></svg>
+        </button>
+      </div>
+
+      {/* Notification list */}
+      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+        <div className="divide-y divide-gray-50 max-h-[60vh] overflow-y-auto">
+          {filteredNotifs.map((n, i) => {
+            const isErro = n.status === 'erro';
+            const isExpanded = expandedErro === i;
+            return (
+              <div key={i} className={`transition-colors ${isErro ? 'bg-red-50/40' : ''}`}>
+                <div className="flex items-center justify-between py-3 px-4">
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    <span className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm ${
+                      isErro ? 'bg-red-100' : n.canal === 'whatsapp' ? 'bg-green-100' : 'bg-blue-100'
+                    }`}>
+                      {isErro ? '❌' : n.canal === 'whatsapp' ? '💬' : '📧'}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm text-gray-800 truncate font-medium">{n.label}</span>
+                        {isErro && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-600 flex-shrink-0">FALHOU</span>
+                        )}
+                      </div>
+                      {isErro && n.erro && (
+                        <button
+                          onClick={() => setExpandedErro(isExpanded ? null : i)}
+                          className="text-[11px] text-red-500 hover:text-red-700 mt-0.5 flex items-center gap-1"
+                        >
+                          <svg className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
+                          Ver detalhe do erro
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                    {isErro && (
+                      <button
+                        onClick={() => handleReenviar(n, i)}
+                        disabled={reenviando === i}
+                        className="px-3 py-1.5 text-xs font-bold bg-red-600 text-white rounded-lg hover:bg-red-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-wait flex items-center gap-1"
+                      >
+                        {reenviando === i ? (
+                          <><div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> A reenviar...</>
+                        ) : (
+                          <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" /></svg> Reenviar</>
+                        )}
+                      </button>
+                    )}
+                    <span className="text-[11px] text-gray-400 font-medium tabular-nums">{formatData(n.data)}</span>
+                  </div>
+                </div>
+                {/* Error detail expandable */}
+                {isErro && isExpanded && n.erro && (
+                  <div className="px-4 pb-3">
+                    <div className="bg-red-100/60 border border-red-200 rounded-lg p-3 text-xs text-red-700 font-mono break-all">
+                      {n.erro}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

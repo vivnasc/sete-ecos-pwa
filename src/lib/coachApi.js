@@ -41,6 +41,7 @@ export const coachApi = {
   setTester: (userId) => coachRequest('set-tester', { userId }),
   testNotificacoes: () => coachRequest('test-notificacoes'),
   historicoNotificacoes: (userId) => coachRequest('historico-notificacoes', { userId }),
+  reenviarNotificacao: (userId, canal, tipo) => coachRequest('reenviar-notificacao', { userId, canal, tipo }),
   centroComunicacoes: (params = {}) => coachRequest('centro-comunicacoes', params),
 
   // Multi-Eco

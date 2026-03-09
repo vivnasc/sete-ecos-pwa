@@ -232,6 +232,11 @@ export default async function handler(req, res) {
         return await historicoNotificacoes(params.userId, res);
       }
 
+      // ── Reenviar notificação falhada ──
+      case 'reenviar-notificacao': {
+        return await reenviarNotificacao(params, res);
+      }
+
       default:
         return res.status(400).json({ error: 'Accao desconhecida: ' + action });
     }
@@ -1448,7 +1453,7 @@ async function historicoNotificacoes(userId, res) {
         const tel = intake.whatsapp.replace(/[^0-9]/g, '');
         const { data: waData } = await supabase
           .from('whatsapp_broadcast_log')
-          .select('tipo, mensagem, status, created_at')
+          .select('tipo, mensagem, status, erro, created_at')
           .eq('telefone', tel)
           .order('created_at', { ascending: false })
           .limit(20);
@@ -1481,6 +1486,7 @@ async function historicoNotificacoes(userId, res) {
         tipo: w.tipo,
         label: `💬 ${w.tipo?.replace('cron-cliente-', '') || 'WA'}`,
         status: w.status,
+        erro: w.erro || null,
         data: w.created_at,
       })),
     ].sort((a, b) => new Date(b.data) - new Date(a.data)).slice(0, 30);
@@ -1488,6 +1494,82 @@ async function historicoNotificacoes(userId, res) {
     return res.status(200).json({ notificacoes });
   } catch (err) {
     return res.status(200).json({ notificacoes: [], erro: err.message });
+  }
+}
+
+// ==========================================
+// REENVIAR NOTIFICAÇÃO FALHADA
+// ==========================================
+async function reenviarNotificacao(params, res) {
+  const { userId, canal, tipo } = params;
+  if (!userId || !canal || !tipo) return res.status(400).json({ error: 'userId, canal e tipo obrigatórios' });
+
+  try {
+    // Obter dados do cliente
+    const { data: user } = await supabase.from('users').select('email, nome').eq('id', userId).maybeSingle();
+    if (!user) return res.status(404).json({ error: 'Utilizador não encontrado' });
+
+    if (canal === 'whatsapp') {
+      // Obter número WA do intake
+      const { data: intake } = await supabase.from('vitalis_intake').select('whatsapp').eq('user_id', userId).order('created_at', { ascending: false }).limit(1).maybeSingle();
+      if (!intake?.whatsapp) return res.status(400).json({ error: 'Cliente sem número WhatsApp' });
+
+      // Detectar template pelo tipo
+      const templateMap = {
+        'cron-cliente-checkin_lembrete': 'checkin_lembrete',
+        'cron-cliente-motivacao': 'motivacao',
+        'cron-cliente-marco_celebracao': 'marco_celebracao',
+        'cron-cliente-marco-peso-peso_1kg': 'marco_celebracao',
+        'cron-cliente-expiracao_aviso': 'expiracao_aviso',
+      };
+      const template = templateMap[tipo] || tipo.replace('cron-cliente-', '');
+      const tel = intake.whatsapp.replace(/[^0-9]/g, '');
+
+      const result = await enviarMensagemWA(tel, '', { template, nome: user.nome || 'Cliente' });
+
+      // Log the retry
+      try {
+        await supabase.from('whatsapp_broadcast_log').insert({
+          telefone: tel,
+          mensagem: `[retry][template:${template}]`,
+          tipo: `retry-${tipo}`,
+          status: result.ok ? 'enviado' : 'erro',
+          erro: result.ok ? null : result.error,
+          message_id: result.messageId || null,
+        });
+      } catch (_) {}
+
+      return res.status(result.ok ? 200 : 500).json({
+        ok: result.ok,
+        canal: 'whatsapp',
+        template,
+        erro: result.ok ? null : result.error,
+      });
+    }
+
+    // Email: usa a API de enviar-email
+    try {
+      const emailRes = await fetch(`${process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000'}/api/enviar-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tipo: tipo.replace('cron-cliente-', ''),
+          email: user.email,
+          dados: { nome: user.nome || 'Cliente' },
+        }),
+      });
+      const emailData = await emailRes.json().catch(() => ({}));
+      return res.status(emailRes.ok ? 200 : 500).json({
+        ok: emailRes.ok,
+        canal: 'email',
+        tipo,
+        erro: emailRes.ok ? null : (emailData.error || 'Falha ao reenviar'),
+      });
+    } catch (err) {
+      return res.status(500).json({ ok: false, canal: 'email', erro: err.message });
+    }
+  } catch (err) {
+    return res.status(500).json({ ok: false, erro: err.message });
   }
 }
 
