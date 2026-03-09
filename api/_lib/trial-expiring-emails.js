@@ -48,7 +48,7 @@ const emailTemplate = (content, preheader) => `
   <div class="container">
     ${content}
     <div class="footer">
-      <p><strong>SETE ECOS</strong> - Transmutação Feminina</p>
+      <p><strong>SETE ECOS</strong> - Transmutação Integral</p>
       <p>
         <a href="https://app.seteecos.com">app.seteecos.com</a> •
         <a href="https://app.seteecos.com/conta">A Minha Conta</a>
@@ -125,7 +125,7 @@ const email1DiaAntes = (nome, eco = 'Vitalis') => ({
         <ul style="margin: 8px 0 0 0;">
           <li>✅ Mantens todo o teu progresso</li>
           <li>✅ Continuas com a mesma energia</li>
-          <li>✅ Garantia de 7 dias (devolução total se não ficares satisfeita)</li>
+          <li>✅ Garantia de 7 dias (devolução total se não ficares satisfeito/a)</li>
           ${eco === 'Vitalis' ? `<li>💰 <strong>Bundle Vitalis + Áurea</strong>: Poupa 25%</li>` : ''}
         </ul>
       </div>
@@ -145,7 +145,7 @@ const email1DiaAntes = (nome, eco = 'Vitalis') => ({
 
 const emailTrialExpirado = (nome, eco = 'Vitalis') => ({
   subject: `${nome}, o teu trial ${eco} expirou hoje 😔`,
-  preheader: 'Volta quando estiveres pronta - estamos aqui!',
+  preheader: 'Volta quando estiveres pronto/a - estamos aqui!',
   html: emailTemplate(
     `
     <div class="header">

@@ -166,7 +166,7 @@ async function enviarLembretes(supabase, resultados) {
           const tipoEmail = diasInactiva >= 5 ? 'motivacao-intensa' : 'lembrete-checkin';
 
           await enviarEmail(tipoEmail, cliente.users.email, {
-            nome: cliente.users.nome || 'Querida',
+            nome: cliente.users.nome || '',
             dias: diasInactiva
           });
 
@@ -236,7 +236,7 @@ async function enviarAvisosExpiracao(supabase, resultados) {
         );
 
         await enviarEmail('expiracao-aviso', cliente.users.email, {
-          nome: cliente.users.nome || 'Querida',
+          nome: cliente.users.nome || '',
           dias: diasRestantes
         });
 

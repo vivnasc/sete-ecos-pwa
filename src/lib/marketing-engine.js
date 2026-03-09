@@ -32,7 +32,7 @@ const HOOKS_PROVOCADORES = [
   'Resolves o corpo. Depois a emoção. Depois o foco. E nunca juntam.',
   'O problema não é falta de conhecimento. É excesso de fragmentação.',
   'Há anos que trabalhas em ti. Mas cada pedaço separado do resto.',
-  'Sabes o que comer, como respirar, como meditar. Mas continuas exausta.',
+  'Sabes o que comer, como respirar, como meditar. Mas continuas sem energia.',
   'Não te falta mais uma solução. Falta-te um sistema onde tudo converse.',
   'A Sete Ecos não nasceu para te melhorar. Nasceu para integrar o que já és.',
   'Se tratas partes isoladas, vais continuar a viver em ciclos.',
@@ -59,7 +59,7 @@ const CONTEUDO_CORPO = [
   },
   {
     hook: 'Resolves o corpo numa app. A emoção noutra. O foco noutra. E depois?',
-    corpo: 'Depois continuas exausta. Porque o problema nunca foi falta de ferramentas. Foi falta de integração. 7 apps separadas nunca vão funcionar como 1 sistema desenhado para conversar.',
+    corpo: 'Depois continuas sem energia. Porque o problema nunca foi falta de ferramentas. Foi falta de integração. 7 apps separadas nunca vão funcionar como 1 sistema desenhado para conversar.',
     cta: '7 ecos. 1 sistema. As partes conversam entre si.',
   },
   {

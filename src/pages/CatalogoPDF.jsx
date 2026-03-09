@@ -50,7 +50,7 @@ export default function CatalogoPDF() {
         <img src="/logos/SETEECOS_HERO.png" alt="Sete Ecos" className="w-48 h-48 mb-8 drop-shadow-2xl" />
         <h1 className="text-6xl font-bold text-white mb-3 tracking-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>SETE ECOS</h1>
         <div className="w-24 h-0.5 mb-4" style={{ background: `linear-gradient(to right, transparent, ${B.verde}, transparent)` }} />
-        <p className="text-xl text-white/60 mb-2 italic" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Sistema de Transmutação Feminina</p>
+        <p className="text-xl text-white/60 mb-2 italic" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>Sistema de Transmutação Integral</p>
         <p className="text-white/40 text-sm mt-16 tracking-widest uppercase">Catálogo de Serviços · 2026</p>
         <p className="text-white/25 text-xs mt-2">Maputo, Moçambique</p>
 
@@ -76,10 +76,10 @@ export default function CatalogoPDF() {
         <div className="grid grid-cols-2 gap-6 mb-6 flex-1">
           <div className="space-y-4 flex flex-col justify-center">
             <p className="text-gray-700 leading-relaxed text-[15px]">
-              O <strong>Sete Ecos</strong> é um sistema de transformação feminina criado em Moçambique, para mulheres moçambicanas e de língua portuguesa.
+              O <strong>Sete Ecos</strong> é um sistema de transmutação integral criado em Moçambique, para pessoas de língua portuguesa.
             </p>
             <p className="text-gray-700 leading-relaxed text-[15px]">
-              Acreditamos que a saúde da mulher não começa na balança — começa na <strong>relação com o próprio corpo</strong>, com a comida, com as emoções.
+              Acreditamos que a saúde não começa na balança — começa na <strong>relação com o próprio corpo</strong>, com a comida, com as emoções.
             </p>
             <p className="text-gray-700 leading-relaxed text-[15px]">
               O nosso trabalho combina <strong>nutrição baseada em evidência</strong> com <strong>compreensão emocional</strong>, usando a comida que já conheces: xima, matapa, caril, feijão nhemba.
@@ -92,7 +92,7 @@ export default function CatalogoPDF() {
             <div className="rounded-2xl p-6 mb-4 flex-1" style={{ background: `linear-gradient(to bottom right, ${B.creme}, ${B.linho})` }}>
               <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: B.verde }}>A nossa missão</p>
               <p className="italic leading-relaxed text-gray-600 mb-6" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '17px' }}>
-                "Ajudar cada mulher a ouvir o seu corpo, alimentar-se com consciência e transformar-se sem culpa. Sem dietas importadas. Sem julgamento. Com amor e ciência."
+                "Ajudar cada pessoa a ouvir o seu corpo, alimentar-se com consciência e transformar-se sem culpa. Sem dietas importadas. Sem julgamento. Com amor e ciência."
               </p>
               <div className="pt-4 flex items-center gap-3" style={{ borderTop: `1px solid ${B.borda}` }}>
                 <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-bold" style={{ background: `linear-gradient(to bottom right, ${B.verde}, #5a6b4e)` }}>VS</div>
@@ -196,7 +196,7 @@ export default function CatalogoPDF() {
             </div>
             <div className="rounded-xl p-4" style={{ background: 'linear-gradient(to right, rgba(155,89,182,0.1), rgba(193,99,74,0.08))' }}>
               <p className="text-xs text-purple-700 font-bold">Ideal para:</p>
-              <p className="text-sm text-gray-600 mt-1">Mulheres que querem entender a sua relação com a comida antes de começar qualquer mudança.</p>
+              <p className="text-sm text-gray-600 mt-1">Pessoas que querem entender a sua relação com a comida antes de começar qualquer mudança.</p>
             </div>
           </div>
         </div>
@@ -219,7 +219,7 @@ export default function CatalogoPDF() {
         </div>
 
         <p className="text-gray-700 text-[15px] leading-relaxed mb-4">
-          Não é uma dieta. É um <strong>sistema de transformação nutricional</strong> desenhado para a mulher moçambicana. Usa a comida que já conheces, respeita o teu ritmo e acompanha-te sem julgamento.
+          Não é uma dieta. É um <strong>sistema de transformação nutricional</strong> feito com comida moçambicana. Usa a comida que já conheces, respeita o teu ritmo e acompanha-te sem julgamento.
         </p>
 
         {/* 4 screenshots em grid — sem limite de altura */}
@@ -341,7 +341,7 @@ export default function CatalogoPDF() {
 
             <div className="bg-purple-50 rounded-xl p-5">
               <p className="font-bold text-base text-purple-700 mb-2">Inclui COMUNIDADE</p>
-              <p className="text-sm text-gray-600">Espaço coletivo com Rio (reflexões), Círculos, Fogueira e Sussurros — mulheres a apoiarem-se mutuamente.</p>
+              <p className="text-sm text-gray-600">Espaço coletivo com Rio (reflexões), Círculos, Fogueira e Sussurros — pessoas a apoiarem-se mutuamente.</p>
             </div>
           </div>
         </div>
@@ -359,7 +359,7 @@ export default function CatalogoPDF() {
         </div>
 
         <p className="text-gray-700 text-[15px] leading-relaxed mb-5">
-          A transformação não se faz sozinha. A Comunidade Sete Ecos é um <strong>espaço seguro</strong> onde mulheres partilham reflexões, desafios e conquistas. Tudo moderado, tudo com propósito.
+          A transformação não se faz sozinha. A Comunidade Sete Ecos é um <strong>espaço seguro</strong> onde pessoas partilham reflexões, desafios e conquistas. Tudo moderado, tudo com propósito.
         </p>
 
         <div className="grid grid-cols-2 gap-5 flex-1 mb-5">
@@ -371,7 +371,7 @@ export default function CatalogoPDF() {
           <div className="flex flex-col gap-3">
             {[
               { icon: '🌊', nome: 'O Rio', desc: 'Reflexões guiadas por prompts diários. Partilha pensamentos, lê os de outras. Um espaço de escrita honesta sobre o dia-a-dia.' },
-              { icon: '👥', nome: 'Círculos de Eco', desc: 'Grupos de 7-12 mulheres que exploram o mesmo Eco juntas. Apoio mútuo com propósito e acompanhamento.' },
+              { icon: '👥', nome: 'Círculos de Eco', desc: 'Grupos de 7-12 pessoas que exploram o mesmo Eco. Apoio mútuo com propósito e acompanhamento.' },
               { icon: '🔥', nome: 'Fogueira', desc: 'Espaço efémero de 24h. Todas se reúnem num tema. Conversas honestas que desaparecem no dia seguinte.' },
               { icon: '💜', nome: 'Sussurros', desc: 'Mensagens privadas de apoio e encorajamento. Palavras que chegam quando mais precisas.' },
             ].map((e, i) => (

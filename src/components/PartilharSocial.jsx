@@ -6,8 +6,8 @@ import React, { useState } from 'react';
  */
 export default function PartilharSocial({
   url,
-  titulo = 'Sete Ecos - Sistema de Transmutação Feminina',
-  texto = 'Descobre os Sete Ecos, uma jornada de transformação feminina.',
+  titulo = 'Sete Ecos - Sistema de Transmutação Integral',
+  texto = 'Descobre os Sete Ecos, uma jornada de transmutação integral.',
   compact = false,
   className = ''
 }) {
