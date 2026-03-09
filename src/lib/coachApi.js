@@ -41,4 +41,5 @@ export const coachApi = {
   setTester: (userId) => coachRequest('set-tester', { userId }),
   testNotificacoes: () => coachRequest('test-notificacoes'),
   historicoNotificacoes: (userId) => coachRequest('historico-notificacoes', { userId }),
+  centroComunicacoes: (params = {}) => coachRequest('centro-comunicacoes', params),
 };

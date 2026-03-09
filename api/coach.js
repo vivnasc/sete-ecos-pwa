@@ -137,6 +137,8 @@ export default async function handler(req, res) {
     switch (action) {
       case 'test-notificacoes':
         return await testNotificacoes(res);
+      case 'centro-comunicacoes':
+        return await centroComunicacoes(params, res);
       case 'listar-clientes':
         return await listarClientes(res);
       case 'coach-notificacoes':
@@ -1373,6 +1375,139 @@ async function historicoNotificacoes(userId, res) {
   } catch (err) {
     return res.status(200).json({ notificacoes: [], erro: err.message });
   }
+}
+
+// ==========================================
+// CENTRO DE COMUNICAÇÕES — vista unificada de todas as comunicações automáticas
+// ==========================================
+
+async function centroComunicacoes(params, res) {
+  const { canal, dias } = params;
+  const diasFiltro = Math.min(dias || 7, 30);
+  const desde = new Date(Date.now() - diasFiltro * 24 * 60 * 60 * 1000).toISOString();
+
+  const resultado = { emails: [], whatsapp: [], resumo: { emails: 0, whatsapp: 0, erros: 0 } };
+
+  // 1. Emails de clientes (vitalis_email_log)
+  if (!canal || canal === 'email' || canal === 'todos') {
+    try {
+      const { data: emailClientes } = await supabase
+        .from('vitalis_email_log')
+        .select('tipo, destinatario, user_id, created_at')
+        .gte('created_at', desde)
+        .order('created_at', { ascending: false })
+        .limit(100);
+      if (emailClientes) {
+        for (const e of emailClientes) {
+          resultado.emails.push({
+            tipo: e.tipo,
+            destinatario: e.destinatario,
+            user_id: e.user_id,
+            fonte: 'cliente',
+            data: e.created_at,
+          });
+        }
+      }
+    } catch (_) { /* tabela pode não existir */ }
+
+    // Emails de leads (waitlist_email_log)
+    try {
+      const { data: emailLeads } = await supabase
+        .from('waitlist_email_log')
+        .select('tipo, email, created_at')
+        .gte('created_at', desde)
+        .order('created_at', { ascending: false })
+        .limit(100);
+      if (emailLeads) {
+        for (const e of emailLeads) {
+          resultado.emails.push({
+            tipo: e.tipo,
+            destinatario: e.email,
+            fonte: 'lead',
+            data: e.created_at,
+          });
+        }
+      }
+    } catch (_) { /* tabela pode não existir */ }
+
+    // Emails de trial (email_log)
+    try {
+      const { data: emailTrial } = await supabase
+        .from('email_log')
+        .select('tipo, email, created_at')
+        .gte('created_at', desde)
+        .order('created_at', { ascending: false })
+        .limit(100);
+      if (emailTrial) {
+        for (const e of emailTrial) {
+          resultado.emails.push({
+            tipo: e.tipo,
+            destinatario: e.email,
+            fonte: 'trial',
+            data: e.created_at,
+          });
+        }
+      }
+    } catch (_) { /* tabela pode não existir */ }
+
+    resultado.emails.sort((a, b) => new Date(b.data) - new Date(a.data));
+    resultado.resumo.emails = resultado.emails.length;
+  }
+
+  // 2. WhatsApp (whatsapp_broadcast_log)
+  if (!canal || canal === 'whatsapp' || canal === 'todos') {
+    try {
+      const { data: waLogs } = await supabase
+        .from('whatsapp_broadcast_log')
+        .select('telefone, mensagem, tipo, status, erro, created_at')
+        .gte('created_at', desde)
+        .order('created_at', { ascending: false })
+        .limit(200);
+      if (waLogs) {
+        resultado.whatsapp = waLogs.map(w => ({
+          telefone: w.telefone,
+          mensagem: (w.mensagem || '').slice(0, 120),
+          tipo: w.tipo,
+          status: w.status,
+          erro: w.erro,
+          data: w.created_at,
+        }));
+        resultado.resumo.whatsapp = waLogs.length;
+        resultado.resumo.erros = waLogs.filter(w => w.status === 'erro').length;
+      }
+    } catch (_) { /* tabela pode não existir */ }
+  }
+
+  // 3. Resumo por dia (para gráfico simples)
+  const porDia = {};
+  for (const e of resultado.emails) {
+    const dia = e.data?.slice(0, 10);
+    if (!dia) continue;
+    if (!porDia[dia]) porDia[dia] = { emails: 0, whatsapp: 0, erros: 0 };
+    porDia[dia].emails++;
+  }
+  for (const w of resultado.whatsapp) {
+    const dia = w.data?.slice(0, 10);
+    if (!dia) continue;
+    if (!porDia[dia]) porDia[dia] = { emails: 0, whatsapp: 0, erros: 0 };
+    porDia[dia].whatsapp++;
+    if (w.status === 'erro') porDia[dia].erros++;
+  }
+  resultado.porDia = porDia;
+
+  // 4. Resumo por tipo
+  const porTipo = {};
+  for (const e of resultado.emails) {
+    const t = e.tipo || 'desconhecido';
+    porTipo[t] = (porTipo[t] || 0) + 1;
+  }
+  for (const w of resultado.whatsapp) {
+    const t = w.tipo || 'wa-desconhecido';
+    porTipo[t] = (porTipo[t] || 0) + 1;
+  }
+  resultado.porTipo = porTipo;
+
+  return res.status(200).json(resultado);
 }
 
 // ==========================================
