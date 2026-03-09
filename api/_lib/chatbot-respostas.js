@@ -36,7 +36,7 @@ Responde com o número ou escreve à vontade`;
 
 const SAUDACAO = `Olá! Sou a *Vivianne*, criadora do Sete Ecos.
 
-Este é um sistema de transformação feminina com *7 dimensões* — do corpo à alma. Começa por onde precisas, ao teu ritmo.
+Este é um sistema de transmutação integral com *7 dimensões* — do corpo à alma. Começa por onde precisas, ao teu ritmo.
 
 ${MENU_PRINCIPAL}`;
 
@@ -57,7 +57,7 @@ O VITALIS não é uma dieta. É uma mudança real na tua relação com a comida 
 ✅ Relatórios semanais de progresso
 ✅ Lista de compras automática
 ✅ Treinos adaptados (sem ginásio!)
-✅ Espaço de Retorno — recaíste? Sem culpa. Voltamos juntas.
+✅ Espaço de Retorno — recaíste? Sem culpa. Voltamos ao caminho.
 ✅ Gamificação com XP, níveis e conquistas
 ✅ Acesso à Comunidade
 
@@ -195,7 +195,7 @@ Experimenta *7 dias grátis*.
 // --- 6: VENTIS ---
 R['ventis'] = `*VENTIS — O Fôlego Vital* 🍃
 
-Cansada mesmo depois de dormir? A exaustão crónica tem solução. O VENTIS ajuda-te a encontrar o teu ritmo.
+Cansaço mesmo depois de dormir? A exaustão crónica tem solução. O VENTIS ajuda-te a encontrar o teu ritmo.
 
 *O que recebes:*
 ✅ Monitor de energia diário
@@ -236,7 +236,7 @@ Quantas vezes engoliste o que querias dizer? O ECOA devolve-te a voz.
 ✅ Chat comigo
 ✅ Acesso à Comunidade
 
-O ECOA é para todas as mulheres que foram silenciadas — pela cultura, pela família, por um parceiro. A tua voz importa.
+O ECOA é para todas as pessoas que foram silenciadas — pela cultura, pela família, por alguém. A tua voz importa.
 
 *Preços:*
 Mensal — *499 MZN*/mês ($9.90 USD)
@@ -285,7 +285,7 @@ O AURORA é o *presente* que recebes ao completar os 7 Ecos. Não se compra — 
 📊 Comparação antes/depois da tua transformação
 📖 Resumo completo da jornada
 🔄 Modo de manutenção — continuar sem recomeçar
-🤝 Mentoria — ajudar outras mulheres
+🤝 Mentoria — ajudar outras pessoas
 🌀 Ritual de renovação anual
 💡 Insights de integração
 
@@ -388,7 +388,7 @@ Enquanto esperas, experimenta:
 🔮 Diagnóstico gratuito: app.seteecos.com/lumina
 📖 Catálogo completo: app.seteecos.com/catalogo
 
-Obrigada pela paciência — falo contigo em breve!`;
+Obrigada/o pela paciência — falo contigo em breve!`;
 
 // --- BUNDLE ---
 R['bundle'] = `*BUNDLES — Quanto mais Ecos, mais poupas!* 🎁
@@ -427,17 +427,17 @@ Responde *pagar* para saber como pagar, ou *vivianne* e monto o teu pacote à me
 // --- COMUNIDADE ---
 R['comunidade'] = `*Comunidade Sete Ecos* 🤝
 
-Um espaço seguro. Sem julgamento. De mulheres para mulheres.
+Um espaço seguro. Sem julgamento. De pessoas para pessoas.
 
 *4 espaços únicos:*
 
-*🏞️ O Rio* — Reflexões guiadas por prompts diários. Partilha os teus pensamentos, lê os de outras mulheres.
+*🏞️ O Rio* — Reflexões guiadas por prompts diários. Partilha os teus pensamentos, lê os de outras pessoas.
 
-*⭕ Círculos de Eco* — Grupos de 7-12 mulheres que exploram o mesmo tema juntas, com apoio mútuo.
+*⭕ Círculos de Eco* — Grupos de 7-12 pessoas que exploram o mesmo tema, com apoio mútuo.
 
-*🔥 Fogueira* — Espaço efémero de 24h. Todas se reúnem num tema. Conversas honestas que desaparecem.
+*🔥 Fogueira* — Espaço efémero de 24h. Conversas honestas que desaparecem.
 
-*💌 Sussurros* — Mensagens privadas de apoio e encorajamento entre mulheres.
+*💌 Sussurros* — Mensagens privadas de apoio e encorajamento.
 
 Isto *não é* uma rede social. É um espaço de cura colectiva.
 
@@ -448,13 +448,13 @@ Queres experimentar? Responde *trial* para 7 dias grátis.`;
 // --- REFERRAL ---
 R['referral'] = `*Programa de Referência* 🎉
 
-Partilha o Sete Ecos com amigas e *ambas ganham*!
+Partilha o Sete Ecos e *ambos ganham*!
 
 *Como funciona:*
 1. Recebes o teu código único (formato ECOS-XXXXXX)
-2. Partilha com amigas
-3. Quando ela subscreve, tu ganhas *+7 dias grátis*
-4. Ela também ganha *7 dias de trial*
+2. Partilha com quem quiseres
+3. Quando a pessoa subscreve, tu ganhas *+7 dias grátis*
+4. A pessoa também ganha *7 dias de trial*
 
 Podes convidar até *10 pessoas*.
 
@@ -477,7 +477,7 @@ Tens dúvidas? Escreve aqui ou responde *vivianne* para falar comigo directament
 R['faq'] = `*Perguntas Frequentes* ❓
 
 *O que é o Sete Ecos?*
-Um sistema de transformação feminina com 7 dimensões (Ecos) — do corpo à identidade. Cada Eco trabalha uma parte de ti.
+Um sistema de transmutação integral com 7 dimensões (Ecos) — do corpo à identidade. Cada Eco trabalha uma parte de ti.
 
 *É uma dieta?*
 O VITALIS trabalha nutrição, mas não é dieta. É reeducação alimentar com comida moçambicana real (xima, matapa, caril...).
@@ -519,7 +519,7 @@ Se precisares de alguma coisa:
 Boa transformação! ✨`;
 
 // --- MENSAGEM GENÉRICA ---
-const GENERICA = `Obrigada pela tua mensagem!
+const GENERICA = `Obrigada/o pela tua mensagem!
 
 Posso ajudar-te com os *7 Ecos*:
 
@@ -777,7 +777,7 @@ function gerarResposta(msgBody, nome, telefone) {
       resposta = `Olá de novo${primeiroNome ? `, ${primeiroNome}` : ''}! Em que posso ajudar?\n\n${MENU_PRINCIPAL}`;
     } else {
       resposta = nome
-        ? `Olá ${nome.split(' ')[0]}! Sou a *Vivianne*, criadora do Sete Ecos.\n\nBem-vindo/a a um sistema de transformação feminina com *7 dimensões* — do corpo à alma.\n\n${MENU_PRINCIPAL}`
+        ? `Olá ${nome.split(' ')[0]}! Sou a *Vivianne*, criadora do Sete Ecos.\n\nBem-vindo/a a um sistema de transmutação integral com *7 dimensões* — do corpo à alma.\n\n${MENU_PRINCIPAL}`
         : SAUDACAO;
     }
   } else if (chave === 'obrigada') {

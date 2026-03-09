@@ -30,7 +30,7 @@ const RODAPE = `
       <a href="${WHATSAPP_LINK}" style="color: white; text-decoration: none; font-weight: bold; font-size: 14px;">WhatsApp: Falar com a Vivianne</a>
     </div>
     <p style="color: #9B9B9B; font-size: 11px; line-height: 1.6;">
-      Sete Ecos — Sistema de Transmutação Feminina<br>
+      Sete Ecos — Sistema de Transmutação Integral<br>
       <a href="${BASE_URL}" style="color: #7C8B6F;">app.seteecos.com</a><br>
       Maputo, Moçambique
     </p>
@@ -61,7 +61,7 @@ const BROADCAST_TEMPLATES = {
         <!-- VITALIS -->
         <div style="background: linear-gradient(135deg, #7C8B6F, #5a6b4f); border-radius: 12px; padding: 20px; margin: 16px 0; color: white;">
           <h2 style="margin: 0 0 8px; font-size: 20px;">VITALIS — Coaching Nutricional</h2>
-          <p style="margin: 0; opacity: 0.9; font-size: 14px;">O programa de transformação feito para a mulher moçambicana.</p>
+          <p style="margin: 0; opacity: 0.9; font-size: 14px;">O programa de transformação feito com comida moçambicana.</p>
           <ul style="margin: 8px 0; padding-left: 20px; font-size: 13px; line-height: 1.8; opacity: 0.9;">
             <li>Plano alimentar personalizado (xima, matapa, caril)</li>
             <li>Check-in diário + Dashboard de progresso</li>
@@ -217,7 +217,7 @@ export default async function handler(req, res) {
 
       for (const lead of waitlist || []) {
         if (lead.email && !destinatarios.has(lead.email)) {
-          destinatarios.set(lead.email, lead.nome || 'amiga');
+          destinatarios.set(lead.email, lead.nome || 'amigo/a');
         }
       }
     }
@@ -239,7 +239,7 @@ export default async function handler(req, res) {
           .maybeSingle();
 
         if (!client || !['active', 'tester'].includes(client?.subscription_status)) {
-          destinatarios.set(user.email, user.nome || 'amiga');
+          destinatarios.set(user.email, user.nome || 'amigo/a');
         }
       }
     }
@@ -254,7 +254,7 @@ export default async function handler(req, res) {
       for (const client of expirados || []) {
         const email = client.users?.email;
         if (email && !destinatarios.has(email)) {
-          destinatarios.set(email, client.users?.nome || 'amiga');
+          destinatarios.set(email, client.users?.nome || 'amigo/a');
         }
       }
     }

@@ -179,7 +179,7 @@ async function enviarLembretes(supabase, resultados) {
 
         if (!jaEnviado || jaEnviado.length === 0) {
           await enviarEmail(tipoEmail, cliente.users.email, {
-            nome: cliente.users.nome || 'Querida',
+            nome: cliente.users.nome || '',
             dias: diasInactiva
           });
 
@@ -382,7 +382,7 @@ async function enviarAvisosExpiracao(supabase, resultados) {
         );
 
         await enviarEmail('expiracao-aviso', cliente.users.email, {
-          nome: cliente.users.nome || 'Querida',
+          nome: cliente.users.nome || '',
           dias: diasRestantes
         });
 
