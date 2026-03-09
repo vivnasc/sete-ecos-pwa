@@ -117,6 +117,7 @@ export default function CoachDashboard() {
   // ─── Push Notification subscription ───
   const [pushStatus, setPushStatus] = useState(null); // null | 'subscribed' | 'denied' | 'unsupported' | 'failed'
   const [pushActivando, setPushActivando] = useState(false);
+  const [pushDismissed, setPushDismissed] = useState(() => sessionStorage.getItem('coach-push-dismissed') === '1');
 
   useEffect(() => {
     registerPushSubscription();
@@ -515,30 +516,41 @@ export default function CoachDashboard() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-4 space-y-4">
-        {/* ═══════ PUSH ACTIVATION BANNER ═══════ */}
-        {pushStatus && pushStatus !== 'subscribed' && (
+        {/* ═══════ PUSH ACTIVATION BANNER (dismissível por sessão) ═══════ */}
+        {pushStatus && pushStatus !== 'subscribed' && !pushDismissed && (
           <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-xl p-4">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
                 <span className="text-xl">🔕</span>
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-red-800 text-sm">Notificações push desactivadas</h3>
+                <h3 className="font-bold text-red-800 text-sm">Push desactivado</h3>
                 <p className="text-red-700 text-xs mt-0.5">
                   {pushStatus === 'denied'
-                    ? 'Permissão bloqueada. Vai às definições do browser para permitir notificações.'
-                    : 'Não vais receber alertas de clientes (pagamentos, espaço retorno, etc.)'}
+                    ? 'Permissão bloqueada no browser.'
+                    : 'Sem alertas de clientes.'}
                 </p>
               </div>
-              {pushStatus !== 'denied' && (
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {pushStatus !== 'denied' && (
+                  <button
+                    onClick={() => registerPushSubscription(true)}
+                    disabled={pushActivando}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-semibold hover:bg-red-700 transition-colors active:scale-95 disabled:opacity-60"
+                  >
+                    {pushActivando ? 'A activar...' : 'Activar'}
+                  </button>
+                )}
                 <button
-                  onClick={() => registerPushSubscription(true)}
-                  disabled={pushActivando}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-semibold hover:bg-red-700 transition-colors flex-shrink-0 active:scale-95 disabled:opacity-60"
+                  onClick={() => { setPushDismissed(true); sessionStorage.setItem('coach-push-dismissed', '1'); }}
+                  className="p-1.5 text-red-400 hover:text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                  title="Fechar"
                 >
-                  {pushActivando ? 'A activar...' : 'Activar'}
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
-              )}
+              </div>
             </div>
           </div>
         )}
