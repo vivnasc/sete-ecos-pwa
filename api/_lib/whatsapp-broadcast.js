@@ -22,7 +22,7 @@ const PHONE_NUMBER_ID = () => (process.env.WHATSAPP_PHONE_NUMBER_ID || '').trim(
 // 2. Clicar "Create Template"
 // 3. Categoria: Marketing
 // 4. Idioma: Portuguese (BR) ou Portuguese (PT)
-// 5. Nome: ex. "sete_ecos_convite_trial" (só minúsculas, underscores)
+// 5. Nome: ex. "sete_ecos_edu_sinais_corpo" (só minúsculas, underscores)
 // 6. Body: texto com {{1}}, {{2}} para variáveis (ex. nome)
 // 7. Submeter para aprovação (demora minutos a horas)
 
@@ -57,9 +57,9 @@ export const META_TEMPLATES = {
     params: (nome) => [nome || ''],
   },
 
-  // Dia 7 — 3 Sinais (= email dia 7)
+  // Dia 7 — 3 Sinais educativos (= email dia 7)
   tres_sinais: {
-    name: 'sete_ecos_tres_sinais',
+    name: 'sete_ecos_edu_sinais_corpo',
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'O teu corpo fala. Estás a ouvir?',
@@ -69,9 +69,9 @@ export const META_TEMPLATES = {
     params: (nome) => [nome || ''],
   },
 
-  // Dia 10 — Segredo / Educacional (= email dia 10)
+  // Dia 10 — Fome emocional vs física (= email dia 10)
   segredo: {
-    name: 'sete_ecos_segredo',
+    name: 'sete_ecos_edu_fome_emocional',
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'Fome emocional vs. fome física',
@@ -82,7 +82,7 @@ export const META_TEMPLATES = {
 
   // Dia 14 — Mitos da nutrição (= email dia 14)
   convite_trial: {
-    name: 'sete_ecos_convite_trial',
+    name: 'sete_ecos_edu_mitos_nutricao',
     language: 'pt_BR',
     category: 'MARKETING',
     header: '3 mitos sobre nutrição',
@@ -94,7 +94,7 @@ export const META_TEMPLATES = {
 
   // Dia 21 — Metabolismo e ciclos (= email dia 21)
   testemunho: {
-    name: 'sete_ecos_testemunho',
+    name: 'sete_ecos_edu_metabolismo',
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'O que ninguém te ensinou sobre metabolismo',
@@ -106,7 +106,7 @@ export const META_TEMPLATES = {
 
   // Dia 30 — Integração holística (= email dia 30)
   ultima_chance: {
-    name: 'sete_ecos_ultima_chance',
+    name: 'sete_ecos_edu_integracao',
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'Os 7 Ecos da transformação',
@@ -182,7 +182,7 @@ export const META_TEMPLATES = {
 
   // Trial a expirar (3 dias antes do fim)
   trial_expirando: {
-    name: 'sete_ecos_trial_expirando',
+    name: 'sete_ecos_trial_expirando_v2',
     language: 'pt_BR',
     category: 'UTILITY',
     header: 'O teu trial termina em breve',
@@ -194,7 +194,7 @@ export const META_TEMPLATES = {
 
   // Win-back (3+ dias após expirar)
   winback: {
-    name: 'sete_ecos_winback',
+    name: 'sete_ecos_winback_v2',
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'O teu progresso está guardado',
@@ -240,7 +240,7 @@ export const META_TEMPLATES = {
 
   // Curiosidade semanal (exercício educativo)
   curiosidade: {
-    name: 'sete_ecos_curiosidade',
+    name: 'sete_ecos_edu_consciencia_alimentar',
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'Comes por fome ou por emoção?',
