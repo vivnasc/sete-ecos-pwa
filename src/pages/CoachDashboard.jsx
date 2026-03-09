@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback, lazy, Suspense } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { coachApi } from '../lib/coachApi';
 import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
 import { enviarBoasVindas, enviarConfirmacaoPagamento } from '../lib/emails';
 import { supabase } from '../lib/supabase';
 import { ECO_PLANS } from '../lib/shared/subscriptionPlans';
+
+const CentroComunicacoes = lazy(() => import('../components/CentroComunicacoes'));
 
 // ─── Real-time toast notifications ───
 const POLL_INTERVAL = 30_000; // 30 seconds
@@ -107,6 +109,9 @@ export default function CoachDashboard() {
   const [notificacoes, setNotificacoes] = useState([]);
   const [loadingNotifs, setLoadingNotifs] = useState(true);
   const [showNotifs, setShowNotifs] = useState(false);
+
+  // Centro de comunicações
+  const [showComms, setShowComms] = useState(false);
 
   // Real-time alerts (polling)
   const [toasts, setToasts] = useState([]);
@@ -592,6 +597,32 @@ export default function CoachDashboard() {
                 <div>📧 Email: {testResult.resultados.email.configurado ? 'Configurado' : 'Não configurado'}</div>
               )}
               {testResult.dica && <div className="mt-1 text-amber-700 font-medium">{testResult.dica}</div>}
+            </div>
+          )}
+        </div>
+
+        {/* ═══════ CENTRO DE COMUNICAÇÕES ═══════ */}
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <button
+            onClick={() => setShowComms(!showComms)}
+            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-lg">📡</span>
+              <span className="font-medium text-gray-800 text-sm">Centro de Comunicacoes</span>
+              <span className="text-xs text-gray-400">emails, WhatsApp, push</span>
+            </div>
+            <span className="text-gray-400 text-sm">{showComms ? '▲' : '▼'}</span>
+          </button>
+          {showComms && (
+            <div className="px-4 pb-4 border-t border-gray-100 pt-3">
+              <Suspense fallback={
+                <div className="flex items-center justify-center py-8">
+                  <div className="w-5 h-5 border-2 border-indigo-300 border-t-transparent rounded-full animate-spin" />
+                </div>
+              }>
+                <CentroComunicacoes />
+              </Suspense>
             </div>
           )}
         </div>
