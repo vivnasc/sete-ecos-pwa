@@ -181,7 +181,7 @@ export default function CoachDashboard() {
     setTestando(true);
     setTestResult(null);
     try {
-      const result = await coachApi('test-notificacoes');
+      const result = await coachApi.testNotificacoes();
       setTestResult(result);
     } catch (err) {
       setTestResult({ ok: false, erro: err.message });

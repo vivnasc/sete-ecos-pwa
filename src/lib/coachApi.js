@@ -39,4 +39,5 @@ export const coachApi = {
   apagarCliente: (userId) => coachRequest('apagar-cliente', { userId }),
   activarSubscricao: (userId, planKey) => coachRequest('activar-subscricao', { userId, planKey }),
   setTester: (userId) => coachRequest('set-tester', { userId }),
+  testNotificacoes: () => coachRequest('test-notificacoes'),
 };
