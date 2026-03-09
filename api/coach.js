@@ -160,6 +160,14 @@ export default async function handler(req, res) {
       case 'set-tester':
         return await setTester(params.userId, res);
 
+      // ── Multi-Eco Management ──
+      case 'listar-clientes-eco':
+        return await listarClientesEco(params.eco, res);
+      case 'activar-subscricao-eco':
+        return await activarSubscricaoEco(params.eco, params.userId, params.planKey, res);
+      case 'set-tester-eco':
+        return await setTesterEco(params.eco, params.userId, res);
+
       // ── WhatsApp Broadcast ──
       case 'wa-contactos':
         return res.status(200).json(await listarContactosWA(supabase));
@@ -609,6 +617,112 @@ async function setTester(userId, res) {
   }).then(() => {}).catch(() => {});
 
   return res.status(200).json({ success: true });
+}
+
+// ==========================================
+// MULTI-ECO: Config das tabelas por eco
+// ==========================================
+const ECO_TABLE_MAP = {
+  vitalis: 'vitalis_clients',
+  aurea: 'aurea_clients',
+  serena: 'serena_clients',
+  ignis: 'ignis_clients',
+  ventis: 'ventis_clients',
+  ecoa: 'ecoa_clients',
+  imago: 'imago_clients',
+  aurora: 'aurora_clients',
+};
+
+// ==========================================
+// MULTI-ECO: Listar clientes de qualquer eco
+// ==========================================
+async function listarClientesEco(eco, res) {
+  if (!eco || !ECO_TABLE_MAP[eco]) {
+    return res.status(400).json({ error: 'Eco inválido. Opções: ' + Object.keys(ECO_TABLE_MAP).join(', ') });
+  }
+
+  const table = ECO_TABLE_MAP[eco];
+
+  const { data: clientsData, error } = await supabase
+    .from(table)
+    .select('*, users!inner(id, nome, email, created_at)')
+    .order('created_at', { ascending: false });
+
+  if (error) return res.status(500).json({ error: 'Erro ao carregar clientes ' + eco + ': ' + error.message });
+  if (!clientsData || clientsData.length === 0) return res.status(200).json({ clients: [], eco });
+
+  const clients = clientsData.map(client => ({
+    ...client,
+    nome: client.users?.nome || 'Sem nome',
+    email: client.users?.email || '',
+    userCreatedAt: client.users?.created_at,
+  }));
+
+  return res.status(200).json({ clients, eco });
+}
+
+// ==========================================
+// MULTI-ECO: Activar subscrição de qualquer eco
+// ==========================================
+async function activarSubscricaoEco(eco, userId, planKey, res) {
+  if (!eco || !ECO_TABLE_MAP[eco]) {
+    return res.status(400).json({ error: 'Eco inválido' });
+  }
+  if (!userId || !planKey) return res.status(400).json({ error: 'userId e planKey obrigatorios' });
+
+  const table = ECO_TABLE_MAP[eco];
+
+  const PLANS = {
+    MONTHLY: { id: 'monthly', name: 'Mensal', duration: 1 },
+    SEMESTRAL: { id: 'semestral', name: 'Semestral', duration: 6 },
+    ANNUAL: { id: 'annual', name: 'Anual', duration: 12 }
+  };
+
+  const plan = PLANS[planKey];
+  if (!plan) return res.status(400).json({ error: 'Plano desconhecido: ' + planKey });
+
+  const expiresAt = new Date();
+  expiresAt.setMonth(expiresAt.getMonth() + plan.duration);
+
+  const { error } = await supabase
+    .from(table)
+    .update({
+      subscription_status: 'active',
+      subscription_expires: expiresAt.toISOString(),
+      payment_method: 'manual',
+      payment_reference: `Coach-${eco}-${Date.now()}`,
+      subscription_updated: new Date().toISOString()
+    })
+    .eq('user_id', userId);
+
+  if (error) return res.status(500).json({ error: error.message });
+
+  return res.status(200).json({ success: true, eco, expiresAt: expiresAt.toISOString(), plan });
+}
+
+// ==========================================
+// MULTI-ECO: Set tester de qualquer eco
+// ==========================================
+async function setTesterEco(eco, userId, res) {
+  if (!eco || !ECO_TABLE_MAP[eco]) {
+    return res.status(400).json({ error: 'Eco inválido' });
+  }
+  if (!userId) return res.status(400).json({ error: 'userId obrigatorio' });
+
+  const table = ECO_TABLE_MAP[eco];
+
+  const { error } = await supabase
+    .from(table)
+    .upsert({
+      user_id: userId,
+      subscription_status: 'tester',
+      subscription_updated: new Date().toISOString(),
+      created_at: new Date().toISOString()
+    }, { onConflict: 'user_id' });
+
+  if (error) return res.status(500).json({ error: error.message });
+
+  return res.status(200).json({ success: true, eco });
 }
 
 // ==========================================
