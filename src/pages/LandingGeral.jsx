@@ -36,7 +36,7 @@ const LandingGeral = () => {
     {
       nome: 'ÁUREA',
       slogan: 'Valor & Presença',
-      descricao: 'A que merece. Para mulheres que gastam tudo nos outros e sentem culpa quando cuidam de si. Trabalha a relação com dinheiro, prazer, roupa e mimo — sem culpa.',
+      descricao: 'A que merece. Para quem gasta tudo nos outros e sente culpa quando cuida de si. Trabalha a relação com dinheiro, prazer, roupa e mimo — sem culpa.',
       detalhe: 'Quota de Presença, Micro-Práticas diárias, Espelho de Roupa, Carteira de Merecimento.',
       logo: '/logos/AUREA_LOGO_V3.png',
       cor: 'from-amber-500 to-yellow-600',
@@ -48,7 +48,7 @@ const LandingGeral = () => {
     {
       nome: 'SERENA',
       slogan: 'A Maré Interior',
-      descricao: 'O fluxo do sistema. Regulação emocional. Para mulheres em caos emocional — botão SOS para crises, diário emocional, correlação com ciclo menstrual.',
+      descricao: 'O fluxo do sistema. Regulação emocional. Para quem vive em caos emocional — botão SOS para crises, diário emocional, correlação com ciclo menstrual.',
       detalhe: 'Práticas de 3-5 min para momentos de crise + check-in diário.',
       logo: '/logos/SERENA_LOGO_V3.png',
       cor: 'from-blue-500 to-cyan-600',
@@ -60,7 +60,7 @@ const LandingGeral = () => {
     {
       nome: 'IGNIS',
       slogan: 'O Fogo Interior',
-      descricao: 'O eixo do sistema. Vontade, direcção, foco. Para mulheres dispersas — define UM foco semanal, regista decisões tomadas e adiadas.',
+      descricao: 'O eixo do sistema. Vontade, direcção, foco. Para quem anda disperso/a — define UM foco semanal, regista decisões tomadas e adiadas.',
       detalhe: 'Aprende a dizer não. Clarificação de vontade, não planeamento.',
       logo: '/logos/IGNIS-LOGO-V3.png',
       cor: 'from-orange-500 to-red-600',
@@ -72,7 +72,7 @@ const LandingGeral = () => {
     {
       nome: 'VENTIS',
       slogan: 'O Fôlego Vital',
-      descricao: 'O ritmo do sistema. Energia, pausas, sustentabilidade. Para mulheres em exaustão crónica — mapeia energia, sono, pausas.',
+      descricao: 'O ritmo do sistema. Energia, pausas, sustentabilidade. Para quem vive em exaustão crónica — mapeia energia, sono, pausas.',
       detalhe: 'Devolve padrões, práticas de respiração, permissão para parar.',
       logo: '/logos/VENTIS_LOGO_V3.png',
       cor: 'from-sky-500 to-blue-600',
@@ -84,7 +84,7 @@ const LandingGeral = () => {
     {
       nome: 'ECOA',
       slogan: 'A Voz que Ressoa',
-      descricao: 'A expressão do sistema. Voz, escrita, desbloqueio. Para mulheres silenciadas — journaling diário, regista o que disse e engoliu.',
+      descricao: 'A expressão do sistema. Voz, escrita, desbloqueio. Para quem foi silenciado/a — journaling diário, regista o que disse e engoliu.',
       detalhe: 'Práticas vocais, prompts de escrita, celebra expressão.',
       logo: '/logos/ECOA_LOGO_V3.png',
       cor: 'from-pink-500 to-rose-600',
@@ -458,7 +458,7 @@ const LandingGeral = () => {
               </span>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-5" style={{ fontFamily: 'var(--font-titulos)' }}>Comunidade de Autoconhecimento</h2>
               <p className="text-purple-300 max-w-2xl mx-auto leading-relaxed">
-                Mais do que uma rede social — um espaço sagrado onde mulheres partilham reflexões,
+                Mais do que uma rede social — um espaço sagrado onde pessoas partilham reflexões,
                 oferecem ressonância e caminham juntas na transformação.
               </p>
             </div>
@@ -483,7 +483,7 @@ const LandingGeral = () => {
               <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-7 border border-pink-500/20 text-center hover:border-pink-500/40 transition-all duration-300 hover:scale-[1.03]">
                 <span className="text-4xl block mb-3">👥</span>
                 <h3 className="text-lg font-bold text-white mb-2">Círculos de Eco</h3>
-                <p className="text-purple-300/80 text-sm leading-relaxed">Pequenos grupos de 7-12 mulheres que exploram o mesmo caminho. Intimidade, apoio e partilha verdadeira.</p>
+                <p className="text-purple-300/80 text-sm leading-relaxed">Pequenos grupos de 7-12 pessoas que exploram o mesmo caminho. Intimidade, apoio e partilha verdadeira.</p>
               </div>
             </ScrollReveal>
           </div>
@@ -728,8 +728,8 @@ const LandingGeral = () => {
             <PartilharSocial
               compact
               url="https://app.seteecos.com/"
-              titulo="Sete Ecos - Sistema de Transmutação Feminina"
-              texto="Descobre os Sete Ecos, uma jornada de transformação feminina integral."
+              titulo="Sete Ecos - Sistema de Transmutação Integral"
+              texto="Descobre os Sete Ecos, uma jornada de transmutação integral."
             />
           </div>
           <div className="border-t border-white/10 pt-6 text-center text-purple-400/50 text-sm">

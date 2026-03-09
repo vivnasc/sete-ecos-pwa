@@ -143,7 +143,7 @@ export default function LandingBundle() {
     <>
       <SEOHead
         title="Bundle Vitalis + Áurea - Poupa 15% | Sete Ecos"
-        description="Transformação completa: Nutrição + Autovalor. Vitalis + Áurea juntos com 15% de desconto. Coaching personalizado para mulheres em Moçambique."
+        description="Transformação completa: Nutrição + Autovalor. Vitalis + Áurea juntos com 15% de desconto. Coaching personalizado em Moçambique."
         path="/bundle"
         imageUrl="https://app.seteecos.com/logos/bundle-social.png"
         type="website"
@@ -514,7 +514,7 @@ export default function LandingBundle() {
             <PartilharSocial
               url="https://app.seteecos.com/bundle"
               titulo="Vitalis + Áurea Bundle - Poupa 15%"
-              descricao="Transformação completa: Nutrição + Autovalor. Coaching personalizado para mulheres."
+              descricao="Transformação completa: Nutrição + Autovalor. Coaching personalizado."
             />
           </div>
         </div>

@@ -30,7 +30,7 @@ const WA_TEMPLATES = {
     nome: 'Follow-up',
     metaTemplate: 'follow_up',
     texto: (nome) =>
-      `Olá ${nome || ''}! Passaste por aqui e quero saber como estás. O VITALIS tem ajudado muitas mulheres a encontrar o equilíbrio com a comida, sem dietas malucas.\n\nQueres saber mais? Responde aqui.\n\n— Vivianne`,
+      `Olá ${nome || ''}! Passaste por aqui e quero saber como estás. O VITALIS tem ajudado muitas pessoas a encontrar o equilíbrio com a comida, sem dietas malucas.\n\nQueres saber mais? Responde aqui.\n\n— Vivianne`,
   },
   'promo': {
     nome: 'Promo 20%',
