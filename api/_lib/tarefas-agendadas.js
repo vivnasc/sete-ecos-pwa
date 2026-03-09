@@ -54,6 +54,7 @@ export default async function handler(req, res) {
     wa_enviados: 0,
     trial_alertas: 0,
     super_engajadas: 0,
+    alertas_inactividade: 0,
     resumo: false,
     erros: []
   };
@@ -71,6 +72,9 @@ export default async function handler(req, res) {
 
     // 3. CLIENTES SUPER-ENGAJADAS — 90%+ aderência semanal
     await alertarSuperEngajadas(supabase, resultados);
+
+    // 3b. CLIENTES INACTIVOS 7+ DIAS — alerta Telegram + Push para coach
+    await alertarClientesInactivos(supabase, resultados);
 
     // ═══ PRIORIDADE 2: Comunicações com clientes ═══
     // Estas podem demorar mais (emails + WA a múltiplos clientes)
@@ -108,9 +112,12 @@ export default async function handler(req, res) {
 }
 
 /**
- * Enviar lembretes motivacionais a clientes inativas
- * - 2-4 dias: lembrete suave
- * - 5+ dias: email provocador com curiosidade + WhatsApp direto
+ * Enviar lembretes motivacionais a clientes inactivos — escalação por marcos
+ * - 2-4 dias: lembrete suave (1x/dia)
+ * - 5-6 dias: motivação intensa (1x a cada 3 dias)
+ * - 7 dias: marco — mensagem especial "1 semana" + alerta coach
+ * - 14 dias: marco — mensagem "reconexão" + alerta coach
+ * - 30 dias: marco — última tentativa gentil + alerta coach
  */
 async function enviarLembretes(supabase, resultados) {
   const doisDiasAtras = new Date();
@@ -149,29 +156,21 @@ async function enviarLembretes(supabase, resultados) {
           ? Math.floor((new Date() - ultimaActividade) / (1000 * 60 * 60 * 24))
           : 10;
 
-        const hoje = new Date().toISOString().split('T')[0];
+        // Determinar tipo de email e deduplicação por marco
+        const { tipoEmail, dedupDias } = determinarTipoLembrete(diasInactiva);
 
-        // Motivação intensa: limitar a 1x a cada 3 dias (evitar spam diário)
-        // Lembrete check-in: manter 1x por dia
-        const tipoVerificacao = diasInactiva >= 5 ? 'motivacao-intensa' : 'lembrete-checkin';
-        let dedupDesde = hoje;
-        if (diasInactiva >= 5) {
-          const tresDiasAtrasDedup = new Date();
-          tresDiasAtrasDedup.setDate(tresDiasAtrasDedup.getDate() - 3);
-          dedupDesde = tresDiasAtrasDedup.toISOString();
-        }
+        const dedupDesde = new Date();
+        dedupDesde.setDate(dedupDesde.getDate() - dedupDias);
 
         const { data: jaEnviado } = await supabase
           .from('vitalis_email_log')
           .select('id')
           .eq('user_id', cliente.user_id)
-          .eq('tipo', tipoVerificacao)
-          .gte('created_at', dedupDesde)
+          .eq('tipo', tipoEmail)
+          .gte('created_at', dedupDesde.toISOString())
           .limit(1);
 
         if (!jaEnviado || jaEnviado.length === 0) {
-          const tipoEmail = diasInactiva >= 5 ? 'motivacao-intensa' : 'lembrete-checkin';
-
           await enviarEmail(tipoEmail, cliente.users.email, {
             nome: cliente.users.nome || 'Querida',
             dias: diasInactiva
@@ -185,8 +184,10 @@ async function enviarLembretes(supabase, resultados) {
 
           resultados.lembretes++;
 
-          // Enviar também via WhatsApp (template apropriado)
-          const waTemplate = diasInactiva >= 5 ? 'motivacao' : 'checkin_lembrete';
+          // WhatsApp template por nível
+          const waTemplate = diasInactiva >= 14 ? 'motivacao' :
+                            diasInactiva >= 7 ? 'motivacao' :
+                            diasInactiva >= 5 ? 'motivacao' : 'checkin_lembrete';
           await enviarWACliente(supabase, cliente.user_id, waTemplate, {
             nome: cliente.users.nome || '',
           }, resultados);
@@ -195,6 +196,134 @@ async function enviarLembretes(supabase, resultados) {
     } catch (err) {
       resultados.erros.push(`Erro lembrete ${cliente.users?.email}: ${err.message}`);
     }
+  }
+}
+
+/**
+ * Determinar tipo de email e período de deduplicação por marco de inactividade
+ */
+function determinarTipoLembrete(diasInactiva) {
+  if (diasInactiva >= 30) {
+    return { tipoEmail: 'inactividade-30d', dedupDias: 30 }; // 1x por mês
+  }
+  if (diasInactiva >= 14) {
+    return { tipoEmail: 'inactividade-14d', dedupDias: 14 }; // 1x a cada 14 dias
+  }
+  if (diasInactiva >= 7) {
+    return { tipoEmail: 'inactividade-7d', dedupDias: 7 }; // 1x por semana
+  }
+  if (diasInactiva >= 5) {
+    return { tipoEmail: 'motivacao-intensa', dedupDias: 3 }; // 1x a cada 3 dias
+  }
+  return { tipoEmail: 'lembrete-checkin', dedupDias: 1 }; // 1x por dia
+}
+
+/**
+ * Alertar coach via Telegram + Push sobre clientes inactivos 7+ dias
+ * Envia alerta agrupado com todos os clientes em risco
+ */
+async function alertarClientesInactivos(supabase, resultados) {
+  try {
+    const { data: clientes, error } = await supabase
+      .from('vitalis_clients')
+      .select(`
+        id,
+        user_id,
+        users!inner(id, nome, email)
+      `)
+      .in('subscription_status', ['active', 'trial', 'tester']);
+
+    if (error || !clientes) return;
+
+    const alertas = { semana: [], quinzena: [], mes: [] };
+
+    for (const cliente of clientes) {
+      try {
+        const { data: ultimoRegisto } = await supabase
+          .from('vitalis_registos')
+          .select('created_at')
+          .eq('user_id', cliente.user_id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (!ultimoRegisto) {
+          // Nunca fez check-in — verificar data de registo
+          const { data: clienteData } = await supabase
+            .from('vitalis_clients')
+            .select('created_at')
+            .eq('id', cliente.id)
+            .single();
+          const diasDesdeRegisto = clienteData
+            ? Math.floor((Date.now() - new Date(clienteData.created_at).getTime()) / 86400000)
+            : 0;
+          if (diasDesdeRegisto >= 7) {
+            const nome = cliente.users?.nome?.split(' ')[0] || '?';
+            alertas.semana.push(`${nome} (nunca fez check-in, ${diasDesdeRegisto}d desde registo)`);
+          }
+          continue;
+        }
+
+        const diasInactivo = Math.floor(
+          (Date.now() - new Date(ultimoRegisto.created_at).getTime()) / 86400000
+        );
+        const nome = cliente.users?.nome?.split(' ')[0] || '?';
+
+        if (diasInactivo >= 30) {
+          alertas.mes.push(`${nome} (${diasInactivo}d)`);
+        } else if (diasInactivo >= 14) {
+          alertas.quinzena.push(`${nome} (${diasInactivo}d)`);
+        } else if (diasInactivo >= 7) {
+          alertas.semana.push(`${nome} (${diasInactivo}d)`);
+        }
+      } catch (_) {
+        // Skip individual errors
+      }
+    }
+
+    const totalAlertas = alertas.semana.length + alertas.quinzena.length + alertas.mes.length;
+    if (totalAlertas === 0) return;
+
+    // Deduplicação: 1x por dia
+    const hoje = new Date().toISOString().split('T')[0];
+    try {
+      const { data: jaEnviado } = await supabase
+        .from('vitalis_email_log')
+        .select('id')
+        .eq('tipo', 'coach-alerta-inactividade')
+        .gte('created_at', hoje)
+        .limit(1);
+      if (jaEnviado && jaEnviado.length > 0) return;
+    } catch (_) { /* tabela pode não existir */ }
+
+    let mensagem = `⚠️ *CLIENTES INACTIVOS — ATENÇÃO*\n`;
+
+    if (alertas.mes.length > 0) {
+      mensagem += `\n🔴 *30+ dias* (risco alto):\n${alertas.mes.join('\n')}`;
+    }
+    if (alertas.quinzena.length > 0) {
+      mensagem += `\n🟠 *14+ dias* (precisa contacto):\n${alertas.quinzena.join('\n')}`;
+    }
+    if (alertas.semana.length > 0) {
+      mensagem += `\n🟡 *7+ dias* (atenção):\n${alertas.semana.join('\n')}`;
+    }
+
+    mensagem += `\n\n💬 Considera enviar mensagem pessoal a quem está há mais tempo inactivo.`;
+
+    await enviarWhatsAppCoach(mensagem);
+
+    // Registar envio para deduplicação
+    try {
+      await supabase.from('vitalis_email_log').insert({
+        user_id: '00000000-0000-0000-0000-000000000000',
+        tipo: 'coach-alerta-inactividade',
+        destinatario: 'coach-telegram'
+      });
+    } catch (_) { /* ok */ }
+
+    resultados.alertas_inactividade = totalAlertas;
+  } catch (err) {
+    resultados.erros.push('Erro alertar inactivos: ' + err.message);
   }
 }
 
@@ -1107,6 +1236,99 @@ async function enviarEmail(tipo, destinatario, dados) {
             <a href="https://wa.me/258851006473" style="display: inline-block; padding: 10px 24px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 14px;">Abrir WhatsApp</a>
           </div>
           <p style="color: #6B5C4C; font-size: 13px; text-align: center;">Vivianne Saraiva<br>Criadora do Sete Ecos</p>
+        </div>
+      `
+    },
+    'inactividade-7d': {
+      assunto: `${dados.nome}, já passou uma semana — estou preocupada contigo`,
+      html: `
+        <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background: #FAF6F0;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://app.seteecos.com/logos/VITALIS_LOGO_V3.png" alt="Vitalis" style="height: 50px;">
+          </div>
+          <h1 style="color: #4A4035; font-size: 22px; text-align: center; line-height: 1.4;">${dados.nome}, já lá vai uma semana.</h1>
+          <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8; text-align: center;">Sei que a vida às vezes atropela tudo. E está tudo bem.</p>
+          <div style="background: #2C2C2C; color: white; padding: 24px; border-radius: 12px; margin: 20px 0;">
+            <p style="font-size: 16px; line-height: 1.6; margin: 0; text-align: center;">Mas quero que saibas: <strong>o teu progresso não desapareceu</strong>. Está tudo guardado, exactamente onde deixaste.</p>
+          </div>
+          <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8;">Não precisas de recomeçar do zero. Basta um pequeno passo:</p>
+          <div style="background: white; padding: 16px; border-radius: 12px; margin: 16px 0; border-left: 4px solid #7C8B6F;">
+            <p style="color: #4A4035; margin: 4px 0;">Abre o Vitalis</p>
+            <p style="color: #4A4035; margin: 4px 0;">Regista só a água de hoje</p>
+            <p style="color: #4A4035; margin: 4px 0;">Pronto. Já reactivaste o teu hábito.</p>
+          </div>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://app.seteecos.com/vitalis/dashboard"
+               style="display: inline-block; background: linear-gradient(135deg, #7C8B6F, #5a6b4f); color: white; padding: 16px 36px; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px;">
+              Voltar ao Vitalis
+            </a>
+          </div>
+          <div style="background: #25D366; border-radius: 12px; padding: 16px; margin: 20px 0; text-align: center;">
+            <p style="color: white; font-weight: bold; margin: 0 0 8px;">Aconteceu alguma coisa? Fala comigo.</p>
+            <a href="${WHATSAPP_LINK}" style="display: inline-block; padding: 10px 24px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 14px;">Abrir WhatsApp</a>
+          </div>
+          <p style="color: #6B5C4C; font-size: 14px; text-align: center; margin-top: 20px;">Estou aqui, sem julgamento.<br><strong>— Vivianne</strong></p>
+        </div>
+      `
+    },
+    'inactividade-14d': {
+      assunto: `${dados.nome}, precisamos de falar — ${dados.dias} dias sem nos vermos`,
+      html: `
+        <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background: #FAF6F0;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://app.seteecos.com/logos/VITALIS_LOGO_V3.png" alt="Vitalis" style="height: 50px;">
+          </div>
+          <h1 style="color: #4A4035; font-size: 22px; text-align: center; line-height: 1.4;">${dados.nome}, faz ${dados.dias} dias.</h1>
+          <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8; text-align: center;">Não te vou mentir — quando vejo que paraste, fico preocupada. Não por ti como "número", mas porque sei o que querias alcançar.</p>
+          <div style="background: white; padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #E65100;">
+            <p style="color: #4A4035; font-size: 15px; line-height: 1.7; margin: 0;"><strong>Posso ser honesta?</strong> Cada dia que passa sem cuidares de ti, os velhos padrões ganham terreno. Não é fraqueza — é biologia. O corpo volta ao que conhece.</p>
+          </div>
+          <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8;">Mas a boa notícia é que <strong>bastam 30 segundos</strong> para quebrares o ciclo. Um check-in. Uma nota. Um copo de água registado.</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://app.seteecos.com/vitalis/dashboard"
+               style="display: inline-block; background: linear-gradient(135deg, #E65100, #BF360C); color: white; padding: 16px 36px; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px;">
+              Reconectar Agora
+            </a>
+          </div>
+          <div style="background: #25D366; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center;">
+            <p style="color: white; font-weight: bold; margin: 0 0 4px;">Se algo te está a travar, quero ouvir.</p>
+            <p style="color: rgba(255,255,255,0.9); font-size: 13px; margin: 0 0 12px;">Às vezes só precisamos de alguém que entenda.</p>
+            <a href="${WHATSAPP_LINK}" style="display: inline-block; padding: 12px 28px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold;">Falar com a Vivianne</a>
+          </div>
+          <p style="color: #6B5C4C; font-size: 14px; text-align: center; margin-top: 20px;">Com carinho,<br><strong>— Vivianne</strong></p>
+        </div>
+      `
+    },
+    'inactividade-30d': {
+      assunto: `${dados.nome}, ainda acredito em ti`,
+      html: `
+        <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background: #FAF6F0;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://app.seteecos.com/logos/VITALIS_LOGO_V3.png" alt="Vitalis" style="height: 50px;">
+          </div>
+          <h1 style="color: #4A4035; font-size: 22px; text-align: center; line-height: 1.4;">${dados.nome},</h1>
+          <p style="color: #6B5C4C; font-size: 16px; line-height: 1.8; text-align: center;">Faz um mês. E não, não me esqueci de ti.</p>
+          <div style="background: #2C2C2C; color: white; padding: 24px; border-radius: 12px; margin: 20px 0;">
+            <p style="font-size: 18px; font-style: italic; line-height: 1.6; margin: 0; text-align: center;">"Não é sobre nunca cair. É sobre levantar mais uma vez."</p>
+          </div>
+          <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8;">Quero que saibas três coisas:</p>
+          <div style="background: white; padding: 16px; border-radius: 12px; margin: 16px 0; border-left: 4px solid #7C8B6F;">
+            <p style="color: #4A4035; margin: 8px 0;">1. O teu plano e todo o progresso <strong>estão guardados</strong></p>
+            <p style="color: #4A4035; margin: 8px 0;">2. Não há julgamento — só apoio</p>
+            <p style="color: #4A4035; margin: 8px 0;">3. Quando estiveres pronta, basta abrir o Vitalis</p>
+          </div>
+          <p style="color: #6B5C4C; font-size: 15px; line-height: 1.8; text-align: center;">Estou à distância de uma mensagem.</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://app.seteecos.com/vitalis/dashboard"
+               style="display: inline-block; background: linear-gradient(135deg, #7C8B6F, #5a6b4f); color: white; padding: 16px 36px; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px;">
+              Estou de Volta
+            </a>
+          </div>
+          <div style="background: #25D366; border-radius: 12px; padding: 16px; margin: 20px 0; text-align: center;">
+            <p style="color: white; font-weight: bold; margin: 0 0 8px;">Ou se preferires, manda-me uma mensagem.</p>
+            <a href="${WHATSAPP_LINK}" style="display: inline-block; padding: 10px 24px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 14px;">Abrir WhatsApp</a>
+          </div>
+          <p style="color: #6B5C4C; font-size: 14px; text-align: center; margin-top: 20px;">Sempre aqui,<br><strong>— Vivianne</strong></p>
         </div>
       `
     },
