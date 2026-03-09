@@ -385,6 +385,7 @@ export default function CoachClienteDetalhe() {
             { key: 'plano', label: 'Plano completo' },
             { key: 'intake', label: 'Intake' },
             { key: 'progresso', label: 'Progresso' },
+            { key: 'notificacoes', label: 'Notificações' },
             { key: 'gestao', label: 'Gestão' },
           ].map(t => (
             <button
@@ -915,6 +916,11 @@ export default function CoachClienteDetalhe() {
           </>
         )}
 
+        {/* === NOTIFICAÇÕES === */}
+        {tab === 'notificacoes' && (
+          <NotificacoesTab userId={userId} />
+        )}
+
         {/* === GESTAO === */}
         {tab === 'gestao' && (
           <div className="space-y-4">
@@ -1108,6 +1114,75 @@ export default function CoachClienteDetalhe() {
             </div>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// ── Notificações Tab ──
+function NotificacoesTab({ userId }) {
+  const [notifs, setNotifs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!userId) return;
+    setLoading(true);
+    coachApi.historicoNotificacoes(userId)
+      .then(data => setNotifs(data.notificacoes || []))
+      .catch(() => setNotifs([]))
+      .finally(() => setLoading(false));
+  }, [userId]);
+
+  const formatData = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const agora = new Date();
+    const diffMs = agora - d;
+    const diffH = Math.floor(diffMs / 3600000);
+    const diffD = Math.floor(diffMs / 86400000);
+    if (diffH < 1) return 'há poucos minutos';
+    if (diffH < 24) return `há ${diffH}h`;
+    if (diffD < 7) return `há ${diffD}d`;
+    return d.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short', year: diffD > 365 ? 'numeric' : undefined });
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
+        <div className="w-8 h-8 border-4 border-gray-200 border-t-gray-500 rounded-full animate-spin mx-auto"></div>
+        <p className="text-gray-400 text-sm mt-3">A carregar histórico...</p>
+      </div>
+    );
+  }
+
+  if (notifs.length === 0) {
+    return (
+      <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
+        <p className="text-gray-400 text-4xl mb-2">📭</p>
+        <p className="text-gray-500 text-sm">Nenhuma notificação enviada a este cliente.</p>
+        <p className="text-gray-400 text-xs mt-1">Emails e WhatsApp automáticos aparecerão aqui.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-xl border border-gray-100 p-4">
+      <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+        <span>📬</span> Histórico de notificações ({notifs.length})
+      </h3>
+      <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+        {notifs.map((n, i) => (
+          <div key={i} className="flex items-center justify-between py-2 px-3 rounded-lg bg-gray-50 text-sm">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="flex-shrink-0">{n.canal === 'whatsapp' ? '💬' : '📧'}</span>
+              <span className="text-gray-800 truncate">{n.label}</span>
+              {n.status === 'erro' && (
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-100 text-red-600">erro</span>
+              )}
+            </div>
+            <span className="text-xs text-gray-400 flex-shrink-0 ml-2">{formatData(n.data)}</span>
+          </div>
+        ))}
       </div>
     </div>
   );

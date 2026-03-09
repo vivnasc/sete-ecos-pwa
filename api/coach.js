@@ -217,6 +217,11 @@ export default async function handler(req, res) {
         return await broadcastInteressados(fakeReq, res);
       }
 
+      // ── Histórico de notificações por cliente ──
+      case 'historico-notificacoes': {
+        return await historicoNotificacoes(params.userId, res);
+      }
+
       default:
         return res.status(400).json({ error: 'Accao desconhecida: ' + action });
     }
@@ -1295,6 +1300,78 @@ export async function sendPushToUser(userId, { title, body, url, tag }) {
   } catch (e) {
     console.error('[Push] Erro ao enviar para user:', e.message);
     return 0;
+  }
+}
+
+// ==========================================
+// HISTÓRICO DE NOTIFICAÇÕES POR CLIENTE
+// ==========================================
+
+async function historicoNotificacoes(userId, res) {
+  try {
+    // Buscar emails enviados ao cliente
+    const { data: emails } = await supabase
+      .from('vitalis_email_log')
+      .select('tipo, destinatario, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(30);
+
+    // Buscar WhatsApp enviados (via intake para obter telefone)
+    let waLogs = [];
+    try {
+      const { data: intake } = await supabase
+        .from('vitalis_intake')
+        .select('whatsapp')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (intake?.whatsapp) {
+        const tel = intake.whatsapp.replace(/[^0-9]/g, '');
+        const { data: waData } = await supabase
+          .from('whatsapp_broadcast_log')
+          .select('tipo, mensagem, status, created_at')
+          .eq('telefone', tel)
+          .order('created_at', { ascending: false })
+          .limit(20);
+        waLogs = waData || [];
+      }
+    } catch (_) { /* tabela pode não existir */ }
+
+    // Mapear tipos para labels legíveis
+    const tipoLabels = {
+      'lembrete-checkin': '📧 Lembrete check-in (2-4d)',
+      'motivacao-intensa': '📧 Motivação intensa (5-6d)',
+      'inactividade-7d': '📧 Marco 7 dias',
+      'inactividade-14d': '📧 Marco 14 dias',
+      'inactividade-30d': '📧 Marco 30 dias',
+      'expiracao-aviso': '📧 Aviso expiração',
+      'curiosidade-insana': '📧 Curiosidade (marketing)',
+      'winback': '📧 Win-back',
+      'coach-resumo-diario': '📧 Resumo coach',
+    };
+
+    const notificacoes = [
+      ...(emails || []).map(e => ({
+        canal: 'email',
+        tipo: e.tipo,
+        label: tipoLabels[e.tipo] || `📧 ${e.tipo}`,
+        data: e.created_at,
+      })),
+      ...waLogs.map(w => ({
+        canal: 'whatsapp',
+        tipo: w.tipo,
+        label: `💬 ${w.tipo?.replace('cron-cliente-', '') || 'WA'}`,
+        status: w.status,
+        data: w.created_at,
+      })),
+    ].sort((a, b) => new Date(b.data) - new Date(a.data)).slice(0, 30);
+
+    return res.status(200).json({ notificacoes });
+  } catch (err) {
+    return res.status(200).json({ notificacoes: [], erro: err.message });
   }
 }
 

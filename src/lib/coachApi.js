@@ -40,4 +40,5 @@ export const coachApi = {
   activarSubscricao: (userId, planKey) => coachRequest('activar-subscricao', { userId, planKey }),
   setTester: (userId) => coachRequest('set-tester', { userId }),
   testNotificacoes: () => coachRequest('test-notificacoes'),
+  historicoNotificacoes: (userId) => coachRequest('historico-notificacoes', { userId }),
 };
