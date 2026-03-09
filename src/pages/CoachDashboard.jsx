@@ -9,7 +9,7 @@ import { ECO_PLANS } from '../lib/shared/subscriptionPlans';
 const CentroComunicacoes = lazy(() => import('../components/CentroComunicacoes'));
 
 // ─── Real-time toast notifications ───
-const POLL_INTERVAL = 30_000; // 30 seconds
+const POLL_INTERVAL = 30_000;
 
 function CoachToast({ alerta, onDismiss, onNavigate }) {
   const [exiting, setExiting] = useState(false);
@@ -25,7 +25,7 @@ function CoachToast({ alerta, onDismiss, onNavigate }) {
 
   return (
     <div
-      className={`${bgColor} text-white rounded-xl px-4 py-3 shadow-2xl flex items-start gap-3 cursor-pointer
+      className={`${bgColor} text-white rounded-2xl px-4 py-3 shadow-2xl flex items-start gap-3 cursor-pointer backdrop-blur-sm
         transition-all duration-300 ${exiting ? 'opacity-0 translate-x-full' : 'opacity-100 translate-x-0'}`}
       style={{ maxWidth: 380, animation: exiting ? undefined : 'slideInRight 0.3s ease-out' }}
       onClick={() => { onNavigate(alerta.user_id); onDismiss(); }}
@@ -47,16 +47,11 @@ function CoachToast({ alerta, onDismiss, onNavigate }) {
   );
 }
 
-/**
- * SETE ECOS - COACH DASHBOARD v5
- * Painel real de coaching - foco em gestao de clientes
- */
-
 const STATUS_LABELS = {
   tester: { label: 'Tester', cor: 'bg-purple-100 text-purple-700' },
   trial: { label: 'Trial', cor: 'bg-blue-100 text-blue-700' },
-  active: { label: 'Activo', cor: 'bg-green-100 text-green-700' },
-  pending: { label: 'Pendente', cor: 'bg-yellow-100 text-yellow-700' },
+  active: { label: 'Activo', cor: 'bg-emerald-100 text-emerald-700' },
+  pending: { label: 'Pendente', cor: 'bg-amber-100 text-amber-700' },
   expired: { label: 'Expirado', cor: 'bg-red-100 text-red-700' },
   cancelled: { label: 'Cancelado', cor: 'bg-gray-100 text-gray-700' },
 };
@@ -64,31 +59,27 @@ const STATUS_LABELS = {
 function StatusBadge({ status }) {
   const config = STATUS_LABELS[status] || { label: status || 'N/A', cor: 'bg-gray-100 text-gray-500' };
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${config.cor}`}>
+    <span className={`px-2 py-0.5 rounded-full text-[11px] font-semibold tracking-wide ${config.cor}`}>
       {config.label}
     </span>
   );
 }
 
 function PlanBadge({ hasIntake, hasPlan, planStatus, planErro }) {
-  if (!hasIntake) {
-    return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Sem intake</span>;
-  }
-  if (planStatus === 'erro') {
-    return (
-      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700" title={planErro || 'Erro na geracao'}>
-        Erro no plano
-      </span>
-    );
-  }
-  if (!hasPlan) {
-    return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700">Sem plano</span>;
-  }
-  if (planStatus === 'pendente_revisao') {
-    return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">Aguarda revisao</span>;
-  }
-  return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Plano activo</span>;
+  if (!hasIntake) return <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-500">Sem intake</span>;
+  if (planStatus === 'erro') return <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-100 text-red-700" title={planErro || 'Erro na geracao'}>Erro no plano</span>;
+  if (!hasPlan) return <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-orange-100 text-orange-700">Sem plano</span>;
+  if (planStatus === 'pendente_revisao') return <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700">Aguarda revisao</span>;
+  return <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700">Plano activo</span>;
 }
+
+// ─── TABS ───
+const TABS = [
+  { key: 'clientes', label: 'Clientes', icon: '👥' },
+  { key: 'ecos', label: 'Ecos', icon: '🌍' },
+  { key: 'comms', label: 'Comunicações', icon: '📡' },
+  { key: 'config', label: 'Config', icon: '⚙️' },
+];
 
 export default function CoachDashboard() {
   const navigate = useNavigate();
@@ -99,23 +90,20 @@ export default function CoachDashboard() {
   const [filterPlan, setFilterPlan] = useState('all');
   const [gerandoPlano, setGerandoPlano] = useState(null);
   const [deletingClient, setDeletingClient] = useState(null);
+  const [activeTab, setActiveTab] = useState('clientes');
 
   // Quick stats
   const [stats, setStats] = useState({ total: 0, active: 0, trial: 0, pending: 0, semPlano: 0, aguardaRevisao: 0, erros: 0 });
   const [multiEcoStats, setMultiEcoStats] = useState(null);
-  const [showMultiEco, setShowMultiEco] = useState(false);
   const [selectedEco, setSelectedEco] = useState(null);
   const [ecoClients, setEcoClients] = useState([]);
   const [loadingEcoClients, setLoadingEcoClients] = useState(false);
-  const [ecoAction, setEcoAction] = useState(null); // { userId, action, eco }
+  const [ecoAction, setEcoAction] = useState(null);
 
   // Coach notifications (static feed)
   const [notificacoes, setNotificacoes] = useState([]);
   const [loadingNotifs, setLoadingNotifs] = useState(true);
   const [showNotifs, setShowNotifs] = useState(false);
-
-  // Centro de comunicações
-  const [showComms, setShowComms] = useState(false);
 
   // Real-time alerts (polling)
   const [toasts, setToasts] = useState([]);
@@ -123,10 +111,10 @@ export default function CoachDashboard() {
   const lastPollTime = useRef(null);
   const pollRef = useRef(null);
 
-  // ─── Push Notification subscription ───
-  const [pushStatus, setPushStatus] = useState(null); // null | 'subscribed' | 'denied' | 'unsupported' | 'failed'
+  // Push Notification subscription
+  const [pushStatus, setPushStatus] = useState(null);
   const [pushActivando, setPushActivando] = useState(false);
-  const [testResult, setTestResult] = useState(null); // resultado do teste de notificações
+  const [testResult, setTestResult] = useState(null);
   const [testando, setTestando] = useState(false);
 
   useEffect(() => {
@@ -141,7 +129,6 @@ export default function CoachDashboard() {
 
     if (userInitiated) setPushActivando(true);
 
-    // Se permissão não foi dada, pedir (só se user clicou no botão)
     if (Notification.permission === 'default') {
       if (!userInitiated) { setPushStatus('failed'); return; }
       try {
@@ -162,8 +149,6 @@ export default function CoachDashboard() {
       const result = await registar();
       if (result.ok) {
         setPushStatus('subscribed');
-        console.log('[Coach Push] Subscription registada com sucesso');
-        // Enviar notificação de teste imediata para confirmar
         if (userInitiated) {
           try {
             const reg = await navigator.serviceWorker.ready;
@@ -176,7 +161,6 @@ export default function CoachDashboard() {
         }
       } else {
         setPushStatus('failed');
-        console.warn('[Coach Push] Falha ao registar:', result.reason || result.error);
       }
     } catch (err) {
       console.error('[Coach Push] Erro ao registar:', err);
@@ -211,7 +195,6 @@ export default function CoachDashboard() {
     }
   }, [navigate]);
 
-  // ─── Real-time polling ───
   const pollAlertas = useCallback(async () => {
     try {
       const desde = lastPollTime.current || new Date(Date.now() - 2 * 60 * 1000).toISOString();
@@ -220,23 +203,14 @@ export default function CoachDashboard() {
 
       const newAlertas = (data.alertas || []).filter(a => !seenAlertIds.current.has(a.id));
       if (newAlertas.length > 0) {
-        for (const a of newAlertas) {
-          seenAlertIds.current.add(a.id);
-        }
-        // Add toasts
+        for (const a of newAlertas) seenAlertIds.current.add(a.id);
         setToasts(prev => [...newAlertas.map(a => ({ ...a, _key: a.id + '_' + Date.now() })), ...prev].slice(0, 5));
-        // Browser notifications for critical
         for (const a of newAlertas) {
-          if (a.som || a.prioridade === 'critica') {
-            showBrowserNotification(a);
-          }
+          if (a.som || a.prioridade === 'critica') showBrowserNotification(a);
         }
-        // Also refresh the static feed
         loadNotificacoes();
       }
-    } catch (err) {
-      // Silent fail — polling shouldn't break the dashboard
-    }
+    } catch (err) {}
   }, [showBrowserNotification]);
 
   useEffect(() => {
@@ -244,12 +218,11 @@ export default function CoachDashboard() {
     loadMultiEcoStats();
     loadNotificacoes();
 
-    // Start polling after initial load
     const startPolling = () => {
       lastPollTime.current = new Date().toISOString();
       pollRef.current = setInterval(pollAlertas, POLL_INTERVAL);
     };
-    const timer = setTimeout(startPolling, 3000); // Wait 3s before first poll
+    const timer = setTimeout(startPolling, 3000);
     return () => { clearTimeout(timer); if (pollRef.current) clearInterval(pollRef.current); };
   }, [pollAlertas]);
 
@@ -262,7 +235,7 @@ export default function CoachDashboard() {
         const config = ECO_PLANS[eco];
         if (!config) continue;
 
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from(config.table)
           .select('subscription_status');
 
@@ -305,7 +278,6 @@ export default function CoachDashboard() {
       } else {
         await coachApi.activarSubscricaoEco(eco, userId, actionType);
       }
-      // Reload
       await loadEcoClients(eco);
       await loadMultiEcoStats();
     } catch (err) {
@@ -316,11 +288,8 @@ export default function CoachDashboard() {
 
   const loadClients = async () => {
     try {
-      // Server-side fetch via coach API (bypasses RLS)
       const data = await coachApi.listarClientes();
       const enriched = data.clients || [];
-
-      // Calculate stats
       const statsCalc = {
         total: enriched.length,
         active: enriched.filter(c => c.subscription_status === 'active').length,
@@ -330,7 +299,6 @@ export default function CoachDashboard() {
         aguardaRevisao: enriched.filter(c => c.planStatus === 'pendente_revisao').length,
         erros: enriched.filter(c => c.planStatus === 'erro').length,
       };
-
       setClients(enriched);
       setStats(statsCalc);
     } catch (error) {
@@ -351,45 +319,24 @@ export default function CoachDashboard() {
     setLoadingNotifs(false);
   };
 
-  // Filtered clients
   const filteredClients = useMemo(() => {
     let result = clients;
-
-    // Search
     if (search.trim()) {
       const s = search.toLowerCase();
-      result = result.filter(c =>
-        c.nome.toLowerCase().includes(s) ||
-        c.email.toLowerCase().includes(s)
-      );
+      result = result.filter(c => c.nome.toLowerCase().includes(s) || c.email.toLowerCase().includes(s));
     }
-
-    // Filter by subscription status
-    if (filterStatus !== 'all') {
-      result = result.filter(c => c.subscription_status === filterStatus);
-    }
-
-    // Filter by plan status
-    if (filterPlan === 'sem_intake') {
-      result = result.filter(c => !c.hasIntake);
-    } else if (filterPlan === 'sem_plano') {
-      result = result.filter(c => c.hasIntake && !c.hasPlan && c.planStatus !== 'erro');
-    } else if (filterPlan === 'aguarda_revisao') {
-      result = result.filter(c => c.planStatus === 'pendente_revisao');
-    } else if (filterPlan === 'plano_activo') {
-      result = result.filter(c => c.planStatus === 'activo');
-    } else if (filterPlan === 'erro') {
-      result = result.filter(c => c.planStatus === 'erro');
-    }
-
+    if (filterStatus !== 'all') result = result.filter(c => c.subscription_status === filterStatus);
+    if (filterPlan === 'sem_intake') result = result.filter(c => !c.hasIntake);
+    else if (filterPlan === 'sem_plano') result = result.filter(c => c.hasIntake && !c.hasPlan && c.planStatus !== 'erro');
+    else if (filterPlan === 'aguarda_revisao') result = result.filter(c => c.planStatus === 'pendente_revisao');
+    else if (filterPlan === 'plano_activo') result = result.filter(c => c.planStatus === 'activo');
+    else if (filterPlan === 'erro') result = result.filter(c => c.planStatus === 'erro');
     return result;
   }, [clients, search, filterStatus, filterPlan]);
 
-  // Generate plan for a client
   const handleGerarPlano = async (client) => {
     if (!confirm(`Gerar plano nutricional para ${client.nome}?`)) return;
     setGerandoPlano(client.user_id);
-
     try {
       const result = await coachApi.gerarPlano(client.user_id);
       alert(`Plano gerado com sucesso!\n${result.plano.calorias} kcal | P:${result.plano.macros.proteina}g C:${result.plano.macros.carboidratos}g G:${result.plano.macros.gordura}g\n\nPlano fica em revisao ate aprovares.`);
@@ -401,12 +348,10 @@ export default function CoachDashboard() {
     }
   };
 
-  // Delete client
   const handleDeleteClient = async (client) => {
     const nome = client.nome || client.email;
     if (!confirm(`APAGAR cliente "${nome}"?\n\nIsto vai remover:\n- Registo vitalis_clients\n- Planos (vitalis_meal_plans)\n- Intake (vitalis_intake)\n- Habitos (vitalis_habitos)\n\nEsta accao e irreversivel!`)) return;
     if (!confirm(`Tens a certeza ABSOLUTA que queres apagar "${nome}"? Ultima chance!`)) return;
-
     setDeletingClient(client.user_id);
     try {
       await coachApi.apagarCliente(client.user_id);
@@ -419,15 +364,12 @@ export default function CoachDashboard() {
     }
   };
 
-  // Quick activate
   const handleActivate = async (client, planKey = 'MONTHLY') => {
     if (!confirm(`Activar subscrição ${SUBSCRIPTION_PLANS[planKey].name} para ${client.nome}?`)) return;
     try {
       const result = await coachApi.activarSubscricao(client.user_id, planKey);
       const validoAte = new Date(result.expiresAt).toLocaleDateString('pt-PT');
       alert(`Subscrição activada até ${validoAte}`);
-
-      // Enviar emails de boas-vindas e confirmação à cliente
       const plan = SUBSCRIPTION_PLANS[planKey];
       enviarBoasVindas(client.email, client.nome, client.sexo).catch(() => {});
       enviarConfirmacaoPagamento(client.email, {
@@ -438,7 +380,6 @@ export default function CoachDashboard() {
         validoAte,
         sexo: client.sexo
       }).catch(() => {});
-
       loadClients();
     } catch (err) {
       alert('Erro: ' + err.message);
@@ -470,18 +411,19 @@ export default function CoachDashboard() {
 
   const notifsCount = notificacoes.filter(n => n.prioridade === 'critica' || n.prioridade === 'alta').length;
 
-  // Days since date
   const daysSince = (dateStr) => {
     if (!dateStr) return null;
     return Math.floor((Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24));
   };
 
+  const multiEcoTotal = multiEcoStats ? Object.values(multiEcoStats).reduce((acc, s) => acc + s.total, 0) : 0;
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-10 h-10 border-4 border-gray-300 border-t-gray-600 rounded-full animate-spin mx-auto"></div>
-          <p className="mt-3 text-gray-500">A carregar clientes...</p>
+          <div className="w-10 h-10 border-3 border-gray-600 border-t-white rounded-full animate-spin mx-auto" />
+          <p className="mt-3 text-gray-400 text-sm">A carregar...</p>
         </div>
       </div>
     );
@@ -489,7 +431,7 @@ export default function CoachDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
-      {/* ═══════ REAL-TIME TOAST NOTIFICATIONS ═══════ */}
+      {/* ═══════ TOASTS ═══════ */}
       {toasts.length > 0 && (
         <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2" style={{ maxWidth: 380 }}>
           {toasts.map(t => (
@@ -503,37 +445,44 @@ export default function CoachDashboard() {
         </div>
       )}
 
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 py-3">
+      {/* ═══════ HEADER ═══════ */}
+      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+        <div className="max-w-6xl mx-auto px-4 pt-4 pb-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 min-w-0">
-              <img src="/logos/VITALIS_LOGO_V3.png" alt="Vitalis" className="w-8 h-8 object-contain flex-shrink-0" />
-              <div className="min-w-0">
-                <h1 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-1.5">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/10">
+                <img src="/logos/VITALIS_LOGO_V3.png" alt="" className="w-6 h-6 object-contain" />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold tracking-tight flex items-center gap-2">
                   Painel Coach
-                  {pushStatus === 'subscribed' && <span title="Push activo" className="w-2 h-2 rounded-full bg-green-400 inline-block flex-shrink-0" />}
+                  {pushStatus === 'subscribed' && (
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Push activo" />
+                  )}
                 </h1>
               </div>
             </div>
-            <div className="flex items-center gap-1.5">
+
+            <div className="flex items-center gap-1">
+              {/* Bell */}
               <button
                 onClick={() => setShowNotifs(!showNotifs)}
-                className={`relative p-2 rounded-lg transition-colors ${showNotifs ? 'bg-amber-100 text-amber-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}
-                title="Notificacoes"
+                className={`relative p-2 rounded-xl transition-all ${showNotifs ? 'bg-white/20' : 'hover:bg-white/10'}`}
+                title="Notificações"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
                 {notifsCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                  <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-gray-900">
                     {notifsCount > 9 ? '9+' : notifsCount}
                   </span>
                 )}
               </button>
+              {/* Refresh */}
               <button
-                onClick={() => { loadClients(); loadNotificacoes(); }}
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                onClick={() => { loadClients(); loadNotificacoes(); loadMultiEcoStats(); }}
+                className="p-2 hover:bg-white/10 rounded-xl transition-all"
                 title="Actualizar"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -542,173 +491,122 @@ export default function CoachDashboard() {
               </button>
             </div>
           </div>
+
+          {/* Quick links */}
+          <div className="flex gap-1.5 mt-3 overflow-x-auto no-scrollbar pb-1">
+            {[
+              { to: '/coach/marketing', label: 'Marketing', color: 'pink' },
+              { to: '/coach/analytics', label: 'Analytics', color: 'indigo' },
+              { to: '/coach/chatbot-teste', label: 'Chatbot', color: 'emerald' },
+              { to: '/coach/broadcast', label: 'Broadcast', color: 'green' },
+              { to: '/coach/social', label: 'Social', color: 'purple' },
+              { to: '/vitalis/dashboard', label: 'Vitalis', color: 'gray' },
+            ].map(link => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="px-3 py-1.5 text-xs font-medium bg-white/10 hover:bg-white/20 text-white/80 hover:text-white rounded-lg transition-all whitespace-nowrap flex-shrink-0 backdrop-blur-sm border border-white/5"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
         </div>
-        {/* Navigation tabs — scroll horizontal no mobile */}
-        <div className="max-w-6xl mx-auto px-4 pb-2">
-          <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
-            <Link to="/coach/marketing" className="px-3 py-1.5 text-xs sm:text-sm bg-pink-50 text-pink-700 rounded-lg hover:bg-pink-100 transition-colors whitespace-nowrap flex-shrink-0">
-              Marketing
-            </Link>
-            <Link to="/coach/analytics" className="px-3 py-1.5 text-xs sm:text-sm bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors whitespace-nowrap flex-shrink-0">
-              Analytics
-            </Link>
-            <Link to="/coach/chatbot-teste" className="px-3 py-1.5 text-xs sm:text-sm bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors whitespace-nowrap flex-shrink-0">
-              Chatbot
-            </Link>
-            <Link to="/coach/broadcast" className="px-3 py-1.5 text-xs sm:text-sm bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors whitespace-nowrap flex-shrink-0">
-              Broadcast
-            </Link>
-            <Link to="/coach/social" className="px-3 py-1.5 text-xs sm:text-sm bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors whitespace-nowrap flex-shrink-0">
-              Social
-            </Link>
-            <Link to="/vitalis/dashboard" className="px-3 py-1.5 text-xs sm:text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors whitespace-nowrap flex-shrink-0">
-              Vitalis
-            </Link>
+
+        {/* ═══════ TABS ═══════ */}
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex gap-0.5">
+            {TABS.map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`px-4 py-2.5 text-sm font-medium rounded-t-xl transition-all flex items-center gap-1.5 ${
+                  activeTab === tab.key
+                    ? 'bg-gray-50 text-gray-900'
+                    : 'text-white/60 hover:text-white/90 hover:bg-white/5'
+                }`}
+              >
+                <span className="text-sm">{tab.icon}</span>
+                <span className="hidden sm:inline">{tab.label}</span>
+                {tab.key === 'ecos' && multiEcoTotal > 0 && (
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                    activeTab === tab.key ? 'bg-gray-200 text-gray-600' : 'bg-white/15 text-white/70'
+                  }`}>{multiEcoTotal}</span>
+                )}
+                {tab.key === 'clientes' && (
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                    activeTab === tab.key ? 'bg-gray-200 text-gray-600' : 'bg-white/15 text-white/70'
+                  }`}>{stats.total}</span>
+                )}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
+      {/* ═══════ MAIN CONTENT ═══════ */}
       <div className="max-w-6xl mx-auto px-4 py-4 space-y-4">
-        {/* ═══════ PUSH ACTIVATION BANNER ═══════ */}
+
+        {/* Push banner — always visible if not subscribed */}
         {pushStatus && pushStatus !== 'subscribed' && (
-          <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-xl p-4">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-                <span className="text-xl">🔕</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-red-800 text-sm">Notificações push desactivadas</h3>
-                <p className="text-red-700 text-xs mt-0.5">
-                  {pushStatus === 'denied'
-                    ? 'Permissão bloqueada. Vai às definições do browser para permitir notificações.'
-                    : 'Não vais receber alertas de clientes (pagamentos, espaço retorno, etc.)'}
-                </p>
-              </div>
-              {pushStatus !== 'denied' && (
-                <button
-                  onClick={() => registerPushSubscription(true)}
-                  disabled={pushActivando}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-semibold hover:bg-red-700 transition-colors flex-shrink-0 active:scale-95 disabled:opacity-60"
-                >
-                  {pushActivando ? 'A activar...' : 'Activar'}
-                </button>
-              )}
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-red-50 border border-red-200/60">
+            <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center flex-shrink-0 text-sm">🔕</div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-red-800">Push desactivado</p>
+              <p className="text-xs text-red-600/80">
+                {pushStatus === 'denied' ? 'Bloqueado no browser.' : 'Sem alertas de clientes.'}
+              </p>
             </div>
+            {pushStatus !== 'denied' && (
+              <button
+                onClick={() => registerPushSubscription(true)}
+                disabled={pushActivando}
+                className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 transition-all active:scale-95 disabled:opacity-60 flex-shrink-0"
+              >
+                {pushActivando ? '...' : 'Activar'}
+              </button>
+            )}
           </div>
         )}
 
-        {/* ═══════ TEST NOTIFICAÇÕES ═══════ */}
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-lg">🧪</span>
-              <div>
-                <h3 className="text-sm font-bold text-gray-800">Testar notificações</h3>
-                <p className="text-xs text-gray-500">Envia teste para Telegram + Push</p>
-              </div>
-            </div>
-            <button
-              onClick={testarNotificacoes}
-              disabled={testando}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors active:scale-95 disabled:opacity-60"
-            >
-              {testando ? 'A testar...' : 'Testar agora'}
-            </button>
-          </div>
-          {testResult && (
-            <div className={`mt-3 p-3 rounded-lg text-xs space-y-1 ${testResult.ok ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
-              <div className="font-bold">{testResult.ok ? '✅ Pelo menos 1 canal funciona!' : '❌ Nenhum canal funcionou'}</div>
-              {testResult.resultados?.telegram && (
-                <div>{testResult.resultados.telegram.enviado ? '✅' : '❌'} Telegram: {testResult.resultados.telegram.enviado ? 'OK' : (testResult.resultados.telegram.erro || 'Não configurado')}</div>
-              )}
-              {testResult.resultados?.push && (
-                <div>{testResult.resultados.push.enviado ? '✅' : '❌'} Push: {testResult.resultados.push.enviado ? 'OK' : (testResult.resultados.push.erro || 'Não configurado')} ({testResult.resultados.push.subscricoes} devices)</div>
-              )}
-              {testResult.resultados?.whatsapp && (
-                <div>📱 WhatsApp: {testResult.resultados.whatsapp.configurado ? `Configurado (${testResult.resultados.whatsapp.numero_destino})` : 'Não configurado'}</div>
-              )}
-              {testResult.resultados?.email && (
-                <div>📧 Email: {testResult.resultados.email.configurado ? 'Configurado' : 'Não configurado'}</div>
-              )}
-              {testResult.dica && <div className="mt-1 text-amber-700 font-medium">{testResult.dica}</div>}
-            </div>
-          )}
-        </div>
-
-        {/* ═══════ CENTRO DE COMUNICAÇÕES ═══════ */}
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <button
-            onClick={() => setShowComms(!showComms)}
-            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-lg">📡</span>
-              <span className="font-medium text-gray-800 text-sm">Centro de Comunicacoes</span>
-              <span className="text-xs text-gray-400">emails, WhatsApp, push</span>
-            </div>
-            <span className="text-gray-400 text-sm">{showComms ? '▲' : '▼'}</span>
-          </button>
-          {showComms && (
-            <div className="px-4 pb-4 border-t border-gray-100 pt-3">
-              <Suspense fallback={
-                <div className="flex items-center justify-center py-8">
-                  <div className="w-5 h-5 border-2 border-indigo-300 border-t-transparent rounded-full animate-spin" />
-                </div>
-              }>
-                <CentroComunicacoes />
-              </Suspense>
-            </div>
-          )}
-        </div>
-
-        {/* ═══════ NOTIFICATION FEED ═══════ */}
+        {/* ═══════ NOTIFICATION SLIDE ═══════ */}
         {showNotifs && (
-          <div className="bg-white rounded-xl border border-amber-200 overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 bg-amber-50 border-b border-amber-100">
+          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+            <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-100/60">
               <h2 className="text-sm font-bold text-amber-900 flex items-center gap-2">
-                <span>🔔</span> Actividade dos clientes (7 dias)
+                <span>🔔</span> Actividade (7 dias)
               </h2>
-              <button onClick={() => setShowNotifs(false)} className="text-amber-400 hover:text-amber-600">
+              <button onClick={() => setShowNotifs(false)} className="text-amber-400 hover:text-amber-600 p-1">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            <div className="max-h-[400px] overflow-y-auto divide-y divide-gray-50">
+            <div className="max-h-[350px] overflow-y-auto divide-y divide-gray-50">
               {loadingNotifs ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="w-5 h-5 border-2 border-amber-300 border-t-transparent rounded-full animate-spin" />
                 </div>
               ) : notificacoes.length === 0 ? (
-                <div className="text-center py-8 text-gray-400 text-sm">
-                  Sem actividade recente
-                </div>
+                <div className="text-center py-8 text-gray-400 text-sm">Sem actividade recente</div>
               ) : (
                 notificacoes.map(n => (
                   <Link
                     key={n.id}
                     to={`/coach/cliente/${n.user_id}`}
-                    className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors ${
-                      n.prioridade === 'critica' ? 'bg-red-50/50' : n.prioridade === 'alta' ? 'bg-amber-50/30' : ''
+                    className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50/80 transition-colors ${
+                      n.prioridade === 'critica' ? 'bg-red-50/40' : n.prioridade === 'alta' ? 'bg-amber-50/30' : ''
                     }`}
                   >
-                    <span className="text-lg flex-shrink-0 mt-0.5">{n.emoji}</span>
+                    <span className="text-base flex-shrink-0 mt-0.5">{n.emoji}</span>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium ${
-                        n.prioridade === 'critica' ? 'text-red-800' : 'text-gray-800'
-                      }`}>
+                      <p className={`text-sm font-medium ${n.prioridade === 'critica' ? 'text-red-800' : 'text-gray-800'}`}>
                         {n.titulo}
                       </p>
-                      {n.detalhe && (
-                        <p className="text-xs text-gray-500 mt-0.5">{n.detalhe}</p>
-                      )}
+                      {n.detalhe && <p className="text-xs text-gray-500 mt-0.5">{n.detalhe}</p>}
                     </div>
-                    <span className="text-[10px] text-gray-400 flex-shrink-0 mt-1">
-                      {tempoRelativo(n.created_at)}
-                    </span>
-                    {n.prioridade === 'critica' && (
-                      <span className="flex-shrink-0 w-2 h-2 rounded-full bg-red-500 mt-2" />
-                    )}
+                    <span className="text-[10px] text-gray-400 flex-shrink-0 mt-1">{tempoRelativo(n.created_at)}</span>
+                    {n.prioridade === 'critica' && <span className="flex-shrink-0 w-2 h-2 rounded-full bg-red-500 mt-2" />}
                   </Link>
                 ))
               )}
@@ -716,26 +614,235 @@ export default function CoachDashboard() {
           </div>
         )}
 
-        {/* Multi-Eco Overview */}
-        {multiEcoStats && (
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <button
-              onClick={() => setShowMultiEco(!showMultiEco)}
-              className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-lg">🌍</span>
-                <span className="font-medium text-gray-800 text-sm">Visão Geral — Todos os Ecos</span>
-                <span className="text-xs text-gray-400">
-                  ({Object.values(multiEcoStats).reduce((acc, s) => acc + s.total, 0)} clientes total)
-                </span>
-              </div>
-              <span className="text-gray-400 text-sm">{showMultiEco ? '▲' : '▼'}</span>
-            </button>
+        {/* ══════════════════════════════════════ */}
+        {/* TAB: CLIENTES                          */}
+        {/* ══════════════════════════════════════ */}
+        {activeTab === 'clientes' && (
+          <>
+            {/* Stats row */}
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+              {[
+                { key: 'total', label: 'Total', value: stats.total, filter: () => { setFilterStatus('all'); setFilterPlan('all'); }, active: filterStatus === 'all' && filterPlan === 'all', bg: 'from-gray-800 to-gray-900', ring: 'ring-gray-300' },
+                { key: 'active', label: 'Activos', value: stats.active, filter: () => { setFilterStatus('active'); setFilterPlan('all'); }, active: filterStatus === 'active', bg: 'from-emerald-500 to-emerald-600', ring: 'ring-emerald-300' },
+                { key: 'trial', label: 'Trial', value: stats.trial, filter: () => { setFilterStatus('trial'); setFilterPlan('all'); }, active: filterStatus === 'trial', bg: 'from-blue-500 to-blue-600', ring: 'ring-blue-300' },
+                { key: 'pending', label: 'Pendentes', value: stats.pending, filter: () => { setFilterStatus('pending'); setFilterPlan('all'); }, active: filterStatus === 'pending', bg: 'from-amber-400 to-amber-500', ring: 'ring-amber-300' },
+                { key: 'semPlano', label: 'Sem plano', value: stats.semPlano, filter: () => { setFilterStatus('all'); setFilterPlan('sem_plano'); }, active: filterPlan === 'sem_plano', bg: 'from-orange-400 to-orange-500', ring: 'ring-orange-300' },
+                { key: 'revisao', label: 'Revisão', value: stats.aguardaRevisao, filter: () => { setFilterStatus('all'); setFilterPlan('aguarda_revisao'); }, active: filterPlan === 'aguarda_revisao', bg: 'from-violet-400 to-violet-500', ring: 'ring-violet-300' },
+              ].map(s => (
+                <button
+                  key={s.key}
+                  onClick={s.filter}
+                  className={`relative p-3 rounded-2xl text-center transition-all overflow-hidden ${
+                    s.active
+                      ? `bg-gradient-to-br ${s.bg} text-white shadow-lg ring-2 ${s.ring} ring-offset-1`
+                      : 'bg-white text-gray-700 hover:shadow-md border border-gray-100'
+                  }`}
+                >
+                  <p className={`text-2xl font-black ${s.active ? '' : 'text-gray-800'}`}>{s.value}</p>
+                  <p className={`text-[11px] font-medium mt-0.5 ${s.active ? 'text-white/80' : 'text-gray-500'}`}>{s.label}</p>
+                </button>
+              ))}
+            </div>
 
-            {showMultiEco && (
-              <div className="px-4 pb-4 border-t border-gray-100">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
+            {/* Search + Filters */}
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex-1 relative">
+                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
+                </svg>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  placeholder="Procurar por nome ou email..."
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-800/20 focus:border-gray-300 transition-all"
+                />
+              </div>
+              <select
+                value={filterStatus}
+                onChange={e => setFilterStatus(e.target.value)}
+                className="px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-800/20"
+              >
+                <option value="all">Todos os estados</option>
+                <option value="active">Activos</option>
+                <option value="trial">Trial</option>
+                <option value="pending">Pendentes</option>
+                <option value="tester">Testers</option>
+                <option value="expired">Expirados</option>
+              </select>
+              <select
+                value={filterPlan}
+                onChange={e => setFilterPlan(e.target.value)}
+                className="px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-800/20"
+              >
+                <option value="all">Todos os planos</option>
+                <option value="sem_intake">Sem intake</option>
+                <option value="sem_plano">Sem plano</option>
+                <option value="aguarda_revisao">Aguarda revisão</option>
+                <option value="plano_activo">Plano activo</option>
+                <option value="erro">Erro no plano</option>
+              </select>
+            </div>
+
+            {/* Pending payments */}
+            {(() => {
+              const pendentes = clients.filter(c => c.subscription_status === 'pending' && c.payment_reference);
+              if (pendentes.length === 0) return null;
+              return (
+                <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200/60 rounded-2xl p-4">
+                  <h3 className="font-bold text-amber-800 mb-3 flex items-center gap-2 text-sm">
+                    <span>💰</span>
+                    {pendentes.length} pagamento{pendentes.length !== 1 ? 's' : ''} pendente{pendentes.length !== 1 ? 's' : ''}
+                  </h3>
+                  <div className="space-y-2">
+                    {pendentes.map(c => (
+                      <div key={c.user_id} className="flex items-center justify-between bg-white/80 backdrop-blur-sm rounded-xl p-3 border border-amber-100">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-gray-900 text-sm">{c.nome}</p>
+                          <div className="flex items-center gap-2 mt-1 text-xs flex-wrap">
+                            <span className="text-amber-700 font-medium">📱 {c.payment_method || 'M-Pesa'}</span>
+                            <span className="font-mono bg-amber-50 text-amber-800 px-1.5 py-0.5 rounded-lg border border-amber-200/60 text-[11px]">
+                              {c.payment_reference}
+                            </span>
+                            {c.payment_amount && (
+                              <span className="text-emerald-700 font-bold">
+                                {Number(c.payment_amount).toLocaleString('pt-MZ')} {c.payment_currency || 'MZN'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                          {['MONTHLY', 'SEMESTRAL', 'ANNUAL'].map(plan => (
+                            <button
+                              key={plan}
+                              onClick={() => handleActivate(c, plan)}
+                              className="px-2.5 py-1.5 text-[11px] font-semibold bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-colors"
+                            >
+                              {plan === 'MONTHLY' ? 'Mensal' : plan === 'SEMESTRAL' ? 'Semest.' : 'Anual'}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Results count */}
+            <p className="text-xs text-gray-400 font-medium">
+              {filteredClients.length} cliente{filteredClients.length !== 1 ? 's' : ''}
+              {(filterStatus !== 'all' || filterPlan !== 'all' || search.trim()) && ` (de ${clients.length})`}
+            </p>
+
+            {/* Client List */}
+            <div className="space-y-2">
+              {filteredClients.length === 0 ? (
+                <div className="bg-white rounded-2xl p-8 text-center text-gray-400 text-sm border border-gray-100">
+                  {clients.length === 0 ? 'Nenhum cliente registado.' : 'Nenhum cliente corresponde aos filtros.'}
+                </div>
+              ) : (
+                filteredClients.map(client => {
+                  const inactivityDays = daysSince(client.lastActivity);
+                  const isInactive = inactivityDays !== null && inactivityDays >= 5;
+                  return (
+                    <div
+                      key={client.user_id}
+                      className={`bg-white rounded-2xl border transition-all hover:shadow-md group ${
+                        isInactive ? 'border-red-200/60' : 'border-gray-100 hover:border-gray-200'
+                      }`}
+                    >
+                      <div className="p-4">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Link
+                                to={`/coach/cliente/${client.user_id}`}
+                                className="font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate"
+                              >
+                                {client.nome}
+                              </Link>
+                              <StatusBadge status={client.subscription_status} />
+                              <PlanBadge hasIntake={client.hasIntake} hasPlan={client.hasPlan} planStatus={client.planStatus} planErro={client.planErro} />
+                              {isInactive && (
+                                <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-100 text-red-700">
+                                  {inactivityDays}d inactivo
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-500 truncate mt-0.5">{client.email}</p>
+                            {client.planErro && (
+                              <p className="text-xs text-red-500 mt-0.5 truncate">{client.planErro}</p>
+                            )}
+                            {client.subscription_status === 'pending' && client.payment_reference && (
+                              <div className="flex items-center gap-2 mt-1 text-xs flex-wrap">
+                                <span className="text-amber-700 font-medium">📱 {client.payment_method || 'M-Pesa'}</span>
+                                <span className="font-mono bg-amber-50 text-amber-800 px-1.5 py-0.5 rounded border border-amber-200/60 text-[11px]">
+                                  {client.payment_reference}
+                                </span>
+                                {client.payment_amount && (
+                                  <span className="text-emerald-700 font-semibold">
+                                    {Number(client.payment_amount).toLocaleString('pt-MZ')} {client.payment_currency || 'MZN'}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                            <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-400">
+                              {client.planCalorias && <span>{client.planCalorias} kcal</span>}
+                              {client.subscription_expires && (
+                                <span>Exp: {new Date(client.subscription_expires).toLocaleDateString('pt-PT')}</span>
+                              )}
+                              <span>Reg: {new Date(client.created_at).toLocaleDateString('pt-PT')}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            <Link
+                              to={`/coach/cliente/${client.user_id}`}
+                              className="px-3 py-1.5 text-xs font-semibold bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                            >
+                              Ver
+                            </Link>
+                            {client.hasIntake && (!client.hasPlan || client.planStatus === 'erro') && (
+                              <button
+                                onClick={() => handleGerarPlano(client)}
+                                disabled={gerandoPlano === client.user_id}
+                                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors disabled:opacity-50 ${
+                                  client.planStatus === 'erro'
+                                    ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                                    : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                                }`}
+                              >
+                                {gerandoPlano === client.user_id ? '...' : (client.planStatus === 'erro' ? 'Retry' : 'Gerar')}
+                              </button>
+                            )}
+                            <ClientActions
+                              client={client}
+                              onActivate={handleActivate}
+                              onSetTester={handleSetTester}
+                              onDelete={handleDeleteClient}
+                              onGeneratePlan={handleGerarPlano}
+                              isGenerating={gerandoPlano === client.user_id}
+                              isDeleting={deletingClient === client.user_id}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </>
+        )}
+
+        {/* ══════════════════════════════════════ */}
+        {/* TAB: ECOS                              */}
+        {/* ══════════════════════════════════════ */}
+        {activeTab === 'ecos' && (
+          <>
+            {multiEcoStats ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {Object.entries(multiEcoStats).map(([eco, ecoStats]) => {
                     const config = ECO_PLANS[eco];
                     if (!config) return null;
@@ -744,47 +851,50 @@ export default function CoachDashboard() {
                       <button
                         key={eco}
                         onClick={() => isSelected ? setSelectedEco(null) : loadEcoClients(eco)}
-                        className={`p-3 rounded-xl border text-left transition-all ${isSelected ? 'ring-2 ring-offset-1' : 'hover:shadow-md'}`}
+                        className={`p-4 rounded-2xl border-2 text-left transition-all ${
+                          isSelected ? 'shadow-lg scale-[1.02]' : 'hover:shadow-md hover:scale-[1.01]'
+                        }`}
                         style={{
-                          borderColor: `${config.color}${isSelected ? '80' : '30'}`,
-                          background: `${config.color}${isSelected ? '15' : '08'}`,
-                          '--tw-ring-color': config.color,
+                          borderColor: isSelected ? config.color : `${config.color}25`,
+                          background: isSelected
+                            ? `linear-gradient(135deg, ${config.color}12, ${config.color}06)`
+                            : `linear-gradient(135deg, ${config.color}08, transparent)`,
                         }}
                       >
-                        <div className="flex items-center gap-2 mb-2">
+                        <div className="flex items-center gap-2.5 mb-3">
                           <div
-                            className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                            style={{ background: config.color }}
+                            className="w-8 h-8 rounded-xl flex items-center justify-center text-white text-sm font-bold shadow-sm"
+                            style={{ background: `linear-gradient(135deg, ${config.color}, ${config.color}cc)` }}
                           >
                             {config.name[0]}
                           </div>
-                          <span className="font-medium text-gray-800 text-sm">{config.name}</span>
+                          <span className="font-bold text-gray-800">{config.name}</span>
                         </div>
-                        <div className="grid grid-cols-2 gap-1 text-xs">
-                          <div>
-                            <span className="text-gray-500">Total: </span>
-                            <span className="font-bold text-gray-800">{ecoStats.total}</span>
+                        <div className="grid grid-cols-2 gap-1.5 text-xs">
+                          <div className="bg-white/60 rounded-lg px-2 py-1">
+                            <span className="text-gray-500">Total</span>
+                            <span className="font-bold text-gray-800 ml-1">{ecoStats.total}</span>
                           </div>
-                          <div>
-                            <span className="text-green-600">Activos: </span>
-                            <span className="font-bold text-green-700">{ecoStats.active}</span>
+                          <div className="bg-white/60 rounded-lg px-2 py-1">
+                            <span className="text-emerald-600">Activos</span>
+                            <span className="font-bold text-emerald-700 ml-1">{ecoStats.active}</span>
                           </div>
                           {ecoStats.trial > 0 && (
-                            <div>
-                              <span className="text-blue-600">Trial: </span>
-                              <span className="font-bold text-blue-700">{ecoStats.trial}</span>
-                            </div>
-                          )}
-                          {ecoStats.pending > 0 && (
-                            <div>
-                              <span className="text-yellow-600">Pendente: </span>
-                              <span className="font-bold text-yellow-700">{ecoStats.pending}</span>
+                            <div className="bg-white/60 rounded-lg px-2 py-1">
+                              <span className="text-blue-600">Trial</span>
+                              <span className="font-bold text-blue-700 ml-1">{ecoStats.trial}</span>
                             </div>
                           )}
                           {ecoStats.tester > 0 && (
-                            <div>
-                              <span className="text-purple-600">Tester: </span>
-                              <span className="font-bold text-purple-700">{ecoStats.tester}</span>
+                            <div className="bg-white/60 rounded-lg px-2 py-1">
+                              <span className="text-purple-600">Tester</span>
+                              <span className="font-bold text-purple-700 ml-1">{ecoStats.tester}</span>
+                            </div>
+                          )}
+                          {ecoStats.pending > 0 && (
+                            <div className="bg-white/60 rounded-lg px-2 py-1">
+                              <span className="text-amber-600">Pend.</span>
+                              <span className="font-bold text-amber-700 ml-1">{ecoStats.pending}</span>
                             </div>
                           )}
                         </div>
@@ -795,11 +905,13 @@ export default function CoachDashboard() {
 
                 {/* Eco Client List */}
                 {selectedEco && (
-                  <div className="mt-4 border-t border-gray-100 pt-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="font-medium text-gray-800 text-sm flex items-center gap-2">
+                  <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100"
+                      style={{ background: `linear-gradient(135deg, ${ECO_PLANS[selectedEco]?.color}08, transparent)` }}
+                    >
+                      <h3 className="font-bold text-gray-800 text-sm flex items-center gap-2">
                         <span
-                          className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                          className="w-6 h-6 rounded-lg flex items-center justify-center text-white text-xs font-bold"
                           style={{ background: ECO_PLANS[selectedEco]?.color }}
                         >
                           {ECO_PLANS[selectedEco]?.name?.[0]}
@@ -808,335 +920,172 @@ export default function CoachDashboard() {
                       </h3>
                       <button
                         onClick={() => setSelectedEco(null)}
-                        className="text-gray-400 hover:text-gray-600 text-sm"
+                        className="text-gray-400 hover:text-gray-600 text-xs font-medium px-2 py-1 rounded-lg hover:bg-gray-100 transition-colors"
                       >
                         Fechar
                       </button>
                     </div>
 
-                    {loadingEcoClients ? (
-                      <p className="text-gray-400 text-xs text-center py-4">A carregar...</p>
-                    ) : ecoClients.length === 0 ? (
-                      <p className="text-gray-400 text-xs text-center py-4">Sem clientes neste eco</p>
-                    ) : (
-                      <div className="space-y-2 max-h-[50vh] overflow-y-auto">
-                        {ecoClients.map(client => (
-                          <div key={client.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <div className="min-w-0 flex-1">
-                              <p className="font-medium text-gray-800 text-sm truncate">{client.nome}</p>
-                              <p className="text-xs text-gray-500 truncate">{client.email}</p>
-                              <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                                client.subscription_status === 'active' ? 'bg-green-100 text-green-700' :
-                                client.subscription_status === 'trial' ? 'bg-blue-100 text-blue-700' :
-                                client.subscription_status === 'tester' ? 'bg-purple-100 text-purple-700' :
-                                client.subscription_status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                                client.subscription_status === 'expired' ? 'bg-red-100 text-red-700' :
-                                'bg-gray-100 text-gray-600'
-                              }`}>
-                                {client.subscription_status || 'sem status'}
-                              </span>
-                              {client.subscription_expires && (
-                                <span className="text-xs text-gray-400 ml-2">
-                                  exp: {new Date(client.subscription_expires).toLocaleDateString('pt')}
-                                </span>
-                              )}
+                    <div className="p-4">
+                      {loadingEcoClients ? (
+                        <div className="flex items-center justify-center py-8">
+                          <div className="w-5 h-5 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
+                        </div>
+                      ) : ecoClients.length === 0 ? (
+                        <p className="text-gray-400 text-sm text-center py-8">Sem clientes neste eco</p>
+                      ) : (
+                        <div className="space-y-2 max-h-[50vh] overflow-y-auto">
+                          {ecoClients.map(client => (
+                            <div key={client.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100/80 transition-colors">
+                              <div className="min-w-0 flex-1">
+                                <p className="font-semibold text-gray-800 text-sm truncate">{client.nome}</p>
+                                <p className="text-xs text-gray-500 truncate">{client.email}</p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+                                    client.subscription_status === 'active' ? 'bg-emerald-100 text-emerald-700' :
+                                    client.subscription_status === 'trial' ? 'bg-blue-100 text-blue-700' :
+                                    client.subscription_status === 'tester' ? 'bg-purple-100 text-purple-700' :
+                                    client.subscription_status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                                    client.subscription_status === 'expired' ? 'bg-red-100 text-red-700' :
+                                    'bg-gray-100 text-gray-600'
+                                  }`}>
+                                    {client.subscription_status || 'sem status'}
+                                  </span>
+                                  {client.subscription_expires && (
+                                    <span className="text-[11px] text-gray-400">
+                                      exp: {new Date(client.subscription_expires).toLocaleDateString('pt')}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex gap-1 ml-2 shrink-0">
+                                {client.subscription_status !== 'tester' && (
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); handleEcoAction(selectedEco, client.user_id, 'tester'); }}
+                                    disabled={ecoAction?.userId === client.user_id}
+                                    className="px-2.5 py-1.5 text-[11px] font-semibold rounded-lg bg-purple-100 text-purple-700 hover:bg-purple-200 disabled:opacity-50 transition-colors"
+                                  >
+                                    Tester
+                                  </button>
+                                )}
+                                {client.subscription_status !== 'active' && (
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); handleEcoAction(selectedEco, client.user_id, 'MONTHLY'); }}
+                                    disabled={ecoAction?.userId === client.user_id}
+                                    className="px-2.5 py-1.5 text-[11px] font-semibold rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200 disabled:opacity-50 transition-colors"
+                                  >
+                                    Activar
+                                  </button>
+                                )}
+                              </div>
                             </div>
-                            <div className="flex gap-1 ml-2 shrink-0">
-                              {client.subscription_status !== 'tester' && (
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); handleEcoAction(selectedEco, client.user_id, 'tester'); }}
-                                  disabled={ecoAction?.userId === client.user_id}
-                                  className="px-2 py-1.5 text-xs rounded-lg bg-purple-100 text-purple-700 hover:bg-purple-200 disabled:opacity-50 transition-colors"
-                                  title="Definir como tester"
-                                >
-                                  Tester
-                                </button>
-                              )}
-                              {client.subscription_status !== 'active' && (
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); handleEcoAction(selectedEco, client.user_id, 'MONTHLY'); }}
-                                  disabled={ecoAction?.userId === client.user_id}
-                                  className="px-2 py-1.5 text-xs rounded-lg bg-green-100 text-green-700 hover:bg-green-200 disabled:opacity-50 transition-colors"
-                                  title="Activar mensal"
-                                >
-                                  Activar
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
+            ) : (
+              <div className="flex items-center justify-center py-12">
+                <div className="w-6 h-6 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
+              </div>
             )}
+          </>
+        )}
+
+        {/* ══════════════════════════════════════ */}
+        {/* TAB: COMUNICAÇÕES                      */}
+        {/* ══════════════════════════════════════ */}
+        {activeTab === 'comms' && (
+          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-indigo-50/50 to-purple-50/50">
+              <h2 className="font-bold text-gray-800 text-sm flex items-center gap-2">
+                <span>📡</span> Centro de Comunicações
+              </h2>
+              <p className="text-xs text-gray-500 mt-0.5">Emails, WhatsApp e push — tudo num só lugar</p>
+            </div>
+            <div className="p-4">
+              <Suspense fallback={
+                <div className="flex items-center justify-center py-12">
+                  <div className="w-6 h-6 border-2 border-indigo-300 border-t-transparent rounded-full animate-spin" />
+                </div>
+              }>
+                <CentroComunicacoes />
+              </Suspense>
+            </div>
           </div>
         )}
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-          <button
-            onClick={() => { setFilterStatus('all'); setFilterPlan('all'); }}
-            className={`p-3 rounded-xl text-center transition-all ${filterStatus === 'all' && filterPlan === 'all' ? 'bg-gray-800 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
-          >
-            <p className="text-2xl font-bold">{stats.total}</p>
-            <p className="text-xs">Total</p>
-          </button>
-          <button
-            onClick={() => { setFilterStatus('active'); setFilterPlan('all'); }}
-            className={`p-3 rounded-xl text-center transition-all ${filterStatus === 'active' ? 'bg-green-600 text-white' : 'bg-white text-gray-700 hover:bg-green-50'}`}
-          >
-            <p className="text-2xl font-bold">{stats.active}</p>
-            <p className="text-xs">Activos</p>
-          </button>
-          <button
-            onClick={() => { setFilterStatus('trial'); setFilterPlan('all'); }}
-            className={`p-3 rounded-xl text-center transition-all ${filterStatus === 'trial' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-blue-50'}`}
-          >
-            <p className="text-2xl font-bold">{stats.trial}</p>
-            <p className="text-xs">Trial</p>
-          </button>
-          <button
-            onClick={() => { setFilterStatus('pending'); setFilterPlan('all'); }}
-            className={`p-3 rounded-xl text-center transition-all ${filterStatus === 'pending' ? 'bg-yellow-500 text-white' : 'bg-white text-gray-700 hover:bg-yellow-50'}`}
-          >
-            <p className="text-2xl font-bold">{stats.pending}</p>
-            <p className="text-xs">Pendentes</p>
-          </button>
-          <button
-            onClick={() => { setFilterStatus('all'); setFilterPlan('sem_plano'); }}
-            className={`p-3 rounded-xl text-center transition-all ${filterPlan === 'sem_plano' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-orange-50'}`}
-          >
-            <p className="text-2xl font-bold">{stats.semPlano}</p>
-            <p className="text-xs">Sem plano</p>
-          </button>
-          <button
-            onClick={() => { setFilterStatus('all'); setFilterPlan('aguarda_revisao'); }}
-            className={`p-3 rounded-xl text-center transition-all ${filterPlan === 'aguarda_revisao' ? 'bg-amber-500 text-white' : 'bg-white text-gray-700 hover:bg-amber-50'}`}
-          >
-            <p className="text-2xl font-bold">{stats.aguardaRevisao}</p>
-            <p className="text-xs">Revisao</p>
-          </button>
-          {stats.erros > 0 && (
-            <button
-              onClick={() => { setFilterStatus('all'); setFilterPlan('erro'); }}
-              className={`p-3 rounded-xl text-center transition-all ${filterPlan === 'erro' ? 'bg-red-600 text-white' : 'bg-white text-gray-700 hover:bg-red-50'}`}
-            >
-              <p className="text-2xl font-bold">{stats.erros}</p>
-              <p className="text-xs">Erros</p>
-            </button>
-          )}
-        </div>
-
-        {/* Search and Filters */}
-        <div className="flex flex-col sm:flex-row gap-2">
-          <div className="flex-1 relative">
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
-            </svg>
-            <input
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Procurar por nome ou email..."
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
-            />
-          </div>
-          <select
-            value={filterStatus}
-            onChange={e => setFilterStatus(e.target.value)}
-            className="px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none"
-          >
-            <option value="all">Todos os estados</option>
-            <option value="active">Activos</option>
-            <option value="trial">Trial</option>
-            <option value="pending">Pendentes</option>
-            <option value="tester">Testers</option>
-            <option value="expired">Expirados</option>
-          </select>
-          <select
-            value={filterPlan}
-            onChange={e => setFilterPlan(e.target.value)}
-            className="px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none"
-          >
-            <option value="all">Todos os planos</option>
-            <option value="sem_intake">Sem intake</option>
-            <option value="sem_plano">Sem plano</option>
-            <option value="aguarda_revisao">Aguarda revisao</option>
-            <option value="plano_activo">Plano activo</option>
-            <option value="erro">Erro no plano</option>
-          </select>
-        </div>
-
-        {/* Pending payments alert */}
-        {(() => {
-          const pendentes = clients.filter(c => c.subscription_status === 'pending' && c.payment_reference);
-          if (pendentes.length === 0) return null;
-          return (
-            <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4">
-              <h3 className="font-bold text-yellow-800 mb-3 flex items-center gap-2">
-                <span className="text-lg">💰</span>
-                {pendentes.length} pagamento{pendentes.length !== 1 ? 's' : ''} pendente{pendentes.length !== 1 ? 's' : ''} de verificação
+        {/* ══════════════════════════════════════ */}
+        {/* TAB: CONFIG                            */}
+        {/* ══════════════════════════════════════ */}
+        {activeTab === 'config' && (
+          <div className="space-y-4 max-w-xl">
+            {/* Push status */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-5">
+              <h3 className="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">
+                <span>🔔</span> Notificações Push
               </h3>
-              <div className="space-y-2">
-                {pendentes.map(c => (
-                  <div key={c.user_id} className="flex items-center justify-between bg-white rounded-lg p-3 border border-yellow-200">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-gray-900">{c.nome}</p>
-                      <div className="flex items-center gap-3 mt-1 text-sm">
-                        <span className="text-yellow-700 font-medium">
-                          📱 {c.payment_method || 'M-Pesa'}
-                        </span>
-                        <span className="text-gray-600 font-mono bg-gray-100 px-2 py-0.5 rounded text-xs">
-                          Ref: {c.payment_reference}
-                        </span>
-                        {c.payment_amount && (
-                          <span className="text-green-700 font-semibold">
-                            {Number(c.payment_amount).toLocaleString('pt-MZ')} {c.payment_currency || 'MZN'}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1 flex-shrink-0 ml-2">
-                      <button
-                        onClick={() => handleActivate(c, 'MONTHLY')}
-                        className="px-3 py-1.5 text-xs font-medium bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
-                      >
-                        Mensal
-                      </button>
-                      <button
-                        onClick={() => handleActivate(c, 'SEMESTRAL')}
-                        className="px-3 py-1.5 text-xs font-medium bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
-                      >
-                        Semestral
-                      </button>
-                      <button
-                        onClick={() => handleActivate(c, 'ANNUAL')}
-                        className="px-3 py-1.5 text-xs font-medium bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
-                      >
-                        Anual
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        })()}
-
-        {/* Results count */}
-        <p className="text-sm text-gray-500">
-          {filteredClients.length} cliente{filteredClients.length !== 1 ? 's' : ''}
-          {(filterStatus !== 'all' || filterPlan !== 'all' || search.trim()) && ` (filtrado de ${clients.length})`}
-        </p>
-
-        {/* Client List */}
-        <div className="space-y-2">
-          {filteredClients.length === 0 ? (
-            <div className="bg-white rounded-xl p-8 text-center text-gray-500">
-              {clients.length === 0 ? 'Nenhum cliente registado.' : 'Nenhum cliente corresponde aos filtros.'}
-            </div>
-          ) : (
-            filteredClients.map(client => {
-              const inactivityDays = daysSince(client.lastActivity);
-              const isInactive = inactivityDays !== null && inactivityDays >= 5;
-
-              return (
-                <div
-                  key={client.user_id}
-                  className={`bg-white rounded-xl border transition-all hover:shadow-md ${
-                    isInactive ? 'border-red-200' : 'border-gray-100'
-                  }`}
-                >
-                  <div className="p-4">
-                    {/* Top row: name, badges, actions */}
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <Link
-                            to={`/coach/cliente/${client.user_id}`}
-                            className="font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate"
-                          >
-                            {client.nome}
-                          </Link>
-                          <StatusBadge status={client.subscription_status} />
-                          <PlanBadge hasIntake={client.hasIntake} hasPlan={client.hasPlan} planStatus={client.planStatus} planErro={client.planErro} />
-                          {isInactive && (
-                            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
-                              {inactivityDays}d inactivo
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-500 truncate mt-0.5">{client.email}</p>
-                        {client.planErro && (
-                          <p className="text-xs text-red-500 mt-0.5 truncate">{client.planErro}</p>
-                        )}
-                        {client.subscription_status === 'pending' && client.payment_reference && (
-                          <div className="flex items-center gap-2 mt-1 text-xs">
-                            <span className="text-yellow-700 font-medium">📱 {client.payment_method || 'M-Pesa'}</span>
-                            <span className="font-mono bg-yellow-50 text-yellow-800 px-1.5 py-0.5 rounded border border-yellow-200">
-                              {client.payment_reference}
-                            </span>
-                            {client.payment_amount && (
-                              <span className="text-green-700 font-semibold">
-                                {Number(client.payment_amount).toLocaleString('pt-MZ')} {client.payment_currency || 'MZN'}
-                              </span>
-                            )}
-                          </div>
-                        )}
-                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
-                          {client.planCalorias && (
-                            <span>{client.planCalorias} kcal</span>
-                          )}
-                          {client.subscription_expires && (
-                            <span>Expira: {new Date(client.subscription_expires).toLocaleDateString('pt-PT')}</span>
-                          )}
-                          <span>Registo: {new Date(client.created_at).toLocaleDateString('pt-PT')}</span>
-                        </div>
-                      </div>
-
-                      {/* Actions */}
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <Link
-                          to={`/coach/cliente/${client.user_id}`}
-                          className="px-3 py-1.5 text-xs font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                        >
-                          Ver
-                        </Link>
-
-                        {client.hasIntake && (!client.hasPlan || client.planStatus === 'erro') && (
-                          <button
-                            onClick={() => handleGerarPlano(client)}
-                            disabled={gerandoPlano === client.user_id}
-                            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors disabled:opacity-50 ${
-                              client.planStatus === 'erro'
-                                ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                                : 'bg-green-100 text-green-700 hover:bg-green-200'
-                            }`}
-                          >
-                            {gerandoPlano === client.user_id ? 'A gerar...' : (client.planStatus === 'erro' ? 'Tentar novamente' : 'Gerar plano')}
-                          </button>
-                        )}
-
-                        {/* Dropdown for more actions */}
-                        <ClientActions
-                          client={client}
-                          onActivate={handleActivate}
-                          onSetTester={handleSetTester}
-                          onDelete={handleDeleteClient}
-                          onGeneratePlan={handleGerarPlano}
-                          isGenerating={gerandoPlano === client.user_id}
-                          isDeleting={deletingClient === client.user_id}
-                        />
-                      </div>
-                    </div>
-                  </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">
+                    {pushStatus === 'subscribed' && 'Activas — recebes alertas de clientes em tempo real.'}
+                    {pushStatus === 'denied' && 'Bloqueadas no browser. Vai às definições para permitir.'}
+                    {pushStatus === 'unsupported' && 'Não suportado neste browser.'}
+                    {pushStatus === 'failed' && 'Não activadas. Clica para activar.'}
+                    {!pushStatus && 'A verificar...'}
+                  </p>
                 </div>
-              );
-            })
-          )}
-        </div>
+                <div className={`w-3 h-3 rounded-full flex-shrink-0 ${
+                  pushStatus === 'subscribed' ? 'bg-emerald-400' : 'bg-gray-300'
+                }`} />
+              </div>
+              {pushStatus && pushStatus !== 'subscribed' && pushStatus !== 'denied' && (
+                <button
+                  onClick={() => registerPushSubscription(true)}
+                  disabled={pushActivando}
+                  className="mt-3 px-4 py-2 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition-all active:scale-95 disabled:opacity-60"
+                >
+                  {pushActivando ? 'A activar...' : 'Activar push'}
+                </button>
+              )}
+            </div>
+
+            {/* Test notifications */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-5">
+              <h3 className="font-bold text-gray-800 text-sm mb-1 flex items-center gap-2">
+                <span>🧪</span> Testar notificações
+              </h3>
+              <p className="text-xs text-gray-500 mb-3">Envia teste para todos os canais configurados (Telegram, Push, etc.)</p>
+              <button
+                onClick={testarNotificacoes}
+                disabled={testando}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-60"
+              >
+                {testando ? 'A testar...' : 'Testar agora'}
+              </button>
+              {testResult && (
+                <div className={`mt-3 p-3 rounded-xl text-xs space-y-1 ${testResult.ok ? 'bg-emerald-50 border border-emerald-200/60' : 'bg-red-50 border border-red-200/60'}`}>
+                  <div className="font-bold">{testResult.ok ? '✅ Pelo menos 1 canal funciona!' : '❌ Nenhum canal funcionou'}</div>
+                  {testResult.resultados?.telegram && (
+                    <div>{testResult.resultados.telegram.enviado ? '✅' : '❌'} Telegram: {testResult.resultados.telegram.enviado ? 'OK' : (testResult.resultados.telegram.erro || 'Não configurado')}</div>
+                  )}
+                  {testResult.resultados?.push && (
+                    <div>{testResult.resultados.push.enviado ? '✅' : '❌'} Push: {testResult.resultados.push.enviado ? 'OK' : (testResult.resultados.push.erro || 'Não configurado')} ({testResult.resultados.push.subscricoes} devices)</div>
+                  )}
+                  {testResult.resultados?.whatsapp && (
+                    <div>📱 WhatsApp: {testResult.resultados.whatsapp.configurado ? `Configurado (${testResult.resultados.whatsapp.numero_destino})` : 'Não configurado'}</div>
+                  )}
+                  {testResult.resultados?.email && (
+                    <div>📧 Email: {testResult.resultados.email.configurado ? 'Configurado' : 'Não configurado'}</div>
+                  )}
+                  {testResult.dica && <div className="mt-1 text-amber-700 font-medium">{testResult.dica}</div>}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1160,10 +1109,10 @@ function ClientActions({ client, onActivate, onSetTester, onDelete, onGeneratePl
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-1 z-50 w-52 bg-white rounded-xl shadow-xl border border-gray-100 py-1 text-sm">
+          <div className="absolute right-0 top-full mt-1 z-50 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 py-1.5 text-sm overflow-hidden">
             <Link
               to={`/coach/cliente/${client.user_id}`}
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-50"
+              className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
               onClick={() => setOpen(false)}
             >
               Ver detalhes
@@ -1173,7 +1122,7 @@ function ClientActions({ client, onActivate, onSetTester, onDelete, onGeneratePl
               <button
                 onClick={() => { onGeneratePlan(client); setOpen(false); }}
                 disabled={isGenerating}
-                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
               >
                 {client.hasPlan ? 'Regenerar plano' : 'Gerar plano'}
               </button>
@@ -1183,19 +1132,19 @@ function ClientActions({ client, onActivate, onSetTester, onDelete, onGeneratePl
 
             <button
               onClick={() => { onActivate(client, 'MONTHLY'); setOpen(false); }}
-              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50"
+              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Activar mensal
             </button>
             <button
               onClick={() => { onActivate(client, 'SEMESTRAL'); setOpen(false); }}
-              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50"
+              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Activar semestral
             </button>
             <button
               onClick={() => { onActivate(client, 'ANNUAL'); setOpen(false); }}
-              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50"
+              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Activar anual
             </button>
@@ -1204,7 +1153,7 @@ function ClientActions({ client, onActivate, onSetTester, onDelete, onGeneratePl
 
             <button
               onClick={() => { onSetTester(client); setOpen(false); }}
-              className="block w-full text-left px-4 py-2 text-purple-700 hover:bg-purple-50"
+              className="block w-full text-left px-4 py-2 text-purple-700 hover:bg-purple-50 transition-colors"
             >
               Definir como tester
             </button>
@@ -1214,7 +1163,7 @@ function ClientActions({ client, onActivate, onSetTester, onDelete, onGeneratePl
                 href={`https://wa.me/?text=${encodeURIComponent(`Ola ${client.nome}!`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block px-4 py-2 text-green-700 hover:bg-green-50"
+                className="block px-4 py-2 text-green-700 hover:bg-green-50 transition-colors"
                 onClick={() => setOpen(false)}
               >
                 WhatsApp
@@ -1226,7 +1175,7 @@ function ClientActions({ client, onActivate, onSetTester, onDelete, onGeneratePl
             <button
               onClick={() => { onDelete(client); setOpen(false); }}
               disabled={isDeleting}
-              className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 disabled:opacity-50"
+              className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 disabled:opacity-50 transition-colors"
             >
               {isDeleting ? 'A apagar...' : 'Apagar cliente'}
             </button>
