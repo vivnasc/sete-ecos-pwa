@@ -1,191 +1,142 @@
 /**
- * IGNIS — Biblioteca de Áudio-Meditações e Afirmações
- * Chakra: Manipura (Plexo Solar) — 320Hz — ignis-drone.mp3
- * Formato idêntico ao ÁUREA AudioMeditacoes.jsx
+ * IGNIS — Scripts de Meditação e Afirmações
+ * Chakra: Manipura (Plexo Solar) — 320Hz
+ * Tema: Fogo, Vontade, Foco, Coragem
+ *
+ * Formato: array de strings — cada item = uma "unidade de respiração"
+ * Compatível com ElevenLabs TTS + drone ignis-drone.mp3 como fundo
  */
 
 export const MEDITACOES_IGNIS = [
   {
     id: 'acende_chama',
-    titulo: 'Acende a Tua Chama Interior',
-    descricao: 'Meditação para activar a tua força de vontade e clareza de propósito',
-    duracao: '7-8 min',
+    nome: 'Acende a Tua Chama Interior',
+    descricao: 'Meditação para activar a tua força de vontade e clareza de propósito.',
+    duracao_min: 8,
     categoria: 'meditacao',
-    nivel: 'bronze',
     icone: '🔥',
-    audio_url: null, // Adicionar URL ElevenLabs quando disponível
-    transcricao: `Fecha os olhos... Coloca uma mão sobre o abdómen...
-Inspira devagar pelo nariz... e expira pela boca, soltando tudo...
-
-Faz isso mais duas vezes... Com calma...
-
-Agora imagina, mesmo aqui no centro do teu corpo... uma centelha...
-Pequena... Mas viva... Sempre viva...
-
-Essa centelha é a tua vontade... O teu fogo interior...
-
-Não desapareceu... Nunca desaparece...
-Às vezes adormece... Às vezes fica encoberta pela fadiga, pelas dúvidas, pelo peso do dia...
-Mas está lá... Sempre esteve...
-
-Inspira agora... e ao inspirar, imagina que trazes ar fresco para essa chama...
-Ela cresce... Brilha um pouco mais...
-
-Com cada respiração, mais força... Mais clareza...
-
-Pergunta a ti mesmo, em silêncio... o que eu realmente quero?...
-Não o que deves querer... Não o que os outros esperam...
-O que tu, lá no fundo, queres mesmo?...
-
-Deixa a resposta surgir... Sem pressa... Sem julgamento...
-
-Esse desejo é o teu fogo... Ele sabe o caminho...
-
-Inspira mais uma vez... e sente essa certeza a crescer no teu peito...
-
-Tu tens o que é preciso...
-Tu já provaste isso antes...
-
-Hoje, escolhe a partir do fogo... Não do medo...
-
-Quando estiveres pronto, abre os olhos... Leva essa chama contigo...`
+    drone: 'ignis-drone.mp3',
+    script: [
+      'Fecha os olhos. Coloca uma mão sobre o abdómen.',
+      'Inspira devagar pelo nariz. Expira pela boca, soltando tudo.',
+      'Faz isso mais duas vezes. Com calma.',
+      'Agora imagina, mesmo aqui no centro do teu corpo, uma centelha.',
+      'Pequena. Mas viva. Sempre viva.',
+      'Essa centelha é a tua vontade. O teu fogo interior.',
+      'Não desapareceu. Nunca desaparece.',
+      'Às vezes adormece. Às vezes fica encoberta pela fadiga, pelas dúvidas, pelo peso do dia.',
+      'Mas está lá. Sempre esteve.',
+      'Inspira agora. E ao inspirar, imagina que trazes ar fresco para essa chama.',
+      'Ela cresce. Brilha um pouco mais.',
+      'Com cada respiração, mais força. Mais clareza.',
+      'Pergunta a ti mesmo, em silêncio: o que eu realmente quero?',
+      'Não o que deves querer. Não o que os outros esperam.',
+      'O que tu, lá no fundo, queres mesmo?',
+      'Deixa a resposta surgir. Sem pressa. Sem julgamento.',
+      'Esse desejo é o teu fogo. Ele sabe o caminho.',
+      'Tu tens o que é preciso. Tu já provaste isso antes.',
+      'Hoje, escolhe a partir do fogo. Não do medo.',
+      'Quando estiveres pronto, abre os olhos. Leva essa chama contigo.',
+    ],
   },
   {
     id: 'corte_que_liberta',
-    titulo: 'O Corte Que Liberta',
-    descricao: 'Meditação para soltar o que drena a tua energia e te afasta do teu centro',
-    duracao: '5-6 min',
+    nome: 'O Corte Que Liberta',
+    descricao: 'Meditação para soltar o que drena a tua energia e te afasta do teu centro.',
+    duracao_min: 6,
     categoria: 'meditacao',
-    nivel: 'bronze',
     icone: '🗡️',
-    audio_url: null,
-    transcricao: `Senta-te com a coluna direita... Pés no chão...
-Respira fundo... Sente o peso do teu corpo na cadeira...
-
-Agora pensa... o que está a pesar hoje?...
-Não para te afundar nesse peso... Só para o reconhecer...
-
-Uma situação... Uma pessoa... Um hábito... Um pensamento que regressa sempre...
-
-Imagina que tens nas mãos uma espada de luz...
-Não para destruir... Para cortar laços que já não servem...
-
-Visualiza esse peso à tua frente... Com calma...
-
-Levanta a espada... e corta...
-Com decisão... Com paz...
-
-Não há raiva neste corte... Há clareza...
-
-Observa como o teu corpo se sente depois desse corte...
-Mais leve?... Mais espaçoso?...
-
-O fogo não queima só para destruir... Queima para purificar...
-O que cortaste hoje criou espaço para o que realmente importa...
-
-Inspira essa leveza... e expira qualquer resíduo que reste...
-Estás mais livre... Escolheste isso...`
+    drone: 'ignis-drone.mp3',
+    script: [
+      'Senta-te com a coluna direita. Pés no chão.',
+      'Respira fundo. Sente o peso do teu corpo na cadeira.',
+      'Agora pensa: o que está a pesar hoje?',
+      'Não para te afundar nesse peso. Só para o reconhecer.',
+      'Uma situação. Uma pessoa. Um hábito. Um pensamento que regressa sempre.',
+      'Imagina que tens nas mãos uma espada de luz.',
+      'Não para destruir. Para cortar laços que já não servem.',
+      'Visualiza esse peso à tua frente. Com calma.',
+      'Levanta a espada. E corta.',
+      'Com decisão. Com paz.',
+      'Não há raiva neste corte. Há clareza.',
+      'Observa como o teu corpo se sente depois desse corte.',
+      'Mais leve? Mais espaçoso?',
+      'O fogo não queima só para destruir. Queima para purificar.',
+      'O que cortaste hoje criou espaço para o que realmente importa.',
+      'Inspira essa leveza. Expira qualquer resíduo que reste.',
+      'Estás mais livre. Escolheste isso.',
+    ],
   },
   {
     id: 'foco_maximo',
-    titulo: 'Sessão de Foco Máximo',
-    descricao: 'Meditação curta para entrar em estado de concentração total',
-    duracao: '4-5 min',
+    nome: 'Sessão de Foco Máximo',
+    descricao: 'Meditação curta para entrar em estado de concentração total antes de uma tarefa.',
+    duracao_min: 5,
     categoria: 'meditacao',
-    nivel: 'prata',
     icone: '🎯',
-    audio_url: null,
-    transcricao: `Para tudo o que estás a fazer... Por estes minutos, só isto importa...
-
-Fecha os olhos... Respira três vezes, devagar...
-
-Na primeira: solta o passado... O que foi, foi...
-Na segunda: solta o futuro... Ele ainda não existe...
-Na terceira: chega ao agora... Aqui... Este momento...
-
-A tua mente é como uma lente... Podes focá-la...
-
-Pensa na tarefa à tua frente... Só essa...
-Visualiza-te a fazê-la... Concentrado... Presente... Eficaz...
-
-Sem distrações... Sem ruído interior...
-
-O teu foco é um músculo... E agora estás a treiná-lo...
-
-Inspira... e ao expirar, desliga tudo o que não é essa tarefa...
-
-Sente a clareza... A nitidez...
-
-Estás pronto... Foco total... Começa...`
+    drone: 'ignis-drone.mp3',
+    script: [
+      'Para tudo o que estás a fazer. Por estes minutos, só isto importa.',
+      'Fecha os olhos. Respira três vezes, devagar.',
+      'Na primeira: solta o passado. O que foi, foi.',
+      'Na segunda: solta o futuro. Ele ainda não existe.',
+      'Na terceira: chega ao agora. Aqui. Este momento.',
+      'A tua mente é como uma lente. Podes focá-la.',
+      'Pensa na tarefa à tua frente. Só essa.',
+      'Visualiza-te a fazê-la. Concentrado. Presente. Eficaz.',
+      'Sem distrações. Sem ruído interior.',
+      'O teu foco é um músculo. E agora estás a treiná-lo.',
+      'Inspira. E ao expirar, desliga tudo o que não é essa tarefa.',
+      'Sente a clareza. A nitidez.',
+      'Estás pronto. Foco total. Começa.',
+    ],
   },
   {
     id: 'manifesto_fogo',
-    titulo: 'Manifesto do Fogo',
-    descricao: 'Afirmações diárias para activar a tua vontade, foco e alinhamento interior',
-    duracao: '3-4 min',
+    nome: 'Manifesto do Fogo',
+    descricao: 'Afirmações diárias para activar a tua vontade, foco e alinhamento interior.',
+    duracao_min: 4,
     categoria: 'afirmacoes',
-    nivel: 'bronze',
     icone: '⚡',
-    audio_url: null,
-    transcricao: `Estas afirmações são para repetires... Em voz alta, se conseguires...
-
-Eu tenho força de vontade...
-
-As minhas escolhas constroem a minha vida...
-
-Eu escolho o que alinha com os meus valores...
-
-O meu foco é poderoso e crescente...
-
-Eu termino o que começo...
-
-Cada pequena acção alimenta a minha chama...
-
-Eu não preciso de perfeição... Preciso de consistência...
-
-As distrações não têm poder sobre mim...
-
-Eu sei o que quero... E vou em direcção a isso...
-
-O meu fogo interior está aceso hoje...
-
-Escolho agir, mesmo quando tenho medo...
-
-Eu sou disciplinado e livre ao mesmo tempo...
-
-O meu presente é a base do meu futuro...
-
-Leva estas palavras contigo... O teu fogo não precisa de aprovação para arder...`
+    drone: 'ignis-drone.mp3',
+    script: [
+      'Estas afirmações são para repetires. Em voz alta, se conseguires.',
+      'Eu tenho força de vontade.',
+      'As minhas escolhas constroem a minha vida.',
+      'Eu escolho o que alinha com os meus valores.',
+      'O meu foco é poderoso e crescente.',
+      'Eu termino o que começo.',
+      'Cada pequena acção alimenta a minha chama.',
+      'Eu não preciso de perfeição. Preciso de consistência.',
+      'As distrações não têm poder sobre mim.',
+      'Eu sei o que quero. E vou em direcção a isso.',
+      'O meu fogo interior está aceso hoje.',
+      'Escolho agir, mesmo quando tenho medo.',
+      'Eu sou disciplinado e livre ao mesmo tempo.',
+      'O meu presente é a base do meu futuro.',
+      'Leva estas palavras contigo. O teu fogo não precisa de aprovação para arder.',
+    ],
   },
   {
     id: 'coragem_diaria',
-    titulo: 'Coragem Diária',
-    descricao: 'Afirmações para os dias difíceis, quando precisas de força para continuar',
-    duracao: '2-3 min',
+    nome: 'Coragem Diária',
+    descricao: 'Afirmações para os dias difíceis, quando precisas de força para continuar.',
+    duracao_min: 3,
     categoria: 'afirmacoes',
-    nivel: 'bronze',
     icone: '🏔️',
-    audio_url: null,
-    transcricao: `Hoje pode ser difícil... Isso não muda o que és...
-
-Eu sou mais forte do que os meus obstáculos...
-
-A resistência que sinto é sinal de que estou a crescer...
-
-Não preciso de ter tudo resolvido... Só preciso de dar o próximo passo...
-
-Eu aprendo com os erros... Não me defino por eles...
-
-A minha coragem não é ausência de medo... É agir apesar dele...
-
-Eu escolho tentar... Sempre...
-
-O desconforto é temporário... O crescimento é permanente...
-
-Eu confio no meu processo...
-
-Hoje, basta fazer o possível... O possível é suficiente...
-
-Respira... Continua... Estás a fazer o suficiente...`
+    drone: 'ignis-drone.mp3',
+    script: [
+      'Hoje pode ser difícil. Isso não muda o que és.',
+      'Eu sou mais forte do que os meus obstáculos.',
+      'A resistência que sinto é sinal de que estou a crescer.',
+      'Não preciso de ter tudo resolvido. Só preciso de dar o próximo passo.',
+      'Eu aprendo com os erros. Não me defino por eles.',
+      'A minha coragem não é ausência de medo. É agir apesar dele.',
+      'Eu escolho tentar. Sempre.',
+      'O desconforto é temporário. O crescimento é permanente.',
+      'Eu confio no meu processo.',
+      'Hoje, basta fazer o possível. O possível é suficiente.',
+      'Respira. Continua. Estás a fazer o suficiente.',
+    ],
   },
 ]

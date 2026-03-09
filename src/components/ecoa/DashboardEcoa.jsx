@@ -183,7 +183,8 @@ export default function DashboardEcoa() {
     { label: t('ecoa.menu.affirmations'), to: '/ecoa/afirmacoes', icon: '\u{2728}', subtitle: t('ecoa.menu.affirmations_sub') },
     { label: t('ecoa.menu.exercises'), to: '/ecoa/exercicios', icon: '\u{270D}\uFE0F', subtitle: t('ecoa.menu.exercises_sub') },
     { label: t('ecoa.menu.communication'), to: '/ecoa/comunicacao', icon: '\u{1F4CE}', subtitle: t('ecoa.menu.communication_sub') },
-    { label: t('ecoa.menu.coach'), to: '/ecoa/chat', icon: '\u{1F4AC}', subtitle: t('ecoa.menu.coach_sub') }
+    { label: t('ecoa.menu.coach'), to: '/ecoa/chat', icon: '\u{1F4AC}', subtitle: t('ecoa.menu.coach_sub') },
+    { label: 'Meditações', to: '/ecoa/meditacoes', icon: '🎧', subtitle: 'Meditações guiadas & afirmações' }
   ]
 
   // ===== Stats =====

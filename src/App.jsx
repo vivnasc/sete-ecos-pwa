@@ -161,6 +161,7 @@ const ChatEcoa = lazy(() => import('./components/ecoa/ChatEcoa'))
 const InsightsEcoa = lazy(() => import('./components/ecoa/InsightsEcoa'))
 const PerfilEcoa = lazy(() => import('./components/ecoa/PerfilEcoa'))
 const NotificacoesEcoa = lazy(() => import('./components/ecoa/NotificacoesEcoa'))
+const MeditacoesEcoa = lazy(() => import('./components/ecoa/MeditacoesEcoa'))
 
 // ECO 7: IMAGO (Identidade & Espelho)
 const LandingImago = lazy(() => import('./pages/LandingImago'))
@@ -478,6 +479,7 @@ function AppRoutes() {
             <Route path="/ecoa/insights" element={<EcoaRoute><InsightsEcoa /></EcoaRoute>} />
             <Route path="/ecoa/perfil" element={<EcoaRoute><PerfilEcoa /></EcoaRoute>} />
             <Route path="/ecoa/notificacoes" element={<EcoaRoute><NotificacoesEcoa /></EcoaRoute>} />
+            <Route path="/ecoa/meditacoes" element={<EcoaRoute><MeditacoesEcoa /></EcoaRoute>} />
 
             {/* ===== ECO 7: IMAGO - Identidade & Espelho ===== */}
             <Route path="/imago" element={<LandingImago />} />
