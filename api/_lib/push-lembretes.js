@@ -1,13 +1,15 @@
 /**
  * Push Lembretes Cron — Envia push notifications reais aos clientes
  *
- * Chamado 3x por dia pelo cron (Vercel Hobby só permite 1x/dia mínimo):
- *   ?bloco=manha  → 0 6 * * *  (08:00 CAT) — lembretes entre 06:00-11:59
- *   ?bloco=tarde  → 0 11 * * * (13:00 CAT) — lembretes entre 12:00-17:59
- *   ?bloco=noite  → 0 17 * * * (19:00 CAT) — lembretes entre 18:00-22:59
+ * Chamado A CADA 5 MINUTOS pelo cron no vercel.json:
+ *   "*/5 * * * *" (Vercel Pro permite crons por minuto)
  *
- * NOTA: Vercel Hobby pode invocar o cron em qualquer ponto dentro da hora,
- * por isso usamos blocos de 6h em vez de janelas exactas de minutos.
+ * Cada execução verifica a hora em Africa/Maputo (CAT) e envia
+ * lembretes cuja hora configurada está dentro dos últimos 6 minutos.
+ * Só activo entre CAT 06:00-22:59 (fora disso faz early return).
+ *
+ * Resultado: notificações chegam no máximo 5 minutos após a hora
+ * configurada — timing praticamente igual a apps nativas.
  *
  * Tags alinhadas com o cliente evitam duplicados via Service Worker.
  */
@@ -26,20 +28,28 @@ if (VAPID_PUBLIC && VAPID_PRIVATE) {
   try { webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE) } catch (e) { /* ok */ }
 }
 
-// Blocos horários (CAT) — cada bloco cobre 6 horas
-const BLOCOS = {
-  manha: { inicio: 6 * 60, fim: 12 * 60 },   // 06:00 - 11:59
-  tarde: { inicio: 12 * 60, fim: 18 * 60 },   // 12:00 - 17:59
-  noite: { inicio: 18 * 60, fim: 23 * 60 },   // 18:00 - 22:59
+// Obter hora e minuto actuais em Africa/Maputo (CAT = UTC+2)
+function horaMinutoCAT() {
+  const now = new Date()
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Africa/Maputo',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false,
+  }).formatToParts(now)
+  const h = parseInt(parts.find(p => p.type === 'hour')?.value || '0', 10)
+  const m = parseInt(parts.find(p => p.type === 'minute')?.value || '0', 10)
+  return { hora: h, minuto: m, totalMinutos: h * 60 + m }
 }
 
-// Verificar se um lembrete está dentro do bloco horário
-function lembreteNoBloco(lembreteHora, bloco) {
-  const range = BLOCOS[bloco]
-  if (!range) return false
+// Verificar se um lembrete está dentro da janela de envio (últimos 6min)
+function lembreteNaJanela(lembreteHora, agoraMinutos) {
   const [h, m] = lembreteHora.split(':').map(Number)
-  const minutos = h * 60 + (m || 0)
-  return minutos >= range.inicio && minutos < range.fim
+  const lembreteMinutos = h * 60 + (m || 0)
+  // Janela: desde 6min atrás até agora (inclusive)
+  // 5min = intervalo entre crons + 1min margem para jitter
+  const diff = agoraMinutos - lembreteMinutos
+  return diff >= 0 && diff < 6
 }
 
 // Mensagens de push por tipo de lembrete
@@ -134,6 +144,7 @@ const MENSAGENS = {
 }
 
 // Tags alinhadas com o cliente (src/utils/notifications.js NOTIFICACOES)
+// para que a mesma tag evite notificações duplicadas via Service Worker
 const TAGS = {
   agua: 'vitalis-agua',
   pequenoAlmoco: 'vitalis-refeicao-pa',
@@ -149,6 +160,9 @@ const TAGS = {
   streak: 'vitalis-streak',
 }
 
+/**
+ * Envia push para um user_id específico
+ */
 async function enviarPush(supabase, userId, tipo) {
   const msg = MENSAGENS[tipo]
   const tag = TAGS[tipo] || `lembrete-${tipo}`
@@ -204,10 +218,7 @@ async function enviarPushRaw(supabase, userId, { title, body, url, tag }) {
 }
 
 /**
- * Handler principal — chamado 3x por dia com ?bloco=manha|tarde|noite
- *
- * Para cada user com preferências activas, envia TODOS os lembretes
- * cujo horário configurado cai dentro do bloco actual.
+ * Handler principal — chamado pelo cron dispatcher a cada 5 minutos
  */
 export default async function handler(req, res) {
   if (!VAPID_PUBLIC || !VAPID_PRIVATE) {
@@ -218,14 +229,17 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Configuração Supabase em falta' })
   }
 
-  const bloco = req.query?.bloco || 'manha'
-  if (!BLOCOS[bloco]) {
-    return res.status(400).json({ error: `Bloco inválido: ${bloco}. Usar: manha, tarde, noite` })
-  }
-
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-  console.log(`[Push Lembretes] Bloco: ${bloco} (${BLOCOS[bloco].inicio / 60}h-${BLOCOS[bloco].fim / 60}h CAT)`)
+  // Determinar hora e minuto actuais em CAT
+  const { hora: horaCAT, minuto: minutoCAT, totalMinutos } = horaMinutoCAT()
+
+  // Só enviar entre CAT 06:00 e 22:59 (não acordar ninguém de madrugada)
+  if (horaCAT < 6 || horaCAT > 22) {
+    return res.status(200).json({ horaCAT, message: 'Fora do horário (CAT 06-22)', enviados: 0 })
+  }
+
+  console.log(`[Push Lembretes] ${horaCAT}:${String(minutoCAT).padStart(2, '0')} CAT — janela de 6min`)
 
   // Buscar user_ids de coaches (não devem receber lembretes de cliente)
   const { data: coachSubs } = await supabase
@@ -246,14 +260,14 @@ export default async function handler(req, res) {
   }
 
   if (!prefs || prefs.length === 0) {
-    return res.status(200).json({ bloco, message: 'Sem preferências activas', enviados: 0 })
+    return res.status(200).json({ horaCAT, message: 'Sem preferências activas', enviados: 0 })
   }
 
   let totalEnviados = 0
   let totalUsers = 0
 
   for (const pref of prefs) {
-    // Excluir coaches
+    // Excluir coaches — só recebem notificações de coach, não de cliente
     if (coachUserIds.has(pref.user_id)) continue
 
     if (!pref.lembretes || !Array.isArray(pref.lembretes)) continue
@@ -266,8 +280,8 @@ export default async function handler(req, res) {
     for (const lembrete of lembretesActivos) {
       if (!lembrete.hora) continue
 
-      // Enviar se o lembrete cai dentro deste bloco horário
-      if (lembreteNoBloco(lembrete.hora, bloco)) {
+      // Enviar se o lembrete está dentro da janela de 6min
+      if (lembreteNaJanela(lembrete.hora, totalMinutos)) {
         const enviados = await enviarPush(supabase, pref.user_id, lembrete.tipo)
         totalEnviados += enviados
         if (enviados > 0) userEnviou = true
@@ -277,10 +291,10 @@ export default async function handler(req, res) {
     if (userEnviou) totalUsers++
   }
 
-  console.log(`[Push Lembretes] Bloco ${bloco}: ${totalEnviados} notificações a ${totalUsers} users`)
+  console.log(`[Push Lembretes] ${horaCAT}h CAT: ${totalEnviados} notificações a ${totalUsers} users`)
 
   return res.status(200).json({
-    bloco,
+    horaCAT,
     prefsActivas: prefs.length,
     notificacoesEnviadas: totalEnviados,
     usersNotificados: totalUsers,
