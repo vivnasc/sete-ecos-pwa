@@ -71,6 +71,7 @@ const CalendarioRefeicoes = lazy(() => import('./components/vitalis/CalendarioRe
 const GuiaUtilizador = lazy(() => import('./components/vitalis/GuiaUtilizador'))
 const GuiaRamadao = lazy(() => import('./components/vitalis/GuiaRamadao'))
 const TreinosVitalis = lazy(() => import('./components/vitalis/TreinosVitalis'))
+const AudioVitalis = lazy(() => import('./components/vitalis/AudioVitalis'))
 const PlanoHTML = lazy(() => import('./pages/PlanoHTML'))
 
 // COMUNIDADE — Espaço de Autoconhecimento
@@ -119,6 +120,7 @@ const ChatIgnis = lazy(() => import('./components/ignis/ChatIgnis'))
 const InsightsIgnis = lazy(() => import('./components/ignis/InsightsIgnis'))
 const PerfilIgnis = lazy(() => import('./components/ignis/PerfilIgnis'))
 const NotificacoesIgnis = lazy(() => import('./components/ignis/NotificacoesIgnis'))
+const MeditacoesIgnis = lazy(() => import('./components/ignis/MeditacoesIgnis'))
 
 // ECO 5: VENTIS (Energia & Ritmo)
 const LandingVentis = lazy(() => import('./pages/LandingVentis'))
@@ -138,6 +140,7 @@ const ChatVentis = lazy(() => import('./components/ventis/ChatVentis'))
 const InsightsVentis = lazy(() => import('./components/ventis/InsightsVentis'))
 const PerfilVentis = lazy(() => import('./components/ventis/PerfilVentis'))
 const NotificacoesVentis = lazy(() => import('./components/ventis/NotificacoesVentis'))
+const MeditacoesVentis = lazy(() => import('./components/ventis/MeditacoesVentis'))
 
 // ECO 6: ECOA (Voz & Desbloqueio do Silencio)
 const LandingEcoa = lazy(() => import('./pages/LandingEcoa'))
@@ -371,6 +374,7 @@ function AppRoutes() {
             <Route path="/vitalis/guia" element={<VitalisRoute><GuiaUtilizador /></VitalisRoute>} />
             <Route path="/vitalis/guia-ramadao" element={<VitalisRoute><GuiaRamadao /></VitalisRoute>} />
             <Route path="/vitalis/treinos" element={<VitalisRoute><TreinosVitalis /></VitalisRoute>} />
+            <Route path="/vitalis/meditacoes" element={<VitalisRoute><AudioVitalis /></VitalisRoute>} />
 
             {/* ===== ECO 2: ÁUREA - Valor & Presença ===== */}
             <Route path="/aurea" element={<LandingAurea />} />
@@ -435,6 +439,7 @@ function AppRoutes() {
             <Route path="/ignis/insights" element={<IgnisRoute><InsightsIgnis /></IgnisRoute>} />
             <Route path="/ignis/perfil" element={<IgnisRoute><PerfilIgnis /></IgnisRoute>} />
             <Route path="/ignis/notificacoes" element={<IgnisRoute><NotificacoesIgnis /></IgnisRoute>} />
+            <Route path="/ignis/meditacoes" element={<IgnisRoute><MeditacoesIgnis /></IgnisRoute>} />
 
             {/* ===== ECO 5: VENTIS - Energia & Ritmo ===== */}
             <Route path="/ventis" element={<LandingVentis />} />
@@ -453,6 +458,7 @@ function AppRoutes() {
             <Route path="/ventis/insights" element={<VentisRoute><InsightsVentis /></VentisRoute>} />
             <Route path="/ventis/perfil" element={<VentisRoute><PerfilVentis /></VentisRoute>} />
             <Route path="/ventis/notificacoes" element={<VentisRoute><NotificacoesVentis /></VentisRoute>} />
+            <Route path="/ventis/meditacoes" element={<VentisRoute><MeditacoesVentis /></VentisRoute>} />
 
             {/* ===== ECO 6: ECOA - Voz & Desbloqueio do Silencio ===== */}
             <Route path="/ecoa" element={<LandingEcoa />} />
