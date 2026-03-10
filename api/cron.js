@@ -1,28 +1,19 @@
-/**
- * Cron Dispatcher — Endpoint único para todas as tarefas agendadas
- *
- * Consolida cron jobs num único endpoint para respeitar o limite de
- * serverless functions do plano Hobby do Vercel.
- *
- * Uso via vercel.json crons:
- *   /api/cron?task=tarefas         → Lembretes + curiosidade + expiração + resumo coach
- *   /api/cron?task=trial-emails    → Emails de trial expirando
- *   /api/cron?task=email-sequencia → Sequência de nurturing (waitlist) c/ VEMVITALIS20
- *   /api/cron?task=instagram       → Publicações agendadas Instagram
- *   /api/cron?task=broadcast       → Broadcast para interessados (catálogo, promo, whatsapp)
- *   /api/cron?task=wa-leads        → WhatsApp follow-up semanal a leads não convertidos
- *   /api/cron?task=wa-sequencia    → Sequência WA automática (dia 0,3,7,10,14,21,30)
- *   /api/cron?task=push-lembretes  → Push notifications de lembretes aos clientes (a cada hora)
- */
+// Cron Dispatcher — Endpoint único para todas as tarefas agendadas
+//
+// Usa imports DINÂMICOS para que um erro de syntax num módulo
+// NÃO bloqueie todos os outros crons.
+//
+// Uso via vercel.json crons:
+//   /api/cron?task=tarefas         → Lembretes + curiosidade + expiração + resumo coach
+//   /api/cron?task=trial-emails    → Emails de trial expirando
+//   /api/cron?task=email-sequencia → Sequência de nurturing (waitlist) c/ VEMVITALIS20
+//   /api/cron?task=instagram       → Publicações agendadas Instagram
+//   /api/cron?task=broadcast       → Broadcast para interessados (catálogo, promo, whatsapp)
+//   /api/cron?task=wa-leads        → WhatsApp follow-up semanal a leads não convertidos
+//   /api/cron?task=wa-sequencia    → Sequência WA automática (dia 0,3,7,10,14,21,30)
+//   /api/cron?task=push-lembretes  → Push notifications de lembretes aos clientes (a cada 5min)
 
-import tarefasAgendadas from './_lib/tarefas-agendadas.js';
-import trialExpiringEmails from './_lib/trial-expiring-emails.js';
-import emailSequencia from './_lib/email-sequencia.js';
-import instagramSchedule from './_lib/instagram-schedule.js';
-import broadcastInteressados from './_lib/broadcast-interessados.js';
-import { waLeadsFollowUp } from './_lib/wa-leads-cron.js';
-import { waSequenciaCron } from './_lib/wa-sequencia-cron.js';
-import pushLembretes from './_lib/push-lembretes.js';
+const TASKS = ['tarefas', 'trial-emails', 'email-sequencia', 'instagram', 'broadcast', 'wa-leads', 'wa-sequencia', 'push-lembretes'];
 
 export default async function handler(req, res) {
   // Verificar autorização (cron jobs do Vercel)
@@ -43,7 +34,7 @@ export default async function handler(req, res) {
   if (!task) {
     return res.status(400).json({
       error: 'Parâmetro task obrigatório',
-      opcoes: ['tarefas', 'trial-emails', 'email-sequencia', 'instagram', 'broadcast', 'wa-leads', 'wa-sequencia', 'push-lembretes'],
+      opcoes: TASKS,
       health: 'OK',
       timestamp: new Date().toISOString(),
       cronSecret: cronSecret ? 'configurada' : 'FALTA',
@@ -52,27 +43,45 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Imports dinâmicos — se um módulo tiver erro de syntax,
+    // só esse cron falha. Os outros continuam a funcionar.
     switch (task) {
-      case 'tarefas':
-        return await tarefasAgendadas(req, res);
-      case 'trial-emails':
-        return await trialExpiringEmails(req, res);
-      case 'email-sequencia':
-        return await emailSequencia(req, res);
-      case 'instagram':
-        return await instagramSchedule(req, res);
-      case 'broadcast':
-        return await broadcastInteressados(req, res);
-      case 'wa-leads':
+      case 'tarefas': {
+        const { default: fn } = await import('./_lib/tarefas-agendadas.js');
+        return await fn(req, res);
+      }
+      case 'trial-emails': {
+        const { default: fn } = await import('./_lib/trial-expiring-emails.js');
+        return await fn(req, res);
+      }
+      case 'email-sequencia': {
+        const { default: fn } = await import('./_lib/email-sequencia.js');
+        return await fn(req, res);
+      }
+      case 'instagram': {
+        const { default: fn } = await import('./_lib/instagram-schedule.js');
+        return await fn(req, res);
+      }
+      case 'broadcast': {
+        const { default: fn } = await import('./_lib/broadcast-interessados.js');
+        return await fn(req, res);
+      }
+      case 'wa-leads': {
+        const { waLeadsFollowUp } = await import('./_lib/wa-leads-cron.js');
         return await waLeadsFollowUp(req, res);
-      case 'wa-sequencia':
+      }
+      case 'wa-sequencia': {
+        const { waSequenciaCron } = await import('./_lib/wa-sequencia-cron.js');
         return await waSequenciaCron(req, res);
-      case 'push-lembretes':
-        return await pushLembretes(req, res);
+      }
+      case 'push-lembretes': {
+        const { default: fn } = await import('./_lib/push-lembretes.js');
+        return await fn(req, res);
+      }
       default:
         return res.status(400).json({
           error: `Task desconhecida: ${task}`,
-          opcoes: ['tarefas', 'trial-emails', 'email-sequencia', 'instagram', 'broadcast', 'wa-leads', 'wa-sequencia', 'push-lembretes']
+          opcoes: TASKS
         });
     }
   } catch (error) {
