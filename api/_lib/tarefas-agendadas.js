@@ -416,10 +416,11 @@ async function enviarResumoDiario(supabase, resultados) {
       supabase.from('vitalis_registos')
         .select('user_id, aderencia_1a10, users!inner(nome)')
         .eq('data', hoje),
-      // Alertas espaço retorno hoje
+      // Alertas espaço retorno hoje (tabela pode não existir — retorna 0)
       supabase.from('vitalis_espaco_retorno')
         .select('id', { count: 'exact' })
-        .gte('created_at', ontem.toISOString()),
+        .gte('created_at', ontem.toISOString())
+        .then(r => r.error ? { count: 0 } : r),
       // Novas clientes (últimas 24h)
       supabase.from('vitalis_clients')
         .select('users!inner(nome, email)')
