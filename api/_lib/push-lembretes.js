@@ -183,12 +183,20 @@ async function enviarPush(supabase, userId, tipo) {
 }
 
 async function enviarPushRaw(supabase, userId, { title, body, url, tag }) {
-  const { data: subs } = await supabase
+  const { data: subs, error: subsError } = await supabase
     .from('push_subscriptions')
     .select('endpoint, keys_p256dh, keys_auth')
     .eq('user_id', userId)
 
-  if (!subs || subs.length === 0) return 0
+  if (subsError) {
+    console.error(`[Push] Erro ao buscar subscriptions para user ${userId}:`, subsError.message)
+    return 0
+  }
+
+  if (!subs || subs.length === 0) {
+    console.log(`[Push] User ${userId} não tem push subscriptions registadas`)
+    return 0
+  }
 
   const payload = JSON.stringify({
     title,
@@ -207,8 +215,10 @@ async function enviarPushRaw(supabase, userId, { title, body, url, tag }) {
       )
       sent++
     } catch (err) {
+      console.error(`[Push] Falha ao enviar para user ${userId}:`, err.statusCode, err.body || err.message)
       if (err.statusCode === 410 || err.statusCode === 404) {
         await supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint)
+        console.log(`[Push] Subscription expirada removida para user ${userId}`)
       }
     }
   }
@@ -239,13 +249,6 @@ export default async function handler(req, res) {
 
   console.log(`[Push Lembretes] ${horaCAT}:${String(minutoCAT).padStart(2, '0')} CAT — janela de 6min`)
 
-  // Buscar user_ids de coaches (não devem receber lembretes de cliente)
-  const { data: coachSubs } = await supabase
-    .from('push_subscriptions')
-    .select('user_id')
-    .eq('role', 'coach')
-  const coachUserIds = new Set((coachSubs || []).map(s => s.user_id).filter(Boolean))
-
   // Buscar todas as preferências activas
   const { data: prefs, error } = await supabase
     .from('push_preferences')
@@ -253,20 +256,21 @@ export default async function handler(req, res) {
     .eq('activo', true)
 
   if (error) {
-    console.error('[Push Lembretes] Erro ao buscar preferências:', error)
+    console.error('[Push Lembretes] Erro ao buscar preferências:', error.message)
     return res.status(500).json({ error: error.message })
   }
 
   if (!prefs || prefs.length === 0) {
+    console.log('[Push Lembretes] Nenhuma preferência activa encontrada na tabela push_preferences')
     return res.status(200).json({ horaCAT, message: 'Sem preferências activas', enviados: 0 })
   }
+
+  console.log(`[Push Lembretes] ${prefs.length} users com preferências activas`)
 
   let totalEnviados = 0
   let totalUsers = 0
 
   for (const pref of prefs) {
-    // Excluir coaches — só recebem notificações de coach, não de cliente
-    if (coachUserIds.has(pref.user_id)) continue
 
     if (!pref.lembretes || !Array.isArray(pref.lembretes)) continue
 
