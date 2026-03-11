@@ -113,11 +113,14 @@ function filterFiles(allFiles, args) {
   if (args.length === 0) return allFiles
 
   return allFiles.filter(({ folder, file }) => {
-    // Filtro por nome de pasta: ECOA, IGNIS, etc.
+    // Filtro por nome de pasta: ECOA, IGNIS, MARKETING, etc.
     if (args.some(a => a.toUpperCase() === folder.toUpperCase())) return true
     // Filtro por número: 35, 36, etc.
     const num = file.match(/^(\d+)/)
     if (num && args.includes(num[1])) return true
+    // Filtro por slug parcial: mkt-teaser, mkt-story, etc.
+    const slug = file.replace('.md', '')
+    if (args.some(a => slug.includes(a.toLowerCase()))) return true
     return false
   })
 }
