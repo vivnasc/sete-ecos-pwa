@@ -40,14 +40,14 @@ function horaMinutoCAT() {
   return { hora: h, minuto: m, totalMinutos: h * 60 + m }
 }
 
-// Verificar se um lembrete está dentro da janela de envio (últimos 6min)
+// Verificar se um lembrete está dentro da janela de envio (últimos 5min)
+// Cron corre a cada 5min. Janela DEVE ser < 5min para evitar duplicados.
+// Exemplo com janela=5: lembrete 19:00, cron 19:00 → diff=0 ✓, cron 19:05 → diff=5 ✗
 function lembreteNaJanela(lembreteHora, agoraMinutos) {
   const [h, m] = lembreteHora.split(':').map(Number)
   const lembreteMinutos = h * 60 + (m || 0)
-  // Janela: desde 6min atrás até agora (inclusive)
-  // 5min = intervalo entre crons + 1min margem para jitter
   const diff = agoraMinutos - lembreteMinutos
-  return diff >= 0 && diff < 6
+  return diff >= 0 && diff < 5
 }
 
 // Mensagens de push por tipo de lembrete
