@@ -12,12 +12,13 @@ import { getAudioUrl } from '../../lib/shared/audioStorage'
  *  - onPlay: callback quando áudio começa
  *  - onEnd: callback quando áudio termina
  */
-export default function AudioPlayerBar({ eco, slug, accentColor = '#4B0082', onPlay, onEnd }) {
+export default function AudioPlayerBar({ eco, slug, accentColor = '#4B0082', onPlay, onEnd, titulo }) {
   const audioRef = useRef(null)
   const [disponivel, setDisponivel] = useState(false)
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
+  const [downloading, setDownloading] = useState(false)
 
   const url = slug ? getAudioUrl(eco, slug) : null
 
@@ -81,6 +82,28 @@ export default function AudioPlayerBar({ eco, slug, accentColor = '#4B0082', onP
     }
   }
 
+  const handleDownload = async () => {
+    if (!url || downloading) return
+    setDownloading(true)
+    try {
+      const res = await fetch(url)
+      const blob = await res.blob()
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(blob)
+      a.download = titulo
+        ? `${titulo.replace(/[^a-zA-Z0-9À-ú\s-]/g, '').trim()}.mp3`
+        : `${eco}-${slug}.mp3`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(a.href)
+    } catch {
+      // silently fail
+    } finally {
+      setDownloading(false)
+    }
+  }
+
   const formatTime = (s) => {
     if (!s || !isFinite(s)) return '0:00'
     const m = Math.floor(s / 60)
@@ -131,9 +154,23 @@ export default function AudioPlayerBar({ eco, slug, accentColor = '#4B0082', onP
         </div>
       </div>
 
-      <span className="text-xs flex-shrink-0" style={{ color: `${accentColor}cc` }}>
-        🎧
-      </span>
+      <button
+        onClick={handleDownload}
+        disabled={downloading}
+        className="w-8 h-8 flex-shrink-0 rounded-full flex items-center justify-center transition-all active:scale-95 disabled:opacity-50"
+        style={{ background: `${accentColor}22` }}
+        aria-label="Baixar áudio"
+      >
+        {downloading ? (
+          <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke={accentColor} strokeWidth="2.5">
+            <path d="M12 2v4m0 12v4m-7.07-3.93l2.83-2.83m8.48-8.48l2.83-2.83M2 12h4m12 0h4m-3.93 7.07l-2.83-2.83M7.76 7.76L4.93 4.93" />
+          </svg>
+        ) : (
+          <svg viewBox="0 0 24 24" fill={accentColor} className="w-4 h-4">
+            <path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z" />
+          </svg>
+        )}
+      </button>
     </div>
   )
 }
