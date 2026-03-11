@@ -1030,25 +1030,6 @@ const CONTEUDO_LUMINA = [
   },
 ];
 
-// Juntar tudo num pool único rotativo
-const TODO_CONTEUDO = [
-  ...CONTEUDO_CORPO,
-  ...CONTEUDO_EMOCIONAL,
-  ...CONTEUDO_PROVOCACAO,
-  ...CONTEUDO_ALIMENTACAO_EMOCIONAL,
-  ...CONTEUDO_DISTORCOES,
-  ...CONTEUDO_ANSIEDADE,
-  ...CONTEUDO_AUTOESTIMA,
-  ...CONTEUDO_CICLO_RECOMECOS,
-  ...CONTEUDO_AUREA,
-  ...CONTEUDO_SERENA,
-  ...CONTEUDO_IGNIS,
-  ...CONTEUDO_VENTIS,
-  ...CONTEUDO_ECOA,
-  ...CONTEUDO_IMAGO,
-  ...CONTEUDO_LUMINA,
-];
-
 const HASHTAGS_BASE = [
   '#seteecos', '#vitalis', '#transformacao',
   '#nutricaointeligente', '#saudereal', '#semdieta', '#bemestar',
@@ -1059,13 +1040,12 @@ const HASHTAGS_TEMATICOS = {
   emocional: ['#saudeemocional', '#autoconhecimento', '#inteligenciaemocional', '#comerconsciente'],
   provocacao: ['#verdadeincomoda', '#semfiltro', '#realidade', '#mudanca', '#chega'],
   lumina: ['#lumina', '#diagnostico', '#autoconhecimento', '#energia', '#checkin'],
-  aurea: ['#aurea', '#autovalor', '#autoestima', '#integracaopessoal', '#empoderamento'],
+  aurea: ['#aurea', '#autovalor', '#merecimento', '#autoestima', '#empoderamento', '#culpaherdada', '#investiremti'],
   alimentacao_emocional: ['#alimentacaoemocional', '#fomeemocional', '#comerconsciente', '#compulsaoalimentar', '#semculpa'],
   distorcoes: ['#imagemcorporal', '#corpopositivo', '#espelho', '#autoaceitacao', '#corporeal'],
   ansiedade: ['#ansiedade', '#stressecorpo', '#sistemanervoso', '#cortisol', '#regulacaoemocional'],
   autoestima: ['#autoestima', '#valorproprio', '#amorproprio', '#voziinterior', '#merecescuidado'],
   ciclo_recomecos: ['#recomecar', '#naoefraqueza', '#persistencia', '#semanadesistencia', '#continuadaqui'],
-  aurea: ['#aurea', '#autovalor', '#merecimento', '#culpaherdada', '#investiremti'],
   serena_eco: ['#serena', '#regulacaoemocional', '#respiracao', '#chorar', '#emocoes'],
   ignis: ['#ignis', '#disciplina', '#foco', '#coragem', '#corte'],
   ventis: ['#ventis', '#energia', '#burnout', '#pausa', '#ritmo'],
@@ -3210,18 +3190,36 @@ const STATUS_CTAS = {
 function gerarStatusSemanal() {
   const week = getWeekNumber();
 
+  // Pool de todos os temas para rotação mais rica
+  const FONTES_EXPANDIDAS = {
+    corpo: CONTEUDO_CORPO,
+    emocional: CONTEUDO_EMOCIONAL,
+    provocacao: CONTEUDO_PROVOCACAO,
+    alimentacao_emocional: CONTEUDO_ALIMENTACAO_EMOCIONAL,
+    distorcoes: CONTEUDO_DISTORCOES,
+    ansiedade: CONTEUDO_ANSIEDADE,
+    autoestima: CONTEUDO_AUTOESTIMA,
+    ciclo_recomecos: CONTEUDO_CICLO_RECOMECOS,
+    aurea: CONTEUDO_AUREA,
+    serena: CONTEUDO_SERENA,
+    lumina: CONTEUDO_LUMINA,
+  };
+
   return STATUS_PLAN.map((plan) => {
     let conteudo;
-    if (plan.fonte === 'corpo') {
-      conteudo = pickFromArray(CONTEUDO_CORPO, week + STATUS_PLAN.indexOf(plan));
-    } else if (plan.fonte === 'emocional') {
-      conteudo = pickFromArray(CONTEUDO_EMOCIONAL, week + STATUS_PLAN.indexOf(plan));
-    } else if (plan.fonte === 'provocacao') {
-      conteudo = pickFromArray(CONTEUDO_PROVOCACAO, week + STATUS_PLAN.indexOf(plan));
-    } else {
-      // hooks — frase curta motivacional
-      const hook = pickFromArray(HOOKS_PROVOCADORES, week + STATUS_PLAN.indexOf(plan));
+    const idx = STATUS_PLAN.indexOf(plan);
+    const fonte = plan.fonte;
+
+    if (FONTES_EXPANDIDAS[fonte]) {
+      conteudo = pickFromArray(FONTES_EXPANDIDAS[fonte], week + idx);
+    } else if (fonte === 'hooks') {
+      const hook = pickFromArray(HOOKS_PROVOCADORES, week + idx);
       conteudo = { hook, corpo: '', cta: '' };
+    } else {
+      // Fallback: rodar por todos os conteúdos expandidos
+      const todosArrays = Object.values(FONTES_EXPANDIDAS);
+      const arr = todosArrays[(week + idx) % todosArrays.length];
+      conteudo = pickFromArray(arr, week + idx);
     }
 
     const hookText = conteudo.hook;
@@ -3362,7 +3360,7 @@ const ECO_CONTEUDO = {
     cor: '#C9A227',
     link: '/aurea',
     linkPagamento: '/aurea/pagamento',
-    preco: '499 MT/mês',
+    preco: '975 MZN/mês',
     hooks: [
       'O teu valor não cabe numa calça tamanho S.',
       'Gastas horas a escolher roupa e 0 minutos a cuidar de como te vês ao espelho.',
@@ -3415,7 +3413,7 @@ const ECO_CONTEUDO = {
     cor: '#6B8E9B',
     link: '/serena',
     linkPagamento: '/serena/pagamento',
-    preco: '499 MT/mês',
+    preco: '750 MZN/mês',
     hooks: [
       'Sentes tudo com intensidade e depois culpas-te por ser "demasiado".',
       'A ansiedade não é fraqueza. É o teu corpo a pedir atenção.',
@@ -3469,7 +3467,7 @@ const ECO_CONTEUDO = {
     cor: '#C1634A',
     link: '/ignis',
     linkPagamento: '/ignis/pagamento',
-    preco: '499 MT/mês',
+    preco: '750 MZN/mês',
     hooks: [
       'Tens 47 separadores abertos e nenhum projecto acabado.',
       'A procrastinação não é preguiça. É medo disfarçado.',
@@ -3523,7 +3521,7 @@ const ECO_CONTEUDO = {
     cor: '#5D9B84',
     link: '/ventis',
     linkPagamento: '/ventis/pagamento',
-    preco: '499 MT/mês',
+    preco: '750 MZN/mês',
     hooks: [
       'Acordas com cansaço e adormeces sem energia. Onde foi parar a tua vitalidade?',
       'Tens uma rotina ou tens um modo de sobrevivência?',
@@ -3577,7 +3575,7 @@ const ECO_CONTEUDO = {
     cor: '#4A90A4',
     link: '/ecoa',
     linkPagamento: '/ecoa/pagamento',
-    preco: '499 MT/mês',
+    preco: '750 MZN/mês',
     hooks: [
       'Quantas vezes engoliste o que querias dizer para não incomodar?',
       'O silêncio que te protegeu em criança está a sufocar-te agora.',
@@ -3631,7 +3629,7 @@ const ECO_CONTEUDO = {
     cor: '#8B7BA5',
     link: '/imago',
     linkPagamento: '/imago/pagamento',
-    preco: '499 MT/mês',
+    preco: '975 MZN/mês',
     hooks: [
       'Sabes quem és quando ninguém está a ver?',
       'A máscara que usas para o mundo está a sufocar quem realmente és.',
