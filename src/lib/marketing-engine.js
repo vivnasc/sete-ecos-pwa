@@ -355,6 +355,192 @@ const CONTEUDO_CICLO_RECOMECOS = [
 ];
 
 // Juntar tudo num pool único rotativo
+// ============================================================
+// CONTEUDO POR ECO — Inspirado nos áudios de cada módulo
+// Cada eco tem a sua dimensão: não é wellness genérico, é específico
+// ============================================================
+
+// ÁUREA — Valor próprio, merecimento, culpa herdada
+// Inspirado: "O Teu Valor Não Se Ganha", "A Culpa Que Não Te Pertence", "Abundância e Merecimento"
+const CONTEUDO_AUREA = [
+  {
+    hook: 'O teu valor não se ganha. Não se conquista. Não depende do que produzes.',
+    corpo: 'Nasceste com ele. Antes de teres nome, profissão ou relações. O teu valor existia. Mas cresceste a acreditar que tinhas de o merecer — ser boa filha, boa mãe, boa profissional. Essa mentira cansa. E consome energia que devias usar para viver.',
+    cta: 'O ÁUREA existe para reconstruir essa relação. Com o teu valor. De verdade. — Vivianne',
+  },
+  {
+    hook: 'A culpa que sentes quando cuidas de ti não é tua. É herdada.',
+    corpo: 'Alguém te ensinou que cuidar de ti era egoísmo. Que priorizar-te era traição. Que gastar contigo era desperdício. Essa pessoa tinha as suas próprias feridas. Mas as feridas dela não são verdade sobre ti.',
+    cta: 'Cuidar de ti não é traição. É a coisa mais sagrada que podes fazer. — Vivianne',
+  },
+  {
+    hook: 'Gastas em tudo menos em ti. E depois perguntas-te por que estás vazia.',
+    corpo: 'Investes nos filhos, no trabalho, na casa, nos outros. Quando sobra algo (se sobrar), talvez compres algo para ti — com culpa. Mas investir em ti não é sobra. É fundação. Sem fundação, tudo o que construíste para os outros desmorona.',
+    cta: 'A tua prosperidade não tira nada a ninguém. — Vivianne',
+  },
+  {
+    hook: 'Dizes "eu mereço" mas não acreditas. Há uma diferença enorme.',
+    corpo: 'Repetes afirmações. Colas post-its no espelho. Mas lá no fundo, sentes que é mentira. Porque o merecimento não se cola — constrói-se. Com decisões pequenas: escolher-te quando é difícil, parar quando o corpo pede, gastar contigo sem pedir desculpa.',
+    cta: 'No ÁUREA, não repetimos mantras. Praticamos o merecimento. — Vivianne',
+  },
+  {
+    hook: 'Se a tua filha se tratasse como tu te tratas, o que lhe dirias?',
+    corpo: 'Dirias: "Tu mereces mais." "Não aceites isso." "Cuida de ti." Mas para ti, aplicam-se regras diferentes. Porquê? Porque interiorizaste que o teu valor depende do quanto dás — não do quanto és.',
+    cta: 'Trata-te como tratarias quem mais amas. Mereces o mesmo. — Vivianne',
+  },
+];
+
+// SERENA — Regulação emocional, respiração, ciclos emocionais
+// Inspirado: "Respiração 4-7-8", "Coerência Cardíaca", técnicas de respiração
+const CONTEUDO_SERENA = [
+  {
+    hook: 'Não precisas de controlar as emoções. Precisas de aprender a surfá-las.',
+    corpo: 'Controlo é repressão disfarçada. E repressão explode — em comida, em raiva, em shutdown. Surfar é diferente: reconhecer a onda, respirar, deixar que passe. A emoção dura 90 segundos no corpo. O sofrimento vem de resistir a ela.',
+    cta: 'O SERENA ensina-te a estar com o que sentes sem ser destruída por isso. — Vivianne',
+  },
+  {
+    hook: '90% da serotonina é produzida no intestino. Não na cabeça.',
+    corpo: 'A tua saúde emocional começa no corpo. No que comes, como respiras, como dormes. A ligação intestino-cérebro não é metáfora — é anatomia. Quando cuidas do corpo, cuidas da emoção. Quando ignoras o corpo, a emoção desregula.',
+    cta: 'Corpo e emoção são um sistema. Não podes tratar só metade. — Vivianne',
+  },
+  {
+    hook: 'Respirar em 4-7-8 durante 60 segundos baixa o cortisol mais do que 30 minutos a tentar "acalmar-te".',
+    corpo: 'O nervo vago conecta o diafragma ao cérebro. Quando expiras mais lentamente do que inspiras, activas a resposta de relaxamento. Não é meditação. É fisiologia. E funciona em menos de 2 minutos.',
+    cta: 'Experimenta agora: inspira 4, segura 7, expira 8. Repete 3 vezes. — Vivianne',
+  },
+  {
+    hook: 'O choro não é fraqueza. É o sistema nervoso a libertar pressão.',
+    corpo: 'As lágrimas de stress contêm cortisol — literalmente eliminas hormonas de stress quando choras. Quem te disse "não chores" estava a pedir-te para guardar veneno no corpo. Chorar limpa. A comida não.',
+    cta: 'A próxima vez que sentires vontade, não vás ao frigorífico. Chora. Depois bebe água. — Vivianne',
+  },
+  {
+    hook: 'Tens emoções. Não és as tuas emoções.',
+    corpo: 'Há uma diferença entre "estou triste" e "sou triste". A primeira é um estado — passa. A segunda é uma identidade — prende. Quando aprendes a observar o que sentes em vez de te fundires com isso, tudo muda.',
+    cta: 'O SERENA começa aqui: observar sem reagir. Sentir sem fugir. — Vivianne',
+  },
+];
+
+// IGNIS — Vontade, foco, cortar o que não serve, disciplina consciente
+// Inspirado: "Acende a Chama", "O Corte Que Liberta", "Foco Máximo", "Coragem Diária"
+const CONTEUDO_IGNIS = [
+  {
+    hook: 'Disciplina não é fazer tudo. É escolher o que importa e cortar o resto.',
+    corpo: 'Estás exausta porque dizes sim a tudo. Ao trabalho, à família, às obrigações, aos outros. Nunca sobra um sim para ti. O IGNIS não te ensina a fazer mais. Ensina-te a cortar — com clareza, sem culpa.',
+    cta: 'Cada "não" que dizes ao que não importa é um "sim" ao que importa. — Vivianne',
+  },
+  {
+    hook: 'Não te falta motivação. Falta-te uma decisão que não se renegocia.',
+    corpo: 'A motivação é uma emoção — vem e vai. A decisão é uma estrutura — fica. Quem espera pela motivação para agir, nunca age consistentemente. Quem decide e age apesar da falta de motivação, transforma-se.',
+    cta: 'Não perguntes "estou motivada?" Pergunta "decidi ou não?" — Vivianne',
+  },
+  {
+    hook: 'O que carregas que já não te pertence? É isso que te tira a energia.',
+    corpo: 'Expectativas alheias. Relações que esgotam. Hábitos que já não servem. Papéis que nunca escolheste. Tudo isso pesa — e rouba energia que devias usar para construir o que importa. Cortar não é destruir. É libertar.',
+    cta: 'O corte que liberta é o mais difícil. Mas é o que te dá espaço para viver. — Vivianne',
+  },
+  {
+    hook: 'Foco não é concentração. É protecção. Estás a proteger a tua energia do que não merece.',
+    corpo: 'Cada vez que abres o telemóvel sem motivo, estás a dar a tua atenção de graça. Cada vez que entras numa conversa que te drena, estás a pagar com energia vital. Foco é decidir onde a tua energia vai — e defender essa decisão.',
+    cta: 'A tua atenção é o recurso mais caro que tens. Gasta-a com cuidado. — Vivianne',
+  },
+  {
+    hook: 'A coragem não é ausência de medo. É fazer apesar dele.',
+    corpo: 'Esperas não ter medo para agir. Mas o medo nunca vai embora — faz parte do sistema nervoso. A questão não é eliminá-lo. É deixar de obedecer-lhe. Cada pequena acção apesar do medo reprograma o cérebro.',
+    cta: 'Coragem diária. Não grandes gestos — pequenas decisões repetidas. — Vivianne',
+  },
+];
+
+// VENTIS — Energia, ritmo, pausa, burnout, renovação
+// Inspirado: "Ritmo Natural", "Pausa Que Renova", "Energia e Equilíbrio"
+const CONTEUDO_VENTIS = [
+  {
+    hook: 'Não estás cansada. Estás em modo de sobrevivência há tanto tempo que esqueceste o que é viver.',
+    corpo: 'O corpo foi desenhado para ciclos: esforço e descanso, acção e pausa. Mas tu cortas o descanso. Sempre. Porque acreditas que parar é perder. Resultado: burnout crónico disfarçado de "cansaço normal".',
+    cta: 'O VENTIS é sobre recuperar o ritmo que perdeste. Não adicionar mais. — Vivianne',
+  },
+  {
+    hook: 'Pausar não é preguiça. É inteligência.',
+    corpo: 'O teu telemóvel precisa de carregar. O teu computador precisa de reiniciar. Mas tu? Tu achas que podes funcionar 18 horas por dia sem consequências. Não podes. E o teu corpo está a avisar-te — com cansaço, insónia, fome descontrolada, irritabilidade.',
+    cta: 'A pausa não é prémio. É necessidade fisiológica. — Vivianne',
+  },
+  {
+    hook: 'Se não páras quando podes, vais parar quando não podes. Chama-se doença.',
+    corpo: 'O corpo não negocia. Envia sinais: dor, cansaço, insónia, inflamação. Se ignoras, escala: doença crónica, burnout, colapso. A pausa preventiva custa minutos. A pausa forçada custa meses.',
+    cta: 'Pára 5 minutos agora. Respira. O mundo espera. — Vivianne',
+  },
+  {
+    hook: 'A energia não se gere com café. Gere-se com ritmo.',
+    corpo: 'O teu corpo tem ritmos ultradianos — ciclos de 90 minutos de alta energia seguidos de 20 minutos de recuperação. Se forças os 90 minutos sem a pausa, cada ciclo seguinte rende menos. Resultado: mais café, menos clareza, mais exaustão.',
+    cta: 'Menos café. Mais pausas. A ciência é clara. — Vivianne',
+  },
+  {
+    hook: 'Cuidas de tudo e de todos. Menos da tua energia. E depois não entendes por que desabas.',
+    corpo: 'A energia é finita. Cada decisão gasta. Cada conflito gasta. Cada obrigação gasta. Se não recarregas conscientemente — com sono, com pausa, com natureza, com silêncio — chegas ao fim do dia a vazio. E é aí que comes por impulso.',
+    cta: 'Gerir energia é a fundação de tudo. Corpo, emoção, foco — tudo depende disto. — Vivianne',
+  },
+];
+
+// ECOA — Voz, silenciamento, expressão, assertividade
+// Inspirado: "O Silêncio Que Guardas", "A Tua Voz É Válida", "Libertar a Palavra"
+const CONTEUDO_ECOA = [
+  {
+    hook: 'O silêncio que te protegeu em criança está a sufocar-te em adulta.',
+    corpo: 'Aprendeste a calar. A não incomodar. A engolir. Funcionou — evitou conflitos, castigos, abandono. Mas agora, esse silêncio não te protege. Prende-te. Cada palavra não dita fica presa no corpo. E o corpo cobra.',
+    cta: 'No ECOA, não forçamos a voz. Primeiro, reconhecemos o silêncio. — Vivianne',
+  },
+  {
+    hook: 'Comes o que não dizes. Literalmente.',
+    corpo: 'Engoles a raiva — comes. Cales a frustração — comes. Abafas a verdade — comes. A comida substitui as palavras que ficaram presas na garganta. Enquanto não encontrares outra saída para o que sentes, a comida vai continuar a ser a tua voz.',
+    cta: 'Antes de mudar o que comes, muda o que dizes. Ou pelo menos o que te permites sentir. — Vivianne',
+  },
+  {
+    hook: 'A tua opinião não é "demais". A tua necessidade não é "exagero". A tua voz é válida.',
+    corpo: 'Quantas vezes pediste desculpa por falar? Quantas vezes começaste com "isto pode ser parvo, mas..."? Quantas vezes disseste "não é nada" quando era tudo? A tua voz foi silenciada tantas vezes que agora és tu que te silencias.',
+    cta: 'A voz é um músculo. Atrofia sem uso. Mas também se fortalece. — Vivianne',
+  },
+  {
+    hook: 'Dizer "não" a alguém é dizer "sim" a ti. E isso não é egoísmo.',
+    corpo: 'O teu "sim" automático é um "não" a ti mesma. Cada vez que aceitas por obrigação, engoles o que querias dizer. E essa energia reprimida vai para algum lado — raiva, cansaço, ou comida.',
+    cta: 'Pratica: hoje diz um "não" pequeno. Sem explicar. Sem pedir desculpa. — Vivianne',
+  },
+  {
+    hook: 'Se guardares mais uma coisa dentro de ti, o corpo vai cobrar.',
+    corpo: 'O corpo fala quando a boca não fala. Tensão na mandíbula? Palavras presas. Nó na garganta? Verdades engolidas. Dor no estômago? Emoções não digeridas. O corpo não mente. E não espera.',
+    cta: 'Escreve o que não consegues dizer. Uma carta que não envias. É um começo. — Vivianne',
+  },
+];
+
+// IMAGO — Identidade, essência, rótulos, quem sou além dos papéis
+// Inspirado: "Quem Sou Sem Rótulos", "Eu Essencial", "Corpo e Identidade"
+const CONTEUDO_IMAGO = [
+  {
+    hook: 'Quem és tu sem os rótulos? Mãe. Esposa. Profissional. Tira tudo. O que fica?',
+    corpo: 'Se te pedirem para te descreveres, começas pelos papéis: mãe de X, trabalha em Y, casada com Z. Mas quem és quando ninguém precisa de ti? Quando não há função a cumprir? Esse vazio não é nada. É a tua essência. E ela existe antes e além de qualquer papel.',
+    cta: 'O IMAGO é para quem quer encontrar-se debaixo de tudo o que carrega. — Vivianne',
+  },
+  {
+    hook: 'A identidade que construíste para sobreviver está a impedir-te de viver.',
+    corpo: 'A "forte". A "que resolve tudo". A "que não precisa de ninguém". Criaste estas versões para te proteger. Mas agora são armaduras que pesam. E por debaixo delas, há alguém que está cansada de fingir que não precisa de cuidado.',
+    cta: 'Soltar versões antigas não é traição. É evolução. — Vivianne',
+  },
+  {
+    hook: 'Mudas o corpo mas não actualizas a identidade. E depois sabotaste.',
+    corpo: 'Perdeste 10kg mas continuas a agir como se pesasses o mesmo. Compras as mesmas roupas. Evitas as mesmas situações. Dizes as mesmas coisas sobre ti. Porque o corpo mudou mas a história que contas sobre ti ficou no passado.',
+    cta: 'Não basta mudar o corpo. Tens de reescrever quem acreditas ser. — Vivianne',
+  },
+  {
+    hook: 'Os teus valores definem o que comes, como gastas e com quem ficas. Sabes quais são?',
+    corpo: 'A maioria das pessoas nunca parou para pensar no que realmente valoriza. Funciona no automático — valores herdados dos pais, da cultura, da sociedade. Mas quando descobres os TEUS valores, cada decisão fica mais clara. Incluindo o que pões no prato.',
+    cta: 'No IMAGO, defines os teus 5 valores essenciais. Tudo o resto alinha-se a partir daí. — Vivianne',
+  },
+  {
+    hook: 'Não és um projecto a melhorar. És uma pessoa a integrar.',
+    corpo: 'A indústria do self-improvement vende-te a ideia de que tens falhas a corrigir. Tens defeitos a eliminar. Tens versões melhores a alcançar. Mas e se não tiveres de te melhorar? E se precisares apenas de integrar o que já és — as partes bonitas e as difíceis?',
+    cta: 'Integração, não perfeição. Esse é o caminho. — Vivianne',
+  },
+];
+
+// Juntar tudo num pool único rotativo
 const TODO_CONTEUDO = [
   ...CONTEUDO_CORPO,
   ...CONTEUDO_EMOCIONAL,
@@ -364,6 +550,12 @@ const TODO_CONTEUDO = [
   ...CONTEUDO_ANSIEDADE,
   ...CONTEUDO_AUTOESTIMA,
   ...CONTEUDO_CICLO_RECOMECOS,
+  ...CONTEUDO_AUREA,
+  ...CONTEUDO_SERENA,
+  ...CONTEUDO_IGNIS,
+  ...CONTEUDO_VENTIS,
+  ...CONTEUDO_ECOA,
+  ...CONTEUDO_IMAGO,
 ];
 
 const HASHTAGS_BASE = [
@@ -382,13 +574,20 @@ const HASHTAGS_TEMATICOS = {
   ansiedade: ['#ansiedade', '#stressecorpo', '#sistemanervoso', '#cortisol', '#regulacaoemocional'],
   autoestima: ['#autoestima', '#valorproprio', '#amorproprio', '#voziinterior', '#merecescuidado'],
   ciclo_recomecos: ['#recomecar', '#naoefraqueza', '#persistencia', '#semanadesistencia', '#continuadaqui'],
+  aurea: ['#aurea', '#autovalor', '#merecimento', '#culpaherdada', '#investiremti'],
+  serena_eco: ['#serena', '#regulacaoemocional', '#respiracao', '#chorar', '#emocoes'],
+  ignis: ['#ignis', '#disciplina', '#foco', '#coragem', '#corte'],
+  ventis: ['#ventis', '#energia', '#burnout', '#pausa', '#ritmo'],
+  ecoa: ['#ecoa', '#voz', '#silenciamento', '#expressao', '#comunicacao'],
+  imago: ['#imago', '#identidade', '#essencia', '#valores', '#autoconhecimento'],
 };
 
 // ============================================================
 // CALENDARIO SEMANAL - Mais variado e estrategico
 // ============================================================
 
-const TEMAS_SEMANA = {
+// Semana par: temas VITALIS + emocionais | Semana ímpar: temas dos outros módulos
+const TEMAS_SEMANA_PAR = {
   0: { tema: 'autoestima', titulo: 'Carta para Ti', formato: 'carrossel', tipo: 'conexão' },
   1: { tema: 'alimentacao_emocional', titulo: 'Fome Emocional', formato: 'reel', tipo: 'educação' },
   2: { tema: 'corpo', titulo: 'Mito vs Realidade', formato: 'carrossel', tipo: 'educação' },
@@ -397,6 +596,21 @@ const TEMAS_SEMANA = {
   5: { tema: 'ciclo_recomecos', titulo: 'Para Quem Já Desistiu', formato: 'carrossel', tipo: 'empatia' },
   6: { tema: 'emocional', titulo: 'Reflexão de Sábado', formato: 'post', tipo: 'reflexão' },
 };
+
+const TEMAS_SEMANA_IMPAR = {
+  0: { tema: 'serena_eco', titulo: 'Sentir Sem Medo', formato: 'carrossel', tipo: 'educação' },
+  1: { tema: 'aurea', titulo: 'Valor Próprio', formato: 'reel', tipo: 'educação' },
+  2: { tema: 'ignis', titulo: 'Foco e Coragem', formato: 'stories', tipo: 'provocação' },
+  3: { tema: 'ventis', titulo: 'Energia e Ritmo', formato: 'carrossel', tipo: 'educação' },
+  4: { tema: 'ecoa', titulo: 'Voz Recuperada', formato: 'reel', tipo: 'provocação' },
+  5: { tema: 'imago', titulo: 'Quem És Tu', formato: 'carrossel', tipo: 'reflexão' },
+  6: { tema: 'alimentacao_emocional', titulo: 'Reflexão Emocional', formato: 'post', tipo: 'reflexão' },
+};
+
+function getTemasSemanaPorData(date) {
+  const weekNum = Math.floor(getDayOfYear(date) / 7);
+  return weekNum % 2 === 0 ? TEMAS_SEMANA_PAR : TEMAS_SEMANA_IMPAR;
+}
 
 // ============================================================
 // GERADOR DE CONTEUDO DIARIO
@@ -419,6 +633,12 @@ function getConteudoByTema(tema, seed) {
   if (tema === 'ansiedade') return pickFromArray(CONTEUDO_ANSIEDADE, seed);
   if (tema === 'autoestima') return pickFromArray(CONTEUDO_AUTOESTIMA, seed);
   if (tema === 'ciclo_recomecos') return pickFromArray(CONTEUDO_CICLO_RECOMECOS, seed);
+  if (tema === 'aurea') return pickFromArray(CONTEUDO_AUREA, seed);
+  if (tema === 'serena_eco') return pickFromArray(CONTEUDO_SERENA, seed);
+  if (tema === 'ignis') return pickFromArray(CONTEUDO_IGNIS, seed);
+  if (tema === 'ventis') return pickFromArray(CONTEUDO_VENTIS, seed);
+  if (tema === 'ecoa') return pickFromArray(CONTEUDO_ECOA, seed);
+  if (tema === 'imago') return pickFromArray(CONTEUDO_IMAGO, seed);
   return pickFromArray(CONTEUDO_PROVOCACAO, seed);
 }
 
@@ -426,7 +646,8 @@ export function gerarConteudoHoje(date = new Date(), variante = 0) {
   const dayOfWeek = date.getDay();
   const dayOfYear = getDayOfYear(date);
   const seed = dayOfYear + variante;
-  const { tema, titulo, formato, tipo } = TEMAS_SEMANA[dayOfWeek];
+  const temasSemana = getTemasSemanaPorData(date);
+  const { tema, titulo, formato, tipo } = temasSemana[dayOfWeek];
   const conteudo = getConteudoByTema(tema, seed);
 
   const hashBase = HASHTAGS_BASE.slice(0, 4);
@@ -455,6 +676,12 @@ export function totalVariantes(tema) {
   if (tema === 'ansiedade') return CONTEUDO_ANSIEDADE.length;
   if (tema === 'autoestima') return CONTEUDO_AUTOESTIMA.length;
   if (tema === 'ciclo_recomecos') return CONTEUDO_CICLO_RECOMECOS.length;
+  if (tema === 'aurea') return CONTEUDO_AUREA.length;
+  if (tema === 'serena_eco') return CONTEUDO_SERENA.length;
+  if (tema === 'ignis') return CONTEUDO_IGNIS.length;
+  if (tema === 'ventis') return CONTEUDO_VENTIS.length;
+  if (tema === 'ecoa') return CONTEUDO_ECOA.length;
+  if (tema === 'imago') return CONTEUDO_IMAGO.length;
   return CONTEUDO_PROVOCACAO.length;
 }
 
