@@ -5,6 +5,7 @@ import { g } from '../../utils/genero'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { TECNICAS_RESPIRACAO } from '../../lib/serena/gamificacao'
+import AudioPlayerBar from '../shared/AudioPlayerBar'
 
 // ===== CONSTANTES =====
 
@@ -255,6 +256,7 @@ export default function RespiracaoGuiada() {
             pausada={sessaoPausada}
             onPausar={handlePausar}
             onCancelar={handleCancelar}
+            slug={tecnicaEscolhida.slug}
           />
         )}
 
@@ -402,7 +404,7 @@ function FeelingCheck({ titulo, subtitulo, onSelect }) {
 
 // --- Sessao Activa (Breathing Session) ---
 
-function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausada, onPausar, onCancelar }) {
+function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausada, onPausar, onCancelar, slug }) {
   const passoInfo = tecnica.passos[passoActual]
   const accao = passoInfo.accao
   const duracao = passoInfo.duracao
@@ -447,6 +449,13 @@ function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausad
           <path d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
+
+      {/* Áudio narrado (se disponível no Storage) */}
+      {slug && (
+        <div className="absolute top-16 left-6 right-6 z-10">
+          <AudioPlayerBar eco="serena" slug={slug} accentColor={SERENA_ACCENT} />
+        </div>
+      )}
 
       {/* Technique name */}
       <p className="relative z-10 text-sm mb-2" style={{ color: '#6a8490' }}>
