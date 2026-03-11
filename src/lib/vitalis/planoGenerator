@@ -127,14 +127,31 @@ export async function gerarPlanoAutomatico(userId) {
     console.log('📊 TDEE calculado:', Math.round(tdee), 'kcal (factor:', factor, ')');
 
     // 5. Aplicar deficit/superavit baseado no objectivo
+    // Ajustar intensidade pela prontidão (1-10): prontidão baixa = deficit mais suave
+    // Pessoas com prontidão baixa (1-4) tendem a desistir com mudanças bruscas
+    const prontidao = parseInt(intake.prontidao_1a10, 10) || 5;
     let caloriasAlvo;
     const objectivo = intake.objectivo_principal;
 
     // Mapear objectivos do intake para lógica de calorias
     // Intake: 'emagrecer', 'ganhar_energia', 'melhorar_saude', 'controlar_emocoes', 'outro'
     if (objectivo === 'perder_peso' || objectivo === 'emagrecer') {
-      // Deficit de 20-25% (perda sustentável)
-      caloriasAlvo = Math.round(tdee * 0.75);
+      // Deficit adaptado pela prontidão:
+      // Prontidão 1-4 (baixa): 10-15% deficit (gentil, foco em hábitos)
+      // Prontidão 5-7 (média): 15-20% deficit (moderado)
+      // Prontidão 8-10 (alta): 20-25% deficit (intenso, como antes)
+      let deficitFactor;
+      if (prontidao <= 4) {
+        deficitFactor = 0.87; // ~13% deficit — mais gentil
+        console.log('📊 Prontidão baixa (' + prontidao + '/10) — deficit suave de ~13%');
+      } else if (prontidao <= 7) {
+        deficitFactor = 0.82; // ~18% deficit — moderado
+        console.log('📊 Prontidão média (' + prontidao + '/10) — deficit moderado de ~18%');
+      } else {
+        deficitFactor = 0.75; // ~25% deficit — intenso
+        console.log('📊 Prontidão alta (' + prontidao + '/10) — deficit padrão de ~25%');
+      }
+      caloriasAlvo = Math.round(tdee * deficitFactor);
     } else if (objectivo === 'ganhar_massa') {
       // Superavit de 10-15%
       caloriasAlvo = Math.round(tdee * 1.1);
@@ -306,32 +323,61 @@ export async function gerarPlanoAutomatico(userId) {
     console.log('✅ Plano criado com sucesso! ID:', plano.id);
 
     // 14. Criar hábitos iniciais da fase de indução
-    const habitosInducao = [
-      {
-        habito: 'Beber 2L de água por dia',
-        categoria: 'hidratacao',
-        fase: 'inducao',
-        dias_total: 14
-      },
-      {
-        habito: 'Fazer 3 refeições dentro da janela alimentar',
-        categoria: 'nutricao',
-        fase: 'inducao',
-        dias_total: 14
-      },
-      {
-        habito: 'Dormir 7-8 horas por noite',
-        categoria: 'sono',
-        fase: 'inducao',
-        dias_total: 14
-      },
-      {
-        habito: 'Check-in diário na app',
-        categoria: 'mindset',
-        fase: 'inducao',
-        dias_total: 14
-      }
-    ];
+    // Hábitos adaptados pela prontidão: quem tem prontidão baixa recebe
+    // micro-hábitos mais fáceis de cumprir (evita sobrecarregar e desistir)
+    let habitosInducao;
+    if (prontidao <= 4) {
+      // Prontidão baixa: micro-hábitos (mais fácil = mais consistência)
+      habitosInducao = [
+        {
+          habito: 'Beber 1 copo de água ao acordar',
+          categoria: 'hidratacao',
+          fase: 'inducao',
+          dias_total: 7
+        },
+        {
+          habito: 'Fazer 1 refeição consciente por dia',
+          categoria: 'nutricao',
+          fase: 'inducao',
+          dias_total: 7
+        },
+        {
+          habito: 'Abrir a app e registar como te sentes',
+          categoria: 'mindset',
+          fase: 'inducao',
+          dias_total: 7
+        }
+      ];
+      console.log('🌱 Prontidão baixa — micro-hábitos activados (7 dias, 3 hábitos simples)');
+    } else {
+      // Prontidão média/alta: hábitos padrão
+      habitosInducao = [
+        {
+          habito: 'Beber 2L de água por dia',
+          categoria: 'hidratacao',
+          fase: 'inducao',
+          dias_total: 14
+        },
+        {
+          habito: 'Fazer 3 refeições dentro da janela alimentar',
+          categoria: 'nutricao',
+          fase: 'inducao',
+          dias_total: 14
+        },
+        {
+          habito: 'Dormir 7-8 horas por noite',
+          categoria: 'sono',
+          fase: 'inducao',
+          dias_total: 14
+        },
+        {
+          habito: 'Check-in diário na app',
+          categoria: 'mindset',
+          fase: 'inducao',
+          dias_total: 14
+        }
+      ];
+    }
 
     const habitosComUserId = habitosInducao.map(h => ({
       ...h,

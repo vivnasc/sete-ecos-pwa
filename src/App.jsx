@@ -73,6 +73,7 @@ const GuiaUtilizador = lazy(() => import('./components/vitalis/GuiaUtilizador'))
 const GuiaRamadao = lazy(() => import('./components/vitalis/GuiaRamadao'))
 const TreinosVitalis = lazy(() => import('./components/vitalis/TreinosVitalis'))
 const AudioVitalis = lazy(() => import('./components/vitalis/AudioVitalis'))
+const MeuCompromisso = lazy(() => import('./components/vitalis/MeuCompromisso'))
 const PlanoHTML = lazy(() => import('./pages/PlanoHTML'))
 
 // COMUNIDADE — Espaço de Autoconhecimento
@@ -375,6 +376,7 @@ function AppRoutes() {
             <Route path="/vitalis/calendario" element={<VitalisRoute><CalendarioRefeicoes /></VitalisRoute>} />
             <Route path="/vitalis/guia" element={<VitalisRoute><GuiaUtilizador /></VitalisRoute>} />
             <Route path="/vitalis/guia-ramadao" element={<VitalisRoute><GuiaRamadao /></VitalisRoute>} />
+            <Route path="/vitalis/compromisso" element={<VitalisRoute><MeuCompromisso /></VitalisRoute>} />
             <Route path="/vitalis/treinos" element={<VitalisRoute><TreinosVitalis /></VitalisRoute>} />
             <Route path="/vitalis/meditacoes" element={<VitalisRoute><AudioVitalis /></VitalisRoute>} />
 

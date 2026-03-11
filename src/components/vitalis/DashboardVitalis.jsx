@@ -19,6 +19,7 @@ import FastingTimerCard from './FastingTimerCard';
 import MealsSection from './MealsSection';
 import MacrosDisplay from './MacrosDisplay';
 import AchievementsPanel from './AchievementsPanel';
+import { useDetectorDesistencia, AlertaDesistencia } from './DetectorDesistencia';
 
 // Função para solicitar permissão de notificações
 const solicitarPermissaoNotificacoes = async () => {
@@ -124,6 +125,9 @@ export default function DashboardVitalis() {
   const [trialDaysLeft, setTrialDaysLeft] = useState(null);
   const [trialExpiresAt, setTrialExpiresAt] = useState(null);
   const [hasIntake, setHasIntake] = useState(false);
+
+  // Detector de padrão de desistência
+  const riskData = useDetectorDesistencia(userId, client, registos);
 
   const hoje = new Date().toISOString().split('T')[0];
   const diaSemana = new Date().toLocaleDateString('pt-PT', { weekday: 'long' });
@@ -1254,6 +1258,9 @@ export default function DashboardVitalis() {
           )}
         </div>
 
+        {/* Alerta de risco de desistência (aparece quando detectado) */}
+        <AlertaDesistencia riskData={riskData} userId={userId} />
+
         {/* Quick Actions - Navegação Principal */}
         <div className="grid grid-cols-4 md:grid-cols-8 gap-2 sm:gap-3">
           {[
@@ -1263,6 +1270,7 @@ export default function DashboardVitalis() {
             { to: '/vitalis/receitas', emoji: '🍳', label: t('vitalis.dashboard.recipes'), cor: '#EA580C', bg: 'linear-gradient(145deg, #FFF7ED, #FFEDD5)' },
             { to: '/vitalis/tendencias', emoji: '📏', label: 'Medidas', cor: '#F59E0B', bg: 'linear-gradient(145deg, #FFFBEB, #FEF3C7)' },
             { to: '/vitalis/espaco-retorno', emoji: '💜', label: 'Espaço Retorno', cor: '#9333EA', bg: 'linear-gradient(145deg, #FAF5FF, #F3E8FF)' },
+            { to: '/vitalis/compromisso', emoji: '📜', label: 'Compromisso', cor: '#7C3AED', bg: 'linear-gradient(145deg, #F5F3FF, #EDE9FE)' },
             { to: '/vitalis/relatorios', emoji: '📊', label: 'Relatórios', cor: '#0891B2', bg: 'linear-gradient(145deg, #ECFEFF, #CFFAFE)' },
             { to: '/vitalis/treinos', emoji: '💪', label: t('vitalis.workouts.title'), cor: '#DC2626', bg: 'linear-gradient(145deg, #FEF2F2, #FECACA)' },
           ].map(item => (

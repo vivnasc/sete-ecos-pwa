@@ -17,6 +17,47 @@ const EspacoRetorno = () => {
   const [respiracaoCiclo, setRespiracaoCiclo] = useState(0);
   const audioRef = useRef(null);
 
+  // Contar usos do Espaço de Retorno para sugerir SERENA
+  const [usosEspacoRetorno, setUsosEspacoRetorno] = useState(0);
+  const [mostrarSugestaoSerena, setMostrarSugestaoSerena] = useState(false);
+
+  useEffect(() => {
+    const contarUsos = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data: userData } = await supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', user.id)
+          .single();
+        if (!userData) return;
+
+        const { count } = await supabase
+          .from('vitalis_espaco_retorno')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', userData.id);
+
+        const totalUsos = (count || 0) + 1; // +1 pelo uso actual
+        setUsosEspacoRetorno(totalUsos);
+
+        // Sugerir SERENA a partir de 3 usos (e apenas 1x a cada 5 usos)
+        const ultimaSugestao = parseInt(localStorage.getItem('vitalis-serena-sugestao-uso') || '0');
+        if (totalUsos >= 3 && totalUsos - ultimaSugestao >= 3) {
+          setMostrarSugestaoSerena(true);
+        }
+      } catch (e) {
+        // Silencioso — não bloqueia funcionalidade
+      }
+    };
+    contarUsos();
+  }, []);
+
+  const fecharSugestaoSerena = () => {
+    setMostrarSugestaoSerena(false);
+    localStorage.setItem('vitalis-serena-sugestao-uso', String(usosEspacoRetorno));
+  };
+
   // Estados emocionais
   const estados = [
     { 
@@ -508,6 +549,25 @@ const EspacoRetorno = () => {
                 </div>
               </button>
 
+              {/* Sugestão SERENA no menu de ferramentas (quando usa frequentemente) */}
+              {mostrarSugestaoSerena && (
+                <div className="mt-4 p-4 bg-gradient-to-r from-blue-500/15 to-cyan-500/15 rounded-2xl border border-blue-300/20">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">💧</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm font-medium">Já vieste aqui {usosEspacoRetorno}x</p>
+                      <p className="text-blue-200 text-xs">O SERENA ajuda-te a trabalhar as emoções na raiz.</p>
+                    </div>
+                    <button
+                      onClick={() => navigate('/serena')}
+                      className="px-3 py-1.5 bg-blue-500/50 hover:bg-blue-500/70 text-white text-xs rounded-lg font-semibold transition-colors shrink-0 active:scale-95"
+                    >
+                      Ver
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Botão registar opcional */}
               <div className="mt-8 pt-6 border-t border-white/10">
                 <button
@@ -849,6 +909,39 @@ const EspacoRetorno = () => {
               É reconhecer padrões, pausar, e escolher diferente.
             </p>
           </div>
+
+          {/* Sugestão SERENA — aparece quando usa o espaço emocional 3+ vezes */}
+          {mostrarSugestaoSerena && (
+            <div className="bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-2xl p-5 mb-6 border border-blue-300/30">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl shrink-0">💧</span>
+                <div>
+                  <h4 className="text-white font-bold text-sm mb-1">
+                    Queres trabalhar as emoções mais a fundo?
+                  </h4>
+                  <p className="text-blue-200 text-sm mb-3">
+                    O <strong>SERENA</strong> é o nosso espaço dedicado à fluidez emocional — com diário de emoções,
+                    técnicas de respiração avançadas, rituais de libertação e muito mais.
+                    Perfeito para quem quer entender por que come por emoção.
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => navigate('/serena')}
+                      className="px-4 py-2 bg-blue-500 hover:bg-blue-400 text-white rounded-xl text-sm font-semibold transition-colors active:scale-95"
+                    >
+                      Conhecer o SERENA
+                    </button>
+                    <button
+                      onClick={fecharSugestaoSerena}
+                      className="px-4 py-2 text-blue-300 hover:text-white text-sm transition-colors"
+                    >
+                      Agora não
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <button
             onClick={() => navigate('/vitalis/dashboard')}
