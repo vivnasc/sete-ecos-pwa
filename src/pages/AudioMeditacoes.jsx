@@ -1,364 +1,201 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
+import { AUDIO_SCRIPTS } from '../lib/audio-scripts-data'
 
-// ─── Catálogo completo das 39 meditações ─────────────────────
-const MEDITACOES = [
+// ─── Constantes ElevenLabs ─────────────────────────────────────
+const DEFAULT_VOICE_ID = 'fnoNuVpfClX7lHKFbyZ2'
+const MODEL_ID = 'eleven_v3'
+
+// ─── Catálogo organizado por tabs ───────────────────────────────
+const TABS = [
   {
-    eco: 'ÁUREA',
-    emoji: '✨',
-    cor: '#B8860B',
-    fundo: '#B8860B22',
-    audios: [
-      { num: '01', slug: '01-valor-nao-se-ganha',    titulo: 'O Valor Não Se Ganha',           duracao: '8 min' },
-      { num: '02', slug: '02-eu-sou-prioridade',      titulo: 'Eu Sou Prioridade',              duracao: '7 min' },
-      { num: '03', slug: '03-culpa-nao-te-pertence',  titulo: 'A Culpa Não Te Pertence',        duracao: '9 min' },
-      { num: '04', slug: '04-ritual-auto-cuidado',    titulo: 'Ritual de Auto-Cuidado',         duracao: '10 min' },
-      { num: '05', slug: '05-espelho-interior',       titulo: 'O Espelho Interior',             duracao: '8 min' },
-      { num: '06', slug: '06-abundancia-merecimento', titulo: 'Abundância e Merecimento',       duracao: '9 min' },
-      { num: '07', slug: '07-soltar-o-dia',           titulo: 'Soltar o Dia',                   duracao: '7 min' },
-      { num: '08', slug: '08-lembrete-1-minuto',      titulo: 'Lembrete de 1 Minuto',           duracao: '1 min' },
+    key: 'meditacoes',
+    label: 'Meditações',
+    grupos: [
+      { eco: 'ÁUREA',   emoji: '✨', cor: '#B8860B', folder: 'AUREA' },
+      { eco: 'IMAGO',   emoji: '⭐', cor: '#6C3483', folder: 'IMAGO' },
+      { eco: 'SERENA',  emoji: '💧', cor: '#1A6B9A', folder: 'SERENA' },
+      { eco: 'IGNIS',   emoji: '🔥', cor: '#C0392B', folder: 'IGNIS' },
+      { eco: 'VENTIS',  emoji: '🍃', cor: '#27AE60', folder: 'VENTIS' },
+      { eco: 'ECOA',    emoji: '🔊', cor: '#2980B9', folder: 'ECOA' },
+      { eco: 'VITALIS', emoji: '🌿', cor: '#2D6A4F', folder: 'VITALIS' },
     ],
   },
   {
-    eco: 'IMAGO',
-    emoji: '⭐',
-    cor: '#6C3483',
-    fundo: '#6C348322',
-    audios: [
-      { num: '09', slug: '09-sem-rotulos',       titulo: 'Sem Rótulos',                duracao: '10 min' },
-      { num: '10', slug: '10-eu-essencial',      titulo: 'O Eu Essencial',             duracao: '12 min' },
-      { num: '11', slug: '11-integracao-7-ecos', titulo: 'Integração dos 7 Ecos',      duracao: '15 min' },
-      { num: '12', slug: '12-soltar-versoes',    titulo: 'Soltar Versões Antigas',     duracao: '11 min' },
-      { num: '13', slug: '13-corpo-identidade',  titulo: 'Corpo e Identidade',         duracao: '9 min' },
-    ],
-  },
-  {
-    eco: 'SERENA',
-    emoji: '💧',
-    cor: '#1A6B9A',
-    fundo: '#1A6B9A22',
-    audios: [
-      { num: '14', slug: '14-respiracao-4-7-8',   titulo: 'Respiração 4-7-8',             duracao: '5 min' },
-      { num: '15', slug: '15-respiracao-box',      titulo: 'Respiração Box',               duracao: '5 min' },
-      { num: '16', slug: '16-respiracao-oceanica', titulo: 'Respiração Oceânica',          duracao: '6 min' },
-      { num: '17', slug: '17-suspiro-fisiologico', titulo: 'Suspiro Fisiológico',          duracao: '4 min' },
-      { num: '18', slug: '18-respiracao-alternada',titulo: 'Respiração Alternada',         duracao: '7 min' },
-      { num: '19', slug: '19-coerencia-cardiaca',  titulo: 'Coerência Cardíaca',           duracao: '5 min' },
-    ],
-  },
-  {
-    eco: 'IGNIS',
-    emoji: '🔥',
-    cor: '#C0392B',
-    fundo: '#C0392B22',
-    audios: [
-      { num: '20', slug: '20-acende-chama',    titulo: 'Acende a Chama',         duracao: '6 min' },
-      { num: '21', slug: '21-corte-que-liberta',titulo: 'O Corte que Liberta',   duracao: '8 min' },
-      { num: '22', slug: '22-foco-maximo',     titulo: 'Foco Máximo',            duracao: '7 min' },
-      { num: '23', slug: '23-manifesto-fogo',  titulo: 'Manifesto do Fogo',      duracao: '5 min' },
-      { num: '24', slug: '24-coragem-diaria',  titulo: 'Coragem Diária',         duracao: '4 min' },
-    ],
-  },
-  {
-    eco: 'VENTIS',
-    emoji: '🍃',
-    cor: '#27AE60',
-    fundo: '#27AE6022',
-    audios: [
-      { num: '25', slug: '25-ritmo-natural',    titulo: 'O Ritmo Natural',        duracao: '8 min' },
-      { num: '26', slug: '26-pausa-que-renova', titulo: 'A Pausa que Renova',     duracao: '6 min' },
-      { num: '27', slug: '27-raizes-no-vento',  titulo: 'Raízes no Vento',        duracao: '9 min' },
-      { num: '28', slug: '28-energia-equilibrio',titulo: 'Energia em Equilíbrio', duracao: '7 min' },
-      { num: '29', slug: '29-guardiao-ritmo',   titulo: 'O Guardião do Ritmo',    duracao: '5 min' },
-    ],
-  },
-  {
-    eco: 'ECOA',
-    emoji: '🔊',
-    cor: '#2980B9',
-    fundo: '#2980B922',
-    audios: [
-      { num: '35', slug: '35-silencio-que-guardas', titulo: 'O Silêncio que Guardas',   duracao: '9 min' },
-      { num: '36', slug: '36-voz-valida',           titulo: 'A Tua Voz é Válida',       duracao: '7 min' },
-      { num: '37', slug: '37-libertar-a-palavra',   titulo: 'Libertar a Palavra',       duracao: '8 min' },
-      { num: '38', slug: '38-manifesto-da-voz',     titulo: 'Manifesto da Voz',         duracao: '5 min' },
-      { num: '39', slug: '39-sussurros-coragem',    titulo: 'Sussurros de Coragem',     duracao: '6 min' },
-    ],
-  },
-  {
-    eco: 'VITALIS',
-    emoji: '🌿',
-    cor: '#2D6A4F',
-    fundo: '#2D6A4F22',
-    audios: [
-      { num: '30', slug: '30-gratidao-corpo',  titulo: 'Gratidão ao Corpo',      duracao: '8 min' },
-      { num: '31', slug: '31-relacao-comida',  titulo: 'Relação com a Comida',   duracao: '9 min' },
-      { num: '32', slug: '32-enraizado-terra', titulo: 'Enraizamento na Terra',  duracao: '7 min' },
-      { num: '33', slug: '33-corpo-sagrado',   titulo: 'O Corpo é Sagrado',      duracao: '8 min' },
-      { num: '34', slug: '34-nutrir-amor',     titulo: 'Nutrir com Amor',        duracao: '6 min' },
+    key: 'marketing',
+    label: 'Marketing',
+    grupos: [
+      { eco: 'MARKETING', emoji: '📣', cor: '#8E44AD', folder: 'MARKETING' },
     ],
   },
 ]
 
-// ─── Áudios de Marketing ───────────────────────────────────────
-const MARKETING = [
-  {
-    eco: 'TEASERS ESPELHO',
-    emoji: '🪞',
-    cor: '#8E44AD',
-    fundo: '#8E44AD22',
-    descricao: 'Para anúncios Instagram/TikTok — parágrafo emocionalmente urgente por espelho (~30s)',
-    audios: [
-      { num: 'T1', slug: 'mkt-teaser-vitalis',  titulo: 'Teaser Espelho VITALIS — O teu corpo está a gritar e tu continuas a ignorar', duracao: '~30s' },
-      { num: 'T2', slug: 'mkt-teaser-aurea',    titulo: 'Teaser Espelho ÁUREA — Gastas a tua energia em quem nunca te deu valor',     duracao: '~30s' },
-      { num: 'T3', slug: 'mkt-teaser-serena',   titulo: 'Teaser Espelho SERENA — Há uma emoção presa no teu peito há anos',           duracao: '~30s' },
-      { num: 'T4', slug: 'mkt-teaser-ignis',    titulo: 'Teaser Espelho IGNIS — Sabes o que queres, mas não tens coragem de cortar',   duracao: '~30s' },
-      { num: 'T5', slug: 'mkt-teaser-ventis',   titulo: 'Teaser Espelho VENTIS — Vives tão ocupado que esqueceste como é respirar',    duracao: '~30s' },
-      { num: 'T6', slug: 'mkt-teaser-ecoa',     titulo: 'Teaser Espelho ECOA — Calaste a tua voz para não incomodar',                 duracao: '~30s' },
-      { num: 'T7', slug: 'mkt-teaser-imago',    titulo: 'Teaser Espelho IMAGO — Quem és tu quando ninguém está a ver?',               duracao: '~30s' },
-    ],
-  },
-  {
-    eco: 'TRAILER',
-    emoji: '🎬',
-    cor: '#E74C3C',
-    fundo: '#E74C3C22',
-    descricao: 'Apresenta os 7 ecos como um caminho completo — para o topo do site ou anúncio maior (~60s)',
-    audios: [
-      { num: 'TR', slug: 'mkt-trailer-7-ecos', titulo: 'Trailer Sete Ecos — O caminho completo de transmutação', duracao: '~60s' },
-    ],
-  },
-  {
-    eco: 'CLIPS STORIES',
-    emoji: '📱',
-    cor: '#E67E22',
-    fundo: '#E67E2222',
-    descricao: 'Ultra-curtos para stories/reels — uma frase de impacto por eco (10-15s)',
-    audios: [
-      { num: 'S1', slug: 'mkt-story-vitalis',  titulo: 'Story VITALIS — O teu corpo não mente',           duracao: '~15s' },
-      { num: 'S2', slug: 'mkt-story-aurea',    titulo: 'Story ÁUREA — Tu mereces mais do que sobras',      duracao: '~15s' },
-      { num: 'S3', slug: 'mkt-story-serena',   titulo: 'Story SERENA — Sentir não é fraqueza',             duracao: '~15s' },
-      { num: 'S4', slug: 'mkt-story-ignis',    titulo: 'Story IGNIS — A disciplina é um acto de amor',     duracao: '~15s' },
-      { num: 'S5', slug: 'mkt-story-ventis',   titulo: 'Story VENTIS — Pára. Respira. Recomeça.',          duracao: '~15s' },
-      { num: 'S6', slug: 'mkt-story-ecoa',     titulo: 'Story ECOA — A tua voz tem peso',                  duracao: '~15s' },
-      { num: 'S7', slug: 'mkt-story-imago',    titulo: 'Story IMAGO — Tu não és os teus rótulos',          duracao: '~15s' },
-    ],
-  },
-  {
-    eco: 'TEASERS ECOS',
-    emoji: '🔮',
-    cor: '#16A085',
-    fundo: '#16A08522',
-    descricao: 'Mini-apresentação de cada eco — para carrosséis e reels explicativos (~30s)',
-    audios: [
-      { num: 'E1', slug: 'mkt-eco-vitalis',  titulo: 'Teaser Eco VITALIS — Nutrição consciente e corpo presente',    duracao: '~30s' },
-      { num: 'E2', slug: 'mkt-eco-aurea',    titulo: 'Teaser Eco ÁUREA — Valor próprio e presença',                  duracao: '~30s' },
-      { num: 'E3', slug: 'mkt-eco-serena',   titulo: 'Teaser Eco SERENA — Emoções em fluidez',                       duracao: '~30s' },
-      { num: 'E4', slug: 'mkt-eco-ignis',    titulo: 'Teaser Eco IGNIS — Foco, corte e vontade',                     duracao: '~30s' },
-      { num: 'E5', slug: 'mkt-eco-ventis',   titulo: 'Teaser Eco VENTIS — Energia, ritmo e natureza',                duracao: '~30s' },
-      { num: 'E6', slug: 'mkt-eco-ecoa',     titulo: 'Teaser Eco ECOA — Voz recuperada e expressão',                 duracao: '~30s' },
-      { num: 'E7', slug: 'mkt-eco-imago',    titulo: 'Teaser Eco IMAGO — Identidade e essência',                     duracao: '~30s' },
-    ],
-  },
-  {
-    eco: 'CHAMADAS À ACÇÃO',
-    emoji: '📣',
-    cor: '#D4AC0D',
-    fundo: '#D4AC0D22',
-    descricao: 'Para o fim de anúncios — 3 variações de CTA com tom da Vivianne',
-    audios: [
-      { num: 'C1', slug: 'mkt-cta-comeca-agora',   titulo: 'CTA — Começa agora, o primeiro passo é grátis',         duracao: '~15s' },
-      { num: 'C2', slug: 'mkt-cta-diagnostico',     titulo: 'CTA — Faz o teu diagnóstico gratuito no Lumina',       duracao: '~15s' },
-      { num: 'C3', slug: 'mkt-cta-transforma',      titulo: 'CTA — A tua transformação começa com uma decisão',     duracao: '~15s' },
-    ],
-  },
-]
-
-// Todos os grupos combinados
-const TODOS_GRUPOS = [...MEDITACOES, ...MARKETING]
-
-// ─── Componente de card de cada áudio ────────────────────────
-function AudioCard({ audio, cor, fundo }) {
-  const url = `/audio/${audio.slug}.mp3`
-  const [status, setStatus] = useState('verificando') // verificando | existe | ausente
-  const audioRef = useRef(null)
-  const [playing, setPlaying] = useState(false)
-
-  useEffect(() => {
-    fetch(url, { method: 'HEAD' })
-      .then(r => setStatus(r.ok ? 'existe' : 'ausente'))
-      .catch(() => setStatus('ausente'))
-  }, [url])
-
-  function togglePlay() {
-    const el = audioRef.current
-    if (!el) return
-    if (playing) {
-      el.pause()
-      setPlaying(false)
-    } else {
-      el.play()
-      setPlaying(true)
+// Construir lista flat de todos os áudios com os scripts
+function buildAudioList() {
+  const list = []
+  for (const tab of TABS) {
+    for (const grupo of tab.grupos) {
+      const scripts = AUDIO_SCRIPTS[grupo.folder] || []
+      for (const s of scripts) {
+        list.push({
+          slug: s.slug,
+          titulo: formatTitulo(s.slug),
+          speed: s.speed,
+          stability: s.stability / 100,
+          script: s.script,
+          eco: grupo.eco,
+          emoji: grupo.emoji,
+          cor: grupo.cor,
+          tab: tab.key,
+        })
+      }
     }
   }
-
-  function baixar() {
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${audio.slug}.mp3`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-  }
-
-  const existe = status === 'existe'
-
-  return (
-    <div
-      className="rounded-xl p-3 sm:p-4 border transition-colors"
-      style={{
-        background: fundo,
-        borderColor: existe ? cor + '66' : '#1f293766',
-        opacity: status === 'verificando' ? 0.7 : 1,
-      }}
-    >
-      <div className="flex items-center gap-3">
-        {/* Número */}
-        <span
-          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-          style={{ background: cor + '44', color: cor }}
-        >
-          {audio.num}
-        </span>
-
-        {/* Título + duração */}
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-white truncate">{audio.titulo}</p>
-          <p className="text-xs text-gray-400">{audio.duracao}</p>
-        </div>
-
-        {/* Acções */}
-        {status === 'verificando' && (
-          <span className="text-xs text-gray-500">…</span>
-        )}
-
-        {existe && (
-          <div className="flex gap-2 flex-shrink-0">
-            <button
-              onClick={togglePlay}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all active:scale-95"
-              style={{ background: cor + '44', color: cor }}
-              title={playing ? 'Pausar' : 'Ouvir prévia'}
-            >
-              {playing ? '⏸' : '▶'}
-            </button>
-            <button
-              onClick={baixar}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all active:scale-95"
-              style={{ background: cor + '44', color: cor }}
-              title="Descarregar"
-            >
-              ⬇
-            </button>
-          </div>
-        )}
-
-        {status === 'ausente' && (
-          <span className="text-xs text-gray-600 flex-shrink-0">⏳ aguarda</span>
-        )}
-      </div>
-
-      {/* Player oculto */}
-      {existe && (
-        <audio
-          ref={audioRef}
-          src={url}
-          onEnded={() => setPlaying(false)}
-          preload="none"
-        />
-      )}
-    </div>
-  )
+  return list
 }
 
-// ─── Página principal ─────────────────────────────────────────
+function formatTitulo(slug) {
+  return slug
+    .replace(/^\d+-/, '')
+    .replace(/^mkt-/, '')
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, l => l.toUpperCase())
+}
+
+const ALL_AUDIOS = buildAudioList()
+
+// ─── Componente principal ────────────────────────────────────────
 export default function AudioMeditacoes() {
-  const [filtro, setFiltro] = useState('TODOS')
-  const [downloading, setDownloading] = useState(false)
-  const [progresso, setProgresso] = useState({ atual: 0, total: 0, ficheiro: '' })
-  const [tab, setTab] = useState('meditacoes') // meditacoes | marketing | tudo
+  const [apiKey, setApiKey] = useState('')
+  const [voiceId, setVoiceId] = useState(DEFAULT_VOICE_ID)
+  const [mostrarKey, setMostrarKey] = useState(false)
+  const [tab, setTab] = useState('meditacoes')
+  const [estados, setEstados] = useState({}) // slug → 'gerando' | 'concluido' | 'erro:msg'
+  const [gerandoTodos, setGerandoTodos] = useState(false)
+  const blobsRef = useRef({}) // slug → Blob (para ZIP)
+  const cancelRef = useRef(false)
 
-  const gruposActivos = tab === 'meditacoes' ? MEDITACOES
-    : tab === 'marketing' ? MARKETING
-    : TODOS_GRUPOS
+  const audiosTab = ALL_AUDIOS.filter(a => a.tab === tab)
+  const tabInfo = TABS.find(t => t.key === tab)
 
-  const grupos = filtro === 'TODOS'
-    ? gruposActivos
-    : gruposActivos.filter(g => g.eco === filtro)
+  // Agrupar por eco
+  const grupos = []
+  const seen = new Set()
+  for (const a of audiosTab) {
+    if (!seen.has(a.eco)) {
+      seen.add(a.eco)
+      grupos.push({ eco: a.eco, emoji: a.emoji, cor: a.cor, audios: audiosTab.filter(x => x.eco === a.eco) })
+    }
+  }
 
-  const totalMeditacoes = MEDITACOES.reduce((s, g) => s + g.audios.length, 0)
-  const totalMarketing = MARKETING.reduce((s, g) => s + g.audios.length, 0)
-  const totalActivo = gruposActivos.reduce((s, g) => s + g.audios.length, 0)
+  function setEstado(slug, estado) {
+    setEstados(prev => ({ ...prev, [slug]: estado }))
+  }
 
-  // Reset filtro quando muda de tab
-  useEffect(() => { setFiltro('TODOS') }, [tab])
+  async function gerarAudio(audio) {
+    if (!apiKey.trim()) return
 
-  const descarregarTudo = useCallback(async () => {
-    setDownloading(true)
+    setEstado(audio.slug, 'gerando')
+
+    try {
+      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId.trim()}`, {
+        method: 'POST',
+        headers: {
+          'xi-api-key': apiKey.trim(),
+          'Content-Type': 'application/json',
+          'Accept': 'audio/mpeg',
+        },
+        body: JSON.stringify({
+          text: audio.script,
+          model_id: MODEL_ID,
+          voice_settings: {
+            stability: audio.stability,
+            similarity_boost: 0.80,
+            style: 0.15,
+            use_speaker_boost: true,
+            speed: audio.speed,
+          },
+        }),
+      })
+
+      if (!res.ok) {
+        const err = await res.text()
+        setEstado(audio.slug, `erro:API ${res.status} — ${err.slice(0, 100)}`)
+        return null
+      }
+
+      const blob = await res.blob()
+      blobsRef.current[audio.slug] = blob
+
+      // Download automático
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${audio.slug}.mp3`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
+      setEstado(audio.slug, 'concluido')
+      return blob
+    } catch (err) {
+      setEstado(audio.slug, `erro:${err.message}`)
+      return null
+    }
+  }
+
+  async function gerarTodos() {
+    if (!apiKey.trim()) return
+    setGerandoTodos(true)
+    cancelRef.current = false
+
+    for (const audio of audiosTab) {
+      if (cancelRef.current) break
+      if (estados[audio.slug] === 'concluido') continue
+      if (!audio.script) {
+        setEstado(audio.slug, 'erro:Sem texto — escreve o script no .md')
+        continue
+      }
+
+      await gerarAudio(audio)
+      // Pausa de 3s para rate limiting
+      if (!cancelRef.current) {
+        await new Promise(r => setTimeout(r, 3000))
+      }
+    }
+
+    setGerandoTodos(false)
+  }
+
+  function pararGeracao() {
+    cancelRef.current = true
+    setGerandoTodos(false)
+  }
+
+  const descarregarZip = useCallback(async () => {
     const zip = new JSZip()
-    const todosAudios = []
+    let count = 0
 
-    // Recolher todos os áudios dos grupos visíveis
-    for (const grupo of grupos) {
-      for (const audio of grupo.audios) {
-        todosAudios.push({ ...audio, eco: grupo.eco })
+    for (const audio of audiosTab) {
+      const blob = blobsRef.current[audio.slug]
+      if (blob) {
+        zip.file(`${audio.slug}.mp3`, blob)
+        count++
       }
     }
 
-    setProgresso({ atual: 0, total: todosAudios.length, ficheiro: '' })
-
-    let adicionados = 0
-    let falhados = 0
-
-    for (let i = 0; i < todosAudios.length; i++) {
-      const audio = todosAudios[i]
-      const url = `/audio/${audio.slug}.mp3`
-      setProgresso({ atual: i + 1, total: todosAudios.length, ficheiro: audio.titulo })
-
-      try {
-        const resp = await fetch(url)
-        if (resp.ok) {
-          const blob = await resp.blob()
-          const pasta = audio.eco.replace(/\s+/g, '-')
-          zip.file(`${pasta}/${audio.slug}.mp3`, blob)
-          adicionados++
-        } else {
-          falhados++
-        }
-      } catch {
-        falhados++
-      }
-    }
-
-    if (adicionados === 0) {
-      setDownloading(false)
-      setProgresso({ atual: 0, total: 0, ficheiro: '' })
-      return
-    }
-
-    setProgresso({ atual: todosAudios.length, total: todosAudios.length, ficheiro: 'A criar ZIP...' })
+    if (count === 0) return
 
     const zipBlob = await zip.generateAsync({ type: 'blob' })
-    const nomeZip = tab === 'marketing' ? 'sete-ecos-marketing-audios.zip'
-      : tab === 'meditacoes' ? 'sete-ecos-meditacoes.zip'
-      : 'sete-ecos-todos-audios.zip'
-    saveAs(zipBlob, nomeZip)
+    saveAs(zipBlob, `sete-ecos-${tab}.zip`)
+  }, [audiosTab, tab])
 
-    setDownloading(false)
-    setProgresso({ atual: 0, total: 0, ficheiro: falhados > 0 ? `${falhados} ficheiros ainda não disponíveis` : '' })
-  }, [grupos, tab])
+  const gerados = audiosTab.filter(a => estados[a.slug] === 'concluido').length
+  const totalTab = audiosTab.length
+  const alguemGerando = audiosTab.some(a => estados[a.slug] === 'gerando')
 
   return (
     <div className="min-h-screen bg-gray-950 text-white p-4 sm:p-6">
@@ -373,63 +210,115 @@ export default function AudioMeditacoes() {
             Central de Áudios 🎙️
           </h1>
           <p className="text-gray-400 text-sm">
-            {totalMeditacoes} meditações + {totalMarketing} clips de marketing — ElevenLabs V3
+            {ALL_AUDIOS.length} áudios — gera com a tua voz ElevenLabs V3
           </p>
         </div>
 
-        {/* Tabs: Meditações / Marketing / Tudo */}
-        <div className="flex gap-1 mb-5 bg-gray-900 rounded-xl p-1">
-          {[
-            { key: 'meditacoes', label: `Meditações (${totalMeditacoes})` },
-            { key: 'marketing', label: `Marketing (${totalMarketing})` },
-            { key: 'tudo', label: `Tudo (${totalMeditacoes + totalMarketing})` },
-          ].map(t => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className="flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all active:scale-95"
-              style={{
-                background: tab === t.key ? '#4B0082' : 'transparent',
-                color: tab === t.key ? 'white' : '#9ca3af',
-              }}
-            >
-              {t.label}
-            </button>
-          ))}
+        {/* API Key + Voice ID */}
+        <div className="bg-gray-900 rounded-xl p-4 mb-5 border border-gray-800 space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              API Key do ElevenLabs
+            </label>
+            <div className="flex gap-2">
+              <input
+                type={mostrarKey ? 'text' : 'password'}
+                value={apiKey}
+                onChange={e => setApiKey(e.target.value)}
+                placeholder="sk_..."
+                className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
+              />
+              <button
+                onClick={() => setMostrarKey(!mostrarKey)}
+                className="px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-400 hover:text-white text-sm transition-colors"
+              >
+                {mostrarKey ? '🙈' : '👁️'}
+              </button>
+            </div>
+            <p className="text-xs text-gray-600 mt-1">
+              Não é guardada — só usada nesta sessão.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Voice ID
+            </label>
+            <input
+              type="text"
+              value={voiceId}
+              onChange={e => setVoiceId(e.target.value)}
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-purple-500"
+            />
+          </div>
         </div>
 
-        {/* Botão descarregar tudo */}
-        <button
-          onClick={descarregarTudo}
-          disabled={downloading}
-          className="w-full mb-5 py-3 rounded-xl font-bold text-sm transition-all active:scale-[0.98] disabled:opacity-60"
-          style={{
-            background: downloading ? '#1f2937' : 'linear-gradient(135deg, #4B0082, #8E44AD)',
-            color: 'white',
-          }}
-        >
-          {downloading
-            ? `A descarregar ${progresso.atual}/${progresso.total}...`
-            : `⬇ Descarregar ${filtro === 'TODOS' ? 'Tudo' : filtro} em ZIP (${
-                filtro === 'TODOS'
-                  ? totalActivo
-                  : grupos.reduce((s, g) => s + g.audios.length, 0)
-              } ficheiros)`
-          }
-        </button>
+        {/* Tabs */}
+        <div className="flex gap-1 mb-5 bg-gray-900 rounded-xl p-1">
+          {TABS.map(t => {
+            const count = ALL_AUDIOS.filter(a => a.tab === t.key).length
+            const done = ALL_AUDIOS.filter(a => a.tab === t.key && estados[a.slug] === 'concluido').length
+            return (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className="flex-1 py-2.5 px-3 rounded-lg text-xs font-semibold transition-all active:scale-95"
+                style={{
+                  background: tab === t.key ? '#4B0082' : 'transparent',
+                  color: tab === t.key ? 'white' : '#9ca3af',
+                }}
+              >
+                {t.label} ({done}/{count})
+              </button>
+            )
+          })}
+        </div>
 
-        {/* Progresso */}
-        {downloading && (
-          <div className="mb-5 bg-gray-900 rounded-xl p-3 border border-gray-800">
-            <div className="flex justify-between text-xs text-gray-400 mb-2">
-              <span>{progresso.ficheiro}</span>
-              <span>{progresso.atual}/{progresso.total}</span>
+        {/* Gerar todos + ZIP */}
+        <div className="flex gap-2 mb-5">
+          <button
+            onClick={gerandoTodos ? pararGeracao : gerarTodos}
+            disabled={!apiKey.trim() || (!gerandoTodos && gerados === totalTab)}
+            className="flex-1 py-3 rounded-xl font-bold text-sm transition-all active:scale-[0.98] disabled:opacity-50"
+            style={{
+              background: gerandoTodos
+                ? '#C0392B'
+                : gerados === totalTab
+                ? '#1a6b2a'
+                : 'linear-gradient(135deg, #4B0082, #8E44AD)',
+              color: 'white',
+            }}
+          >
+            {gerandoTodos
+              ? `⏸ Parar (${gerados}/${totalTab})`
+              : gerados === totalTab
+              ? `✅ Todos gerados!`
+              : `🎵 Gerar todos desta aba (${totalTab})`
+            }
+          </button>
+
+          {gerados > 0 && (
+            <button
+              onClick={descarregarZip}
+              className="px-4 py-3 rounded-xl font-bold text-sm transition-all active:scale-[0.98] bg-gray-800 hover:bg-gray-700 text-white"
+            >
+              ⬇ ZIP ({gerados})
+            </button>
+          )}
+        </div>
+
+        {/* Progresso geral */}
+        {(gerandoTodos || gerados > 0) && (
+          <div className="mb-5">
+            <div className="flex justify-between text-xs text-gray-400 mb-1">
+              <span>{gerandoTodos ? 'A gerar...' : 'Progresso'}</span>
+              <span>{gerados}/{totalTab}</span>
             </div>
             <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all"
                 style={{
-                  width: `${progresso.total > 0 ? (progresso.atual / progresso.total) * 100 : 0}%`,
+                  width: `${totalTab > 0 ? (gerados / totalTab) * 100 : 0}%`,
                   background: 'linear-gradient(90deg, #4B0082, #8E44AD)',
                 }}
               />
@@ -437,67 +326,27 @@ export default function AudioMeditacoes() {
           </div>
         )}
 
-        {/* Info como gerar */}
-        <div className="bg-gray-900 rounded-xl p-4 mb-6 border border-gray-800 text-sm text-gray-300">
-          <p className="font-medium mb-2">Para gerar os ficheiros:</p>
-          <ol className="text-xs text-gray-400 space-y-1 list-decimal list-inside font-mono">
-            <li>Adiciona <span className="text-purple-300">ELEVENLABS_API_KEY=sk_...</span> ao .env</li>
-            <li>Corre <span className="text-purple-300">node scripts/gerar-audios-elevenlabs.js</span></li>
-            <li>Os MP3 ficam em <span className="text-purple-300">public/audio/</span></li>
-            <li>Faz deploy → os ✅ aparecem aqui</li>
-          </ol>
-        </div>
-
-        {/* Filtro por Eco/Categoria */}
-        <div className="flex gap-2 flex-wrap mb-6">
-          <button
-            onClick={() => setFiltro('TODOS')}
-            className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all active:scale-95"
-            style={{
-              background: filtro === 'TODOS' ? 'white' : '#1f2937',
-              color: filtro === 'TODOS' ? '#111' : '#9ca3af',
-            }}
-          >
-            Todos ({totalActivo})
-          </button>
-          {gruposActivos.map(g => (
-            <button
-              key={g.eco}
-              onClick={() => setFiltro(g.eco)}
-              className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all active:scale-95"
-              style={{
-                background: filtro === g.eco ? g.cor : g.cor + '22',
-                color: filtro === g.eco ? 'white' : g.cor,
-              }}
-            >
-              {g.emoji} {g.eco} ({g.audios.length})
-            </button>
-          ))}
-        </div>
-
-        {/* Grupos */}
+        {/* Grupos de áudios */}
         <div className="space-y-6">
           {grupos.map(grupo => (
             <div key={grupo.eco}>
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-3">
                 <span className="text-lg">{grupo.emoji}</span>
                 <h2 className="text-sm font-bold" style={{ color: grupo.cor }}>
                   {grupo.eco}
                 </h2>
                 <span className="text-xs text-gray-600">
-                  {grupo.audios.length} faixas
+                  {grupo.audios.filter(a => estados[a.slug] === 'concluido').length}/{grupo.audios.length}
                 </span>
               </div>
-              {grupo.descricao && (
-                <p className="text-xs text-gray-500 mb-3 ml-7">{grupo.descricao}</p>
-              )}
               <div className="space-y-2">
                 {grupo.audios.map(audio => (
                   <AudioCard
                     key={audio.slug}
                     audio={audio}
-                    cor={grupo.cor}
-                    fundo={grupo.fundo}
+                    estado={estados[audio.slug]}
+                    onGerar={() => gerarAudio(audio)}
+                    apiKey={apiKey}
                   />
                 ))}
               </div>
@@ -505,17 +354,73 @@ export default function AudioMeditacoes() {
           ))}
         </div>
 
-        {/* Link para a outra página de áudio */}
+        {/* Link para sons de drone */}
         <div className="mt-8 text-center">
           <Link
             to="/coach/audio-ecos"
             className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
           >
-            → Sons de Drone dos Ecos (página anterior)
+            → Sons de Drone dos Ecos
           </Link>
         </div>
 
       </div>
+    </div>
+  )
+}
+
+// ─── Card de cada áudio ──────────────────────────────────────────
+function AudioCard({ audio, estado, onGerar, apiKey }) {
+  const [expandido, setExpandido] = useState(false)
+  const gerando = estado === 'gerando'
+  const concluido = estado === 'concluido'
+  const erro = estado?.startsWith('erro:') ? estado.replace('erro:', '') : null
+  const semTexto = !audio.script
+
+  return (
+    <div
+      className="rounded-xl p-3 sm:p-4 border transition-colors"
+      style={{
+        background: audio.cor + '11',
+        borderColor: concluido ? '#1a6b2a88' : erro ? '#7f1d1d88' : '#1f293744',
+      }}
+    >
+      <div className="flex items-center gap-3">
+        {/* Slug/número */}
+        <span
+          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+          style={{ background: audio.cor + '33', color: audio.cor }}
+        >
+          {concluido ? '✅' : gerando ? '⏳' : audio.emoji}
+        </span>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0" onClick={() => setExpandido(!expandido)} style={{ cursor: 'pointer' }}>
+          <p className="text-sm font-semibold text-white truncate">{audio.titulo}</p>
+          <p className="text-xs text-gray-500 font-mono">{audio.slug}.mp3</p>
+          {erro && <p className="text-xs text-red-400 mt-0.5 truncate">⚠️ {erro}</p>}
+        </div>
+
+        {/* Botão gerar */}
+        <button
+          onClick={onGerar}
+          disabled={gerando || !apiKey.trim() || semTexto}
+          className="flex-shrink-0 px-3 py-2 rounded-lg text-xs font-semibold transition-all active:scale-95 disabled:opacity-40"
+          style={{
+            background: concluido ? '#1a6b2a' : gerando ? '#374151' : audio.cor + 'cc',
+            color: 'white',
+          }}
+        >
+          {gerando ? '⏳' : concluido ? '✅' : semTexto ? '—' : 'Gerar'}
+        </button>
+      </div>
+
+      {/* Script expandido */}
+      {expandido && (
+        <div className="mt-3 p-3 bg-gray-900 rounded-lg text-xs text-gray-400 max-h-40 overflow-y-auto font-mono leading-relaxed">
+          {audio.script || <span className="text-gray-600 italic">Sem texto — escreve o script no ficheiro .md</span>}
+        </div>
+      )}
     </div>
   )
 }
