@@ -1392,7 +1392,7 @@ function ModoSimples({ copiar, copiado, onVerTudo, prog }) {
             return (
               <button
                 key={i}
-                onClick={() => setDiaOffset(Math.round((dData - new Date(new Date().toISOString().split('T')[0])) / 86400000))}
+                onClick={() => { const hoje = new Date(); hoje.setHours(0,0,0,0); const d = new Date(dData); d.setHours(0,0,0,0); setDiaOffset(Math.round((d - hoje) / 86400000)); }}
                 className={`flex-shrink-0 flex flex-col items-center gap-0.5 px-2.5 py-2 rounded-xl text-[10px] font-bold transition-all active:scale-95 ${
                   isSelected
                     ? 'bg-[#1a1a2e] text-white shadow-lg'
