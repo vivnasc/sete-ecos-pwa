@@ -69,6 +69,10 @@ export default function RespiracaoGuiada() {
   const intervalRef = useRef(null)
   const startTimeRef = useRef(null)
 
+  // Audio sync — when audio is playing, cycles loop until audio ends
+  const [audioPlaying, setAudioPlaying] = useState(false)
+  const audioPlayingRef = useRef(false)
+
   // Saving state
   const [saving, setSaving] = useState(false)
 
@@ -132,7 +136,12 @@ export default function RespiracaoGuiada() {
         setCicloActual(prevCiclo => {
           const nextCiclo = prevCiclo + 1
           if (nextCiclo >= totalCiclos) {
-            // Session complete
+            // If audio is still playing, loop back to cycle 0
+            if (audioPlayingRef.current) {
+              setTempoRestante(tecnicaEscolhida.passos[0].duracao)
+              return 0
+            }
+            // Session complete (no audio or audio already ended)
             finalizarSessao()
             return prevCiclo
           }
@@ -151,8 +160,22 @@ export default function RespiracaoGuiada() {
 
   const finalizarSessao = useCallback(() => {
     setSessaoActiva(false)
+    setAudioPlaying(false)
+    audioPlayingRef.current = false
     if (intervalRef.current) clearInterval(intervalRef.current)
     setFase('pos_check')
+  }, [])
+
+  // When audio ends, finalize session (if cycles are still looping for audio)
+  const handleAudioEnd = useCallback(() => {
+    setAudioPlaying(false)
+    audioPlayingRef.current = false
+    // Session will finalize at end of current cycle via avancar()
+  }, [])
+
+  const handleAudioPlayingChange = useCallback((isPlaying) => {
+    setAudioPlaying(isPlaying)
+    audioPlayingRef.current = isPlaying
   }, [])
 
   const handlePausar = () => {
@@ -257,6 +280,8 @@ export default function RespiracaoGuiada() {
             onPausar={handlePausar}
             onCancelar={handleCancelar}
             slug={tecnicaEscolhida.slug}
+            onAudioEnd={handleAudioEnd}
+            onAudioPlayingChange={handleAudioPlayingChange}
           />
         )}
 
@@ -404,7 +429,7 @@ function FeelingCheck({ titulo, subtitulo, onSelect }) {
 
 // --- Sessao Activa (Breathing Session) ---
 
-function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausada, onPausar, onCancelar, slug }) {
+function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausada, onPausar, onCancelar, slug, onAudioEnd, onAudioPlayingChange }) {
   const passoInfo = tecnica.passos[passoActual]
   const accao = passoInfo.accao
   const duracao = passoInfo.duracao
@@ -453,7 +478,7 @@ function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausad
       {/* Áudio narrado (se disponível no Storage) */}
       {slug && (
         <div className="absolute top-16 left-6 right-6 z-10">
-          <AudioPlayerBar eco="serena" slug={slug} accentColor={SERENA_ACCENT} />
+          <AudioPlayerBar eco="serena" slug={slug} accentColor={SERENA_ACCENT} autoPlay onEnd={onAudioEnd} onPlayingChange={onAudioPlayingChange} />
         </div>
       )}
 
@@ -464,7 +489,7 @@ function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausad
 
       {/* Cycle counter */}
       <p className="relative z-10 text-xs mb-8" style={{ color: '#4d6a75' }}>
-        Ciclo {cicloActual + 1} de {tecnica.ciclos}
+        Ciclo {cicloActual + 1}
       </p>
 
       {/* Breathing circle */}

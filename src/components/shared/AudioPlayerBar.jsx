@@ -12,13 +12,14 @@ import { getAudioUrl } from '../../lib/shared/audioStorage'
  *  - onPlay: callback quando áudio começa
  *  - onEnd: callback quando áudio termina
  */
-export default function AudioPlayerBar({ eco, slug, accentColor = '#4B0082', onPlay, onEnd, titulo }) {
+export default function AudioPlayerBar({ eco, slug, accentColor = '#4B0082', onPlay, onEnd, titulo, autoPlay, onPlayingChange }) {
   const audioRef = useRef(null)
   const [disponivel, setDisponivel] = useState(false)
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
   const [downloading, setDownloading] = useState(false)
+  const autoPlayedRef = useRef(false)
 
   const url = slug ? getAudioUrl(eco, slug) : null
 
@@ -68,6 +69,23 @@ export default function AudioPlayerBar({ eco, slug, accentColor = '#4B0082', onP
       audio.removeEventListener('error', onError)
     }
   }, [disponivel, onEnd])
+
+  // Auto-play when disponivel and autoPlay prop is set
+  useEffect(() => {
+    if (autoPlay && disponivel && audioRef.current && !autoPlayedRef.current) {
+      autoPlayedRef.current = true
+      audioRef.current.play().then(() => {
+        setPlaying(true)
+        onPlay?.()
+        onPlayingChange?.(true)
+      }).catch(() => {})
+    }
+  }, [autoPlay, disponivel])
+
+  // Notify parent of playing state changes
+  useEffect(() => {
+    onPlayingChange?.(playing)
+  }, [playing])
 
   const togglePlay = () => {
     const audio = audioRef.current
