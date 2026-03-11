@@ -204,13 +204,22 @@ function AudioCard({ audio, cor, fundo }) {
     }
   }
 
-  function baixar() {
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${audio.slug}.mp3`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
+  async function baixar() {
+    try {
+      const resp = await fetch(url)
+      const blob = await resp.blob()
+      const blobUrl = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = blobUrl
+      a.download = `${audio.slug}.mp3`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(blobUrl)
+    } catch {
+      // Fallback: abrir directamente
+      window.open(url, '_blank')
+    }
   }
 
   const existe = status === 'existe'
