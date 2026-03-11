@@ -12,7 +12,7 @@ import { getAudioUrl } from '../../lib/shared/audioStorage'
  *  - onPlay: callback quando áudio começa
  *  - onEnd: callback quando áudio termina
  */
-export default function AudioPlayerBar({ eco, slug, accentColor = '#4B0082', onPlay, onEnd, titulo, autoPlay, onPlayingChange, onNotAvailable }) {
+export default function AudioPlayerBar({ eco, slug, accentColor = '#4B0082', onPlay, onEnd, titulo, autoPlay, onPlayingChange, onNotAvailable, onAvailable }) {
   const audioRef = useRef(null)
   const [disponivel, setDisponivel] = useState(false)
   const [playing, setPlaying] = useState(false)
@@ -32,8 +32,12 @@ export default function AudioPlayerBar({ eco, slug, accentColor = '#4B0082', onP
     // Verificar se o áudio existe com HEAD request
     fetch(url, { method: 'HEAD' })
       .then(res => {
-        if (res.ok) setDisponivel(true)
-        else onNotAvailable?.()
+        if (res.ok) {
+          setDisponivel(true)
+          onAvailable?.()
+        } else {
+          onNotAvailable?.()
+        }
       })
       .catch(() => { onNotAvailable?.() })
   }, [url])
