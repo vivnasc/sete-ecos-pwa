@@ -12,7 +12,7 @@ import { getAudioUrl } from '../../lib/shared/audioStorage'
  *  - onPlay: callback quando áudio começa
  *  - onEnd: callback quando áudio termina
  */
-export default function AudioPlayerBar({ eco, slug, accentColor = '#4B0082', onPlay, onEnd, titulo, autoPlay, onPlayingChange }) {
+export default function AudioPlayerBar({ eco, slug, accentColor = '#4B0082', onPlay, onEnd, titulo, autoPlay, onPlayingChange, onNotAvailable }) {
   const audioRef = useRef(null)
   const [disponivel, setDisponivel] = useState(false)
   const [playing, setPlaying] = useState(false)
@@ -33,8 +33,9 @@ export default function AudioPlayerBar({ eco, slug, accentColor = '#4B0082', onP
     fetch(url, { method: 'HEAD' })
       .then(res => {
         if (res.ok) setDisponivel(true)
+        else onNotAvailable?.()
       })
-      .catch(() => {})
+      .catch(() => { onNotAvailable?.() })
   }, [url])
 
   useEffect(() => {
