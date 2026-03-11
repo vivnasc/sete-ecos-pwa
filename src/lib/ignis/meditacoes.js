@@ -10,6 +10,7 @@
 export const MEDITACOES_IGNIS = [
   {
     id: 'acende_chama',
+    slug: '20-acende-chama',
     nome: 'Acende a Tua Chama Interior',
     descricao: 'Meditação para activar a tua força de vontade e clareza de propósito.',
     duracao_min: 8,
@@ -41,6 +42,7 @@ export const MEDITACOES_IGNIS = [
   },
   {
     id: 'corte_que_liberta',
+    slug: '21-corte-que-liberta',
     nome: 'O Corte Que Liberta',
     descricao: 'Meditação para soltar o que drena a tua energia e te afasta do teu centro.',
     duracao_min: 6,
@@ -69,6 +71,7 @@ export const MEDITACOES_IGNIS = [
   },
   {
     id: 'foco_maximo',
+    slug: '22-foco-maximo',
     nome: 'Sessão de Foco Máximo',
     descricao: 'Meditação curta para entrar em estado de concentração total antes de uma tarefa.',
     duracao_min: 5,
@@ -93,6 +96,7 @@ export const MEDITACOES_IGNIS = [
   },
   {
     id: 'manifesto_fogo',
+    slug: '23-manifesto-fogo',
     nome: 'Manifesto do Fogo',
     descricao: 'Afirmações diárias para activar a tua vontade, foco e alinhamento interior.',
     duracao_min: 4,
@@ -119,6 +123,7 @@ export const MEDITACOES_IGNIS = [
   },
   {
     id: 'coragem_diaria',
+    slug: '24-coragem-diaria',
     nome: 'Coragem Diária',
     descricao: 'Afirmações para os dias difíceis, quando precisas de força para continuar.',
     duracao_min: 3,

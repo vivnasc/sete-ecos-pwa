@@ -90,6 +90,7 @@ export const IMAGO_GAMIFICATION = {
 export const MEDITACOES_ESSENCIA = [
   {
     id: 'sem_rotulos',
+    slug: '09-sem-rotulos',
     nome: 'Quem sou sem rótulos?',
     descricao: 'Meditação guiada para explorar a identidade além de papéis e rótulos sociais.',
     duracao_min: 10,
@@ -106,6 +107,7 @@ export const MEDITACOES_ESSENCIA = [
   },
   {
     id: 'eu_essencial',
+    slug: '10-eu-essencial',
     nome: 'O meu eu essencial',
     descricao: 'Conectar com a versão mais autêntica de si, antes das máscaras.',
     duracao_min: 12,
@@ -124,6 +126,7 @@ export const MEDITACOES_ESSENCIA = [
   },
   {
     id: 'integracao_7_ecos',
+    slug: '11-integracao-7-ecos',
     nome: 'Integração dos 7 Ecos',
     descricao: 'Meditação de integração que percorre cada eco e unifica a experiência.',
     duracao_min: 15,
@@ -143,6 +146,7 @@ export const MEDITACOES_ESSENCIA = [
   },
   {
     id: 'soltar_versoes',
+    slug: '12-soltar-versoes',
     nome: 'Soltar versões antigas',
     descricao: 'Ritual meditativo para libertar identidades que já não servem.',
     duracao_min: 12,
@@ -161,6 +165,7 @@ export const MEDITACOES_ESSENCIA = [
   },
   {
     id: 'corpo_identidade',
+    slug: '13-corpo-identidade',
     nome: 'O corpo como identidade',
     descricao: 'Exploração da relação entre corpo e sentido de eu.',
     duracao_min: 8,
