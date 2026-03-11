@@ -92,6 +92,26 @@ const CONTEUDO_CORPO = [
     corpo: 'Resolves o corpo — a emoção sabota. Resolves a emoção — a identidade bloqueia. Resolves a identidade — falta energia. É um ciclo. A Sete Ecos é a saída do ciclo.',
     cta: 'Não é melhorar partes. É integrar o todo.',
   },
+  {
+    hook: 'Pergunta incómoda: se tirasses todos os papéis, ficava o quê?',
+    corpo: 'Mãe, profissional, esposa, filha, amiga. Tira tudo. O que fica? Se a resposta te assusta, é porque nunca tiveste espaço para a descobrir. A Sete Ecos começa aí — na essência, não nos papéis.',
+    cta: 'O LUMINA mostra-te onde estás. O sistema mostra-te quem és. — Vivianne',
+  },
+  {
+    hook: 'Não tens de escolher entre corpo e mente. Isso é uma falsa escolha.',
+    corpo: 'A indústria separou: ou cuidas do corpo (ginásio, dieta) ou cuidas da mente (terapia, meditação). Como se fosses duas pessoas. Não és. E enquanto tratares partes, perdes energia na fragmentação.',
+    cta: 'Um sistema. Todas as dimensões. Começa com o LUMINA.',
+  },
+  {
+    hook: 'Uma pessoa escreveu-me: "Finalmente algo que não me subestima."',
+    corpo: 'Ela tinha tentado apps de hábitos, planners, bullet journals, terapia, coaching. Tudo funcionava parcialmente. Porque tudo tratava uma fatia. Ela não precisava de mais fatias. Precisava do bolo inteiro.',
+    cta: 'Se já tentaste tudo por partes, experimenta por inteiro. — Vivianne',
+  },
+  {
+    hook: 'A coerência é o luxo que mais falta nesta era de excesso.',
+    corpo: 'Tens acesso a tudo: informação, apps, cursos, podcasts. E quanto mais acesso tens, mais fragmentada ficas. Porque acumular recursos sem integração é coleccionar ferramentas sem casa.',
+    cta: 'A Sete Ecos não te dá mais. Organiza o que já tens. — Vivianne',
+  },
 ];
 
 // PROFUNDIDADE — para quem já fez muita coisa e procura algo com substância
@@ -131,6 +151,31 @@ const CONTEUDO_EMOCIONAL = [
     corpo: 'Não é falta de motivação. Não é preguiça. Não é depressão. É fragmentação. A sensação de que cada parte da tua vida está a funcionar — mas não juntas. Eu conheço essa sensação.',
     cta: 'O LUMINA é o primeiro passo. 2 minutos. Para ti.',
   },
+  {
+    hook: 'Não é mais uma conta de desenvolvimento pessoal. É um sistema.',
+    corpo: 'Não vou publicar citações de outras pessoas. Não vou fazer danças no Reels. Não vou vender sonhos em 3 passos. Vou mostrar-te um sistema construído por alguém que vive profundidade — para pessoas que vivem profundidade.',
+    cta: 'Se isto ressoa, fica. Se não, tudo bem. Não é para todos. — Vivianne',
+  },
+  {
+    hook: 'A sabedoria sem estrutura é apenas informação acumulada.',
+    corpo: 'Sabes muito. Leste livros, fizeste cursos, tiveste insights. Mas saber e integrar são coisas diferentes. A Sete Ecos transforma conhecimento disperso em acção coerente.',
+    cta: 'A diferença entre saber e ser é a integração. Essa é a promessa.',
+  },
+  {
+    hook: 'Fizeste terapia e ajudou. Mas não ligou o que aprendeste ao corpo.',
+    corpo: 'A terapia deu-te consciência. Mas a consciência sozinha não muda hábitos. Precisas de ligar o que entendes mentalmente ao que o corpo faz automaticamente. Essa ponte é o que falta. A Sete Ecos é essa ponte.',
+    cta: 'Consciência + estrutura = mudança real. — Vivianne',
+  },
+  {
+    hook: 'Perfeição é uma armadilha. Integração é liberdade.',
+    corpo: 'Não te peço para seres perfeita. Peço-te para seres inteira. Inteira é quando podes ser forte e vulnerável. Disciplinada e flexível. Profunda e leve. Sem contradição. Sem culpa.',
+    cta: 'A Sete Ecos não te quer perfeita. Quer-te inteira.',
+  },
+  {
+    hook: 'Uma pergunta: estás a viver ou a funcionar?',
+    corpo: 'Levantar, trabalhar, comer, dormir, repetir. Se a tua vida se resume a uma sequência funcional, estás a sobreviver. Não a viver. A diferença é a presença. A intenção. A escolha.',
+    cta: 'Passa de funcionar a viver. O LUMINA mostra-te onde começas. — Vivianne',
+  },
 ];
 
 // POSIÇÃO — o que torna a Sete Ecos diferente de tudo o resto
@@ -164,6 +209,36 @@ const CONTEUDO_PROVOCACAO = [
     hook: 'Criar respeito antes de criar empatia. Essa é a posição.',
     corpo: 'Não quero que chores com os meus posts. Quero que pares e penses "isto foi pensado por alguém que sabe do que fala." O respeito vem antes. A confiança constrói-se depois.',
     cta: 'Sete Ecos. Estrutura com consciência. — Vivianne',
+  },
+  {
+    hook: 'Pagaste terapia, coaching, curso de meditação. E ainda estás fragmentada.',
+    corpo: 'Não porque não funcionaram. Mas porque cada um trabalhou uma parte. E ninguém te ajudou a ligar as partes. É como ter 7 especialistas que nunca se falam. A Sete Ecos é a reunião que faltava.',
+    cta: 'Para de pagar por pedaços. Investe no sistema. — Vivianne',
+  },
+  {
+    hook: 'O que distingue a Sete Ecos de tudo o resto? Uma palavra: arquitectura.',
+    corpo: 'Não é inspiração — é estrutura. Não é motivação — é sistema. Cada eco conversa com os outros. O corpo influencia a emoção. A emoção influencia a voz. A voz influencia a identidade. Nada está isolado.',
+    cta: 'Arquitectura humana. Esse é o diferencial.',
+  },
+  {
+    hook: 'Três tipos de pessoas seguem esta conta. Tu és uma delas.',
+    corpo: '1) Quem já fez muita coisa e procura profundidade. 2) Quem sente que algo não encaixa mas não sabe o quê. 3) Quem está cansada de soluções rasas. Se te reconheces em qualquer uma, ficaste no sítio certo.',
+    cta: 'Faz o LUMINA e descobre qual é o teu ponto de partida. Grátis. — Vivianne',
+  },
+  {
+    hook: 'A transformação mais difícil não é mudar de peso. É mudar de identidade.',
+    corpo: 'Podes perder 20kg e continuar a viver como a pessoa que tinhas de ser. Podes ganhar músculos e continuar a esconder-te. A mudança real não é no corpo — é em quem acreditas ser. E isso, nenhuma dieta resolve.',
+    cta: 'A Sete Ecos começa no corpo e acaba na essência. Essa é a jornada.',
+  },
+  {
+    hook: 'Se quisesse vender fácil, prometia transformação em 21 dias. Recusei-me.',
+    corpo: 'Porque respeito quem me segue. Não vou mentir sobre o tempo que leva mudar. Não vou simplificar o que é profundo. Não vou vender urgência para criar dependência. Vou dar-te estrutura e respeitar o teu ritmo.',
+    cta: 'Respeito antes de empatia. Essa é a minha posição. — Vivianne',
+  },
+  {
+    hook: 'Responde: o que tentarias se soubesses que não ias falhar?',
+    corpo: 'Provavelmente já sabes a resposta. E provavelmente o medo de falhar é maior do que o medo de ficar onde estás. Mas ficar onde estás também tem um custo — e esse custo é invisível até ser tarde.',
+    cta: 'Começa pelo mais simples: o LUMINA. 2 minutos. Sem risco. Sem compromisso. — Vivianne',
   },
 ];
 
@@ -955,25 +1030,6 @@ const CONTEUDO_LUMINA = [
   },
 ];
 
-// Juntar tudo num pool único rotativo
-const TODO_CONTEUDO = [
-  ...CONTEUDO_CORPO,
-  ...CONTEUDO_EMOCIONAL,
-  ...CONTEUDO_PROVOCACAO,
-  ...CONTEUDO_ALIMENTACAO_EMOCIONAL,
-  ...CONTEUDO_DISTORCOES,
-  ...CONTEUDO_ANSIEDADE,
-  ...CONTEUDO_AUTOESTIMA,
-  ...CONTEUDO_CICLO_RECOMECOS,
-  ...CONTEUDO_AUREA,
-  ...CONTEUDO_SERENA,
-  ...CONTEUDO_IGNIS,
-  ...CONTEUDO_VENTIS,
-  ...CONTEUDO_ECOA,
-  ...CONTEUDO_IMAGO,
-  ...CONTEUDO_LUMINA,
-];
-
 const HASHTAGS_BASE = [
   '#seteecos', '#vitalis', '#transformacao',
   '#nutricaointeligente', '#saudereal', '#semdieta', '#bemestar',
@@ -984,13 +1040,12 @@ const HASHTAGS_TEMATICOS = {
   emocional: ['#saudeemocional', '#autoconhecimento', '#inteligenciaemocional', '#comerconsciente'],
   provocacao: ['#verdadeincomoda', '#semfiltro', '#realidade', '#mudanca', '#chega'],
   lumina: ['#lumina', '#diagnostico', '#autoconhecimento', '#energia', '#checkin'],
-  aurea: ['#aurea', '#autovalor', '#autoestima', '#integracaopessoal', '#empoderamento'],
+  aurea: ['#aurea', '#autovalor', '#merecimento', '#autoestima', '#empoderamento', '#culpaherdada', '#investiremti'],
   alimentacao_emocional: ['#alimentacaoemocional', '#fomeemocional', '#comerconsciente', '#compulsaoalimentar', '#semculpa'],
   distorcoes: ['#imagemcorporal', '#corpopositivo', '#espelho', '#autoaceitacao', '#corporeal'],
   ansiedade: ['#ansiedade', '#stressecorpo', '#sistemanervoso', '#cortisol', '#regulacaoemocional'],
   autoestima: ['#autoestima', '#valorproprio', '#amorproprio', '#voziinterior', '#merecescuidado'],
   ciclo_recomecos: ['#recomecar', '#naoefraqueza', '#persistencia', '#semanadesistencia', '#continuadaqui'],
-  aurea: ['#aurea', '#autovalor', '#merecimento', '#culpaherdada', '#investiremti'],
   serena_eco: ['#serena', '#regulacaoemocional', '#respiracao', '#chorar', '#emocoes'],
   ignis: ['#ignis', '#disciplina', '#foco', '#coragem', '#corte'],
   ventis: ['#ventis', '#energia', '#burnout', '#pausa', '#ritmo'],
@@ -3135,18 +3190,36 @@ const STATUS_CTAS = {
 function gerarStatusSemanal() {
   const week = getWeekNumber();
 
+  // Pool de todos os temas para rotação mais rica
+  const FONTES_EXPANDIDAS = {
+    corpo: CONTEUDO_CORPO,
+    emocional: CONTEUDO_EMOCIONAL,
+    provocacao: CONTEUDO_PROVOCACAO,
+    alimentacao_emocional: CONTEUDO_ALIMENTACAO_EMOCIONAL,
+    distorcoes: CONTEUDO_DISTORCOES,
+    ansiedade: CONTEUDO_ANSIEDADE,
+    autoestima: CONTEUDO_AUTOESTIMA,
+    ciclo_recomecos: CONTEUDO_CICLO_RECOMECOS,
+    aurea: CONTEUDO_AUREA,
+    serena: CONTEUDO_SERENA,
+    lumina: CONTEUDO_LUMINA,
+  };
+
   return STATUS_PLAN.map((plan) => {
     let conteudo;
-    if (plan.fonte === 'corpo') {
-      conteudo = pickFromArray(CONTEUDO_CORPO, week + STATUS_PLAN.indexOf(plan));
-    } else if (plan.fonte === 'emocional') {
-      conteudo = pickFromArray(CONTEUDO_EMOCIONAL, week + STATUS_PLAN.indexOf(plan));
-    } else if (plan.fonte === 'provocacao') {
-      conteudo = pickFromArray(CONTEUDO_PROVOCACAO, week + STATUS_PLAN.indexOf(plan));
-    } else {
-      // hooks — frase curta motivacional
-      const hook = pickFromArray(HOOKS_PROVOCADORES, week + STATUS_PLAN.indexOf(plan));
+    const idx = STATUS_PLAN.indexOf(plan);
+    const fonte = plan.fonte;
+
+    if (FONTES_EXPANDIDAS[fonte]) {
+      conteudo = pickFromArray(FONTES_EXPANDIDAS[fonte], week + idx);
+    } else if (fonte === 'hooks') {
+      const hook = pickFromArray(HOOKS_PROVOCADORES, week + idx);
       conteudo = { hook, corpo: '', cta: '' };
+    } else {
+      // Fallback: rodar por todos os conteúdos expandidos
+      const todosArrays = Object.values(FONTES_EXPANDIDAS);
+      const arr = todosArrays[(week + idx) % todosArrays.length];
+      conteudo = pickFromArray(arr, week + idx);
     }
 
     const hookText = conteudo.hook;
@@ -3287,7 +3360,7 @@ const ECO_CONTEUDO = {
     cor: '#C9A227',
     link: '/aurea',
     linkPagamento: '/aurea/pagamento',
-    preco: '499 MT/mês',
+    preco: '499 MZN/mês',
     hooks: [
       'O teu valor não cabe numa calça tamanho S.',
       'Gastas horas a escolher roupa e 0 minutos a cuidar de como te vês ao espelho.',
@@ -3340,7 +3413,7 @@ const ECO_CONTEUDO = {
     cor: '#6B8E9B',
     link: '/serena',
     linkPagamento: '/serena/pagamento',
-    preco: '499 MT/mês',
+    preco: '499 MZN/mês',
     hooks: [
       'Sentes tudo com intensidade e depois culpas-te por ser "demasiado".',
       'A ansiedade não é fraqueza. É o teu corpo a pedir atenção.',
@@ -3394,7 +3467,7 @@ const ECO_CONTEUDO = {
     cor: '#C1634A',
     link: '/ignis',
     linkPagamento: '/ignis/pagamento',
-    preco: '499 MT/mês',
+    preco: '499 MZN/mês',
     hooks: [
       'Tens 47 separadores abertos e nenhum projecto acabado.',
       'A procrastinação não é preguiça. É medo disfarçado.',
@@ -3448,7 +3521,7 @@ const ECO_CONTEUDO = {
     cor: '#5D9B84',
     link: '/ventis',
     linkPagamento: '/ventis/pagamento',
-    preco: '499 MT/mês',
+    preco: '499 MZN/mês',
     hooks: [
       'Acordas com cansaço e adormeces sem energia. Onde foi parar a tua vitalidade?',
       'Tens uma rotina ou tens um modo de sobrevivência?',
@@ -3502,7 +3575,7 @@ const ECO_CONTEUDO = {
     cor: '#4A90A4',
     link: '/ecoa',
     linkPagamento: '/ecoa/pagamento',
-    preco: '499 MT/mês',
+    preco: '499 MZN/mês',
     hooks: [
       'Quantas vezes engoliste o que querias dizer para não incomodar?',
       'O silêncio que te protegeu em criança está a sufocar-te agora.',
@@ -3556,7 +3629,7 @@ const ECO_CONTEUDO = {
     cor: '#8B7BA5',
     link: '/imago',
     linkPagamento: '/imago/pagamento',
-    preco: '499 MT/mês',
+    preco: '499 MZN/mês',
     hooks: [
       'Sabes quem és quando ninguém está a ver?',
       'A máscara que usas para o mundo está a sufocar quem realmente és.',
@@ -3643,7 +3716,7 @@ const ECO_CONTEUDO = {
     cor: '#7C8B6F',
     link: '/vitalis',
     linkPagamento: '/vitalis/pagamento',
-    preco: '2.500 MT/mês',
+    preco: '2.500 MZN/mês',
     hooks: HOOKS_PROVOCADORES,
     conteudoIG: [
       {
@@ -3865,13 +3938,14 @@ function gerarConteudoEcoDia(eco, seed) {
   const igIndex = seed % (conteudoIG.length || 1);
   const waIndex = seed % (mensagensWA.length || 1);
 
-  const igContent = conteudoIG[igIndex] || null;
+  let igContent = conteudoIG[igIndex] || null;
   const waMsg = mensagensWA[waIndex] || '';
 
   // Usar CONTEUDO_* expandidos para hook/corpo/cta quando disponível
   let hook = '';
   let corpo = '';
   let cta = '';
+  let usouExpandido = false;
   const conteudoArray = ECO_CONTEUDO_ARRAYS[eco];
 
   if (eco === 'vitalis') {
@@ -3879,12 +3953,27 @@ function gerarConteudoEcoDia(eco, seed) {
     const conteudo = getConteudoByTema(['corpo', 'emocional', 'provocacao'][seed % 3], seed);
     corpo = conteudo.corpo;
     cta = conteudo.cta;
+    usouExpandido = true;
+    igContent = {
+      tipo: 'dica',
+      texto: corpo.slice(0, 120),
+      subtitulo: cta,
+      caption: '',
+    };
   } else if (conteudoArray && conteudoArray.length > 0) {
     // Usar conteúdo expandido (12 entradas por eco)
     const item = conteudoArray[seed % conteudoArray.length];
     hook = item.hook;
     corpo = item.corpo;
     cta = item.cta;
+    usouExpandido = true;
+    // Sobrescrever igContent para reflectir o conteúdo expandido
+    igContent = {
+      tipo: 'dica',
+      texto: corpo.slice(0, 120),
+      subtitulo: cta,
+      caption: '',
+    };
   } else {
     hook = hooks[hookIndex] || '';
     corpo = igContent?.texto || hook;
@@ -3893,6 +3982,11 @@ function gerarConteudoEcoDia(eco, seed) {
 
   const linkEco = `${BASE_URL}${ecoData.link}`;
   const hashExtra = HASHTAGS_TEMATICOS[eco === 'vitalis' ? ['corpo', 'emocional', 'provocacao'][seed % 3] : eco] || [];
+
+  // WA: quando há conteúdo expandido, gerar WA dinâmico; senão usar estático
+  const whatsappFinal = usouExpandido
+    ? formatarParaWhatsApp(hook, corpo, cta, linkEco)
+    : (waMsg || formatarParaWhatsApp(hook, corpo, cta, linkEco));
 
   return {
     eco,
@@ -3912,7 +4006,7 @@ function gerarConteudoEcoDia(eco, seed) {
       ideia: script.roteiro,
       caption: script.caption,
     } : formatarParaTikTok(hook, corpo, cta, eco, hashExtra),
-    whatsapp: waMsg || formatarParaWhatsApp(hook, corpo, cta, linkEco),
+    whatsapp: whatsappFinal,
   };
 }
 
