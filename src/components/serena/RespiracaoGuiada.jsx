@@ -21,13 +21,6 @@ const FEELING_SCALE = [
   { value: 5, label: 'Bem', emoji: '😊' }
 ]
 
-const ACCAO_LABELS = {
-  inspira: 'Inspira...',
-  segura: 'Segura...',
-  expira: 'Expira...'
-}
-
-// Resolve labels for actions that may have extra instructions (e.g. "inspira (narina esquerda)")
 function getAccaoLabel(accao) {
   const lower = accao.toLowerCase()
   if (lower.startsWith('inspira')) return accao.charAt(0).toUpperCase() + accao.slice(1) + '...'
@@ -36,12 +29,11 @@ function getAccaoLabel(accao) {
   return accao + '...'
 }
 
-// Determine animation scale based on action
 function getCircleScale(accao) {
   const lower = accao.toLowerCase()
   if (lower.startsWith('inspira')) return 1.0
   if (lower.startsWith('expira')) return 0.5
-  return 0.75 // segura — hold at midpoint or current
+  return 0.75
 }
 
 // ===== COMPONENTE PRINCIPAL =====
@@ -50,180 +42,40 @@ export default function RespiracaoGuiada() {
   const navigate = useNavigate()
   const { user, userRecord } = useAuth()
 
-  // Fase: 'selecao' | 'pre_check' | 'sessao' | 'pos_check' | 'conclusao'
   const [fase, setFase] = useState('selecao')
   const [tecnicaEscolhida, setTecnicaEscolhida] = useState(null)
-
-  // Before/after feelings
   const [sentimentoAntes, setSentimentoAntes] = useState(null)
   const [sentimentoDepois, setSentimentoDepois] = useState(null)
-
-  // Session state
-  const [cicloActual, setCicloActual] = useState(0)
-  const [passoActual, setPassoActual] = useState(0)
-  const [tempoRestante, setTempoRestante] = useState(0)
-  const [sessaoActiva, setSessaoActiva] = useState(false)
-  const [sessaoPausada, setSessaoPausada] = useState(false)
-
-  // Timing refs
-  const intervalRef = useRef(null)
-  const startTimeRef = useRef(null)
-
-  // Audio sync — when audio is playing, cycles loop until audio ends
-  const [audioPlaying, setAudioPlaying] = useState(false)
-  const audioPlayingRef = useRef(false)
-  // Wait for audio before starting breathing cycles
-  const [aguardandoAudio, setAguardandoAudio] = useState(false)
-  const audioDisponivelRef = useRef(false)
-
-  // Saving state
   const [saving, setSaving] = useState(false)
 
-  // ===== SELECAO DE TECNICA =====
+  const startTimeRef = useRef(null)
 
   const handleSelectTecnica = (tecnica) => {
     setTecnicaEscolhida(tecnica)
     setFase('pre_check')
   }
 
-  // ===== PRE-CHECK =====
-
   const handlePreCheck = (valor) => {
     setSentimentoAntes(valor)
-    iniciarSessao()
-  }
-
-  // ===== SESSAO =====
-
-  const iniciarSessao = useCallback(() => {
-    setCicloActual(0)
-    setPassoActual(0)
-    setTempoRestante(tecnicaEscolhida.passos[0].duracao)
-    // Start in waiting mode — timer paused until audio plays (or no audio available)
-    setSessaoActiva(false)
-    setAguardandoAudio(true)
-    setSessaoPausada(false)
     setFase('sessao')
     startTimeRef.current = Date.now()
-  }, [tecnicaEscolhida])
-
-  // When audio starts playing for the first time, begin breathing cycles
-  const audioStartedOnceRef = useRef(false)
-  const handleAudioFirstPlay = useCallback(() => {
-    if (!audioStartedOnceRef.current) {
-      audioStartedOnceRef.current = true
-      setAguardandoAudio(false)
-      setSessaoActiva(true)
-      startTimeRef.current = Date.now()
-    }
-  }, [])
-
-  // If no audio available, start cycles after a short delay
-  const handleAudioNotAvailable = useCallback(() => {
-    audioDisponivelRef.current = false
-    if (aguardandoAudio) {
-      setAguardandoAudio(false)
-      setSessaoActiva(true)
-    }
-  }, [aguardandoAudio])
-
-  // Tick timer
-  useEffect(() => {
-    if (!sessaoActiva || sessaoPausada || fase !== 'sessao' || !tecnicaEscolhida) return
-
-    intervalRef.current = setInterval(() => {
-      setTempoRestante(prev => {
-        if (prev <= 1) {
-          // Move to next step or cycle
-          avancar()
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
-  }, [sessaoActiva, sessaoPausada, fase, cicloActual, passoActual, tecnicaEscolhida])
-
-  const avancar = useCallback(() => {
-    if (!tecnicaEscolhida) return
-
-    const totalPassos = tecnicaEscolhida.passos.length
-    const totalCiclos = tecnicaEscolhida.ciclos
-
-    setPassoActual(prevPasso => {
-      const nextPasso = prevPasso + 1
-
-      if (nextPasso >= totalPassos) {
-        // End of cycle, move to next
-        setCicloActual(prevCiclo => {
-          const nextCiclo = prevCiclo + 1
-          if (nextCiclo >= totalCiclos) {
-            // If audio is still playing, loop back to cycle 0
-            if (audioPlayingRef.current) {
-              setTempoRestante(tecnicaEscolhida.passos[0].duracao)
-              return 0
-            }
-            // Session complete (no audio or audio already ended)
-            finalizarSessao()
-            return prevCiclo
-          }
-          // Start first step of new cycle
-          setTempoRestante(tecnicaEscolhida.passos[0].duracao)
-          return nextCiclo
-        })
-        return 0
-      }
-
-      // Next step in same cycle
-      setTempoRestante(tecnicaEscolhida.passos[nextPasso].duracao)
-      return nextPasso
-    })
-  }, [tecnicaEscolhida])
+  }
 
   const finalizarSessao = useCallback(() => {
-    setSessaoActiva(false)
-    setAudioPlaying(false)
-    audioPlayingRef.current = false
-    if (intervalRef.current) clearInterval(intervalRef.current)
     setFase('pos_check')
   }, [])
 
-  // When audio ends, finalize session (if cycles are still looping for audio)
-  const handleAudioEnd = useCallback(() => {
-    setAudioPlaying(false)
-    audioPlayingRef.current = false
-    // Session will finalize at end of current cycle via avancar()
-  }, [])
-
-  const handleAudioPlayingChange = useCallback((isPlaying) => {
-    setAudioPlaying(isPlaying)
-    audioPlayingRef.current = isPlaying
-  }, [])
-
-  const handlePausar = () => {
-    setSessaoPausada(prev => !prev)
-  }
-
   const handleCancelar = () => {
-    setSessaoActiva(false)
-    if (intervalRef.current) clearInterval(intervalRef.current)
     setFase('selecao')
     setTecnicaEscolhida(null)
     setSentimentoAntes(null)
   }
-
-  // ===== POS-CHECK =====
 
   const handlePosCheck = async (valor) => {
     setSentimentoDepois(valor)
     await salvarSessao(valor)
     setFase('conclusao')
   }
-
-  // ===== SALVAR =====
 
   const salvarSessao = async (sentDepois) => {
     if (!user || !userRecord?.id) return
@@ -251,30 +103,12 @@ export default function RespiracaoGuiada() {
     }
   }
 
-  // ===== NOVA SESSAO =====
-
   const handleNovaSessao = () => {
     setFase('selecao')
     setTecnicaEscolhida(null)
     setSentimentoAntes(null)
     setSentimentoDepois(null)
-    setCicloActual(0)
-    setPassoActual(0)
-    setSessaoActiva(false)
-    setAguardandoAudio(false)
-    audioStartedOnceRef.current = false
-    audioPlayingRef.current = false
-    audioDisponivelRef.current = false
   }
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
-  }, [])
-
-  // ===== RENDER =====
 
   return (
     <div className="min-h-screen" style={{ background: SERENA_BG, color: '#e8edf0' }}>
@@ -302,18 +136,8 @@ export default function RespiracaoGuiada() {
         {fase === 'sessao' && tecnicaEscolhida && (
           <SessaoActiva
             tecnica={tecnicaEscolhida}
-            cicloActual={cicloActual}
-            passoActual={passoActual}
-            tempoRestante={tempoRestante}
-            pausada={sessaoPausada}
-            onPausar={handlePausar}
+            onFinalizar={finalizarSessao}
             onCancelar={handleCancelar}
-            slug={tecnicaEscolhida.slug}
-            onAudioEnd={handleAudioEnd}
-            onAudioPlayingChange={handleAudioPlayingChange}
-            onAudioFirstPlay={handleAudioFirstPlay}
-            onAudioNotAvailable={handleAudioNotAvailable}
-            aguardandoAudio={aguardandoAudio}
           />
         )}
 
@@ -342,8 +166,6 @@ export default function RespiracaoGuiada() {
 }
 
 // ===== SUB-COMPONENTES =====
-
-// --- Selecao de Tecnica ---
 
 function TecnicaSelecao({ onSelect }) {
   return (
@@ -409,8 +231,6 @@ function TecnicaSelecao({ onSelect }) {
   )
 }
 
-// --- Feeling Check (Before/After) ---
-
 function FeelingCheck({ titulo, subtitulo, onSelect }) {
   const [selected, setSelected] = useState(null)
 
@@ -459,34 +279,132 @@ function FeelingCheck({ titulo, subtitulo, onSelect }) {
   )
 }
 
-// --- Sessao Activa (Breathing Session) ---
+// --- Sessao Activa — UM SÓ componente com dois modos ---
+// Áudio disponível → visual ambiente (círculo pulsa, sem timer), sessão acaba com o áudio
+// Sem áudio → timer com ciclos, sessão acaba com os ciclos
 
-function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausada, onPausar, onCancelar, slug, onAudioEnd, onAudioPlayingChange, onAudioFirstPlay, onAudioNotAvailable, aguardandoAudio }) {
+function SessaoActiva({ tecnica, onFinalizar, onCancelar }) {
+  // Audio detection
+  const [temAudio, setTemAudio] = useState(null) // null=checking, true/false
+  const [audioAcabou, setAudioAcabou] = useState(false)
+
+  // Timer state (used only when no audio)
+  const [cicloActual, setCicloActual] = useState(0)
+  const [passoActual, setPassoActual] = useState(0)
+  const [tempoRestante, setTempoRestante] = useState(tecnica.passos[0].duracao)
+  const [pausada, setPausada] = useState(false)
+  const intervalRef = useRef(null)
+  const finalizouRef = useRef(false)
+
+  // Ambient animation (used when audio is available)
+  const [breathPhase, setBreathPhase] = useState(0)
+
+  // If no slug, go straight to timer mode
+  useEffect(() => {
+    if (!tecnica.slug) {
+      setTemAudio(false)
+    }
+  }, [tecnica.slug])
+
+  // Ambient breathing pulse
+  useEffect(() => {
+    if (temAudio !== true) return
+    const interval = setInterval(() => {
+      setBreathPhase(prev => (prev + 1) % 2)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [temAudio])
+
+  // Timer tick (only when no audio)
+  useEffect(() => {
+    if (temAudio !== false || pausada) return
+
+    intervalRef.current = setInterval(() => {
+      setTempoRestante(prev => {
+        if (prev <= 1) {
+          avancar()
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
+  }, [temAudio, pausada, cicloActual, passoActual])
+
+  const avancar = useCallback(() => {
+    const totalPassos = tecnica.passos.length
+    const totalCiclos = tecnica.ciclos
+
+    setPassoActual(prevPasso => {
+      const nextPasso = prevPasso + 1
+      if (nextPasso >= totalPassos) {
+        setCicloActual(prevCiclo => {
+          const nextCiclo = prevCiclo + 1
+          if (nextCiclo >= totalCiclos) {
+            if (!finalizouRef.current) {
+              finalizouRef.current = true
+              if (intervalRef.current) clearInterval(intervalRef.current)
+              onFinalizar()
+            }
+            return prevCiclo
+          }
+          setTempoRestante(tecnica.passos[0].duracao)
+          return nextCiclo
+        })
+        return 0
+      }
+      setTempoRestante(tecnica.passos[nextPasso].duracao)
+      return nextPasso
+    })
+  }, [tecnica, onFinalizar])
+
+  // Audio callbacks
+  const handleAudioEnd = useCallback(() => {
+    setAudioAcabou(true)
+    if (!finalizouRef.current) {
+      finalizouRef.current = true
+      onFinalizar()
+    }
+  }, [onFinalizar])
+
+  const handleAudioDetected = useCallback(() => {
+    // AudioPlayerBar rendered = audio exists
+    setTemAudio(true)
+  }, [])
+
+  const handleAudioNotFound = useCallback(() => {
+    setTemAudio(false)
+  }, [])
+
+  const handleCancelar = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    onCancelar()
+  }
+
+  // Current step info (for timer mode)
   const passoInfo = tecnica.passos[passoActual]
   const accao = passoInfo.accao
   const duracao = passoInfo.duracao
-  const scale = aguardandoAudio ? 0.75 : getCircleScale(accao)
-  const label = aguardandoAudio ? 'Prepara-te...' : getAccaoLabel(accao)
 
-  // If no slug, no audio — notify parent to start immediately
-  useEffect(() => {
-    if (!slug && aguardandoAudio) {
-      onAudioNotAvailable?.()
-    }
-  }, [slug, aguardandoAudio])
+  // Visual scales
+  const isAudioMode = temAudio === true
+  const scale = isAudioMode
+    ? (breathPhase === 0 ? 1.0 : 0.6)
+    : getCircleScale(accao)
+  const transitionDuration = isAudioMode
+    ? '4s'
+    : (pausada ? '0.3s' : `${duracao}s`)
 
-  // Calculate progress within current step (0 to 1)
-  const progresso = 1 - (tempoRestante / duracao)
-
-  // Determine transition duration — matches step duration for smooth animation
-  const transitionDuration = pausada ? '0.3s' : `${duracao}s`
-
-  // Background pulse color based on action
-  const bgColor = accao.toLowerCase().startsWith('inspira')
-    ? `${SERENA_ACCENT}15`
-    : accao.toLowerCase().startsWith('expira')
-      ? `${SERENA_ACCENT}08`
-      : `${SERENA_ACCENT}10`
+  const bgColor = isAudioMode
+    ? `${SERENA_ACCENT}10`
+    : accao.toLowerCase().startsWith('inspira')
+      ? `${SERENA_ACCENT}15`
+      : accao.toLowerCase().startsWith('expira')
+        ? `${SERENA_ACCENT}08`
+        : `${SERENA_ACCENT}10`
 
   return (
     <div
@@ -502,9 +420,9 @@ function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausad
         }}
       />
 
-      {/* Cancel button top-left */}
+      {/* Cancel button */}
       <button
-        onClick={onCancelar}
+        onClick={handleCancelar}
         className="absolute top-6 left-6 z-10 p-2 rounded-lg text-sm"
         style={{ color: '#6a8490' }}
         aria-label="Cancelar sessao"
@@ -514,18 +432,17 @@ function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausad
         </svg>
       </button>
 
-      {/* Áudio narrado (se disponível no Storage) */}
-      {slug && (
+      {/* Audio player — always render, it auto-hides if no audio file */}
+      {tecnica.slug && (
         <div className="absolute top-16 left-6 right-6 z-10">
           <AudioPlayerBar
             eco="serena"
-            slug={slug}
+            slug={tecnica.slug}
             accentColor={SERENA_ACCENT}
             autoPlay
-            onPlay={onAudioFirstPlay}
-            onEnd={onAudioEnd}
-            onPlayingChange={onAudioPlayingChange}
-            onNotAvailable={onAudioNotAvailable}
+            onEnd={handleAudioEnd}
+            onAvailable={handleAudioDetected}
+            onNotAvailable={handleAudioNotFound}
           />
         </div>
       )}
@@ -535,21 +452,15 @@ function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausad
         {tecnica.nome}
       </p>
 
-      {/* Cycle counter */}
-      {!aguardandoAudio && (
-        <p className="relative z-10 text-xs mb-8" style={{ color: '#4d6a75' }}>
-          Ciclo {cicloActual + 1}
-        </p>
-      )}
-      {aguardandoAudio && (
-        <p className="relative z-10 text-xs mb-8" style={{ color: '#4d6a75' }}>
-          A carregar áudio...
-        </p>
-      )}
+      {/* Subtitle — depends on mode */}
+      <p className="relative z-10 text-xs mb-8" style={{ color: '#4d6a75' }}>
+        {temAudio === null && 'A preparar...'}
+        {isAudioMode && 'Segue o áudio'}
+        {temAudio === false && `Ciclo ${cicloActual + 1} de ${tecnica.ciclos}`}
+      </p>
 
       {/* Breathing circle */}
       <div className="relative z-10 flex items-center justify-center mb-8">
-        {/* Outer ring */}
         <div
           className="absolute rounded-full"
           style={{
@@ -561,7 +472,6 @@ function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausad
           }}
         />
 
-        {/* Main breathing circle */}
         <div
           className="rounded-full flex items-center justify-center"
           style={{
@@ -573,13 +483,21 @@ function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausad
             transform: `scale(${scale})`
           }}
         >
-          {/* Timer number */}
-          <span
-            className={`text-4xl font-light tabular-nums ${aguardandoAudio ? 'animate-pulse' : ''}`}
-            style={{ color: '#e8edf0', fontFamily: 'var(--font-titulos)' }}
-          >
-            {aguardandoAudio ? '🎧' : tempoRestante}
-          </span>
+          {/* Audio mode: ambient icon. Timer mode: countdown number */}
+          {isAudioMode ? (
+            <span className="text-3xl" style={{ opacity: 0.6 }}>
+              {breathPhase === 0 ? '🫁' : '💨'}
+            </span>
+          ) : temAudio === false ? (
+            <span
+              className="text-4xl font-light tabular-nums"
+              style={{ color: '#e8edf0', fontFamily: 'var(--font-titulos)' }}
+            >
+              {tempoRestante}
+            </span>
+          ) : (
+            <span className="text-3xl animate-pulse">🎧</span>
+          )}
         </div>
       </div>
 
@@ -588,49 +506,53 @@ function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausad
         className="relative z-10 text-2xl font-light mb-2"
         style={{
           color: '#e8edf0',
-          fontFamily: 'var(--font-titulos)'
+          fontFamily: 'var(--font-titulos)',
+          opacity: isAudioMode ? 0.7 : 1
         }}
       >
-        {label}
+        {isAudioMode
+          ? (breathPhase === 0 ? 'Inspira...' : 'Expira...')
+          : temAudio === false
+            ? getAccaoLabel(accao)
+            : 'Prepara-te...'
+        }
       </h2>
 
-      {/* Step dots */}
-      <div className="relative z-10 flex gap-2 mb-10">
-        {tecnica.passos.map((_, idx) => (
-          <div
-            key={idx}
-            className="w-2 h-2 rounded-full transition-all duration-300"
-            style={{
-              background: idx === passoActual ? SERENA_ACCENT : `${SERENA_ACCENT}33`,
-              transform: idx === passoActual ? 'scale(1.4)' : 'scale(1)'
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Controls */}
-      {!aguardandoAudio && (
-      <div className="relative z-10 flex gap-4">
-        <button
-          onClick={onPausar}
-          className="px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
-          style={{
-            background: pausada ? SERENA_ACCENT : `${SERENA_ACCENT}22`,
-            color: pausada ? '#fff' : SERENA_ACCENT,
-            border: `1px solid ${SERENA_ACCENT}44`
-          }}
-        >
-          {pausada ? 'Retomar' : 'Pausa'}
-        </button>
-      </div>
+      {/* Step dots (timer mode only) */}
+      {temAudio === false && (
+        <div className="relative z-10 flex gap-2 mb-10">
+          {tecnica.passos.map((_, idx) => (
+            <div
+              key={idx}
+              className="w-2 h-2 rounded-full transition-all duration-300"
+              style={{
+                background: idx === passoActual ? SERENA_ACCENT : `${SERENA_ACCENT}33`,
+                transform: idx === passoActual ? 'scale(1.4)' : 'scale(1)'
+              }}
+            />
+          ))}
+        </div>
       )}
 
-      {/* Paused overlay */}
+      {/* Pause button (timer mode only) */}
+      {temAudio === false && (
+        <div className="relative z-10 flex gap-4">
+          <button
+            onClick={() => setPausada(prev => !prev)}
+            className="px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
+            style={{
+              background: pausada ? SERENA_ACCENT : `${SERENA_ACCENT}22`,
+              color: pausada ? '#fff' : SERENA_ACCENT,
+              border: `1px solid ${SERENA_ACCENT}44`
+            }}
+          >
+            {pausada ? 'Retomar' : 'Pausa'}
+          </button>
+        </div>
+      )}
+
       {pausada && (
-        <p
-          className="relative z-10 mt-4 text-sm animate-pulse"
-          style={{ color: '#6a8490' }}
-        >
+        <p className="relative z-10 mt-4 text-sm animate-pulse" style={{ color: '#6a8490' }}>
           Em pausa...
         </p>
       )}
@@ -638,7 +560,7 @@ function SessaoActiva({ tecnica, cicloActual, passoActual, tempoRestante, pausad
   )
 }
 
-// --- Conclusao (Completion Screen) ---
+// --- Conclusao ---
 
 function Conclusao({ tecnica, sentimentoAntes, sentimentoDepois, startTime, onNovaSessao, onVoltar, saving }) {
   const duracao = startTime ? Math.round((Date.now() - startTime) / 1000) : 0
@@ -658,7 +580,6 @@ function Conclusao({ tecnica, sentimentoAntes, sentimentoDepois, startTime, onNo
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4">
-      {/* Completion icon */}
       <div
         className="w-20 h-20 rounded-full flex items-center justify-center mb-6"
         style={{ background: `${SERENA_ACCENT}22` }}
@@ -677,18 +598,15 @@ function Conclusao({ tecnica, sentimentoAntes, sentimentoDepois, startTime, onNo
         {mensagemEncorajamento()}
       </p>
 
-      {/* Summary card */}
       <div
         className="w-full max-w-sm rounded-xl p-5 mb-8 text-left"
         style={{ background: SERENA_DARK, border: `1px solid ${SERENA_ACCENT}22` }}
       >
-        {/* Technique */}
         <div className="flex justify-between items-center mb-3 pb-3" style={{ borderBottom: `1px solid ${SERENA_ACCENT}15` }}>
           <span className="text-xs uppercase tracking-wider" style={{ color: '#6a8490' }}>Tecnica</span>
           <span className="text-sm font-medium" style={{ color: '#e8edf0' }}>{tecnica.nome}</span>
         </div>
 
-        {/* Duration */}
         <div className="flex justify-between items-center mb-3 pb-3" style={{ borderBottom: `1px solid ${SERENA_ACCENT}15` }}>
           <span className="text-xs uppercase tracking-wider" style={{ color: '#6a8490' }}>Duracao</span>
           <span className="text-sm font-medium" style={{ color: '#e8edf0' }}>
@@ -696,7 +614,6 @@ function Conclusao({ tecnica, sentimentoAntes, sentimentoDepois, startTime, onNo
           </span>
         </div>
 
-        {/* Before → After */}
         <div className="flex justify-between items-center">
           <span className="text-xs uppercase tracking-wider" style={{ color: '#6a8490' }}>Sentimento</span>
           <div className="flex items-center gap-2">
@@ -723,7 +640,6 @@ function Conclusao({ tecnica, sentimentoAntes, sentimentoDepois, startTime, onNo
         <p className="text-xs mb-4" style={{ color: '#6a8490' }}>A guardar...</p>
       )}
 
-      {/* Actions */}
       <div className="flex flex-col gap-3 w-full max-w-sm">
         <button
           onClick={onNovaSessao}
