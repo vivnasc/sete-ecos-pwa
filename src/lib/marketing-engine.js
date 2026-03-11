@@ -92,6 +92,26 @@ const CONTEUDO_CORPO = [
     corpo: 'Resolves o corpo — a emoção sabota. Resolves a emoção — a identidade bloqueia. Resolves a identidade — falta energia. É um ciclo. A Sete Ecos é a saída do ciclo.',
     cta: 'Não é melhorar partes. É integrar o todo.',
   },
+  {
+    hook: 'Pergunta incómoda: se tirasses todos os papéis, ficava o quê?',
+    corpo: 'Mãe, profissional, esposa, filha, amiga. Tira tudo. O que fica? Se a resposta te assusta, é porque nunca tiveste espaço para a descobrir. A Sete Ecos começa aí — na essência, não nos papéis.',
+    cta: 'O LUMINA mostra-te onde estás. O sistema mostra-te quem és. — Vivianne',
+  },
+  {
+    hook: 'Não tens de escolher entre corpo e mente. Isso é uma falsa escolha.',
+    corpo: 'A indústria separou: ou cuidas do corpo (ginásio, dieta) ou cuidas da mente (terapia, meditação). Como se fosses duas pessoas. Não és. E enquanto tratares partes, perdes energia na fragmentação.',
+    cta: 'Um sistema. Todas as dimensões. Começa com o LUMINA.',
+  },
+  {
+    hook: 'Uma pessoa escreveu-me: "Finalmente algo que não me subestima."',
+    corpo: 'Ela tinha tentado apps de hábitos, planners, bullet journals, terapia, coaching. Tudo funcionava parcialmente. Porque tudo tratava uma fatia. Ela não precisava de mais fatias. Precisava do bolo inteiro.',
+    cta: 'Se já tentaste tudo por partes, experimenta por inteiro. — Vivianne',
+  },
+  {
+    hook: 'A coerência é o luxo que mais falta nesta era de excesso.',
+    corpo: 'Tens acesso a tudo: informação, apps, cursos, podcasts. E quanto mais acesso tens, mais fragmentada ficas. Porque acumular recursos sem integração é coleccionar ferramentas sem casa.',
+    cta: 'A Sete Ecos não te dá mais. Organiza o que já tens. — Vivianne',
+  },
 ];
 
 // PROFUNDIDADE — para quem já fez muita coisa e procura algo com substância
@@ -131,6 +151,31 @@ const CONTEUDO_EMOCIONAL = [
     corpo: 'Não é falta de motivação. Não é preguiça. Não é depressão. É fragmentação. A sensação de que cada parte da tua vida está a funcionar — mas não juntas. Eu conheço essa sensação.',
     cta: 'O LUMINA é o primeiro passo. 2 minutos. Para ti.',
   },
+  {
+    hook: 'Não é mais uma conta de desenvolvimento pessoal. É um sistema.',
+    corpo: 'Não vou publicar citações de outras pessoas. Não vou fazer danças no Reels. Não vou vender sonhos em 3 passos. Vou mostrar-te um sistema construído por alguém que vive profundidade — para pessoas que vivem profundidade.',
+    cta: 'Se isto ressoa, fica. Se não, tudo bem. Não é para todos. — Vivianne',
+  },
+  {
+    hook: 'A sabedoria sem estrutura é apenas informação acumulada.',
+    corpo: 'Sabes muito. Leste livros, fizeste cursos, tiveste insights. Mas saber e integrar são coisas diferentes. A Sete Ecos transforma conhecimento disperso em acção coerente.',
+    cta: 'A diferença entre saber e ser é a integração. Essa é a promessa.',
+  },
+  {
+    hook: 'Fizeste terapia e ajudou. Mas não ligou o que aprendeste ao corpo.',
+    corpo: 'A terapia deu-te consciência. Mas a consciência sozinha não muda hábitos. Precisas de ligar o que entendes mentalmente ao que o corpo faz automaticamente. Essa ponte é o que falta. A Sete Ecos é essa ponte.',
+    cta: 'Consciência + estrutura = mudança real. — Vivianne',
+  },
+  {
+    hook: 'Perfeição é uma armadilha. Integração é liberdade.',
+    corpo: 'Não te peço para seres perfeita. Peço-te para seres inteira. Inteira é quando podes ser forte e vulnerável. Disciplinada e flexível. Profunda e leve. Sem contradição. Sem culpa.',
+    cta: 'A Sete Ecos não te quer perfeita. Quer-te inteira.',
+  },
+  {
+    hook: 'Uma pergunta: estás a viver ou a funcionar?',
+    corpo: 'Levantar, trabalhar, comer, dormir, repetir. Se a tua vida se resume a uma sequência funcional, estás a sobreviver. Não a viver. A diferença é a presença. A intenção. A escolha.',
+    cta: 'Passa de funcionar a viver. O LUMINA mostra-te onde começas. — Vivianne',
+  },
 ];
 
 // POSIÇÃO — o que torna a Sete Ecos diferente de tudo o resto
@@ -164,6 +209,36 @@ const CONTEUDO_PROVOCACAO = [
     hook: 'Criar respeito antes de criar empatia. Essa é a posição.',
     corpo: 'Não quero que chores com os meus posts. Quero que pares e penses "isto foi pensado por alguém que sabe do que fala." O respeito vem antes. A confiança constrói-se depois.',
     cta: 'Sete Ecos. Estrutura com consciência. — Vivianne',
+  },
+  {
+    hook: 'Pagaste terapia, coaching, curso de meditação. E ainda estás fragmentada.',
+    corpo: 'Não porque não funcionaram. Mas porque cada um trabalhou uma parte. E ninguém te ajudou a ligar as partes. É como ter 7 especialistas que nunca se falam. A Sete Ecos é a reunião que faltava.',
+    cta: 'Para de pagar por pedaços. Investe no sistema. — Vivianne',
+  },
+  {
+    hook: 'O que distingue a Sete Ecos de tudo o resto? Uma palavra: arquitectura.',
+    corpo: 'Não é inspiração — é estrutura. Não é motivação — é sistema. Cada eco conversa com os outros. O corpo influencia a emoção. A emoção influencia a voz. A voz influencia a identidade. Nada está isolado.',
+    cta: 'Arquitectura humana. Esse é o diferencial.',
+  },
+  {
+    hook: 'Três tipos de pessoas seguem esta conta. Tu és uma delas.',
+    corpo: '1) Quem já fez muita coisa e procura profundidade. 2) Quem sente que algo não encaixa mas não sabe o quê. 3) Quem está cansada de soluções rasas. Se te reconheces em qualquer uma, ficaste no sítio certo.',
+    cta: 'Faz o LUMINA e descobre qual é o teu ponto de partida. Grátis. — Vivianne',
+  },
+  {
+    hook: 'A transformação mais difícil não é mudar de peso. É mudar de identidade.',
+    corpo: 'Podes perder 20kg e continuar a viver como a pessoa que tinhas de ser. Podes ganhar músculos e continuar a esconder-te. A mudança real não é no corpo — é em quem acreditas ser. E isso, nenhuma dieta resolve.',
+    cta: 'A Sete Ecos começa no corpo e acaba na essência. Essa é a jornada.',
+  },
+  {
+    hook: 'Se quisesse vender fácil, prometia transformação em 21 dias. Recusei-me.',
+    corpo: 'Porque respeito quem me segue. Não vou mentir sobre o tempo que leva mudar. Não vou simplificar o que é profundo. Não vou vender urgência para criar dependência. Vou dar-te estrutura e respeitar o teu ritmo.',
+    cta: 'Respeito antes de empatia. Essa é a minha posição. — Vivianne',
+  },
+  {
+    hook: 'Responde: o que tentarias se soubesses que não ias falhar?',
+    corpo: 'Provavelmente já sabes a resposta. E provavelmente o medo de falhar é maior do que o medo de ficar onde estás. Mas ficar onde estás também tem um custo — e esse custo é invisível até ser tarde.',
+    cta: 'Começa pelo mais simples: o LUMINA. 2 minutos. Sem risco. Sem compromisso. — Vivianne',
   },
 ];
 
@@ -3872,6 +3947,7 @@ function gerarConteudoEcoDia(eco, seed) {
   let hook = '';
   let corpo = '';
   let cta = '';
+  let usouExpandido = false;
   const conteudoArray = ECO_CONTEUDO_ARRAYS[eco];
 
   if (eco === 'vitalis') {
@@ -3885,6 +3961,7 @@ function gerarConteudoEcoDia(eco, seed) {
     hook = item.hook;
     corpo = item.corpo;
     cta = item.cta;
+    usouExpandido = true;
     // Sobrescrever igContent para reflectir o conteúdo expandido
     igContent = {
       tipo: 'dica',
@@ -3900,6 +3977,11 @@ function gerarConteudoEcoDia(eco, seed) {
 
   const linkEco = `${BASE_URL}${ecoData.link}`;
   const hashExtra = HASHTAGS_TEMATICOS[eco === 'vitalis' ? ['corpo', 'emocional', 'provocacao'][seed % 3] : eco] || [];
+
+  // WA: quando há conteúdo expandido, gerar WA dinâmico; senão usar estático
+  const whatsappFinal = usouExpandido
+    ? formatarParaWhatsApp(hook, corpo, cta, linkEco)
+    : (waMsg || formatarParaWhatsApp(hook, corpo, cta, linkEco));
 
   return {
     eco,
@@ -3919,7 +4001,7 @@ function gerarConteudoEcoDia(eco, seed) {
       ideia: script.roteiro,
       caption: script.caption,
     } : formatarParaTikTok(hook, corpo, cta, eco, hashExtra),
-    whatsapp: waMsg || formatarParaWhatsApp(hook, corpo, cta, linkEco),
+    whatsapp: whatsappFinal,
   };
 }
 

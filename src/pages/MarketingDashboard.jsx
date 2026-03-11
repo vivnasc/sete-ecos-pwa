@@ -1330,7 +1330,7 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
 function ModoSimples({ copiar, copiado, onVerTudo, prog }) {
   const [variante, setVariante] = useState(0);
   const [diaOffset, setDiaOffset] = useState(0);
-  const [subModo, setSubModo] = useState('lancamento'); // 'lancamento' ou 'diario'
+  const [subModo, setSubModo] = useState('diario'); // 'diario' ou 'lancamento'
 
   const dataAlvo = new Date();
   dataAlvo.setDate(dataAlvo.getDate() + diaOffset);
