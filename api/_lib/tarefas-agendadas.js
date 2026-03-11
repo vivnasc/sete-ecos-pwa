@@ -17,6 +17,14 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { enviarMensagemWA } from './whatsapp-broadcast.js';
+import webpush from 'web-push';
+
+const VAPID_PUBLIC = process.env.VAPID_PUBLIC_KEY;
+const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY;
+const VAPID_EMAIL = process.env.VAPID_EMAIL || 'mailto:viv.saraiva@gmail.com';
+if (VAPID_PUBLIC && VAPID_PRIVATE) {
+  try { webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE); } catch (_) { /* ok */ }
+}
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
@@ -1052,9 +1060,59 @@ async function alertarSuperEngajadas(supabase, resultados) {
 }
 
 /**
+ * Envia push notification à coach (resumo, alertas, etc.)
+ */
+async function enviarPushCoach(mensagem) {
+  if (!VAPID_PUBLIC || !VAPID_PRIVATE) return;
+
+  try {
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    const { data: subs } = await supabase
+      .from('push_subscriptions')
+      .select('endpoint, keys_p256dh, keys_auth')
+      .eq('role', 'coach');
+
+    if (!subs || subs.length === 0) return;
+
+    // Extrair título da primeira linha da mensagem
+    const linhas = mensagem.split('\n').filter(l => l.trim());
+    const titulo = (linhas[0] || 'Alerta Coach').replace(/[*_~`#]/g, '').trim().slice(0, 80);
+    const corpo = (linhas.slice(1, 3).join(' ') || '').replace(/[*_~`#]/g, '').trim().slice(0, 150);
+
+    const payload = JSON.stringify({
+      title: titulo,
+      body: corpo || 'Abre o dashboard para ver os detalhes.',
+      url: '/coach',
+      tag: 'coach-alert',
+      requireInteraction: true,
+      vibrate: [200, 100, 200],
+    });
+
+    for (const sub of subs) {
+      try {
+        await webpush.sendNotification(
+          { endpoint: sub.endpoint, keys: { p256dh: sub.keys_p256dh, auth: sub.keys_auth } },
+          payload
+        );
+      } catch (err) {
+        if (err.statusCode === 410 || err.statusCode === 404) {
+          await supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
+        }
+      }
+    }
+    console.log(`[Push Coach] Enviado a ${subs.length} dispositivos`);
+  } catch (err) {
+    console.error('[Push Coach] Erro:', err.message);
+  }
+}
+
+/**
  * Envia notificação para a coach via Telegram (preferido) ou WhatsApp (fallback)
  */
 async function enviarWhatsAppCoach(mensagem) {
+  // 0. Push notification à coach (chega sempre, mesmo sem Telegram/WA)
+  await enviarPushCoach(mensagem);
+
   // 1. Tentar Telegram primeiro (mais fiável, sem tokens que expiram)
   if (TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID) {
     try {
