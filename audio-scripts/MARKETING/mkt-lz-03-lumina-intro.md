@@ -8,4 +8,4 @@
 
 ## Script (colar directamente no ElevenLabs)
 
-[warmly] 8 dimensões da tua vida. 7 perguntas. 2 minutos. [pause] Grátis. [long pause] O LUMINA mapeia como estás de verdade. [pause] 23 leituras possíveis. Cada uma com um padrão diferente. [pause] E a partir daí, sabes por onde começar. [pause] [softly] Experimenta. app.seteecos.com/lumina.
+[intensely] Em 2 minutos vou mostrar-te a parte da tua vida que está a sabotar todo o resto. [long pause] [warmly] Não é um quiz de personalidade. Não é horóscopo. [pause] São 7 perguntas. E o resultado mostra-te um padrão que provavelmente nunca ninguém te apontou. [pause] Talvez o teu cansaço não seja físico. Talvez a tua ansiedade não seja emocional. [pause] [softly] O LUMINA mapeia o que está escondido. [pause] Grátis. Sem registo. [pause] app.seteecos.com/lumina.

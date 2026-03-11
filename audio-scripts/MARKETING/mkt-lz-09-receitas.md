@@ -8,4 +8,4 @@
 
 ## Script (colar directamente no ElevenLabs)
 
-[warmly] 98 receitas. Ingredientes que encontras em qualquer mercado. [pause] Sem listas impossíveis. [long pause] Pratos tradicionais. Opções leves. Comfort food. Refeições rápidas. [pause] Cada receita filtrada para o TEU perfil. [pause] [intensely] Nada importado. Nada caro. [pause] [softly] Cuidar do corpo não devia ser um privilégio. [pause] Link na bio.
+[warmly] Matapa. Xima. Caril de amendoim. Chamuças. [pause] [intensely] Sim, podes comer isto e transformar o teu corpo. [long pause] [warmly] 98 receitas. Ingredientes do Mercado Central. [pause] Nada importado. Nada caro. Nada que precises de procurar em 3 lojas diferentes. [pause] Cada receita filtrada para o teu perfil — se és intolerante à lactose, vegetariana, halal, o plano adapta-se. [pause] [softly] Cuidar do corpo com comida de verdade. Da tua terra. [pause] Link na bio.

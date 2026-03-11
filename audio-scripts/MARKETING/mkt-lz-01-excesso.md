@@ -8,4 +8,4 @@
 
 ## Script (colar directamente no ElevenLabs)
 
-[intensely] Isto nasceu de excesso. Não de falta. [pause] Eu vivia muitas camadas ao mesmo tempo — intelectual, espiritual, profissional, criativa, corporal — [pause] e tudo estava separado. [long pause] Recusei-me a continuar a trabalhar a vida por pedaços. [pause] [warmly] E criei isto. [pause] Segue. [softly] Nos próximos dias vais perceber o que é.
+[intensely] Eu pesava 87 quilos. Tinha um MBA. Meditava todos os dias. [pause] E continuava perdida. [long pause] Não me faltava nada. [pause] Eu fazia tudo. Nutrição. Mindfulness. Exercício. Desenvolvimento pessoal. [pause] [warmly] Tudo separado. Nada conversava. [pause] E um dia percebi — o problema não era eu. [pause] Era trabalhar a vida aos pedaços. [long pause] [softly] Então criei uma coisa diferente. [pause] Segue. Nos próximos dias vais perceber o quê. [pause] — Vivianne

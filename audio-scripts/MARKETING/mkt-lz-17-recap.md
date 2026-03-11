@@ -8,4 +8,4 @@
 
 ## Script (colar directamente no ElevenLabs)
 
-[intensely] 7 dimensões. 1 sistema. [pause] As partes conversam. [pause] E o primeiro passo é grátis. [long pause] [warmly] Não é motivação. Não é wellness estético. [pause] É arquitectura de integração. [pause] O LUMINA é o ponto de partida. [pause] Gratuito. 2 minutos. 23 leituras possíveis. [pause] [softly] app.seteecos.com/lumina.
+[intensely] Já tentaste mudar a vida por partes? [pause] Dieta aqui. Meditação ali. Journaling acolá. [pause] E nada cola. [long pause] [warmly] Porque estás a tratar sintomas. Não a causa. [pause] O Sete Ecos é o primeiro sistema que junta corpo, valor, emoção, vontade, energia, voz e identidade. [pause] Tudo conversa. Tudo se afecta. [pause] E o primeiro passo é grátis. [pause] [softly] 2 minutos. Sem registo. Descobre por onde começar. [pause] app.seteecos.com/lumina. [pause] — Vivianne
