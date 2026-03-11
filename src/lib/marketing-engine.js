@@ -3841,6 +3841,17 @@ function formatarParaWhatsApp(hook, corpo, cta, linkEco) {
   return `${hook}\n\n${corpo}\n\n${cta}\n\n👉 ${linkEco}`;
 }
 
+// Mapa eco -> array de conteúdo expandido (hook/corpo/cta)
+const ECO_CONTEUDO_ARRAYS = {
+  aurea: CONTEUDO_AUREA,
+  serena: CONTEUDO_SERENA,
+  ignis: CONTEUDO_IGNIS,
+  ventis: CONTEUDO_VENTIS,
+  ecoa: CONTEUDO_ECOA,
+  imago: CONTEUDO_IMAGO,
+  lumina: CONTEUDO_LUMINA,
+};
+
 function gerarConteudoEcoDia(eco, seed) {
   const ecoData = ECO_CONTEUDO[eco];
   if (!ecoData) return null;
@@ -3854,18 +3865,28 @@ function gerarConteudoEcoDia(eco, seed) {
   const igIndex = seed % (conteudoIG.length || 1);
   const waIndex = seed % (mensagensWA.length || 1);
 
-  const hook = hooks[hookIndex] || '';
   const igContent = conteudoIG[igIndex] || null;
   const waMsg = mensagensWA[waIndex] || '';
 
-  // Build corpo from TODO_CONTEUDO for vitalis, or from IG content for others
+  // Usar CONTEUDO_* expandidos para hook/corpo/cta quando disponível
+  let hook = '';
   let corpo = '';
   let cta = '';
+  const conteudoArray = ECO_CONTEUDO_ARRAYS[eco];
+
   if (eco === 'vitalis') {
+    hook = hooks[hookIndex] || '';
     const conteudo = getConteudoByTema(['corpo', 'emocional', 'provocacao'][seed % 3], seed);
     corpo = conteudo.corpo;
     cta = conteudo.cta;
+  } else if (conteudoArray && conteudoArray.length > 0) {
+    // Usar conteúdo expandido (12 entradas por eco)
+    const item = conteudoArray[seed % conteudoArray.length];
+    hook = item.hook;
+    corpo = item.corpo;
+    cta = item.cta;
   } else {
+    hook = hooks[hookIndex] || '';
     corpo = igContent?.texto || hook;
     cta = `Descobre mais sobre o ${ecoData.nome}. Link na bio.`;
   }
