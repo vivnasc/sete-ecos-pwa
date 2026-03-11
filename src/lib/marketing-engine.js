@@ -211,6 +211,31 @@ const CONTEUDO_ALIMENTACAO_EMOCIONAL = [
     corpo: 'Não é ignorância. É automático. O cérebro aprendeu: stress → come. Tristeza → come. Tédio → come. É um circuito neurológico, não uma falha moral. Reprogramar circuitos leva tempo, gentileza e repetição — não vergonha.',
     cta: 'Cada vez que pausas antes de comer, estás a reescrever o padrão. Mesmo que depois comas. — Vivianne',
   },
+  {
+    hook: 'Uma cliente disse-me: "Só como à noite, quando todos dormem." Reconheces-te?',
+    corpo: 'Comer às escondidas é mais comum do que pensas. Não é vergonha — é um sinal de que a comida carrega algo que não queres que ninguém veja. Um consolo privado. Uma recompensa secreta. Um momento só teu num dia inteiro vivido para os outros.',
+    cta: 'Não precisas de esconder o que sentes. Precisas de um espaço seguro para sentir. O VITALIS tem esse espaço. — Vivianne',
+  },
+  {
+    hook: '3 sinais de que a tua fome é emocional (e não física):',
+    corpo: '1) Aparece de repente, sem aviso — a fome real cresce devagar. 2) Queres algo específico (chocolate, pão, salgados) — a fome real aceita qualquer comida. 3) Não desaparece depois de comer — porque nunca foi fome.',
+    cta: 'Antes de comer, pára 2 minutos e pergunta: isto é fome ou é outra coisa? — Vivianne',
+  },
+  {
+    hook: 'Responde honestamente: quando foi a última vez que comeste com prazer e sem culpa?',
+    corpo: 'Se não te lembras, o problema não é a comida. É a relação. Transformaste algo que deveria ser nutritivo e prazeroso num campo de batalha. Cada refeição é um julgamento. Cada garfada tem um veredito. Isso não é saúde. É tortura disfarçada de disciplina.',
+    cta: 'A comida não é inimiga. A culpa é. Vamos separar as duas. — Vivianne',
+  },
+  {
+    hook: 'O tédio é o gatilho emocional mais subestimado. E o mais frequente.',
+    corpo: 'Não é fome. Não é tristeza. É simplesmente nada. E o "nada" é insuportável para um cérebro que precisa de estímulo. A comida dá dopamina instantânea — sabor, textura, ritual. Resolve o tédio por 10 minutos. Depois volta. E comes outra vez.',
+    cta: 'A próxima vez que sentires tédio, experimenta: 5 minutos ao ar livre, uma música que gostes, ou ligar a alguém. — Vivianne',
+  },
+  {
+    hook: 'A tua mãe dizia "come tudo" e o teu corpo ainda obedece.',
+    corpo: 'As regras de infância ficam gravadas: não desperdiçar, comer tudo do prato, a sobremesa é prémio. Décadas depois, o teu corpo adulto ainda obedece à voz de uma criança de 5 anos. Não é fome. É programação. E programação reprograma-se.',
+    cta: 'Podes amar a tua mãe e devolver-lhe a regra. Já não te serve. — Vivianne',
+  },
 ];
 
 // DISTORÇÕES E IMAGEM CORPORAL — como o espelho mente
@@ -245,6 +270,36 @@ const CONTEUDO_DISTORCOES = [
     corpo: 'Chás detox. Cintas modeladoras. Dietas de 800 calorias. Antes e depois milagrosos. Tudo desenhado para te fazer sentir que estás errada como estás. Estás errada? Ou estás num corpo real que precisa de nutrição real?',
     cta: 'Escolhe cuidar-te por amor, não por vergonha. A diferença muda tudo. — Vivianne',
   },
+  {
+    hook: 'Uma cliente perdeu 15kg. Continuava a ver-se "enorme". O espelho mentia.',
+    corpo: 'A roupa era nova, os números confirmavam, as pessoas elogiavam. Mas no espelho, ela via o corpo antigo. Porque a imagem corporal não se actualiza com a balança. Actualiza-se quando reescreves a história que tens sobre o teu corpo.',
+    cta: 'No VITALIS trabalhamos o corpo E a imagem. Porque mudar só um não chega. — Vivianne',
+  },
+  {
+    hook: 'Quantas fotos apagaste porque "não estavas bem"?',
+    corpo: 'Centenas. Talvez milhares. Fotos de momentos felizes, eliminadas porque o ângulo mostrava uma barriga, um braço, um queixo. Apagaste memórias para apagar um corpo. Mas o corpo estava lá — a viver, a celebrar. Eras tu.',
+    cta: 'A próxima foto que tirares, guarda-a. Mesmo que o espelho proteste. — Vivianne',
+  },
+  {
+    hook: '5 coisas que o teu corpo fez hoje que nada têm a ver com aparência:',
+    corpo: '1) Respirou sem que pedisses. 2) Digeriu a comida que lhe deste. 3) Levou-te onde precisavas de ir. 4) Deu-te abraços e recebeu-os. 5) Manteve-te viva. O teu corpo é extraordinário. Não pelo que parece. Pelo que faz.',
+    cta: 'Antes de criticar, agradece. O teu corpo trabalha para ti 24 horas por dia. — Vivianne',
+  },
+  {
+    hook: 'O "antes e depois" é a maior mentira do wellness.',
+    corpo: 'Iluminação diferente, postura alterada, roupa escolhida a dedo. O "antes" é desenhado para parecer miserável. O "depois" é desenhado para parecer impossível sem o produto. E tu, no meio, a sentir que o teu progresso real nunca é suficiente.',
+    cta: 'O teu progresso não precisa de fotos. Precisa de honestidade. — Vivianne',
+  },
+  {
+    hook: 'Dizes "odeio o meu corpo" como quem diz "bom dia". Ouve o que estás a dizer.',
+    corpo: 'Normalizaste a violência verbal contra ti mesma. É tão automático que nem percebes. Mas cada "odeio" reforça a crença. E a crença gera o comportamento — comes por castigo, não por prazer. Restringes por punição, não por saúde.',
+    cta: 'Experimenta 7 dias sem te insultares ao espelho. Nota o que muda. — Vivianne',
+  },
+  {
+    hook: 'O corpo da mulher na capa da revista não existe. Nem ela o tem.',
+    corpo: 'Filtros, edição, iluminação profissional, maquilhagem de 3 horas, e mesmo assim retocam. Estás a comparar-te com uma imagem que a própria modelo não reconhece. Esse "padrão" é ficção. O teu corpo é real. Real ganha.',
+    cta: 'Compara-te com quem eras ontem. Mais ninguém importa. — Vivianne',
+  },
 ];
 
 // ANSIEDADE E STRESS — o impacto no corpo e na alimentação
@@ -278,6 +333,36 @@ const CONTEUDO_ANSIEDADE = [
     hook: 'A "falta de disciplina" é quase sempre o sistema nervoso em modo de sobrevivência.',
     corpo: 'Quando o corpo está em fight-or-flight permanente, a parte do cérebro que toma decisões racionais desliga-se. Literalmente. A amígdala assume o controlo. E a amígdala não quer salada — quer sobreviver. É por isso que a disciplina falha quando estás em burnout.',
     cta: 'Segurança primeiro. Nutrição depois. A ordem importa. — Vivianne',
+  },
+  {
+    hook: 'Uma cliente descobriu que cada vez que o chefe gritava, ela comia pão no carro a caminho de casa.',
+    corpo: 'O padrão era invisível até escrevermos juntas. Conflito no trabalho → tensão → carro → padaria → comer em silêncio → culpa → "amanhã como bem". Repetiu 200 vezes em 4 anos. Quando nomeou o gatilho, a padaria perdeu o poder.',
+    cta: 'Mapear gatilhos é a ferramenta mais subestimada da nutrição. No VITALIS fazemos isto juntas. — Vivianne',
+  },
+  {
+    hook: 'A insónia e a compulsão alimentar são primas. Dormem na mesma casa.',
+    corpo: 'Quando dormes pouco, a grelina (hormona da fome) sobe 28%. A leptina (hormona da saciedade) desce. O córtex pré-frontal desliga. Resultado: queres comida calórica, não sentes saciedade, e não tens capacidade de decidir. Não é fraqueza. É privação de sono.',
+    cta: 'Antes de mudar a dieta, conta-me: quantas horas dormes? A resposta pode mudar tudo. — Vivianne',
+  },
+  {
+    hook: '4 perguntas para quando a ansiedade apertar e quiseres comer:',
+    corpo: '1) Tenho fome real ou aconteceu algo? 2) O que sinto no corpo agora — aperto, calor, tremor? 3) Se a comida não existisse, o que faria? 4) Do que preciso realmente neste momento? Não é para evitar comer. É para escolher conscientemente.',
+    cta: 'Cola estas 4 perguntas no frigorífico. A sério. Funciona. — Vivianne',
+  },
+  {
+    hook: 'Não precisas de eliminar o stress. Precisas de processar o stress que já está no corpo.',
+    corpo: 'O stress que não se processa acumula-se: tensão muscular, inflamação, cortisol elevado, fome constante. Não basta meditar 5 minutos. É preciso mover o corpo — sacudir, dançar, correr, chorar. A energia precisa de sair, não de ser controlada.',
+    cta: 'O corpo sabe como libertar o stress. Só precisa de permissão. Dá-lha. — Vivianne',
+  },
+  {
+    hook: 'O scroll infinito no telemóvel é ansiedade disfarçada. E muitas vezes acaba na cozinha.',
+    corpo: 'Telemóvel → comparação → inadequação → ansiedade → cozinha. Reconheces? O cérebro entra em overload com estímulos digitais e pede algo físico para regular. A comida é o mais acessível. Mas não é a única saída.',
+    cta: 'Experimenta: 20 minutos sem telemóvel antes de dormir. Nota o que muda na tua fome nocturna. — Vivianne',
+  },
+  {
+    hook: 'Respira. Literalmente. 3 respirações profundas cortam 40% do impulso.',
+    corpo: 'Não é filosofia. É fisiologia. A expiração longa activa o parassimpático e desacelera a amígdala. 3 respirações de 6 segundos (2 a inspirar, 4 a expirar) são suficientes para sair do modo de emergência e voltar ao modo de escolha.',
+    cta: 'Faz agora: inspira 2 segundos, expira 4. Repete 3 vezes. Pronto. Estás diferente. — Vivianne',
   },
 ];
 
@@ -318,6 +403,31 @@ const CONTEUDO_AUTOESTIMA = [
     corpo: 'Reparaste que perdoas os erros dos outros mas castigas os teus? Que dás espaço aos outros mas exiges perfeição de ti? Que acolhes a vulnerabilidade alheia mas rejeitas a tua? Esta é a raiz de tudo.',
     cta: 'Trata-te como tratarias alguém que amas. É simples. Mas não é fácil. — Vivianne',
   },
+  {
+    hook: 'Uma cliente recusou ir à praia 5 verões seguidos. Não por causa do corpo. Por causa do que pensava do corpo.',
+    corpo: 'O corpo dela estava bem. Funcional, saudável, capaz. Mas a narrativa dizia "não estás pronta". Pronta para quê? Para quem? Quem decidiu que há um corpo de praia e um corpo de esconder? A praia não tem bilheteira de quilos.',
+    cta: 'O que deixaste de viver por causa do que pensas sobre o teu corpo? Conta-me. — Vivianne',
+  },
+  {
+    hook: 'Dizes "não tenho tempo para mim" mas o que queres dizer é "não mereço tempo para mim".',
+    corpo: 'Tempo para os filhos, encontras. Para o trabalho, encontras. Para ajudar alguém, encontras. Para ti? "Não dá." Porque no fundo, o teu cuidado não é prioridade. E enquanto não for, nenhum plano alimentar sobrevive à primeira semana.',
+    cta: 'Marca 15 minutos no teu dia. Só para ti. Amanhã. Sem negociar. — Vivianne',
+  },
+  {
+    hook: 'O elogio que recusas diz mais sobre ti do que quem o fez.',
+    corpo: '"Estás bonita." "Não, estou horrível." "Que bem que te fica." "Isto? Estava em saldos." Deflectir elogios é recusar amor. É dizer ao mundo: não mereço ser vista. Cada elogio recusado reforça a crença de que não és suficiente.',
+    cta: 'Próximo elogio que receberes: diz apenas "obrigada". Sem mas. Sem desculpas. — Vivianne',
+  },
+  {
+    hook: 'Pedes desculpa por existir. Já reparaste?',
+    corpo: '"Desculpa incomodar." "Desculpa perguntar." "Desculpa, mas..." Pedes desculpa por ter fome, por ter opinião, por ocupar espaço. A comida torna-se a única área onde não precisas de pedir licença. Comes em silêncio. Sem pedir desculpa a ninguém.',
+    cta: 'A tua presença não é incómodo. A tua fome não é exagero. Estás a ocupar o teu lugar. — Vivianne',
+  },
+  {
+    hook: 'A autoestima não se constrói com afirmações no espelho. Constrói-se com decisões.',
+    corpo: 'Repetir "eu mereço" 50 vezes não muda nada se depois aceitas migalhas. A autoestima real é: escolher-te quando é difícil, sair quando te tratam mal, descansar quando precisas, comer com cuidado porque o teu corpo importa. Acções. Não palavras.',
+    cta: 'Hoje toma uma decisão pequena a teu favor. É aí que começa. — Vivianne',
+  },
 ];
 
 // CICLO DE COMEÇA-PÁRA — para quem já "desistiu 100 vezes"
@@ -351,6 +461,36 @@ const CONTEUDO_CICLO_RECOMECOS = [
     hook: 'Não precisas de começar do zero. Precisas de continuar de onde paraste.',
     corpo: 'Cada vez que "recomeças", trazes contigo tudo o que aprendeste. Não partes do zero. Partes do 47. Ou do 73. Ou do 89. As lições ficaram. O progresso acumulou-se. Mesmo que não pareça.',
     cta: 'Não recomeça. Continua. A diferença é enorme. — Vivianne',
+  },
+  {
+    hook: 'Uma cliente contou-me que tinha 47 screenshots de dietas guardadas no telemóvel. Usou zero.',
+    corpo: 'Guardar informação é confortável. Agir sobre ela é desconfortável. O acto de guardar dá a ilusão de progresso — "estou a preparar-me". Mas preparar-te eternamente é outra forma de adiar. A informação que tens já chega. O que falta é começar imperfeita.',
+    cta: 'Apaga as screenshots. Começa com uma única refeição consciente. Hoje. — Vivianne',
+  },
+  {
+    hook: 'O "tudo ou nada" é a armadilha perfeita. Come um chocolate e a semana "foi por água".',
+    corpo: 'Uma refeição não estraga nada. Mas na tua cabeça, um deslize = fracasso total = desisto = como tudo = segunda-feira recomeço. Este pensamento binário é mais destrutivo do que qualquer chocolate. Porque não é o chocolate que te faz parar. É a crença de que imperfeito não conta.',
+    cta: 'Imperfeito conta. 70% é melhor que 0%. Sempre. — Vivianne',
+  },
+  {
+    hook: 'Sabes qual é a diferença entre quem consegue e quem não consegue? Não é o plano.',
+    corpo: 'É a capacidade de continuar depois de falhar. Quem transforma o corpo não é quem nunca saiu do plano. É quem saiu, voltou, saiu, voltou — e não desistiu. A consistência imperfeita bate a perfeição intermitente todas as vezes.',
+    cta: 'Não sejas perfeita. Sê consistente. Mesmo que signifique 3 dias bons por semana. — Vivianne',
+  },
+  {
+    hook: 'Já pensaste que talvez não estejas a falhar — mas a aprender como NÃO fazer?',
+    corpo: 'Edison fez 10.000 tentativas antes da lâmpada. Ninguém lhe chamou fraco. Mas tu, com 10 tentativas de mudar hábitos de uma vida inteira, achas que és um caso perdido? Cada tentativa anterior ensinou-te algo. Mesmo que tenha sido "isto não funciona para mim".',
+    cta: 'A sabedoria que trazes de cada tentativa é o teu verdadeiro superpoder. — Vivianne',
+  },
+  {
+    hook: 'A pergunta não é "como começo?" É "o que me fez parar das últimas vezes?"',
+    corpo: 'Começas com energia, motivação e um plano novinho. Na semana 3, algo acontece — stress, ciclo menstrual, uma festa, uma discussão. E pronto. Mas o gatilho é sempre o mesmo. Se identificares o teu, podes preparar-te em vez de ser surpreendida.',
+    cta: 'Diz-me o que te fez parar e eu digo-te o que fazer diferente. É isso que fazemos no VITALIS. — Vivianne',
+  },
+  {
+    hook: 'Não tens de mudar tudo ao mesmo tempo. Muda uma coisa. Uma.',
+    corpo: 'Dieta nova + ginásio + meditação + jejum + suplementos + 2L de água + 8h de sono. Tudo ao mesmo tempo. Em que universo isto é sustentável? Escolhe UMA coisa. Faz durante 14 dias. Quando for automático, acrescenta outra. Micro-mudanças. Macro-resultados.',
+    cta: 'Qual é a tua UMA coisa desta semana? Decide agora. — Vivianne',
   },
 ];
 
@@ -388,6 +528,41 @@ const CONTEUDO_AUREA = [
     corpo: 'Dirias: "Tu mereces mais." "Não aceites isso." "Cuida de ti." Mas para ti, aplicam-se regras diferentes. Porquê? Porque interiorizaste que o teu valor depende do quanto dás — não do quanto és.',
     cta: 'Trata-te como tratarias quem mais amas. Mereces o mesmo. — Vivianne',
   },
+  {
+    hook: 'O dinheiro que gastas em ti não é despesa. É investimento na tua fundação.',
+    corpo: 'Gastas na escola dos filhos sem pensar. No carro, no aluguer, nas contas. Mas gastar 2.500 MZN em ti provoca culpa. Porque aprendeste que gastar em ti é luxo. Não é. É o investimento que sustenta todo o resto.',
+    cta: 'Se a fundação ceder, tudo o que construíste em cima cai. Cuida da fundação. — Vivianne',
+  },
+  {
+    hook: '3 formas pelas quais te desvalorizas sem perceber:',
+    corpo: '1) Aceitas menos do que mereces — no trabalho, nas relações, na comida que te dás. 2) Pedes desculpa por ter necessidades. 3) Priorizas sempre os outros e dizes que "não faz mal". Faz. E o teu corpo sabe.',
+    cta: 'Reconhecer o padrão é o primeiro passo para quebrá-lo. O ÁUREA mostra-te como. — Vivianne',
+  },
+  {
+    hook: 'A abundância não é ter muito. É acreditar que mereces o que tens.',
+    corpo: 'Podes ter dinheiro e sentir-te pobre. Podes ter saúde e sentir-te doente. Podes ter amor e sentir-te sozinha. A abundância não é externa — é a crença interna de que o que chega até ti é merecido. Sem essa crença, nada é suficiente.',
+    cta: 'O que já tens e não celebras? Começa por aí. — Vivianne',
+  },
+  {
+    hook: 'Uma cliente chorou quando lhe perguntei: "Quando foi a última vez que fizeste algo só por prazer?"',
+    corpo: 'Não se lembrava. Tudo tinha de ter propósito — para os filhos, para o trabalho, para a casa. O prazer era "perda de tempo". Mas o prazer é nutrição. Sem ele, o corpo procura substitutos: comida, compras, scroll infinito.',
+    cta: 'Prazer sem culpa é um acto revolucionário. O ÁUREA começa aí. — Vivianne',
+  },
+  {
+    hook: 'Vestir-te bem não é vaidade. É a forma como dizes ao mundo que existes.',
+    corpo: 'Quando te vestes por obrigação — preto, largo, discreto — estás a esconder-te. Quando te vestes com intenção — cores que gostas, tecidos que sentes, formas que celebram — estás a ocupar espaço. E ocupar espaço é merecimento em acção.',
+    cta: 'O espelho do ÁUREA não julga. Convida-te a ver-te de novo. — Vivianne',
+  },
+  {
+    hook: 'Herdaste a relação da tua mãe com o dinheiro. Já decidiste se queres ficar com ela?',
+    corpo: 'Se a tua mãe poupava por medo, talvez acredites que gastar é perigo. Se nunca havia suficiente, talvez acredites que nunca vai haver. Essas crenças não são tuas — são herdadas. E o primeiro passo é devolvê-las.',
+    cta: 'O ÁUREA tem um exercício de "crenças herdadas" que muda tudo. Experimenta na versão trial. — Vivianne',
+  },
+  {
+    hook: 'Responde: qual é o valor máximo que gastarias em ti mesma, sem culpa?',
+    corpo: 'Se a resposta te assusta, repara no que isso diz. Não sobre dinheiro — sobre quanto achas que vales. Uma pessoa que se valoriza não tem um tecto para o cuidado próprio. Tem discernimento, sim. Mas não tem culpa.',
+    cta: 'O teu valor não tem tecto. Vamos reconstruir isso juntas. — Vivianne',
+  },
 ];
 
 // SERENA — Regulação emocional, respiração, ciclos emocionais
@@ -417,6 +592,41 @@ const CONTEUDO_SERENA = [
     hook: 'Tens emoções. Não és as tuas emoções.',
     corpo: 'Há uma diferença entre "estou triste" e "sou triste". A primeira é um estado — passa. A segunda é uma identidade — prende. Quando aprendes a observar o que sentes em vez de te fundires com isso, tudo muda.',
     cta: 'O SERENA começa aqui: observar sem reagir. Sentir sem fugir. — Vivianne',
+  },
+  {
+    hook: 'Uma cliente disse: "Não sei o que sinto. Só sei que como." O SERENA começa aí.',
+    corpo: 'A iliteracia emocional é mais comum do que imaginas. Cresceste sem vocabulário para emoções — estava tudo bem ou estava mal. Sem nuances. "Triste" pode ser 15 coisas diferentes: solidão, luto, desilusão, saudade, exaustão. Quando aprendes a nomear, paras de comer para calar.',
+    cta: 'No SERENA tens uma roda com 16 emoções. Nomear é o primeiro passo para libertar. — Vivianne',
+  },
+  {
+    hook: 'A raiva que engoles transforma-se em inflamação. Literalmente.',
+    corpo: 'Emoções reprimidas activam a resposta inflamatória do corpo. Raiva crónica não expressa → cortisol → inflamação sistémica → retenção, inchaço, dor. Não é metáfora. É bioquímica. O corpo grita o que a boca cala.',
+    cta: 'Expressar raiva não é gritar. É reconhecer, respirar e canalizar. O SERENA ensina. — Vivianne',
+  },
+  {
+    hook: '5 emoções que confundes com fome:',
+    corpo: '1) Tédio — o "nada" que pede estímulo. 2) Solidão — a falta que sentes de presença. 3) Ansiedade — o aperto que parece estômago vazio. 4) Raiva — a energia que não sabes onde pôr. 5) Cansaço — o corpo que confunde sono com fome.',
+    cta: 'Na próxima vez, antes de ir à cozinha, pergunta: qual destas 5 estou a sentir? — Vivianne',
+  },
+  {
+    hook: 'O teu ciclo menstrual muda as tuas emoções. E ninguém te avisou.',
+    corpo: 'Fase folicular: energia, optimismo. Ovulação: confiança, sociabilidade. Fase lútea: irritabilidade, compulsão. Menstruação: introspecção, cansaço. Não és instável. És cíclica. E quando entendes o ciclo, paras de te culpar pelo que é biologia.',
+    cta: 'O SERENA integra o ciclo menstrual no teu mapa emocional. Porque faz toda a diferença. — Vivianne',
+  },
+  {
+    hook: 'Coerência cardíaca: 5 minutos por dia que mudam a tua bioquímica.',
+    corpo: 'Respirar a 6 ciclos por minuto sincroniza o coração, o cérebro e o sistema nervoso. Reduz cortisol, melhora variabilidade cardíaca, e corta impulsos alimentares. Não é meditação mística. É treino fisiológico com resultados em 2 semanas.',
+    cta: 'Experimenta: 5 segundos a inspirar, 5 a expirar. Durante 5 minutos. Todos os dias. — Vivianne',
+  },
+  {
+    hook: 'Responde: qual é a emoção que mais evitas sentir?',
+    corpo: 'Todos temos uma. A raiva, a tristeza, a vergonha, o medo, a solidão. Aquela que tapas mais rápido — com comida, com trabalho, com distracção. Essa emoção evitada é a chave. Porque enquanto a evitares, ela controla-te. Quando a enfrentares, liberta-te.',
+    cta: 'Não tenhas medo dela. Ela tem o tamanho que lhe dás. — Vivianne',
+  },
+  {
+    hook: 'Estás a sentir muito ou estás a sentir o que sempre evitaste?',
+    corpo: 'Quando começas a cuidar de ti — nutrição, sono, menos álcool — as anestesias caem. E o que estavas a tapar emerge. Parece que estás pior. Na verdade, estás mais presente. É desconfortável. Mas é o caminho.',
+    cta: 'O desconforto de sentir é temporário. O preço de evitar é permanente. — Vivianne',
   },
 ];
 
@@ -448,6 +658,41 @@ const CONTEUDO_IGNIS = [
     corpo: 'Esperas não ter medo para agir. Mas o medo nunca vai embora — faz parte do sistema nervoso. A questão não é eliminá-lo. É deixar de obedecer-lhe. Cada pequena acção apesar do medo reprograma o cérebro.',
     cta: 'Coragem diária. Não grandes gestos — pequenas decisões repetidas. — Vivianne',
   },
+  {
+    hook: 'Uma cliente disse "sim" ao ginásio, à dieta e ao trabalho. Disse "não" a tudo o resto. Esgotou-se.',
+    corpo: 'Disciplina sem discernimento é prisão. Ela fazia tudo "certo" mas estava destruída. Porque a disciplina verdadeira não é fazer mais — é fazer o que importa. E às vezes, o que importa é parar.',
+    cta: 'No IGNIS, a primeira chama que acendes é a da escolha consciente. Não da força bruta. — Vivianne',
+  },
+  {
+    hook: 'A procrastinação é a versão educada do medo.',
+    corpo: 'Não adias porque és preguiçosa. Adias porque tens medo: de falhar, de ser julgada, de não ser suficiente. O cérebro prefere o desconforto de adiar ao desconforto de enfrentar. Mas o preço de adiar é maior — e paga-se em culpa.',
+    cta: 'Identifica o medo por trás do adiamento. Quando o nomeares, perde metade do poder. — Vivianne',
+  },
+  {
+    hook: '4 coisas que podes cortar esta semana sem perder nada:',
+    corpo: '1) Uma obrigação social que não te acrescenta. 2) 30 minutos de scroll antes de dormir. 3) Uma conversa com alguém que só te drena. 4) Uma tarefa que fazes por hábito, não por necessidade. Cortar não é egoísmo. É higiene energética.',
+    cta: 'Escolhe uma. Corta. Nota como te sentes. — Vivianne',
+  },
+  {
+    hook: 'O teu "sim automático" está a matar a tua energia.',
+    corpo: 'Alguém pede — dizes sim. Antes de pensar, já aceitaste. Porque "não" parece egoísta, rude, cruel. Mas cada sim automático é um não a ti mesma. E a energia que gastas em coisas que não escolheste é energia que falta para o que importa.',
+    cta: 'Pratica o "deixa-me pensar" antes de responder. É o primeiro passo. — Vivianne',
+  },
+  {
+    hook: 'Responde: qual é a decisão que andas a adiar há meses?',
+    corpo: 'Sabes qual é. Está aí, no fundo, a ocupar espaço mental todos os dias. Cada dia que adias, gasta energia em não decidir. Uma decisão tomada — mesmo imperfeita — liberta mais energia do que semanas de indecisão.',
+    cta: 'O IGNIS chama-lhe "O Corte Que Liberta". E funciona. — Vivianne',
+  },
+  {
+    hook: 'Estás tão ocupada a sobreviver que esqueceste de decidir como queres viver.',
+    corpo: 'O modo automático é confortável: levantar, trabalhar, comer, dormir, repetir. Não precisas de pensar. Mas também não vives. O IGNIS é sobre parar o automático e acender a intenção. Cada escolha consciente é uma chama.',
+    cta: 'Viver por inércia é confortável. Viver com intenção é transformador. — Vivianne',
+  },
+  {
+    hook: 'A distracção não é inofensiva. É o que te impede de sentir, decidir e agir.',
+    corpo: 'Telemóvel, séries, comida, compras — são tudo versões da mesma fuga. Foge-se do vazio, do medo, da incerteza. Mas o que evitas não desaparece. Acumula-se. Até que não caiba mais e transborde — em ansiedade, em compulsão, em burnout.',
+    cta: 'Experimenta 10 minutos de silêncio total. Sem estímulos. Nota o que aparece. — Vivianne',
+  },
 ];
 
 // VENTIS — Energia, ritmo, pausa, burnout, renovação
@@ -477,6 +722,41 @@ const CONTEUDO_VENTIS = [
     hook: 'Cuidas de tudo e de todos. Menos da tua energia. E depois não entendes por que desabas.',
     corpo: 'A energia é finita. Cada decisão gasta. Cada conflito gasta. Cada obrigação gasta. Se não recarregas conscientemente — com sono, com pausa, com natureza, com silêncio — chegas ao fim do dia a vazio. E é aí que comes por impulso.',
     cta: 'Gerir energia é a fundação de tudo. Corpo, emoção, foco — tudo depende disto. — Vivianne',
+  },
+  {
+    hook: 'Uma cliente dormia 5 horas e compensava com 4 cafés. Chamava-lhe "rotina".',
+    corpo: 'Quando lhe disse que o cansaço era a causa de 80% das suas compulsões alimentares, não acreditou. Duas semanas a dormir 7 horas: menos fome, menos irritabilidade, menos 2kg. Sem mudar a dieta. Só o sono.',
+    cta: 'E se o segredo não fosse comer menos, mas dormir mais? — Vivianne',
+  },
+  {
+    hook: '3 tipos de cansaço que confundes com preguiça:',
+    corpo: '1) Cansaço físico — o corpo precisa de descanso real (não de séries no sofá). 2) Cansaço mental — decisões demais, estímulos demais, obrigações demais. 3) Cansaço emocional — relações que drenam, emoções não processadas. Cada um precisa de um tipo diferente de pausa.',
+    cta: 'Qual é o teu cansaço dominante? Identificar muda a forma como descansas. — Vivianne',
+  },
+  {
+    hook: 'O domingo não é para "pôr tudo em dia". É para parar.',
+    corpo: 'Lavar, cozinhar, limpar, organizar, preparar a semana. O teu "dia de descanso" é o mais produtivo da semana. Resultado: começas segunda esgotada. O corpo entra em modo de sobrevivência e pede comida calórica. Não é gula. É exaustão.',
+    cta: 'Experimenta um domingo com metade das tarefas. Nota como começas segunda. — Vivianne',
+  },
+  {
+    hook: 'A natureza não tem pressa. E tu devias aprender com ela.',
+    corpo: 'Uma árvore não cresce mais rápido porque gritas com ela. Um rio não corre mais porque lhe pedes. O teu corpo funciona com os mesmos ritmos da natureza. Quando forças velocidade antinatural, o corpo adoece. Quando respeitas o ritmo, floresce.',
+    cta: '10 minutos ao ar livre, sem telemóvel. É a pausa mais poderosa que existe. — Vivianne',
+  },
+  {
+    hook: 'Responde: a que horas a tua energia é máxima? Usas essa janela para ti ou para os outros?',
+    corpo: 'Todos temos um pico de energia. Se o teu é de manhã e o gastas todo em emails e reuniões, chegas ao fim do dia sem nada para ti. E quando não tens energia para ti, não tens energia para escolhas conscientes — comes o que aparecer.',
+    cta: 'Protege a tua melhor hora do dia. Usa-a para o que importa. — Vivianne',
+  },
+  {
+    hook: 'Burnout não é trabalhar muito. É viver sem prazer.',
+    corpo: 'Há quem trabalhe 12 horas e não entre em burnout. E há quem trabalhe 6 e desmorone. A diferença não é o volume — é a presença ou ausência de momentos de recarga genuína. Prazer, riso, conexão, natureza, silêncio. Sem isto, qualquer carga é demais.',
+    cta: 'O VENTIS tem um detector de burnout. Porque às vezes estás em burnout e não sabes. — Vivianne',
+  },
+  {
+    hook: 'O corpo avisa 3 vezes antes de colapsar. Estás a ouvir?',
+    corpo: 'Primeiro aviso: cansaço constante, sono não reparador. Segundo aviso: dores de cabeça, tensão muscular, digestão difícil. Terceiro aviso: insónia, ansiedade, compulsões, inflamação. Se ignoras os 3, vem o colapso. Não é surpresa. É consequência.',
+    cta: 'Em que aviso estás? Sê honesta. O VENTIS ajuda-te a responder. — Vivianne',
   },
 ];
 
@@ -508,6 +788,41 @@ const CONTEUDO_ECOA = [
     corpo: 'O corpo fala quando a boca não fala. Tensão na mandíbula? Palavras presas. Nó na garganta? Verdades engolidas. Dor no estômago? Emoções não digeridas. O corpo não mente. E não espera.',
     cta: 'Escreve o que não consegues dizer. Uma carta que não envias. É um começo. — Vivianne',
   },
+  {
+    hook: 'Uma cliente escreveu uma carta à mãe que nunca enviou. Perdeu 4kg no mês seguinte.',
+    corpo: 'Não por magia. Porque a raiva que guardava há 20 anos finalmente teve saída. Sem a raiva a ocupar espaço, o corpo largou o peso — literal e figurado. A comida que usava para abafar deixou de ser necessária.',
+    cta: 'O ECOA tem exercícios de cartas não enviadas. Perdão. Raiva. Despedida. Verdade. Escolhe uma. — Vivianne',
+  },
+  {
+    hook: '3 frases que parecem educadas mas são silenciamento:',
+    corpo: '1) "Não vale a pena dizer nada." — Vale. 2) "Eu aguento." — Mas devias ter de aguentar? 3) "Deixa estar, não é nada." — É. E quanto mais dizes que não é, mais se acumula. Estas frases são o teu silêncio disfarçado de maturidade.',
+    cta: 'Hoje substitui "não é nada" por "é isto que sinto". Uma vez basta. — Vivianne',
+  },
+  {
+    hook: 'Responde: quem te silenciou pela primeira vez?',
+    corpo: 'Um pai que gritava. Uma mãe que dizia "cala-te". Um professor que humilhava. Um parceiro que minimizava. Alguém, em algum momento, te ensinou que a tua voz era perigosa. E tu aprendeste. Mas podes desaprender.',
+    cta: 'Não é para culpar. É para entender. E depois, escolher diferente. — Vivianne',
+  },
+  {
+    hook: 'O nó na garganta não é ansiedade. É a tua verdade a pedir passagem.',
+    corpo: 'Sentes aquele aperto antes de falar? Aquela sensação de que as palavras ficam presas? Não é doença. É o corpo a preparar-se para dizer algo que a mente acha perigoso. A garganta é o portão entre o que sentes e o que expressas.',
+    cta: 'A próxima vez que sentires o nó, respira e deixa sair. Mesmo que trema. — Vivianne',
+  },
+  {
+    hook: 'A assertividade não é ser dura. É ser honesta sem te destruir nem destruir o outro.',
+    corpo: 'Passiva: engoles e acumulas. Agressiva: explodes e magoas. Assertiva: dizes o que sentes, com respeito, sem culpa. A maioria das pessoas oscila entre passiva e agressiva porque nunca aprendeu a terceira via.',
+    cta: 'O ECOA tem 4 modelos de comunicação assertiva. Pratica-se como qualquer músculo. — Vivianne',
+  },
+  {
+    hook: 'Se a tua voz incomoda alguém, talvez esteja a dizer a verdade.',
+    corpo: 'As pessoas que beneficiam do teu silêncio vão resistir à tua voz. Vão dizer que mudaste, que estás diferente, que és "difícil". Não mudaste para pior. Estás a deixar de ser conveniente. E isso assusta quem te quer submissa.',
+    cta: 'A tua voz não é para confortar os outros. É para honrar quem és. — Vivianne',
+  },
+  {
+    hook: 'Quanto mais calas, mais comes. A boca encontra outra função.',
+    corpo: 'Quando a boca não serve para falar — para dizer "não", "basta", "eu quero" — ela encontra outra ocupação. Mastigar. Engolir. Encher. A compulsão alimentar e o silenciamento são dois lados da mesma moeda. Libertar a voz liberta a fome.',
+    cta: 'Começa com o Micro-Voz: 8 semanas progressivas para recuperar a tua voz. No ECOA. — Vivianne',
+  },
 ];
 
 // IMAGO — Identidade, essência, rótulos, quem sou além dos papéis
@@ -538,6 +853,106 @@ const CONTEUDO_IMAGO = [
     corpo: 'A indústria do self-improvement vende-te a ideia de que tens falhas a corrigir. Tens defeitos a eliminar. Tens versões melhores a alcançar. Mas e se não tiveres de te melhorar? E se precisares apenas de integrar o que já és — as partes bonitas e as difíceis?',
     cta: 'Integração, não perfeição. Esse é o caminho. — Vivianne',
   },
+  {
+    hook: 'Uma cliente descobriu que vivia a vida da mãe. Aos 38 anos.',
+    corpo: 'Mesma profissão. Mesmo tipo de parceiro. Mesma relação com comida. Mesma forma de se esconder. Tudo herdado, nada escolhido. Quando percebeu, chorou. Depois perguntou: "E agora, quem sou eu?" Essa pergunta é o início do IMAGO.',
+    cta: 'A identidade que tens foi escolhida ou herdada? Descobre. — Vivianne',
+  },
+  {
+    hook: '3 versões de ti que já não existem (mas ainda te governam):',
+    corpo: '1) A criança que aprendeu que ser boa = ser amada. 2) A adolescente que acreditou que o corpo define o valor. 3) A jovem adulta que decidiu que pedir ajuda é fraqueza. Essas versões criaram regras. Regras que ainda obedeces.',
+    cta: 'No IMAGO, fazemos arqueologia da identidade. Camada a camada, até chegar a ti. — Vivianne',
+  },
+  {
+    hook: 'Responde: quem serias se ninguém te estivesse a ver?',
+    corpo: 'Sem julgamento, sem expectativas, sem audiência. Que roupa vestirias? Que comida escolherias? Que decisão tomarias? Se a resposta é diferente do que fazes agora, a distância entre as duas é a distância entre quem és e quem mostras.',
+    cta: 'A coragem de ser quem és quando alguém está a ver — isso é identidade integrada. — Vivianne',
+  },
+  {
+    hook: 'O teu corpo conta a tua história. Cada quilo, cada cicatriz, cada tensão.',
+    corpo: 'O peso que ganhaste no luto. A tensão nos ombros do trabalho. A barriga que cresceu com o stress. O corpo não engorda por acaso. Guarda o que a mente recusa processar. Quando integras a história, o corpo liberta-a.',
+    cta: 'No IMAGO, o corpo é mapa. Não é problema. — Vivianne',
+  },
+  {
+    hook: 'A máscara que usas para o mundo pesa mais do que qualquer excesso de peso.',
+    corpo: 'A "simpática". A "disponível". A "forte". A "que está sempre bem". Cada máscara é energia gasta em performance. E quando chegas a casa e tiras tudo, o vazio que sentes não é depressão. É exaustão de ser quem não és.',
+    cta: 'O IMAGO tem o Espelho Triplo: quem mostras, quem és, quem queres ser. A diferença entre os 3 é reveladora. — Vivianne',
+  },
+  {
+    hook: 'Conheces os teus gatilhos alimentares. Mas conheces os teus valores?',
+    corpo: 'Sabes o que te faz comer mal. Mas sabes o que te faz viver bem? Se "saúde" é um valor, as tuas decisões alimentares mudam. Se "liberdade" é um valor, dietas restritivas nunca vão funcionar. Os valores são o GPS. Sem eles, andas em círculos.',
+    cta: 'Define 5 valores. Alinha as tuas decisões. Tudo muda. — Vivianne',
+  },
+  {
+    hook: 'Não precisas de te encontrar. Precisas de parar de te esconder.',
+    corpo: 'Sabes quem és. Lá no fundo, sabes. Mas mostrar é arriscado. Porque se mostrares quem realmente és e alguém rejeitar, dói mais do que rejeitar a máscara. Então escondes-te. E vives a versão segura. E seguro e vivo não são a mesma coisa.',
+    cta: 'A vulnerabilidade é o preço da autenticidade. E vale cada risco. — Vivianne',
+  },
+];
+
+// LUMINA — Diagnóstico gratuito, autoconhecimento, despertar
+// O LUMINA é a porta de entrada: gratuito, rápido, revelador
+const CONTEUDO_LUMINA = [
+  {
+    hook: '7 perguntas. 23 padrões. 2 minutos. O diagnóstico que ninguém te fez.',
+    corpo: 'Não mede peso. Não conta calorias. Mede como estás — de verdade. Energia, tensão no corpo, imagem no espelho, clareza mental, conexão emocional. Em 2 minutos tens um mapa de 8 dimensões da tua vida. Gratuito. Sem registo.',
+    cta: 'Experimenta agora: app.seteecos.com/lumina — Vivianne',
+  },
+  {
+    hook: 'A última vez que alguém te perguntou "como estás?" e tu respondeste a verdade foi quando?',
+    corpo: '"Estou bem." "Tudo normal." "Na correria." Respostas automáticas que escondem o que realmente sentes. O LUMINA não aceita "estou bem". Faz-te as perguntas que ninguém faz. E dá-te respostas que ninguém te deu.',
+    cta: 'São 7 perguntas honestas. Consegues responder sem mentir a ti mesma? — Vivianne',
+  },
+  {
+    hook: 'Uma pessoa fez o LUMINA "por curiosidade". Chorou quando leu o resultado.',
+    corpo: 'Não porque o resultado era mau. Porque pela primeira vez alguém nomeou o que ela sentia. "Tensão acumulada com protecção activa." Nunca ninguém tinha dito aquilo. Mas ela reconheceu-se em cada palavra. Às vezes, ser vista é o que faltava.',
+    cta: 'O LUMINA não julga. Espelha. E às vezes o espelho é mais poderoso que qualquer conselho. — Vivianne',
+  },
+  {
+    hook: 'Não precisas de pagar nada para começar a conhecer-te. O LUMINA é gratuito.',
+    corpo: 'Sem cartão. Sem compromisso. Sem truques. 7 perguntas sobre como te sentes no corpo, nas emoções, na energia, na mente. O resultado é teu — com padrões identificados, dimensões mapeadas, e caminhos sugeridos.',
+    cta: 'Se estás a ler isto e ainda não fizeste, a pergunta é: porquê? — Vivianne',
+  },
+  {
+    hook: '8 dimensões da tua vida. Qual está em alerta?',
+    corpo: 'Corpo. Passado. Impulso. Futuro. Mente. Energia. Espelho. Cuidado. O LUMINA mapeia as 8 e mostra onde estás a ignorar sinais. Porque o corpo avisa. As emoções avisam. Mas se ninguém te ensinou a ouvir, passam despercebidos.',
+    cta: 'O LUMINA ensina-te a ouvir. Em 2 minutos. Grátis. — Vivianne',
+  },
+  {
+    hook: 'Responde honestamente: de 0 a 10, como te sentes AGORA no teu corpo?',
+    corpo: 'Se respondeste abaixo de 7, a pergunta seguinte é: o que estás a fazer sobre isso? Se a resposta é "nada", não é porque não te importas. É porque não sabes por onde começar. O LUMINA é esse início. Um mapa. Um ponto de partida.',
+    cta: 'Começa por saber onde estás. O caminho fica claro depois. — Vivianne',
+  },
+  {
+    hook: '23 leituras possíveis. Cada uma é um espelho diferente.',
+    corpo: '4 categorias de severidade: protecção, alerta, máximo, crítico. Cada leitura tem 3 mensagens personalizadas e uma recomendação de eco. Não é genérico. É feito para ti — baseado nas tuas respostas, não em médias estatísticas.',
+    cta: 'Qual é a tua leitura? Descobre: app.seteecos.com/lumina — Vivianne',
+  },
+  {
+    hook: 'O LUMINA é grátis. O preço de não te conhecer é que é caro.',
+    corpo: 'Decisões erradas na alimentação. Relações que drenam. Trabalho que esgota. Emoções que transbordam. Tudo isto tem um custo — em saúde, em energia, em anos. Conhecer-te é o investimento mais barato e mais rentável que podes fazer.',
+    cta: 'Investe 2 minutos. O retorno dura a vida inteira. — Vivianne',
+  },
+  {
+    hook: '3 coisas que o LUMINA revela que tu não vias:',
+    corpo: '1) Padrões repetitivos — o que fazes automaticamente sem perceber. 2) Dimensões em alerta — áreas da vida que estás a negligenciar. 3) A ligação entre corpo e emoção — como o que sentes afecta o que comes, a energia que tens e as decisões que tomas.',
+    cta: 'Ninguém muda o que não vê. O LUMINA mostra. — Vivianne',
+  },
+  {
+    hook: 'Já fizeste o LUMINA? Então faz outra vez. Tu não és a mesma pessoa.',
+    corpo: 'O LUMINA não é um teste que se faz uma vez. É um check-in. Porque a tua energia muda. As tuas emoções mudam. O teu corpo muda. Fazer o LUMINA de 3 em 3 meses mostra-te a evolução — ou mostra-te o que ainda precisa de atenção.',
+    cta: 'Repetir o LUMINA é um acto de coragem. Porque às vezes a verdade incomoda. Mas cura. — Vivianne',
+  },
+  {
+    hook: 'O diagnóstico mais honesto que vais fazer não é no hospital. É no LUMINA.',
+    corpo: 'O médico mede o teu colesterol. O LUMINA mede como te sentes a viver. Porque podes ter análises perfeitas e estar destruída por dentro. Saúde não é só ausência de doença. É presença de bem-estar. E isso ninguém mede — excepto tu.',
+    cta: 'Mede-te. De verdade. Gratuitamente. app.seteecos.com/lumina — Vivianne',
+  },
+  {
+    hook: 'Achas que te conheces? O LUMINA pode surpreender-te.',
+    corpo: 'Sabemos muito sobre o mundo e pouco sobre nós. Sabemos as notícias, o horóscopo, o tempo. Mas não sabemos responder: "Como está a minha energia?" "O que sinto no corpo agora?" "Qual é a emoção dominante esta semana?" O autoconhecimento começa com perguntas simples.',
+    cta: 'O LUMINA faz as perguntas. Tu descobres as respostas. Grátis. — Vivianne',
+  },
 ];
 
 // Juntar tudo num pool único rotativo
@@ -556,6 +971,7 @@ const TODO_CONTEUDO = [
   ...CONTEUDO_VENTIS,
   ...CONTEUDO_ECOA,
   ...CONTEUDO_IMAGO,
+  ...CONTEUDO_LUMINA,
 ];
 
 const HASHTAGS_BASE = [
@@ -580,6 +996,7 @@ const HASHTAGS_TEMATICOS = {
   ventis: ['#ventis', '#energia', '#burnout', '#pausa', '#ritmo'],
   ecoa: ['#ecoa', '#voz', '#silenciamento', '#expressao', '#comunicacao'],
   imago: ['#imago', '#identidade', '#essencia', '#valores', '#autoconhecimento'],
+  lumina_eco: ['#lumina', '#diagnostico', '#autoconhecimento', '#gratuito', '#checkin'],
 };
 
 // ============================================================
@@ -604,7 +1021,7 @@ const TEMAS_SEMANA_IMPAR = {
   3: { tema: 'ventis', titulo: 'Energia e Ritmo', formato: 'carrossel', tipo: 'educação' },
   4: { tema: 'ecoa', titulo: 'Voz Recuperada', formato: 'reel', tipo: 'provocação' },
   5: { tema: 'imago', titulo: 'Quem És Tu', formato: 'carrossel', tipo: 'reflexão' },
-  6: { tema: 'alimentacao_emocional', titulo: 'Reflexão Emocional', formato: 'post', tipo: 'reflexão' },
+  6: { tema: 'lumina_eco', titulo: 'Diagnóstico Gratuito', formato: 'post', tipo: 'conversão' },
 };
 
 function getTemasSemanaPorData(date) {
@@ -639,6 +1056,7 @@ function getConteudoByTema(tema, seed) {
   if (tema === 'ventis') return pickFromArray(CONTEUDO_VENTIS, seed);
   if (tema === 'ecoa') return pickFromArray(CONTEUDO_ECOA, seed);
   if (tema === 'imago') return pickFromArray(CONTEUDO_IMAGO, seed);
+  if (tema === 'lumina_eco') return pickFromArray(CONTEUDO_LUMINA, seed);
   return pickFromArray(CONTEUDO_PROVOCACAO, seed);
 }
 
@@ -682,6 +1100,7 @@ export function totalVariantes(tema) {
   if (tema === 'ventis') return CONTEUDO_VENTIS.length;
   if (tema === 'ecoa') return CONTEUDO_ECOA.length;
   if (tema === 'imago') return CONTEUDO_IMAGO.length;
+  if (tema === 'lumina_eco') return CONTEUDO_LUMINA.length;
   return CONTEUDO_PROVOCACAO.length;
 }
 
