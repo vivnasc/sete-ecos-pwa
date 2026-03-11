@@ -3953,6 +3953,13 @@ function gerarConteudoEcoDia(eco, seed) {
     const conteudo = getConteudoByTema(['corpo', 'emocional', 'provocacao'][seed % 3], seed);
     corpo = conteudo.corpo;
     cta = conteudo.cta;
+    usouExpandido = true;
+    igContent = {
+      tipo: 'dica',
+      texto: corpo.slice(0, 120),
+      subtitulo: cta,
+      caption: '',
+    };
   } else if (conteudoArray && conteudoArray.length > 0) {
     // Usar conteúdo expandido (12 entradas por eco)
     const item = conteudoArray[seed % conteudoArray.length];
