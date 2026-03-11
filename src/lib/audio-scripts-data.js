@@ -1,5 +1,5 @@
 // Auto-gerado a partir de audio-scripts/*.md
-// Não editar manualmente — regenerar com: node scripts/gerar-audios-elevenlabs.js
+// Não editar manualmente — regenerar com: node scripts/gerar-audio-scripts-data.js
 
 export const AUDIO_SCRIPTS = {
   "AUREA": [
@@ -208,6 +208,186 @@ export const AUDIO_SCRIPTS = {
       "speed": 0.85,
       "stability": 75,
       "script": "[warmly] VITALIS é o eco do corpo. [pause] Nutrição consciente, movimento com propósito, e a coragem de olhar para o que comes, como dormes, como tratas esta casa que é tua. [pause] Não é dieta. [pause] É uma relação nova com o teu corpo. [pause] A começar agora."
+    },
+    {
+      "slug": "mkt-hook-integracao-01",
+      "speed": 0.87,
+      "stability": 73,
+      "script": "[intensely] Tens profundidade em cada área da tua vida. [pause] Mas nenhuma fala com a outra. [long pause] Sabes sobre nutrição. Leste sobre emoções. Experimentaste meditação. [pause] Mas cada conhecimento vive num compartimento estanque. [pause] [warmly] A Sete Ecos liga tudo."
+    },
+    {
+      "slug": "mkt-hook-integracao-02",
+      "speed": 0.87,
+      "stability": 73,
+      "script": "[intensely] Resolves o corpo numa app. A emoção noutra. O foco noutra. [pause] E depois? [long pause] Depois continuas sem energia. [pause] Porque o problema nunca foi falta de ferramentas. [pause] Foi falta de integração. [warmly] 7 apps separadas nunca vão funcionar como 1 sistema."
+    },
+    {
+      "slug": "mkt-hook-integracao-03",
+      "speed": 0.87,
+      "stability": 73,
+      "script": "[intensely] A fragmentação cansa. [pause] E ninguém fala nisso. [long pause] Fazes tudo bem. Mas no fim do dia, algo não encaixa. [pause] [warmly] Porque viver por pedaços gasta mais energia do que qualquer rotina."
+    },
+    {
+      "slug": "mkt-hook-posicao-01",
+      "speed": 0.87,
+      "stability": 73,
+      "script": "[intensely] Enquanto tratares partes isoladas, vais continuar a viver em ciclos. [long pause] Corpo sem emoção: recaída. [pause] Emoção sem identidade: instabilidade. [pause] A indústria do bem-estar lucra com pedaços. [pause] [warmly] A Sete Ecos recusa-se."
+    },
+    {
+      "slug": "mkt-hook-posicao-02",
+      "speed": 0.87,
+      "stability": 73,
+      "script": "[intensely] O mercado do wellness vende esperança. [pause] Eu quero oferecer coerência. [long pause] Esperança é bonita. Mas sem estrutura, é vazio. [pause] [warmly] Coerência é quando o que comes, sentes, dizes e decides estão alinhados."
+    },
+    {
+      "slug": "mkt-hook-profundidade-01",
+      "speed": 0.87,
+      "stability": 73,
+      "script": "[intensely] Isto não é para quem quer motivação. [pause] É para quem quer coerência. [long pause] Se procuras frases inspiradoras e promessas de transformação em 21 dias, isto não é para ti. [pause] [warmly] A Sete Ecos é para quem já percebeu que a resposta está na estrutura."
+    },
+    {
+      "slug": "mkt-hook-profundidade-02",
+      "speed": 0.87,
+      "stability": 73,
+      "script": "[warmly] A Sete Ecos não nasceu para te melhorar. [pause] Nasceu para integrar o que já és. [long pause] [intensely] Não és um projecto a corrigir. [pause] És uma pessoa com muitas dimensões que nunca tiveram espaço para se encontrar."
+    },
+    {
+      "slug": "mkt-hook-profundidade-03",
+      "speed": 0.87,
+      "stability": 73,
+      "script": "[warmly] Há quanto tempo procuras algo que não sabes nomear? [pause] Talvez seja isto. [long pause] [intensely] Não é falta de motivação. Não é preguiça. [pause] É fragmentação. [pause] A sensação de que cada parte da tua vida está a funcionar, mas não juntas."
+    },
+    {
+      "slug": "mkt-lz-01-excesso",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[intensely] Isto nasceu de excesso. Não de falta. [pause] Eu vivia muitas camadas ao mesmo tempo — intelectual, espiritual, profissional, criativa, corporal — [pause] e tudo estava separado. [long pause] Recusei-me a continuar a trabalhar a vida por pedaços. [pause] [warmly] E criei isto. [pause] Segue. [softly] Nos próximos dias vais perceber o que é."
+    },
+    {
+      "slug": "mkt-lz-02-sete-dimensoes",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[intensely] Resolver só o corpo não muda identidade. [pause] Resolver só emoção não muda disciplina. [long pause] [warmly] 7 dimensões. Corpo. Valor. Emoção. Vontade. Energia. Voz. Identidade. [pause] 1 sistema. [pause] As partes conversam entre si. [pause] [softly] Chama-se Sete Ecos."
+    },
+    {
+      "slug": "mkt-lz-03-lumina-intro",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[warmly] 8 dimensões da tua vida. 7 perguntas. 2 minutos. [pause] Grátis. [long pause] O LUMINA mapeia como estás de verdade. [pause] 23 leituras possíveis. Cada uma com um padrão diferente. [pause] E a partir daí, sabes por onde começar. [pause] [softly] Experimenta. app.seteecos.com/lumina."
+    },
+    {
+      "slug": "mkt-lz-05-padroes",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[softly] Energia baixa pode ser desconexão emocional. [pause] Tensão no corpo pode ser palavras engolidas. [long pause] [warmly] O LUMINA mostra-te padrões que não vias. [pause] Cansaço crónico pode ser falta de ritmo. [pause] Falta de clareza pode ser identidade fragmentada. [pause] Cada leitura é uma porta. [pause] [intensely] Tu decides qual abrir. [pause] [softly] Grátis. 2 minutos."
+    },
+    {
+      "slug": "mkt-lz-06-vitalis-raiz",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[intensely] A maioria das apps resolve o corpo e ignora tudo o resto. [pause] O VITALIS é diferente. [long pause] [warmly] O corpo é a raiz. A primeira dimensão. [pause] Plano personalizado. 98 receitas. Coach 24 horas. Treinos adaptados. Espaço emocional. [pause] Mas é UMA dimensão de sete. [pause] [softly] E isso é o ponto. [pause] 7 dias grátis. Link na bio."
+    },
+    {
+      "slug": "mkt-lz-07-nao-pdf",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[intensely] Isto é o que recebes. [pause] Não é um PDF. Não é um grupo de WhatsApp. [pause] É uma app completa. [long pause] [warmly] Plano personalizado. Check-in diário. 98 receitas filtradas para ti. [pause] Espaço emocional. Relatórios. Treinos. [pause] Construído com rigor. [pause] [softly] Nada genérico. [pause] Link na bio."
+    },
+    {
+      "slug": "mkt-lz-08-coach",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[warmly] Quando precisas de orientação, a resposta está a uma mensagem. [pause] A qualquer hora. [long pause] Coach disponível 24 horas. [pause] Porções. Prato. Jejum. Treino. Dúvidas. [pause] [intensely] Não é motivação genérica. É coaching nutricional real. [pause] [softly] Porque as dúvidas não esperam pelo horário de consulta. [pause] Link na bio."
+    },
+    {
+      "slug": "mkt-lz-09-receitas",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[warmly] 98 receitas. Ingredientes que encontras em qualquer mercado. [pause] Sem listas impossíveis. [long pause] Pratos tradicionais. Opções leves. Comfort food. Refeições rápidas. [pause] Cada receita filtrada para o TEU perfil. [pause] [intensely] Nada importado. Nada caro. [pause] [softly] Cuidar do corpo não devia ser um privilégio. [pause] Link na bio."
+    },
+    {
+      "slug": "mkt-lz-10-emocao",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[intensely] O corpo e a emoção não são departamentos separados. [pause] No VITALIS, também não. [long pause] [warmly] O Espaço de Retorno existe dentro do VITALIS. [pause] É o lugar onde não se fala de comida. [pause] Fala-se do que está por trás. [pause] [softly] Uma app de nutrição que ignora o que sentes não é integração. [pause] É só mais um pedaço. [pause] [intensely] Nós não trabalhamos por pedaços."
+    },
+    {
+      "slug": "mkt-lz-11-aurea",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[intensely] Cuidas do corpo mas não cuidas de como te vês ao espelho. [pause] Porquê? [long pause] [warmly] O ÁUREA é a dimensão do valor próprio. [pause] Como gastas dinheiro. Como ocupas o tempo. Como te vestes. O que te dá prazer. [pause] 100 micro-práticas. [pause] [softly] Sem esta dimensão, qualquer transformação é superficial. [pause] Link na bio."
+    },
+    {
+      "slug": "mkt-lz-12-serena",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[softly] Sentir intensamente não é o problema. [pause] [intensely] O problema é não saber o que fazer com isso. [long pause] [warmly] O SERENA mapeia 16 emoções no teu corpo. [pause] Quando as nomeias, perdem poder sobre ti. [pause] 6 técnicas de respiração. Diário emocional. Detector de padrões. SOS para crises. [pause] [softly] Não é terapia. É consciência com estrutura."
+    },
+    {
+      "slug": "mkt-lz-13-ignis",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[warmly] Tens vontade de mudar tudo. [pause] [intensely] Mas sem direcção, a vontade dispersa-se. [long pause] [warmly] O IGNIS é a dimensão da vontade e do foco. [pause] 16 desafios. Sessões de foco. Detector de distracções. Bússola de valores. [pause] [softly] Porque disciplina sem direcção é só cansaço. [pause] Link na bio."
+    },
+    {
+      "slug": "mkt-lz-14-ventis",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[intensely] Se precisas de café para funcionar, não é energia. [pause] É dívida. [long pause] [warmly] O VENTIS é a dimensão da energia e do ritmo. [pause] Monitor de energia. 8 tipos de pausas conscientes. Detector de burnout. [pause] [softly] O teu corpo tem um ritmo natural. [pause] Ignorá-lo é o que te cansa. [pause] Link na bio."
+    },
+    {
+      "slug": "mkt-lz-15-ecoa",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[softly] Há coisas que nunca disseste. [pause] E o corpo guarda tudo. [long pause] [warmly] O ECOA é a dimensão da voz e da expressão. [pause] Mapa de silenciamento. Programa Micro-Voz de 8 semanas. Cartas não enviadas. Comunicação assertiva. [pause] [intensely] Integração também é ter voz para o que sentes. [pause] Link na bio."
+    },
+    {
+      "slug": "mkt-lz-16-imago",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[warmly] Profissional. Familiar. Amigo. Colega. [pause] [intensely] E tu? Quem és para além dos papéis? [long pause] [warmly] O IMAGO é a dimensão da identidade. [pause] Espelho triplo — essência, máscara, aspiração. [pause] Arqueologia pessoal. 50 valores. Mapa de identidade. [pause] [softly] Sem saber quem és, não sabes para onde ir. [pause] Link na bio."
+    },
+    {
+      "slug": "mkt-lz-17-recap",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[intensely] 7 dimensões. 1 sistema. [pause] As partes conversam. [pause] E o primeiro passo é grátis. [long pause] [warmly] Não é motivação. Não é wellness estético. [pause] É arquitectura de integração. [pause] O LUMINA é o ponto de partida. [pause] Gratuito. 2 minutos. 23 leituras possíveis. [pause] [softly] app.seteecos.com/lumina."
+    },
+    {
+      "slug": "mkt-mockup-01-lancamento",
+      "speed": 0.88,
+      "stability": 72,
+      "script": "[warmly] Isto não é mais um app de dieta. [pause] Isto é inteligência nutricional e desportiva. Personalizada. Com ciência. [pause] Com emoção. [long pause] Chama-se VITALIS. [pause] E foi feito para ti."
+    },
+    {
+      "slug": "mkt-mockup-02-dashboard",
+      "speed": 0.88,
+      "stability": 72,
+      "script": "Isto é o VITALIS por dentro. [pause] Plano alimentar. Check-in diário. Receitas. Treinos. Relatórios. Espaço emocional. [pause] Não é um PDF. Não é um grupo de WhatsApp. [long pause] É uma app completa. No teu telemóvel. [pause] A sério."
+    },
+    {
+      "slug": "mkt-mockup-03-coach",
+      "speed": 0.88,
+      "stability": 72,
+      "script": "[softly] Três da manhã. Não consegues dormir. [pause] A ansiedade aperta. Abres o frigorífico. [long pause] [gently] E se em vez disso abrires uma conversa com alguém que te entende? [pause] Coach disponível. Vinte e quatro horas."
+    },
+    {
+      "slug": "mkt-mockup-04-receitas",
+      "speed": 0.88,
+      "stability": 72,
+      "script": "[warmly] Noventa e oito receitas. [pause] Nenhuma pede quinoa. [pause] Comida real. Equilibrada. Saborosa. [pause] Filtrada para o teu perfil. [long pause] Ingredientes que encontras em qualquer mercado. [pause] Sem desculpas. Só sabor."
+    },
+    {
+      "slug": "mkt-mockup-05-emocional",
+      "speed": 0.88,
+      "stability": 72,
+      "script": "[gently] O que estás a sentir agora? [pause] Cansaço. Ansiedade. Tristeza. [pause] Não há resposta errada. [long pause] [softly] Isto é o Espaço de Retorno do VITALIS. [pause] O lugar onde não se fala de comida. [pause] Fala-se de ti."
+    },
+    {
+      "slug": "mkt-mockup-06-treino-ciclo",
+      "speed": 0.88,
+      "stability": 72,
+      "script": "[warmly] Sabias que treinar intenso na fase errada pode prejudicar-te? [pause] O VITALIS adapta-se ao teu ciclo. [pause] Menstrual, descanso. Folicular, mais intensidade. Ovulação, treino forte. Lútea, recuperação. [long pause] O teu corpo sabe. O VITALIS ouve."
     },
     {
       "slug": "mkt-story-aurea",
