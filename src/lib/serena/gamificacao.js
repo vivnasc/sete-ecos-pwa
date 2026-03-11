@@ -123,6 +123,7 @@ export const CORPO_ZONAS = [
 export const TECNICAS_RESPIRACAO = [
   {
     id: '4-7-8',
+    slug: '14-respiracao-4-7-8',
     nome: 'Respiração 4-7-8',
     descricao: 'Inspira 4s, segura 7s, expira 8s. Acalma o sistema nervoso.',
     passos: [
@@ -135,6 +136,7 @@ export const TECNICAS_RESPIRACAO = [
   },
   {
     id: 'box',
+    slug: '15-respiracao-box',
     nome: 'Respiração Box',
     descricao: 'Inspira 4s, segura 4s, expira 4s, segura 4s. Equilibra.',
     passos: [
@@ -148,6 +150,7 @@ export const TECNICAS_RESPIRACAO = [
   },
   {
     id: 'oceanica',
+    slug: '16-respiracao-oceanica',
     nome: 'Respiração Oceânica',
     descricao: 'Inspira lentamente pelo nariz, expira pela boca como ondas do mar.',
     passos: [
@@ -159,6 +162,7 @@ export const TECNICAS_RESPIRACAO = [
   },
   {
     id: 'suspiro',
+    slug: '17-suspiro-fisiologico',
     nome: 'Suspiro Fisiológico',
     descricao: 'Duas inspirações curtas pelo nariz + expiração longa. O reset mais rápido.',
     passos: [
@@ -171,6 +175,7 @@ export const TECNICAS_RESPIRACAO = [
   },
   {
     id: 'alternada',
+    slug: '18-respiracao-alternada',
     nome: 'Respiração Alternada',
     descricao: 'Alterna entre narinas. Equilibra hemisférios cerebrais.',
     passos: [
@@ -186,6 +191,7 @@ export const TECNICAS_RESPIRACAO = [
   },
   {
     id: 'coerencia',
+    slug: '19-coerencia-cardiaca',
     nome: 'Coerência Cardíaca',
     descricao: 'Inspira 5s, expira 5s. 6 respirações por minuto = coerência.',
     passos: [
