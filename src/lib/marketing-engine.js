@@ -3865,7 +3865,7 @@ function gerarConteudoEcoDia(eco, seed) {
   const igIndex = seed % (conteudoIG.length || 1);
   const waIndex = seed % (mensagensWA.length || 1);
 
-  const igContent = conteudoIG[igIndex] || null;
+  let igContent = conteudoIG[igIndex] || null;
   const waMsg = mensagensWA[waIndex] || '';
 
   // Usar CONTEUDO_* expandidos para hook/corpo/cta quando disponível
@@ -3885,6 +3885,13 @@ function gerarConteudoEcoDia(eco, seed) {
     hook = item.hook;
     corpo = item.corpo;
     cta = item.cta;
+    // Sobrescrever igContent para reflectir o conteúdo expandido
+    igContent = {
+      tipo: 'dica',
+      texto: corpo.slice(0, 120),
+      subtitulo: cta,
+      caption: '',
+    };
   } else {
     hook = hooks[hookIndex] || '';
     corpo = igContent?.texto || hook;
