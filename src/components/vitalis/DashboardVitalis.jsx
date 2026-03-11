@@ -1566,6 +1566,13 @@ export default function DashboardVitalis() {
               <p className="font-semibold text-white text-sm">Lembretes</p>
               <p className="text-white/70 text-xs mt-1">Configurar alertas</p>
             </Link>
+
+            {/* Meditações */}
+            <Link to="/vitalis/meditacoes" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
+              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🧘</div>
+              <p className="font-semibold text-white text-sm">Meditações</p>
+              <p className="text-white/70 text-xs mt-1">Corpo e mente</p>
+            </Link>
           </div>
         </div>
 
