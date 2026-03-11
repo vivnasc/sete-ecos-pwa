@@ -10,6 +10,7 @@
 export const MEDITACOES_VENTIS = [
   {
     id: 'ritmo_natural',
+    slug: '25-ritmo-natural',
     nome: 'O Ritmo Natural do Teu Corpo',
     descricao: 'Meditação para reconectar com o teu próprio ritmo de energia, sem pressa nem culpa.',
     duracao_min: 10,
@@ -43,6 +44,7 @@ export const MEDITACOES_VENTIS = [
   },
   {
     id: 'pausa_que_renova',
+    slug: '26-pausa-que-renova',
     nome: 'Pausa Que Renova',
     descricao: 'Meditação para recuperar energia a meio do dia, em apenas seis minutos.',
     duracao_min: 6,
@@ -71,6 +73,7 @@ export const MEDITACOES_VENTIS = [
   },
   {
     id: 'raizes_no_vento',
+    slug: '27-raizes-no-vento',
     nome: 'Raízes no Vento',
     descricao: 'Meditação para te manteres centrado mesmo nos dias de mais turbulência e exigência.',
     duracao_min: 8,
@@ -99,6 +102,7 @@ export const MEDITACOES_VENTIS = [
   },
   {
     id: 'energia_equilibrio',
+    slug: '28-energia-equilibrio',
     nome: 'Energia em Equilíbrio',
     descricao: 'Afirmações para manter a tua energia estável e protegida ao longo do dia.',
     duracao_min: 3,
@@ -122,6 +126,7 @@ export const MEDITACOES_VENTIS = [
   },
   {
     id: 'guardiao_ritmo',
+    slug: '29-guardiao-ritmo',
     nome: 'Guardião do Meu Ritmo',
     descricao: 'Afirmações para dias de burnout ou quando sentes que perdeste o teu equilíbrio.',
     duracao_min: 3,

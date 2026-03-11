@@ -10,6 +10,7 @@
 export const MEDITACOES_VITALIS = [
   {
     id: 'gratidao_corpo',
+    slug: '30-gratidao-corpo',
     nome: 'Gratidão ao Corpo',
     descricao: 'Meditação para reconectar com o teu corpo e agradecer tudo o que ele faz por ti todos os dias.',
     duracao_min: 8,
@@ -39,6 +40,7 @@ export const MEDITACOES_VITALIS = [
   },
   {
     id: 'relacao_comida',
+    slug: '31-relacao-comida',
     nome: 'A Minha Relação com a Comida',
     descricao: 'Meditação para explorar e curar a tua relação emocional com a alimentação, sem julgamento.',
     duracao_min: 10,
@@ -69,6 +71,7 @@ export const MEDITACOES_VITALIS = [
   },
   {
     id: 'enraizado_terra',
+    slug: '32-enraizado-terra',
     nome: 'Enraizado na Terra',
     descricao: 'Meditação de enraizamento para quando te sentes ansioso, disperso ou desligado do teu corpo.',
     duracao_min: 7,
@@ -97,6 +100,7 @@ export const MEDITACOES_VITALIS = [
   },
   {
     id: 'corpo_sagrado',
+    slug: '33-corpo-sagrado',
     nome: 'O Meu Corpo É Sagrado',
     descricao: 'Afirmações para reconstruir uma relação de respeito e cuidado com o teu corpo.',
     duracao_min: 3,
@@ -121,6 +125,7 @@ export const MEDITACOES_VITALIS = [
   },
   {
     id: 'nutrir_amor',
+    slug: '34-nutrir-amor',
     nome: 'Nutrir com Amor',
     descricao: 'Afirmações para os dias em que a alimentação saudável parece difícil ou sem motivação.',
     duracao_min: 3,

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { g } from '../../utils/genero';
+import { getAudioUrl } from '../../lib/shared/audioStorage';
 
 /**
  * ÁUREA - Áudio-Meditações
@@ -27,13 +28,13 @@ const CORES = {
 const BIBLIOTECA_AUDIOS = [
   {
     id: 'valor_nao_se_ganha',
+    slug: '01-valor-nao-se-ganha',
     titulo: 'O Teu Valor Não Se Ganha',
     descricao: 'Meditação para reconhecer o teu valor intrínseco',
     duracao: '5-7 min',
     categoria: 'meditacao',
     nivel: 'bronze',
     icone: '✨',
-    audio_url: null, // Adicionar URL ElevenLabs quando disponível
     transcricao: `Acomoda-te... Encontra uma posição confortável...
 Fecha os olhos se te sentires segura para isso...
 
@@ -82,13 +83,13 @@ Tu mereces... Sempre mereceste...`
   },
   {
     id: 'eu_sou_prioridade',
+    slug: '02-eu-sou-prioridade',
     titulo: 'Eu Sou Prioridade',
     descricao: 'Afirmações para te colocares em primeiro lugar',
     duracao: '3-4 min',
     categoria: 'afirmacoes',
     nivel: 'bronze',
     icone: '💎',
-    audio_url: null,
     transcricao: `Estas são afirmações para repetires...
 Podes ouvi-las de manhã, ou sempre que precisares de te lembrar...
 
@@ -127,13 +128,13 @@ Repete-as até acreditares...`
   },
   {
     id: 'culpa_nao_te_pertence',
+    slug: '03-culpa-nao-te-pertence',
     titulo: 'A Culpa Que Não Te Pertence',
     descricao: 'Libertar culpa herdada de cuidar de ti',
     duracao: '6-8 min',
     categoria: 'meditacao',
     nivel: 'prata',
     icone: '🌸',
-    audio_url: null,
     transcricao: `Encontra um lugar onde possas estar só contigo...
 Fecha os olhos... Deixa o corpo relaxar...
 
@@ -191,13 +192,13 @@ Tu já não precisas dela...`
   },
   {
     id: 'ritual_auto_cuidado',
+    slug: '04-ritual-auto-cuidado',
     titulo: 'Pequeno Ritual de Auto-Cuidado',
     descricao: 'Prática diária de 3 minutos',
     duracao: '4-5 min',
     categoria: 'pratica',
     nivel: 'bronze',
     icone: '🌿',
-    audio_url: null,
     transcricao: `Este é um pequeno ritual para fazeres em qualquer momento do dia...
 Pode ser de manhã, antes de sair de casa...
 Ou à noite, antes de dormir...
@@ -239,13 +240,13 @@ Tu mereces ser ${g('visto', 'vista')}... Por ti ${g('mesmo', 'mesma')}...`
   },
   {
     id: 'espelho_interior',
+    slug: '05-espelho-interior',
     titulo: 'O Espelho Interior',
     descricao: 'Ver-te como realmente és',
     duracao: '5-6 min',
     categoria: 'meditacao',
     nivel: 'prata',
     icone: '🪞',
-    audio_url: null,
     transcricao: `Acomoda-te e fecha os olhos...
 Deixa o corpo relaxar, parte por parte...
 
@@ -293,13 +294,13 @@ Tu és ela... Sempre foste...`
   },
   {
     id: 'abundancia_merecimento',
+    slug: '06-abundancia-merecimento',
     titulo: 'Abundância e Merecimento',
     descricao: 'Reprogramar a relação com abundância',
     duracao: '3-4 min',
     categoria: 'afirmacoes',
     nivel: 'prata',
     icone: '💰',
-    audio_url: null,
     transcricao: `Repete estas afirmações para reprogramar a tua relação com abundância...
 
 Eu mereço abundância em todas as áreas da minha vida...
@@ -334,13 +335,13 @@ Eu mereço... Ponto final...`
   },
   {
     id: 'soltar_o_dia',
+    slug: '07-soltar-o-dia',
     titulo: 'Soltar o Dia',
     descricao: 'Meditação para dormir',
     duracao: '5-6 min',
     categoria: 'ritual',
     nivel: 'bronze',
     icone: '🌙',
-    audio_url: null,
     transcricao: `Deita-te confortavelmente...
 O dia está a terminar... É hora de soltar...
 
@@ -383,13 +384,13 @@ Amanhã, eu estarei aqui...`
   },
   {
     id: 'lembrete_1_minuto',
+    slug: '08-lembrete-1-minuto',
     titulo: 'Lembrete de 1 Minuto',
     descricao: 'Pausa rápida para te lembrares',
     duracao: '1 min',
     categoria: 'pratica',
     nivel: 'bronze',
     icone: '⏱️',
-    audio_url: null,
     transcricao: `Pára um momento...
 Respira...
 
@@ -483,9 +484,14 @@ export default function AudioMeditacoes() {
 
     setCurrentAudio(audio);
 
-    if (audio.audio_url && audioRef.current) {
-      audioRef.current.src = audio.audio_url;
-      audioRef.current.play();
+    // Tentar carregar áudio do Supabase Storage
+    if (audio.slug && audioRef.current) {
+      const url = getAudioUrl('aurea', audio.slug);
+      audioRef.current.src = url;
+      audioRef.current.play().catch(() => {
+        // Áudio ainda não existe no storage — mostra transcrição
+        setIsPlaying(false);
+      });
       setIsPlaying(true);
     }
 
@@ -535,7 +541,7 @@ export default function AudioMeditacoes() {
 
   return (
     <div className="min-h-screen pb-24" style={{ backgroundColor: CORES.bg }}>
-      <audio ref={audioRef} onEnded={() => setIsPlaying(false)} />
+      <audio ref={audioRef} onEnded={() => setIsPlaying(false)} onError={() => setIsPlaying(false)} />
 
       {/* Header */}
       <header className="px-5 pt-6 pb-4" style={{ background: `linear-gradient(180deg, ${CORES.goldLight}40 0%, ${CORES.bg} 100%)` }}>
@@ -650,11 +656,11 @@ export default function AudioMeditacoes() {
         {/* Info */}
         <div className="p-4 rounded-2xl" style={{ backgroundColor: `${CORES.gold}15`, border: `1px solid ${CORES.gold}30` }}>
           <div className="flex items-start gap-3">
-            <span className="text-xl">🎙️</span>
+            <span className="text-xl">🎧</span>
             <div>
-              <p className="font-medium" style={{ color: CORES.text }}>Áudios em produção</p>
+              <p className="font-medium" style={{ color: CORES.text }}>Meditações guiadas</p>
               <p className="text-sm mt-1" style={{ color: CORES.textLight }}>
-                Os áudios estão a ser gravados com amor. Enquanto isso, podes ler as transcrições.
+                Ouve o áudio ou lê a transcrição enquanto meditas. Cada áudio conta como +1 jóia.
               </p>
             </div>
           </div>
@@ -685,7 +691,7 @@ export default function AudioMeditacoes() {
               </button>
             </div>
 
-            {currentAudio.audio_url ? (
+            {isPlaying || (currentAudio.slug && audioRef.current?.src) ? (
               <div className="space-y-4">
                 <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: CORES.accent }}>
                   <div className="h-full rounded-full" style={{ width: '30%', backgroundColor: CORES.rose }} />

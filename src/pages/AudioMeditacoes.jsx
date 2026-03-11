@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
 import { AUDIO_SCRIPTS } from '../lib/audio-scripts-data'
+import { supabase } from '../lib/supabase'
+import { uploadAudio, ECO_FOLDER_MAP } from '../lib/shared/audioStorage'
 
 // ─── Constantes ElevenLabs ─────────────────────────────────────
 const DEFAULT_VOICE_ID = 'fnoNuVpfClX7lHKFbyZ2'
@@ -46,6 +48,7 @@ function buildAudioList() {
           stability: s.stability / 100,
           script: s.script,
           eco: grupo.eco,
+          folder: grupo.folder,
           emoji: grupo.emoji,
           cor: grupo.cor,
           tab: tab.key,
@@ -72,8 +75,9 @@ export default function AudioMeditacoes() {
   const [voiceId, setVoiceId] = useState(DEFAULT_VOICE_ID)
   const [mostrarKey, setMostrarKey] = useState(false)
   const [tab, setTab] = useState('meditacoes')
-  const [estados, setEstados] = useState({}) // slug → 'gerando' | 'concluido' | 'erro:msg'
+  const [estados, setEstados] = useState({}) // slug → 'gerando' | 'uploading' | 'concluido' | 'erro:msg'
   const [gerandoTodos, setGerandoTodos] = useState(false)
+  const [autoUpload, setAutoUpload] = useState(true)
   const blobsRef = useRef({}) // slug → Blob (para ZIP)
   const cancelRef = useRef(false)
 
@@ -129,7 +133,19 @@ export default function AudioMeditacoes() {
       const blob = await res.blob()
       blobsRef.current[audio.slug] = blob
 
-      // Download automático
+      // Upload ao Supabase Storage (se activo)
+      if (autoUpload) {
+        setEstado(audio.slug, 'uploading')
+        try {
+          const ecoKey = ECO_FOLDER_MAP[audio.folder] || audio.folder.toLowerCase()
+          await uploadAudio(supabase, ecoKey, audio.slug, blob)
+        } catch (uploadErr) {
+          console.warn('Upload falhou (áudio gerado mas não enviado):', uploadErr.message)
+          // Não falha — áudio foi gerado, só o upload falhou
+        }
+      }
+
+      // Download local como backup
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -251,6 +267,27 @@ export default function AudioMeditacoes() {
               className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-purple-500"
             />
           </div>
+
+          <label className="flex items-center gap-3 cursor-pointer">
+            <div
+              role="switch"
+              aria-checked={autoUpload}
+              onClick={() => setAutoUpload(!autoUpload)}
+              className="w-10 h-6 rounded-full flex items-center transition-colors"
+              style={{ background: autoUpload ? '#4B0082' : '#374151', padding: '2px' }}
+            >
+              <div
+                className="w-5 h-5 bg-white rounded-full transition-transform"
+                style={{ transform: autoUpload ? 'translateX(16px)' : 'translateX(0)' }}
+              />
+            </div>
+            <div>
+              <p className="text-sm text-gray-300">Upload automático ao Supabase</p>
+              <p className="text-xs text-gray-600">
+                {autoUpload ? 'Áudios ficam disponíveis nos ecos automaticamente' : 'Só download local'}
+              </p>
+            </div>
+          </label>
         </div>
 
         {/* Tabs */}
@@ -373,6 +410,7 @@ export default function AudioMeditacoes() {
 function AudioCard({ audio, estado, onGerar, apiKey }) {
   const [expandido, setExpandido] = useState(false)
   const gerando = estado === 'gerando'
+  const uploading = estado === 'uploading'
   const concluido = estado === 'concluido'
   const erro = estado?.startsWith('erro:') ? estado.replace('erro:', '') : null
   const semTexto = !audio.script
@@ -391,7 +429,7 @@ function AudioCard({ audio, estado, onGerar, apiKey }) {
           className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
           style={{ background: audio.cor + '33', color: audio.cor }}
         >
-          {concluido ? '✅' : gerando ? '⏳' : audio.emoji}
+          {concluido ? '✅' : uploading ? '☁️' : gerando ? '⏳' : audio.emoji}
         </span>
 
         {/* Info */}
@@ -404,14 +442,14 @@ function AudioCard({ audio, estado, onGerar, apiKey }) {
         {/* Botão gerar */}
         <button
           onClick={onGerar}
-          disabled={gerando || !apiKey.trim() || semTexto}
+          disabled={gerando || uploading || !apiKey.trim() || semTexto}
           className="flex-shrink-0 px-3 py-2 rounded-lg text-xs font-semibold transition-all active:scale-95 disabled:opacity-40"
           style={{
             background: concluido ? '#1a6b2a' : gerando ? '#374151' : audio.cor + 'cc',
             color: 'white',
           }}
         >
-          {gerando ? '⏳' : concluido ? '✅' : semTexto ? '—' : 'Gerar'}
+          {gerando ? '⏳' : uploading ? '☁️' : concluido ? '✅' : semTexto ? '—' : 'Gerar'}
         </button>
       </div>
 

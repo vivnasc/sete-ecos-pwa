@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { g } from '../../utils/genero'
 import ModuleHeader from '../shared/ModuleHeader'
+import AudioPlayerBar from '../shared/AudioPlayerBar'
 import { MEDITACOES_IGNIS } from '../../lib/ignis/meditacoes'
 
 // ============================================================
@@ -240,6 +241,13 @@ export default function MeditacoesIgnis() {
                 🎵 ignis-drone.mp3
               </span>
             </div>
+
+            {/* Áudio narrado (se disponível no Storage) */}
+            {escolhida.slug && (
+              <div className="absolute top-16 left-6 right-6 z-10">
+                <AudioPlayerBar eco="ignis" slug={escolhida.slug} accentColor={ACCENT} />
+              </div>
+            )}
 
             {/* Título */}
             <div className="text-center pt-16 pb-4 px-6">

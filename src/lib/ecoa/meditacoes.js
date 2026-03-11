@@ -10,6 +10,7 @@
 export const MEDITACOES_ECOA = [
   {
     id: 'silencio_que_guardas',
+    slug: '35-silencio-que-guardas',
     nome: 'O Silêncio Que Guardas',
     descricao: 'Meditação para explorar com compaixão os silêncios que carregas e o que eles protegem.',
     duracao_min: 9,
@@ -38,6 +39,7 @@ export const MEDITACOES_ECOA = [
   },
   {
     id: 'voz_valida',
+    slug: '36-voz-valida',
     nome: 'A Tua Voz É Válida',
     descricao: 'Meditação para reconectar com o direito de falar, ocupar espaço e ser ouvido.',
     duracao_min: 8,
@@ -66,6 +68,7 @@ export const MEDITACOES_ECOA = [
   },
   {
     id: 'libertar_a_palavra',
+    slug: '37-libertar-a-palavra',
     nome: 'Libertar a Palavra',
     descricao: 'Meditação guiada para soltar palavras que ficaram presas — com gentileza e sem pressa.',
     duracao_min: 10,
@@ -95,6 +98,7 @@ export const MEDITACOES_ECOA = [
   },
   {
     id: 'manifesto_da_voz',
+    slug: '38-manifesto-da-voz',
     nome: 'Manifesto da Voz',
     descricao: 'Afirmações para reafirmar o teu direito de falar, de ocupar espaço e de ser ouvido.',
     duracao_min: 4,
@@ -119,6 +123,7 @@ export const MEDITACOES_ECOA = [
   },
   {
     id: 'sussurros_coragem',
+    slug: '39-sussurros-coragem',
     nome: 'Sussurros de Coragem',
     descricao: 'Afirmações para os momentos em que tens medo de falar, de ser julgado ou de decepcionar.',
     duracao_min: 3,

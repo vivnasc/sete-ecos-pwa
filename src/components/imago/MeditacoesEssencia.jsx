@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { g } from '../../utils/genero'
 import ModuleHeader from '../shared/ModuleHeader'
+import AudioPlayerBar from '../shared/AudioPlayerBar'
 import { MEDITACOES_ESSENCIA } from '../../lib/imago/gamificacao'
 
 // ============================================================
@@ -454,6 +455,13 @@ export default function MeditacoesEssencia() {
                 <path d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
+
+            {/* Áudio narrado (se disponível no Storage) */}
+            {meditacaoEscolhida.slug && (
+              <div className="absolute top-16 left-6 right-6 z-10">
+                <AudioPlayerBar eco="imago" slug={meditacaoEscolhida.slug} accentColor={ACCENT} />
+              </div>
+            )}
 
             {/* Title */}
             <div className="text-center pt-16 pb-4 px-6">
