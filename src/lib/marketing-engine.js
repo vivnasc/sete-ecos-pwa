@@ -167,8 +167,204 @@ const CONTEUDO_PROVOCACAO = [
   },
 ];
 
+// ============================================================
+// CONTEUDO EDUCATIVO — Alimentação emocional, distorções, ansiedade, auto-estima
+// Inspirado nos áudios do VITALIS: gratidão ao corpo, relação com comida,
+// corpo sagrado, nutrir com amor, enraizamento
+// Objectivo: educar sobre padrões emocionais que sabotam a nutrição
+// ============================================================
+
+// ALIMENTAÇÃO EMOCIONAL — o "porquê" por trás da compulsão
+const CONTEUDO_ALIMENTACAO_EMOCIONAL = [
+  {
+    hook: 'Não é fome. É solidão disfarçada de apetite.',
+    corpo: 'Quando comes sem ter fome, o teu corpo não está a pedir comida. Está a pedir presença. Companhia. Conforto. A comida é o substituto mais acessível — está sempre disponível, não julga, não rejeita. Mas também não preenche. Porque a fome era de outra coisa.',
+    cta: 'A próxima vez que quiseres comer sem fome, pára e pergunta: do que é que eu preciso mesmo? — Vivianne',
+  },
+  {
+    hook: 'Comer por emoção não é fraqueza. É o teu sistema nervoso a pedir ajuda.',
+    corpo: 'Quando o stress activa o modo de sobrevivência, o cérebro pede energia rápida — açúcar, gordura, sal. Não é falta de força de vontade. É biologia. A diferença é que agora sabes o que está a acontecer. E saber é o primeiro passo para escolher diferente.',
+    cta: 'Não lutes contra o impulso. Observa-o. O padrão revela o que precisas curar. — Vivianne',
+  },
+  {
+    hook: 'A culpa depois de comer faz mais dano do que a comida em si.',
+    corpo: 'Comeste demais. Acontece. Mas o que vem a seguir é que destrói: a culpa, a vergonha, o "amanhã começo de novo", o jejum compensatório, o exercício punitivo. Este ciclo de restrição-compulsão-culpa é mais tóxico do que qualquer refeição isolada.',
+    cta: 'Comeste. Está feito. O que fazes a seguir importa mais do que o que fizeste antes. — Vivianne',
+  },
+  {
+    hook: 'A comida tornou-se a tua forma de amor próprio. Mas não era para ser assim.',
+    corpo: 'Quando ninguém te ensinou a cuidar das tuas emoções, encontraste uma forma. A comida acalmava. Premiava. Protegia. Não te culpes por isso — funcionou durante anos. Mas agora precisas de mais ferramentas, não de menos compaixão.',
+    cta: 'Não tires a comida sem colocar algo no lugar. Senão vais voltar a ela. — Vivianne',
+  },
+  {
+    hook: 'Diz-me quando comes e eu digo-te o que sentes.',
+    corpo: 'À noite, quando a casa está quieta e o dia pesa — é solidão ou cansaço emocional. Depois de uma discussão — é raiva não expressa. Ao domingo à tarde — é vazio existencial. Os gatilhos são previsíveis. E quando são previsíveis, podes preparar-te.',
+    cta: 'Mapear os gatilhos é mais poderoso do que qualquer plano alimentar. — Vivianne',
+  },
+  {
+    hook: 'O problema nunca foi saber o que comer. Foi saber o que sentir.',
+    corpo: 'Sabes as calorias do abacate. Sabes que açúcar faz mal. Sabes a diferença entre macro e micro. Mas quando a ansiedade aperta, nada disso importa. Porque o conhecimento nutricional não resolve a iliteracia emocional.',
+    cta: 'Antes de mudar o prato, muda a relação com o que sentes. — Vivianne',
+  },
+  {
+    hook: 'Se a comida fosse o problema, já o tinhas resolvido. Sabes comer. Não sabes parar.',
+    corpo: 'Não é ignorância. É automático. O cérebro aprendeu: stress → come. Tristeza → come. Tédio → come. É um circuito neurológico, não uma falha moral. Reprogramar circuitos leva tempo, gentileza e repetição — não vergonha.',
+    cta: 'Cada vez que pausas antes de comer, estás a reescrever o padrão. Mesmo que depois comas. — Vivianne',
+  },
+];
+
+// DISTORÇÕES E IMAGEM CORPORAL — como o espelho mente
+const CONTEUDO_DISTORCOES = [
+  {
+    hook: 'O espelho não te mostra o que és. Mostra-te o que acreditas.',
+    corpo: 'A imagem que vês quando te olhas ao espelho não é objectiva. É filtrada pelas tuas crenças, pelo teu dia, pela tua energia, pelo que alguém te disse aos 12 anos. Distorção de imagem corporal não é vaidade — é uma ferida.',
+    cta: 'Pergunta: quando foi a última vez que te olhaste sem julgar? — Vivianne',
+  },
+  {
+    hook: 'Mudaste de corpo. Mas a cabeça ficou no antigo.',
+    corpo: 'Já perdeste peso antes. Já mudaste. Mas continuas a ver-te como antes — a evitar espelhos, a comprar roupa larga, a sentir que "não chega". Isto chama-se dissonância de imagem. O corpo mudou. A identidade ainda não.',
+    cta: 'Não basta mudar o corpo. Tens de actualizar a história que contas sobre ti. — Vivianne',
+  },
+  {
+    hook: 'Ninguém te ensinou a habitar o teu corpo. Ensinaram-te a corrigi-lo.',
+    corpo: 'Desde criança: "estás gorda", "come menos", "fecha a boca", "não devias repetir". Cresceste a achar que o teu corpo era um problema a resolver. Não era. Era — e é — a tua casa. Não se destrói uma casa. Renova-se.',
+    cta: 'O teu corpo não é um projecto. É o teu endereço. — Vivianne',
+  },
+  {
+    hook: 'Compras roupa para o corpo que achas que devias ter, não para o que tens.',
+    corpo: 'Calças "motivação" guardadas no armário. Vestidos para "quando emagrecer". Biquínis para "o próximo verão". Enquanto isso, vives no corpo de agora com vergonha do corpo de agora. Mas este corpo já te trouxe até aqui.',
+    cta: 'Veste-te para o corpo que tens. Ele merece. — Vivianne',
+  },
+  {
+    hook: '3 quilos a mais não mudam quem és. Mas a forma como falas contigo muda.',
+    corpo: 'A diferença entre 68kg e 71kg é invisível para quem te ama. Mas na tua cabeça é a diferença entre "posso sair" e "fico em casa". Não são os quilos que te prendem. É a narrativa.',
+    cta: 'Muda a voz interior antes de mudar a balança. — Vivianne',
+  },
+  {
+    hook: 'A indústria lucra com a tua insatisfação corporal. Não sejas cliente.',
+    corpo: 'Chás detox. Cintas modeladoras. Dietas de 800 calorias. Antes e depois milagrosos. Tudo desenhado para te fazer sentir que estás errada como estás. Estás errada? Ou estás num corpo real que precisa de nutrição real?',
+    cta: 'Escolhe cuidar-te por amor, não por vergonha. A diferença muda tudo. — Vivianne',
+  },
+];
+
+// ANSIEDADE E STRESS — o impacto no corpo e na alimentação
+const CONTEUDO_ANSIEDADE = [
+  {
+    hook: 'A ansiedade não mora na cabeça. Mora no estômago.',
+    corpo: 'O intestino tem mais neurónios que a espinal medula. 90% da serotonina é produzida no intestino, não no cérebro. Quando comes por ansiedade, não estás a ser fraca — o teu corpo está literalmente a tentar regular-se. O problema não é tu. É o sistema nervoso em sobrecarga.',
+    cta: 'Antes de mudar a dieta, regula o sistema nervoso. Tudo o resto segue. — Vivianne',
+  },
+  {
+    hook: 'Não estás a comer demais. Estás a sentir demais sem ferramentas para processar.',
+    corpo: 'A comida é a tua ferramenta de regulação. Provavelmente a única que te ensinaram. Ninguém te disse: "quando sentires medo, respira em 4-7-8". Disseram-te: "come um bolinho e acalma-te". Agora tens mais ferramentas.',
+    cta: 'No VITALIS, o Espaço de Retorno existe exactamente para estes momentos. — Vivianne',
+  },
+  {
+    hook: 'O cortisol engorda. Mas a culpa por engordar produz mais cortisol.',
+    corpo: 'Stress crónico → cortisol alto → acumula gordura abdominal → vês o corpo a mudar → stress por ver o corpo a mudar → mais cortisol. É um ciclo bioquímico, não moral. A saída não é mais dieta. É menos stress.',
+    cta: 'Às vezes, dormir melhor emagrece mais do que cortar calorias. — Vivianne',
+  },
+  {
+    hook: 'Tens ansiedade por comida. Ou tens ansiedade que se manifesta na comida?',
+    corpo: 'A comida é o sintoma, não a causa. A causa pode ser um trabalho que te drena, uma relação que te sufoca, um passado que não processaste, ou simplesmente nunca teres aprendido a regular emoções sem substâncias.',
+    cta: 'Tratar o sintoma sem tocar na causa é como tomar paracetamol para uma infecção. — Vivianne',
+  },
+  {
+    hook: 'A técnica 4-7-8 não é meditação hippie. É neurociência.',
+    corpo: 'Inspirar 4 segundos, segurar 7, expirar 8 — activa o nervo vago, reduz cortisol, baixa a frequência cardíaca e corta o impulso de comer por stress. Em 60 segundos. Sem app, sem equipamento, sem desculpa.',
+    cta: 'Da próxima vez que quiseres abrir o frigorífico por ansiedade, experimenta primeiro. — Vivianne',
+  },
+  {
+    hook: 'A "falta de disciplina" é quase sempre o sistema nervoso em modo de sobrevivência.',
+    corpo: 'Quando o corpo está em fight-or-flight permanente, a parte do cérebro que toma decisões racionais desliga-se. Literalmente. A amígdala assume o controlo. E a amígdala não quer salada — quer sobreviver. É por isso que a disciplina falha quando estás em burnout.',
+    cta: 'Segurança primeiro. Nutrição depois. A ordem importa. — Vivianne',
+  },
+];
+
+// AUTOESTIMA E VALOR PRÓPRIO — o que comes reflecte o que sentes sobre ti
+const CONTEUDO_AUTOESTIMA = [
+  {
+    hook: 'Não comes demais porque não tens disciplina. Comes demais porque não acreditas que mereces cuidado.',
+    corpo: 'Pensa nisto: quando cuidas de alguém que amas, preparas comida com atenção. Escolhes bons ingredientes. Não dás lixo. Mas quando é para ti, qualquer coisa serve. Porquê? Porque no fundo, não te sentes digna desse cuidado.',
+    cta: 'Cozinhar para ti com atenção é um acto de reparação. Começa por aí. — Vivianne',
+  },
+  {
+    hook: 'A forma como falas do teu corpo é a forma como falas de ti.',
+    corpo: '"Sou gorda." "Sou horrível." "Que nojo." Dirias isto a alguém que amas? Então por que dizes a ti? Cada vez que te insultas no espelho, reforças a crença de que não mereces. E quem não merece, não cuida.',
+    cta: 'Hoje experimenta: olha-te ao espelho e diz "Obrigada por carregares a minha vida." — Vivianne',
+  },
+  {
+    hook: 'Não é o peso que te tira a paz. É a crença de que só és válida magra.',
+    corpo: 'Se acreditas que o teu valor depende da balança, vais viver em montanha-russa emocional para sempre. -2kg e és feliz. +1kg e estás destruída. Esse não é um sistema de saúde. É uma prisão.',
+    cta: 'O teu valor não tem quilos. Nunca teve. — Vivianne',
+  },
+  {
+    hook: 'Investes em roupa, cabelo, unhas. Mas investes na forma como falas contigo?',
+    corpo: 'A autoestima não é o que os outros vêem. É o que tu dizes quando ficas sozinha contigo. E se essa voz interior é cruel, controladora e insatisfeita, nenhuma mudança exterior vai ser suficiente.',
+    cta: 'A transformação começa na voz que ouves por dentro. — Vivianne',
+  },
+  {
+    hook: 'Sabotagem não é preguiça. É protecção.',
+    corpo: 'Quando estás prestes a conseguir, algo dentro de ti trava. Não é falta de querer. É medo de conseguir. Porque se conseguires e continuares infeliz, perdes a desculpa. A sabotagem protege-te da desilusão de descobrir que o problema nunca foi o peso.',
+    cta: 'O medo de conseguir é mais real do que o medo de falhar. Vamos falar sobre isto. — Vivianne',
+  },
+  {
+    hook: 'Mereces nutrir-te. Não é prémio. Não é condicional. Mereces.',
+    corpo: 'Não "quando emagrecer". Não "quando merecer". Não "quando for disciplinada". Agora. Hoje. Neste corpo. Neste peso. Nesta desordem. Nutrir-te não é um destino. É uma decisão diária.',
+    cta: 'A saúde é um acto de amor, não de controlo. — Vivianne',
+  },
+  {
+    hook: 'Se tratasses uma amiga como te tratas a ti, já não seriam amigas.',
+    corpo: 'Reparaste que perdoas os erros dos outros mas castigas os teus? Que dás espaço aos outros mas exiges perfeição de ti? Que acolhes a vulnerabilidade alheia mas rejeitas a tua? Esta é a raiz de tudo.',
+    cta: 'Trata-te como tratarias alguém que amas. É simples. Mas não é fácil. — Vivianne',
+  },
+];
+
+// CICLO DE COMEÇA-PÁRA — para quem já "desistiu 100 vezes"
+const CONTEUDO_CICLO_RECOMECOS = [
+  {
+    hook: 'Já começaste 100 vezes. E achas que isso te torna fraca. Eu acho que te torna persistente.',
+    corpo: 'Cada recomeço não é um fracasso. É evidência de que não desististe. Quem realmente desiste, pára de tentar. Tu voltaste. Outra vez. E isso não é fraqueza — é a coisa mais corajosa que podes fazer.',
+    cta: 'Desta vez não é diferente porque o plano é melhor. É diferente porque vais entender por que paravas. — Vivianne',
+  },
+  {
+    hook: 'Não falhaste 100 dietas. Sobreviveste a 100 planos que não te viam por inteiro.',
+    corpo: 'Cada dieta que "falhaste" ignorou algo: a tua emoção, o teu contexto, o teu passado com comida, os teus gatilhos, a tua auto-estima. Não falhaste. O plano é que falhou contigo.',
+    cta: 'Um plano que não inclui quem tu és, nunca vai funcionar para quem tu és. — Vivianne',
+  },
+  {
+    hook: 'O padrão não é: começar e desistir. O padrão é: começar, sentir, fugir do que sentiste.',
+    corpo: 'Na semana 2-3, algo acontece. Não é que o plano fique difícil. É que as emoções que estavas a tapar com comida começam a emergir. E como não tens ferramentas para lidar com elas, voltas ao conforto que conheces.',
+    cta: 'A verdadeira transformação começa quando o desconforto aparece e decides ficar. — Vivianne',
+  },
+  {
+    hook: '"Amanhã começo." Amanhã nunca vem. Porque amanhã também terás emoções.',
+    corpo: 'Adiar é uma estratégia emocional, não logística. Não esperas pela segunda-feira porque é mais conveniente. Esperas porque hoje dói. Mas segunda-feira também vai doer. A questão não é quando começar. É decidir que vais sentir o desconforto e não fugir.',
+    cta: 'Não esperes pela motivação. Age apesar da falta dela. — Vivianne',
+  },
+  {
+    hook: 'Desistir na semana 2 não é falta de vontade. É um padrão — e padrões mudam-se.',
+    corpo: 'O teu cérebro tem uma janela de desistência. Normalmente entre o dia 10 e o dia 21. É quando a novidade acaba e o trabalho real começa. Se souberes que essa janela existe, podes preparar-te para ela em vez de ser apanhada de surpresa.',
+    cta: 'No VITALIS, o Detector de Desistência avisa-te quando estás nesse ponto. Para desta vez ser diferente. — Vivianne',
+  },
+  {
+    hook: 'Não precisas de começar do zero. Precisas de continuar de onde paraste.',
+    corpo: 'Cada vez que "recomeças", trazes contigo tudo o que aprendeste. Não partes do zero. Partes do 47. Ou do 73. Ou do 89. As lições ficaram. O progresso acumulou-se. Mesmo que não pareça.',
+    cta: 'Não recomeça. Continua. A diferença é enorme. — Vivianne',
+  },
+];
+
 // Juntar tudo num pool único rotativo
-const TODO_CONTEUDO = [...CONTEUDO_CORPO, ...CONTEUDO_EMOCIONAL, ...CONTEUDO_PROVOCACAO];
+const TODO_CONTEUDO = [
+  ...CONTEUDO_CORPO,
+  ...CONTEUDO_EMOCIONAL,
+  ...CONTEUDO_PROVOCACAO,
+  ...CONTEUDO_ALIMENTACAO_EMOCIONAL,
+  ...CONTEUDO_DISTORCOES,
+  ...CONTEUDO_ANSIEDADE,
+  ...CONTEUDO_AUTOESTIMA,
+  ...CONTEUDO_CICLO_RECOMECOS,
+];
 
 const HASHTAGS_BASE = [
   '#seteecos', '#vitalis', '#transformacao',
@@ -181,6 +377,11 @@ const HASHTAGS_TEMATICOS = {
   provocacao: ['#verdadeincomoda', '#semfiltro', '#realidade', '#mudanca', '#chega'],
   lumina: ['#lumina', '#diagnostico', '#autoconhecimento', '#energia', '#checkin'],
   aurea: ['#aurea', '#autovalor', '#autoestima', '#integracaopessoal', '#empoderamento'],
+  alimentacao_emocional: ['#alimentacaoemocional', '#fomeemocional', '#comerconsciente', '#compulsaoalimentar', '#semculpa'],
+  distorcoes: ['#imagemcorporal', '#corpopositivo', '#espelho', '#autoaceitacao', '#corporeal'],
+  ansiedade: ['#ansiedade', '#stressecorpo', '#sistemanervoso', '#cortisol', '#regulacaoemocional'],
+  autoestima: ['#autoestima', '#valorproprio', '#amorproprio', '#voziinterior', '#merecescuidado'],
+  ciclo_recomecos: ['#recomecar', '#naoefraqueza', '#persistencia', '#semanadesistencia', '#continuadaqui'],
 };
 
 // ============================================================
@@ -188,13 +389,13 @@ const HASHTAGS_TEMATICOS = {
 // ============================================================
 
 const TEMAS_SEMANA = {
-  0: { tema: 'emocional', titulo: 'Reflexão de Domingo', formato: 'carrossel', tipo: 'empatia' },
-  1: { tema: 'provocação', titulo: 'Verdade Incomoda', formato: 'reel', tipo: 'desafio' },
+  0: { tema: 'autoestima', titulo: 'Carta para Ti', formato: 'carrossel', tipo: 'conexão' },
+  1: { tema: 'alimentacao_emocional', titulo: 'Fome Emocional', formato: 'reel', tipo: 'educação' },
   2: { tema: 'corpo', titulo: 'Mito vs Realidade', formato: 'carrossel', tipo: 'educação' },
-  3: { tema: 'emocional', titulo: 'Reflexão de Quarta', formato: 'stories', tipo: 'reflexão' },
-  4: { tema: 'provocação', titulo: 'Pergunta que Doi', formato: 'reel', tipo: 'provocação' },
-  5: { tema: 'corpo', titulo: 'Receita + Dica', formato: 'reel', tipo: 'valor' },
-  6: { tema: 'emocional', titulo: 'Carta para Ti', formato: 'post', tipo: 'conexão' },
+  3: { tema: 'ansiedade', titulo: 'Corpo e Stress', formato: 'stories', tipo: 'educação' },
+  4: { tema: 'distorcoes', titulo: 'Espelho e Verdade', formato: 'reel', tipo: 'provocação' },
+  5: { tema: 'ciclo_recomecos', titulo: 'Para Quem Já Desistiu', formato: 'carrossel', tipo: 'empatia' },
+  6: { tema: 'emocional', titulo: 'Reflexão de Sábado', formato: 'post', tipo: 'reflexão' },
 };
 
 // ============================================================
@@ -213,6 +414,11 @@ function pickFromArray(arr, seed) {
 function getConteudoByTema(tema, seed) {
   if (tema === 'corpo') return pickFromArray(CONTEUDO_CORPO, seed);
   if (tema === 'emocional') return pickFromArray(CONTEUDO_EMOCIONAL, seed);
+  if (tema === 'alimentacao_emocional') return pickFromArray(CONTEUDO_ALIMENTACAO_EMOCIONAL, seed);
+  if (tema === 'distorcoes') return pickFromArray(CONTEUDO_DISTORCOES, seed);
+  if (tema === 'ansiedade') return pickFromArray(CONTEUDO_ANSIEDADE, seed);
+  if (tema === 'autoestima') return pickFromArray(CONTEUDO_AUTOESTIMA, seed);
+  if (tema === 'ciclo_recomecos') return pickFromArray(CONTEUDO_CICLO_RECOMECOS, seed);
   return pickFromArray(CONTEUDO_PROVOCACAO, seed);
 }
 
@@ -244,6 +450,11 @@ export function gerarConteudoHoje(date = new Date(), variante = 0) {
 export function totalVariantes(tema) {
   if (tema === 'corpo') return CONTEUDO_CORPO.length;
   if (tema === 'emocional') return CONTEUDO_EMOCIONAL.length;
+  if (tema === 'alimentacao_emocional') return CONTEUDO_ALIMENTACAO_EMOCIONAL.length;
+  if (tema === 'distorcoes') return CONTEUDO_DISTORCOES.length;
+  if (tema === 'ansiedade') return CONTEUDO_ANSIEDADE.length;
+  if (tema === 'autoestima') return CONTEUDO_AUTOESTIMA.length;
+  if (tema === 'ciclo_recomecos') return CONTEUDO_CICLO_RECOMECOS.length;
   return CONTEUDO_PROVOCACAO.length;
 }
 
