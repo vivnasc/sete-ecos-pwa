@@ -8,4 +8,4 @@
 
 ## Script (colar directamente no ElevenLabs)
 
-[intensely] O corpo e a emoção não são departamentos separados. [pause] No VITALIS, também não. [long pause] [warmly] O Espaço de Retorno existe dentro do VITALIS. [pause] É o lugar onde não se fala de comida. [pause] Fala-se do que está por trás. [pause] [softly] Uma app de nutrição que ignora o que sentes não é integração. [pause] É só mais um pedaço. [pause] [intensely] Nós não trabalhamos por pedaços.
+[intensely] Comes mais quando estás ansiosa. [pause] Já reparaste? [long pause] [warmly] Não é falta de força de vontade. É o teu corpo a tentar acalmar alguma coisa. [pause] Dentro do VITALIS existe um espaço que não fala de comida. [pause] Chama-se Espaço de Retorno. [pause] É onde olhas para o que está por trás da fome. [pause] [softly] Porque uma app de nutrição que ignora o que sentes vai falhar. Como todas as outras falharam. [pause] Link na bio.

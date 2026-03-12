@@ -8,4 +8,4 @@
 
 ## Script (colar directamente no ElevenLabs)
 
-[intensely] Isto é o que recebes. [pause] Não é um PDF. Não é um grupo de WhatsApp. [pause] É uma app completa. [long pause] [warmly] Plano personalizado. Check-in diário. 98 receitas filtradas para ti. [pause] Espaço emocional. Relatórios. Treinos. [pause] Construído com rigor. [pause] [softly] Nada genérico. [pause] Link na bio.
+[intensely] Se alguém te mandar mais um PDF de dieta, foge. [pause] A sério. [long pause] [warmly] Um PDF não sabe se dormiste mal. Não adapta porções ao teu dia. Não te responde às 23 horas. [pause] O VITALIS é uma app completa. [pause] Plano personalizado. 98 receitas filtradas para ti. Check-in diário. Relatórios. Treinos. Coach disponível quando precisares. [pause] [softly] Não é um ficheiro que guardas e nunca abres. [pause] É uma ferramenta que trabalha contigo. [pause] Link na bio.

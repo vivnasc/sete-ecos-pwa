@@ -8,4 +8,4 @@
 
 ## Script (colar directamente no ElevenLabs)
 
-[softly] Há coisas que nunca disseste. [pause] E o corpo guarda tudo. [long pause] [warmly] O ECOA é a dimensão da voz e da expressão. [pause] Mapa de silenciamento. Programa Micro-Voz de 8 semanas. Cartas não enviadas. Comunicação assertiva. [pause] [intensely] Integração também é ter voz para o que sentes. [pause] Link na bio.
+[intensely] "Está tudo bem." [pause] Quantas vezes disseste isso esta semana? [pause] E quantas vezes era mentira? [long pause] [warmly] Cada vez que engoles o que querias dizer, o corpo guarda. [pause] Na garganta. No estômago. Nas costas. [pause] O ECOA é o eco da voz. [pause] Mapa de silenciamento. Programa de 8 semanas. Cartas que nunca enviaste. Comunicação assertiva. [pause] [softly] Não precisas de gritar. Precisas de parar de engolir. [pause] Link na bio.

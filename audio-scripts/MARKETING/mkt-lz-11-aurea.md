@@ -8,4 +8,4 @@
 
 ## Script (colar directamente no ElevenLabs)
 
-[intensely] Cuidas do corpo mas não cuidas de como te vês ao espelho. [pause] Porquê? [long pause] [warmly] O ÁUREA é a dimensão do valor próprio. [pause] Como gastas dinheiro. Como ocupas o tempo. Como te vestes. O que te dá prazer. [pause] 100 micro-práticas. [pause] [softly] Sem esta dimensão, qualquer transformação é superficial. [pause] Link na bio.
+[intensely] Gastas dinheiro nos outros sem pensar duas vezes. [pause] Mas quando é para ti, sentes culpa. [long pause] [warmly] Compras roupa nova e sentes que não combina contigo. [pause] Alguém te elogia e tu descontas logo. [pause] Isso tem nome. É desconexão do teu valor próprio. [pause] O ÁUREA trabalha isto. [pause] Como gastas. Como te vestes. Como ocupas o teu tempo. O que te dá prazer. [pause] [softly] 100 micro-práticas para voltares a olhar para ti sem pedir desculpa. [pause] Link na bio.

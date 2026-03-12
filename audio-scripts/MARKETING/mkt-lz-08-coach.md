@@ -8,4 +8,4 @@
 
 ## Script (colar directamente no ElevenLabs)
 
-[warmly] Quando precisas de orientação, a resposta está a uma mensagem. [pause] A qualquer hora. [long pause] Coach disponível 24 horas. [pause] Porções. Prato. Jejum. Treino. Dúvidas. [pause] [intensely] Não é motivação genérica. É coaching nutricional real. [pause] [softly] Porque as dúvidas não esperam pelo horário de consulta. [pause] Link na bio.
+[intensely] São 23 horas. Amanhã tens um almoço de família. E não sabes o que comer. [pause] A quem perguntas? [long pause] [warmly] No VITALIS tens coach disponível 24 horas. [pause] Não é um bot genérico. É orientação nutricional real. [pause] Porções. Substituições. Jejum. O que fazer quando saíste do plano. [pause] [softly] Porque as dúvidas aparecem às 23 horas, não às 10 da manhã na consulta. [pause] Link na bio.
