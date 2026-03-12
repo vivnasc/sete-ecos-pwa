@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { g } from '../../utils/genero'
 import ModuleHeader from '../shared/ModuleHeader'
+import AudioPlayerBar from '../shared/AudioPlayerBar'
 import { CAMADAS_ARQUEOLOGIA } from '../../lib/imago/gamificacao'
 
 /**
@@ -280,6 +281,16 @@ export default function ArqueologiaDeSi() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Guided audio — Infância */}
+        <div className="mb-4">
+          <AudioPlayerBar
+            eco="journaling"
+            slug="imago-03-infancia"
+            accentColor="#8B7BA5"
+            titulo="Meditação: A Criança Interior"
+          />
         </div>
 
         {/* Campos de reflexao */}

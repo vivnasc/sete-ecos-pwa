@@ -27,8 +27,15 @@ const ECO_CORES = {
 }
 
 // ─── Mini player individual ────────────────────────────────────
-function EpisodioCard({ ep, isPlaying, onPlay, onPause, compact }) {
+function EpisodioCard({ ep, isPlaying, onPlay, onPause, compact, progress, duration }) {
   const cor = ECO_CORES[ep.eco] || '#4B0082'
+
+  const formatTime = (s) => {
+    if (!s || !isFinite(s)) return '0:00'
+    const m = Math.floor(s / 60)
+    const sec = Math.floor(s % 60)
+    return `${m}:${sec.toString().padStart(2, '0')}`
+  }
 
   return (
     <div
@@ -86,14 +93,14 @@ function EpisodioCard({ ep, isPlaying, onPlay, onPause, compact }) {
         {/* Duration badge */}
         <span className={`flex-shrink-0 ${compact ? 'text-[9px]' : 'text-[10px]'} font-medium px-2 py-0.5 rounded-full`}
           style={{ background: `${cor}10`, color: cor }}>
-          2-3 min
+          {isPlaying && duration > 0 ? formatTime(duration) : '2-3 min'}
         </span>
       </div>
 
       {/* Progress bar when playing */}
       {isPlaying && (
         <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ background: `${cor}15` }}>
-          <div className="h-full rounded-full animate-pulse" style={{ background: cor, width: '45%' }} />
+          <div className="h-full rounded-full transition-[width] duration-300" style={{ background: cor, width: `${progress}%` }} />
         </div>
       )}
     </div>
@@ -113,6 +120,8 @@ function EpisodioCard({ ep, isPlaying, onPlay, onPause, compact }) {
  */
 export default function PodcastPlayer({ eco, max, compact = false, showTitle = true, className = '' }) {
   const [playing, setPlaying] = useState(null) // slug do episódio a tocar
+  const [progress, setProgress] = useState(0)
+  const [duration, setDuration] = useState(0)
   const audioRef = useRef(null)
 
   // Filtrar episódios
@@ -135,17 +144,28 @@ export default function PodcastPlayer({ eco, max, compact = false, showTitle = t
     const url = getAudioUrl('podcast', ep.slug)
     const audio = new Audio(url)
 
-    audio.addEventListener('ended', () => setPlaying(null))
-    audio.addEventListener('error', () => {
-      // Áudio ainda não gerado — feedback visual
+    audio.addEventListener('ended', () => {
       setPlaying(null)
+      setProgress(100)
+    })
+    audio.addEventListener('error', () => {
+      setPlaying(null)
+      setProgress(0)
+    })
+    audio.addEventListener('timeupdate', () => {
+      if (audio.duration) {
+        setProgress((audio.currentTime / audio.duration) * 100)
+      }
+    })
+    audio.addEventListener('loadedmetadata', () => {
+      setDuration(audio.duration)
     })
 
     audio.play().then(() => {
       setPlaying(ep.slug)
+      setProgress(0)
       audioRef.current = audio
     }).catch(() => {
-      // Áudio não disponível (ainda não gerado no ElevenLabs)
       setPlaying(null)
     })
   }
@@ -194,6 +214,8 @@ export default function PodcastPlayer({ eco, max, compact = false, showTitle = t
             onPlay={handlePlay}
             onPause={handlePause}
             compact={compact}
+            progress={playing === ep.slug ? progress : 0}
+            duration={playing === ep.slug ? duration : 0}
           />
         ))}
       </div>

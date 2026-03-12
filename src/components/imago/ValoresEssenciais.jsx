@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { g } from '../../utils/genero'
 import ModuleHeader from '../shared/ModuleHeader'
+import AudioPlayerBar from '../shared/AudioPlayerBar'
 import { LISTA_VALORES } from '../../lib/imago/gamificacao'
 
 // ============================================================
@@ -582,6 +583,13 @@ export default function ValoresEssenciais() {
         {/* ===== STEP 4: Reflexoes para os 3 valores ===== */}
         {step === 4 && (
           <div className="space-y-6 animate-fadeIn">
+            {/* Guided audio — Valores */}
+            <AudioPlayerBar
+              eco="journaling"
+              slug="imago-04-valores"
+              accentColor={ACCENT}
+              titulo="Meditação: Os Teus Valores"
+            />
             {selectedThree.map((valor, index) => (
               <div
                 key={valor}
