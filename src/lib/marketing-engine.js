@@ -3925,6 +3925,94 @@ const ECO_CONTEUDO_ARRAYS = {
   lumina: CONTEUDO_LUMINA,
 };
 
+// Títulos de carrossel por eco (rotam com seed)
+const CARROSSEL_TITULOS = {
+  vitalis: [
+    '5 verdades sobre o teu corpo',
+    '5 mitos que te venderam sobre alimentação',
+    'O que ninguém te contou sobre nutrição',
+    '5 sinais de que o teu corpo precisa de atenção',
+  ],
+  aurea: [
+    '5 coisas sobre valor próprio que precisas de ouvir',
+    'A culpa de cuidar de ti: de onde vem?',
+    '4 formas de investir em ti sem culpa',
+    'O teu valor não depende do que produzes',
+  ],
+  serena: [
+    '5 verdades sobre emoções que ninguém te disse',
+    'Sentir não é fraqueza. É inteligência.',
+    '4 sinais de que estás a reprimir emoções',
+    'O corpo guarda o que a boca não diz',
+  ],
+  ignis: [
+    '5 coisas sobre foco que precisas de saber',
+    'Disciplina sem propósito é prisão',
+    '4 sinais de dispersão que ignoras',
+    'A diferença entre ocupada e produtiva',
+  ],
+  ventis: [
+    '5 verdades sobre a tua energia',
+    'Cansaço crónico não se resolve com café',
+    '4 sinais de que precisas de parar',
+    'Ritmo não é velocidade. É cadência.',
+  ],
+  ecoa: [
+    '5 coisas sobre a tua voz que precisas de ouvir',
+    'O silêncio que te protege também te aprisiona',
+    '4 sinais de que calaste a tua verdade',
+    'Falar não é confronto. É existência.',
+  ],
+  imago: [
+    '5 verdades sobre identidade',
+    'Quem és tu quando ninguém está a ver?',
+    '4 máscaras que usas sem perceber',
+    'A diferença entre quem és e quem mostras',
+  ],
+  lumina: [
+    '5 padrões que o LUMINA revela',
+    'O que 2 minutos dizem sobre ti',
+    '4 dimensões que afectam tudo',
+    'Diagnóstico gratuito: o ponto de partida',
+  ],
+};
+
+function gerarCarrosselDiario(eco, conteudoArray, seed) {
+  if (!conteudoArray || conteudoArray.length < 4) return null;
+
+  const titulos = CARROSSEL_TITULOS[eco] || ['5 coisas que precisas de saber'];
+  const tituloCarrossel = titulos[seed % titulos.length];
+
+  const slides = [
+    { titulo: tituloCarrossel, texto: 'Desliza →' },
+  ];
+
+  // Escolher 4 itens diferentes espalhados pelo array
+  for (let i = 0; i < 4; i++) {
+    const item = conteudoArray[(seed + i * 3) % conteudoArray.length];
+    slides.push({
+      titulo: item.hook.length > 80 ? item.hook.slice(0, 77) + '...' : item.hook,
+      texto: item.corpo.length > 120 ? item.corpo.slice(0, 117) + '...' : item.corpo,
+    });
+  }
+
+  // Slide final com CTA
+  const itemPrincipal = conteudoArray[seed % conteudoArray.length];
+  slides.push({
+    titulo: itemPrincipal.cta.length > 80 ? itemPrincipal.cta.slice(0, 77) + '...' : itemPrincipal.cta,
+    texto: 'app.seteecos.com',
+  });
+
+  return {
+    tipo: 'carrossel',
+    titulo: tituloCarrossel,
+    texto: itemPrincipal.hook.slice(0, 120),
+    subtitulo: itemPrincipal.cta,
+    caption: '',
+    slides,
+  };
+}
+
 function gerarConteudoEcoDia(eco, seed) {
   const ecoData = ECO_CONTEUDO[eco];
   if (!ecoData) return null;
@@ -3950,16 +4038,16 @@ function gerarConteudoEcoDia(eco, seed) {
 
   if (eco === 'vitalis') {
     hook = hooks[hookIndex] || '';
-    const conteudo = getConteudoByTema(['corpo', 'emocional', 'provocacao'][seed % 3], seed);
+    const temaIdx = seed % 3;
+    const temas = ['corpo', 'emocional', 'provocacao'];
+    const conteudo = getConteudoByTema(temas[temaIdx], seed);
     corpo = conteudo.corpo;
     cta = conteudo.cta;
     usouExpandido = true;
-    igContent = {
-      tipo: 'dica',
-      texto: corpo.slice(0, 120),
-      subtitulo: cta,
-      caption: '',
-    };
+    // Vitalis: gerar carrossel a partir dos arrays corpo/emocional/provocacao
+    const vitalisArrays = [CONTEUDO_CORPO, CONTEUDO_EMOCIONAL, CONTEUDO_PROVOCACAO];
+    const arrayParaCarrossel = vitalisArrays[temaIdx];
+    igContent = gerarCarrosselDiario('vitalis', arrayParaCarrossel, seed);
   } else if (conteudoArray && conteudoArray.length > 0) {
     // Usar conteúdo expandido (12 entradas por eco)
     const item = conteudoArray[seed % conteudoArray.length];
@@ -3967,13 +4055,8 @@ function gerarConteudoEcoDia(eco, seed) {
     corpo = item.corpo;
     cta = item.cta;
     usouExpandido = true;
-    // Sobrescrever igContent para reflectir o conteúdo expandido
-    igContent = {
-      tipo: 'dica',
-      texto: corpo.slice(0, 120),
-      subtitulo: cta,
-      caption: '',
-    };
+    // Gerar carrossel a partir do array expandido
+    igContent = gerarCarrosselDiario(eco, conteudoArray, seed);
   } else {
     hook = hooks[hookIndex] || '';
     corpo = igContent?.texto || hook;

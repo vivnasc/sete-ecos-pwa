@@ -736,7 +736,7 @@ function BlocoEco({ eco, copiar, copiado, prefixo }) {
                 <span className="text-[9px] bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-full">Slides</span>
               </div>
               <div className="p-3">
-                <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x">
+                <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
                   {ig.slides.map((slide, i) => (
                     <AutoImage
                       key={i}
