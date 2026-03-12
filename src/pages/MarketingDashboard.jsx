@@ -30,6 +30,8 @@ import {
   getCampanhaLancamentoZero,
 } from '../lib/marketing-engine';
 import { RENDER_MAP, CORES, FORMATOS } from '../components/TemplateVisual';
+import { getAudioUrl } from '../lib/shared/audioStorage';
+import { AUDIO_SCRIPTS } from '../lib/audio-scripts-data';
 
 // ============================================================
 // AUTO IMAGE - Gera imagem automaticamente
@@ -1091,13 +1093,16 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
   const mockups = post.mockups || getMockupsEco(post.eco);
   const mockupPrincipal = mockups[0];
 
-  // Gerar slides de carrossel a partir do corpo do post
+  // Usar slides pré-escritos do conteudoIG quando existem, senão auto-gerar do corpo
   const carrosselSlides = (() => {
     if (post.formato === 'destaques') return null;
+    // Preferir slides pré-definidos em conteudoIG
+    if (post.conteudoIG?.slides?.length > 1) return post.conteudoIG.slides;
+    // Fallback: auto-gerar a partir do corpo
     const paragrafos = (post.corpo || '').split('\n').filter(p => p.trim().length > 10);
     if (paragrafos.length < 2) return null;
     const slides = [
-      { titulo: post.hook?.length > 80 ? post.hook.slice(0, 77) + '...' : post.hook, texto: 'Desliza →' },
+      { titulo: post.titulo || post.hook, texto: 'Desliza →' },
     ];
     paragrafos.slice(0, 4).forEach(p => {
       slides.push({ titulo: p.length > 80 ? p.slice(0, 77) + '...' : p, texto: '' });
@@ -1161,21 +1166,43 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
             </div>
           )}
 
-          {/* Áudio script para ElevenLabs */}
-          {post.audioScript && (
-            <div className="bg-orange-50 border border-orange-200 rounded-xl p-2.5">
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-[10px] text-orange-700 font-bold">Áudio (voiceover ElevenLabs)</p>
-                <button
-                  onClick={() => copiar(post.audioScript, `lanc-${post.dia}-audio`)}
-                  className="text-[9px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-bold active:scale-95"
-                >
-                  {copiado === `lanc-${post.dia}-audio` ? 'Copiado!' : 'Copiar script'}
-                </button>
+          {/* Áudio — player se pré-gerado, ou script para copiar */}
+          {post.audioScript && (() => {
+            const diaStr = String(post.dia).padStart(2, '0');
+            const audioEntry = (AUDIO_SCRIPTS?.MARKETING || []).find(e => e.slug.startsWith(`mkt-lz-${diaStr}`));
+            const audioUrl = audioEntry ? getAudioUrl('marketing', audioEntry.slug) : null;
+            return (
+              <div className="bg-orange-50 border border-orange-200 rounded-xl p-2.5 space-y-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] text-orange-700 font-bold">Áudio (voiceover)</p>
+                  <button
+                    onClick={() => copiar(post.audioScript, `lanc-${post.dia}-audio`)}
+                    className="text-[9px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-bold active:scale-95"
+                  >
+                    {copiado === `lanc-${post.dia}-audio` ? 'Copiado!' : 'Copiar script'}
+                  </button>
+                </div>
+                {audioUrl ? (
+                  <div className="flex items-center gap-2">
+                    <audio src={audioUrl} controls preload="none" className="h-8 flex-1 min-w-0" />
+                    <a
+                      href={audioUrl}
+                      download
+                      className="text-[9px] bg-orange-200 text-orange-800 px-2 py-1 rounded-full font-bold shrink-0 active:scale-95"
+                    >
+                      ⬇ MP3
+                    </a>
+                  </div>
+                ) : (
+                  <p className="text-[9px] text-orange-400 italic">Áudio não gerado — gera em /coach/audio-meditacoes</p>
+                )}
+                <details className="group">
+                  <summary className="text-[9px] text-orange-500 cursor-pointer">Ver script</summary>
+                  <p className="text-[10px] text-orange-600 leading-relaxed mt-1">{post.audioScript}</p>
+                </details>
               </div>
-              <p className="text-[10px] text-orange-600 leading-relaxed">{post.audioScript}</p>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Dica de formato */}
           {post.dica && (
