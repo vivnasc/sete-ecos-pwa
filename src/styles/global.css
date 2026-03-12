@@ -5,6 +5,14 @@
 /* Tailwind CSS v4 — Build-time compilation (não CDN) */
 @import "tailwindcss";
 
+/* Fix: horizontal scroll containers não devem bloquear scroll vertical no mobile */
+@layer base {
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+}
+
 /* Suporte a Light/Dark Mode */
 :root {
   color-scheme: light dark;
