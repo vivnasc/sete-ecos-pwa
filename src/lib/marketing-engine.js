@@ -19,6 +19,7 @@
  */
 
 import { buildUTMUrl, UTM_TEMPLATES } from '../utils/utm';
+import { getAudioUrl } from './shared/audioStorage';
 
 const BASE_URL = 'https://app.seteecos.com';
 
@@ -1097,6 +1098,128 @@ function pickFromArray(arr, seed) {
   return arr[seed % arr.length];
 }
 
+// ============================================================
+// AUDIOGRAMAS & ÁUDIOS DE MARKETING — mapeamento tema → áudio
+// Cada tema de conteúdo tem audiogramas e áudios relevantes
+// para usar em social media, emails e WhatsApp
+// ============================================================
+
+const AUDIOGRAMAS_POR_TEMA = {
+  corpo: [
+    { pasta: 'audiogramas', slug: 'audiograma-08-corpo-fala', titulo: 'O teu corpo falou primeiro' },
+    { pasta: 'audiogramas', slug: 'audiograma-04-cansaco-alma', titulo: 'Esse cansaço não é do corpo' },
+  ],
+  emocional: [
+    { pasta: 'audiogramas', slug: 'audiograma-01-fome-nao-e-fome', titulo: 'Essa fome não é fome' },
+    { pasta: 'audiogramas', slug: 'audiograma-07-dar-tudo', titulo: 'Dás tudo e não guardas nada' },
+  ],
+  alimentacao_emocional: [
+    { pasta: 'audiogramas', slug: 'audiograma-01-fome-nao-e-fome', titulo: 'Essa fome não é fome' },
+    { pasta: 'audiogramas', slug: 'audiograma-02-dieta-mentira', titulo: 'A tua dieta mentiu-te' },
+  ],
+  distorcoes: [
+    { pasta: 'audiogramas', slug: 'audiograma-03-espelho-mente', titulo: 'O espelho mente' },
+    { pasta: 'audiogramas', slug: 'audiograma-09-mascara-cansa', titulo: 'Essa máscara cansa' },
+  ],
+  ansiedade: [
+    { pasta: 'audiogramas', slug: 'audiograma-06-ocupada-fuga', titulo: 'Estar ocupada é fuga' },
+    { pasta: 'audiogramas', slug: 'audiograma-04-cansaco-alma', titulo: 'Esse cansaço não é do corpo' },
+  ],
+  autoestima: [
+    { pasta: 'audiogramas', slug: 'audiograma-07-dar-tudo', titulo: 'Dás tudo e não guardas nada' },
+    { pasta: 'audiogramas', slug: 'audiograma-03-espelho-mente', titulo: 'O espelho mente' },
+  ],
+  provocacao: [
+    { pasta: 'marketing', slug: 'mkt-trailer-7-ecos', titulo: 'Os 7 Ecos — A visão' },
+    { pasta: 'audiogramas', slug: 'audiograma-10-diagnostico-gratis', titulo: '2 minutos para mudar o teu dia' },
+  ],
+  aurea: [
+    { pasta: 'marketing', slug: 'mkt-eco-aurea', titulo: 'ÁUREA — Ouve a apresentação' },
+    { pasta: 'marketing', slug: 'mkt-story-aurea', titulo: 'A história da ÁUREA' },
+    { pasta: 'marketing', slug: 'mkt-teaser-aurea', titulo: 'Teaser ÁUREA' },
+  ],
+  serena_eco: [
+    { pasta: 'marketing', slug: 'mkt-eco-serena', titulo: 'SERENA — Ouve a apresentação' },
+    { pasta: 'marketing', slug: 'mkt-story-serena', titulo: 'A história da SERENA' },
+    { pasta: 'marketing', slug: 'mkt-teaser-serena', titulo: 'Teaser SERENA' },
+  ],
+  ignis: [
+    { pasta: 'marketing', slug: 'mkt-eco-ignis', titulo: 'IGNIS — Ouve a apresentação' },
+    { pasta: 'marketing', slug: 'mkt-story-ignis', titulo: 'A história do IGNIS' },
+    { pasta: 'marketing', slug: 'mkt-teaser-ignis', titulo: 'Teaser IGNIS' },
+  ],
+  ventis: [
+    { pasta: 'marketing', slug: 'mkt-eco-ventis', titulo: 'VENTIS — Ouve a apresentação' },
+    { pasta: 'marketing', slug: 'mkt-story-ventis', titulo: 'A história do VENTIS' },
+    { pasta: 'marketing', slug: 'mkt-teaser-ventis', titulo: 'Teaser VENTIS' },
+  ],
+  ecoa: [
+    { pasta: 'marketing', slug: 'mkt-eco-ecoa', titulo: 'ECOA — Ouve a apresentação' },
+    { pasta: 'marketing', slug: 'mkt-story-ecoa', titulo: 'A história do ECOA' },
+    { pasta: 'marketing', slug: 'mkt-teaser-ecoa', titulo: 'Teaser ECOA' },
+  ],
+  imago: [
+    { pasta: 'marketing', slug: 'mkt-eco-imago', titulo: 'IMAGO — Ouve a apresentação' },
+    { pasta: 'marketing', slug: 'mkt-story-imago', titulo: 'A história do IMAGO' },
+    { pasta: 'marketing', slug: 'mkt-teaser-imago', titulo: 'Teaser IMAGO' },
+  ],
+  lumina_eco: [
+    { pasta: 'audiogramas', slug: 'audiograma-10-diagnostico-gratis', titulo: '2 minutos para mudar o teu dia' },
+    { pasta: 'marketing', slug: 'mkt-lz-03-lumina-intro', titulo: 'Introdução ao LUMINA' },
+  ],
+  ciclo_recomecos: [
+    { pasta: 'audiogramas', slug: 'audiograma-01-fome-nao-e-fome', titulo: 'Essa fome não é fome' },
+    { pasta: 'audiogramas', slug: 'audiograma-05-silencio-aprendido', titulo: 'Aprendeste a calar-te' },
+  ],
+};
+
+/**
+ * Obter audiograma relevante para um tema
+ * @param {string} tema - Nome do tema de conteúdo
+ * @param {number} seed - Semente para rotação
+ * @returns {{ pasta: string, slug: string, titulo: string } | null}
+ */
+export function getAudiogramaPorTema(tema, seed = 0) {
+  const audios = AUDIOGRAMAS_POR_TEMA[tema];
+  if (!audios || audios.length === 0) return null;
+  return audios[seed % audios.length];
+}
+
+/**
+ * Todos os audiogramas disponíveis (para social media scheduler)
+ */
+export function getAudiogramasDisponiveis() {
+  return [
+    { slug: 'audiograma-01-fome-nao-e-fome', titulo: 'Essa fome não é fome — é solidão', eco: 'vitalis' },
+    { slug: 'audiograma-02-dieta-mentira', titulo: 'A tua dieta mentiu-te', eco: 'vitalis' },
+    { slug: 'audiograma-03-espelho-mente', titulo: 'O espelho mente', eco: 'imago' },
+    { slug: 'audiograma-04-cansaco-alma', titulo: 'Esse cansaço é da alma', eco: 'ventis' },
+    { slug: 'audiograma-05-silencio-aprendido', titulo: 'Aprendeste a calar-te', eco: 'ecoa' },
+    { slug: 'audiograma-06-ocupada-fuga', titulo: 'Estar ocupada é fuga', eco: 'ignis' },
+    { slug: 'audiograma-07-dar-tudo', titulo: 'Dás tudo e não guardas nada', eco: 'aurea' },
+    { slug: 'audiograma-08-corpo-fala', titulo: 'O teu corpo falou primeiro', eco: 'vitalis' },
+    { slug: 'audiograma-09-mascara-cansa', titulo: 'Essa máscara cansa', eco: 'imago' },
+    { slug: 'audiograma-10-diagnostico-gratis', titulo: '2 minutos para mudar o teu dia', eco: 'lumina' },
+  ];
+}
+
+/**
+ * Todos os áudios de marketing por eco (intro, story, teaser)
+ */
+export function getAudiosMarketingPorEco(eco) {
+  const ecoKey = eco.toLowerCase();
+  const slugs = {
+    vitalis: { intro: 'mkt-eco-vitalis', story: 'mkt-story-vitalis', teaser: 'mkt-teaser-vitalis' },
+    aurea: { intro: 'mkt-eco-aurea', story: 'mkt-story-aurea', teaser: 'mkt-teaser-aurea' },
+    serena: { intro: 'mkt-eco-serena', story: 'mkt-story-serena', teaser: 'mkt-teaser-serena' },
+    ignis: { intro: 'mkt-eco-ignis', story: 'mkt-story-ignis', teaser: 'mkt-teaser-ignis' },
+    ventis: { intro: 'mkt-eco-ventis', story: 'mkt-story-ventis', teaser: 'mkt-teaser-ventis' },
+    ecoa: { intro: 'mkt-eco-ecoa', story: 'mkt-story-ecoa', teaser: 'mkt-teaser-ecoa' },
+    imago: { intro: 'mkt-eco-imago', story: 'mkt-story-imago', teaser: 'mkt-teaser-imago' },
+  };
+  return slugs[ecoKey] || null;
+}
+
 function getConteudoByTema(tema, seed) {
   if (tema === 'corpo') return pickFromArray(CONTEUDO_CORPO, seed);
   if (tema === 'emocional') return pickFromArray(CONTEUDO_EMOCIONAL, seed);
@@ -1126,6 +1249,8 @@ export function gerarConteudoHoje(date = new Date(), variante = 0) {
   const hashBase = HASHTAGS_BASE.slice(0, 4);
   const hashTema = (HASHTAGS_TEMATICOS[tema] || []).slice(0, 4);
 
+  const audiograma = getAudiogramaPorTema(tema, seed);
+
   return {
     data: date.toISOString().split('T')[0],
     diaSemana: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][dayOfWeek],
@@ -1138,6 +1263,7 @@ export function gerarConteudoHoje(date = new Date(), variante = 0) {
     corpo: conteudo.corpo,
     cta: conteudo.cta,
     hashtags: [...hashBase, ...hashTema],
+    audiograma, // { pasta, slug, titulo } ou null
   };
 }
 
@@ -1217,11 +1343,19 @@ export function gerarMensagemWhatsApp(tipo = 'dica', campanha = '', variante = 0
     grupo: `*Para todas as pessoas neste grupo* 🤍\n\nVou ser directa: a maioria de nós nunca aprendeu a comer.\n\nAprendemos a fazer dieta. A contar calorias. A sentir culpa.\n\nMas ninguém nos ensinou a OUVIR o corpo.\n\nHoje quero partilhar algo: um diagnóstico gratuito que analisa a tua energia, emoção e corpo em 2 minutos.\n\nNão vende nada. Não pede cartão. É só... um espelho.\n\n${linkLumina}\n\nExperimenta e partilha aqui o que achaste 🤍`,
   };
 
+  const msg = templates[tipo] || templates.dica;
+  // Incluir link de áudio quando disponível
+  const audioInfo = hoje.audiograma;
+  const audioLink = audioInfo
+    ? `\n\n🎧 *Ouve este áudio:* ${audioInfo.titulo}\n${getAudioUrl(audioInfo.pasta, audioInfo.slug)}`
+    : '';
+
   return {
-    mensagem: templates[tipo] || templates.dica,
+    mensagem: msg + audioLink,
     link: linkVitalis,
     tipo,
     campanha: camp,
+    audiograma: audioInfo,
   };
 }
 

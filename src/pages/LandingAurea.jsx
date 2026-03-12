@@ -7,6 +7,7 @@ import PartilharSocial from '../components/PartilharSocial';
 import WhatsAppMockup from '../components/WhatsAppMockup';
 import ScrollReveal from '../components/ScrollReveal';
 import PodcastPlayer from '../components/shared/PodcastPlayer';
+import AudioPlayerBar from '../components/shared/AudioPlayerBar';
 import { ECO_PLANS } from '../lib/shared/subscriptionPlans';
 
 /**
@@ -652,6 +653,8 @@ const LandingAurea = () => {
             <p className="text-center text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#B8860B' }}>
               Ouve a Vivianne
             </p>
+            <AudioPlayerBar eco="marketing" slug="mkt-eco-aurea" accentColor="#B8860B" titulo="Apresentação da ÁUREA" />
+            <div className="mt-4" />
             <PodcastPlayer eco="aurea" />
           </ScrollReveal>
         </div>

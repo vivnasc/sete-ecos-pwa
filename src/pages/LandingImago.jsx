@@ -9,6 +9,7 @@ import PartilharSocial from '../components/PartilharSocial'
 import WhatsAppMockup from '../components/WhatsAppMockup'
 import ScrollReveal from '../components/ScrollReveal'
 import PodcastPlayer from '../components/shared/PodcastPlayer'
+import AudioPlayerBar from '../components/shared/AudioPlayerBar'
 
 /**
  * IMAGO - Landing Page
@@ -844,6 +845,8 @@ const LandingImago = () => {
             <p className="text-center text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#6C3483' }}>
               Ouve a Vivianne
             </p>
+            <AudioPlayerBar eco="marketing" slug="mkt-eco-imago" accentColor="#6C3483" titulo="Apresentação do IMAGO" />
+            <div className="mt-4" />
             <PodcastPlayer eco="imago" />
           </ScrollReveal>
         </div>

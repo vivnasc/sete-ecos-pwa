@@ -10,6 +10,10 @@
 
 const COACH_NUMERO = '258851006473';
 
+// URL base para áudios no Supabase Storage (público)
+const SB_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '';
+const audioUrl = (pasta, slug) => SB_URL ? `${SB_URL}/storage/v1/object/public/audios/${pasta}/${slug}.mp3` : '';
+
 // ===== MENU PRINCIPAL =====
 
 const MENU_PRINCIPAL = `Como te posso ajudar?
@@ -73,6 +77,8 @@ Anual — *21.000 MZN* (poupas 9.000!)
 
 Experimenta *7 dias grátis* antes de decidir.
 
+🎧 Ouve a apresentação do VITALIS: ${audioUrl('marketing', 'mkt-eco-vitalis')}
+
 👉 Começa: app.seteecos.com/vitalis
 
 Ou responde *preços* para comparar todos os planos`;
@@ -97,6 +103,8 @@ São *23 padrões possíveis* — a tua leitura é única.
 - Fase do ciclo menstrual (opcional)
 
 *100% gratuito · Sem registo · 5 minutos*
+
+🎧 Ouve sobre o Lumina: ${audioUrl('audiogramas', 'audiograma-10-diagnostico-gratis')}
 
 👉 Começa agora: app.seteecos.com/lumina
 
@@ -130,6 +138,8 @@ Anual — *4.190 MZN* (poupas 1.798 MZN — 30% desc.)
 
 Experimenta *7 dias grátis* com acesso total.
 
+🎧 Ouve sobre a ÁUREA: ${audioUrl('marketing', 'mkt-eco-aurea')}
+
 👉 Começa: app.seteecos.com/aurea
 
 💡 _Combina com o VITALIS? Responde *bundle* para ver pacotes com até 40% desconto!_`;
@@ -159,6 +169,8 @@ Semestral — *2.395 MZN* (poupas 599 MZN — 20% desc.)
 Anual — *4.190 MZN* (poupas 1.798 MZN — 30% desc.)
 
 Experimenta *7 dias grátis*.
+
+🎧 Ouve sobre a SERENA: ${audioUrl('marketing', 'mkt-eco-serena')}
 
 👉 Começa: app.seteecos.com/serena
 
@@ -190,6 +202,8 @@ Anual — *4.190 MZN* (poupas 1.798 MZN — 30% desc.)
 
 Experimenta *7 dias grátis*.
 
+🎧 Ouve sobre o IGNIS: ${audioUrl('marketing', 'mkt-eco-ignis')}
+
 👉 Começa: app.seteecos.com/ignis`;
 
 // --- 6: VENTIS ---
@@ -216,6 +230,8 @@ Semestral — *2.395 MZN* (poupas 599 MZN — 20% desc.)
 Anual — *4.190 MZN* (poupas 1.798 MZN — 30% desc.)
 
 Experimenta *7 dias grátis*.
+
+🎧 Ouve sobre o VENTIS: ${audioUrl('marketing', 'mkt-eco-ventis')}
 
 👉 Começa: app.seteecos.com/ventis`;
 
@@ -245,6 +261,8 @@ Anual — *4.190 MZN* (poupas 1.798 MZN — 30% desc.)
 
 Experimenta *7 dias grátis*.
 
+🎧 Ouve sobre o ECOA: ${audioUrl('marketing', 'mkt-eco-ecoa')}
+
 👉 Começa: app.seteecos.com/ecoa`;
 
 // --- 8: IMAGO ---
@@ -272,6 +290,8 @@ Semestral — *2.395 MZN* (poupas 599 MZN — 20% desc.)
 Anual — *4.190 MZN* (poupas 1.798 MZN — 30% desc.)
 
 Experimenta *7 dias grátis*.
+
+🎧 Ouve sobre o IMAGO: ${audioUrl('marketing', 'mkt-eco-imago')}
 
 👉 Começa: app.seteecos.com/imago`;
 

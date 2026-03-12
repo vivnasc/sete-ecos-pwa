@@ -9,6 +9,7 @@ import PartilharSocial from '../components/PartilharSocial'
 import WhatsAppMockup from '../components/WhatsAppMockup'
 import ScrollReveal from '../components/ScrollReveal'
 import PodcastPlayer from '../components/shared/PodcastPlayer'
+import AudioPlayerBar from '../components/shared/AudioPlayerBar'
 
 /**
  * SERENA - Landing Page
@@ -783,6 +784,8 @@ const LandingSerena = () => {
             <p className="text-center text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#1A6B9A' }}>
               Ouve a Vivianne
             </p>
+            <AudioPlayerBar eco="marketing" slug="mkt-eco-serena" accentColor="#1A6B9A" titulo="Apresentação da SERENA" />
+            <div className="mt-4" />
             <PodcastPlayer eco="serena" />
           </ScrollReveal>
         </div>

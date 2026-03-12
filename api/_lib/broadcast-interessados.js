@@ -24,6 +24,20 @@ const BASE_URL = 'https://app.seteecos.com';
 const WHATSAPP_LINK = 'https://wa.me/258851006473';
 const CODIGO_PROMO = 'VEMVITALIS20';
 
+// URL base para áudios no Supabase Storage
+const AUDIO_BASE = SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/audios` : '';
+
+function blocoAudioEmail(pasta, slug, titulo) {
+  if (!AUDIO_BASE) return '';
+  const url = `${AUDIO_BASE}/${pasta}/${slug}.mp3`;
+  return `
+    <div style="background: linear-gradient(135deg, #4B0082, #6B5B95); border-radius: 12px; padding: 16px; margin: 16px 0; text-align: center;">
+      <p style="color: rgba(255,255,255,0.8); font-size: 11px; letter-spacing: 1px; margin: 0 0 6px; text-transform: uppercase;">Áudio da Vivianne</p>
+      <p style="color: white; font-weight: bold; font-size: 15px; margin: 0 0 12px;">${titulo}</p>
+      <a href="${url}" style="display: inline-block; padding: 10px 28px; background: white; color: #4B0082; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 14px;">▶ Ouvir Áudio</a>
+    </div>`;
+}
+
 const RODAPE = `
   <div style="border-top: 1px solid #E8E0D8; margin-top: 30px; padding-top: 20px; text-align: center;">
     <div style="background: #25D366; border-radius: 10px; padding: 14px; margin: 0 auto 16px; max-width: 300px;">
@@ -92,6 +106,8 @@ const BROADCAST_TEMPLATES = {
           <p style="margin: 4px 0; font-size: 14px; opacity: 0.9;">Desde 2.600 MZN/mês (poupas 875 MZN!)</p>
         </div>
 
+        ${blocoAudioEmail('marketing', 'mkt-trailer-7-ecos', 'Os 7 Ecos — Ouve a visão completa')}
+
         <!-- CODIGO PROMO -->
         <div style="background: #2C2C2C; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center; color: white;">
           <p style="font-size: 11px; letter-spacing: 2px; margin: 0;">CÓDIGO EXCLUSIVO PARA TI</p>
@@ -133,6 +149,8 @@ const BROADCAST_TEMPLATES = {
           <p style="color: #4A4035; margin: 6px 0; font-size: 14px;">Acompanhamento real com a Vivianne</p>
           <p style="color: #4A4035; margin: 6px 0; font-size: 14px;">7 dias de garantia total</p>
         </div>
+
+        ${blocoAudioEmail('marketing', 'mkt-eco-vitalis', 'Ouve sobre o VITALIS')}
 
         <div style="text-align: center; margin: 24px 0;">
           <a href="${BASE_URL}/vitalis/pagamento?code=${CODIGO_PROMO}&utm_source=broadcast&utm_campaign=promo" style="display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #7C8B6F, #5a6b4f); color: white; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px;">Usar Código — 20% Off</a>

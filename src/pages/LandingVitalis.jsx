@@ -8,6 +8,7 @@ import PartilharSocial from '../components/PartilharSocial';
 import WhatsAppMockup from '../components/WhatsAppMockup';
 import ScrollReveal from '../components/ScrollReveal';
 import PodcastPlayer from '../components/shared/PodcastPlayer';
+import AudioPlayerBar from '../components/shared/AudioPlayerBar';
 import { ECO_PLANS } from '../lib/shared/subscriptionPlans';
 
 /**
@@ -796,6 +797,8 @@ const LandingVitalis = () => {
             <p className="text-center text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#7C8B6F' }}>
               Ouve a Vivianne
             </p>
+            <AudioPlayerBar eco="marketing" slug="mkt-eco-vitalis" accentColor="#7C8B6F" titulo="Apresentação do VITALIS" />
+            <div className="mt-4" />
             <PodcastPlayer eco="vitalis" />
           </ScrollReveal>
         </div>
