@@ -2,6 +2,68 @@
 // Não editar manualmente — regenerar com: node scripts/gerar-audio-scripts-data.js
 
 export const AUDIO_SCRIPTS = {
+  "AUDIOGRAMAS": [
+    {
+      "slug": "audiograma-01-fome-nao-e-fome",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[firmly] Essa fome que sentes às onze da noite — não é fome.\n[pause]\nÉ solidão. É tédio. É uma emoção que nunca aprendeste a sentir.\n[softly] O teu corpo não precisa de comida. Precisa de atenção.\n[pause]\nFaz o diagnóstico grátis. Link na bio."
+    },
+    {
+      "slug": "audiograma-02-dieta-mentira",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[firmly] A tua dieta mentiu-te.\n[pause]\nDisse-te que o problema eras tu. Que não tinhas disciplina. Que falhaste.\n[softly] Mas a verdade? O plano é que falhou. Porque nunca foi feito para ti.\n[pause]\nPára de seguir planos genéricos. Descobre o que o teu corpo precisa.\n[firmly] Link na bio."
+    },
+    {
+      "slug": "audiograma-03-espelho-mente",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[firmly] O espelho mente.\n[pause]\nNão te mostra o que és — mostra o que te ensinaram a ver.\n[softly] Cada defeito que encontras foi plantado por alguém que também não se sabia ver.\n[pause]\nEstá na hora de olhar com outros olhos.\n[firmly] Diagnóstico grátis. Link na bio."
+    },
+    {
+      "slug": "audiograma-04-cansaco-alma",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Dormiste oito horas e acordaste destruída.\n[pause]\n[firmly] Esse cansaço não é do corpo. É da alma.\n[pause]\nÉ de fingir que está tudo bem. De carregar o que não é teu. De viver no piloto automático.\n[softly] O teu corpo está a gritar. Vais continuar a ignorar?\n[firmly] Link na bio."
+    },
+    {
+      "slug": "audiograma-05-silencio-aprendido",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[firmly] Tu não nasceste calada. Aprendeste a calar-te.\n[pause]\nAlguém te disse que a tua opinião não importava. E tu acreditaste.\n[softly] Cada vez que engoles o que querias dizer, perdes um pedaço de ti.\n[pause]\n[firmly] Recupera a tua voz. Diagnóstico grátis — link na bio."
+    },
+    {
+      "slug": "audiograma-06-ocupada-fuga",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[firmly] Estar ocupada não é produtividade. É fuga.\n[pause]\nEnches a agenda para não teres de parar. Porque quando páras — sentes.\n[softly] E sentir assusta-te.\n[pause]\nMas tudo o que evitas cresce por baixo.\n[firmly] Pára. Olha. Dois minutos. Link na bio."
+    },
+    {
+      "slug": "audiograma-07-dar-tudo",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Dás tudo aos outros e não guardas nada para ti.\n[pause]\n[firmly] E ainda achas que isso é amor. Não é. É auto-abandono.\n[pause]\nCada vez que dizes sim quando querias dizer não — trais-te a ti mesma.\n[softly] Quando foi a última vez que fizeste algo só para ti?\n[firmly] Começa aqui. Link na bio."
+    },
+    {
+      "slug": "audiograma-08-corpo-fala",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[firmly] Aquela dor de cabeça. O estômago apertado. A insónia.\n[pause]\nO teu corpo falou primeiro. Tu é que não ouviste.\n[softly] Antes de ser doença, foi sinal. Antes de ser crise, foi sussurro.\n[pause]\n[firmly] Aprende a ouvir antes que ele grite. Link na bio."
+    },
+    {
+      "slug": "audiograma-09-mascara-cansa",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[firmly] Essa máscara que usas todos os dias — cansa.\n[pause]\nA versão \"estou bem\", \"estou forte\", \"não preciso de ninguém\".\n[softly] Por baixo, estás a desmoronar. E ninguém sabe. Porque nunca deixas ninguém ver.\n[pause]\n[firmly] E se pudesses tirar a máscara? Começa aqui. Link na bio."
+    },
+    {
+      "slug": "audiograma-10-diagnostico-gratis",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[firmly] Dois minutos. É o que demora a fazeres o diagnóstico Lumina.\n\n[pause]\n\n[softly] Oito perguntas sobre como estás — corpo, mente, energia, espelho. E depois... uma leitura que te diz o que já sabes mas não queres ouvir.\n\n[warmly] É grátis. É honesto. E pode mudar o teu dia. [pause] Link na bio."
+    }
+  ],
   "AUREA": [
     {
       "slug": "01-valor-nao-se-ganha",
@@ -146,6 +208,364 @@ export const AUDIO_SCRIPTS = {
       "speed": 0.75,
       "stability": 82,
       "script": "[gently] Fecha os olhos... [pause] Traz a atenção ao teu corpo... [long pause]\n\nNão para julgares... [pause] Não para avaliares... [pause] Apenas para sentires... [long pause]\n\nEste corpo que te carrega... [pause] Que mudou tantas vezes... [pause] Que passou por tanto... [long pause]\n\n[warmly] Pensa em tudo o que este corpo já viveu... [pause] As noites sem dormir... [pause] Os abraços que te sustentaram... [pause] As vezes que caíste e ele te ajudou a levantar... [long pause]\n\nCada cicatriz conta uma história... [pause] Cada ruga é um mapa... [long pause]\n\n[gently] O teu corpo não é só um veículo... [pause] É parte de quem és... [pause] Guarda memórias que a mente esqueceu... [pause] Conhece verdades que as palavras não alcançam... [long pause]\n\nAgora, pergunta ao teu corpo... [long pause]\n\n[softly] \"O que sabes sobre mim que eu esqueci?\"... [long pause] [long pause] [long pause]\n\n[gently] Ouve... [pause] O corpo fala em sensações, não em palavras... [pause] Pode ser um aperto... [pause] Um calor... [pause] Uma vontade de mover... [pause] Uma leveza... [long pause]\n\nNão interpretes... [pause] Apenas recebe... [long pause]\n\n[warmly] Agradece ao teu corpo... [pause] Por tudo o que faz sem que lhe peças... [pause] Por bater... [pause] Por respirar... [pause] Por te manter aqui... [long pause]\n\nEle sempre soube quem és... [pause] Mesmo quando tu esqueceste... [long pause]\n\n[gently] Abre os olhos quando estiveres pronta... [pause] E trata hoje o teu corpo com a gentileza que ele merece..."
+    }
+  ],
+  "JOURNALING": [
+    {
+      "slug": "ecoa-01-silencio-momento",
+      "speed": 0.75,
+      "stability": 85,
+      "script": "[softly] Fecha os olhos. Respira devagar.\n\n[pause: 3s]\n\nInspira pelo nariz... e solta pela boca, sem pressa.\n\n[pause: 5s]\n\nHouve um momento. Talvez não consigas precisar a data, mas o teu corpo lembra. Um momento em que decidiste calar-te.\n\n[pause: 3s]\n\n[gently] Não foi de uma vez. Talvez tenha começado com um olhar. Uma correcção. Uma frase que te fez sentir que a tua voz era demais. Ou de menos.\n\n[pause: 5s]\n\n[slowly] Onde estavas? Quem estava contigo? O que querias dizer — e não disseste?\n\n[pause: 5s]\n\nSente o que ficou preso nesse instante. A palavra que voltou para dentro. A frase que engoliste.\n\n[pause: 3s]\n\nNão precisas de a julgar. Naquele momento, o silêncio foi a tua protecção. E funcionou.\n\n[pause: 3s]\n\n[softly] Mas hoje estás aqui. Segura. Abre os olhos. E escreve sobre esse momento. Quando foi que decidiste ficar em silêncio? O que aconteceu — e o que ficou por dizer?\n\n[pause: 3s]\n\nDeixa sair o que ficou guardado."
+    },
+    {
+      "slug": "ecoa-02-voz-perdida",
+      "speed": 0.75,
+      "stability": 85,
+      "script": "[softly] Fecha os olhos. Deixa o corpo amolecer na cadeira.\n\n[pause: 3s]\n\nUma inspiração profunda... e ao soltar, deixa ir a tensão do maxilar. Da língua. Da garganta.\n\n[pause: 5s]\n\nAgora imagina um espaço onde ninguém te ouve. Ninguém te julga. Ninguém te interrompe. Um espaço só teu.\n\n[pause: 3s]\n\n[gently] Nesse espaço, tens permissão total. Para dizer tudo. Sem consequências. Sem filtros.\n\n[pause: 5s]\n\n[slowly] O que dirias?\n\n[pause: 5s]\n\nA quem? Sobre o quê? Que verdade mora na ponta da tua língua há semanas, meses, talvez anos — à espera de coragem?\n\n[pause: 3s]\n\nNão precisas de a dizer em voz alta. Ainda não. Mas podes escrevê-la.\n\n[pause: 3s]\n\n[softly] Abre os olhos. Pega nas palavras que o medo tem guardado e coloca-as no papel. O que dirias se não tivesses medo? Diz agora — aqui, onde é seguro.\n\n[pause: 3s]\n\nA tua voz merece existir."
+    },
+    {
+      "slug": "ecoa-03-carta-nunca-enviada",
+      "speed": 0.75,
+      "stability": 85,
+      "script": "[softly] Fecha os olhos. Solta os ombros. Solta as mãos.\n\n[pause: 3s]\n\nRespira fundo... e ao expirar, imagina que abres uma gaveta antiga dentro de ti. Uma gaveta que guardas fechada há muito tempo.\n\n[pause: 5s]\n\nLá dentro, há uma carta. Nunca a escreveste de verdade — mas ela existe. Dentro de ti. Cada palavra, cada vírgula, cada silêncio entre as linhas.\n\n[pause: 3s]\n\n[gently] Para quem é essa carta?\n\n[pause: 5s]\n\n[slowly] Talvez para alguém que te magoou. Talvez para alguém que partiu. Talvez para alguém que ainda está aqui — mas nunca ouviu o que precisavas de dizer.\n\n[pause: 3s]\n\nNão precisas de enviar esta carta. Ela não é para a outra pessoa. É para ti. Para tirares de dentro o que já não cabe.\n\n[pause: 5s]\n\n[softly] Abre os olhos. E escreve essa carta agora. Começa por: \"Precisava de te dizer...\" — e deixa a mão guiar-te. Sem censura. Sem rascunho.\n\n[pause: 3s]\n\nEsta carta é tua. Só tua."
+    },
+    {
+      "slug": "ecoa-04-permissao-falar",
+      "speed": 0.75,
+      "stability": 85,
+      "script": "[softly] Fecha os olhos. Coloca uma mão sobre a garganta — com suavidade.\n\n[pause: 3s]\n\nSente o calor da tua mão. Sente a tua respiração a passar por ali, devagar.\n\n[pause: 5s]\n\n[gently] Durante muito tempo, alguém te disse — com palavras ou sem elas — que não devias falar. Que a tua opinião não contava. Que era melhor ficar quieta. Que eras demais.\n\n[pause: 3s]\n\nE tu acreditaste. Porque eras pequena. Ou porque estavas cansada. Ou porque era mais seguro assim.\n\n[pause: 5s]\n\n[slowly] Mas hoje, aqui, neste momento, eu quero que ouças isto: tu tens permissão.\n\n[pause: 3s]\n\nPermissão para falar. Para discordar. Para ocupar espaço. Para dizer \"não\". Para dizer \"eu preciso\". Para dizer \"eu existo\".\n\n[pause: 5s]\n\n[softly] Abre os olhos. E escreve a permissão que te dás hoje. Começa assim: \"A partir de hoje, eu dou-me permissão para...\" — e completa. Quantas vezes quiseres.\n\n[pause: 3s]\n\nA tua voz começa aqui."
+    },
+    {
+      "slug": "ecoa-05-voz-futura",
+      "speed": 0.75,
+      "stability": 85,
+      "script": "[softly] Fecha os olhos. Endireita suavemente a coluna — como se um fio invisível te puxasse pelo topo da cabeça.\n\n[pause: 3s]\n\nInspira... e ao soltar, imagina que a tua voz viaja para a frente no tempo.\n\n[pause: 5s]\n\n[gently] Imagina-te daqui a um ano. Estás diferente. Não por fora — por dentro. Há algo na forma como falas. Na forma como te moves. Na forma como olhas as pessoas nos olhos.\n\n[pause: 3s]\n\n[slowly] Essa versão futura de ti fala com clareza. Sem pedir desculpa por existir. Sem diminuir o que sente. Sem engolir as palavras.\n\n[pause: 5s]\n\nComo é que essa voz soa? É firme? É suave? É quente? É directa?\n\n[pause: 3s]\n\nEssa voz já está dentro de ti. Ainda baixa. Ainda tímida. Mas presente.\n\n[pause: 5s]\n\n[softly] Abre os olhos. E escreve como essa voz futura. Como é que ela soa? O que é que ela diz? Que frases saem da tua boca quando finalmente te permites falar sem medo?\n\n[pause: 3s]\n\nEscreve com a voz que estás a construir."
+    },
+    {
+      "slug": "imago-01-espelho-triplo",
+      "speed": 0.75,
+      "stability": 85,
+      "script": "[softly] Fecha os olhos. Respira fundo. Deixa o mundo ficar em silêncio.\n\n[pause: 5s]\n\nAgora imagina que estás sozinha. Completamente sozinha. Sem telefone. Sem espelhos. Sem ninguém para agradar, impressionar ou proteger.\n\n[pause: 3s]\n\n[gently] Ninguém te vê. Ninguém te avalia. Ninguém espera nada de ti.\n\n[pause: 5s]\n\n[slowly] O que fazes? Como te moves? Como te sentas? Que expressão tem o teu rosto quando não está a actuar para ninguém?\n\n[pause: 3s]\n\nRis sozinha? Choras? Danças? Ficas em silêncio?\n\n[pause: 5s]\n\nEssa pessoa — a que aparece quando ninguém está a ver — é a mais verdadeira que tens. E raramente lhe dás atenção.\n\n[pause: 3s]\n\n[softly] Abre os olhos. E apresenta-te a ti mesma. Quem és tu quando não há plateia? O que gostas de verdade? O que sentes de verdade? Escreve como se te encontrasses pela primeira vez.\n\n[pause: 3s]\n\nSem máscara. Sem filtro. Só tu."
+    },
+    {
+      "slug": "imago-02-mascara",
+      "speed": 0.75,
+      "stability": 85,
+      "script": "[softly] Fecha os olhos. Solta a mandíbula. Relaxa a testa.\n\n[pause: 3s]\n\nInspira pelo nariz, devagar... e solta.\n\n[pause: 5s]\n\nTodos nós usamos máscaras. Não por sermos falsos — mas porque aprendemos que era preciso. Para sobreviver. Para pertencer. Para não sermos rejeitados.\n\n[pause: 3s]\n\n[gently] Qual é a máscara que usas mais? A que já vestiste tantas vezes que quase esqueceste que não és tu?\n\n[pause: 5s]\n\n[slowly] Talvez seja a máscara de quem está sempre bem. Ou de quem é forte. Ou de quem não precisa de nada. Ou de quem agrada a todos. Ou de quem não sente.\n\n[pause: 3s]\n\nQuando é que a colocas? Com quem? Em que situações ela aparece automaticamente — antes sequer de pensares?\n\n[pause: 5s]\n\n[softly] Abre os olhos. E escreve sobre essa máscara. Descreve-a. Quando é que começaste a usá-la? O que protege? E o que esconde por baixo?\n\n[pause: 3s]\n\nA máscara serviu-te. Mas talvez já não precises tanto dela."
+    },
+    {
+      "slug": "imago-03-infancia",
+      "speed": 0.75,
+      "stability": 85,
+      "script": "[softly] Fecha os olhos. Respira como se embalasses alguém ao colo — devagar, com ritmo.\n\n[pause: 5s]\n\nImagina-te com seis, sete anos. Pequena. Com os joelhos esfolados e o cabelo despenteado. Olhos abertos ao mundo.\n\n[pause: 3s]\n\n[gently] Essa criança acreditava em coisas. Sobre si mesma. Sobre o mundo. Sobre o que merecia e o que não merecia.\n\n[pause: 5s]\n\n[slowly] Algumas dessas crenças eram bonitas: \"eu consigo tudo\", \"o mundo é mágico\". Outras eram pesadas — plantadas por alguém que não teve cuidado.\n\n[pause: 3s]\n\n\"Não sou suficiente.\" \"Sou demais.\" \"Tenho de ser perfeita para ser amada.\" \"Se chorar, sou fraca.\"\n\n[pause: 5s]\n\nTu já não és essa criança. Mas há crenças dela que ainda carregas — sem saber.\n\n[pause: 3s]\n\n[softly] Abre os olhos. E escreve. O que é que a criança dentro de ti acreditava sobre si mesma? O que é que era verdade — e o que é que já podes devolver a quem te deu?\n\n[pause: 3s]\n\nEscreve para ela. Com a gentileza que merecia."
+    },
+    {
+      "slug": "imago-04-valores",
+      "speed": 0.75,
+      "stability": 85,
+      "script": "[softly] Fecha os olhos. Coloca as duas mãos sobre o peito.\n\n[pause: 3s]\n\nSente o teu coração. Ele está ali — constante, fiel, a bater sem que lhe peças.\n\n[pause: 5s]\n\n[gently] Há coisas na tua vida que são inegociáveis. Coisas que defendes mesmo quando te custa. Mesmo quando ficas sozinha por causa delas. Mesmo quando o mundo te diz que estás errada.\n\n[pause: 3s]\n\n[slowly] O que é isso para ti?\n\n[pause: 5s]\n\nTalvez seja a verdade. Talvez seja a justiça. A liberdade. A lealdade. O respeito. O cuidado com quem amas. Talvez nem saibas nomeá-lo — mas sentes quando alguém o viola.\n\n[pause: 3s]\n\nEsse desconforto que sentes quando algo está errado — é o teu valor a falar.\n\n[pause: 5s]\n\n[softly] Abre os olhos. E escreve. O que defendes, mesmo quando te custa? Quando foi a última vez que pagaste um preço por seres fiel ao que acreditas?\n\n[pause: 3s]\n\nOs teus valores são a tua bússola. Escreve-os com orgulho."
+    },
+    {
+      "slug": "imago-05-essencia",
+      "speed": 0.75,
+      "stability": 85,
+      "script": "[softly] Fecha os olhos. Inspira profundamente... e ao expirar, deixa cair todos os títulos.\n\n[pause: 5s]\n\nMãe. Filha. Amiga. Profissional. Esposa. Colega. Cuidadora.\n\n[pause: 3s]\n\n[gently] Tira tudo. Camada por camada. Como quem despe casacos ao chegar a casa.\n\n[pause: 5s]\n\n[slowly] O que sobra? Quando não és a mãe de alguém, nem a filha de alguém, nem a funcionária de alguém — quem está ali? Quem respira debaixo de todos esses papéis?\n\n[pause: 5s]\n\nTalvez nunca te tenham feito esta pergunta. Talvez nunca te tenhas dado tempo para a ouvir.\n\n[pause: 3s]\n\nMas há algo em ti que existia antes de qualquer papel. Antes de qualquer expectativa. Algo que não muda com o emprego, com a relação, com a idade.\n\n[pause: 5s]\n\n[softly] Abre os olhos. E descreve-te sem nenhum rótulo. Sem profissão, sem relação, sem papel. Quem és tu na essência? Que três palavras te descrevem no fundo de tudo?\n\n[pause: 3s]\n\nEscreve a partir do centro. Do mais verdadeiro."
+    },
+    {
+      "slug": "serena-01-emocao-corpo",
+      "speed": 0.75,
+      "stability": 85,
+      "script": "[softly] Fecha os olhos.\n\n[pause: 3s]\n\nInspira profundamente pelo nariz... e solta pela boca, devagar.\n\n[pause: 5s]\n\nAgora, sem pressa, traz à tua mente aquilo que estás a sentir neste momento. Não precisas de lhe dar um nome. Apenas reconhece que está ali.\n\n[pause: 3s]\n\n[gently] E agora pergunta ao teu corpo: onde é que isto mora?\n\n[pause: 5s]\n\nTalvez sintas um peso no peito. Um nó na garganta. Um aperto no estômago. Calor nas mãos. Tensão nos ombros. Não há resposta errada — o teu corpo sabe.\n\n[pause: 3s]\n\n[slowly] Coloca mentalmente a tua mão nesse lugar. Com cuidado. Como quem toca numa criança adormecida.\n\n[pause: 5s]\n\nE diz a essa parte de ti: eu estou aqui. Eu sinto-te.\n\n[pause: 3s]\n\n[softly] Quando estiveres pronta, abre os olhos. Pega na caneta — ou no teclado — e escreve. Onde é que o teu corpo guardou o que sentes hoje? O que é que encontraste ali?\n\n[pause: 3s]\n\nEscreve sem julgamento. Só verdade."
+    },
+    {
+      "slug": "serena-02-emocao-nome",
+      "speed": 0.75,
+      "stability": 85,
+      "script": "[softly] Fecha os olhos. Deixa o mundo lá fora por um momento.\n\n[pause: 3s]\n\nUma inspiração lenta... e uma expiração ainda mais lenta.\n\n[pause: 5s]\n\nHá algo dentro de ti agora. Uma emoção. Talvez clara, talvez confusa. Não importa — ela está presente.\n\n[pause: 3s]\n\n[gently] E se essa emoção tivesse um nome? Não o nome que os livros dão. O nome que tu lhe darias.\n\n[pause: 5s]\n\nTalvez se chame \"nevoeiro\". Ou \"espinho\". Ou \"maré baixa\". Talvez tenha um nome que só faz sentido para ti — e isso é perfeito.\n\n[pause: 3s]\n\n[slowly] Imagina essa emoção à tua frente, como uma criatura pequena. Que forma tem? Que cor? Que textura?\n\n[pause: 5s]\n\nOlha para ela sem medo. Ela não te quer magoar. Quer ser vista.\n\n[pause: 3s]\n\n[softly] Agora, abre os olhos devagar. E escreve. Dá-lhe o nome. Descreve-a como se a apresentasses a alguém. Quem é esta emoção que vive em ti hoje?\n\n[pause: 3s]\n\nDeixa as palavras virem — sem filtro, sem vergonha."
+    },
+    {
+      "slug": "serena-03-emocao-crianca",
+      "speed": 0.75,
+      "stability": 85,
+      "script": "[softly] Fecha os olhos. Respira fundo, uma vez.\n\n[pause: 5s]\n\nPensa no que tens sentido ultimamente. Essa emoção que aparece, que volta, que insiste.\n\n[pause: 3s]\n\n[gently] Agora deixa a tua mente viajar para trás. Devagar. Como quem folheia um álbum antigo.\n\n[pause: 3s]\n\nQuando foi a primeira vez que sentiste isto? Consegues lembrar-te?\n\n[pause: 5s]\n\nTalvez estavas numa sala. Talvez estavas sozinha. Talvez eras muito pequena — tão pequena que nem tinhas palavras para o que sentias.\n\n[pause: 3s]\n\n[slowly] Quantos anos tinhas? Onde estavas? Quem estava perto de ti — ou quem não estava?\n\n[pause: 5s]\n\nEssa criança não sabia o que fazer com aquilo. Guardou. Escondeu. E carregou até aqui.\n\n[pause: 3s]\n\n[softly] Abre os olhos agora. E escreve para ela. Para a criança que sentiu isto pela primeira vez. Conta-lhe o que sabes hoje. O que dirias a essa versão mais nova de ti?\n\n[pause: 3s]\n\nEscreve com ternura."
+    },
+    {
+      "slug": "serena-04-emocao-mensagem",
+      "speed": 0.75,
+      "stability": 85,
+      "script": "[softly] Fecha os olhos. Deixa os ombros descerem.\n\n[pause: 3s]\n\nInspira... e solta. Outra vez. Inspira... e solta.\n\n[pause: 5s]\n\nAgora pensa naquilo que tens sentido. Essa emoção que te acompanha. Talvez a tenhas tentado ignorar. Empurrar. Ultrapassar.\n\n[pause: 3s]\n\n[gently] Mas e se ela não fosse o problema? E se fosse uma mensageira?\n\n[pause: 5s]\n\nImagina que essa emoção pudesse falar. Que tivesse uma voz calma e antiga. Uma voz que te conhece melhor do que tu própria.\n\n[pause: 3s]\n\n[slowly] O que é que ela te diria?\n\n[pause: 5s]\n\nTalvez te diga: pára. Ou: presta atenção. Ou: já te esqueceste de mim demasiadas vezes. Ou simplesmente: preciso que me ouças.\n\n[pause: 3s]\n\n[softly] Abre os olhos. Agora és tu que escreves a mensagem. Se esta emoção pudesse falar, o que te estaria a tentar dizer? Escreve as palavras dela — sem as corrigir.\n\n[pause: 3s]\n\nOuve-a no papel."
+    },
+    {
+      "slug": "serena-05-emocao-libertar",
+      "speed": 0.75,
+      "stability": 85,
+      "script": "[softly] Fecha os olhos. Coloca as mãos sobre as tuas pernas, com as palmas viradas para cima.\n\n[pause: 3s]\n\nInspira fundo... e ao expirar, imagina que soltas algo invisível pelas pontas dos dedos.\n\n[pause: 5s]\n\nHá algo que tens carregado. Algo pesado. Talvez uma mágoa. Um medo. Uma culpa antiga. Tu sabes o que é.\n\n[pause: 3s]\n\n[gently] Agora imagina: como seria se pudesses pousar esse peso? Não empurrá-lo, não fingir que não existe — apenas pousá-lo. Ao teu lado. No chão.\n\n[pause: 5s]\n\n[slowly] Como ficaria o teu corpo? Mais leve? Os teus ombros desceriam? O teu peito abriria?\n\n[pause: 3s]\n\nRespira nesse espaço vazio. Nesse alívio.\n\n[pause: 5s]\n\nNão precisas de resolver nada agora. Só precisas de sentir como seria — mesmo que por um instante — viver sem esse peso.\n\n[pause: 3s]\n\n[softly] Abre os olhos. E escreve. O que sentirias se conseguisses largar isto? O que farias com essa leveza? Que vida começaria amanhã?\n\n[pause: 3s]\n\nEscreve como se já fosses livre."
+    }
+  ],
+  "LUMINA": [
+    {
+      "slug": "01-lumina-crit-vid",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[intensely] Pára. [long pause]\n\n[gently] Eu sei que queres resolver tudo agora. [pause] Mas estás a funcionar no vazio. [pause] Sem energia, sem te veres, e a forçar decisões que não são tuas. [long pause]\n\n[warmly] Não decidas nada hoje. [pause] Protege-te de ti mesma. [pause] Amanhã vais ver mais claro. [pause]\n\n[softly] Por agora, só isto: pára."
+    },
+    {
+      "slug": "02-lumina-crit-pfm",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[gently] O passado puxa, o futuro assusta, e a cabeça não pára de girar. [pause] Eu sei. [long pause]\n\n[warmly] Mas não vais resolver isto a pensar. [pause] Pára o ciclo. [pause] Respira. [pause] Muda de divisão. [pause] Bebe água. [long pause]\n\n[softly] Se quiseres, escreve três linhas sobre o que te pesa. [pause] Depois fecha a folha. [pause] Não tens de resolver nada disto agora. [pause] Só respirar."
+    },
+    {
+      "slug": "03-lumina-crit-tba",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[gently] O corpo está tenso, a energia sumiu, e perdeste-te de vista. [pause] Dia difícil. [long pause]\n\n[warmly] Não é fraqueza. [pause] É sinal. [pause] Estás a operar no limite e o teu corpo está a avisar-te. [long pause]\n\n[softly] Hoje fazes só o essencial. [pause] Água. [pause] Descanso. [pause] Nada mais. [pause] O resto espera."
+    },
+    {
+      "slug": "04-lumina-forca-max",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[warmly] Isto é o teu melhor. [pause] Energia cheia, corpo solto, mente clara, e vês-te bem. [long pause]\n\n[building] Dia de ouro. [pause] Tudo está no sítio. [pause] O que fizeres agora vai ter raiz profunda. [long pause]\n\n[intensely] Não desperdices isto em tarefas pequenas. [pause] Age. [pause] Cria. [pause] Decide. [pause] Tens apoio interno total."
+    },
+    {
+      "slug": "05-lumina-presenca-rara",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[warmly] Estás aqui. [pause] Toda. [pause] E isso é raro. [long pause]\n\n[gently] Quase tudo alinhado. [pause] Presença real. [pause] Este é o momento de agir, criar, ou simplesmente ser — completamente. [long pause]\n\n[intensely] Não deixes escapar. [pause] Faz uma coisa importante. [pause] Agora."
+    },
+    {
+      "slug": "06-lumina-esgotamento",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[gently] Estás cansada e a querer resolver. [pause] Eu entendo o impulso. [pause] Mas pára. [long pause]\n\n[warmly] Decisões tomadas em vazio raramente são boas. [pause] Essa combinação de pouca energia e muita vontade engana. [long pause]\n\n[softly] Deita-te dez minutos antes de fazer o que quer que seja. [pause] A clareza vem depois do descanso."
+    },
+    {
+      "slug": "07-lumina-dissociacao",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[gently] Estás desligada de ti. [pause] Não te estás a ver bem e a energia está em baixo. [pause] Isso acontece. [long pause]\n\n[warmly] O espelho hoje mente. [pause] Não te julgues. [pause] Não é verdade o que estás a ver. [long pause]\n\n[softly] Faz uma coisa sensorial. [pause] Um duche quente, um chá, uma música. [pause] Volta ao corpo. [pause] Amanhã vês diferente."
+    },
+    {
+      "slug": "08-lumina-passado-comanda",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[gently] O passado está a comandar o teu presente. [pause] A mente não pára de revisitar. [pause] Eu sei como isso cansa. [long pause]\n\n[warmly] Mas a ruminação não resolve. [pause] Alimenta. [pause] Não vais resolver isto a pensar. [long pause]\n\n[softly] Escreve o que te pesa numa folha. [pause] Depois fecha a folha. [pause] Muda de cenário. [pause] Movimento, água, ar. [pause] Quebra o loop."
+    },
+    {
+      "slug": "09-lumina-falsa-clareza",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[gently] A mente parece clara, mas o corpo está fechado. [pause] Há tensão. [pause] E essa tensão é informação. [long pause]\n\n[warmly] Cuidado com decisões que parecem certas mas não têm raiz. [pause] Quando cabeça e corpo alinham, sabes. [pause] Agora, ainda não. [long pause]\n\n[softly] Espera pelo corpo. [pause] Clareza real inclui o corpo inteiro."
+    },
+    {
+      "slug": "10-lumina-fuga-frente",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[gently] Estás a fugir para a frente. [pause] O futuro assusta e a resposta é agir. [pause] Mas agir agora é evitar. [long pause]\n\n[warmly] Essa urgência é alarme falso. [pause] Decisões de fuga não são decisões. [pause] São reacções. [long pause]\n\n[softly] Pára. [pause] Olha para o medo. [pause] Não o contornes. [pause] Não precisas decidir agora. [pause] Respira."
+    },
+    {
+      "slug": "11-lumina-mente-sabota",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[gently] O corpo está bem, mas a mente não pára. [pause] Há ruído mental a sabotar um dia que podia ser bom. [long pause]\n\n[warmly] Não lhe dês ouvidos. [pause] Ignora a cabeça hoje. [pause] O corpo resolve o que a mente baralha. [long pause]\n\n[softly] Move-te. [pause] Segue o corpo. [pause] Ele sabe o que fazer."
+    },
+    {
+      "slug": "12-lumina-corpo-grita",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[gently] A mente está calma, mas o corpo pede atenção. [pause] Tensão física que a mente ainda não viu. [long pause]\n\n[warmly] O corpo fala primeiro. [pause] Sempre. [pause] Não o ignores. [long pause]\n\n[softly] Pára e pergunta-lhe o que precisa. [pause] Movimento? [pause] Descanso? [pause] Comida? [pause] Atende ao corpo primeiro."
+    },
+    {
+      "slug": "13-lumina-futuro-rouba",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[gently] O futuro está a roubar-te o presente. [pause] Tens energia, mas ela está toda a ir para preocupação. [pause] Desperdício. [long pause]\n\n[warmly] Estás presente no amanhã e ausente no hoje. [pause] O futuro não existe ainda. [long pause]\n\n[softly] Volta. [pause] Traz a atenção para aqui. [pause] O que podes fazer agora? [pause] Só isso importa. [pause] Faz uma coisa. [pause] Só uma."
+    },
+    {
+      "slug": "14-lumina-recolhimento",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[softly] Queres esconder-te. [pause] E o corpo concorda. [long pause]\n\n[warmly] Não lutes contra isto. [pause] É sabedoria, não fraqueza. [pause] Dia de não. [pause] Não aparecer, não forçar, não fingir. [long pause]\n\n[gently] Está tudo bem. [pause] Honra o não. [pause] Recolhe e cuida de ti. [pause] Amanhã será diferente."
+    },
+    {
+      "slug": "15-lumina-vazio-fertil",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[softly] A energia está em baixo, mas há silêncio e abertura. [pause] Este vazio não é mau. [pause] É fértil. [long pause]\n\n[warmly] Parece que não há nada, mas há espaço. [pause] E espaço é raro. [pause] Pode ser incubação. [long pause]\n\n[gently] Não o preenchas. [pause] Não o ocupes com preocupação. [pause] Confia no processo. [pause] Descansa nele."
+    },
+    {
+      "slug": "16-lumina-silencio-cura",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[softly] Mente silenciosa. [pause] Corpo neutro. [pause] Energia estável. [pause] Isto é raro. [long pause]\n\n[warmly] Paz interior. [pause] Não faças nada para a perturbar. [pause] Este é o teu estado natural a lembrar-te que existe. [long pause]\n\n[gently] Protege este estado. [pause] Não metas barulho. [pause] Respira aqui. [pause] Este silêncio cura."
+    },
+    {
+      "slug": "17-lumina-alinhamento",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[warmly] Energia, corpo e mente alinhados. [pause] Bom dia para fazer o que importa. [long pause]\n\n[building] Tens clareza e capacidade. [pause] Tens suporte interno. [pause] Faz o que tens adiado. [pause] Hoje tens recursos. [long pause]\n\n[intensely] Não percas isto em tarefas pequenas. [pause] Fala, cria, decide."
+    },
+    {
+      "slug": "18-lumina-abertura-sem-direcao",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[gently] O corpo está disponível, mas não há impulso claro. [pause] E está bem assim. [long pause]\n\n[warmly] Não precisas saber para onde. [pause] Só estar disponível já é muito. [pause] Às vezes o caminho aparece quando paramos de o procurar. [long pause]\n\n[softly] Fica assim. [pause] A direcção vem. [pause] Por agora, só presença."
+    },
+    {
+      "slug": "19-lumina-corpo-lidera",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[warmly] O corpo quer ir e tem energia para isso. [pause] Combinação poderosa. [long pause]\n\n[building] Dia de acção física. [pause] Não analises. [pause] Não penses demais. [pause] Deixa o corpo liderar. [pause] A mente que siga. [long pause]\n\n[intensely] Move-te. [pause] O corpo sabe."
+    },
+    {
+      "slug": "20-lumina-futuro-convite",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[warmly] O futuro está a chamar-te. [pause] E desta vez, tens energia para responder. [long pause]\n\n[building] O teu corpo está presente, a mente está limpa, e há qualquer coisa à frente que faz sentido. [pause] Não é fantasia. [pause] É direcção real. [long pause]\n\n[firmly] Aceita o convite. [pause] Planeia. [pause] Age. [pause] Hoje é dia de construir."
+    },
+    {
+      "slug": "21-lumina-neutralidade",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Dia neutro. [pause] Nada a puxar muito para nenhum lado. [long pause]\n\n[gently] E isso não é mau. [pause] Nem tudo tem de ser intenso. [pause] Às vezes o corpo só precisa de um dia normal. [pause] Sem drama, sem revelações. [long pause]\n\n[warmly] Aceita a normalidade. [pause] Mantém o ritmo. [pause] Cuida do básico. [pause] Amanhã pode ser diferente — e hoje está bem assim."
+    },
+    {
+      "slug": "22-lumina-transicao",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Estás entre estados. [pause] Algo está a mudar, mas ainda não sabes o quê. [long pause]\n\n[gently] Não forces a clareza. [pause] Transições não se apressam. [pause] O teu sistema está a reorganizar-se por dentro — e isso leva tempo. [long pause]\n\n[warmly] Deixa acontecer. [pause] Não precisas de ter resposta hoje. [pause] Confia no movimento, mesmo quando não o vês."
+    },
+    {
+      "slug": "23-lumina-dia-sem-nome",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Não sei nomear o que sentes hoje. [pause] E talvez tu também não. [long pause]\n\n[gently] Há dias assim. [pause] Dias sem rótulo, sem categoria. [pause] Mistério. [pause] E o mistério não é um problema — é informação que ainda não chegou. [long pause]\n\n[warmly] Aceita não saber. [pause] Fica presente. [pause] O nome vem depois. [pause] Por agora, só observa."
+    },
+    {
+      "slug": "24-lumina-aurea-corpo-tenso",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[gently] O teu corpo está a carregar o que dás aos outros. [pause] Tenso, apertado, sempre em serviço. [long pause]\n\n[softly] Dás tanto que te esqueces de guardar. [pause] E o corpo acumula o que a mente ignora. [pause] Essa tensão não é stress — é sacrifício sem retorno. [long pause]\n\n[warmly] A Áurea ensina-te a devolver algo a ti. [pause] Começa pelo corpo. [pause] Ele já te está a pedir."
+    },
+    {
+      "slug": "25-lumina-aurea-energia-baixa",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Estás a funcionar no mínimo. [pause] Sem energia, sem reserva. [pause] E mesmo assim, continuas a dar. [long pause]\n\n[gently] A tua bateria está em zero porque a carregas nos outros. [pause] Não sobra nada para ti. [pause] E isso não é generosidade — é esgotamento disfarçado. [long pause]\n\n[warmly] A Áurea ensina-te a guardar algo para ti. [pause] Não é egoísmo. [pause] É sobrevivência."
+    },
+    {
+      "slug": "26-lumina-aurea-espelho-invisivel",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Olhas para o espelho e não te vês. [pause] Não porque não estejas lá — mas porque te apagaste para servir. [long pause]\n\n[gently] Dás tanto aos outros que desapareceste de ti. [pause] E agora, quando te procuras, não encontras nada. [pause] Só o reflexo do que fazes para os outros. [long pause]\n\n[warmly] A Áurea ajuda-te a reaparecer. [pause] Camada por camada. [pause] Até te voltares a ver."
+    },
+    {
+      "slug": "27-lumina-aurea-isolado",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[gently] O teu sistema funciona. [pause] Está equilibrado, até. [pause] Mas tu não estás na lista de prioridades. [long pause]\n\n[softly] Fazes tudo pelos outros e nada por ti. [pause] Não é que não saibas cuidar — é que nunca te pões em primeiro. [pause] E isso cansa de uma forma silenciosa. [long pause]\n\n[warmly] A Áurea ajuda-te a seres prioridade. [pause] Não a única — mas pelo menos uma. [pause] Mereces esse lugar."
+    },
+    {
+      "slug": "28-lumina-serena-emocao-retida",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Há emoções presas dentro de ti. [pause] O passado pesa e o corpo fechou-se para não sentir. [long pause]\n\n[gently] Não é fraqueza. [pause] É protecção antiga. [pause] Mas o que guardas sem processar fica preso nos músculos, na respiração, na forma como te moves. [long pause]\n\n[warmly] A Serena ajuda-te a libertar sem forçar. [pause] Gota a gota. [pause] Ao teu ritmo. [pause] Não precisas de explodir para te libertares."
+    },
+    {
+      "slug": "29-lumina-serena-ciclo-pesa",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Tudo está pesado. [pause] A mente não pára e as emoções repetem-se em ciclo. [pause] Sentes que carregas o mundo. [long pause]\n\n[gently] Ciclos emocionais intensos não são defeito teu. [pause] São o sistema a pedir descompressão. [pause] Precisas de espaço para sentir sem te afogares. [long pause]\n\n[warmly] A Serena ajuda-te a descomprimir. [pause] Com respiração, com fluidez. [pause] Para que o ciclo abrande — e tu consigas respirar."
+    },
+    {
+      "slug": "30-lumina-ignis-paralisia-escolha",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[firmly] A mente está em caos e o futuro parece ameaça. [pause] Tens mil opções e não consegues escolher nenhuma. [long pause]\n\n[gently] A paralisia não é preguiça. [pause] É excesso de ruído. [pause] Quando tudo parece urgente, nada se move. [long pause]\n\n[warmly] O Ignis corta o ruído. [pause] Ensina-te a escolher uma coisa. [pause] Só uma. [pause] E agir. [pause] O resto simplifica-se depois."
+    },
+    {
+      "slug": "31-lumina-ventis-burnout-silencioso",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] A mente funciona. [pause] O corpo aguenta. [pause] Mas não há combustível. [pause] Estás em burnout silencioso. [long pause]\n\n[gently] Não caíste — mas estás a flutuar sem energia. [pause] Ninguém nota porque continuas a produzir. [pause] Mas por dentro, o tanque está vazio. [long pause]\n\n[warmly] O Ventis restaura o ritmo. [pause] Ensina-te a parar antes de quebrar. [pause] A encontrar o pulso natural da tua energia. [pause] Antes que o corpo decida por ti."
+    },
+    {
+      "slug": "32-lumina-ecoa-voz-presa",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Queres esconder-te. [pause] A mente está caótica, sentes-te invisível, e as palavras não saem. [long pause]\n\n[gently] Não é que não tenhas nada a dizer. [pause] É que a voz ficou presa. [pause] Silenciada — por medo, por hábito, por protecção. [pause] E quanto mais guardas, mais pesado fica. [long pause]\n\n[warmly] O Ecoa encontra as palavras por ti. [pause] Começa em silêncio, se precisares. [pause] Mas dá-te ferramentas para que a voz volte. [pause] Ao teu ritmo."
+    },
+    {
+      "slug": "33-lumina-imago-mascara-cansa",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Tens energia para funcionar. [pause] Mas não te reconheces no que fazes. [pause] A máscara está a cansar-te mais do que o trabalho. [long pause]\n\n[gently] Representas um papel todos os dias. [pause] E ninguém sabe que por dentro és outra pessoa. [pause] Essa distância entre quem és e quem mostras — consome tudo. [long pause]\n\n[warmly] O Imago ajuda-te a tirar o disfarce. [pause] Não de uma vez — devagar. [pause] Até que o reflexo no espelho volte a ser teu."
+    },
+    {
+      "slug": "34-lumina-imago-espelho-distorcido",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[gently] A tua energia está boa. [pause] O corpo funciona, a mente está clara. [pause] Mas quando olhas para ti, não vês isso. [long pause]\n\n[softly] O espelho está distorcido. [pause] Mostra-te menor, pior, menos capaz do que realmente és. [pause] E tu acreditas nele. [long pause]\n\n[warmly] O Imago corrige esse espelho. [pause] Ensina-te a ver-te como és — não como o medo te mostra. [pause] A imagem real já lá está. [pause] Só precisas de a encontrar."
+    },
+    {
+      "slug": "35-lumina-ansiedade-activa",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[firmly] Tens energia — mas está toda a alimentar o caos. [pause] A mente acelera, o corpo agita-se, e chamas a isso produtividade. [long pause]\n\n[gently] Não é produtividade. [pause] É ansiedade disfarçada de acção. [pause] Estás a correr, mas não para a frente — estás a correr para fugir. [long pause]\n\n[softly] Simplifica. [pause] Escolhe uma coisa. [pause] Respira antes de agir. [pause] A velocidade não é o mesmo que direcção."
+    },
+    {
+      "slug": "36-lumina-sobrevivente",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Por fora, funcionas. [pause] Ninguém diria que há peso. [pause] Mas por dentro, carregas algo antigo que nunca largaste. [long pause]\n\n[gently] Sobreviveste a coisas que não contaste. [pause] Adaptaste-te tão bem que até tu te esqueceste. [pause] Mas o corpo lembra. [pause] E às vezes, à noite, a mente também. [long pause]\n\n[warmly] Não tens de resolver isso hoje. [pause] Mas reconhece: estás a carregar mais do que mostras. [pause] E isso merece cuidado."
+    },
+    {
+      "slug": "37-lumina-sonhadora-presa",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[gently] Vês o futuro com clareza. [pause] Sabes para onde queres ir. [pause] Mas o corpo não acompanha. [pause] É como sonhar acordado sem conseguir levantar. [long pause]\n\n[softly] A visão está lá. [pause] O que falta é trazer o corpo para dentro do plano. [pause] Não precisas de mais inspiração — precisas de âncora. [long pause]\n\n[warmly] Começa pelo físico. [pause] Um passo pequeno, concreto. [pause] O sonho precisa de chão para acontecer."
+    },
+    {
+      "slug": "38-lumina-supressao",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] A mente está quieta. [pause] Mas isto não é paz. [pause] É supressão. [pause] Estás a empurrar coisas para baixo para não as sentir. [long pause]\n\n[gently] Funciona — por um tempo. [pause] Mas o que empurras para baixo não desaparece. [pause] Acumula-se. [pause] E um dia volta, com juros. [long pause]\n\n[warmly] O passado precisa de voz. [pause] Não precisa de ser gritado — mas precisa de ser dito. [pause] Quando estiveres pronto, dá-lhe espaço. [pause] Mesmo que seja um sussurro."
+    },
+    {
+      "slug": "39-lumina-fazer-sem-ver",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[gently] Produzes. [pause] Fazes. [pause] Resolves. [pause] Mas não te vês a fazer nada disso. [long pause]\n\n[softly] É como seres invisível para ti. [pause] Os outros notam o que fazes — mas tu não. [pause] Passas ao lado das tuas próprias conquistas como se não contassem. [long pause]\n\n[warmly] Pára um momento. [pause] Olha para trás. [pause] Vê o que já fizeste hoje, esta semana, este mês. [pause] Reconhece o teu trabalho. [pause] Tu mereces ver-te."
+    },
+    {
+      "slug": "40-lumina-hipervigilancia",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[firmly] Tudo em alerta. [pause] O corpo tenso, a mente a vigiar, os sentidos no máximo. [pause] Como se o perigo estivesse sempre à porta. [long pause]\n\n[gently] Estás em modo de luta ou fuga — mas não há ameaça real. [pause] O teu sistema nervoso aprendeu a proteger-te assim. [pause] E agora não desliga. [long pause]\n\n[softly] Estás seguro. [pause] Respira. [slowly] Inspira fundo. [pause] Solta devagar. [pause] Não tens de vigiar o mundo inteiro. [pause] Podes pousar a guarda."
+    },
+    {
+      "slug": "41-lumina-luto-silencioso",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Peso. [pause] Silêncio. [pause] Vontade de parar. [pause] Pode ser luto. [long pause]\n\n[gently] Não precisa de ser uma morte. [pause] Perdemos pessoas, fases, versões de nós, sonhos que não aconteceram. [pause] E esse luto, quando não tem nome, pesa ainda mais. [long pause]\n\n[warmly] Honra o que perdeste. [pause] Dá-lhe espaço, mesmo que ninguém mais veja. [pause] O luto silencioso também precisa de ser acolhido. [pause] Não tens pressa. [pause] Fica o tempo que precisares."
+    },
+    {
+      "slug": "42-lumina-casulo-cura",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Energia baixa. [pause] Vontade de parar. [pause] Mas cuidas de ti — e isso muda tudo. [long pause]\n\n[gently] Isto não é preguiça. [pause] É um casulo. [pause] Um recolhimento intencional. [pause] O teu sistema está a curar-se, a reorganizar-se por dentro. [pause] E precisa de silêncio para o fazer. [long pause]\n\n[warmly] Não lutes contra isto. [pause] É sabedoria do corpo. [pause] Fica no casulo o tempo que for preciso. [pause] Quando saíres, vais estar diferente."
+    },
+    {
+      "slug": "43-lumina-despertar",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Algo está a mover-se dentro de ti. [pause]\n\nNão é euforia. Não é ilusão. [gently] É clareza. A mente está limpa, o futuro faz sentido, e há uma vontade genuína de agir.\n\n[pause]\n\n[warmly] Isto é real. Confia. Estás a sair de algo — e o que vem a seguir tem raiz.\n\n[slowly] A clareza que sentes é nova e frágil. Não a forces. Não a apresses. [pause] Protege-a. Age devagar... mas age.\n\n[softly] Isto é um despertar. Honra-o."
+    },
+    {
+      "slug": "44-lumina-comparacao",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[gently] Vês o futuro com clareza. Tens energia. Tens esperança. [pause]\n\nMas quando olhas para ti... não te achas suficiente para o que vem. [softly] Como se precisasses de ser outra versão de ti para merecer o que sonhas.\n\n[pause]\n\n[firmly] Mentira. [pause] Tu, como és — agora, hoje, com tudo o que carregas — já chegas.\n\n[warmly] O futuro não precisa de uma versão perfeita de ti. Precisa da versão real. [pause] E essa versão já está aqui.\n\n[softly] Pára de te comparar com quem achas que devias ser. Começa por quem és."
     }
   ],
   "MARKETING": [
@@ -516,6 +936,68 @@ export const AUDIO_SCRIPTS = {
       "script": "[gently] Há uma versão de ti que ainda não nasceu. [long pause]\n\n[building] Uma que cuida do corpo... [pause] que reconhece o seu valor... [pause] que sente sem medo... [pause] que age com foco... [pause] que respira com ritmo... [pause] que fala a sua verdade... [pause] e que sabe exactamente quem é. [long pause]\n\n[warmly] São sete ecos. Sete espelhos. Sete caminhos que se encontram num só. [pause]\n\nVITALIS, o teu corpo. [pause] ÁUREA, o teu valor. [pause] SERENA, as tuas emoções. [pause] IGNIS, a tua vontade. [pause] VENTIS, a tua energia. [pause] ECOA, a tua voz. [pause] IMAGO, a tua essência. [long pause]\n\n[intensely] O caminho não começa amanhã. [pause] Começa agora. [pause] Com um diagnóstico gratuito. [pause]\n\nSete Ecos. A tua transmutação integral."
     }
   ],
+  "PODCAST": [
+    {
+      "slug": "ep01-fome-emocional",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[warmly] Olá. Eu sou a Vivianne, e hoje vamos falar de uma coisa que provavelmente já te aconteceu — esta semana, talvez até hoje.\n\n[beat] Estás a trabalhar, ou a ver o telemóvel, ou simplesmente sentada no sofá... e de repente tens vontade de comer. Não uma vontade qualquer. Uma vontade urgente, específica — chocolate, pão, algo crocante, algo doce.\n\n[pause] E tu comes. Porque parece que precisas.\n\nMas aqui está a questão: [firmly] será que era mesmo fome?\n\nDeixa-me explicar a diferença. A fome física aparece devagar. Começa com um vazio no estômago, talvez um bocadinho de fraqueza. E — isto é importante — qualquer comida serve. Se tens fome a sério, uma banana resolve. Um prato de arroz resolve.\n\n[beat] A fome emocional é diferente. Aparece de repente. Não é no estômago — é na cabeça. E é muito específica. Queres exactamente aquele bolo. Exactamente aquelas batatas fritas. Nada mais serve.\n\n[softly] E depois de comeres? A fome física traz alívio. Sentes-te satisfeita. Mas a fome emocional... traz culpa. Traz aquela sensação de \"porque é que eu fiz isto outra vez?\"\n\n[pause] E sabes o que é mais interessante? A fome emocional não é um defeito teu. É uma resposta aprendida. Quando eras criança e choravas, alguém te dava um biscoito para acalmares. Quando estavas triste, a avó fazia o teu prato preferido. O teu cérebro aprendeu: desconforto emocional igual a comida.\n\n[firmly] Não estou a dizer que é errado. Estou a dizer que é automático. E tudo o que é automático pode ser observado.\n\n[beat] Da próxima vez que sentires aquela vontade súbita, experimenta isto: pára. Respira. E pergunta-te — \"estou com fome ou estou a sentir alguma coisa?\"\n\n[warmly] Não precisas de mudar nada nesse momento. Só observar. Porque o primeiro passo para transformar a tua relação com a comida não é uma dieta. É perceberes o que realmente está a pedir para ser alimentado.\n\n[softly] Às vezes não é o corpo que tem fome. É o coração.\n\n[pause]\n\n[warmly] Isto é o Vivianne Explica. Cuida de ti. — Vivianne"
+    },
+    {
+      "slug": "ep02-valor-proprio",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[warmly] Olá. Eu sou a Vivianne, e hoje quero falar contigo sobre uma palavra que incomoda muita gente — valor próprio.\n\n[beat] Quando digo \"coloca-te em primeiro lugar,\" o que é que sentes? Se a tua primeira reacção é desconforto, ou aquela vozinha que diz \"isso é egoísmo\"... então este episódio é exactamente para ti.\n\n[pause] Vamos lá desmontar isto.\n\n[firmly] Crescemos a ouvir que ser boa pessoa é dar. Dar tempo, dar energia, dar atenção. Aos filhos, ao marido, à família, ao trabalho. E quanto mais dás, mais valor tens — é essa a mensagem, não é?\n\n[beat] Mas repara numa coisa. Quando dás tudo e não sobra nada para ti, o que acontece? Ficas cansada. Irritada. Ressentida. E depois sentes-te culpada por estares irritada — porque supostamente devias estar feliz por dar tanto.\n\n[softly] É um ciclo brutal. E chama-se auto-abandono disfarçado de generosidade.\n\n[pause] Valor próprio não é achares que és melhor do que os outros. Não é deixares de cuidar de quem amas. É simplesmente isto: [firmly] incluíres-te na lista de pessoas que merecem o teu cuidado.\n\n[beat] Parece simples, eu sei. Mas pensa: quando foi a última vez que compraste algo só para ti, sem culpa? Quando foi a última vez que disseste \"não\" sem te justificares durante cinco minutos?\n\n[warmly] Quando foi a última vez que fizeste algo por ti e sentiste que merecías?\n\n[pause] Na Áurea, trabalhamos isto de forma concreta. Não com frases bonitas — com acções. Quanto tempo dedicas a ti por semana? Quanto dinheiro gastas contigo sem culpa? Como é que tratas a tua roupa, o teu espaço, o teu corpo?\n\n[beat] Porque o valor próprio não é um conceito abstracto. Aparece nos detalhes do dia-a-dia. Na forma como falas de ti. Na forma como te tratas quando ninguém está a ver.\n\n[softly] E aqui está a verdade que ninguém te diz: quando te valorizas a sério, dás melhor. Não dás menos — dás com mais presença, mais inteireza. Porque já não estás a dar de um copo vazio.\n\n[firmly] Então não. Valor próprio não é egoísmo. Egoísmo é esperares que um corpo esgotado e uma mente negligenciada consigam dar amor de qualidade.\n\n[pause]\n\n[warmly] Isto é o Vivianne Explica. Cuida de ti. — Vivianne"
+    },
+    {
+      "slug": "ep03-silenciamento",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[softly] Olá. Eu sou a Vivianne, e hoje quero falar-te de algo que talvez nunca tenhas percebido que perdeste.\n\n[pause] A tua voz.\n\n[beat] Não a voz física — essa está aí. Falo da outra. A que diz o que realmente pensas. A que diz \"não concordo.\" A que diz \"isto magoa-me.\" A que diz \"eu preciso.\"\n\n[firmly] Em algum momento da tua vida, aprendeste a calar essa voz. E vou dizer-te quando: no momento exacto em que alguém te fez sentir que falar era perigoso.\n\n[pause] Talvez tenha sido na infância. \"Cala-te, os adultos estão a falar.\" Talvez na escola. \"Não digas disparates.\" Talvez numa relação. \"Estás a exagerar.\" Talvez no trabalho. \"Não é a altura.\"\n\n[beat] O silenciamento não acontece de uma vez. Acontece gota a gota. Cada vez que engoles uma opinião. Cada vez que dizes \"está tudo bem\" quando não está. Cada vez que ris de uma piada que te incomoda. Gota a gota, até um dia olhares para ti e perceberes que já não sabes o que pensas sobre nada.\n\n[softly] Porque a voz, quando não é usada, atrofia. Como um músculo.\n\n[pause] E a parte mais difícil? Quando tentas falar depois de anos em silêncio, o corpo resiste. O coração acelera. A garganta aperta. A cabeça diz \"deixa estar, não vale a pena.\" Não é fraqueza. É o teu sistema nervoso a repetir o padrão de protecção que aprendeu.\n\n[warmly] Mas aqui está a boa notícia. A voz não desaparece. Está guardada. Está à espera.\n\n[beat] E não precisas de começar a gritar. Não precisas de um grande confronto. Podes começar com micro-expressões. Dizer \"prefiro isto\" quando te perguntam onde jantar. Dizer \"preciso de um momento\" quando estás sobrecarregada. Escrever o que sentes num diário, mesmo que ninguém leia.\n\n[firmly] Cada vez que te expressas, mesmo de forma pequena, estás a reconstruir esse músculo. Estás a dizer ao teu sistema nervoso: \"é seguro falar.\"\n\n[pause] Na Ecoa, chamamos a isto \"recuperar a voz.\" Não é aprender a falar. É desaprender a calar-te.\n\n[softly] E quando essa voz volta, tudo muda. As relações mudam. A forma como te sentes contigo muda. Porque finalmente, estás presente.\n\n[pause]\n\n[warmly] Isto é o Vivianne Explica. Cuida de ti. — Vivianne"
+    },
+    {
+      "slug": "ep04-corpo-sinal",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[warmly] Olá. Eu sou a Vivianne, e hoje quero falar-te de um idioma que falas todos os dias mas nunca te ensinaram a ouvir.\n\n[beat] O idioma do teu corpo.\n\n[pause] Já reparaste? Antes de saberes que estás nervosa, as tuas mãos ficam frias. Antes de perceberes que estás ansiosa, o estômago aperta. Antes de admitires que estás esgotada, os ombros sobem até às orelhas.\n\n[firmly] O corpo fala antes de ti. Sempre. O problema é que passamos a vida inteira a ignorá-lo.\n\n[beat] E não é por maldade. É porque nos ensinaram a viver da cabeça para cima. \"Pensa positivo.\" \"Não ligues a isso.\" \"É só stress, passa.\" Como se o corpo fosse uma máquina e os sinais fossem apenas avarias inconvenientes.\n\n[pause] Mas o corpo não avaria sem razão. Cada sinal tem uma mensagem.\n\n[softly] A dor de cabeça recorrente pode ser tensão acumulada que nunca é libertada. A fadiga constante pode ser um \"não\" que nunca é dito. A insónia pode ser a mente a processar aquilo que durante o dia não tens espaço para sentir.\n\n[warmly] E a digestão? A digestão é um espelho. Não digerimos só comida — digerimos experiências. Se a tua vida está cheia de coisas que não consegues \"engolir,\" o corpo avisa.\n\n[beat] Não estou a dizer que tudo é emocional. Claro que há causas físicas. Mas estou a dizer que o corpo e a mente não são departamentos separados. São o mesmo sistema.\n\n[firmly] E quando começas a ouvir — quando páras três segundos e perguntas \"o que é que o meu corpo me está a dizer agora\" — tudo muda.\n\n[pause] Começas a perceber que o cansaço das três da tarde não é preguiça, é o ritmo natural do teu corpo a pedir uma pausa. Que a vontade de açúcar depois do almoço não é gula, é uma descida de energia que pode ser evitada. Que a tensão no pescoço ao fim do dia é o peso das coisas que carregaste sem pedir ajuda.\n\n[softly] O teu corpo não é o teu inimigo. É o teu primeiro aliado. Mas só funciona se o ouvires.\n\n[beat] Hoje, experimenta isto: pára três vezes durante o dia. Fecha os olhos. Pergunta ao teu corpo: \"como estás?\" E ouve. Sem julgamento. Sem pressa de resolver.\n\n[warmly] Só ouve.\n\n[pause]\n\n[warmly] Isto é o Vivianne Explica. Cuida de ti. — Vivianne"
+    },
+    {
+      "slug": "ep05-mascara-essencia",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[warmly] Olá. Eu sou a Vivianne. E hoje vou fazer-te uma pergunta desconfortável.\n\n[pause] Quem és tu quando ninguém está a ver?\n\n[beat] Não. A sério. Pensa nisso. A pessoa que és no trabalho — é a mesma que és em casa? A pessoa que mostras nas redes sociais — é a mesma que vês no espelho de manhã, antes de arrumar a cara?\n\n[firmly] A maioria de nós vive com pelo menos duas versões de si. A versão que mostramos — a máscara. E a versão que escondemos — que pode ser a essência, ou pode ser outra máscara por baixo da primeira.\n\n[pause] E aqui está o problema: [softly] quando usas uma máscara durante tempo suficiente, esqueces-te que a estás a usar. Ela cola-se à pele. Torna-se \"tu.\" E quando alguém te pergunta \"quem és tu realmente,\" ficas em branco.\n\n[beat] Não porque não existas. Mas porque há tanto tempo que representas, que perdeste o contacto com o que é genuíno.\n\nA máscara não é má. Vamos ser claros. [warmly] Todos precisamos de máscaras. A máscara profissional que usas numa reunião. A máscara social que usas num jantar. São ferramentas de adaptação. O problema começa quando a máscara já não é uma escolha — é uma prisão.\n\n[firmly] Quando dizes \"sim\" e o teu corpo diz \"não.\" Quando sorris e por dentro estás a gritar. Quando toda a gente te acha forte e tu sabes que estás a desmoronar.\n\n[pause] Na Imago, fazemos um exercício que se chama Espelho Triplo. Olhas para três reflexos: quem tu mostras ser, quem tu realmente és, e quem tu aspiras ser. E a maioria das pessoas leva um choque — porque a distância entre o primeiro e o segundo é enorme.\n\n[softly] Mas esse choque é o início da liberdade.\n\n[beat] Porque quando vês a máscara, podes escolher. Podes decidir onde ela é útil e onde te está a sufocar. Podes começar a deixar a essência respirar — mesmo que seja só um bocadinho de cada vez.\n\n[warmly] Não precisas de mudar tudo amanhã. Mas podes começar a notar. Da próxima vez que disseres algo e sentires um incómodo pequeno — presta atenção. É a tua essência a dizer-te que a máscara não lhe serve.\n\n[pause]\n\n[warmly] Isto é o Vivianne Explica. Cuida de ti. — Vivianne"
+    },
+    {
+      "slug": "ep06-fuga-frente",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[warmly] Olá. Eu sou a Vivianne. E hoje quero falar de uma das fugas mais bem disfarçadas que existem.\n\n[beat] Estar ocupada.\n\n[pause] Eu sei. Parece estranho. A sociedade adora pessoas ocupadas. \"Uau, és tão produtiva.\" \"Nem sei como consegues fazer tudo isso.\" \"Que energia.\" Estar ocupada é quase um troféu.\n\n[firmly] Mas deixa-me perguntar-te uma coisa. Quando páras — quando realmente páras, sem telemóvel, sem tarefas, sem nada para fazer — o que sentes?\n\n[pause] Se a resposta é desconforto... temos conversa.\n\n[softly] Porque há dois tipos de acção. A acção com intenção — sabes porquê estás a fazer, para onde vai, o que queres construir. E a acção por fuga — fazes porque parar é insuportável. Porque no silêncio aparecem as perguntas que não queres responder. \"Estou feliz?\" \"Este trabalho faz-me sentido?\" \"Esta relação nutre-me?\"\n\n[beat] Fugir para a frente é mover-se muito sem ir a lado nenhum. É ter a agenda cheia e a alma vazia.\n\n[warmly] E eu conheço isto bem. Houve alturas na minha vida em que o \"fazer\" era a minha anestesia preferida. Mais projectos. Mais compromissos. Mais listas. Tudo menos parar e sentir.\n\n[firmly] O problema é que o que evitas não desaparece. Fica à espera. E quanto mais corres, mais exausta ficas — não pelo que fazes, mas pelo que foges.\n\n[pause] Na Ignis, trabalhamos o foco consciente. E foco consciente começa por uma coisa que parece contraditória: parar. Parar e perguntar — \"esta acção é uma escolha ou é uma fuga?\"\n\n[beat] Não é fácil. Especialmente quando toda a gente à tua volta celebra a tua hiperactividade. Mas pensa: se alguém precisa de correr o tempo todo para não pensar, isso é produtividade ou é ansiedade com boa aparência?\n\n[softly] Estar ocupada não é o mesmo que estar a viver. Às vezes, a coisa mais corajosa que podes fazer é sentar-te, respirar, e perguntar-te: \"o que é que eu estou realmente a evitar?\"\n\n[pause] A resposta pode assustar. Mas também pode libertar.\n\n[pause]\n\n[warmly] Isto é o Vivianne Explica. Cuida de ti. — Vivianne"
+    },
+    {
+      "slug": "ep07-ciclo-emocional",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[warmly] Olá. Eu sou a Vivianne. E hoje vamos falar de uma coisa que ninguém te ensinou na escola — mas que explica metade dos teus dias difíceis.\n\n[beat] O teu ciclo emocional.\n\n[pause] Já reparaste que há semanas em que te sentes imparável? Motivada, clara, cheia de energia. E depois há semanas em que tudo pesa. Levantar custa. Concentrar-te custa. Até sorrir custa.\n\n[firmly] E o que fazes? Culpas-te. \"O que é que se passa comigo?\" \"Porque é que não consigo ser constante?\" \"As outras pessoas conseguem, qual é o meu problema?\"\n\n[softly] Mas e se eu te dissesse que não há problema nenhum contigo?\n\n[beat] As emoções não são lineares. Não funcionam como um interruptor — feliz ou triste, motivada ou preguiçosa. Funcionam em ciclos. Ondas. Marés.\n\n[pause] Há um ritmo natural no teu mundo emocional. Dias de expansão — quando tens energia para dar e vender. E dias de recolhimento — quando o corpo e a mente pedem silêncio, descanso, interioridade.\n\n[warmly] E se tens ciclo menstrual, isto é ainda mais visível. A fase folicular traz energia e clareza. A ovulação traz confiança e conexão. A fase lútea pode trazer irritabilidade e sensibilidade. E a menstruação pede recolhimento.\n\n[firmly] Mas mesmo sem ciclo menstrual — homens incluídos — todos temos flutuações emocionais. Os ritmos circadianos, as estações do ano, o sono, o stress acumulado... tudo influencia o que sentimos e quando sentimos.\n\n[beat] O problema não é o ciclo. O problema é vivermos como se não tivéssemos ciclo nenhum. Como se devêssemos ser máquinas constantes, a mesma pessoa todos os dias, com a mesma energia e a mesma disposição.\n\n[softly] Isso não é humano. Isso é uma expectativa impossível.\n\n[pause] Na Serena, ensinamos a mapear o teu ciclo emocional. Não para controlá-lo — isso é impossível. Mas para antecipá-lo. Para saberes: \"hoje é um dia de recolhimento, vou respeitar isso.\" Ou \"esta semana tenho energia, vou aproveitá-la.\"\n\n[warmly] Quando deixas de lutar contra o teu ritmo natural e começas a dançar com ele, a culpa desaparece. E no lugar dela aparece algo raro: compaixão por ti.\n\n[beat] Porque a verdade é esta: não tens de ser a mesma pessoa todos os dias. Só tens de ser honesta sobre quem és hoje.\n\n[pause]\n\n[warmly] Isto é o Vivianne Explica. Cuida de ti. — Vivianne"
+    },
+    {
+      "slug": "ep08-espelho-mente",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[warmly] Olá. Eu sou a Vivianne. E hoje vou dizer-te uma coisa que talvez não queiras ouvir.\n\n[beat] O espelho mente.\n\n[pause] Não o espelho físico — embora esse também tenha os seus truques. Falo do espelho mental. A imagem que tens de ti. A história que contas a ti mesma sobre quem és.\n\n[firmly] Porque tu não te vês como és. Vês-te através de um filtro. Um filtro construído por anos de experiências, comentários, comparações e conclusões que tiraste quando eras demasiado nova para questionar.\n\n[softly] Alguém disse-te que eras \"demais\" — e guardaste. Alguém olhou para o teu corpo com desaprovação — e registaste. Alguém não te escolheu — e decidiste que não eras suficiente.\n\n[beat] E esses momentos, essas micro-conclusões, tornaram-se o filtro. Agora, quando te olhas, não vês o que está lá. Vês o que esse filtro te deixa ver.\n\n[pause] É por isso que podes receber dez elogios e agarrar-te à única crítica. É por isso que olhas para uma fotografia em que estás a sorrir e o teu olho vai directo para o \"defeito.\" É por isso que te comparas com pessoas que nem conheces e perdes sempre.\n\n[warmly] Mas aqui está a coisa — e quero que ouças isto com atenção. [firmly] Se a tua percepção de ti foi construída, pode ser reconstruída.\n\n[beat] A Lumina é o diagnóstico que criámos no Sete Ecos exactamente para isto. Para te mostrares a ti mesma não através do filtro antigo, mas através de dados reais. Como te sentes no corpo? Como geres a tua energia? Onde é que te silencias? Onde é que te perdes?\n\n[pause] E quando vês os resultados, muitas vezes é um choque. Não porque sejas pior do que pensavas — quase sempre é o contrário. Há áreas em que estás muito melhor do que acreditas. Forças que não reconheces. Recursos que minimizas.\n\n[softly] O filtro antigo escondeu-te de ti.\n\n[beat] Não vou dizer-te que basta \"acreditares em ti\" e tudo muda. Isso é conversa de motivação barata. Mas vou dizer-te isto: o primeiro passo para te veres com clareza é admitires que até agora estavas a olhar através de uma lente partida.\n\n[warmly] E quando trocas essa lente — quando começas a questionar \"será que isto que penso de mim é facto, ou é uma história antiga?\" — o reflexo muda. Não porque tu mudaste. Mas porque finalmente estás a ver.\n\n[pause]\n\n[warmly] Isto é o Vivianne Explica. Cuida de ti. — Vivianne"
+    },
+    {
+      "slug": "ep09-burnout-invisivel",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[warmly] Olá. Eu sou a Vivianne. E hoje quero falar de algo que afecta muitas pessoas mas quase ninguém reconhece.\n\n[beat] O burnout invisível.\n\n[pause] Quando pensamos em burnout, imaginamos alguém em colapso total. A chorar no trabalho. De baixa médica. Incapaz de sair da cama. E sim, isso existe. Mas há outra forma de burnout que é muito mais comum — e muito mais perigosa, exactamente porque ninguém a vê.\n\n[softly] Incluindo tu.\n\n[firmly] É assim: acordas de manhã já cansada. Mas levantas-te. Fazes o que tens a fazer. Trabalhas. Cuidas da casa, dos filhos, das pessoas. Respondes às mensagens. Sorris. Funcionar — é isso que fazes. E quando alguém te pergunta como estás, dizes \"bem.\" Talvez até acredites.\n\n[beat] Mas por dentro há sinais que estás a ignorar.\n\n[pause] A memória começa a falhar — esqueces coisas simples, palavras fogem-te a meio da frase. Perdes a paciência com coisas pequenas e depois sentes-te culpada. Adormeces a ver o telemóvel porque o silêncio é demasiado. Acorda a meio da noite sem razão aparente. Comes por impulso. Evitas pessoas. Ou então rodeia-te de gente mas sentes-te completamente sozinha.\n\n[softly] E o mais assustador: perdes o prazer. As coisas que antes te davam alegria agora são indiferentes. Não é tristeza — é um vazio cinzento. Um \"tanto faz\" que se instala sem pedir licença.\n\n[warmly] Isto é burnout. Mesmo que continues a funcionar. Mesmo que ninguém note.\n\n[beat] Na Ventis, chamamos a isto \"burnout funcional.\" Porque a pessoa continua a produzir, continua a aparecer — mas a energia está a zero. O tanque está vazio e o carro ainda anda, só porque vai numa descida. Mas quando vier a primeira subida, pára.\n\n[firmly] E o mais importante: o burnout invisível não se resolve com férias. Dois dias na praia não repõem meses de sobre-funcionamento. É preciso algo mais profundo. É preciso olhares para o teu ritmo e perguntares: \"onde é que eu ultrapassei os meus limites e nem percebi?\"\n\n[pause] Porque o burnout não é sinal de fraqueza. [warmly] É sinal de que deste mais do que tinhas. Durante mais tempo do que devias. Sem repor o que gastavas.\n\n[softly] E mereces parar antes de cair. Não depois.\n\n[beat] Se alguma coisa disto te tocou... presta atenção. O teu corpo já te está a falar. A pergunta é se vais ouvir agora — ou esperar pelo colapso.\n\n[pause]\n\n[warmly] Isto é o Vivianne Explica. Cuida de ti. — Vivianne"
+    },
+    {
+      "slug": "ep10-auto-sacrificio",
+      "speed": 0.85,
+      "stability": 75,
+      "script": "[warmly] Olá. Eu sou a Vivianne e isto é o Vivianne Explica.\n\n[pause]\n\n[gently] Hoje quero falar-te sobre auto-sacrifício. E vou ser directa: dar tudo aos outros não te faz boa pessoa. Faz-te vazia.\n\n[beat]\n\nEu sei que isto é difícil de ouvir. Porque foste educada a acreditar que o teu valor está no que dás. Na mãe que nunca descansa. Na amiga que está sempre disponível. Na colega que diz sim a tudo.\n\n[pause]\n\n[firmly] Mas deixa-me perguntar-te uma coisa: quando foi a última vez que alguém te perguntou como estás — e tu respondeste a verdade?\n\n[beat]\n\nO auto-sacrifício não é generosidade. É um padrão. [pause] E como todos os padrões, tem uma origem. Normalmente começa na infância. Alguém te ensinou — directa ou indirectamente — que para seres amada, tinhas de ser útil. Que o teu valor dependia do que fazias pelos outros.\n\n[gently] E tu acreditaste. Porque eras criança. E crianças acreditam no que lhes dizem.\n\n[pause]\n\n[warmly] O problema é que agora és adulta e o padrão continua. A tua energia vai toda para fora. Nada fica para ti. E quando tentas parar, aparece a culpa. Aquela vozinha que diz: \"E se precisarem de mim?\"\n\n[beat]\n\n[firmly] Precisam. Claro que precisam. Mas sabes quem mais precisa de ti? Tu.\n\n[pause]\n\nNo ÁUREA, trabalhamos exactamente isto. Não é sobre te tornares egoísta. É sobre aprenderes a existir na tua própria agenda. A reservar quota de presença para ti mesma. [pause] A dizer não sem culpa.\n\n[gently] Porque a verdade é esta: não podes dar o que não tens. E se te esvaziares completamente nos outros, o que sobra para ti é... nada.\n\n[pause]\n\n[softly] Começa com uma coisa pequena hoje. Faz algo só para ti. Sem justificar. Sem pedir permissão. [pause] Só porque mereces.\n\n[warmly] Isto é o Vivianne Explica. Cuida de ti. — Vivianne"
+    }
+  ],
   "SERENA": [
     {
       "slug": "14-respiracao-4-7-8",
@@ -616,6 +1098,68 @@ export const AUDIO_SCRIPTS = {
       "speed": 0.75,
       "stability": 80,
       "script": "[gently] Hoje pode não ser perfeito... [pause] Está bem... [long pause]\n\n[warmly] Uma escolha melhor já é progresso... [long pause]\n\nEu não preciso de ser perfeito para estar a avançar... [long pause]\n\nCada vez que escolho nutrir-me, estou a investir em mim... [long pause]\n\nA consistência importa mais do que a perfeição... [long pause]\n\n[gently] Errar numa refeição não apaga tudo o que já fiz... [long pause]\n\nComeço de novo... [pause] Sempre que precisar... [long pause]\n\n[warmly] Eu mereço sentir-me bem no meu corpo... [long pause]\n\nA saúde é um acto de amor, não de controlo... [long pause]\n\nEu faço o melhor que posso com o que tenho hoje... [long pause]\n\n[softly] E isso é suficiente... [pause] Eu sou suficiente..."
+    }
+  ],
+  "WHATSAPP": [
+    {
+      "slug": "wa-nurture-dia-00-boas-vindas",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[warmly] Olá! Vi que te juntaste ao Sete Ecos e fico mesmo contente. [pause] Queria só dizer-te que isto não é mais uma plataforma de dietas ou de conselhos genéricos. É um espaço onde vais aprender a ouvir o teu corpo a sério. Nos próximos dias vou partilhar contigo coisas que mudaram a vida de muitas pessoas. Fica atenta. Um beijinho."
+    },
+    {
+      "slug": "wa-nurture-dia-01-leitura",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[gently] Olá, tudo bem? Queria saber como é que te sentiste com a tua leitura do Lumina. Às vezes os resultados surpreendem, outras vezes confirmam aquilo que já sentias por dentro. [pause] Seja o que for, não ignores. O teu corpo está a falar contigo. Se quiseres conversar sobre o que apareceu, estou aqui. Um beijinho."
+    },
+    {
+      "slug": "wa-nurture-dia-03-convite-lumina",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[warmly] Olá! Ainda não fizeste o diagnóstico do Lumina e queria lembrar-te que são só dois minutinhos. Sete perguntas simples sobre como te tens sentido, e no final recebes uma leitura personalizada sobre o teu corpo, a tua energia e as tuas emoções. [pause] É completamente gratuito. Experimenta, depois diz-me o que achaste. Beijo."
+    },
+    {
+      "slug": "wa-nurture-dia-05-sinais",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Sabes aquele cansaço que não é do corpo? Aquele que dormes oito horas e acordas na mesma sem energia? [pause] Isso não é preguiça. É o teu cortisol elevado, o stress acumulado a dizer-te que algo precisa de mudar. [gently] O teu corpo avisa-te todos os dias, só que ninguém te ensinou a ouvir. E é exactamente isso que fazemos no Sete Ecos. Beijo."
+    },
+    {
+      "slug": "wa-nurture-dia-07-educacao",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[warmly] Queria partilhar uma coisa contigo. Muitas pessoas acham que para emagrecer é preciso comer menos. Mas a ciência diz o contrário. Quando cortas calorias a sério, o teu metabolismo abranda, e o corpo começa a guardar tudo o que comes. [pause] Resultado? O famoso efeito ioiô. [gently] A solução não é comer menos, é comer certo. E isso muda tudo. Beijo."
+    },
+    {
+      "slug": "wa-nurture-dia-10-segredo",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Vou ser directa contigo. A maioria das dietas falha, e não é por falta de disciplina. É porque ninguém fala do verdadeiro problema. [pause] A fome emocional. Aquela vontade que aparece do nada, que pede algo específico, e que depois te deixa com culpa. [gently] Isso não é fraqueza. É o teu cérebro a procurar conforto rápido. E quando percebes isso, tudo muda. Deixas de lutar contra ti. Beijo."
+    },
+    {
+      "slug": "wa-nurture-dia-14-vitalis-convite",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[warmly] Tenho uma coisa para te mostrar. Chama-se Vitalis e é o primeiro eco do Sete Ecos. É um programa de nutrição personalizado, com plano alimentar feito para ti, check-ins diários, e acompanhamento meu. [pause] Não é uma dieta. É aprenderes a comer de forma que funcione para o teu corpo. [gently] Podes experimentar durante sete dias, sem compromisso. Se quiseres saber mais, responde a esta mensagem. Beijo."
+    },
+    {
+      "slug": "wa-nurture-dia-21-testemunho",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[warmly] Queria contar-te uma coisa que me deixou muito feliz. Uma pessoa que começou exactamente como tu, com dúvidas, sem saber se funcionava, decidiu experimentar o Vitalis. Em três semanas, não só perdeu peso como começou a dormir melhor e a sentir-se com mais energia. [pause] E sabes o que ela me disse? Que o mais importante não foi a balança. Foi entender finalmente o porquê. [gently] Se ela conseguiu, tu também consegues. Beijo."
+    },
+    {
+      "slug": "wa-nurture-dia-28-ultima-chance",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[warmly] Olá! Olha, tenho um código especial para ti e queria partilhar antes que expire. [pause] Com o código VEMVITALIS20, tens vinte por cento de desconto no Vitalis. Em vez de dois mil e quinhentos meticais, pagas dois mil. [gently] Eu sei que há sempre um motivo para adiar. Mas o teu corpo não espera. E às vezes o momento certo é este. Vou enviar-te o link a seguir. Usa o código e começa hoje. Beijo."
+    },
+    {
+      "slug": "wa-nurture-dia-30-despedida",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[softly] Olá. Esta é a minha última mensagem desta série, e queria que soubesses uma coisa. [pause] A porta fica sempre aberta. Se um dia sentires que é a altura certa, o Sete Ecos vai estar aqui. Sem pressão, sem pressa. [gently] Cuida de ti. E se precisares de alguma coisa, é só mandar mensagem. Estou sempre aqui. Um beijinho grande."
     }
   ]
 };
