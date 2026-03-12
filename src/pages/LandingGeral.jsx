@@ -1,10 +1,94 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { WhatsAppAlertas } from '../lib/whatsapp';
 import SEOHead from '../components/SEOHead';
 import PartilharSocial from '../components/PartilharSocial';
 import ScrollReveal from '../components/ScrollReveal';
+
+// Script para gerar áudio intro no ElevenLabs (200k créditos disponíveis)
+// Voz: calma, pausada, tom de professora/mentora. Duração ~90 segundos.
+const AUDIO_INTRO_SCRIPT = `Já percebeste que sabes muito... mas continuas a repetir os mesmos padrões?
+
+Sabes o que comer. Mas comes por emoção.
+Sabes o que fazer. Mas não fazes.
+Tens disciplina. Mas não tens direcção.
+
+Porquê?
+
+Porque a informação está fragmentada. Cuidas do corpo num lado. Das emoções noutro. Do foco noutro. E nada conversa.
+
+Mas o corpo, a emoção, o foco, a energia, a voz e a identidade não são coisas separadas. São dimensões da mesma pessoa. De ti.
+
+Quando comes por stress, não é um problema de comida. É um problema de emoção.
+Quando aceitas o que não devias, não é falta de coragem. É falta de valor próprio.
+Quando estás exausta, não é falta de sono. É falta de limites.
+
+Todas as decisões que tomas lá fora são filtradas pelo que sentes aqui dentro.
+
+Quem não se conhece, é vivido pelo ambiente.
+Quem se conhece, navega o ambiente.
+
+Isto é a Sete Ecos. Não é mais uma app. É um sistema onde finalmente olhas para dentro para te situares no mundo.
+
+O primeiro passo é grátis. Chama-se Lumina. São 2 minutos.`;
+
+const AudioIntro = () => {
+  const [playing, setPlaying] = useState(false);
+  const [showScript, setShowScript] = useState(false);
+  const audioRef = useRef(null);
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (playing) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play().catch(() => {});
+    }
+    setPlaying(!playing);
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto mt-10 mb-6">
+      <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 sm:p-6 border border-purple-500/20">
+        <div className="flex items-center gap-4 mb-3">
+          <button
+            onClick={togglePlay}
+            className="flex-shrink-0 w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all active:scale-95"
+            aria-label={playing ? 'Pausar áudio' : 'Ouvir introdução'}
+          >
+            {playing ? '⏸' : '▶'}
+          </button>
+          <div className="min-w-0">
+            <p className="text-white font-medium text-sm sm:text-base">Ouve antes de começar</p>
+            <p className="text-purple-300/70 text-xs sm:text-sm">90 segundos que mudam a perspectiva</p>
+          </div>
+        </div>
+
+        <audio
+          ref={audioRef}
+          src="/audio/intro-sete-ecos.mp3"
+          onEnded={() => setPlaying(false)}
+          onError={() => setShowScript(true)}
+          preload="none"
+        />
+
+        <button
+          onClick={() => setShowScript(!showScript)}
+          className="text-purple-400 text-xs hover:text-purple-300 transition-colors mt-1"
+        >
+          {showScript ? 'Esconder texto' : 'Preferes ler?'}
+        </button>
+
+        {showScript && (
+          <div className="mt-3 p-4 bg-white/5 rounded-xl text-purple-200/80 text-sm leading-relaxed whitespace-pre-line">
+            {AUDIO_INTRO_SCRIPT}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 /**
  * SETE ECOS - Landing Page Geral
@@ -205,13 +289,13 @@ const LandingGeral = () => {
           </ScrollReveal>
           <ScrollReveal variant="fadeUp" delay={0.2}>
             <p className="text-xl md:text-2xl text-purple-200 mb-5 max-w-3xl mx-auto leading-relaxed">
-              Um ecossistema de transformação integral para a mulher moderna
+              Olha para dentro. Situa-te no mundo.
             </p>
           </ScrollReveal>
           <ScrollReveal variant="fadeUp" delay={0.4}>
             <p className="text-lg text-purple-300/80 mb-14 max-w-2xl mx-auto leading-relaxed">
-              Sete caminhos que se complementam para te guiar numa jornada de autodescoberta,
-              equilíbrio e plenitude. Cada eco desperta uma dimensão essencial do teu ser.
+              Corpo, valor, emoção, foco, energia, voz e identidade — 7 dimensões que precisam de conversar.
+              Porque quem não se conhece, é vivido pelo ambiente. Quem se conhece, navega-o.
             </p>
           </ScrollReveal>
 
@@ -230,6 +314,10 @@ const LandingGeral = () => {
                 Ir directo ao Vitalis
               </Link>
             </div>
+          </ScrollReveal>
+
+          <ScrollReveal variant="fadeUp" delay={0.8}>
+            <AudioIntro />
           </ScrollReveal>
         </div>
       </header>
