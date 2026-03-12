@@ -75,10 +75,11 @@ export default function AudioMeditacoes() {
   const [voiceId, setVoiceId] = useState(DEFAULT_VOICE_ID)
   const [mostrarKey, setMostrarKey] = useState(false)
   const [tab, setTab] = useState('meditacoes')
-  const [estados, setEstados] = useState({}) // slug → 'gerando' | 'uploading' | 'concluido' | 'erro:msg'
+  const [estados, setEstados] = useState({}) // slug → 'gerando' | 'concluido' | 'erro:msg'
+  const [uploads, setUploads] = useState({}) // slug → 'uploading' | 'uploaded' | 'erro:msg'
   const [gerandoTodos, setGerandoTodos] = useState(false)
   const [autoUpload, setAutoUpload] = useState(true)
-  const blobsRef = useRef({}) // slug → Blob (para ZIP)
+  const blobsRef = useRef({}) // slug → Blob (para ZIP e retry)
   const cancelRef = useRef(false)
 
   const audiosTab = ALL_AUDIOS.filter(a => a.tab === tab)
@@ -96,6 +97,40 @@ export default function AudioMeditacoes() {
 
   function setEstado(slug, estado) {
     setEstados(prev => ({ ...prev, [slug]: estado }))
+  }
+
+  function setUpload(slug, estado) {
+    setUploads(prev => ({ ...prev, [slug]: estado }))
+  }
+
+  async function fazerUpload(audio, blob) {
+    setUpload(audio.slug, 'uploading')
+    try {
+      const ecoKey = ECO_FOLDER_MAP[audio.folder] || audio.folder.toLowerCase()
+      await uploadAudio(supabase, ecoKey, audio.slug, blob)
+      setUpload(audio.slug, 'uploaded')
+      return true
+    } catch (uploadErr) {
+      console.warn('Upload falhou:', uploadErr.message)
+      setUpload(audio.slug, `erro:${uploadErr.message}`)
+      return false
+    }
+  }
+
+  async function retryUpload(audio) {
+    const blob = blobsRef.current[audio.slug]
+    if (!blob) return
+    await fazerUpload(audio, blob)
+  }
+
+  async function retryAllUploads() {
+    for (const audio of audiosTab) {
+      const up = uploads[audio.slug]
+      const blob = blobsRef.current[audio.slug]
+      if (blob && (!up || up.startsWith('erro:'))) {
+        await fazerUpload(audio, blob)
+      }
+    }
   }
 
   async function gerarAudio(audio) {
@@ -135,14 +170,7 @@ export default function AudioMeditacoes() {
 
       // Upload ao Supabase Storage (se activo)
       if (autoUpload) {
-        setEstado(audio.slug, 'uploading')
-        try {
-          const ecoKey = ECO_FOLDER_MAP[audio.folder] || audio.folder.toLowerCase()
-          await uploadAudio(supabase, ecoKey, audio.slug, blob)
-        } catch (uploadErr) {
-          console.warn('Upload falhou (áudio gerado mas não enviado):', uploadErr.message)
-          // Não falha — áudio foi gerado, só o upload falhou
-        }
+        await fazerUpload(audio, blob)
       }
 
       // Download local como backup
@@ -210,8 +238,9 @@ export default function AudioMeditacoes() {
   }, [audiosTab, tab])
 
   const gerados = audiosTab.filter(a => estados[a.slug] === 'concluido').length
+  const uploaded = audiosTab.filter(a => uploads[a.slug] === 'uploaded').length
+  const uploadFailed = audiosTab.filter(a => uploads[a.slug]?.startsWith('erro:')).length
   const totalTab = audiosTab.length
-  const alguemGerando = audiosTab.some(a => estados[a.slug] === 'gerando')
 
   return (
     <div className="min-h-screen bg-gray-950 text-white p-4 sm:p-6">
@@ -295,6 +324,7 @@ export default function AudioMeditacoes() {
           {TABS.map(t => {
             const count = ALL_AUDIOS.filter(a => a.tab === t.key).length
             const done = ALL_AUDIOS.filter(a => a.tab === t.key && estados[a.slug] === 'concluido').length
+            const up = ALL_AUDIOS.filter(a => a.tab === t.key && uploads[a.slug] === 'uploaded').length
             return (
               <button
                 key={t.key}
@@ -305,7 +335,7 @@ export default function AudioMeditacoes() {
                   color: tab === t.key ? 'white' : '#9ca3af',
                 }}
               >
-                {t.label} ({done}/{count})
+                {t.label} ({up}/{count})
               </button>
             )
           })}
@@ -346,20 +376,51 @@ export default function AudioMeditacoes() {
 
         {/* Progresso geral */}
         {(gerandoTodos || gerados > 0) && (
-          <div className="mb-5">
-            <div className="flex justify-between text-xs text-gray-400 mb-1">
-              <span>{gerandoTodos ? 'A gerar...' : 'Progresso'}</span>
-              <span>{gerados}/{totalTab}</span>
+          <div className="mb-5 space-y-3">
+            <div>
+              <div className="flex justify-between text-xs text-gray-400 mb-1">
+                <span>{gerandoTodos ? 'A gerar...' : 'Gerados'}</span>
+                <span>{gerados}/{totalTab}</span>
+              </div>
+              <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{
+                    width: `${totalTab > 0 ? (gerados / totalTab) * 100 : 0}%`,
+                    background: 'linear-gradient(90deg, #4B0082, #8E44AD)',
+                  }}
+                />
+              </div>
             </div>
-            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all"
-                style={{
-                  width: `${totalTab > 0 ? (gerados / totalTab) * 100 : 0}%`,
-                  background: 'linear-gradient(90deg, #4B0082, #8E44AD)',
-                }}
-              />
-            </div>
+            {autoUpload && (uploaded > 0 || uploadFailed > 0) && (
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className={uploadFailed > 0 ? 'text-red-400' : 'text-gray-400'}>
+                    {uploadFailed > 0 ? `Supabase — ${uploadFailed} falharam` : 'Supabase'}
+                  </span>
+                  <span className={uploadFailed > 0 ? 'text-red-400' : 'text-green-400'}>
+                    {uploaded}/{gerados}
+                  </span>
+                </div>
+                <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{
+                      width: `${gerados > 0 ? (uploaded / gerados) * 100 : 0}%`,
+                      background: uploadFailed > 0 ? '#ef4444' : '#22c55e',
+                    }}
+                  />
+                </div>
+                {uploadFailed > 0 && (
+                  <button
+                    onClick={retryAllUploads}
+                    className="mt-2 text-xs text-red-400 hover:text-red-300 underline transition-colors"
+                  >
+                    Tentar enviar {uploadFailed} falhados ao Supabase
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -373,7 +434,7 @@ export default function AudioMeditacoes() {
                   {grupo.eco}
                 </h2>
                 <span className="text-xs text-gray-600">
-                  {grupo.audios.filter(a => estados[a.slug] === 'concluido').length}/{grupo.audios.length}
+                  {grupo.audios.filter(a => uploads[a.slug] === 'uploaded').length}/{grupo.audios.length}
                 </span>
               </div>
               <div className="space-y-2">
@@ -382,7 +443,9 @@ export default function AudioMeditacoes() {
                     key={audio.slug}
                     audio={audio}
                     estado={estados[audio.slug]}
+                    uploadEstado={uploads[audio.slug]}
                     onGerar={() => gerarAudio(audio)}
+                    onRetryUpload={() => retryUpload(audio)}
                     apiKey={apiKey}
                   />
                 ))}
@@ -407,53 +470,74 @@ export default function AudioMeditacoes() {
 }
 
 // ─── Card de cada áudio ──────────────────────────────────────────
-function AudioCard({ audio, estado, onGerar, apiKey }) {
+function AudioCard({ audio, estado, uploadEstado, onGerar, onRetryUpload, apiKey }) {
   const [expandido, setExpandido] = useState(false)
   const gerando = estado === 'gerando'
-  const uploading = estado === 'uploading'
   const concluido = estado === 'concluido'
   const erro = estado?.startsWith('erro:') ? estado.replace('erro:', '') : null
   const semTexto = !audio.script
 
+  const uploading = uploadEstado === 'uploading'
+  const uploaded = uploadEstado === 'uploaded'
+  const uploadErro = uploadEstado?.startsWith('erro:') ? uploadEstado.replace('erro:', '') : null
+
+  // Ícone principal: prioridade upload > geração
+  const icone = uploaded ? '✅' : uploading ? '☁️' : uploadErro ? '⚠️' : gerando ? '⏳' : concluido ? '💾' : audio.emoji
+  const borderColor = uploaded ? '#1a6b2a88' : uploadErro ? '#7f1d1d88' : erro ? '#7f1d1d88' : '#1f293744'
+
   return (
     <div
       className="rounded-xl p-3 sm:p-4 border transition-colors"
-      style={{
-        background: audio.cor + '11',
-        borderColor: concluido ? '#1a6b2a88' : erro ? '#7f1d1d88' : '#1f293744',
-      }}
+      style={{ background: audio.cor + '11', borderColor }}
     >
       <div className="flex items-center gap-3">
-        {/* Slug/número */}
         <span
           className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-          style={{ background: audio.cor + '33', color: audio.cor }}
+          style={{ background: audio.cor + '33', color: uploadErro ? '#ef4444' : audio.cor }}
         >
-          {concluido ? '✅' : uploading ? '☁️' : gerando ? '⏳' : audio.emoji}
+          {icone}
         </span>
 
-        {/* Info */}
         <div className="flex-1 min-w-0" onClick={() => setExpandido(!expandido)} style={{ cursor: 'pointer' }}>
           <p className="text-sm font-semibold text-white truncate">{audio.titulo}</p>
           <p className="text-xs text-gray-500 font-mono">{audio.slug}.mp3</p>
           {erro && <p className="text-xs text-red-400 mt-0.5 truncate">⚠️ {erro}</p>}
+          {uploadErro && (
+            <p className="text-xs text-red-400 mt-0.5 truncate">
+              Upload falhou: {uploadErro}
+            </p>
+          )}
+          {concluido && !uploaded && !uploading && !uploadErro && (
+            <p className="text-xs text-yellow-500 mt-0.5">Gerado — não enviado ao Supabase</p>
+          )}
         </div>
 
-        {/* Botão gerar */}
-        <button
-          onClick={onGerar}
-          disabled={gerando || uploading || !apiKey.trim() || semTexto}
-          className="flex-shrink-0 px-3 py-2 rounded-lg text-xs font-semibold transition-all active:scale-95 disabled:opacity-40"
-          style={{
-            background: concluido ? '#1a6b2a' : gerando ? '#374151' : audio.cor + 'cc',
-            color: 'white',
-          }}
-        >
-          {gerando ? '⏳' : uploading ? '☁️' : concluido ? '✅' : semTexto ? '—' : 'Gerar'}
-        </button>
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          {/* Retry upload */}
+          {uploadErro && (
+            <button
+              onClick={onRetryUpload}
+              className="px-2 py-2 rounded-lg text-xs font-semibold transition-all active:scale-95 bg-red-900/50 text-red-300 hover:bg-red-900/80"
+              title="Tentar upload novamente"
+            >
+              ↻
+            </button>
+          )}
+
+          <button
+            onClick={onGerar}
+            disabled={gerando || uploading || !apiKey.trim() || semTexto}
+            className="px-3 py-2 rounded-lg text-xs font-semibold transition-all active:scale-95 disabled:opacity-40"
+            style={{
+              background: uploaded ? '#1a6b2a' : gerando ? '#374151' : audio.cor + 'cc',
+              color: 'white',
+            }}
+          >
+            {gerando ? '⏳' : uploading ? '☁️' : uploaded ? '✅' : semTexto ? '—' : 'Gerar'}
+          </button>
+        </div>
       </div>
 
-      {/* Script expandido */}
       {expandido && (
         <div className="mt-3 p-3 bg-gray-900 rounded-lg text-xs text-gray-400 max-h-40 overflow-y-auto font-mono leading-relaxed">
           {audio.script || <span className="text-gray-600 italic">Sem texto — escreve o script no ficheiro .md</span>}
