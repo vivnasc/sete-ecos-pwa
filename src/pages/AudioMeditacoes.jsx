@@ -1,10 +1,10 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
 import { AUDIO_SCRIPTS } from '../lib/audio-scripts-data'
 import { supabase } from '../lib/supabase'
-import { uploadAudio, ECO_FOLDER_MAP } from '../lib/shared/audioStorage'
+import { uploadAudio, checkAudioExists, ECO_FOLDER_MAP } from '../lib/shared/audioStorage'
 
 // ─── Constantes ElevenLabs ─────────────────────────────────────
 const DEFAULT_VOICE_ID = 'fnoNuVpfClX7lHKFbyZ2'
@@ -79,8 +79,11 @@ export default function AudioMeditacoes() {
   const [uploads, setUploads] = useState({}) // slug → 'uploading' | 'uploaded' | 'erro:msg'
   const [gerandoTodos, setGerandoTodos] = useState(false)
   const [autoUpload, setAutoUpload] = useState(true)
+  const [verificando, setVerificando] = useState(false)
   const blobsRef = useRef({}) // slug → Blob (para ZIP e retry)
   const cancelRef = useRef(false)
+  const fileInputRef = useRef(null)
+  const pendingUploadAudioRef = useRef(null)
 
   const audiosTab = ALL_AUDIOS.filter(a => a.tab === tab)
   const tabInfo = TABS.find(t => t.key === tab)
@@ -131,6 +134,47 @@ export default function AudioMeditacoes() {
         await fazerUpload(audio, blob)
       }
     }
+  }
+
+  // Verificar quais áudios já existem no Supabase
+  async function verificarSupabase() {
+    setVerificando(true)
+    const batch = 6 // verificar em lotes para não sobrecarregar
+    for (let i = 0; i < ALL_AUDIOS.length; i += batch) {
+      const lote = ALL_AUDIOS.slice(i, i + batch)
+      const results = await Promise.all(
+        lote.map(async (audio) => {
+          const ecoKey = ECO_FOLDER_MAP[audio.folder] || audio.folder.toLowerCase()
+          const exists = await checkAudioExists(ecoKey, audio.slug)
+          return { slug: audio.slug, exists }
+        })
+      )
+      for (const { slug, exists } of results) {
+        if (exists) setUpload(slug, 'uploaded')
+      }
+    }
+    setVerificando(false)
+  }
+
+  // Verificar ao montar o componente
+  useEffect(() => { verificarSupabase() }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Upload de ficheiro local
+  function triggerFileUpload(audio) {
+    pendingUploadAudioRef.current = audio
+    fileInputRef.current?.click()
+  }
+
+  async function handleFileSelected(e) {
+    const file = e.target.files?.[0]
+    const audio = pendingUploadAudioRef.current
+    if (!file || !audio) return
+    e.target.value = '' // reset para permitir re-selecção
+
+    const blob = new Blob([file], { type: 'audio/mpeg' })
+    blobsRef.current[audio.slug] = blob
+    setEstado(audio.slug, 'concluido')
+    await fazerUpload(audio, blob)
   }
 
   async function gerarAudio(audio) {
@@ -244,6 +288,15 @@ export default function AudioMeditacoes() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white p-4 sm:p-6">
+      {/* Input escondido para upload de ficheiros locais */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="audio/mpeg,.mp3"
+        onChange={handleFileSelected}
+        className="hidden"
+      />
+
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
@@ -317,6 +370,23 @@ export default function AudioMeditacoes() {
               </p>
             </div>
           </label>
+        </div>
+
+        {/* Supabase status */}
+        <div className="flex items-center justify-between mb-4 px-1">
+          <div className="text-xs text-gray-500">
+            {verificando
+              ? 'A verificar Supabase...'
+              : `${ALL_AUDIOS.filter(a => uploads[a.slug] === 'uploaded').length}/${ALL_AUDIOS.length} no Supabase`
+            }
+          </div>
+          <button
+            onClick={verificarSupabase}
+            disabled={verificando}
+            className="text-xs text-purple-400 hover:text-purple-300 disabled:opacity-50 transition-colors"
+          >
+            {verificando ? '...' : '↻ Verificar'}
+          </button>
         </div>
 
         {/* Tabs */}
@@ -446,6 +516,7 @@ export default function AudioMeditacoes() {
                     uploadEstado={uploads[audio.slug]}
                     onGerar={() => gerarAudio(audio)}
                     onRetryUpload={() => retryUpload(audio)}
+                    onFileUpload={() => triggerFileUpload(audio)}
                     apiKey={apiKey}
                   />
                 ))}
@@ -470,7 +541,7 @@ export default function AudioMeditacoes() {
 }
 
 // ─── Card de cada áudio ──────────────────────────────────────────
-function AudioCard({ audio, estado, uploadEstado, onGerar, onRetryUpload, apiKey }) {
+function AudioCard({ audio, estado, uploadEstado, onGerar, onRetryUpload, onFileUpload, apiKey }) {
   const [expandido, setExpandido] = useState(false)
   const gerando = estado === 'gerando'
   const concluido = estado === 'concluido'
@@ -481,7 +552,6 @@ function AudioCard({ audio, estado, uploadEstado, onGerar, onRetryUpload, apiKey
   const uploaded = uploadEstado === 'uploaded'
   const uploadErro = uploadEstado?.startsWith('erro:') ? uploadEstado.replace('erro:', '') : null
 
-  // Ícone principal: prioridade upload > geração
   const icone = uploaded ? '✅' : uploading ? '☁️' : uploadErro ? '⚠️' : gerando ? '⏳' : concluido ? '💾' : audio.emoji
   const borderColor = uploaded ? '#1a6b2a88' : uploadErro ? '#7f1d1d88' : erro ? '#7f1d1d88' : '#1f293744'
 
@@ -507,12 +577,20 @@ function AudioCard({ audio, estado, uploadEstado, onGerar, onRetryUpload, apiKey
               Upload falhou: {uploadErro}
             </p>
           )}
-          {concluido && !uploaded && !uploading && !uploadErro && (
-            <p className="text-xs text-yellow-500 mt-0.5">Gerado — não enviado ao Supabase</p>
-          )}
         </div>
 
         <div className="flex items-center gap-1.5 flex-shrink-0">
+          {/* Upload de ficheiro local — quando não está no Supabase */}
+          {!uploaded && !uploading && (
+            <button
+              onClick={onFileUpload}
+              className="px-2 py-2 rounded-lg text-xs transition-all active:scale-95 bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700"
+              title="Enviar MP3 do computador"
+            >
+              📁
+            </button>
+          )}
+
           {/* Retry upload */}
           {uploadErro && (
             <button

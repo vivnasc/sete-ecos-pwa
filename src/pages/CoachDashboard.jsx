@@ -117,6 +117,7 @@ const QUICK_LINKS = [
   { to: '/coach/chatbot-teste', label: 'Chatbot', gradient: 'from-green-500/20 to-emerald-500/20' },
   { to: '/coach/broadcast', label: 'Broadcast', gradient: 'from-amber-500/20 to-orange-500/20' },
   { to: '/coach/social', label: 'Social', gradient: 'from-violet-500/20 to-purple-500/20' },
+  { to: '/coach/audio-meditacoes', label: 'Áudios', gradient: 'from-fuchsia-500/20 to-purple-500/20' },
 ];
 
 export default function CoachDashboard() {
