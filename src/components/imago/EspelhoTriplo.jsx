@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { g } from '../../utils/genero'
 import ModuleHeader from '../shared/ModuleHeader'
+import AudioPlayerBar from '../shared/AudioPlayerBar'
 import { ESPELHO_TRIPLO_GUIA } from '../../lib/imago/gamificacao'
 
 const TABS = [
@@ -13,6 +14,13 @@ const TABS = [
 ]
 
 const IMAGO_COLOR = '#8B7BA5'
+
+// Journaling audio por tab
+const TAB_AUDIO = {
+  essencia: { slug: 'imago-01-espelho-triplo', titulo: 'Quem És Sem Plateia' },
+  mascara: { slug: 'imago-02-mascara', titulo: 'A Máscara Que Usas' },
+  aspiracao: { slug: 'imago-05-essencia', titulo: 'A Tua Essência' },
+}
 
 export default function EspelhoTriplo() {
   const navigate = useNavigate()
@@ -220,6 +228,18 @@ export default function EspelhoTriplo() {
           >
             {guiaActual.titulo}
           </h2>
+
+          {/* Guided audio */}
+          {TAB_AUDIO[activeTab] && (
+            <div className="mb-4">
+              <AudioPlayerBar
+                eco="journaling"
+                slug={TAB_AUDIO[activeTab].slug}
+                accentColor={IMAGO_COLOR}
+                titulo={TAB_AUDIO[activeTab].titulo}
+              />
+            </div>
+          )}
 
           {/* Guiding Questions */}
           <div className="mb-4 space-y-2">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import ModuleHeader from '../shared/ModuleHeader';
+import AudioPlayerBar from '../shared/AudioPlayerBar';
 import { g } from '../../utils/genero';
 import { useAuth } from '../../contexts/AuthContext';
 import { EMOCOES, CORPO_ZONAS } from '../../lib/serena/gamificacao';
@@ -274,42 +275,82 @@ const StepCorpo = ({ selected, onSelect }) => (
   </div>
 );
 
+// Guided journaling audios for Serena
+const SERENA_JOURNALING = [
+  { slug: 'serena-01-emocao-corpo', titulo: 'Emoção no Corpo', desc: 'Onde mora o que sentes?' },
+  { slug: 'serena-02-emocao-nome', titulo: 'Dar Nome à Emoção', desc: 'Que nome darias ao que sentes?' },
+  { slug: 'serena-03-emocao-crianca', titulo: 'A Criança Interior', desc: 'Quando sentiste isto pela primeira vez?' },
+  { slug: 'serena-04-emocao-mensagem', titulo: 'A Mensagem da Emoção', desc: 'O que te quer dizer?' },
+  { slug: 'serena-05-emocao-libertar', titulo: 'Libertar o Peso', desc: 'Como seria viver sem este peso?' },
+]
+
 // ==========================
 // Step 5: Reflexão
 // ==========================
-const StepReflexao = ({ value, onChange }) => (
-  <div className="space-y-6 animate-fadeIn">
-    <div className="text-center mb-4">
-      <h2 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
-        Queres reflectir sobre isto?
-      </h2>
-      <p className="text-sm text-gray-400 mt-1">Opcional — um momento para ti</p>
+const StepReflexao = ({ value, onChange }) => {
+  const [showAudios, setShowAudios] = useState(false)
+
+  return (
+    <div className="space-y-6 animate-fadeIn">
+      <div className="text-center mb-4">
+        <h2 className="text-lg font-semibold text-white" style={{ fontFamily: 'var(--font-titulos)' }}>
+          Queres reflectir sobre isto?
+        </h2>
+        <p className="text-sm text-gray-400 mt-1">Opcional — um momento para ti</p>
+      </div>
+
+      {/* Guided audio toggle */}
+      <button
+        onClick={() => setShowAudios(!showAudios)}
+        className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"
+        style={{ background: `${ACCENT}15`, border: `1px solid ${ACCENT}25`, color: ACCENT_LIGHT }}
+      >
+        <span className="flex items-center gap-2">
+          <span>🎧</span> Meditação guiada antes de escrever
+        </span>
+        <svg className={`w-4 h-4 transition-transform ${showAudios ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      {showAudios && (
+        <div className="space-y-2">
+          {SERENA_JOURNALING.map(a => (
+            <div key={a.slug} className="rounded-xl p-3" style={{ background: `${ACCENT}08`, border: `1px solid ${ACCENT}15` }}>
+              <p className="text-sm font-medium text-white mb-0.5">{a.titulo}</p>
+              <p className="text-xs mb-2" style={{ color: '#8da3ad' }}>{a.desc}</p>
+              <AudioPlayerBar eco="journaling" slug={a.slug} accentColor={ACCENT} titulo={a.titulo} />
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="relative">
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="O que esta emoção quer me dizer? O que preciso agora?"
+          rows={5}
+          maxLength={1000}
+          className="w-full p-4 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
+          style={{
+            background: 'rgba(255,255,255,0.06)',
+            borderColor: 'transparent',
+            focusRingColor: ACCENT
+          }}
+          aria-label="Reflexão livre sobre a emoção"
+        />
+        <span className="absolute bottom-3 right-3 text-xs text-gray-600">{value.length}/1000</span>
+      </div>
+      <div className="p-4 rounded-xl" style={{ background: 'rgba(107,142,155,0.08)' }}>
+        <p className="text-xs text-gray-400 italic leading-relaxed">
+          Não há respostas certas nem erradas. Este espaço é teu — escreve livremente,
+          sem julgar. A água não força o caminho, ela encontra-o.
+        </p>
+      </div>
     </div>
-    <div className="relative">
-      <textarea
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="O que esta emoção quer me dizer? O que preciso agora?"
-        rows={5}
-        maxLength={1000}
-        className="w-full p-4 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 transition-all duration-200"
-        style={{
-          background: 'rgba(255,255,255,0.06)',
-          borderColor: 'transparent',
-          focusRingColor: ACCENT
-        }}
-        aria-label="Reflexão livre sobre a emoção"
-      />
-      <span className="absolute bottom-3 right-3 text-xs text-gray-600">{value.length}/1000</span>
-    </div>
-    <div className="p-4 rounded-xl" style={{ background: 'rgba(107,142,155,0.08)' }}>
-      <p className="text-xs text-gray-400 italic leading-relaxed">
-        Não há respostas certas nem erradas. Este espaço é teu — escreve livremente,
-        sem julgar. A água não força o caminho, ela encontra-o.
-      </p>
-    </div>
-  </div>
-);
+  )
+}
 
 // ==========================
 // Confirmação pós-submit

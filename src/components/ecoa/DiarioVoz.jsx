@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../lib/supabase.js'
 import { useAuth } from '../../contexts/AuthContext'
 import ModuleHeader from '../shared/ModuleHeader'
+import AudioPlayerBar from '../shared/AudioPlayerBar'
 import { g } from '../../utils/genero'
 
 // ============================================================
@@ -22,6 +23,15 @@ const PROMPTS = [
   'Que silencio carregas hoje?',
   'O que dirias se ninguem te julgasse?',
   'Que som faz a tua verdade?'
+]
+
+// Meditações guiadas de journaling (áudio no Supabase Storage)
+const JOURNALING_AUDIOS = [
+  { slug: 'ecoa-01-silencio-momento', titulo: 'O Silêncio Daquele Momento', desc: 'Quando decidiste calar-te pela primeira vez' },
+  { slug: 'ecoa-02-voz-perdida', titulo: 'A Voz Perdida', desc: 'O que dirias se não tivesses medo' },
+  { slug: 'ecoa-03-carta-nunca-enviada', titulo: 'Carta Nunca Enviada', desc: 'Escreve o que ficou por dizer' },
+  { slug: 'ecoa-04-permissao-falar', titulo: 'Permissão Para Falar', desc: 'Dá-te permissão para ocupar espaço' },
+  { slug: 'ecoa-05-voz-futura', titulo: 'A Tua Voz Futura', desc: 'Como soa a voz que estás a construir' },
 ]
 
 // Get a daily prompt based on the date (deterministic per day)
@@ -278,6 +288,22 @@ export default function DiarioVoz() {
                   >
                     {p.substring(0, 30)}{p.length > 30 ? '...' : ''}
                   </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Guided audio journaling */}
+            <div className="space-y-2">
+              <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider px-1">
+                Meditação Guiada — Ouve Antes de Escrever
+              </h3>
+              <div className="space-y-2">
+                {JOURNALING_AUDIOS.map(a => (
+                  <div key={a.slug} className="rounded-xl p-3" style={{ background: `${ACCENT}08`, border: `1px solid ${ACCENT}15` }}>
+                    <p className="text-sm font-medium text-white mb-0.5">{a.titulo}</p>
+                    <p className="text-xs mb-2" style={{ color: '#5a8090' }}>{a.desc}</p>
+                    <AudioPlayerBar eco="journaling" slug={a.slug} accentColor={ACCENT} titulo={a.titulo} />
+                  </div>
                 ))}
               </div>
             </div>

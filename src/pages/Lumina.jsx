@@ -28,6 +28,55 @@ import {
 } from '../lib/genero';
 import { setSexo } from '../utils/genero';
 import { WhatsAppAlertas } from '../lib/whatsapp';
+import AudioPlayerBar from '../components/shared/AudioPlayerBar';
+
+// Mapeamento padrão Lumina → slug de áudio no Supabase Storage
+const LUMINA_AUDIO_SLUGS = {
+  crit_vid: '01-lumina-crit-vid',
+  crit_pfm: '02-lumina-crit-pfm',
+  crit_tba: '03-lumina-crit-tba',
+  forcaMax: '04-lumina-forca-max',
+  presencaRara: '05-lumina-presenca-rara',
+  esgotamento: '06-lumina-esgotamento',
+  dissociacao: '07-lumina-dissociacao',
+  passadoComanda: '08-lumina-passado-comanda',
+  falsaClareza: '09-lumina-falsa-clareza',
+  fugaFrente: '10-lumina-fuga-frente',
+  menteSabota: '11-lumina-mente-sabota',
+  corpoGrita: '12-lumina-corpo-grita',
+  futuroRouba: '13-lumina-futuro-rouba',
+  recolhimento: '14-lumina-recolhimento',
+  vazioFertil: '15-lumina-vazio-fertil',
+  silencioCura: '16-lumina-silencio-cura',
+  alinhamento: '17-lumina-alinhamento',
+  aberturaSemDirecao: '18-lumina-abertura-sem-direcao',
+  corpoLidera: '19-lumina-corpo-lidera',
+  futuroConvite: '20-lumina-futuro-convite',
+  neutralidade: '21-lumina-neutralidade',
+  transicao: '22-lumina-transicao',
+  diaSemNome: '23-lumina-dia-sem-nome',
+  aurea_corpoTenso: '24-lumina-aurea-corpo-tenso',
+  aurea_energiaBaixa: '25-lumina-aurea-energia-baixa',
+  aurea_espelhoInvisivel: '26-lumina-aurea-espelho-invisivel',
+  aurea_isolado: '27-lumina-aurea-isolado',
+  serena_emocaoRetida: '28-lumina-serena-emocao-retida',
+  serena_cicloPesa: '29-lumina-serena-ciclo-pesa',
+  ignis_paralisiaEscolha: '30-lumina-ignis-paralisia-escolha',
+  ventis_burnoutSilencioso: '31-lumina-ventis-burnout-silencioso',
+  ecoa_vozPresa: '32-lumina-ecoa-voz-presa',
+  imago_mascaraCansa: '33-lumina-imago-mascara-cansa',
+  imago_espelhoDistorcido: '34-lumina-imago-espelho-distorcido',
+  ansiedadeActiva: '35-lumina-ansiedade-activa',
+  sobrevivente: '36-lumina-sobrevivente',
+  sonhadoraPresa: '37-lumina-sonhadora-presa',
+  supressao: '38-lumina-supressao',
+  fazerSemVer: '39-lumina-fazer-sem-ver',
+  hipervigilancia: '40-lumina-hipervigilancia',
+  lutoSilencioso: '41-lumina-luto-silencioso',
+  casuloCura: '42-lumina-casulo-cura',
+  despertar: '43-lumina-despertar',
+  comparacao: '44-lumina-comparacao',
+};
 import { useAuth } from '../contexts/AuthContext';
 import { useI18n } from '../contexts/I18nContext';
 import UpsellCard from '../components/UpsellCard';
@@ -1049,6 +1098,18 @@ export default function Lumina() {
           }}>
             "{leitura}"
           </p>
+
+          {/* Áudio da leitura — Vivianne lê a tua leitura */}
+          {padrao && LUMINA_AUDIO_SLUGS[padrao] && (
+            <div style={{ marginTop: '16px' }}>
+              <AudioPlayerBar
+                eco="lumina"
+                slug={LUMINA_AUDIO_SLUGS[padrao]}
+                accentColor="#4B0082"
+                titulo={`Leitura Lumina — ${padrao}`}
+              />
+            </div>
+          )}
 
           {/* Contexto do Ciclo com Eco Map */}
           {cicloInfo && (
