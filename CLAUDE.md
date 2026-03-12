@@ -2,7 +2,7 @@
 
 ## Session Instructions (MANDATORY)
 
-**The owner (Vivianne) works exclusively via Claude Code on the web.** Every session must follow these rules:
+**The owner (Vivianne) works exclusively via Claude Code on the web.** She does NOT have a local development environment — no local terminal, no local Node.js, no local IDE. All development, testing, builds, git operations, and file editing happen inside the Claude Code web session. Never suggest local commands, local installs, or "run this on your machine" — everything must be done here. Every session must follow these rules:
 
 1. **Language**: Communicate in Portuguese (informal). Vivianne writes informally — interpret typos and abbreviations naturally.
 2. **Never break existing functionality.** Before changing any file, understand what it does. Don't touch layout, PDF generation, or plan generation logic unless explicitly asked.

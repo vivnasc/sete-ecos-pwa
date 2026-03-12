@@ -67,7 +67,7 @@ const AudioIntro = () => {
 
         <audio
           ref={audioRef}
-          src="/audio/intro-sete-ecos.mp3"
+          src="/audio/mkt-intro-landing.mp3"
           onEnded={() => setPlaying(false)}
           onError={() => setShowScript(true)}
           preload="none"

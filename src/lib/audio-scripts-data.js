@@ -258,100 +258,106 @@ export const AUDIO_SCRIPTS = {
       "script": "[warmly] Há quanto tempo procuras algo que não sabes nomear? [pause] Talvez seja isto. [long pause] [intensely] Não é falta de motivação. Não é preguiça. [pause] É fragmentação. [pause] A sensação de que cada parte da tua vida está a funcionar, mas não juntas."
     },
     {
+      "slug": "mkt-intro-landing",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[gently] Já percebeste que sabes muito... [pause] mas continuas a repetir os mesmos padrões? [long pause]\n\n[building] Sabes o que comer. Mas comes por emoção. [pause]\nSabes o que fazer. Mas não fazes. [pause]\nTens disciplina. Mas não tens direcção. [long pause]\n\n[pause] Porquê? [long pause]\n\n[warmly] Porque a informação está fragmentada. [pause] Cuidas do corpo num lado. [pause] Das emoções noutro. [pause] Do foco noutro. [pause] E nada conversa. [long pause]\n\nMas o corpo, a emoção, o foco, a energia, a voz e a identidade não são coisas separadas. [pause] São dimensões da mesma pessoa. [pause] De ti. [long pause]\n\n[building] Quando comes por stress, não é um problema de comida. [pause] É um problema de emoção. [pause]\nQuando aceitas o que não devias, não é falta de coragem. [pause] É falta de valor próprio. [pause]\nQuando estás exausta, não é falta de sono. [pause] É falta de limites. [long pause]\n\n[intensely] Todas as decisões que tomas lá fora [pause] são filtradas pelo que sentes aqui dentro. [long pause]\n\n[warmly] Quem não se conhece, [pause] é vivido pelo ambiente. [pause]\nQuem se conhece, [pause] navega o ambiente. [long pause]\n\n[gently] Isto é a Sete Ecos. [pause] Não é mais uma app. [pause] É um sistema onde finalmente olhas para dentro [pause] para te situares no mundo. [long pause]\n\nO primeiro passo é grátis. [pause] Chama-se Lumina. [pause] São 2 minutos."
+    },
+    {
       "slug": "mkt-lz-01-excesso",
       "speed": 0.85,
       "stability": 75,
-      "script": "[intensely] Isto nasceu de excesso. Não de falta. [pause] Eu vivia muitas camadas ao mesmo tempo — intelectual, espiritual, profissional, criativa, corporal — [pause] e tudo estava separado. [long pause] Recusei-me a continuar a trabalhar a vida por pedaços. [pause] [warmly] E criei isto. [pause] Segue. [softly] Nos próximos dias vais perceber o que é."
+      "script": "[intensely] Eu pesava 87 quilos. Tinha um MBA. Meditava todos os dias. [pause] E continuava perdida. [long pause] Não me faltava nada. [pause] Eu fazia tudo. Nutrição. Mindfulness. Exercício. Desenvolvimento pessoal. [pause] [warmly] Tudo separado. Nada conversava. [pause] E um dia percebi — o problema não era eu. [pause] Era trabalhar a vida aos pedaços. [long pause] [softly] Então criei uma coisa diferente. [pause] Segue. Nos próximos dias vais perceber o quê. [pause] — Vivianne"
     },
     {
       "slug": "mkt-lz-02-sete-dimensoes",
       "speed": 0.85,
       "stability": 75,
-      "script": "[intensely] Resolver só o corpo não muda identidade. [pause] Resolver só emoção não muda disciplina. [long pause] [warmly] 7 dimensões. Corpo. Valor. Emoção. Vontade. Energia. Voz. Identidade. [pause] 1 sistema. [pause] As partes conversam entre si. [pause] [softly] Chama-se Sete Ecos."
+      "script": "[intensely] Já fizeste dieta, perdeste peso — e continuaste infeliz? [pause] Já meditaste 30 dias seguidos e continuaste ansiosa? [long pause] [warmly] O problema não és tu. [pause] O problema é trabalhar uma coisa de cada vez. [pause] O corpo afecta a emoção. A emoção afecta o foco. O foco afecta a identidade. [pause] Está tudo ligado. [pause] [softly] 7 ecos. Corpo. Valor. Emoção. Vontade. Energia. Voz. Identidade. [pause] Um sistema onde as partes finalmente conversam. [pause] Chama-se Sete Ecos."
     },
     {
       "slug": "mkt-lz-03-lumina-intro",
       "speed": 0.85,
       "stability": 75,
-      "script": "[warmly] 8 dimensões da tua vida. 7 perguntas. 2 minutos. [pause] Grátis. [long pause] O LUMINA mapeia como estás de verdade. [pause] 23 leituras possíveis. Cada uma com um padrão diferente. [pause] E a partir daí, sabes por onde começar. [pause] [softly] Experimenta. app.seteecos.com/lumina."
+      "script": "[intensely] Em 2 minutos vou mostrar-te a parte da tua vida que está a sabotar todo o resto. [long pause] [warmly] Não é um quiz de personalidade. Não é horóscopo. [pause] São 7 perguntas. E o resultado mostra-te um padrão que provavelmente nunca ninguém te apontou. [pause] Talvez o teu cansaço não seja físico. Talvez a tua ansiedade não seja emocional. [pause] [softly] O LUMINA mapeia o que está escondido. [pause] Grátis. Sem registo. [pause] app.seteecos.com/lumina."
     },
     {
       "slug": "mkt-lz-05-padroes",
       "speed": 0.85,
       "stability": 75,
-      "script": "[softly] Energia baixa pode ser desconexão emocional. [pause] Tensão no corpo pode ser palavras engolidas. [long pause] [warmly] O LUMINA mostra-te padrões que não vias. [pause] Cansaço crónico pode ser falta de ritmo. [pause] Falta de clareza pode ser identidade fragmentada. [pause] Cada leitura é uma porta. [pause] [intensely] Tu decides qual abrir. [pause] [softly] Grátis. 2 minutos."
+      "script": "[intensely] Dormes 8 horas e acordas cansada. [pause] Já pensaste que o problema pode não ser sono? [long pause] [warmly] Às vezes o cansaço vem de palavras que engoliste a semana toda. [pause] Às vezes a ansiedade vem de uma identidade que já não te serve. [pause] O LUMINA detecta 23 padrões diferentes. [pause] E mostra-te de onde vem o que sentes — de verdade. [pause] [softly] Não é o que esperas ouvir. É o que precisas saber. [pause] Grátis. 2 minutos. app.seteecos.com/lumina."
     },
     {
       "slug": "mkt-lz-06-vitalis-raiz",
       "speed": 0.85,
       "stability": 75,
-      "script": "[intensely] A maioria das apps resolve o corpo e ignora tudo o resto. [pause] O VITALIS é diferente. [long pause] [warmly] O corpo é a raiz. A primeira dimensão. [pause] Plano personalizado. 98 receitas. Coach 24 horas. Treinos adaptados. Espaço emocional. [pause] Mas é UMA dimensão de sete. [pause] [softly] E isso é o ponto. [pause] 7 dias grátis. Link na bio."
+      "script": "[intensely] Sabes quantas vezes já começaste uma dieta? [pause] E quantas vezes desististe exactamente no mesmo ponto? [long pause] [warmly] O problema nunca foi falta de disciplina. [pause] Foi ignorar o motivo por que desistes. [pause] O VITALIS não te dá só um plano de refeições. Dá-te um espaço emocional. Um coach 24 horas. Check-ins diários. [pause] Porque o corpo muda quando percebes o que te faz parar. [pause] [softly] 7 dias grátis. Link na bio."
     },
     {
-      "slug": "mkt-lz-07-nao-pdf",
-      "speed": 0.85,
-      "stability": 75,
-      "script": "[intensely] Isto é o que recebes. [pause] Não é um PDF. Não é um grupo de WhatsApp. [pause] É uma app completa. [long pause] [warmly] Plano personalizado. Check-in diário. 98 receitas filtradas para ti. [pause] Espaço emocional. Relatórios. Treinos. [pause] Construído com rigor. [pause] [softly] Nada genérico. [pause] Link na bio."
+      "slug": "mkt-lz-07-dietas-falham",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[warmly] As dietas falham. [pause] Mas não é por falta de disciplina. [long pause] [gently] As dietas focam-se no que comes. Mas ignoram o porquê comes. [pause] Comes por fome? [pause] Ou por stress, solidão, tédio, raiva? [long pause] [building] A ciência chama-lhe fome emocional. E afecta 75 por cento das pessoas que tentam fazer dieta. [pause] Enquanto não entenderes a emoção por trás do garfo, nenhum plano alimentar vai funcionar. [long pause] [intensely] Isto não é opinião. É neurociência. [pause] O cérebro usa comida como regulador emocional quando não tem outra ferramenta. [pause] [gently] É por isso que a força de vontade falha. [pause] Porque nunca foi um problema de vontade. [long pause] Foi um problema de consciência."
     },
     {
-      "slug": "mkt-lz-08-coach",
-      "speed": 0.85,
-      "stability": 75,
-      "script": "[warmly] Quando precisas de orientação, a resposta está a uma mensagem. [pause] A qualquer hora. [long pause] Coach disponível 24 horas. [pause] Porções. Prato. Jejum. Treino. Dúvidas. [pause] [intensely] Não é motivação genérica. É coaching nutricional real. [pause] [softly] Porque as dúvidas não esperam pelo horário de consulta. [pause] Link na bio."
+      "slug": "mkt-lz-08-corpo-guarda",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[intensely] O teu corpo guarda tudo. [pause] Mesmo o que finges que não sentes. [long pause] [gently] A raiva que engoles vira tensão no pescoço. [pause] A tristeza que ignoras vira dor de estômago. [pause] A ansiedade vira bruxismo enquanto dormes. [pause] O medo vira insónia. [long pause] [building] Isto não é poesia. É psicossomática. [pause] A ciência que estuda como as emoções se expressam no corpo. [long pause] [warmly] O teu corpo é o diário que nunca mentes. [pause] Se não ouves o que sentes, o corpo grita. [long pause] [gently] Guarda isto. [pause] E da próxima vez que tiveres uma dor, pergunta-te: [pause] o que estou a sentir?"
     },
     {
-      "slug": "mkt-lz-09-receitas",
-      "speed": 0.85,
-      "stability": 75,
-      "script": "[warmly] 98 receitas. Ingredientes que encontras em qualquer mercado. [pause] Sem listas impossíveis. [long pause] Pratos tradicionais. Opções leves. Comfort food. Refeições rápidas. [pause] Cada receita filtrada para o TEU perfil. [pause] [intensely] Nada importado. Nada caro. [pause] [softly] Cuidar do corpo não devia ser um privilégio. [pause] Link na bio."
+      "slug": "mkt-lz-09-5-perguntas",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[warmly] Estas 5 perguntas revelam mais sobre ti do que qualquer teste de personalidade. [long pause] [gently] Primeira: quando estás em stress, o que fazes primeiro? [pause] Comes? Isolaste? Trabalhas mais? Ficas no telemóvel? [pause] A tua resposta automática revela o teu padrão. [long pause] Segunda: o que evitas há mais de 6 meses? [pause] Aquilo que adias é o que mais precisa de atenção. [long pause] Terceira: se pudesses mudar uma coisa amanhã, o que seria? [pause] A primeira resposta que te vem à cabeça é a mais honesta. [long pause] Quarta: quando foi a última vez que fizeste algo só para ti? [pause] [intensely] Se demoras a responder, é um sinal. [long pause] [building] Quinta: se o teu corpo pudesse falar, o que diria? [long pause] [warmly] Responde nos comentários. [pause] A tua primeira reacção é a mais verdadeira."
     },
     {
-      "slug": "mkt-lz-10-emocao",
-      "speed": 0.85,
-      "stability": 75,
-      "script": "[intensely] O corpo e a emoção não são departamentos separados. [pause] No VITALIS, também não. [long pause] [warmly] O Espaço de Retorno existe dentro do VITALIS. [pause] É o lugar onde não se fala de comida. [pause] Fala-se do que está por trás. [pause] [softly] Uma app de nutrição que ignora o que sentes não é integração. [pause] É só mais um pedaço. [pause] [intensely] Nós não trabalhamos por pedaços."
+      "slug": "mkt-lz-10-olhar-dentro",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[intensely] Queres mudar a tua vida? [pause] Para de olhar para fora. [long pause] [gently] Comes mal? Não é problema de comida. [pause] É problema de emoção. [pause] Aceitas o que não devias? Não é falta de coragem. [pause] É falta de valor próprio. [pause] Estás exausta? Não é falta de sono. [pause] É falta de limites. [pause] Repetes os mesmos padrões? Não é azar. [pause] É falta de consciência. [long pause] [building] Todas as decisões externas são filtradas pelo teu estado interno. [pause] Se por dentro estás em caos, por fora reflectes caos. [long pause] [warmly] Quem não se conhece, é vivido pelo ambiente. [pause] [intensely] Quem se conhece, navega o ambiente. [long pause] [gently] Guarda isto. [pause] Lê outra vez."
     },
     {
-      "slug": "mkt-lz-11-aurea",
-      "speed": 0.85,
-      "stability": 75,
-      "script": "[intensely] Cuidas do corpo mas não cuidas de como te vês ao espelho. [pause] Porquê? [long pause] [warmly] O ÁUREA é a dimensão do valor próprio. [pause] Como gastas dinheiro. Como ocupas o tempo. Como te vestes. O que te dá prazer. [pause] 100 micro-práticas. [pause] [softly] Sem esta dimensão, qualquer transformação é superficial. [pause] Link na bio."
+      "slug": "mkt-lz-11-4-ciclos",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[intensely] Repetes isto sem saber. [pause] E é por isso que nada muda. [long pause] [gently] Ciclo da culpa alimentar: [pause] comes, sentes culpa, restringes, dá-te compulsão, comes mais. [pause] Repete. [long pause] Ciclo do esgotamento: [pause] dás tudo, esgotaste, paras, sentes culpa, voltas a dar tudo. [pause] Repete. [long pause] Ciclo do silêncio: [pause] engoles o que queres dizer, acumulas, explodes, arrependeste, engoles outra vez. [pause] Repete. [long pause] Ciclo da ocupação: [pause] ocupaste para não sentir, cansaste, compensas com comida ou ecrã, ocupaste outra vez. [pause] Repete. [long pause] [building] O primeiro passo para quebrar um ciclo é vê-lo. [long pause] [warmly] Se reconheces algum, guarda."
     },
     {
-      "slug": "mkt-lz-12-serena",
-      "speed": 0.85,
-      "stability": 75,
-      "script": "[softly] Sentir intensamente não é o problema. [pause] [intensely] O problema é não saber o que fazer com isso. [long pause] [warmly] O SERENA mapeia 16 emoções no teu corpo. [pause] Quando as nomeias, perdem poder sobre ti. [pause] 6 técnicas de respiração. Diário emocional. Detector de padrões. SOS para crises. [pause] [softly] Não é terapia. É consciência com estrutura."
+      "slug": "mkt-lz-12-valor-proprio",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[warmly] Sabes quanto vales? [pause] Ou sabes quanto te disseram que vales? [long pause] [gently] A maioria confunde autoestima com valor próprio. [pause] Autoestima é como te sentes sobre ti. [pause] Valor próprio é o que acreditas que mereces. [long pause] [building] Se cresceste a ouvir que não és suficiente, o teu cérebro gravou isso como verdade. [pause] E agora? [pause] Sabotás oportunidades. Aceitas menos do que mereces. Dás tudo aos outros e nada a ti. [pause] [intensely] Não por escolha. Por programação. [long pause] [warmly] A boa notícia? [pause] Programação muda-se. [pause] [gently] Não com afirmações no espelho. [pause] Com acções concretas. Pequenas. Diárias. [long pause] Guarda isto."
     },
     {
-      "slug": "mkt-lz-13-ignis",
-      "speed": 0.85,
-      "stability": 75,
-      "script": "[warmly] Tens vontade de mudar tudo. [pause] [intensely] Mas sem direcção, a vontade dispersa-se. [long pause] [warmly] O IGNIS é a dimensão da vontade e do foco. [pause] 16 desafios. Sessões de foco. Detector de distracções. Bússola de valores. [pause] [softly] Porque disciplina sem direcção é só cansaço. [pause] Link na bio."
+      "slug": "mkt-lz-13-reprimir-emocoes",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[intensely] Sou forte. [pause] É a frase mais perigosa que podes dizer. [long pause] [building] A ciência mostra: reprimir emoções aumenta o cortisol. [pause] Inflama o corpo. [pause] Enfraquece o sistema imunitário. [pause] Não é teoria. É biologia. [long pause] [gently] Choras no banho e sorris no dia seguinte. [pause] O corpo paga essa conta. [pause] Engoles a raiva. Ignoras a tristeza. Finges que está tudo bem. [pause] Mas o corpo sabe. [pause] A insónia sabe. [pause] A tensão sabe. [long pause] [warmly] Sentir não é fraqueza. [pause] É a forma mais inteligente de proteger a tua saúde. [long pause] [gently] Guarda. [pause] Envia a quem diz sou forte enquanto se destrói por dentro."
     },
     {
-      "slug": "mkt-lz-14-ventis",
-      "speed": 0.85,
-      "stability": 75,
-      "script": "[intensely] Se precisas de café para funcionar, não é energia. [pause] É dívida. [long pause] [warmly] O VENTIS é a dimensão da energia e do ritmo. [pause] Monitor de energia. 8 tipos de pausas conscientes. Detector de burnout. [pause] [softly] O teu corpo tem um ritmo natural. [pause] Ignorá-lo é o que te cansa. [pause] Link na bio."
+      "slug": "mkt-lz-14-ocupada-vs-focada",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[warmly] Há uma diferença entre estar ocupada e estar a avançar. [long pause] [gently] Ocupação é reactiva. [pause] Respondes ao que aparece. Mensagens. Fogos. Pedidos. [pause] O dia controla-te. [long pause] Foco é intencional. [pause] Proteges o que importa. Escolhes. Priorizas. Dizes não. [long pause] [building] A ocupação dá-te a ilusão de produtividade. [pause] O foco dá-te resultados reais. [long pause] [intensely] A pergunta não é: o que fiz hoje? [pause] É: o que avancei hoje? [long pause] [warmly] Exercício prático: [pause] amanhã, antes de começar o dia, pergunta-te: [pause] [gently] o que preciso proteger hoje? [long pause] Guarda."
     },
     {
-      "slug": "mkt-lz-15-ecoa",
-      "speed": 0.85,
-      "stability": 75,
-      "script": "[softly] Há coisas que nunca disseste. [pause] E o corpo guarda tudo. [long pause] [warmly] O ECOA é a dimensão da voz e da expressão. [pause] Mapa de silenciamento. Programa Micro-Voz de 8 semanas. Cartas não enviadas. Comunicação assertiva. [pause] [intensely] Integração também é ter voz para o que sentes. [pause] Link na bio."
+      "slug": "mkt-lz-15-cansaco-cronico",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[intensely] Se precisas de 3 cafés para funcionar, o problema não é sono. [long pause] [gently] O teu corpo tem um ritmo natural. [pause] Chama-se ritmo circadiano. [pause] Picos de energia de manhã. [pause] Baixa natural a meio da tarde. [pause] Recuperação à noite. [long pause] [building] A maioria das pessoas trabalha contra este ritmo. [pause] Força produtividade quando o corpo pede pausa. [pause] Descansa quando o corpo tem energia. [pause] E depois compensa com café, açúcar, ecrãs. [long pause] [warmly] Não é mais café que precisas. [pause] É respeitar o teu ritmo. [long pause] [gently] Exercício: amanhã, observa — [pause] a que horas tens mais energia natural? [long pause] Guarda."
     },
     {
-      "slug": "mkt-lz-16-imago",
-      "speed": 0.85,
-      "stability": 75,
-      "script": "[warmly] Profissional. Familiar. Amigo. Colega. [pause] [intensely] E tu? Quem és para além dos papéis? [long pause] [warmly] O IMAGO é a dimensão da identidade. [pause] Espelho triplo — essência, máscara, aspiração. [pause] Arqueologia pessoal. 50 valores. Mapa de identidade. [pause] [softly] Sem saber quem és, não sabes para onde ir. [pause] Link na bio."
+      "slug": "mkt-lz-16-preco-silencio",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[gently] Cada vez que engoles o que querias dizer, o corpo guarda. [long pause] [building] O silêncio tem um preço. [pause] Físico: tensão no pescoço. [pause] Dor de cabeça. [pause] Bruxismo. [long pause] Emocional: ressentimento. [pause] Raiva contida. [pause] Explosões inesperadas. [long pause] Relacional: distância. [pause] Mal-entendidos. [pause] Solidão. [long pause] [intensely] Não é manter a paz. [pause] É pagar um preço silencioso por uma paz que não existe. [long pause] [warmly] Pensa na última vez que engoliste algo. [pause] O que custou? [long pause] [gently] Guarda. [pause] Envia a quem precisa."
     },
     {
-      "slug": "mkt-lz-17-recap",
-      "speed": 0.85,
-      "stability": 75,
-      "script": "[intensely] 7 dimensões. 1 sistema. [pause] As partes conversam. [pause] E o primeiro passo é grátis. [long pause] [warmly] Não é motivação. Não é wellness estético. [pause] É arquitectura de integração. [pause] O LUMINA é o ponto de partida. [pause] Gratuito. 2 minutos. 23 leituras possíveis. [pause] [softly] app.seteecos.com/lumina."
+      "slug": "mkt-lz-17-integracao",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[warmly] Já sabes muito. [pause] Comes bem e mesmo assim não funciona. [pause] Lês sobre produtividade e mesmo assim repetes padrões. [pause] Porquê? [long pause] [building] Porque a informação está fragmentada. [pause] Sabes de nutrição. Mas não sabes que comes por emoção. [pause] Sabes de produtividade. Mas não sabes que a ocupação é fuga. [pause] Sabes de comunicação. Mas não sabes por que te calas. [long pause] [intensely] O conhecimento isolado não transforma. [pause] A integração sim. [long pause] [gently] Corpo. Valor. Emoção. Foco. Energia. Voz. Identidade. [pause] 7 dimensões que precisam de conversar. [long pause] [warmly] Nas últimas semanas partilhei o que aprendi. [pause] Agora convido-te a descobrir o teu ponto de partida. [long pause] [gently] Diagnóstico grátis. [pause] 2 minutos. [pause] Link na bio."
     },
     {
       "slug": "mkt-mockup-01-lancamento",
