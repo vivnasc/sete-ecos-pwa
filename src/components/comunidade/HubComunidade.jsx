@@ -4,6 +4,7 @@ import { useI18n } from '../../contexts/I18nContext'
 import { supabase } from '../../lib/supabase'
 import { getFogueiraAtiva, getPromptDoDia, getPerfilPublico, contarReflexoes, contarRessonanciaRecebida, getMeusCirculos, ECOS_INFO } from '../../lib/comunidade'
 import { getGhostCommunityStats, getGhostPostsForRange, GHOST_PROFILES } from '../../lib/ghost-users'
+import PodcastPlayer from '../shared/PodcastPlayer'
 
 // Avatar component — iniciais com cor em vez de emoji genérico
 function Avatar({ perfil, size = 40, className = '' }) {
@@ -326,6 +327,11 @@ export default function HubComunidade() {
           </button>
         </div>
       )}
+
+      {/* ══════ VIVIANNE EXPLICA — Podcast ══════ */}
+      <div className="px-5 mb-4">
+        <PodcastPlayer max={3} compact />
+      </div>
 
       {/* ══════ ESPAÇOS — Grid moderno ══════ */}
       <div className="px-5 mb-5">

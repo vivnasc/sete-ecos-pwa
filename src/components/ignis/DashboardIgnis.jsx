@@ -7,6 +7,7 @@ import { g } from '../../utils/genero'
 import { IGNIS_GAMIFICATION } from '../../lib/ignis/gamificacao'
 import ModuleDashboardShell from '../shared/ModuleDashboardShell'
 import { GamificationBadge } from '../shared/GamificationSystem'
+import PodcastPlayer from '../shared/PodcastPlayer'
 
 /**
  * IGNIS — Dashboard Principal
@@ -293,6 +294,11 @@ export default function DashboardIgnis() {
           total={chamas}
           streak={streak}
         />
+      </div>
+
+      {/* Vivianne Explica */}
+      <div className="px-4 sm:px-6 mb-6">
+        <PodcastPlayer eco="ignis" compact />
       </div>
 
       {/* Link para ver mais */}

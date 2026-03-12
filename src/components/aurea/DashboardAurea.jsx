@@ -4,6 +4,7 @@ import { useI18n } from '../../contexts/I18nContext';
 import { supabase } from '../../lib/supabase';
 import { calcularNivel, calcularProgressoNivel, formatarJoias } from '../../lib/aurea/gamificacao';
 import { getPraticaDoDia, CATEGORIAS } from '../../lib/aurea/praticas';
+import PodcastPlayer from '../shared/PodcastPlayer';
 
 /**
  * ÁUREA - Dashboard Principal
@@ -563,6 +564,10 @@ export default function DashboardAurea() {
             </div>
           </Link>
         )}
+        {/* Vivianne Explica */}
+        <div className="px-4 sm:px-6 mb-6">
+          <PodcastPlayer eco="aurea" compact />
+        </div>
       </main>
 
       {/* Bottom Navigation - Claro e organizado */}

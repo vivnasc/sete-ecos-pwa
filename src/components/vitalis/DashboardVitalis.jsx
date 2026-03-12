@@ -20,6 +20,7 @@ import MealsSection from './MealsSection';
 import MacrosDisplay from './MacrosDisplay';
 import AchievementsPanel from './AchievementsPanel';
 import { useDetectorDesistencia, AlertaDesistencia } from './DetectorDesistencia';
+import PodcastPlayer from '../shared/PodcastPlayer';
 
 // Função para solicitar permissão de notificações
 const solicitarPermissaoNotificacoes = async () => {
@@ -1589,6 +1590,11 @@ export default function DashboardVitalis() {
           conquistasDesbloqueadas={conquistasDesbloqueadas}
           xpTotal={xpTotal}
         />
+
+        {/* Vivianne Explica */}
+        <div className="px-4 sm:px-6 mb-6">
+          <PodcastPlayer eco="vitalis" compact />
+        </div>
 
       </main>
 

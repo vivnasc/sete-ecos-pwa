@@ -7,6 +7,7 @@ import { g } from '../../utils/genero'
 import { IMAGO_GAMIFICATION } from '../../lib/imago/gamificacao'
 import ModuleDashboardShell from '../shared/ModuleDashboardShell'
 import { GamificationBadge } from '../shared/GamificationSystem'
+import PodcastPlayer from '../shared/PodcastPlayer'
 
 /**
  * IMAGO — Dashboard Principal
@@ -356,6 +357,11 @@ export default function DashboardImago() {
           <span className="text-xl">👤</span>
           <span className="text-white/70 text-xs">Perfil</span>
         </Link>
+      </div>
+
+      {/* Vivianne Explica */}
+      <div className="px-4 sm:px-6 mb-6">
+        <PodcastPlayer eco="imago" compact />
       </div>
 
       {/* Link para perfil completo */}

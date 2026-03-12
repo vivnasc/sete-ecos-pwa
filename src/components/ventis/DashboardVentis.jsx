@@ -7,6 +7,7 @@ import { g } from '../../utils/genero'
 import { VENTIS_GAMIFICATION } from '../../lib/ventis/gamificacao'
 import ModuleDashboardShell from '../shared/ModuleDashboardShell'
 import { GamificationBadge } from '../shared/GamificationSystem'
+import PodcastPlayer from '../shared/PodcastPlayer'
 
 /**
  * VENTIS — Dashboard Principal
@@ -373,6 +374,11 @@ export default function DashboardVentis() {
           total={folhas}
           streak={streak}
         />
+      </div>
+
+      {/* Vivianne Explica */}
+      <div className="px-4 sm:px-6 mb-6">
+        <PodcastPlayer eco="ventis" compact />
       </div>
 
       {/* Link para ver mais */}

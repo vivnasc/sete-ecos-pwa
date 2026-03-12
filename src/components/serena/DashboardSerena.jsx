@@ -7,6 +7,7 @@ import { g } from '../../utils/genero'
 import { SERENA_GAMIFICATION, EMOCOES } from '../../lib/serena/gamificacao'
 import ModuleDashboardShell from '../shared/ModuleDashboardShell'
 import { GamificationBadge } from '../shared/GamificationSystem'
+import PodcastPlayer from '../shared/PodcastPlayer'
 
 /**
  * SERENA — Dashboard Principal
@@ -373,6 +374,11 @@ export default function DashboardSerena() {
           total={gotas}
           streak={streak}
         />
+      </div>
+
+      {/* Vivianne Explica */}
+      <div className="px-4 sm:px-6 mb-6">
+        <PodcastPlayer eco="serena" compact />
       </div>
 
       {/* Link para ver mais */}
