@@ -23,10 +23,22 @@ function parseHeader(content) {
 }
 
 function extractScript(content) {
-  const marker = '## Script (colar directamente no ElevenLabs)'
-  const idx = content.indexOf(marker)
-  if (idx === -1) return null
-  return content.slice(idx + marker.length).trim()
+  // Suporta ambos os marcadores (Script / Script de Voz)
+  const markers = [
+    '## Script (colar directamente no ElevenLabs)',
+    '## Script de Voz (colar directamente no ElevenLabs)',
+  ]
+  for (const marker of markers) {
+    const idx = content.indexOf(marker)
+    if (idx !== -1) {
+      let text = content.slice(idx + marker.length).trim()
+      // Cortar no próximo "---" ou "##" (secções seguintes como Notas, Texto Overlay)
+      const nextSection = text.search(/\n---|\n##/)
+      if (nextSection > 0) text = text.slice(0, nextSection).trim()
+      return text
+    }
+  }
+  return null
 }
 
 const data = {}

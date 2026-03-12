@@ -26,6 +26,41 @@ const TABS = [
     ],
   },
   {
+    key: 'lumina',
+    label: 'Lumina',
+    grupos: [
+      { eco: 'LUMINA', emoji: '🔮', cor: '#4B0082', folder: 'LUMINA' },
+    ],
+  },
+  {
+    key: 'journaling',
+    label: 'Journaling',
+    grupos: [
+      { eco: 'JOURNALING', emoji: '📝', cor: '#5B2C6F', folder: 'JOURNALING' },
+    ],
+  },
+  {
+    key: 'whatsapp',
+    label: 'WhatsApp',
+    grupos: [
+      { eco: 'WHATSAPP', emoji: '💬', cor: '#25D366', folder: 'WHATSAPP' },
+    ],
+  },
+  {
+    key: 'podcast',
+    label: 'Podcast',
+    grupos: [
+      { eco: 'PODCAST', emoji: '🎙️', cor: '#E74C3C', folder: 'PODCAST' },
+    ],
+  },
+  {
+    key: 'audiogramas',
+    label: 'Audiogramas',
+    grupos: [
+      { eco: 'AUDIOGRAMAS', emoji: '📊', cor: '#F39C12', folder: 'AUDIOGRAMAS' },
+    ],
+  },
+  {
     key: 'marketing',
     label: 'Marketing',
     grupos: [

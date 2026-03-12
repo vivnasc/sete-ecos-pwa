@@ -169,6 +169,149 @@ export const LEITURAS = {
     "O sistema está equilibrado, mas há uma ferida: não te colocas na lista. ÁUREA ajuda-te a ser prioridade também.",
     "Tudo parece bem — mas e tu? Quando foi a última vez que fizeste algo só para ti? ÁUREA trabalha isso.",
     "Equilibrada para fora, esquecida por dentro. ÁUREA ajuda-te a existir na tua própria agenda."
+  ],
+
+  // ============================================================
+  // PADRÕES SERENA - EMOÇÃO RETIDA E CICLO
+  // ============================================================
+
+  // Passado pesado + corpo fechado + impulso parar (emoções presas no corpo)
+  serena_emocaoRetida: [
+    "Há algo preso no corpo que a mente não quer tocar. Emoção retida. SERENA ajuda-te a deixar fluir sem forçar.",
+    "O corpo guarda o que não processaste. Está pesado porque carrega emoção antiga. SERENA ensina-te a soltar.",
+    "Tensão que não é física — é emocional. Algo ficou por dizer, por chorar, por libertar. SERENA abre esse espaço."
+  ],
+
+  // Mente caótica + energia baixa + passado pesado (ciclo emocional intenso)
+  serena_cicloPesa: [
+    "Tudo pesa e a cabeça não pára. Estás no meio de um ciclo emocional intenso. SERENA ajuda-te a respirar dentro do caos.",
+    "Mente a girar, corpo cansado, passado a puxar. É demais para processar sozinha. SERENA dá-te ferramentas para navegar isto.",
+    "Quando tudo aperta ao mesmo tempo, não é fraqueza — é sobrecarga emocional. SERENA ensina-te a descomprimir."
+  ],
+
+  // ============================================================
+  // PADRÕES IGNIS - PARALISIA E FOCO
+  // ============================================================
+
+  // Mente caótica + impulso decidir + futuro ameaçador (paralisia de escolha)
+  ignis_paralisiaEscolha: [
+    "Queres decidir mas o medo paralisa. Muitas opções, nenhuma parece certa. IGNIS ajuda-te a cortar o ruído e agir.",
+    "A mente gira em círculos e o futuro assusta. Não precisas da escolha perfeita — precisas de uma escolha. IGNIS mostra-te como.",
+    "Paralisia disfarçada de análise. Estás a pensar em vez de agir. IGNIS ensina-te a confiar no primeiro passo."
+  ],
+
+  // ============================================================
+  // PADRÕES VENTIS - BURNOUT E ENERGIA
+  // ============================================================
+
+  // Energia baixa + mente clara + corpo neutro/aberto (burnout silencioso)
+  ventis_burnoutSilencioso: [
+    "Pareces bem por fora. Mas a energia acabou por dentro. Burnout silencioso. VENTIS ajuda-te a recuperar o ritmo.",
+    "A mente funciona, o corpo aguenta, mas não há combustível. Estás a funcionar no vazio. VENTIS ensina-te a parar antes de cair.",
+    "Cansaço que não se vê. Tudo parece normal mas tu sabes que não é. VENTIS ajuda-te a ouvir o corpo antes que ele grite."
+  ],
+
+  // ============================================================
+  // PADRÕES ECOA - VOZ E EXPRESSÃO
+  // ============================================================
+
+  // Impulso esconder + mente caótica + espelho mau (voz presa)
+  ecoa_vozPresa: [
+    "Há tanto para dizer mas o medo tranca tudo. A voz está presa. ECOA ajuda-te a encontrar as palavras que te pertencem.",
+    "Queres esconder-te porque mostrar-te dói. Mas o silêncio também dói. ECOA ensina-te a falar sem te expor demais.",
+    "O ruído na cabeça é tudo o que não dizes. A voz presa vira pensamento obsessivo. ECOA ajuda-te a soltar."
+  ],
+
+  // ============================================================
+  // PADRÕES IMAGO - IDENTIDADE E ESPELHO
+  // ============================================================
+
+  // Energia boa + espelho mau + passado pesado (máscara que cansa)
+  imago_mascaraCansa: [
+    "Tens energia para funcionar mas não te reconheces. A máscara funciona — mas cansa. IMAGO ajuda-te a tirar o disfarce.",
+    "Produtiva por fora, perdida por dentro. Fazes tudo bem mas não sabes quem és sem o papel. IMAGO trabalha isso.",
+    "O passado moldou uma versão de ti que já não serve. Tens energia para mudar — só falta veres quem realmente és. IMAGO mostra-te."
+  ],
+
+  // Energia boa + espelho mau (distorção de auto-imagem)
+  imago_espelhoDistorcido: [
+    "A energia está boa mas o espelho não reflecte isso. Há distorção. Não estás a ver-te como és. IMAGO corrige o espelho.",
+    "O mundo vê-te de um jeito, tu vês-te de outro. Essa distância entre o real e o percebido é trabalho do IMAGO.",
+    "Tens mais do que pensas. O espelho está distorcido por crenças antigas. IMAGO ajuda-te a ver com olhos novos."
+  ],
+
+  // ============================================================
+  // NOVOS PADRÕES DE NUANCE
+  // ============================================================
+
+  // Energia alta + mente caótica (ansiedade produtiva)
+  ansiedadeActiva: [
+    "Tens energia mas está dispersa. A mente corre em mil direcções. Cuidado: produtividade ansiosa não é clareza. Foca numa coisa.",
+    "Hiperactiva por dentro. A energia está a alimentar o caos mental. Pára. Respira. Escolhe uma coisa. Só uma.",
+    "Parece produtividade mas é ansiedade disfarçada. O corpo tem energia, a mente gasta-a em ruído. Simplifica."
+  ],
+
+  // Energia/espelho bom + passado pesado (sobrevivente funcional)
+  sobrevivente: [
+    "Funcionas bem. Ninguém diria que carregas o que carregas. Mas o passado pesa. Não tens de ser forte o tempo todo.",
+    "Sobrevivente funcional. Fazes tudo, aguentas tudo, mas há peso escondido. Honra o que passaste. Mereces descanso.",
+    "A força que mostras é real. Mas a dor que escondes também. Não precisas de resolver — só de reconhecer que está lá."
+  ],
+
+  // Futuro bom + corpo fechado (sonhadora desconectada)
+  sonhadoraPresa: [
+    "O futuro parece claro mas o corpo não acompanha. Estás a sonhar da cintura para cima. Traz o corpo para o plano.",
+    "Visão clara, corpo preso. A mente já está no amanhã mas o corpo ficou no hoje. Reconecta. O corpo precisa de ser incluído.",
+    "Sonhas bem mas não te moves. A visão sem acção é fantasia. Começa pelo corpo. Um passo. Só um."
+  ],
+
+  // Mente silenciosa + passado pesado (supressão)
+  supressao: [
+    "A mente está quieta mas não é paz — é supressão. Há algo por baixo do silêncio que precisa de atenção.",
+    "Silêncio forçado. Empurraste tudo para baixo e agora parece calmo. Mas o passado não desaparece com silêncio. Precisa de voz.",
+    "A calma que sentes pode ser anestesia. O passado está lá, quieto, à espera. Quando estiveres pronta, ele fala."
+  ],
+
+  // Energia alta + espelho mau (fazer sem se ver)
+  fazerSemVer: [
+    "Fazes, produzes, resolves. Mas não te vês a fazer. Estás invisível para ti mesma. A energia vai mas o reconhecimento não volta.",
+    "Produtiva e invisível. Tudo feito, nada reconhecido — por ti. Pára. Olha para o que fizeste. Conta. É teu.",
+    "A energia alimenta a acção mas não alimenta o teu valor. Fazes tudo e não te dás crédito. Pára e reconhece-te."
+  ],
+
+  // Energia alta + corpo tenso + mente caótica (hipervigilância)
+  hipervigilancia: [
+    "Tudo ligado. Energia alta, corpo em alerta, mente a antecipar. Modo sobrevivência. Não estás em perigo — mas o corpo não sabe.",
+    "Hipervigilância. Energia gasta em antecipar ameaças que não existem. O corpo está pronto para fugir. Pára. Estás segura.",
+    "Alerta máximo sem razão visível. O sistema nervoso está activado. Não precisas de resolver nada — precisas de te regular. Respira fundo."
+  ],
+
+  // Energia baixa + passado pesado + mente silenciosa + impulso parar (luto)
+  lutoSilencioso: [
+    "Há peso, silêncio e vontade de parar. Pode ser luto. Não precisa de nome para ser real. Honra o que perdeste.",
+    "Algo foi embora e o corpo sabe. Energia baixa, mente quieta, vontade de nada. É luto. Deixa-o estar.",
+    "Não forces. O que sentes não precisa de ser explicado. Às vezes o corpo faz luto antes da mente entender."
+  ],
+
+  // Energia baixa + impulso parar + bom cuidado (casulo de cura)
+  casuloCura: [
+    "Energia baixa mas não é alarme. Estás a cuidar de ti e a querer parar. Isso é sabedoria, não preguiça. O casulo é necessário.",
+    "Recolhimento consciente. Sabes que precisas de parar e estás a honrar isso. Fica. Cura. O mundo espera.",
+    "Nem toda paragem é problema. Esta é intencional. Estás em casulo. A transformação acontece no escuro."
+  ],
+
+  // Energia normal + mente clara + futuro bom + impulso agir (despertar)
+  despertar: [
+    "Algo está a mover-se. Não é euforia — é clareza. O futuro faz sentido e há impulso para agir. Confia. É real.",
+    "Momento de despertar. A mente está limpa, o futuro convida, e há vontade genuína. Usa isto. Não é ilusão.",
+    "Estás a sair de algo. A clareza que sentes é nova e frágil. Protege-a. Age devagar mas age."
+  ],
+
+  // Energia boa + espelho mau + futuro bom (comparação com ideal)
+  comparacao: [
+    "Vês o futuro claramente mas não te vês nele. Estás a comparar-te com uma versão ideal que não existe. Tu, como és, já chegas.",
+    "A visão é boa mas o espelho não acompanha. Cuidado com a armadilha da comparação. O futuro não precisa de uma versão perfeita de ti.",
+    "Tens energia e esperança mas não te achas suficiente para o que vem. Mentira. O que tens agora é exactamente o que precisas."
   ]
 };
 
@@ -215,6 +358,21 @@ export function detectarPadrao(respostas) {
   // Auto-sacrifício isolado: quando tudo está equilibrado mas não se prioriza
   if (autoSacrificio && normais >= 4) return 'aurea_isolado';
 
+  // PADRÕES PER-ECO (prioridade antes dos alertas genéricos)
+  // SERENA - emoção retida no corpo
+  if (pPesa && cFechado && (impulso === 'parar' || impulso === 'esconder')) return 'serena_emocaoRetida';
+  // SERENA - ciclo emocional pesado
+  if (mRuid && eBaixa && pPesa) return 'serena_cicloPesa';
+  // IGNIS - paralisia de escolha
+  if (mRuid && impulso === 'decidir' && fAmeaca) return 'ignis_paralisiaEscolha';
+  // ECOA - voz presa
+  if (impulso === 'esconder' && mRuid && eMau) return 'ecoa_vozPresa';
+  // IMAGO - máscara que cansa
+  if (eAlta && eMau && pPesa) return 'imago_mascaraCansa';
+
+  // HIPERVIGILÂNCIA (antes dos alertas — estado de alarme)
+  if (eAlta && cFechado && mRuid) return 'hipervigilancia';
+
   // MÁXIMOS
   if (energia === 'cheia' && corpo === 'solto' && mente === 'silenciosa' && espelho === 'luminosa') return 'forcaMax';
   if (pos >= 6) return 'presencaRara';
@@ -223,23 +381,47 @@ export function detectarPadrao(respostas) {
   if (eBaixa && (impulso === 'decidir' || impulso === 'agir')) return 'esgotamento';
   if (eMau && (eBaixa || mRuid)) return 'dissociacao';
   if (pPesa && mRuid) return 'passadoComanda';
+  // Ansiedade activa (energia alta + mente caótica sem corpo tenso)
+  if (eAlta && mRuid && !cFechado) return 'ansiedadeActiva';
   if (mClara && cFechado) return 'falsaClareza';
   if (fAmeaca && (impulso === 'decidir' || impulso === 'agir')) return 'fugaFrente';
   if (mRuid && cAberto) return 'menteSabota';
   if (cFechado && mClara) return 'corpoGrita';
   if (fAmeaca && eAlta) return 'futuroRouba';
+  // Fazer sem se ver (produtiva mas invisível)
+  if (eAlta && eMau && !pPesa) return 'fazerSemVer';
+  // IMAGO - espelho distorcido (energia boa + espelho mau, sem passado pesado)
+  if (eAlta && eMau) return 'imago_espelhoDistorcido';
+  // Sobrevivente funcional (funciona mas carrega passado)
+  if ((eAlta || eBom) && pPesa && !mRuid) return 'sobrevivente';
+  // Comparação com ideal (futuro bom + espelho mau)
+  if (fConv && eMau && eAlta) return 'comparacao';
+  // Sonhadora presa (futuro bom + corpo fechado)
+  if (fConv && cFechado) return 'sonhadoraPresa';
+  // Supressão (mente silenciosa + passado pesado)
+  if (mClara && pPesa && !cAberto) return 'supressao';
 
   // PROTECÇÃO
   if (cFechado && impulso === 'esconder') return 'recolhimento';
+  // Luto silencioso (baixa energia + passado pesado + silêncio + parar)
+  if (eBaixa && pPesa && mente === 'silenciosa' && (impulso === 'parar' || impulso === 'nada')) return 'lutoSilencioso';
+  // Casulo de cura (baixa energia + parar + bom cuidado)
+  if (eBaixa && (impulso === 'parar' || impulso === 'nada') && cuidadoBom) return 'casuloCura';
 
   // FERTILIDADE
   if (eBaixa && mente === 'silenciosa' && (futuro === 'normal' || fConv)) return 'vazioFertil';
   if (mente === 'silenciosa' && (corpo === 'normal' || cAberto) && energia === 'normal') return 'silencioCura';
 
+  // VENTIS - burnout silencioso (energia baixa + mente clara + corpo ok)
+  if (eBaixa && mClara && (corpo === 'normal' || cAberto)) return 'ventis_burnoutSilencioso';
+
   // ALINHAMENTO
   if (eAlta && cAberto && mClara) return 'alinhamento';
   if (cAberto && impulso === 'nada') return 'aberturaSemDirecao';
   if (cAberto && impulso === 'agir' && eAlta) return 'corpoLidera';
+
+  // DESPERTAR (clareza emergente)
+  if (energia === 'normal' && mClara && fConv && impulso === 'agir') return 'despertar';
 
   // CONVITE
   if (fConv && eAlta && cAberto) return 'futuroConvite';

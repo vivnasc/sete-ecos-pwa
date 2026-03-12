@@ -70,4 +70,9 @@ export const ECO_FOLDER_MAP = {
   ECOA: 'ecoa',
   VITALIS: 'vitalis',
   MARKETING: 'marketing',
+  LUMINA: 'lumina',
+  WHATSAPP: 'whatsapp',
+  PODCAST: 'podcast',
+  JOURNALING: 'journaling',
+  AUDIOGRAMAS: 'audiogramas',
 }
