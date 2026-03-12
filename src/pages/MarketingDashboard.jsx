@@ -1135,7 +1135,16 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
             </div>
             <div className="text-left min-w-0">
               <p className={`font-bold text-sm truncate ${publicado ? 'text-emerald-700 line-through' : 'text-[#4A4035]'}`}>{post.titulo}</p>
-              <p className="text-[10px] text-[#A09888] truncate">{post.hook?.slice(0, 50)}{post.hook?.length > 50 ? '...' : ''}</p>
+              <p className="text-[10px] text-[#A09888] truncate">
+                <span className={`inline-block px-1.5 py-0.5 rounded text-[8px] font-bold mr-1 ${
+                  post.formato === 'carrossel' ? 'bg-purple-100 text-purple-700' :
+                  post.formato === 'destaques' ? 'bg-amber-100 text-amber-700' :
+                  'bg-pink-100 text-pink-700'
+                }`}>
+                  {post.formato === 'carrossel' ? 'CARROSSEL' : post.formato === 'destaques' ? 'TAREFA' : 'REEL'}
+                </span>
+                {post.hook?.slice(0, 40)}{post.hook?.length > 40 ? '...' : ''}
+              </p>
             </div>
           </div>
           <span className="text-[#A09888] text-sm shrink-0 ml-2">{aberto ? '▲' : '▼'}</span>
@@ -1144,6 +1153,30 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
 
       {aberto && (
         <div className="space-y-3 pl-1">
+          {/* Cronograma — instrução clara do que fazer */}
+          {post.cronograma && (
+            <div className="bg-gradient-to-r from-[#1a1a2e] to-[#0f3460] rounded-xl p-3">
+              <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">O que fazer hoje</p>
+              <p className="text-xs text-white font-medium leading-relaxed">{post.cronograma}</p>
+            </div>
+          )}
+
+          {/* Áudio script para ElevenLabs */}
+          {post.audioScript && (
+            <div className="bg-orange-50 border border-orange-200 rounded-xl p-2.5">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-[10px] text-orange-700 font-bold">Áudio (voiceover ElevenLabs)</p>
+                <button
+                  onClick={() => copiar(post.audioScript, `lanc-${post.dia}-audio`)}
+                  className="text-[9px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-bold active:scale-95"
+                >
+                  {copiado === `lanc-${post.dia}-audio` ? 'Copiado!' : 'Copiar script'}
+                </button>
+              </div>
+              <p className="text-[10px] text-orange-600 leading-relaxed">{post.audioScript}</p>
+            </div>
+          )}
+
           {/* Dica de formato */}
           {post.dica && (
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-2.5">
