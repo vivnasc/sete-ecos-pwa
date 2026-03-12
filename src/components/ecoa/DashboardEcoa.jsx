@@ -7,6 +7,7 @@ import { g } from '../../utils/genero'
 import { ECOA_GAMIFICATION } from '../../lib/ecoa/gamificacao'
 import ModuleDashboardShell from '../shared/ModuleDashboardShell'
 import { GamificationBadge } from '../shared/GamificationSystem'
+import PodcastPlayer from '../shared/PodcastPlayer'
 
 /**
  * ECOA — Dashboard Principal
@@ -357,6 +358,11 @@ export default function DashboardEcoa() {
           total={ecos}
           streak={streak}
         />
+      </div>
+
+      {/* Vivianne Explica */}
+      <div className="px-4 sm:px-6 mb-6">
+        <PodcastPlayer eco="ecoa" compact />
       </div>
 
       {/* Link para ver mais */}

@@ -7,6 +7,7 @@ import SEOHead from '../components/SEOHead';
 import PartilharSocial from '../components/PartilharSocial';
 import WhatsAppMockup from '../components/WhatsAppMockup';
 import ScrollReveal from '../components/ScrollReveal';
+import PodcastPlayer from '../components/shared/PodcastPlayer';
 import { ECO_PLANS } from '../lib/shared/subscriptionPlans';
 
 /**
@@ -785,6 +786,18 @@ const LandingVitalis = () => {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Vivianne Explica — Podcast teaser */}
+      <section className="py-12 px-4" style={{ background: 'linear-gradient(180deg, #F5F0EB 0%, #FDF8F3 100%)' }}>
+        <div className="max-w-lg mx-auto">
+          <ScrollReveal>
+            <p className="text-center text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#7C8B6F' }}>
+              Ouve a Vivianne
+            </p>
+            <PodcastPlayer eco="vitalis" />
+          </ScrollReveal>
         </div>
       </section>
 

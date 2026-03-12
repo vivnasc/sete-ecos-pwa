@@ -8,6 +8,7 @@ import SEOHead from '../components/SEOHead'
 import PartilharSocial from '../components/PartilharSocial'
 import WhatsAppMockup from '../components/WhatsAppMockup'
 import ScrollReveal from '../components/ScrollReveal'
+import PodcastPlayer from '../components/shared/PodcastPlayer'
 
 /**
  * IGNIS - Landing Page (Expanded)
@@ -811,6 +812,18 @@ const LandingIgnis = () => {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Vivianne Explica — Podcast teaser */}
+      <section className="py-12 px-4" style={{ background: 'linear-gradient(180deg, #F5F0EB 0%, #FDF8F3 100%)' }}>
+        <div className="max-w-lg mx-auto">
+          <ScrollReveal>
+            <p className="text-center text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#C0392B' }}>
+              Ouve a Vivianne
+            </p>
+            <PodcastPlayer eco="ignis" />
+          </ScrollReveal>
         </div>
       </section>
 
