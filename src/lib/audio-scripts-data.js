@@ -360,6 +360,36 @@ export const AUDIO_SCRIPTS = {
       "script": "[warmly] Já sabes muito. [pause] Comes bem e mesmo assim não funciona. [pause] Lês sobre produtividade e mesmo assim repetes padrões. [pause] Porquê? [long pause] [building] Porque a informação está fragmentada. [pause] Sabes de nutrição. Mas não sabes que comes por emoção. [pause] Sabes de produtividade. Mas não sabes que a ocupação é fuga. [pause] Sabes de comunicação. Mas não sabes por que te calas. [long pause] [intensely] O conhecimento isolado não transforma. [pause] A integração sim. [long pause] [gently] Corpo. Valor. Emoção. Foco. Energia. Voz. Identidade. [pause] 7 dimensões que precisam de conversar. [long pause] [warmly] Nas últimas semanas partilhei o que aprendi. [pause] Agora convido-te a descobrir o teu ponto de partida. [long pause] [gently] Diagnóstico grátis. [pause] 2 minutos. [pause] Link na bio."
     },
     {
+      "slug": "mkt-lz-lc-01-fragmentada",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[gently] Se isto soa familiar... [pause] guarda este post. [long pause]\n\n[building] Cuidas do corpo [pause] mas ignoras o que sentes. [pause]\nTens disciplina [pause] mas zero direcção. [pause]\nSabes o que fazer [pause] mas não fazes. [pause]\nEstás sempre cansada... [pause] mas não é do corpo. [pause]\nAjudas toda a gente. [long pause]\n\n[intensely] Menos a ti. [long pause]\n\n[warmly] Se reconheces 3 ou mais, [pause] a tua vida não precisa de mais informação. [pause] Precisa de integração. [long pause]\n\n[gently] Guarda [pause] e envia a quem precisa disto."
+    },
+    {
+      "slug": "mkt-lz-lc-02-cansaco",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[intensely] Estás exausta. [pause] Mas não é do corpo. [long pause]\n\n[building] Dormes 7 horas [pause] e acordas destruída. [pause]\nComes bem [pause] e continuas sem energia. [pause]\nFazes exercício [pause] e mesmo assim arrastas-te. [long pause]\n\n[gently] E se o cansaço não for físico? [pause]\nE se for falta de integração [pause] entre o que vives, [pause] o que sentes, [pause] e o que precisas? [long pause]\n\n[warmly] O corpo fala. [pause] Mas não só de comida e sono. [long pause]\n\n[gently] Faz o diagnóstico grátis. [pause] 2 minutos. [pause] Link na bio."
+    },
+    {
+      "slug": "mkt-lz-lc-03-corpo-fala",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[intensely] O teu corpo está a falar. [pause] Tu é que não estás a ouvir. [long pause]\n\n[building] Tensão no pescoço? [pause] Pode ser o que não dizes. [pause]\nDor de estômago constante? [pause] Pode ser ansiedade disfarçada. [pause]\nInsónia? [pause] Pode ser uma decisão que estás a adiar. [pause]\nComes sem fome? [pause] Pode ser emoção a pedir atenção. [long pause]\n\n[warmly] Não é fraqueza. [pause] É informação. [long pause]\n\n[gently] Guarda isto. [pause] E descobre o que o teu corpo diz."
+    },
+    {
+      "slug": "mkt-lz-lc-04-diagnostico",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[warmly] Fiz isto em 2 minutos. [pause] E mudou a forma como me vejo. [long pause]\n\n[building] São 7 perguntas. [pause] Sobre corpo, [pause] energia, [pause] mente, [pause] emoção. [pause]\nNada de peso. [pause] Nada de calorias. [long pause]\n\n[gently] E o resultado? [pause] 23 leituras possíveis. [pause] Cada uma revela um padrão diferente. [long pause]\n\n[intensely] Eu fiquei chocada com a minha. [long pause]\n\n[warmly] Experimenta. [pause] É grátis. [pause] Link na bio."
+    },
+    {
+      "slug": "mkt-lz-lc-06-resolves-tudo",
+      "speed": 0.75,
+      "stability": 82,
+      "script": "[intensely] Resolves o trabalho. [pause] Os filhos. [pause] A casa. [pause] O jantar. [pause] Tudo. [long pause]\n\n[gently] Menos o que sentes. [long pause]\n\n[building] Tens solução para tudo. [pause]\nMenos para a tua exaustão. [pause]\nMenos para aquele vazio que aparece quando paras. [pause]\nMenos para a pergunta: [pause] e eu? [long pause]\n\n[warmly] Porque cresceste a acreditar que cuidar de ti era egoísmo. [long pause]\n\n[intensely] Não é. [pause] É a fundação de tudo o resto."
+    },
+    {
       "slug": "mkt-mockup-01-lancamento",
       "speed": 0.88,
       "stability": 72,
