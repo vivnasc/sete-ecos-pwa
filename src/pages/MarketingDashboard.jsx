@@ -31,7 +31,6 @@ import {
 } from '../lib/marketing-engine';
 import { RENDER_MAP, CORES, FORMATOS } from '../components/TemplateVisual';
 import { getAudioUrl } from '../lib/shared/audioStorage';
-import { AUDIO_SCRIPTS } from '../lib/audio-scripts-data';
 
 // ============================================================
 // AUTO IMAGE - Gera imagem automaticamente
@@ -1168,9 +1167,7 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
 
           {/* Áudio — player se pré-gerado, ou script para copiar */}
           {post.audioScript && (() => {
-            const diaStr = String(post.dia).padStart(2, '0');
-            const audioEntry = (AUDIO_SCRIPTS?.MARKETING || []).find(e => e.slug.startsWith(`mkt-lz-${diaStr}`));
-            const audioUrl = audioEntry ? getAudioUrl('marketing', audioEntry.slug) : null;
+            const audioUrl = post.audioSlug ? getAudioUrl('marketing', post.audioSlug) : null;
             return (
               <div className="bg-orange-50 border border-orange-200 rounded-xl p-2.5 space-y-2">
                 <div className="flex items-center justify-between">
