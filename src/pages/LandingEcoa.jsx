@@ -9,6 +9,7 @@ import PartilharSocial from '../components/PartilharSocial'
 import WhatsAppMockup from '../components/WhatsAppMockup'
 import ScrollReveal from '../components/ScrollReveal'
 import PodcastPlayer from '../components/shared/PodcastPlayer'
+import AudioPlayerBar from '../components/shared/AudioPlayerBar'
 
 /**
  * ECOA - Landing Page
@@ -843,6 +844,8 @@ const LandingEcoa = () => {
             <p className="text-center text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#2980B9' }}>
               Ouve a Vivianne
             </p>
+            <AudioPlayerBar eco="marketing" slug="mkt-eco-ecoa" accentColor="#2980B9" titulo="Apresentação do ECOA" />
+            <div className="mt-4" />
             <PodcastPlayer eco="ecoa" />
           </ScrollReveal>
         </div>

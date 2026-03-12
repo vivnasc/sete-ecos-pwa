@@ -5,6 +5,7 @@ import { WhatsAppAlertas } from '../lib/whatsapp';
 import SEOHead from '../components/SEOHead';
 import PartilharSocial from '../components/PartilharSocial';
 import ScrollReveal from '../components/ScrollReveal';
+import { getAudioUrl } from '../lib/shared/audioStorage';
 
 // Script para gerar áudio intro no ElevenLabs (200k créditos disponíveis)
 // Voz: calma, pausada, tom de professora/mentora. Duração ~90 segundos.
@@ -67,7 +68,7 @@ const AudioIntro = () => {
 
         <audio
           ref={audioRef}
-          src="/audio/mkt-intro-landing.mp3"
+          src={getAudioUrl('marketing', 'mkt-intro-landing')}
           onEnded={() => setPlaying(false)}
           onError={() => setShowScript(true)}
           preload="none"

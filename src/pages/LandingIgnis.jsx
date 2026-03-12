@@ -9,6 +9,7 @@ import PartilharSocial from '../components/PartilharSocial'
 import WhatsAppMockup from '../components/WhatsAppMockup'
 import ScrollReveal from '../components/ScrollReveal'
 import PodcastPlayer from '../components/shared/PodcastPlayer'
+import AudioPlayerBar from '../components/shared/AudioPlayerBar'
 
 /**
  * IGNIS - Landing Page (Expanded)
@@ -822,6 +823,8 @@ const LandingIgnis = () => {
             <p className="text-center text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#C0392B' }}>
               Ouve a Vivianne
             </p>
+            <AudioPlayerBar eco="marketing" slug="mkt-eco-ignis" accentColor="#C0392B" titulo="Apresentação do IGNIS" />
+            <div className="mt-4" />
             <PodcastPlayer eco="ignis" />
           </ScrollReveal>
         </div>

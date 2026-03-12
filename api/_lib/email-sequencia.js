@@ -24,6 +24,24 @@ const FROM_EMAIL = process.env.FROM_EMAIL || 'Sete Ecos <noreply@seteecos.com>';
 const BASE_URL = 'https://app.seteecos.com';
 const WHATSAPP_CHATBOT = 'https://wa.me/258851006473';
 
+// URL base para áudios no Supabase Storage
+const AUDIO_BASE = SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/audios` : '';
+
+/**
+ * Gera bloco HTML de áudio para emails (botão "Ouvir Áudio")
+ * Email clients não suportam <audio>, por isso usamos link directo
+ */
+function blocoAudio(pasta, slug, titulo) {
+  if (!AUDIO_BASE) return '';
+  const url = `${AUDIO_BASE}/${pasta}/${slug}.mp3`;
+  return `
+    <div style="background: linear-gradient(135deg, #4B0082, #6B5B95); border-radius: 12px; padding: 16px; margin: 20px 0; text-align: center;">
+      <p style="color: rgba(255,255,255,0.8); font-size: 11px; letter-spacing: 1px; margin: 0 0 6px; text-transform: uppercase;">Áudio da Vivianne</p>
+      <p style="color: white; font-weight: bold; font-size: 15px; margin: 0 0 12px;">${titulo}</p>
+      <a href="${url}" style="display: inline-block; padding: 10px 28px; background: white; color: #4B0082; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 14px;">▶ Ouvir Áudio</a>
+    </div>`;
+}
+
 // Rodapé padrão com WhatsApp
 const RODAPE_WHATSAPP = `
   <div style="background: #25D366; border-radius: 12px; padding: 16px; margin: 30px 0; text-align: center;">
@@ -45,6 +63,7 @@ const SEQUENCIA = [
         <p style="color: #6B5C4C; line-height: 1.8;">O Sete Ecos é um ecossistema de transformação integral — sete caminhos que se complementam para te guiar numa jornada de autodescoberta, equilíbrio e plenitude.</p>
         <p style="color: #6B5C4C; line-height: 1.8;">Nos próximos dias, vou partilhar contigo conhecimento prático sobre corpo, emoção e mente. Coisas que aprendi ao longo de anos de trabalho com pessoas reais.</p>
         <p style="color: #6B5C4C; line-height: 1.8;">A começar pelo <strong>Lumina</strong> — um diagnóstico gratuito que revela padrões sobre a tua energia, emoção e corpo.</p>
+        ${blocoAudio('whatsapp', 'wa-nurture-dia-00-boas-vindas', 'Mensagem de boas-vindas')}
         <div style="text-align: center; margin: 30px 0;">
           <a href="${BASE_URL}/lumina?utm_source=email&utm_medium=sequencia&utm_campaign=dia0" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6B5B95, #9B59B6); color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Experimentar o Lumina (Gratuito)</a>
         </div>
@@ -66,6 +85,7 @@ const SEQUENCIA = [
           <li>Ligações entre ciclo hormonal e estados emocionais</li>
         </ul>
         <p style="color: #6B5C4C; line-height: 1.8;">É <strong>completamente gratuito</strong>. Demora menos de 2 minutos.</p>
+        ${blocoAudio('audiogramas', 'audiograma-10-diagnostico-gratis', '2 minutos que podem mudar o teu dia')}
         <div style="text-align: center; margin: 30px 0;">
           <a href="${BASE_URL}/lumina?utm_source=email&utm_medium=sequencia&utm_campaign=dia3" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6B5B95, #9B59B6); color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Fazer o Meu Diagnóstico</a>
         </div>
@@ -89,6 +109,7 @@ const SEQUENCIA = [
           <p style="color: #6B5C4C; margin: 0;">Perder peso e ganhar de volta é o resultado mais comum de dietas restritivas. O metabolismo adapta-se, baixa o gasto energético, e quando voltas a comer normalmente o corpo armazena mais. Não é falta de disciplina — é biologia.</p>
         </div>
         <p style="color: #6B5C4C; line-height: 1.8;">Se te identificas com algum destes sinais, o Lumina pode ajudar-te a entender melhor o que o teu corpo está a dizer.</p>
+        ${blocoAudio('audiogramas', 'audiograma-08-corpo-fala', 'O teu corpo falou primeiro — ouviste?')}
         <div style="text-align: center; margin: 30px 0;">
           <a href="${BASE_URL}/lumina?utm_source=email&utm_medium=sequencia&utm_campaign=dia7" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6B5B95, #9B59B6); color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Experimenta o Lumina</a>
         </div>
@@ -130,6 +151,7 @@ const SEQUENCIA = [
         </div>
         <p style="color: #6B5C4C; line-height: 1.8;">Quando sentires vontade de comer, experimenta parar e perguntar: "Estou com fome no corpo ou na cabeça?" Só essa pergunta já muda muita coisa.</p>
         <p style="color: #6B5C4C; line-height: 1.8;">No Sete Ecos chamamos a isto o <strong>Espaço de Retorno</strong> — um momento de pausa consciente antes de agir. É uma prática, não uma regra. E fica mais fácil com o tempo.</p>
+        ${blocoAudio('audiogramas', 'audiograma-01-fome-nao-e-fome', 'Essa fome não é fome')}
         ${RODAPE_WHATSAPP}
         <p style="color: #6B5C4C; font-size: 14px; text-align: center;">— Vivianne</p>
       </div>`
@@ -158,6 +180,7 @@ const SEQUENCIA = [
         </div>
 
         <p style="color: #6B5C4C; line-height: 1.8;">Se queres entender melhor como o teu corpo funciona, o <strong>Lumina</strong> ajuda-te a identificar padrões — é gratuito e demora menos de 2 minutos.</p>
+        ${blocoAudio('audiogramas', 'audiograma-02-dieta-mentira', 'A tua dieta mentiu-te')}
         <div style="text-align: center; margin: 30px 0;">
           <a href="${BASE_URL}/lumina?utm_source=email&utm_medium=sequencia&utm_campaign=dia14" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6B5B95, #9B59B6); color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Experimenta o Lumina</a>
         </div>
@@ -187,6 +210,7 @@ const SEQUENCIA = [
 
         <p style="color: #6B5C4C; line-height: 1.8;">Conhecer o teu ciclo muda a forma como te relacionas com a comida. Em vez de lutar contra o corpo, aprendes a trabalhar com ele.</p>
         <p style="color: #6B5C4C; line-height: 1.8;">O <strong>Lumina</strong> integra o ciclo menstrual no diagnóstico — para que entendas como o teu corpo funciona em cada fase.</p>
+        ${blocoAudio('audiogramas', 'audiograma-04-cansaco-alma', 'Esse cansaço não é do corpo')}
         <div style="text-align: center; margin: 30px 0;">
           <a href="${BASE_URL}/lumina?utm_source=email&utm_medium=sequencia&utm_campaign=dia21" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6B5B95, #9B59B6); color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Descobre mais no Lumina</a>
         </div>
@@ -216,6 +240,8 @@ const SEQUENCIA = [
 
         <p style="color: #6B5C4C; line-height: 1.8;">Cada eco trabalha uma dimensão diferente. Juntos, formam um sistema integrado de transformação. Não é preciso fazer todos — começas por onde sentes mais necessidade.</p>
         <p style="color: #6B5C4C; line-height: 1.8;">Se queres descobrir por onde começar, o <strong>Lumina</strong> mostra-te exactamente isso.</p>
+
+        ${blocoAudio('marketing', 'mkt-trailer-7-ecos', 'Os 7 Ecos — A visão completa')}
 
         <div style="text-align: center; margin: 30px 0;">
           <a href="${BASE_URL}/lumina?utm_source=email&utm_medium=sequencia&utm_campaign=dia30" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6B5B95, #9B59B6); color: white; border-radius: 25px; text-decoration: none; font-weight: bold;">Descobre por onde começar</a>
