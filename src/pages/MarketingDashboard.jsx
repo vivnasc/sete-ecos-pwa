@@ -956,10 +956,10 @@ function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo, prog }) {
             </button>
           </div>
           <h1 className="text-xl font-bold" style={{ fontFamily: 'var(--font-titulos)' }}>
-            Campanha de Lançamento
+            17 Posts de Lançamento
           </h1>
           <p className="text-white/60 text-sm mt-1">
-            17 Reels para construir audiência do zero — sem precisares de aparecer
+            17 posts para construir audiência do zero — feeds, carrosséis, stories e reels
           </p>
 
           {/* Barra de progresso */}
@@ -977,10 +977,10 @@ function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo, prog }) {
           </div>
 
           <div className="flex gap-1.5 mt-3">
-            <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">Reels only</span>
+            <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">Feeds + Stories</span>
+            <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">Carrosséis</span>
             <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">Mockups reais</span>
             <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">1 eco = 1 cor</span>
-            <span className="text-[9px] bg-white/10 text-white/70 px-2 py-1 rounded-full">Zero stories</span>
           </div>
         </div>
       </div>
@@ -991,7 +991,7 @@ function CampanhaLancamento({ copiar, copiado, onDiario, onVerTudo, prog }) {
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3">
             <p className="text-xs text-amber-800 font-bold mb-1">Como usar esta campanha</p>
             <p className="text-[11px] text-amber-700 leading-relaxed">
-              Publica 1 Reel por dia (Reels são o ÚNICO formato que chega a quem não te segue). Fase 1: monta o perfil e os destaques. Fase 2: mostra Lumina grátis + Vitalis com mockups. Fase 3: cada eco com a sua cor e mockup. NUNCA stories (ninguém as vê com zero seguidores).
+              Publica 1 post por dia. Cada post inclui: imagem feed (1:1), carrossel deslizável, stories (9:16) e legendas para todas as redes. Fase 1: monta o perfil e os destaques. Fase 2: mostra Lumina grátis + Vitalis com mockups. Fase 3: cada eco com a sua cor e mockup.
             </p>
           </div>
         </div>
@@ -1087,6 +1087,25 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
   const [aberto, setAberto] = useState(false);
   const [textoAberto, setTextoAberto] = useState(null);
 
+  const templateTipo = post.template === 'cta' ? 'cta' : 'dica';
+  const mockups = post.mockups || getMockupsEco(post.eco);
+  const mockupPrincipal = mockups[0];
+
+  // Gerar slides de carrossel a partir do corpo do post
+  const carrosselSlides = (() => {
+    if (post.formato === 'destaques') return null;
+    const paragrafos = (post.corpo || '').split('\n').filter(p => p.trim().length > 10);
+    if (paragrafos.length < 2) return null;
+    const slides = [
+      { titulo: post.hook?.length > 80 ? post.hook.slice(0, 77) + '...' : post.hook, texto: 'Desliza →' },
+    ];
+    paragrafos.slice(0, 4).forEach(p => {
+      slides.push({ titulo: p.length > 80 ? p.slice(0, 77) + '...' : p, texto: '' });
+    });
+    slides.push({ titulo: post.cta?.length > 80 ? post.cta.slice(0, 77) + '...' : (post.cta || 'app.seteecos.com'), texto: 'app.seteecos.com' });
+    return slides;
+  })();
+
   return (
     <div className="space-y-2">
       {/* Header do post */}
@@ -1133,9 +1152,8 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
             </div>
           )}
 
-          {/* ========== MATERIAL PRONTO A PUBLICAR ========== */}
+          {/* ===== DESTAQUES (post 4 apenas) ===== */}
           {post.formato === 'destaques' ? (
-            /* DESTAQUES: 9 capas individuais para IG Highlights */
             <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
               <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
                 <div>
@@ -1167,99 +1185,148 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
                 })()}
               </div>
             </div>
-          ) : post.mockups && post.mockups.length > 0 ? (
-            /* COM MOCKUP: imagens compostas prontas (mockup + texto + cores) */
-            <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
-              <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
-                <div>
-                  <p className="font-bold text-xs text-[#4A4035]">Imagens prontas a publicar</p>
-                  <p className="text-[10px] text-[#A09888]">Compostas com mockup + texto — descarrega e publica</p>
-                </div>
-                <span className="text-[9px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full">Prontas</span>
-              </div>
-              <div className="p-3 space-y-3">
-                {/* Feed 1:1 */}
-                <div>
-                  <p className="text-[10px] font-bold text-[#6B5C4C] mb-1.5">Feed (1:1)</p>
-                  <div className="flex gap-3 overflow-x-auto pb-1">
-                    {post.mockups.map((src, i) => (
-                      <MockupSlide
-                        key={`feed-${i}`}
-                        mockupSrc={src}
-                        texto={post.hook}
-                        subtitulo={post.cta || 'app.seteecos.com'}
-                        isCover={i === 0}
-                        filename={`post-${post.dia}-feed-${i + 1}.jpg`}
-                      />
-                    ))}
-                  </div>
-                </div>
-                {/* Story/Reel 9:16 */}
-                <div>
-                  <p className="text-[10px] font-bold text-[#6B5C4C] mb-1.5">Story / Reel (9:16)</p>
-                  <div className="flex gap-3 overflow-x-auto pb-1">
-                    {post.mockups.map((src, i) => (
-                      <StorySlide
-                        key={`story-${i}`}
-                        mockupSrc={src}
-                        texto={post.hook}
-                        subtitulo={CORES[post.eco]?.nome || post.eco.toUpperCase()}
-                        eco={post.eco}
-                        filename={`post-${post.dia}-reel-${i + 1}.jpg`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
           ) : (
-            /* SEM MOCKUP: frames de texto prontos */
-            (() => {
-              const frames = parseReelFrames(post);
-              if (frames.length === 0) return (
-                <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
-                  <div className="px-4 py-2.5 border-b border-[#E8E2D9]">
-                    <p className="font-bold text-xs text-[#4A4035]">Imagens prontas</p>
+            <>
+              {/* ===== 1. POST FEED COLORIDO (AutoImage 1:1) ===== */}
+              <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+                <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-xs text-[#4A4035]">Post do dia</p>
+                    <p className="text-[10px] text-[#A09888]">Imagem pronta — descarrega e publica</p>
                   </div>
-                  <div className="p-3 flex gap-3 justify-center flex-wrap">
-                    <AutoImage template={post.template || 'dica'} eco={post.eco} formato="post" texto={post.conteudoIG?.texto || post.hook} subtitulo={post.conteudoIG?.subtitulo || ''} scale={0.28} filename={`post-${post.dia}-feed.png`} />
-                    <AutoImage template={post.template || 'dica'} eco={post.eco} formato="stories" texto={post.conteudoIG?.texto || post.hook} subtitulo={post.conteudoIG?.subtitulo || ''} scale={0.16} filename={`post-${post.dia}-reel.png`} />
-                  </div>
+                  <span className="text-[9px] bg-pink-100 text-pink-700 font-bold px-2 py-0.5 rounded-full">1:1</span>
                 </div>
-              );
-              return (
+                <div className="p-3 flex justify-center">
+                  <AutoImage
+                    template={templateTipo}
+                    eco={post.eco}
+                    formato="post"
+                    texto={post.conteudoIG?.texto || post.hook}
+                    subtitulo={post.conteudoIG?.subtitulo || post.cta || ''}
+                    scale={0.28}
+                    filename={`post-${post.dia}-feed.png`}
+                  />
+                </div>
+              </div>
+
+              {/* ===== 2. CARROSSEL (slides deslizáveis) ===== */}
+              {carrosselSlides && (
                 <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
                   <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
                     <div>
-                      <p className="font-bold text-xs text-[#4A4035]">Reel pronto — {frames.length} frames</p>
-                      <p className="text-[10px] text-[#A09888]">Descarrega → CapCut → 2-3s por frame + fade</p>
+                      <p className="font-bold text-xs text-[#4A4035]">Carrossel: {post.titulo}</p>
+                      <p className="text-[10px] text-[#A09888]">{carrosselSlides.length} slides — desliza e descarrega</p>
                     </div>
-                    <span className="text-[9px] bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold px-2 py-0.5 rounded-full">{frames.length} frames</span>
+                    <span className="text-[9px] bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-full">Slides</span>
                   </div>
-                  <div className="p-3 space-y-3">
+                  <div className="p-3">
+                    <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+                      {carrosselSlides.map((slide, i) => (
+                        <AutoImage
+                          key={i}
+                          template="carrossel"
+                          eco={post.eco}
+                          formato="post"
+                          texto={slide.titulo}
+                          subtitulo={slide.texto}
+                          slideNum={i + 1}
+                          totalSlides={carrosselSlides.length}
+                          bgIndex={i}
+                          scale={0.24}
+                          filename={`post-${post.dia}-carrossel-${i + 1}.png`}
+                          className="shrink-0"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ===== 3. MOCKUP (se houver) ===== */}
+              {post.mockups && post.mockups.length > 0 && (
+                <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+                  <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
                     <div>
-                      <p className="text-[10px] font-bold text-[#6B5C4C] mb-1.5">Reel (9:16)</p>
+                      <p className="font-bold text-xs text-[#4A4035]">Mockup da app</p>
+                      <p className="text-[10px] text-[#A09888]">Imagem com screenshot real</p>
+                    </div>
+                    <span className="text-[9px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full">Mockup</span>
+                  </div>
+                  <div className="p-3">
+                    <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+                      {post.mockups.map((src, i) => (
+                        <MockupSlide
+                          key={`feed-${i}`}
+                          mockupSrc={src}
+                          texto={post.hook}
+                          subtitulo={post.cta || 'app.seteecos.com'}
+                          isCover={i === 0}
+                          filename={`post-${post.dia}-mockup-${i + 1}.jpg`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ===== 4. STORIES — colorida + mockup ===== */}
+              <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+                <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-xs text-[#4A4035]">Stories</p>
+                    <p className="text-[10px] text-[#A09888]">IG, FB e WA Status — 2 versões</p>
+                  </div>
+                  <span className="text-[9px] bg-gradient-to-r from-orange-400 to-pink-500 text-white font-bold px-2 py-0.5 rounded-full">9:16</span>
+                </div>
+                <div className="p-3 flex gap-3 justify-center overflow-x-auto">
+                  <AutoImage
+                    template={templateTipo}
+                    eco={post.eco}
+                    formato="stories"
+                    texto={post.conteudoIG?.texto || post.hook}
+                    subtitulo="app.seteecos.com"
+                    scale={0.16}
+                    filename={`post-${post.dia}-story-colorido.png`}
+                  />
+                  {mockupPrincipal && (
+                    <StorySlide
+                      mockupSrc={mockupPrincipal}
+                      texto={post.hook}
+                      subtitulo={CORES[post.eco]?.nome || post.eco.toUpperCase()}
+                      eco={post.eco}
+                      filename={`post-${post.dia}-story-mockup.jpg`}
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* ===== 5. REEL FRAMES (se não tem mockups) ===== */}
+              {!post.mockups && (() => {
+                const frames = parseReelFrames(post);
+                if (frames.length === 0) return null;
+                return (
+                  <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+                    <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+                      <div>
+                        <p className="font-bold text-xs text-[#4A4035]">Reel — {frames.length} frames</p>
+                        <p className="text-[10px] text-[#A09888]">CapCut → 2-3s por frame + fade</p>
+                      </div>
+                      <span className="text-[9px] bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold px-2 py-0.5 rounded-full">{frames.length} frames</span>
+                    </div>
+                    <div className="p-3">
                       <div className="grid grid-cols-2 gap-2">
                         {frames.map((frame, i) => (
                           <AutoImage key={i} template="dica" eco={frame.eco} formato="stories" texto={frame.texto} subtitulo={i === frames.length - 1 ? 'app.seteecos.com' : ''} scale={0.22} filename={`reel-${post.dia}-frame-${frame.num}.png`} />
                         ))}
                       </div>
                     </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-[#6B5C4C] mb-1.5">Feed (1:1)</p>
-                      <div className="grid grid-cols-2 gap-2">
-                        {frames.map((frame, i) => (
-                          <AutoImage key={`f-${i}`} template="dica" eco={frame.eco} formato="post" texto={frame.texto} subtitulo={i === frames.length - 1 ? 'app.seteecos.com' : ''} scale={0.22} filename={`feed-${post.dia}-frame-${frame.num}.png`} />
-                        ))}
-                      </div>
-                    </div>
                   </div>
-                </div>
-              );
-            })()
+                );
+              })()}
+            </>
           )}
 
-          {/* Legendas por plataforma — esconde se não há captions (destaques) */}
+          {/* Legendas por plataforma */}
           {post.formato !== 'destaques' && <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
             <div className="px-4 py-2.5 border-b border-[#E8E2D9]">
               <p className="font-bold text-xs text-[#4A4035]">Legendas prontas</p>
