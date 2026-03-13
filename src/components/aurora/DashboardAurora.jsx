@@ -127,6 +127,7 @@ export default function DashboardAurora() {
     { label: t('aurora.dashboard.maintenance'), to: '/aurora/manutencao', icon: '\u{1F6E1}\uFE0F', subtitle: t('aurora.dashboard.maintenance_sub') },
     { label: t('aurora.dashboard.mentorship'), to: '/aurora/mentoria', icon: '\u{1F31F}', subtitle: t('aurora.dashboard.mentorship_sub') },
     { label: t('aurora.dashboard.ritual'), to: '/aurora/ritual', icon: '\u2600\uFE0F', subtitle: t('aurora.dashboard.ritual_sub') },
+    { label: 'Rituais Guiados', to: '/aurora/audios', icon: '🎧', subtitle: '7 meditações guiadas' },
     { label: t('aurora.dashboard.renewal'), to: '/aurora/renovacao', icon: '\u{1F504}', subtitle: t('aurora.dashboard.renewal_sub') }
   ]
 
