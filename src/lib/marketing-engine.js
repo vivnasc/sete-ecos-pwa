@@ -1480,6 +1480,7 @@ export function getCarrosseisProntos() {
       titulo: '5 Mitos sobre Alimentação',
       marca: 'vitalis',
       cor: '#7C8B6F',
+      audioSlug: 'mkt-carrossel-mitos-alimentacao',
       slides: [
         { titulo: '5 Mitos que Destroem a tua Saúde', texto: 'Quantos destes já acreditaste?' },
         { titulo: 'Mito 1: Hidratos engordam', texto: 'Falso. O que importa é a porção e o acompanhamento. Hidratos são energia essencial.' },
@@ -1495,6 +1496,7 @@ export function getCarrosseisProntos() {
       titulo: '4 Sinais de Fome Emocional',
       marca: 'vitalis',
       cor: '#7C8B6F',
+      audioSlug: 'mkt-carrossel-fome-emocional',
       slides: [
         { titulo: 'Tens fome ou tens medo?', texto: '4 sinais de que comes por emoção, não por necessidade.' },
         { titulo: 'Sinal 1: Comes sem fome', texto: 'Quando a boca quer mas o estômago não pede. É emoção disfarçada.' },
@@ -1510,6 +1512,7 @@ export function getCarrosseisProntos() {
       titulo: 'Guia de Porções com as Mãos',
       marca: 'vitalis',
       cor: '#7C8B6F',
+      audioSlug: 'mkt-carrossel-porcoes-maos',
       slides: [
         { titulo: 'Esquece a balança. Usa as mãos.', texto: 'O guia mais simples para porções correctas.' },
         { titulo: 'Palma aberta = Proteína', texto: 'Frango, peixe, carne, ovo. Uma palma por refeição.' },
@@ -1525,6 +1528,7 @@ export function getCarrosseisProntos() {
       titulo: 'LUMINA: O Diagnóstico que Ninguém te Fez',
       marca: 'lumina',
       cor: '#5C6BC0',
+      audioSlug: 'mkt-carrossel-lumina-como-funciona',
       slides: [
         { titulo: 'O diagnóstico que ninguém te fez.', texto: '2 minutos. 7 perguntas. 23 padrões possíveis.' },
         { titulo: '7 perguntas simples', texto: 'Energia, tensão, imagem, passado, futuro, clareza, conexão.' },
@@ -1539,6 +1543,7 @@ export function getCarrosseisProntos() {
       titulo: 'O que o VITALIS Inclui',
       marca: 'vitalis',
       cor: '#7C8B6F',
+      audioSlug: 'mkt-carrossel-vitalis-o-que-inclui',
       slides: [
         { titulo: 'Não é uma dieta. É o fim das dietas.', texto: 'VITALIS - Coaching Nutricional Personalizado' },
         { titulo: 'Plano alimentar feito para TI', texto: 'Com comida real e acessível. Adaptado à tua rotina. Sem listas impossíveis.' },
@@ -1554,6 +1559,7 @@ export function getCarrosseisProntos() {
       titulo: 'O Ciclo Vicioso da Dieta',
       marca: 'seteEcos',
       cor: '#6B5B95',
+      audioSlug: 'mkt-carrossel-ciclo-dieta',
       slides: [
         { titulo: '80% dos problemas com comida são emocionais.', texto: 'Conhece o ciclo que te prende.' },
         { titulo: 'STRESS → Comes demais', texto: 'O corpo procura conforto rápido. Açúcar. Hidratos. Comida processada.' },
@@ -1568,6 +1574,7 @@ export function getCarrosseisProntos() {
       titulo: 'AUREA: O Programa de Autovalor',
       marca: 'aurea',
       cor: '#C9A227',
+      audioSlug: 'mkt-carrossel-aurea-autovalor',
       slides: [
         { titulo: 'O teu valor não cabe numa calça tamanho S.', texto: 'ÁUREA - Programa de Autovalor' },
         { titulo: 'Foste condicionado(a) a duvidar de ti.', texto: 'Pela escola. Pela TV. Pelas redes. Pelo espelho. Mas isso é uma mentira.' },
@@ -1582,6 +1589,7 @@ export function getCarrosseisProntos() {
       titulo: 'As 7 Dimensões do Bem-Estar',
       marca: 'seteEcos',
       cor: '#6B5B95',
+      audioSlug: 'mkt-carrossel-7-dimensoes',
       slides: [
         { titulo: 'Porque é que abordagens isoladas não funcionam?', texto: 'O bem-estar tem 7 dimensões. Conhece cada uma.' },
         { titulo: '1. Corpo (Vitalis)', texto: 'Alimentação consciente, não restritiva. Ouvir o corpo em vez de o punir.' },

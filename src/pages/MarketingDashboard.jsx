@@ -667,6 +667,44 @@ export default function MarketingDashboard() {
 // ============================================================
 
 // ============================================================
+// ÁUDIOS DOS CARROSSÉIS PRONTOS — filtra por eco e mostra player
+// ============================================================
+
+function CarrosseisAudioBloco({ eco }) {
+  const carrosseis = getCarrosseisProntos().filter(c => c.marca === eco || (eco === 'vitalis' && c.marca === 'vitalis') || c.marca === 'seteEcos');
+  const comAudio = carrosseis.filter(c => c.audioSlug);
+  if (comAudio.length === 0) return null;
+
+  return (
+    <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+      <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+        <div>
+          <p className="font-bold text-xs text-[#4A4035]">Áudios dos carrosséis</p>
+          <p className="text-[10px] text-[#A09888]">{comAudio.length} voiceover{comAudio.length > 1 ? 's' : ''} — ouve e partilha</p>
+        </div>
+        <span className="text-[9px] bg-orange-100 text-orange-700 font-bold px-2 py-0.5 rounded-full">MP3</span>
+      </div>
+      <div className="p-3 space-y-2.5">
+        {comAudio.map(c => {
+          const url = getAudioUrl('marketing', c.audioSlug);
+          return (
+            <div key={c.id} className="bg-orange-50 border border-orange-200 rounded-xl p-2.5 space-y-1.5">
+              <p className="text-[10px] font-bold text-orange-800">{c.titulo}</p>
+              <div className="flex items-center gap-2">
+                <audio src={url} controls preload="none" className="h-8 flex-1 min-w-0" />
+                <a href={url} download={`${c.id}-voiceover.mp3`} className="text-[9px] bg-orange-200 text-orange-800 px-2 py-1 rounded-full font-bold shrink-0 active:scale-95">
+                  MP3
+                </a>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
 // BLOCO DE ECO — todo o conteúdo visual de 1 eco (imagens + legendas)
 // ============================================================
 
@@ -814,7 +852,10 @@ function BlocoEco({ eco, copiar, copiado, prefixo }) {
             </div>
           </div>
 
-          {/* ===== 5. TEXTOS POR PLATAFORMA (collapsible) ===== */}
+          {/* ===== 5. ÁUDIOS DOS CARROSSÉIS ===== */}
+          <CarrosseisAudioBloco eco={eco.eco} />
+
+          {/* ===== 6. TEXTOS POR PLATAFORMA (collapsible) ===== */}
           <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
             <div className="px-4 py-2.5 border-b border-[#E8E2D9]">
               <p className="font-bold text-xs text-[#4A4035]">Legendas prontas</p>
@@ -3067,6 +3108,7 @@ function CarrosseisTab({ copiar, copiado }) {
 function CarrosselPreview({ carrossel, copiar, copiado }) {
   const [dataUrls, setDataUrls] = useState([]);
   const [loading, setLoading] = useState(true);
+  const audioUrl = carrossel.audioSlug ? getAudioUrl('marketing', carrossel.audioSlug) : null;
 
   useEffect(() => {
     setLoading(true);
@@ -3122,11 +3164,25 @@ function CarrosselPreview({ carrossel, copiar, copiado }) {
           ))}
         </div>
       )}
+      {audioUrl && (
+        <div className="mt-3 p-3 bg-[#1a1a2e]/5 rounded-xl border border-[#E8E2D9]">
+          <p className="text-[10px] font-bold text-[#6B5C4C] mb-2">VOICEOVER</p>
+          <audio controls preload="metadata" className="w-full h-10" style={{ borderRadius: '8px' }}>
+            <source src={audioUrl} type="audio/mpeg" />
+          </audio>
+        </div>
+      )}
       <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-[#E8E2D9]">
         <button onClick={downloadAll} disabled={loading} className="flex items-center gap-1.5 px-4 py-2 bg-[#1a1a2e] text-white rounded-full text-sm font-bold disabled:opacity-50">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
           Todos ({carrossel.slides.length} slides)
         </button>
+        {audioUrl && (
+          <a href={audioUrl} download={`${carrossel.id}-voiceover.mp3`} className="flex items-center gap-1.5 px-4 py-2 bg-[#6B5B95] text-white rounded-full text-sm font-bold hover:opacity-90 transition-opacity">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>
+            MP3
+          </a>
+        )}
         <CopyBtn onClick={() => copiar(carrossel.caption, 'c-cap')} copiado={copiado === 'c-cap'} label="Copiar Caption" />
       </div>
       <div className="mt-3 p-3 bg-gray-50 rounded-xl">
