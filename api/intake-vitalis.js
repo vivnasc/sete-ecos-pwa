@@ -55,23 +55,32 @@ export default async function handler(req, res) {
     // Sanitizar: TEXT[] columns rejects "" (empty string) — convert to null
     // Also handle empty arrays and stringified empty values
     const sanitizeForArrayColumns = (data) => {
+      // ALL columns that might be TEXT[] in the real database
       const arrayColumns = [
         'restricoes_alimentares', 'condicoes_saude', 'onde_come',
         'tipos_comida', 'bebidas', 'o_que_petisca',
-        'o_que_procura_comer', 'tipo_exercicio'
+        'o_que_procura_comer', 'tipo_exercicio',
+        'como_sente_depois', 'historico_dietas', 'dieta_funcionou',
+        'gatilhos_sair_plano', 'preferencias_alimentares', 'como_conheceu'
       ];
       const sanitized = { ...data };
       for (const col of arrayColumns) {
         if (col in sanitized) {
           const val = sanitized[col];
-          if (val === '' || val === '""' || (Array.isArray(val) && val.length === 0)) {
+          // Empty → null
+          if (val === '' || val === null || val === undefined || (Array.isArray(val) && val.length === 0)) {
             sanitized[col] = null;
           }
+          // String → wrap in array (e.g. "Sem restrições" → ["Sem restrições"])
+          else if (typeof val === 'string') {
+            sanitized[col] = val.includes(', ') ? val.split(', ') : [val];
+          }
+          // Array is fine as-is
         }
       }
-      // Also sanitize any field that is empty string but might be TEXT[] in real schema
+      // Sanitize empty strings in non-array fields
       for (const [key, val] of Object.entries(sanitized)) {
-        if (val === '' && key !== 'user_id') {
+        if (val === '' && key !== 'user_id' && !arrayColumns.includes(key)) {
           sanitized[key] = null;
         }
       }
