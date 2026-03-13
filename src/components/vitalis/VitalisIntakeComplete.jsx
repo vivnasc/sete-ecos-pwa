@@ -462,6 +462,9 @@ try {
 
   const aceita_jejum = formData.abordagem_preferida === 'keto_if';
 
+  // Sanitizar arrays — colunas TEXT[] não aceitam strings vazias
+  const safeArray = (val) => Array.isArray(val) && val.length > 0 ? val : null;
+
   // Converter arrays para strings onde necessário (colunas TEXT no PostgreSQL)
   const intakeData = {
         nome: formData.nome,
@@ -479,8 +482,8 @@ try {
         porque_importante: formData.porque_importante,
         abordagem_preferida: formData.abordagem_preferida,
         aceita_jejum: aceita_jejum,
-        restricoes_alimentares: formData.restricoes_alimentares,
-        condicoes_saude: formData.condicoes_saude,
+        restricoes_alimentares: safeArray(formData.restricoes_alimentares),
+        condicoes_saude: safeArray(formData.condicoes_saude),
         medicacao: formData.medicacao,
         refeicoes_dia: formData.refeicoes_dia === '1-2' ? 2
                      : formData.refeicoes_dia === '3' ? 3
@@ -490,14 +493,14 @@ try {
         pequeno_almoco: formData.faz_pequeno_almoco === 'sim' || formData.faz_pequeno_almoco === 'as_vezes'
           ? formData.pequeno_almoco_opcoes.join(', ')
           : 'Não faz',
-        onde_come: formData.onde_come,
-        tipos_comida: formData.tipos_comida,
+        onde_come: safeArray(formData.onde_come),
+        tipos_comida: safeArray(formData.tipos_comida),
         agua_litros_dia: parseFloat(formData.agua_litros_dia),
-        bebidas: formData.bebidas,
+        bebidas: safeArray(formData.bebidas),
         freq_doces: parseInt(formData.freq_doces),
         freq_fritos: parseInt(formData.freq_fritos),
         petisca: formData.petisca,
-        o_que_petisca: formData.o_que_petisca,
+        o_que_petisca: safeArray(formData.o_que_petisca),
         freq_cansaco: formData.freq_cansaco,
         freq_ansiedade: formData.freq_ansiedade,
         freq_tristeza: formData.freq_tristeza,
@@ -506,7 +509,7 @@ try {
         freq_solidao: formData.freq_solidao,
         freq_negacao: formData.freq_negacao,
         emocao_dominante: formData.emocao_dominante,
-        o_que_procura_comer: formData.o_que_procura_comer,
+        o_que_procura_comer: safeArray(formData.o_que_procura_comer),
         como_sente_depois: Array.isArray(formData.como_sente_depois)
           ? formData.como_sente_depois.join(', ')
           : formData.como_sente_depois,
@@ -515,7 +518,7 @@ try {
         que_alternativas: formData.que_alternativas,
         nivel_actividade: formData.nivel_actividade,
         faz_exercicio: formData.faz_exercicio,
-        tipo_exercicio: formData.tipo_exercicio,
+        tipo_exercicio: safeArray(formData.tipo_exercicio),
         horas_sono: formData.horas_sono,
         qualidade_sono: parseInt(formData.qualidade_sono),
         nivel_stress: parseInt(formData.nivel_stress),
