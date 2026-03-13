@@ -570,6 +570,54 @@ export const AUDIO_SCRIPTS = {
   ],
   "MARKETING": [
     {
+      "slug": "mkt-carrossel-7-dimensoes",
+      "speed": 0.78,
+      "stability": 80,
+      "script": "[firmly] Porque é que abordagens isoladas não funcionam? [pause] O bem-estar tem 7 dimensões. Conhece cada uma. [long pause]\n\n[building] 1. Corpo — Vitalis. [pause] Alimentação consciente, não restritiva. Ouvir o corpo em vez de o punir. [pause]\n\n2. Valor — Áurea. E 3. Emoção — Serena. [pause] Reconhecer o teu valor e aprender a navegar as emoções sem as anestesiar. [pause]\n\n4. Vontade — Ignis. E 5. Energia — Ventis. [pause] Foco consciente e gestão de energia. Saber quando avançar e quando parar. [pause]\n\n6. Expressão — Ecoa. E 7. Identidade — Imago. [pause] Encontrar a tua voz e integrar quem realmente és. [pause] As 7 dimensões ligam-se no Aurora. [long pause]\n\n[warmly] Começa por onde faz sentido para ti. [pause] Sete Ecos. Transmutação Integral."
+    },
+    {
+      "slug": "mkt-carrossel-aurea-autovalor",
+      "speed": 0.78,
+      "stability": 80,
+      "script": "[firmly] O teu valor não cabe numa calça tamanho S. [pause] ÁUREA. Programa de Autovalor. [long pause]\n\n[softly] Foste condicionada a duvidar de ti. [pause] Pela escola. Pela TV. Pelas redes. Pelo espelho. [pause] Mas isso é uma mentira. [pause]\n\n[building] 7 semanas de reconexão. [pause] Exercícios, reflexões e ferramentas para reconstruir a relação contigo. [pause]\n\n[warmly] O teu corpo é a tua casa. Não um projecto. [pause] Para de tentar arranjá-lo. [pause] Começa a habitá-lo. [long pause]\n\nÁUREA. [pause] Envia DM para saber mais."
+    },
+    {
+      "slug": "mkt-carrossel-ciclo-dieta",
+      "speed": 0.78,
+      "stability": 82,
+      "script": "[firmly] 80 por cento dos problemas com comida são emocionais. [pause] Conhece o ciclo que te prende. [long pause]\n\n[building] Stress — e comes demais. [pause] O corpo procura conforto rápido. Açúcar. Hidratos. Comida processada. [pause]\n\nCulpa — e restringes. [pause] Amanhã não como nada. Vou só beber água. A punição começa. [pause]\n\nRestrição — e vem a compulsão. [pause] O corpo não aguenta. Comes tudo. A culpa volta. [pause] Repete. [long pause]\n\n[warmly] A saída não é mais disciplina. [pause] É compreensão. [pause] Sete Ecos. Transmutação Integral."
+    },
+    {
+      "slug": "mkt-carrossel-fome-emocional",
+      "speed": 0.78,
+      "stability": 80,
+      "script": "[softly] Tens fome... ou tens medo? [pause] 4 sinais de que comes por emoção, não por necessidade. [long pause]\n\n[building] Sinal 1: Comes sem fome. [pause] Quando a boca quer mas o estômago não pede. É emoção disfarçada. [pause]\n\nSinal 2: Comes às escondidas. [pause] Se precisas de esconder o que comes, o problema não é a comida. [pause]\n\nSinal 3: Culpa depois de comer. [pause] Comer não é crime. Se sentes culpa, alguém te ensinou a ter medo. [pause]\n\nSinal 4: Comer acalma a ansiedade. [pause] A comida virou anestesia. O corpo encontrou uma forma de lidar com a dor. [long pause]\n\n[warmly] Há uma saída. [pause] E não é mais uma dieta. [pause] VITALIS. Espaço de Retorno Emocional."
+    },
+    {
+      "slug": "mkt-carrossel-lumina-como-funciona",
+      "speed": 0.8,
+      "stability": 80,
+      "script": "[firmly] O diagnóstico que ninguém te fez. [pause] 2 minutos. 7 perguntas. 23 padrões possíveis. [long pause]\n\n[building] 7 perguntas simples. [pause] Energia, tensão, imagem, passado, futuro, clareza, conexão. [pause]\n\n23 leituras possíveis. [pause] Críticas, alertas, proteção, transição, equilíbrio. [pause] O LUMINA encontra o teu padrão. [pause]\n\n[softly] Uma leitura só tua. [pause] Não é horóscopo. É baseado nas tuas respostas reais de hoje. [long pause]\n\n[warmly] Gratuito. Sem registo. 2 minutos. [pause] LUMINA."
+    },
+    {
+      "slug": "mkt-carrossel-mitos-alimentacao",
+      "speed": 0.8,
+      "stability": 78,
+      "script": "[firmly] 5 mitos que destroem a tua saúde. [pause] Quantos destes já acreditaste? [long pause]\n\n[building] Mito 1: Hidratos engordam. [pause] Falso. O que importa é a porção e o acompanhamento. Hidratos são energia essencial. [pause]\n\nMito 2: Preciso de suplementos caros. [pause] Feijão, ovo, amendoim, lentilhas. Proteína acessível em qualquer mercado. [pause]\n\nMito 3: Comer menos é emagrecer. [pause] Quando comes de menos, o metabolismo abranda. Comer melhor é o segredo. [pause]\n\nMito 4: Salada todos os dias. [pause] Comida saudável tem sabor. Caril de coco, piri-piri. Porção certa é saúde. [long pause]\n\n[warmly] Para de acreditar em mitos. [pause] VITALIS. Coaching Nutricional."
+    },
+    {
+      "slug": "mkt-carrossel-porcoes-maos",
+      "speed": 0.82,
+      "stability": 78,
+      "script": "[firmly] Esquece a balança. [pause] Usa as mãos. [pause] O guia mais simples para porções correctas. [long pause]\n\n[building] Palma aberta — proteína. [pause] Frango, peixe, carne, ovo. Uma palma por refeição. [pause]\n\nPunho fechado — hidratos. [pause] Arroz, massa, batata, pão. Um punho por refeição. É suficiente. [pause]\n\nPolegar — gorduras. [pause] Óleo, amendoim, abacate. Um polegar. Pouco mas essencial. [pause]\n\nDuas mãos — legumes. [pause] Quanto mais legumes, melhor. Sem limite. Enche o prato. [long pause]\n\n[warmly] Sem balança. Sem apps. Só as tuas mãos. [pause] VITALIS. Coaching Nutricional."
+    },
+    {
+      "slug": "mkt-carrossel-vitalis-o-que-inclui",
+      "speed": 0.8,
+      "stability": 78,
+      "script": "[firmly] Não é uma dieta. [pause] É o fim das dietas. [pause] VITALIS. Coaching Nutricional Personalizado. [long pause]\n\n[building] Plano alimentar feito para ti. [pause] Com comida real e acessível. Adaptado à tua rotina. Sem listas impossíveis. [pause]\n\nCoach I.A. disponível 24 horas. [pause] Pergunta o que quiseres. A qualquer hora. Sem julgamento. [pause]\n\n[softly] Espaço emocional para dias difíceis. [pause] Recaíste? Sem problema. Há um espaço para isso. Sem culpa. [pause]\n\n[building] Dashboard, receitas e desafios. [pause] Tudo no teu telemóvel. Progresso real que podes ver. [long pause]\n\n[warmly] Queres saber mais? [pause] Envia-me DM. [pause] VITALIS."
+    },
+    {
       "slug": "mkt-cta-comeca-agora",
       "speed": 0.9,
       "stability": 70,
