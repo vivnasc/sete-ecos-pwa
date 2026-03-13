@@ -105,13 +105,24 @@ function formatTitulo(slug) {
 const ALL_AUDIOS = buildAudioList()
 
 // ─── Componente principal ────────────────────────────────────────
+// Cache helpers — persistir estado de uploads/gerados entre reloads
+const CACHE_KEY_UPLOADS = 'sete-ecos-audio-uploads'
+const CACHE_KEY_ESTADOS = 'sete-ecos-audio-estados'
+
+function loadCache(key) {
+  try { return JSON.parse(localStorage.getItem(key)) || {} } catch { return {} }
+}
+function saveCache(key, data) {
+  try { localStorage.setItem(key, JSON.stringify(data)) } catch { /* quota */ }
+}
+
 export default function AudioMeditacoes() {
   const [apiKey, setApiKey] = useState('')
   const [voiceId, setVoiceId] = useState(DEFAULT_VOICE_ID)
   const [mostrarKey, setMostrarKey] = useState(false)
   const [tab, setTab] = useState('meditacoes')
-  const [estados, setEstados] = useState({}) // slug → 'gerando' | 'concluido' | 'erro:msg'
-  const [uploads, setUploads] = useState({}) // slug → 'uploading' | 'uploaded' | 'erro:msg'
+  const [estados, setEstados] = useState(() => loadCache(CACHE_KEY_ESTADOS)) // slug → 'concluido' | 'erro:msg'
+  const [uploads, setUploads] = useState(() => loadCache(CACHE_KEY_UPLOADS)) // slug → 'uploaded' | 'erro:msg'
   const [gerandoTodos, setGerandoTodos] = useState(false)
   const [autoUpload, setAutoUpload] = useState(true)
   const [verificando, setVerificando] = useState(false)
@@ -134,11 +145,25 @@ export default function AudioMeditacoes() {
   }
 
   function setEstado(slug, estado) {
-    setEstados(prev => ({ ...prev, [slug]: estado }))
+    setEstados(prev => {
+      const next = { ...prev, [slug]: estado }
+      // Persistir só estados finais (não 'gerando' que é transitório)
+      if (estado === 'concluido' || estado?.startsWith('erro:')) {
+        saveCache(CACHE_KEY_ESTADOS, next)
+      }
+      return next
+    })
   }
 
   function setUpload(slug, estado) {
-    setUploads(prev => ({ ...prev, [slug]: estado }))
+    setUploads(prev => {
+      const next = { ...prev, [slug]: estado }
+      // Persistir só 'uploaded' (não 'uploading' que é transitório)
+      if (estado === 'uploaded') {
+        saveCache(CACHE_KEY_UPLOADS, next)
+      }
+      return next
+    })
   }
 
   async function fazerUpload(audio, blob) {
@@ -174,9 +199,11 @@ export default function AudioMeditacoes() {
   // Verificar quais áudios já existem no Supabase
   async function verificarSupabase() {
     setVerificando(true)
-    const batch = 6 // verificar em lotes para não sobrecarregar
-    for (let i = 0; i < ALL_AUDIOS.length; i += batch) {
-      const lote = ALL_AUDIOS.slice(i, i + batch)
+    // Só verificar áudios que não estão já marcados como uploaded no cache
+    const paraVerificar = ALL_AUDIOS.filter(a => uploads[a.slug] !== 'uploaded')
+    const batch = 10
+    for (let i = 0; i < paraVerificar.length; i += batch) {
+      const lote = paraVerificar.slice(i, i + batch)
       const results = await Promise.all(
         lote.map(async (audio) => {
           const ecoKey = ECO_FOLDER_MAP[audio.folder] || audio.folder.toLowerCase()
