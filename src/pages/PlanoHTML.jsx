@@ -161,7 +161,9 @@ export default function PlanoHTML() {
       tamanho_mao: plano?.tamanho_mao_g || 25,
       tamanho_polegar: plano?.tamanho_polegar_g || 7,
       data_inicio: plano?.data_inicio_fase || plano?.created_at || new Date().toISOString(),
-      abordagem: abordagem
+      abordagem: abordagem,
+      num_refeicoes: plano?.num_refeicoes || 3,
+      horarios: plano?.horarios || (abordagem === 'keto_if' ? ['12:00', '16:00', '20:00'] : ['08:00', '13:00', '19:00'])
     };
   };
 
@@ -1022,12 +1024,43 @@ export default function PlanoHTML() {
           <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',borderRadius:'14px',padding:'13px',border:'2px solid #42A5F5',boxShadow:'0 2px 12px rgba(66,165,245,0.18)'}}>
             <h3 style={{fontSize:'16px',fontWeight:'700',color:'#1565C0',marginBottom:'10px',fontFamily:'Playfair Display,serif'}}>⏰ Estrutura Diária Recomendada</h3>
             <div style={{fontSize:'12px',lineHeight:'1.6',color:'#3A3025',fontFamily:'Georgia,serif'}}>
-              <strong>7h-8h:</strong> Pequeno-almoço com proteína (ovos, iogurte grego)<br/>
-              <strong>10h-11h:</strong> Snack (se necessário): frutos secos ou fruta<br/>
-              <strong>12h30-13h30:</strong> Almoço completo (proteína + legumes + hidrato)<br/>
-              <strong>16h-17h:</strong> Snack da tarde (iogurte, queijo, nozes)<br/>
-              <strong>19h-20h:</strong> Jantar (proteína + legumes + gordura boa)<br/>
-              <strong>Antes de dormir:</strong> Chá de camomila ou casca de abacaxi
+              {dados.abordagem === 'keto_if' ? (
+                <>
+                  <div style={{background:'#1565C010',borderRadius:'8px',padding:'8px 10px',marginBottom:'8px'}}>
+                    <strong style={{color:'#1565C0'}}>Jejum Intermitente 16:8</strong><br/>
+                    Jejum de 16 horas · Janela alimentar de 8 horas<br/>
+                    <span style={{fontSize:'11px',color:'#666'}}>Escolhe o horário que melhor se adapta à tua rotina:</span>
+                  </div>
+                  <strong>Opção A (recomendada):</strong> Janela 12h-20h<br/>
+                  <strong style={{marginLeft:'10px'}}>12h:</strong> Primeira refeição (proteína + gordura + legumes)<br/>
+                  {dados.num_refeicoes >= 3 && <><strong style={{marginLeft:'10px'}}>16h:</strong> Refeição intermédia (snack proteico)<br/></>}
+                  <strong style={{marginLeft:'10px'}}>20h:</strong> Última refeição (proteína + legumes + gordura boa)<br/>
+                  <br/>
+                  <strong>Opção B:</strong> Janela 10h-18h<br/>
+                  <strong style={{marginLeft:'10px'}}>10h:</strong> Primeira refeição<br/>
+                  {dados.num_refeicoes >= 3 && <><strong style={{marginLeft:'10px'}}>14h:</strong> Refeição intermédia<br/></>}
+                  <strong style={{marginLeft:'10px'}}>18h:</strong> Última refeição<br/>
+                  <br/>
+                  <span style={{fontSize:'11px',color:'#666'}}>Durante o jejum: água, chá sem açúcar, café preto. Nada com calorias.</span>
+                </>
+              ) : dados.abordagem === 'low_carb' ? (
+                <>
+                  <strong>8h-9h:</strong> Pequeno-almoço proteico (ovos, abacate, queijo)<br/>
+                  <strong>12h30-13h30:</strong> Almoço completo (proteína + legumes + gordura boa)<br/>
+                  <strong>16h-17h:</strong> Snack da tarde (nozes, iogurte grego)<br/>
+                  <strong>19h-20h:</strong> Jantar (proteína + legumes + azeite)<br/>
+                  <strong>Antes de dormir:</strong> Chá de camomila ou casca de abacaxi
+                </>
+              ) : (
+                <>
+                  <strong>7h-8h:</strong> Pequeno-almoço com proteína (ovos, iogurte grego)<br/>
+                  <strong>10h-11h:</strong> Snack (se necessário): frutos secos ou fruta<br/>
+                  <strong>12h30-13h30:</strong> Almoço completo (proteína + legumes + hidrato)<br/>
+                  <strong>16h-17h:</strong> Snack da tarde (iogurte, queijo, nozes)<br/>
+                  <strong>19h-20h:</strong> Jantar (proteína + legumes + gordura boa)<br/>
+                  <strong>Antes de dormir:</strong> Chá de camomila ou casca de abacaxi
+                </>
+              )}
             </div>
           </div>
 
