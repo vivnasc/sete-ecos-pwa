@@ -510,9 +510,7 @@ try {
         freq_negacao: formData.freq_negacao,
         emocao_dominante: formData.emocao_dominante,
         o_que_procura_comer: safeArray(formData.o_que_procura_comer),
-        como_sente_depois: Array.isArray(formData.como_sente_depois)
-          ? formData.como_sente_depois.join(', ')
-          : formData.como_sente_depois,
+        como_sente_depois: safeArray(formData.como_sente_depois),
         quando_comecou_padrao: formData.quando_comecou_padrao,
         tentou_alternativas: formData.tentou_alternativas,
         que_alternativas: formData.que_alternativas,
@@ -527,25 +525,15 @@ try {
         filhos_pequenos: formData.filhos_pequenos,
         quem_cozinha: formData.quem_cozinha,
         quantas_dietas: formData.quantas_dietas,
-        historico_dietas: Array.isArray(formData.historico_dietas)
-          ? formData.historico_dietas.join(', ')
-          : formData.historico_dietas,
-        dieta_funcionou: Array.isArray(formData.dieta_funcionou)
-          ? formData.dieta_funcionou.join(', ')
-          : formData.dieta_funcionou,
+        historico_dietas: safeArray(formData.historico_dietas),
+        dieta_funcionou: safeArray(formData.dieta_funcionou),
         maior_obstaculo: formData.maior_obstaculo,
-        gatilhos_sair_plano: Array.isArray(formData.gatilhos_sair_plano)
-          ? formData.gatilhos_sair_plano.join(', ')
-          : formData.gatilhos_sair_plano,
+        gatilhos_sair_plano: safeArray(formData.gatilhos_sair_plano),
         abordagem_realista: formData.abordagem_realista,
-        preferencias_alimentares: Array.isArray(formData.preferencias_alimentares)
-          ? formData.preferencias_alimentares.join(', ')
-          : formData.preferencias_alimentares,
+        preferencias_alimentares: safeArray(formData.preferencias_alimentares),
         medir_pesar_comida: formData.medir_pesar_comida,
         acesso_ingredientes: formData.acesso_ingredientes,
-        como_conheceu: Array.isArray(formData.como_conheceu)
-          ? formData.como_conheceu.join(', ')
-          : formData.como_conheceu,
+        como_conheceu: safeArray(formData.como_conheceu),
         o_que_espera_ganhar: formData.o_que_espera_ganhar,
         observacoes_adicionais: formData.observacoes_adicionais,
         prontidao_1a10: parseInt(formData.prontidao_1a10),
