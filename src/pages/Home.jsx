@@ -261,7 +261,7 @@ export default function Home() {
                   {t('home.discover_desc')}
                 </p>
                 <button
-                  onClick={() => navigate('/landing')}
+                  onClick={() => navigate('/sete-ecos')}
                   className="flex items-center gap-2 text-[#C9A227] font-semibold text-sm group animate-pulse-glow rounded-lg px-4 py-2 -ml-4"
                 >
                   {t('home.see_all_ecos')}
