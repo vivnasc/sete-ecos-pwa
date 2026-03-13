@@ -549,9 +549,13 @@ try {
           ? formData.dieta_funcionou.join(', ') 
           : formData.dieta_funcionou,
         maior_obstaculo: formData.maior_obstaculo,
-        gatilhos_sair_plano: formData.gatilhos_sair_plano,
+        gatilhos_sair_plano: Array.isArray(formData.gatilhos_sair_plano)
+          ? formData.gatilhos_sair_plano.join(', ')
+          : formData.gatilhos_sair_plano,
         abordagem_realista: formData.abordagem_realista,
-        preferencias_alimentares: formData.preferencias_alimentares,
+        preferencias_alimentares: Array.isArray(formData.preferencias_alimentares)
+          ? formData.preferencias_alimentares.join(', ')
+          : formData.preferencias_alimentares,
         medir_pesar_comida: formData.medir_pesar_comida,
         acesso_ingredientes: formData.acesso_ingredientes,
         como_conheceu: Array.isArray(formData.como_conheceu) 
@@ -565,16 +569,35 @@ try {
       };
 
       // Inserir intake primeiro
-      const { error: intakeError } = await supabase
+      console.log('📝 [INTAKE] A gravar intake para user_id:', intakeData.user_id);
+      const { data: intakeResult, error: intakeError } = await supabase
         .from('vitalis_intake')
-        .upsert(intakeData, { 
-          onConflict: 'user_id',
-          returning: 'minimal'
-        });
+        .upsert(intakeData, {
+          onConflict: 'user_id'
+        })
+        .select('id');
 
       if (intakeError) {
-        console.error('Erro no intake:', intakeError);
-        throw intakeError;
+        console.error('❌ [INTAKE] Erro no upsert:', intakeError);
+        throw new Error(`Erro ao gravar questionário: ${intakeError.message}`);
+      }
+
+      // Verificar se o intake foi realmente gravado (RLS pode bloquear silenciosamente)
+      if (!intakeResult || intakeResult.length === 0) {
+        console.error('❌ [INTAKE] Upsert retornou vazio — possível bloqueio de RLS');
+        // Tentar verificar se o registo existe
+        const { data: checkIntake } = await supabase
+          .from('vitalis_intake')
+          .select('id')
+          .eq('user_id', intakeData.user_id)
+          .maybeSingle();
+
+        if (!checkIntake) {
+          throw new Error('O questionário não foi gravado. Por favor tenta novamente ou contacta a Coach Vivianne via WhatsApp.');
+        }
+        console.log('✅ [INTAKE] Intake já existia, upsert atualizou:', checkIntake.id);
+      } else {
+        console.log('✅ [INTAKE] Intake gravado com sucesso:', intakeResult[0]?.id);
       }
 
     // Verificar se já existe registo com subscription_status
@@ -624,14 +647,14 @@ try {
         console.log('✅ [INTAKE] Client atualizado com sucesso');
       } else {
         // ❌ NÃO DEVERIA CHEGAR AQUI se user já pagou/usou código!
-        console.warn('⚠️ [INTAKE] AVISO: Criando NOVO vitalis_clients com subscription_status=none para user_id:', userData.id);
+        console.warn('⚠️ [INTAKE] AVISO: Criando NOVO vitalis_clients com subscription_status=pending para user_id:', userData.id);
         console.warn('⚠️ [INTAKE] Isto NÃO deveria acontecer se o user já usou código ou pagou!');
         const { error: clientError } = await supabase
           .from('vitalis_clients')
           .insert({
             ...clientData,
-            status: 'novo',
-            subscription_status: 'none',
+            status: 'activo',
+            subscription_status: 'pending',
             created_at: new Date().toISOString()
           });
         if (clientError) {
