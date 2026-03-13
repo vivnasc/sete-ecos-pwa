@@ -1,9 +1,9 @@
 // ============================================================
-// LUMINA v15 - Componente React CORRIGIDO
+// LUMINA v16 - Revamp Completo (Design + Funcionalidade)
 // Sete Ecos © Vivianne dos Santos
 // ============================================================
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import {
   detectarPadrao,
@@ -190,7 +190,7 @@ const PERGUNTAS = [
     eco: 8,
     titulo: 'Cuidado Próprio',
     inicial: 'C',
-    explicacao: 'Como tens tratado a ti mesma ultimamente?',
+    explicacao: 'Como te tens tratado ultimamente?',
     opcoes: [
       { valor: 'esquecida', posicao: 'negativo' },
       { valor: 'por ultimo', posicao: 'negativo' },
@@ -255,6 +255,9 @@ export default function Lumina() {
   const [captureEmail, setCaptureEmail] = useState('');
   const [captureSubmitted, setCaptureSubmitted] = useState(false);
   const [captureLoading, setCaptureLoading] = useState(false);
+
+  // Share state
+  const [copied, setCopied] = useState(false);
   
   // Estados do onboarding
   const [nome, setNome] = useState('');
@@ -549,6 +552,95 @@ export default function Lumina() {
   }
 
   // ============================================================
+  // PARTILHA E EMAIL
+  // ============================================================
+
+  const shareText = useCallback(() => {
+    if (!leitura) return '';
+    return t('lumina.share.text').replace('{reading}', leitura);
+  }, [leitura, t]);
+
+  function handleShareWhatsApp() {
+    const text = shareText();
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  }
+
+  async function handleCopyReading() {
+    try {
+      await navigator.clipboard.writeText(shareText());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback
+      const textarea = document.createElement('textarea');
+      textarea.value = shareText();
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }
+
+  async function handleEmailCapture() {
+    if (!captureEmail.includes('@')) return;
+    setCaptureLoading(true);
+    try {
+      // 1. Inserir na waitlist
+      await supabase.from('waitlist').insert({
+        nome: profile?.nome || '',
+        email: captureEmail.trim(),
+        whatsapp: null,
+        produto: 'lumina-checkin'
+      });
+
+      // 2. Enviar email com a leitura REAL (a promessa cumprida!)
+      try {
+        await fetch('/api/enviar-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tipo: 'lumina-leitura',
+            destinatario: captureEmail.trim(),
+            dados: {
+              nome: profile?.nome || null,
+              leitura: leitura,
+              padrao: padrao,
+              respostas: respostas,
+              ecoRecomendado: ecoRecomendado
+            }
+          })
+        });
+      } catch {
+        // Email falhou mas waitlist foi inserida — não bloquear
+      }
+
+      // 3. Notificar coach (fire-and-forget)
+      WhatsAppAlertas.novoLeadWaitlist(
+        profile?.nome || '', captureEmail.trim(), 'lumina-checkin'
+      ).catch(() => {});
+    } catch {
+      // Duplicado ou erro, ignorar silenciosamente
+    }
+    setCaptureSubmitted(true);
+    setCaptureLoading(false);
+  }
+
+  // Score map para visualização das dimensões
+  const SCORE_MAP = {
+    vazia: 1, baixa: 2, normal: 3, boa: 4, cheia: 5,
+    pesado: 1, tenso: 2, solto: 4, leve: 5,
+    caotica: 1, barulhenta: 2, calma: 4, silenciosa: 5,
+    preso: 1, apesar: 2, arrumado: 4,
+    esconder: 1, parar: 2, nada: 3, decidir: 4, agir: 5,
+    escuro: 1, luminoso: 5, claro: 4,
+    invisivel: 1, apagada: 2, visivel: 4, luminosa: 5,
+    esquecida: 1, 'por ultimo': 2, presente: 4, prioritaria: 5
+  };
+  const toScore = (val) => SCORE_MAP[val] || 3;
+
+  // ============================================================
   // ONBOARDING
   // ============================================================
   
@@ -650,19 +742,27 @@ export default function Lumina() {
             ))}
           </div>
         ) : (
-          historico.slice(0, 10).map((entry, i) => (
-            <div key={i} className="history-item">
-              <div className="history-date">
-                {new Date(entry.created_at).toLocaleDateString(dateLocale)}
-                {entry.dia_ciclo && ` · ${t('lumina.history.cycle_day', { day: entry.dia_ciclo })}`}
+          historico.slice(0, 10).map((entry, i) => {
+            const DIM_COLORS = { energia: '#C1634A', corpo: '#7C8B6F', mente: '#4A90A4', espelho: '#8B7BA5', cuidado: '#4B0082' };
+            return (
+              <div key={i} className="history-item">
+                <div className="history-date">
+                  {new Date(entry.created_at).toLocaleDateString(dateLocale)}
+                  {entry.dia_ciclo && ` · ${t('lumina.history.cycle_day', { day: entry.dia_ciclo })}`}
+                </div>
+                <div className="history-tags">
+                  {['energia', 'corpo', 'mente', 'espelho', 'cuidado'].map(dim => entry[dim] && (
+                    <span key={dim} className="history-tag" style={{
+                      borderLeft: `2px solid ${DIM_COLORS[dim]}`,
+                      paddingLeft: '8px'
+                    }}>
+                      {locale === 'pt' ? entry[dim] : t(`lumina.opt.${entry[dim]}`)}
+                    </span>
+                  ))}
+                </div>
               </div>
-              <div className="history-tags">
-                <span className="history-tag">{locale === 'pt' ? entry.energia : t(`lumina.opt.${entry.energia}`)}</span>
-                <span className="history-tag">{locale === 'pt' ? entry.corpo : t(`lumina.opt.${entry.corpo}`)}</span>
-                <span className="history-tag">{locale === 'pt' ? entry.mente : t(`lumina.opt.${entry.mente}`)}</span>
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
 
         {patterns14 && (
@@ -779,11 +879,11 @@ export default function Lumina() {
           ))}
         </div>
 
-        <button className="splash-tap" onClick={handleSplashTap}>
+        <button className="splash-tap" onClick={handleSplashTap} aria-label={t('lumina.enter')}>
           {t('lumina.enter')}
         </button>
 
-        <button className="splash-history" onClick={showHistory}>
+        <button className="splash-history" onClick={showHistory} aria-label={t('lumina.history_link_simple')}>
           {t('lumina.history_link_simple')} ({diasCount} {diasCount === 1 ? t('lumina.day') : t('lumina.days')})
         </button>
       </div>
@@ -1050,27 +1150,27 @@ export default function Lumina() {
   
   function renderPause() {
     return (
-      <div className={`screen pause-screen ${screen === 'pause' ? 'active' : ''}`}>
-        <img src="/logos/lumina-logo_v2.png" alt="LUMINA" className="pause-eye" />
+      <div className={`screen pause-screen ${screen === 'pause' ? 'active' : ''}`} role="status" aria-live="polite">
+        <img src="/logos/lumina-logo_v2.png" alt="" className="pause-eye" aria-hidden="true" />
         <p className="pause-text">{t('lumina.pause')}</p>
       </div>
     );
   }
 
   // ============================================================
-  // RENDER - LEITURA
+  // RENDER - LEITURA (v16 — Revamp Completo)
   // ============================================================
-  
+
   function renderReading() {
     // Os 7 Ecos - LUMINA NÃO É UM ECO, ela observa e guia
     const SETE_ECOS = [
-      { nome: 'Vitalis', foco: t('lumina.ecos.vitalis_focus'), cor: '#7C8B6F', disponivel: true, link: '/vitalis' },
-      { nome: 'Áurea', foco: t('lumina.ecos.aurea_focus'), cor: '#C9A227', disponivel: true, link: '/aurea' },
-      { nome: 'Serena', foco: t('lumina.ecos.serena_focus'), cor: '#6B8E9B', disponivel: true, link: '/serena' },
-      { nome: 'Ignis', foco: t('lumina.ecos.ignis_focus'), cor: '#C1634A', disponivel: true, link: '/ignis' },
-      { nome: 'Ventis', foco: t('lumina.ecos.ventis_focus'), cor: '#5D9B84', disponivel: true, link: '/ventis' },
-      { nome: 'Ecoa', foco: t('lumina.ecos.ecoa_focus'), cor: '#4A90A4', disponivel: true, link: '/ecoa' },
-      { nome: 'Imago', foco: t('lumina.ecos.imago_focus'), cor: '#8B7BA5', disponivel: true, link: '/imago' }
+      { nome: 'Vitalis', foco: t('lumina.ecos.vitalis_focus'), cor: '#7C8B6F', emoji: '🌿', link: '/vitalis' },
+      { nome: 'Áurea', foco: t('lumina.ecos.aurea_focus'), cor: '#C9A227', emoji: '✧', link: '/aurea' },
+      { nome: 'Serena', foco: t('lumina.ecos.serena_focus'), cor: '#6B8E9B', emoji: '💧', link: '/serena' },
+      { nome: 'Ignis', foco: t('lumina.ecos.ignis_focus'), cor: '#C1634A', emoji: '🔥', link: '/ignis' },
+      { nome: 'Ventis', foco: t('lumina.ecos.ventis_focus'), cor: '#5D9B84', emoji: '🍃', link: '/ventis' },
+      { nome: 'Ecoa', foco: t('lumina.ecos.ecoa_focus'), cor: '#4A90A4', emoji: '🔊', link: '/ecoa' },
+      { nome: 'Imago', foco: t('lumina.ecos.imago_focus'), cor: '#8B7BA5', emoji: '⭐', link: '/imago' }
     ];
 
     // Informação do ciclo para mostrar
@@ -1078,7 +1178,33 @@ export default function Lumina() {
 
     // Cor índigo da Lumina
     const INDIGO = '#4B0082';
-    const INDIGO_LIGHT = 'rgba(75, 0, 130, 0.1)';
+    const INDIGO_LIGHT = 'rgba(75, 0, 130, 0.08)';
+
+    // Dimensões com scores visuais
+    const dimensoes = [
+      { id: 'corpo', label: t('lumina.dims.corpo'), cor: '#C1634A' },
+      { id: 'passado', label: t('lumina.dims.passado'), cor: '#6B8E9B' },
+      { id: 'impulso', label: t('lumina.dims.impulso'), cor: '#C9A227' },
+      { id: 'futuro', label: t('lumina.dims.futuro'), cor: '#5D9B84' },
+      { id: 'mente', label: t('lumina.dims.mente'), cor: '#4A90A4' },
+      { id: 'energia', label: t('lumina.dims.energia'), cor: '#C1634A' },
+      { id: 'espelho', label: t('lumina.dims.espelho'), cor: '#8B7BA5' },
+      { id: 'cuidado', label: t('lumina.dims.cuidado'), cor: '#4B0082' }
+    ];
+
+    // Calcular scores para upsell
+    const vals = Object.values(respostas || {});
+    const media = vals.length > 0 ? vals.reduce((sum, v) => sum + toScore(v), 0) / vals.length : 3;
+    const corpoScore = toScore(respostas?.corpo);
+    const espelhoScore = toScore(respostas?.espelho);
+    const cuidadoScore = toScore(respostas?.cuidado);
+    const needsAurea = espelhoScore <= 2 || cuidadoScore <= 2;
+    const eco = needsAurea ? 'aurea' : 'vitalis';
+    const ecoNome = needsAurea ? 'ÁUREA' : 'VITALIS';
+    const ecoMsg = needsAurea
+      ? t('lumina.reading.aurea_upsell')
+      : t('lumina.reading.vitalis_upsell');
+    const ecoCor = needsAurea ? '#C9A227' : '#7C8B6F';
 
     return (
       <div className={`screen ${screen === 'reading' ? 'active' : ''}`} style={{ overflowY: 'auto', paddingBottom: '100px' }}>
@@ -1088,35 +1214,128 @@ export default function Lumina() {
           <div className="days-badge">{t('lumina.reading.days_with_you', { count: diasCount })}</div>
         )}
 
-        <div className="reading-container">
-          <p className="reading-text" style={{
-            fontSize: '17px',
-            lineHeight: 1.8,
-            fontStyle: 'italic',
-            wordBreak: 'break-word',
-            hyphens: 'auto'
+        <div className="reading-container" style={{ maxWidth: '380px' }}>
+          {/* ═══ LEITURA PRINCIPAL ═══ */}
+          <div style={{
+            background: 'linear-gradient(135deg, #F8F8FC 0%, #F2F0FA 100%)',
+            borderRadius: '20px',
+            padding: '28px 22px',
+            borderLeft: '4px solid #4B0082',
+            boxShadow: '0 4px 30px rgba(75, 0, 130, 0.06)'
           }}>
-            "{leitura}"
-          </p>
+            <p className="reading-text" style={{
+              fontSize: '17px',
+              lineHeight: 1.9,
+              fontStyle: 'italic',
+              wordBreak: 'break-word',
+              hyphens: 'auto',
+              margin: 0
+            }}>
+              &ldquo;{leitura}&rdquo;
+            </p>
+          </div>
 
-          {/* Áudio da leitura — Vivianne lê a tua leitura */}
+          {/* ═══ ÁUDIO ═══ */}
           {padrao && LUMINA_AUDIO_SLUGS[padrao] && (
             <div style={{ marginTop: '16px' }}>
               <AudioPlayerBar
                 eco="lumina"
                 slug={LUMINA_AUDIO_SLUGS[padrao]}
                 accentColor="#4B0082"
-                titulo={`Leitura Lumina — ${padrao}`}
+                titulo={t('lumina.reading.listen_reading')}
               />
             </div>
           )}
 
-          {/* Contexto do Ciclo com Eco Map */}
+          {/* ═══ PARTILHA ═══ */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '10px',
+            marginTop: '16px'
+          }}>
+            <button
+              onClick={handleShareWhatsApp}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                padding: '10px 18px', borderRadius: '20px',
+                background: 'rgba(37, 211, 102, 0.1)', border: '1px solid rgba(37, 211, 102, 0.2)',
+                color: '#128C7E', fontSize: '12px', fontWeight: '600',
+                cursor: 'pointer', transition: 'all 0.2s ease',
+                fontFamily: 'inherit'
+              }}
+              aria-label={t('lumina.share.whatsapp')}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+              {t('lumina.share.whatsapp')}
+            </button>
+            <button
+              onClick={handleCopyReading}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                padding: '10px 18px', borderRadius: '20px',
+                background: copied ? 'rgba(16, 185, 129, 0.1)' : INDIGO_LIGHT,
+                border: `1px solid ${copied ? 'rgba(16, 185, 129, 0.2)' : 'rgba(75, 0, 130, 0.15)'}`,
+                color: copied ? '#059669' : '#4B0082', fontSize: '12px', fontWeight: '600',
+                cursor: 'pointer', transition: 'all 0.2s ease',
+                fontFamily: 'inherit'
+              }}
+              aria-label={t('lumina.share.copy')}
+            >
+              {copied ? '✓' : '📋'} {copied ? t('lumina.share.copied') : t('lumina.share.copy')}
+            </button>
+          </div>
+
+          {/* ═══ MAPA DAS 8 DIMENSÕES ═══ */}
+          <div style={{
+            marginTop: '24px',
+            padding: '20px',
+            background: 'white',
+            borderRadius: '16px',
+            border: '1px solid rgba(26, 26, 78, 0.06)',
+            boxShadow: '0 2px 16px rgba(26, 26, 78, 0.04)'
+          }}>
+            <div style={{
+              fontSize: '10px', letterSpacing: '2px', color: '#6B6B9D',
+              marginBottom: '14px', textAlign: 'center'
+            }}>
+              {t('lumina.dims.title')}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              {dimensoes.map(dim => {
+                const score = toScore(respostas[dim.id]);
+                const pct = (score / 5) * 100;
+                return (
+                  <div key={dim.id} style={{ padding: '6px 0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: '600', color: '#3A3A6F' }}>{dim.label}</span>
+                      <span style={{ fontSize: '10px', color: '#6B6B9D' }}>
+                        {locale === 'pt' ? opcaoLabel(respostas[dim.id], genero || profile?.genero) : t(`lumina.opt.${respostas[dim.id]}`)}
+                      </span>
+                    </div>
+                    <div style={{
+                      height: '4px', borderRadius: '2px',
+                      background: 'rgba(26, 26, 78, 0.06)', overflow: 'hidden'
+                    }}>
+                      <div style={{
+                        width: `${pct}%`, height: '100%',
+                        borderRadius: '2px',
+                        background: score <= 2 ? '#E74C3C' : score === 3 ? '#F39C12' : dim.cor,
+                        transition: 'width 0.8s ease'
+                      }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ═══ CONTEXTO DO CICLO ═══ */}
           {cicloInfo && (
             <div style={{
               background: INDIGO_LIGHT,
-              padding: '16px',
-              borderRadius: '12px',
+              padding: '18px',
+              borderRadius: '14px',
               marginTop: '20px',
               borderLeft: `4px solid ${INDIGO}`
             }}>
@@ -1140,16 +1359,16 @@ export default function Lumina() {
             </div>
           )}
 
-          {/* Insights Personalizados (aprendizagem) */}
+          {/* ═══ INSIGHTS PERSONALIZADOS ═══ */}
           {insightsPersonalizados && insightsPersonalizados.length > 0 && (
             <div style={{
               background: INDIGO_LIGHT,
-              padding: '16px',
-              borderRadius: '12px',
+              padding: '18px',
+              borderRadius: '14px',
               marginTop: '16px',
               borderLeft: `4px solid ${INDIGO}`
             }}>
-              <div style={{ fontSize: '12px', letterSpacing: '1px', color: '#5A5A8F', marginBottom: '10px' }}>
+              <div style={{ fontSize: '10px', letterSpacing: '2px', color: '#5A5A8F', marginBottom: '12px' }}>
                 {t('lumina.reading.learned')}
               </div>
               {insightsPersonalizados.map((insight, i) => (
@@ -1157,12 +1376,12 @@ export default function Lumina() {
                   fontSize: '13px',
                   lineHeight: 1.5,
                   marginBottom: i < insightsPersonalizados.length - 1 ? '10px' : 0,
-                  padding: '8px',
-                  background: insight.tipo === 'atencao' ? 'rgba(255, 193, 7, 0.1)' : 'rgba(75, 0, 130, 0.05)',
-                  borderRadius: '8px'
+                  padding: '10px 12px',
+                  background: insight.tipo === 'atencao' ? 'rgba(255, 193, 7, 0.12)' : 'rgba(75, 0, 130, 0.05)',
+                  borderRadius: '10px'
                 }}>
-                  <span style={{ marginRight: '6px' }}>
-                    {insight.tipo === 'atencao' ? '!' : insight.tipo === 'confirmacao' ? '·' : '·'}
+                  <span style={{ marginRight: '8px', fontWeight: 'bold' }}>
+                    {insight.tipo === 'atencao' ? '⚠' : '·'}
                   </span>
                   {insight.msg}
                 </div>
@@ -1170,34 +1389,29 @@ export default function Lumina() {
             </div>
           )}
 
-          {/* Recomendação Ciclo + Eco */}
+          {/* ═══ RECOMENDAÇÃO ECO (ciclo ou genérica) ═══ */}
           {recomendacaoCiclo && (
             <div style={{
-              marginTop: '16px',
-              padding: '16px',
+              marginTop: '20px',
+              padding: '20px',
               background: recomendacaoCiclo.eco === 'Áurea'
-                ? 'linear-gradient(135deg, rgba(201, 162, 39, 0.15) 0%, rgba(212, 175, 55, 0.1) 100%)'
-                : recomendacaoCiclo.eco === 'Vitalis' ? 'rgba(124, 139, 111, 0.1)' : INDIGO_LIGHT,
-              borderRadius: '12px',
+                ? 'linear-gradient(135deg, rgba(201, 162, 39, 0.12) 0%, rgba(212, 175, 55, 0.06) 100%)'
+                : recomendacaoCiclo.eco === 'Vitalis' ? 'rgba(124, 139, 111, 0.08)' : INDIGO_LIGHT,
+              borderRadius: '14px',
               borderLeft: `4px solid ${
                 recomendacaoCiclo.eco === 'Áurea' ? '#C9A227'
                 : recomendacaoCiclo.eco === 'Vitalis' ? '#7C8B6F' : INDIGO
-              }`,
-              boxShadow: recomendacaoCiclo.eco === 'Áurea' ? '0 2px 12px rgba(201, 162, 39, 0.2)' : 'none'
+              }`
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                <span style={{ fontSize: '18px' }}>
                   {recomendacaoCiclo.eco === 'Áurea' ? '✧' : recomendacaoCiclo.lua}
                 </span>
-                <span style={{
-                  fontWeight: 'bold',
-                  fontSize: '14px',
-                  color: recomendacaoCiclo.eco === 'Áurea' ? '#7A6200' : 'inherit'
-                }}>
+                <span style={{ fontWeight: 'bold', fontSize: '14px' }}>
                   {t('lumina.reading.eco_for_phase', { eco: recomendacaoCiclo.eco })}
                 </span>
               </div>
-              <div style={{ fontSize: '13px', lineHeight: 1.5, marginBottom: '8px' }}>
+              <div style={{ fontSize: '13px', lineHeight: 1.6, marginBottom: '8px' }}>
                 {recomendacaoCiclo.razao}
               </div>
               <div style={{ fontSize: '12px', color: '#3A3A6F', fontStyle: 'italic' }}>
@@ -1206,17 +1420,16 @@ export default function Lumina() {
               {recomendacaoCiclo.disponivel && recomendacaoCiclo.link && (
                 <a href={recomendacaoCiclo.link} style={{
                   display: 'inline-block',
-                  marginTop: '12px',
-                  padding: '10px 20px',
+                  marginTop: '14px',
+                  padding: '11px 22px',
                   background: recomendacaoCiclo.eco === 'Áurea'
                     ? 'linear-gradient(135deg, #C9A227 0%, #D4AF37 100%)'
                     : recomendacaoCiclo.eco === 'Vitalis' ? '#7C8B6F' : INDIGO,
                   color: 'white',
-                  borderRadius: '20px',
+                  borderRadius: '22px',
                   textDecoration: 'none',
                   fontSize: '13px',
-                  fontWeight: 'bold',
-                  boxShadow: recomendacaoCiclo.eco === 'Áurea' ? '0 4px 15px rgba(201, 162, 39, 0.3)' : 'none'
+                  fontWeight: 'bold'
                 }}>
                   {t('lumina.reading.explore_eco', { eco: recomendacaoCiclo.eco })}
                 </a>
@@ -1224,68 +1437,37 @@ export default function Lumina() {
             </div>
           )}
 
-          {/* Fallback para Eco Recomendado (sem ciclo) */}
+          {/* Fallback Eco Recomendado (sem ciclo) */}
           {!recomendacaoCiclo && ecoRecomendado && (
             <div style={{
               marginTop: '20px',
-              padding: '16px',
+              padding: '20px',
               background: ecoRecomendado.eco === 'Áurea'
-                ? 'linear-gradient(135deg, rgba(201, 162, 39, 0.15) 0%, rgba(212, 175, 55, 0.1) 100%)'
-                : ecoRecomendado.eco === 'Vitalis'
-                  ? 'rgba(124, 139, 111, 0.1)'
-                  : INDIGO_LIGHT,
-              borderRadius: '12px',
+                ? 'linear-gradient(135deg, rgba(201, 162, 39, 0.12) 0%, rgba(212, 175, 55, 0.06) 100%)'
+                : ecoRecomendado.eco === 'Vitalis' ? 'rgba(124, 139, 111, 0.08)' : INDIGO_LIGHT,
+              borderRadius: '14px',
               borderLeft: `4px solid ${
                 ecoRecomendado.eco === 'Áurea' ? '#C9A227'
-                : ecoRecomendado.eco === 'Vitalis' ? '#7C8B6F'
-                : INDIGO
-              }`,
-              boxShadow: ecoRecomendado.eco === 'Áurea' ? '0 2px 12px rgba(201, 162, 39, 0.2)' : 'none'
+                : ecoRecomendado.eco === 'Vitalis' ? '#7C8B6F' : INDIGO
+              }`
             }}>
-              {/* Ícone dourado para ÁUREA */}
-              {ecoRecomendado.eco === 'Áurea' && (
-                <div style={{
-                  textAlign: 'center',
-                  marginBottom: '12px',
-                  fontSize: '32px'
-                }}>
-                  ✧
-                </div>
-              )}
               <div style={{
-                fontWeight: 'bold',
-                marginBottom: '8px',
-                fontSize: '14px',
-                color: ecoRecomendado.eco === 'Áurea' ? '#7A6200' : 'inherit',
+                fontWeight: 'bold', marginBottom: '8px', fontSize: '14px',
                 textAlign: ecoRecomendado.eco === 'Áurea' ? 'center' : 'left'
               }}>
                 {ecoRecomendado.eco === 'Áurea' ? t('lumina.reading.needs_aurea') : t('lumina.reading.suggestion', { eco: ecoRecomendado.eco })}
               </div>
-              <div style={{
-                fontSize: '14px',
-                lineHeight: 1.6,
-                textAlign: ecoRecomendado.eco === 'Áurea' ? 'center' : 'left'
-              }}>
-                {ecoRecomendado.eco === 'Áurea'
-                  ? t('lumina.reading.aurea_desc')
-                  : ecoRecomendado.msg
-                }
+              <div style={{ fontSize: '13px', lineHeight: 1.6, textAlign: ecoRecomendado.eco === 'Áurea' ? 'center' : 'left' }}>
+                {ecoRecomendado.eco === 'Áurea' ? t('lumina.reading.aurea_desc') : ecoRecomendado.msg}
               </div>
               {ecoRecomendado.disponivel && ecoRecomendado.link ? (
                 <a href={ecoRecomendado.link} style={{
-                  display: 'block',
-                  marginTop: '16px',
-                  padding: '12px 24px',
+                  display: 'block', marginTop: '14px', padding: '12px 24px',
                   background: ecoRecomendado.eco === 'Áurea'
                     ? 'linear-gradient(135deg, #C9A227 0%, #D4AF37 100%)'
                     : ecoRecomendado.eco === 'Vitalis' ? '#7C8B6F' : INDIGO,
-                  color: 'white',
-                  borderRadius: '25px',
-                  textDecoration: 'none',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  textAlign: 'center',
-                  boxShadow: ecoRecomendado.eco === 'Áurea' ? '0 4px 15px rgba(201, 162, 39, 0.3)' : 'none'
+                  color: 'white', borderRadius: '25px', textDecoration: 'none',
+                  fontSize: '14px', fontWeight: 'bold', textAlign: 'center'
                 }}>
                   {t('lumina.reading.explore_eco', { eco: ecoRecomendado.eco })}
                 </a>
@@ -1297,7 +1479,7 @@ export default function Lumina() {
             </div>
           )}
 
-          {/* Padrão Semanal */}
+          {/* ═══ PADRÃO SEMANAL ═══ */}
           {padraoSemanal && (
             <div className="pattern-alert" style={{ marginTop: '16px' }}>
               <div className="pattern-alert-title">{t('lumina.reading.pattern_detected')}</div>
@@ -1305,16 +1487,13 @@ export default function Lumina() {
             </div>
           )}
 
-          {/* Tendências Mensais */}
+          {/* ═══ TENDÊNCIAS MENSAIS ═══ */}
           {tendenciasMensais && tendenciasMensais.insights.length > 0 && (
             <div style={{
-              background: INDIGO_LIGHT,
-              padding: '14px',
-              borderRadius: '10px',
-              marginTop: '16px',
-              borderLeft: `3px solid ${INDIGO}`
+              background: INDIGO_LIGHT, padding: '16px', borderRadius: '12px',
+              marginTop: '16px', borderLeft: `3px solid ${INDIGO}`
             }}>
-              <div style={{ fontSize: '12px', letterSpacing: '1px', color: '#5A5A8F', marginBottom: '8px' }}>
+              <div style={{ fontSize: '10px', letterSpacing: '2px', color: '#5A5A8F', marginBottom: '10px' }}>
                 {t('lumina.reading.monthly_trend')}
               </div>
               {tendenciasMensais.insights.map((insight, i) => (
@@ -1325,94 +1504,50 @@ export default function Lumina() {
             </div>
           )}
 
-          {/* Ponte Contextual: Lumina → Vitalis/Áurea */}
-          {(() => {
-            // Converter respostas de string para score numérico
-            const SCORE_MAP = {
-              // Energia
-              vazia: 1, baixa: 2, normal: 3, boa: 4, cheia: 5,
-              // Corpo
-              pesado: 1, tenso: 2, solto: 4, leve: 5,
-              // Mente
-              caotica: 1, barulhenta: 2, calma: 4, silenciosa: 5,
-              // Passado
-              preso: 1, apesar: 2, arrumado: 4,
-              // Impulso
-              esconder: 1, parar: 2, nada: 3, decidir: 4, agir: 5,
-              // Futuro
-              escuro: 1, luminoso: 5, claro: 4,
-              // Espelho
-              invisivel: 1, apagada: 2, visivel: 4, luminosa: 5,
-              // Cuidado
-              esquecida: 1, 'por ultimo': 2, presente: 4, prioritaria: 5
-            };
-            const toScore = (val) => SCORE_MAP[val] || 3;
-            const vals = Object.values(respostas || {});
-            const media = vals.length > 0 ? vals.reduce((sum, v) => sum + toScore(v), 0) / vals.length : 3;
-            const corpoScore = toScore(respostas?.corpo) || toScore(respostas?.energia) || 3;
-            const espelhoScore = toScore(respostas?.espelho) || 3;
-            const cuidadoScore = toScore(respostas?.cuidado) || 3;
-            const needsVitalis = corpoScore <= 2 || media <= 2.5;
-            const needsAurea = espelhoScore <= 2 || cuidadoScore <= 2;
-            const eco = needsAurea ? 'aurea' : 'vitalis';
-            const ecoNome = needsAurea ? 'ÁUREA' : 'VITALIS';
-            const ecoMsg = needsAurea
-              ? t('lumina.reading.aurea_upsell')
-              : t('lumina.reading.vitalis_upsell');
-            const ecoCor = needsAurea ? '#C9A227' : '#7C8B6F';
-            const ecoBg = needsAurea
-              ? 'linear-gradient(135deg, rgba(201, 162, 39, 0.12) 0%, rgba(212, 175, 55, 0.06) 100%)'
-              : 'linear-gradient(135deg, rgba(124, 139, 111, 0.12) 0%, rgba(156, 175, 136, 0.06) 100%)';
+          {/* ═══ PONTE CONTEXTUAL: LUMINA → ECO ═══ */}
+          <div style={{
+            marginTop: '24px',
+            padding: '22px 20px',
+            background: needsAurea
+              ? 'linear-gradient(135deg, rgba(201, 162, 39, 0.1) 0%, rgba(212, 175, 55, 0.04) 100%)'
+              : 'linear-gradient(135deg, rgba(124, 139, 111, 0.1) 0%, rgba(156, 175, 136, 0.04) 100%)',
+            borderRadius: '16px',
+            border: `1px solid ${ecoCor}25`,
+            textAlign: 'center'
+          }}>
+            <div style={{ fontSize: '10px', letterSpacing: '2px', color: '#6B6B9D', marginBottom: '10px' }}>
+              {t('lumina.reading.next_step')}
+            </div>
+            <div style={{ fontSize: '16px', fontWeight: 'bold', color: ecoCor, marginBottom: '10px' }}>
+              {t('lumina.reading.can_help', { eco: ecoNome })}
+            </div>
+            <div style={{ fontSize: '13px', lineHeight: 1.6, color: '#3A3A6F', marginBottom: '16px' }}>
+              {ecoMsg}
+            </div>
+            <a href={`/${eco}?utm_source=lumina&utm_medium=upsell&utm_campaign=pos-checkin`} style={{
+              display: 'inline-block', padding: '13px 30px',
+              background: ecoCor, color: 'white', borderRadius: '25px',
+              textDecoration: 'none', fontSize: '13px', fontWeight: 'bold'
+            }}>
+              {t('lumina.reading.know_eco', { eco: ecoNome })}
+            </a>
+            <div style={{ fontSize: '11px', color: '#6B6B9D', marginTop: '10px' }}>
+              {needsAurea ? t('lumina.reading.price_aurea') : t('lumina.reading.price_vitalis')}
+            </div>
+          </div>
 
-            return (
-              <div style={{
-                marginTop: '24px',
-                padding: '20px',
-                background: ecoBg,
-                borderRadius: '16px',
-                border: `1px solid ${ecoCor}30`,
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '11px', letterSpacing: '2px', color: '#6B6B9D', marginBottom: '8px' }}>
-                  {t('lumina.reading.next_step')}
-                </div>
-                <div style={{ fontSize: '15px', fontWeight: 'bold', color: ecoCor, marginBottom: '8px' }}>
-                  {t('lumina.reading.can_help', { eco: ecoNome })}
-                </div>
-                <div style={{ fontSize: '13px', lineHeight: 1.6, color: '#3A3A6F', marginBottom: '16px' }}>
-                  {ecoMsg}
-                </div>
-                <a href={`/${eco}?utm_source=lumina&utm_medium=upsell&utm_campaign=pos-checkin`} style={{
-                  display: 'inline-block',
-                  padding: '12px 28px',
-                  background: ecoCor,
-                  color: 'white',
-                  borderRadius: '25px',
-                  textDecoration: 'none',
-                  fontSize: '13px',
-                  fontWeight: 'bold'
-                }}>
-                  {t('lumina.reading.know_eco', { eco: ecoNome })}
-                </a>
-                <div style={{ fontSize: '11px', color: '#6B6B9D', marginTop: '10px' }}>
-                  {needsAurea ? t('lumina.reading.price_aurea') : t('lumina.reading.price_vitalis')}
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* Captura de email - só para visitantes não autenticadas */}
+          {/* ═══ CAPTURA DE EMAIL (visitantes) ═══ */}
           {!user && !captureSubmitted && (
             <div style={{
               marginTop: '24px',
               padding: '24px 20px',
-              background: 'linear-gradient(135deg, rgba(107, 91, 149, 0.08) 0%, rgba(155, 89, 182, 0.04) 100%)',
+              background: 'linear-gradient(135deg, rgba(75, 0, 130, 0.06) 0%, rgba(107, 91, 149, 0.03) 100%)',
               borderRadius: '16px',
-              border: '1px solid rgba(107, 91, 149, 0.15)',
+              border: '1px solid rgba(75, 0, 130, 0.1)',
               textAlign: 'center'
             }}>
-              <div style={{ fontSize: '24px', marginBottom: '8px' }}>✉️</div>
-              <div style={{ fontSize: '15px', fontWeight: 'bold', marginBottom: '6px' }}>
+              <div style={{ fontSize: '28px', marginBottom: '10px' }}>✉</div>
+              <div style={{ fontSize: '15px', fontWeight: 'bold', marginBottom: '6px', color: '#1A1A4E' }}>
                 {t('lumina.email.title')}
               </div>
               <div style={{ fontSize: '13px', color: '#5A5A8F', marginBottom: '16px', lineHeight: 1.5 }}>
@@ -1424,48 +1559,23 @@ export default function Lumina() {
                   value={captureEmail}
                   onChange={(e) => setCaptureEmail(e.target.value)}
                   placeholder={t('lumina.email.placeholder')}
+                  aria-label={t('lumina.email.placeholder')}
                   style={{
-                    flex: 1,
-                    padding: '12px 16px',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(107, 91, 149, 0.2)',
-                    background: 'white',
-                    fontSize: '14px',
-                    outline: 'none'
+                    flex: 1, padding: '13px 16px', borderRadius: '12px',
+                    border: '1px solid rgba(75, 0, 130, 0.15)', background: 'white',
+                    fontSize: '14px', outline: 'none', fontFamily: 'inherit'
                   }}
                 />
                 <button
                   disabled={captureLoading || !captureEmail.includes('@')}
-                  onClick={async () => {
-                    if (!captureEmail.includes('@')) return;
-                    setCaptureLoading(true);
-                    try {
-                      await supabase.from('waitlist').insert({
-                        nome: profile?.nome || '',
-                        email: captureEmail.trim(),
-                        whatsapp: null,
-                        produto: 'lumina-checkin'
-                      });
-                      // Notificar coach (fire-and-forget)
-                      WhatsAppAlertas.novoLeadWaitlist(
-                        profile?.nome || '', captureEmail.trim(), 'lumina-checkin'
-                      ).catch(() => {});
-                    } catch (err) {
-                      // Duplicado ou erro, ignorar silenciosamente
-                    }
-                    setCaptureSubmitted(true);
-                    setCaptureLoading(false);
-                  }}
+                  onClick={handleEmailCapture}
                   style={{
-                    padding: '12px 20px',
-                    borderRadius: '12px',
-                    background: captureLoading ? '#999' : '#6B5B95',
-                    color: 'white',
-                    border: 'none',
-                    fontWeight: 'bold',
-                    fontSize: '14px',
-                    cursor: captureLoading ? 'wait' : 'pointer',
-                    whiteSpace: 'nowrap'
+                    padding: '13px 22px', borderRadius: '12px',
+                    background: captureLoading ? '#999' : '#4B0082',
+                    color: 'white', border: 'none', fontWeight: 'bold',
+                    fontSize: '14px', cursor: captureLoading ? 'wait' : 'pointer',
+                    whiteSpace: 'nowrap', fontFamily: 'inherit',
+                    opacity: !captureEmail.includes('@') ? 0.5 : 1
                   }}
                 >
                   {captureLoading ? '...' : t('lumina.email.send')}
@@ -1477,141 +1587,78 @@ export default function Lumina() {
             </div>
           )}
 
-          {/* Confirmacao de captura */}
+          {/* Confirmação de captura */}
           {!user && captureSubmitted && (
             <div style={{
-              marginTop: '24px',
-              padding: '20px',
-              background: 'rgba(16, 185, 129, 0.08)',
-              borderRadius: '16px',
-              border: '1px solid rgba(16, 185, 129, 0.2)',
+              marginTop: '24px', padding: '22px',
+              background: 'rgba(16, 185, 129, 0.06)',
+              borderRadius: '16px', border: '1px solid rgba(16, 185, 129, 0.15)',
               textAlign: 'center'
             }}>
-              <div style={{ fontSize: '24px', marginBottom: '6px' }}>✓</div>
+              <div style={{ fontSize: '28px', marginBottom: '8px' }}>✓</div>
               <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#059669' }}>
                 {t('lumina.email.thanks')}
               </div>
               <a href="/login" style={{
-                display: 'inline-block',
-                marginTop: '12px',
-                padding: '10px 24px',
-                background: '#6B5B95',
-                color: 'white',
-                borderRadius: '20px',
-                textDecoration: 'none',
-                fontSize: '13px',
-                fontWeight: 'bold'
+                display: 'inline-block', marginTop: '14px',
+                padding: '11px 24px', background: '#4B0082',
+                color: 'white', borderRadius: '22px',
+                textDecoration: 'none', fontSize: '13px', fontWeight: 'bold'
               }}>
                 {t('lumina.email.create_account')}
               </a>
             </div>
           )}
 
-          {/* Os 7 Ecos - LUMINA observa, não faz parte */}
-          <div style={{ marginTop: '30px' }}>
+          {/* ═══ OS 7 ECOS — todos clicáveis ═══ */}
+          <div style={{ marginTop: '32px' }}>
             <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-              <div style={{ fontSize: '13px', letterSpacing: '2px', color: '#6B6B9D' }}>{t('lumina.ecos.title')}</div>
+              <div style={{ fontSize: '10px', letterSpacing: '3px', color: '#6B6B9D' }}>{t('lumina.ecos.title')}</div>
               <div style={{ fontSize: '11px', color: '#6B6B9D', marginTop: '4px' }}>
                 {t('lumina.ecos.subtitle')}
               </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
-              {SETE_ECOS.slice(0, 4).map(eco => (
-                <div key={eco.nome} style={{
-                  textAlign: 'center',
-                  padding: '10px 4px',
-                  background: eco.disponivel ? 'rgba(124, 139, 111, 0.1)' : 'rgba(0,0,0,0.03)',
-                  borderRadius: '8px',
-                  opacity: eco.disponivel ? 1 : 0.6
+              {SETE_ECOS.slice(0, 4).map(ecoItem => (
+                <a key={ecoItem.nome} href={ecoItem.link} style={{
+                  textAlign: 'center', padding: '12px 4px',
+                  background: 'white', borderRadius: '12px',
+                  border: `1px solid ${ecoItem.cor}20`,
+                  textDecoration: 'none', color: 'inherit',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 1px 8px rgba(26, 26, 78, 0.03)'
                 }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: eco.cor, margin: '0 auto 6px' }} />
-                  <div style={{ fontSize: '10px', fontWeight: 'bold' }}>{eco.nome}</div>
-                  <div style={{ fontSize: '10px', color: '#6B6B9D' }}>{eco.foco}</div>
-                </div>
+                  <div style={{ fontSize: '16px', marginBottom: '4px' }}>{ecoItem.emoji}</div>
+                  <div style={{ fontSize: '10px', fontWeight: 'bold', color: ecoItem.cor }}>{ecoItem.nome}</div>
+                  <div style={{ fontSize: '9px', color: '#6B6B9D', lineHeight: 1.3, marginTop: '2px' }}>{ecoItem.foco}</div>
+                </a>
               ))}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginTop: '8px' }}>
-              {SETE_ECOS.slice(4).map(eco => (
-                <div key={eco.nome} style={{
-                  textAlign: 'center',
-                  padding: '10px 4px',
-                  background: eco.disponivel ? 'rgba(124, 139, 111, 0.1)' : 'rgba(0,0,0,0.03)',
-                  borderRadius: '8px',
-                  opacity: eco.disponivel ? 1 : 0.6
+              {SETE_ECOS.slice(4).map(ecoItem => (
+                <a key={ecoItem.nome} href={ecoItem.link} style={{
+                  textAlign: 'center', padding: '12px 4px',
+                  background: 'white', borderRadius: '12px',
+                  border: `1px solid ${ecoItem.cor}20`,
+                  textDecoration: 'none', color: 'inherit',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 1px 8px rgba(26, 26, 78, 0.03)'
                 }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: eco.cor, margin: '0 auto 6px' }} />
-                  <div style={{ fontSize: '10px', fontWeight: 'bold' }}>{eco.nome}</div>
-                  <div style={{ fontSize: '10px', color: '#6B6B9D' }}>{eco.foco}</div>
-                </div>
+                  <div style={{ fontSize: '16px', marginBottom: '4px' }}>{ecoItem.emoji}</div>
+                  <div style={{ fontSize: '10px', fontWeight: 'bold', color: ecoItem.cor }}>{ecoItem.nome}</div>
+                  <div style={{ fontSize: '9px', color: '#6B6B9D', lineHeight: 1.3, marginTop: '2px' }}>{ecoItem.foco}</div>
+                </a>
               ))}
-            </div>
-
-            {/* CTAs dos Ecos Disponíveis */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '20px' }}>
-              {/* CTA Vitalis */}
-              <a href="/vitalis" style={{
-                display: 'block',
-                padding: '14px 10px',
-                background: 'linear-gradient(135deg, #7C8B6F 0%, #6B7A5E 100%)',
-                color: 'white',
-                borderRadius: '12px',
-                textDecoration: 'none',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontWeight: 'bold', marginBottom: '4px', fontSize: '13px' }}>VITALIS</div>
-                <div style={{ fontSize: '10px', opacity: 0.9, lineHeight: 1.3 }}>
-                  {t('lumina.ecos.vitalis_focus')}
-                </div>
-              </a>
-
-              {/* CTA ÁUREA */}
-              <a href="/aurea" style={{
-                display: 'block',
-                padding: '14px 10px',
-                background: 'linear-gradient(135deg, #C9A227 0%, #D4AF37 100%)',
-                color: 'white',
-                borderRadius: '12px',
-                textDecoration: 'none',
-                textAlign: 'center',
-                boxShadow: '0 2px 10px rgba(201, 162, 39, 0.25)'
-              }}>
-                <div style={{ fontWeight: 'bold', marginBottom: '4px', fontSize: '13px' }}>ÁUREA</div>
-                <div style={{ fontSize: '10px', opacity: 0.9, lineHeight: 1.3 }}>
-                  {t('lumina.ecos.self_worth')}
-                </div>
-              </a>
-            </div>
-
-            {/* Login para clientes existentes */}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '10px' }}>
-              <a href="/vitalis/login" style={{
-                padding: '10px',
-                color: '#7C8B6F',
-                textDecoration: 'none',
-                textAlign: 'center',
-                fontSize: '11px'
-              }}>
-                Vitalis → <span style={{ fontWeight: 'bold' }}>{t('lumina.ecos.login')}</span>
-              </a>
-              <a href="/aurea/login" style={{
-                padding: '10px',
-                color: '#B8941F',
-                textDecoration: 'none',
-                textAlign: 'center',
-                fontSize: '11px'
-              }}>
-                Áurea → <span style={{ fontWeight: 'bold' }}>{t('lumina.ecos.login')}</span>
-              </a>
             </div>
           </div>
 
-          {/* Upsell contextual - só aparece para quem não tem Vitalis/Aurea */}
+          {/* Upsell contextual */}
           {!upsellDismissed && !vitalisAccess && !aureaAccess && padrao && (
             <UpsellCard padrao={padrao} onDismiss={() => setUpsellDismissed(true)} />
           )}
 
-          {/* Assinatura e botão dentro do container para evitar sobreposição */}
+          {/* ═══ ASSINATURA E GUARDAR ═══ */}
           <div style={{ marginTop: '40px', textAlign: 'center' }}>
             <div style={{ fontSize: '9px', color: '#6B6B9D', letterSpacing: '1px' }}>
               LUMINA · Sete Ecos<br />
@@ -1619,8 +1666,7 @@ export default function Lumina() {
             </div>
 
             <button className="close-button" onClick={saveAndRestart} style={{
-              marginTop: '20px',
-              padding: '14px 35px'
+              marginTop: '20px', padding: '14px 35px'
             }}>
               {t('lumina.save_close')}
             </button>
