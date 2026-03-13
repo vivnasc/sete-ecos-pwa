@@ -117,9 +117,9 @@ export default function OnboardingTutorial({ onComplete, onSkip }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-b from-[#1a1a2e] to-[#16213e] z-50 flex flex-col">
+    <div className="fixed inset-0 bg-gradient-to-b from-[#1a1a2e] to-[#16213e] z-[60] flex flex-col overflow-y-auto">
       {/* Progress bar */}
-      <div className="h-1 bg-white/10">
+      <div className="h-1 bg-white/10 flex-shrink-0">
         <div
           className="h-full bg-[#7C8B6F] transition-all duration-500"
           style={{ width: `${progress}%` }}
@@ -128,7 +128,7 @@ export default function OnboardingTutorial({ onComplete, onSkip }) {
 
       {/* Skip button */}
       {!isLast && (
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-4 right-4 z-10">
           <button
             onClick={skip}
             className="text-white/60 text-sm hover:text-white/80 transition-colors"
@@ -139,7 +139,7 @@ export default function OnboardingTutorial({ onComplete, onSkip }) {
       )}
 
       {/* Content */}
-      <div className="flex-1 flex flex-col items-center justify-center p-6 overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-center px-5 py-4 min-h-0">
         <div
           className={`max-w-md w-full transition-all duration-300 ${
             animating ? 'opacity-0 translate-x-10' : 'opacity-100 translate-x-0'
@@ -147,24 +147,24 @@ export default function OnboardingTutorial({ onComplete, onSkip }) {
         >
           {/* Icon */}
           <div
-            className={`w-28 h-28 mx-auto mb-6 rounded-full bg-gradient-to-br ${step.cor} flex items-center justify-center shadow-2xl animate-float`}
+            className={`w-20 h-20 sm:w-28 sm:h-28 mx-auto mb-4 sm:mb-6 rounded-full bg-gradient-to-br ${step.cor} flex items-center justify-center shadow-2xl animate-float`}
           >
-            <span className="text-5xl">{step.icone}</span>
+            <span className="text-4xl sm:text-5xl">{step.icone}</span>
           </div>
 
           {/* Title */}
-          <h2 className="text-2xl md:text-3xl font-bold text-white text-center mb-4">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white text-center mb-3 sm:mb-4">
             {step.titulo}
           </h2>
 
           {/* Description */}
-          <p className="text-gray-300 text-center text-lg leading-relaxed mb-6">
+          <p className="text-gray-300 text-center text-base sm:text-lg leading-relaxed mb-4 sm:mb-6">
             {step.descricao}
           </p>
 
           {/* Tip box */}
           {step.dica && (
-            <div className="bg-white/10 backdrop-blur rounded-xl p-4 mb-6">
+            <div className="bg-white/10 backdrop-blur rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
               <div className="flex items-start gap-3">
                 <span className="text-xl">💡</span>
                 <p className="text-white/80 text-sm">{step.dica}</p>
@@ -174,8 +174,8 @@ export default function OnboardingTutorial({ onComplete, onSkip }) {
 
           {/* Quote */}
           {step.citacao && (
-            <div className="text-center mb-6">
-              <p className="text-xl text-white/90 italic font-light">
+            <div className="text-center mb-4 sm:mb-6">
+              <p className="text-lg sm:text-xl text-white/90 italic font-light">
                 {step.citacao}
               </p>
             </div>
@@ -183,10 +183,10 @@ export default function OnboardingTutorial({ onComplete, onSkip }) {
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="p-6 pb-8">
+      {/* Navigation — sempre visível, acima da barra de navegação */}
+      <div className="flex-shrink-0 px-5 pt-3 pb-24 sm:pb-8">
         {/* Step indicators */}
-        <div className="flex justify-center gap-2 mb-6">
+        <div className="flex justify-center gap-2 mb-4">
           {TUTORIAL_STEPS.map((_, i) => (
             <div
               key={i}
@@ -206,14 +206,14 @@ export default function OnboardingTutorial({ onComplete, onSkip }) {
           {!isFirst && (
             <button
               onClick={prevStep}
-              className="flex-1 py-4 bg-white/10 text-white rounded-xl font-medium hover:bg-white/20 transition-colors"
+              className="flex-1 py-3.5 bg-white/10 text-white rounded-xl font-medium hover:bg-white/20 transition-colors"
             >
               ← Anterior
             </button>
           )}
           <button
             onClick={nextStep}
-            className={`flex-1 py-4 bg-gradient-to-r ${step.cor} text-white rounded-xl font-semibold hover:opacity-90 transition-opacity ${
+            className={`flex-1 py-3.5 bg-gradient-to-r ${step.cor} text-white rounded-xl font-semibold hover:opacity-90 transition-opacity ${
               isFirst ? 'text-lg' : ''
             }`}
           >

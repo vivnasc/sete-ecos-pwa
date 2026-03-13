@@ -520,26 +520,27 @@ export default function DashboardVitalis() {
       // Verificar novas conquistas — usar celebradas como fonte de verdade
       const celebradas = getConquistasCelebradas();
       const conquistasNotificadas = JSON.parse(localStorage.getItem('vitalis-conquistas-notificadas') || '[]');
+
+      // Determinar conquistas REALMENTE novas (não celebradas NEM notificadas antes)
       const novasConquistas = conquistas.filter(c => !celebradas.has(c) && !conquistasNotificadas.includes(c));
 
-      // Se há novas conquistas, notificar e celebrar
-      if (novasConquistas.length > 0) {
-        // UNION: juntar antigas + novas (nunca perder conquistas já notificadas)
-        const todasNotificadas = [...new Set([...conquistasNotificadas, ...conquistas])];
-        localStorage.setItem('vitalis-conquistas-notificadas', JSON.stringify(todasNotificadas));
+      // SEMPRE sincronizar todas as conquistas actuais no localStorage
+      const todasNotificadas = [...new Set([...conquistasNotificadas, ...conquistas])];
+      localStorage.setItem('vitalis-conquistas-notificadas', JSON.stringify(todasNotificadas));
+      for (const cId of conquistas) {
+        marcarConquistaCelebrada(cId);
+      }
 
-        // Mostrar celebração apenas da PRIMEIRA nova conquista (1x por sessão)
+      // Só mostrar celebração se é realmente nova E ainda não mostrámos nesta sessão
+      const jaCelebrouNestaSessao = sessionStorage.getItem('vitalis-celebracao-sessao');
+      if (novasConquistas.length > 0 && !jaCelebrouNestaSessao) {
+        sessionStorage.setItem('vitalis-celebracao-sessao', '1');
+
         const primeiraNovaId = novasConquistas[0];
         const primeiraNovaConquista = CONQUISTAS[primeiraNovaId];
         if (primeiraNovaConquista) {
-          marcarConquistaCelebrada(primeiraNovaId);
           setConquistaActual(primeiraNovaId);
           setShowCelebracao(true);
-        }
-
-        // Marcar todas as novas como celebradas (para não mostrar nas próximas sessões)
-        for (const cId of novasConquistas) {
-          marcarConquistaCelebrada(cId);
         }
 
         // Enviar emails para todas as novas conquistas
@@ -559,10 +560,6 @@ export default function DashboardVitalis() {
             }
           }
         }
-      } else {
-        // Sem novas conquistas: sincronizar notificadas com celebradas
-        const todasNotificadas = [...new Set([...conquistasNotificadas, ...conquistas])];
-        localStorage.setItem('vitalis-conquistas-notificadas', JSON.stringify(todasNotificadas));
       }
 
       setConquistasDesbloqueadas(conquistas);
