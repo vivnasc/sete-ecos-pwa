@@ -74,10 +74,11 @@ export default class ErrorBoundary extends React.Component {
             Ocorreu um erro inesperado. Podes tentar recarregar esta secção ou voltar ao início.
           </p>
           {this.state.error && (
-            <details className="mb-6 max-w-md text-left">
+            <details open className="mb-6 max-w-md text-left">
               <summary className="text-xs text-gray-400 cursor-pointer hover:text-gray-600">Detalhes do erro</summary>
-              <pre className="mt-2 p-3 bg-gray-100 rounded-lg text-xs text-red-600 overflow-auto max-h-40 whitespace-pre-wrap">
+              <pre className="mt-2 p-3 bg-gray-100 rounded-lg text-xs text-red-600 overflow-auto max-h-60 whitespace-pre-wrap">
                 {this.state.error.message || String(this.state.error)}
+                {this.state.error.stack ? '\n\n' + this.state.error.stack : ''}
               </pre>
             </details>
           )}
