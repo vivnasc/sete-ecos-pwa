@@ -52,10 +52,36 @@ export default async function handler(req, res) {
     }
 
     // ── 1. GRAVAR INTAKE ──
-    const intakePayload = {
+    // Sanitizar: TEXT[] columns rejects "" (empty string) — convert to null
+    // Also handle empty arrays and stringified empty values
+    const sanitizeForArrayColumns = (data) => {
+      const arrayColumns = [
+        'restricoes_alimentares', 'condicoes_saude', 'onde_come',
+        'tipos_comida', 'bebidas', 'o_que_petisca',
+        'o_que_procura_comer', 'tipo_exercicio'
+      ];
+      const sanitized = { ...data };
+      for (const col of arrayColumns) {
+        if (col in sanitized) {
+          const val = sanitized[col];
+          if (val === '' || val === '""' || (Array.isArray(val) && val.length === 0)) {
+            sanitized[col] = null;
+          }
+        }
+      }
+      // Also sanitize any field that is empty string but might be TEXT[] in real schema
+      for (const [key, val] of Object.entries(sanitized)) {
+        if (val === '' && key !== 'user_id') {
+          sanitized[key] = null;
+        }
+      }
+      return sanitized;
+    };
+
+    const intakePayload = sanitizeForArrayColumns({
       ...clientIntake,
       user_id: userId
-    };
+    });
 
     console.log('📝 [API-INTAKE] A gravar intake para user_id:', userId);
     const { data: intakeResult, error: intakeError } = await supabase
