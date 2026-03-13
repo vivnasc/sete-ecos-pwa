@@ -135,44 +135,58 @@ export default function PodcastPlayer({ eco, max, compact = false, showTitle = t
   if (episodios.length === 0) return null
 
   const handlePlay = (ep) => {
-    // Parar áudio anterior
+    // Parar QUALQUER áudio anterior imediatamente
     if (audioRef.current) {
       audioRef.current.pause()
+      audioRef.current.removeAttribute('src')
       audioRef.current = null
     }
 
     const url = getAudioUrl('podcast', ep.slug)
     const audio = new Audio(url)
 
+    // Guardar ref ANTES de play() para evitar race conditions
+    audioRef.current = audio
+
     audio.addEventListener('ended', () => {
       setPlaying(null)
       setProgress(100)
     })
     audio.addEventListener('error', () => {
-      setPlaying(null)
-      setProgress(0)
+      // Só limpar se este áudio ainda é o actual
+      if (audioRef.current === audio) {
+        setPlaying(null)
+        setProgress(0)
+        audioRef.current = null
+      }
     })
     audio.addEventListener('timeupdate', () => {
-      if (audio.duration) {
+      if (audio.duration && audioRef.current === audio) {
         setProgress((audio.currentTime / audio.duration) * 100)
       }
     })
     audio.addEventListener('loadedmetadata', () => {
-      setDuration(audio.duration)
+      if (audioRef.current === audio) {
+        setDuration(audio.duration)
+      }
     })
 
-    audio.play().then(() => {
-      setPlaying(ep.slug)
-      setProgress(0)
-      audioRef.current = audio
-    }).catch(() => {
-      setPlaying(null)
+    setPlaying(ep.slug)
+    setProgress(0)
+
+    audio.play().catch(() => {
+      // Se falhou e ainda é o áudio actual, limpar
+      if (audioRef.current === audio) {
+        setPlaying(null)
+        audioRef.current = null
+      }
     })
   }
 
   const handlePause = () => {
     if (audioRef.current) {
       audioRef.current.pause()
+      audioRef.current = null
     }
     setPlaying(null)
   }
