@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link, useNavigate } from 'react-router-dom';
 import { StreakDisplay, CelebracaoModal, ConquistasSection, NivelProgresso, CONQUISTAS } from './Gamificacao.jsx';
-import { useOnboarding, OnboardingWrapper } from './OnboardingTutorial.jsx';
+import { useOnboarding } from './OnboardingTutorial.jsx';
 import { EmailTriggers } from '../../lib/emails';
 import WelcomeTutorial from '../WelcomeTutorial.jsx';
 import { isCoach } from '../../lib/coach';
@@ -1645,10 +1645,6 @@ export default function DashboardVitalis() {
       </div>
     )}
 
-    {/* Modais com position:fixed — FORA do container animado */}
-    {mostrarOnboarding && (
-      <OnboardingWrapper onComplete={completarOnboarding} />
-    )}
     </>
   );
 }
