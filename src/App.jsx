@@ -327,6 +327,12 @@ function AppRoutes() {
   // Activar notificações locais ao nível global (não só no dashboard Vitalis)
   useGlobalNotifications(session)
 
+  // Limpar flag de error_reload quando a app carrega com sucesso
+  useEffect(() => {
+    sessionStorage.removeItem('error_reload')
+    sessionStorage.removeItem('chunk_reload')
+  }, [])
+
   if (loading) return <LoadingFallback />
 
   return (
