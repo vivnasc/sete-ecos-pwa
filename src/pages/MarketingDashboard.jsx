@@ -3067,6 +3067,7 @@ function CarrosseisTab({ copiar, copiado }) {
 function CarrosselPreview({ carrossel, copiar, copiado }) {
   const [dataUrls, setDataUrls] = useState([]);
   const [loading, setLoading] = useState(true);
+  const audioUrl = carrossel.audioSlug ? getAudioUrl('marketing', carrossel.audioSlug) : null;
 
   useEffect(() => {
     setLoading(true);
@@ -3122,11 +3123,25 @@ function CarrosselPreview({ carrossel, copiar, copiado }) {
           ))}
         </div>
       )}
+      {audioUrl && (
+        <div className="mt-3 p-3 bg-[#1a1a2e]/5 rounded-xl border border-[#E8E2D9]">
+          <p className="text-[10px] font-bold text-[#6B5C4C] mb-2">VOICEOVER</p>
+          <audio controls preload="metadata" className="w-full h-10" style={{ borderRadius: '8px' }}>
+            <source src={audioUrl} type="audio/mpeg" />
+          </audio>
+        </div>
+      )}
       <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-[#E8E2D9]">
         <button onClick={downloadAll} disabled={loading} className="flex items-center gap-1.5 px-4 py-2 bg-[#1a1a2e] text-white rounded-full text-sm font-bold disabled:opacity-50">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
           Todos ({carrossel.slides.length} slides)
         </button>
+        {audioUrl && (
+          <a href={audioUrl} download={`${carrossel.id}-voiceover.mp3`} className="flex items-center gap-1.5 px-4 py-2 bg-[#6B5B95] text-white rounded-full text-sm font-bold hover:opacity-90 transition-opacity">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>
+            MP3
+          </a>
+        )}
         <CopyBtn onClick={() => copiar(carrossel.caption, 'c-cap')} copiado={copiado === 'c-cap'} label="Copiar Caption" />
       </div>
       <div className="mt-3 p-3 bg-gray-50 rounded-xl">
