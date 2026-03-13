@@ -1028,20 +1028,16 @@ export default function PlanoHTML() {
                 <>
                   <div style={{background:'#1565C010',borderRadius:'8px',padding:'8px 10px',marginBottom:'8px'}}>
                     <strong style={{color:'#1565C0'}}>Jejum Intermitente 16:8</strong><br/>
-                    Jejum de 16 horas · Janela alimentar de 8 horas<br/>
-                    <span style={{fontSize:'11px',color:'#666'}}>Escolhe o horário que melhor se adapta à tua rotina:</span>
+                    Jejum de 16 horas · Janela alimentar de 8 horas
                   </div>
-                  <strong>Opção A (recomendada):</strong> Janela 12h-20h<br/>
-                  <strong style={{marginLeft:'10px'}}>12h:</strong> Primeira refeição (proteína + gordura + legumes)<br/>
-                  {dados.num_refeicoes >= 3 && <><strong style={{marginLeft:'10px'}}>16h:</strong> Refeição intermédia (snack proteico)<br/></>}
-                  <strong style={{marginLeft:'10px'}}>20h:</strong> Última refeição (proteína + legumes + gordura boa)<br/>
+                  • Escolhe a janela de 8 horas que melhor se adapta à tua rotina<br/>
+                  • Configura o teu horário no <strong>Timer de Jejum</strong> na app<br/>
+                  • Faz {dados.num_refeicoes || 2} refeições dentro da janela alimentar<br/>
+                  • Cada refeição: proteína + legumes + gordura saudável<br/>
+                  • Distribui as porções do dia entre as refeições<br/>
                   <br/>
-                  <strong>Opção B:</strong> Janela 10h-18h<br/>
-                  <strong style={{marginLeft:'10px'}}>10h:</strong> Primeira refeição<br/>
-                  {dados.num_refeicoes >= 3 && <><strong style={{marginLeft:'10px'}}>14h:</strong> Refeição intermédia<br/></>}
-                  <strong style={{marginLeft:'10px'}}>18h:</strong> Última refeição<br/>
-                  <br/>
-                  <span style={{fontSize:'11px',color:'#666'}}>Durante o jejum: água, chá sem açúcar, café preto. Nada com calorias.</span>
+                  <strong>Durante o jejum:</strong> água, chá sem açúcar, café preto — nada com calorias.<br/>
+                  <strong>Ao quebrar o jejum:</strong> começa com proteína e gordura, não hidratos.
                 </>
               ) : dados.abordagem === 'low_carb' ? (
                 <>
