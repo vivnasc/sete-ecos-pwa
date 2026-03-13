@@ -885,16 +885,18 @@ export default function DashboardVitalis() {
   }
 
   return (
+    <>
+    {/* Modais com position:fixed — FORA do container animado para evitar bug CSS
+        (transform no pai quebra position:fixed nos filhos) */}
+    {mostrarOnboarding && (
+      <WelcomeTutorial eco="vitalis" onComplete={completarOnboarding} />
+    )}
+
     <div className={`min-h-screen pb-20 transition-colors duration-500 animate-page-enter ${
       isDarkMode
         ? 'bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f0f23]'
         : 'bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]'
     }`}>
-
-      {/* Tutorial de Boas-vindas - Apenas na primeira vez (controlado por useOnboarding) */}
-      {mostrarOnboarding && (
-        <WelcomeTutorial eco="vitalis" onComplete={completarOnboarding} />
-      )}
 
       {/* Header com Perfil — premium animated gradient */}
       <header className="relative overflow-hidden">
@@ -1597,61 +1599,59 @@ export default function DashboardVitalis() {
         </div>
 
       </main>
-
-      {/* Modal de Celebração de Conquistas */}
-      <CelebracaoModal
-        conquista={conquistaActual}
-        show={showCelebracao}
-        onClose={() => {
-          setShowCelebracao(false);
-          setConquistaActual(null);
-        }}
-      />
-
-      {/* Modal de Seleção de Avatar */}
-      {showAvatarPicker && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowAvatarPicker(false)} />
-          <div className="relative bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-bounceIn">
-            <h3 className="text-xl font-bold text-gray-800 mb-2 text-center">Escolhe o teu avatar</h3>
-            <p className="text-sm text-gray-500 text-center mb-4">Representa o teu progresso na jornada</p>
-
-            <div className="grid grid-cols-5 gap-3 mb-4">
-              {['🌱', '🌿', '🌳', '🌻', '🌸', '🦋', '🔥', '⭐', '💎', '🏆', '👑', '🌙', '☀️', '🌈', '🍀'].map((emoji) => (
-                <button
-                  key={emoji}
-                  onClick={() => {
-                    setAvatarIcon(emoji);
-                    localStorage.setItem('vitalis-avatar', emoji);
-                    setShowAvatarPicker(false);
-                  }}
-                  className={`w-12 h-12 rounded-xl text-2xl flex items-center justify-center transition-all ${
-                    avatarIcon === emoji
-                      ? 'bg-[#7C8B6F] scale-110 shadow-lg'
-                      : 'bg-gray-100 hover:bg-gray-200'
-                  }`}
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-
-            <button
-              onClick={() => setShowAvatarPicker(false)}
-              className="w-full py-3 bg-gray-100 text-gray-600 rounded-xl font-medium hover:bg-gray-200 transition-colors"
-            >
-              Cancelar
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Modal de Conquistas agora está dentro de AchievementsPanel */}
-
-      {/* Onboarding para novos utilizadores */}
-      {mostrarOnboarding && (
-        <OnboardingWrapper onComplete={completarOnboarding} />
-      )}
     </div>
+
+    {/* Modais com position:fixed — FORA do container animado (transform quebra fixed) */}
+    <CelebracaoModal
+      conquista={conquistaActual}
+      show={showCelebracao}
+      onClose={() => {
+        setShowCelebracao(false);
+        setConquistaActual(null);
+      }}
+    />
+
+    {showAvatarPicker && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn">
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowAvatarPicker(false)} />
+        <div className="relative bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-bounceIn">
+          <h3 className="text-xl font-bold text-gray-800 mb-2 text-center">Escolhe o teu avatar</h3>
+          <p className="text-sm text-gray-500 text-center mb-4">Representa o teu progresso na jornada</p>
+
+          <div className="grid grid-cols-5 gap-3 mb-4">
+            {['🌱', '🌿', '🌳', '🌻', '🌸', '🦋', '🔥', '⭐', '💎', '🏆', '👑', '🌙', '☀️', '🌈', '🍀'].map((emoji) => (
+              <button
+                key={emoji}
+                onClick={() => {
+                  setAvatarIcon(emoji);
+                  localStorage.setItem('vitalis-avatar', emoji);
+                  setShowAvatarPicker(false);
+                }}
+                className={`w-12 h-12 rounded-xl text-2xl flex items-center justify-center transition-all ${
+                  avatarIcon === emoji
+                    ? 'bg-[#7C8B6F] scale-110 shadow-lg'
+                    : 'bg-gray-100 hover:bg-gray-200'
+                }`}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setShowAvatarPicker(false)}
+            className="w-full py-3 bg-gray-100 text-gray-600 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    )}
+
+    {/* Modais com position:fixed — FORA do container animado */}
+    {mostrarOnboarding && (
+      <OnboardingWrapper onComplete={completarOnboarding} />
+    )}
+    </>
   );
 }
