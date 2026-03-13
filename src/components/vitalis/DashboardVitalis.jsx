@@ -491,17 +491,21 @@ export default function DashboardVitalis() {
         xp += CONQUISTAS[faseId]?.xp || 250;
       }
 
-      // Conquistas de água
-      if ((aguaCount.count || 0) >= 1) { conquistas.push('agua_1'); xp += 50; }
-      if ((aguaCount.count || 0) >= 50) { conquistas.push('agua_50'); xp += 150; }
+      // Conquistas de água (só conta se realmente há registos, não erros de query)
+      const aguaTotal = typeof aguaCount.count === 'number' ? aguaCount.count : 0;
+      const mealsTotal = typeof mealsCount.count === 'number' ? mealsCount.count : 0;
+      const treinoTotal = typeof treinoCount.count === 'number' ? treinoCount.count : 0;
+
+      if (aguaTotal >= 1) { conquistas.push('agua_1'); xp += 50; }
+      if (aguaTotal >= 50) { conquistas.push('agua_50'); xp += 150; }
 
       // Conquistas de treino
-      if ((treinoCount.count || 0) >= 1) { conquistas.push('treino_1'); xp += 75; }
-      if ((treinoCount.count || 0) >= 10) { conquistas.push('treino_10'); xp += 200; }
+      if (treinoTotal >= 1) { conquistas.push('treino_1'); xp += 75; }
+      if (treinoTotal >= 10) { conquistas.push('treino_10'); xp += 200; }
 
       // Conquistas de refeições
-      if ((mealsCount.count || 0) >= 10) { conquistas.push('refeicoes_10'); xp += 100; }
-      if ((mealsCount.count || 0) >= 50) { conquistas.push('refeicoes_50'); xp += 250; }
+      if (mealsTotal >= 10) { conquistas.push('refeicoes_10'); xp += 100; }
+      if (mealsTotal >= 50) { conquistas.push('refeicoes_50'); xp += 250; }
 
       // Conquistas de peso — comparar peso actual vs peso inicial
       if (client?.peso_inicial && client?.peso_actual && client.peso_inicial > client.peso_actual) {
@@ -517,12 +521,19 @@ export default function DashboardVitalis() {
         }
       }
 
+      // Se utilizador não tem NENHUMA actividade, não celebrar nada
+      // (evita "Primeira Gota" e outros popups na primeira visita)
+      const temActividade = aguaTotal > 0 || mealsTotal > 0 || treinoTotal > 0 ||
+        (typeof checkinCount.count === 'number' && checkinCount.count > 0);
+
       // Verificar novas conquistas — usar celebradas como fonte de verdade
       const celebradas = getConquistasCelebradas();
       const conquistasNotificadas = JSON.parse(localStorage.getItem('vitalis-conquistas-notificadas') || '[]');
 
       // Determinar conquistas REALMENTE novas (não celebradas NEM notificadas antes)
-      const novasConquistas = conquistas.filter(c => !celebradas.has(c) && !conquistasNotificadas.includes(c));
+      const novasConquistas = temActividade
+        ? conquistas.filter(c => !celebradas.has(c) && !conquistasNotificadas.includes(c))
+        : [];
 
       // SEMPRE sincronizar todas as conquistas actuais no localStorage
       const todasNotificadas = [...new Set([...conquistasNotificadas, ...conquistas])];
