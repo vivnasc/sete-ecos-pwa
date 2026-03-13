@@ -109,16 +109,10 @@ export async function registerPendingPayment(eco, userId, details) {
 
       if (userData) {
         await supabase.from('vitalis_alerts').insert({
+          user_id: userId,
           tipo_alerta: 'novo_pagamento',
-          mensagem: `[${config.name}] Novo pagamento pendente de ${userData.nome || userData.email}: ${plan.price_mzn} MZN via ${details.method}. Ref: ${details.reference}`,
-          dados: {
-            eco,
-            userId,
-            plan: details.planKey,
-            method: details.method,
-            reference: details.reference,
-            amount: plan.price_mzn
-          }
+          prioridade: 'alta',
+          descricao: `[${config.name}] Novo pagamento pendente de ${userData.nome || userData.email}: ${plan.price_mzn} MZN via ${details.method}. Ref: ${details.reference}`
         })
       }
     } catch (alertErr) {
