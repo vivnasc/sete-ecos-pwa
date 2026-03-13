@@ -1,5 +1,5 @@
 /* ============================================================
-   LUMINA - CSS COMPLETO (Conversão fiel do HTML v15)
+   LUMINA v16 - CSS Revamp Completo
    Sete Ecos © Vivianne dos Santos
    ============================================================ */
 
@@ -141,7 +141,7 @@
   width: 100px;
   height: 100px;
   margin-bottom: 20px;
-  animation: pulse 2s ease-in-out infinite;
+  animation: pulseGlow 2.5s ease-in-out infinite;
 }
 
 .splash-title {
@@ -152,7 +152,7 @@
   color: var(--indigo-escuro);
   margin-bottom: 10px;
   opacity: 0;
-  animation: fadeIn 1.5s ease forwards 0.5s;
+  animation: fadeSlideUp 1.2s ease forwards 0.4s;
 }
 
 .splash-subtitle {
@@ -164,22 +164,20 @@
   letter-spacing: 2px;
   text-transform: none;
   opacity: 0;
-  animation: fadeIn 1.5s ease forwards 0.8s;
+  animation: fadeSlideUp 1.2s ease forwards 0.7s;
 }
 
 .splash-tap {
   margin-top: 40px;
   font-size: 11px;
-  color: var(--texto-hint);
   letter-spacing: 3px;
   opacity: 0;
-  animation: fadeIn 1.5s ease forwards 1.2s, pulse 3s ease-in-out infinite 2.7s;
+  animation: fadeSlideUp 1.2s ease forwards 1s;
   cursor: pointer;
   background: none;
-  border: none;
   font-family: 'Quicksand', sans-serif;
   padding: 16px 40px;
-  border: 1px solid var(--indigo);
+  border: 1.5px solid var(--indigo);
   border-radius: 30px;
   color: var(--indigo);
   transition: all 0.3s ease;
@@ -188,6 +186,12 @@
 .splash-tap:hover {
   background: var(--indigo);
   color: white;
+  box-shadow: 0 4px 20px rgba(75, 0, 130, 0.2);
+  transform: translateY(-1px);
+}
+
+.splash-tap:active {
+  transform: scale(0.97);
 }
 
 .splash-history {
@@ -196,13 +200,20 @@
   color: var(--indigo);
   letter-spacing: 2px;
   opacity: 0;
-  animation: fadeIn 1.5s ease forwards 1.5s;
+  animation: fadeIn 1.5s ease forwards 1.3s;
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 3px;
   background: none;
   border: none;
   font-family: 'Quicksand', sans-serif;
+  padding: 8px 16px;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+}
+
+.splash-history:hover {
+  background: rgba(75, 0, 130, 0.06);
 }
 
 /* ============================================================
@@ -212,9 +223,19 @@
   to { opacity: 1; }
 }
 
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; filter: drop-shadow(0 0 10px rgba(75, 0, 130, 0.1)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 25px rgba(75, 0, 130, 0.25)); }
 }
 
 @keyframes readingAppear {
@@ -222,6 +243,10 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes barGrow {
+  from { width: 0; }
 }
 
 /* ============================================================
@@ -419,7 +444,7 @@ input[type="date"] {
    ============================================================ */
 .start-button {
   background: transparent;
-  border: 1px solid var(--indigo);
+  border: 1.5px solid var(--indigo);
   font-family: 'Quicksand', sans-serif;
   font-size: 12px;
   font-weight: 500;
@@ -428,12 +453,19 @@ input[type="date"] {
   padding: 16px 45px;
   border-radius: 30px;
   letter-spacing: 4px;
-  transition: all 0.4s ease;
+  transition: all 0.3s ease;
+  min-height: 50px;
 }
 
 .start-button:hover {
   background: var(--indigo);
   color: white;
+  box-shadow: 0 4px 20px rgba(75, 0, 130, 0.2);
+  transform: translateY(-1px);
+}
+
+.start-button:active {
+  transform: scale(0.97);
 }
 
 /* ============================================================
@@ -529,21 +561,27 @@ input[type="date"] {
 }
 
 .option {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(26, 26, 78, 0.12);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1.5px solid rgba(26, 26, 78, 0.1);
   font-family: 'Quicksand', sans-serif;
   font-size: 13px;
   color: var(--texto-principal);
   cursor: pointer;
-  padding: 11px 20px;
-  border-radius: 20px;
+  padding: 12px 22px;
+  border-radius: 22px;
   letter-spacing: 0.5px;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
+  min-height: 44px;
 }
 
 .option:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 20px rgba(26, 26, 78, 0.12);
+  transform: scale(1.04);
+  box-shadow: 0 4px 20px rgba(26, 26, 78, 0.1);
+}
+
+.option:active {
+  transform: scale(0.96);
+  transition: transform 0.1s ease;
 }
 
 /* Hover states por Eco */
@@ -610,11 +648,12 @@ input[type="date"] {
    ============================================================ */
 .reading-container {
   text-align: center;
-  padding: 0 15px;
-  max-width: 320px;
+  padding: 0 10px;
+  max-width: 380px;
+  width: 100%;
   opacity: 0;
   transform: translateY(15px);
-  animation: readingAppear 1s ease forwards 0.3s;
+  animation: readingAppear 0.8s ease forwards 0.2s;
 }
 
 .days-badge {
@@ -711,7 +750,7 @@ input[type="date"] {
   margin-top: 20px;
   margin-bottom: 40px;
   background: transparent;
-  border: 1px solid var(--indigo);
+  border: 1.5px solid var(--indigo);
   font-family: 'Quicksand', sans-serif;
   font-size: 11px;
   font-weight: 500;
@@ -720,14 +759,19 @@ input[type="date"] {
   letter-spacing: 3px;
   padding: 14px 35px;
   border-radius: 25px;
-  transition: all 0.4s ease;
+  transition: all 0.3s ease;
   opacity: 0;
-  animation: fadeIn 0.8s ease forwards 1.4s;
+  animation: fadeIn 0.8s ease forwards 0.6s;
 }
 
 .close-button:hover {
   background: var(--indigo);
   color: white;
+  box-shadow: 0 4px 16px rgba(75, 0, 130, 0.15);
+}
+
+.close-button:active {
+  transform: scale(0.97);
 }
 
 /* ============================================================
@@ -735,7 +779,7 @@ input[type="date"] {
    ============================================================ */
 .history-container {
   width: 100%;
-  max-height: 550px;
+  max-height: 70vh;
   overflow-y: auto;
   padding: 0 10px;
 }
@@ -756,15 +800,17 @@ input[type="date"] {
   color: var(--texto-suave);
   text-align: center;
   line-height: 2;
-  padding: 20px;
+  padding: 30px 20px;
+  background: rgba(75, 0, 130, 0.03);
+  border-radius: 16px;
 }
 
 .weekly-summary {
-  background: rgba(26, 26, 78, 0.06);
-  border-radius: 15px;
-  padding: 15px;
+  background: rgba(75, 0, 130, 0.05);
+  border-radius: 16px;
+  padding: 18px;
   margin-bottom: 20px;
-  border-left: 3px solid var(--indigo);
+  border-left: 4px solid var(--indigo);
 }
 
 .weekly-title {
@@ -787,11 +833,13 @@ input[type="date"] {
 }
 
 .history-item {
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 15px;
-  padding: 15px;
-  margin-bottom: 12px;
+  background: white;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
   border-left: 3px solid var(--indigo);
+  box-shadow: 0 1px 8px rgba(26, 26, 78, 0.04);
+  transition: transform 0.2s ease;
 }
 
 .history-date {
@@ -864,23 +912,28 @@ input[type="date"] {
 }
 
 .back-btn {
-  margin-top: 20px;
+  margin-top: 24px;
   background: transparent;
-  border: 1px solid var(--indigo);
+  border: 1.5px solid var(--indigo);
   font-family: 'Quicksand', sans-serif;
   font-size: 11px;
   font-weight: 500;
   color: var(--indigo);
   cursor: pointer;
   letter-spacing: 2px;
-  padding: 12px 30px;
-  border-radius: 20px;
+  padding: 13px 32px;
+  border-radius: 22px;
   transition: all 0.3s ease;
 }
 
 .back-btn:hover {
   background: var(--indigo);
   color: white;
+  box-shadow: 0 4px 16px rgba(75, 0, 130, 0.15);
+}
+
+.back-btn:active {
+  transform: scale(0.97);
 }
 
 /* Scrollbar */
@@ -902,17 +955,26 @@ input[type="date"] {
    ============================================================ */
 @media (max-width: 400px) {
   .screen {
-    padding: 50px 20px;
+    padding: 50px 16px;
   }
 
   .reading-container {
     max-width: 100%;
-    padding: 0 10px;
+    padding: 0 4px;
   }
 
   .splash-title {
     font-size: 36px;
     letter-spacing: 8px;
+  }
+
+  .options-row {
+    gap: 6px;
+  }
+
+  .option {
+    padding: 10px 14px;
+    font-size: 12px;
   }
 }
 
@@ -923,12 +985,16 @@ input[type="date"] {
   }
 
   .reading-text {
-    font-size: 20px !important;
+    font-size: 19px !important;
   }
 
   .history-container {
     max-width: 500px;
     margin: 0 auto;
+  }
+
+  .option:hover {
+    transform: scale(1.06);
   }
 }
 

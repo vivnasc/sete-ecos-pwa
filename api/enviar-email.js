@@ -470,6 +470,95 @@ function getEmailTemplate(tipo, dados = {}) {
       `
     },
 
+    'lumina-leitura': {
+      assunto: `✨ A tua leitura LUMINA — ${dados.padrao ? dados.padrao.replace(/_/g, ' ') : 'o que precisas saber'}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body { font-family: Georgia, 'Times New Roman', serif; background: #F8F8FC; margin: 0; padding: 20px; color: #1A1A4E; }
+            .container { max-width: 560px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px 30px; box-shadow: 0 4px 40px rgba(26, 26, 78, 0.06); }
+            .logo { text-align: center; margin-bottom: 24px; }
+            .logo-text { font-size: 28px; font-weight: 300; letter-spacing: 10px; color: #1A1A4E; }
+            .logo-sub { font-size: 11px; letter-spacing: 3px; color: #6B6B9D; margin-top: 4px; }
+            .divider { width: 40px; height: 1px; background: #4B0082; margin: 24px auto; opacity: 0.3; }
+            .greeting { font-size: 16px; color: #3A3A6F; text-align: center; margin-bottom: 8px; }
+            .reading-box { background: linear-gradient(135deg, #F8F8FC 0%, #F2F0FA 100%); border-radius: 16px; padding: 28px 24px; margin: 24px 0; border-left: 4px solid #4B0082; }
+            .reading-text { font-size: 17px; line-height: 1.9; font-style: italic; color: #1A1A4E; }
+            .eco-box { background: linear-gradient(135deg, rgba(75, 0, 130, 0.06) 0%, rgba(75, 0, 130, 0.02) 100%); border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center; }
+            .eco-name { font-size: 15px; font-weight: bold; color: #4B0082; margin-bottom: 6px; }
+            .eco-reason { font-size: 14px; color: #3A3A6F; line-height: 1.6; }
+            .cta-btn { display: inline-block; padding: 14px 32px; background: #4B0082; color: white; border-radius: 25px; text-decoration: none; font-size: 14px; font-weight: bold; margin-top: 16px; }
+            .dimensions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 20px 0; }
+            .dim-tag { display: inline-block; padding: 6px 14px; background: rgba(26, 26, 78, 0.06); border-radius: 20px; font-size: 12px; color: #3A3A6F; font-family: -apple-system, sans-serif; }
+            .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #6B6B9D; line-height: 1.6; font-family: -apple-system, sans-serif; }
+            .footer a { color: #4B0082; text-decoration: none; }
+            .signature { font-style: italic; color: #3A3A6F; margin-top: 24px; text-align: center; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="logo">
+              <div class="logo-text">LUMINA</div>
+              <div class="logo-sub">DIAGNÓSTICO INTERIOR</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="greeting">
+              ${dados.nome ? `${dados.nome},` : 'Olá,'} esta é a tua leitura de hoje.
+            </div>
+
+            <div class="reading-box">
+              <div class="reading-text">"${dados.leitura || ''}"</div>
+            </div>
+
+            ${dados.respostas ? `
+            <div class="dimensions">
+              ${dados.respostas.corpo ? `<span class="dim-tag">Corpo: ${dados.respostas.corpo}</span>` : ''}
+              ${dados.respostas.energia ? `<span class="dim-tag">Energia: ${dados.respostas.energia}</span>` : ''}
+              ${dados.respostas.mente ? `<span class="dim-tag">Mente: ${dados.respostas.mente}</span>` : ''}
+              ${dados.respostas.espelho ? `<span class="dim-tag">Espelho: ${dados.respostas.espelho}</span>` : ''}
+            </div>` : ''}
+
+            ${dados.ecoRecomendado ? `
+            <div class="eco-box">
+              <div class="eco-name">${dados.ecoRecomendado.eco || 'Eco'} para ti</div>
+              <div class="eco-reason">${dados.ecoRecomendado.msg || ''}</div>
+              ${dados.ecoRecomendado.link ? `<a href="https://app.seteecos.com${dados.ecoRecomendado.link}" class="cta-btn">Explorar ${dados.ecoRecomendado.eco} →</a>` : ''}
+            </div>` : ''}
+
+            <div style="text-align: center; margin-top: 24px;">
+              <a href="https://app.seteecos.com/lumina" class="cta-btn" style="background: #1A1A4E;">Fazer nova leitura →</a>
+            </div>
+
+            <div style="text-align: center; margin-top: 16px;">
+              <a href="https://app.seteecos.com/login" style="color: #4B0082; font-size: 13px; text-decoration: none; font-family: -apple-system, sans-serif;">
+                Cria conta grátis para guardar o teu histórico →
+              </a>
+            </div>
+
+            <div class="signature">
+              — Vivianne
+            </div>
+
+            <div class="footer">
+              <div class="divider"></div>
+              LUMINA · <a href="https://app.seteecos.com">Sete Ecos</a><br>
+              Sistema de Transmutação Integral<br>
+              <span style="font-size: 11px; margin-top: 8px; display: block;">
+                Recebeste este email porque pediste os teus resultados LUMINA.
+              </span>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+    },
+
     'coach-resumo-diario': {
       assunto: `📊 Resumo Diário - ${new Date().toLocaleDateString('pt-PT')} - Vitalis`,
       html: `
