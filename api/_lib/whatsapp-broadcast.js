@@ -59,7 +59,7 @@ export const META_TEMPLATES = {
 
   // Dia 7 — 3 Sinais educativos (= email dia 7)
   tres_sinais: {
-    name: 'sete_ecos_edu_sinais_corpo',
+    name: 'sete_ecos_tres_sinais',
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'O teu corpo fala. Estás a ouvir?',
@@ -71,7 +71,7 @@ export const META_TEMPLATES = {
 
   // Dia 10 — Fome emocional vs física (= email dia 10)
   segredo: {
-    name: 'sete_ecos_edu_fome_emocional',
+    name: 'sete_ecos_segredo',
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'Fome emocional vs. fome física',
@@ -82,7 +82,7 @@ export const META_TEMPLATES = {
 
   // Dia 14 — Mitos da nutrição (= email dia 14)
   convite_trial: {
-    name: 'sete_ecos_edu_mitos_nutricao',
+    name: 'sete_ecos_convite_trial',
     language: 'pt_BR',
     category: 'MARKETING',
     header: '3 mitos sobre nutrição',
@@ -94,7 +94,7 @@ export const META_TEMPLATES = {
 
   // Dia 21 — Metabolismo e ciclos (= email dia 21)
   testemunho: {
-    name: 'sete_ecos_edu_metabolismo',
+    name: 'sete_ecos_testemunho',
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'O que ninguém te ensinou sobre metabolismo',
@@ -106,7 +106,7 @@ export const META_TEMPLATES = {
 
   // Dia 30 — Integração holística (= email dia 30)
   ultima_chance: {
-    name: 'sete_ecos_edu_integracao',
+    name: 'sete_ecos_ultima_chance',
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'Os 7 Ecos da transformação',
