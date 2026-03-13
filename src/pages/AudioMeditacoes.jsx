@@ -23,6 +23,7 @@ const TABS = [
       { eco: 'VENTIS',  emoji: '🍃', cor: '#27AE60', folder: 'VENTIS' },
       { eco: 'ECOA',    emoji: '🔊', cor: '#2980B9', folder: 'ECOA' },
       { eco: 'VITALIS', emoji: '🌿', cor: '#2D6A4F', folder: 'VITALIS' },
+      { eco: 'AURORA',  emoji: '🌅', cor: '#FF6B35', folder: 'AURORA' },
     ],
   },
   {
