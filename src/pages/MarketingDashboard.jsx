@@ -667,6 +667,44 @@ export default function MarketingDashboard() {
 // ============================================================
 
 // ============================================================
+// ÁUDIOS DOS CARROSSÉIS PRONTOS — filtra por eco e mostra player
+// ============================================================
+
+function CarrosseisAudioBloco({ eco }) {
+  const carrosseis = getCarrosseisProntos().filter(c => c.marca === eco || (eco === 'vitalis' && c.marca === 'vitalis') || c.marca === 'seteEcos');
+  const comAudio = carrosseis.filter(c => c.audioSlug);
+  if (comAudio.length === 0) return null;
+
+  return (
+    <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+      <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+        <div>
+          <p className="font-bold text-xs text-[#4A4035]">Áudios dos carrosséis</p>
+          <p className="text-[10px] text-[#A09888]">{comAudio.length} voiceover{comAudio.length > 1 ? 's' : ''} — ouve e partilha</p>
+        </div>
+        <span className="text-[9px] bg-orange-100 text-orange-700 font-bold px-2 py-0.5 rounded-full">MP3</span>
+      </div>
+      <div className="p-3 space-y-2.5">
+        {comAudio.map(c => {
+          const url = getAudioUrl('marketing', c.audioSlug);
+          return (
+            <div key={c.id} className="bg-orange-50 border border-orange-200 rounded-xl p-2.5 space-y-1.5">
+              <p className="text-[10px] font-bold text-orange-800">{c.titulo}</p>
+              <div className="flex items-center gap-2">
+                <audio src={url} controls preload="none" className="h-8 flex-1 min-w-0" />
+                <a href={url} download={`${c.id}-voiceover.mp3`} className="text-[9px] bg-orange-200 text-orange-800 px-2 py-1 rounded-full font-bold shrink-0 active:scale-95">
+                  MP3
+                </a>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
 // BLOCO DE ECO — todo o conteúdo visual de 1 eco (imagens + legendas)
 // ============================================================
 
@@ -814,7 +852,10 @@ function BlocoEco({ eco, copiar, copiado, prefixo }) {
             </div>
           </div>
 
-          {/* ===== 5. TEXTOS POR PLATAFORMA (collapsible) ===== */}
+          {/* ===== 5. ÁUDIOS DOS CARROSSÉIS ===== */}
+          <CarrosseisAudioBloco eco={eco.eco} />
+
+          {/* ===== 6. TEXTOS POR PLATAFORMA (collapsible) ===== */}
           <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
             <div className="px-4 py-2.5 border-b border-[#E8E2D9]">
               <p className="font-bold text-xs text-[#4A4035]">Legendas prontas</p>
