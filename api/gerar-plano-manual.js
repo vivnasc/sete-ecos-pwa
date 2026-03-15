@@ -38,7 +38,8 @@ async function gerarPlano(userId, supabase) {
   }
 
   // 2. Dados
-  const altura = parseFloat(intake.altura_cm) || 165;
+  const alturaRaw = parseFloat(intake.altura_cm);
+  const altura = (alturaRaw >= 100 && alturaRaw <= 250) ? alturaRaw : 165;
   const peso = parseFloat(intake.peso_actual);
   const idade = parseInt(intake.idade, 10);
   const sexo = intake.sexo;

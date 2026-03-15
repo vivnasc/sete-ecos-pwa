@@ -294,7 +294,11 @@ async function gerarPlano(userId, res) {
   } catch (e) { /* column may not exist */ }
 
   // 3. Calculate TMB (Mifflin-St Jeor)
-  const altura = parseFloat(intake.altura_cm) || parseFloat(alturaFromUsers) || 165;
+  const alturaIntake = parseFloat(intake.altura_cm);
+  const alturaUsers = parseFloat(alturaFromUsers);
+  const altura = (alturaIntake >= 100 && alturaIntake <= 250) ? alturaIntake
+               : (alturaUsers >= 100 && alturaUsers <= 250) ? alturaUsers
+               : 165;
   const peso = parseFloat(intake.peso_actual);
   const idade = parseInt(intake.idade, 10);
   const sexo = intake.sexo;

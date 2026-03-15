@@ -55,7 +55,11 @@ export async function gerarPlanoAutomatico(userId) {
 
     // 3. Calcular TMB (Taxa Metabólica Basal) - Fórmula Mifflin-St Jeor
     // 🛡️ Converter para número com segurança (protege contra strings, null, undefined)
-    const altura = parseFloat(intake.altura_cm) || parseFloat(alturaFromUsers) || 165;
+    const alturaIntake = parseFloat(intake.altura_cm);
+    const alturaUsers = parseFloat(alturaFromUsers);
+    const altura = (alturaIntake >= 100 && alturaIntake <= 250) ? alturaIntake
+                 : (alturaUsers >= 100 && alturaUsers <= 250) ? alturaUsers
+                 : 165;
     const peso = parseFloat(intake.peso_actual);
     const idade = parseInt(intake.idade, 10);
     const sexo = intake.sexo;
@@ -492,7 +496,11 @@ export async function recalcularPlano(userId, novaFase = null) {
 
     // 5. Calcular TMB com peso actual (não o inicial)
     // 🛡️ Converter para número com segurança
-    const altura = parseFloat(intake.altura_cm) || parseFloat(alturaFromUsers) || 165;
+    const alturaIntake = parseFloat(intake.altura_cm);
+    const alturaUsers = parseFloat(alturaFromUsers);
+    const altura = (alturaIntake >= 100 && alturaIntake <= 250) ? alturaIntake
+                 : (alturaUsers >= 100 && alturaUsers <= 250) ? alturaUsers
+                 : 165;
     const peso = parseFloat(client.peso_actual) || parseFloat(intake.peso_actual);
     const idade = parseInt(intake.idade, 10);
     const sexo = intake.sexo;

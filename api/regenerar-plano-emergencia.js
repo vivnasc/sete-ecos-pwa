@@ -59,11 +59,19 @@ export default async function handler(req, res) {
 
     console.log('✅ Intake encontrado');
 
-    // 3. Calcular valores
-    const altura = intake.altura_cm;
-    const peso = intake.peso_actual;
-    const idade = intake.idade;
+    // 3. Calcular valores (com fallback para altura inválida)
+    const alturaRaw = parseFloat(intake.altura_cm);
+    const altura = (alturaRaw >= 100 && alturaRaw <= 250) ? alturaRaw : 165;
+    const peso = parseFloat(intake.peso_actual);
+    const idade = parseInt(intake.idade, 10);
     const sexo = intake.sexo;
+
+    if (!peso || peso < 30 || peso > 300) {
+      return res.status(400).json({ erro: `Peso inválido (${intake.peso_actual}kg)` });
+    }
+    if (!idade || idade < 15 || idade > 100) {
+      return res.status(400).json({ erro: `Idade inválida (${intake.idade})` });
+    }
 
     let tmb;
     if (sexo === 'masculino') {
