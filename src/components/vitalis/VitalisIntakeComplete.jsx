@@ -83,28 +83,73 @@ export default function VitalisIntakeComplete() {
       labels: ['Emagrecer', 'Ganhar energia', 'Melhorar saúde', 'Controlar fome emocional', 'Outro'],
       required: true 
     },
-    prazo: { label: 'Em quanto tempo?', type: 'radio', options: ['3m', '6m', '9m', '12m', 'sem_pressa'], labels: ['3 meses', '6 meses', '9 meses', '12 meses', 'Sem pressa'], required: true },
+    prazo: {
+      label: 'Em quanto tempo?',
+      type: 'radio',
+      options: ['3m', '6m', '9m', '12m', 'sem_pressa'],
+      labels: ['3 meses', '6 meses', '9 meses', '12 meses', 'Sem pressa'],
+      required: true,
+      dynamicHint: (formData) => {
+        const peso = parseFloat(formData.peso_actual);
+        const meta = parseFloat(formData.peso_meta);
+        if (!peso || !meta || peso <= meta) return null;
+        const diff = peso - meta;
+        const mesesIdeal = Math.ceil(diff / 4); // ~4kg/mês saudável
+        if (mesesIdeal <= 3) return '💡 Para ' + Math.round(diff) + ' kg, 3 meses é um prazo realista e saudável.';
+        if (mesesIdeal <= 6) return '💡 Para ' + Math.round(diff) + ' kg, recomendamos 6 meses para resultados sustentáveis (~4 kg/mês).';
+        return '💡 Para ' + Math.round(diff) + ' kg, um prazo de ' + mesesIdeal + '+ meses permite perda saudável sem efeito rebote.';
+      }
+    },
     porque_importante: { label: 'Porquê é importante para ti?', type: 'textarea', placeholder: 'O que vai mudar na tua vida?', rows: 3 },
-    abordagem_preferida: { label: 'Que abordagem preferes?', type: 'radio', options: ['keto_if', 'low_carb', 'equilibrado', 'nao_sei'], labels: ['Keto + Jejum Intermitente', 'Low Carb', 'Equilibrado', 'Não sei'], required: true },
+    abordagem_preferida: {
+      label: 'Que abordagem preferes?',
+      type: 'radio',
+      options: ['keto_if', 'low_carb', 'equilibrado', 'nao_sei'],
+      labels: ['Keto + Jejum Intermitente', 'Low Carb', 'Equilibrado', 'Não sei'],
+      required: true,
+      dynamicHint: (formData) => {
+        const peso = parseFloat(formData.peso_actual);
+        const meta = parseFloat(formData.peso_meta);
+        if (!peso || !meta || peso <= meta) return null;
+        const diff = peso - meta;
+        if (diff >= 20) return '💡 Com ' + Math.round(diff) + ' kg a perder, Keto + Jejum Intermitente costuma dar resultados mais rápidos — mas a escolha é tua!';
+        if (diff >= 10) return '💡 Com ' + Math.round(diff) + ' kg a perder, Keto + IF ou Low Carb são boas opções. Escolhe a que te parecer mais sustentável!';
+        if (diff < 5) return '💡 Com poucos quilos a ajustar, uma abordagem Equilibrada pode ser ideal — mas qualquer opção funciona!';
+        return null;
+      }
+    },
     restricoes_alimentares: { label: 'Restrições alimentares', type: 'checkbox', options: ['Vegetariano/a', 'Vegano/a', 'Sem glúten', 'Sem lactose', 'Halal', 'Nenhuma'] },
     observa_ramadao: { label: '🌙 Observas o jejum do Ramadan?', type: 'radio', options: ['sim', 'nao', 'as_vezes'], labels: ['Sim, todos os anos', 'Não', 'Às vezes / parcialmente'] },
-    condicoes_saude: { label: 'Condições de saúde', type: 'checkbox', options: ['Diabetes', 'Hipertensão', 'Colesterol alto', 'Problemas de tiroide', 'SOP (Síndrome do Ovário Policístico)', 'Problemas de próstata', 'Nenhuma'] },
+    condicoes_saude: {
+      label: 'Condições de saúde',
+      type: 'checkbox',
+      options: ['Diabetes', 'Hipertensão', 'Colesterol alto', 'Problemas de tiroide', 'SOP (Síndrome do Ovário Policístico)', 'Problemas de próstata', 'Nenhuma'],
+      dynamicHint: (formData) => formData.abordagem_preferida === 'keto_if'
+        ? '💡 Se tens diabetes ou hipertensão, consulta o teu médico antes de iniciar jejum intermitente.'
+        : null
+    },
     medicacao: { label: 'Medicação e suplementos actuais', type: 'textarea', placeholder: 'Lista medicamentos e suplementos (ou "Nenhum")', rows: 2 },
     
     // REFEIÇÕES - CORRIGIDO
-    refeicoes_dia: { 
-      label: 'Quantas refeições comes por dia?', 
+    refeicoes_dia: {
+      label: 'Quantas refeições comes por dia?',
       type: 'radio',
       options: ['1-2', '3', '4', '5-6'],
       labels: ['1-2 refeições', '3 refeições', '4 refeições', '5-6 refeições'],
-      required: true
+      required: true,
+      dynamicHint: (formData) => formData.abordagem_preferida === 'keto_if'
+        ? '💡 Para Keto + Jejum Intermitente, recomendamos 2-3 refeições numa janela de 8 horas — mas a escolha é tua!'
+        : null
     },
     faz_pequeno_almoco: {
       label: 'Fazes pequeno-almoço?',
       type: 'radio',
       options: ['sim', 'nao', 'as_vezes'],
       labels: ['Sim, sempre', 'Não', 'Às vezes'],
-      required: true
+      required: true,
+      dynamicHint: (formData) => formData.abordagem_preferida === 'keto_if'
+        ? '💡 No Jejum Intermitente 16:8, normalmente saltas o pequeno-almoço e começas a comer ao meio-dia.'
+        : null
     },
     pequeno_almoco_opcoes: { 
       label: 'O que costumas comer no pequeno-almoço?', 
@@ -654,12 +699,18 @@ try {
           </div>
         );
 
-      case 'radio':
+      case 'radio': {
+        const hint = config.dynamicHint ? config.dynamicHint(formData) : null;
         return (
           <div className="mb-6" id={`field-${fieldId}`}>
             <p className="block text-sm font-semibold text-gray-700 mb-3">
               {config.label} {config.required && <span className="text-red-500">*</span>}
             </p>
+            {hint && (
+              <p className="text-xs text-[#C1634A] bg-[#C1634A]/10 rounded-lg px-3 py-2 mb-3">
+                {hint}
+              </p>
+            )}
             <div className="space-y-2">
               {config.options.map((opt, i) => (
                 <label key={opt} className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#C1634A]/10 cursor-pointer transition-colors">
@@ -678,13 +729,20 @@ try {
             {hasError && <p className="text-red-500 text-sm mt-1">{hasError}</p>}
           </div>
         );
+      }
 
-      case 'checkbox':
+      case 'checkbox': {
+        const cbHint = config.dynamicHint ? config.dynamicHint(formData) : null;
         return (
           <div className="mb-6" id={`field-${fieldId}`}>
             <p className="block text-sm font-semibold text-gray-700 mb-3">
               {config.label} {config.required && <span className="text-red-500">*</span>}
             </p>
+            {cbHint && (
+              <p className="text-xs text-[#C1634A] bg-[#C1634A]/10 rounded-lg px-3 py-2 mb-3">
+                {cbHint}
+              </p>
+            )}
             <div className="space-y-2">
               {config.options.map(opt => (
                 <label key={opt} className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#C1634A]/10 cursor-pointer transition-colors">
@@ -701,6 +759,7 @@ try {
             {hasError && <p className="text-red-500 text-sm mt-1">{hasError}</p>}
           </div>
         );
+      }
 
       case 'checkbox_single':
         return (
