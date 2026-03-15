@@ -205,12 +205,12 @@ export async function gerarPlanoAutomatico(userId) {
     // 1 palma de proteína ≈ 25g proteína
     // 1 punho de legumes ≈ 50g legumes
     // 1 mão em concha de hidratos ≈ 30g hidratos
-    // 1 polegar de gordura ≈ 10g gordura
+    // 1 polegar de gordura ≈ 15g gordura
 
     const porcoesProteina = Math.round(proteinaG / 25);
     const porcoesLegumes = 4; // Sempre 4 punhos por dia (fixo)
     const porcoesHidratos = Math.round(carboidratosG / 30);
-    const porcoesGordura = Math.round(gorduraG / 10);
+    const porcoesGordura = Math.round(gorduraG / 15);
 
     // 8. Determinar número de refeições baseado no intake
     let numRefeicoes;
@@ -598,7 +598,7 @@ export async function recalcularPlano(userId, novaFase = null) {
     const porcoesProteina = Math.round(proteinaG / 25);
     const porcoesLegumes = 4;
     const porcoesHidratos = Math.round(carboidratosG / 30);
-    const porcoesGordura = Math.round(gorduraG / 10);
+    const porcoesGordura = Math.round(gorduraG / 15);
 
     // 12. Manter configuração de refeições existente
     const configActual = planoActual.receitas_incluidas

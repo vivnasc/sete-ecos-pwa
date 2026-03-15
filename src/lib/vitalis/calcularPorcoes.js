@@ -9,7 +9,7 @@
  * - 1 palma de proteína ≈ 25g proteína
  * - 1 punho de legumes (valor guardado no plano, ou 4 por defeito)
  * - 1 mão em concha de hidratos ≈ 30g hidratos
- * - 1 polegar de gordura ≈ 10g gordura
+ * - 1 polegar de gordura ≈ 15g gordura
  *
  * @param {Object} plano - Objecto do plano (vitalis_meal_plans row)
  * @returns {{ proteina: number, legumes: number, hidratos: number, gordura: number }}
@@ -47,7 +47,7 @@ export function calcularPorcoesDiarias(plano) {
     proteina: porcoesDiarias.proteina || Math.round(proteinaG / 25),
     legumes: porcoesDiarias.legumes || porcoesRefeicao.legumes || 4,
     hidratos: porcoesDiarias.hidratos || Math.round(carboidratosG / 30),
-    gordura: porcoesDiarias.gordura || Math.round(gorduraG / 10),
+    gordura: porcoesDiarias.gordura || Math.round(gorduraG / 15),
   };
 }
 
