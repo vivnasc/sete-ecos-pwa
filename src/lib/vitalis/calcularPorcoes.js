@@ -45,7 +45,7 @@ export function calcularPorcoesDiarias(plano) {
   return {
     // Prioridade: porcoes_diarias guardadas > cálculo a partir dos macros
     proteina: porcoesDiarias.proteina || Math.round(proteinaG / 25),
-    legumes: porcoesDiarias.legumes || porcoesRefeicao.legumes || 4,
+    legumes: porcoesDiarias.legumes || 4,
     hidratos: porcoesDiarias.hidratos || Math.round(carboidratosG / 30),
     gordura: porcoesDiarias.gordura || Math.round(gorduraG / 15),
   };
