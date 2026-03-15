@@ -105,7 +105,7 @@ async function gerarPlano(userId, supabase) {
   const porcoesProteina = Math.round(proteinaG / 25);
   const porcoesLegumes = 4;
   const porcoesHidratos = Math.round(carboidratosG / 30);
-  const porcoesGordura = Math.round(gorduraG / 10);
+  const porcoesGordura = Math.round(gorduraG / 15);
 
   // 8. Refeições
   let numRefeicoes;
