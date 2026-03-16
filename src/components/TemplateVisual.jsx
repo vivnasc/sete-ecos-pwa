@@ -352,13 +352,29 @@ async function renderCarrossel(canvas, config) {
   const titleLines = wrapText(ctx, texto, maxW);
   const titleH = titleLines.length * (titleSize * 1.35);
 
-  // Calculate subtitle
-  const subSize = 28;
+  // Calculate subtitle — limit lines to prevent overflow into footer
+  const bottomReserve = isStories ? 200 : 120;
+  const topReserve = isStories ? 180 : 150;
+  const maxContentH = height - topReserve - bottomReserve;
+  let subSize = 28;
   let subLines = [];
   let subH = 0;
   if (subtitulo) {
     ctx.font = `400 ${subSize}px 'Inter', sans-serif`;
     subLines = wrapText(ctx, subtitulo, maxW);
+    // If total text would overflow, try smaller subtitle font
+    const tentativeSubH = subLines.length * (subSize * 1.5) + 35;
+    if (titleH + tentativeSubH > maxContentH && subLines.length > 3) {
+      subSize = 24;
+      ctx.font = `400 ${subSize}px 'Inter', sans-serif`;
+      subLines = wrapText(ctx, subtitulo, maxW);
+    }
+    // Clamp to max 5 lines
+    const maxSubLines = 5;
+    if (subLines.length > maxSubLines) {
+      subLines = subLines.slice(0, maxSubLines);
+      subLines[maxSubLines - 1] = subLines[maxSubLines - 1].replace(/\s*$/, '...');
+    }
     subH = subLines.length * (subSize * 1.5) + 35;
   }
 

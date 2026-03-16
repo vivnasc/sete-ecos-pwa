@@ -23,6 +23,22 @@ import { getAudioUrl } from './shared/audioStorage';
 
 const BASE_URL = 'https://app.seteecos.com';
 
+/**
+ * Trunca texto na última frase completa antes do limite.
+ * Corta sempre num "." para evitar texto incompleto.
+ */
+function truncarFrase(texto, limite = 160) {
+  if (!texto || texto.length <= limite) return texto;
+  const cortado = texto.slice(0, limite);
+  const ultimoPonto = cortado.lastIndexOf('.');
+  if (ultimoPonto > limite * 0.4) {
+    return cortado.slice(0, ultimoPonto + 1);
+  }
+  // Sem ponto adequado — cortar na última palavra completa
+  const ultimoEspaco = cortado.lastIndexOf(' ');
+  return (ultimoEspaco > 0 ? cortado.slice(0, ultimoEspaco) : cortado) + '...';
+}
+
 // ============================================================
 // HOOKS - Frases que param o scroll (primeiros 3 segundos)
 // Princípio: não motivação barata. Observação inteligente.
@@ -4134,14 +4150,14 @@ function gerarCarrosselDiario(eco, conteudoArray, seed) {
     const item = conteudoArray[(seed + i * 3) % conteudoArray.length];
     slides.push({
       titulo: item.hook.length > 80 ? item.hook.slice(0, 77) + '...' : item.hook,
-      texto: item.corpo.length > 120 ? item.corpo.slice(0, 117) + '...' : item.corpo,
+      texto: truncarFrase(item.corpo, 160),
     });
   }
 
   // Slide final com CTA
   const itemPrincipal = conteudoArray[seed % conteudoArray.length];
   slides.push({
-    titulo: itemPrincipal.cta.length > 80 ? itemPrincipal.cta.slice(0, 77) + '...' : itemPrincipal.cta,
+    titulo: truncarFrase(itemPrincipal.cta, 80),
     texto: 'app.seteecos.com',
   });
 
