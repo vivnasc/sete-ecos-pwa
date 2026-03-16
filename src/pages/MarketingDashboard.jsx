@@ -704,6 +704,99 @@ function CarrosseisAudioBloco({ eco }) {
 }
 
 // ============================================================
+// CARROSSEL PRONTO — slides + áudio + legenda (sempre fixo)
+// ============================================================
+
+function CarrosselProntoBloco({ cp, audioUrl, copiar, copiado }) {
+  const [aberto, setAberto] = useState(false);
+
+  return (
+    <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+      {/* Header colapsável */}
+      <button
+        onClick={() => setAberto(v => !v)}
+        className="w-full px-4 py-3 flex items-center justify-between active:bg-gray-50 transition-colors"
+      >
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className="w-3 h-3 rounded-full shrink-0" style={{ background: cp.cor }} />
+          <div className="text-left min-w-0">
+            <p className="font-bold text-xs text-[#4A4035] truncate">{cp.titulo}</p>
+            <p className="text-[10px] text-[#A09888]">{cp.slides.length} slides + áudio</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-[9px] bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-full">Pronto</span>
+          <span className="text-[#A09888] text-sm">{aberto ? '▲' : '▼'}</span>
+        </div>
+      </button>
+
+      {aberto && (
+        <div className="border-t border-[#E8E2D9]">
+          {/* Slides deslizáveis */}
+          <div className="p-3">
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+              {cp.slides.map((slide, i) => (
+                <AutoImage
+                  key={i}
+                  template="carrossel"
+                  eco={cp.marca}
+                  formato="post"
+                  texto={slide.titulo}
+                  subtitulo={slide.texto}
+                  slideNum={i + 1}
+                  totalSlides={cp.slides.length}
+                  bgIndex={i}
+                  scale={0.24}
+                  filename={`${cp.id}-slide-${i + 1}.png`}
+                  className="shrink-0"
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Áudio */}
+          {audioUrl && (
+            <div className="px-3 pb-3">
+              <div className="bg-orange-50 border border-orange-200 rounded-xl p-2.5 space-y-1.5">
+                <p className="text-[10px] font-bold text-orange-800">Voiceover</p>
+                <div className="flex items-center gap-2">
+                  <audio src={audioUrl} controls preload="none" className="h-8 flex-1 min-w-0" />
+                  <a
+                    href={audioUrl}
+                    download={`${cp.id}-voiceover.mp3`}
+                    className="text-[9px] bg-orange-200 text-orange-800 px-2 py-1 rounded-full font-bold shrink-0 active:scale-95"
+                  >
+                    MP3
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Legenda */}
+          {cp.caption && (
+            <div className="px-3 pb-3">
+              <details>
+                <summary className="text-[10px] text-[#A09888] cursor-pointer font-bold">Legenda Instagram</summary>
+                <div className="mt-2 bg-[#F5F2ED] rounded-lg p-3">
+                  <p className="text-[10px] text-[#6B5C4C] leading-relaxed whitespace-pre-line">{cp.caption}</p>
+                  <button
+                    onClick={() => copiar(cp.caption, `cp-${cp.id}`)}
+                    className="mt-2 text-[9px] bg-[#1a1a2e] text-white px-3 py-1.5 rounded-full font-bold active:scale-95 transition-all"
+                  >
+                    {copiado === `cp-${cp.id}` ? 'Copiado!' : 'Copiar legenda'}
+                  </button>
+                </div>
+              </details>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
 // BLOCO DE ECO — todo o conteúdo visual de 1 eco (imagens + legendas)
 // ============================================================
 
@@ -791,44 +884,6 @@ function BlocoEco({ eco, copiar, copiado, prefixo }) {
             </div>
           )}
 
-          {/* ===== 2b. CARROSSÉIS PRONTOS do eco (getCarrosseisProntos) ===== */}
-          {(() => {
-            const prontos = getCarrosseisProntos().filter(c => c.marca === eco.eco || c.marca === 'seteEcos');
-            if (prontos.length === 0) return null;
-            return prontos.map(cp => (
-              <div key={cp.id} className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
-                <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
-                  <div>
-                    <p className="font-bold text-xs text-[#4A4035]">Carrossel: {cp.titulo}</p>
-                    <p className="text-[10px] text-[#A09888]">{cp.slides.length} slides prontos — descarrega e publica</p>
-                  </div>
-                  <span className="text-[9px] bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-full">Pronto</span>
-                </div>
-                <div className="p-3">
-                  <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
-                    {cp.slides.map((slide, i) => (
-                      <AutoImage
-                        key={i}
-                        template="carrossel" eco={cp.marca === 'seteEcos' ? 'seteEcos' : eco.eco} formato="post"
-                        texto={slide.titulo} subtitulo={slide.texto}
-                        slideNum={i + 1} totalSlides={cp.slides.length}
-                        bgIndex={i}
-                        scale={0.24} filename={`${cp.id}-slide-${i + 1}.png`}
-                        className="shrink-0"
-                      />
-                    ))}
-                  </div>
-                  {cp.caption && (
-                    <details className="mt-2">
-                      <summary className="text-[10px] text-[#A09888] cursor-pointer">Legenda</summary>
-                      <p className="text-[10px] text-[#6B5C4C] leading-relaxed mt-1 whitespace-pre-line">{cp.caption}</p>
-                    </details>
-                  )}
-                </div>
-              </div>
-            ));
-          })()}
-
           {/* ===== 3. MOCKUP COMPOSTO (screenshot da app + texto) ===== */}
           <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
             <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
@@ -889,10 +944,7 @@ function BlocoEco({ eco, copiar, copiado, prefixo }) {
             </div>
           </div>
 
-          {/* ===== 5. ÁUDIOS DOS CARROSSÉIS ===== */}
-          <CarrosseisAudioBloco eco={eco.eco} />
-
-          {/* ===== 6. TEXTOS POR PLATAFORMA (collapsible) ===== */}
+          {/* ===== 5. TEXTOS POR PLATAFORMA (collapsible) ===== */}
           <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
             <div className="px-4 py-2.5 border-b border-[#E8E2D9]">
               <p className="font-bold text-xs text-[#4A4035]">Legendas prontas</p>
@@ -1628,6 +1680,21 @@ function ModoSimples({ copiar, copiado, onVerTudo, prog }) {
             {conteudo.ecoDoDia?.nome} — eco do dia
           </p>
           <BlocoEco eco={conteudo.ecoDoDia} copiar={copiar} copiado={copiado} prefixo="e" />
+        </div>
+
+        {/* ===== CARROSSÉIS PRONTOS (sempre fixos) ===== */}
+        <div>
+          <p className="text-[10px] font-bold text-[#A09888] uppercase tracking-wider mb-2 px-1">
+            Carrosséis prontos — sempre disponíveis
+          </p>
+          <div className="space-y-3">
+            {getCarrosseisProntos().map(cp => {
+              const audioUrl = cp.audioSlug ? getAudioUrl('marketing', cp.audioSlug) : null;
+              return (
+                <CarrosselProntoBloco key={cp.id} cp={cp} audioUrl={audioUrl} copiar={copiar} copiado={copiado} />
+              );
+            })}
+          </div>
         </div>
 
         {/* Link para dashboard completo */}
