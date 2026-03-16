@@ -13,7 +13,7 @@
 //   /api/cron?task=wa-sequencia    → Sequência WA automática (dia 0,3,7,10,14,21,30)
 //   /api/cron?task=push-lembretes  → Push notifications de lembretes aos clientes (a cada 5min)
 
-const TASKS = ['tarefas', 'trial-emails', 'email-sequencia', 'instagram', 'broadcast', 'wa-leads', 'wa-sequencia', 'push-lembretes'];
+const TASKS = ['tarefas', 'trial-emails', 'email-sequencia', 'instagram', 'broadcast', 'wa-leads', 'wa-sequencia', 'push-lembretes', 'sync-expired'];
 
 export default async function handler(req, res) {
   // Verificar autorização (cron jobs do Vercel)
@@ -76,6 +76,10 @@ export default async function handler(req, res) {
       }
       case 'push-lembretes': {
         const { default: fn } = await import('./_lib/push-lembretes.js');
+        return await fn(req, res);
+      }
+      case 'sync-expired': {
+        const { default: fn } = await import('./_lib/sync-expired.js');
         return await fn(req, res);
       }
       default:
