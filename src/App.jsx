@@ -212,6 +212,7 @@ const ChatAurora = lazy(() => import('./components/aurora/ChatAurora'))
 const InsightsAurora = lazy(() => import('./components/aurora/InsightsAurora'))
 const PerfilAurora = lazy(() => import('./components/aurora/PerfilAurora'))
 const NotificacoesAurora = lazy(() => import('./components/aurora/NotificacoesAurora'))
+const AudioRituais = lazy(() => import('./components/aurora/AudioRituais'))
 
 // ECO 2: ÁUREA (Valor & Presença)
 const LandingAurea = lazy(() => import('./pages/LandingAurea'))
@@ -546,6 +547,7 @@ function AppRoutes() {
             <Route path="/aurora/insights" element={<AuroraRoute><InsightsAurora /></AuroraRoute>} />
             <Route path="/aurora/perfil" element={<AuroraRoute><PerfilAurora /></AuroraRoute>} />
             <Route path="/aurora/notificacoes" element={<AuroraRoute><NotificacoesAurora /></AuroraRoute>} />
+            <Route path="/aurora/audios" element={<AuroraRoute><AudioRituais /></AuroraRoute>} />
 
             {/* ===== ADMIN / COACH ===== */}
             <Route path="/coach" element={

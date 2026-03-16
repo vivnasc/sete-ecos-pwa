@@ -75,4 +75,5 @@ export const ECO_FOLDER_MAP = {
   PODCAST: 'podcast',
   JOURNALING: 'journaling',
   AUDIOGRAMAS: 'audiogramas',
+  AURORA: 'aurora',
 }
