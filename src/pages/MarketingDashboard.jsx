@@ -671,21 +671,20 @@ export default function MarketingDashboard() {
 // ============================================================
 
 function CarrosseisAudioBloco({ eco }) {
-  const carrosseis = getCarrosseisProntos().filter(c => c.marca === eco || (eco === 'vitalis' && c.marca === 'vitalis') || c.marca === 'seteEcos');
-  const comAudio = carrosseis.filter(c => c.audioSlug);
-  if (comAudio.length === 0) return null;
+  const carrosseis = getCarrosseisProntos().filter(c => c.audioSlug);
+  if (carrosseis.length === 0) return null;
 
   return (
     <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
       <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
         <div>
           <p className="font-bold text-xs text-[#4A4035]">Áudios dos carrosséis</p>
-          <p className="text-[10px] text-[#A09888]">{comAudio.length} voiceover{comAudio.length > 1 ? 's' : ''} — ouve e partilha</p>
+          <p className="text-[10px] text-[#A09888]">{carrosseis.length} voiceover{carrosseis.length > 1 ? 's' : ''} — ouve e partilha</p>
         </div>
         <span className="text-[9px] bg-orange-100 text-orange-700 font-bold px-2 py-0.5 rounded-full">MP3</span>
       </div>
       <div className="p-3 space-y-2.5">
-        {comAudio.map(c => {
+        {carrosseis.map(c => {
           const url = getAudioUrl('marketing', c.audioSlug);
           return (
             <div key={c.id} className="bg-orange-50 border border-orange-200 rounded-xl p-2.5 space-y-1.5">
@@ -791,6 +790,44 @@ function BlocoEco({ eco, copiar, copiado, prefixo }) {
               </div>
             </div>
           )}
+
+          {/* ===== 2b. CARROSSÉIS PRONTOS do eco (getCarrosseisProntos) ===== */}
+          {(() => {
+            const prontos = getCarrosseisProntos().filter(c => c.marca === eco.eco || c.marca === 'seteEcos');
+            if (prontos.length === 0) return null;
+            return prontos.map(cp => (
+              <div key={cp.id} className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
+                <div className="px-4 py-2.5 border-b border-[#E8E2D9] flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-xs text-[#4A4035]">Carrossel: {cp.titulo}</p>
+                    <p className="text-[10px] text-[#A09888]">{cp.slides.length} slides prontos — descarrega e publica</p>
+                  </div>
+                  <span className="text-[9px] bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-full">Pronto</span>
+                </div>
+                <div className="p-3">
+                  <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+                    {cp.slides.map((slide, i) => (
+                      <AutoImage
+                        key={i}
+                        template="carrossel" eco={cp.marca === 'seteEcos' ? 'seteEcos' : eco.eco} formato="post"
+                        texto={slide.titulo} subtitulo={slide.texto}
+                        slideNum={i + 1} totalSlides={cp.slides.length}
+                        bgIndex={i}
+                        scale={0.24} filename={`${cp.id}-slide-${i + 1}.png`}
+                        className="shrink-0"
+                      />
+                    ))}
+                  </div>
+                  {cp.caption && (
+                    <details className="mt-2">
+                      <summary className="text-[10px] text-[#A09888] cursor-pointer">Legenda</summary>
+                      <p className="text-[10px] text-[#6B5C4C] leading-relaxed mt-1 whitespace-pre-line">{cp.caption}</p>
+                    </details>
+                  )}
+                </div>
+              </div>
+            ));
+          })()}
 
           {/* ===== 3. MOCKUP COMPOSTO (screenshot da app + texto) ===== */}
           <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-sm">
