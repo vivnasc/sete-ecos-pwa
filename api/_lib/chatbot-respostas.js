@@ -567,6 +567,19 @@ function detectarResposta(texto, telefone) {
     }
   }
 
+  // ===== EMAIL COMO FALLBACK (quando lookup por telefone falhou) =====
+  // Detectar email em qualquer posição: "meu email é x@y.com", "x@y.com", etc.
+  const emailMatch = t.match(/[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}/i);
+  if (emailMatch && sessao?.aguardaEmail) {
+    return { chave: 'email_fallback', dados: { email: emailMatch[0] } };
+  }
+  // Também detectar se a sessão não tem flag mas a última chave era de atualização falhada
+  if (emailMatch && sessao?.ultimaChave && (
+    sessao.ultimaChave.startsWith('atualizar_') || sessao.ultimaChave === 'lookup_falhou'
+  )) {
+    return { chave: 'email_fallback', dados: { email: emailMatch[0] } };
+  }
+
   // ===== ATUALIZAÇÕES DE PLANO VIA WHATSAPP =====
 
   // Atualizar peso: "peso 72", "agora peso 72kg", "estou com 72 kg"
@@ -824,6 +837,8 @@ const NOMES_CHAVES = {
   'atualizar_objetivo': 'Atualizar objetivo',
   'confirmar_plano_sim': 'Confirmou atualização',
   'confirmar_plano_nao': 'Cancelou atualização',
+  'email_fallback': 'Email para lookup',
+  'lookup_falhou': 'Lookup falhou',
 };
 
 // Follow-ups contextuais baseados na última interação
@@ -856,7 +871,7 @@ function gerarResposta(msgBody, nome, telefone) {
   let resposta;
 
   // ===== ATUALIZAÇÕES DE PLANO (respostas especiais — webhook trata a parte async) =====
-  if (chave?.startsWith('atualizar_') || chave === 'confirmar_plano_sim' || chave === 'confirmar_plano_nao') {
+  if (chave?.startsWith('atualizar_') || chave === 'confirmar_plano_sim' || chave === 'confirmar_plano_nao' || chave === 'email_fallback') {
     atualizarSessao(telefone, msgBody, chave);
     return { resposta: null, chave, dados, notificarCoach: true, asyncHandler: true };
   }
