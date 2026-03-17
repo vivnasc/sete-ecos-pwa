@@ -656,12 +656,47 @@ async function listarClientesEco(eco, res) {
   if (error) return res.status(500).json({ error: 'Erro ao carregar clientes ' + eco + ': ' + error.message });
   if (!clientsData || clientsData.length === 0) return res.status(200).json({ clients: [], eco });
 
-  const clients = clientsData.map(client => ({
-    ...client,
-    nome: client.users?.nome || 'Sem nome',
-    email: client.users?.email || '',
-    userCreatedAt: client.users?.created_at,
-  }));
+  const agora = new Date();
+  const idsExpirados = [];
+
+  const clients = clientsData.map(client => {
+    let status = client.subscription_status;
+
+    // Corrigir status em tempo real: se expirou, marcar como expired
+    if ((status === 'active' || status === 'trial') && client.subscription_expires) {
+      if (new Date(client.subscription_expires) < agora) {
+        status = 'expired';
+        idsExpirados.push(client.id);
+      }
+    }
+    // Trial sem subscription_expires mas com trial_started > 7 dias
+    if (status === 'trial' && !client.subscription_expires && client.trial_started) {
+      const trialEnd = new Date(client.trial_started);
+      trialEnd.setDate(trialEnd.getDate() + 7);
+      if (trialEnd < agora) {
+        status = 'expired';
+        idsExpirados.push(client.id);
+      }
+    }
+
+    return {
+      ...client,
+      subscription_status: status,
+      nome: client.users?.nome || 'Sem nome',
+      email: client.users?.email || '',
+      userCreatedAt: client.users?.created_at,
+    };
+  });
+
+  // Actualizar na BD os que expiraram (fire-and-forget)
+  if (idsExpirados.length > 0) {
+    supabase.from(table).update({
+      subscription_status: 'expired',
+      subscription_updated: agora.toISOString()
+    }).in('id', idsExpirados).then(() => {
+      console.log(`✅ coach: ${idsExpirados.length} clientes ${eco} marcados como expired`);
+    });
+  }
 
   return res.status(200).json({ clients, eco });
 }
@@ -773,12 +808,32 @@ async function listarClientes(res) {
   });
 
   // Enrich clients
+  const agora = new Date();
+  const idsExpirados = [];
+
   const clients = clientsData.map(client => {
     const intake = intakeMap[client.user_id];
     const plan = planMap[client.user_id];
     const errorPlan = errorPlanMap[client.user_id];
     const hasIntake = !!(intake && intake.altura_cm && intake.peso_actual && intake.idade);
     const hasPlan = !!plan;
+
+    // Corrigir status em tempo real: se expirou, marcar como expired
+    let status = client.subscription_status;
+    if ((status === 'active' || status === 'trial') && client.subscription_expires) {
+      if (new Date(client.subscription_expires) < agora) {
+        status = 'expired';
+        idsExpirados.push(client.id);
+      }
+    }
+    if (status === 'trial' && !client.subscription_expires && client.trial_started) {
+      const trialEnd = new Date(client.trial_started);
+      trialEnd.setDate(trialEnd.getDate() + 7);
+      if (trialEnd < agora) {
+        status = 'expired';
+        idsExpirados.push(client.id);
+      }
+    }
 
     // Extract error message if there's an error plan
     let planErro = null;
@@ -793,6 +848,7 @@ async function listarClientes(res) {
 
     return {
       ...client,
+      subscription_status: status,
       nome: client.users?.nome || 'Sem nome',
       email: client.users?.email || '',
       userCreatedAt: client.users?.created_at,
@@ -805,6 +861,16 @@ async function listarClientes(res) {
       lastActivity: lastActivityMap[client.user_id] || null,
     };
   });
+
+  // Actualizar na BD os que expiraram (fire-and-forget)
+  if (idsExpirados.length > 0) {
+    supabase.from('vitalis_clients').update({
+      subscription_status: 'expired',
+      subscription_updated: agora.toISOString()
+    }).in('id', idsExpirados).then(() => {
+      console.log(`✅ coach: ${idsExpirados.length} clientes vitalis marcados como expired`);
+    });
+  }
 
   return res.status(200).json({ clients });
 }
