@@ -20,6 +20,7 @@ import { gerarResposta, COACH_NUMERO, NOMES_CHAVES, getSessao, atualizarSessao }
 import { logMensagem } from './_lib/chatbot-log.js';
 import {
   lookupUserByPhone,
+  lookupUserByEmail,
   atualizarPeso,
   atualizarRestricoes, parseRestricoes,
   atualizarActividade, parseActividade,
@@ -287,19 +288,53 @@ async function handlePlanoUpdate(telefone, nome, chave, dados, msgBody) {
     return 'Cancelado! Nada foi alterado no teu plano.\n\nSe precisares de ajuda, escreve *vivianne*.';
   }
 
+  // ===== EMAIL FALLBACK — cliente enviou email depois do lookup falhar =====
+  if (chave === 'email_fallback') {
+    const email = dados.email;
+    const lookup = await lookupUserByEmail(email);
+
+    if (!lookup.found) {
+      if (lookup.userFound && lookup.error === 'intake_not_found') {
+        return `Encontrei a tua conta (${email}) mas ainda não preencheste o questionário VITALIS.\n\nPreenche primeiro em: app.seteecos.com/vitalis\n\nDepois podes atualizar os teus dados aqui por WhatsApp!`;
+      }
+      return `Não encontrei nenhuma conta com o email *${email}*.\n\nVerifica se é o email correcto ou escreve *vivianne* para falar comigo directamente.`;
+    }
+
+    // Guardar userId na sessão para próximas interações
+    const sessao = getSessao(telefone) || {};
+    atualizarSessao(telefone, msgBody, chave);
+    const s = getSessao(telefone);
+    if (s) {
+      s.lookupCache = { userId: lookup.userId, intake: lookup.intake, nome: lookup.nome, email: lookup.email };
+      s.aguardaEmail = false;
+    }
+
+    const primeiroNome = (lookup.nome || nome || '').split(' ')[0] || '';
+    return `Encontrei o teu perfil${primeiroNome ? `, ${primeiroNome}` : ''}! ✅\n\nAgora podes atualizar os teus dados. Escreve o que queres mudar:\n- *peso 72kg* — atualizar peso\n- *sem glúten* — adicionar restrição\n- *3x semana* — mudar atividade\n- *4 refeições* — mudar refeições\n- *quero emagrecer* — mudar objetivo`;
+  }
+
   // ===== NOVAS ATUALIZAÇÕES — primeiro fazer lookup =====
 
-  const lookup = await lookupUserByPhone(telefone);
+  // Verificar se já temos cache do lookup na sessão (via email fallback)
+  const sessaoAtual = getSessao(telefone);
+  let lookup;
+  if (sessaoAtual?.lookupCache) {
+    lookup = { found: true, ...sessaoAtual.lookupCache };
+  } else {
+    lookup = await lookupUserByPhone(telefone);
+  }
 
   if (!lookup.found) {
+    // Marcar sessão para aceitar email como fallback
+    atualizarSessao(telefone, msgBody, 'lookup_falhou');
+    const s = getSessao(telefone);
+    if (s) s.aguardaEmail = true;
+
     return `Não encontrei um perfil VITALIS associado a este número de WhatsApp.
 
-Para que eu possa atualizar o teu plano, precisas de:
-1. Ter uma conta em app.seteecos.com
-2. Ter preenchido o questionário VITALIS
-3. Ter o teu número de WhatsApp no perfil
+Diz-me o teu *email* (o que usaste para criar conta) que eu procuro!
 
-Se já tens conta, diz-me o teu email que eu procuro manualmente. Ou escreve *vivianne* para falar comigo.`;
+Ou escreve *vivianne* para falar comigo directamente.`;
   }
 
   const primeiroNome = (lookup.nome || nome || '').split(' ')[0] || '';

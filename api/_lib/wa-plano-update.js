@@ -28,7 +28,8 @@ function getSupabase() {
 
 /**
  * Encontra o user_id pelo número de WhatsApp
- * Procura em vitalis_intake.whatsapp e vitalis_clients.whatsapp_numero
+ * Procura em: vitalis_intake.whatsapp, waitlist.whatsapp, chatbot_mensagens (histórico)
+ * Tenta múltiplos formatos do número (com/sem +258, com espaços, etc.)
  */
 export async function lookupUserByPhone(telefone) {
   const supabase = getSupabase();
@@ -37,42 +38,129 @@ export async function lookupUserByPhone(telefone) {
   // Normalizar telefone: só dígitos
   const tel = telefone.replace(/[^0-9]/g, '');
 
-  // Variantes de pesquisa (com e sem prefixo de país)
-  const variantes = [tel];
-  if (tel.startsWith('258')) variantes.push(tel.slice(3));
-  if (!tel.startsWith('258') && tel.length <= 10) variantes.push('258' + tel);
-  // Com + na frente (alguns campos guardam assim)
-  variantes.push('+' + tel);
-  if (tel.startsWith('258')) variantes.push('+' + tel, tel.slice(3));
+  // Gerar todas as variantes possíveis do número
+  const variantes = new Set();
+  variantes.add(tel);                          // 258845243875
+  if (tel.startsWith('258')) {
+    variantes.add(tel.slice(3));               // 845243875
+    variantes.add('+' + tel);                  // +258845243875
+    variantes.add('+258 ' + tel.slice(3));     // +258 845243875
+    // Com espaços no formato local
+    const local = tel.slice(3);
+    if (local.length === 9) {
+      variantes.add(`+258 ${local.slice(0, 2)} ${local.slice(2, 5)} ${local.slice(5)}`);  // +258 84 524 3875
+      variantes.add(`${local.slice(0, 2)} ${local.slice(2, 5)} ${local.slice(5)}`);        // 84 524 3875
+    }
+  }
+  if (!tel.startsWith('258') && tel.length <= 10) {
+    variantes.add('258' + tel);                // 258845243875
+    variantes.add('+258' + tel);               // +258845243875
+    variantes.add('+258 ' + tel);              // +258 845243875
+  }
 
-  // Tentar via vitalis_intake.whatsapp
-  for (const v of variantes) {
+  const variantesArr = [...variantes];
+
+  // === 1. Procurar em vitalis_intake.whatsapp (LIKE para apanhar formatos parciais) ===
+  for (const v of variantesArr) {
     const { data, error } = await supabase
       .from('vitalis_intake')
       .select('user_id, sexo, peso_actual, altura_cm, idade, nivel_actividade, objectivo_principal, abordagem_preferida, restricoes_alimentares, refeicoes_dia, aceita_jejum, prontidao_1a10, emocao_dominante, peso_meta')
-      .or(`whatsapp.eq.${v},whatsapp.eq.+${v}`)
+      .ilike('whatsapp', `%${v.replace(/[^0-9]/g, '').slice(-9)}%`)
       .order('created_at', { ascending: false })
       .limit(1);
 
     if (!error && data && data.length > 0) {
-      // Buscar nome do user
-      const { data: user } = await supabase
-        .from('users')
-        .select('nome, email')
-        .eq('id', data[0].user_id)
-        .single();
-
-      return {
-        found: true,
-        userId: data[0].user_id,
-        intake: data[0],
-        nome: user?.nome || null,
-        email: user?.email || null,
-      };
+      return await enrichLookup(supabase, data[0]);
     }
   }
 
+  // === 2. Procurar na waitlist pelo WhatsApp (leads que já deram o número) ===
+  // Se encontrar, tentar associar ao user pelo email
+  for (const v of variantesArr) {
+    const { data: wl } = await supabase
+      .from('waitlist')
+      .select('email, whatsapp')
+      .ilike('whatsapp', `%${v.replace(/[^0-9]/g, '').slice(-9)}%`)
+      .limit(1);
+
+    if (wl && wl.length > 0 && wl[0].email) {
+      const result = await lookupUserByEmail(wl[0].email);
+      if (result.found) return result;
+    }
+  }
+
+  // === 3. Procurar no histórico de chatbot (o número já falou antes, pode ter user) ===
+  // Este é o fallback mais fraco — apenas para encontrar o email se o cliente já deu
+  const { data: chatHist } = await supabase
+    .from('chatbot_mensagens')
+    .select('telefone, nome')
+    .eq('telefone', tel)
+    .order('created_at', { ascending: false })
+    .limit(1);
+
+  // Se encontrou histórico mas sem email, não conseguimos ligar ao user
+  // O bot vai pedir o email como fallback
+
   return { found: false };
+}
+
+/**
+ * Encontra o user_id pelo email
+ * Procura em users.email → depois busca intake
+ */
+export async function lookupUserByEmail(email) {
+  const supabase = getSupabase();
+  if (!supabase) return { found: false, error: 'supabase_not_configured' };
+
+  const emailLimpo = email.trim().toLowerCase();
+
+  // Procurar user pelo email
+  const { data: user, error: userErr } = await supabase
+    .from('users')
+    .select('id, nome, email')
+    .ilike('email', emailLimpo)
+    .limit(1)
+    .single();
+
+  if (userErr || !user) return { found: false };
+
+  // Buscar intake do user
+  const { data: intake } = await supabase
+    .from('vitalis_intake')
+    .select('user_id, sexo, peso_actual, altura_cm, idade, nivel_actividade, objectivo_principal, abordagem_preferida, restricoes_alimentares, refeicoes_dia, aceita_jejum, prontidao_1a10, emocao_dominante, peso_meta')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single();
+
+  if (!intake) {
+    return { found: false, userFound: true, userId: user.id, nome: user.nome, error: 'intake_not_found' };
+  }
+
+  return {
+    found: true,
+    userId: user.id,
+    intake,
+    nome: user.nome || null,
+    email: user.email || null,
+  };
+}
+
+/** Helper: enriquecer resultado do lookup com dados do user */
+async function enrichLookup(supabase, intakeRow) {
+  const { data: user } = await supabase
+    .from('users')
+    .select('nome, email')
+    .eq('id', intakeRow.user_id)
+    .single();
+
+  return {
+    found: true,
+    userId: intakeRow.user_id,
+    intake: intakeRow,
+    nome: user?.nome || null,
+    email: user?.email || null,
+  };
 }
 
 // ===== ATUALIZAR PESO =====
