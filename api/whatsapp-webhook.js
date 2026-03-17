@@ -25,7 +25,6 @@ import {
   atualizarActividade, parseActividade,
   atualizarRefeicoes, parseRefeicoes,
   atualizarObjetivo, parseObjetivo,
-  regenerarPlano, formatarResumoPlano,
 } from './_lib/wa-plano-update.js';
 
 const VERIFY_TOKEN = (process.env.WHATSAPP_VERIFY_TOKEN || 'seteecos2026').trim();
@@ -250,37 +249,35 @@ async function handlePlanoUpdate(telefone, nome, chave, dados, msgBody) {
 
     const { tipo, userId, valor } = sessao.acaoPendente;
 
-    // Executar a atualização
+    // Executar a atualização dos dados (sem regenerar plano — a coach decide quando)
     let resultado;
+    let descricao = '';
     if (tipo === 'peso') {
       resultado = await atualizarPeso(userId, valor);
+      descricao = `Peso atualizado para *${valor}kg*`;
     } else if (tipo === 'restricoes') {
       resultado = await atualizarRestricoes(userId, valor.restricoes, valor.remover);
+      descricao = `Restrições ${valor.remover ? 'removidas' : 'adicionadas'}`;
     } else if (tipo === 'actividade') {
       resultado = await atualizarActividade(userId, valor);
+      descricao = `Atividade atualizada para *${NIVEIS_NOMES[valor] || valor}*`;
     } else if (tipo === 'refeicoes') {
       resultado = await atualizarRefeicoes(userId, valor);
+      descricao = `Refeições atualizadas para *${valor}x/dia*`;
     } else if (tipo === 'objetivo') {
       resultado = await atualizarObjetivo(userId, valor);
+      descricao = `Objetivo atualizado para *${OBJETIVOS_NOMES[valor] || valor}*`;
     }
 
     if (!resultado?.ok) {
-      // Limpar ação pendente
       sessao.acaoPendente = null;
       return `Houve um erro ao atualizar: ${resultado?.error || 'erro desconhecido'}.\n\nTenta de novo ou escreve *vivianne*.`;
     }
 
-    // Regenerar plano
-    const planoResult = await regenerarPlano(userId);
-
     // Limpar ação pendente
     sessao.acaoPendente = null;
 
-    if (!planoResult?.ok) {
-      return `Dados atualizados mas houve um erro ao recalcular o plano: ${planoResult?.error || 'erro desconhecido'}.\n\nVou pedir à Vivianne para verificar. Não te preocupes!`;
-    }
-
-    return formatarResumoPlano(planoResult.plano);
+    return `${descricao} ✅\n\nOs teus dados foram guardados. A Vivianne vai rever e atualizar o teu plano em breve.\n\nSe precisares de mais alguma coisa, escreve aqui!`;
   }
 
   // Confirmação: não
@@ -322,7 +319,7 @@ Se já tens conta, diz-me o teu email que eu procuro manualmente. Ou escreve *vi
 
     let msg = `${primeiroNome ? primeiroNome + ', ' : ''}vou atualizar o teu peso de *${pesoAtual}kg* para *${novoPeso}kg*`;
     if (diff > 0) msg += ` (${novoPeso > pesoAtual ? '+' : ''}${(novoPeso - pesoAtual).toFixed(1)}kg)`;
-    msg += ` e recalcular o teu plano alimentar.\n\n*Confirmas?* (sim/não)`;
+    msg += `.\n\nA Vivianne vai usar estes dados quando atualizar o teu plano.\n\n*Confirmas?* (sim/não)`;
 
     return msg;
   }
@@ -344,7 +341,7 @@ Se já tens conta, diz-me o teu email que eu procuro manualmente. Ou escreve *vi
     const s = getSessao(telefone);
     if (s) s.acaoPendente = sessao.acaoPendente;
 
-    return `${primeiroNome ? primeiroNome + ', ' : ''}vou *${remover ? 'remover' : 'adicionar'}*: ${nomes}\n\nRestrições atuais: ${atualStr}\n\nIsto vai recalcular o teu plano alimentar.\n\n*Confirmas?* (sim/não)`;
+    return `${primeiroNome ? primeiroNome + ', ' : ''}vou *${remover ? 'remover' : 'adicionar'}*: ${nomes}\n\nRestrições atuais: ${atualStr}\n\nA Vivianne vai usar estes dados quando atualizar o teu plano.\n\n*Confirmas?* (sim/não)`;
   }
 
   // ===== ATUALIZAR ATIVIDADE =====
@@ -363,7 +360,7 @@ Se já tens conta, diz-me o teu email que eu procuro manualmente. Ou escreve *vi
     const s = getSessao(telefone);
     if (s) s.acaoPendente = sessao.acaoPendente;
 
-    return `${primeiroNome ? primeiroNome + ', ' : ''}vou mudar o teu nível de atividade de *${atualNivel}* para *${NIVEIS_NOMES[nivel]}*.\n\nIsto vai recalcular as tuas calorias e macros.\n\n*Confirmas?* (sim/não)`;
+    return `${primeiroNome ? primeiroNome + ', ' : ''}vou mudar o teu nível de atividade de *${atualNivel}* para *${NIVEIS_NOMES[nivel]}*.\n\nA Vivianne vai usar estes dados quando atualizar o teu plano.\n\n*Confirmas?* (sim/não)`;
   }
 
   // ===== ATUALIZAR REFEIÇÕES =====
@@ -382,7 +379,7 @@ Se já tens conta, diz-me o teu email que eu procuro manualmente. Ou escreve *vi
     const s = getSessao(telefone);
     if (s) s.acaoPendente = sessao.acaoPendente;
 
-    return `${primeiroNome ? primeiroNome + ', ' : ''}vou mudar de *${atualRef} refeições* para *${num} refeições* por dia.\n\nAs porções serão redistribuídas automaticamente.\n\n*Confirmas?* (sim/não)`;
+    return `${primeiroNome ? primeiroNome + ', ' : ''}vou mudar de *${atualRef} refeições* para *${num} refeições* por dia.\n\nA Vivianne vai usar estes dados quando atualizar o teu plano.\n\n*Confirmas?* (sim/não)`;
   }
 
   // ===== ATUALIZAR OBJETIVO =====
@@ -401,7 +398,7 @@ Se já tens conta, diz-me o teu email que eu procuro manualmente. Ou escreve *vi
     const s = getSessao(telefone);
     if (s) s.acaoPendente = sessao.acaoPendente;
 
-    return `${primeiroNome ? primeiroNome + ', ' : ''}vou mudar o teu objetivo de *${atualObj}* para *${OBJETIVOS_NOMES[objetivo]}*.\n\nIsto muda completamente o cálculo do teu plano (calorias, macros, porções).\n\n*Confirmas?* (sim/não)`;
+    return `${primeiroNome ? primeiroNome + ', ' : ''}vou mudar o teu objetivo de *${atualObj}* para *${OBJETIVOS_NOMES[objetivo]}*.\n\nA Vivianne vai usar estes dados quando atualizar o teu plano.\n\n*Confirmas?* (sim/não)`;
   }
 
   return 'Não percebi o que queres atualizar. Escreve *vivianne* para falar comigo directamente.';
