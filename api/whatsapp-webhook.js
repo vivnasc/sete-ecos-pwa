@@ -16,8 +16,16 @@
  * - WHATSAPP_PHONE_NUMBER_ID: ID do número no Meta Business
  */
 
-import { gerarResposta, COACH_NUMERO, NOMES_CHAVES } from './_lib/chatbot-respostas.js';
+import { gerarResposta, COACH_NUMERO, NOMES_CHAVES, getSessao, atualizarSessao } from './_lib/chatbot-respostas.js';
 import { logMensagem } from './_lib/chatbot-log.js';
+import {
+  lookupUserByPhone,
+  atualizarPeso,
+  atualizarRestricoes, parseRestricoes,
+  atualizarActividade, parseActividade,
+  atualizarRefeicoes, parseRefeicoes,
+  atualizarObjetivo, parseObjetivo,
+} from './_lib/wa-plano-update.js';
 
 const VERIFY_TOKEN = (process.env.WHATSAPP_VERIFY_TOKEN || 'seteecos2026').trim();
 const ACCESS_TOKEN = () => (process.env.WHATSAPP_ACCESS_TOKEN || '').trim();
@@ -205,6 +213,195 @@ async function notificarVivianne(clienteNumero, clienteNome, contexto) {
     // Sem número pessoal configurado — log apenas (Supabase já regista)
     console.log('Coach notify (sem envio — mesmo número):', clienteNumero, clienteNome, contexto);
   }
+}
+
+// ===== ATUALIZAÇÃO DE PLANO VIA WHATSAPP =====
+
+const NIVEIS_NOMES = {
+  'sedentaria': 'Sedentária',
+  'leve': 'Leve (1-3x/semana)',
+  'moderada': 'Moderada (3-5x/semana)',
+  'intensa': 'Intensa (5+x/semana)',
+};
+
+const RESTRICOES_NOMES = {
+  'halal': 'Halal',
+  'sem_lactose': 'Sem lactose',
+  'sem_gluten': 'Sem glúten',
+  'vegetariano': 'Vegetariano',
+  'vegano': 'Vegano',
+};
+
+const OBJETIVOS_NOMES = {
+  'emagrecer': 'Emagrecer',
+  'ganhar_massa': 'Ganhar massa muscular',
+  'melhorar_saude': 'Melhorar saúde',
+  'ganhar_energia': 'Ganhar energia',
+};
+
+async function handlePlanoUpdate(telefone, nome, chave, dados, msgBody) {
+  // Confirmação: sim
+  if (chave === 'confirmar_plano_sim') {
+    const sessao = getSessao(telefone);
+    if (!sessao?.acaoPendente) {
+      return 'Não há nenhuma atualização pendente. Escreve o que queres mudar (ex: "peso 72kg", "sem glúten", "4 refeições").';
+    }
+
+    const { tipo, userId, valor } = sessao.acaoPendente;
+
+    // Executar a atualização dos dados (sem regenerar plano — a coach decide quando)
+    let resultado;
+    let descricao = '';
+    if (tipo === 'peso') {
+      resultado = await atualizarPeso(userId, valor);
+      descricao = `Peso atualizado para *${valor}kg*`;
+    } else if (tipo === 'restricoes') {
+      resultado = await atualizarRestricoes(userId, valor.restricoes, valor.remover);
+      descricao = `Restrições ${valor.remover ? 'removidas' : 'adicionadas'}`;
+    } else if (tipo === 'actividade') {
+      resultado = await atualizarActividade(userId, valor);
+      descricao = `Atividade atualizada para *${NIVEIS_NOMES[valor] || valor}*`;
+    } else if (tipo === 'refeicoes') {
+      resultado = await atualizarRefeicoes(userId, valor);
+      descricao = `Refeições atualizadas para *${valor}x/dia*`;
+    } else if (tipo === 'objetivo') {
+      resultado = await atualizarObjetivo(userId, valor);
+      descricao = `Objetivo atualizado para *${OBJETIVOS_NOMES[valor] || valor}*`;
+    }
+
+    if (!resultado?.ok) {
+      sessao.acaoPendente = null;
+      return `Houve um erro ao atualizar: ${resultado?.error || 'erro desconhecido'}.\n\nTenta de novo ou escreve *vivianne*.`;
+    }
+
+    // Limpar ação pendente
+    sessao.acaoPendente = null;
+
+    return `${descricao} ✅\n\nOs teus dados foram guardados. A Vivianne vai rever e atualizar o teu plano em breve.\n\nSe precisares de mais alguma coisa, escreve aqui!`;
+  }
+
+  // Confirmação: não
+  if (chave === 'confirmar_plano_nao') {
+    const sessao = getSessao(telefone);
+    if (sessao) sessao.acaoPendente = null;
+    return 'Cancelado! Nada foi alterado no teu plano.\n\nSe precisares de ajuda, escreve *vivianne*.';
+  }
+
+  // ===== NOVAS ATUALIZAÇÕES — primeiro fazer lookup =====
+
+  const lookup = await lookupUserByPhone(telefone);
+
+  if (!lookup.found) {
+    return `Não encontrei um perfil VITALIS associado a este número de WhatsApp.
+
+Para que eu possa atualizar o teu plano, precisas de:
+1. Ter uma conta em app.seteecos.com
+2. Ter preenchido o questionário VITALIS
+3. Ter o teu número de WhatsApp no perfil
+
+Se já tens conta, diz-me o teu email que eu procuro manualmente. Ou escreve *vivianne* para falar comigo.`;
+  }
+
+  const primeiroNome = (lookup.nome || nome || '').split(' ')[0] || '';
+
+  // ===== ATUALIZAR PESO =====
+  if (chave === 'atualizar_peso') {
+    const novoPeso = dados.peso;
+    const pesoAtual = parseFloat(lookup.intake.peso_actual) || 0;
+    const diff = Math.abs(novoPeso - pesoAtual);
+
+    // Guardar ação pendente na sessão
+    const sessao = getSessao(telefone) || {};
+    sessao.acaoPendente = { tipo: 'peso', userId: lookup.userId, valor: novoPeso };
+    atualizarSessao(telefone, msgBody, chave);
+    const s = getSessao(telefone);
+    if (s) s.acaoPendente = sessao.acaoPendente;
+
+    let msg = `${primeiroNome ? primeiroNome + ', ' : ''}vou atualizar o teu peso de *${pesoAtual}kg* para *${novoPeso}kg*`;
+    if (diff > 0) msg += ` (${novoPeso > pesoAtual ? '+' : ''}${(novoPeso - pesoAtual).toFixed(1)}kg)`;
+    msg += `.\n\nA Vivianne vai usar estes dados quando atualizar o teu plano.\n\n*Confirmas?* (sim/não)`;
+
+    return msg;
+  }
+
+  // ===== ATUALIZAR RESTRIÇÕES =====
+  if (chave === 'atualizar_restricoes') {
+    const { restricoes, remover } = parseRestricoes(dados.textoOriginal);
+
+    if (restricoes.length === 0) {
+      return `Não percebi que restrição queres ${remover ? 'remover' : 'adicionar'}.\n\nOpções disponíveis:\n- *sem glúten*\n- *sem lactose*\n- *halal*\n- *vegetariano*\n- *vegano*\n\nExemplo: "sem glúten" ou "tirar lactose"`;
+    }
+
+    const nomes = restricoes.map(r => RESTRICOES_NOMES[r] || r).join(', ');
+    const atualStr = (lookup.intake.restricoes_alimentares || []).map(r => RESTRICOES_NOMES[r] || r).join(', ') || 'nenhuma';
+
+    const sessao = getSessao(telefone) || {};
+    sessao.acaoPendente = { tipo: 'restricoes', userId: lookup.userId, valor: { restricoes, remover } };
+    atualizarSessao(telefone, msgBody, chave);
+    const s = getSessao(telefone);
+    if (s) s.acaoPendente = sessao.acaoPendente;
+
+    return `${primeiroNome ? primeiroNome + ', ' : ''}vou *${remover ? 'remover' : 'adicionar'}*: ${nomes}\n\nRestrições atuais: ${atualStr}\n\nA Vivianne vai usar estes dados quando atualizar o teu plano.\n\n*Confirmas?* (sim/não)`;
+  }
+
+  // ===== ATUALIZAR ATIVIDADE =====
+  if (chave === 'atualizar_actividade') {
+    const nivel = parseActividade(dados.textoOriginal);
+
+    if (!nivel) {
+      return `Não percebi o nível de atividade.\n\nOpções:\n- *sedentária* (sem exercício)\n- *leve* (1-3x/semana)\n- *moderada* (3-5x/semana)\n- *intensa* (5+x/semana)\n\nOu diz quantas vezes treinas: "3x semana"`;
+    }
+
+    const atualNivel = NIVEIS_NOMES[lookup.intake.nivel_actividade] || lookup.intake.nivel_actividade || 'não definida';
+
+    const sessao = getSessao(telefone) || {};
+    sessao.acaoPendente = { tipo: 'actividade', userId: lookup.userId, valor: nivel };
+    atualizarSessao(telefone, msgBody, chave);
+    const s = getSessao(telefone);
+    if (s) s.acaoPendente = sessao.acaoPendente;
+
+    return `${primeiroNome ? primeiroNome + ', ' : ''}vou mudar o teu nível de atividade de *${atualNivel}* para *${NIVEIS_NOMES[nivel]}*.\n\nA Vivianne vai usar estes dados quando atualizar o teu plano.\n\n*Confirmas?* (sim/não)`;
+  }
+
+  // ===== ATUALIZAR REFEIÇÕES =====
+  if (chave === 'atualizar_refeicoes') {
+    const num = parseRefeicoes(dados.textoOriginal);
+
+    if (!num || num < 2 || num > 6) {
+      return 'Quantas refeições por dia queres? (entre 2 e 6)\n\nExemplo: "4 refeições"';
+    }
+
+    const atualRef = lookup.intake.refeicoes_dia || 3;
+
+    const sessao = getSessao(telefone) || {};
+    sessao.acaoPendente = { tipo: 'refeicoes', userId: lookup.userId, valor: num };
+    atualizarSessao(telefone, msgBody, chave);
+    const s = getSessao(telefone);
+    if (s) s.acaoPendente = sessao.acaoPendente;
+
+    return `${primeiroNome ? primeiroNome + ', ' : ''}vou mudar de *${atualRef} refeições* para *${num} refeições* por dia.\n\nA Vivianne vai usar estes dados quando atualizar o teu plano.\n\n*Confirmas?* (sim/não)`;
+  }
+
+  // ===== ATUALIZAR OBJETIVO =====
+  if (chave === 'atualizar_objetivo') {
+    const objetivo = parseObjetivo(dados.textoOriginal);
+
+    if (!objetivo) {
+      return `Qual é o teu novo objetivo?\n\nOpções:\n- *emagrecer* (perder peso)\n- *ganhar massa* (muscular)\n- *melhorar saúde*\n- *mais energia*\n\nExemplo: "quero emagrecer"`;
+    }
+
+    const atualObj = OBJETIVOS_NOMES[lookup.intake.objectivo_principal] || lookup.intake.objectivo_principal || 'não definido';
+
+    const sessao = getSessao(telefone) || {};
+    sessao.acaoPendente = { tipo: 'objetivo', userId: lookup.userId, valor: objetivo };
+    atualizarSessao(telefone, msgBody, chave);
+    const s = getSessao(telefone);
+    if (s) s.acaoPendente = sessao.acaoPendente;
+
+    return `${primeiroNome ? primeiroNome + ', ' : ''}vou mudar o teu objetivo de *${atualObj}* para *${OBJETIVOS_NOMES[objetivo]}*.\n\nA Vivianne vai usar estes dados quando atualizar o teu plano.\n\n*Confirmas?* (sim/não)`;
+  }
+
+  return 'Não percebi o que queres atualizar. Escreve *vivianne* para falar comigo directamente.';
 }
 
 // ===== HANDLER PRINCIPAL =====
@@ -448,7 +645,36 @@ export default async function handler(req, res) {
     if (!msgBody) return res.status(200).send('OK');
 
     // Gerar resposta usando módulo partilhado (com telefone para sessões)
-    const { resposta, chave, notificarCoach } = gerarResposta(msgBody, nome, from);
+    const { resposta, chave, notificarCoach, asyncHandler, dados } = gerarResposta(msgBody, nome, from);
+
+    // ===== ATUALIZAÇÃO DE PLANO VIA WHATSAPP (async) =====
+    if (asyncHandler) {
+      try {
+        const respostaAsync = await handlePlanoUpdate(from, nome, chave, dados, msgBody);
+
+        logMensagem({
+          telefone: from, nome,
+          mensagemIn: msgBody,
+          mensagemOut: respostaAsync,
+          chave,
+          notificouCoach: true,
+          canal: 'whatsapp-meta',
+        }).catch(() => {});
+
+        await enviarMensagem(from, respostaAsync);
+
+        // Notificar coach de atualizações de plano
+        const tema = NOMES_CHAVES[chave] || 'Atualização de plano';
+        notificarVivianne(from, nome, `*${tema}*\nMensagem: "${msgBody}"`).catch(() => {});
+
+        return res.status(200).send('OK');
+      } catch (err) {
+        console.error('Erro no handlePlanoUpdate:', err);
+        const errMsg = 'Desculpa, houve um erro ao processar o teu pedido. Tenta de novo ou escreve *vivianne* para falar comigo directamente.';
+        await enviarMensagem(from, errMsg);
+        return res.status(200).send('OK');
+      }
+    }
 
     console.log('Resposta gerada para:', msgBody, '| chave:', chave, '| tamanho:', resposta.length);
 
