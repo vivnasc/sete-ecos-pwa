@@ -136,6 +136,25 @@ const SECCOES = [
     ]
   },
   {
+    id: 'whatsapp',
+    titulo: 'Atualizar via WhatsApp',
+    icone: '📲',
+    conteudo: [
+      {
+        subtitulo: 'O que podes fazer',
+        texto: 'Não precisas de abrir a app para atualizar os teus dados! Manda uma mensagem ao WhatsApp do Sete Ecos e o chatbot trata de tudo:\n\n• **Atualizar peso:** "peso 72kg"\n• **Restrições alimentares:** "sem glúten" ou "tirar lactose"\n• **Atividade física:** "3x semana" ou "atividade moderada"\n• **Refeições por dia:** "4 refeições"\n• **Objetivo:** "quero emagrecer" ou "ganhar massa"'
+      },
+      {
+        subtitulo: 'Como funciona',
+        texto: '1. Envia a mensagem para o número Sete Ecos no WhatsApp\n2. O chatbot pergunta-te para confirmar (sim/não)\n3. Os dados são guardados automaticamente\n4. A Vivianne revê e ajusta o teu plano quando necessário\n\nSe o chatbot não te reconhecer pelo número, basta enviar o teu email!'
+      },
+      {
+        subtitulo: 'Número do WhatsApp',
+        texto: '**+258 85 100 6473**\n\nGuarda este número nos teus contactos como "Sete Ecos" para acesso rápido.'
+      }
+    ]
+  },
+  {
     id: 'dicas',
     titulo: 'Dicas e Truques',
     icone: '💡',
