@@ -50,6 +50,12 @@ const WA_TEMPLATES = {
     texto: (nome) =>
       `Olá ${nome || ''}! Faz este exercício: antes de comeres algo, põe a mão no peito e pergunta "estou mesmo com fome ou estou a sentir algo?"\n\nSe a resposta for "estou a sentir algo" — o problema não é fome. É emoção.\n\nVEMVITALIS20 — 20% desconto\nhttps://app.seteecos.com/vitalis/pagamento?code=VEMVITALIS20\n\n— Vivianne`,
   },
+  'novidade-wa-plano': {
+    nome: 'WA Plano',
+    metaTemplate: 'novidade_wa_plano',
+    texto: (nome) =>
+      `Olá ${nome || ''}!\n\nAgora podes atualizar os teus dados do VITALIS directamente por WhatsApp. Sem abrir a app!\n\nÉ só mandares mensagem para o número *+258 85 100 6473* com:\n• *peso 72kg* — para atualizar o teu peso\n• *sem glúten* — para adicionar uma restrição\n• *tirar lactose* — para remover uma restrição\n• *3x semana* — para mudar o nível de atividade\n• *4 refeições* — para mudar o número de refeições\n• *quero emagrecer* — para mudar o objetivo\n\nEu confirmo contigo antes de mudar. Depois revejo e ajusto o teu plano.\n\nExperimenta agora — manda o teu peso actual para o +258 85 100 6473!\n\n— Vivianne`,
+  },
   personalizado: {
     nome: 'Personalizado',
     metaTemplate: null,
@@ -101,6 +107,7 @@ export default function CoachBroadcast() {
   const [waModo, setWaModo] = useState('grupo');
   const [waUsarTemplate, setWaUsarTemplate] = useState(true);
   const [filtro, setFiltro] = useState('');
+  const [copiado, setCopiado] = useState(false);
 
   // Email state
   const [emailTemplate, setEmailTemplate] = useState('catalogo');
@@ -573,8 +580,25 @@ export default function CoachBroadcast() {
                   className="w-full px-3 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-[#4A4035] dark:text-white resize-none"
                 />
               ) : (
-                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 text-sm text-[#4A4035] dark:text-gray-200 whitespace-pre-wrap max-h-48 overflow-y-auto">
-                  {previewMensagem}
+                <div className="relative group">
+                  <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 pr-10 text-sm text-[#4A4035] dark:text-gray-200 whitespace-pre-wrap max-h-48 overflow-y-auto">
+                    {previewMensagem}
+                  </div>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(previewMensagem);
+                      setCopiado(true);
+                      setTimeout(() => setCopiado(false), 2000);
+                    }}
+                    className="absolute top-2 right-2 p-1.5 rounded-md bg-white dark:bg-gray-600 shadow-sm border border-gray-200 dark:border-gray-500 text-gray-500 dark:text-gray-300 hover:text-[#25D366] transition-all active:scale-90"
+                    title="Copiar mensagem"
+                  >
+                    {copiado ? (
+                      <svg className="w-4 h-4 text-[#25D366]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                    )}
+                  </button>
                 </div>
               )}
 
