@@ -244,7 +244,7 @@ export const META_TEMPLATES = {
     language: 'pt_BR',
     category: 'MARKETING',
     header: 'Novidade: atualiza o teu plano por WhatsApp!',
-    body: 'Olá {{1}}!\n\nAgora podes atualizar os teus dados do VITALIS directamente aqui no WhatsApp. Sem abrir a app!\n\nÉ só escreveres:\n• *peso 72kg* — para atualizar o teu peso\n• *sem glúten* — para adicionar uma restrição\n• *tirar lactose* — para remover uma restrição\n• *3x semana* — para mudar o nível de atividade\n• *4 refeições* — para mudar o número de refeições\n• *quero emagrecer* — para mudar o objetivo\n\nEu confirmo contigo antes de mudar. Depois revejo e ajusto o teu plano.\n\nExperimenta agora — manda-me o teu peso actual!\n\n— Vivianne',
+    body: 'Olá {{1}}!\n\nAgora podes atualizar os teus dados do VITALIS directamente por WhatsApp. Sem abrir a app!\n\nÉ só mandares mensagem para o número *+258 85 100 6473* com:\n• *peso 72kg* — para atualizar o teu peso\n• *sem glúten* — para adicionar uma restrição\n• *tirar lactose* — para remover uma restrição\n• *3x semana* — para mudar o nível de atividade\n• *4 refeições* — para mudar o número de refeições\n• *quero emagrecer* — para mudar o objetivo\n\nEu confirmo contigo antes de mudar. Depois revejo e ajusto o teu plano.\n\nExperimenta agora — manda o teu peso actual para o +258 85 100 6473!\n\n— Vivianne',
     footer: 'Sete Ecos — VITALIS',
     params: (nome) => [nome || ''],
   },
