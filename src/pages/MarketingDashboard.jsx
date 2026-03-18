@@ -31,6 +31,14 @@ import {
 } from '../lib/marketing-engine';
 import { RENDER_MAP, CORES, FORMATOS } from '../components/TemplateVisual';
 import { getAudioUrl } from '../lib/shared/audioStorage';
+import {
+  gerarHooksIA,
+  gerarConteudoIA,
+  gerarVideoScriptIA,
+  PLATAFORMAS,
+  ESTILOS_VIDEO,
+  ECOS_OPCOES,
+} from '../lib/marketing-ai';
 
 // ============================================================
 // AUTO IMAGE - Gera imagem automaticamente
@@ -576,6 +584,7 @@ export default function MarketingDashboard() {
     { id: 'grid', label: 'Grid IG (12)', icon: '📸' },
     { id: 'anuncios', label: 'Anúncios', icon: '📣' },
     { id: 'carrosseis', label: 'Carrosséis', icon: '📑' },
+    { id: 'ia', label: 'IA', icon: '🤖' },
   ];
 
   // ---- MODO SIMPLES: conteúdo de hoje, copiar e pronto ----
@@ -657,6 +666,7 @@ export default function MarketingDashboard() {
         {tab === 'grid' && <GridTab copiar={copiar} copiado={copiado} />}
         {tab === 'anuncios' && <AnunciosTab copiar={copiar} copiado={copiado} />}
         {tab === 'carrosseis' && <CarrosseisTab copiar={copiar} copiado={copiado} />}
+        {tab === 'ia' && <IATab copiar={copiar} copiado={copiado} />}
       </div>
     </div>
   );
@@ -3703,6 +3713,414 @@ function WABusinessTab({ copiar, copiado }) {
             </Card>
           ))}
         </>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
+// TAB IA - Geração de conteúdo com inteligência artificial
+// Hooks híbridos: sementes existentes + Claude para variação
+// ============================================================
+
+function IATab({ copiar, copiado }) {
+  const [eco, setEco] = useState('');
+  const [plataforma, setPlataforma] = useState('instagram');
+  const [genero, setGenero] = useState('');
+  const [estiloVideo, setEstiloVideo] = useState('talking-head');
+  const [duracao, setDuracao] = useState('15-30s');
+
+  // Estado de geração
+  const [hooks, setHooks] = useState([]);
+  const [hookSelecionado, setHookSelecionado] = useState('');
+  const [conteudo, setConteudo] = useState(null);
+  const [videoScript, setVideoScript] = useState(null);
+  const [loading, setLoading] = useState('');
+  const [erro, setErro] = useState('');
+
+  const gerarHooks = async () => {
+    setLoading('hooks');
+    setErro('');
+    setHooks([]);
+    setConteudo(null);
+    setVideoScript(null);
+    try {
+      const result = await gerarHooksIA({ eco: eco || undefined, quantidade: 6, formato: plataforma, genero: genero || undefined });
+      setHooks(result);
+      if (result.length) setHookSelecionado(result[0]);
+    } catch (e) {
+      setErro(e.message);
+    } finally {
+      setLoading('');
+    }
+  };
+
+  const gerarConteudoCompleto = async () => {
+    if (!hookSelecionado) return;
+    setLoading('conteudo');
+    setErro('');
+    setConteudo(null);
+    try {
+      const result = await gerarConteudoIA({
+        hook: hookSelecionado,
+        eco: eco || undefined,
+        plataforma,
+        genero: genero || undefined,
+      });
+      setConteudo(result);
+    } catch (e) {
+      setErro(e.message);
+    } finally {
+      setLoading('');
+    }
+  };
+
+  const gerarVideo = async () => {
+    setLoading('video');
+    setErro('');
+    setVideoScript(null);
+    try {
+      const result = await gerarVideoScriptIA({
+        hook: hookSelecionado || undefined,
+        eco: eco || undefined,
+        duracao,
+        estilo: estiloVideo,
+        genero: genero || undefined,
+      });
+      setVideoScript(result);
+    } catch (e) {
+      setErro(e.message);
+    } finally {
+      setLoading('');
+    }
+  };
+
+  const conteudoTextoCompleto = conteudo
+    ? `${conteudo.hook}\n\n${conteudo.corpo}\n\n${conteudo.cta}${conteudo.hashtags?.length ? '\n\n' + conteudo.hashtags.join(' ') : ''}`
+    : '';
+
+  const videoTextoCompleto = videoScript
+    ? `${videoScript.titulo || ''}\n\n${(videoScript.roteiro || []).map(r => `[${r.tempo}] ${r.visual}\n${r.texto}${r.musica ? ` | Música: ${r.musica}` : ''}`).join('\n\n')}\n\nCaption: ${videoScript.caption || ''}\n\n${(videoScript.hashtags || []).join(' ')}${videoScript.dica_gravacao ? `\n\nDica: ${videoScript.dica_gravacao}` : ''}`
+    : '';
+
+  return (
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-4 text-white">
+        <h2 className="text-lg font-bold flex items-center gap-2">Gerador IA de Conteúdo</h2>
+        <p className="text-sm text-white/80 mt-1">Hooks híbridos: os teus conteúdos existentes como base + IA para variações infinitas.</p>
+      </div>
+
+      {/* Configuração */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+        <h3 className="font-bold text-sm text-[#4A4035]">Configuração</h3>
+
+        {/* Eco */}
+        <div>
+          <label className="text-xs font-medium text-[#6B5C4C] block mb-1">Eco</label>
+          <div className="flex flex-wrap gap-1.5">
+            {ECOS_OPCOES.map(e => (
+              <button
+                key={e.id}
+                onClick={() => setEco(e.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  eco === e.id
+                    ? 'bg-[#1a1a2e] text-white shadow-md'
+                    : 'bg-gray-100 text-[#6B5C4C] hover:bg-gray-200'
+                }`}
+              >
+                {e.emoji} {e.nome}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Plataforma */}
+        <div>
+          <label className="text-xs font-medium text-[#6B5C4C] block mb-1">Plataforma</label>
+          <div className="flex flex-wrap gap-1.5">
+            {PLATAFORMAS.map(p => (
+              <button
+                key={p.id}
+                onClick={() => setPlataforma(p.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  plataforma === p.id
+                    ? 'bg-[#1a1a2e] text-white shadow-md'
+                    : 'bg-gray-100 text-[#6B5C4C] hover:bg-gray-200'
+                }`}
+              >
+                {p.icon} {p.nome}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Género */}
+        <div>
+          <label className="text-xs font-medium text-[#6B5C4C] block mb-1">Género do público</label>
+          <div className="flex gap-2">
+            {[{ id: '', label: 'Neutro' }, { id: 'F', label: 'Feminino' }, { id: 'M', label: 'Masculino' }].map(g => (
+              <button
+                key={g.id}
+                onClick={() => setGenero(g.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  genero === g.id
+                    ? 'bg-[#1a1a2e] text-white shadow-md'
+                    : 'bg-gray-100 text-[#6B5C4C] hover:bg-gray-200'
+                }`}
+              >
+                {g.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Gerar Hooks */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="font-bold text-sm text-[#4A4035]">1. Gerar Hooks</h3>
+          <button
+            onClick={gerarHooks}
+            disabled={!!loading}
+            className="px-4 py-2 bg-purple-600 text-white text-xs font-bold rounded-full hover:bg-purple-700 disabled:opacity-50 transition-all active:scale-95"
+          >
+            {loading === 'hooks' ? 'A gerar...' : 'Gerar Hooks'}
+          </button>
+        </div>
+        <p className="text-xs text-[#8B7E6E]">A IA usa os teus hooks existentes como referência de tom e cria variações novas.</p>
+
+        {hooks.length > 0 && (
+          <div className="space-y-2">
+            {hooks.map((h, i) => (
+              <button
+                key={i}
+                onClick={() => setHookSelecionado(h)}
+                className={`w-full text-left p-3 rounded-xl text-sm transition-all ${
+                  hookSelecionado === h
+                    ? 'bg-purple-50 border-2 border-purple-400 text-purple-900'
+                    : 'bg-gray-50 border border-gray-200 text-[#4A4035] hover:bg-gray-100'
+                }`}
+              >
+                <span className="text-purple-500 font-bold mr-2">{i + 1}.</span>
+                {h}
+                <div className="flex justify-end mt-1">
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => { e.stopPropagation(); copiar(h, `hook-${i}`); }}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); copiar(h, `hook-${i}`); } }}
+                    className="text-[10px] text-purple-500 hover:text-purple-700 cursor-pointer"
+                  >
+                    {copiado === `hook-${i}` ? '✓ Copiado' : '📋 Copiar'}
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Gerar Conteúdo Completo */}
+      {hooks.length > 0 && (
+        <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold text-sm text-[#4A4035]">2. Gerar Conteúdo Completo</h3>
+            <button
+              onClick={gerarConteudoCompleto}
+              disabled={!!loading || !hookSelecionado}
+              className="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-full hover:bg-indigo-700 disabled:opacity-50 transition-all active:scale-95"
+            >
+              {loading === 'conteudo' ? 'A gerar...' : `Gerar para ${PLATAFORMAS.find(p => p.id === plataforma)?.nome || plataforma}`}
+            </button>
+          </div>
+
+          {hookSelecionado && (
+            <div className="bg-purple-50 p-3 rounded-xl text-sm">
+              <span className="text-xs font-medium text-purple-600">Hook seleccionado:</span>
+              <p className="text-[#4A4035] mt-1">{hookSelecionado}</p>
+            </div>
+          )}
+
+          {conteudo && (
+            <div className="space-y-2">
+              <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+                <p className="font-bold text-sm text-[#4A4035]">{conteudo.hook}</p>
+                <p className="text-sm text-[#6B5C4C] whitespace-pre-line">{conteudo.corpo}</p>
+                <p className="text-sm text-purple-700 italic">{conteudo.cta}</p>
+                {conteudo.hashtags?.length > 0 && (
+                  <p className="text-xs text-blue-500">{conteudo.hashtags.join(' ')}</p>
+                )}
+              </div>
+
+              {/* Slides (carrossel/story) */}
+              {conteudo.slides?.length > 0 && (
+                <div>
+                  <p className="text-xs font-medium text-[#6B5C4C] mb-1">Slides:</p>
+                  <div className="flex gap-2 overflow-x-auto pb-2">
+                    {conteudo.slides.map((s, i) => (
+                      <div key={i} className="shrink-0 w-40 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl p-3 text-xs text-[#4A4035]">
+                        <span className="font-bold text-purple-600">{i + 1}.</span> {s}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end">
+                <button
+                  onClick={() => copiar(conteudoTextoCompleto, 'conteudo-completo')}
+                  className={`px-4 py-2 text-xs font-bold rounded-full transition-all active:scale-95 ${
+                    copiado === 'conteudo-completo'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-[#1a1a2e] text-white hover:bg-[#2a2a4e]'
+                  }`}
+                >
+                  {copiado === 'conteudo-completo' ? '✓ Copiado' : '📋 Copiar tudo'}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Gerar Vídeo Script */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="font-bold text-sm text-[#4A4035]">Roteiro de Vídeo</h3>
+          <button
+            onClick={gerarVideo}
+            disabled={!!loading}
+            className="px-4 py-2 bg-pink-600 text-white text-xs font-bold rounded-full hover:bg-pink-700 disabled:opacity-50 transition-all active:scale-95"
+          >
+            {loading === 'video' ? 'A gerar...' : 'Gerar Roteiro'}
+          </button>
+        </div>
+
+        {/* Opções de vídeo */}
+        <div className="space-y-2">
+          <div>
+            <label className="text-xs font-medium text-[#6B5C4C] block mb-1">Estilo</label>
+            <div className="flex flex-wrap gap-1.5">
+              {ESTILOS_VIDEO.map(e => (
+                <button
+                  key={e.id}
+                  onClick={() => setEstiloVideo(e.id)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    estiloVideo === e.id
+                      ? 'bg-pink-600 text-white shadow-md'
+                      : 'bg-gray-100 text-[#6B5C4C] hover:bg-gray-200'
+                  }`}
+                >
+                  {e.nome}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="text-xs font-medium text-[#6B5C4C] block mb-1">Duração</label>
+            <div className="flex gap-2">
+              {['7-15s', '15-30s', '30-60s'].map(d => (
+                <button
+                  key={d}
+                  onClick={() => setDuracao(d)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    duracao === d
+                      ? 'bg-pink-600 text-white shadow-md'
+                      : 'bg-gray-100 text-[#6B5C4C] hover:bg-gray-200'
+                  }`}
+                >
+                  {d}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {videoScript && (
+          <div className="space-y-2">
+            <div className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-4 space-y-3">
+              <h4 className="font-bold text-sm text-pink-800">{videoScript.titulo}</h4>
+
+              {videoScript.hook_visual && (
+                <div className="bg-white/60 rounded-lg p-2">
+                  <span className="text-[10px] font-bold text-pink-600 uppercase">Hook Visual (0-3s)</span>
+                  <p className="text-sm text-[#4A4035] font-medium">{videoScript.hook_visual}</p>
+                </div>
+              )}
+
+              {/* Roteiro timeline */}
+              {videoScript.roteiro?.length > 0 && (
+                <div className="space-y-2">
+                  {videoScript.roteiro.map((r, i) => (
+                    <div key={i} className="flex gap-3 items-start">
+                      <span className="shrink-0 bg-pink-600 text-white text-[10px] font-bold px-2 py-1 rounded-full">{r.tempo}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-[#8B7E6E]">{r.visual}</p>
+                        <p className="text-sm text-[#4A4035] font-medium">{r.texto}</p>
+                        {r.musica && <p className="text-[10px] text-purple-500">Música: {r.musica}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {videoScript.caption && (
+                <div className="bg-white/60 rounded-lg p-2">
+                  <span className="text-[10px] font-bold text-indigo-600 uppercase">Caption</span>
+                  <p className="text-xs text-[#4A4035]">{videoScript.caption}</p>
+                </div>
+              )}
+
+              {videoScript.dica_gravacao && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2">
+                  <span className="text-[10px] font-bold text-yellow-700">Dica de Gravação</span>
+                  <p className="text-xs text-yellow-800">{videoScript.dica_gravacao}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                onClick={() => copiar(videoTextoCompleto, 'video-script')}
+                className={`px-4 py-2 text-xs font-bold rounded-full transition-all active:scale-95 ${
+                  copiado === 'video-script'
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-[#1a1a2e] text-white hover:bg-[#2a2a4e]'
+                }`}
+              >
+                {copiado === 'video-script' ? '✓ Copiado' : '📋 Copiar roteiro'}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Erro */}
+      {erro && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+          <p className="text-sm text-red-700 font-medium">Erro</p>
+          <p className="text-xs text-red-600 mt-1">{erro}</p>
+          {erro.includes('ANTHROPIC_API_KEY') && (
+            <p className="text-xs text-red-500 mt-2">
+              Adiciona a variável <code className="bg-red-100 px-1 rounded">ANTHROPIC_API_KEY</code> nas Settings do Vercel (Environment Variables).
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Loading overlay */}
+      {loading && (
+        <div className="flex items-center justify-center py-6">
+          <div className="flex items-center gap-3 bg-white rounded-full px-6 py-3 shadow-lg">
+            <div className="w-4 h-4 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+            <span className="text-sm text-[#4A4035] font-medium">
+              {loading === 'hooks' && 'A gerar hooks...'}
+              {loading === 'conteudo' && 'A criar conteúdo...'}
+              {loading === 'video' && 'A escrever roteiro...'}
+            </span>
+          </div>
+        </div>
       )}
     </div>
   );
