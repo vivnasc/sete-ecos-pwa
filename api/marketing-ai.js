@@ -236,15 +236,282 @@ Responde em JSON:
 
 const AIMLAPI_BASE = 'https://api.aimlapi.com/v2/generate/audio/suno-ai';
 
-// Moods por eco para prompts musicais
+
+// Moods por eco para prompts musicais (estilo AwakeSoul — íntimo, poético, corpo-centrado)
 const ECO_MOODS = {
-  vitalis: { tags: 'ambient electronic calm organic', desc: 'natureza, corpo, nutrição' },
-  aurea: { tags: 'elegant piano warm cinematic', desc: 'valor próprio, presença, ouro' },
-  serena: { tags: 'ambient water flowing peaceful meditation', desc: 'emoção, fluidez, água' },
-  ignis: { tags: 'energetic percussion tribal fire drums', desc: 'fogo, vontade, determinação' },
-  ventis: { tags: 'airy flute nature breeze gentle folk', desc: 'vento, energia, natureza' },
-  ecoa: { tags: 'vocal choral echo resonant ethereal', desc: 'voz, expressão, eco' },
-  imago: { tags: 'cinematic orchestral deep introspective', desc: 'identidade, essência, profundidade' },
+  vitalis: {
+    tags: 'organic acoustic warm female vocal, marrabenta feel, grounded rhythm, shaker percussion',
+    desc: 'corpo, nutrição, raiz, terra',
+    energy: 'steady',
+  },
+  aurea: {
+    tags: 'elegant piano warm cinematic, intimate female vocal, strings, golden atmosphere',
+    desc: 'valor próprio, presença, ouro interior',
+    energy: 'anthem',
+  },
+  serena: {
+    tags: 'ambient water flowing, soft synth pads, contemplative female vocal, subtle piano',
+    desc: 'emoção, fluidez, água, corpo-sentir',
+    energy: 'whisper',
+  },
+  ignis: {
+    tags: 'energetic percussion tribal drums, powerful female vocal, driving beat, bass-forward',
+    desc: 'fogo interior, vontade, corte, determinação',
+    energy: 'pulse',
+  },
+  ventis: {
+    tags: 'airy flute acoustic guitar, nature sounds, gentle folk, breathing rhythm, organic',
+    desc: 'vento, energia, natureza, ritmo do corpo',
+    energy: 'steady',
+  },
+  ecoa: {
+    tags: 'vocal choral echo, close-mic raw female vocal, piano arpeggios, resonant ethereal',
+    desc: 'voz recuperada, expressão, eco interior',
+    energy: 'raw',
+  },
+  imago: {
+    tags: 'cinematic orchestral deep, layered vocals, rising strings, introspective atmospheric',
+    desc: 'identidade, essência, espelho interior',
+    energy: 'anthem',
+  },
+};
+
+// Letras pré-escritas por eco (estilo Vivianne — corpo-centrado, sem terapia-fala, poético)
+const ECO_LETRAS = {
+  vitalis: {
+    titulo: 'Raiz',
+    letra: `[Verse 1]
+A manhã entra de mansinho
+Pelo cheiro da matapa no fogão
+O corpo acorda antes da mente
+Os pés descalços sabem o caminho
+
+[Verse 2]
+Não é dieta, não é regime
+É lembrar o que a avó já sabia
+Que nutrir é um acto de presença
+Cada refeição, uma cerimónia
+
+[Chorus]
+Volta ao corpo, volta à raiz
+Não é melhorar, é lembrar
+O que as mãos já sabem fazer
+O que a terra sempre quis dar
+
+[Bridge]
+A xima no prato, o nhemba na panela
+O corpo não mente quando a mesa é real
+
+[Outro]
+Volta ao corpo
+Volta à raiz`,
+  },
+  aurea: {
+    titulo: 'Ouro que Já Eras',
+    letra: `[Verse 1]
+Havia um espelho na casa da minha mãe
+Que só reflectia o que faltava
+Passei anos a medir-me por ele
+A minha sombra nunca era bastante
+
+[Verse 2]
+Hoje visto a capulana sem pedir licença
+As jóias não estão no pescoço
+Estão na forma como entro numa sala
+Sem me encolher para caber
+
+[Chorus]
+O ouro que procuras já eras tu
+Antes de te dizerem que não bastava
+Não é valor que se compra ou se ganha
+É o peso exacto do teu nome
+
+[Bridge]
+Tira o casaco do desconto
+Larga o preço que te puseram
+Tu não estás em promoção
+
+[Outro]
+O ouro que procuras
+Já eras tu`,
+  },
+  serena: {
+    titulo: 'Água que Sente',
+    letra: `[Verse 1]
+Há uma maré dentro do peito
+Que sobe e desce sem pedir licença
+Aprendi a chamar-lhe fraqueza
+Quando sempre foi inteligência
+
+[Verse 2]
+O corpo sabe antes da palavra
+A garganta aperta, o olho molha
+Não é perder o controlo
+É a água a encontrar a margem
+
+[Chorus]
+Deixa correr, não segures o rio
+A emoção não é o inimigo
+É o mapa que o corpo desenha
+Quando a mente esqueceu o caminho
+
+[Bridge]
+Respira fundo, quatro tempos
+Segura sete, solta oito
+O corpo lembra o que a pressa esqueceu
+
+[Outro]
+A água sente
+O que a mente nega`,
+  },
+  ignis: {
+    titulo: 'Fogo de Dentro',
+    letra: `[Verse 1]
+Não me peças para ser morna
+Passei anos a baixar a chama
+A caber no forno dos outros
+A cozinhar planos que não eram meus
+
+[Verse 2]
+O fogo não é raiva
+É a vontade que se recusou a morrer
+É o "não" que ficou preso na garganta
+E hoje sai como decisão
+
+[Chorus]
+Acende o que apagaram
+O fogo de dentro não se negocia
+Não é agressão, não é descontrolo
+É a coragem de escolher o teu caminho
+
+[Bridge]
+Corta o que não serve
+Não com violência
+Com a precisão de quem sabe o que quer
+
+[Outro]
+Arde
+Mas arde por escolha`,
+  },
+  ventis: {
+    titulo: 'Vento e Raízes',
+    letra: `[Verse 1]
+A árvore não pede desculpa por descansar
+Perde as folhas e não chama fracasso
+O vento passa e ela dobra
+Mas nunca se parte por orgulho
+
+[Verse 2]
+Há um ritmo debaixo do ritmo
+O coração sabe a cadência
+Não é fazer mais, é fazer certo
+O corpo tem a sua ciência
+
+[Chorus]
+Pára, respira, sente o vento
+Nem tudo que é lento está parado
+A pausa não é o oposto de avançar
+É a raiz que segura o passo
+
+[Bridge]
+Manhã de sol, tarde de chuva
+O corpo não quer constância
+Quer verdade
+
+[Outro]
+O vento leva
+O que não é teu`,
+  },
+  ecoa: {
+    titulo: 'A Voz que Voltou',
+    letra: `[Verse 1]
+Engoliram-me as palavras tão cedo
+Que achei que o silêncio era a minha língua
+A voz ficou guardada entre os ossos
+Como uma carta que nunca foi enviada
+
+[Verse 2]
+Primeiro veio um sussurro
+Depois uma frase inteira sem pedir desculpa
+A garganta lembrou-se do que era
+Antes de aprenderem a calá-la
+
+[Chorus]
+Ecoa, ecoa, a voz que voltou
+Não pede licença, não pede perdão
+Cada palavra é um tijolo
+Na casa que nunca te deixaram construir
+
+[Bridge]
+Diz o que precisas
+Sem embrulhar em desculpas
+A tua voz não é barulho
+É arquitectura
+
+[Outro]
+Ecoa
+Dentro e fora de ti`,
+  },
+  imago: {
+    titulo: 'Espelho Inteiro',
+    letra: `[Verse 1]
+Fui tantas versões de mim
+Que perdi a original no caminho
+A filha exemplar, a mãe perfeita
+A mulher que sorria de encomenda
+
+[Verse 2]
+Hoje olho o espelho sem maquilhagem
+Sem o filtro que os outros me ensinaram
+E vejo alguém que conheço
+De um tempo antes de ter nome
+
+[Chorus]
+Não preciso de me encontrar
+Nunca estive perdida
+Preciso de parar de me esconder
+Debaixo de quem me disseram que devia ser
+
+[Bridge]
+A criança sabia
+O adolescente duvidou
+A mulher esqueceu
+Hoje lembro
+
+[Outro]
+Eu sou o espelho inteiro
+Não só o reflexo`,
+  },
+  geral: {
+    titulo: 'Sete Ecos',
+    letra: `[Verse 1]
+Sete camadas, sete véus
+Sete formas de voltar a casa
+O corpo fala, a emoção traduz
+A voz levanta o que a vergonha arrasa
+
+[Verse 2]
+Não é um sistema para te melhorar
+É um espelho para te inteirar
+As peças já estavam todas lá
+Só faltava aprender a conversar
+
+[Chorus]
+Sete Ecos, um só centro
+Corpo, valor, emoção
+Vontade, energia, voz
+E no espelho, o teu nome — inteiro
+
+[Bridge]
+Da raiz ao topo
+Do silêncio ao som
+Cada eco é uma conversa
+Contigo, em ti, por ti
+
+[Outro]
+Sete Ecos
+Um só tu`,
+  },
 };
 
 async function gerarMusica({ eco, tipo, titulo, prompt, duracao, instrumental }) {
@@ -269,21 +536,24 @@ async function gerarMusica({ eco, tipo, titulo, prompt, duracao, instrumental })
     tags = ecoMood?.tags || 'ambient modern wellness';
   }
 
-  // Construir prompt musical
+  // Construir prompt musical — usa letras pré-escritas se disponíveis
   let musicPrompt = prompt;
   if (!musicPrompt) {
     const ecoDesc = ecoMood?.desc || 'bem-estar holístico, integração, coerência';
+    const letraPreEscrita = eco ? ECO_LETRAS[eco] : ECO_LETRAS.geral;
     if (instrumental) {
-      musicPrompt = `Instrumental music for a wellness brand called Sete Ecos. Theme: ${ecoDesc}. Mood: sophisticated, deep, not generic. Portuguese/African influence.`;
+      musicPrompt = `Instrumental music for a wellness brand called Sete Ecos. Theme: ${ecoDesc}. Mood: sophisticated, deep, not generic. Portuguese/African influence. Energy: ${ecoMood?.energy || 'steady'}.`;
+    } else if (letraPreEscrita) {
+      musicPrompt = letraPreEscrita.letra;
     } else {
-      musicPrompt = `[Verse]\nSete Ecos, sete dimensões\nCorpo, emoção, voz e visões\nNão é melhorar, é integrar\nO que já és, deixa brilhar\n\n[Chorus]\nSete Ecos, um só sistema\nAs partes conversam, sem enigma\nCoerência é o caminho\nNão estás sozinha neste ninho`;
+      musicPrompt = ECO_LETRAS.geral.letra;
     }
   }
 
   const body = {
     prompt: musicPrompt,
     tags,
-    title: titulo || `Sete Ecos${eco ? ' - ' + (ECOS[eco]?.nome || eco) : ''}`,
+    title: titulo || (eco && ECO_LETRAS[eco]?.titulo ? `${ECOS[eco]?.nome || eco} — ${ECO_LETRAS[eco].titulo}` : 'Sete Ecos'),
   };
 
   // Se é instrumental, adicionar flag

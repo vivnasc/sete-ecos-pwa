@@ -159,6 +159,230 @@ export const TIPOS_MUSICA = [
 ];
 
 /**
+ * Letras pré-escritas por eco (estilo Vivianne — corpo-centrado, poético, sem terapia-fala).
+ * Podem ser editadas antes de gerar. O backend tem as mesmas como fallback.
+ */
+export const ECO_LETRAS = {
+  vitalis: `[Verse 1]
+A manhã entra de mansinho
+Pelo cheiro da matapa no fogão
+O corpo acorda antes da mente
+Os pés descalços sabem o caminho
+
+[Verse 2]
+Não é dieta, não é regime
+É lembrar o que a avó já sabia
+Que nutrir é um acto de presença
+Cada refeição, uma cerimónia
+
+[Chorus]
+Volta ao corpo, volta à raiz
+Não é melhorar, é lembrar
+O que as mãos já sabem fazer
+O que a terra sempre quis dar
+
+[Bridge]
+A xima no prato, o nhemba na panela
+O corpo não mente quando a mesa é real
+
+[Outro]
+Volta ao corpo
+Volta à raiz`,
+
+  aurea: `[Verse 1]
+Havia um espelho na casa da minha mãe
+Que só reflectia o que faltava
+Passei anos a medir-me por ele
+A minha sombra nunca era bastante
+
+[Verse 2]
+Hoje visto a capulana sem pedir licença
+As jóias não estão no pescoço
+Estão na forma como entro numa sala
+Sem me encolher para caber
+
+[Chorus]
+O ouro que procuras já eras tu
+Antes de te dizerem que não bastava
+Não é valor que se compra ou se ganha
+É o peso exacto do teu nome
+
+[Bridge]
+Tira o casaco do desconto
+Larga o preço que te puseram
+Tu não estás em promoção
+
+[Outro]
+O ouro que procuras
+Já eras tu`,
+
+  serena: `[Verse 1]
+Há uma maré dentro do peito
+Que sobe e desce sem pedir licença
+Aprendi a chamar-lhe fraqueza
+Quando sempre foi inteligência
+
+[Verse 2]
+O corpo sabe antes da palavra
+A garganta aperta, o olho molha
+Não é perder o controlo
+É a água a encontrar a margem
+
+[Chorus]
+Deixa correr, não segures o rio
+A emoção não é o inimigo
+É o mapa que o corpo desenha
+Quando a mente esqueceu o caminho
+
+[Bridge]
+Respira fundo, quatro tempos
+Segura sete, solta oito
+O corpo lembra o que a pressa esqueceu
+
+[Outro]
+A água sente
+O que a mente nega`,
+
+  ignis: `[Verse 1]
+Não me peças para ser morna
+Passei anos a baixar a chama
+A caber no forno dos outros
+A cozinhar planos que não eram meus
+
+[Verse 2]
+O fogo não é raiva
+É a vontade que se recusou a morrer
+É o "não" que ficou preso na garganta
+E hoje sai como decisão
+
+[Chorus]
+Acende o que apagaram
+O fogo de dentro não se negocia
+Não é agressão, não é descontrolo
+É a coragem de escolher o teu caminho
+
+[Bridge]
+Corta o que não serve
+Não com violência
+Com a precisão de quem sabe o que quer
+
+[Outro]
+Arde
+Mas arde por escolha`,
+
+  ventis: `[Verse 1]
+A árvore não pede desculpa por descansar
+Perde as folhas e não chama fracasso
+O vento passa e ela dobra
+Mas nunca se parte por orgulho
+
+[Verse 2]
+Há um ritmo debaixo do ritmo
+O coração sabe a cadência
+Não é fazer mais, é fazer certo
+O corpo tem a sua ciência
+
+[Chorus]
+Pára, respira, sente o vento
+Nem tudo que é lento está parado
+A pausa não é o oposto de avançar
+É a raiz que segura o passo
+
+[Bridge]
+Manhã de sol, tarde de chuva
+O corpo não quer constância
+Quer verdade
+
+[Outro]
+O vento leva
+O que não é teu`,
+
+  ecoa: `[Verse 1]
+Engoliram-me as palavras tão cedo
+Que achei que o silêncio era a minha língua
+A voz ficou guardada entre os ossos
+Como uma carta que nunca foi enviada
+
+[Verse 2]
+Primeiro veio um sussurro
+Depois uma frase inteira sem pedir desculpa
+A garganta lembrou-se do que era
+Antes de aprenderem a calá-la
+
+[Chorus]
+Ecoa, ecoa, a voz que voltou
+Não pede licença, não pede perdão
+Cada palavra é um tijolo
+Na casa que nunca te deixaram construir
+
+[Bridge]
+Diz o que precisas
+Sem embrulhar em desculpas
+A tua voz não é barulho
+É arquitectura
+
+[Outro]
+Ecoa
+Dentro e fora de ti`,
+
+  imago: `[Verse 1]
+Fui tantas versões de mim
+Que perdi a original no caminho
+A filha exemplar, a mãe perfeita
+A mulher que sorria de encomenda
+
+[Verse 2]
+Hoje olho o espelho sem maquilhagem
+Sem o filtro que os outros me ensinaram
+E vejo alguém que conheço
+De um tempo antes de ter nome
+
+[Chorus]
+Não preciso de me encontrar
+Nunca estive perdida
+Preciso de parar de me esconder
+Debaixo de quem me disseram que devia ser
+
+[Bridge]
+A criança sabia
+O adolescente duvidou
+A mulher esqueceu
+Hoje lembro
+
+[Outro]
+Eu sou o espelho inteiro
+Não só o reflexo`,
+
+  '': `[Verse 1]
+Sete camadas, sete véus
+Sete formas de voltar a casa
+O corpo fala, a emoção traduz
+A voz levanta o que a vergonha arrasa
+
+[Verse 2]
+Não é um sistema para te melhorar
+É um espelho para te inteirar
+As peças já estavam todas lá
+Só faltava aprender a conversar
+
+[Chorus]
+Sete Ecos, um só centro
+Corpo, valor, emoção
+Vontade, energia, voz
+E no espelho, o teu nome — inteiro
+
+[Bridge]
+Da raiz ao topo
+Do silêncio ao som
+Cada eco é uma conversa
+Contigo, em ti, por ti
+
+[Outro]
+Sete Ecos
+Um só tu`,
+};
+
+/**
  * Plataformas suportadas com metadata.
  */
 export const PLATAFORMAS = [

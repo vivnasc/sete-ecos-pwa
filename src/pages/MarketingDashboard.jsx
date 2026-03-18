@@ -41,6 +41,7 @@ import {
   ESTILOS_VIDEO,
   ECOS_OPCOES,
   TIPOS_MUSICA,
+  ECO_LETRAS,
 } from '../lib/marketing-ai';
 
 // ============================================================
@@ -4197,17 +4198,28 @@ function IATab({ copiar, copiado }) {
           <span className="text-xs text-[#6B5C4C]">{instrumental ? 'Instrumental (sem voz)' : 'Com voz/letra'}</span>
         </div>
 
-        {/* Prompt personalizado */}
+        {/* Letra pré-escrita + editável */}
         {!instrumental && (
           <div>
-            <label className="text-xs font-medium text-[#6B5C4C] block mb-1">Letra (opcional)</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs font-medium text-[#6B5C4C]">Letra</label>
+              {ECO_LETRAS[eco] && promptMusica !== ECO_LETRAS[eco] && (
+                <button
+                  onClick={() => setPromptMusica(ECO_LETRAS[eco])}
+                  className="text-[10px] text-amber-600 hover:text-amber-800 font-medium"
+                >
+                  Restaurar original
+                </button>
+              )}
+            </div>
             <textarea
-              value={promptMusica}
+              value={promptMusica || ECO_LETRAS[eco] || ECO_LETRAS[''] || ''}
               onChange={(e) => setPromptMusica(e.target.value)}
-              placeholder="[Verse]&#10;Sete Ecos, sete dimensões...&#10;&#10;[Chorus]&#10;As partes conversam..."
-              className="w-full h-24 text-sm bg-gray-50 border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-amber-400"
+              placeholder="[Verse]&#10;Escreve a tua letra aqui..."
+              className="w-full h-48 text-xs leading-relaxed font-mono bg-gray-50 border border-gray-200 rounded-xl p-3 resize-y focus:outline-none focus:ring-2 focus:ring-amber-400"
               maxLength={3000}
             />
+            <p className="text-[10px] text-[#8B7E6E] mt-1">Formato Suno: usa [Verse], [Chorus], [Bridge], [Outro]. Podes editar antes de gerar.</p>
           </div>
         )}
 
