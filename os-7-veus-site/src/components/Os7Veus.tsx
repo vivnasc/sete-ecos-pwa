@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { categorias, getCursosByCategoria } from "@/lib/veus-data";
 
 export default function Os7Veus() {
@@ -40,9 +41,10 @@ export default function Os7Veus() {
                 {/* Lista de cursos */}
                 <div className="space-y-3 pl-7">
                   {cursos.map((curso) => (
-                    <div
+                    <Link
                       key={curso.slug}
-                      className="p-5 bg-white rounded-lg border border-transparent hover:border-[var(--sage-green)]/40 transition-all group"
+                      href={`/cursos/${curso.slug}`}
+                      className="block p-5 bg-white rounded-lg border border-transparent hover:border-[var(--sage-green)]/40 transition-all group"
                     >
                       <div className="flex items-start gap-4">
                         <span
@@ -59,8 +61,16 @@ export default function Os7Veus() {
                             {curso.descricao}
                           </p>
                         </div>
+                        <svg
+                          className="w-5 h-5 text-[var(--text-dark)]/30 group-hover:text-[var(--sage-green)] flex-shrink-0 mt-1 transition-colors"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>
