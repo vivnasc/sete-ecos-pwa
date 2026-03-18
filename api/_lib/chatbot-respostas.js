@@ -64,6 +64,7 @@ O VITALIS não é uma dieta. É uma mudança real na tua relação com a comida 
 ✅ Espaço de Retorno — recaíste? Sem culpa. Voltamos ao caminho.
 ✅ Gamificação com XP, níveis e conquistas
 ✅ Acesso à Comunidade
+✅ Atualizar o teu plano por WhatsApp (peso, restrições, refeições)
 
 *3 fases:*
 1. *Indução* — primeiras mudanças, sem pressão
@@ -522,6 +523,9 @@ Sim! Eu, Vivianne, respondo pessoalmente. Não sou um bot (mas este WhatsApp é 
 
 *Posso pagar por M-Pesa?*
 Sim! M-Pesa, PayPal e cartão de crédito/débito.
+
+*Posso atualizar o meu plano por WhatsApp?*
+Sim! Escreve aqui: "peso 72kg", "sem glúten", "3x semana", "4 refeições" ou "quero emagrecer" — e os teus dados são atualizados. A Vivianne revê e ajusta o plano.
 
 *Quanto custa tudo junto?*
 Com o Bundle TUDO (7 Ecos), tens *40% de desconto* sobre o preço individual. Responde *bundle* para ver detalhes!
