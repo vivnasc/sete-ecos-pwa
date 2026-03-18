@@ -3,8 +3,8 @@
  * Gera variações de hooks e conteúdo marketing usando Claude API.
  * Abordagem híbrida: usa hooks existentes como sementes + IA para variação contextual.
  *
- * Actions: gerar-hooks, gerar-conteudo, gerar-video-script
- * Requires: ANTHROPIC_API_KEY env var
+ * Actions: gerar-hooks, gerar-conteudo, gerar-video-script, gerar-musica, status-musica
+ * Requires: ANTHROPIC_API_KEY env var, AIMLAPI_KEY env var (for Suno music)
  */
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
@@ -57,7 +57,7 @@ const ECOS = {
 function corsHeaders() {
   return {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   };
 }
@@ -232,6 +232,116 @@ Responde em JSON:
   }
 }
 
+// ─── Suno AI via AIMLAPI ───
+
+const AIMLAPI_BASE = 'https://api.aimlapi.com/v2/generate/audio/suno-ai';
+
+// Moods por eco para prompts musicais
+const ECO_MOODS = {
+  vitalis: { tags: 'ambient electronic calm organic', desc: 'natureza, corpo, nutrição' },
+  aurea: { tags: 'elegant piano warm cinematic', desc: 'valor próprio, presença, ouro' },
+  serena: { tags: 'ambient water flowing peaceful meditation', desc: 'emoção, fluidez, água' },
+  ignis: { tags: 'energetic percussion tribal fire drums', desc: 'fogo, vontade, determinação' },
+  ventis: { tags: 'airy flute nature breeze gentle folk', desc: 'vento, energia, natureza' },
+  ecoa: { tags: 'vocal choral echo resonant ethereal', desc: 'voz, expressão, eco' },
+  imago: { tags: 'cinematic orchestral deep introspective', desc: 'identidade, essência, profundidade' },
+};
+
+async function gerarMusica({ eco, tipo, titulo, prompt, duracao, instrumental }) {
+  const apiKey = process.env.AIMLAPI_KEY;
+  if (!apiKey) {
+    throw new Error('AIMLAPI_KEY não configurada. Adiciona nas variáveis de ambiente do Vercel.');
+  }
+
+  const ecoMood = eco ? ECO_MOODS[eco] : null;
+
+  // Construir tags baseadas no eco e tipo
+  let tags = '';
+  if (tipo === 'jingle') {
+    tags = `short jingle catchy ${ecoMood?.tags || 'ambient modern'}`;
+  } else if (tipo === 'fundo') {
+    tags = `background ambient instrumental ${ecoMood?.tags || 'calm modern'}`;
+  } else if (tipo === 'reels') {
+    tags = `energetic short hook viral trending ${ecoMood?.tags || 'pop electronic'}`;
+  } else if (tipo === 'meditacao') {
+    tags = `meditation ambient slow peaceful healing ${ecoMood?.tags || 'ambient'}`;
+  } else {
+    tags = ecoMood?.tags || 'ambient modern wellness';
+  }
+
+  // Construir prompt musical
+  let musicPrompt = prompt;
+  if (!musicPrompt) {
+    const ecoDesc = ecoMood?.desc || 'bem-estar holístico, integração, coerência';
+    if (instrumental) {
+      musicPrompt = `Instrumental music for a wellness brand called Sete Ecos. Theme: ${ecoDesc}. Mood: sophisticated, deep, not generic. Portuguese/African influence.`;
+    } else {
+      musicPrompt = `[Verse]\nSete Ecos, sete dimensões\nCorpo, emoção, voz e visões\nNão é melhorar, é integrar\nO que já és, deixa brilhar\n\n[Chorus]\nSete Ecos, um só sistema\nAs partes conversam, sem enigma\nCoerência é o caminho\nNão estás sozinha neste ninho`;
+    }
+  }
+
+  const body = {
+    prompt: musicPrompt,
+    tags,
+    title: titulo || `Sete Ecos${eco ? ' - ' + (ECOS[eco]?.nome || eco) : ''}`,
+  };
+
+  // Se é instrumental, adicionar flag
+  if (instrumental) {
+    body.make_instrumental = true;
+  }
+
+  const res = await fetch(`${AIMLAPI_BASE}/clip`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Suno API erro ${res.status}: ${err}`);
+  }
+
+  const data = await res.json();
+  return {
+    clip_ids: data.clip_ids || [],
+    message: 'Música a ser gerada. Usa status-musica para verificar o progresso.',
+  };
+}
+
+async function statusMusica({ clip_ids }) {
+  const apiKey = process.env.AIMLAPI_KEY;
+  if (!apiKey) {
+    throw new Error('AIMLAPI_KEY não configurada.');
+  }
+
+  if (!clip_ids?.length) {
+    throw new Error('clip_ids é obrigatório');
+  }
+
+  // Buscar múltiplos clips
+  const params = clip_ids.map(id => `clip_ids[]=${encodeURIComponent(id)}`).join('&');
+  const url = `${AIMLAPI_BASE}/clips?${params}&status=complete`;
+
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+    },
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Suno API erro ${res.status}: ${err}`);
+  }
+
+  const data = await res.json();
+  return data;
+}
+
 export default async function handler(req, res) {
   // CORS
   if (req.method === 'OPTIONS') {
@@ -240,12 +350,19 @@ export default async function handler(req, res) {
 
   Object.entries(corsHeaders()).forEach(([k, v]) => res.setHeader(k, v));
 
-  if (req.method !== 'POST') {
+  if (req.method !== 'POST' && req.method !== 'GET') {
     return res.status(405).json({ error: 'Método não permitido' });
   }
 
   try {
-    const { action, ...params } = req.body || {};
+    // GET requests use query params, POST uses body
+    const rawParams = req.method === 'GET' ? req.query : (req.body || {});
+    const { action, ...params } = rawParams;
+    // Parse clip_ids from query string if needed
+    if (params['clip_ids[]']) {
+      params.clip_ids = Array.isArray(params['clip_ids[]']) ? params['clip_ids[]'] : [params['clip_ids[]']];
+      delete params['clip_ids[]'];
+    }
 
     if (!action) {
       return res.status(400).json({ error: 'Falta parâmetro "action"' });
@@ -262,6 +379,12 @@ export default async function handler(req, res) {
         break;
       case 'gerar-video-script':
         result = await gerarVideoScript(params);
+        break;
+      case 'gerar-musica':
+        result = await gerarMusica(params);
+        break;
+      case 'status-musica':
+        result = await statusMusica(params);
         break;
       default:
         return res.status(400).json({ error: `Acção desconhecida: ${action}` });

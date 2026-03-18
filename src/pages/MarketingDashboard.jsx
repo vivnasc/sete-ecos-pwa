@@ -35,9 +35,12 @@ import {
   gerarHooksIA,
   gerarConteudoIA,
   gerarVideoScriptIA,
+  gerarMusicaIA,
+  statusMusicaIA,
   PLATAFORMAS,
   ESTILOS_VIDEO,
   ECOS_OPCOES,
+  TIPOS_MUSICA,
 } from '../lib/marketing-ai';
 
 // ============================================================
@@ -3735,6 +3738,11 @@ function IATab({ copiar, copiado }) {
   const [hookSelecionado, setHookSelecionado] = useState('');
   const [conteudo, setConteudo] = useState(null);
   const [videoScript, setVideoScript] = useState(null);
+  const [tipoMusica, setTipoMusica] = useState('reels');
+  const [instrumental, setInstrumental] = useState(true);
+  const [promptMusica, setPromptMusica] = useState('');
+  const [clipIds, setClipIds] = useState([]);
+  const [clips, setClips] = useState([]);
   const [loading, setLoading] = useState('');
   const [erro, setErro] = useState('');
 
@@ -3792,6 +3800,52 @@ function IATab({ copiar, copiado }) {
       setErro(e.message);
     } finally {
       setLoading('');
+    }
+  };
+
+  const gerarMusica = async () => {
+    setLoading('musica');
+    setErro('');
+    setClipIds([]);
+    setClips([]);
+    try {
+      const result = await gerarMusicaIA({
+        eco: eco || undefined,
+        tipo: tipoMusica,
+        prompt: promptMusica || undefined,
+        instrumental,
+      });
+      setClipIds(result.clip_ids || []);
+      // Iniciar polling automático
+      if (result.clip_ids?.length) {
+        pollClips(result.clip_ids);
+      }
+    } catch (e) {
+      setErro(e.message);
+      setLoading('');
+    }
+  };
+
+  const pollClips = async (ids, tentativas = 0) => {
+    if (tentativas > 20) {
+      setLoading('');
+      setErro('Timeout: a música está a demorar demais. Tenta verificar o status mais tarde.');
+      return;
+    }
+    try {
+      const result = await statusMusicaIA(ids);
+      const clipsList = Array.isArray(result) ? result : (result.clips || [result]);
+      const prontos = clipsList.filter(c => c.status === 'complete' || c.audio_url);
+      if (prontos.length > 0) {
+        setClips(prontos);
+        setLoading('');
+      } else {
+        // Esperar 5s e tentar novamente
+        setTimeout(() => pollClips(ids, tentativas + 1), 5000);
+      }
+    } catch {
+      // Retry silenciosamente
+      setTimeout(() => pollClips(ids, tentativas + 1), 5000);
     }
   };
 
@@ -4096,14 +4150,136 @@ function IATab({ copiar, copiado }) {
         )}
       </div>
 
+      {/* Gerar Música (Suno AI) */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="font-bold text-sm text-[#4A4035]">Gerar Música (Suno AI)</h3>
+          <button
+            onClick={gerarMusica}
+            disabled={!!loading}
+            className="px-4 py-2 bg-amber-600 text-white text-xs font-bold rounded-full hover:bg-amber-700 disabled:opacity-50 transition-all active:scale-95"
+          >
+            {loading === 'musica' ? 'A gerar...' : 'Gerar Música'}
+          </button>
+        </div>
+        <p className="text-xs text-[#8B7E6E]">Gera música original com Suno AI via AIMLAPI. Cada eco tem um mood sonoro próprio.</p>
+
+        {/* Tipo de música */}
+        <div>
+          <label className="text-xs font-medium text-[#6B5C4C] block mb-1">Tipo</label>
+          <div className="flex flex-wrap gap-1.5">
+            {TIPOS_MUSICA.map(t => (
+              <button
+                key={t.id}
+                onClick={() => setTipoMusica(t.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  tipoMusica === t.id
+                    ? 'bg-amber-600 text-white shadow-md'
+                    : 'bg-gray-100 text-[#6B5C4C] hover:bg-gray-200'
+                }`}
+              >
+                {t.icon} {t.nome}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Instrumental toggle */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setInstrumental(!instrumental)}
+            className={`relative w-10 h-5 rounded-full transition-colors ${instrumental ? 'bg-amber-500' : 'bg-gray-300'}`}
+            role="switch"
+            aria-checked={instrumental}
+          >
+            <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${instrumental ? 'left-5' : 'left-0.5'}`} />
+          </button>
+          <span className="text-xs text-[#6B5C4C]">{instrumental ? 'Instrumental (sem voz)' : 'Com voz/letra'}</span>
+        </div>
+
+        {/* Prompt personalizado */}
+        {!instrumental && (
+          <div>
+            <label className="text-xs font-medium text-[#6B5C4C] block mb-1">Letra (opcional)</label>
+            <textarea
+              value={promptMusica}
+              onChange={(e) => setPromptMusica(e.target.value)}
+              placeholder="[Verse]&#10;Sete Ecos, sete dimensões...&#10;&#10;[Chorus]&#10;As partes conversam..."
+              className="w-full h-24 text-sm bg-gray-50 border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-amber-400"
+              maxLength={3000}
+            />
+          </div>
+        )}
+
+        {/* Status de geração */}
+        {loading === 'musica' && clipIds.length > 0 && (
+          <div className="bg-amber-50 rounded-xl p-3 flex items-center gap-3">
+            <div className="w-4 h-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" />
+            <div>
+              <p className="text-sm text-amber-800 font-medium">A gerar música...</p>
+              <p className="text-xs text-amber-600">Isto pode demorar 20-60 segundos. Não feches a página.</p>
+            </div>
+          </div>
+        )}
+
+        {/* Clips prontos */}
+        {clips.length > 0 && (
+          <div className="space-y-3">
+            <p className="text-xs font-medium text-green-700">Música pronta!</p>
+            {clips.map((clip, i) => (
+              <div key={clip.id || i} className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 space-y-2">
+                {clip.title && <h4 className="font-bold text-sm text-amber-900">{clip.title}</h4>}
+                {clip.audio_url && (
+                  <audio controls className="w-full" preload="metadata">
+                    <source src={clip.audio_url} type="audio/mpeg" />
+                  </audio>
+                )}
+                <div className="flex gap-2">
+                  {clip.audio_url && (
+                    <a
+                      href={clip.audio_url}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 bg-amber-600 text-white text-xs font-bold rounded-full hover:bg-amber-700 transition-all active:scale-95"
+                    >
+                      Download MP3
+                    </a>
+                  )}
+                  {clip.image_url && (
+                    <a
+                      href={clip.image_url}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 bg-gray-200 text-[#4A4035] text-xs font-bold rounded-full hover:bg-gray-300 transition-all active:scale-95"
+                    >
+                      Cover Art
+                    </a>
+                  )}
+                </div>
+                {clip.metadata && (
+                  <p className="text-[10px] text-amber-700">
+                    {clip.metadata.tags && `Tags: ${clip.metadata.tags}`}
+                    {clip.metadata.duration && ` | ${Math.round(clip.metadata.duration)}s`}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Erro */}
       {erro && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-4">
           <p className="text-sm text-red-700 font-medium">Erro</p>
           <p className="text-xs text-red-600 mt-1">{erro}</p>
-          {erro.includes('ANTHROPIC_API_KEY') && (
+          {(erro.includes('ANTHROPIC_API_KEY') || erro.includes('AIMLAPI_KEY')) && (
             <p className="text-xs text-red-500 mt-2">
-              Adiciona a variável <code className="bg-red-100 px-1 rounded">ANTHROPIC_API_KEY</code> nas Settings do Vercel (Environment Variables).
+              Adiciona a variável nas Settings do Vercel (Environment Variables):
+              {erro.includes('ANTHROPIC_API_KEY') && <><br /><code className="bg-red-100 px-1 rounded">ANTHROPIC_API_KEY</code> — para hooks e conteúdo</>}
+              {erro.includes('AIMLAPI_KEY') && <><br /><code className="bg-red-100 px-1 rounded">AIMLAPI_KEY</code> — para música (Suno AI)</>}
             </p>
           )}
         </div>
@@ -4118,6 +4294,7 @@ function IATab({ copiar, copiado }) {
               {loading === 'hooks' && 'A gerar hooks...'}
               {loading === 'conteudo' && 'A criar conteúdo...'}
               {loading === 'video' && 'A escrever roteiro...'}
+              {loading === 'musica' && 'A compor música...'}
             </span>
           </div>
         </div>

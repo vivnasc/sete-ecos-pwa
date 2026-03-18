@@ -103,6 +103,61 @@ export async function gerarVideoScriptIA(opts = {}) {
   });
 }
 
+// ─── Suno AI (Música) ───
+
+/**
+ * Gera música via Suno AI (AIMLAPI).
+ * @param {Object} opts
+ * @param {string} [opts.eco] - Eco para mood musical
+ * @param {string} [opts.tipo='reels'] - jingle, fundo, reels, meditacao
+ * @param {string} [opts.titulo] - Título da música
+ * @param {string} [opts.prompt] - Letra/prompt personalizado (opcional)
+ * @param {boolean} [opts.instrumental=false] - Só instrumental, sem voz
+ * @returns {Promise<{clip_ids: string[], message: string}>}
+ */
+export async function gerarMusicaIA(opts = {}) {
+  const { eco, tipo = 'reels', titulo, prompt, instrumental = false } = opts;
+
+  return callMarketingAI('gerar-musica', {
+    eco: eco || undefined,
+    tipo,
+    titulo,
+    prompt: prompt || undefined,
+    instrumental,
+  });
+}
+
+/**
+ * Verifica o status de clips de música em geração.
+ * @param {string[]} clipIds - IDs dos clips a verificar
+ * @returns {Promise<Object>} Dados dos clips (com audio_url quando pronto)
+ */
+export async function statusMusicaIA(clipIds) {
+  if (!clipIds?.length) throw new Error('clipIds é obrigatório');
+
+  const params = clipIds.map(id => `clip_ids[]=${encodeURIComponent(id)}`).join('&');
+  const res = await fetch(`${API_URL}?action=status-musica&${params}`);
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: `Erro ${res.status}` }));
+    throw new Error(err.error || `Erro ${res.status}`);
+  }
+
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error || 'Erro desconhecido');
+  return data.result;
+}
+
+/**
+ * Tipos de música disponíveis.
+ */
+export const TIPOS_MUSICA = [
+  { id: 'jingle', nome: 'Jingle', desc: 'Curto e memorável (5-15s)', icon: '🎵' },
+  { id: 'fundo', nome: 'Fundo', desc: 'Música ambiente para conteúdo', icon: '🎶' },
+  { id: 'reels', nome: 'Reels/Shorts', desc: 'Energético e viral', icon: '🎬' },
+  { id: 'meditacao', nome: 'Meditação', desc: 'Calmo e contemplativo', icon: '🧘' },
+];
+
 /**
  * Plataformas suportadas com metadata.
  */
