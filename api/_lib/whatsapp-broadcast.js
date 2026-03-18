@@ -238,6 +238,17 @@ export const META_TEMPLATES = {
     params: (nome) => [nome || ''],
   },
 
+  // Novidade: atualizar plano via WhatsApp
+  novidade_wa_plano: {
+    name: 'sete_ecos_novidade_wa_plano',
+    language: 'pt_BR',
+    category: 'MARKETING',
+    header: 'Novidade: atualiza o teu plano por WhatsApp!',
+    body: 'Olá {{1}}!\n\nAgora podes atualizar os teus dados do VITALIS directamente aqui no WhatsApp. Sem abrir a app!\n\nÉ só escreveres:\n• *peso 72kg* — para atualizar o teu peso\n• *sem glúten* — para adicionar uma restrição\n• *tirar lactose* — para remover uma restrição\n• *3x semana* — para mudar o nível de atividade\n• *4 refeições* — para mudar o número de refeições\n• *quero emagrecer* — para mudar o objetivo\n\nEu confirmo contigo antes de mudar. Depois revejo e ajusto o teu plano.\n\nExperimenta agora — manda-me o teu peso actual!\n\n— Vivianne',
+    footer: 'Sete Ecos — VITALIS',
+    params: (nome) => [nome || ''],
+  },
+
   // Curiosidade semanal (exercício educativo)
   curiosidade: {
     name: 'sete_ecos_edu_consciencia_alimentar',
