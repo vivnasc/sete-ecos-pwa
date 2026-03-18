@@ -240,8 +240,8 @@ const AIMLAPI_BASE = 'https://api.aimlapi.com/v2/generate/audio/suno-ai';
 // Moods por eco para prompts musicais (estilo AwakeSoul — íntimo, poético, corpo-centrado)
 const ECO_MOODS = {
   vitalis: {
-    tags: 'organic acoustic warm female vocal, marrabenta feel, grounded rhythm, shaker percussion',
-    desc: 'corpo, nutrição, raiz, terra',
+    tags: 'organic acoustic warm female vocal, grounded rhythm, gentle percussion, contemporary',
+    desc: 'corpo, presença, nutrição, centro',
     energy: 'steady',
   },
   aurea: {
@@ -250,22 +250,22 @@ const ECO_MOODS = {
     energy: 'anthem',
   },
   serena: {
-    tags: 'ambient water flowing, soft synth pads, contemplative female vocal, subtle piano',
-    desc: 'emoção, fluidez, água, corpo-sentir',
+    tags: 'ambient flowing, soft synth pads, contemplative female vocal, subtle piano',
+    desc: 'emoção, fluidez, corpo-sentir',
     energy: 'whisper',
   },
   ignis: {
-    tags: 'energetic percussion tribal drums, powerful female vocal, driving beat, bass-forward',
+    tags: 'energetic percussion, powerful female vocal, driving beat, bass-forward, modern',
     desc: 'fogo interior, vontade, corte, determinação',
     energy: 'pulse',
   },
   ventis: {
-    tags: 'airy flute acoustic guitar, nature sounds, gentle folk, breathing rhythm, organic',
-    desc: 'vento, energia, natureza, ritmo do corpo',
+    tags: 'airy flute acoustic guitar, gentle folk, breathing rhythm, organic, atmospheric',
+    desc: 'vento, energia, ritmo do corpo',
     energy: 'steady',
   },
   ecoa: {
-    tags: 'vocal choral echo, close-mic raw female vocal, piano arpeggios, resonant ethereal',
+    tags: 'vocal echo, close-mic raw female vocal, piano arpeggios, resonant ethereal',
     desc: 'voz recuperada, expressão, eco interior',
     energy: 'raw',
   },
@@ -276,35 +276,36 @@ const ECO_MOODS = {
   },
 };
 
-// Letras pré-escritas por eco (estilo Vivianne — corpo-centrado, sem terapia-fala, poético)
+// Letras pré-escritas por eco (voz Vivianne — urbana, íntima, arquitectural, corpo-centrada)
+// Sem folclore estereotipado. Sem exotismo. Metáforas: corpo, casa, espelho, garganta, ossos.
 const ECO_LETRAS = {
   vitalis: {
-    titulo: 'Raiz',
+    titulo: 'Volta ao Centro',
     letra: `[Verse 1]
-A manhã entra de mansinho
-Pelo cheiro da matapa no fogão
-O corpo acorda antes da mente
-Os pés descalços sabem o caminho
+O corpo fala antes da mente acordar
+A fome não é fraqueza, é mapa
+Cada refeição que escolho com presença
+É um tijolo na casa que habito
 
 [Verse 2]
-Não é dieta, não é regime
-É lembrar o que a avó já sabia
-Que nutrir é um acto de presença
-Cada refeição, uma cerimónia
+Não é regime, não é punição
+É voltar a ouvir o que o estômago diz
+A mesa posta com intenção
+É o primeiro acto de respeito
 
 [Chorus]
-Volta ao corpo, volta à raiz
+Volta ao corpo, volta ao centro
 Não é melhorar, é lembrar
 O que as mãos já sabem fazer
-O que a terra sempre quis dar
+Quando a cabeça pára de mandar
 
 [Bridge]
-A xima no prato, o nhemba na panela
-O corpo não mente quando a mesa é real
+O corpo não mente
+Mesmo quando a mente mente
 
 [Outro]
 Volta ao corpo
-Volta à raiz`,
+Volta ao centro`,
   },
   aurea: {
     titulo: 'Ouro que Já Eras',
@@ -315,10 +316,10 @@ Passei anos a medir-me por ele
 A minha sombra nunca era bastante
 
 [Verse 2]
-Hoje visto a capulana sem pedir licença
+Hoje entro numa sala sem me encolher
 As jóias não estão no pescoço
-Estão na forma como entro numa sala
-Sem me encolher para caber
+Estão na forma como ocupo o espaço
+Sem pedir desculpa pelo meu tamanho
 
 [Chorus]
 O ouro que procuras já eras tu
@@ -369,8 +370,8 @@ O que a mente nega`,
     letra: `[Verse 1]
 Não me peças para ser morna
 Passei anos a baixar a chama
-A caber no forno dos outros
-A cozinhar planos que não eram meus
+A caber no molde dos outros
+A aquecer planos que não eram meus
 
 [Verse 2]
 O fogo não é raiva
@@ -485,7 +486,7 @@ Não só o reflexo`,
   geral: {
     titulo: 'Sete Ecos',
     letra: `[Verse 1]
-Sete camadas, sete véus
+Sete camadas, sete conversas
 Sete formas de voltar a casa
 O corpo fala, a emoção traduz
 A voz levanta o que a vergonha arrasa

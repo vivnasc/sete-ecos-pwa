@@ -160,34 +160,36 @@ export const TIPOS_MUSICA = [
 
 /**
  * Letras pré-escritas por eco (estilo Vivianne — corpo-centrado, poético, sem terapia-fala).
+ * Voz: urbana, íntima, arquitectural. Metáforas do corpo, da casa, do espelho.
+ * Sem folclore estereotipado. Sem exotismo. Sem tribalismo.
  * Podem ser editadas antes de gerar. O backend tem as mesmas como fallback.
  */
 export const ECO_LETRAS = {
   vitalis: `[Verse 1]
-A manhã entra de mansinho
-Pelo cheiro da matapa no fogão
-O corpo acorda antes da mente
-Os pés descalços sabem o caminho
+O corpo fala antes da mente acordar
+A fome não é fraqueza, é mapa
+Cada refeição que escolho com presença
+É um tijolo na casa que habito
 
 [Verse 2]
-Não é dieta, não é regime
-É lembrar o que a avó já sabia
-Que nutrir é um acto de presença
-Cada refeição, uma cerimónia
+Não é regime, não é punição
+É voltar a ouvir o que o estômago diz
+A mesa posta com intenção
+É o primeiro acto de respeito
 
 [Chorus]
-Volta ao corpo, volta à raiz
+Volta ao corpo, volta ao centro
 Não é melhorar, é lembrar
 O que as mãos já sabem fazer
-O que a terra sempre quis dar
+Quando a cabeça pára de mandar
 
 [Bridge]
-A xima no prato, o nhemba na panela
-O corpo não mente quando a mesa é real
+O corpo não mente
+Mesmo quando a mente mente
 
 [Outro]
 Volta ao corpo
-Volta à raiz`,
+Volta ao centro`,
 
   aurea: `[Verse 1]
 Havia um espelho na casa da minha mãe
@@ -196,10 +198,10 @@ Passei anos a medir-me por ele
 A minha sombra nunca era bastante
 
 [Verse 2]
-Hoje visto a capulana sem pedir licença
+Hoje entro numa sala sem me encolher
 As jóias não estão no pescoço
-Estão na forma como entro numa sala
-Sem me encolher para caber
+Estão na forma como ocupo o espaço
+Sem pedir desculpa pelo meu tamanho
 
 [Chorus]
 O ouro que procuras já eras tu
@@ -246,8 +248,8 @@ O que a mente nega`,
   ignis: `[Verse 1]
 Não me peças para ser morna
 Passei anos a baixar a chama
-A caber no forno dos outros
-A cozinhar planos que não eram meus
+A caber no molde dos outros
+A aquecer planos que não eram meus
 
 [Verse 2]
 O fogo não é raiva
@@ -354,7 +356,7 @@ Eu sou o espelho inteiro
 Não só o reflexo`,
 
   '': `[Verse 1]
-Sete camadas, sete véus
+Sete camadas, sete conversas
 Sete formas de voltar a casa
 O corpo fala, a emoção traduz
 A voz levanta o que a vergonha arrasa
