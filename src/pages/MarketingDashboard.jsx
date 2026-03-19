@@ -31,6 +31,18 @@ import {
 } from '../lib/marketing-engine';
 import { RENDER_MAP, CORES, FORMATOS } from '../components/TemplateVisual';
 import { getAudioUrl } from '../lib/shared/audioStorage';
+import {
+  gerarHooksIA,
+  gerarConteudoIA,
+  gerarVideoScriptIA,
+  gerarMusicaIA,
+  statusMusicaIA,
+  PLATAFORMAS,
+  ESTILOS_VIDEO,
+  ECOS_OPCOES,
+  TIPOS_MUSICA,
+  ECO_LETRAS,
+} from '../lib/marketing-ai';
 
 // ============================================================
 // AUTO IMAGE - Gera imagem automaticamente
@@ -576,6 +588,7 @@ export default function MarketingDashboard() {
     { id: 'grid', label: 'Grid IG (12)', icon: '📸' },
     { id: 'anuncios', label: 'Anúncios', icon: '📣' },
     { id: 'carrosseis', label: 'Carrosséis', icon: '📑' },
+    { id: 'ia', label: 'IA', icon: '🤖' },
   ];
 
   // ---- MODO SIMPLES: conteúdo de hoje, copiar e pronto ----
@@ -657,6 +670,7 @@ export default function MarketingDashboard() {
         {tab === 'grid' && <GridTab copiar={copiar} copiado={copiado} />}
         {tab === 'anuncios' && <AnunciosTab copiar={copiar} copiado={copiado} />}
         {tab === 'carrosseis' && <CarrosseisTab copiar={copiar} copiado={copiado} />}
+        {tab === 'ia' && <IATab copiar={copiar} copiado={copiado} />}
       </div>
     </div>
   );
@@ -3703,6 +3717,599 @@ function WABusinessTab({ copiar, copiado }) {
             </Card>
           ))}
         </>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
+// TAB IA - Geração de conteúdo com inteligência artificial
+// Hooks híbridos: sementes existentes + Claude para variação
+// ============================================================
+
+function IATab({ copiar, copiado }) {
+  const [eco, setEco] = useState('');
+  const [plataforma, setPlataforma] = useState('instagram');
+  const [genero, setGenero] = useState('');
+  const [estiloVideo, setEstiloVideo] = useState('talking-head');
+  const [duracao, setDuracao] = useState('15-30s');
+
+  // Estado de geração
+  const [hooks, setHooks] = useState([]);
+  const [hookSelecionado, setHookSelecionado] = useState('');
+  const [conteudo, setConteudo] = useState(null);
+  const [videoScript, setVideoScript] = useState(null);
+  const [tipoMusica, setTipoMusica] = useState('reels');
+  const [instrumental, setInstrumental] = useState(true);
+  const [promptMusica, setPromptMusica] = useState('');
+  const [clipIds, setClipIds] = useState([]);
+  const [clips, setClips] = useState([]);
+  const [loading, setLoading] = useState('');
+  const [erro, setErro] = useState('');
+
+  const gerarHooks = async () => {
+    setLoading('hooks');
+    setErro('');
+    setHooks([]);
+    setConteudo(null);
+    setVideoScript(null);
+    try {
+      const result = await gerarHooksIA({ eco: eco || undefined, quantidade: 6, formato: plataforma, genero: genero || undefined });
+      setHooks(result);
+      if (result.length) setHookSelecionado(result[0]);
+    } catch (e) {
+      setErro(e.message);
+    } finally {
+      setLoading('');
+    }
+  };
+
+  const gerarConteudoCompleto = async () => {
+    if (!hookSelecionado) return;
+    setLoading('conteudo');
+    setErro('');
+    setConteudo(null);
+    try {
+      const result = await gerarConteudoIA({
+        hook: hookSelecionado,
+        eco: eco || undefined,
+        plataforma,
+        genero: genero || undefined,
+      });
+      setConteudo(result);
+    } catch (e) {
+      setErro(e.message);
+    } finally {
+      setLoading('');
+    }
+  };
+
+  const gerarVideo = async () => {
+    setLoading('video');
+    setErro('');
+    setVideoScript(null);
+    try {
+      const result = await gerarVideoScriptIA({
+        hook: hookSelecionado || undefined,
+        eco: eco || undefined,
+        duracao,
+        estilo: estiloVideo,
+        genero: genero || undefined,
+      });
+      setVideoScript(result);
+    } catch (e) {
+      setErro(e.message);
+    } finally {
+      setLoading('');
+    }
+  };
+
+  const gerarMusica = async () => {
+    setLoading('musica');
+    setErro('');
+    setClipIds([]);
+    setClips([]);
+    try {
+      const result = await gerarMusicaIA({
+        eco: eco || undefined,
+        tipo: tipoMusica,
+        prompt: promptMusica || undefined,
+        instrumental,
+      });
+      setClipIds(result.clip_ids || []);
+      // Iniciar polling automático
+      if (result.clip_ids?.length) {
+        pollClips(result.clip_ids);
+      }
+    } catch (e) {
+      setErro(e.message);
+      setLoading('');
+    }
+  };
+
+  const pollClips = async (ids, tentativas = 0) => {
+    if (tentativas > 20) {
+      setLoading('');
+      setErro('Timeout: a música está a demorar demais. Tenta verificar o status mais tarde.');
+      return;
+    }
+    try {
+      const result = await statusMusicaIA(ids);
+      const clipsList = Array.isArray(result) ? result : (result.clips || [result]);
+      const prontos = clipsList.filter(c => c.status === 'complete' || c.audio_url);
+      if (prontos.length > 0) {
+        setClips(prontos);
+        setLoading('');
+      } else {
+        // Esperar 5s e tentar novamente
+        setTimeout(() => pollClips(ids, tentativas + 1), 5000);
+      }
+    } catch {
+      // Retry silenciosamente
+      setTimeout(() => pollClips(ids, tentativas + 1), 5000);
+    }
+  };
+
+  const conteudoTextoCompleto = conteudo
+    ? `${conteudo.hook}\n\n${conteudo.corpo}\n\n${conteudo.cta}${conteudo.hashtags?.length ? '\n\n' + conteudo.hashtags.join(' ') : ''}`
+    : '';
+
+  const videoTextoCompleto = videoScript
+    ? `${videoScript.titulo || ''}\n\n${(videoScript.roteiro || []).map(r => `[${r.tempo}] ${r.visual}\n${r.texto}${r.musica ? ` | Música: ${r.musica}` : ''}`).join('\n\n')}\n\nCaption: ${videoScript.caption || ''}\n\n${(videoScript.hashtags || []).join(' ')}${videoScript.dica_gravacao ? `\n\nDica: ${videoScript.dica_gravacao}` : ''}`
+    : '';
+
+  return (
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-4 text-white">
+        <h2 className="text-lg font-bold flex items-center gap-2">Gerador IA de Conteúdo</h2>
+        <p className="text-sm text-white/80 mt-1">Hooks híbridos: os teus conteúdos existentes como base + IA para variações infinitas.</p>
+      </div>
+
+      {/* Configuração */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+        <h3 className="font-bold text-sm text-[#4A4035]">Configuração</h3>
+
+        {/* Eco */}
+        <div>
+          <label className="text-xs font-medium text-[#6B5C4C] block mb-1">Eco</label>
+          <div className="flex flex-wrap gap-1.5">
+            {ECOS_OPCOES.map(e => (
+              <button
+                key={e.id}
+                onClick={() => setEco(e.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  eco === e.id
+                    ? 'bg-[#1a1a2e] text-white shadow-md'
+                    : 'bg-gray-100 text-[#6B5C4C] hover:bg-gray-200'
+                }`}
+              >
+                {e.emoji} {e.nome}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Plataforma */}
+        <div>
+          <label className="text-xs font-medium text-[#6B5C4C] block mb-1">Plataforma</label>
+          <div className="flex flex-wrap gap-1.5">
+            {PLATAFORMAS.map(p => (
+              <button
+                key={p.id}
+                onClick={() => setPlataforma(p.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  plataforma === p.id
+                    ? 'bg-[#1a1a2e] text-white shadow-md'
+                    : 'bg-gray-100 text-[#6B5C4C] hover:bg-gray-200'
+                }`}
+              >
+                {p.icon} {p.nome}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Género */}
+        <div>
+          <label className="text-xs font-medium text-[#6B5C4C] block mb-1">Género do público</label>
+          <div className="flex gap-2">
+            {[{ id: '', label: 'Neutro' }, { id: 'F', label: 'Feminino' }, { id: 'M', label: 'Masculino' }].map(g => (
+              <button
+                key={g.id}
+                onClick={() => setGenero(g.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  genero === g.id
+                    ? 'bg-[#1a1a2e] text-white shadow-md'
+                    : 'bg-gray-100 text-[#6B5C4C] hover:bg-gray-200'
+                }`}
+              >
+                {g.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Gerar Hooks */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="font-bold text-sm text-[#4A4035]">1. Gerar Hooks</h3>
+          <button
+            onClick={gerarHooks}
+            disabled={!!loading}
+            className="px-4 py-2 bg-purple-600 text-white text-xs font-bold rounded-full hover:bg-purple-700 disabled:opacity-50 transition-all active:scale-95"
+          >
+            {loading === 'hooks' ? 'A gerar...' : 'Gerar Hooks'}
+          </button>
+        </div>
+        <p className="text-xs text-[#8B7E6E]">A IA usa os teus hooks existentes como referência de tom e cria variações novas.</p>
+
+        {hooks.length > 0 && (
+          <div className="space-y-2">
+            {hooks.map((h, i) => (
+              <button
+                key={i}
+                onClick={() => setHookSelecionado(h)}
+                className={`w-full text-left p-3 rounded-xl text-sm transition-all ${
+                  hookSelecionado === h
+                    ? 'bg-purple-50 border-2 border-purple-400 text-purple-900'
+                    : 'bg-gray-50 border border-gray-200 text-[#4A4035] hover:bg-gray-100'
+                }`}
+              >
+                <span className="text-purple-500 font-bold mr-2">{i + 1}.</span>
+                {h}
+                <div className="flex justify-end mt-1">
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => { e.stopPropagation(); copiar(h, `hook-${i}`); }}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); copiar(h, `hook-${i}`); } }}
+                    className="text-[10px] text-purple-500 hover:text-purple-700 cursor-pointer"
+                  >
+                    {copiado === `hook-${i}` ? '✓ Copiado' : '📋 Copiar'}
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Gerar Conteúdo Completo */}
+      {hooks.length > 0 && (
+        <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold text-sm text-[#4A4035]">2. Gerar Conteúdo Completo</h3>
+            <button
+              onClick={gerarConteudoCompleto}
+              disabled={!!loading || !hookSelecionado}
+              className="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-full hover:bg-indigo-700 disabled:opacity-50 transition-all active:scale-95"
+            >
+              {loading === 'conteudo' ? 'A gerar...' : `Gerar para ${PLATAFORMAS.find(p => p.id === plataforma)?.nome || plataforma}`}
+            </button>
+          </div>
+
+          {hookSelecionado && (
+            <div className="bg-purple-50 p-3 rounded-xl text-sm">
+              <span className="text-xs font-medium text-purple-600">Hook seleccionado:</span>
+              <p className="text-[#4A4035] mt-1">{hookSelecionado}</p>
+            </div>
+          )}
+
+          {conteudo && (
+            <div className="space-y-2">
+              <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+                <p className="font-bold text-sm text-[#4A4035]">{conteudo.hook}</p>
+                <p className="text-sm text-[#6B5C4C] whitespace-pre-line">{conteudo.corpo}</p>
+                <p className="text-sm text-purple-700 italic">{conteudo.cta}</p>
+                {conteudo.hashtags?.length > 0 && (
+                  <p className="text-xs text-blue-500">{conteudo.hashtags.join(' ')}</p>
+                )}
+              </div>
+
+              {/* Slides (carrossel/story) */}
+              {conteudo.slides?.length > 0 && (
+                <div>
+                  <p className="text-xs font-medium text-[#6B5C4C] mb-1">Slides:</p>
+                  <div className="flex gap-2 overflow-x-auto pb-2">
+                    {conteudo.slides.map((s, i) => (
+                      <div key={i} className="shrink-0 w-40 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl p-3 text-xs text-[#4A4035]">
+                        <span className="font-bold text-purple-600">{i + 1}.</span> {s}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end">
+                <button
+                  onClick={() => copiar(conteudoTextoCompleto, 'conteudo-completo')}
+                  className={`px-4 py-2 text-xs font-bold rounded-full transition-all active:scale-95 ${
+                    copiado === 'conteudo-completo'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-[#1a1a2e] text-white hover:bg-[#2a2a4e]'
+                  }`}
+                >
+                  {copiado === 'conteudo-completo' ? '✓ Copiado' : '📋 Copiar tudo'}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Gerar Vídeo Script */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="font-bold text-sm text-[#4A4035]">Roteiro de Vídeo</h3>
+          <button
+            onClick={gerarVideo}
+            disabled={!!loading}
+            className="px-4 py-2 bg-pink-600 text-white text-xs font-bold rounded-full hover:bg-pink-700 disabled:opacity-50 transition-all active:scale-95"
+          >
+            {loading === 'video' ? 'A gerar...' : 'Gerar Roteiro'}
+          </button>
+        </div>
+
+        {/* Opções de vídeo */}
+        <div className="space-y-2">
+          <div>
+            <label className="text-xs font-medium text-[#6B5C4C] block mb-1">Estilo</label>
+            <div className="flex flex-wrap gap-1.5">
+              {ESTILOS_VIDEO.map(e => (
+                <button
+                  key={e.id}
+                  onClick={() => setEstiloVideo(e.id)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    estiloVideo === e.id
+                      ? 'bg-pink-600 text-white shadow-md'
+                      : 'bg-gray-100 text-[#6B5C4C] hover:bg-gray-200'
+                  }`}
+                >
+                  {e.nome}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="text-xs font-medium text-[#6B5C4C] block mb-1">Duração</label>
+            <div className="flex gap-2">
+              {['7-15s', '15-30s', '30-60s'].map(d => (
+                <button
+                  key={d}
+                  onClick={() => setDuracao(d)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    duracao === d
+                      ? 'bg-pink-600 text-white shadow-md'
+                      : 'bg-gray-100 text-[#6B5C4C] hover:bg-gray-200'
+                  }`}
+                >
+                  {d}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {videoScript && (
+          <div className="space-y-2">
+            <div className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-4 space-y-3">
+              <h4 className="font-bold text-sm text-pink-800">{videoScript.titulo}</h4>
+
+              {videoScript.hook_visual && (
+                <div className="bg-white/60 rounded-lg p-2">
+                  <span className="text-[10px] font-bold text-pink-600 uppercase">Hook Visual (0-3s)</span>
+                  <p className="text-sm text-[#4A4035] font-medium">{videoScript.hook_visual}</p>
+                </div>
+              )}
+
+              {/* Roteiro timeline */}
+              {videoScript.roteiro?.length > 0 && (
+                <div className="space-y-2">
+                  {videoScript.roteiro.map((r, i) => (
+                    <div key={i} className="flex gap-3 items-start">
+                      <span className="shrink-0 bg-pink-600 text-white text-[10px] font-bold px-2 py-1 rounded-full">{r.tempo}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-[#8B7E6E]">{r.visual}</p>
+                        <p className="text-sm text-[#4A4035] font-medium">{r.texto}</p>
+                        {r.musica && <p className="text-[10px] text-purple-500">Música: {r.musica}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {videoScript.caption && (
+                <div className="bg-white/60 rounded-lg p-2">
+                  <span className="text-[10px] font-bold text-indigo-600 uppercase">Caption</span>
+                  <p className="text-xs text-[#4A4035]">{videoScript.caption}</p>
+                </div>
+              )}
+
+              {videoScript.dica_gravacao && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2">
+                  <span className="text-[10px] font-bold text-yellow-700">Dica de Gravação</span>
+                  <p className="text-xs text-yellow-800">{videoScript.dica_gravacao}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                onClick={() => copiar(videoTextoCompleto, 'video-script')}
+                className={`px-4 py-2 text-xs font-bold rounded-full transition-all active:scale-95 ${
+                  copiado === 'video-script'
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-[#1a1a2e] text-white hover:bg-[#2a2a4e]'
+                }`}
+              >
+                {copiado === 'video-script' ? '✓ Copiado' : '📋 Copiar roteiro'}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Gerar Música (Suno AI) */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="font-bold text-sm text-[#4A4035]">Gerar Música (Suno AI)</h3>
+          <button
+            onClick={gerarMusica}
+            disabled={!!loading}
+            className="px-4 py-2 bg-amber-600 text-white text-xs font-bold rounded-full hover:bg-amber-700 disabled:opacity-50 transition-all active:scale-95"
+          >
+            {loading === 'musica' ? 'A gerar...' : 'Gerar Música'}
+          </button>
+        </div>
+        <p className="text-xs text-[#8B7E6E]">Gera música original com Suno AI via AIMLAPI. Cada eco tem um mood sonoro próprio.</p>
+
+        {/* Tipo de música */}
+        <div>
+          <label className="text-xs font-medium text-[#6B5C4C] block mb-1">Tipo</label>
+          <div className="flex flex-wrap gap-1.5">
+            {TIPOS_MUSICA.map(t => (
+              <button
+                key={t.id}
+                onClick={() => setTipoMusica(t.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  tipoMusica === t.id
+                    ? 'bg-amber-600 text-white shadow-md'
+                    : 'bg-gray-100 text-[#6B5C4C] hover:bg-gray-200'
+                }`}
+              >
+                {t.icon} {t.nome}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Instrumental toggle */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setInstrumental(!instrumental)}
+            className={`relative w-10 h-5 rounded-full transition-colors ${instrumental ? 'bg-amber-500' : 'bg-gray-300'}`}
+            role="switch"
+            aria-checked={instrumental}
+          >
+            <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${instrumental ? 'left-5' : 'left-0.5'}`} />
+          </button>
+          <span className="text-xs text-[#6B5C4C]">{instrumental ? 'Instrumental (sem voz)' : 'Com voz/letra'}</span>
+        </div>
+
+        {/* Letra pré-escrita + editável */}
+        {!instrumental && (
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs font-medium text-[#6B5C4C]">Letra</label>
+              {ECO_LETRAS[eco] && promptMusica !== ECO_LETRAS[eco] && (
+                <button
+                  onClick={() => setPromptMusica(ECO_LETRAS[eco])}
+                  className="text-[10px] text-amber-600 hover:text-amber-800 font-medium"
+                >
+                  Restaurar original
+                </button>
+              )}
+            </div>
+            <textarea
+              value={promptMusica || ECO_LETRAS[eco] || ECO_LETRAS[''] || ''}
+              onChange={(e) => setPromptMusica(e.target.value)}
+              placeholder="[Verse]&#10;Escreve a tua letra aqui..."
+              className="w-full h-48 text-xs leading-relaxed font-mono bg-gray-50 border border-gray-200 rounded-xl p-3 resize-y focus:outline-none focus:ring-2 focus:ring-amber-400"
+              maxLength={3000}
+            />
+            <p className="text-[10px] text-[#8B7E6E] mt-1">Formato Suno: usa [Verse], [Chorus], [Bridge], [Outro]. Podes editar antes de gerar.</p>
+          </div>
+        )}
+
+        {/* Status de geração */}
+        {loading === 'musica' && clipIds.length > 0 && (
+          <div className="bg-amber-50 rounded-xl p-3 flex items-center gap-3">
+            <div className="w-4 h-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" />
+            <div>
+              <p className="text-sm text-amber-800 font-medium">A gerar música...</p>
+              <p className="text-xs text-amber-600">Isto pode demorar 20-60 segundos. Não feches a página.</p>
+            </div>
+          </div>
+        )}
+
+        {/* Clips prontos */}
+        {clips.length > 0 && (
+          <div className="space-y-3">
+            <p className="text-xs font-medium text-green-700">Música pronta!</p>
+            {clips.map((clip, i) => (
+              <div key={clip.id || i} className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 space-y-2">
+                {clip.title && <h4 className="font-bold text-sm text-amber-900">{clip.title}</h4>}
+                {clip.audio_url && (
+                  <audio controls className="w-full" preload="metadata">
+                    <source src={clip.audio_url} type="audio/mpeg" />
+                  </audio>
+                )}
+                <div className="flex gap-2">
+                  {clip.audio_url && (
+                    <a
+                      href={clip.audio_url}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 bg-amber-600 text-white text-xs font-bold rounded-full hover:bg-amber-700 transition-all active:scale-95"
+                    >
+                      Download MP3
+                    </a>
+                  )}
+                  {clip.image_url && (
+                    <a
+                      href={clip.image_url}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 bg-gray-200 text-[#4A4035] text-xs font-bold rounded-full hover:bg-gray-300 transition-all active:scale-95"
+                    >
+                      Cover Art
+                    </a>
+                  )}
+                </div>
+                {clip.metadata && (
+                  <p className="text-[10px] text-amber-700">
+                    {clip.metadata.tags && `Tags: ${clip.metadata.tags}`}
+                    {clip.metadata.duration && ` | ${Math.round(clip.metadata.duration)}s`}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Erro */}
+      {erro && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+          <p className="text-sm text-red-700 font-medium">Erro</p>
+          <p className="text-xs text-red-600 mt-1">{erro}</p>
+          {(erro.includes('ANTHROPIC_API_KEY') || erro.includes('AIMLAPI_KEY')) && (
+            <p className="text-xs text-red-500 mt-2">
+              Adiciona a variável nas Settings do Vercel (Environment Variables):
+              {erro.includes('ANTHROPIC_API_KEY') && <><br /><code className="bg-red-100 px-1 rounded">ANTHROPIC_API_KEY</code> — para hooks e conteúdo</>}
+              {erro.includes('AIMLAPI_KEY') && <><br /><code className="bg-red-100 px-1 rounded">AIMLAPI_KEY</code> — para música (Suno AI)</>}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Loading overlay */}
+      {loading && (
+        <div className="flex items-center justify-center py-6">
+          <div className="flex items-center gap-3 bg-white rounded-full px-6 py-3 shadow-lg">
+            <div className="w-4 h-4 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+            <span className="text-sm text-[#4A4035] font-medium">
+              {loading === 'hooks' && 'A gerar hooks...'}
+              {loading === 'conteudo' && 'A criar conteúdo...'}
+              {loading === 'video' && 'A escrever roteiro...'}
+              {loading === 'musica' && 'A compor música...'}
+            </span>
+          </div>
+        </div>
       )}
     </div>
   );
