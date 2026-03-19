@@ -4154,19 +4154,27 @@ function gerarCarrosselDiario(eco, conteudoArray, seed) {
     });
   }
 
-  // Slide final com CTA
+  // Slide final com CTA — inclui nome do eco
   const itemPrincipal = conteudoArray[seed % conteudoArray.length];
+  const ecoInfo = ECO_CONTEUDO[eco];
+  const nomeEco = ecoInfo?.nome || eco.toUpperCase();
+  const subEco = ecoInfo?.subtitulo || '';
   slides.push({
     titulo: truncarFrase(itemPrincipal.cta, 80),
-    texto: 'app.seteecos.com',
+    texto: `${nomeEco}${subEco ? ' - ' + subEco : ''}\napp.seteecos.com`,
   });
+
+  // Gerar legenda Instagram a partir do conteúdo principal
+  const hashExtra = HASHTAGS_TEMATICOS[eco] || [];
+  const hashtags = [...HASHTAGS_IG_BASE, ...hashExtra].slice(0, 12).join(' ');
+  const caption = `${tituloCarrossel}\n\n${truncarFrase(itemPrincipal.corpo, 200)}\n\n${itemPrincipal.cta}\n\nLink na bio.\n.\n.\n.\n${hashtags}`;
 
   return {
     tipo: 'carrossel',
     titulo: tituloCarrossel,
     texto: itemPrincipal.hook.slice(0, 120),
     subtitulo: itemPrincipal.cta,
-    caption: '',
+    caption,
     slides,
   };
 }
