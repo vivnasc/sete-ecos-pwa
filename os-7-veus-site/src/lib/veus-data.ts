@@ -184,7 +184,7 @@ export const cursosData: CursoData[] = [
     titulo: "Ouro Próprio",
     slug: "ouro-proprio",
     categoriaId: "herancas",
-    descricao: "Há um brilho que te ensinaram a procurar fora. E se já fosse teu?",
+    descricao: "A relação com dinheiro como espelho de ti",
     subtituloLanding: "Valor próprio, validação externa, o brilho que já existe",
     descricaoLonga: "Começa pela arqueologia do teu valor: de onde veio a crença de que precisas de aprovação? Passa pelo inventário do que já tens. Treina o reconhecimento. Termina com o brilho como ponto de partida, não de chegada.",
     modulos: [
@@ -204,7 +204,7 @@ export const cursosData: CursoData[] = [
     titulo: "Sangue e Seda",
     slug: "sangue-e-seda",
     categoriaId: "herancas",
-    descricao: "O que herdaste no sangue nem sempre cabe na pele que escolheste.",
+    descricao: "A herança invisível entre mães e filhas",
     subtituloLanding: "Heranças familiares, lealdades invisíveis, o peso do sangue",
     descricaoLonga: "Começa pela árvore emocional: o que herdaste sem pedir? Passa pelas lealdades invisíveis que te prendem ao passado. Treina a separação saudável. Termina com a escolha do que levar e do que devolver.",
     modulos: [
@@ -224,7 +224,7 @@ export const cursosData: CursoData[] = [
     titulo: "O Fio Invisível",
     slug: "o-fio-invisivel",
     categoriaId: "herancas",
-    descricao: "Há ligações que não se vêem mas que puxam com uma força antiga.",
+    descricao: "A ligação entre todos nós e como a tua cura toca o todo",
     subtituloLanding: "Vínculos inconscientes, padrões repetidos, ligações que puxam",
     descricaoLonga: "Começa pela detecção dos fios: que padrões se repetem nas tuas relações? Passa pela origem — onde foram tecidos. Treina a consciência do que te puxa. Termina com a escolha de cortar ou fortalecer cada fio.",
     modulos: [
@@ -244,7 +244,7 @@ export const cursosData: CursoData[] = [
     titulo: "O Silêncio que Grita",
     slug: "o-silencio-que-grita",
     categoriaId: "herancas",
-    descricao: "Há silêncios que dizem mais do que qualquer palavra.",
+    descricao: "O que a tua família nunca disse vive no teu corpo",
     subtituloLanding: "O não-dito, segredos familiares, o peso do silêncio",
     descricaoLonga: "Começa pelo mapa dos silêncios: o que nunca foi dito na tua família? Passa pelo custo de guardar segredos que não são teus. Treina a voz que foi calada. Termina com a liberdade de nomear o que existia sem palavras.",
     modulos: [
@@ -261,10 +261,10 @@ export const cursosData: CursoData[] = [
   },
   {
     numero: 16,
-    titulo: "Antes do Ninho",
-    slug: "antes-do-ninho",
+    titulo: "A Mulher Antes de Mãe",
+    slug: "a-mulher-antes-de-mae",
     categoriaId: "herancas",
-    descricao: "Antes de seres mãe, filha, esposa — quem eras?",
+    descricao: "Quem eras antes de seres de alguém",
     subtituloLanding: "Identidade pré-papéis, a mulher antes dos rótulos, o eu original",
     descricaoLonga: "Começa pela escavação: quem eras antes de te definires pelos outros? Passa pelos papéis que vestiram por ti. Treina o contacto com quem existe por baixo. Termina com a integração — ser todas e ainda assim ser tu.",
     modulos: [
@@ -286,7 +286,7 @@ export const cursosData: CursoData[] = [
     titulo: "A Arte da Inteireza",
     slug: "a-arte-da-inteireza",
     categoriaId: "fronteiras",
-    descricao: "Ser inteira não é ser perfeita. É deixar de cortar pedaços de ti para caber.",
+    descricao: "Amar sem te perderes no outro",
     subtituloLanding: "Fragmentação, perfeição, a coragem de ser inteira",
     descricaoLonga: "Começa pelo inventário dos pedaços cortados: o que amputaste de ti para ser aceite? Passa pelo custo da perfeição. Treina a reintegração. Termina com a inteireza como prática diária — imperfeita e completa.",
     modulos: [
@@ -306,7 +306,7 @@ export const cursosData: CursoData[] = [
     titulo: "Limite Sagrado",
     slug: "limite-sagrado",
     categoriaId: "fronteiras",
-    descricao: "Dizer não é, às vezes, o acto de amor mais difícil.",
+    descricao: "Limites, o preço de agradar, a culpa da recusa",
     subtituloLanding: "Limites, o preço de agradar, a culpa da recusa",
     descricaoLonga: "Começa pela arqueologia: de onde vem a incapacidade de recusar? Passa pelo custo real de dizer sim a tudo. Treina o não. Termina com o não como espaço para o sim.",
     modulos: [
@@ -326,7 +326,7 @@ export const cursosData: CursoData[] = [
     titulo: "Voz de Dentro",
     slug: "voz-de-dentro",
     categoriaId: "fronteiras",
-    descricao: "Há uma voz que fala antes de pensares. Já paraste para a ouvir?",
+    descricao: "Dizer o que precisas de dizer a quem mais importa",
     subtituloLanding: "Intuição, voz interior, o ruído que cala o essencial",
     descricaoLonga: "Começa pelo silêncio: quando foi a última vez que ouviste sem filtro? Passa pelo ruído — tudo o que abafa a tua voz. Treina a escuta interna. Termina com a confiança no que sabes antes de saber.",
     modulos: [
@@ -346,7 +346,7 @@ export const cursosData: CursoData[] = [
     titulo: "O Espelho do Outro",
     slug: "o-espelho-do-outro",
     categoriaId: "fronteiras",
-    descricao: "O que te irrita no outro pode ser o que não aceitas em ti.",
+    descricao: "O que te incomoda no outro vive em ti",
     subtituloLanding: "Projecção, sombra, o outro como espelho",
     descricaoLonga: "Começa pela irritação: o que te incomoda nos outros e porquê? Passa pela projecção — o mecanismo de ver fora o que vive dentro. Treina o reconhecimento. Termina com o outro como mestre involuntário.",
     modulos: [
@@ -366,7 +366,7 @@ export const cursosData: CursoData[] = [
     titulo: "A Teia",
     slug: "a-teia",
     categoriaId: "fronteiras",
-    descricao: "Estamos todos ligados. A questão é: és fio ou és presa?",
+    descricao: "Pertencer sem desaparecer",
     subtituloLanding: "Relações de poder, dependência, liberdade dentro da ligação",
     descricaoLonga: "Começa pelo mapa relacional: quem puxa, quem cede, quem controla? Passa pelos padrões de poder invisíveis. Treina a presença sem submissão. Termina com a liberdade de estar ligada sem estar presa.",
     modulos: [
@@ -388,7 +388,7 @@ export const cursosData: CursoData[] = [
     titulo: "Depois do Fogo",
     slug: "depois-do-fogo",
     categoriaId: "ciclos",
-    descricao: "O que resta quando tudo o que não eras arde?",
+    descricao: "Quando a vida te pede para começar de novo",
     subtituloLanding: "Recomeço, destruição criativa, renascer das cinzas",
     descricaoLonga: "Começa pelo inventário das cinzas: o que perdeste e o que sobrou? Passa pelo luto do que foi. Treina a reconstrução a partir do essencial. Termina com a descoberta de que o fogo não destruiu — revelou.",
     modulos: [
@@ -408,7 +408,7 @@ export const cursosData: CursoData[] = [
     titulo: "Olhos Abertos",
     slug: "olhos-abertos",
     categoriaId: "ciclos",
-    descricao: "Ver de verdade é um acto de coragem, não de visão.",
+    descricao: "Decidir a partir de clareza, não de medo",
     subtituloLanding: "Lucidez, auto-engano, a coragem de ver",
     descricaoLonga: "Começa pela cegueira voluntária: o que escolhes não ver? Passa pelos mecanismos de auto-engano. Treina a visão sem filtros. Termina com a lucidez como forma de liberdade — mesmo quando dói.",
     modulos: [
@@ -428,7 +428,7 @@ export const cursosData: CursoData[] = [
     titulo: "Flores no Escuro",
     slug: "flores-no-escuro",
     categoriaId: "ciclos",
-    descricao: "Há coisas que só crescem onde a luz não chega.",
+    descricao: "As perdas que não são morte mas doem como se fossem",
     subtituloLanding: "Crise como crescimento, dor como terreno fértil, beleza no escuro",
     descricaoLonga: "Começa pela escuridão: o que vive nos teus momentos mais difíceis? Passa pela resistência ao sofrimento. Treina a presença no desconforto. Termina com a descoberta de que as maiores transformações nascem onde menos esperas.",
     modulos: [
@@ -445,11 +445,11 @@ export const cursosData: CursoData[] = [
   },
   {
     numero: 17,
-    titulo: "Mãos Cansadas",
-    slug: "maos-cansadas",
+    titulo: "O Ofício de Ser",
+    slug: "o-oficio-de-ser",
     categoriaId: "ciclos",
-    descricao: "Há um momento em que segurar já não é força — é hábito.",
-    subtituloLanding: "Esgotamento, largar o controlo, a sabedoria de descansar",
+    descricao: "Quando o trabalho te define e o propósito te escapa",
+    subtituloLanding: "Trabalho, identidade, propósito, a mulher para além da função",
     descricaoLonga: "Começa pelo inventário do que seguras: o que carregas que já não faz sentido? Passa pela confusão entre força e teimosia. Treina o largar. Termina com a descoberta de que descansar é um acto de coragem.",
     modulos: [
       { titulo: "O que Seguras", resumo: "O inventário do que carregas sem necessidade" },
@@ -465,11 +465,11 @@ export const cursosData: CursoData[] = [
   },
   {
     numero: 18,
-    titulo: "Estações Partidas",
-    slug: "estacoes-partidas",
+    titulo: "O Relógio Partido",
+    slug: "o-relogio-partido",
     categoriaId: "ciclos",
-    descricao: "Nem todas as partidas são fugas. Algumas são o início de um regresso.",
-    subtituloLanding: "Transições, partidas necessárias, o ciclo de ir e voltar",
+    descricao: "A relação com o tempo que te rouba o presente",
+    subtituloLanding: "Tempo, pressa, presença, a tirania do relógio",
     descricaoLonga: "Começa pelo mapa das partidas: o que deixaste para trás e porquê? Passa pela diferença entre fugir e partir. Treina a despedida consciente. Termina com a descoberta de que partir pode ser a forma mais profunda de ficar contigo.",
     modulos: [
       { titulo: "O Mapa das Partidas", resumo: "As vezes que partiste e o que levaste" },
@@ -487,10 +487,10 @@ export const cursosData: CursoData[] = [
   // — MATÉRIA —
   {
     numero: 6,
-    titulo: "A Pele Lembra",
-    slug: "a-pele-lembra",
+    titulo: "Pele Nua",
+    slug: "pele-nua",
     categoriaId: "materia",
-    descricao: "O corpo guarda o que a mente esquece. A pele sabe.",
+    descricao: "Aprender a ouvir o corpo antes de a mente racionalizar",
     subtituloLanding: "Memória corporal, marcas emocionais, o corpo como arquivo",
     descricaoLonga: "Começa pelo mapa do corpo: onde guardas a dor, a tensão, a alegria? Passa pela memória somática. Treina a escuta do corpo. Termina com a reconciliação — habitar o corpo como casa e não como campo de batalha.",
     modulos: [
@@ -510,7 +510,7 @@ export const cursosData: CursoData[] = [
     titulo: "O Peso e o Chão",
     slug: "o-peso-e-o-chao",
     categoriaId: "materia",
-    descricao: "Quando o corpo carrega o que a alma não resolve.",
+    descricao: "Quando descansar não resolve",
     subtituloLanding: "Peso emocional, relação com o corpo, enraizamento",
     descricaoLonga: "Começa pela pergunta: o que pesa em ti que não está no corpo? Passa pela relação entre emoções não processadas e o peso físico. Treina o enraizamento. Termina com a leveza de quem encontrou o chão.",
     modulos: [
@@ -527,10 +527,10 @@ export const cursosData: CursoData[] = [
   },
   {
     numero: 15,
-    titulo: "Brasa Viva",
-    slug: "brasa-viva",
+    titulo: "A Chama",
+    slug: "a-chama",
     categoriaId: "materia",
-    descricao: "Há um fogo dentro de ti que não se apaga com silêncio.",
+    descricao: "A raiva que nunca te deixaram sentir",
     subtituloLanding: "Desejo, raiva contida, energia vital reprimida",
     descricaoLonga: "Começa pela brasa: o que arde em ti que não encontra saída? Passa pela raiva contida, o desejo reprimido, a energia vital bloqueada. Treina a expressão segura do fogo. Termina com o fogo como aliado e não como ameaça.",
     modulos: [
@@ -547,11 +547,11 @@ export const cursosData: CursoData[] = [
   },
   {
     numero: 19,
-    titulo: "Ouro e Sombra",
-    slug: "ouro-e-sombra",
+    titulo: "A Coroa Escondida",
+    slug: "a-coroa-escondida",
     categoriaId: "materia",
-    descricao: "O que brilha em ti tem raízes no escuro. E isso não o diminui.",
-    subtituloLanding: "Luz e sombra, integração, a beleza do todo",
+    descricao: "O poder que tens e te assusta",
+    subtituloLanding: "Poder pessoal, medo de brilhar, a coroa que escondes",
     descricaoLonga: "Começa pela sombra: o que escondes de ti e do mundo? Passa pela descoberta de que o ouro e a sombra são inseparáveis. Treina a aceitação do todo. Termina com a integração — brilhar sem negar o escuro.",
     modulos: [
       { titulo: "A Sombra Escondida", resumo: "O que escondes de ti e dos outros" },
@@ -567,11 +567,11 @@ export const cursosData: CursoData[] = [
   },
   {
     numero: 20,
-    titulo: "Pão e Silêncio",
-    slug: "pao-e-silencio",
+    titulo: "A Fome",
+    slug: "a-fome",
     categoriaId: "materia",
-    descricao: "Nutrir-se nem sempre é comer. Às vezes é parar.",
-    subtituloLanding: "Nutrição emocional, presença, o sagrado do quotidiano",
+    descricao: "O que comes quando não tens fome de comida",
+    subtituloLanding: "Fome emocional, vazio, o que preenches sem saber",
     descricaoLonga: "Começa pela fome: do que tens fome para além do pão? Passa pela forma como te nutres — ou não. Treina a presença no gesto simples. Termina com o quotidiano como prática sagrada — comer, parar, respirar.",
     modulos: [
       { titulo: "A Fome que não é Fome", resumo: "O que procuras quando abres o frigorífico" },
