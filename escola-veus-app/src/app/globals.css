@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-escola-bg: #0D0D1A;
+  --color-escola-bg-light: #1A1A2E;
+  --color-escola-creme: #F5F0E6;
+  --color-escola-dourado: #C9A96E;
+  --color-escola-muted: #a0a0b0;
+  --color-escola-muted-dark: #666680;
+
+  --font-display: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-escola-bg);
+  color: var(--color-escola-creme);
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+::selection {
+  background-color: rgba(201, 169, 110, 0.3);
+  color: var(--color-escola-creme);
+}
+
+/* Hide scrollbar */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
