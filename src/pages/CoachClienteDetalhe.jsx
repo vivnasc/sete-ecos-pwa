@@ -911,6 +911,46 @@ export default function CoachClienteDetalhe() {
                   .sort((a, b) => a.data.localeCompare(b.data))
                   .filter((p, i, arr) => i === 0 || p.data !== arr[i - 1].data);
 
+                // Sem registos individuais — usar dados do vitalis_clients
+                if (todosPesos.length === 0 && client?.peso_inicial) {
+                  const pesoIni = parseFloat(client.peso_inicial);
+                  const pesoAct = parseFloat(client.peso_actual) || pesoIni;
+                  const pesoMeta = parseFloat(client.peso_meta);
+                  const diff = pesoAct - pesoIni;
+                  return (
+                    <div>
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="text-center flex-1">
+                          <p className="text-xs text-gray-500">Inicial</p>
+                          <p className="text-lg font-bold text-gray-400">{pesoIni}kg</p>
+                        </div>
+                        <div className="text-center flex-1">
+                          <p className={`text-sm font-bold ${diff < 0 ? 'text-green-600' : diff > 0 ? 'text-red-500' : 'text-gray-500'}`}>
+                            {diff < 0 ? '' : '+'}{diff.toFixed(1)}kg
+                          </p>
+                        </div>
+                        <div className="text-center flex-1">
+                          <p className="text-xs text-gray-500">Actual</p>
+                          <p className="text-lg font-bold text-gray-800">{pesoAct}kg</p>
+                        </div>
+                        {pesoMeta && (
+                          <div className="text-center flex-1">
+                            <p className="text-xs text-gray-500">Meta</p>
+                            <p className="text-lg font-bold text-green-600">{pesoMeta}kg</p>
+                          </div>
+                        )}
+                      </div>
+                      {pesoMeta && pesoIni > pesoMeta && (
+                        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+                          <div className="bg-green-500 h-2.5 rounded-full" style={{ width: `${Math.min(((pesoIni - pesoAct) / (pesoIni - pesoMeta)) * 100, 100)}%` }} />
+                        </div>
+                      )}
+                      {diff < 0 && <p className="text-center text-sm text-green-600">Já perdeu {Math.abs(diff).toFixed(1)} kg</p>}
+                      <p className="text-[10px] text-gray-400 mt-1 text-center">Sem registos diários de peso — dados do perfil do cliente</p>
+                    </div>
+                  );
+                }
+
                 if (todosPesos.length === 0) return <p className="text-sm text-gray-500">Sem registos de peso.</p>;
 
                 const pesoMin = Math.min(...todosPesos.map(p => p.peso));
@@ -1098,7 +1138,29 @@ export default function CoachClienteDetalhe() {
                                     {m.porcoes_legumes > 0 && <span className="text-[10px] bg-green-50 text-green-700 px-1.5 py-0.5 rounded">{m.porcoes_legumes} leg</span>}
                                   </div>
                                 )}
-                                {m.notas && <p className="text-[10px] text-gray-500 mt-1 italic">{m.notas}</p>}
+                                {m.notas && (() => {
+                                  // Notas pode ser JSON estruturado com items da refeição
+                                  try {
+                                    const parsed = typeof m.notas === 'string' ? JSON.parse(m.notas) : m.notas;
+                                    if (parsed?.items && Array.isArray(parsed.items)) {
+                                      return (
+                                        <div className="mt-1 space-y-0.5">
+                                          {parsed.items.map((item, idx) => (
+                                            <p key={idx} className="text-[10px] text-gray-600">
+                                              {item.icon || ''} {item.nome} — {item.quantidade_g}g ({item.calorias}kcal)
+                                            </p>
+                                          ))}
+                                          {parsed.macros_total && (
+                                            <p className="text-[10px] font-medium text-gray-700 mt-0.5">
+                                              Total: {parsed.macros_total.calorias}kcal | P:{parsed.macros_total.proteina}g C:{parsed.macros_total.carboidratos}g G:{parsed.macros_total.gordura}g
+                                            </p>
+                                          )}
+                                        </div>
+                                      );
+                                    }
+                                  } catch { /* não é JSON, mostrar como texto */ }
+                                  return <p className="text-[10px] text-gray-500 mt-1 italic">{m.notas}</p>;
+                                })()}
                               </div>
                             </div>
                           ))}
