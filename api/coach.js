@@ -917,15 +917,17 @@ async function buscarPlanoPdf(planId, userId, res) {
 async function buscarDadosCliente(userId, res) {
   if (!userId) return res.status(400).json({ error: 'userId obrigatorio' });
 
-  const [userRes, clientRes, intakeRes, planoRes, registosRes, aguaRes, mealsRes, habitosRes] = await Promise.all([
+  const [userRes, clientRes, intakeRes, planoRes, registosRes, aguaRes, mealsRes, habitosRes, medidasRes, checkinsRes] = await Promise.all([
     supabase.from('users').select('*').eq('id', userId).single(),
     supabase.from('vitalis_clients').select('*').eq('user_id', userId).maybeSingle(),
     supabase.from('vitalis_intake').select('*').eq('user_id', userId).maybeSingle(),
     supabase.from('vitalis_meal_plans').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(5),
     supabase.from('vitalis_registos').select('*').eq('user_id', userId).order('data', { ascending: false }).limit(30),
     supabase.from('vitalis_agua_log').select('*').eq('user_id', userId).order('data', { ascending: false }).limit(30),
-    supabase.from('vitalis_meals_log').select('*').eq('user_id', userId).order('data', { ascending: false }).limit(30),
+    supabase.from('vitalis_meals_log').select('*').eq('user_id', userId).order('data', { ascending: false }).limit(60),
     supabase.from('vitalis_habitos').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(10),
+    supabase.from('vitalis_medidas_log').select('*').eq('user_id', userId).order('data', { ascending: false }).limit(20),
+    supabase.from('vitalis_checkins').select('*').eq('user_id', userId).order('data', { ascending: false }).limit(30),
   ]);
 
   if (userRes.error) return res.status(404).json({ error: 'Cliente nao encontrado' });
@@ -939,6 +941,8 @@ async function buscarDadosCliente(userId, res) {
     aguaLogs: aguaRes.data || [],
     mealsLogs: mealsRes.data || [],
     habitos: habitosRes.data || [],
+    medidas: medidasRes.data || [],
+    checkins: checkinsRes.data || [],
   });
 }
 

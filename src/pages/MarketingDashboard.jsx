@@ -754,13 +754,13 @@ function CarrosselProntoBloco({ cp, audioUrl, copiar, copiado }) {
                   key={i}
                   template="carrossel"
                   eco={cp.marca}
-                  formato="post"
+                  formato="stories"
                   texto={slide.titulo}
                   subtitulo={slide.texto}
                   slideNum={i + 1}
                   totalSlides={cp.slides.length}
                   bgIndex={i}
-                  scale={0.24}
+                  scale={0.16}
                   filename={`${cp.id}-slide-${i + 1}.png`}
                   className="shrink-0"
                 />
@@ -885,16 +885,33 @@ function BlocoEco({ eco, copiar, copiado, prefixo }) {
                   {ig.slides.map((slide, i) => (
                     <AutoImage
                       key={i}
-                      template="carrossel" eco={eco.eco} formato="post"
+                      template="carrossel" eco={eco.eco} formato="stories"
                       texto={slide.titulo} subtitulo={slide.texto}
                       slideNum={i + 1} totalSlides={ig.slides.length}
                       bgIndex={i}
-                      scale={0.24} filename={`${eco.eco}-carrossel-${i + 1}.png`}
+                      scale={0.16} filename={`${eco.eco}-carrossel-${i + 1}.png`}
                       className="shrink-0"
                     />
                   ))}
                 </div>
               </div>
+              {/* Legenda do carrossel diário */}
+              {ig.caption && (
+                <div className="px-3 pb-3 border-t border-[#E8E2D9]">
+                  <details>
+                    <summary className="text-[10px] text-[#A09888] cursor-pointer font-bold pt-2">Legenda Instagram</summary>
+                    <div className="mt-2 bg-[#F5F2ED] rounded-lg p-3">
+                      <p className="text-[10px] text-[#6B5C4C] leading-relaxed whitespace-pre-line">{ig.caption}</p>
+                      <button
+                        onClick={() => copiar(ig.caption, `car-${eco.eco}`)}
+                        className="mt-2 text-[9px] bg-[#1a1a2e] text-white px-3 py-1.5 rounded-full font-bold active:scale-95 transition-all"
+                      >
+                        {copiado === `car-${eco.eco}` ? 'Copiado!' : 'Copiar legenda'}
+                      </button>
+                    </div>
+                  </details>
+                </div>
+              )}
             </div>
           )}
 
@@ -1427,13 +1444,13 @@ function PostLancamento({ post, copiar, copiado, publicado, onTogglePublicado })
                           key={i}
                           template="carrossel"
                           eco={post.eco}
-                          formato="post"
+                          formato="stories"
                           texto={slide.titulo}
                           subtitulo={slide.texto}
                           slideNum={i + 1}
                           totalSlides={carrosselSlides.length}
                           bgIndex={i}
-                          scale={0.24}
+                          scale={0.16}
                           filename={`post-${post.dia}-carrossel-${i + 1}.png`}
                           className="shrink-0"
                         />

@@ -206,6 +206,8 @@ export default function CoachClienteDetalhe() {
   const [registos, setRegistos] = useState([]);
   const [aguaLogs, setAguaLogs] = useState([]);
   const [mealsLogs, setMealsLogs] = useState([]);
+  const [medidas, setMedidas] = useState([]);
+  const [checkins, setCheckins] = useState([]);
 
   // Actions
   const [gerandoPlano, setGerandoPlano] = useState(false);
@@ -227,6 +229,8 @@ export default function CoachClienteDetalhe() {
       setRegistos(data.registos || []);
       setAguaLogs(data.aguaLogs || []);
       setMealsLogs(data.mealsLogs || []);
+      setMedidas(data.medidas || []);
+      setCheckins(data.checkins || []);
     } catch (err) {
       console.error('Erro ao carregar dados do cliente:', err);
     } finally {
@@ -458,6 +462,52 @@ export default function CoachClienteDetalhe() {
                     <p className="text-[10px] text-gray-500">Fase</p>
                   </div>
                 </div>
+                {/* Detalhe do cálculo TMB */}
+                {intake && (
+                  <details className="mt-3">
+                    <summary className="text-[10px] text-gray-400 cursor-pointer font-medium">Ver cálculo TMB</summary>
+                    <div className="mt-2 bg-gray-50 rounded-lg p-3 text-xs text-gray-600 space-y-1">
+                      {(() => {
+                        const peso = parseFloat(intake.peso_actual) || 0;
+                        const altura = parseFloat(intake.altura_cm) || 165;
+                        const idade = parseInt(intake.idade) || 30;
+                        const sexo = intake.sexo;
+                        const tmb = sexo === 'masculino'
+                          ? (10 * peso) + (6.25 * altura) - (5 * idade) + 5
+                          : (10 * peso) + (6.25 * altura) - (5 * idade) - 161;
+                        const factores = { sedentaria: 1.2, leve: 1.375, moderada: 1.55, intensa: 1.725 };
+                        const factor = factores[intake.nivel_actividade] || 1.2;
+                        const tdee = tmb * factor;
+                        const prontidao = parseInt(intake.prontidao_1a10) || 5;
+                        const obj = intake.objectivo_principal;
+                        let defLabel = 'Manutenção (0%)';
+                        let calFinal = tdee;
+                        if (obj === 'perder_peso' || obj === 'emagrecer') {
+                          if (prontidao <= 4) { calFinal = tdee * 0.87; defLabel = `Deficit 13% (prontidão ${prontidao}/10)`; }
+                          else if (prontidao <= 7) { calFinal = tdee * 0.82; defLabel = `Deficit 18% (prontidão ${prontidao}/10)`; }
+                          else { calFinal = tdee * 0.75; defLabel = `Deficit 25% (prontidão ${prontidao}/10)`; }
+                        } else if (obj === 'ganhar_massa') {
+                          calFinal = tdee * 1.1; defLabel = 'Superavit 10%';
+                        }
+                        // Calorias reais das porções
+                        const calPorcoes = (porcoesProteina * 25 * 4) + (porcoesHidratos * 30 * 4) + (porcoesGordura * 10 * 9) + (porcoesLegumes * 50 * 0.3);
+                        return (
+                          <>
+                            <p>Peso: {peso}kg | Altura: {altura}cm | Idade: {idade} | Sexo: {sexo}</p>
+                            <p>TMB (Mifflin-St Jeor): <strong>{Math.round(tmb)} kcal</strong></p>
+                            <p>Actividade: {intake.nivel_actividade} (×{factor}) → TDEE: <strong>{Math.round(tdee)} kcal</strong></p>
+                            <p>Objectivo: {obj} | {defLabel}</p>
+                            <p>Alvo calculado: <strong>{Math.round(calFinal)} kcal/dia</strong></p>
+                            <p className="border-t border-gray-200 pt-1 mt-1">Porções → {porcoesProteina} prot + {porcoesHidratos} hid + {porcoesGordura} gord + {porcoesLegumes} leg</p>
+                            <p>Calorias reais das porções: <strong className={Math.abs(calPorcoes - calFinal) > 200 ? 'text-red-600' : 'text-green-600'}>~{Math.round(calPorcoes)} kcal</strong>
+                              {Math.abs(calPorcoes - calFinal) > 200 && <span className="text-red-500"> (diferença de {Math.round(Math.abs(calPorcoes - calFinal))} kcal!)</span>}
+                            </p>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </details>
+                )}
               </div>
             )}
 
@@ -851,22 +901,157 @@ export default function CoachClienteDetalhe() {
         {/* === PROGRESSO === */}
         {tab === 'progresso' && (
           <>
+            {/* ===== EVOLUÇÃO PESO ===== */}
             <div className="bg-white rounded-xl border border-gray-100 p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Check-ins ({registos.length})</h3>
-              {registos.length === 0 ? (
+              <h3 className="font-semibold text-gray-900 mb-3">Evolução de Peso</h3>
+              {(() => {
+                const pesosRegistos = registos.filter(r => r.peso).map(r => ({ data: r.data, peso: parseFloat(r.peso) }));
+                const pesosCheckins = checkins.filter(c => c.peso).map(c => ({ data: c.data, peso: parseFloat(c.peso) }));
+                const todosPesos = [...pesosRegistos, ...pesosCheckins]
+                  .sort((a, b) => a.data.localeCompare(b.data))
+                  .filter((p, i, arr) => i === 0 || p.data !== arr[i - 1].data);
+
+                if (todosPesos.length === 0) return <p className="text-sm text-gray-500">Sem registos de peso.</p>;
+
+                const pesoMin = Math.min(...todosPesos.map(p => p.peso));
+                const pesoMax = Math.max(...todosPesos.map(p => p.peso));
+                const range = pesoMax - pesoMin || 1;
+                const primeiro = todosPesos[0].peso;
+                const ultimo = todosPesos[todosPesos.length - 1].peso;
+                const diff = ultimo - primeiro;
+
+                return (
+                  <div>
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="text-center">
+                        <p className="text-xs text-gray-500">Início</p>
+                        <p className="text-lg font-bold text-gray-400">{primeiro}kg</p>
+                      </div>
+                      <div className="flex-1 text-center">
+                        <p className={`text-sm font-bold ${diff < 0 ? 'text-green-600' : diff > 0 ? 'text-red-500' : 'text-gray-500'}`}>
+                          {diff < 0 ? '' : '+'}{diff.toFixed(1)}kg
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-xs text-gray-500">Actual</p>
+                        <p className="text-lg font-bold text-gray-800">{ultimo}kg</p>
+                      </div>
+                      {client?.peso_meta && (
+                        <div className="text-center">
+                          <p className="text-xs text-gray-500">Meta</p>
+                          <p className="text-lg font-bold text-green-600">{client.peso_meta}kg</p>
+                        </div>
+                      )}
+                    </div>
+                    {/* Mini gráfico de barras */}
+                    <div className="flex items-end gap-0.5 h-16 bg-gray-50 rounded-lg p-2">
+                      {todosPesos.slice(-20).map((p, i) => {
+                        const h = ((p.peso - pesoMin) / range) * 100 || 50;
+                        return (
+                          <div key={i} className="flex-1 flex flex-col items-center gap-0.5" title={`${p.data}: ${p.peso}kg`}>
+                            <div className="w-full bg-green-400 rounded-t-sm" style={{ height: `${Math.max(h, 8)}%` }} />
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="flex justify-between text-[9px] text-gray-400 mt-1 px-1">
+                      <span>{todosPesos.slice(-20)[0]?.data}</span>
+                      <span>{todosPesos[todosPesos.length - 1]?.data}</span>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* ===== MEDIDAS CORPORAIS ===== */}
+            <div className="bg-white rounded-xl border border-gray-100 p-4">
+              <h3 className="font-semibold text-gray-900 mb-3">Medidas Corporais</h3>
+              {medidas.length === 0 ? (
+                <p className="text-sm text-gray-500">Sem medidas registadas.</p>
+              ) : (
+                <div>
+                  <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div className="bg-indigo-50 rounded-lg p-3 text-center">
+                      <p className="text-xs text-indigo-600">Cintura</p>
+                      <p className="text-xl font-bold text-indigo-700">{medidas[0].cintura_cm || '-'} cm</p>
+                      {medidas.length > 1 && medidas[0].cintura_cm && medidas[medidas.length - 1].cintura_cm && (
+                        <p className={`text-xs font-medium ${medidas[0].cintura_cm < medidas[medidas.length - 1].cintura_cm ? 'text-green-600' : 'text-gray-400'}`}>
+                          {(medidas[0].cintura_cm - medidas[medidas.length - 1].cintura_cm).toFixed(1)}cm vs início
+                        </p>
+                      )}
+                    </div>
+                    <div className="bg-pink-50 rounded-lg p-3 text-center">
+                      <p className="text-xs text-pink-600">Anca</p>
+                      <p className="text-xl font-bold text-pink-700">{medidas[0].anca_cm || '-'} cm</p>
+                      {medidas.length > 1 && medidas[0].anca_cm && medidas[medidas.length - 1].anca_cm && (
+                        <p className={`text-xs font-medium ${medidas[0].anca_cm < medidas[medidas.length - 1].anca_cm ? 'text-green-600' : 'text-gray-400'}`}>
+                          {(medidas[0].anca_cm - medidas[medidas.length - 1].anca_cm).toFixed(1)}cm vs início
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="space-y-1 max-h-40 overflow-y-auto">
+                    {medidas.map((m, i) => (
+                      <div key={i} className="flex items-center justify-between text-sm py-1 border-b border-gray-50">
+                        <span className="text-gray-600">{m.data}</span>
+                        <div className="flex gap-3">
+                          <span className="text-indigo-600 text-xs">C: {m.cintura_cm || '-'}cm</span>
+                          <span className="text-pink-600 text-xs">A: {m.anca_cm || '-'}cm</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ===== CHECK-INS DETALHADOS ===== */}
+            <div className="bg-white rounded-xl border border-gray-100 p-4">
+              <h3 className="font-semibold text-gray-900 mb-3">Check-ins Diários ({registos.length})</h3>
+              {registos.length === 0 && checkins.length === 0 ? (
                 <p className="text-sm text-gray-500">Sem check-ins.</p>
               ) : (
-                <div className="space-y-1 max-h-60 overflow-y-auto">
+                <div className="space-y-2 max-h-80 overflow-y-auto">
                   {registos.map((r, i) => (
-                    <div key={i} className="flex items-center justify-between text-sm py-1 border-b border-gray-50">
-                      <span className="text-gray-600">{r.data}</span>
-                      <div className="flex items-center gap-2">
-                        {r.peso && <span className="text-xs text-gray-400">{r.peso}kg</span>}
+                    <div key={`r-${i}`} className="bg-gray-50 rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-medium text-sm text-gray-700">{r.data}</span>
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                           r.aderencia_1a10 >= 7 ? 'bg-green-100 text-green-700' :
                           r.aderencia_1a10 >= 4 ? 'bg-amber-100 text-amber-700' :
                           'bg-red-100 text-red-700'
-                        }`}>{r.aderencia_1a10}/10</span>
+                        }`}>Aderência: {r.aderencia_1a10}/10</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2 text-xs">
+                        {r.peso && <span className="bg-white px-2 py-1 rounded border border-gray-200">Peso: {r.peso}kg</span>}
+                        {r.energia_1a5 && <span className="bg-yellow-50 px-2 py-1 rounded border border-yellow-200">Energia: {r.energia_1a5}/5</span>}
+                        {r.humor && <span className="bg-blue-50 px-2 py-1 rounded border border-blue-200">Humor: {r.humor}/5</span>}
+                        {r.sono && <span className="bg-purple-50 px-2 py-1 rounded border border-purple-200">Sono: {r.sono}/5</span>}
+                        {r.seguiu_plano !== undefined && r.seguiu_plano !== null && (
+                          <span className={`px-2 py-1 rounded border ${r.seguiu_plano ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
+                            {r.seguiu_plano ? 'Seguiu plano' : 'Não seguiu'}
+                          </span>
+                        )}
+                        {r.fez_exercicio !== undefined && r.fez_exercicio !== null && (
+                          <span className={`px-2 py-1 rounded border ${r.fez_exercicio ? 'bg-green-50 border-green-200 text-green-700' : 'bg-gray-50 border-gray-200 text-gray-500'}`}>
+                            {r.fez_exercicio ? 'Fez exercício' : 'Sem exercício'}
+                          </span>
+                        )}
+                        {r.agua && <span className="bg-blue-50 px-2 py-1 rounded border border-blue-200">Água: {r.agua}L</span>}
+                      </div>
+                    </div>
+                  ))}
+                  {checkins.filter(c => !registos.some(r => r.data === c.data)).map((c, i) => (
+                    <div key={`c-${i}`} className="bg-gray-50 rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-medium text-sm text-gray-700">{c.data}</span>
+                        <span className="text-[10px] text-gray-400">Check-in</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2 text-xs">
+                        {c.peso && <span className="bg-white px-2 py-1 rounded border border-gray-200">Peso: {c.peso}kg</span>}
+                        {c.energia && <span className="bg-yellow-50 px-2 py-1 rounded border border-yellow-200">Energia: {c.energia}/5</span>}
+                        {c.humor && <span className="bg-blue-50 px-2 py-1 rounded border border-blue-200">Humor: {c.humor}/5</span>}
+                        {c.sono && <span className="bg-purple-50 px-2 py-1 rounded border border-purple-200">Sono: {c.sono}/5</span>}
                       </div>
                     </div>
                   ))}
@@ -874,6 +1059,79 @@ export default function CoachClienteDetalhe() {
               )}
             </div>
 
+            {/* ===== REFEIÇÕES DETALHADAS ===== */}
+            <div className="bg-white rounded-xl border border-gray-100 p-4">
+              <h3 className="font-semibold text-gray-900 mb-3">Refeições Detalhadas ({mealsLogs.length})</h3>
+              {mealsLogs.length === 0 ? (
+                <p className="text-sm text-gray-500">Sem registos de refeições.</p>
+              ) : (
+                <div className="space-y-2 max-h-96 overflow-y-auto">
+                  {(() => {
+                    // Agrupar refeições por data
+                    const porDia = {};
+                    mealsLogs.forEach(m => {
+                      if (!porDia[m.data]) porDia[m.data] = [];
+                      porDia[m.data].push(m);
+                    });
+                    return Object.entries(porDia).map(([data, refeicoes]) => (
+                      <div key={data} className="bg-gray-50 rounded-lg p-3">
+                        <p className="font-medium text-sm text-gray-700 mb-2 border-b border-gray-200 pb-1">{data}</p>
+                        <div className="space-y-1.5">
+                          {refeicoes.map((m, i) => (
+                            <div key={i} className="flex items-start justify-between gap-2">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-medium text-gray-700 capitalize">{m.refeicao}</span>
+                                  {m.hora && <span className="text-[10px] text-gray-400">{m.hora}</span>}
+                                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                                    m.seguiu_plano === 'sim' ? 'bg-green-100 text-green-700' :
+                                    m.seguiu_plano === 'parcial' ? 'bg-amber-100 text-amber-700' :
+                                    'bg-red-100 text-red-700'
+                                  }`}>{m.seguiu_plano}</span>
+                                </div>
+                                {/* Porções registadas */}
+                                {(m.porcoes_proteina || m.porcoes_hidratos || m.porcoes_gordura || m.porcoes_legumes) && (
+                                  <div className="flex gap-1.5 mt-1">
+                                    {m.porcoes_proteina > 0 && <span className="text-[10px] bg-rose-50 text-rose-700 px-1.5 py-0.5 rounded">{m.porcoes_proteina} prot</span>}
+                                    {m.porcoes_hidratos > 0 && <span className="text-[10px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded">{m.porcoes_hidratos} hid</span>}
+                                    {m.porcoes_gordura > 0 && <span className="text-[10px] bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded">{m.porcoes_gordura} gord</span>}
+                                    {m.porcoes_legumes > 0 && <span className="text-[10px] bg-green-50 text-green-700 px-1.5 py-0.5 rounded">{m.porcoes_legumes} leg</span>}
+                                  </div>
+                                )}
+                                {m.notas && <p className="text-[10px] text-gray-500 mt-1 italic">{m.notas}</p>}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        {/* Totais do dia */}
+                        {(() => {
+                          const totProt = refeicoes.reduce((s, m) => s + (m.porcoes_proteina || 0), 0);
+                          const totHid = refeicoes.reduce((s, m) => s + (m.porcoes_hidratos || 0), 0);
+                          const totGord = refeicoes.reduce((s, m) => s + (m.porcoes_gordura || 0), 0);
+                          const totLeg = refeicoes.reduce((s, m) => s + (m.porcoes_legumes || 0), 0);
+                          if (totProt + totHid + totGord + totLeg === 0) return null;
+                          // Estimar calorias: prot*25*4 + hid*30*4 + gord*10*9 + leg*50*0.3
+                          const calEst = (totProt * 25 * 4) + (totHid * 30 * 4) + (totGord * 10 * 9) + (totLeg * 50 * 0.3);
+                          return (
+                            <div className="mt-2 pt-2 border-t border-gray-200 flex items-center justify-between">
+                              <div className="flex gap-2 text-[10px]">
+                                <span className="text-rose-600 font-medium">{totProt} prot</span>
+                                <span className="text-amber-600 font-medium">{totHid} hid</span>
+                                <span className="text-purple-600 font-medium">{totGord} gord</span>
+                                <span className="text-green-600 font-medium">{totLeg} leg</span>
+                              </div>
+                              <span className="text-[10px] font-bold text-gray-600">~{Math.round(calEst)} kcal est.</span>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    ));
+                  })()}
+                </div>
+              )}
+            </div>
+
+            {/* ===== ÁGUA ===== */}
             <div className="bg-white rounded-xl border border-gray-100 p-4">
               <h3 className="font-semibold text-gray-900 mb-3">Água (30 dias)</h3>
               {aguaLogs.length === 0 ? (
@@ -885,29 +1143,14 @@ export default function CoachClienteDetalhe() {
                   ).map(([data, total]) => (
                     <div key={data} className="flex items-center justify-between text-sm py-1 border-b border-gray-50">
                       <span className="text-gray-600">{data}</span>
-                      <span className={`font-medium ${total >= 2000 ? 'text-blue-600' : 'text-gray-400'}`}>
-                        {(total / 1000).toFixed(1)}L
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="bg-white rounded-xl border border-gray-100 p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Refeições (30 dias)</h3>
-              {mealsLogs.length === 0 ? (
-                <p className="text-sm text-gray-500">Sem registos.</p>
-              ) : (
-                <div className="space-y-1 max-h-40 overflow-y-auto">
-                  {mealsLogs.slice(0, 20).map((m, i) => (
-                    <div key={i} className="flex items-center justify-between text-sm py-1 border-b border-gray-50">
-                      <span className="text-gray-600">{m.data} - {m.refeicao}</span>
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                        m.seguiu_plano === 'sim' ? 'bg-green-100 text-green-700' :
-                        m.seguiu_plano === 'parcial' ? 'bg-amber-100 text-amber-700' :
-                        'bg-red-100 text-red-700'
-                      }`}>{m.seguiu_plano}</span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-20 bg-gray-200 rounded-full h-2">
+                          <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${Math.min((total / 2500) * 100, 100)}%` }} />
+                        </div>
+                        <span className={`font-medium text-xs ${total >= 2000 ? 'text-blue-600' : 'text-gray-400'}`}>
+                          {(total / 1000).toFixed(1)}L
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
