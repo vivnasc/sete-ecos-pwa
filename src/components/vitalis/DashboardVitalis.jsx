@@ -1565,6 +1565,13 @@ export default function DashboardVitalis() {
               <p className="text-white/70 text-xs mt-1">Planear semana</p>
             </Link>
 
+            {/* Calendário de Progresso */}
+            <Link to="/vitalis/calendario-progresso" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
+              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🗓️</div>
+              <p className="font-semibold text-white text-sm">Diário</p>
+              <p className="text-white/70 text-xs mt-1">Ver por dia</p>
+            </Link>
+
             {/* Fotos Progresso */}
             <Link to="/vitalis/fotos-progresso" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
               <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">📸</div>

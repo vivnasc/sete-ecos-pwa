@@ -69,6 +69,7 @@ const ChatCoach = lazy(() => import('./components/vitalis/ChatCoach'))
 const FotosProgresso = lazy(() => import('./components/vitalis/FotosProgresso'))
 const DesafiosSemanais = lazy(() => import('./components/vitalis/DesafiosSemanais'))
 const CalendarioRefeicoes = lazy(() => import('./components/vitalis/CalendarioRefeicoes'))
+const CalendarioProgresso = lazy(() => import('./components/vitalis/CalendarioProgresso'))
 const GuiaUtilizador = lazy(() => import('./components/vitalis/GuiaUtilizador'))
 const GuiaRamadao = lazy(() => import('./components/vitalis/GuiaRamadao'))
 // Onboardings por eco
@@ -393,6 +394,7 @@ function AppRoutes() {
             <Route path="/vitalis/fotos-progresso" element={<VitalisRoute><FotosProgresso /></VitalisRoute>} />
             <Route path="/vitalis/desafios" element={<VitalisRoute><DesafiosSemanais /></VitalisRoute>} />
             <Route path="/vitalis/calendario" element={<VitalisRoute><CalendarioRefeicoes /></VitalisRoute>} />
+            <Route path="/vitalis/calendario-progresso" element={<VitalisRoute><CalendarioProgresso /></VitalisRoute>} />
             <Route path="/vitalis/guia" element={<VitalisRoute><GuiaUtilizador /></VitalisRoute>} />
             <Route path="/vitalis/guia-ramadao" element={<VitalisRoute><GuiaRamadao /></VitalisRoute>} />
             <Route path="/vitalis/compromisso" element={<VitalisRoute><MeuCompromisso /></VitalisRoute>} />
