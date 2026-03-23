@@ -208,6 +208,8 @@ export default function CoachClienteDetalhe() {
   const [mealsLogs, setMealsLogs] = useState([]);
   const [medidas, setMedidas] = useState([]);
   const [checkins, setCheckins] = useState([]);
+  const [treinos, setTreinos] = useState([]);
+  const [sonoLogs, setSonoLogs] = useState([]);
 
   // Actions
   const [gerandoPlano, setGerandoPlano] = useState(false);
@@ -231,6 +233,8 @@ export default function CoachClienteDetalhe() {
       setMealsLogs(data.mealsLogs || []);
       setMedidas(data.medidas || []);
       setCheckins(data.checkins || []);
+      setTreinos(data.treinos || []);
+      setSonoLogs(data.sonoLogs || []);
     } catch (err) {
       console.error('Erro ao carregar dados do cliente:', err);
     } finally {
@@ -389,6 +393,7 @@ export default function CoachClienteDetalhe() {
             { key: 'plano', label: 'Plano completo' },
             { key: 'intake', label: 'Intake' },
             { key: 'progresso', label: 'Progresso' },
+            { key: 'calendario', label: 'Calendário' },
             { key: 'notificacoes', label: 'Notificações' },
             { key: 'gestao', label: 'Gestão' },
           ].map(t => (
@@ -1221,6 +1226,19 @@ export default function CoachClienteDetalhe() {
           </>
         )}
 
+        {/* === CALENDÁRIO === */}
+        {tab === 'calendario' && (
+          <CalendarioCoach
+            mealsLogs={mealsLogs}
+            aguaLogs={aguaLogs}
+            treinos={treinos}
+            sonoLogs={sonoLogs}
+            registos={registos}
+            checkins={checkins}
+            medidas={medidas}
+          />
+        )}
+
         {/* === NOTIFICAÇÕES === */}
         {tab === 'notificacoes' && (
           <NotificacoesTab userId={userId} />
@@ -1420,6 +1438,307 @@ export default function CoachClienteDetalhe() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// ── Calendário Coach ──
+const DIAS_SEMANA = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+const MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+function CalendarioCoach({ mealsLogs, aguaLogs, treinos, sonoLogs, registos, checkins, medidas }) {
+  const hoje = new Date();
+  const [mes, setMes] = useState(hoje.getMonth());
+  const [ano, setAno] = useState(hoje.getFullYear());
+  const [diaSel, setDiaSel] = useState(null);
+
+  // Construir mapa de dados por dia a partir dos dados já carregados
+  const dadosMes = useMemo(() => {
+    const mapa = {};
+    const prefix = `${ano}-${String(mes + 1).padStart(2, '0')}`;
+
+    (mealsLogs || []).forEach(m => {
+      if (!m.data?.startsWith(prefix)) return;
+      if (!mapa[m.data]) mapa[m.data] = {};
+      if (!mapa[m.data].meals) mapa[m.data].meals = [];
+      mapa[m.data].meals.push(m);
+    });
+
+    (aguaLogs || []).forEach(a => {
+      if (!a.data?.startsWith(prefix)) return;
+      if (!mapa[a.data]) mapa[a.data] = {};
+      mapa[a.data].agua = (mapa[a.data].agua || 0) + (a.quantidade_ml || 0);
+    });
+
+    (treinos || []).forEach(t => {
+      if (!t.data?.startsWith(prefix)) return;
+      if (!mapa[t.data]) mapa[t.data] = {};
+      if (!mapa[t.data].treinos) mapa[t.data].treinos = [];
+      mapa[t.data].treinos.push(t);
+    });
+
+    (sonoLogs || []).forEach(s => {
+      if (!s.data?.startsWith(prefix)) return;
+      if (!mapa[s.data]) mapa[s.data] = {};
+      mapa[s.data].sono = s;
+    });
+
+    // registos + checkins para peso/energia/humor
+    const allCheckins = [
+      ...(registos || []).map(r => ({ data: r.data, peso: r.peso || r.peso_kg, energia: r.energia_1a5 || r.energia_1a10, humor: r.humor || r.humor_1a10, aderencia: r.aderencia_1a10, seguiu: r.seguiu_plano, exercicio: r.fez_exercicio, agua: r.agua, vitorias: r.vitorias_semana })),
+      ...(checkins || []).map(c => ({ data: c.data, peso: c.peso, energia: c.energia, humor: c.humor, sono_q: c.sono, seguiu: c.seguiu_plano, exercicio: c.fez_exercicio })),
+    ];
+    allCheckins.forEach(c => {
+      if (!c.data?.startsWith(prefix)) return;
+      if (!mapa[c.data]) mapa[c.data] = {};
+      if (c.peso) mapa[c.data].peso = parseFloat(c.peso);
+      if (c.energia) mapa[c.data].energia = c.energia;
+      if (c.humor) mapa[c.data].humor = c.humor;
+      if (c.aderencia) mapa[c.data].aderencia = c.aderencia;
+      if (c.seguiu !== undefined && c.seguiu !== null) mapa[c.data].seguiu = c.seguiu;
+      if (c.exercicio !== undefined && c.exercicio !== null) mapa[c.data].exercicio = c.exercicio;
+      if (c.vitorias) mapa[c.data].vitorias = c.vitorias;
+    });
+
+    return mapa;
+  }, [mealsLogs, aguaLogs, treinos, sonoLogs, registos, checkins, mes, ano]);
+
+  // Gerar dias do mês
+  const firstDay = new Date(ano, mes, 1);
+  const lastDay = new Date(ano, mes + 1, 0);
+  let startWeekday = firstDay.getDay() - 1;
+  if (startWeekday < 0) startWeekday = 6;
+
+  const dias = [];
+  for (let i = 0; i < startWeekday; i++) dias.push(null);
+  for (let d = 1; d <= lastDay.getDate(); d++) dias.push(d);
+
+  const hojeStr = hoje.toISOString().split('T')[0];
+
+  const getDataStr = (d) => `${ano}-${String(mes + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+  const getScore = (dataStr) => {
+    const d = dadosMes[dataStr];
+    if (!d) return 0;
+    let s = 0;
+    if (d.meals?.length > 0) s++;
+    if (d.agua >= 1500) s++;
+    if (d.treinos?.length > 0) s++;
+    if (d.sono) s++;
+    if (d.peso) s++;
+    return s;
+  };
+
+  const mudarMes = (delta) => {
+    let m = mes + delta, a = ano;
+    if (m < 0) { m = 11; a--; }
+    if (m > 11) { m = 0; a++; }
+    setMes(m); setAno(a); setDiaSel(null);
+  };
+
+  const detalhes = diaSel ? dadosMes[diaSel] : null;
+
+  // Contar dias activos no mês
+  const diasActivos = Object.keys(dadosMes).length;
+  const totalDiasMes = lastDay.getDate();
+
+  return (
+    <div className="space-y-4">
+      {/* Navegação */}
+      <div className="bg-white rounded-xl border border-gray-100 p-4">
+        <div className="flex items-center justify-between mb-4">
+          <button onClick={() => mudarMes(-1)} className="p-2 rounded-lg hover:bg-gray-100 text-lg">◀</button>
+          <h3 className="font-bold text-gray-900">{MESES[mes]} {ano}</h3>
+          <button
+            onClick={() => mudarMes(1)}
+            className="p-2 rounded-lg hover:bg-gray-100 text-lg"
+            disabled={mes === hoje.getMonth() && ano === hoje.getFullYear()}
+          >
+            <span className={mes === hoje.getMonth() && ano === hoje.getFullYear() ? 'opacity-30' : ''}>▶</span>
+          </button>
+        </div>
+
+        {/* Header dias */}
+        <div className="grid grid-cols-7 gap-1 mb-1">
+          {DIAS_SEMANA.map(d => (
+            <div key={d} className="text-center text-[10px] font-semibold text-gray-400 py-1">{d}</div>
+          ))}
+        </div>
+
+        {/* Grid */}
+        <div className="grid grid-cols-7 gap-1">
+          {dias.map((d, i) => {
+            if (!d) return <div key={`e-${i}`} />;
+            const dataStr = getDataStr(d);
+            const isFuturo = new Date(ano, mes, d) > hoje;
+            const isHoje = dataStr === hojeStr;
+            const isSel = dataStr === diaSel;
+            const score = getScore(dataStr);
+            const data = dadosMes[dataStr];
+            const indicators = [];
+            if (data?.meals?.length > 0) indicators.push('🍽️');
+            if (data?.agua > 0) indicators.push('💧');
+            if (data?.treinos?.length > 0) indicators.push('💪');
+            if (data?.sono) indicators.push('😴');
+            if (data?.peso) indicators.push('⚖️');
+
+            const bg = isSel ? 'bg-gray-900 text-white' :
+              isHoje ? 'bg-blue-50 text-blue-700 font-bold ring-2 ring-blue-400' :
+              score >= 4 ? 'bg-green-100 text-green-800' :
+              score >= 2 ? 'bg-emerald-50 text-emerald-700' :
+              score >= 1 ? 'bg-amber-50 text-amber-700' :
+              'text-gray-600';
+
+            return (
+              <button
+                key={dataStr}
+                onClick={() => !isFuturo && setDiaSel(isSel ? null : dataStr)}
+                disabled={isFuturo}
+                className={`relative aspect-square rounded-lg flex flex-col items-center justify-center text-xs transition-all ${isFuturo ? 'opacity-20' : 'hover:shadow-md cursor-pointer'} ${bg}`}
+              >
+                <span className="font-medium">{d}</span>
+                {indicators.length > 0 && (
+                  <div className="flex gap-0 mt-0.5">
+                    {indicators.slice(0, 3).map((ind, j) => (
+                      <span key={j} className="text-[7px] leading-none">{ind}</span>
+                    ))}
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Legenda + resumo */}
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[9px] text-gray-400">🍽️ Ref</span>
+            <span className="text-[9px] text-gray-400">💧 Água</span>
+            <span className="text-[9px] text-gray-400">💪 Treino</span>
+            <span className="text-[9px] text-gray-400">😴 Sono</span>
+            <span className="text-[9px] text-gray-400">⚖️ Peso</span>
+          </div>
+          <span className="text-xs font-medium text-gray-600">{diasActivos}/{totalDiasMes} dias</span>
+        </div>
+      </div>
+
+      {/* Detalhe do dia */}
+      {diaSel && (
+        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+          <div className="bg-gray-900 text-white px-4 py-3">
+            <h4 className="font-bold text-sm">
+              {new Date(diaSel + 'T12:00:00').toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })}
+            </h4>
+          </div>
+
+          {!detalhes ? (
+            <p className="p-4 text-sm text-gray-400 text-center">Nenhum registo neste dia</p>
+          ) : (
+            <div className="p-4 space-y-3">
+              {/* Peso / Check-in */}
+              {(detalhes.peso || detalhes.energia || detalhes.humor || detalhes.aderencia !== undefined) && (
+                <div className="p-3 bg-purple-50 rounded-lg">
+                  <p className="text-[10px] font-semibold text-purple-700 uppercase mb-2">Check-in</p>
+                  <div className="flex flex-wrap gap-3">
+                    {detalhes.peso && <div className="text-center"><p className="text-lg font-bold text-purple-800">{detalhes.peso}kg</p><p className="text-[9px] text-purple-500">Peso</p></div>}
+                    {detalhes.energia && <div className="text-center"><p className="text-lg font-bold text-purple-800">{detalhes.energia}</p><p className="text-[9px] text-purple-500">Energia</p></div>}
+                    {detalhes.humor && <div className="text-center"><p className="text-lg font-bold text-purple-800">{detalhes.humor}</p><p className="text-[9px] text-purple-500">Humor</p></div>}
+                    {detalhes.aderencia && <div className="text-center"><p className="text-lg font-bold text-purple-800">{detalhes.aderencia}/10</p><p className="text-[9px] text-purple-500">Aderência</p></div>}
+                  </div>
+                  {detalhes.seguiu !== undefined && detalhes.seguiu !== null && (
+                    <p className={`text-xs mt-1 ${detalhes.seguiu ? 'text-green-600' : 'text-red-500'}`}>
+                      {detalhes.seguiu ? '✅ Seguiu o plano' : '❌ Não seguiu o plano'}
+                    </p>
+                  )}
+                  {detalhes.vitorias && <p className="text-xs text-purple-600 mt-1 italic">{detalhes.vitorias}</p>}
+                </div>
+              )}
+
+              {/* Refeições */}
+              {detalhes.meals?.length > 0 && (
+                <div className="p-3 bg-orange-50 rounded-lg">
+                  <p className="text-[10px] font-semibold text-orange-700 uppercase mb-2">Refeições ({detalhes.meals.length})</p>
+                  <div className="space-y-1.5">
+                    {detalhes.meals.map((m, i) => {
+                      const icon = m.seguiu_plano === 'sim' ? '✅' : m.seguiu_plano === 'parcial' ? '🟡' : m.seguiu_plano === 'nao' ? '❌' : '⚪';
+                      let items = [];
+                      try { items = (typeof m.notas === 'string' ? JSON.parse(m.notas) : m.notas)?.items || []; } catch {}
+                      return (
+                        <div key={i} className="flex items-start gap-2">
+                          <span className="text-xs">{icon}</span>
+                          <div className="min-w-0 flex-1">
+                            <span className="text-xs font-medium text-orange-800 capitalize">{m.refeicao}</span>
+                            {m.hora && <span className="text-[9px] text-orange-500 ml-1">{m.hora}</span>}
+                            {items.length > 0 && (
+                              <p className="text-[10px] text-orange-600 truncate">{items.map(it => it.nome).filter(Boolean).join(', ')}</p>
+                            )}
+                            {(m.porcoes_proteina || m.porcoes_hidratos) && (
+                              <div className="flex gap-1 mt-0.5">
+                                {m.porcoes_proteina > 0 && <span className="text-[9px] bg-rose-100 text-rose-700 px-1 rounded">{m.porcoes_proteina}p</span>}
+                                {m.porcoes_hidratos > 0 && <span className="text-[9px] bg-amber-100 text-amber-700 px-1 rounded">{m.porcoes_hidratos}h</span>}
+                                {m.porcoes_gordura > 0 && <span className="text-[9px] bg-purple-100 text-purple-700 px-1 rounded">{m.porcoes_gordura}g</span>}
+                                {m.porcoes_legumes > 0 && <span className="text-[9px] bg-green-100 text-green-700 px-1 rounded">{m.porcoes_legumes}l</span>}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Água */}
+              {detalhes.agua > 0 && (
+                <div className="p-3 bg-sky-50 rounded-lg">
+                  <p className="text-[10px] font-semibold text-sky-700 uppercase mb-1">Água</p>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">💧</span>
+                    <p className="text-lg font-bold text-sky-800">{(detalhes.agua / 1000).toFixed(1)}L</p>
+                    <div className="flex-1 h-2 bg-sky-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-sky-500 rounded-full" style={{ width: `${Math.min(100, (detalhes.agua / 2000) * 100)}%` }} />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Treino */}
+              {detalhes.treinos?.length > 0 && (
+                <div className="p-3 bg-red-50 rounded-lg">
+                  <p className="text-[10px] font-semibold text-red-700 uppercase mb-1">Treino</p>
+                  {detalhes.treinos.map((t, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <span>💪</span>
+                      <span className="text-sm font-medium text-red-800 capitalize">{t.tipo || 'Exercício'}</span>
+                      {t.duracao_min && <span className="text-xs text-red-600">{t.duracao_min}min</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Sono */}
+              {detalhes.sono && (
+                <div className="p-3 bg-indigo-50 rounded-lg">
+                  <p className="text-[10px] font-semibold text-indigo-700 uppercase mb-1">Sono</p>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">😴</span>
+                    <p className="text-lg font-bold text-indigo-800">
+                      {Math.floor((detalhes.sono.duracao_min || 0) / 60)}h{(detalhes.sono.duracao_min || 0) % 60 > 0 ? `${(detalhes.sono.duracao_min || 0) % 60}m` : ''}
+                    </p>
+                    {detalhes.sono.qualidade_1a5 && (
+                      <div className="flex items-center gap-0.5">
+                        {[1, 2, 3, 4, 5].map(n => (
+                          <span key={n} className={`text-xs ${n <= detalhes.sono.qualidade_1a5 ? 'text-indigo-500' : 'text-gray-300'}`}>★</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link } from 'react-router-dom';
+import { isNearRamadan, observaRamadao } from '../../utils/ramadao';
 
 // ============================================================
 // VIVIANNE - COACH COM METODOLOGIA VITALIS
@@ -996,10 +997,11 @@ export default function ChatCoach() {
         `• "Peso estagnado"\n` +
         `• "Alimentação e treino"\n` +
         `• "Alimentação emocional"\n\n` +
+        (isNearRamadan(10).mostrar ? (
         `**🌙 Ramadan:**\n` +
         `• "Ramadan" - apoio durante o mês sagrado\n` +
         `• "Suhoor" / "Iftar" - dicas práticas\n` +
-        `• "Hidratação ramadan" / "Exercício ramadan"\n\n` +
+        `• "Hidratação ramadan" / "Exercício ramadan"\n\n`) : '') +
         `Pergunta o que quiseres!`;
     }
 
@@ -1188,7 +1190,7 @@ export default function ChatCoach() {
               { texto: 'Porções', emoji: '🖐️' },
               { texto: 'Refeições', emoji: '🍽️' },
               { texto: 'Jejum', emoji: '⏰' },
-              { texto: 'Ramadan', emoji: '🌙' },
+              ...(isNearRamadan(5).mostrar && observaRamadao() ? [{ texto: 'Ramadan', emoji: '🌙' }] : []),
               { texto: 'Treino', emoji: '💪' },
               { texto: 'Peso', emoji: '⚖️' },
               { texto: 'Ajuda', emoji: '❓' },
