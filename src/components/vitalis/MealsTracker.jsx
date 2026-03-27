@@ -145,6 +145,23 @@ export default function MealsTracker() {
     await salvarRegisto(refeicaoNome, novosItems);
   };
 
+  // Apagar refeição inteira
+  const apagarRefeicao = async (refeicaoNome) => {
+    const registo = registosHoje[refeicaoNome];
+    if (!registo?.id) return;
+    setSaving(true);
+    try {
+      const { error } = await supabase.from('vitalis_meals_log').delete().eq('id', registo.id);
+      if (error) throw error;
+      setRegistosHoje(prev => { const n = { ...prev }; delete n[refeicaoNome]; return n; });
+      setItemsPorRefeicao(prev => ({ ...prev, [refeicaoNome]: [] }));
+    } catch (err) {
+      console.error('Erro ao apagar refeição:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   // Salvar registo no Supabase
   const salvarRegisto = async (refeicaoNome, items) => {
     setSaving(true);
@@ -426,7 +443,7 @@ export default function MealsTracker() {
                             </div>
                             <button
                               onClick={() => removerItem(ref.nome, item.id)}
-                              className="p-1 text-gray-300 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                              className="p-1.5 text-gray-400 hover:text-red-500 active:text-red-600 transition-colors"
                               aria-label={`Remover ${item.nome}`}
                             >
                               ✕
@@ -453,13 +470,24 @@ export default function MealsTracker() {
                     )}
 
                     {/* Add food button */}
-                    <button
-                      onClick={() => setAddFoodModal(ref.nome)}
-                      className="w-full py-3 mt-1 border-2 border-dashed border-gray-200 hover:border-[#7C8B6F] rounded-xl text-sm text-gray-500 hover:text-[#7C8B6F] font-medium transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                    >
-                      <span className="text-lg">+</span>
-                      Adicionar alimento
-                    </button>
+                    <div className="flex gap-2 mt-1">
+                      <button
+                        onClick={() => setAddFoodModal(ref.nome)}
+                        className="flex-1 py-3 border-2 border-dashed border-gray-200 hover:border-[#7C8B6F] rounded-xl text-sm text-gray-500 hover:text-[#7C8B6F] font-medium transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                      >
+                        <span className="text-lg">+</span>
+                        Adicionar alimento
+                      </button>
+                      {registo && (
+                        <button
+                          onClick={() => { if (window.confirm('Apagar esta refeição e todos os alimentos?')) apagarRefeicao(ref.nome); }}
+                          className="py-3 px-3 border-2 border-dashed border-gray-200 hover:border-red-300 rounded-xl text-gray-400 hover:text-red-500 transition-all active:scale-[0.98]"
+                          aria-label={`Apagar ${ref.nome}`}
+                        >
+                          🗑️
+                        </button>
+                      )}
+                    </div>
 
                     {/* Quick note */}
                     {registo?.notas && (() => {
