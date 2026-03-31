@@ -250,24 +250,36 @@ Boas-vindas à comunidade! 🌱`);
    * Chamar quando cliente usa Espaço de Retorno
    */
   async onEspacoRetorno(cliente, estado) {
-    // Email para coach
+    // Email para coach (canal mais fiável)
     await notificarAlertaCliente({
-      tipo: 'Espaço de Retorno activado',
-      descricao: `${cliente.nome} usou o Espaço de Retorno (${estado})`,
+      tipo: 'URGENTE — Espaço de Retorno activado',
+      descricao: `${cliente.nome} usou o Espaço de Retorno (${estado}). Pode precisar de apoio.`,
       nome: cliente.nome,
       email: cliente.email,
       ultimaActividade: new Date().toLocaleDateString('pt-PT'),
       whatsapp: cliente.whatsapp
     });
 
-    // WhatsApp para coach (alerta crítico - cliente pode precisar de apoio)
-    await enviarWhatsAppCoach(`⚠️ *ALERTA ESPAÇO RETORNO*
+    // WhatsApp para coach — com fallback email se falhar
+    const waOk = await enviarWhatsAppCoach(`⚠️ *ALERTA ESPAÇO RETORNO*
 
 👤 ${cliente.nome}
 😔 Estado: ${estado}
 🕐 ${new Date().toLocaleTimeString('pt-PT')}
 
 A cliente pode precisar de apoio. 💚`);
+
+    if (!waOk) {
+      // WA falhou — enviar email extra com URGENTE no assunto
+      console.warn('[EspacoRetorno] WhatsApp falhou, enviando email urgente extra');
+      await enviarEmail('coach-alerta', getCoachEmail(), {
+        tipo: 'URGENTE — WhatsApp não entregou',
+        descricao: `${cliente.nome} usou o Espaço de Retorno (${estado}). WhatsApp falhou — verifica o token Meta.`,
+        nome: cliente.nome,
+        email: cliente.email,
+        ultimaActividade: new Date().toLocaleDateString('pt-PT'),
+      });
+    }
 
     // Push para telemóvel (CRÍTICO)
     await pushCoach({
