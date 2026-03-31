@@ -9,12 +9,12 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon-32.png', 'favicon-16.png', 'apple-touch-icon.png'],
       manifest: {
-        name: 'SETE ECOS — Sistema de Transmutação Feminina',
+        name: 'SETE ECOS — Sistema de Transmutação Integral',
         short_name: 'Sete Ecos',
-        description: 'Sete caminhos para despertar cada dimensão da tua essência feminina. Plataforma holística de bem-estar.',
+        description: 'Sete caminhos para despertar cada dimensão da tua essência. Plataforma holística de bem-estar.',
         lang: 'pt',
         theme_color: '#4B0082',
-        background_color: '#FCFCFF',
+        background_color: '#4B0082',
         display: 'standalone',
         orientation: 'portrait',
         scope: '/',
@@ -24,18 +24,26 @@ export default defineConfig({
           {
             src: 'logos/sete-ecos-192.png',
             sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'logos/sete-ecos-512.png',
-            sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any'
           },
           {
             src: 'logos/sete-ecos-512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any'
+          },
+          {
+            src: 'logos/sete-ecos-maskable-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable'
+          },
+          {
+            src: 'logos/sete-ecos-maskable-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
           }
         ],
         screenshots: [],
