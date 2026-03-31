@@ -356,6 +356,27 @@ export const registerEcoPendingPayment = async (eco, userId, paymentData) => {
       .maybeSingle()
 
     if (error) return { success: false, error }
+
+    // Notificar coach via alerta
+    try {
+      const { data: userData } = await supabase
+        .from('users')
+        .select('nome, email')
+        .eq('id', userId)
+        .maybeSingle()
+
+      if (userData) {
+        await supabase.from('vitalis_alerts').insert({
+          user_id: userId,
+          tipo_alerta: 'novo_pagamento',
+          prioridade: 'alta',
+          descricao: `[${ecoConfig.name}] Novo pagamento pendente de ${userData.nome || userData.email}: ${paymentData.amount?.toLocaleString()} MZN via ${paymentData.method}. Ref: ${paymentData.reference}`
+        })
+      }
+    } catch (alertErr) {
+      console.error('Erro ao criar alerta de pagamento:', alertErr)
+    }
+
     return { success: true, data }
   } catch (error) {
     return { success: false, error: error.message }

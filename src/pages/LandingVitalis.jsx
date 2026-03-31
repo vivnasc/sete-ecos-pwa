@@ -124,6 +124,11 @@ const LandingVitalis = () => {
       desc: 'Conversa com a Vivianne virtual para dúvidas e motivação a qualquer hora.'
     },
     {
+      icone: '📲',
+      titulo: 'Atualizar via WhatsApp',
+      desc: 'Atualiza peso, restrições e refeições por WhatsApp. Sem abrir a app.'
+    },
+    {
       icone: '📈',
       titulo: 'Gráficos de Tendência',
       desc: 'Visualiza a evolução do peso, água e sono ao longo do tempo.'

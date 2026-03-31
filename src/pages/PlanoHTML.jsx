@@ -161,7 +161,9 @@ export default function PlanoHTML() {
       tamanho_mao: plano?.tamanho_mao_g || 25,
       tamanho_polegar: plano?.tamanho_polegar_g || 7,
       data_inicio: plano?.data_inicio_fase || plano?.created_at || new Date().toISOString(),
-      abordagem: abordagem
+      abordagem: abordagem,
+      num_refeicoes: plano?.num_refeicoes || 3,
+      horarios: plano?.horarios || (abordagem === 'keto_if' ? ['12:00', '16:00', '20:00'] : ['08:00', '13:00', '19:00'])
     };
   };
 
@@ -1022,12 +1024,39 @@ export default function PlanoHTML() {
           <div style={{background:'linear-gradient(135deg, #E3F2FD, #BBDEFB)',borderRadius:'14px',padding:'13px',border:'2px solid #42A5F5',boxShadow:'0 2px 12px rgba(66,165,245,0.18)'}}>
             <h3 style={{fontSize:'16px',fontWeight:'700',color:'#1565C0',marginBottom:'10px',fontFamily:'Playfair Display,serif'}}>⏰ Estrutura Diária Recomendada</h3>
             <div style={{fontSize:'12px',lineHeight:'1.6',color:'#3A3025',fontFamily:'Georgia,serif'}}>
-              <strong>7h-8h:</strong> Pequeno-almoço com proteína (ovos, iogurte grego)<br/>
-              <strong>10h-11h:</strong> Snack (se necessário): frutos secos ou fruta<br/>
-              <strong>12h30-13h30:</strong> Almoço completo (proteína + legumes + hidrato)<br/>
-              <strong>16h-17h:</strong> Snack da tarde (iogurte, queijo, nozes)<br/>
-              <strong>19h-20h:</strong> Jantar (proteína + legumes + gordura boa)<br/>
-              <strong>Antes de dormir:</strong> Chá de camomila ou casca de abacaxi
+              {dados.abordagem === 'keto_if' ? (
+                <>
+                  <div style={{background:'#1565C010',borderRadius:'8px',padding:'8px 10px',marginBottom:'8px'}}>
+                    <strong style={{color:'#1565C0'}}>Jejum Intermitente 16:8</strong><br/>
+                    Jejum de 16 horas · Janela alimentar de 8 horas
+                  </div>
+                  • Escolhe a janela de 8 horas que melhor se adapta à tua rotina<br/>
+                  • Configura o teu horário no <strong>Timer de Jejum</strong> na app<br/>
+                  • Faz {dados.num_refeicoes || 2} refeições dentro da janela alimentar<br/>
+                  • Cada refeição: proteína + legumes + gordura saudável<br/>
+                  • Distribui as porções do dia entre as refeições<br/>
+                  <br/>
+                  <strong>Durante o jejum:</strong> água, chá sem açúcar, café preto — nada com calorias.<br/>
+                  <strong>Ao quebrar o jejum:</strong> começa com proteína e gordura, não hidratos.
+                </>
+              ) : dados.abordagem === 'low_carb' ? (
+                <>
+                  <strong>8h-9h:</strong> Pequeno-almoço proteico (ovos, abacate, queijo)<br/>
+                  <strong>12h30-13h30:</strong> Almoço completo (proteína + legumes + gordura boa)<br/>
+                  <strong>16h-17h:</strong> Snack da tarde (nozes, iogurte grego)<br/>
+                  <strong>19h-20h:</strong> Jantar (proteína + legumes + azeite)<br/>
+                  <strong>Antes de dormir:</strong> Chá de camomila ou casca de abacaxi
+                </>
+              ) : (
+                <>
+                  <strong>7h-8h:</strong> Pequeno-almoço com proteína (ovos, iogurte grego)<br/>
+                  <strong>10h-11h:</strong> Snack (se necessário): frutos secos ou fruta<br/>
+                  <strong>12h30-13h30:</strong> Almoço completo (proteína + legumes + hidrato)<br/>
+                  <strong>16h-17h:</strong> Snack da tarde (iogurte, queijo, nozes)<br/>
+                  <strong>19h-20h:</strong> Jantar (proteína + legumes + gordura boa)<br/>
+                  <strong>Antes de dormir:</strong> Chá de camomila ou casca de abacaxi
+                </>
+              )}
             </div>
           </div>
 

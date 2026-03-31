@@ -3,6 +3,8 @@ import React from 'react'
 /**
  * ErrorBoundary — captura erros de renderização e mostra fallback amigável.
  * Previne crash total da aplicação quando um componente falha.
+ *
+ * Inclui auto-reload para erros causados por cache desactualizado (Service Worker).
  */
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -23,17 +25,62 @@ export default class ErrorBoundary extends React.Component {
       error?.message?.includes('Loading CSS chunk') ||
       error?.message?.includes('Expected a JavaScript module script');
 
-    if (isChunkError && !sessionStorage.getItem('chunk_reload')) {
-      sessionStorage.setItem('chunk_reload', '1')
-      window.location.reload()
+    // Detect ReferenceError from stale cached code (e.g., "Can't find variable: X")
+    // Safari says "Can't find variable", Chrome/Firefox say "X is not defined"
+    const isStaleCodeError = error instanceof ReferenceError;
+
+    const shouldAutoReload = isChunkError || isStaleCodeError;
+
+    if (shouldAutoReload && !sessionStorage.getItem('error_reload')) {
+      console.warn('[ErrorBoundary] Erro provável de cache desactualizado. A forçar reload...')
+      sessionStorage.setItem('error_reload', '1')
+
+      // Limpar caches do Service Worker antes de recarregar
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          return Promise.all(names.map(name => caches.delete(name)))
+        }).then(() => {
+          window.location.reload()
+        }).catch(() => {
+          window.location.reload()
+        })
+      } else {
+        window.location.reload()
+      }
       return
     }
-    // Clear flag after a successful page load
-    sessionStorage.removeItem('chunk_reload')
+
+    // Limpar flag depois de um carregamento com sucesso (se já tentámos reload e ainda dá erro, mostrar ao user)
+    // Nota: a flag é limpa no próximo carregamento sem erro via useEffect no App
   }
 
   handleRetry = () => {
+    // Limpar flag de reload para permitir nova tentativa
+    sessionStorage.removeItem('error_reload')
     this.setState({ hasError: false, error: null })
+  }
+
+  handleForceReload = () => {
+    // Limpar TODOS os caches e forçar reload completo
+    sessionStorage.removeItem('error_reload')
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        for (const registration of registrations) {
+          registration.unregister()
+        }
+      }).catch(() => {})
+    }
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        return Promise.all(names.map(name => caches.delete(name)))
+      }).then(() => {
+        window.location.href = window.location.pathname + '?cache_bust=' + Date.now()
+      }).catch(() => {
+        window.location.href = window.location.pathname + '?cache_bust=' + Date.now()
+      })
+    } else {
+      window.location.href = window.location.pathname + '?cache_bust=' + Date.now()
+    }
   }
 
   render() {
@@ -70,15 +117,30 @@ export default class ErrorBoundary extends React.Component {
           >
             Algo correu mal
           </h2>
-          <p className="text-gray-600 mb-6 max-w-md">
+          <p className="text-gray-600 mb-4 max-w-md">
             Ocorreu um erro inesperado. Podes tentar recarregar esta secção ou voltar ao início.
           </p>
-          <div className="flex gap-3">
+          {this.state.error && (
+            <details open className="mb-6 max-w-md text-left">
+              <summary className="text-xs text-gray-400 cursor-pointer hover:text-gray-600">Detalhes do erro</summary>
+              <pre className="mt-2 p-3 bg-gray-100 rounded-lg text-xs text-red-600 overflow-auto max-h-60 whitespace-pre-wrap">
+                {this.state.error.message || String(this.state.error)}
+                {this.state.error.stack ? '\n\n' + this.state.error.stack : ''}
+              </pre>
+            </details>
+          )}
+          <div className="flex flex-wrap gap-3 justify-center">
             <button
               onClick={this.handleRetry}
               className="px-6 py-2.5 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
             >
               Tentar novamente
+            </button>
+            <button
+              onClick={this.handleForceReload}
+              className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Limpar cache e recarregar
             </button>
             <button
               onClick={() => window.location.href = '/'}

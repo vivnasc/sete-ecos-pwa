@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link, useNavigate } from 'react-router-dom';
 import { StreakDisplay, CelebracaoModal, ConquistasSection, NivelProgresso, CONQUISTAS } from './Gamificacao.jsx';
-import { useOnboarding, OnboardingWrapper } from './OnboardingTutorial.jsx';
+import { useOnboarding } from './OnboardingTutorial.jsx';
 import { EmailTriggers } from '../../lib/emails';
 import WelcomeTutorial from '../WelcomeTutorial.jsx';
 import { isCoach } from '../../lib/coach';
@@ -491,17 +491,21 @@ export default function DashboardVitalis() {
         xp += CONQUISTAS[faseId]?.xp || 250;
       }
 
-      // Conquistas de água
-      if ((aguaCount.count || 0) >= 1) { conquistas.push('agua_1'); xp += 50; }
-      if ((aguaCount.count || 0) >= 50) { conquistas.push('agua_50'); xp += 150; }
+      // Conquistas de água (só conta se realmente há registos, não erros de query)
+      const aguaTotal = typeof aguaCount.count === 'number' ? aguaCount.count : 0;
+      const mealsTotal = typeof mealsCount.count === 'number' ? mealsCount.count : 0;
+      const treinoTotal = typeof treinoCount.count === 'number' ? treinoCount.count : 0;
+
+      if (aguaTotal >= 1) { conquistas.push('agua_1'); xp += 50; }
+      if (aguaTotal >= 50) { conquistas.push('agua_50'); xp += 150; }
 
       // Conquistas de treino
-      if ((treinoCount.count || 0) >= 1) { conquistas.push('treino_1'); xp += 75; }
-      if ((treinoCount.count || 0) >= 10) { conquistas.push('treino_10'); xp += 200; }
+      if (treinoTotal >= 1) { conquistas.push('treino_1'); xp += 75; }
+      if (treinoTotal >= 10) { conquistas.push('treino_10'); xp += 200; }
 
       // Conquistas de refeições
-      if ((mealsCount.count || 0) >= 10) { conquistas.push('refeicoes_10'); xp += 100; }
-      if ((mealsCount.count || 0) >= 50) { conquistas.push('refeicoes_50'); xp += 250; }
+      if (mealsTotal >= 10) { conquistas.push('refeicoes_10'); xp += 100; }
+      if (mealsTotal >= 50) { conquistas.push('refeicoes_50'); xp += 250; }
 
       // Conquistas de peso — comparar peso actual vs peso inicial
       if (client?.peso_inicial && client?.peso_actual && client.peso_inicial > client.peso_actual) {
@@ -517,29 +521,37 @@ export default function DashboardVitalis() {
         }
       }
 
+      // Se utilizador não tem NENHUMA actividade, não celebrar nada
+      // (evita "Primeira Gota" e outros popups na primeira visita)
+      const temActividade = aguaTotal > 0 || mealsTotal > 0 || treinoTotal > 0 ||
+        (typeof checkinCount.count === 'number' && checkinCount.count > 0);
+
       // Verificar novas conquistas — usar celebradas como fonte de verdade
       const celebradas = getConquistasCelebradas();
       const conquistasNotificadas = JSON.parse(localStorage.getItem('vitalis-conquistas-notificadas') || '[]');
-      const novasConquistas = conquistas.filter(c => !celebradas.has(c) && !conquistasNotificadas.includes(c));
 
-      // Se há novas conquistas, notificar e celebrar
-      if (novasConquistas.length > 0) {
-        // UNION: juntar antigas + novas (nunca perder conquistas já notificadas)
-        const todasNotificadas = [...new Set([...conquistasNotificadas, ...conquistas])];
-        localStorage.setItem('vitalis-conquistas-notificadas', JSON.stringify(todasNotificadas));
+      // Determinar conquistas REALMENTE novas (não celebradas NEM notificadas antes)
+      const novasConquistas = temActividade
+        ? conquistas.filter(c => !celebradas.has(c) && !conquistasNotificadas.includes(c))
+        : [];
 
-        // Mostrar celebração apenas da PRIMEIRA nova conquista (1x por sessão)
+      // SEMPRE sincronizar todas as conquistas actuais no localStorage
+      const todasNotificadas = [...new Set([...conquistasNotificadas, ...conquistas])];
+      localStorage.setItem('vitalis-conquistas-notificadas', JSON.stringify(todasNotificadas));
+      for (const cId of conquistas) {
+        marcarConquistaCelebrada(cId);
+      }
+
+      // Só mostrar celebração se é realmente nova E ainda não mostrámos nesta sessão
+      const jaCelebrouNestaSessao = sessionStorage.getItem('vitalis-celebracao-sessao');
+      if (novasConquistas.length > 0 && !jaCelebrouNestaSessao) {
+        sessionStorage.setItem('vitalis-celebracao-sessao', '1');
+
         const primeiraNovaId = novasConquistas[0];
         const primeiraNovaConquista = CONQUISTAS[primeiraNovaId];
         if (primeiraNovaConquista) {
-          marcarConquistaCelebrada(primeiraNovaId);
           setConquistaActual(primeiraNovaId);
           setShowCelebracao(true);
-        }
-
-        // Marcar todas as novas como celebradas (para não mostrar nas próximas sessões)
-        for (const cId of novasConquistas) {
-          marcarConquistaCelebrada(cId);
         }
 
         // Enviar emails para todas as novas conquistas
@@ -559,10 +571,6 @@ export default function DashboardVitalis() {
             }
           }
         }
-      } else {
-        // Sem novas conquistas: sincronizar notificadas com celebradas
-        const todasNotificadas = [...new Set([...conquistasNotificadas, ...conquistas])];
-        localStorage.setItem('vitalis-conquistas-notificadas', JSON.stringify(todasNotificadas));
       }
 
       setConquistasDesbloqueadas(conquistas);
@@ -885,16 +893,18 @@ export default function DashboardVitalis() {
   }
 
   return (
+    <>
+    {/* Modais com position:fixed — FORA do container animado para evitar bug CSS
+        (transform no pai quebra position:fixed nos filhos) */}
+    {mostrarOnboarding && (
+      <WelcomeTutorial eco="vitalis" onComplete={completarOnboarding} />
+    )}
+
     <div className={`min-h-screen pb-20 transition-colors duration-500 animate-page-enter ${
       isDarkMode
         ? 'bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f0f23]'
         : 'bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]'
     }`}>
-
-      {/* Tutorial de Boas-vindas - Apenas na primeira vez (controlado por useOnboarding) */}
-      {mostrarOnboarding && (
-        <WelcomeTutorial eco="vitalis" onComplete={completarOnboarding} />
-      )}
 
       {/* Header com Perfil — premium animated gradient */}
       <header className="relative overflow-hidden">
@@ -1238,7 +1248,7 @@ export default function DashboardVitalis() {
                   Dia {Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / (1000 * 60 * 60 * 24)) + 1} da tua jornada •
                   {t('vitalis.dashboard.week')} {Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / (7 * 24 * 60 * 60 * 1000)) + 1} •
                   {(() => {
-                    const abordagem = plano?.abordagem || intake?.abordagem_preferida || 'equilibrado';
+                    const abordagem = plano?.abordagem || 'equilibrado';
                     const faseNomes = {
                       keto_if: { inducao: 'Indução', transicao: 'Transição', recomposicao: 'Recomposição', manutencao: 'Manutenção' },
                       low_carb: { inducao: 'Adaptação', transicao: 'Transição', recomposicao: 'Recomposição', manutencao: 'Manutenção' },
@@ -1604,61 +1614,55 @@ export default function DashboardVitalis() {
         </div>
 
       </main>
-
-      {/* Modal de Celebração de Conquistas */}
-      <CelebracaoModal
-        conquista={conquistaActual}
-        show={showCelebracao}
-        onClose={() => {
-          setShowCelebracao(false);
-          setConquistaActual(null);
-        }}
-      />
-
-      {/* Modal de Seleção de Avatar */}
-      {showAvatarPicker && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowAvatarPicker(false)} />
-          <div className="relative bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-bounceIn">
-            <h3 className="text-xl font-bold text-gray-800 mb-2 text-center">Escolhe o teu avatar</h3>
-            <p className="text-sm text-gray-500 text-center mb-4">Representa o teu progresso na jornada</p>
-
-            <div className="grid grid-cols-5 gap-3 mb-4">
-              {['🌱', '🌿', '🌳', '🌻', '🌸', '🦋', '🔥', '⭐', '💎', '🏆', '👑', '🌙', '☀️', '🌈', '🍀'].map((emoji) => (
-                <button
-                  key={emoji}
-                  onClick={() => {
-                    setAvatarIcon(emoji);
-                    localStorage.setItem('vitalis-avatar', emoji);
-                    setShowAvatarPicker(false);
-                  }}
-                  className={`w-12 h-12 rounded-xl text-2xl flex items-center justify-center transition-all ${
-                    avatarIcon === emoji
-                      ? 'bg-[#7C8B6F] scale-110 shadow-lg'
-                      : 'bg-gray-100 hover:bg-gray-200'
-                  }`}
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-
-            <button
-              onClick={() => setShowAvatarPicker(false)}
-              className="w-full py-3 bg-gray-100 text-gray-600 rounded-xl font-medium hover:bg-gray-200 transition-colors"
-            >
-              Cancelar
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Modal de Conquistas agora está dentro de AchievementsPanel */}
-
-      {/* Onboarding para novos utilizadores */}
-      {mostrarOnboarding && (
-        <OnboardingWrapper onComplete={completarOnboarding} />
-      )}
     </div>
+
+    {/* Modais com position:fixed — FORA do container animado (transform quebra fixed) */}
+    <CelebracaoModal
+      conquista={conquistaActual}
+      show={showCelebracao}
+      onClose={() => {
+        setShowCelebracao(false);
+        setConquistaActual(null);
+      }}
+    />
+
+    {showAvatarPicker && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn">
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowAvatarPicker(false)} />
+        <div className="relative bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-bounceIn">
+          <h3 className="text-xl font-bold text-gray-800 mb-2 text-center">Escolhe o teu avatar</h3>
+          <p className="text-sm text-gray-500 text-center mb-4">Representa o teu progresso na jornada</p>
+
+          <div className="grid grid-cols-5 gap-3 mb-4">
+            {['🌱', '🌿', '🌳', '🌻', '🌸', '🦋', '🔥', '⭐', '💎', '🏆', '👑', '🌙', '☀️', '🌈', '🍀'].map((emoji) => (
+              <button
+                key={emoji}
+                onClick={() => {
+                  setAvatarIcon(emoji);
+                  localStorage.setItem('vitalis-avatar', emoji);
+                  setShowAvatarPicker(false);
+                }}
+                className={`w-12 h-12 rounded-xl text-2xl flex items-center justify-center transition-all ${
+                  avatarIcon === emoji
+                    ? 'bg-[#7C8B6F] scale-110 shadow-lg'
+                    : 'bg-gray-100 hover:bg-gray-200'
+                }`}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setShowAvatarPicker(false)}
+            className="w-full py-3 bg-gray-100 text-gray-600 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    )}
+
+    </>
   );
 }

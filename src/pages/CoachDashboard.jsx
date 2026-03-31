@@ -7,6 +7,7 @@ import { supabase } from '../lib/supabase';
 import { ECO_PLANS } from '../lib/shared/subscriptionPlans';
 
 const CentroComunicacoes = lazy(() => import('../components/CentroComunicacoes'));
+const CoachPromoManager = lazy(() => import('../components/CoachPromoManager'));
 
 const POLL_INTERVAL = 30_000;
 
@@ -822,7 +823,7 @@ export default function CoachDashboard() {
 
         {/* ══════ CONFIG ══════ */}
         {activeTab === 'config' && (
-          <div className="space-y-4 max-w-lg animate-fadeIn">
+          <div className="space-y-4 max-w-xl animate-fadeIn">
             <div className="coach-glass rounded-2xl p-5">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-bold text-white/90 text-sm">Push Notifications</h3>
@@ -864,6 +865,11 @@ export default function CoachDashboard() {
                 </div>
               )}
             </div>
+
+            {/* Gestão de Códigos Promo */}
+            <Suspense fallback={<div className="h-32 rounded-2xl bg-white/[0.04] animate-pulse" />}>
+              <CoachPromoManager />
+            </Suspense>
           </div>
         )}
       </main>

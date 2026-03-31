@@ -61,7 +61,7 @@ export const luminaTranslations = {
     'lumina.q.espelho.title': 'Espelho',
     'lumina.q.espelho.explain': 'Quando te olhas, o que encontras?',
     'lumina.q.cuidado.title': 'Cuidado Próprio',
-    'lumina.q.cuidado.explain': 'Como tens tratado a ti mesma ultimamente?',
+    'lumina.q.cuidado.explain': 'Como te tens tratado ultimamente?',
 
     // === OPTION VALUES ===
     'lumina.opt.pesado': 'pesado',
@@ -143,6 +143,29 @@ export const luminaTranslations = {
     'lumina.ecos.imago_focus': 'Identidade & Essência',
     'lumina.ecos.self_worth': 'Valor Próprio',
     'lumina.ecos.login': 'Entrar',
+
+    // === SHARE ===
+    'lumina.share.title': 'PARTILHAR LEITURA',
+    'lumina.share.whatsapp': 'WhatsApp',
+    'lumina.share.copy': 'Copiar',
+    'lumina.share.copied': 'Copiado',
+    'lumina.share.text': 'A minha leitura LUMINA de hoje:\n\n"{reading}"\n\nDescobre o teu estado interior: app.seteecos.com/lumina',
+
+    // === DIMENSIONS SUMMARY ===
+    'lumina.dims.title': 'AS TUAS 8 DIMENSÕES',
+    'lumina.dims.corpo': 'Corpo',
+    'lumina.dims.passado': 'Passado',
+    'lumina.dims.impulso': 'Impulso',
+    'lumina.dims.futuro': 'Futuro',
+    'lumina.dims.mente': 'Mente',
+    'lumina.dims.energia': 'Energia',
+    'lumina.dims.espelho': 'Espelho',
+    'lumina.dims.cuidado': 'Cuidado',
+
+    // === NEW READING LABELS ===
+    'lumina.reading.your_pattern': 'O TEU PADRÃO',
+    'lumina.reading.what_to_do': 'O QUE PODES FAZER',
+    'lumina.reading.listen_reading': 'Ouvir leitura',
 
     // === FOOTER ===
     'lumina.save_close': 'Guardar e Fechar',
@@ -346,6 +369,29 @@ export const luminaTranslations = {
     'lumina.ecos.self_worth': 'Self-Worth',
     'lumina.ecos.login': 'Login',
 
+    // === SHARE ===
+    'lumina.share.title': 'SHARE READING',
+    'lumina.share.whatsapp': 'WhatsApp',
+    'lumina.share.copy': 'Copy',
+    'lumina.share.copied': 'Copied',
+    'lumina.share.text': 'My LUMINA reading today:\n\n"{reading}"\n\nDiscover your inner state: app.seteecos.com/lumina',
+
+    // === DIMENSIONS SUMMARY ===
+    'lumina.dims.title': 'YOUR 8 DIMENSIONS',
+    'lumina.dims.corpo': 'Body',
+    'lumina.dims.passado': 'Past',
+    'lumina.dims.impulso': 'Impulse',
+    'lumina.dims.futuro': 'Future',
+    'lumina.dims.mente': 'Mind',
+    'lumina.dims.energia': 'Energy',
+    'lumina.dims.espelho': 'Mirror',
+    'lumina.dims.cuidado': 'Self-Care',
+
+    // === NEW READING LABELS ===
+    'lumina.reading.your_pattern': 'YOUR PATTERN',
+    'lumina.reading.what_to_do': 'WHAT YOU CAN DO',
+    'lumina.reading.listen_reading': 'Listen to reading',
+
     // === FOOTER ===
     'lumina.save_close': 'Save and Close',
 
@@ -547,6 +593,29 @@ export const luminaTranslations = {
     'lumina.ecos.imago_focus': 'Identité & Essence',
     'lumina.ecos.self_worth': 'Valeur de Soi',
     'lumina.ecos.login': 'Connexion',
+
+    // === SHARE ===
+    'lumina.share.title': 'PARTAGER LA LECTURE',
+    'lumina.share.whatsapp': 'WhatsApp',
+    'lumina.share.copy': 'Copier',
+    'lumina.share.copied': 'Copié',
+    'lumina.share.text': 'Ma lecture LUMINA aujourd\'hui :\n\n"{reading}"\n\nDécouvre ton état intérieur : app.seteecos.com/lumina',
+
+    // === DIMENSIONS SUMMARY ===
+    'lumina.dims.title': 'TES 8 DIMENSIONS',
+    'lumina.dims.corpo': 'Corps',
+    'lumina.dims.passado': 'Passé',
+    'lumina.dims.impulso': 'Impulsion',
+    'lumina.dims.futuro': 'Futur',
+    'lumina.dims.mente': 'Esprit',
+    'lumina.dims.energia': 'Énergie',
+    'lumina.dims.espelho': 'Miroir',
+    'lumina.dims.cuidado': 'Soin de Soi',
+
+    // === NEW READING LABELS ===
+    'lumina.reading.your_pattern': 'TON PATTERN',
+    'lumina.reading.what_to_do': 'CE QUE TU PEUX FAIRE',
+    'lumina.reading.listen_reading': 'Écouter la lecture',
 
     // === FOOTER ===
     'lumina.save_close': 'Sauvegarder et Fermer',

@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { setSexo } from '../../utils/genero';
 import { setObservaRamadao } from '../../utils/ramadao';
 import { EmailTriggers } from '../../lib/emails';
-import { gerarPlanoAutomatico } from '../../lib/vitalis/planoGenerator';
 
 export default function VitalisIntakeComplete() {
   const navigate = useNavigate();
@@ -84,28 +83,73 @@ export default function VitalisIntakeComplete() {
       labels: ['Emagrecer', 'Ganhar energia', 'Melhorar saúde', 'Controlar fome emocional', 'Outro'],
       required: true 
     },
-    prazo: { label: 'Em quanto tempo?', type: 'radio', options: ['3m', '6m', '9m', '12m', 'sem_pressa'], labels: ['3 meses', '6 meses', '9 meses', '12 meses', 'Sem pressa'], required: true },
+    prazo: {
+      label: 'Em quanto tempo?',
+      type: 'radio',
+      options: ['3m', '6m', '9m', '12m', 'sem_pressa'],
+      labels: ['3 meses', '6 meses', '9 meses', '12 meses', 'Sem pressa'],
+      required: true,
+      dynamicHint: (formData) => {
+        const peso = parseFloat(formData.peso_actual);
+        const meta = parseFloat(formData.peso_meta);
+        if (!peso || !meta || peso <= meta) return null;
+        const diff = peso - meta;
+        const mesesIdeal = Math.ceil(diff / 4); // ~4kg/mês saudável
+        if (mesesIdeal <= 3) return '💡 Para ' + Math.round(diff) + ' kg, 3 meses é um prazo realista e saudável.';
+        if (mesesIdeal <= 6) return '💡 Para ' + Math.round(diff) + ' kg, recomendamos 6 meses para resultados sustentáveis (~4 kg/mês).';
+        return '💡 Para ' + Math.round(diff) + ' kg, um prazo de ' + mesesIdeal + '+ meses permite perda saudável sem efeito rebote.';
+      }
+    },
     porque_importante: { label: 'Porquê é importante para ti?', type: 'textarea', placeholder: 'O que vai mudar na tua vida?', rows: 3 },
-    abordagem_preferida: { label: 'Que abordagem preferes?', type: 'radio', options: ['keto_if', 'low_carb', 'equilibrado', 'nao_sei'], labels: ['Keto + Jejum Intermitente', 'Low Carb', 'Equilibrado', 'Não sei'], required: true },
+    abordagem_preferida: {
+      label: 'Que abordagem preferes?',
+      type: 'radio',
+      options: ['keto_if', 'low_carb', 'equilibrado', 'nao_sei'],
+      labels: ['Keto + Jejum Intermitente', 'Low Carb', 'Equilibrado', 'Não sei'],
+      required: true,
+      dynamicHint: (formData) => {
+        const peso = parseFloat(formData.peso_actual);
+        const meta = parseFloat(formData.peso_meta);
+        if (!peso || !meta || peso <= meta) return null;
+        const diff = peso - meta;
+        if (diff >= 20) return '💡 Com ' + Math.round(diff) + ' kg a perder, Keto + Jejum Intermitente costuma dar resultados mais rápidos — mas a escolha é tua!';
+        if (diff >= 10) return '💡 Com ' + Math.round(diff) + ' kg a perder, Keto + IF ou Low Carb são boas opções. Escolhe a que te parecer mais sustentável!';
+        if (diff < 5) return '💡 Com poucos quilos a ajustar, uma abordagem Equilibrada pode ser ideal — mas qualquer opção funciona!';
+        return null;
+      }
+    },
     restricoes_alimentares: { label: 'Restrições alimentares', type: 'checkbox', options: ['Vegetariano/a', 'Vegano/a', 'Sem glúten', 'Sem lactose', 'Halal', 'Nenhuma'] },
     observa_ramadao: { label: '🌙 Observas o jejum do Ramadan?', type: 'radio', options: ['sim', 'nao', 'as_vezes'], labels: ['Sim, todos os anos', 'Não', 'Às vezes / parcialmente'] },
-    condicoes_saude: { label: 'Condições de saúde', type: 'checkbox', options: ['Diabetes', 'Hipertensão', 'Colesterol alto', 'Problemas de tiroide', 'SOP (Síndrome do Ovário Policístico)', 'Problemas de próstata', 'Nenhuma'] },
+    condicoes_saude: {
+      label: 'Condições de saúde',
+      type: 'checkbox',
+      options: ['Diabetes', 'Hipertensão', 'Colesterol alto', 'Problemas de tiroide', 'SOP (Síndrome do Ovário Policístico)', 'Problemas de próstata', 'Nenhuma'],
+      dynamicHint: (formData) => formData.abordagem_preferida === 'keto_if'
+        ? '💡 Se tens diabetes ou hipertensão, consulta o teu médico antes de iniciar jejum intermitente.'
+        : null
+    },
     medicacao: { label: 'Medicação e suplementos actuais', type: 'textarea', placeholder: 'Lista medicamentos e suplementos (ou "Nenhum")', rows: 2 },
     
     // REFEIÇÕES - CORRIGIDO
-    refeicoes_dia: { 
-      label: 'Quantas refeições comes por dia?', 
+    refeicoes_dia: {
+      label: 'Quantas refeições comes por dia?',
       type: 'radio',
       options: ['1-2', '3', '4', '5-6'],
       labels: ['1-2 refeições', '3 refeições', '4 refeições', '5-6 refeições'],
-      required: true
+      required: true,
+      dynamicHint: (formData) => formData.abordagem_preferida === 'keto_if'
+        ? '💡 Para Keto + Jejum Intermitente, recomendamos 2-3 refeições numa janela de 8 horas — mas a escolha é tua!'
+        : null
     },
     faz_pequeno_almoco: {
       label: 'Fazes pequeno-almoço?',
       type: 'radio',
       options: ['sim', 'nao', 'as_vezes'],
       labels: ['Sim, sempre', 'Não', 'Às vezes'],
-      required: true
+      required: true,
+      dynamicHint: (formData) => formData.abordagem_preferida === 'keto_if'
+        ? '💡 No Jejum Intermitente 16:8, normalmente saltas o pequeno-almoço e começas a comer ao meio-dia.'
+        : null
     },
     pequeno_almoco_opcoes: { 
       label: 'O que costumas comer no pequeno-almoço?', 
@@ -458,30 +502,16 @@ export default function VitalisIntakeComplete() {
     setError('');
 
 try {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Não autenticado');
-
-  // Buscar user record (já criado pelo AuthContext)
-  const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('id, nome')
-    .eq('auth_id', user.id)
-    .maybeSingle();
-
-  if (userError) {
-    console.error('Erro ao buscar utilizador:', userError);
-    throw new Error('Erro ao carregar perfil de utilizador. Tente novamente.');
-  }
-
-  if (!userData) {
-    throw new Error('Perfil de utilizador não encontrado. Faça logout e login novamente.');
-  }
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error('Não autenticado');
 
   const aceita_jejum = formData.abordagem_preferida === 'keto_if';
 
-  // Converter arrays para strings onde necessário
+  // Sanitizar arrays — colunas TEXT[] não aceitam strings vazias
+  const safeArray = (val) => Array.isArray(val) && val.length > 0 ? val : null;
+
+  // Converter arrays para strings onde necessário (colunas TEXT no PostgreSQL)
   const intakeData = {
-    user_id: userData.id,  // 🎯 MUDANÇA AQUI!
         nome: formData.nome,
         email: formData.email,
         whatsapp: formData.whatsapp,
@@ -497,25 +527,25 @@ try {
         porque_importante: formData.porque_importante,
         abordagem_preferida: formData.abordagem_preferida,
         aceita_jejum: aceita_jejum,
-        restricoes_alimentares: formData.restricoes_alimentares,
-        condicoes_saude: formData.condicoes_saude,
+        restricoes_alimentares: safeArray(formData.restricoes_alimentares),
+        condicoes_saude: safeArray(formData.condicoes_saude),
         medicacao: formData.medicacao,
-        refeicoes_dia: formData.refeicoes_dia === '1-2' ? 2 
+        refeicoes_dia: formData.refeicoes_dia === '1-2' ? 2
                      : formData.refeicoes_dia === '3' ? 3
                      : formData.refeicoes_dia === '4' ? 4
                      : formData.refeicoes_dia === '5-6' ? 5
                      : null,
-        pequeno_almoco: formData.faz_pequeno_almoco === 'sim' || formData.faz_pequeno_almoco === 'as_vezes' 
-          ? formData.pequeno_almoco_opcoes.join(', ') 
+        pequeno_almoco: formData.faz_pequeno_almoco === 'sim' || formData.faz_pequeno_almoco === 'as_vezes'
+          ? formData.pequeno_almoco_opcoes.join(', ')
           : 'Não faz',
-        onde_come: formData.onde_come,
-        tipos_comida: formData.tipos_comida,
+        onde_come: safeArray(formData.onde_come),
+        tipos_comida: safeArray(formData.tipos_comida),
         agua_litros_dia: parseFloat(formData.agua_litros_dia),
-        bebidas: formData.bebidas,
+        bebidas: safeArray(formData.bebidas),
         freq_doces: parseInt(formData.freq_doces),
         freq_fritos: parseInt(formData.freq_fritos),
         petisca: formData.petisca,
-        o_que_petisca: formData.o_que_petisca,
+        o_que_petisca: safeArray(formData.o_que_petisca),
         freq_cansaco: formData.freq_cansaco,
         freq_ansiedade: formData.freq_ansiedade,
         freq_tristeza: formData.freq_tristeza,
@@ -524,16 +554,14 @@ try {
         freq_solidao: formData.freq_solidao,
         freq_negacao: formData.freq_negacao,
         emocao_dominante: formData.emocao_dominante,
-        o_que_procura_comer: formData.o_que_procura_comer,
-        como_sente_depois: Array.isArray(formData.como_sente_depois) 
-          ? formData.como_sente_depois.join(', ') 
-          : formData.como_sente_depois,
+        o_que_procura_comer: safeArray(formData.o_que_procura_comer),
+        como_sente_depois: safeArray(formData.como_sente_depois),
         quando_comecou_padrao: formData.quando_comecou_padrao,
         tentou_alternativas: formData.tentou_alternativas,
         que_alternativas: formData.que_alternativas,
         nivel_actividade: formData.nivel_actividade,
         faz_exercicio: formData.faz_exercicio,
-        tipo_exercicio: formData.tipo_exercicio,
+        tipo_exercicio: safeArray(formData.tipo_exercicio),
         horas_sono: formData.horas_sono,
         qualidade_sono: parseInt(formData.qualidade_sono),
         nivel_stress: parseInt(formData.nivel_stress),
@@ -542,21 +570,15 @@ try {
         filhos_pequenos: formData.filhos_pequenos,
         quem_cozinha: formData.quem_cozinha,
         quantas_dietas: formData.quantas_dietas,
-        historico_dietas: Array.isArray(formData.historico_dietas) 
-          ? formData.historico_dietas.join(', ') 
-          : formData.historico_dietas,
-        dieta_funcionou: Array.isArray(formData.dieta_funcionou) 
-          ? formData.dieta_funcionou.join(', ') 
-          : formData.dieta_funcionou,
+        historico_dietas: safeArray(formData.historico_dietas),
+        dieta_funcionou: safeArray(formData.dieta_funcionou),
         maior_obstaculo: formData.maior_obstaculo,
-        gatilhos_sair_plano: formData.gatilhos_sair_plano,
+        gatilhos_sair_plano: safeArray(formData.gatilhos_sair_plano),
         abordagem_realista: formData.abordagem_realista,
-        preferencias_alimentares: formData.preferencias_alimentares,
+        preferencias_alimentares: safeArray(formData.preferencias_alimentares),
         medir_pesar_comida: formData.medir_pesar_comida,
         acesso_ingredientes: formData.acesso_ingredientes,
-        como_conheceu: Array.isArray(formData.como_conheceu) 
-          ? formData.como_conheceu.join(', ') 
-          : formData.como_conheceu,
+        como_conheceu: safeArray(formData.como_conheceu),
         o_que_espera_ganhar: formData.o_que_espera_ganhar,
         observacoes_adicionais: formData.observacoes_adicionais,
         prontidao_1a10: parseInt(formData.prontidao_1a10),
@@ -564,162 +586,48 @@ try {
         observa_ramadao: formData.observa_ramadao || null
       };
 
-      // Inserir intake primeiro
-      const { error: intakeError } = await supabase
-        .from('vitalis_intake')
-        .upsert(intakeData, { 
-          onConflict: 'user_id',
-          returning: 'minimal'
-        });
-
-      if (intakeError) {
-        console.error('Erro no intake:', intakeError);
-        throw intakeError;
-      }
-
-    // Verificar se já existe registo com subscription_status
-      console.log('🔍 [INTAKE] Buscando existingClient para user_id:', userData.id);
-      const { data: existingClient, error: selectError } = await supabase
-        .from('vitalis_clients')
-        .select('id, subscription_status, status, created_at')
-        .eq('user_id', userData.id)
-        .maybeSingle();
-
-      if (selectError) {
-        console.error('❌ [INTAKE] Erro ao buscar existingClient:', selectError);
-      }
-
-      console.log('📊 [INTAKE] existingClient encontrado?', existingClient ? 'SIM' : 'NÃO');
-      if (existingClient) {
-        console.log('✅ [INTAKE] Dados do existingClient:', {
-          id: existingClient.id,
-          subscription_status: existingClient.subscription_status,
-          status: existingClient.status,
-          created_at: existingClient.created_at
-        });
-      }
-
-      const clientData = {
-        user_id: userData.id,
-        objectivo_principal: formData.objectivo_principal,
-        peso_inicial: parseFloat(formData.peso_actual),
-        peso_actual: parseFloat(formData.peso_actual),
-        peso_meta: parseFloat(formData.peso_meta),
-        emocao_dominante: formData.emocao_dominante,
-        prontidao_1a10: parseInt(formData.prontidao_1a10)
-      };
-
-      if (existingClient) {
-        // Atualizar mas NÃO sobrescrever subscription_status NEM status
-        // (planoGenerator will set status: 'activo' when generating the plan)
-        console.log('🔄 [INTAKE] Atualizando existingClient - preservando subscription_status:', existingClient.subscription_status);
-        const { error: clientError } = await supabase
-          .from('vitalis_clients')
-          .update(clientData)
-          .eq('user_id', userData.id);
-        if (clientError) {
-          console.error('❌ [INTAKE] Erro ao atualizar client:', clientError);
-          throw clientError;
-        }
-        console.log('✅ [INTAKE] Client atualizado com sucesso');
-      } else {
-        // ❌ NÃO DEVERIA CHEGAR AQUI se user já pagou/usou código!
-        console.warn('⚠️ [INTAKE] AVISO: Criando NOVO vitalis_clients com subscription_status=none para user_id:', userData.id);
-        console.warn('⚠️ [INTAKE] Isto NÃO deveria acontecer se o user já usou código ou pagou!');
-        const { error: clientError } = await supabase
-          .from('vitalis_clients')
-          .insert({
-            ...clientData,
-            status: 'novo',
-            subscription_status: 'none',
-            created_at: new Date().toISOString()
-          });
-        if (clientError) {
-          console.error('❌ [INTAKE] Erro ao inserir client:', clientError);
-          throw clientError;
-        }
-        console.log('⚠️ [INTAKE] Novo client criado com subscription_status=none');
-      }
-
-      // IMPORTANTE: Re-buscar o cliente para obter o status ACTUAL após insert/update
-      console.log('🔄 [INTAKE] Re-buscando currentClient após insert/update...');
-      const { data: currentClient, error: currentError } = await supabase
-        .from('vitalis_clients')
-        .select('subscription_status, status')
-        .eq('user_id', userData.id)
-        .maybeSingle();
-
-      if (currentError) {
-        console.error('❌ [INTAKE] Erro ao re-buscar currentClient:', currentError);
-      }
-
-      console.log('📊 [INTAKE] currentClient FINAL:', {
-        subscription_status: currentClient?.subscription_status,
-        status: currentClient?.status,
-        user_id: userData.id
+      // Enviar tudo para a API serverless (bypassa RLS com service role)
+      console.log('📝 [INTAKE] Enviando para API serverless...');
+      const response = await fetch('/api/intake-vitalis', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ intakeData, formData })
       });
 
-      // 🛡️ REGRAS DE GERAÇÃO DE PLANO AUTOMÁTICO
-      // APENAS testers e utilizadores com subscrição ACTIVE geram plano
-      // pending aguarda verificação de pagamento (não gera ainda)
-      // trial tem acesso básico (dashboard, receitas, check-in) mas SEM plano personalizado
-      const statusComPlano = ['tester', 'active'];
-      const temPlano = currentClient && statusComPlano.includes(currentClient.subscription_status);
+      const result = await response.json();
 
-      // Trial e pending têm acesso limitado ao dashboard, mas SEM plano personalizado
-      const statusComAcessoBasico = ['trial', 'pending'];
-      const temAcessoBasico = currentClient && statusComAcessoBasico.includes(currentClient.subscription_status);
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao gravar questionário');
+      }
 
-      console.log('🎯 [INTAKE] DECISÃO DE GERAÇÃO DE PLANO:');
-      console.log('  → subscription_status:', currentClient?.subscription_status);
-      console.log('  → statusComPlano:', statusComPlano);
-      console.log('  → temPlano:', temPlano);
-      console.log('  → statusComAcessoBasico:', statusComAcessoBasico);
-      console.log('  → temAcessoBasico:', temAcessoBasico);
-      console.log('  → Ação:', temPlano ? '✅ GERAR PLANO' : temAcessoBasico ? '📋 ACESSO BÁSICO (sem plano)' : '💳 REDIRECIONAR PARA PAGAMENTO');
+      console.log('✅ [INTAKE] API respondeu:', result);
 
       // Notificar coach que intake foi completo
       EmailTriggers.onIntakeCompleto({
-        nome: formData.nome || user.email.split('@')[0],
-        email: user.email,
+        nome: formData.nome || session.user.email.split('@')[0],
+        email: session.user.email,
         objectivo: formData.objectivo_principal,
-        status: currentClient?.subscription_status || 'none',
+        status: result.temPlano ? 'active' : result.temAcessoBasico ? 'trial' : 'pending',
       }).catch(() => {});
 
       // Guardar preferências para personalizar textos na app
       setSexo(formData.sexo);
       setObservaRamadao(formData.observa_ramadao);
 
-      if (temPlano) {
-        // GERAR PLANO AUTOMATICAMENTE para utilizadores com subscrição activa
-        setPlanoUserId(userData.id);
-        setPlanoStatus('gerando');
-        console.log('🔄 A gerar plano automático para userId:', userData.id);
-
-        try {
-          const resultado = await gerarPlanoAutomatico(userData.id);
-          if (resultado?.success) {
-            console.log('✅ PLANO GERADO COM SUCESSO!', resultado.plano);
-            setPlanoStatus('sucesso');
-            // Esperar 2s para a utilizadora ver a confirmação
-            setTimeout(() => navigate('/vitalis/dashboard'), 2000);
-          } else {
-            console.error('⚠️ Plano não gerado:', resultado?.error);
-            setPlanoStatus('erro');
-            setPlanoErro(resultado?.error || 'Erro desconhecido ao gerar plano');
-          }
-        } catch (planoError) {
-          console.error('⚠️ Erro ao gerar plano:', planoError);
-          setPlanoStatus('erro');
-          setPlanoErro(planoError.message || 'Erro inesperado ao gerar plano');
-        }
-      } else if (temAcessoBasico) {
-        // Trial: acesso básico sem plano personalizado
-        console.log('✅ Trial iniciado - acesso básico concedido (dashboard, receitas, check-in)');
+      if (result.temPlano && result.plano && !result.plano.error) {
+        setPlanoUserId(result.userId);
+        setPlanoStatus('sucesso');
+        setTimeout(() => navigate('/vitalis/dashboard'), 2000);
+      } else if (result.temPlano && result.plano?.error) {
+        setPlanoStatus('erro');
+        setPlanoErro(result.plano.error);
+      } else if (result.temAcessoBasico) {
         navigate('/vitalis/dashboard');
       } else {
-        // Não tem acesso - ir para pagamento
-        navigate('/vitalis/pagamento');
+        navigate(result.redirect || '/vitalis/pagamento');
       }
     } catch (err) {
       console.error('Erro completo:', err);
@@ -791,12 +699,18 @@ try {
           </div>
         );
 
-      case 'radio':
+      case 'radio': {
+        const hint = config.dynamicHint ? config.dynamicHint(formData) : null;
         return (
           <div className="mb-6" id={`field-${fieldId}`}>
             <p className="block text-sm font-semibold text-gray-700 mb-3">
               {config.label} {config.required && <span className="text-red-500">*</span>}
             </p>
+            {hint && (
+              <p className="text-xs text-[#C1634A] bg-[#C1634A]/10 rounded-lg px-3 py-2 mb-3">
+                {hint}
+              </p>
+            )}
             <div className="space-y-2">
               {config.options.map((opt, i) => (
                 <label key={opt} className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#C1634A]/10 cursor-pointer transition-colors">
@@ -815,13 +729,20 @@ try {
             {hasError && <p className="text-red-500 text-sm mt-1">{hasError}</p>}
           </div>
         );
+      }
 
-      case 'checkbox':
+      case 'checkbox': {
+        const cbHint = config.dynamicHint ? config.dynamicHint(formData) : null;
         return (
           <div className="mb-6" id={`field-${fieldId}`}>
             <p className="block text-sm font-semibold text-gray-700 mb-3">
               {config.label} {config.required && <span className="text-red-500">*</span>}
             </p>
+            {cbHint && (
+              <p className="text-xs text-[#C1634A] bg-[#C1634A]/10 rounded-lg px-3 py-2 mb-3">
+                {cbHint}
+              </p>
+            )}
             <div className="space-y-2">
               {config.options.map(opt => (
                 <label key={opt} className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#C1634A]/10 cursor-pointer transition-colors">
@@ -838,6 +759,7 @@ try {
             {hasError && <p className="text-red-500 text-sm mt-1">{hasError}</p>}
           </div>
         );
+      }
 
       case 'checkbox_single':
         return (

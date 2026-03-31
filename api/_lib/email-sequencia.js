@@ -48,6 +48,7 @@ const RODAPE_WHATSAPP = `
     <p style="color: white; font-weight: bold; margin: 0 0 8px; font-size: 15px;">Tens perguntas? Fala comigo no WhatsApp.</p>
     <a href="${WHATSAPP_CHATBOT}" style="display: inline-block; padding: 10px 24px; background: white; color: #25D366; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 14px;">Abrir WhatsApp</a>
     <p style="color: rgba(255,255,255,0.8); font-size: 11px; margin: 8px 0 0;">Respondo em menos de 1 hora | Seg-Sex 9h-18h</p>
+    <p style="color: rgba(255,255,255,0.7); font-size: 11px; margin: 4px 0 0;">Dica: podes atualizar peso, restrições e refeições por WhatsApp!</p>
   </div>`;
 
 const SEQUENCIA = [

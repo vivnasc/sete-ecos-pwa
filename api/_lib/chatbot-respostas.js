@@ -64,6 +64,7 @@ O VITALIS não é uma dieta. É uma mudança real na tua relação com a comida 
 ✅ Espaço de Retorno — recaíste? Sem culpa. Voltamos ao caminho.
 ✅ Gamificação com XP, níveis e conquistas
 ✅ Acesso à Comunidade
+✅ Atualizar o teu plano por WhatsApp (peso, restrições, refeições)
 
 *3 fases:*
 1. *Indução* — primeiras mudanças, sem pressão
@@ -523,6 +524,9 @@ Sim! Eu, Vivianne, respondo pessoalmente. Não sou um bot (mas este WhatsApp é 
 *Posso pagar por M-Pesa?*
 Sim! M-Pesa, PayPal e cartão de crédito/débito.
 
+*Posso atualizar o meu plano por WhatsApp?*
+Sim! Escreve aqui: "peso 72kg", "sem glúten", "3x semana", "4 refeições" ou "quero emagrecer" — e os teus dados são atualizados. A Vivianne revê e ajusta o plano.
+
 *Quanto custa tudo junto?*
 Com o Bundle TUDO (7 Ecos), tens *40% de desconto* sobre o preço individual. Responde *bundle* para ver detalhes!
 
@@ -552,8 +556,79 @@ Ou responde *vivianne* para falar comigo directamente.`;
 
 // ===== DETECÇÃO POR PALAVRAS-CHAVE =====
 
-function detectarResposta(texto) {
+function detectarResposta(texto, telefone) {
   const t = texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+
+  // ===== CONFIRMAÇÃO DE ATUALIZAÇÃO DE PLANO =====
+  // Se há uma ação pendente na sessão, verificar sim/não primeiro
+  const sessao = getSessao(telefone);
+  if (sessao?.acaoPendente) {
+    if (t === 'sim' || t === 'confirmo' || t === 'confirmar' || t === 's' || t === 'yes' || t === 'ok') {
+      return { chave: 'confirmar_plano_sim' };
+    }
+    if (t === 'nao' || t === 'não' || t === 'cancelar' || t === 'n' || t === 'no' || t === 'cancela') {
+      return { chave: 'confirmar_plano_nao' };
+    }
+  }
+
+  // ===== EMAIL COMO FALLBACK (quando lookup por telefone falhou) =====
+  // Detectar email em qualquer posição: "meu email é x@y.com", "x@y.com", etc.
+  const emailMatch = t.match(/[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}/i);
+  if (emailMatch && sessao?.aguardaEmail) {
+    return { chave: 'email_fallback', dados: { email: emailMatch[0] } };
+  }
+  // Também detectar se a sessão não tem flag mas a última chave era de atualização falhada
+  if (emailMatch && sessao?.ultimaChave && (
+    sessao.ultimaChave.startsWith('atualizar_') || sessao.ultimaChave === 'lookup_falhou'
+  )) {
+    return { chave: 'email_fallback', dados: { email: emailMatch[0] } };
+  }
+
+  // ===== ATUALIZAÇÕES DE PLANO VIA WHATSAPP =====
+
+  // Atualizar peso: "peso 72", "agora peso 72kg", "estou com 72 kg"
+  const pesoMatch = t.match(/(?:peso|estou com|tenho|pes[oa])\s*(?:e\s+|de\s+)?(\d+(?:[.,]\d+)?)\s*(?:kg|quilos?)?/);
+  if (pesoMatch) {
+    const valor = parseFloat(pesoMatch[1].replace(',', '.'));
+    if (valor >= 30 && valor <= 300) {
+      return { chave: 'atualizar_peso', dados: { peso: valor } };
+    }
+  }
+  // "72kg", "72 kg" (quando é só o número + kg)
+  const pesoSimples = t.match(/^(\d+(?:[.,]\d+)?)\s*kg$/);
+  if (pesoSimples) {
+    const valor = parseFloat(pesoSimples[1].replace(',', '.'));
+    if (valor >= 30 && valor <= 300) {
+      return { chave: 'atualizar_peso', dados: { peso: valor } };
+    }
+  }
+
+  // Atualizar restrições: "sem glúten", "tirar lactose", "adicionar halal"
+  const restricoesKw = ['sem gluten', 'sem lactose', 'halal', 'vegetarian', 'vegan', 'tirar gluten', 'tirar lactose',
+    'adicionar halal', 'remover gluten', 'remover lactose', 'restricao', 'restricoes', 'intolerancia'];
+  if (restricoesKw.some(kw => t.includes(kw.normalize('NFD').replace(/[\u0300-\u036f]/g, '')))) {
+    return { chave: 'atualizar_restricoes', dados: { textoOriginal: texto } };
+  }
+
+  // Atualizar atividade: "actividade moderada", "faço exercício 3x semana"
+  const actividadeKw = ['actividade', 'atividade', 'exercicio', 'sedentari', 'treino', 'ginasio', 'academia'];
+  const actMatch = t.match(/(\d+)\s*(?:x|vezes)\s*(?:por\s*)?(?:semana)?/);
+  if (actividadeKw.some(kw => t.includes(kw)) || actMatch) {
+    return { chave: 'atualizar_actividade', dados: { textoOriginal: texto } };
+  }
+
+  // Atualizar refeições: "quero 4 refeições", "2 refeições por dia"
+  const refMatch = t.match(/(\d+)\s*(?:refeic|meals)/);
+  if (refMatch || (t.includes('refeic') && t.match(/\d/))) {
+    return { chave: 'atualizar_refeicoes', dados: { textoOriginal: texto } };
+  }
+
+  // Atualizar objetivo: "quero emagrecer", "objectivo ganhar massa"
+  const objKw = ['objectivo', 'objetivo', 'quero emagrecer', 'quero perder', 'quero ganhar massa',
+    'ganhar musculo', 'perder peso', 'mudar objectivo', 'mudar objetivo'];
+  if (objKw.some(kw => t.includes(kw.normalize('NFD').replace(/[\u0300-\u036f]/g, '')))) {
+    return { chave: 'atualizar_objetivo', dados: { textoOriginal: texto } };
+  }
 
   // Números diretos (1-7 = os 7 Ecos)
   if (t === '1') return { chave: '1' };        // Vitalis
@@ -759,6 +834,15 @@ const NOMES_CHAVES = {
   'faq': 'FAQ',
   'referral': 'Referência',
   'catalogo': 'Catálogo',
+  'atualizar_peso': 'Atualizar peso',
+  'atualizar_restricoes': 'Atualizar restrições',
+  'atualizar_actividade': 'Atualizar atividade',
+  'atualizar_refeicoes': 'Atualizar refeições',
+  'atualizar_objetivo': 'Atualizar objetivo',
+  'confirmar_plano_sim': 'Confirmou atualização',
+  'confirmar_plano_nao': 'Cancelou atualização',
+  'email_fallback': 'Email para lookup',
+  'lookup_falhou': 'Lookup falhou',
 };
 
 // Follow-ups contextuais baseados na última interação
@@ -783,12 +867,18 @@ function gerarResposta(msgBody, nome, telefone) {
   // ANTI-LOOP: Se o telefone é o número da coach/negócio, nunca notificar coach
   const isCoach = telefone === COACH_NUMERO;
 
-  const { chave } = detectarResposta(msgBody);
+  const { chave, dados } = detectarResposta(msgBody, telefone);
   // SEMPRE notificar a coach sobre TODAS as interações (excepto as da própria coach)
   const notificarCoach = !isCoach;
   const sessao = getSessao(telefone);
 
   let resposta;
+
+  // ===== ATUALIZAÇÕES DE PLANO (respostas especiais — webhook trata a parte async) =====
+  if (chave?.startsWith('atualizar_') || chave === 'confirmar_plano_sim' || chave === 'confirmar_plano_nao' || chave === 'email_fallback') {
+    atualizarSessao(telefone, msgBody, chave);
+    return { resposta: null, chave, dados, notificarCoach: true, asyncHandler: true };
+  }
 
   if (chave === 'saudacao') {
     if (sessao && sessao.historico.length > 0) {
@@ -831,5 +921,7 @@ export {
   R,
   NOMES_CHAVES,
   detectarResposta,
-  gerarResposta
+  gerarResposta,
+  getSessao,
+  atualizarSessao
 };

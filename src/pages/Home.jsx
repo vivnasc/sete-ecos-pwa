@@ -119,10 +119,11 @@ export default function Home() {
               </button>
             </ScrollReveal>
 
-            {/* Vitalis */}
+            {/* Vitalis — só aparece se tiver acesso */}
+            {vitalisAccess && (
             <ScrollReveal variant="fadeUp" delay={0.2}>
               <button
-                onClick={() => navigate(vitalisAccess ? '/vitalis/dashboard' : '/vitalis')}
+                onClick={() => navigate('/vitalis/dashboard')}
                 className="group relative overflow-hidden rounded-3xl text-left shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1.5 w-full"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#7C8B6F] to-[#3D4D35]" />
@@ -135,17 +136,19 @@ export default function Home() {
                     <h3 className="text-white font-bold tracking-[0.15em] text-sm">VITALIS</h3>
                     <p className="text-white/60 text-xs mt-1">{t('home.body_nutrition')}</p>
                     <span className="inline-block mt-3 text-[10px] text-white/40 bg-white/10 px-2.5 py-0.5 rounded-full tracking-wide">
-                      {vitalisAccess ? t('home.active') : t('home.start')}
+                      {t('home.active')}
                     </span>
                   </div>
                 </div>
               </button>
             </ScrollReveal>
+            )}
 
-            {/* Aurea */}
+            {/* Aurea — só aparece se tiver acesso */}
+            {aureaAccess && (
             <ScrollReveal variant="fadeUp" delay={0.3}>
               <button
-                onClick={() => navigate(aureaAccess ? '/aurea/dashboard' : '/aurea')}
+                onClick={() => navigate('/aurea/dashboard')}
                 className="group relative overflow-hidden rounded-3xl text-left shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1.5 w-full"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#C9A227] to-[#8B6914]" />
@@ -158,12 +161,13 @@ export default function Home() {
                     <h3 className="text-white font-bold tracking-[0.15em] text-sm">AUREA</h3>
                     <p className="text-white/60 text-xs mt-1">{t('home.selfcare_beauty')}</p>
                     <span className="inline-block mt-3 text-[10px] text-white/40 bg-white/10 px-2.5 py-0.5 rounded-full tracking-wide">
-                      {aureaAccess ? t('home.active') : t('home.start')}
+                      {t('home.active')}
                     </span>
                   </div>
                 </div>
               </button>
             </ScrollReveal>
+            )}
 
             {/* Comunidade */}
             <ScrollReveal variant="fadeUp" delay={0.4}>
@@ -257,7 +261,7 @@ export default function Home() {
                   {t('home.discover_desc')}
                 </p>
                 <button
-                  onClick={() => navigate('/landing')}
+                  onClick={() => navigate('/sete-ecos')}
                   className="flex items-center gap-2 text-[#C9A227] font-semibold text-sm group animate-pulse-glow rounded-lg px-4 py-2 -ml-4"
                 >
                   {t('home.see_all_ecos')}

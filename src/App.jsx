@@ -72,6 +72,13 @@ const CalendarioRefeicoes = lazy(() => import('./components/vitalis/CalendarioRe
 const CalendarioProgresso = lazy(() => import('./components/vitalis/CalendarioProgresso'))
 const GuiaUtilizador = lazy(() => import('./components/vitalis/GuiaUtilizador'))
 const GuiaRamadao = lazy(() => import('./components/vitalis/GuiaRamadao'))
+// Onboardings por eco
+const OnboardingSerena = lazy(() => import('./components/serena/OnboardingSerena'))
+const OnboardingIgnis = lazy(() => import('./components/ignis/OnboardingIgnis'))
+const OnboardingVentis = lazy(() => import('./components/ventis/OnboardingVentis'))
+const OnboardingEcoa = lazy(() => import('./components/ecoa/OnboardingEcoa'))
+const OnboardingImago = lazy(() => import('./components/imago/OnboardingImago'))
+const OnboardingComunidade = lazy(() => import('./components/comunidade/OnboardingComunidade'))
 const TreinosVitalis = lazy(() => import('./components/vitalis/TreinosVitalis'))
 const AudioVitalis = lazy(() => import('./components/vitalis/AudioVitalis'))
 const MeuCompromisso = lazy(() => import('./components/vitalis/MeuCompromisso'))
@@ -105,6 +112,7 @@ const DetectorPadroes = lazy(() => import('./components/serena/DetectorPadroes')
 const CicloMenstrual = lazy(() => import('./components/serena/CicloMenstrual'))
 const PerfilSerena = lazy(() => import('./components/serena/PerfilSerena'))
 const NotificacoesSerena = lazy(() => import('./components/serena/NotificacoesSerena'))
+const GuiaUtilizadorSerena = lazy(() => import('./components/serena/GuiaUtilizador'))
 
 // ECO 4: IGNIS (Vontade & Direccao Consciente)
 const LandingIgnis = lazy(() => import('./pages/LandingIgnis'))
@@ -124,6 +132,7 @@ const InsightsIgnis = lazy(() => import('./components/ignis/InsightsIgnis'))
 const PerfilIgnis = lazy(() => import('./components/ignis/PerfilIgnis'))
 const NotificacoesIgnis = lazy(() => import('./components/ignis/NotificacoesIgnis'))
 const MeditacoesIgnis = lazy(() => import('./components/ignis/MeditacoesIgnis'))
+const GuiaUtilizadorIgnis = lazy(() => import('./components/ignis/GuiaUtilizador'))
 
 // ECO 5: VENTIS (Energia & Ritmo)
 const LandingVentis = lazy(() => import('./pages/LandingVentis'))
@@ -144,6 +153,7 @@ const InsightsVentis = lazy(() => import('./components/ventis/InsightsVentis'))
 const PerfilVentis = lazy(() => import('./components/ventis/PerfilVentis'))
 const NotificacoesVentis = lazy(() => import('./components/ventis/NotificacoesVentis'))
 const MeditacoesVentis = lazy(() => import('./components/ventis/MeditacoesVentis'))
+const GuiaUtilizadorVentis = lazy(() => import('./components/ventis/GuiaUtilizador'))
 
 // ECO 6: ECOA (Voz & Desbloqueio do Silencio)
 const LandingEcoa = lazy(() => import('./pages/LandingEcoa'))
@@ -165,6 +175,7 @@ const InsightsEcoa = lazy(() => import('./components/ecoa/InsightsEcoa'))
 const PerfilEcoa = lazy(() => import('./components/ecoa/PerfilEcoa'))
 const NotificacoesEcoa = lazy(() => import('./components/ecoa/NotificacoesEcoa'))
 const MeditacoesEcoa = lazy(() => import('./components/ecoa/MeditacoesEcoa'))
+const GuiaUtilizadorEcoa = lazy(() => import('./components/ecoa/GuiaUtilizador'))
 
 // ECO 7: IMAGO (Identidade & Espelho)
 const LandingImago = lazy(() => import('./pages/LandingImago'))
@@ -185,6 +196,7 @@ const ChatImago = lazy(() => import('./components/imago/ChatImago'))
 const InsightsImago = lazy(() => import('./components/imago/InsightsImago'))
 const PerfilImago = lazy(() => import('./components/imago/PerfilImago'))
 const NotificacoesImago = lazy(() => import('./components/imago/NotificacoesImago'))
+const GuiaUtilizadorImago = lazy(() => import('./components/imago/GuiaUtilizador'))
 
 // AURORA (Integracao Final)
 const LandingAurora = lazy(() => import('./pages/LandingAurora'))
@@ -329,6 +341,12 @@ function AppRoutes() {
   // Activar notificações locais ao nível global (não só no dashboard Vitalis)
   useGlobalNotifications(session)
 
+  // Limpar flag de error_reload quando a app carrega com sucesso
+  useEffect(() => {
+    sessionStorage.removeItem('error_reload')
+    sessionStorage.removeItem('chunk_reload')
+  }, [])
+
   if (loading) return <LoadingFallback />
 
   return (
@@ -410,6 +428,7 @@ function AppRoutes() {
             <Route path="/comunidade/sussurros" element={<AuthRoute from="/comunidade"><Sussurros /></AuthRoute>} />
             <Route path="/comunidade/mensagens" element={<AuthRoute from="/comunidade"><Mensagens /></AuthRoute>} />
             <Route path="/comunidade/mensagens/:conversaId" element={<AuthRoute from="/comunidade"><Mensagens /></AuthRoute>} />
+            <Route path="/comunidade/onboarding" element={<AuthRoute from="/comunidade"><OnboardingComunidade /></AuthRoute>} />
 
             {/* ===== ECO 3: SERENA - Emoção & Fluidez ===== */}
             <Route path="/serena" element={<LandingSerena />} />
@@ -429,6 +448,8 @@ function AppRoutes() {
             <Route path="/serena/ciclo-menstrual" element={<SerenaRoute><CicloMenstrual /></SerenaRoute>} />
             <Route path="/serena/perfil" element={<SerenaRoute><PerfilSerena /></SerenaRoute>} />
             <Route path="/serena/notificacoes" element={<SerenaRoute><NotificacoesSerena /></SerenaRoute>} />
+            <Route path="/serena/onboarding" element={<SerenaRoute><OnboardingSerena /></SerenaRoute>} />
+            <Route path="/serena/guia" element={<SerenaRoute><GuiaUtilizadorSerena /></SerenaRoute>} />
 
             {/* ===== ECO 4: IGNIS - Vontade & Direccao Consciente ===== */}
             <Route path="/ignis" element={<LandingIgnis />} />
@@ -447,6 +468,8 @@ function AppRoutes() {
             <Route path="/ignis/perfil" element={<IgnisRoute><PerfilIgnis /></IgnisRoute>} />
             <Route path="/ignis/notificacoes" element={<IgnisRoute><NotificacoesIgnis /></IgnisRoute>} />
             <Route path="/ignis/meditacoes" element={<IgnisRoute><MeditacoesIgnis /></IgnisRoute>} />
+            <Route path="/ignis/onboarding" element={<IgnisRoute><OnboardingIgnis /></IgnisRoute>} />
+            <Route path="/ignis/guia" element={<IgnisRoute><GuiaUtilizadorIgnis /></IgnisRoute>} />
 
             {/* ===== ECO 5: VENTIS - Energia & Ritmo ===== */}
             <Route path="/ventis" element={<LandingVentis />} />
@@ -466,6 +489,8 @@ function AppRoutes() {
             <Route path="/ventis/perfil" element={<VentisRoute><PerfilVentis /></VentisRoute>} />
             <Route path="/ventis/notificacoes" element={<VentisRoute><NotificacoesVentis /></VentisRoute>} />
             <Route path="/ventis/meditacoes" element={<VentisRoute><MeditacoesVentis /></VentisRoute>} />
+            <Route path="/ventis/onboarding" element={<VentisRoute><OnboardingVentis /></VentisRoute>} />
+            <Route path="/ventis/guia" element={<VentisRoute><GuiaUtilizadorVentis /></VentisRoute>} />
 
             {/* ===== ECO 6: ECOA - Voz & Desbloqueio do Silencio ===== */}
             <Route path="/ecoa" element={<LandingEcoa />} />
@@ -486,6 +511,8 @@ function AppRoutes() {
             <Route path="/ecoa/perfil" element={<EcoaRoute><PerfilEcoa /></EcoaRoute>} />
             <Route path="/ecoa/notificacoes" element={<EcoaRoute><NotificacoesEcoa /></EcoaRoute>} />
             <Route path="/ecoa/meditacoes" element={<EcoaRoute><MeditacoesEcoa /></EcoaRoute>} />
+            <Route path="/ecoa/onboarding" element={<EcoaRoute><OnboardingEcoa /></EcoaRoute>} />
+            <Route path="/ecoa/guia" element={<EcoaRoute><GuiaUtilizadorEcoa /></EcoaRoute>} />
 
             {/* ===== ECO 7: IMAGO - Identidade & Espelho ===== */}
             <Route path="/imago" element={<LandingImago />} />
@@ -505,6 +532,8 @@ function AppRoutes() {
             <Route path="/imago/insights" element={<ImagoRoute><InsightsImago /></ImagoRoute>} />
             <Route path="/imago/perfil" element={<ImagoRoute><PerfilImago /></ImagoRoute>} />
             <Route path="/imago/notificacoes" element={<ImagoRoute><NotificacoesImago /></ImagoRoute>} />
+            <Route path="/imago/onboarding" element={<ImagoRoute><OnboardingImago /></ImagoRoute>} />
+            <Route path="/imago/guia" element={<ImagoRoute><GuiaUtilizadorImago /></ImagoRoute>} />
 
             {/* ===== AURORA - Integracao Final ===== */}
             <Route path="/aurora" element={<LandingAurora />} />

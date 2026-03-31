@@ -108,6 +108,161 @@ export default function WelcomeTutorial({ eco = 'vitalis', onComplete }) {
           icon: '💜'
         }
       ]
+    },
+    serena: {
+      title: g('Bem-vindo ao Serena!', 'Bem-vinda ao Serena!'),
+      color: '#6B8E9B',
+      steps: [
+        {
+          title: 'Diário Emocional',
+          description: 'Regista as tuas emoções com a roda de 16 emoções e mapeia onde as sentes no corpo.',
+          icon: '📝'
+        },
+        {
+          title: 'Respiração Guiada',
+          description: '6 técnicas de respiração para cada situação — da ansiedade ao sono.',
+          icon: '🫁'
+        },
+        {
+          title: 'Rituais de Libertação',
+          description: 'Práticas simbólicas para soltar o que já não te serve.',
+          icon: '🦋'
+        },
+        {
+          title: 'Padrões e Ciclos',
+          description: 'Descobre os teus padrões emocionais ao longo do tempo.',
+          icon: '🔄'
+        },
+        {
+          title: g('Estamos juntos!', 'Estamos juntas!'),
+          description: 'Sentir é coragem. O Serena está aqui para ti, sem julgamento.',
+          icon: '💧'
+        }
+      ]
+    },
+    ignis: {
+      title: g('Bem-vindo ao Ignis!', 'Bem-vinda ao Ignis!'),
+      color: '#C1634A',
+      steps: [
+        {
+          title: 'Escolhas Conscientes',
+          description: 'Regista cada decisão importante e percebe se escolhes por medo ou por vontade.',
+          icon: '🎯'
+        },
+        {
+          title: 'Sessões de Foco',
+          description: 'Timer de concentração com rastreamento de distracções.',
+          icon: '🔬'
+        },
+        {
+          title: 'Desafios de Fogo',
+          description: '16 desafios em 4 categorias: coragem, corte, alinhamento e iniciativa.',
+          icon: '⚔️'
+        },
+        {
+          title: 'Plano de Acção',
+          description: 'Transforma intenções em passos concretos com prazos.',
+          icon: '📋'
+        },
+        {
+          title: 'Acende o Fogo!',
+          description: 'Cada escolha consciente fortalece a tua chama interior.',
+          icon: '🔥'
+        }
+      ]
+    },
+    ventis: {
+      title: g('Bem-vindo ao Ventis!', 'Bem-vinda ao Ventis!'),
+      color: '#5D9B84',
+      steps: [
+        {
+          title: 'Monitor de Energia',
+          description: 'Regista o teu nível de energia ao longo do dia e descobre os teus picos e vales.',
+          icon: '⚡'
+        },
+        {
+          title: 'Rotinas & Rituais',
+          description: 'Constrói rotinas sustentáveis e transforma hábitos em rituais com intenção.',
+          icon: '🔄'
+        },
+        {
+          title: 'Pausas Conscientes',
+          description: '8 tipos de pausa para recarregar — de micro-pausas a meditações.',
+          icon: '⏸️'
+        },
+        {
+          title: 'Movimento & Natureza',
+          description: 'Yoga, dança, caminhada consciente e conexão com a natureza.',
+          icon: '🌿'
+        },
+        {
+          title: 'Flui!',
+          description: 'A energia não é infinita — é renovável. Aprende a fluir sem forçar.',
+          icon: '🍃'
+        }
+      ]
+    },
+    ecoa: {
+      title: g('Bem-vindo ao Ecoa!', 'Bem-vinda ao Ecoa!'),
+      color: '#4A90A4',
+      steps: [
+        {
+          title: 'Mapa de Silenciamento',
+          description: 'Identifica onde te calas: família, trabalho, relações, contigo.',
+          icon: '🤐'
+        },
+        {
+          title: 'Programa Micro-Voz',
+          description: '8 semanas de exercícios progressivos para recuperar a tua expressão.',
+          icon: '🎤'
+        },
+        {
+          title: 'Cartas Não Enviadas',
+          description: 'Escreve o que nunca disseste — perdão, raiva, gratidão, verdade.',
+          icon: '✉️'
+        },
+        {
+          title: 'Comunicação Assertiva',
+          description: 'Templates para comunicar com clareza sem agressividade.',
+          icon: '🗣️'
+        },
+        {
+          title: 'Fala!',
+          description: 'A tua voz existe. O Ecoa dá-te permissão para a usar.',
+          icon: '🔊'
+        }
+      ]
+    },
+    imago: {
+      title: g('Bem-vindo ao Imago!', 'Bem-vinda ao Imago!'),
+      color: '#8B7BA5',
+      steps: [
+        {
+          title: 'Espelho Triplo',
+          description: 'Descobre a tua essência, máscara e aspiração — 3 dimensões de quem és.',
+          icon: '🪞'
+        },
+        {
+          title: 'Arqueologia de Si',
+          description: 'Escava 5 camadas: infância, adolescência, juventude, vida adulta, presente.',
+          icon: '⛏️'
+        },
+        {
+          title: 'Valores Essenciais',
+          description: 'Selecciona os teus valores-guia entre 50 opções universais.',
+          icon: '💎'
+        },
+        {
+          title: 'Meditações de Essência',
+          description: '5 meditações guiadas para te encontrares a um nível mais profundo.',
+          icon: '🧘'
+        },
+        {
+          title: 'Descobre-te!',
+          description: 'A identidade é um rio, não uma pedra. O Imago é a tua lente.',
+          icon: '⭐'
+        }
+      ]
     }
   };
 
