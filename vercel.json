@@ -61,18 +61,6 @@
       "schedule": "0 10 * * 1"
     },
     {
-      "path": "/api/cron?task=push-lembretes&bloco=manha",
-      "schedule": "0 6 * * *"
-    },
-    {
-      "path": "/api/cron?task=push-lembretes&bloco=tarde",
-      "schedule": "0 11 * * *"
-    },
-    {
-      "path": "/api/cron?task=push-lembretes&bloco=noite",
-      "schedule": "0 17 * * *"
-    },
-    {
       "path": "/api/cron?task=sync-expired",
       "schedule": "0 7 * * *"
     }

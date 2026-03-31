@@ -237,6 +237,16 @@ export default async function handler(req, res) {
         return await reenviarNotificacao(params, res);
       }
 
+      // ── Consolidados do Hobby plan (ex-endpoints separados) ──
+      case 'diagnostico-notificacoes': {
+        const { default: fn } = await import('./_lib/diagnostico-notificacoes.js');
+        return await fn(req, res);
+      }
+      case 'gerar-sons-ecos': {
+        const { default: fn } = await import('./_lib/gerar-sons-ecos.js');
+        return await fn(req, res);
+      }
+
       default:
         return res.status(400).json({ error: 'Accao desconhecida: ' + action });
     }
