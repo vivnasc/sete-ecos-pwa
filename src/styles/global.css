@@ -143,8 +143,14 @@
   }
 
   .app {
-    padding-bottom: 80px;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
     min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Nav bar fixa — safe area para dispositivos com notch */
+  nav[role="navigation"].fixed {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   ::selection {
