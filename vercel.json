@@ -61,10 +61,6 @@
       "schedule": "0 10 * * 1"
     },
     {
-      "path": "/api/cron?task=push-lembretes",
-      "schedule": "*/5 * * * *"
-    },
-    {
       "path": "/api/cron?task=sync-expired",
       "schedule": "0 7 * * *"
     }

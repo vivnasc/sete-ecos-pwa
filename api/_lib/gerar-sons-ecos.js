@@ -4,10 +4,6 @@
  * Gera sons de drone para cada Eco
  */
 
-export const config = {
-  maxDuration: 60,
-}
-
 const ECOS_PROMPTS = {
   vitalis: {
     nome: 'VITALIS',
