@@ -10,11 +10,11 @@ const API_URL = '/api/marketing-ai';
 
 // ─── API Calls ───
 
-async function callMarketingAI(action, params) {
-  const res = await fetch(API_URL, {
+async function callMarketingAI(subAction, params) {
+  const res = await fetch('/api/coach', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action, ...params }),
+    body: JSON.stringify({ action: 'marketing-ai', subAction, ...params }),
   });
 
   if (!res.ok) {
