@@ -3,6 +3,7 @@ import Header from "@/components/layout/Header";
 import PageWrapper from "@/components/layout/PageWrapper";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
+import PoweredByFooter from "@/components/layout/PoweredByFooter";
 
 // ---------------------------------------------------------------------------
 // Menu items
@@ -131,6 +132,8 @@ export default function MorePage() {
           );
         })}
       </div>
+
+      <PoweredByFooter className="mt-4 mb-2" />
     </PageWrapper>
   );
 }

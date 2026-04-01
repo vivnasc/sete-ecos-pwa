@@ -14,7 +14,7 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   // Hide on auth pages
-  if (pathname?.startsWith("/login") || pathname?.startsWith("/onboarding")) {
+  if (pathname?.startsWith("/login") || pathname?.startsWith("/onboarding") || pathname === "/landing") {
     return null;
   }
 

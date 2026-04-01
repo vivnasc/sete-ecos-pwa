@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import PoweredByFooter from "@/components/layout/PoweredByFooter";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -20,11 +21,11 @@ export default function LoginPage() {
       <div className="w-full max-w-sm animate-fade-in">
         {/* Logo */}
         <div className="text-center mb-8">
-          <span className="text-6xl block mb-4">🍳</span>
+          <img src="/icon-192.png" alt="Pitada" className="w-20 h-20 mx-auto mb-4 rounded-2xl" />
           <h1 className="text-3xl font-display text-charcoal">
-            Cozinha de Casa
+            Pitada
           </h1>
-          <p className="text-sm text-stone-light mt-2">
+          <p className="text-sm text-stone mt-2">
             A tua cozinha, organizada.
           </p>
         </div>
@@ -52,10 +53,12 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        {/* Footer */}
+        {/* Terms */}
         <p className="text-xs text-stone-light text-center mt-8">
           Ao entrar, aceitas os termos de utilização.
         </p>
+
+        <PoweredByFooter className="mt-6" />
       </div>
     </div>
   );
