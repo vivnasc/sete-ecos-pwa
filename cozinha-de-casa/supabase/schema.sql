@@ -60,19 +60,8 @@ CREATE TABLE IF NOT EXISTS recipes (
   photo_url text,
   youtube_videos jsonb,
   is_favorite boolean DEFAULT false,
-  is_vivianne_safe boolean GENERATED ALWAYS AS (
-    NOT EXISTS (
-      SELECT 1 FROM jsonb_array_elements(ingredients) AS ing
-      WHERE (ing->>'is_allergen_milk')::boolean = true
-         OR (ing->>'is_allergen_wheat')::boolean = true
-    )
-  ) STORED,
-  is_ticy_safe boolean GENERATED ALWAYS AS (
-    NOT EXISTS (
-      SELECT 1 FROM jsonb_array_elements(ingredients) AS ing
-      WHERE (ing->>'is_allergen_egg')::boolean = true
-    )
-  ) STORED,
+  is_vivianne_safe boolean DEFAULT true,
+  is_ticy_safe boolean DEFAULT true,
   times_used integer DEFAULT 0,
   last_used_at timestamptz,
   parent_recipe_id uuid REFERENCES recipes(id),
@@ -122,6 +111,28 @@ CREATE TABLE IF NOT EXISTS notes (
   linked_member_id uuid REFERENCES household_members(id),
   created_at timestamptz DEFAULT now()
 );
+
+-- Trigger: auto-compute allergen safety flags on recipes
+CREATE OR REPLACE FUNCTION compute_recipe_safety()
+RETURNS trigger AS $$
+BEGIN
+  NEW.is_vivianne_safe := NOT EXISTS (
+    SELECT 1 FROM jsonb_array_elements(NEW.ingredients) AS ing
+    WHERE (ing->>'is_allergen_milk')::boolean = true
+       OR (ing->>'is_allergen_wheat')::boolean = true
+  );
+  NEW.is_ticy_safe := NOT EXISTS (
+    SELECT 1 FROM jsonb_array_elements(NEW.ingredients) AS ing
+    WHERE (ing->>'is_allergen_egg')::boolean = true
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_recipe_safety
+  BEFORE INSERT OR UPDATE ON recipes
+  FOR EACH ROW
+  EXECUTE FUNCTION compute_recipe_safety();
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_stock_household ON stock_items(household_id);
