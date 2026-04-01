@@ -1035,11 +1035,19 @@ export default function TreinosVitalis() {
   const [intakeData, setIntakeData] = useState(null);
 
   // Estados da interface
-  const [tabActiva, setTabActiva] = useState('recomendado');
+  const [tabActiva, setTabActiva] = useState('registar');
   const [localTreino, setLocalTreino] = useState('todos');
   const [grupoFiltro, setGrupoFiltro] = useState('todos');
   const [faseCiclo, setFaseCiclo] = useState('folicular');
   const [exercicioExpandido, setExercicioExpandido] = useState(null);
+
+  // Estados do registo de treino
+  const [treinoTipo, setTreinoTipo] = useState(null);
+  const [treinoDuracao, setTreinoDuracao] = useState('');
+  const [salvandoTreino, setSalvandoTreino] = useState(false);
+  const [treinoHoje, setTreinoHoje] = useState(null);
+  const [historico, setHistorico] = useState([]);
+  const [userId, setUserId] = useState(null);
 
   // Carregar dados do utilizador
   useEffect(() => {
@@ -1076,6 +1084,16 @@ export default function TreinosVitalis() {
       setUserData(clientResult.data);
       setPlanoAlimentar(planoResult.data);
       setIntakeData(intakeResult.data);
+      setUserId(userRecord.id);
+
+      // Buscar treino de hoje e histórico
+      const hoje = new Date().toISOString().split('T')[0];
+      const [treinoHojeRes, historicoRes] = await Promise.all([
+        supabase.from('vitalis_workouts_log').select('*').eq('user_id', userRecord.id).eq('data', hoje).limit(1).maybeSingle(),
+        supabase.from('vitalis_workouts_log').select('*').eq('user_id', userRecord.id).order('data', { ascending: false }).limit(14)
+      ]);
+      if (treinoHojeRes.data) setTreinoHoje(treinoHojeRes.data);
+      if (historicoRes.data) setHistorico(historicoRes.data);
 
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -1243,6 +1261,7 @@ export default function TreinosVitalis() {
         {/* Tabs */}
         <div className="flex gap-1 p-1 bg-[#4A4035]/10 rounded-xl">
           {[
+            { id: 'registar', label: 'Registar', icon: '✏️' },
             { id: 'recomendado', label: 'Para Ti', icon: '⭐' },
             { id: 'ciclo', label: 'Ciclo', icon: '🌙' },
             { id: 'biblioteca', label: 'Biblioteca', icon: '📖' }
@@ -1260,6 +1279,39 @@ export default function TreinosVitalis() {
             </button>
           ))}
         </div>
+
+        {/* TAB: Registar Treino */}
+        {tabActiva === 'registar' && (
+          <RegistarTreinoTab
+            treinoHoje={treinoHoje}
+            historico={historico}
+            userId={userId}
+            treinoTipo={treinoTipo}
+            setTreinoTipo={setTreinoTipo}
+            treinoDuracao={treinoDuracao}
+            setTreinoDuracao={setTreinoDuracao}
+            salvandoTreino={salvandoTreino}
+            onRegistar={async () => {
+              if (!treinoTipo || !userId) return;
+              setSalvandoTreino(true);
+              try {
+                const hoje = new Date().toISOString().split('T')[0];
+                const insertData = { user_id: userId, data: hoje, tipo: treinoTipo };
+                if (treinoDuracao) insertData.duracao_min = parseInt(treinoDuracao);
+                const { data, error } = await supabase.from('vitalis_workouts_log').insert(insertData).select().single();
+                if (error) throw error;
+                setTreinoHoje(data);
+                setHistorico(prev => [data, ...prev]);
+                setTreinoTipo(null);
+                setTreinoDuracao('');
+              } catch (err) {
+                console.error('Erro ao registar treino:', err);
+              } finally {
+                setSalvandoTreino(false);
+              }
+            }}
+          />
+        )}
 
         {/* TAB: Exercícios Recomendados */}
         {tabActiva === 'recomendado' && (
@@ -1496,6 +1548,180 @@ export default function TreinosVitalis() {
           </Link>
         </div>
       </nav>
+    </div>
+  );
+}
+
+// ============================================================
+// ============================================================
+// TIPOS DE TREINO COM DICAS
+// ============================================================
+const TIPOS_TREINO = [
+  { id: 'musculacao', emoji: '🏋️', label: 'Musculação', tips: ['Aquece 5-10 min antes de começar', 'Foca na técnica antes de aumentar peso', 'Descansa 60-90s entre séries', 'Come proteína até 1h após treino'] },
+  { id: 'corrida', emoji: '🏃', label: 'Corrida', tips: ['Começa devagar, aumenta ritmo gradualmente', 'Hidrata antes, durante e depois', 'Alonga bem no final — especialmente gémeos e quadríceps', 'Alterna dias de corrida com descanso'] },
+  { id: 'caminhada', emoji: '🚶', label: 'Caminhada', tips: ['Mantém postura erecta e ombros relaxados', 'Passos firmes e regulares', 'Tenta 30 min mínimo para benefícios cardiovasculares', 'Excelente para dias de recuperação activa'] },
+  { id: 'yoga', emoji: '🧘', label: 'Yoga', tips: ['Respira profundamente em cada postura', 'Não forces — respeita os limites do teu corpo', 'Foco na respiração, não na perfeição', 'Ideal para combinar com treinos de força'] },
+  { id: 'natacao', emoji: '🏊', label: 'Natação', tips: ['Aquece articulações antes de entrar na água', 'Alterna estilos para trabalhar todo o corpo', 'Hidrata — perdes líquidos mesmo na água', 'Excelente para quem tem problemas articulares'] },
+  { id: 'danca', emoji: '💃', label: 'Dança', tips: ['Diverte-te — não precisa ser perfeito!', 'Boa alternativa a cardio tradicional', 'Melhora coordenação, equilíbrio e humor', 'Queima muitas calorias sem perceber'] },
+  { id: 'ciclismo', emoji: '🚴', label: 'Ciclismo', tips: ['Ajusta o selim à tua altura', 'Começa em terreno plano, evolui gradualmente', 'Alterna intensidades para mais resultados', 'Protege os joelhos — não forces demais na subida'] },
+  { id: 'hiit', emoji: '⚡', label: 'HIIT', tips: ['Aquece muito bem antes (10 min)', 'Respeita os tempos de descanso', 'Não faças mais de 3x por semana', 'Ideal para queima de gordura em pouco tempo'] },
+  { id: 'pilates', emoji: '🤸', label: 'Pilates', tips: ['Foca no core — centro de força', 'Movimentos controlados e lentos', 'Respiração coordenada com cada exercício', 'Complemento ideal para musculação'] },
+  { id: 'outro', emoji: '🔥', label: 'Outro', tips: ['Qualquer movimento conta — parabéns!', 'Consistência supera intensidade', 'Ouve o teu corpo e descansa quando preciso', 'Celebra cada sessão que completas'] },
+];
+
+// ============================================================
+// COMPONENTE: Tab Registar Treino
+// ============================================================
+function RegistarTreinoTab({ treinoHoje, historico, userId, treinoTipo, setTreinoTipo, treinoDuracao, setTreinoDuracao, salvandoTreino, onRegistar }) {
+  const tipoInfo = treinoTipo ? TIPOS_TREINO.find(t => t.id === treinoTipo) : null;
+  const treinoHojeInfo = treinoHoje?.tipo ? TIPOS_TREINO.find(t => t.id === treinoHoje.tipo) : null;
+
+  return (
+    <div className="space-y-4">
+      {/* Treino de hoje */}
+      {treinoHoje ? (
+        <div className="bg-emerald-50 rounded-2xl p-5 border border-emerald-200 text-center">
+          <span className="text-4xl">{treinoHojeInfo?.emoji || '✅'}</span>
+          <h3 className="text-lg font-bold text-emerald-800 mt-2">Treino Feito!</h3>
+          <p className="text-emerald-600 text-sm">
+            {treinoHojeInfo?.label || treinoHoje.tipo}
+            {treinoHoje.duracao_min ? ` — ${treinoHoje.duracao_min} min` : ''}
+          </p>
+          <p className="text-emerald-500 text-xs mt-1">
+            {treinoHoje.created_at ? new Date(treinoHoje.created_at).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }) : ''}
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Formulário de registo */}
+          <div className="bg-white rounded-2xl p-4 shadow-md border border-[#E8E2D9]">
+            <h3 className="font-bold text-[#4A4035] mb-3">O que fizeste hoje?</h3>
+
+            {/* Grid de tipos */}
+            <div className="grid grid-cols-5 gap-2 mb-4">
+              {TIPOS_TREINO.map(({ id, emoji, label }) => (
+                <button
+                  key={id}
+                  onClick={() => setTreinoTipo(id)}
+                  className={`flex flex-col items-center p-2.5 rounded-xl transition-all ${
+                    treinoTipo === id
+                      ? 'bg-emerald-100 ring-2 ring-emerald-400 scale-105 shadow-md'
+                      : 'bg-[#F5F1EB] hover:bg-emerald-50'
+                  }`}
+                  aria-pressed={treinoTipo === id}
+                >
+                  <span className="text-xl">{emoji}</span>
+                  <span className="text-[9px] sm:text-[10px] text-gray-600 leading-tight mt-1 text-center">{label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Duração + Tips */}
+            {treinoTipo && (
+              <div className="space-y-3 animate-page-enter">
+                <div>
+                  <p className="text-xs text-gray-500 mb-2">Duração (minutos)</p>
+                  <div className="flex gap-2">
+                    {[15, 30, 45, 60, 90].map(min => (
+                      <button
+                        key={min}
+                        onClick={() => setTreinoDuracao(String(min))}
+                        className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                          treinoDuracao === String(min)
+                            ? 'bg-emerald-500 text-white shadow-md'
+                            : 'bg-[#F5F1EB] text-gray-600 hover:bg-emerald-50'
+                        }`}
+                      >
+                        {min}m
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tips */}
+                {tipoInfo && (
+                  <div className="bg-[#7C8B6F]/10 rounded-xl p-4 border border-[#7C8B6F]/20">
+                    <p className="text-sm font-semibold text-[#5A6B4D] mb-2">{tipoInfo.emoji} Dicas para {tipoInfo.label}</p>
+                    <ul className="space-y-1.5">
+                      {tipoInfo.tips.map((tip, i) => (
+                        <li key={i} className="text-sm text-[#4A4035]/80 flex items-start gap-2">
+                          <span className="text-[#7C8B6F] mt-0.5 shrink-0">•</span>
+                          {tip}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Botão guardar */}
+                <button
+                  onClick={onRegistar}
+                  disabled={salvandoTreino}
+                  className="w-full py-3 bg-gradient-to-r from-[#7C8B6F] to-[#5A6B4D] text-white rounded-xl text-sm font-bold hover:shadow-lg transition-all disabled:opacity-50 active:scale-95"
+                >
+                  {salvandoTreino ? 'A guardar...' : `✓ Registar ${tipoInfo?.label || 'Treino'}`}
+                </button>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Historial recente */}
+      {historico.length > 0 && (
+        <div className="bg-white rounded-2xl p-4 shadow-md border border-[#E8E2D9]">
+          <h3 className="font-bold text-[#4A4035] mb-3 text-sm">Últimos treinos</h3>
+          <div className="space-y-2 max-h-[40vh] overflow-y-auto">
+            {historico.map((treino, i) => {
+              const info = TIPOS_TREINO.find(t => t.id === treino.tipo);
+              const data = new Date(treino.data);
+              const hoje = new Date();
+              const diffDias = Math.floor((hoje - data) / (1000 * 60 * 60 * 24));
+              const dataLabel = diffDias === 0 ? 'Hoje' : diffDias === 1 ? 'Ontem' : data.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' });
+
+              return (
+                <div key={treino.id || i} className="flex items-center gap-3 p-2.5 bg-[#F5F1EB] rounded-lg">
+                  <span className="text-xl">{info?.emoji || '💪'}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-[#4A4035] truncate">{info?.label || treino.tipo}</p>
+                    <p className="text-xs text-gray-500">{dataLabel}{treino.duracao_min ? ` — ${treino.duracao_min} min` : ''}</p>
+                  </div>
+                  <span className="text-emerald-500">✓</span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Stats resumo */}
+          <div className="mt-3 pt-3 border-t border-[#E8E2D9] grid grid-cols-3 gap-2 text-center">
+            <div>
+              <p className="text-lg font-bold text-[#4A4035]">{historico.length}</p>
+              <p className="text-[10px] text-gray-500">Treinos</p>
+            </div>
+            <div>
+              <p className="text-lg font-bold text-[#4A4035]">{historico.reduce((s, t) => s + (t.duracao_min || 0), 0)}</p>
+              <p className="text-[10px] text-gray-500">Min totais</p>
+            </div>
+            <div>
+              <p className="text-lg font-bold text-[#4A4035]">
+                {(() => {
+                  const tipoCount = {};
+                  historico.forEach(t => { tipoCount[t.tipo] = (tipoCount[t.tipo] || 0) + 1; });
+                  const top = Object.entries(tipoCount).sort((a, b) => b[1] - a[1])[0];
+                  return top ? (TIPOS_TREINO.find(tt => tt.id === top[0])?.emoji || '💪') : '—';
+                })()}
+              </p>
+              <p className="text-[10px] text-gray-500">Favorito</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Motivação */}
+      <div className="bg-gradient-to-r from-[#7C8B6F] to-[#5A6B4D] rounded-2xl p-4 text-center">
+        <p className="text-white/80 text-sm italic">"Cada treino que fazes é um investimento na tua saúde futura."</p>
+        <p className="text-white/50 text-xs mt-1">— Vivianne</p>
+      </div>
     </div>
   );
 }
