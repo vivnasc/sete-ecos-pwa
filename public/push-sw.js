@@ -33,7 +33,7 @@ function scheduleLocalNotifications(lembretes) {
     const timeoutId = setTimeout(() => {
       self.registration.showNotification(lembrete.titulo, {
         body: lembrete.corpo || '',
-        icon: '/logos/VITALIS_LOGO_V3.png',
+        icon: '/logos/sete-ecos-192.png',
         badge: '/logos/sete-ecos-192.png',
         tag: lembrete.tag || 'sete-ecos-lembrete',
         data: { url: '/vitalis' },
@@ -63,7 +63,7 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: '/logos/VITALIS_LOGO_V3.png',
+      icon: '/logos/sete-ecos-192.png',
       badge: '/logos/sete-ecos-192.png',
       tag: data.tag || 'sete-ecos',
       data: { url: data.url || '/' },

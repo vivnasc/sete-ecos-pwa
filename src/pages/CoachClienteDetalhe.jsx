@@ -463,7 +463,7 @@ export default function CoachClienteDetalhe() {
                     <p className="text-[10px] text-gray-500">Gordura</p>
                   </div>
                   <div className="bg-blue-50 rounded-lg p-2">
-                    <p className="text-lg font-bold text-blue-700">{FASE_LABELS[activePlan.fase] || activePlan.fase}</p>
+                    <p className="text-lg font-bold text-blue-700">{(FASE_NOMES_POR_ABORDAGEM[activePlan.abordagem] || FASE_NOMES_POR_ABORDAGEM.equilibrado)[activePlan.fase] || activePlan.fase}</p>
                     <p className="text-[10px] text-gray-500">Fase</p>
                   </div>
                 </div>
@@ -636,7 +636,7 @@ export default function CoachClienteDetalhe() {
                 <div className="bg-gradient-to-r from-[#7C8B6F] to-[#5A6B4D] rounded-xl p-5 text-white">
                   <div className="flex items-center justify-between mb-2">
                     <div>
-                      <h2 className="text-xl font-bold">{faseDicas?.nome || FASE_LABELS[activePlan.fase] || activePlan.fase}</h2>
+                      <h2 className="text-xl font-bold">{faseDicas?.nome || (FASE_NOMES_POR_ABORDAGEM[activePlan.abordagem] || FASE_NOMES_POR_ABORDAGEM.equilibrado)[activePlan.fase] || activePlan.fase}</h2>
                       <p className="text-white/70 text-sm">{ABORDAGEM_LABELS[activePlan.abordagem] || activePlan.abordagem} | {faseDicas?.duracao || ''}</p>
                     </div>
                     <button

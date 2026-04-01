@@ -130,6 +130,22 @@ export default async function handler(req, res) {
     // ── Telegram ──
     if (action === 'telegram-send') return await telegramSend(params, res);
 
+    // ── Consolidated endpoints (own auth, no coach check) ──
+    if (action === 'recuperar-password') {
+      const { default: fn } = await import('./_lib/recuperar-password.js');
+      return await fn(req, res);
+    }
+    if (action === 'marketing-ai') {
+      const { default: fn } = await import('./_lib/marketing-ai.js');
+      // Re-map: coach body has action='marketing-ai', sub-action in subAction field
+      req.body = { action: params.subAction || params.action, ...params };
+      return await fn(req, res);
+    }
+    if (action === 'consulta-cliente') {
+      const { default: fn } = await import('./_lib/consulta-cliente.js');
+      return await fn(req, res);
+    }
+
     // ── All other actions require coach auth ──
     const coach = await verifyCoach(req);
     if (!coach) return res.status(403).json({ error: 'Acesso negado. Apenas coaches autorizadas.' });
@@ -237,6 +253,15 @@ export default async function handler(req, res) {
         return await reenviarNotificacao(params, res);
       }
 
+      // ── Consolidados do Hobby plan (ex-endpoints separados) ──
+      case 'diagnostico-notificacoes': {
+        const { default: fn } = await import('./_lib/diagnostico-notificacoes.js');
+        return await fn(req, res);
+      }
+      case 'gerar-sons-ecos': {
+        const { default: fn } = await import('./_lib/gerar-sons-ecos.js');
+        return await fn(req, res);
+      }
       default:
         return res.status(400).json({ error: 'Accao desconhecida: ' + action });
     }

@@ -74,10 +74,11 @@ export default function RecuperarPassword() {
       // Usar endpoint próprio que envia email pelo Resend (personalizado Sete Ecos)
       // IMPORTANTE: redirectTo SEM query params — o wildcard do Supabase
       // não faz match a URLs com query strings, e redireciona para o Site URL (home).
-      const response = await fetch('/api/recuperar-password', {
+      const response = await fetch('/api/coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          action: 'recuperar-password',
           email: email.trim(),
           redirectTo: `${window.location.origin}/recuperar-password`
         })

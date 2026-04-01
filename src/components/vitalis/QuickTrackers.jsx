@@ -1,5 +1,16 @@
 import { useState } from 'react'
 
+const TIPOS_TREINO = [
+  { id: 'musculacao', emoji: '🏋️', label: 'Musculação', tips: ['Aquece 5-10 min antes', 'Foca na técnica antes de aumentar peso', 'Descansa 60-90s entre séries', 'Proteína até 1h após treino'] },
+  { id: 'corrida', emoji: '🏃', label: 'Corrida', tips: ['Começa devagar, aumenta ritmo gradualmente', 'Hidrata antes e durante', 'Alonga bem no final', 'Alterna dias de corrida com descanso'] },
+  { id: 'caminhada', emoji: '🚶', label: 'Caminhada', tips: ['Mantém postura erecta', 'Passos firmes e regulares', 'Tenta 30 min mínimo', 'Boa opção para dias de descanso activo'] },
+  { id: 'yoga', emoji: '🧘', label: 'Yoga', tips: ['Respira profundamente em cada postura', 'Não forces — respeita o teu corpo', 'Foco na respiração, não na perfeição', 'Ideal para dias de recuperação'] },
+  { id: 'natacao', emoji: '🏊', label: 'Natação', tips: ['Aquece articulações antes', 'Alterna estilos para trabalhar todo o corpo', 'Hidrata mesmo na água', 'Excelente para articulações'] },
+  { id: 'danca', emoji: '💃', label: 'Dança', tips: ['Não precisa ser perfeito — diverte-te!', 'Boa alternativa a cardio tradicional', 'Melhora coordenação e humor', 'Queima muitas calorias sem perceber'] },
+  { id: 'ciclismo', emoji: '🚴', label: 'Ciclismo', tips: ['Ajusta o selim à tua altura', 'Começa em terreno plano', 'Alterna intensidades', 'Protege os joelhos — não forces demais'] },
+  { id: 'outro', emoji: '⚡', label: 'Outro', tips: ['Qualquer movimento conta', 'Consistência supera intensidade', 'Ouve o teu corpo', 'Celebra cada sessão feita'] },
+]
+
 /**
  * QuickTrackers — Painel de tracking rápido (água, treino, sono, humor)
  * Extraído do DashboardVitalis para melhor manutenção.
@@ -20,6 +31,10 @@ export default function QuickTrackers({
   const [sonoHoras, setSonoHoras] = useState('')
   const [sonoMinutos, setSonoMinutos] = useState('')
   const [sonoQualidade, setSonoQualidade] = useState(0)
+  const [mostrarTreinoForm, setMostrarTreinoForm] = useState(false)
+  const [treinoTipo, setTreinoTipo] = useState(null)
+  const [treinoDuracao, setTreinoDuracao] = useState('')
+  const [salvandoTreino, setSalvandoTreino] = useState(false)
 
   const progressoAgua = (aguaHoje / metaAgua) * 100
 
@@ -35,6 +50,22 @@ export default function QuickTrackers({
     setSonoMinutos('')
     setSonoQualidade(0)
   }
+
+  const handleLogWorkout = async () => {
+    if (!treinoTipo) return
+    setSalvandoTreino(true)
+    try {
+      await onLogWorkout(treinoTipo, parseInt(treinoDuracao) || null)
+      setMostrarTreinoForm(false)
+      setTreinoTipo(null)
+      setTreinoDuracao('')
+    } finally {
+      setSalvandoTreino(false)
+    }
+  }
+
+  const tipoInfo = treinoTipo ? TIPOS_TREINO.find(t => t.id === treinoTipo) : null
+  const treinoTipoInfo = treinoHoje?.tipo ? TIPOS_TREINO.find(t => t.id === treinoHoje.tipo) : null
 
   return (
     <div className="bg-white rounded-2xl shadow-xl p-4">
@@ -80,29 +111,124 @@ export default function QuickTrackers({
       </div>
 
       {/* Treino */}
-      <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-xl mb-2">
-        <div className="flex items-center gap-2">
-          <span className="text-xl" aria-hidden="true">🏃‍♀️</span>
-          <div>
-            <p className="font-semibold text-gray-800 text-sm">
-              {ehDiaTreino ? 'Dia de Treino' : 'Dia de Descanso'}
-            </p>
-            <p className="text-xs text-gray-500">
-              {treinoHoje ? `Feito as ${treinoHoje.hora || treinoHoje.created_at?.substring(11, 16) || '—'}` : (ehDiaTreino ? 'Por fazer' : 'Recupera bem!')}
-            </p>
+      <div className="p-3 bg-emerald-50 rounded-xl mb-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-xl" aria-hidden="true">{treinoTipoInfo?.emoji || '🏃‍♀️'}</span>
+            <div>
+              <p className="font-semibold text-gray-800 text-sm">
+                {treinoHoje
+                  ? (treinoTipoInfo?.label || 'Treino')
+                  : (ehDiaTreino ? 'Dia de Treino' : 'Dia de Descanso')}
+              </p>
+              <p className="text-xs text-gray-500">
+                {treinoHoje
+                  ? `${treinoHoje.duracao_min ? `${treinoHoje.duracao_min} min — ` : ''}${treinoHoje.hora || treinoHoje.created_at?.substring(11, 16) || '—'}`
+                  : (ehDiaTreino ? 'Por registar' : 'Recupera bem!')}
+              </p>
+            </div>
           </div>
+          {!treinoHoje && (
+            <button
+              onClick={() => setMostrarTreinoForm(!mostrarTreinoForm)}
+              className={`px-3 py-1.5 text-xs rounded-full font-medium transition-colors shadow-md ${
+                mostrarTreinoForm
+                  ? 'bg-gray-200 text-gray-600'
+                  : 'bg-emerald-500 text-white hover:bg-emerald-600'
+              }`}
+              aria-expanded={mostrarTreinoForm}
+              aria-label="Registar treino"
+            >
+              {mostrarTreinoForm ? 'Fechar' : '+ Registar'}
+            </button>
+          )}
+          {treinoHoje && (
+            <span className="text-emerald-500 text-xl" aria-label="Treino concluido">✓</span>
+          )}
         </div>
-        {ehDiaTreino && !treinoHoje && (
-          <button
-            onClick={onLogWorkout}
-            className="px-3 py-1.5 bg-emerald-500 text-white text-xs rounded-full font-medium hover:bg-emerald-600 transition-colors shadow-md"
-            aria-label="Marcar treino como feito"
-          >
-            ✓ Feito
-          </button>
-        )}
-        {treinoHoje && (
-          <span className="text-emerald-500 text-xl" aria-label="Treino concluido">✓</span>
+
+        {/* Formulário de registo de treino */}
+        {mostrarTreinoForm && !treinoHoje && (
+          <div className="mt-3 pt-3 border-t border-emerald-100 space-y-3">
+            {/* Tipo de treino */}
+            <div>
+              <p className="text-xs text-gray-500 mb-2">O que fizeste?</p>
+              <div className="grid grid-cols-4 gap-1.5">
+                {TIPOS_TREINO.map(({ id, emoji, label }) => (
+                  <button
+                    key={id}
+                    onClick={() => setTreinoTipo(id)}
+                    className={`flex flex-col items-center p-2 rounded-lg transition-all text-center ${
+                      treinoTipo === id
+                        ? 'bg-emerald-100 ring-2 ring-emerald-400 scale-105'
+                        : 'bg-white hover:bg-emerald-50'
+                    }`}
+                    aria-pressed={treinoTipo === id}
+                  >
+                    <span className="text-lg">{emoji}</span>
+                    <span className="text-[10px] text-gray-600 leading-tight mt-0.5">{label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Duração */}
+            {treinoTipo && (
+              <div>
+                <p className="text-xs text-gray-500 mb-2">Quanto tempo? (minutos)</p>
+                <div className="flex gap-2">
+                  {[15, 30, 45, 60].map(min => (
+                    <button
+                      key={min}
+                      onClick={() => setTreinoDuracao(String(min))}
+                      className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
+                        treinoDuracao === String(min)
+                          ? 'bg-emerald-500 text-white'
+                          : 'bg-white text-gray-600 hover:bg-emerald-50'
+                      }`}
+                    >
+                      {min}m
+                    </button>
+                  ))}
+                  <input
+                    type="number"
+                    min="5"
+                    max="180"
+                    placeholder="Outro"
+                    value={![15, 30, 45, 60].includes(parseInt(treinoDuracao)) ? treinoDuracao : ''}
+                    onChange={(e) => setTreinoDuracao(e.target.value)}
+                    className="w-16 px-2 py-2 border border-gray-200 rounded-lg text-center text-sm focus:border-emerald-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Tips para o tipo escolhido */}
+            {tipoInfo && (
+              <div className="bg-white rounded-lg p-3">
+                <p className="text-xs font-semibold text-emerald-700 mb-1.5">{tipoInfo.emoji} Dicas para {tipoInfo.label}</p>
+                <ul className="space-y-1">
+                  {tipoInfo.tips.map((tip, i) => (
+                    <li key={i} className="text-xs text-gray-600 flex items-start gap-1.5">
+                      <span className="text-emerald-400 mt-0.5 shrink-0">•</span>
+                      {tip}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Botão guardar */}
+            {treinoTipo && (
+              <button
+                onClick={handleLogWorkout}
+                disabled={salvandoTreino}
+                className="w-full py-2.5 bg-emerald-500 text-white rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-colors disabled:opacity-50 active:scale-95"
+              >
+                {salvandoTreino ? 'A guardar...' : `✓ Registar ${tipoInfo?.label || 'Treino'}`}
+              </button>
+            )}
+          </div>
         )}
       </div>
 

@@ -11,7 +11,7 @@
 //   /api/cron?task=broadcast       → Broadcast para interessados (catálogo, promo, whatsapp)
 //   /api/cron?task=wa-leads        → WhatsApp follow-up semanal a leads não convertidos
 //   /api/cron?task=wa-sequencia    → Sequência WA automática (dia 0,3,7,10,14,21,30)
-//   /api/cron?task=push-lembretes  → Push notifications de lembretes aos clientes (a cada 5min)
+//   /api/cron?task=push-lembretes&bloco=manha|tarde|noite  → Push notifications 3x/dia
 
 const TASKS = ['tarefas', 'trial-emails', 'email-sequencia', 'instagram', 'broadcast', 'wa-leads', 'wa-sequencia', 'push-lembretes', 'sync-expired'];
 

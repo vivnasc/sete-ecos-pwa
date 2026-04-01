@@ -77,10 +77,10 @@ export default function AudioEcos() {
     setEstado(eco.key, 'gerando')
 
     try {
-      const res = await fetch('/api/gerar-sons-ecos', {
+      const res = await fetch('/api/coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ eco: eco.key, apiKey: apiKey.trim() }),
+        body: JSON.stringify({ action: 'gerar-sons-ecos', eco: eco.key, apiKey: apiKey.trim() }),
       })
 
       if (!res.ok) {
