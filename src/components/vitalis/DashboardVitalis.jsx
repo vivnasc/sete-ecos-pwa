@@ -671,7 +671,7 @@ export default function DashboardVitalis() {
   };
 
   // FUNÇÃO TREINO
-  const registarTreino = async () => {
+  const registarTreino = async (tipo = 'geral', duracaoMin = null) => {
     if (!userId) {
       console.error('userId não disponível');
       return;
@@ -684,13 +684,16 @@ export default function DashboardVitalis() {
         minute: '2-digit' 
       });
       
-      const { data, error } = await supabase
-        .from('vitalis_workouts_log')
-        .insert({
+      const insertData = {
           user_id: userId,
           data: hoje,
-          tipo: 'geral'
-        })
+          tipo: tipo
+        };
+      if (duracaoMin) insertData.duracao_min = duracaoMin;
+
+      const { data, error } = await supabase
+        .from('vitalis_workouts_log')
+        .insert(insertData)
         .select()
         .single();
       
