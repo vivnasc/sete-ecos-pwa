@@ -3,13 +3,13 @@ import "./globals.css";
 import BottomNav from "@/components/layout/BottomNav";
 
 export const metadata: Metadata = {
-  title: "Cozinha de Casa",
-  description: "Gestão de culinária caseira — receitas, stock, cardápio e lista de compras para a família.",
+  title: "Pitada",
+  description: "A tua cozinha, organizada. Receitas, stock, cardápio e lista de compras para a família.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Cozinha de Casa",
+    title: "Pitada",
   },
 };
 

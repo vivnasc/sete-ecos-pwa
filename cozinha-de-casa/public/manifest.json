@@ -1,7 +1,7 @@
 {
-  "name": "Cozinha de Casa",
-  "short_name": "Cozinha",
-  "description": "Gestão de culinária caseira",
+  "name": "Pitada",
+  "short_name": "Pitada",
+  "description": "A tua cozinha, organizada.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
