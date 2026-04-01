@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import PoweredByFooter from "@/components/layout/PoweredByFooter";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -52,10 +53,12 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        {/* Footer */}
+        {/* Terms */}
         <p className="text-xs text-stone-light text-center mt-8">
           Ao entrar, aceitas os termos de utilização.
         </p>
+
+        <PoweredByFooter className="mt-6" />
       </div>
     </div>
   );
