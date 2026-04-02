@@ -13,12 +13,12 @@ export default function WelcomeTutorial({ eco = 'vitalis', onComplete }) {
   const storageKey = `${eco}_tutorial_completed`;
 
   useEffect(() => {
-    // Check if tutorial was already completed
-    const completed = localStorage.getItem(storageKey);
+    // Check if tutorial was already completed (check both key formats for backwards compat)
+    const completed = localStorage.getItem(storageKey) || localStorage.getItem(`${eco}-onboarding-complete`);
     if (!completed) {
       setIsVisible(true);
     }
-  }, [storageKey]);
+  }, [storageKey, eco]);
 
   const tutorials = {
     vitalis: {
@@ -289,6 +289,7 @@ export default function WelcomeTutorial({ eco = 'vitalis', onComplete }) {
 
   const handleComplete = () => {
     localStorage.setItem(storageKey, 'true');
+    localStorage.setItem(`${eco}-onboarding-complete`, 'true');
     setIsVisible(false);
     if (onComplete) onComplete();
   };

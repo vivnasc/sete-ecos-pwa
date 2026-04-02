@@ -230,7 +230,7 @@ export function useOnboarding() {
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    const completed = localStorage.getItem('vitalis-onboarding-complete');
+    const completed = localStorage.getItem('vitalis-onboarding-complete') || localStorage.getItem('vitalis_tutorial_completed');
     if (!completed) {
       setShowOnboarding(true);
     }
@@ -238,11 +238,13 @@ export function useOnboarding() {
 
   const completeOnboarding = () => {
     localStorage.setItem('vitalis-onboarding-complete', 'true');
+    localStorage.setItem('vitalis_tutorial_completed', 'true');
     setShowOnboarding(false);
   };
 
   const resetOnboarding = () => {
     localStorage.removeItem('vitalis-onboarding-complete');
+    localStorage.removeItem('vitalis_tutorial_completed');
     setShowOnboarding(true);
   };
 

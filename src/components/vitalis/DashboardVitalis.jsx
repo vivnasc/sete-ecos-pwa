@@ -131,6 +131,7 @@ export default function DashboardVitalis() {
   const riskData = useDetectorDesistencia(userId, client, registos);
 
   const hoje = new Date().toISOString().split('T')[0];
+  const [dataTracking, setDataTracking] = useState(hoje);
   const diaSemana = new Date().toLocaleDateString('pt-PT', { weekday: 'long' });
   const dataFormatada = new Date().toLocaleDateString('pt-PT', { day: 'numeric', month: 'long' });
 
@@ -380,42 +381,8 @@ export default function DashboardVitalis() {
         .order('ordem', { ascending: true });
       setRefeicoes(refeicoesCofig || []);
 
-      const { data: mealsData } = await supabase
-        .from('vitalis_meals_log')
-        .select('*')
-        .eq('user_id', userData.id)
-        .eq('data', hoje);
-      setMealsHoje(mealsData || []);
-
-      const { data: aguaData } = await supabase
-        .from('vitalis_agua_log')
-        .select('quantidade_ml')
-        .eq('user_id', userData.id)
-        .eq('data', hoje);
-      
-      const totalAgua = (aguaData || []).reduce((sum, a) => sum + a.quantidade_ml, 0) / 1000;
-      setAguaHoje(totalAgua);
-
-      // Usar maybeSingle() para evitar crashes quando não há dados
-      const { data: treinoData } = await supabase
-        .from('vitalis_workouts_log')
-        .select('*')
-        .eq('user_id', userData.id)
-        .eq('data', hoje)
-        .limit(1)
-        .maybeSingle();
-
-      setTreinoHoje(treinoData || null);
-
-      const { data: sonoData } = await supabase
-        .from('vitalis_sono_log')
-        .select('*')
-        .eq('user_id', userData.id)
-        .eq('data', hoje)
-        .limit(1)
-        .maybeSingle();
-
-      setSonoHoje(sonoData || null);
+      // Carregar dados do dia seleccionado (hoje ou passado)
+      await carregarDadosDia(userData.id, dataTracking);
 
       const { data: jejumData } = await supabase
         .from('vitalis_fasting_log')
@@ -643,6 +610,27 @@ export default function DashboardVitalis() {
     }
   };
 
+  // Carregar dados de um dia específico (água, treino, sono, refeições)
+  const carregarDadosDia = async (uid, data) => {
+    const [mealsRes, aguaRes, treinoRes, sonoRes] = await Promise.all([
+      supabase.from('vitalis_meals_log').select('*').eq('user_id', uid).eq('data', data),
+      supabase.from('vitalis_agua_log').select('quantidade_ml').eq('user_id', uid).eq('data', data),
+      supabase.from('vitalis_workouts_log').select('*').eq('user_id', uid).eq('data', data).limit(1).maybeSingle(),
+      supabase.from('vitalis_sono_log').select('*').eq('user_id', uid).eq('data', data).limit(1).maybeSingle(),
+    ]);
+    setMealsHoje(mealsRes.data || []);
+    setAguaHoje((aguaRes.data || []).reduce((sum, a) => sum + a.quantidade_ml, 0) / 1000);
+    setTreinoHoje(treinoRes.data || null);
+    setSonoHoje(sonoRes.data || null);
+  };
+
+  // Recarregar quando o utilizador muda a data de tracking
+  useEffect(() => {
+    if (userId && dataTracking) {
+      carregarDadosDia(userId, dataTracking);
+    }
+  }, [dataTracking]);
+
   // FUNÇÃO ÁGUA
   const adicionarAgua = async (ml = 250) => {
     if (!userId) {
@@ -655,7 +643,7 @@ export default function DashboardVitalis() {
         .from('vitalis_agua_log')
         .insert({
           user_id: userId,
-          data: hoje,
+          data: dataTracking,
           quantidade_ml: ml
         });
       
@@ -686,7 +674,7 @@ export default function DashboardVitalis() {
       
       const insertData = {
           user_id: userId,
-          data: hoje,
+          data: dataTracking,
           tipo: tipo
         };
       if (duracaoMin) insertData.duracao_min = duracaoMin;
@@ -739,7 +727,7 @@ export default function DashboardVitalis() {
         .from('vitalis_sono_log')
         .insert({
           user_id: userId,
-          data: hoje,
+          data: dataTracking,
           duracao_min: duracaoMin,
           qualidade_1a5: qualidadeFinal
         })
@@ -1364,6 +1352,8 @@ export default function DashboardVitalis() {
               onLogWorkout={registarTreino}
               onLogSleep={registarSono}
               onMoodSelect={registarHumor}
+              dataTracking={dataTracking}
+              onChangeDate={setDataTracking}
             />
           </div>
 

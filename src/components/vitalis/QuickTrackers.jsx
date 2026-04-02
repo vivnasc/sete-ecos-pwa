@@ -26,6 +26,8 @@ export default function QuickTrackers({
   onLogWorkout,
   onLogSleep,
   onMoodSelect,
+  dataTracking,
+  onChangeDate,
 }) {
   const [mostrarSonoForm, setMostrarSonoForm] = useState(false)
   const [sonoHoras, setSonoHoras] = useState('')
@@ -70,6 +72,54 @@ export default function QuickTrackers({
   return (
     <div className="bg-white rounded-2xl shadow-xl p-4">
       <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Quick Track</h3>
+
+      {/* Seletor de data — permite registar dias passados */}
+      {onChangeDate && (
+        <div className="flex items-center justify-between mb-3 p-2 bg-gray-50 rounded-lg">
+          <button
+            onClick={() => {
+              const d = new Date(dataTracking);
+              d.setDate(d.getDate() - 1);
+              onChangeDate(d.toISOString().split('T')[0]);
+            }}
+            className="p-1.5 rounded-lg hover:bg-gray-200 transition-colors active:scale-95"
+            aria-label="Dia anterior"
+          >
+            ←
+          </button>
+          <div className="flex items-center gap-2">
+            <input
+              type="date"
+              value={dataTracking}
+              max={new Date().toISOString().split('T')[0]}
+              onChange={(e) => onChangeDate(e.target.value)}
+              className="text-sm font-medium text-gray-700 bg-transparent border-none text-center cursor-pointer focus:outline-none"
+            />
+            {dataTracking !== new Date().toISOString().split('T')[0] && (
+              <button
+                onClick={() => onChangeDate(new Date().toISOString().split('T')[0])}
+                className="text-[10px] px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full font-medium hover:bg-emerald-200"
+              >
+                Hoje
+              </button>
+            )}
+          </div>
+          <button
+            onClick={() => {
+              const d = new Date(dataTracking);
+              d.setDate(d.getDate() + 1);
+              const hojeStr = new Date().toISOString().split('T')[0];
+              if (d.toISOString().split('T')[0] <= hojeStr) {
+                onChangeDate(d.toISOString().split('T')[0]);
+              }
+            }}
+            className="p-1.5 rounded-lg hover:bg-gray-200 transition-colors active:scale-95"
+            aria-label="Dia seguinte"
+          >
+            →
+          </button>
+        </div>
+      )}
 
       {/* Agua */}
       <div className="p-3 bg-sky-50 rounded-xl mb-2">
