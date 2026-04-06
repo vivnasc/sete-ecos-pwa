@@ -100,15 +100,31 @@ export default function DashboardVitalis() {
   const notificacaoJejumEnviada = useRef(false);
   const jejumTimerRef = useRef(null);
 
-  // Conquistas já celebradas — persistente via localStorage (não useRef que reseta a cada mount)
+  // Conquistas já celebradas — persistente via localStorage individual por conquista
   const getConquistasCelebradas = () => {
-    try { return new Set(JSON.parse(localStorage.getItem('vitalis-conquistas-celebradas') || '[]')); }
-    catch { return new Set(); }
+    const set = new Set();
+    // Ler chaves individuais (mais robusto que JSON array)
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith('vitalis-conquista-')) {
+        set.add(key.replace('vitalis-conquista-', ''));
+      }
+    }
+    // Migrar formato antigo (JSON array) se existir
+    try {
+      const old = JSON.parse(localStorage.getItem('vitalis-conquistas-celebradas') || '[]');
+      old.forEach(id => { set.add(id); localStorage.setItem(`vitalis-conquista-${id}`, '1'); });
+      if (old.length > 0) localStorage.removeItem('vitalis-conquistas-celebradas');
+    } catch { /* ignorar */ }
+    try {
+      const old2 = JSON.parse(localStorage.getItem('vitalis-conquistas-notificadas') || '[]');
+      old2.forEach(id => { set.add(id); localStorage.setItem(`vitalis-conquista-${id}`, '1'); });
+      if (old2.length > 0) localStorage.removeItem('vitalis-conquistas-notificadas');
+    } catch { /* ignorar */ }
+    return set;
   };
   const marcarConquistaCelebrada = (id) => {
-    const set = getConquistasCelebradas();
-    set.add(id);
-    localStorage.setItem('vitalis-conquistas-celebradas', JSON.stringify([...set]));
+    localStorage.setItem(`vitalis-conquista-${id}`, '1');
   };
 
   // Estados de sono interactivo movidos para QuickTrackers
@@ -493,18 +509,15 @@ export default function DashboardVitalis() {
       const temActividade = aguaTotal > 0 || mealsTotal > 0 || treinoTotal > 0 ||
         (typeof checkinCount.count === 'number' && checkinCount.count > 0);
 
-      // Verificar novas conquistas — usar celebradas como fonte de verdade
+      // Verificar novas conquistas — usar chaves individuais no localStorage
       const celebradas = getConquistasCelebradas();
-      const conquistasNotificadas = JSON.parse(localStorage.getItem('vitalis-conquistas-notificadas') || '[]');
 
-      // Determinar conquistas REALMENTE novas (não celebradas NEM notificadas antes)
+      // Determinar conquistas REALMENTE novas (nunca celebradas)
       const novasConquistas = temActividade
-        ? conquistas.filter(c => !celebradas.has(c) && !conquistasNotificadas.includes(c))
+        ? conquistas.filter(c => !celebradas.has(c))
         : [];
 
-      // SEMPRE sincronizar todas as conquistas actuais no localStorage
-      const todasNotificadas = [...new Set([...conquistasNotificadas, ...conquistas])];
-      localStorage.setItem('vitalis-conquistas-notificadas', JSON.stringify(todasNotificadas));
+      // Marcar TODAS as conquistas como celebradas imediatamente (chaves individuais)
       for (const cId of conquistas) {
         marcarConquistaCelebrada(cId);
       }
@@ -591,13 +604,17 @@ export default function DashboardVitalis() {
         localStorage.setItem('vitalis-melhor-streak', count.toString());
         setMelhorStreak(count);
 
-        // Verificar conquistas de streak
+        // Verificar conquistas de streak (só se não foi já celebrada)
+        const celebradas = getConquistasCelebradas();
         const streakMilestones = [3, 7, 14, 30, 60];
         for (const milestone of streakMilestones) {
           if (count >= milestone && melhor < milestone) {
             const conquistaId = `streak_${milestone}`;
-            setConquistaActual(conquistaId);
-            setShowCelebracao(true);
+            if (!celebradas.has(conquistaId)) {
+              marcarConquistaCelebrada(conquistaId);
+              setConquistaActual(conquistaId);
+              setShowCelebracao(true);
+            }
             break;
           }
         }

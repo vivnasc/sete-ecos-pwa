@@ -194,13 +194,13 @@ export default function RelatoriosHub() {
   };
 
   const getNomeFase = (numero) => {
-    const fases = {
-      1: 'Indução',
-      2: 'Transição',
-      3: 'Recomposição',
-      4: 'Manutenção'
+    const abordagem = plano?.abordagem || 'equilibrado';
+    const fasesPorAbordagem = {
+      keto: { 1: 'Indução', 2: 'Transição', 3: 'Estabilização', 4: 'Manutenção' },
+      lowcarb: { 1: 'Adaptação', 2: 'Progressão', 3: 'Consolidação', 4: 'Autonomia' },
+      equilibrado: { 1: 'Arranque', 2: 'Evolução', 3: 'Optimização', 4: 'Manutenção' }
     };
-    return fases[numero] || `Fase ${numero}`;
+    return (fasesPorAbordagem[abordagem] || fasesPorAbordagem.equilibrado)[numero] || `Fase ${numero}`;
   };
 
   const [gerando, setGerando] = useState(null);
@@ -226,6 +226,8 @@ export default function RelatoriosHub() {
 
       await gerarRelatorioMensal({
         mes: relMensal.mes,
+        dataInicio: inicioStr,
+        dataFim: fimStr,
         registos: registosRes.data || [],
         agua: aguaRes.data || [],
         treinos: treinosRes.data || [],
