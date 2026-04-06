@@ -384,7 +384,88 @@ CREATE POLICY "Users can manage own medidas"
   USING (auth.uid() = user_id);
 
 -- =====================================================
--- 9. VERIFICAÇÃO FINAL
+-- 9. TABELAS DE TRACKING DIÁRIO
+-- =====================================================
+-- Estas tabelas suportam o QuickTrackers do Dashboard
+-- e os relatórios semanais/calendário de progresso.
+-- =====================================================
+
+-- 9a. vitalis_workouts_log (Registo de treinos)
+CREATE TABLE IF NOT EXISTS vitalis_workouts_log (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  data DATE NOT NULL DEFAULT CURRENT_DATE,
+  tipo TEXT NOT NULL DEFAULT 'geral',
+  -- tipos: geral, musculacao, corrida, caminhada, yoga, natacao, danca, ciclismo, hiit, pilates, outro
+  duracao_min INTEGER CHECK (duracao_min > 0 AND duracao_min <= 300),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_vitalis_workouts_user_data ON vitalis_workouts_log(user_id, data DESC);
+
+ALTER TABLE vitalis_workouts_log ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can manage own workouts"
+  ON vitalis_workouts_log FOR ALL
+  USING (auth.uid() = user_id);
+
+-- 9b. vitalis_agua_log (Registo de água)
+CREATE TABLE IF NOT EXISTS vitalis_agua_log (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  data DATE NOT NULL DEFAULT CURRENT_DATE,
+  quantidade_ml INTEGER NOT NULL CHECK (quantidade_ml > 0 AND quantidade_ml <= 5000),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_vitalis_agua_user_data ON vitalis_agua_log(user_id, data DESC);
+
+ALTER TABLE vitalis_agua_log ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can manage own agua"
+  ON vitalis_agua_log FOR ALL
+  USING (auth.uid() = user_id);
+
+-- 9c. vitalis_sono_log (Registo de sono)
+CREATE TABLE IF NOT EXISTS vitalis_sono_log (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  data DATE NOT NULL DEFAULT CURRENT_DATE,
+  duracao_min INTEGER NOT NULL CHECK (duracao_min > 0 AND duracao_min <= 1440),
+  qualidade_1a5 INTEGER CHECK (qualidade_1a5 BETWEEN 1 AND 5),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+
+  UNIQUE(user_id, data)
+);
+
+CREATE INDEX IF NOT EXISTS idx_vitalis_sono_user_data ON vitalis_sono_log(user_id, data DESC);
+
+ALTER TABLE vitalis_sono_log ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can manage own sono"
+  ON vitalis_sono_log FOR ALL
+  USING (auth.uid() = user_id);
+
+-- 9d. vitalis_fasting_log (Registo de jejum intermitente)
+CREATE TABLE IF NOT EXISTS vitalis_fasting_log (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  data DATE NOT NULL DEFAULT CURRENT_DATE,
+  hora_inicio TIMESTAMPTZ NOT NULL,
+  hora_fim TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_vitalis_fasting_user_data ON vitalis_fasting_log(user_id, data DESC);
+
+ALTER TABLE vitalis_fasting_log ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can manage own fasting"
+  ON vitalis_fasting_log FOR ALL
+  USING (auth.uid() = user_id);
+
+-- =====================================================
+-- 10. VERIFICAÇÃO FINAL
 -- =====================================================
 
 SELECT
@@ -398,7 +479,17 @@ SELECT 'vitalis_meal_plans', count(*) FROM vitalis_meal_plans
 UNION ALL
 SELECT 'vitalis_habitos', count(*) FROM vitalis_habitos
 UNION ALL
-SELECT 'vitalis_checkins', count(*) FROM vitalis_checkins;
+SELECT 'vitalis_checkins', count(*) FROM vitalis_checkins
+UNION ALL
+SELECT 'vitalis_medidas_log', count(*) FROM vitalis_medidas_log
+UNION ALL
+SELECT 'vitalis_workouts_log', count(*) FROM vitalis_workouts_log
+UNION ALL
+SELECT 'vitalis_agua_log', count(*) FROM vitalis_agua_log
+UNION ALL
+SELECT 'vitalis_sono_log', count(*) FROM vitalis_sono_log
+UNION ALL
+SELECT 'vitalis_fasting_log', count(*) FROM vitalis_fasting_log;
 
 -- =====================================================
 -- ✅ DONE!
