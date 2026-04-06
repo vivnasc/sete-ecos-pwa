@@ -208,22 +208,32 @@ export default function RelatoriosHub() {
   const gerarPDFMensal = async (relMensal) => {
     setGerando(`mensal-${relMensal.mes}`);
     try {
-      // Buscar registos do mês
       const dataInicio = new Date(relMensal.data);
       const dataFim = new Date(dataInicio);
       dataFim.setMonth(dataFim.getMonth() + 1);
+      const inicioStr = dataInicio.toISOString().split('T')[0];
+      const fimStr = dataFim.toISOString().split('T')[0];
+      const uid = client?.user_id;
 
-      const { data: registos } = await supabase
-        .from('vitalis_registos')
-        .select('*')
-        .eq('user_id', client?.user_id)
-        .gte('data', dataInicio.toISOString().split('T')[0])
-        .lt('data', dataFim.toISOString().split('T')[0]);
+      const [registosRes, aguaRes, treinosRes, sonoRes, mealsRes, medidasRes] = await Promise.all([
+        supabase.from('vitalis_registos').select('*').eq('user_id', uid).gte('data', inicioStr).lt('data', fimStr).order('data'),
+        supabase.from('vitalis_agua_log').select('*').eq('user_id', uid).gte('data', inicioStr).lt('data', fimStr),
+        supabase.from('vitalis_workouts_log').select('*').eq('user_id', uid).gte('data', inicioStr).lt('data', fimStr),
+        supabase.from('vitalis_sono_log').select('*').eq('user_id', uid).gte('data', inicioStr).lt('data', fimStr),
+        supabase.from('vitalis_meals_log').select('*').eq('user_id', uid).gte('data', inicioStr).lt('data', fimStr),
+        supabase.from('vitalis_medidas_log').select('*').eq('user_id', uid).gte('data', inicioStr).lt('data', fimStr).order('data'),
+      ]);
 
       await gerarRelatorioMensal({
         mes: relMensal.mes,
-        registos: registos || [],
-        cliente: client
+        registos: registosRes.data || [],
+        agua: aguaRes.data || [],
+        treinos: treinosRes.data || [],
+        sono: sonoRes.data || [],
+        meals: mealsRes.data || [],
+        medidas: medidasRes.data || [],
+        cliente: client,
+        plano
       });
     } catch (error) {
       console.error('Erro ao gerar PDF mensal:', error);
@@ -236,15 +246,24 @@ export default function RelatoriosHub() {
   const gerarPDFFase = async (fase) => {
     setGerando(`fase-${fase.numero}`);
     try {
-      // Buscar registos da fase
-      const { data: registos } = await supabase
-        .from('vitalis_registos')
-        .select('*')
-        .eq('user_id', client?.user_id);
+      const uid = client?.user_id;
+      const [registosRes, aguaRes, treinosRes, sonoRes, mealsRes, medidasRes] = await Promise.all([
+        supabase.from('vitalis_registos').select('*').eq('user_id', uid).order('data'),
+        supabase.from('vitalis_agua_log').select('*').eq('user_id', uid),
+        supabase.from('vitalis_workouts_log').select('*').eq('user_id', uid),
+        supabase.from('vitalis_sono_log').select('*').eq('user_id', uid),
+        supabase.from('vitalis_meals_log').select('*').eq('user_id', uid),
+        supabase.from('vitalis_medidas_log').select('*').eq('user_id', uid).order('data'),
+      ]);
 
       await gerarRelatorioFase({
         fase,
-        registos: registos || [],
+        registos: registosRes.data || [],
+        agua: aguaRes.data || [],
+        treinos: treinosRes.data || [],
+        sono: sonoRes.data || [],
+        meals: mealsRes.data || [],
+        medidas: medidasRes.data || [],
         cliente: client,
         plano
       });
@@ -259,22 +278,26 @@ export default function RelatoriosHub() {
   const gerarPDFFinal = async () => {
     setGerando('final');
     try {
-      // Buscar todos os registos e conquistas
-      const [registosRes, conquistasRes] = await Promise.all([
-        supabase
-          .from('vitalis_registos')
-          .select('*')
-          .eq('user_id', client?.user_id),
-        supabase
-          .from('vitalis_conquistas')
-          .select('*')
-          .eq('user_id', client?.user_id)
+      const uid = client?.user_id;
+      const [registosRes, conquistasRes, aguaRes, treinosRes, sonoRes, mealsRes, medidasRes] = await Promise.all([
+        supabase.from('vitalis_registos').select('*').eq('user_id', uid).order('data'),
+        supabase.from('vitalis_conquistas').select('*').eq('user_id', uid),
+        supabase.from('vitalis_agua_log').select('*').eq('user_id', uid),
+        supabase.from('vitalis_workouts_log').select('*').eq('user_id', uid),
+        supabase.from('vitalis_sono_log').select('*').eq('user_id', uid),
+        supabase.from('vitalis_meals_log').select('*').eq('user_id', uid),
+        supabase.from('vitalis_medidas_log').select('*').eq('user_id', uid).order('data'),
       ]);
 
       await gerarRelatorioFinal({
         cliente: client,
         registos: registosRes.data || [],
         conquistas: conquistasRes.data || [],
+        agua: aguaRes.data || [],
+        treinos: treinosRes.data || [],
+        sono: sonoRes.data || [],
+        meals: mealsRes.data || [],
+        medidas: medidasRes.data || [],
         plano
       });
     } catch (error) {

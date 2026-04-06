@@ -189,6 +189,9 @@ export default function RelatorioSemanal() {
     // Treinos
     const diasTreinoPlaneados = plano?.dias_treino?.length || 0;
     const treinosFeitos = treinos.length;
+    const totalMinTreino = treinos.reduce((s, t) => s + (t.duracao_min || 0), 0);
+    const tiposTreino = {};
+    treinos.forEach(t => { tiposTreino[t.tipo] = (tiposTreino[t.tipo] || 0) + 1; });
 
     // Sono (média)
     const sonoComDuracao = sono.filter(s => s.duracao_min);
@@ -232,6 +235,8 @@ export default function RelatorioSemanal() {
       diasComAgua,
       treinosFeitos,
       diasTreinoPlaneados,
+      totalMinTreino,
+      tiposTreino,
       mediaSono,
       mediaQualidadeSono,
       jejunsCompletos,
@@ -535,7 +540,7 @@ export default function RelatorioSemanal() {
             </div>
             <p className="text-3xl font-bold text-gray-800">{stats.treinosFeitos}</p>
             <p className="text-xs text-gray-500 mt-1">
-              de {stats.diasTreinoPlaneados} planeados
+              {stats.totalMinTreino > 0 ? `${stats.totalMinTreino} min total` : `de ${stats.diasTreinoPlaneados} planeados`}
             </p>
           </div>
 
@@ -551,6 +556,26 @@ export default function RelatorioSemanal() {
             </p>
           </div>
         </div>
+
+        {/* Treinos - detalhe por tipo */}
+        {Object.keys(stats.tiposTreino).length > 0 && (
+          <div className="bg-white rounded-2xl shadow-lg p-5">
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Treinos por Tipo</h3>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(stats.tiposTreino).sort((a, b) => b[1] - a[1]).map(([tipo, count]) => {
+                const emojis = { musculacao: '🏋️', corrida: '🏃', caminhada: '🚶', yoga: '🧘', natacao: '🏊', danca: '💃', ciclismo: '🚴', hiit: '⚡', pilates: '🤸', outro: '🔥', geral: '💪' };
+                return (
+                  <span key={tipo} className="px-3 py-1.5 bg-emerald-50 text-emerald-800 rounded-full text-sm font-medium border border-emerald-200">
+                    {emojis[tipo] || '💪'} {tipo.charAt(0).toUpperCase() + tipo.slice(1)}: {count}x
+                  </span>
+                );
+              })}
+            </div>
+            {stats.totalMinTreino > 0 && (
+              <p className="text-xs text-gray-500 mt-2">Tempo total: {stats.totalMinTreino} min (~{Math.round(stats.totalMinTreino / 60)}h)</p>
+            )}
+          </div>
+        )}
 
         {/* Energia & Humor */}
         <div className="bg-white rounded-2xl shadow-lg p-5">
