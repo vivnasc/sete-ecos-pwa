@@ -5,7 +5,7 @@ import { useEffect } from 'react';
  * Usa document.head directamente (sem dependências externas)
  */
 const SEO_DEFAULTS = {
-  title: 'Sete Ecos — Nutrição, Coaching e Bem-estar | Moçambique',
+  title: 'Sete Ecos | Nutrição e Bem-estar',
   description: 'Plataforma de transformação pessoal com plano alimentar personalizado, coaching nutricional e bem-estar. Comida moçambicana, método científico. Por Vivianne Saraiva.',
   image: 'https://app.seteecos.com/og-image.png',
   url: 'https://app.seteecos.com/',

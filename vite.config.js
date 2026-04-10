@@ -9,7 +9,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon-32.png', 'favicon-16.png', 'apple-touch-icon.png'],
       manifest: {
-        name: 'SETE ECOS — Sistema de Transmutação Integral',
+        name: 'Sete Ecos',
         short_name: 'Sete Ecos',
         description: 'Sete caminhos para despertar cada dimensão da tua essência. Plataforma holística de bem-estar.',
         lang: 'pt',
