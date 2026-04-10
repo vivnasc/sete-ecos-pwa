@@ -4,6 +4,7 @@ import { coachApi } from '../lib/coachApi';
 import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
 import { enviarBoasVindas, enviarConfirmacaoPagamento } from '../lib/emails';
 import { calcularPorcoesDiarias, extrairConfigPlano } from '../lib/vitalis/calcularPorcoes.js';
+import { gerarRelatorioMensal, gerarRelatorioFase, gerarRelatorioFinal } from '../lib/relatorios-pdf';
 
 /**
  * Coach - Vista detalhada de um cliente
@@ -395,6 +396,7 @@ export default function CoachClienteDetalhe() {
             { key: 'progresso', label: 'Progresso' },
             { key: 'calendario', label: 'Calendário' },
             { key: 'notificacoes', label: 'Notificações' },
+            { key: 'relatorios', label: 'Relatórios' },
             { key: 'gestao', label: 'Gestão' },
           ].map(t => (
             <button
@@ -1244,6 +1246,21 @@ export default function CoachClienteDetalhe() {
           <NotificacoesTab userId={userId} />
         )}
 
+        {/* === RELATORIOS === */}
+        {tab === 'relatorios' && (
+          <RelatoriosCoachTab
+            client={client}
+            intake={intake}
+            plano={activePlan}
+            registos={registos}
+            aguaLogs={aguaLogs}
+            mealsLogs={mealsLogs}
+            medidas={medidas}
+            treinos={treinos}
+            sonoLogs={sonoLogs}
+          />
+        )}
+
         {/* === GESTAO === */}
         {tab === 'gestao' && (
           <div className="space-y-4">
@@ -1435,6 +1452,254 @@ export default function CoachClienteDetalhe() {
               </button>
               <p className="text-xs text-red-400 mt-2">Irreversível. Remove todos os dados.</p>
             </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Relatórios Coach ──
+function RelatoriosCoachTab({ client, intake, plano, registos, aguaLogs, mealsLogs, medidas, treinos, sonoLogs }) {
+  const [gerando, setGerando] = useState(null);
+  const nome = intake?.nome || client?.nome || 'Cliente';
+
+  // Calcular meses disponíveis
+  const dataInicio = new Date(client?.data_inicio || client?.created_at || new Date());
+  const hoje = new Date();
+  const mesesDisponiveis = [];
+  const d = new Date(dataInicio);
+  d.setDate(1);
+  while (d < hoje) {
+    const mesStr = d.toISOString().split('T')[0];
+    const label = d.toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' });
+    mesesDisponiveis.push({ data: mesStr, label, mes: d.getMonth(), ano: d.getFullYear() });
+    d.setMonth(d.getMonth() + 1);
+  }
+
+  // Fases completas
+  const faseActual = plano?.fase || client?.fase_actual || 'inducao';
+  const faseOrdem = ['inducao', 'transicao', 'estabilizacao', 'manutencao'];
+  const faseIdx = faseOrdem.indexOf(faseActual);
+  const abordagem = plano?.abordagem || intake?.abordagem_preferida || 'equilibrado';
+  const faseNomes = {
+    keto: { inducao: 'Indução', transicao: 'Transição', estabilizacao: 'Estabilização', manutencao: 'Manutenção' },
+    lowcarb: { inducao: 'Adaptação', transicao: 'Progressão', estabilizacao: 'Consolidação', manutencao: 'Autonomia' },
+    equilibrado: { inducao: 'Arranque', transicao: 'Evolução', estabilizacao: 'Optimização', manutencao: 'Manutenção' }
+  };
+  const fasesCompletas = faseOrdem.slice(0, Math.max(faseIdx, 0)).map((key, i) => ({
+    numero: i + 1,
+    nome: (faseNomes[abordagem] || faseNomes.equilibrado)[key] || key
+  }));
+
+  // Programa completo?
+  const diasPrograma = Math.floor((hoje - dataInicio) / (1000 * 60 * 60 * 24));
+  const programaCompleto = diasPrograma >= 84;
+
+  const filtrarPorMes = (dados, mesInfo) => {
+    const inicio = `${mesInfo.ano}-${String(mesInfo.mes + 1).padStart(2, '0')}-01`;
+    const fimDate = new Date(mesInfo.ano, mesInfo.mes + 1, 0);
+    const fim = fimDate.toISOString().split('T')[0];
+    return (dados || []).filter(r => r.data >= inicio && r.data <= fim);
+  };
+
+  const gerarMensal = async (mesInfo) => {
+    setGerando(`mensal-${mesInfo.data}`);
+    try {
+      const inicio = `${mesInfo.ano}-${String(mesInfo.mes + 1).padStart(2, '0')}-01`;
+      const fimDate = new Date(mesInfo.ano, mesInfo.mes + 1, 0);
+      const fim = fimDate.toISOString().split('T')[0];
+
+      await gerarRelatorioMensal({
+        mes: mesInfo.label,
+        dataInicio: inicio,
+        dataFim: fim,
+        registos: filtrarPorMes(registos, mesInfo),
+        agua: filtrarPorMes(aguaLogs, mesInfo),
+        treinos: filtrarPorMes(treinos, mesInfo),
+        sono: filtrarPorMes(sonoLogs, mesInfo),
+        meals: filtrarPorMes(mealsLogs, mesInfo),
+        medidas: filtrarPorMes(medidas, mesInfo),
+        cliente: { ...client, nome, abordagem },
+        plano
+      });
+    } catch (error) {
+      console.error('Erro ao gerar relatório mensal:', error);
+      alert('Erro ao gerar relatório.');
+    } finally {
+      setGerando(null);
+    }
+  };
+
+  const gerarFase = async (fase) => {
+    setGerando(`fase-${fase.numero}`);
+    try {
+      await gerarRelatorioFase({
+        fase,
+        registos: registos || [],
+        agua: aguaLogs || [],
+        treinos: treinos || [],
+        sono: sonoLogs || [],
+        meals: mealsLogs || [],
+        medidas: medidas || [],
+        cliente: { ...client, nome, abordagem },
+        plano
+      });
+    } catch (error) {
+      console.error('Erro ao gerar relatório de fase:', error);
+      alert('Erro ao gerar relatório.');
+    } finally {
+      setGerando(null);
+    }
+  };
+
+  const gerarFinal = async () => {
+    setGerando('final');
+    try {
+      await gerarRelatorioFinal({
+        cliente: { ...client, nome, abordagem },
+        registos: registos || [],
+        conquistas: [],
+        agua: aguaLogs || [],
+        treinos: treinos || [],
+        sono: sonoLogs || [],
+        meals: mealsLogs || [],
+        medidas: medidas || [],
+        plano
+      });
+    } catch (error) {
+      console.error('Erro ao gerar relatório final:', error);
+      alert('Erro ao gerar relatório.');
+    } finally {
+      setGerando(null);
+    }
+  };
+
+  // Estatísticas rápidas para visão geral
+  const diasActivos = new Set([
+    ...(registos || []).map(r => r.data),
+    ...(mealsLogs || []).map(m => m.data),
+    ...(aguaLogs || []).map(a => a.data),
+    ...(treinos || []).map(t => t.data)
+  ]).size;
+  const totalMeals = (mealsLogs || []).length;
+  const mealsOk = (mealsLogs || []).filter(m => m.seguiu_plano === 'sim').length;
+  const aderencia = totalMeals > 0 ? Math.round(mealsOk / totalMeals * 100) : 0;
+
+  return (
+    <div className="space-y-4">
+      {/* Resumo rápido */}
+      <div className="bg-white rounded-xl border p-4">
+        <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+          <span className="text-lg">📊</span>
+          Dados disponíveis para {nome}
+        </h3>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-gray-50 rounded-lg p-3 text-center">
+            <p className="text-2xl font-bold text-gray-800">{diasActivos}</p>
+            <p className="text-xs text-gray-500">Dias activos</p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-3 text-center">
+            <p className="text-2xl font-bold text-gray-800">{totalMeals}</p>
+            <p className="text-xs text-gray-500">Refeições ({aderencia}%)</p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-3 text-center">
+            <p className="text-2xl font-bold text-gray-800">{(treinos || []).length}</p>
+            <p className="text-xs text-gray-500">Treinos</p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-3 text-center">
+            <p className="text-2xl font-bold text-gray-800">{diasPrograma}d</p>
+            <p className="text-xs text-gray-500">No programa</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Relatórios Mensais */}
+      <div className="bg-white rounded-xl border p-4">
+        <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+          <span className="text-lg">📅</span>
+          Relatórios Mensais
+        </h3>
+        {mesesDisponiveis.length > 0 ? (
+          <div className="space-y-2">
+            {mesesDisponiveis.map((m, i) => (
+              <button
+                key={i}
+                onClick={() => gerarMensal(m)}
+                disabled={gerando === `mensal-${m.data}`}
+                className="flex items-center justify-between w-full p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">{gerando === `mensal-${m.data}` ? '⏳' : '📊'}</span>
+                  <div className="text-left">
+                    <p className="font-medium text-gray-800 capitalize">{m.label}</p>
+                    <p className="text-xs text-gray-500">{gerando === `mensal-${m.data}` ? 'A gerar...' : 'Gerar PDF'}</p>
+                  </div>
+                </div>
+                <span className="text-sm font-medium text-indigo-600">📥 PDF</span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-400 italic">Primeiro mês completo ainda em curso.</p>
+        )}
+      </div>
+
+      {/* Relatórios de Fase */}
+      <div className="bg-white rounded-xl border p-4">
+        <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+          <span className="text-lg">🎯</span>
+          Relatórios de Fase
+        </h3>
+        {fasesCompletas.length > 0 ? (
+          <div className="space-y-2">
+            {fasesCompletas.map((fase, i) => (
+              <button
+                key={i}
+                onClick={() => gerarFase(fase)}
+                disabled={gerando === `fase-${fase.numero}`}
+                className="flex items-center justify-between w-full p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">{gerando === `fase-${fase.numero}` ? '⏳' : '🎯'}</span>
+                  <div className="text-left">
+                    <p className="font-medium text-gray-800">Fase {fase.numero}: {fase.nome}</p>
+                    <p className="text-xs text-gray-500">{gerando === `fase-${fase.numero}` ? 'A gerar...' : 'Gerar PDF'}</p>
+                  </div>
+                </div>
+                <span className="text-sm font-medium text-indigo-600">📥 PDF</span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-400 italic">Nenhuma fase completa ainda.</p>
+        )}
+      </div>
+
+      {/* Relatório Final */}
+      <div className="bg-white rounded-xl border p-4">
+        <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+          <span className="text-lg">🏆</span>
+          Relatório Final
+        </h3>
+        {programaCompleto ? (
+          <button
+            onClick={gerarFinal}
+            disabled={gerando === 'final'}
+            className="flex items-center justify-between w-full p-4 bg-gradient-to-r from-amber-50 to-yellow-50 hover:from-amber-100 hover:to-yellow-100 rounded-lg transition-colors border border-amber-200 disabled:opacity-50"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">{gerando === 'final' ? '⏳' : '🏆'}</span>
+              <div className="text-left">
+                <p className="font-bold text-gray-800">Relatório de Conclusão</p>
+                <p className="text-xs text-gray-600">{gerando === 'final' ? 'A gerar...' : `Jornada de ${diasPrograma} dias`}</p>
+              </div>
+            </div>
+            <span className="text-sm font-medium text-amber-600">📥 PDF</span>
+          </button>
+        ) : (
+          <div className="p-4 bg-gray-50 rounded-lg text-center">
+            <p className="text-sm text-gray-500">Disponível após 12 semanas ({84 - diasPrograma} dias restantes).</p>
           </div>
         )}
       </div>
