@@ -4,7 +4,7 @@ import { coachApi } from '../lib/coachApi';
 import { SUBSCRIPTION_PLANS } from '../lib/subscriptions';
 import { enviarBoasVindas, enviarConfirmacaoPagamento } from '../lib/emails';
 import { calcularPorcoesDiarias, extrairConfigPlano } from '../lib/vitalis/calcularPorcoes.js';
-import { gerarRelatorioMensal, gerarRelatorioFase, gerarRelatorioFinal } from '../lib/relatorios-pdf';
+import { gerarRelatorioMensal, gerarRelatorioFase, gerarRelatorioFinal, gerarRelatorioProgresso } from '../lib/relatorios-pdf';
 
 /**
  * Coach - Vista detalhada de um cliente
@@ -1464,17 +1464,24 @@ function RelatoriosCoachTab({ client, intake, plano, registos, aguaLogs, mealsLo
   const [gerando, setGerando] = useState(null);
   const nome = intake?.nome || client?.nome || 'Cliente';
 
-  // Calcular meses disponíveis
+  // Calcular ciclos de 30 dias desde o início do programa
   const dataInicio = new Date(client?.data_inicio || client?.created_at || new Date());
   const hoje = new Date();
-  const mesesDisponiveis = [];
-  const d = new Date(dataInicio);
-  d.setDate(1);
-  while (d < hoje) {
-    const mesStr = d.toISOString().split('T')[0];
-    const label = d.toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' });
-    mesesDisponiveis.push({ data: mesStr, label, mes: d.getMonth(), ano: d.getFullYear() });
-    d.setMonth(d.getMonth() + 1);
+  const diasPrograma = Math.floor((hoje - dataInicio) / (1000 * 60 * 60 * 24));
+  const totalCiclos = Math.floor(diasPrograma / 30);
+  const ciclosDisponiveis = [];
+  for (let i = 0; i < totalCiclos; i++) {
+    const cicloInicio = new Date(dataInicio);
+    cicloInicio.setDate(cicloInicio.getDate() + (i * 30));
+    const cicloFim = new Date(dataInicio);
+    cicloFim.setDate(cicloFim.getDate() + ((i + 1) * 30) - 1);
+    ciclosDisponiveis.push({
+      numero: i + 1,
+      label: `Mês ${i + 1} de programa`,
+      sublabel: `${cicloInicio.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })} — ${cicloFim.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', year: 'numeric' })}`,
+      dataInicio: cicloInicio.toISOString().split('T')[0],
+      dataFim: cicloFim.toISOString().split('T')[0]
+    });
   }
 
   // Fases completas
@@ -1492,34 +1499,46 @@ function RelatoriosCoachTab({ client, intake, plano, registos, aguaLogs, mealsLo
     nome: (faseNomes[abordagem] || faseNomes.equilibrado)[key] || key
   }));
 
-  // Programa completo?
-  const diasPrograma = Math.floor((hoje - dataInicio) / (1000 * 60 * 60 * 24));
   const programaCompleto = diasPrograma >= 84;
 
-  const filtrarPorMes = (dados, mesInfo) => {
-    const inicio = `${mesInfo.ano}-${String(mesInfo.mes + 1).padStart(2, '0')}-01`;
-    const fimDate = new Date(mesInfo.ano, mesInfo.mes + 1, 0);
-    const fim = fimDate.toISOString().split('T')[0];
+  const filtrarPorDatas = (dados, inicio, fim) => {
     return (dados || []).filter(r => r.data >= inicio && r.data <= fim);
   };
 
-  const gerarMensal = async (mesInfo) => {
-    setGerando(`mensal-${mesInfo.data}`);
+  const gerarProgresso = async () => {
+    setGerando('progresso');
     try {
-      const inicio = `${mesInfo.ano}-${String(mesInfo.mes + 1).padStart(2, '0')}-01`;
-      const fimDate = new Date(mesInfo.ano, mesInfo.mes + 1, 0);
-      const fim = fimDate.toISOString().split('T')[0];
+      await gerarRelatorioProgresso({
+        registos: registos || [],
+        agua: aguaLogs || [],
+        treinos: treinos || [],
+        sono: sonoLogs || [],
+        meals: mealsLogs || [],
+        medidas: medidas || [],
+        cliente: { ...client, nome, abordagem },
+        plano
+      });
+    } catch (error) {
+      console.error('Erro ao gerar relatório progresso:', error);
+      alert('Erro ao gerar relatório.');
+    } finally {
+      setGerando(null);
+    }
+  };
 
+  const gerarMensal = async (ciclo) => {
+    setGerando(`mensal-${ciclo.numero}`);
+    try {
       await gerarRelatorioMensal({
-        mes: mesInfo.label,
-        dataInicio: inicio,
-        dataFim: fim,
-        registos: filtrarPorMes(registos, mesInfo),
-        agua: filtrarPorMes(aguaLogs, mesInfo),
-        treinos: filtrarPorMes(treinos, mesInfo),
-        sono: filtrarPorMes(sonoLogs, mesInfo),
-        meals: filtrarPorMes(mealsLogs, mesInfo),
-        medidas: filtrarPorMes(medidas, mesInfo),
+        mes: ciclo.label,
+        dataInicio: ciclo.dataInicio,
+        dataFim: ciclo.dataFim,
+        registos: filtrarPorDatas(registos, ciclo.dataInicio, ciclo.dataFim),
+        agua: filtrarPorDatas(aguaLogs, ciclo.dataInicio, ciclo.dataFim),
+        treinos: filtrarPorDatas(treinos, ciclo.dataInicio, ciclo.dataFim),
+        sono: filtrarPorDatas(sonoLogs, ciclo.dataInicio, ciclo.dataFim),
+        meals: filtrarPorDatas(mealsLogs, ciclo.dataInicio, ciclo.dataFim),
+        medidas: filtrarPorDatas(medidas, ciclo.dataInicio, ciclo.dataFim),
         cliente: { ...client, nome, abordagem },
         plano
       });
@@ -1614,26 +1633,48 @@ function RelatoriosCoachTab({ client, intake, plano, registos, aguaLogs, mealsLo
         </div>
       </div>
 
-      {/* Relatórios Mensais */}
+      {/* Progresso Acumulado */}
+      <div className="bg-white rounded-xl border p-4">
+        <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+          <span className="text-lg">📈</span>
+          Progresso Acumulado
+        </h3>
+        <button
+          onClick={gerarProgresso}
+          disabled={gerando === 'progresso'}
+          className="flex items-center justify-between w-full p-3 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors disabled:opacity-50"
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-xl">{gerando === 'progresso' ? '⏳' : '📈'}</span>
+            <div className="text-left">
+              <p className="font-medium text-gray-800">Todo o progresso desde o dia 1</p>
+              <p className="text-xs text-gray-500">{gerando === 'progresso' ? 'A gerar...' : `${diasPrograma} dias de programa`}</p>
+            </div>
+          </div>
+          <span className="text-sm font-medium text-emerald-600">📥 PDF</span>
+        </button>
+      </div>
+
+      {/* Ciclos de 30 dias */}
       <div className="bg-white rounded-xl border p-4">
         <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
           <span className="text-lg">📅</span>
-          Relatórios Mensais
+          Progresso por Ciclo (30 dias)
         </h3>
-        {mesesDisponiveis.length > 0 ? (
+        {ciclosDisponiveis.length > 0 ? (
           <div className="space-y-2">
-            {mesesDisponiveis.map((m, i) => (
+            {ciclosDisponiveis.map((ciclo, i) => (
               <button
                 key={i}
-                onClick={() => gerarMensal(m)}
-                disabled={gerando === `mensal-${m.data}`}
+                onClick={() => gerarMensal(ciclo)}
+                disabled={gerando === `mensal-${ciclo.numero}`}
                 className="flex items-center justify-between w-full p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-xl">{gerando === `mensal-${m.data}` ? '⏳' : '📊'}</span>
+                  <span className="text-xl">{gerando === `mensal-${ciclo.numero}` ? '⏳' : '📊'}</span>
                   <div className="text-left">
-                    <p className="font-medium text-gray-800 capitalize">{m.label}</p>
-                    <p className="text-xs text-gray-500">{gerando === `mensal-${m.data}` ? 'A gerar...' : 'Gerar PDF'}</p>
+                    <p className="font-medium text-gray-800">{ciclo.label}</p>
+                    <p className="text-xs text-gray-500">{gerando === `mensal-${ciclo.numero}` ? 'A gerar...' : ciclo.sublabel}</p>
                   </div>
                 </div>
                 <span className="text-sm font-medium text-indigo-600">📥 PDF</span>
@@ -1641,7 +1682,7 @@ function RelatoriosCoachTab({ client, intake, plano, registos, aguaLogs, mealsLo
             ))}
           </div>
         ) : (
-          <p className="text-sm text-gray-400 italic">Primeiro mês completo ainda em curso.</p>
+          <p className="text-sm text-gray-400 italic">Primeiro ciclo de 30 dias ainda em curso ({30 - diasPrograma} dias restantes).</p>
         )}
       </div>
 

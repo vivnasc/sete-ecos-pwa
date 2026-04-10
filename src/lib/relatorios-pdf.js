@@ -771,6 +771,116 @@ export async function gerarRelatorioFinal(dados) {
 // ==========================================
 // RENDER PDF
 // ==========================================
+// RELATÓRIO PROGRESSO ACUMULADO (desde dia 1)
+// ==========================================
+
+export async function gerarRelatorioProgresso(dados) {
+  const { cliente } = dados;
+  const stats = calcularStats(dados);
+  const nome = cliente?.nome || g('Guerreiro', 'Guerreira');
+
+  const dataInicio = cliente?.data_inicio || cliente?.created_at;
+  const diasPrograma = dataInicio
+    ? Math.floor((new Date() - new Date(dataInicio)) / (1000 * 60 * 60 * 24))
+    : 0;
+  const consistencia = diasPrograma > 0 ? Math.round((stats.diasActivos / diasPrograma) * 100) : 0;
+
+  const pesoInicialProg = cliente?.peso_inicial || stats.pesoInicio;
+  const pesoActual = cliente?.peso_actual || stats.pesoFim;
+  const totalPerdido = pesoInicialProg - pesoActual;
+  const meta = cliente?.peso_meta || 0;
+  const pctMeta = meta > 0 && pesoInicialProg > meta
+    ? Math.min(Math.round(Math.abs(totalPerdido) / Math.abs(pesoInicialProg - meta) * 100), 100)
+    : 0;
+
+  const dataInicioStr = dataInicio ? new Date(dataInicio).toLocaleDateString('pt-PT', { day: '2-digit', month: 'long', year: 'numeric' }) : '—';
+  const hojeStr = new Date().toLocaleDateString('pt-PT', { day: '2-digit', month: 'long', year: 'numeric' });
+
+  const html = `
+    <div style="font-family: 'Inter', -apple-system, sans-serif; max-width: 800px; margin: 0 auto; font-size: 12px; line-height: 1.5; color: #4A4035;">
+      ${gerarHeader('Progresso Acumulado', `${dataInicioStr} — ${hojeStr} (${diasPrograma} dias)`)}
+      <div style="padding: 0 20px;">
+
+        ${htmlContextoPrograma(dados)}
+
+        <!-- Resumo da Jornada -->
+        ${secao('Resumo da Jornada', `
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            ${metricaCard('Programa', `${diasPrograma}d`, `${consistencia}% consistência`, '#7C8B6F')}
+            ${metricaCard('Dias Activos', stats.diasActivos, `de ${diasPrograma}`, consistencia >= 70 ? '#10b981' : '#f59e0b')}
+            ${metricaCard('Refeições', stats.totalMeals > 0 ? `${stats.aderenciaRefeicoes}%` : '—', stats.totalMeals > 0 ? `${stats.mealsOk}✓ de ${stats.totalMeals}` : 'sem registos', stats.aderenciaRefeicoes >= 70 ? '#10b981' : '#f59e0b')}
+            ${metricaCard('Treinos', stats.treinosFeitos > 0 ? `${stats.treinosFeitos}` : '—', stats.treinosFeitos > 0 ? `${Math.round(stats.totalMinTreino / 60)}h total` : 'sem registos', '#6366f1')}
+          </div>
+        `, '📊')}
+
+        <!-- Peso: progresso em direcção à meta -->
+        ${secao('Peso — Caminho até à Meta', `
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+            ${metricaCard('Início', `${pesoInicialProg} kg`, dataInicioStr.split(' ').slice(0, 2).join(' '), '#7C8B6F')}
+            ${metricaCard('Actual', `${pesoActual} kg`, 'hoje', totalPerdido > 0 ? '#10b981' : '#f59e0b')}
+            ${metricaCard('Variação', `${totalPerdido > 0 ? '-' : '+'}${Math.abs(totalPerdido).toFixed(1)} kg`, totalPerdido > 0 ? '↓ a perder' : totalPerdido < 0 ? '↑ ganho' : 'estável', totalPerdido > 0 ? '#10b981' : '#ef4444')}
+            ${meta > 0 ? metricaCard('Meta', `${meta} kg`, `${pctMeta}% alcançado`, pctMeta >= 100 ? '#10b981' : '#6366f1') : metricaCard('Água/dia', parseFloat(stats.mediaAguaL) > 0 ? `${stats.mediaAguaL}L` : '—', '', '#3b82f6')}
+          </div>
+          ${meta > 0 ? `
+            <div style="margin-bottom:6px;">
+              <div style="display:flex; justify-content:space-between; font-size:9px; color:#6B5C4C; margin-bottom:3px;">
+                <span>${pesoInicialProg} kg</span>
+                <span>Meta: ${meta} kg</span>
+              </div>
+              ${barraProgresso(pctMeta, pctMeta >= 100 ? '#10b981' : '#6366f1', '12px')}
+              <div style="font-size:9px; color:#6B5C4C; text-align:center; margin-top:3px;">
+                ${pctMeta >= 100 ? 'Meta atingida!' : `Faltam ${(pesoActual - meta).toFixed(1)} kg`}
+              </div>
+            </div>` : ''}
+          ${stats.pesosOrdenados.length > 2 ? `
+            <div style="margin-top:8px;">
+              <div style="font-size:10px; color:#6B5C4C; margin-bottom:4px;">Evolução do peso (${stats.pesosOrdenados.length} registos)</div>
+              ${miniBarChart(
+                stats.pesosOrdenados.map(p => p.peso_kg),
+                Math.max(...stats.pesosOrdenados.map(p => p.peso_kg)) + 2,
+                (v) => v <= pesoInicialProg ? '#10b981' : '#ef4444'
+              )}
+            </div>` : ''}
+        `, '⚖️')}
+
+        ${htmlMedidas(stats)}
+
+        ${htmlMealBreakdown(stats)}
+
+        ${htmlTreinos(stats)}
+
+        ${secao('Hidratação & Sono', `
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            ${metricaCard('Água/dia', parseFloat(stats.mediaAguaL) > 0 ? `${stats.mediaAguaL}L` : '—', stats.diasComAgua > 0 ? `${stats.diasMeta2L} dias ≥2L` : 'sem registos', parseFloat(stats.mediaAguaL) >= 2 ? '#10b981' : '#f59e0b')}
+            ${metricaCard('Sono', parseFloat(stats.mediaSonoH) > 0 ? `${stats.mediaSonoH}h` : '—', parseFloat(stats.mediaSonoQ) > 0 ? `Qualidade: ${stats.mediaSonoQ}/5` : 'sem registos', parseFloat(stats.mediaSonoH) >= 7 ? '#10b981' : '#f59e0b')}
+            ${metricaCard('Energia', stats.mediaEnergia !== '—' ? `${stats.mediaEnergia}/10` : '—', '', '#f59e0b')}
+            ${metricaCard('Humor', stats.mediaHumor !== '—' ? `${stats.mediaHumor}/10` : '—', '', '#10b981')}
+          </div>
+        `, '💧')}
+
+        ${dataInicio ? htmlCalendario(stats, new Date(dataInicio).toISOString().split('T')[0], new Date().toISOString().split('T')[0]) : ''}
+
+        ${htmlSemanasBreakdown(stats)}
+
+        ${htmlInsights(stats)}
+
+        <div style="background:linear-gradient(135deg, #7C8B6F, #5A6B4D); padding:16px; border-radius:12px; color:white; text-align:center; margin-top:10px;">
+          <p style="margin:0; font-size:12px; font-style:italic; line-height:1.5;">
+            "${nome}, ${diasPrograma} dias de caminho percorrido. Cada registo conta. Continua — o progresso é teu."
+          </p>
+          <p style="margin:8px 0 0; font-size:10px; opacity:0.8;">— Vivianne, Coach Vitalis</p>
+        </div>
+
+      </div>
+      ${gerarFooter()}
+    </div>`;
+
+  await renderPDF(html, `Vitalis_Progresso_${nome.replace(/\s/g, '_')}_${diasPrograma}dias.pdf`);
+}
+
+// ==========================================
+// RENDER PDF
+// ==========================================
 
 async function renderPDF(html, filename) {
   const container = document.createElement('div');
@@ -783,4 +893,4 @@ async function renderPDF(html, filename) {
   document.body.removeChild(container);
 }
 
-export default { gerarRelatorioMensal, gerarRelatorioFase, gerarRelatorioFinal };
+export default { gerarRelatorioMensal, gerarRelatorioFase, gerarRelatorioFinal, gerarRelatorioProgresso };

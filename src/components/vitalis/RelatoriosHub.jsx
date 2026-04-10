@@ -11,7 +11,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link } from 'react-router-dom';
-import { gerarRelatorioMensal, gerarRelatorioFase, gerarRelatorioFinal } from '../../lib/relatorios-pdf';
+import { gerarRelatorioMensal, gerarRelatorioFase, gerarRelatorioFinal, gerarRelatorioProgresso } from '../../lib/relatorios-pdf';
 
 // ============================================================
 // ÍCONES
@@ -155,21 +155,24 @@ export default function RelatoriosHub() {
   const calcularRelatoriosDisponiveis = (clientData, planoData) => {
     const dataInicio = new Date(clientData?.data_inicio || new Date());
     const hoje = new Date();
-    
-    // Calcular meses completos
-    const mesesCompletos = [];
-    let dataVerificar = new Date(dataInicio);
-    dataVerificar.setMonth(dataVerificar.getMonth() + 1);
-    dataVerificar.setDate(1); // Primeiro dia do mês seguinte
-    
-    while (dataVerificar <= hoje) {
-      const mesAnterior = new Date(dataVerificar);
-      mesAnterior.setMonth(mesAnterior.getMonth() - 1);
-      mesesCompletos.push({
-        mes: mesAnterior.toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' }),
-        data: mesAnterior.toISOString().split('T')[0]
+    const diasPrograma = Math.floor((hoje - dataInicio) / (1000 * 60 * 60 * 24));
+
+    // Calcular ciclos de 30 dias desde o início do plano
+    const ciclosCompletos = [];
+    const totalCiclos = Math.floor(diasPrograma / 30);
+    for (let i = 0; i < totalCiclos; i++) {
+      const cicloInicio = new Date(dataInicio);
+      cicloInicio.setDate(cicloInicio.getDate() + (i * 30));
+      const cicloFim = new Date(dataInicio);
+      cicloFim.setDate(cicloFim.getDate() + ((i + 1) * 30) - 1);
+
+      ciclosCompletos.push({
+        numero: i + 1,
+        label: `Mês ${i + 1} de programa`,
+        sublabel: `${cicloInicio.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })} — ${cicloFim.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', year: 'numeric' })}`,
+        dataInicio: cicloInicio.toISOString().split('T')[0],
+        dataFim: cicloFim.toISOString().split('T')[0]
       });
-      dataVerificar.setMonth(dataVerificar.getMonth() + 1);
     }
 
     // Calcular fases completas
@@ -182,12 +185,11 @@ export default function RelatoriosHub() {
       });
     }
 
-    // Verificar se programa terminou (3 meses)
-    const diasPrograma = Math.floor((hoje - dataInicio) / (1000 * 60 * 60 * 24));
-    const programaTerminado = diasPrograma >= 84; // ~12 semanas
+    // Verificar se programa terminou (3 meses = 84 dias)
+    const programaTerminado = diasPrograma >= 84;
 
     setRelatoriosDisponiveis({
-      mensais: mesesCompletos,
+      mensais: ciclosCompletos,
       fases: fasesCompletas,
       final: programaTerminado
     });
@@ -205,27 +207,24 @@ export default function RelatoriosHub() {
 
   const [gerando, setGerando] = useState(null);
 
-  const gerarPDFMensal = async (relMensal) => {
-    setGerando(`mensal-${relMensal.mes}`);
+  const gerarPDFMensal = async (ciclo) => {
+    setGerando(`mensal-${ciclo.numero}`);
     try {
-      const dataInicio = new Date(relMensal.data);
-      const dataFim = new Date(dataInicio);
-      dataFim.setMonth(dataFim.getMonth() + 1);
-      const inicioStr = dataInicio.toISOString().split('T')[0];
-      const fimStr = dataFim.toISOString().split('T')[0];
+      const inicioStr = ciclo.dataInicio;
+      const fimStr = ciclo.dataFim;
       const uid = client?.user_id;
 
       const [registosRes, aguaRes, treinosRes, sonoRes, mealsRes, medidasRes] = await Promise.all([
-        supabase.from('vitalis_registos').select('*').eq('user_id', uid).gte('data', inicioStr).lt('data', fimStr).order('data'),
-        supabase.from('vitalis_agua_log').select('*').eq('user_id', uid).gte('data', inicioStr).lt('data', fimStr),
-        supabase.from('vitalis_workouts_log').select('*').eq('user_id', uid).gte('data', inicioStr).lt('data', fimStr),
-        supabase.from('vitalis_sono_log').select('*').eq('user_id', uid).gte('data', inicioStr).lt('data', fimStr),
-        supabase.from('vitalis_meals_log').select('*').eq('user_id', uid).gte('data', inicioStr).lt('data', fimStr),
-        supabase.from('vitalis_medidas_log').select('*').eq('user_id', uid).gte('data', inicioStr).lt('data', fimStr).order('data'),
+        supabase.from('vitalis_registos').select('*').eq('user_id', uid).gte('data', inicioStr).lte('data', fimStr).order('data'),
+        supabase.from('vitalis_agua_log').select('*').eq('user_id', uid).gte('data', inicioStr).lte('data', fimStr),
+        supabase.from('vitalis_workouts_log').select('*').eq('user_id', uid).gte('data', inicioStr).lte('data', fimStr),
+        supabase.from('vitalis_sono_log').select('*').eq('user_id', uid).gte('data', inicioStr).lte('data', fimStr),
+        supabase.from('vitalis_meals_log').select('*').eq('user_id', uid).gte('data', inicioStr).lte('data', fimStr),
+        supabase.from('vitalis_medidas_log').select('*').eq('user_id', uid).gte('data', inicioStr).lte('data', fimStr).order('data'),
       ]);
 
       await gerarRelatorioMensal({
-        mes: relMensal.mes,
+        mes: ciclo.label,
         dataInicio: inicioStr,
         dataFim: fimStr,
         registos: registosRes.data || [],
@@ -310,10 +309,44 @@ export default function RelatoriosHub() {
     }
   };
 
-  // Calcular semana actual
-  const semanaActual = client?.data_inicio 
+  const gerarPDFProgresso = async () => {
+    setGerando('progresso');
+    try {
+      const uid = client?.user_id;
+      const [registosRes, aguaRes, treinosRes, sonoRes, mealsRes, medidasRes] = await Promise.all([
+        supabase.from('vitalis_registos').select('*').eq('user_id', uid).order('data'),
+        supabase.from('vitalis_agua_log').select('*').eq('user_id', uid),
+        supabase.from('vitalis_workouts_log').select('*').eq('user_id', uid),
+        supabase.from('vitalis_sono_log').select('*').eq('user_id', uid),
+        supabase.from('vitalis_meals_log').select('*').eq('user_id', uid),
+        supabase.from('vitalis_medidas_log').select('*').eq('user_id', uid).order('data'),
+      ]);
+
+      await gerarRelatorioProgresso({
+        registos: registosRes.data || [],
+        agua: aguaRes.data || [],
+        treinos: treinosRes.data || [],
+        sono: sonoRes.data || [],
+        meals: mealsRes.data || [],
+        medidas: medidasRes.data || [],
+        cliente: client,
+        plano
+      });
+    } catch (error) {
+      console.error('Erro ao gerar PDF progresso:', error);
+      alert('Erro ao gerar relatório. Tenta novamente.');
+    } finally {
+      setGerando(null);
+    }
+  };
+
+  // Calcular semana actual e dias de programa
+  const semanaActual = client?.data_inicio
     ? Math.ceil((new Date() - new Date(client.data_inicio)) / (7 * 24 * 60 * 60 * 1000))
     : 1;
+  const diasPrograma = client?.data_inicio
+    ? Math.floor((new Date() - new Date(client.data_inicio)) / (1000 * 60 * 60 * 24))
+    : 0;
 
   if (loading) {
     return (
@@ -379,6 +412,42 @@ export default function RelatoriosHub() {
           </div>
         </div>
 
+        {/* Progresso Total — sempre disponível */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-3 bg-emerald-100 rounded-xl text-emerald-600">
+                <Icons.Target />
+              </div>
+              <div>
+                <h2 className="font-bold text-gray-800">Progresso Total</h2>
+                <p className="text-sm text-gray-500">{diasPrograma} dias de programa</p>
+              </div>
+            </div>
+
+            <p className="text-sm text-gray-600 mb-4">
+              Todo o teu progresso desde o dia 1: peso, refeições, treinos, sono, hidratação e mais.
+            </p>
+
+            <button
+              onClick={gerarPDFProgresso}
+              disabled={gerando === 'progresso'}
+              className="flex items-center justify-between w-full p-3 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-colors disabled:opacity-50"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{gerando === 'progresso' ? '⏳' : '📈'}</span>
+                <span className="font-medium text-emerald-700">
+                  {gerando === 'progresso' ? 'A gerar...' : 'Gerar Relatório Acumulado'}
+                </span>
+              </div>
+              <div className="flex items-center gap-1 text-emerald-600">
+                <Icons.Download />
+                <span className="text-sm font-medium">PDF</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
         {/* Secção PDFs */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
           <div className="p-5 border-b border-gray-100">
@@ -395,28 +464,28 @@ export default function RelatoriosHub() {
 
           <div className="divide-y divide-gray-100">
             
-            {/* Relatórios Mensais */}
+            {/* Relatórios por Ciclo (30 dias de programa) */}
             <div className="p-4">
               <div className="flex items-center gap-2 mb-3">
                 <Icons.BarChart />
-                <h3 className="font-semibold text-gray-700">Relatórios Mensais</h3>
+                <h3 className="font-semibold text-gray-700">Progresso por Ciclo</h3>
               </div>
-              
+
               {relatoriosDisponiveis.mensais.length > 0 ? (
                 <div className="space-y-2">
-                  {relatoriosDisponiveis.mensais.map((rel, i) => (
+                  {relatoriosDisponiveis.mensais.map((ciclo, i) => (
                     <button
                       key={i}
-                      onClick={() => gerarPDFMensal(rel)}
-                      disabled={gerando === `mensal-${rel.mes}`}
+                      onClick={() => gerarPDFMensal(ciclo)}
+                      disabled={gerando === `mensal-${ciclo.numero}`}
                       className="flex items-center justify-between w-full p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors disabled:opacity-50"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl">{gerando === `mensal-${rel.mes}` ? '⏳' : '📊'}</span>
+                        <span className="text-2xl">{gerando === `mensal-${ciclo.numero}` ? '⏳' : '📊'}</span>
                         <div className="text-left">
-                          <p className="font-medium text-gray-800 capitalize">{rel.mes}</p>
+                          <p className="font-medium text-gray-800">{ciclo.label}</p>
                           <p className="text-xs text-gray-500">
-                            {gerando === `mensal-${rel.mes}` ? 'A gerar...' : 'Resumo mensal'}
+                            {gerando === `mensal-${ciclo.numero}` ? 'A gerar...' : ciclo.sublabel}
                           </p>
                         </div>
                       </div>
@@ -429,7 +498,7 @@ export default function RelatoriosHub() {
                 </div>
               ) : (
                 <p className="text-sm text-gray-400 italic p-3 bg-gray-50 rounded-xl">
-                  Disponível no fim do primeiro mês completo
+                  Disponível após os primeiros 30 dias de programa
                 </p>
               )}
             </div>
