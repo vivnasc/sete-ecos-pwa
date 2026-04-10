@@ -186,6 +186,7 @@ function calcularStats(dados) {
     primeiraM, ultimaM, pesosOrdenados, medidasOrdenadas,
     totalRegistos: (registos || []).length,
     diasActivos: diasActivos.size,
+    diasActivosSet: diasActivos,
     semanasMap
   };
 }
@@ -219,7 +220,23 @@ function htmlPeso(stats, cliente) {
 }
 
 function htmlMedidas(stats) {
-  if (!stats.primeiraM || !stats.ultimaM) return '';
+  if (!stats.primeiraM && !stats.ultimaM) {
+    return secao('Medidas Corporais', `
+      <div style="padding:10px 14px; background:#F5F2ED; border-radius:8px; font-size:11px; color:#6B5C4C; text-align:center;">
+        Sem medidas registadas. Registar cintura e anca semanalmente ajuda a ver resultados mesmo quando o peso não muda.
+      </div>`, '📏');
+  }
+
+  if (!stats.ultimaM) {
+    const info = [];
+    if (stats.primeiraM?.cintura_cm) info.push(`Cintura: ${stats.primeiraM.cintura_cm} cm`);
+    if (stats.primeiraM?.anca_cm) info.push(`Anca: ${stats.primeiraM.anca_cm} cm`);
+    return secao('Medidas Corporais', `
+      <div style="padding:10px 14px; background:#F5F2ED; border-radius:8px; font-size:11px; color:#6B5C4C;">
+        Apenas 1 registo (${info.join(', ')}). É preciso pelo menos 2 registos para ver a evolução.
+      </div>`, '📏');
+  }
+
   const diffCintura = stats.ultimaM.cintura_cm && stats.primeiraM.cintura_cm
     ? (stats.ultimaM.cintura_cm - stats.primeiraM.cintura_cm).toFixed(1) : null;
   const diffAnca = stats.ultimaM.anca_cm && stats.primeiraM.anca_cm
@@ -234,7 +251,8 @@ function htmlMedidas(stats) {
     </div>`, '📏');
 }
 
-function htmlInsights(stats, contexto = '') {
+function htmlInsights(stats, contexto = '', overrides = {}) {
+  const varPeso = overrides.variacaoPeso !== undefined ? overrides.variacaoPeso : stats.variacaoPeso;
   const insights = [];
 
   // Consistência
@@ -293,9 +311,9 @@ function htmlInsights(stats, contexto = '') {
   }
 
   // Peso
-  if (stats.variacaoPeso < -2) insights.push({ tipo: 'sucesso', texto: `Perdeste ${Math.abs(stats.variacaoPeso).toFixed(1)} kg — progresso sólido!` });
-  else if (stats.variacaoPeso < -0.5) insights.push({ tipo: 'bom', texto: `Perdeste ${Math.abs(stats.variacaoPeso).toFixed(1)} kg — ritmo saudável e sustentável.` });
-  else if (stats.variacaoPeso > 1) insights.push({ tipo: 'alerta', texto: `O peso subiu ${stats.variacaoPeso.toFixed(1)} kg. Pode ser retenção, ciclo menstrual, ou precisa de ajuste alimentar.` });
+  if (varPeso < -2) insights.push({ tipo: 'sucesso', texto: `Perdeste ${Math.abs(varPeso).toFixed(1)} kg — progresso sólido!` });
+  else if (varPeso < -0.5) insights.push({ tipo: 'bom', texto: `Perdeste ${Math.abs(varPeso).toFixed(1)} kg — ritmo saudável e sustentável.` });
+  else if (varPeso > 1) insights.push({ tipo: 'alerta', texto: `O peso subiu ${varPeso.toFixed(1)} kg. Pode ser retenção, ciclo menstrual, ou precisa de ajuste alimentar.` });
 
   // Energia/Humor
   if (stats.mediaEnergia !== '—' && parseFloat(stats.mediaEnergia) < 5) {
@@ -324,7 +342,7 @@ function htmlCalendario(stats, dataInicio, dataFim) {
   const d = new Date(inicio);
   while (d <= fim) {
     const dataStr = d.toISOString().split('T')[0];
-    const activo = stats.aguaPorDia?.[dataStr] || false;
+    const activo = stats.diasActivosSet ? stats.diasActivosSet.has(dataStr) : !!stats.aguaPorDia?.[dataStr];
     dias.push({ data: dataStr, dia: d.getDate(), activo });
     d.setDate(d.getDate() + 1);
   }
@@ -862,7 +880,7 @@ export async function gerarRelatorioProgresso(dados) {
 
         ${htmlSemanasBreakdown(stats)}
 
-        ${htmlInsights(stats)}
+        ${htmlInsights(stats, '', { variacaoPeso: -totalPerdido })}
 
         <div style="background:linear-gradient(135deg, #7C8B6F, #5A6B4D); padding:16px; border-radius:12px; color:white; text-align:center; margin-top:10px;">
           <p style="margin:0; font-size:12px; font-style:italic; line-height:1.5;">
