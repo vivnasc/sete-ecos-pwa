@@ -4,35 +4,50 @@ import { Link } from 'react-router-dom';
 
 const DIAS_SEMANA = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
 
-// Fallback meals if DB recipes fail to load
+// Fallback meals — everyday foods (not fancy recipes)
 // fases: inducao=keto-safe, transicao=low-carb OK, manutencao=all approaches
 const REFEICOES_FALLBACK = {
   pequeno_almoco: [
-    { id: 'fb-pa1', nome: 'Ovos mexidos com espinafres', icone: '🥚', proteina: 1, hidratos: 0, gordura: 1, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
-    { id: 'fb-pa2', nome: 'Papas de milho com amendoim', icone: '🥣', proteina: 0.5, hidratos: 1.5, gordura: 0.5, tags: ['tradicional'], fases: ['manutencao'] },
-    { id: 'fb-pa3', nome: 'Batido proteico de amendoim', icone: '🥤', proteina: 0.5, hidratos: 1, gordura: 1, tags: [], fases: ['transicao', 'manutencao'] },
-    { id: 'fb-pa4', nome: 'Iogurte grego com sementes', icone: '🥛', proteina: 0.5, hidratos: 0, gordura: 1, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-pa1', nome: 'Ovos mexidos', icone: '🍳', proteina: 1, hidratos: 0, gordura: 1, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-pa2', nome: 'Iogurte natural com fruta', icone: '🥛', proteina: 0.5, hidratos: 0.5, gordura: 0.5, tags: [], fases: ['transicao', 'manutencao'] },
+    { id: 'fb-pa3', nome: 'Torrada com queijo e fiambre', icone: '🍞', proteina: 0.5, hidratos: 1, gordura: 0.5, tags: [], fases: ['transicao', 'manutencao'] },
+    { id: 'fb-pa4', nome: 'Cereais com leite', icone: '🥣', proteina: 0.5, hidratos: 1.5, gordura: 0, tags: [], fases: ['manutencao'] },
+    { id: 'fb-pa5', nome: 'Omelete simples', icone: '🥚', proteina: 1, hidratos: 0, gordura: 1, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-pa6', nome: 'Pão com manteiga de amendoim', icone: '🥜', proteina: 0.5, hidratos: 1, gordura: 1, tags: [], fases: ['transicao', 'manutencao'] },
+    { id: 'fb-pa7', nome: 'Panquecas de banana', icone: '🥞', proteina: 0.5, hidratos: 1, gordura: 0.5, tags: [], fases: ['transicao', 'manutencao'] },
+    { id: 'fb-pa8', nome: 'Iogurte grego com nozes', icone: '🥛', proteina: 1, hidratos: 0, gordura: 1, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
   ],
   almoco: [
-    { id: 'fb-al1', nome: 'Frango à Zambeziana', icone: '🍗', proteina: 1.5, hidratos: 0, gordura: 1, tags: ['keto', 'proteico'], fases: ['inducao', 'transicao', 'manutencao'] },
-    { id: 'fb-al2', nome: 'Matapa com camarão', icone: '🥬', proteina: 1, hidratos: 0.5, gordura: 1, tags: ['tradicional'], fases: ['inducao', 'transicao', 'manutencao'] },
-    { id: 'fb-al3', nome: 'Peixe grelhado com legumes', icone: '🐟', proteina: 1, hidratos: 0, gordura: 0.5, tags: ['keto', 'proteico'], fases: ['inducao', 'transicao', 'manutencao'] },
-    { id: 'fb-al4', nome: 'Xima com caril de amendoim', icone: '🍛', proteina: 0.5, hidratos: 1.5, gordura: 1, tags: ['tradicional'], fases: ['manutencao'] },
-    { id: 'fb-al5', nome: 'Caril de camarão', icone: '🦐', proteina: 1, hidratos: 0, gordura: 1, tags: ['keto', 'proteico'], fases: ['inducao', 'transicao', 'manutencao'] },
-    { id: 'fb-al6', nome: 'Galinha à Cafreal', icone: '🍗', proteina: 1.5, hidratos: 0, gordura: 1, tags: ['keto', 'proteico'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-al1', nome: 'Arroz com frango grelhado', icone: '🍗', proteina: 1, hidratos: 1, gordura: 0.5, tags: [], fases: ['transicao', 'manutencao'] },
+    { id: 'fb-al2', nome: 'Massa com atum', icone: '🍝', proteina: 1, hidratos: 1, gordura: 0.5, tags: [], fases: ['transicao', 'manutencao'] },
+    { id: 'fb-al3', nome: 'Bife com salada', icone: '🥩', proteina: 1.5, hidratos: 0, gordura: 1, tags: ['keto', 'proteico'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-al4', nome: 'Frango com legumes salteados', icone: '🥗', proteina: 1, hidratos: 0, gordura: 0.5, tags: ['keto', 'proteico'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-al5', nome: 'Peixe grelhado com legumes', icone: '🐟', proteina: 1, hidratos: 0, gordura: 0.5, tags: ['keto', 'proteico'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-al6', nome: 'Salada de atum com ovo', icone: '🥗', proteina: 1, hidratos: 0, gordura: 1, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-al7', nome: 'Arroz com feijão e frango', icone: '🍛', proteina: 1, hidratos: 1.5, gordura: 0.5, tags: [], fases: ['manutencao'] },
+    { id: 'fb-al8', nome: 'Sandes de frango com alface', icone: '🥪', proteina: 1, hidratos: 1, gordura: 0.5, tags: [], fases: ['transicao', 'manutencao'] },
+    { id: 'fb-al9', nome: 'Esparguete à bolonhesa', icone: '🍝', proteina: 1, hidratos: 1.5, gordura: 0.5, tags: [], fases: ['manutencao'] },
+    { id: 'fb-al10', nome: 'Hambúrguer caseiro com salada', icone: '🍔', proteina: 1.5, hidratos: 0.5, gordura: 1, tags: [], fases: ['transicao', 'manutencao'] },
   ],
   jantar: [
-    { id: 'fb-jt1', nome: 'Sopa de peixe Zambeziana', icone: '🍜', proteina: 1, hidratos: 0.5, gordura: 0, tags: ['proteico'], fases: ['transicao', 'manutencao'] },
-    { id: 'fb-jt2', nome: 'Peixe grelhado com molho de coco e manga', icone: '🐟', proteina: 1, hidratos: 0, gordura: 1, tags: ['keto', 'proteico'], fases: ['inducao', 'transicao', 'manutencao'] },
-    { id: 'fb-jt3', nome: 'Camarão grelhado com alho', icone: '🦐', proteina: 1, hidratos: 0, gordura: 1, tags: ['keto', 'proteico'], fases: ['inducao', 'transicao', 'manutencao'] },
-    { id: 'fb-jt4', nome: 'Mucapata', icone: '🫘', proteina: 0.5, hidratos: 1, gordura: 0.5, tags: ['tradicional'], fases: ['manutencao'] },
-    { id: 'fb-jt5', nome: 'Omelete com salada', icone: '🍳', proteina: 1, hidratos: 0, gordura: 1, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-jt1', nome: 'Sopa de legumes com frango', icone: '🍲', proteina: 0.5, hidratos: 0.5, gordura: 0, tags: [], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-jt2', nome: 'Omelete com salada', icone: '🍳', proteina: 1, hidratos: 0, gordura: 1, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-jt3', nome: 'Peixe no forno com batata', icone: '🐟', proteina: 1, hidratos: 1, gordura: 0.5, tags: [], fases: ['transicao', 'manutencao'] },
+    { id: 'fb-jt4', nome: 'Frango grelhado com salada', icone: '🍗', proteina: 1, hidratos: 0, gordura: 0.5, tags: ['keto', 'proteico'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-jt5', nome: 'Wrap de atum', icone: '🌯', proteina: 1, hidratos: 1, gordura: 0.5, tags: [], fases: ['transicao', 'manutencao'] },
+    { id: 'fb-jt6', nome: 'Ovos cozidos com abacate', icone: '🥑', proteina: 1, hidratos: 0, gordura: 1, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-jt7', nome: 'Sopa de lentilhas', icone: '🍲', proteina: 0.5, hidratos: 1, gordura: 0, tags: [], fases: ['transicao', 'manutencao'] },
+    { id: 'fb-jt8', nome: 'Sandes mista grelhada', icone: '🥪', proteina: 0.5, hidratos: 1, gordura: 0.5, tags: [], fases: ['transicao', 'manutencao'] },
   ],
   snack: [
-    { id: 'fb-sn1', nome: 'Amendoim torrado com piripiri', icone: '🥜', proteina: 0.5, hidratos: 0, gordura: 1, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
-    { id: 'fb-sn2', nome: 'Sumo de baobá', icone: '🥤', proteina: 0, hidratos: 0.5, gordura: 0, tags: [], fases: ['transicao', 'manutencao'] },
-    { id: 'fb-sn3', nome: 'Batido de papaia e coco', icone: '🥭', proteina: 0, hidratos: 1, gordura: 0.5, tags: [], fases: ['manutencao'] },
-    { id: 'fb-sn4', nome: 'Chá de capim-limão', icone: '🫖', proteina: 0, hidratos: 0, gordura: 0, tags: ['keto', 'jejum_friendly'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-sn1', nome: 'Banana', icone: '🍌', proteina: 0, hidratos: 1, gordura: 0, tags: [], fases: ['transicao', 'manutencao'] },
+    { id: 'fb-sn2', nome: 'Nozes e amêndoas', icone: '🥜', proteina: 0.5, hidratos: 0, gordura: 1, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-sn3', nome: 'Iogurte natural', icone: '🥛', proteina: 0.5, hidratos: 0.5, gordura: 0, tags: [], fases: ['transicao', 'manutencao'] },
+    { id: 'fb-sn4', nome: 'Queijo fresco', icone: '🧀', proteina: 0.5, hidratos: 0, gordura: 0.5, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-sn5', nome: 'Maçã', icone: '🍎', proteina: 0, hidratos: 1, gordura: 0, tags: [], fases: ['transicao', 'manutencao'] },
+    { id: 'fb-sn6', nome: 'Bolacha integral com manteiga de amendoim', icone: '🍪', proteina: 0.5, hidratos: 1, gordura: 0.5, tags: [], fases: ['manutencao'] },
+    { id: 'fb-sn7', nome: 'Ovo cozido', icone: '🥚', proteina: 0.5, hidratos: 0, gordura: 0.5, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-sn8', nome: 'Palitos de cenoura com húmus', icone: '🥕', proteina: 0, hidratos: 0.5, gordura: 0.5, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
   ]
 };
 
@@ -100,7 +115,10 @@ export default function CalendarioRefeicoes() {
   // Mapa de nomes para display — usa config da pessoa ou fallback
   const getNomeRefeicao = (chave) => {
     const cfg = refeicaoConfig.find(c => c.chave === chave);
-    if (cfg) return cfg.nome + (cfg.hora_habitual ? ` (${cfg.hora_habitual})` : '');
+    if (cfg) {
+      const hora = cfg.hora_habitual ? cfg.hora_habitual.replace(/:00$/, '') : '';
+      return cfg.nome + (hora ? ` (${hora})` : '');
+    }
     const fallback = { pequeno_almoco: 'Peq. Almoço', almoco: 'Almoço', jantar: 'Jantar', snack: 'Snack', lanche: 'Lanche' };
     return fallback[chave] || chave;
   };
@@ -381,50 +399,40 @@ export default function CalendarioRefeicoes() {
     setCopiarPara(null);
   };
 
+  // Check if recipe is ideal for the approach (used for sorting, not blocking)
+  const isIdealParaAbordagem = (r) => {
+    if (!abordagem) return true;
+    const tags = r.tags || [];
+    const fases = r.fases || [];
+    const hasFaseInfo = fases.length > 0 || tags.length > 0;
+    if (abordagem === 'keto_if') {
+      if (hasFaseInfo) return tags.includes('keto') || fases.includes('inducao');
+      return (r.hidratos || 0) <= 0.5;
+    }
+    if (abordagem === 'low_carb') {
+      if (hasFaseInfo) return fases.includes('inducao') || fases.includes('transicao');
+      return (r.hidratos || 0) <= 1.5;
+    }
+    return true;
+  };
+
   const filtrarPorAbordagem = (lista) => {
     if (!abordagem) return lista;
-    return lista.filter(r => {
-      const tags = r.tags || [];
-      const fases = r.fases || [];
-      const hasFaseInfo = fases.length > 0 || tags.length > 0;
-
-      if (abordagem === 'keto_if') {
-        // Keto: strictly require keto tag or inducao phase
-        if (hasFaseInfo) {
-          return tags.includes('keto') || fases.includes('inducao');
-        }
-        return (r.hidratos || 0) <= 0.5;
-      }
-      if (abordagem === 'low_carb') {
-        // Low-carb: allow inducao + transicao phases
-        if (hasFaseInfo) {
-          return fases.includes('inducao') || fases.includes('transicao');
-        }
-        return (r.hidratos || 0) <= 1.5;
-      }
-      if (abordagem === 'equilibrado') {
-        // Equilibrado: exclude purely-keto recipes (align with ReceitasBrowse)
-        if (tags.includes('keto') && !tags.some(t => ['vegetariano', 'rapido', 'economico', 'sem_gluten', 'tradicional', 'proteico'].includes(t))) {
-          return false;
-        }
-        // Also filter by current phase if set
-        if (fase && fases.length > 0) {
-          return fases.includes(fase);
-        }
-        return true;
-      }
-      return true;
+    // Sort: ideal recipes first, less ideal after — don't block anything
+    return [...lista].sort((a, b) => {
+      const aIdeal = isIdealParaAbordagem(a) ? 0 : 1;
+      const bIdeal = isIdealParaAbordagem(b) ? 0 : 1;
+      return aIdeal - bIdeal;
     });
   };
 
   const getRefeicoes = (tipo) => {
-    let lista;
-    if (receitasDB && receitasDB[tipo] && receitasDB[tipo].length > 0) {
-      lista = receitasDB[tipo];
-    } else {
-      lista = REFEICOES_FALLBACK[tipo] || REFEICOES_FALLBACK.almoco;
-    }
-    return filtrarPorAbordagem(lista);
+    // Combine DB recipes + everyday fallbacks (dedupe by name)
+    const db = (receitasDB && receitasDB[tipo]) || [];
+    const fb = REFEICOES_FALLBACK[tipo] || [];
+    const nomesDB = new Set(db.map(r => r.nome.toLowerCase()));
+    const combinada = [...db, ...fb.filter(r => !nomesDB.has(r.nome.toLowerCase()))];
+    return filtrarPorAbordagem(combinada.length > 0 ? combinada : REFEICOES_FALLBACK.almoco);
   };
 
   const guardarPlano = (novoPlano) => {
@@ -1046,8 +1054,28 @@ export default function CalendarioRefeicoes() {
                 const filtradas = buscaReceita.trim()
                   ? todas.filter(r => r.nome.toLowerCase().includes(buscaReceita.toLowerCase()))
                   : todas;
+
+                // Check how many carbs are already planned for this day
+                const totDia = calcularTotaisDia(modalAberto.dia);
+                const metaCarbs = metaDiaria?.hidratos || 0;
+                const carbsRestantes = metaCarbs > 0 ? metaCarbs - totDia.hidratos : null;
+
                 return (
                   <>
+                    {/* Daily carbs budget warning */}
+                    {carbsRestantes !== null && (
+                      <div className={`mb-3 px-3 py-2 rounded-lg text-xs ${
+                        carbsRestantes <= 0 ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                        carbsRestantes <= 0.5 ? 'bg-orange-50 text-orange-600' :
+                        'bg-emerald-50 text-emerald-600'
+                      }`}>
+                        {carbsRestantes <= 0
+                          ? `Meta de hidratos do dia atingida (${totDia.hidratos.toFixed(1)}/${metaCarbs} mãos). Podes adicionar, mas ultrapassa a meta.`
+                          : `Hidratos restantes: ${carbsRestantes.toFixed(1)} de ${metaCarbs} mãos`
+                        }
+                      </div>
+                    )}
+
                     {filtradas.length === 0 ? (
                       <p className="text-center text-sm text-gray-400 py-8">
                         Nenhuma receita encontrada{buscaReceita ? ` para "${buscaReceita}"` : ''}.
@@ -1055,22 +1083,31 @@ export default function CalendarioRefeicoes() {
                       </p>
                     ) : (
                       <div className="grid grid-cols-2 gap-3">
-                        {filtradas.map(refeicao => (
-                          <button
-                            key={refeicao.id}
-                            onClick={() => { adicionarRefeicao(refeicao); setBuscaReceita(''); setMostrarCustom(false); }}
-                            className="p-3 bg-gray-50 rounded-xl hover:bg-[#7C8B6F]/10 transition-colors text-left border border-transparent hover:border-[#7C8B6F]/20"
-                          >
-                            <span className="text-2xl">{refeicao.icone}</span>
-                            <p className="font-medium text-gray-800 mt-1.5 text-sm leading-tight">{refeicao.nome}</p>
-                            <div className="flex flex-wrap gap-1.5 mt-1.5">
-                              {refeicao.proteina > 0 && <span className="text-xs text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">🫲{refeicao.proteina}</span>}
-                              {refeicao.hidratos > 0 && <span className="text-xs text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded">🤲{refeicao.hidratos}</span>}
-                              {refeicao.gordura > 0 && <span className="text-xs text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">👍{refeicao.gordura}</span>}
-                            </div>
-                            {refeicao.tempo > 0 && <p className="text-xs text-gray-400 mt-1">{refeicao.tempo} min</p>}
-                          </button>
-                        ))}
+                        {filtradas.map(refeicao => {
+                          const ideal = isIdealParaAbordagem(refeicao);
+                          const ultrapassaCarbs = carbsRestantes !== null && (refeicao.hidratos || 0) > carbsRestantes && carbsRestantes >= 0;
+                          return (
+                            <button
+                              key={refeicao.id}
+                              onClick={() => { adicionarRefeicao(refeicao); setBuscaReceita(''); setMostrarCustom(false); }}
+                              className={`p-3 rounded-xl transition-colors text-left border ${
+                                !ideal ? 'bg-gray-50/60 border-gray-100 opacity-70' :
+                                'bg-gray-50 border-transparent hover:bg-[#7C8B6F]/10 hover:border-[#7C8B6F]/20'
+                              }`}
+                            >
+                              <span className="text-2xl">{refeicao.icone}</span>
+                              <p className="font-medium text-gray-800 mt-1.5 text-sm leading-tight">{refeicao.nome}</p>
+                              <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                {refeicao.proteina > 0 && <span className="text-xs text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">🫲{refeicao.proteina}</span>}
+                                {refeicao.hidratos > 0 && <span className={`text-xs px-1.5 py-0.5 rounded ${ultrapassaCarbs ? 'text-amber-700 bg-amber-50 font-medium' : 'text-orange-600 bg-orange-50'}`}>🤲{refeicao.hidratos}</span>}
+                                {refeicao.gordura > 0 && <span className="text-xs text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">👍{refeicao.gordura}</span>}
+                              </div>
+                              {ultrapassaCarbs && <p className="text-xs text-amber-600 mt-1">Ultrapassa meta carbs</p>}
+                              {!ideal && <p className="text-xs text-gray-400 mt-1">Menos indicada para {abordagem === 'keto_if' ? 'keto' : abordagem}</p>}
+                              {refeicao.tempo > 0 && <p className="text-xs text-gray-400 mt-1">{refeicao.tempo} min</p>}
+                            </button>
+                          );
+                        })}
                       </div>
                     )}
                   </>
