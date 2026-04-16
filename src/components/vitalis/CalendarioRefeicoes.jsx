@@ -5,33 +5,34 @@ import { Link } from 'react-router-dom';
 const DIAS_SEMANA = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
 
 // Fallback meals if DB recipes fail to load
+// fases: inducao=keto-safe, transicao=low-carb OK, manutencao=all approaches
 const REFEICOES_FALLBACK = {
   pequeno_almoco: [
-    { id: 'fb-pa1', nome: 'Ovos mexidos com espinafres', icone: '🥚', proteina: 1, hidratos: 0, gordura: 1 },
-    { id: 'fb-pa2', nome: 'Papas de milho com amendoim', icone: '🥣', proteina: 0.5, hidratos: 1.5, gordura: 0.5 },
-    { id: 'fb-pa3', nome: 'Batido proteico de amendoim', icone: '🥤', proteina: 0.5, hidratos: 1, gordura: 1 },
-    { id: 'fb-pa4', nome: 'Iogurte grego com sementes', icone: '🥛', proteina: 0.5, hidratos: 0, gordura: 1 },
+    { id: 'fb-pa1', nome: 'Ovos mexidos com espinafres', icone: '🥚', proteina: 1, hidratos: 0, gordura: 1, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-pa2', nome: 'Papas de milho com amendoim', icone: '🥣', proteina: 0.5, hidratos: 1.5, gordura: 0.5, tags: ['tradicional'], fases: ['manutencao'] },
+    { id: 'fb-pa3', nome: 'Batido proteico de amendoim', icone: '🥤', proteina: 0.5, hidratos: 1, gordura: 1, tags: [], fases: ['transicao', 'manutencao'] },
+    { id: 'fb-pa4', nome: 'Iogurte grego com sementes', icone: '🥛', proteina: 0.5, hidratos: 0, gordura: 1, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
   ],
   almoco: [
-    { id: 'fb-al1', nome: 'Frango à Zambeziana', icone: '🍗', proteina: 1.5, hidratos: 0, gordura: 1 },
-    { id: 'fb-al2', nome: 'Matapa com camarão', icone: '🥬', proteina: 1, hidratos: 0.5, gordura: 1 },
-    { id: 'fb-al3', nome: 'Peixe grelhado com legumes', icone: '🐟', proteina: 1, hidratos: 0, gordura: 0.5 },
-    { id: 'fb-al4', nome: 'Xima com caril de amendoim', icone: '🍛', proteina: 0.5, hidratos: 1.5, gordura: 1 },
-    { id: 'fb-al5', nome: 'Caril de camarão', icone: '🦐', proteina: 1, hidratos: 0, gordura: 1 },
-    { id: 'fb-al6', nome: 'Galinha à Cafreal', icone: '🍗', proteina: 1.5, hidratos: 0, gordura: 1 },
+    { id: 'fb-al1', nome: 'Frango à Zambeziana', icone: '🍗', proteina: 1.5, hidratos: 0, gordura: 1, tags: ['keto', 'proteico'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-al2', nome: 'Matapa com camarão', icone: '🥬', proteina: 1, hidratos: 0.5, gordura: 1, tags: ['tradicional'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-al3', nome: 'Peixe grelhado com legumes', icone: '🐟', proteina: 1, hidratos: 0, gordura: 0.5, tags: ['keto', 'proteico'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-al4', nome: 'Xima com caril de amendoim', icone: '🍛', proteina: 0.5, hidratos: 1.5, gordura: 1, tags: ['tradicional'], fases: ['manutencao'] },
+    { id: 'fb-al5', nome: 'Caril de camarão', icone: '🦐', proteina: 1, hidratos: 0, gordura: 1, tags: ['keto', 'proteico'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-al6', nome: 'Galinha à Cafreal', icone: '🍗', proteina: 1.5, hidratos: 0, gordura: 1, tags: ['keto', 'proteico'], fases: ['inducao', 'transicao', 'manutencao'] },
   ],
   jantar: [
-    { id: 'fb-jt1', nome: 'Sopa de peixe Zambeziana', icone: '🍜', proteina: 1, hidratos: 0.5, gordura: 0 },
-    { id: 'fb-jt2', nome: 'Peixe grelhado com molho de coco e manga', icone: '🐟', proteina: 1, hidratos: 0, gordura: 1 },
-    { id: 'fb-jt3', nome: 'Camarão grelhado com alho', icone: '🦐', proteina: 1, hidratos: 0, gordura: 1 },
-    { id: 'fb-jt4', nome: 'Mucapata', icone: '🫘', proteina: 0.5, hidratos: 1, gordura: 0.5 },
-    { id: 'fb-jt5', nome: 'Omelete com salada', icone: '🍳', proteina: 1, hidratos: 0, gordura: 1 },
+    { id: 'fb-jt1', nome: 'Sopa de peixe Zambeziana', icone: '🍜', proteina: 1, hidratos: 0.5, gordura: 0, tags: ['proteico'], fases: ['transicao', 'manutencao'] },
+    { id: 'fb-jt2', nome: 'Peixe grelhado com molho de coco e manga', icone: '🐟', proteina: 1, hidratos: 0, gordura: 1, tags: ['keto', 'proteico'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-jt3', nome: 'Camarão grelhado com alho', icone: '🦐', proteina: 1, hidratos: 0, gordura: 1, tags: ['keto', 'proteico'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-jt4', nome: 'Mucapata', icone: '🫘', proteina: 0.5, hidratos: 1, gordura: 0.5, tags: ['tradicional'], fases: ['manutencao'] },
+    { id: 'fb-jt5', nome: 'Omelete com salada', icone: '🍳', proteina: 1, hidratos: 0, gordura: 1, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
   ],
   snack: [
-    { id: 'fb-sn1', nome: 'Amendoim torrado com piripiri', icone: '🥜', proteina: 0.5, hidratos: 0, gordura: 1 },
-    { id: 'fb-sn2', nome: 'Sumo de baobá', icone: '🥤', proteina: 0, hidratos: 0.5, gordura: 0 },
-    { id: 'fb-sn3', nome: 'Batido de papaia e coco', icone: '🥭', proteina: 0, hidratos: 1, gordura: 0.5 },
-    { id: 'fb-sn4', nome: 'Chá de capim-limão', icone: '🫖', proteina: 0, hidratos: 0, gordura: 0 },
+    { id: 'fb-sn1', nome: 'Amendoim torrado com piripiri', icone: '🥜', proteina: 0.5, hidratos: 0, gordura: 1, tags: ['keto'], fases: ['inducao', 'transicao', 'manutencao'] },
+    { id: 'fb-sn2', nome: 'Sumo de baobá', icone: '🥤', proteina: 0, hidratos: 0.5, gordura: 0, tags: [], fases: ['transicao', 'manutencao'] },
+    { id: 'fb-sn3', nome: 'Batido de papaia e coco', icone: '🥭', proteina: 0, hidratos: 1, gordura: 0.5, tags: [], fases: ['manutencao'] },
+    { id: 'fb-sn4', nome: 'Chá de capim-limão', icone: '🫖', proteina: 0, hidratos: 0, gordura: 0, tags: ['keto', 'jejum_friendly'], fases: ['inducao', 'transicao', 'manutencao'] },
   ]
 };
 
@@ -58,6 +59,8 @@ const receitaParaCalendario = (receita) => ({
   kcal: receita.calorias || 0,
   tempo: receita.tempo_minutos || 0,
   dificuldade: receita.dificuldade || '',
+  tags: receita.tags || [],
+  fases: receita.fases_recomendadas || [],
 });
 
 export default function CalendarioRefeicoes() {
@@ -221,7 +224,7 @@ export default function CalendarioRefeicoes() {
       // Load recipes from DB
       const { data: receitas } = await supabase
         .from('vitalis_receitas')
-        .select('id, titulo, tipo, imagem_url, proteina_g, carboidratos_g, gordura_g, calorias, tempo_minutos, dificuldade, tags')
+        .select('id, titulo, tipo, imagem_url, proteina_g, carboidratos_g, gordura_g, calorias, tempo_minutos, dificuldade, tags, fases_recomendadas')
         .eq('ativo', true)
         .order('titulo');
 
@@ -284,12 +287,24 @@ export default function CalendarioRefeicoes() {
   const filtrarPorAbordagem = (lista) => {
     if (!abordagem || abordagem === 'equilibrado') return lista;
     return lista.filter(r => {
+      const tags = r.tags || [];
+      const fases = r.fases || [];
+      const hasFaseInfo = fases.length > 0 || tags.length > 0;
+
       if (abordagem === 'keto_if') {
-        // Keto: max 0.5 hand portions of carbs per meal
+        // DB recipes: must be tagged keto OR recommended for inducao phase
+        if (hasFaseInfo) {
+          return tags.includes('keto') || fases.includes('inducao');
+        }
+        // Fallback/custom recipes without tags: filter by carb portions
         return (r.hidratos || 0) <= 0.5;
       }
       if (abordagem === 'low_carb') {
-        // Low carb: max 1.5 hand portions of carbs per meal
+        // DB recipes: recommended for inducao or transicao (not manutencao-only)
+        if (hasFaseInfo) {
+          return fases.includes('inducao') || fases.includes('transicao');
+        }
+        // Fallback/custom: filter by carb portions
         return (r.hidratos || 0) <= 1.5;
       }
       return true;
