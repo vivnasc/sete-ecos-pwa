@@ -74,6 +74,8 @@ export default function CalendarioRefeicoes() {
   const [mostrarCustom, setMostrarCustom] = useState(false);
   const [customNome, setCustomNome] = useState('');
   const [buscaReceita, setBuscaReceita] = useState('');
+  const [copiarPara, setCopiarPara] = useState(null); // { refeicao, tipo, diasSel: Set }
+  const [customSalvas, setCustomSalvas] = useState([]);
 
   const NOMES_REFEICAO = {
     pequeno_almoco: 'Peq. Almoço',
@@ -217,6 +219,42 @@ export default function CalendarioRefeicoes() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Load saved custom meals from localStorage
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('vitalis-custom-meals') || '[]');
+      if (Array.isArray(saved)) setCustomSalvas(saved);
+    } catch {}
+  }, []);
+
+  const guardarCustomMeal = (meal) => {
+    // Avoid duplicates by name
+    const exists = customSalvas.some(m => m.nome.toLowerCase() === meal.nome.toLowerCase());
+    if (exists) return;
+    const updated = [meal, ...customSalvas].slice(0, 30); // max 30
+    setCustomSalvas(updated);
+    localStorage.setItem('vitalis-custom-meals', JSON.stringify(updated));
+  };
+
+  const removerCustomMeal = (nome) => {
+    const updated = customSalvas.filter(m => m.nome !== nome);
+    setCustomSalvas(updated);
+    localStorage.setItem('vitalis-custom-meals', JSON.stringify(updated));
+  };
+
+  // Copy meal to multiple days
+  const confirmarCopia = () => {
+    if (!copiarPara || copiarPara.diasSel.size === 0) return;
+    const novoPlano = { ...planoSemanal };
+    copiarPara.diasSel.forEach(diaIndex => {
+      const chave = chavesSemana[diaIndex];
+      if (!novoPlano[chave]) novoPlano[chave] = {};
+      novoPlano[chave][copiarPara.tipo] = { ...copiarPara.refeicao };
+    });
+    guardarPlano(novoPlano);
+    setCopiarPara(null);
   };
 
   const getRefeicoes = (tipo) => {
@@ -655,6 +693,11 @@ export default function CalendarioRefeicoes() {
                             onClick={(e) => { e.stopPropagation(); removerRefeicao(diaIndex, tipo); }}
                             className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity z-10"
                           >×</button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setCopiarPara({ refeicao, tipo, diasSel: new Set() }); }}
+                            className="absolute -top-1 left-0 w-5 h-5 bg-blue-500 text-white rounded-full text-[10px] opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                            title="Copiar para outros dias"
+                          >📋</button>
                           <span className="text-lg">{refeicao.icone}</span>
                           <p className="text-xs text-gray-700 mt-0.5 line-clamp-2 leading-tight">{refeicao.nome}</p>
                           {refeicao.tempo > 0 && <p className="text-xs text-gray-400 mt-0.5">{refeicao.tempo}min</p>}
@@ -769,12 +812,14 @@ export default function CalendarioRefeicoes() {
                     <button
                       onClick={() => {
                         if (!customNome.trim()) return;
-                        adicionarRefeicao({
+                        const meal = {
                           id: `custom-${Date.now()}`,
                           nome: customNome.trim(),
                           icone: modalAberto.tipo === 'pequeno_almoco' ? '🍳' : modalAberto.tipo === 'snack' ? '🥜' : '🍽️',
                           proteina: 0, hidratos: 0, gordura: 0, kcal: 0, tempo: 0
-                        });
+                        };
+                        adicionarRefeicao(meal);
+                        guardarCustomMeal(meal);
                         setCustomNome('');
                         setMostrarCustom(false);
                         setBuscaReceita('');
@@ -787,6 +832,36 @@ export default function CalendarioRefeicoes() {
                   </div>
                 </div>
               )}
+
+              {/* Saved custom meals */}
+              {(() => {
+                const customFiltradas = buscaReceita.trim()
+                  ? customSalvas.filter(m => m.nome.toLowerCase().includes(buscaReceita.toLowerCase()))
+                  : customSalvas;
+                if (customFiltradas.length === 0) return null;
+                return (
+                  <div className="mb-3">
+                    <p className="text-xs font-medium text-gray-500 mb-2">As tuas refeições</p>
+                    <div className="flex flex-wrap gap-2">
+                      {customFiltradas.map(meal => (
+                        <div key={meal.nome} className="flex items-center gap-1">
+                          <button
+                            onClick={() => { adicionarRefeicao({ ...meal, id: `custom-${Date.now()}` }); setBuscaReceita(''); setMostrarCustom(false); }}
+                            className="px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-full text-xs text-gray-700 hover:bg-amber-100 transition-colors"
+                          >
+                            {meal.icone} {meal.nome}
+                          </button>
+                          <button
+                            onClick={() => removerCustomMeal(meal.nome)}
+                            className="w-5 h-5 text-gray-300 hover:text-red-400 text-xs"
+                            title="Remover"
+                          >×</button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Recipe grid */}
               {(() => {
@@ -824,6 +899,50 @@ export default function CalendarioRefeicoes() {
                   </>
                 );
               })()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Copy to multiple days modal */}
+      {copiarPara && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-5 max-w-sm w-full">
+            <h3 className="font-bold text-gray-800 mb-1">Copiar refeição</h3>
+            <p className="text-sm text-gray-600 mb-1">{copiarPara.refeicao.icone} {copiarPara.refeicao.nome}</p>
+            <p className="text-xs text-gray-400 mb-3">Selecciona os dias para onde copiar:</p>
+            <div className="grid grid-cols-7 gap-2 mb-4">
+              {DIAS_SEMANA.map((dia, i) => {
+                const sel = copiarPara.diasSel.has(i);
+                const jaTemMesma = planoSemanal[chavesSemana[i]]?.[copiarPara.tipo]?.nome === copiarPara.refeicao.nome;
+                return (
+                  <button
+                    key={i}
+                    disabled={jaTemMesma}
+                    onClick={() => {
+                      const novo = new Set(copiarPara.diasSel);
+                      sel ? novo.delete(i) : novo.add(i);
+                      setCopiarPara({ ...copiarPara, diasSel: novo });
+                    }}
+                    className={`py-2 rounded-lg text-xs font-medium transition-all ${
+                      jaTemMesma ? 'bg-gray-100 text-gray-300 cursor-not-allowed' :
+                      sel ? 'bg-[#7C8B6F] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {dia.slice(0, 3)}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setCopiarPara(null)} className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium text-sm">Cancelar</button>
+              <button
+                onClick={confirmarCopia}
+                disabled={copiarPara.diasSel.size === 0}
+                className="flex-1 py-2.5 bg-[#7C8B6F] text-white rounded-xl font-medium text-sm hover:bg-[#5C6B4F] disabled:opacity-40"
+              >
+                Copiar ({copiarPara.diasSel.size})
+              </button>
             </div>
           </div>
         </div>
