@@ -71,6 +71,11 @@ export default function CalendarioRefeicoes() {
   const [tiposRefeicao, setTiposRefeicao] = useState(['pequeno_almoco', 'almoco', 'jantar', 'snack']);
   const [confirmarLimpar, setConfirmarLimpar] = useState(false);
   const [templateGuardado, setTemplateGuardado] = useState(false);
+  const [mostrarCustom, setMostrarCustom] = useState(false);
+  const [customNome, setCustomNome] = useState('');
+  const [buscaReceita, setBuscaReceita] = useState('');
+  const [copiarPara, setCopiarPara] = useState(null); // { refeicao, tipo, diasSel: Set }
+  const [customSalvas, setCustomSalvas] = useState([]);
 
   const NOMES_REFEICAO = {
     pequeno_almoco: 'Peq. Almoço',
@@ -214,6 +219,42 @@ export default function CalendarioRefeicoes() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Load saved custom meals from localStorage
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('vitalis-custom-meals') || '[]');
+      if (Array.isArray(saved)) setCustomSalvas(saved);
+    } catch {}
+  }, []);
+
+  const guardarCustomMeal = (meal) => {
+    // Avoid duplicates by name
+    const exists = customSalvas.some(m => m.nome.toLowerCase() === meal.nome.toLowerCase());
+    if (exists) return;
+    const updated = [meal, ...customSalvas].slice(0, 30); // max 30
+    setCustomSalvas(updated);
+    localStorage.setItem('vitalis-custom-meals', JSON.stringify(updated));
+  };
+
+  const removerCustomMeal = (nome) => {
+    const updated = customSalvas.filter(m => m.nome !== nome);
+    setCustomSalvas(updated);
+    localStorage.setItem('vitalis-custom-meals', JSON.stringify(updated));
+  };
+
+  // Copy meal to multiple days
+  const confirmarCopia = () => {
+    if (!copiarPara || copiarPara.diasSel.size === 0) return;
+    const novoPlano = { ...planoSemanal };
+    copiarPara.diasSel.forEach(diaIndex => {
+      const chave = chavesSemana[diaIndex];
+      if (!novoPlano[chave]) novoPlano[chave] = {};
+      novoPlano[chave][copiarPara.tipo] = { ...copiarPara.refeicao };
+    });
+    guardarPlano(novoPlano);
+    setCopiarPara(null);
   };
 
   const getRefeicoes = (tipo) => {
@@ -541,8 +582,8 @@ export default function CalendarioRefeicoes() {
               <span>←</span>
             </Link>
             <div className="flex-1">
-              <h1 className="text-xl font-bold">Calendário de Refeições</h1>
-              <p className="text-white/70 text-sm">Planeia a tua semana com a palma da mão</p>
+              <h1 className="text-xl font-bold">Menu Semanal</h1>
+              <p className="text-white/70 text-sm">Monta o teu menu, imprime e cozinha</p>
             </div>
             <Link to="/vitalis/lista-compras" className="px-3 py-1.5 bg-white/20 rounded-lg text-sm hover:bg-white/30 transition-colors">
               🛒 Compras
@@ -652,6 +693,11 @@ export default function CalendarioRefeicoes() {
                             onClick={(e) => { e.stopPropagation(); removerRefeicao(diaIndex, tipo); }}
                             className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity z-10"
                           >×</button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setCopiarPara({ refeicao, tipo, diasSel: new Set() }); }}
+                            className="absolute -top-1 left-0 w-5 h-5 bg-blue-500 text-white rounded-full text-[10px] opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                            title="Copiar para outros dias"
+                          >📋</button>
                           <span className="text-lg">{refeicao.icone}</span>
                           <p className="text-xs text-gray-700 mt-0.5 line-clamp-2 leading-tight">{refeicao.nome}</p>
                           {refeicao.tempo > 0 && <p className="text-xs text-gray-400 mt-0.5">{refeicao.tempo}min</p>}
@@ -712,9 +758,9 @@ export default function CalendarioRefeicoes() {
       {/* Meal Selection Modal */}
       {modalAberto && (
         <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50">
-          <div className="bg-white rounded-t-3xl md:rounded-3xl w-full max-w-md max-h-[80vh] overflow-hidden">
-            <div className="p-4 border-b bg-gray-50">
-              <div className="flex items-center justify-between">
+          <div className="bg-white rounded-t-3xl md:rounded-3xl w-full max-w-md max-h-[85vh] overflow-hidden flex flex-col">
+            <div className="p-4 border-b bg-gray-50 flex-shrink-0">
+              <div className="flex items-center justify-between mb-3">
                 <div>
                   <h3 className="font-bold text-gray-800">
                     {NOMES_REFEICAO[modalAberto.tipo] || modalAberto.tipo}
@@ -723,37 +769,180 @@ export default function CalendarioRefeicoes() {
                     {DIAS_SEMANA[modalAberto.dia]}, {formatarData(datasSemana[modalAberto.dia])}
                   </p>
                 </div>
-                <button onClick={() => setModalAberto(null)} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">×</button>
+                <button onClick={() => { setModalAberto(null); setBuscaReceita(''); setMostrarCustom(false); setCustomNome(''); }} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-lg">×</button>
               </div>
+              {/* Search */}
+              <input
+                type="text"
+                value={buscaReceita}
+                onChange={e => setBuscaReceita(e.target.value)}
+                placeholder="Buscar receita..."
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7C8B6F]/30"
+              />
             </div>
 
-            <div className="p-4 overflow-y-auto max-h-[60vh]">
-              {receitasDB && (
-                <p className="text-xs text-green-600 mb-3 flex items-center gap-1">
-                  <span>✓</span> Receitas da base de dados ({getRefeicoes(modalAberto.tipo).length} opções)
-                </p>
+            <div className="p-4 overflow-y-auto flex-1">
+              {/* Custom meal toggle */}
+              {!mostrarCustom ? (
+                <button
+                  onClick={() => setMostrarCustom(true)}
+                  className="w-full mb-3 p-3 border-2 border-dashed border-gray-300 rounded-xl text-sm text-gray-500 hover:border-[#7C8B6F] hover:text-[#7C8B6F] transition-colors"
+                >
+                  + Adicionar refeição livre (algo que não está na lista)
+                </button>
+              ) : (
+                <div className="mb-3 p-3 bg-[#7C8B6F]/5 border border-[#7C8B6F]/20 rounded-xl space-y-2">
+                  <p className="text-xs font-medium text-gray-600">Refeição personalizada</p>
+                  <input
+                    type="text"
+                    value={customNome}
+                    onChange={e => setCustomNome(e.target.value)}
+                    placeholder="Ex: Arroz com frango grelhado"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7C8B6F]/30"
+                    autoFocus
+                    maxLength={100}
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => { setMostrarCustom(false); setCustomNome(''); }}
+                      className="px-3 py-1.5 text-xs text-gray-500 bg-gray-100 rounded-lg"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (!customNome.trim()) return;
+                        const meal = {
+                          id: `custom-${Date.now()}`,
+                          nome: customNome.trim(),
+                          icone: modalAberto.tipo === 'pequeno_almoco' ? '🍳' : modalAberto.tipo === 'snack' ? '🥜' : '🍽️',
+                          proteina: 0, hidratos: 0, gordura: 0, kcal: 0, tempo: 0
+                        };
+                        adicionarRefeicao(meal);
+                        guardarCustomMeal(meal);
+                        setCustomNome('');
+                        setMostrarCustom(false);
+                        setBuscaReceita('');
+                      }}
+                      disabled={!customNome.trim()}
+                      className="flex-1 px-3 py-1.5 text-xs font-medium text-white bg-[#7C8B6F] rounded-lg hover:bg-[#5C6B4F] disabled:opacity-40"
+                    >
+                      Adicionar ao menu
+                    </button>
+                  </div>
+                </div>
               )}
-              <div className="grid grid-cols-2 gap-3">
-                {getRefeicoes(modalAberto.tipo).map(refeicao => (
-                  <button
-                    key={refeicao.id}
-                    onClick={() => adicionarRefeicao(refeicao)}
-                    className="p-3 bg-gray-50 rounded-xl hover:bg-[#7C8B6F]/10 transition-colors text-left border border-transparent hover:border-[#7C8B6F]/20"
-                  >
-                    <span className="text-2xl">{refeicao.icone}</span>
-                    <p className="font-medium text-gray-800 mt-1.5 text-sm leading-tight">{refeicao.nome}</p>
-                    <div className="flex flex-wrap gap-1.5 mt-1.5">
-                      {refeicao.proteina > 0 && <span className="text-xs text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">🫲{refeicao.proteina}</span>}
-                      {refeicao.hidratos > 0 && <span className="text-xs text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded">🤲{refeicao.hidratos}</span>}
-                      {refeicao.gordura > 0 && <span className="text-xs text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">👍{refeicao.gordura}</span>}
+
+              {/* Saved custom meals */}
+              {(() => {
+                const customFiltradas = buscaReceita.trim()
+                  ? customSalvas.filter(m => m.nome.toLowerCase().includes(buscaReceita.toLowerCase()))
+                  : customSalvas;
+                if (customFiltradas.length === 0) return null;
+                return (
+                  <div className="mb-3">
+                    <p className="text-xs font-medium text-gray-500 mb-2">As tuas refeições</p>
+                    <div className="flex flex-wrap gap-2">
+                      {customFiltradas.map(meal => (
+                        <div key={meal.nome} className="flex items-center gap-1">
+                          <button
+                            onClick={() => { adicionarRefeicao({ ...meal, id: `custom-${Date.now()}` }); setBuscaReceita(''); setMostrarCustom(false); }}
+                            className="px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-full text-xs text-gray-700 hover:bg-amber-100 transition-colors"
+                          >
+                            {meal.icone} {meal.nome}
+                          </button>
+                          <button
+                            onClick={() => removerCustomMeal(meal.nome)}
+                            className="w-5 h-5 text-gray-300 hover:text-red-400 text-xs"
+                            title="Remover"
+                          >×</button>
+                        </div>
+                      ))}
                     </div>
-                    {refeicao.tempo > 0 && <p className="text-xs text-gray-400 mt-1">{refeicao.tempo} min</p>}
+                  </div>
+                );
+              })()}
+
+              {/* Recipe grid */}
+              {(() => {
+                const todas = getRefeicoes(modalAberto.tipo);
+                const filtradas = buscaReceita.trim()
+                  ? todas.filter(r => r.nome.toLowerCase().includes(buscaReceita.toLowerCase()))
+                  : todas;
+                return (
+                  <>
+                    {filtradas.length === 0 ? (
+                      <p className="text-center text-sm text-gray-400 py-8">
+                        Nenhuma receita encontrada{buscaReceita ? ` para "${buscaReceita}"` : ''}.
+                        <br />Usa o botão acima para adicionar algo personalizado.
+                      </p>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-3">
+                        {filtradas.map(refeicao => (
+                          <button
+                            key={refeicao.id}
+                            onClick={() => { adicionarRefeicao(refeicao); setBuscaReceita(''); setMostrarCustom(false); }}
+                            className="p-3 bg-gray-50 rounded-xl hover:bg-[#7C8B6F]/10 transition-colors text-left border border-transparent hover:border-[#7C8B6F]/20"
+                          >
+                            <span className="text-2xl">{refeicao.icone}</span>
+                            <p className="font-medium text-gray-800 mt-1.5 text-sm leading-tight">{refeicao.nome}</p>
+                            <div className="flex flex-wrap gap-1.5 mt-1.5">
+                              {refeicao.proteina > 0 && <span className="text-xs text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">🫲{refeicao.proteina}</span>}
+                              {refeicao.hidratos > 0 && <span className="text-xs text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded">🤲{refeicao.hidratos}</span>}
+                              {refeicao.gordura > 0 && <span className="text-xs text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">👍{refeicao.gordura}</span>}
+                            </div>
+                            {refeicao.tempo > 0 && <p className="text-xs text-gray-400 mt-1">{refeicao.tempo} min</p>}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Copy to multiple days modal */}
+      {copiarPara && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-5 max-w-sm w-full">
+            <h3 className="font-bold text-gray-800 mb-1">Copiar refeição</h3>
+            <p className="text-sm text-gray-600 mb-1">{copiarPara.refeicao.icone} {copiarPara.refeicao.nome}</p>
+            <p className="text-xs text-gray-400 mb-3">Selecciona os dias para onde copiar:</p>
+            <div className="grid grid-cols-7 gap-2 mb-4">
+              {DIAS_SEMANA.map((dia, i) => {
+                const sel = copiarPara.diasSel.has(i);
+                const jaTemMesma = planoSemanal[chavesSemana[i]]?.[copiarPara.tipo]?.nome === copiarPara.refeicao.nome;
+                return (
+                  <button
+                    key={i}
+                    disabled={jaTemMesma}
+                    onClick={() => {
+                      const novo = new Set(copiarPara.diasSel);
+                      sel ? novo.delete(i) : novo.add(i);
+                      setCopiarPara({ ...copiarPara, diasSel: novo });
+                    }}
+                    className={`py-2 rounded-lg text-xs font-medium transition-all ${
+                      jaTemMesma ? 'bg-gray-100 text-gray-300 cursor-not-allowed' :
+                      sel ? 'bg-[#7C8B6F] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {dia.slice(0, 3)}
                   </button>
-                ))}
-              </div>
-              <Link to="/vitalis/receitas" className="block mt-4 text-center text-sm text-[#7C8B6F] font-medium hover:underline">
-                Ver todas as receitas →
-              </Link>
+                );
+              })}
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setCopiarPara(null)} className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium text-sm">Cancelar</button>
+              <button
+                onClick={confirmarCopia}
+                disabled={copiarPara.diasSel.size === 0}
+                className="flex-1 py-2.5 bg-[#7C8B6F] text-white rounded-xl font-medium text-sm hover:bg-[#5C6B4F] disabled:opacity-40"
+              >
+                Copiar ({copiarPara.diasSel.size})
+              </button>
             </div>
           </div>
         </div>
