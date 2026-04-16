@@ -70,6 +70,7 @@ export default function CalendarioRefeicoes() {
   const [planoMacros, setPlanoMacros] = useState(null);
   const [abordagem, setAbordagem] = useState(null); // keto_if, low_carb, equilibrado
   const [fase, setFase] = useState(null);
+  const [refeicaoConfig, setRefeicaoConfig] = useState([]); // [{nome, hora_habitual, chave}]
   const [tiposRefeicao, setTiposRefeicao] = useState(['pequeno_almoco', 'almoco', 'jantar', 'snack']);
   const [confirmarLimpar, setConfirmarLimpar] = useState(false);
   const [templateGuardado, setTemplateGuardado] = useState(false);
@@ -79,13 +80,24 @@ export default function CalendarioRefeicoes() {
   const [copiarPara, setCopiarPara] = useState(null); // { refeicao, tipo, diasSel: Set }
   const [customSalvas, setCustomSalvas] = useState([]);
 
-  const NOMES_REFEICAO = {
-    pequeno_almoco: 'Peq. Almoço',
-    almoco: 'Almoço',
-    jantar: 'Jantar',
-    snack: 'Snack',
-    lanche_manha: 'Lanche manhã',
-    lanche_tarde: 'Lanche tarde',
+  // Normalizar nome → chave interna consistente
+  const normalizar = (nome) => (nome || 'almoco').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove acentos
+    .replace(/[-\s]+/g, '_')                          // espaços/hífens → underscore
+    .replace(/[^a-z0-9_]/g, '');                      // só alfanumérico
+
+  // Detectar se é pequeno-almoço (para filtro keto)
+  const isPequenoAlmoco = (nome) => {
+    const n = (nome || '').toLowerCase();
+    return n.includes('pequeno') || n.includes('breakfast') || n.includes('peq.');
+  };
+
+  // Mapa de nomes para display — usa config da pessoa ou fallback
+  const getNomeRefeicao = (chave) => {
+    const cfg = refeicaoConfig.find(c => c.chave === chave);
+    if (cfg) return cfg.nome + (cfg.hora_habitual ? ` (${cfg.hora_habitual})` : '');
+    const fallback = { pequeno_almoco: 'Peq. Almoço', almoco: 'Almoço', jantar: 'Jantar', snack: 'Snack', lanche: 'Lanche' };
+    return fallback[chave] || chave;
   };
 
   const getDatasSemana = (offset = 0) => {
@@ -152,53 +164,57 @@ export default function CalendarioRefeicoes() {
         }
       }
 
-      // Load user's meal config (custom meal types)
-      const { data: config } = await supabase
-        .from('vitalis_refeicoes_config')
-        .select('tipo, nome')
+      // Load user's meal config (names, times, order)
+      let tiposFromConfig = null;
+      let cfgsLocal = []; // local ref for use in keto filter below
+      try {
+        const { data: config } = await supabase
+          .from('vitalis_refeicoes_config')
+          .select('nome, hora_habitual, ordem, activo')
+          .eq('user_id', user.id)
+          .eq('activo', true)
+          .order('ordem', { ascending: true });
+
+        if (config && config.length > 0) {
+          cfgsLocal = config.map(c => ({
+            nome: c.nome,
+            hora_habitual: c.hora_habitual || '',
+            chave: normalizar(c.nome),
+          }));
+          setRefeicaoConfig(cfgsLocal);
+          tiposFromConfig = cfgsLocal.map(c => c.chave);
+          setTiposRefeicao(tiposFromConfig);
+        }
+      } catch { /* table may not exist */ }
+
+      // Always load meal plan for abordagem + macros
+      const { data: mp } = await supabase
+        .from('vitalis_meal_plans')
+        .select('proteina_g, carboidratos_g, gordura_g, calorias_alvo, abordagem, fase')
         .eq('user_id', user.id)
-        .order('ordem', { ascending: true });
-
-      if (config && config.length > 0) {
-        const tipos = config.map(c => c.tipo || c.nome?.toLowerCase().replace(/\s+/g, '_') || 'almoco');
-        setTiposRefeicao([...new Set(tipos)]);
-      }
-
-      // Load plan macros for targets
-      const { data: plano } = await supabase
-        .from('vitalis_plano')
-        .select('porcoes_proteina, porcoes_hidratos, porcoes_gordura, calorias_diarias')
-        .eq('client_id', user.id)
+        .eq('status', 'activo')
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
 
-      if (plano) {
-        setPlanoMacros(plano);
-      } else {
-        // Fallback to vitalis_meal_plans
-        const { data: mp } = await supabase
-          .from('vitalis_meal_plans')
-          .select('proteina_g, carboidratos_g, gordura_g, calorias_diarias, abordagem, fase, receitas_incluidas')
-          .eq('user_id', user.id)
-          .eq('status', 'activo')
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
+      if (mp) {
+        setPlanoMacros({
+          porcoes_proteina: Math.round((mp.proteina_g || 0) / 25),
+          porcoes_hidratos: Math.round((mp.carboidratos_g || 0) / 30),
+          porcoes_gordura: Math.round((mp.gordura_g || 0) / 10),
+          calorias_diarias: mp.calorias_alvo,
+        });
+        if (mp.abordagem) setAbordagem(mp.abordagem);
+        if (mp.fase) setFase(mp.fase);
 
-        if (mp) {
-          setPlanoMacros({
-            porcoes_proteina: Math.round((mp.proteina_g || 0) / 25),
-            porcoes_hidratos: Math.round((mp.carboidratos_g || 0) / 30),
-            porcoes_gordura: Math.round((mp.gordura_g || 0) / 10),
-            calorias_diarias: mp.calorias_diarias,
-          });
-          if (mp.abordagem) setAbordagem(mp.abordagem);
-          if (mp.fase) setFase(mp.fase);
-          // For keto_if with fasting: remove breakfast from meal types
-          if (mp.abordagem === 'keto_if') {
-            setTiposRefeicao(prev => prev.filter(t => t !== 'pequeno_almoco'));
-          }
+        // For keto_if: remove breakfast from meal types
+        if (mp.abordagem === 'keto_if') {
+          const tipos = tiposFromConfig || ['almoco', 'jantar', 'snack'];
+          setTiposRefeicao(tipos.filter(t => {
+            // Check both the key and the original name from config
+            const nomeOriginal = cfgsLocal.find(c => c.chave === t)?.nome || t;
+            return !isPequenoAlmoco(t) && !isPequenoAlmoco(nomeOriginal);
+          }));
         }
       }
 
@@ -471,7 +487,7 @@ export default function CalendarioRefeicoes() {
                 ${ref.kcal > 0 ? ` · ${ref.kcal} kcal` : ''}${ref.tempo > 0 ? ` · ${ref.tempo}min` : ''}
               </div>
             </div>
-            <div style="font-size:9px; color:#8B7D6B; text-transform:capitalize;">${(NOMES_REFEICAO[tipo] || tipo).replace(/_/g, ' ')}</div>
+            <div style="font-size:9px; color:#8B7D6B; text-transform:capitalize;">${getNomeRefeicao(tipo)}</div>
           </div>`;
       }).join('');
 
@@ -706,7 +722,7 @@ export default function CalendarioRefeicoes() {
             {tiposRefeicao.map(tipo => (
               <div key={tipo} className="grid grid-cols-8 border-b last:border-b-0">
                 <div className="p-3 text-center bg-gray-50 border-r flex items-center justify-center">
-                  <span className="font-medium text-gray-600 text-xs">{NOMES_REFEICAO[tipo] || tipo}</span>
+                  <span className="font-medium text-gray-600 text-xs">{getNomeRefeicao(tipo)}</span>
                 </div>
                 {DIAS_SEMANA.map((_, diaIndex) => {
                   const chave = chavesSemana[diaIndex];
@@ -789,7 +805,7 @@ export default function CalendarioRefeicoes() {
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <h3 className="font-bold text-gray-800">
-                    {NOMES_REFEICAO[modalAberto.tipo] || modalAberto.tipo}
+                    {getNomeRefeicao(modalAberto.tipo)}
                   </h3>
                   <p className="text-sm text-gray-500">
                     {DIAS_SEMANA[modalAberto.dia]}, {formatarData(datasSemana[modalAberto.dia])}
