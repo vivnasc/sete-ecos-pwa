@@ -83,6 +83,7 @@ export default function CalendarioRefeicoes() {
   const [buscaReceita, setBuscaReceita] = useState('');
   const [copiarPara, setCopiarPara] = useState(null); // { refeicao, tipo, diasSel: Set }
   const [customSalvas, setCustomSalvas] = useState([]);
+  const [registosFeitos, setRegistosFeitos] = useState({}); // { "2026-04-16|almoco": true }
 
   // Normalizar nome → chave interna consistente
   const normalizar = (nome) => (nome || 'almoco').toLowerCase()
@@ -102,6 +103,12 @@ export default function CalendarioRefeicoes() {
     if (cfg) return cfg.nome + (cfg.hora_habitual ? ` (${cfg.hora_habitual})` : '');
     const fallback = { pequeno_almoco: 'Peq. Almoço', almoco: 'Almoço', jantar: 'Jantar', snack: 'Snack', lanche: 'Lanche' };
     return fallback[chave] || chave;
+  };
+
+  // Nome original sem hora (para guardar no meals_log, compatível com MealsTracker)
+  const getNomeOriginal = (chave) => {
+    const cfg = refeicaoConfig.find(c => c.chave === chave);
+    return cfg?.nome || chave;
   };
 
   const getDatasSemana = (offset = 0) => {
@@ -253,10 +260,88 @@ export default function CalendarioRefeicoes() {
         // Make snacks/drinks available as snacks
         setReceitasDB(grouped);
       }
+
+      // Load existing meal logs for the week (to show done state)
+      await carregarRegistosSemana(uid);
+
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Load meal logs for visible week dates
+  const carregarRegistosSemana = async (uid_override) => {
+    const uid_val = uid_override || userId;
+    if (!uid_val) return;
+    try {
+      const { data: logs } = await supabase
+        .from('vitalis_meals_log')
+        .select('data, refeicao')
+        .eq('user_id', uid_val)
+        .in('data', chavesSemana);
+
+      if (logs && logs.length > 0) {
+        const feitos = {};
+        logs.forEach(l => {
+          // Match log refeicao name to our tipo keys
+          const tipoKey = tiposRefeicao.find(t => getNomeOriginal(t) === l.refeicao) || normalizar(l.refeicao);
+          feitos[`${l.data}|${tipoKey}`] = true;
+        });
+        setRegistosFeitos(feitos);
+      } else {
+        setRegistosFeitos({});
+      }
+    } catch { /* table may not exist */ }
+  };
+
+  // Reload meal logs when week changes
+  useEffect(() => {
+    if (userId) carregarRegistosSemana();
+  }, [semanaAtual]);
+
+  // Quick-register a meal from the calendar
+  const marcarFeita = async (diaIndex, tipo) => {
+    if (!userId) return;
+    const chave = chavesSemana[diaIndex];
+    const refeicao = planoSemanal[chave]?.[tipo];
+    if (!refeicao) return;
+
+    const regKey = `${chave}|${tipo}`;
+    // Toggle: if already done, undo
+    if (registosFeitos[regKey]) {
+      try {
+        const nomeRef = getNomeOriginal(tipo);
+        await supabase.from('vitalis_meals_log')
+          .delete()
+          .eq('user_id', userId)
+          .eq('data', chave)
+          .eq('refeicao', nomeRef);
+        setRegistosFeitos(prev => { const n = { ...prev }; delete n[regKey]; return n; });
+      } catch {}
+      return;
+    }
+
+    // Register the meal
+    try {
+      const nomeRef = getNomeOriginal(tipo);
+      const dados = {
+        user_id: userId,
+        data: chave,
+        refeicao: nomeRef,
+        seguiu_plano: 'sim',
+        hora: new Date().toLocaleTimeString('pt', { hour: '2-digit', minute: '2-digit' }),
+        porcoes_proteina: refeicao.proteina || 0,
+        porcoes_hidratos: refeicao.hidratos || 0,
+        porcoes_gordura: refeicao.gordura || 0,
+        porcoes_legumes: 0,
+        notas: JSON.stringify({ items: [{ nome: refeicao.nome, quantidade_porcao: 1 }], from_menu: true })
+      };
+      await supabase.from('vitalis_meals_log').insert([dados]);
+      setRegistosFeitos(prev => ({ ...prev, [regKey]: true }));
+    } catch (err) {
+      console.error('Erro ao registar refeição:', err);
     }
   };
 
@@ -763,10 +848,12 @@ export default function CalendarioRefeicoes() {
                 {DIAS_SEMANA.map((_, diaIndex) => {
                   const chave = chavesSemana[diaIndex];
                   const refeicao = planoSemanal[chave]?.[tipo];
+                  const feita = registosFeitos[`${chave}|${tipo}`];
+                  const podeMarcar = datasSemana[diaIndex] <= new Date();
                   return (
                     <div key={diaIndex} className={`p-1.5 border-r last:border-r-0 min-h-[80px] ${isHoje(datasSemana[diaIndex]) ? 'bg-[#7C8B6F]/5' : ''}`}>
                       {refeicao ? (
-                        <div className="bg-[#7C8B6F]/10 rounded-lg p-1.5 h-full relative group cursor-pointer" onClick={() => setModalAberto({ dia: diaIndex, tipo })}>
+                        <div className={`rounded-lg p-1.5 h-full relative group cursor-pointer ${feita ? 'bg-emerald-100 ring-1 ring-emerald-300' : 'bg-[#7C8B6F]/10'}`} onClick={() => setModalAberto({ dia: diaIndex, tipo })}>
                           <button
                             onClick={(e) => { e.stopPropagation(); removerRefeicao(diaIndex, tipo); }}
                             className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity z-10"
@@ -778,7 +865,19 @@ export default function CalendarioRefeicoes() {
                           >📋</button>
                           <span className="text-lg">{refeicao.icone}</span>
                           <p className="text-xs text-gray-700 mt-0.5 line-clamp-2 leading-tight">{refeicao.nome}</p>
-                          {refeicao.tempo > 0 && <p className="text-xs text-gray-400 mt-0.5">{refeicao.tempo}min</p>}
+                          {/* Done button */}
+                          {podeMarcar && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); marcarFeita(diaIndex, tipo); }}
+                              className={`mt-1 w-full py-1 rounded text-xs font-medium transition-all active:scale-95 ${
+                                feita
+                                  ? 'bg-emerald-500 text-white'
+                                  : 'bg-white/80 text-gray-500 hover:bg-emerald-50 hover:text-emerald-600 border border-gray-200'
+                              }`}
+                            >
+                              {feita ? '✓ Feita' : '○ Done'}
+                            </button>
+                          )}
                         </div>
                       ) : (
                         <button onClick={() => setModalAberto({ dia: diaIndex, tipo })} className="w-full h-full flex items-center justify-center text-gray-300 hover:text-[#7C8B6F] hover:bg-[#7C8B6F]/5 rounded-lg transition-colors">
