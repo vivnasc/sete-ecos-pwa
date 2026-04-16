@@ -68,6 +68,8 @@ export default function CalendarioRefeicoes() {
   const [userData, setUserData] = useState(null);
   const [receitasDB, setReceitasDB] = useState(null); // null = not loaded, {} = loaded
   const [planoMacros, setPlanoMacros] = useState(null);
+  const [abordagem, setAbordagem] = useState(null); // keto_if, low_carb, equilibrado
+  const [fase, setFase] = useState(null);
   const [tiposRefeicao, setTiposRefeicao] = useState(['pequeno_almoco', 'almoco', 'jantar', 'snack']);
   const [confirmarLimpar, setConfirmarLimpar] = useState(false);
   const [templateGuardado, setTemplateGuardado] = useState(false);
@@ -177,7 +179,7 @@ export default function CalendarioRefeicoes() {
         // Fallback to vitalis_meal_plans
         const { data: mp } = await supabase
           .from('vitalis_meal_plans')
-          .select('proteina_g, carboidratos_g, gordura_g, calorias_diarias')
+          .select('proteina_g, carboidratos_g, gordura_g, calorias_diarias, abordagem, fase, receitas_incluidas')
           .eq('user_id', user.id)
           .eq('status', 'activo')
           .order('created_at', { ascending: false })
@@ -191,6 +193,12 @@ export default function CalendarioRefeicoes() {
             porcoes_gordura: Math.round((mp.gordura_g || 0) / 10),
             calorias_diarias: mp.calorias_diarias,
           });
+          if (mp.abordagem) setAbordagem(mp.abordagem);
+          if (mp.fase) setFase(mp.fase);
+          // For keto_if with fasting: remove breakfast from meal types
+          if (mp.abordagem === 'keto_if') {
+            setTiposRefeicao(prev => prev.filter(t => t !== 'pequeno_almoco'));
+          }
         }
       }
 
@@ -257,11 +265,29 @@ export default function CalendarioRefeicoes() {
     setCopiarPara(null);
   };
 
+  const filtrarPorAbordagem = (lista) => {
+    if (!abordagem || abordagem === 'equilibrado') return lista;
+    return lista.filter(r => {
+      if (abordagem === 'keto_if') {
+        // Keto: max 0.5 hand portions of carbs per meal
+        return (r.hidratos || 0) <= 0.5;
+      }
+      if (abordagem === 'low_carb') {
+        // Low carb: max 1.5 hand portions of carbs per meal
+        return (r.hidratos || 0) <= 1.5;
+      }
+      return true;
+    });
+  };
+
   const getRefeicoes = (tipo) => {
+    let lista;
     if (receitasDB && receitasDB[tipo] && receitasDB[tipo].length > 0) {
-      return receitasDB[tipo];
+      lista = receitasDB[tipo];
+    } else {
+      lista = REFEICOES_FALLBACK[tipo] || REFEICOES_FALLBACK.almoco;
     }
-    return REFEICOES_FALLBACK[tipo] || REFEICOES_FALLBACK.almoco;
+    return filtrarPorAbordagem(lista);
   };
 
   const guardarPlano = (novoPlano) => {
