@@ -285,27 +285,36 @@ export default function CalendarioRefeicoes() {
   };
 
   const filtrarPorAbordagem = (lista) => {
-    if (!abordagem || abordagem === 'equilibrado') return lista;
+    if (!abordagem) return lista;
     return lista.filter(r => {
       const tags = r.tags || [];
       const fases = r.fases || [];
       const hasFaseInfo = fases.length > 0 || tags.length > 0;
 
       if (abordagem === 'keto_if') {
-        // DB recipes: must be tagged keto OR recommended for inducao phase
+        // Keto: strictly require keto tag or inducao phase
         if (hasFaseInfo) {
           return tags.includes('keto') || fases.includes('inducao');
         }
-        // Fallback/custom recipes without tags: filter by carb portions
         return (r.hidratos || 0) <= 0.5;
       }
       if (abordagem === 'low_carb') {
-        // DB recipes: recommended for inducao or transicao (not manutencao-only)
+        // Low-carb: allow inducao + transicao phases
         if (hasFaseInfo) {
           return fases.includes('inducao') || fases.includes('transicao');
         }
-        // Fallback/custom: filter by carb portions
         return (r.hidratos || 0) <= 1.5;
+      }
+      if (abordagem === 'equilibrado') {
+        // Equilibrado: exclude purely-keto recipes (align with ReceitasBrowse)
+        if (tags.includes('keto') && !tags.some(t => ['vegetariano', 'rapido', 'economico', 'sem_gluten', 'tradicional', 'proteico'].includes(t))) {
+          return false;
+        }
+        // Also filter by current phase if set
+        if (fase && fases.length > 0) {
+          return fases.includes(fase);
+        }
+        return true;
       }
       return true;
     });
