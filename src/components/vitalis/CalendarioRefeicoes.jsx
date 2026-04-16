@@ -541,8 +541,8 @@ export default function CalendarioRefeicoes() {
               <span>←</span>
             </Link>
             <div className="flex-1">
-              <h1 className="text-xl font-bold">Calendário de Refeições</h1>
-              <p className="text-white/70 text-sm">Planeia a tua semana com a palma da mão</p>
+              <h1 className="text-xl font-bold">Menu Semanal</h1>
+              <p className="text-white/70 text-sm">Monta o teu menu, imprime e cozinha</p>
             </div>
             <Link to="/vitalis/lista-compras" className="px-3 py-1.5 bg-white/20 rounded-lg text-sm hover:bg-white/30 transition-colors">
               🛒 Compras

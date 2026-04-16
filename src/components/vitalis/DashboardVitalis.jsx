@@ -1286,6 +1286,7 @@ export default function DashboardVitalis() {
             { to: '/vitalis/plano', emoji: '📋', label: t('vitalis.dashboard.meal_plan'), cor: '#7C8B6F', bg: 'linear-gradient(145deg, #F0FDF4, #DCFCE7)' },
             { to: '/vitalis/checkin', emoji: '✅', label: t('vitalis.dashboard.daily_checkin'), cor: '#059669', bg: 'linear-gradient(145deg, #ECFDF5, #D1FAE5)' },
             { to: '/vitalis/meals', emoji: '🍽️', label: 'Refeições', cor: '#D97706', bg: 'linear-gradient(145deg, #FFFBEB, #FEF3C7)' },
+            { to: '/vitalis/calendario', emoji: '📅', label: 'Menu Semanal', cor: '#0D9488', bg: 'linear-gradient(145deg, #F0FDFA, #CCFBF1)' },
             { to: '/vitalis/receitas', emoji: '🍳', label: t('vitalis.dashboard.recipes'), cor: '#EA580C', bg: 'linear-gradient(145deg, #FFF7ED, #FFEDD5)' },
             { to: '/vitalis/tendencias', emoji: '📏', label: 'Medidas', cor: '#F59E0B', bg: 'linear-gradient(145deg, #FFFBEB, #FEF3C7)' },
             { to: '/vitalis/espaco-retorno', emoji: '💜', label: 'Espaço Retorno', cor: '#9333EA', bg: 'linear-gradient(145deg, #FAF5FF, #F3E8FF)' },
@@ -1568,13 +1569,6 @@ export default function DashboardVitalis() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {/* Calendário de Refeições */}
-            <Link to="/vitalis/calendario" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
-              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">📅</div>
-              <p className="font-semibold text-white text-sm">Calendário</p>
-              <p className="text-white/70 text-xs mt-1">Planear semana</p>
-            </Link>
-
             {/* Calendário de Progresso */}
             <Link to="/vitalis/calendario-progresso" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
               <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🗓️</div>
