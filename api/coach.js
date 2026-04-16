@@ -167,6 +167,8 @@ export default async function handler(req, res) {
         return await buscarPlanoPdf(params.planId, params.userId, res);
       case 'gerar-plano':
         return await gerarPlano(params.userId, res);
+      case 'mudar-abordagem':
+        return await mudarAbordagem(params.userId, params.abordagem, res);
       case 'aprovar-plano':
         return await aprovarPlano(params.userId, params.planId, res);
       case 'apagar-cliente':
@@ -274,6 +276,35 @@ export default async function handler(req, res) {
 // ==========================================
 // GERAR PLANO - Full planoGenerator logic
 // ==========================================
+async function mudarAbordagem(userId, abordagem, res) {
+  if (!userId) return res.status(400).json({ error: 'userId obrigatorio' });
+  const ABORDAGENS_VALIDAS = ['keto_if', 'low_carb', 'equilibrado'];
+  if (!abordagem || !ABORDAGENS_VALIDAS.includes(abordagem)) {
+    return res.status(400).json({ error: `Abordagem invalida. Opcoes: ${ABORDAGENS_VALIDAS.join(', ')}` });
+  }
+
+  // Update intake
+  const { error: intakeError } = await supabase
+    .from('vitalis_intake')
+    .update({ abordagem_preferida: abordagem })
+    .eq('user_id', userId);
+
+  if (intakeError) {
+    return res.status(500).json({ error: 'Erro ao actualizar abordagem: ' + intakeError.message });
+  }
+
+  // If changing to keto_if, ensure aceita_jejum is set
+  if (abordagem === 'keto_if') {
+    await supabase
+      .from('vitalis_intake')
+      .update({ aceita_jejum: true })
+      .eq('user_id', userId);
+  }
+
+  // Generate new plan with updated approach
+  return await gerarPlano(userId, res);
+}
+
 async function gerarPlano(userId, res) {
   if (!userId) return res.status(400).json({ error: 'userId obrigatorio' });
 

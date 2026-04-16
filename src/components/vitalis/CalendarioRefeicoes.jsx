@@ -359,6 +359,126 @@ export default function CalendarioRefeicoes() {
     setConfirmarLimpar(false);
   };
 
+  // Auto-fill week with varied recipes
+  const preencherSemana = () => {
+    const novoPlano = { ...planoSemanal };
+    chavesSemana.forEach((chave, diaIndex) => {
+      if (!novoPlano[chave]) novoPlano[chave] = {};
+      tiposRefeicao.forEach(tipo => {
+        if (novoPlano[chave][tipo]) return; // already has a meal
+        const opcoes = getRefeicoes(tipo);
+        if (opcoes.length === 0) return;
+        // Avoid repeating the same recipe on consecutive days
+        const usadasRecentes = [];
+        for (let d = Math.max(0, diaIndex - 2); d < diaIndex; d++) {
+          const ref = novoPlano[chavesSemana[d]]?.[tipo];
+          if (ref) usadasRecentes.push(ref.id);
+        }
+        const naoUsadas = opcoes.filter(o => !usadasRecentes.includes(o.id));
+        const pool = naoUsadas.length > 0 ? naoUsadas : opcoes;
+        novoPlano[chave][tipo] = { ...pool[Math.floor(Math.random() * pool.length)] };
+      });
+    });
+    guardarPlano(novoPlano);
+  };
+
+  // Print weekly menu as PDF
+  const imprimirMenu = async () => {
+    const nome = userData?.user_metadata?.nome || 'Vitalis';
+    const semanaLabel = `${formatarData(datasSemana[0])} - ${formatarData(datasSemana[6])}`;
+
+    const diasHTML = DIAS_SEMANA.map((dia, i) => {
+      const chave = chavesSemana[i];
+      const refeicoesDia = planoSemanal[chave] || {};
+      const totDia = calcularTotaisDia(i);
+      const mealsHTML = tiposRefeicao.map(tipo => {
+        const ref = refeicoesDia[tipo];
+        if (!ref) return '';
+        return `
+          <div style="display:flex; align-items:center; gap:8px; padding:6px 10px; background:#F5F2ED; border-radius:8px; margin-bottom:4px;">
+            <span style="font-size:18px;">${ref.icone}</span>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:11px; font-weight:600; color:#4A4035;">${ref.nome}</div>
+              <div style="font-size:9px; color:#6B5C4C;">
+                ${ref.proteina > 0 ? `🫲${ref.proteina}` : ''} ${ref.hidratos > 0 ? `🤲${ref.hidratos}` : ''} ${ref.gordura > 0 ? `👍${ref.gordura}` : ''}
+                ${ref.kcal > 0 ? ` · ${ref.kcal} kcal` : ''}${ref.tempo > 0 ? ` · ${ref.tempo}min` : ''}
+              </div>
+            </div>
+            <div style="font-size:9px; color:#8B7D6B; text-transform:capitalize;">${(NOMES_REFEICAO[tipo] || tipo).replace(/_/g, ' ')}</div>
+          </div>`;
+      }).join('');
+
+      if (!mealsHTML) return '';
+      return `
+        <div style="page-break-inside:avoid; margin-bottom:14px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+            <h3 style="margin:0; font-size:13px; font-weight:700; color:#4A4035;">${dia} <span style="font-weight:400; color:#8B7D6B;">${formatarData(datasSemana[i])}</span></h3>
+            ${totDia.count > 0 ? `<span style="font-size:9px; color:#6B5C4C;">🫲${totDia.proteina.toFixed(0)} 🤲${totDia.hidratos.toFixed(0)} 👍${totDia.gordura.toFixed(0)}</span>` : ''}
+          </div>
+          ${mealsHTML}
+        </div>`;
+    }).join('');
+
+    const metaHTML = metaDiaria ? `
+      <div style="display:flex; gap:8px; justify-content:center; margin-bottom:14px;">
+        <div style="background:#FEE2E2; padding:6px 14px; border-radius:8px; text-align:center;">
+          <div style="font-size:16px; font-weight:700; color:#BE123C;">🫲 ${metaDiaria.proteina}</div>
+          <div style="font-size:8px; color:#9F1239;">palmas/dia</div>
+        </div>
+        <div style="background:#FFEDD5; padding:6px 14px; border-radius:8px; text-align:center;">
+          <div style="font-size:16px; font-weight:700; color:#C2410C;">🤲 ${metaDiaria.hidratos}</div>
+          <div style="font-size:8px; color:#9A3412;">mãos/dia</div>
+        </div>
+        <div style="background:#F3E8FF; padding:6px 14px; border-radius:8px; text-align:center;">
+          <div style="font-size:16px; font-weight:700; color:#7C3AED;">👍 ${metaDiaria.gordura}</div>
+          <div style="font-size:8px; color:#6D28D9;">polegares/dia</div>
+        </div>
+      </div>` : '';
+
+    const legendaHTML = `
+      <div style="background:#F5F2ED; padding:10px; border-radius:10px; margin-top:10px;">
+        <div style="font-size:10px; font-weight:600; color:#4A4035; margin-bottom:4px;">Como medir com a mão:</div>
+        <div style="display:flex; gap:12px; font-size:9px; color:#6B5C4C;">
+          <span>🫲 1 palma = porção de proteína (~25g)</span>
+          <span>🤲 1 mão = porção de hidratos (~30g)</span>
+          <span>👍 1 polegar = porção de gordura (~10g)</span>
+        </div>
+      </div>`;
+
+    const html = `
+      <div style="font-family:'Inter',-apple-system,sans-serif; max-width:800px; margin:0 auto; font-size:12px; line-height:1.5; color:#4A4035;">
+        <div style="background:linear-gradient(135deg,#7C8B6F,#5A6B4D); color:white; padding:20px 24px; border-radius:0 0 14px 14px; margin-bottom:16px;">
+          <h1 style="margin:0; font-size:20px; font-weight:700;">Menu Semanal</h1>
+          <p style="margin:4px 0 0; font-size:12px; opacity:0.85;">${semanaLabel}</p>
+        </div>
+        <div style="padding:0 16px;">
+          ${metaHTML}
+          ${diasHTML}
+          ${legendaHTML}
+          <div style="text-align:center; margin-top:14px; padding:10px; font-size:9px; color:#8B7D6B; border-top:1px solid #E8E2D9;">
+            VITALIS — Gerado em ${new Date().toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' })}
+          </div>
+        </div>
+      </div>`;
+
+    const container = document.createElement('div');
+    container.innerHTML = html;
+    document.body.appendChild(container);
+    try {
+      const mod = await import('html2pdf.js');
+      const html2pdf = mod.default || mod;
+      await html2pdf().set({
+        margin: [8, 8, 8, 8],
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        filename: `Menu_Semanal_${chavesSemana[0]}.pdf`
+      }).from(container).save();
+    } finally {
+      document.body.removeChild(container);
+    }
+  };
+
   const formatarData = (data) => `${data.getDate()}/${data.getMonth() + 1}`;
 
   const isHoje = (data) => {
@@ -447,11 +567,17 @@ export default function CalendarioRefeicoes() {
 
           {/* Quick actions */}
           <div className="flex flex-wrap gap-2 mt-4 justify-center">
+            <button onClick={preencherSemana} className="px-3 py-1.5 bg-[#7C8B6F] text-white rounded-full text-sm hover:bg-[#5C6B4F] font-medium">
+              ✨ Preencher semana
+            </button>
+            <button onClick={imprimirMenu} className="px-3 py-1.5 bg-blue-600 text-white rounded-full text-sm hover:bg-blue-700 font-medium">
+              🖨️ Imprimir PDF
+            </button>
             <button onClick={copiarSemanaAnterior} className="px-3 py-1.5 bg-[#7C8B6F]/10 text-[#7C8B6F] rounded-full text-sm hover:bg-[#7C8B6F]/20">
               📋 Copiar anterior
             </button>
-            <button onClick={guardarComoTemplate} className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full text-sm hover:bg-blue-100">
-              {templateGuardado ? '✓ Template guardado!' : '💾 Guardar como template'}
+            <button onClick={guardarComoTemplate} className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-sm hover:bg-gray-200">
+              {templateGuardado ? '✓ Guardado!' : '💾 Template'}
             </button>
             <button onClick={() => setConfirmarLimpar(true)} className="px-3 py-1.5 bg-red-50 text-red-600 rounded-full text-sm hover:bg-red-100">
               🗑️ Limpar
