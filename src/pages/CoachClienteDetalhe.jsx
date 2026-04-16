@@ -214,6 +214,7 @@ export default function CoachClienteDetalhe() {
 
   // Actions
   const [gerandoPlano, setGerandoPlano] = useState(false);
+  const [mudandoAbordagem, setMudandoAbordagem] = useState(false);
   const [copiedMsg, setCopiedMsg] = useState(null);
 
   useEffect(() => {
@@ -277,6 +278,23 @@ export default function CoachClienteDetalhe() {
       alert('Erro ao gerar plano: ' + err.message);
     } finally {
       setGerandoPlano(false);
+    }
+  };
+
+  // Change approach
+  const handleMudarAbordagem = async (novaAbordagem) => {
+    const abordagemActual = activePlan?.abordagem || intake?.abordagem_preferida || 'equilibrado';
+    if (novaAbordagem === abordagemActual) return;
+    const nomeNova = ABORDAGEM_LABELS[novaAbordagem] || novaAbordagem;
+    if (!confirm(`Mudar abordagem para "${nomeNova}" e regenerar plano?`)) return;
+    setMudandoAbordagem(true);
+    try {
+      await coachApi.mudarAbordagem(userId, novaAbordagem);
+      loadClientData();
+    } catch (err) {
+      alert('Erro ao mudar abordagem: ' + err.message);
+    } finally {
+      setMudandoAbordagem(false);
     }
   };
 
@@ -467,6 +485,30 @@ export default function CoachClienteDetalhe() {
                   <div className="bg-blue-50 rounded-lg p-2">
                     <p className="text-lg font-bold text-blue-700">{(FASE_NOMES_POR_ABORDAGEM[activePlan.abordagem] || FASE_NOMES_POR_ABORDAGEM.equilibrado)[activePlan.fase] || activePlan.fase}</p>
                     <p className="text-[10px] text-gray-500">Fase</p>
+                  </div>
+                </div>
+                {/* Mudar abordagem */}
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs text-gray-500 font-medium">Abordagem:</span>
+                    {['equilibrado', 'low_carb', 'keto_if'].map(ab => {
+                      const isActive = abordagemCliente === ab;
+                      return (
+                        <button
+                          key={ab}
+                          onClick={() => !isActive && handleMudarAbordagem(ab)}
+                          disabled={mudandoAbordagem || gerandoPlano}
+                          className={`px-3 py-1.5 text-xs rounded-full font-medium transition-all ${
+                            isActive
+                              ? 'bg-green-600 text-white'
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          } disabled:opacity-50`}
+                        >
+                          {ABORDAGEM_LABELS[ab]}
+                        </button>
+                      );
+                    })}
+                    {mudandoAbordagem && <span className="text-xs text-gray-400 animate-pulse">A regenerar...</span>}
                   </div>
                 </div>
                 {/* Detalhe do cálculo TMB */}

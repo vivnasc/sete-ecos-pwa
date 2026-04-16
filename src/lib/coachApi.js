@@ -35,6 +35,7 @@ export const coachApi = {
   buscarDadosCliente: (userId) => coachRequest('buscar-dados-cliente', { userId }),
   buscarPlanoPdf: (planId, userId) => coachRequest('buscar-plano-pdf', { planId, userId }),
   gerarPlano: (userId) => coachRequest('gerar-plano', { userId }),
+  mudarAbordagem: (userId, abordagem) => coachRequest('mudar-abordagem', { userId, abordagem }),
   aprovarPlano: (userId, planId) => coachRequest('aprovar-plano', { userId, planId }),
   apagarCliente: (userId) => coachRequest('apagar-cliente', { userId }),
   activarSubscricao: (userId, planKey) => coachRequest('activar-subscricao', { userId, planKey }),
