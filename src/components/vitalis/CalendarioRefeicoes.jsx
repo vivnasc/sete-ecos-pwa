@@ -69,6 +69,7 @@ export default function CalendarioRefeicoes() {
   const [modalAberto, setModalAberto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
+  const [userId, setUserId] = useState(null); // users.id (internal FK)
   const [receitasDB, setReceitasDB] = useState(null); // null = not loaded, {} = loaded
   const [planoMacros, setPlanoMacros] = useState(null);
   const [abordagem, setAbordagem] = useState(null); // keto_if, low_carb, equilibrado
@@ -127,12 +128,23 @@ export default function CalendarioRefeicoes() {
       if (!user) return;
       setUserData(user);
 
+      // Convert auth_id → users.id (internal FK used by all vitalis tables)
+      const { data: userRow } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', user.id)
+        .single();
+
+      const uid = userRow?.id;
+      if (!uid) return;
+      setUserId(uid);
+
       // Load calendar: try Supabase first, fallback to localStorage
       try {
         const { data: calDB } = await supabase
           .from('vitalis_calendario_refeicoes')
           .select('*')
-          .eq('user_id', user.id);
+          .eq('user_id', uid);
 
         if (calDB && calDB.length > 0) {
           // Convert flat rows to nested planoSemanal format
@@ -154,27 +166,27 @@ export default function CalendarioRefeicoes() {
           setPlanoSemanal(plano);
         } else {
           // Fallback: localStorage
-          const planoGuardado = localStorage.getItem(`vitalis-plano-refeicoes-${user.id}`);
+          const planoGuardado = localStorage.getItem(`vitalis-plano-refeicoes-${uid}`);
           if (planoGuardado) {
             try { setPlanoSemanal(JSON.parse(planoGuardado)); } catch {}
           }
         }
       } catch {
         // Table might not exist yet — use localStorage
-        const planoGuardado = localStorage.getItem(`vitalis-plano-refeicoes-${user.id}`);
+        const planoGuardado = localStorage.getItem(`vitalis-plano-refeicoes-${uid}`);
         if (planoGuardado) {
           try { setPlanoSemanal(JSON.parse(planoGuardado)); } catch {}
         }
       }
 
-      // Load user's meal config (names, times, order)
+      // Load user's meal config (names, times, order) — same as MealsTracker
       let tiposFromConfig = null;
-      let cfgsLocal = []; // local ref for use in keto filter below
+      let cfgsLocal = [];
       try {
         const { data: config } = await supabase
           .from('vitalis_refeicoes_config')
-          .select('nome, hora_habitual, ordem, activo')
-          .eq('user_id', user.id)
+          .select('*')
+          .eq('user_id', uid)
           .eq('activo', true)
           .order('ordem', { ascending: true });
 
@@ -194,7 +206,7 @@ export default function CalendarioRefeicoes() {
       const { data: mp } = await supabase
         .from('vitalis_meal_plans')
         .select('proteina_g, carboidratos_g, gordura_g, calorias_alvo, abordagem, fase')
-        .eq('user_id', user.id)
+        .eq('user_id', uid)
         .eq('status', 'activo')
         .order('created_at', { ascending: false })
         .limit(1)
@@ -332,17 +344,17 @@ export default function CalendarioRefeicoes() {
 
   const guardarPlano = (novoPlano) => {
     setPlanoSemanal(novoPlano);
-    if (!userData) return;
+    if (!userId) return;
 
     // Always save to localStorage as immediate backup
-    localStorage.setItem(`vitalis-plano-refeicoes-${userData.id}`, JSON.stringify(novoPlano));
+    localStorage.setItem(`vitalis-plano-refeicoes-${userId}`, JSON.stringify(novoPlano));
 
     // Save to Supabase (async, non-blocking)
     syncToSupabase(novoPlano);
   };
 
   const syncToSupabase = async (plano) => {
-    if (!userData) return;
+    if (!userId) return;
     try {
       // Get all dates that are in the current view's range
       const allDates = Object.keys(plano);
@@ -352,7 +364,7 @@ export default function CalendarioRefeicoes() {
       await supabase
         .from('vitalis_calendario_refeicoes')
         .delete()
-        .eq('user_id', userData.id)
+        .eq('user_id', userId)
         .in('data', allDates);
 
       // Build rows to insert
@@ -360,7 +372,7 @@ export default function CalendarioRefeicoes() {
       Object.entries(plano).forEach(([data, refeicoes]) => {
         Object.entries(refeicoes).forEach(([tipo, ref]) => {
           rows.push({
-            user_id: userData.id,
+            user_id: userId,
             data,
             tipo_refeicao: tipo,
             receita_id: ref.receitaId || null,
@@ -420,7 +432,7 @@ export default function CalendarioRefeicoes() {
     });
     if (!copiou) {
       // Try loading saved template
-      const template = localStorage.getItem(`vitalis-template-semanal-${userData?.id}`);
+      const template = localStorage.getItem(`vitalis-template-semanal-${userId}`);
       if (template) {
         try {
           const tpl = JSON.parse(template);
@@ -436,14 +448,14 @@ export default function CalendarioRefeicoes() {
   };
 
   const guardarComoTemplate = () => {
-    if (!userData) return;
+    if (!userId) return;
     const template = {};
     chavesSemana.forEach((chave, i) => {
       if (planoSemanal[chave]) {
         template[i] = planoSemanal[chave];
       }
     });
-    localStorage.setItem(`vitalis-template-semanal-${userData.id}`, JSON.stringify(template));
+    localStorage.setItem(`vitalis-template-semanal-${userId}`, JSON.stringify(template));
     setTemplateGuardado(true);
     setTimeout(() => setTemplateGuardado(false), 2000);
   };
@@ -452,14 +464,14 @@ export default function CalendarioRefeicoes() {
     const novoPlano = { ...planoSemanal };
     chavesSemana.forEach(chave => delete novoPlano[chave]);
     setPlanoSemanal(novoPlano);
-    if (userData) {
-      localStorage.setItem(`vitalis-plano-refeicoes-${userData.id}`, JSON.stringify(novoPlano));
+    if (userId) {
+      localStorage.setItem(`vitalis-plano-refeicoes-${userId}`, JSON.stringify(novoPlano));
       // Also delete from Supabase
       try {
         await supabase
           .from('vitalis_calendario_refeicoes')
           .delete()
-          .eq('user_id', userData.id)
+          .eq('user_id', userId)
           .in('data', chavesSemana);
       } catch {}
     }
