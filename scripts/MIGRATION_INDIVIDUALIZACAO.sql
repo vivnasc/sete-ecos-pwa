@@ -17,3 +17,8 @@ ALTER TABLE vitalis_registos
   ADD COLUMN IF NOT EXISTS vitorias_nao_balanca TEXT[];
 -- Valores: roupa_folgada, mais_energia, sono_melhor, fome_controlada,
 --         pele_melhor, clareza_mental, disposicao_estavel
+
+-- ── PONTO 6: Medidas expandidas (coxa e braço) ──
+ALTER TABLE vitalis_medidas_log
+  ADD COLUMN IF NOT EXISTS coxa_cm NUMERIC(5,1),
+  ADD COLUMN IF NOT EXISTS braco_cm NUMERIC(5,1);
