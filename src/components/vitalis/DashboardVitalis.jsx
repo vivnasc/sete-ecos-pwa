@@ -14,6 +14,7 @@ import { temPermissao, contarLembretesHoje } from '../../utils/notifications';
 import { pedirPermissaoERegistar, guardarPreferencias } from '../../lib/pushSubscription';
 import { checkVitalisAccess } from '../../lib/subscriptions';
 import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
+import { obterRegrasOuro, obterMetaAgua } from '../../lib/vitalis/regrasOuro.js';
 import QuickTrackers from './QuickTrackers';
 import FastingTimerCard from './FastingTimerCard';
 import MealsSection from './MealsSection';
@@ -82,6 +83,7 @@ export default function DashboardVitalis() {
   const [melhorStreak, setMelhorStreak] = useState(0);
   const [showCelebracao, setShowCelebracao] = useState(false);
   const [conquistaActual, setConquistaActual] = useState(null);
+  const [regrasExpandidas, setRegrasExpandidas] = useState(false);
   const [conquistasDesbloqueadas, setConquistasDesbloqueadas] = useState([]);
   const [xpTotal, setXpTotal] = useState(0);
   const [avatarIcon, setAvatarIcon] = useState(() => {
@@ -836,8 +838,10 @@ export default function DashboardVitalis() {
   const pesoRestante = pesoActual - pesoMeta;
   const progressoPeso = pesoInicial > pesoMeta ? ((pesoPerdido) / (pesoInicial - pesoMeta)) * 100 : 0;
 
-  const metaAgua = 2;
+  const abordagemActual = plano?.abordagem || 'equilibrado';
+  const metaAgua = obterMetaAgua(abordagemActual);
   const progressoAgua = (aguaHoje / metaAgua) * 100;
+  const regrasOuro = obterRegrasOuro(abordagemActual);
 
   const totalRefeicoes = refeicoes.length || 4;
   const refeicoesConcluidas = mealsHoje.filter(m => m.seguiu_plano === 'sim' || m.seguiu_plano === 'parcial').length;
@@ -1302,6 +1306,56 @@ export default function DashboardVitalis() {
           ))}
         </div>
 
+        {/* Regras de Ouro (por abordagem) */}
+        <div className="rounded-3xl shadow-lg overflow-hidden"
+          style={{ background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', borderLeft: '4px solid #D97706' }}>
+          <button
+            type="button"
+            onClick={() => setRegrasExpandidas(!regrasExpandidas)}
+            className="w-full flex items-center justify-between p-4 sm:p-5 active:scale-[0.99] transition-transform"
+            aria-expanded={regrasExpandidas}
+            aria-controls="regras-ouro-list"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="text-2xl sm:text-3xl shrink-0">📜</div>
+              <div className="text-left min-w-0">
+                <h3 className="font-bold text-[#4A4035] text-sm sm:text-base truncate" style={{ fontFamily: 'var(--font-corpo)' }}>
+                  As Tuas Regras de Ouro
+                </h3>
+                <p className="text-xs text-[#6B5C4C] truncate">
+                  {abordagemActual === 'keto_if' && 'Keto + Jejum Intermitente'}
+                  {abordagemActual === 'low_carb' && 'Low Carb'}
+                  {abordagemActual === 'equilibrado' && 'Equilibrado'}
+                  {' · '}{regrasOuro.length} regras essenciais
+                </p>
+              </div>
+            </div>
+            <div className="text-xl text-[#D97706] shrink-0 ml-2" aria-hidden="true">
+              {regrasExpandidas ? '▲' : '▼'}
+            </div>
+          </button>
+          {regrasExpandidas && (
+            <ul id="regras-ouro-list" className="px-4 sm:px-5 pb-4 sm:pb-5 space-y-2.5">
+              {regrasOuro.map((regra, idx) => (
+                <li key={idx} className="flex gap-3 p-3 bg-white/60 rounded-xl">
+                  <div className="flex flex-col items-center shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-[#D97706] text-white text-xs font-bold flex items-center justify-center">
+                      {idx + 1}
+                    </div>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-sm text-[#4A4035] flex items-center gap-1.5">
+                      <span aria-hidden="true">{regra.emoji}</span>
+                      {regra.titulo}
+                    </p>
+                    <p className="text-xs sm:text-sm text-[#6B5C4C] mt-0.5 leading-snug">{regra.descricao}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
         {/* Grid Principal */}
         <div className="grid grid-cols-12 gap-4">
           
@@ -1362,6 +1416,7 @@ export default function DashboardVitalis() {
             <QuickTrackers
               aguaHoje={aguaHoje}
               metaAgua={metaAgua}
+              abordagem={abordagemActual}
               treinoHoje={treinoHoje}
               ehDiaTreino={ehDiaTreino}
               sonoHoje={sonoHoje}
