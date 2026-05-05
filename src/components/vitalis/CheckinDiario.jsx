@@ -16,8 +16,28 @@ export const CheckinDiario = () => {
     humor_1a10: 5,
     aderencia_1a10: 5,
     desafios_semana: '',
-    vitorias_semana: ''
+    vitorias_semana: '',
+    vitorias_nao_balanca: []
   });
+
+  const VITORIAS_NAO_BALANCA = [
+    { id: 'roupa_folgada', label: 'A roupa está mais folgada', emoji: '👗' },
+    { id: 'mais_energia', label: 'Tenho mais energia ao acordar', emoji: '⚡' },
+    { id: 'sono_melhor', label: 'Durmo melhor', emoji: '😴' },
+    { id: 'fome_controlada', label: 'A fome está controlada', emoji: '🍽️' },
+    { id: 'pele_melhor', label: 'A pele está mais limpa', emoji: '✨' },
+    { id: 'clareza_mental', label: 'Sinto mais clareza mental', emoji: '🧠' },
+    { id: 'disposicao_estavel', label: 'Disposição mais estável', emoji: '💪' }
+  ];
+
+  const toggleVitoria = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      vitorias_nao_balanca: prev.vitorias_nao_balanca.includes(id)
+        ? prev.vitorias_nao_balanca.filter(v => v !== id)
+        : [...prev.vitorias_nao_balanca, id]
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,7 +85,8 @@ export const CheckinDiario = () => {
           humor_1a10: formData.humor_1a10,
           aderencia_1a10: formData.aderencia_1a10,
           desafios_semana: formData.desafios_semana,
-          vitorias_semana: formData.vitorias_semana
+          vitorias_semana: formData.vitorias_semana,
+          vitorias_nao_balanca: formData.vitorias_nao_balanca.length > 0 ? formData.vitorias_nao_balanca : null
         }]);
 
       if (error) throw error;
@@ -280,8 +301,42 @@ export const CheckinDiario = () => {
             <h3 className="text-xl font-bold text-gray-800 mb-6">Reflexão da Semana</h3>
 
             <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                🏆 Vitórias além da balança
+              </label>
+              <p className="text-xs text-gray-500 mb-3">A fita métrica não mente — e o teu corpo também não. Marca o que sentes.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {VITORIAS_NAO_BALANCA.map(v => {
+                  const checked = formData.vitorias_nao_balanca.includes(v.id);
+                  return (
+                    <label
+                      key={v.id}
+                      className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all border-2 ${
+                        checked ? 'bg-emerald-50 border-emerald-400' : 'bg-white border-gray-200 hover:border-emerald-200'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleVitoria(v.id)}
+                        className="w-5 h-5 text-emerald-600 rounded shrink-0"
+                      />
+                      <span className="text-lg shrink-0" aria-hidden="true">{v.emoji}</span>
+                      <span className="text-sm text-gray-700">{v.label}</span>
+                    </label>
+                  );
+                })}
+              </div>
+              {formData.vitorias_nao_balanca.length > 0 && (
+                <p className="text-xs text-emerald-700 bg-emerald-50 rounded-lg px-3 py-2 mt-3">
+                  ✨ {formData.vitorias_nao_balanca.length} {formData.vitorias_nao_balanca.length === 1 ? 'vitória notada' : 'vitórias notadas'} — celebra cada uma.
+                </p>
+              )}
+            </div>
+
+            <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                🌱 Vitórias desta semana (opcional)
+                🌱 Vitórias desta semana em palavras (opcional)
               </label>
               <textarea
                 value={formData.vitorias_semana}

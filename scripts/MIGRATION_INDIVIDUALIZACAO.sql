@@ -11,3 +11,9 @@ ALTER TABLE vitalis_intake
 ALTER TABLE vitalis_intake
   ADD COLUMN IF NOT EXISTS janela_jejum_inicio TIME,
   ADD COLUMN IF NOT EXISTS janela_jejum_fim TIME;
+
+-- ── PONTO 7: Vitórias além da balança no check-in ──
+ALTER TABLE vitalis_registos
+  ADD COLUMN IF NOT EXISTS vitorias_nao_balanca TEXT[];
+-- Valores: roupa_folgada, mais_energia, sono_melhor, fome_controlada,
+--         pele_melhor, clareza_mental, disposicao_estavel
