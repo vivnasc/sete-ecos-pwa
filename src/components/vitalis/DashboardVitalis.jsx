@@ -312,7 +312,7 @@ export default function DashboardVitalis() {
       // Buscar sexo e preferências do intake para adaptar UI
       const { data: intakeData } = await supabase
         .from('vitalis_intake')
-        .select('sexo, observa_ramadao, altura_cm, peso_actual, idade')
+        .select('sexo, observa_ramadao, altura_cm, peso_actual, idade, janela_jejum_inicio, janela_jejum_fim')
         .eq('user_id', userData.id)
         .maybeSingle();
 
@@ -353,6 +353,19 @@ export default function DashboardVitalis() {
 
         if (mealPlan) {
           const porcoesDiarias = calcularPorcoesDiarias(mealPlan);
+          // Calcular horas de jejum a partir da janela definida no intake
+          let horasJejumPersonalizadas = mealPlan.abordagem === 'keto_if' ? 16 : null;
+          let protocoloPersonalizado = mealPlan.abordagem === 'keto_if' ? '16_8' : null;
+          if (mealPlan.abordagem === 'keto_if' && intakeData?.janela_jejum_inicio && intakeData?.janela_jejum_fim) {
+            const [hi, mi] = String(intakeData.janela_jejum_inicio).split(':').map(Number);
+            const [hf, mf] = String(intakeData.janela_jejum_fim).split(':').map(Number);
+            let inicio = hi + (mi || 0) / 60;
+            let fim = hf + (mf || 0) / 60;
+            if (fim <= inicio) fim += 24;
+            const janela = fim - inicio;
+            horasJejumPersonalizadas = Math.round(24 - janela);
+            protocoloPersonalizado = `${horasJejumPersonalizadas}_${Math.round(janela)}`;
+          }
           planoData = {
             ...mealPlan,
             client_id: activeClientData.id,
@@ -361,9 +374,11 @@ export default function DashboardVitalis() {
             porcoes_hidratos: porcoesDiarias.hidratos,
             porcoes_gordura: porcoesDiarias.gordura,
             porcoes_legumes: porcoesDiarias.legumes,
-            horas_jejum: mealPlan.abordagem === 'keto_if' ? 16 : null,
+            horas_jejum: horasJejumPersonalizadas,
             aceita_jejum: mealPlan.abordagem === 'keto_if',
-            protocolo_jejum: mealPlan.abordagem === 'keto_if' ? '16_8' : null,
+            protocolo_jejum: protocoloPersonalizado,
+            janela_jejum_inicio: intakeData?.janela_jejum_inicio || null,
+            janela_jejum_fim: intakeData?.janela_jejum_fim || null,
             dias_treino: mealPlan.dias_treino || []
           };
         } else {
