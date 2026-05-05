@@ -1308,6 +1308,7 @@ export default function DashboardVitalis() {
             { to: '/vitalis/calendario', emoji: '📅', label: 'Menu Semanal', cor: '#0D9488', bg: 'linear-gradient(145deg, #F0FDFA, #CCFBF1)' },
             { to: '/vitalis/receitas', emoji: '🍳', label: t('vitalis.dashboard.recipes'), cor: '#EA580C', bg: 'linear-gradient(145deg, #FFF7ED, #FFEDD5)' },
             { to: '/vitalis/tendencias', emoji: '📏', label: 'Medidas', cor: '#F59E0B', bg: 'linear-gradient(145deg, #FFFBEB, #FEF3C7)' },
+            { to: '/vitalis/sintomas', emoji: '🌡️', label: 'Adaptação', cor: '#DC2626', bg: 'linear-gradient(145deg, #FEF2F2, #FEE2E2)' },
             { to: '/vitalis/espaco-retorno', emoji: '💜', label: 'Espaço Retorno', cor: '#9333EA', bg: 'linear-gradient(145deg, #FAF5FF, #F3E8FF)' },
             { to: '/vitalis/compromisso', emoji: '📜', label: 'Compromisso', cor: '#7C3AED', bg: 'linear-gradient(145deg, #F5F3FF, #EDE9FE)' },
             { to: '/vitalis/relatorios', emoji: '📊', label: 'Relatórios', cor: '#0891B2', bg: 'linear-gradient(145deg, #ECFEFF, #CFFAFE)' },

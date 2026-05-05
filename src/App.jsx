@@ -81,6 +81,7 @@ const OnboardingImago = lazy(() => import('./components/imago/OnboardingImago'))
 const OnboardingComunidade = lazy(() => import('./components/comunidade/OnboardingComunidade'))
 const TreinosVitalis = lazy(() => import('./components/vitalis/TreinosVitalis'))
 const AudioVitalis = lazy(() => import('./components/vitalis/AudioVitalis'))
+const SintomasTracker = lazy(() => import('./components/vitalis/SintomasTracker'))
 const MeuCompromisso = lazy(() => import('./components/vitalis/MeuCompromisso'))
 const PlanoHTML = lazy(() => import('./pages/PlanoHTML'))
 
@@ -378,6 +379,7 @@ function AppRoutes() {
             <Route path="/vitalis/intake" element={<VitalisRoute><VitalisIntakeComplete /></VitalisRoute>} />
             <Route path="/vitalis/dashboard" element={<VitalisRoute><DashboardVitalis /></VitalisRoute>} />
             <Route path="/vitalis/checkin" element={<VitalisRoute><CheckinDiario /></VitalisRoute>} />
+            <Route path="/vitalis/sintomas" element={<VitalisRoute><SintomasTracker /></VitalisRoute>} />
             <Route path="/vitalis/receitas" element={<VitalisRoute><ReceitasBrowse /></VitalisRoute>} />
             <Route path="/vitalis/espaco-retorno" element={<VitalisRoute><EspacoRetorno /></VitalisRoute>} />
             <Route path="/vitalis/plano" element={<VitalisRoute><PlanoAlimentar /></VitalisRoute>} />
