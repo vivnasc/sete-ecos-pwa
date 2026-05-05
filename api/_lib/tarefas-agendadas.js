@@ -87,6 +87,7 @@ export default async function handler(req, res) {
     { nome: 'marcos-peso', fn: () => enviarMarcosPeso(supabase, resultados) },
     { nome: 'winback', fn: () => enviarWinback(supabase, resultados) },
     { nome: 'curiosidade', fn: () => enviarCuriosidadeInsana(supabase, resultados) },
+    { nome: 'lembretes-medidas', fn: () => enviarLembretesMedidas(supabase, resultados) },
   ];
 
   for (const tarefa of tarefas) {
@@ -1519,4 +1520,95 @@ async function enviarEmail(tipo, destinatario, dados) {
   }
 
   return response.json();
+}
+
+/**
+ * Lembretes de medidas quinzenais
+ * Envia push notification quando o cliente não regista medidas há 14+ dias.
+ * Deduplicado: 1x a cada 14 dias por cliente (via vitalis_email_log com tipo
+ * 'lembrete-medidas').
+ */
+async function enviarLembretesMedidas(supabase, resultados) {
+  const { data: clientes, error } = await supabase
+    .from('vitalis_clients')
+    .select('user_id, users!inner(email, nome)')
+    .in('subscription_status', ['active', 'trial', 'tester']);
+
+  if (error) {
+    resultados.erros.push('lembretes-medidas: ' + error.message);
+    return;
+  }
+
+  const agora = new Date();
+  const limite = new Date(agora);
+  limite.setDate(limite.getDate() - 14);
+
+  for (const cliente of clientes || []) {
+    if (cliente.users?.email && COACH_EMAILS_LIST.includes(cliente.users.email.toLowerCase())) continue;
+
+    try {
+      const { data: ultima } = await supabase
+        .from('vitalis_medidas_log')
+        .select('data')
+        .eq('user_id', cliente.user_id)
+        .order('data', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      const dataUltima = ultima?.data ? new Date(ultima.data) : null;
+      if (dataUltima && dataUltima >= limite) continue; // mediu há menos de 14 dias
+
+      // Deduplicação: enviado nos últimos 14 dias?
+      const dedupDesde = new Date();
+      dedupDesde.setDate(dedupDesde.getDate() - 14);
+      const { data: jaEnviado } = await supabase
+        .from('vitalis_email_log')
+        .select('id')
+        .eq('user_id', cliente.user_id)
+        .eq('tipo', 'lembrete-medidas')
+        .gte('created_at', dedupDesde.toISOString())
+        .limit(1);
+
+      if (jaEnviado && jaEnviado.length > 0) continue;
+
+      // Push notification
+      if (VAPID_PUBLIC && VAPID_PRIVATE) {
+        const { data: subs } = await supabase
+          .from('push_subscriptions')
+          .select('endpoint, keys_p256dh, keys_auth')
+          .eq('email', cliente.users.email);
+
+        if (subs && subs.length > 0) {
+          const payload = JSON.stringify({
+            title: 'Hora de medir 📏',
+            body: 'A fita métrica não mente. Mede cintura, anca, coxa e braço.',
+            url: '/vitalis/tendencias',
+            tag: 'lembrete-medidas',
+            requireInteraction: false,
+          });
+          for (const sub of subs) {
+            try {
+              await webpush.sendNotification(
+                { endpoint: sub.endpoint, keys: { p256dh: sub.keys_p256dh, auth: sub.keys_auth } },
+                payload
+              );
+            } catch (err) {
+              if (err.statusCode === 410 || err.statusCode === 404) {
+                await supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
+              }
+            }
+          }
+        }
+      }
+
+      // Log para deduplicação (e auditoria)
+      await supabase.from('vitalis_email_log').insert({
+        user_id: cliente.user_id,
+        tipo: 'lembrete-medidas',
+        destinatario: cliente.users.email
+      });
+    } catch (err) {
+      resultados.erros.push(`lembrete-medidas ${cliente.users?.email}: ${err.message}`);
+    }
+  }
 }

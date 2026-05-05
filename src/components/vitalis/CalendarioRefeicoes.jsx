@@ -756,7 +756,10 @@ export default function CalendarioRefeicoes() {
               <h1 className="text-xl font-bold">Menu Semanal</h1>
               <p className="text-white/70 text-sm">Monta o teu menu, imprime e cozinha</p>
             </div>
-            <Link to="/vitalis/lista-compras" className="px-3 py-1.5 bg-white/20 rounded-lg text-sm hover:bg-white/30 transition-colors">
+            <Link
+              to={datasSemana?.[0] ? `/vitalis/lista-compras?modo=menu&semana=${datasSemana[0].toISOString().split('T')[0]}` : '/vitalis/lista-compras'}
+              className="px-3 py-1.5 bg-white/20 rounded-lg text-sm hover:bg-white/30 transition-colors"
+            >
               🛒 Compras
             </Link>
           </div>

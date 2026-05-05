@@ -210,6 +210,8 @@ export default function GraficosTendencia() {
   const [mostrarFormMedidas, setMostrarFormMedidas] = useState(false);
   const [novaCintura, setNovaCintura] = useState('');
   const [novaAnca, setNovaAnca] = useState('');
+  const [novaCoxa, setNovaCoxa] = useState('');
+  const [novoBraco, setNovoBraco] = useState('');
   const [salvandoMedidas, setSalvandoMedidas] = useState(false);
 
   useEffect(() => {
@@ -376,7 +378,7 @@ export default function GraficosTendencia() {
   };
 
   const salvarMedidas = async () => {
-    if (!novaCintura && !novaAnca) return;
+    if (!novaCintura && !novaAnca && !novaCoxa && !novoBraco) return;
     setSalvandoMedidas(true);
     try {
       const hoje = new Date().toISOString().split('T')[0];
@@ -386,6 +388,8 @@ export default function GraficosTendencia() {
       };
       if (novaCintura) dados.cintura_cm = parseFloat(novaCintura);
       if (novaAnca) dados.anca_cm = parseFloat(novaAnca);
+      if (novaCoxa) dados.coxa_cm = parseFloat(novaCoxa);
+      if (novoBraco) dados.braco_cm = parseFloat(novoBraco);
 
       // Verificar se já existe registo para hoje
       const { data: existente } = await supabase
@@ -422,6 +426,8 @@ export default function GraficosTendencia() {
 
       setNovaCintura('');
       setNovaAnca('');
+      setNovaCoxa('');
+      setNovoBraco('');
       setMostrarFormMedidas(false);
       carregarDados(); // Recarregar gráficos
     } catch (error) {
@@ -684,11 +690,11 @@ export default function GraficosTendencia() {
                     <span>📏</span> Registar medidas
                   </h4>
                   <p className="text-xs text-gray-500 mb-3">
-                    Mede semanalmente, sempre no mesmo dia e hora (de manhã, em jejum).
+                    Mede a cada 2 semanas, sempre no mesmo dia e hora (de manhã, em jejum). Cintura e anca são essenciais. Coxa e braço opcionais.
                   </p>
                   <div className="grid grid-cols-2 gap-3 mb-3">
                     <div>
-                      <label className="text-xs text-gray-600 font-medium mb-1 block">Cintura (cm)</label>
+                      <label className="text-xs text-gray-600 font-medium mb-1 block">Cintura (cm) <span className="text-amber-600">*</span></label>
                       <input
                         type="number"
                         step="0.1"
@@ -701,7 +707,7 @@ export default function GraficosTendencia() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-600 font-medium mb-1 block">Anca (cm)</label>
+                      <label className="text-xs text-gray-600 font-medium mb-1 block">Anca (cm) <span className="text-amber-600">*</span></label>
                       <input
                         type="number"
                         step="0.1"
@@ -713,17 +719,43 @@ export default function GraficosTendencia() {
                         className="w-full px-3 py-2.5 rounded-lg border border-amber-200 text-sm focus:ring-2 focus:ring-amber-300 focus:border-amber-300 bg-white"
                       />
                     </div>
+                    <div>
+                      <label className="text-xs text-gray-600 font-medium mb-1 block">Coxa (cm)</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="20"
+                        max="120"
+                        value={novaCoxa}
+                        onChange={e => setNovaCoxa(e.target.value)}
+                        placeholder="10cm acima do joelho"
+                        className="w-full px-3 py-2.5 rounded-lg border border-amber-200 text-sm focus:ring-2 focus:ring-amber-300 focus:border-amber-300 bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-600 font-medium mb-1 block">Braço (cm)</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="15"
+                        max="80"
+                        value={novoBraco}
+                        onChange={e => setNovoBraco(e.target.value)}
+                        placeholder="parte mais larga"
+                        className="w-full px-3 py-2.5 rounded-lg border border-amber-200 text-sm focus:ring-2 focus:ring-amber-300 focus:border-amber-300 bg-white"
+                      />
+                    </div>
                   </div>
                   <div className="flex gap-2">
                     <button
                       onClick={salvarMedidas}
-                      disabled={salvandoMedidas || (!novaCintura && !novaAnca)}
+                      disabled={salvandoMedidas || (!novaCintura && !novaAnca && !novaCoxa && !novoBraco)}
                       className="flex-1 py-2.5 bg-amber-500 text-white rounded-lg font-semibold text-sm hover:bg-amber-600 disabled:opacity-50 active:scale-[0.98] transition-all"
                     >
                       {salvandoMedidas ? 'A salvar...' : 'Salvar'}
                     </button>
                     <button
-                      onClick={() => { setMostrarFormMedidas(false); setNovaCintura(''); setNovaAnca(''); }}
+                      onClick={() => { setMostrarFormMedidas(false); setNovaCintura(''); setNovaAnca(''); setNovaCoxa(''); setNovoBraco(''); }}
                       className="px-4 py-2.5 bg-white text-gray-600 rounded-lg text-sm border border-gray-200 hover:bg-gray-50"
                     >
                       Cancelar

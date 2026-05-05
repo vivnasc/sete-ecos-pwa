@@ -18,6 +18,7 @@ const TIPOS_TREINO = [
 export default function QuickTrackers({
   aguaHoje,
   metaAgua,
+  abordagem,
   treinoHoje,
   ehDiaTreino,
   sonoHoje,
@@ -128,10 +129,19 @@ export default function QuickTrackers({
             <span className="text-xl" aria-hidden="true">💧</span>
             <div>
               <p className="font-semibold text-gray-800 text-sm">{aguaHoje.toFixed(1)} / {metaAgua}L</p>
-              <p className="text-xs text-gray-500">Agua</p>
+              <p className="text-xs text-gray-500">
+                {abordagem === 'keto_if' ? 'Em keto perdes mais água — bebe 3L/dia' :
+                 abordagem === 'low_carb' ? 'Meta low carb: 2.5L/dia' :
+                 'Agua'}
+              </p>
             </div>
           </div>
         </div>
+        {aguaHoje > 0 && aguaHoje < metaAgua * 0.7 && (
+          <div className="mb-2 text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5">
+            ⚠️ Estás abaixo da meta de hidratação ({Math.round(metaAgua * 0.7 * 10) / 10}L mínimo).
+          </div>
+        )}
 
         <div className="h-2 bg-sky-100 rounded-full mb-3 overflow-hidden" role="progressbar" aria-valuenow={Math.round(progressoAgua)} aria-valuemin={0} aria-valuemax={100} aria-label="Progresso de agua">
           <div

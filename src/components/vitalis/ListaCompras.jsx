@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
 import { buscarRestricoesUtilizador, deveExcluirAlimento } from '../../lib/vitalis/restricoesAlimentares.js';
 
@@ -17,6 +17,10 @@ const CATEGORIAS = {
 };
 
 export default function ListaCompras() {
+  const [searchParams] = useSearchParams();
+  const semanaParam = searchParams.get('semana');
+  const modoMenu = searchParams.get('modo') === 'menu' || !!semanaParam;
+
   const [loading, setLoading] = useState(true);
   const [plano, setPlano] = useState(null);
   const [planoCompleto, setPlanoCompleto] = useState(null);
@@ -27,13 +31,136 @@ export default function ListaCompras() {
   const [planoCache, setPlanoCache] = useState(null);
   const [planoDiaCache, setPlanoDiaCache] = useState(null);
   const [faseRestritivaCache, setFaseRestritivaCache] = useState(false);
+  const [origemMenu, setOrigemMenu] = useState(false);
+  const [semanaInfo, setSemanaInfo] = useState(null);
 
   useEffect(() => {
-    loadListaCompras();
+    if (modoMenu) {
+      loadListaDoMenu();
+    } else {
+      loadListaCompras();
+    }
     buscarRestricoesUtilizador().then(setRestricoesAlimentares);
     const comprados = JSON.parse(localStorage.getItem('vitalis-lista-comprados') || '{}');
     setItensComprados(comprados);
-  }, []);
+  }, [modoMenu, semanaParam]);
+
+  const categorizarIngrediente = (nome) => {
+    const n = (nome || '').toLowerCase();
+    if (/(frango|peru|vaca|porco|peixe|salmão|bacalhau|ovo|atum|sard|whey|prote)/.test(n)) return 'proteinas';
+    if (/(leite|queijo|iogurte|manteiga|natas|requeijão)/.test(n)) return 'laticinios';
+    if (/(alface|espinafre|couve|brócol|tomate|pepino|cenoura|cebola|alho|abóbora|aipo|salsa|coentr|rúcula|legumes|vegetais|chuchu)/.test(n)) return 'vegetais';
+    if (/(maçã|banana|pera|laranja|limão|abacate|morango|frutos vermelhos|fruta|kiwi)/.test(n)) return 'frutas';
+    if (/(arroz|massa|pão|aveia|farinha|cereais|batata|quinoa|amido)/.test(n)) return 'cereais';
+    if (/(azeite|óleo|amêndoa|noz|amendoim|pasta de amendoim|sementes|chia|linhaça|coco|gordura)/.test(n)) return 'gorduras';
+    if (/(sal|pimenta|paprika|curcuma|orégão|canela|baunilha|vinagre|ervas|especiar)/.test(n)) return 'temperos';
+    return 'outros';
+  };
+
+  const loadListaDoMenu = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: userData } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', user.id)
+        .maybeSingle();
+      if (!userData) return;
+
+      // Determinar intervalo da semana (segunda a domingo)
+      const refDate = semanaParam ? new Date(semanaParam) : new Date();
+      const diaSemana = refDate.getDay() || 7; // domingo = 0 → 7
+      const segunda = new Date(refDate);
+      segunda.setDate(refDate.getDate() - (diaSemana - 1));
+      const domingo = new Date(segunda);
+      domingo.setDate(segunda.getDate() + 6);
+      const inicio = segunda.toISOString().split('T')[0];
+      const fim = domingo.toISOString().split('T')[0];
+      setSemanaInfo({ inicio, fim });
+
+      const { data: refeicoesPlaneadas } = await supabase
+        .from('vitalis_calendario_refeicoes')
+        .select('receita_id, data')
+        .eq('user_id', userData.id)
+        .gte('data', inicio)
+        .lte('data', fim)
+        .not('receita_id', 'is', null);
+
+      if (!refeicoesPlaneadas || refeicoesPlaneadas.length === 0) {
+        // Sem menu — mostrar lista heurística com aviso
+        setOrigemMenu(false);
+        loadListaCompras();
+        return;
+      }
+
+      const receitaIds = [...new Set(refeicoesPlaneadas.map(r => r.receita_id))];
+      const contagemReceitas = refeicoesPlaneadas.reduce((acc, r) => {
+        acc[r.receita_id] = (acc[r.receita_id] || 0) + 1;
+        return acc;
+      }, {});
+
+      const { data: receitas } = await supabase
+        .from('vitalis_receitas')
+        .select('id, titulo, ingredientes')
+        .in('id', receitaIds);
+
+      // Agregar ingredientes
+      const agregado = new Map();
+      for (const receita of receitas || []) {
+        const vezes = contagemReceitas[receita.id] || 1;
+        const ingredientes = Array.isArray(receita.ingredientes)
+          ? receita.ingredientes
+          : (typeof receita.ingredientes === 'string' ? JSON.parse(receita.ingredientes) : []);
+        for (const ing of ingredientes || []) {
+          const nome = ing.item || ing.nome;
+          if (!nome) continue;
+          const chave = nome.toLowerCase().trim();
+          if (!agregado.has(chave)) {
+            agregado.set(chave, {
+              nome,
+              quantidades: [],
+              receitas: new Set(),
+              vezes: 0
+            });
+          }
+          const entry = agregado.get(chave);
+          entry.quantidades.push(`${ing.quantidade || ''}`.trim());
+          entry.receitas.add(receita.titulo);
+          entry.vezes += vezes;
+        }
+      }
+
+      const lista = Array.from(agregado.values()).map(entry => {
+        const qtdsLimpas = entry.quantidades.filter(Boolean);
+        const qtdResumo = qtdsLimpas.length > 1
+          ? `${entry.vezes}x (${qtdsLimpas[0]})`
+          : (qtdsLimpas[0] || `${entry.vezes}x`);
+        return {
+          nome: entry.nome,
+          quantidade: qtdResumo,
+          unidade: '',
+          categoria: categorizarIngrediente(entry.nome),
+          nota: `${entry.receitas.size} receita${entry.receitas.size > 1 ? 's' : ''}`
+        };
+      });
+
+      // Ordenar por categoria e nome
+      lista.sort((a, b) => {
+        if (a.categoria !== b.categoria) return a.categoria.localeCompare(b.categoria);
+        return a.nome.localeCompare(b.nome);
+      });
+
+      setItens(lista);
+      setOrigemMenu(true);
+    } catch (err) {
+      console.error('Erro ao carregar lista do menu:', err);
+      // Fallback para a lista heurística
+      loadListaCompras();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Re-gerar lista quando as restrições ficam disponíveis
   useEffect(() => {
@@ -425,7 +552,10 @@ export default function ListaCompras() {
               <div>
                 <h1 className="text-xl font-bold" style={{ fontFamily: 'var(--font-titulos)' }}>Lista de Compras</h1>
                 <p className="text-white/70 text-sm">
-                  {planoCompleto?.fase?.nome || 'Personalizada'} • {plano?.porcoes_proteina || 6}P {plano?.porcoes_hidratos || 3}H {plano?.porcoes_gordura || 8}G
+                  {origemMenu
+                    ? `Do teu menu semanal${semanaInfo ? ` (${semanaInfo.inicio} a ${semanaInfo.fim})` : ''}`
+                    : `${planoCompleto?.fase?.nome || 'Personalizada'} • ${plano?.porcoes_proteina || 6}P ${plano?.porcoes_hidratos || 3}H ${plano?.porcoes_gordura || 8}G`
+                  }
                 </p>
               </div>
             </div>

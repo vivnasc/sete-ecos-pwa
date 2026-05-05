@@ -14,6 +14,8 @@ import { temPermissao, contarLembretesHoje } from '../../utils/notifications';
 import { pedirPermissaoERegistar, guardarPreferencias } from '../../lib/pushSubscription';
 import { checkVitalisAccess } from '../../lib/subscriptions';
 import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
+import { obterRegrasOuro, obterMetaAgua } from '../../lib/vitalis/regrasOuro.js';
+import { obterConteudoSemanal, calcularSemanaPrograma } from '../../lib/vitalis/conteudoFase.js';
 import QuickTrackers from './QuickTrackers';
 import FastingTimerCard from './FastingTimerCard';
 import MealsSection from './MealsSection';
@@ -82,6 +84,7 @@ export default function DashboardVitalis() {
   const [melhorStreak, setMelhorStreak] = useState(0);
   const [showCelebracao, setShowCelebracao] = useState(false);
   const [conquistaActual, setConquistaActual] = useState(null);
+  const [regrasExpandidas, setRegrasExpandidas] = useState(false);
   const [conquistasDesbloqueadas, setConquistasDesbloqueadas] = useState([]);
   const [xpTotal, setXpTotal] = useState(0);
   const [avatarIcon, setAvatarIcon] = useState(() => {
@@ -310,7 +313,7 @@ export default function DashboardVitalis() {
       // Buscar sexo e preferências do intake para adaptar UI
       const { data: intakeData } = await supabase
         .from('vitalis_intake')
-        .select('sexo, observa_ramadao, altura_cm, peso_actual, idade')
+        .select('sexo, observa_ramadao, altura_cm, peso_actual, idade, janela_jejum_inicio, janela_jejum_fim')
         .eq('user_id', userData.id)
         .maybeSingle();
 
@@ -351,6 +354,19 @@ export default function DashboardVitalis() {
 
         if (mealPlan) {
           const porcoesDiarias = calcularPorcoesDiarias(mealPlan);
+          // Calcular horas de jejum a partir da janela definida no intake
+          let horasJejumPersonalizadas = mealPlan.abordagem === 'keto_if' ? 16 : null;
+          let protocoloPersonalizado = mealPlan.abordagem === 'keto_if' ? '16_8' : null;
+          if (mealPlan.abordagem === 'keto_if' && intakeData?.janela_jejum_inicio && intakeData?.janela_jejum_fim) {
+            const [hi, mi] = String(intakeData.janela_jejum_inicio).split(':').map(Number);
+            const [hf, mf] = String(intakeData.janela_jejum_fim).split(':').map(Number);
+            let inicio = hi + (mi || 0) / 60;
+            let fim = hf + (mf || 0) / 60;
+            if (fim <= inicio) fim += 24;
+            const janela = fim - inicio;
+            horasJejumPersonalizadas = Math.round(24 - janela);
+            protocoloPersonalizado = `${horasJejumPersonalizadas}_${Math.round(janela)}`;
+          }
           planoData = {
             ...mealPlan,
             client_id: activeClientData.id,
@@ -359,9 +375,11 @@ export default function DashboardVitalis() {
             porcoes_hidratos: porcoesDiarias.hidratos,
             porcoes_gordura: porcoesDiarias.gordura,
             porcoes_legumes: porcoesDiarias.legumes,
-            horas_jejum: mealPlan.abordagem === 'keto_if' ? 16 : null,
+            horas_jejum: horasJejumPersonalizadas,
             aceita_jejum: mealPlan.abordagem === 'keto_if',
-            protocolo_jejum: mealPlan.abordagem === 'keto_if' ? '16_8' : null,
+            protocolo_jejum: protocoloPersonalizado,
+            janela_jejum_inicio: intakeData?.janela_jejum_inicio || null,
+            janela_jejum_fim: intakeData?.janela_jejum_fim || null,
             dias_treino: mealPlan.dias_treino || []
           };
         } else {
@@ -836,8 +854,12 @@ export default function DashboardVitalis() {
   const pesoRestante = pesoActual - pesoMeta;
   const progressoPeso = pesoInicial > pesoMeta ? ((pesoPerdido) / (pesoInicial - pesoMeta)) * 100 : 0;
 
-  const metaAgua = 2;
+  const abordagemActual = plano?.abordagem || 'equilibrado';
+  const metaAgua = obterMetaAgua(abordagemActual);
   const progressoAgua = (aguaHoje / metaAgua) * 100;
+  const regrasOuro = obterRegrasOuro(abordagemActual);
+  const semanaPrograma = calcularSemanaPrograma(client?.data_inicio);
+  const conteudoSemanal = obterConteudoSemanal(abordagemActual, semanaPrograma);
 
   const totalRefeicoes = refeicoes.length || 4;
   const refeicoesConcluidas = mealsHoje.filter(m => m.seguiu_plano === 'sim' || m.seguiu_plano === 'parcial').length;
@@ -1289,6 +1311,7 @@ export default function DashboardVitalis() {
             { to: '/vitalis/calendario', emoji: '📅', label: 'Menu Semanal', cor: '#0D9488', bg: 'linear-gradient(145deg, #F0FDFA, #CCFBF1)' },
             { to: '/vitalis/receitas', emoji: '🍳', label: t('vitalis.dashboard.recipes'), cor: '#EA580C', bg: 'linear-gradient(145deg, #FFF7ED, #FFEDD5)' },
             { to: '/vitalis/tendencias', emoji: '📏', label: 'Medidas', cor: '#F59E0B', bg: 'linear-gradient(145deg, #FFFBEB, #FEF3C7)' },
+            { to: '/vitalis/sintomas', emoji: '🌡️', label: 'Adaptação', cor: '#DC2626', bg: 'linear-gradient(145deg, #FEF2F2, #FEE2E2)' },
             { to: '/vitalis/espaco-retorno', emoji: '💜', label: 'Espaço Retorno', cor: '#9333EA', bg: 'linear-gradient(145deg, #FAF5FF, #F3E8FF)' },
             { to: '/vitalis/compromisso', emoji: '📜', label: 'Compromisso', cor: '#7C3AED', bg: 'linear-gradient(145deg, #F5F3FF, #EDE9FE)' },
             { to: '/vitalis/relatorios', emoji: '📊', label: 'Relatórios', cor: '#0891B2', bg: 'linear-gradient(145deg, #ECFEFF, #CFFAFE)' },
@@ -1300,6 +1323,85 @@ export default function DashboardVitalis() {
               <p className="font-semibold text-[#4A4035] text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>{item.label}</p>
             </Link>
           ))}
+        </div>
+
+        {/* Conteúdo Educativo da Semana */}
+        {conteudoSemanal && (
+          <div className="rounded-3xl shadow-lg p-4 sm:p-5"
+            style={{ background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)', borderLeft: '4px solid #2563EB' }}>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-2xl shrink-0" aria-hidden="true">📖</span>
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-[#2563EB]">
+                  Semana {semanaPrograma} no teu plano
+                </p>
+                <h3 className="font-bold text-[#1E3A8A] text-sm sm:text-base truncate" style={{ fontFamily: 'var(--font-corpo)' }}>
+                  {conteudoSemanal.titulo}
+                </h3>
+              </div>
+            </div>
+            <p className="text-sm text-[#1E40AF] leading-relaxed mb-3">{conteudoSemanal.mensagem}</p>
+            <div className="grid sm:grid-cols-2 gap-2">
+              <div className="bg-white/70 rounded-xl p-3">
+                <p className="text-[11px] font-semibold text-[#2563EB] uppercase tracking-wide mb-1">O que esperar</p>
+                <p className="text-xs text-[#1E40AF] leading-snug">{conteudoSemanal.expectativa}</p>
+              </div>
+              <div className="bg-white/70 rounded-xl p-3">
+                <p className="text-[11px] font-semibold text-[#2563EB] uppercase tracking-wide mb-1">💡 Dica desta semana</p>
+                <p className="text-xs text-[#1E40AF] leading-snug">{conteudoSemanal.dica}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Regras de Ouro (por abordagem) */}
+        <div className="rounded-3xl shadow-lg overflow-hidden"
+          style={{ background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', borderLeft: '4px solid #D97706' }}>
+          <button
+            type="button"
+            onClick={() => setRegrasExpandidas(!regrasExpandidas)}
+            className="w-full flex items-center justify-between p-4 sm:p-5 active:scale-[0.99] transition-transform"
+            aria-expanded={regrasExpandidas}
+            aria-controls="regras-ouro-list"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="text-2xl sm:text-3xl shrink-0">📜</div>
+              <div className="text-left min-w-0">
+                <h3 className="font-bold text-[#4A4035] text-sm sm:text-base truncate" style={{ fontFamily: 'var(--font-corpo)' }}>
+                  As Tuas Regras de Ouro
+                </h3>
+                <p className="text-xs text-[#6B5C4C] truncate">
+                  {abordagemActual === 'keto_if' && 'Keto + Jejum Intermitente'}
+                  {abordagemActual === 'low_carb' && 'Low Carb'}
+                  {abordagemActual === 'equilibrado' && 'Equilibrado'}
+                  {' · '}{regrasOuro.length} regras essenciais
+                </p>
+              </div>
+            </div>
+            <div className="text-xl text-[#D97706] shrink-0 ml-2" aria-hidden="true">
+              {regrasExpandidas ? '▲' : '▼'}
+            </div>
+          </button>
+          {regrasExpandidas && (
+            <ul id="regras-ouro-list" className="px-4 sm:px-5 pb-4 sm:pb-5 space-y-2.5">
+              {regrasOuro.map((regra, idx) => (
+                <li key={idx} className="flex gap-3 p-3 bg-white/60 rounded-xl">
+                  <div className="flex flex-col items-center shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-[#D97706] text-white text-xs font-bold flex items-center justify-center">
+                      {idx + 1}
+                    </div>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-sm text-[#4A4035] flex items-center gap-1.5">
+                      <span aria-hidden="true">{regra.emoji}</span>
+                      {regra.titulo}
+                    </p>
+                    <p className="text-xs sm:text-sm text-[#6B5C4C] mt-0.5 leading-snug">{regra.descricao}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         {/* Grid Principal */}
@@ -1362,6 +1464,7 @@ export default function DashboardVitalis() {
             <QuickTrackers
               aguaHoje={aguaHoje}
               metaAgua={metaAgua}
+              abordagem={abordagemActual}
               treinoHoje={treinoHoje}
               ehDiaTreino={ehDiaTreino}
               sonoHoje={sonoHoje}
