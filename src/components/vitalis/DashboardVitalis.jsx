@@ -15,6 +15,7 @@ import { pedirPermissaoERegistar, guardarPreferencias } from '../../lib/pushSubs
 import { checkVitalisAccess } from '../../lib/subscriptions';
 import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
 import { obterRegrasOuro, obterMetaAgua } from '../../lib/vitalis/regrasOuro.js';
+import { obterConteudoSemanal, calcularSemanaPrograma } from '../../lib/vitalis/conteudoFase.js';
 import QuickTrackers from './QuickTrackers';
 import FastingTimerCard from './FastingTimerCard';
 import MealsSection from './MealsSection';
@@ -857,6 +858,8 @@ export default function DashboardVitalis() {
   const metaAgua = obterMetaAgua(abordagemActual);
   const progressoAgua = (aguaHoje / metaAgua) * 100;
   const regrasOuro = obterRegrasOuro(abordagemActual);
+  const semanaPrograma = calcularSemanaPrograma(client?.data_inicio);
+  const conteudoSemanal = obterConteudoSemanal(abordagemActual, semanaPrograma);
 
   const totalRefeicoes = refeicoes.length || 4;
   const refeicoesConcluidas = mealsHoje.filter(m => m.seguiu_plano === 'sim' || m.seguiu_plano === 'parcial').length;
@@ -1321,6 +1324,35 @@ export default function DashboardVitalis() {
             </Link>
           ))}
         </div>
+
+        {/* Conteúdo Educativo da Semana */}
+        {conteudoSemanal && (
+          <div className="rounded-3xl shadow-lg p-4 sm:p-5"
+            style={{ background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)', borderLeft: '4px solid #2563EB' }}>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-2xl shrink-0" aria-hidden="true">📖</span>
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-[#2563EB]">
+                  Semana {semanaPrograma} no teu plano
+                </p>
+                <h3 className="font-bold text-[#1E3A8A] text-sm sm:text-base truncate" style={{ fontFamily: 'var(--font-corpo)' }}>
+                  {conteudoSemanal.titulo}
+                </h3>
+              </div>
+            </div>
+            <p className="text-sm text-[#1E40AF] leading-relaxed mb-3">{conteudoSemanal.mensagem}</p>
+            <div className="grid sm:grid-cols-2 gap-2">
+              <div className="bg-white/70 rounded-xl p-3">
+                <p className="text-[11px] font-semibold text-[#2563EB] uppercase tracking-wide mb-1">O que esperar</p>
+                <p className="text-xs text-[#1E40AF] leading-snug">{conteudoSemanal.expectativa}</p>
+              </div>
+              <div className="bg-white/70 rounded-xl p-3">
+                <p className="text-[11px] font-semibold text-[#2563EB] uppercase tracking-wide mb-1">💡 Dica desta semana</p>
+                <p className="text-xs text-[#1E40AF] leading-snug">{conteudoSemanal.dica}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Regras de Ouro (por abordagem) */}
         <div className="rounded-3xl shadow-lg overflow-hidden"
