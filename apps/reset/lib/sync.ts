@@ -2,7 +2,7 @@
 
 import { getSupabase } from './supabase'
 import { getUser } from './auth'
-import type { DiaLog, AlcoolRegisto, MedidaRegisto, DesabafoEntry, InsightCache } from './storage'
+import type { DiaLog, AlcoolRegisto, MedidaRegisto, DesabafoEntry, InsightCache, PesoLog, JejumLog, CicloLog } from './storage'
 
 const PREFIX = 'fenixfit:'
 
@@ -28,12 +28,15 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
   if (!user) return { ok: false, erro: 'sem sessão' }
 
   try {
-    const [diasR, alcoolR, medidasR, desabafoR, insightsR] = await Promise.all([
+    const [diasR, alcoolR, medidasR, desabafoR, insightsR, pesoR, jejumR, cicloR] = await Promise.all([
       sb.from('fenixfit_dias').select('*').eq('user_id', user.id),
       sb.from('fenixfit_alcool').select('*').eq('user_id', user.id),
       sb.from('fenixfit_medidas').select('*').eq('user_id', user.id),
       sb.from('fenixfit_desabafo').select('*').eq('user_id', user.id),
-      sb.from('fenixfit_insights').select('*').eq('user_id', user.id)
+      sb.from('fenixfit_insights').select('*').eq('user_id', user.id),
+      sb.from('fenixfit_peso').select('*').eq('user_id', user.id),
+      sb.from('fenixfit_jejum').select('*').eq('user_id', user.id),
+      sb.from('fenixfit_ciclo').select('*').eq('user_id', user.id)
     ])
 
     if (diasR.error) throw diasR.error
@@ -93,6 +96,38 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       }
     })
     write('insights', insightsMap)
+
+    const pesoList: PesoLog[] = (pesoR.data ?? []).map(p => ({
+      id: p.id,
+      date: p.date,
+      peso: Number(p.peso),
+      hora: p.hora ?? '',
+      notas: p.notas ?? ''
+    }))
+    write('peso', pesoList)
+
+    const jejumList: JejumLog[] = (jejumR.data ?? []).map(j => ({
+      id: j.id,
+      date: j.date,
+      ultimaRefeicao: j.ultima_refeicao,
+      primeiraRefeicao: j.primeira_refeicao,
+      duracaoHoras: j.duracao_horas !== null ? Number(j.duracao_horas) : null,
+      meta: j.meta ?? 14,
+      completou: j.completou ?? false
+    }))
+    write('jejum', jejumList)
+
+    const cicloList: CicloLog[] = (cicloR.data ?? []).map(c => ({
+      id: c.id,
+      dataInicio: c.data_inicio,
+      duracaoCiclo: c.duracao_ciclo,
+      duracaoMenstruacao: c.duracao_menstruacao,
+      fluxo: c.fluxo,
+      sintomas: c.sintomas ?? [],
+      cravings: c.cravings ?? [],
+      notas: c.notas ?? ''
+    }))
+    write('ciclo', cicloList)
 
     localStorage.setItem('fenixfit:lastSync', new Date().toISOString())
 
@@ -187,6 +222,65 @@ export async function syncInsight(c: InsightCache): Promise<void> {
       gerado_em: c.geradoEm
     },
     { onConflict: 'user_id,week_start' }
+  )
+}
+
+export async function syncPeso(p: PesoLog): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  await sb.from('fenixfit_peso').upsert(
+    {
+      id: p.id,
+      user_id: user.id,
+      date: p.date,
+      peso: p.peso,
+      hora: p.hora,
+      notas: p.notas
+    },
+    { onConflict: 'user_id,date' }
+  )
+}
+
+export async function syncJejum(j: JejumLog): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  await sb.from('fenixfit_jejum').upsert(
+    {
+      id: j.id,
+      user_id: user.id,
+      date: j.date,
+      ultima_refeicao: j.ultimaRefeicao,
+      primeira_refeicao: j.primeiraRefeicao,
+      duracao_horas: j.duracaoHoras,
+      meta: j.meta,
+      completou: j.completou
+    },
+    { onConflict: 'user_id,date' }
+  )
+}
+
+export async function syncCiclo(c: CicloLog): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  await sb.from('fenixfit_ciclo').upsert(
+    {
+      id: c.id,
+      user_id: user.id,
+      data_inicio: c.dataInicio,
+      duracao_ciclo: c.duracaoCiclo,
+      duracao_menstruacao: c.duracaoMenstruacao,
+      fluxo: c.fluxo,
+      sintomas: c.sintomas,
+      cravings: c.cravings,
+      notas: c.notas
+    },
+    { onConflict: 'user_id,data_inicio' }
   )
 }
 

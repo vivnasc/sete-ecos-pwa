@@ -1,43 +1,45 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowUpRight, Salad, Dumbbell, Sparkles, Pencil, Ruler, Settings, LogOut } from 'lucide-react'
+import { ArrowUpRight, Salad, Dumbbell, Sparkles, Pencil, Ruler, Settings, LogOut, Scale, Clock, Droplet } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { signOut } from '@/lib/auth'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/AuthGate'
-
-const SECCOES = [
-  {
-    titulo: 'Práticas',
-    items: [
-      { href: '/medidas', label: 'Medidas', sub: 'cintura · ancas · foto', icon: Ruler },
-      { href: '/desabafo', label: 'Desabafo', sub: 'só para ti', icon: Pencil },
-      { href: '/insights', label: 'Insights', sub: 'leitura semanal', icon: Sparkles }
-    ]
-  },
-  {
-    titulo: 'Referências',
-    items: [
-      { href: '/receitas', label: 'Comer', sub: 'keto · janela 9–19h', icon: Salad },
-      { href: '/treino', label: 'Treino', sub: '4× semana · 30min', icon: Dumbbell }
-    ]
-  }
-]
+import { getProfile } from '@/lib/profile'
 
 export default function MaisPage() {
   const [email, setEmail] = useState<string | null>(null)
+  const [sexo, setSexo] = useState<'F' | 'M' | 'O'>('F')
   const router = useRouter()
   const { configurado, session } = useAuth()
 
   useEffect(() => {
     setEmail(session?.user?.email ?? null)
+    setSexo(getProfile().sexo)
   }, [session])
 
   const sair = async () => {
     await signOut()
     router.replace('/login')
   }
+
+  const trackingItems = [
+    { href: '/peso', label: 'Peso', sub: 'pesagem diária · tendência', icon: Scale },
+    { href: '/jejum', label: 'Jejum', sub: 'janela 9–19h · streak', icon: Clock },
+    ...(sexo !== 'M' ? [{ href: '/ciclo', label: 'Ciclo', sub: 'fases · sintomas · correlações', icon: Droplet }] : []),
+    { href: '/medidas', label: 'Medidas', sub: 'cintura · ancas · foto', icon: Ruler }
+  ]
+
+  const praticas = [
+    { href: '/desabafo', label: 'Desabafo', sub: 'só para ti', icon: Pencil },
+    { href: '/insights', label: 'Insights', sub: 'leitura semanal', icon: Sparkles }
+  ]
+
+  const referencias = [
+    { href: '/receitas', label: 'Comer', sub: 'keto · janela 9–19h', icon: Salad },
+    { href: '/treino', label: 'Treino', sub: '4× semana · 30min', icon: Dumbbell }
+  ]
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -47,28 +49,9 @@ export default function MaisPage() {
         <div className="h-px w-12 bg-ouro" aria-hidden />
       </header>
 
-      {SECCOES.map(s => (
-        <section key={s.titulo} className="space-y-2">
-          <span className="label-cap px-1">{s.titulo}</span>
-          <ul className="card-solid divide-y divide-[var(--hair)] !p-0">
-            {s.items.map(item => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className="flex items-center gap-4 px-5 py-4 transition-elegant hover:bg-[var(--surface-soft)]"
-                >
-                  <item.icon size={18} strokeWidth={1.3} className="text-ouro" />
-                  <div className="min-w-0 flex-1">
-                    <p className="font-serif text-[17px]">{item.label}</p>
-                    <p className="text-faint text-[12px]">{item.sub}</p>
-                  </div>
-                  <ArrowUpRight size={16} strokeWidth={1.3} className="text-faint" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+      <Seccao titulo="Tracking" itens={trackingItems} />
+      <Seccao titulo="Práticas" itens={praticas} />
+      <Seccao titulo="Referências" itens={referencias} />
 
       <section className="space-y-2">
         <span className="label-cap px-1">Conta</span>
@@ -105,5 +88,32 @@ export default function MaisPage() {
 
       <p className="text-faint text-center text-[11px]">fénixfit · 60 dias</p>
     </div>
+  )
+}
+
+type Item = { href: string; label: string; sub: string; icon: typeof Scale }
+
+function Seccao({ titulo, itens }: { titulo: string; itens: Item[] }) {
+  return (
+    <section className="space-y-2">
+      <span className="label-cap px-1">{titulo}</span>
+      <ul className="card-solid divide-y divide-[var(--hair)] !p-0">
+        {itens.map(item => (
+          <li key={item.href}>
+            <Link
+              href={item.href}
+              className="flex items-center gap-4 px-5 py-4 transition-elegant hover:bg-[var(--surface-soft)]"
+            >
+              <item.icon size={18} strokeWidth={1.3} className="text-ouro" />
+              <div className="min-w-0 flex-1">
+                <p className="font-serif text-[17px]">{item.label}</p>
+                <p className="text-faint text-[12px]">{item.sub}</p>
+              </div>
+              <ArrowUpRight size={16} strokeWidth={1.3} className="text-faint" />
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   )
 }

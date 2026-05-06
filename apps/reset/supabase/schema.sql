@@ -135,6 +135,65 @@ create policy "lembretes_owner" on fenixfit_lembretes for all using (auth.uid() 
 -- 1. Criar bucket "fenixfit-fotos" privado
 -- 2. Policy SELECT/INSERT/UPDATE/DELETE com expressão: bucket_id = 'fenixfit-fotos' AND (storage.foldername(name))[1] = auth.uid()::text
 
+-- ===== PESO (pesagem diária) =====
+create table if not exists fenixfit_peso (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  date date not null,
+  peso numeric(5,2) not null,
+  hora time,
+  notas text not null default '',
+  created_at timestamptz not null default now(),
+  unique (user_id, date)
+);
+
+create index if not exists fenixfit_peso_user_date on fenixfit_peso (user_id, date desc);
+
+alter table fenixfit_peso enable row level security;
+drop policy if exists "peso_owner" on fenixfit_peso;
+create policy "peso_owner" on fenixfit_peso for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- ===== JEJUM (janela alimentar) =====
+create table if not exists fenixfit_jejum (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  date date not null,
+  ultima_refeicao timestamptz,
+  primeira_refeicao timestamptz,
+  duracao_horas numeric(4,1),
+  meta int not null default 14,
+  completou boolean not null default false,
+  created_at timestamptz not null default now(),
+  unique (user_id, date)
+);
+
+create index if not exists fenixfit_jejum_user_date on fenixfit_jejum (user_id, date desc);
+
+alter table fenixfit_jejum enable row level security;
+drop policy if exists "jejum_owner" on fenixfit_jejum;
+create policy "jejum_owner" on fenixfit_jejum for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- ===== CICLO MENSTRUAL =====
+create table if not exists fenixfit_ciclo (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  data_inicio date not null,
+  duracao_ciclo int,
+  duracao_menstruacao int,
+  fluxo text check (fluxo in ('leve', 'moderado', 'intenso') or fluxo is null),
+  sintomas text[] not null default '{}',
+  cravings text[] not null default '{}',
+  notas text not null default '',
+  created_at timestamptz not null default now(),
+  unique (user_id, data_inicio)
+);
+
+create index if not exists fenixfit_ciclo_user_data on fenixfit_ciclo (user_id, data_inicio desc);
+
+alter table fenixfit_ciclo enable row level security;
+drop policy if exists "ciclo_owner" on fenixfit_ciclo;
+create policy "ciclo_owner" on fenixfit_ciclo for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
 -- ===== TRIGGER updated_at =====
 create or replace function fenixfit_touch_updated_at()
 returns trigger language plpgsql as $$
