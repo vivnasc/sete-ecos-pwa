@@ -135,17 +135,21 @@ create policy "lembretes_owner" on fenixfit_lembretes for all using (auth.uid() 
 -- 1. Criar bucket "fenixfit-fotos" privado
 -- 2. Policy SELECT/INSERT/UPDATE/DELETE com expressão: bucket_id = 'fenixfit-fotos' AND (storage.foldername(name))[1] = auth.uid()::text
 
--- ===== PESO (pesagem diária) =====
+-- ===== PESO (pesagem diária + cintura opcional) =====
 create table if not exists fenixfit_peso (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid not null references auth.users(id) on delete cascade,
   date date not null,
   peso numeric(5,2) not null,
+  cintura numeric(5,1),
   hora time,
   notas text not null default '',
   created_at timestamptz not null default now(),
   unique (user_id, date)
 );
+
+-- migração para tabelas existentes (sem cintura)
+alter table fenixfit_peso add column if not exists cintura numeric(5,1);
 
 create index if not exists fenixfit_peso_user_date on fenixfit_peso (user_id, date desc);
 

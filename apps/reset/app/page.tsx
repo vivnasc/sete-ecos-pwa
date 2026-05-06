@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react'
 import { ArrowUpRight, Scale, Clock, Sparkles } from 'lucide-react'
 import SmartNow from '@/components/SmartNow'
 import AnchorChecklist from '@/components/AnchorChecklist'
+import JanelaTimer from '@/components/JanelaTimer'
+import MorningPanel from '@/components/MorningPanel'
 import { MANTRAS } from '@/lib/data'
 import {
   RESET_DAYS,
@@ -97,7 +99,7 @@ export default function HomePage() {
     const n = Number(pesoInput)
     if (isNaN(n) || n < 30 || n > 250) return
     const horaStr = `${String(hoje.getHours()).padStart(2, '0')}:${String(hoje.getMinutes()).padStart(2, '0')}`
-    savePeso({ date: hoje.toISOString().slice(0, 10), peso: n, hora: horaStr, notas: '' })
+    savePeso({ date: hoje.toISOString().slice(0, 10), peso: n, cintura: null, hora: horaStr, notas: '' })
     setPesoInput('')
   }
 
@@ -135,6 +137,9 @@ export default function HomePage() {
         </section>
       ) : null}
 
+      {/* PAINEL MATINAL · ferramentas perto */}
+      {status === 'durante' ? <MorningPanel /> : null}
+
       {/* SmartNow contextual */}
       {status === 'durante' ? <SmartNow /> : null}
 
@@ -147,21 +152,8 @@ export default function HomePage() {
         </p>
       </section>
 
-      {/* JEJUM em curso */}
-      {pronto && metrics.jejum ? (
-        <Link href="/jejum" className="card-feature flex items-center justify-between gap-3 transition-elegant hover:shadow-ink">
-          <div>
-            <div className="flex items-center gap-2">
-              <Clock size={14} strokeWidth={1.4} className="text-ouro" />
-              <span className="label-cap">em jejum há</span>
-            </div>
-            <p className="editorial-num mt-2 text-[36px] leading-none">
-              {Math.floor(metrics.jejum.horas)}<span className="text-faint text-[16px] ml-0.5">h{String(Math.round((metrics.jejum.horas % 1) * 60)).padStart(2, '0')}</span>
-            </p>
-          </div>
-          <ArrowUpRight size={18} strokeWidth={1.3} className="text-faint" />
-        </Link>
-      ) : null}
+      {/* JANELA · adaptativa com timer */}
+      {pronto && status === 'durante' ? <JanelaTimer /> : null}
 
       {/* PESO QUICK ADD */}
       {status === 'durante' ? (

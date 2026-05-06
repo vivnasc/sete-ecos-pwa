@@ -14,6 +14,7 @@ import {
   type CicloFase
 } from '@/lib/storage'
 import { isoDate, fromIso, formatarData } from '@/lib/dates'
+import BackButton from '@/components/BackButton'
 import { getProfile } from '@/lib/profile'
 import { cn } from '@/lib/utils'
 
@@ -55,6 +56,8 @@ export default function CicloPage() {
 
   return (
     <div className="space-y-7 animate-fade-in">
+      <BackButton />
+
       <header className="space-y-2 pt-4">
         <p className="label-soft">ciclo</p>
         <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Plus, X } from 'lucide-react'
 import { addMedida, getMedidas, type MedidaRegisto } from '@/lib/storage'
+import BackButton from '@/components/BackButton'
 import { isoDate, fromIso, formatarData } from '@/lib/dates'
 import { cn } from '@/lib/utils'
 
@@ -29,6 +30,8 @@ export default function MedidasPage() {
 
   return (
     <div className="space-y-7 animate-fade-in">
+      <BackButton />
+
       <header className="space-y-2 pt-4">
         <p className="label-soft">medidas</p>
         <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">

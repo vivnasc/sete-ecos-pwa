@@ -54,6 +54,7 @@ export type PesoLog = {
   id: string
   date: string // YYYY-MM-DD (única por dia)
   peso: number
+  cintura: number | null
   hora: string // HH:MM
   notas: string
 }

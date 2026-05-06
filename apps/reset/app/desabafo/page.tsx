@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { addDesabafo, getDesabafos, type DesabafoEntry } from '@/lib/storage'
+import BackButton from '@/components/BackButton'
 import { cn } from '@/lib/utils'
 
 const EMOCOES = ['leve', 'cansada', 'irritada', 'triste', 'ansiosa', 'orgulhosa', 'em paz', 'confusa'] as const
@@ -27,6 +28,8 @@ export default function DesabafoPage() {
 
   return (
     <div className="space-y-7 animate-fade-in">
+      <BackButton />
+
       <header className="space-y-2 pt-4">
         <p className="label-soft">desabafo</p>
         <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">só para ti</h1>

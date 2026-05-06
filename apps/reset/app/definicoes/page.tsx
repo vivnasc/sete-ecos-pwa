@@ -5,6 +5,7 @@ import { Sun, Moon, Monitor, Bell, Download, Upload, RotateCcw, Cloud, CloudOff,
 import { useTheme } from '@/components/ThemeProvider'
 import { useAuth } from '@/components/AuthGate'
 import { getProfile, saveProfile, type Profile } from '@/lib/profile'
+import BackButton from '@/components/BackButton'
 import { exportarTudo, importarTudo, limparTudoLocal } from '@/lib/storage'
 import { hidratarTudo, lastSyncTime } from '@/lib/sync'
 import { syncProfile } from '@/lib/sync'
@@ -99,6 +100,8 @@ export default function DefinicoesPage() {
 
   return (
     <div className="space-y-8 animate-fade-in">
+      <BackButton />
+
       <header className="space-y-2 pt-4">
         <p className="label-soft">definições</p>
         <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">ajustar</h1>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" fill="#F6F1E8"/>
+
+  <!-- Hairline arc · phoenix wing rising -->
+  <path d="M 290 410 Q 360 280 512 230 Q 664 280 734 410"
+        stroke="#B8924A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Tiny dot · ember -->
+  <circle cx="512" cy="220" r="5" fill="#B8704A"/>
+
+  <!-- Wordmark · serif lowercase -->
+  <text x="512" y="600" font-family="Georgia, serif" font-size="120"
+        fill="#1F1814" text-anchor="middle" font-weight="300" letter-spacing="-2">
+    fénixfit
+  </text>
+
+  <!-- Hairline divider -->
+  <line x1="462" y1="660" x2="562" y2="660" stroke="#B8924A" stroke-width="1"/>
+
+  <!-- Tagline -->
+  <text x="512" y="720" font-family="Helvetica, Arial, sans-serif" font-size="22"
+        fill="#7A6E5F" text-anchor="middle" font-weight="400" letter-spacing="6">
+    SESSENTA DIAS
+  </text>
+</svg>

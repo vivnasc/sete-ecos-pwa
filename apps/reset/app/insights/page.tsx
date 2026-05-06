@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Sparkles, RefreshCcw } from 'lucide-react'
 import { ANCORAS } from '@/lib/data'
+import BackButton from '@/components/BackButton'
 import { isoDate, fromIso, formatarData } from '@/lib/dates'
 import {
   getTodosDias,
@@ -115,6 +116,8 @@ export default function InsightsPage() {
 
   return (
     <div className="space-y-7 animate-fade-in">
+      <BackButton />
+
       <header className="space-y-2 pt-4">
         <p className="label-soft">insights</p>
         <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">o que vejo</h1>

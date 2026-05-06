@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { Scale, ArrowDown, ArrowUp, Minus } from 'lucide-react'
+import { ArrowDown, ArrowUp, Minus } from 'lucide-react'
 import {
   getPesos,
   getPesoHoje,
@@ -10,19 +10,24 @@ import {
   variacaoPeso,
   type PesoLog
 } from '@/lib/storage'
-import { isoDate, fromIso, mesCurto } from '@/lib/dates'
+import { isoDate, fromIso, mesCurto, diaSemana } from '@/lib/dates'
 import TrendChart from '@/components/TrendChart'
+import BackButton from '@/components/BackButton'
 import { cn } from '@/lib/utils'
+import { Plus } from 'lucide-react'
 
 export default function PesoPage() {
   const [pesos, setPesos] = useState<PesoLog[]>([])
   const [pesoHoje, setPesoHoje] = useState<PesoLog | null>(null)
   const [valor, setValor] = useState<string>('')
+  const [cintura, setCintura] = useState<string>('')
   const [hora, setHora] = useState<string>(() => {
     const d = new Date()
     return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
   })
   const [notas, setNotas] = useState<string>('')
+  const eSexta = diaSemana(new Date()) === 'Sexta'
+  const [mostrarCintura, setMostrarCintura] = useState(eSexta)
 
   useEffect(() => {
     const refresh = () => {
@@ -32,6 +37,8 @@ export default function PesoPage() {
       setPesoHoje(hoje)
       if (hoje) {
         setValor(String(hoje.peso))
+        setCintura(hoje.cintura !== null ? String(hoje.cintura) : '')
+        if (hoje.cintura !== null) setMostrarCintura(true)
         setHora(hoje.hora)
         setNotas(hoje.notas)
       }
@@ -44,29 +51,51 @@ export default function PesoPage() {
   const variacoes = useMemo(() => variacaoPeso(), [pesos])
   const ma7 = useMemo(() => pesoMediaMovel(7), [pesos])
 
+  // Variação cintura
+  const cinturaVariacoes = useMemo(() => {
+    const comC = pesos.filter(p => p.cintura !== null)
+    if (comC.length < 2) return null
+    const ult = comC[comC.length - 1].cintura as number
+    const ha7 = comC.length > 7 ? comC[comC.length - 8].cintura as number : null
+    const ini = comC[0].cintura as number
+    return {
+      semana: ha7 !== null ? Math.round((ult - ha7) * 10) / 10 : null,
+      total: Math.round((ult - ini) * 10) / 10,
+      actual: ult
+    }
+  }, [pesos])
+
   const submit = () => {
     if (!valor) return
     const n = Number(valor)
     if (isNaN(n) || n < 30 || n > 250) return
-    savePeso({ date: isoDate(), peso: n, hora, notas: notas.trim() })
+    const c = cintura ? Number(cintura) : null
+    if (c !== null && (isNaN(c) || c < 30 || c > 200)) return
+    savePeso({
+      date: isoDate(),
+      peso: n,
+      cintura: c,
+      hora,
+      notas: notas.trim()
+    })
   }
 
-  const pontos30 = pesos.slice(-30).map(p => ({
+  const pontos30Peso = pesos.slice(-30).map(p => ({
     x: `${fromIso(p.date).getDate()}${mesCurto(fromIso(p.date)).charAt(0)}`,
     y: p.peso
   }))
 
-  // Pontos da média móvel para sobrepor
-  const pontos30Ma = pesos.slice(-30).map((_, i, arr) => {
-    const ate = pesos.length - arr.length + i + 1
-    const ma = pesoMediaMovel(7, ate)
-    return ma !== null ? { x: arr[i].date, y: ma } : null
-  }).filter((p): p is { x: string; y: number } => p !== null)
+  const pontos30Cintura = pesos.slice(-30).filter(p => p.cintura !== null).map(p => ({
+    x: `${fromIso(p.date).getDate()}${mesCurto(fromIso(p.date)).charAt(0)}`,
+    y: p.cintura as number
+  }))
 
   return (
     <div className="space-y-7 animate-fade-in">
-      <header className="space-y-2 pt-4">
-        <p className="label-soft">peso</p>
+      <BackButton />
+
+      <header className="space-y-2 pt-2">
+        <p className="label-soft">peso · cintura</p>
         <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">
           todos os dias
         </h1>
@@ -82,23 +111,60 @@ export default function PesoPage() {
           <span className="label-cap">{pesoHoje ? 'hoje · registado' : 'hoje · pesa-te'}</span>
           {pesoHoje ? <span className="label-soft tnum">{pesoHoje.hora}</span> : null}
         </div>
-        <div className="flex items-baseline gap-3">
-          <input
-            type="number"
-            inputMode="decimal"
-            step="0.1"
-            min="30"
-            max="250"
-            value={valor}
-            onChange={e => setValor(e.target.value)}
-            placeholder="—"
-            className="editorial-num w-full border-0 bg-transparent text-[64px] tnum focus:outline-none"
-            style={{ caretColor: 'var(--ouro)' }}
-            autoFocus
-          />
-          <span className="text-faint pb-3 text-[16px]">kg</span>
+
+        {/* Peso */}
+        <div>
+          <span className="label-cap text-[10px] block mb-1">peso</span>
+          <div className="flex items-baseline gap-3">
+            <input
+              type="number"
+              inputMode="decimal"
+              step="0.1"
+              min="30"
+              max="250"
+              value={valor}
+              onChange={e => setValor(e.target.value)}
+              placeholder="—"
+              className="editorial-num w-full border-0 bg-transparent text-[56px] tnum focus:outline-none"
+              style={{ caretColor: 'var(--ouro)' }}
+              autoFocus
+            />
+            <span className="text-faint pb-2 text-[14px]">kg</span>
+          </div>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+
+        {/* Cintura · sextas */}
+        {mostrarCintura ? (
+          <div className="border-t border-[var(--hair)] pt-4">
+            <span className="label-cap text-[10px] block mb-1">
+              cintura {eSexta ? '· sexta' : ''}
+            </span>
+            <div className="flex items-baseline gap-3">
+              <input
+                type="number"
+                inputMode="decimal"
+                step="0.5"
+                min="30"
+                max="200"
+                value={cintura}
+                onChange={e => setCintura(e.target.value)}
+                placeholder="—"
+                className="editorial-num w-full border-0 bg-transparent text-[40px] tnum focus:outline-none"
+                style={{ caretColor: 'var(--ouro)' }}
+              />
+              <span className="text-faint pb-1 text-[12px]">cm</span>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setMostrarCintura(true)}
+            className="flex items-center gap-1.5 text-[11px] text-faint border-t border-[var(--hair)] pt-3 hover:text-soft tracking-cap uppercase"
+          >
+            <Plus size={11} strokeWidth={1.5} /> cintura · medir hoje
+          </button>
+        )}
+
+        <div className="grid grid-cols-2 gap-3 border-t border-[var(--hair)] pt-4">
           <label>
             <span className="label-cap mb-1.5 block">hora</span>
             <input
@@ -120,18 +186,34 @@ export default function PesoPage() {
             />
           </label>
         </div>
+
         <button onClick={submit} disabled={!valor} className="btn-primary w-full">
           {pesoHoje ? 'actualizar' : 'registar'}
         </button>
       </section>
 
-      {/* Variações */}
+      {/* Variações peso */}
       {pesos.length >= 2 ? (
-        <section className="grid grid-cols-2 gap-3">
-          <Card label="vs ontem" valor={variacoes.ultima} />
-          <Card label="vs semana" valor={variacoes.semana} />
-          <Card label="vs mês" valor={variacoes.mes} />
-          <Card label="desde início" valor={variacoes.total} highlight />
+        <section>
+          <span className="label-cap px-1 mb-2 block">peso</span>
+          <div className="grid grid-cols-2 gap-3">
+            <Card label="vs ontem" valor={variacoes.ultima} unit="kg" />
+            <Card label="vs semana" valor={variacoes.semana} unit="kg" />
+            <Card label="vs mês" valor={variacoes.mes} unit="kg" />
+            <Card label="desde início" valor={variacoes.total} unit="kg" highlight />
+          </div>
+        </section>
+      ) : null}
+
+      {/* Variações cintura */}
+      {cinturaVariacoes ? (
+        <section>
+          <span className="label-cap px-1 mb-2 block">cintura</span>
+          <div className="grid grid-cols-3 gap-3">
+            <Card label="actual" valor={cinturaVariacoes.actual} unit="cm" raw />
+            <Card label="vs semana" valor={cinturaVariacoes.semana} unit="cm" />
+            <Card label="desde início" valor={cinturaVariacoes.total} unit="cm" highlight />
+          </div>
         </section>
       ) : null}
 
@@ -149,11 +231,19 @@ export default function PesoPage() {
         </section>
       ) : null}
 
-      {/* Tendência 30 dias */}
-      {pontos30.length >= 2 ? (
+      {/* Tendência peso */}
+      {pontos30Peso.length >= 2 ? (
         <section className="space-y-2">
-          <span className="label-cap px-1">Tendência · 30 dias</span>
-          <TrendChart pontos={pontos30} unidade="kg" cor="var(--ouro)" altura={140} />
+          <span className="label-cap px-1">peso · 30 dias</span>
+          <TrendChart pontos={pontos30Peso} unidade="kg" cor="var(--ouro)" altura={140} />
+        </section>
+      ) : null}
+
+      {/* Tendência cintura */}
+      {pontos30Cintura.length >= 2 ? (
+        <section className="space-y-2">
+          <span className="label-cap px-1">cintura · 30 dias</span>
+          <TrendChart pontos={pontos30Cintura} unidade="cm" cor="#9B5D3E" altura={120} />
         </section>
       ) : null}
 
@@ -162,7 +252,7 @@ export default function PesoPage() {
         <section className="space-y-2">
           <span className="label-cap px-1">Histórico</span>
           <ul className="card-solid divide-y divide-[var(--hair)] !p-0">
-            {[...pesos].reverse().slice(0, 14).map((p, i, arr) => {
+            {[...pesos].reverse().slice(0, 14).map((p, i) => {
               const idxNoArr = pesos.length - 1 - i
               const anterior = idxNoArr > 0 ? pesos[idxNoArr - 1].peso : null
               const diff = anterior !== null ? Math.round((p.peso - anterior) * 10) / 10 : null
@@ -176,6 +266,7 @@ export default function PesoPage() {
                   </div>
                   <div className="text-right">
                     <span className="font-serif text-[18px] tnum">{p.peso}<span className="text-faint ml-1 text-[10px]">kg</span></span>
+                    {p.cintura !== null ? <span className="text-faint ml-2 text-[12px] tnum">{p.cintura}cm</span> : null}
                     {diff !== null ? (
                       <span className={cn(
                         'ml-2 inline-flex items-baseline gap-0.5 text-[11px] tnum',
@@ -207,12 +298,22 @@ export default function PesoPage() {
   )
 }
 
-function Card({ label, valor, highlight }: { label: string; valor: number | null; highlight?: boolean }) {
+function Card({ label, valor, unit, highlight, raw }: { label: string; valor: number | null; unit: string; highlight?: boolean; raw?: boolean }) {
   if (valor === null) {
     return (
       <div className="card-solid">
         <span className="label-cap">{label}</span>
         <p className="font-serif text-[24px] text-faint">—</p>
+      </div>
+    )
+  }
+  if (raw) {
+    return (
+      <div className={cn('card-solid', highlight && 'shadow-hair-strong')}>
+        <span className="label-cap">{label}</span>
+        <p className="editorial-num text-[28px]">
+          {valor}<span className="ml-1 text-[10px] text-faint">{unit}</span>
+        </p>
       </div>
     )
   }
@@ -226,7 +327,7 @@ function Card({ label, valor, highlight }: { label: string; valor: number | null
         zero ? 'text-faint' : positivo ? 'text-terracota' : 'text-oliva'
       )}>
         {positivo ? '+' : ''}{valor}
-        <span className="ml-1 text-[10px] text-faint">kg</span>
+        <span className="ml-1 text-[10px] text-faint">{unit}</span>
       </p>
     </div>
   )

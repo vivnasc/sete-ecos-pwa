@@ -11,6 +11,7 @@ import {
   type JejumLog
 } from '@/lib/storage'
 import { isoDate, fromIso } from '@/lib/dates'
+import BackButton from '@/components/BackButton'
 import { cn } from '@/lib/utils'
 
 export default function JejumPage() {
@@ -83,6 +84,8 @@ export default function JejumPage() {
 
   return (
     <div className="space-y-7 animate-fade-in">
+      <BackButton />
+
       <header className="space-y-2 pt-4">
         <p className="label-soft">jejum</p>
         <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">

@@ -101,6 +101,7 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       id: p.id,
       date: p.date,
       peso: Number(p.peso),
+      cintura: p.cintura !== null && p.cintura !== undefined ? Number(p.cintura) : null,
       hora: p.hora ?? '',
       notas: p.notas ?? ''
     }))
@@ -236,6 +237,7 @@ export async function syncPeso(p: PesoLog): Promise<void> {
       user_id: user.id,
       date: p.date,
       peso: p.peso,
+      cintura: p.cintura,
       hora: p.hora,
       notas: p.notas
     },
