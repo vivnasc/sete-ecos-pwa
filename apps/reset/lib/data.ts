@@ -8,7 +8,7 @@ export type Ancora = {
 
 export const ANCORAS: Ancora[] = [
   { id: 'ecra_21h', titulo: 'Ecrã off às 21h', detalhe: 'cama 22h30 · carregador na cozinha' },
-  { id: 'pa_proteina', titulo: 'PA com proteína + gordura', detalhe: 'na 1ª hora após acordar' },
+  { id: 'pa_proteina', titulo: 'Primeira refeição: proteína + gordura', detalhe: '30g+ proteína · sem carbo · às 9h rompe o jejum' },
   { id: 'janela_9_19', titulo: 'Janela 9h–19h', detalhe: 'jejum 14h · 16h depois se aceitares' },
   { id: 'carbos_zero', titulo: 'Carbos zero', detalhe: 'sem cinzentos · refeed só sábado à noite' },
   { id: 'eletrolitos', titulo: 'Eletrólitos', detalhe: 'sal de manhã · magnésio à noite' },

@@ -65,7 +65,7 @@ function determinarJanela(hora: number, dow: string, log: DiaLog): Janela {
       contexto: 'janela alimentar abre às 9h',
       acaoPrincipal: {
         titulo: paFeito ? 'PA registado ✓' : 'pequeno-almoço',
-        subtitulo: paFeito ? 'janela aberta · 14h jejum' : 'proteína + gordura na primeira hora',
+        subtitulo: paFeito ? 'janela aberta · 14h jejum cumpridas' : 'às 9h · proteína + gordura · sem carbo',
         href: paFeito ? '/diario' : '/receitas',
         tone: paFeito ? 'oliva' : 'ouro'
       },

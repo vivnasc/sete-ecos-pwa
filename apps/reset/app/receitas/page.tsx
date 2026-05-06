@@ -48,7 +48,7 @@ export default function ReceitasPage() {
 function ComerTab() {
   return (
     <div className="space-y-6">
-      <Bloco titulo="Pequeno-almoço" subtitulo="9h · primeira hora">
+      <Bloco titulo="Primeira refeição" subtitulo="9h · rompe o jejum">
         {REFEICOES.pequenoAlmoco.map((r, i) => <Receita key={i} {...r} />)}
       </Bloco>
 
