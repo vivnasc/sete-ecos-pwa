@@ -1,15 +1,30 @@
 import type { Metadata, Viewport } from 'next'
-import { Lora, Inter } from 'next/font/google'
+import { Fraunces, Inter } from 'next/font/google'
 import Navigation from '@/components/Navigation'
 import RegisterSW from '@/components/RegisterSW'
+import { ThemeProvider } from '@/components/ThemeProvider'
+import { AuthGate } from '@/components/AuthGate'
+import OnboardingGate from '@/components/OnboardingGate'
+import QuickLog from '@/components/QuickLog'
+import InstallPrompt from '@/components/InstallPrompt'
 import './globals.css'
 
-const lora = Lora({ subsets: ['latin'], variable: '--font-lora', display: 'swap' })
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' })
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-fraunces',
+  display: 'swap',
+  axes: ['SOFT', 'opsz']
+})
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap'
+})
 
 export const metadata: Metadata = {
   title: 'Reset · 60 dias',
-  description: 'Companheira de jornada · 11 maio – 9 julho 2026',
+  description: 'companheira de jornada · 11 maio – 9 julho 2026',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -23,7 +38,10 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#F8F4EC',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#F6F1E8' },
+    { media: '(prefers-color-scheme: dark)', color: '#14110D' }
+  ],
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -33,11 +51,19 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt" className={`${lora.variable} ${inter.variable}`}>
+    <html lang="pt" className={`${fraunces.variable} ${inter.variable}`} suppressHydrationWarning>
       <body>
-        <main className="container-app pb-28 pt-6 sm:pt-10">{children}</main>
-        <Navigation />
-        <RegisterSW />
+        <ThemeProvider>
+          <AuthGate>
+            <OnboardingGate>
+              <main className="container-app pb-32 pt-4 sm:pt-8">{children}</main>
+              <Navigation />
+              <QuickLog />
+              <InstallPrompt />
+            </OnboardingGate>
+          </AuthGate>
+          <RegisterSW />
+        </ThemeProvider>
       </body>
     </html>
   )

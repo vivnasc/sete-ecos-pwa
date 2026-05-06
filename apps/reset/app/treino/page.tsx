@@ -1,29 +1,26 @@
 'use client'
 
-import { Dumbbell } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { TREINO_SEMANAL, REGRAS_TREINO } from '@/lib/data'
 import { diaSemana } from '@/lib/dates'
-import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 
 const ORDEM = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'] as const
 
 export default function TreinoPage() {
   const [hoje, setHoje] = useState<string>('')
-  useEffect(() => {
-    setHoje(diaSemana(new Date()))
-  }, [])
+  useEffect(() => { setHoje(diaSemana(new Date())) }, [])
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-2 text-center">
-        <p className="label-cap">Treino</p>
-        <h1 className="titulo-serif text-3xl sm:text-4xl">corpo já sabe</h1>
-        <p className="text-sm text-cinza">4x semana · 30min · halteres + peso corporal</p>
-        <div className="mx-auto divisor-ouro" aria-hidden />
+    <div className="space-y-7 animate-fade-in">
+      <header className="space-y-2 pt-4">
+        <p className="label-soft">treino</p>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">corpo já sabe</h1>
+        <div className="h-px w-12 bg-ouro" aria-hidden />
+        <p className="text-faint mt-3 text-[12.5px]">4× semana · 30min · halteres + peso corporal</p>
       </header>
 
-      <section className="space-y-2">
+      <section className="card-solid divide-y divide-[var(--hair)] !p-0">
         {ORDEM.map(dia => {
           const t = TREINO_SEMANAL[dia]
           const isHoje = dia === hoje
@@ -31,48 +28,40 @@ export default function TreinoPage() {
             <div
               key={dia}
               className={cn(
-                'card-solid flex items-start gap-3 transition',
-                isHoje && 'ring-2 ring-ouro'
+                'flex items-baseline gap-4 px-5 py-4 transition-elegant',
+                isHoje && 'bg-ouro/5'
               )}
             >
-              <div className="shrink-0">
-                <div
-                  className={cn(
-                    'flex h-12 w-12 items-center justify-center rounded-xl',
-                    t.descanso ? 'bg-creme-escuro/60 text-cinza' : 'bg-ouro/15 text-ouro'
-                  )}
-                >
-                  <Dumbbell size={20} strokeWidth={1.5} />
-                </div>
-              </div>
+              <span className={cn('w-16 shrink-0 text-[11px] uppercase tracking-cap', t.descanso ? 'text-faint' : 'text-ouro')}>
+                {dia.slice(0, 3).toLowerCase()}
+              </span>
               <div className="min-w-0 flex-1">
-                <div className="flex items-baseline justify-between gap-2">
-                  <p className="font-serif text-lg text-castanho">{dia}</p>
-                  {isHoje ? <span className="text-[10px] uppercase tracking-wider text-ouro">hoje</span> : null}
-                </div>
-                <p className="text-sm font-medium text-castanho/80">{t.tipo}</p>
-                <p className="mt-0.5 text-xs text-cinza">{t.descricao}</p>
+                <p className={cn('font-serif text-[16px] tracking-editorial', t.descanso ? 'text-soft' : '')}>{t.tipo}</p>
+                <p className="text-faint mt-0.5 text-[12px]">{t.descricao}</p>
               </div>
+              {isHoje ? <span className="text-[10px] uppercase tracking-cap text-ouro">hoje</span> : null}
             </div>
           )
         })}
       </section>
 
-      <section className="card space-y-3">
-        <span className="label-cap">Regras</span>
-        <ul className="space-y-1.5 text-sm">
+      <section className="card">
+        <span className="label-cap mb-3 block">Regras</span>
+        <ul className="space-y-2 text-[13.5px] leading-relaxed">
           {REGRAS_TREINO.map((r, i) => (
-            <li key={i} className="flex gap-2 text-castanho/80">
-              <span className="text-ouro">·</span>
+            <li key={i} className="flex gap-2 text-soft">
+              <span className="mt-1 h-px w-3 shrink-0 bg-ouro" aria-hidden />
               {r}
             </li>
           ))}
         </ul>
       </section>
 
-      <section className="card-solid space-y-2">
-        <span className="label-cap text-terracota">Cuidado</span>
-        <p className="text-sm text-castanho/80">se acordares antes da Cris e ela ficar a chorar enquanto treinas, pára. dia mau de treino é dia bom de mãe presente. amanhã retomas.</p>
+      <section className="card-solid">
+        <span className="label-cap text-terracota mb-2 block">Cuidado</span>
+        <p className="text-soft text-[13.5px] leading-relaxed">
+          se acordares antes da Cris e ela ficar a chorar enquanto treinas, pára. dia mau de treino é dia bom de mãe presente. amanhã retomas.
+        </p>
       </section>
     </div>
   )

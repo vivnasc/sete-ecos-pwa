@@ -26,32 +26,34 @@ export default function DesabafoPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-2 text-center">
-        <p className="label-cap">Desabafo</p>
-        <h1 className="titulo-serif text-3xl sm:text-4xl">só para ti</h1>
-        <p className="mx-auto max-w-xs text-xs text-cinza">não há respostas. é um diário, não um chat.</p>
-        <div className="mx-auto divisor-ouro" aria-hidden />
+    <div className="space-y-7 animate-fade-in">
+      <header className="space-y-2 pt-4">
+        <p className="label-soft">desabafo</p>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">só para ti</h1>
+        <div className="h-px w-12 bg-ouro" aria-hidden />
+        <p className="text-faint mt-3 text-[12.5px]">não há respostas. é diário, não chat.</p>
       </header>
 
-      <section className="card-solid space-y-3">
+      <section className="card-feature space-y-4">
         <textarea
           value={texto}
           onChange={e => setTexto(e.target.value)}
-          rows={6}
+          rows={7}
           placeholder="o que está aí, agora..."
-          className="input-base resize-none text-base leading-relaxed"
+          className="input-base resize-none border-0 bg-transparent !p-0 text-[16px] leading-relaxed shadow-none focus:shadow-none"
         />
         <div>
-          <span className="label-cap mb-1.5 block">tag de emoção · opcional</span>
-          <div className="flex flex-wrap gap-2">
+          <span className="label-cap mb-2 block">tag · opcional</span>
+          <div className="flex flex-wrap gap-1.5">
             {EMOCOES.map(e => (
               <button
                 key={e}
                 onClick={() => setEmocao(emocao === e ? '' : e)}
                 className={cn(
-                  'rounded-full px-3 py-1.5 text-xs transition active:scale-95',
-                  emocao === e ? 'bg-castanho text-creme' : 'bg-creme-escuro/60 text-castanho/70'
+                  'rounded-full px-3 py-1.5 text-[12px] transition-elegant active:scale-95',
+                  emocao === e
+                    ? 'bg-tinta text-[var(--bg)] dark:bg-ouro dark:text-tinta'
+                    : 'shadow-hair hover:shadow-hair-strong'
                 )}
               >
                 {e}
@@ -65,9 +67,12 @@ export default function DesabafoPage() {
       </section>
 
       <section className="space-y-3">
-        <span className="label-cap px-1">Histórico · {entries.length}</span>
+        <div className="flex items-baseline justify-between px-1">
+          <span className="label-cap">Histórico</span>
+          <span className="label-soft tnum">{entries.length}</span>
+        </div>
         {entries.length === 0 ? (
-          <div className="card text-center text-sm text-cinza">
+          <div className="card text-center text-soft text-[13px]">
             quando escreveres a primeira, fica aqui.
           </div>
         ) : (
@@ -78,13 +83,11 @@ export default function DesabafoPage() {
               const hora = data.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })
               return (
                 <li key={e.id} className="card">
-                  <div className="mb-1 flex items-baseline justify-between gap-2 text-xs text-cinza">
-                    <span>
-                      {dia} · {hora}
-                    </span>
-                    {e.emocao ? <span className="text-terracota">{e.emocao}</span> : null}
+                  <div className="mb-2 flex items-baseline justify-between gap-2">
+                    <span className="text-faint text-[11px] tnum">{dia} · {hora}</span>
+                    {e.emocao ? <span className="text-terracota text-[11px] uppercase tracking-cap">{e.emocao}</span> : null}
                   </div>
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-castanho/90">{e.texto}</p>
+                  <p className="whitespace-pre-wrap text-[14px] leading-[1.55] text-soft">{e.texto}</p>
                 </li>
               )
             })}

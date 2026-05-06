@@ -15,8 +15,10 @@ export default function Mantra({ index }: { index?: number }) {
   if (!texto) return <div className="h-12" aria-hidden />
 
   return (
-    <p className="animate-fade-in text-center font-serif text-lg leading-relaxed text-terracota sm:text-xl">
-      &ldquo;{texto}&rdquo;
+    <p className="mantra-text text-soft animate-fade-in text-center">
+      <span className="font-serif text-ouro">&ldquo;</span>
+      {texto}
+      <span className="font-serif text-ouro">&rdquo;</span>
     </p>
   )
 }

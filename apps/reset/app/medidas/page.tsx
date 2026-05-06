@@ -28,27 +28,28 @@ export default function MedidasPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-2 text-center">
-        <p className="label-cap">Medidas</p>
-        <h1 className="titulo-serif text-3xl sm:text-4xl">a fita não mente</h1>
-        <div className="mx-auto divisor-ouro" aria-hidden />
-        <p className="mx-auto max-w-xs text-xs text-cinza">balança opcional · cintura é o que importa</p>
+    <div className="space-y-7 animate-fade-in">
+      <header className="space-y-2 pt-4">
+        <p className="label-soft">medidas</p>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">
+          a fita não mente
+        </h1>
+        <div className="h-px w-12 bg-ouro" aria-hidden />
+        <p className="text-faint mt-3 text-[12.5px]">balança opcional · cintura é o que importa</p>
       </header>
 
-      <button onClick={() => setAberto(true)} className="btn-ouro w-full gap-2">
-        <Plus size={16} />
-        Nova medição
+      <button onClick={() => setAberto(true)} className="btn-primary w-full">
+        <Plus size={14} strokeWidth={1.6} /> nova medição
       </button>
 
       {medidas.length >= 2 ? (
-        <section className="card-solid space-y-3">
-          <span className="label-cap">Variação total</span>
-          <div className="grid grid-cols-2 gap-3">
-            <Variacao label="Cintura" valor={variacao('cintura')} unit="cm" />
-            <Variacao label="Ancas" valor={variacao('ancas')} unit="cm" />
-            <Variacao label="Coxa" valor={variacao('coxa')} unit="cm" />
-            <Variacao label="Braço" valor={variacao('braco')} unit="cm" />
+        <section className="card-solid">
+          <span className="label-cap">Variação</span>
+          <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3">
+            <Variacao label="Cintura" valor={variacao('cintura')} />
+            <Variacao label="Ancas" valor={variacao('ancas')} />
+            <Variacao label="Coxa" valor={variacao('coxa')} />
+            <Variacao label="Braço" valor={variacao('braco')} />
           </div>
         </section>
       ) : null}
@@ -56,28 +57,30 @@ export default function MedidasPage() {
       <section className="space-y-3">
         <span className="label-cap px-1">Histórico</span>
         {medidas.length === 0 ? (
-          <div className="card text-center text-sm text-cinza">
-            sem medições ainda. <br />
-            faz a primeira agora — ponto de partida.
+          <div className="card text-center">
+            <p className="text-soft text-[13px]">sem medições ainda.</p>
+            <p className="text-faint mt-1 text-[12px]">a primeira é o teu ponto de partida.</p>
           </div>
         ) : (
           <ul className="space-y-2">
             {[...medidas].reverse().map(m => (
               <li key={m.id} className="card-solid">
                 <div className="flex items-baseline justify-between">
-                  <p className="font-serif text-base text-castanho">{formatarData(fromIso(m.date), true)}</p>
-                  {m.peso ? <span className="text-xs text-cinza">{m.peso}kg</span> : null}
+                  <p className="font-serif text-[16px] tracking-editorial">{formatarData(fromIso(m.date), true)}</p>
+                  {m.peso ? <span className="text-faint text-[12px] tnum">{m.peso} kg</span> : null}
                 </div>
-                <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                  {m.cintura ? <Linha label="Cintura" v={m.cintura} /> : null}
-                  {m.ancas ? <Linha label="Ancas" v={m.ancas} /> : null}
-                  {m.coxa ? <Linha label="Coxa" v={m.coxa} /> : null}
-                  {m.braco ? <Linha label="Braço" v={m.braco} /> : null}
+                <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 text-[13px]">
+                  {m.cintura !== null ? <Linha label="Cintura" v={m.cintura} /> : null}
+                  {m.ancas !== null ? <Linha label="Ancas" v={m.ancas} /> : null}
+                  {m.coxa !== null ? <Linha label="Coxa" v={m.coxa} /> : null}
+                  {m.braco !== null ? <Linha label="Braço" v={m.braco} /> : null}
                 </div>
                 {m.sentir ? (
-                  <p className="mt-3 border-t border-creme-escuro pt-2 text-sm italic text-cinza">&ldquo;{m.sentir}&rdquo;</p>
+                  <p className="mt-3 border-t border-[var(--hair)] pt-3 text-[13px] italic text-soft">
+                    &ldquo;{m.sentir}&rdquo;
+                  </p>
                 ) : null}
-                {m.mudou ? <p className="mt-1 text-sm text-castanho/70">{m.mudou}</p> : null}
+                {m.mudou ? <p className="text-soft mt-1 text-[13px]">{m.mudou}</p> : null}
               </li>
             ))}
           </ul>
@@ -91,33 +94,34 @@ export default function MedidasPage() {
 
 function Linha({ label, v }: { label: string; v: number }) {
   return (
-    <div className="flex items-baseline justify-between">
-      <span className="text-cinza">{label}</span>
-      <span className="font-serif text-castanho">
+    <div className="flex items-baseline justify-between border-b border-[var(--hair)] pb-1">
+      <span className="text-faint text-[11px] uppercase tracking-cap">{label}</span>
+      <span className="font-serif text-[16px] tnum">
         {v}
-        <span className="ml-0.5 text-xs text-cinza">cm</span>
+        <span className="ml-0.5 text-[10px] text-faint">cm</span>
       </span>
     </div>
   )
 }
 
-function Variacao({ label, valor, unit }: { label: string; valor: number | null; unit: string }) {
-  if (valor === null)
+function Variacao({ label, valor }: { label: string; valor: number | null }) {
+  if (valor === null) {
     return (
       <div>
         <span className="label-cap">{label}</span>
-        <p className="font-serif text-2xl text-cinza">—</p>
+        <p className="font-serif text-[24px] text-faint">—</p>
       </div>
     )
+  }
   const positivo = valor > 0
   const zero = valor === 0
   return (
     <div>
       <span className="label-cap">{label}</span>
-      <p className={cn('font-serif text-2xl', zero ? 'text-cinza' : positivo ? 'text-terracota' : 'text-oliva')}>
+      <p className={cn('editorial-num text-[24px]', zero ? 'text-faint' : positivo ? 'text-terracota' : 'text-oliva')}>
         {positivo ? '+' : ''}
         {valor}
-        <span className="ml-1 text-xs text-cinza">{unit}</span>
+        <span className="ml-1 text-[10px] text-faint">cm</span>
       </p>
     </div>
   )
@@ -150,47 +154,47 @@ function NovaMedidaSheet({ onClose, onSave }: { onClose: () => void; onSave: () 
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-castanho/40 backdrop-blur-sm sm:items-center" role="dialog" aria-modal="true">
-      <div className="w-full max-w-md max-h-[92vh] overflow-y-auto rounded-t-3xl bg-creme p-5 shadow-xl animate-slide-up sm:rounded-3xl">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="titulo-serif text-xl">Nova medição</h2>
-          <button onClick={onClose} aria-label="Fechar" className="rounded-full p-2 text-cinza hover:bg-creme-escuro">
-            <X size={18} />
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-tinta/40 backdrop-blur-sm sm:items-center" role="dialog" aria-modal="true">
+      <div className="w-full max-w-md max-h-[92vh] overflow-y-auto rounded-t-2xl bg-[var(--bg-elev)] p-6 shadow-ink animate-slide-up sm:rounded-2xl">
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="font-serif text-[22px] font-light tracking-editorial">nova medição</h2>
+          <button onClick={onClose} aria-label="Fechar" className="rounded-full p-1 text-faint hover:opacity-70">
+            <X size={18} strokeWidth={1.5} />
           </button>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           <Field label="Data">
-            <input type="date" value={data.date} onChange={e => setData({ ...data, date: e.target.value })} className="input-base" />
+            <input type="date" value={data.date} onChange={e => setData({ ...data, date: e.target.value })} className="input-base text-[14px]" />
           </Field>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Cintura (cm)">
-              <input type="number" inputMode="decimal" step="0.5" value={data.cintura} onChange={e => setData({ ...data, cintura: e.target.value })} className="input-base" placeholder="—" />
+            <Field label="Cintura · cm">
+              <input type="number" inputMode="decimal" step="0.5" value={data.cintura} onChange={e => setData({ ...data, cintura: e.target.value })} className="input-base text-[14px]" placeholder="—" />
             </Field>
-            <Field label="Ancas (cm)">
-              <input type="number" inputMode="decimal" step="0.5" value={data.ancas} onChange={e => setData({ ...data, ancas: e.target.value })} className="input-base" placeholder="—" />
+            <Field label="Ancas · cm">
+              <input type="number" inputMode="decimal" step="0.5" value={data.ancas} onChange={e => setData({ ...data, ancas: e.target.value })} className="input-base text-[14px]" placeholder="—" />
             </Field>
-            <Field label="Coxa (cm)">
-              <input type="number" inputMode="decimal" step="0.5" value={data.coxa} onChange={e => setData({ ...data, coxa: e.target.value })} className="input-base" placeholder="—" />
+            <Field label="Coxa · cm">
+              <input type="number" inputMode="decimal" step="0.5" value={data.coxa} onChange={e => setData({ ...data, coxa: e.target.value })} className="input-base text-[14px]" placeholder="—" />
             </Field>
-            <Field label="Braço (cm)">
-              <input type="number" inputMode="decimal" step="0.5" value={data.braco} onChange={e => setData({ ...data, braco: e.target.value })} className="input-base" placeholder="—" />
+            <Field label="Braço · cm">
+              <input type="number" inputMode="decimal" step="0.5" value={data.braco} onChange={e => setData({ ...data, braco: e.target.value })} className="input-base text-[14px]" placeholder="—" />
             </Field>
           </div>
-          <Field label="Peso (kg) · opcional">
-            <input type="number" inputMode="decimal" step="0.1" value={data.peso} onChange={e => setData({ ...data, peso: e.target.value })} className="input-base" placeholder="—" />
+          <Field label="Peso · kg · opcional">
+            <input type="number" inputMode="decimal" step="0.1" value={data.peso} onChange={e => setData({ ...data, peso: e.target.value })} className="input-base text-[14px]" placeholder="—" />
           </Field>
-          <Field label="Como te sentes hoje">
-            <textarea rows={2} value={data.sentir} onChange={e => setData({ ...data, sentir: e.target.value })} className="input-base resize-none" placeholder="uma frase, sem julgamento" />
+          <Field label="Como te sentes">
+            <textarea rows={2} value={data.sentir} onChange={e => setData({ ...data, sentir: e.target.value })} className="input-base resize-none text-[14px]" placeholder="uma frase, sem julgamento" />
           </Field>
-          <Field label="O que mudou desde a última">
-            <textarea rows={2} value={data.mudou} onChange={e => setData({ ...data, mudou: e.target.value })} className="input-base resize-none" placeholder="roupa, energia, espelho..." />
+          <Field label="O que mudou">
+            <textarea rows={2} value={data.mudou} onChange={e => setData({ ...data, mudou: e.target.value })} className="input-base resize-none text-[14px]" placeholder="roupa, energia, espelho..." />
           </Field>
         </div>
 
-        <div className="mt-5 flex gap-2">
+        <div className="mt-6 flex gap-2">
           <button onClick={onClose} className="btn-ghost flex-1">cancelar</button>
-          <button onClick={submit} className="btn-ouro flex-1">guardar</button>
+          <button onClick={submit} className="btn-primary flex-1">guardar</button>
         </div>
       </div>
     </div>

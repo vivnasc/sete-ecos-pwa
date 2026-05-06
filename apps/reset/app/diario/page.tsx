@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react'
 import {
   RESET_DAYS,
-  RESET_START,
   diaSemana,
   diaSemanaCurto,
   formatarData,
@@ -19,11 +19,16 @@ import { getDia, saveDia, toggleAncora, type DiaLog } from '@/lib/storage'
 import { cn } from '@/lib/utils'
 
 export default function DiarioPage() {
-  const [selecionada, setSelecionada] = useState<string>(isoDate())
+  const params = useSearchParams()
+  const queryDate = params.get('d')
+  const [selecionada, setSelecionada] = useState<string>(queryDate ?? isoDate())
   const [log, setLog] = useState<DiaLog | null>(null)
 
   useEffect(() => {
     setLog(getDia(selecionada))
+    const onUpdate = () => setLog(getDia(selecionada))
+    window.addEventListener('reset:storage', onUpdate)
+    return () => window.removeEventListener('reset:storage', onUpdate)
   }, [selecionada])
 
   const dias = useMemo(() => todosOsDias().map(d => isoDate(d)), [])
@@ -38,34 +43,44 @@ export default function DiarioPage() {
   const dow = diaSemana(data)
   const treino = TREINO_SEMANAL[dow]
   const numDia = dias.indexOf(selecionada) + 1
+  const isHoje = selecionada === isoDate()
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-2 text-center">
-        <p className="label-cap">Diário</p>
-        <h1 className="titulo-serif text-3xl sm:text-4xl">60 dias</h1>
-        <div className="mx-auto divisor-ouro" aria-hidden />
+    <div className="space-y-6 animate-fade-in">
+      <header className="space-y-2 pt-4">
+        <p className="label-soft">diário</p>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">60 dias</h1>
+        <div className="h-px w-12 bg-ouro" aria-hidden />
       </header>
 
       <DiasStrip dias={dias} selecionada={selecionada} onSelect={setSelecionada} />
 
       <nav className="flex items-center justify-between gap-3" aria-label="Navegar dias">
-        <button onClick={() => navegar(-1)} className="btn-ghost gap-1" aria-label="Dia anterior" disabled={dias.indexOf(selecionada) === 0}>
-          <ChevronLeft size={18} />
-          anterior
+        <button
+          onClick={() => navegar(-1)}
+          className="btn-ghost"
+          aria-label="Dia anterior"
+          disabled={dias.indexOf(selecionada) === 0}
+        >
+          <ChevronLeft size={14} strokeWidth={1.4} />
         </button>
         <div className="text-center">
-          <p className="font-serif text-xl text-castanho">
-            Dia <span className="text-ouro">{numDia}</span>
-            <span className="text-cinza"> / {RESET_DAYS}</span>
+          <p className="font-serif text-[22px] font-light tracking-editorial">
+            <span className="tnum">Dia {String(numDia).padStart(2, '0')}</span>
+            <span className="text-faint"> / {RESET_DAYS}</span>
           </p>
-          <p className="text-xs uppercase tracking-[0.18em] text-oliva">
-            {dow} · {formatarData(data)}
+          <p className="label-soft mt-1">
+            {dow.toLowerCase()} · {formatarData(data)}
+            {isHoje ? <span className="ml-2 text-ouro">· hoje</span> : null}
           </p>
         </div>
-        <button onClick={() => navegar(1)} className="btn-ghost gap-1" aria-label="Dia seguinte" disabled={dias.indexOf(selecionada) === dias.length - 1}>
-          seguinte
-          <ChevronRight size={18} />
+        <button
+          onClick={() => navegar(1)}
+          className="btn-ghost"
+          aria-label="Dia seguinte"
+          disabled={dias.indexOf(selecionada) === dias.length - 1}
+        >
+          <ChevronRight size={14} strokeWidth={1.4} />
         </button>
       </nav>
 
@@ -73,6 +88,7 @@ export default function DiarioPage() {
         <DiaForm
           log={log}
           treino={treino}
+          dow={dow}
           onChange={novo => {
             setLog(novo)
             saveDia(novo)
@@ -97,7 +113,7 @@ function DiasStrip({
   const diaActual = diaDoPlano()
 
   return (
-    <div className="-mx-4 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6">
+    <div className="-mx-5 overflow-x-auto px-5 pb-1 sm:-mx-7 sm:px-7">
       <ol className="flex gap-1.5">
         {dias.map((d, i) => {
           const data = fromIso(d)
@@ -113,22 +129,22 @@ function DiasStrip({
                 onClick={() => onSelect(d)}
                 aria-current={isActive ? 'date' : undefined}
                 className={cn(
-                  'flex w-12 flex-col items-center rounded-xl py-2 transition active:scale-95',
+                  'flex w-11 flex-col items-center rounded-md py-2 transition-elegant active:scale-95',
                   isActive
-                    ? 'bg-castanho text-creme'
+                    ? 'bg-tinta text-[var(--bg)] dark:bg-ouro dark:text-tinta'
                     : isHoje
-                      ? 'bg-ouro/15 text-castanho ring-1 ring-ouro/40'
+                      ? 'shadow-hair-strong'
                       : proximo
-                        ? 'text-castanho/40 hover:text-castanho/70'
-                        : 'text-castanho/70 hover:bg-white/60'
+                        ? 'opacity-30 hover:opacity-60'
+                        : 'hover:bg-[var(--surface-soft)]'
                 )}
               >
-                <span className="text-[9px] uppercase tracking-wide">{diaSemanaCurto(data)}</span>
-                <span className="font-serif text-base">{data.getDate()}</span>
-                <span className="text-[9px] text-current/50">{mesCurto(data)}</span>
+                <span className="text-[9px] uppercase tracking-cap opacity-70">{diaSemanaCurto(data)}</span>
+                <span className="font-serif text-[15px] tnum">{data.getDate()}</span>
+                <span className="text-[9px] opacity-60">{mesCurto(data)}</span>
                 <span
                   className={cn(
-                    'mt-1 h-1 w-4 rounded-full transition',
+                    'mt-1 h-px w-3 transition-elegant',
                     cumpridas === 0 ? 'bg-transparent' : cumpridas < 5 ? 'bg-terracota' : 'bg-oliva'
                   )}
                   aria-hidden
@@ -145,26 +161,28 @@ function DiasStrip({
 function DiaForm({
   log,
   treino,
+  dow,
   onChange,
   onToggle
 }: {
   log: DiaLog
   treino: { tipo: string; descricao: string; descanso: boolean }
+  dow: string
   onChange: (l: DiaLog) => void
   onToggle: (id: string) => void
 }) {
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="card-solid">
-        <span className="label-cap">Treino do dia</span>
-        <p className="mt-1 font-serif text-lg text-castanho">{treino.tipo}</p>
-        <p className="text-sm text-cinza">{treino.descricao}</p>
+        <span className="label-cap">treino · {dow.toLowerCase()}</span>
+        <p className="mt-2 font-serif text-[18px] tracking-editorial">{treino.tipo}</p>
+        <p className="text-faint mt-1 text-[12.5px]">{treino.descricao}</p>
       </div>
 
-      <section className="space-y-3">
-        <span className="label-cap px-1">Âncoras</span>
-        <ul className="space-y-2">
-          {ANCORAS.map(a => {
+      <section>
+        <span className="label-cap mb-3 block">Âncoras</span>
+        <ul className="card-solid divide-y divide-[var(--hair)] !p-0">
+          {ANCORAS.map((a, idx) => {
             const feita = !!log.ancoras[a.id]
             return (
               <li key={a.id}>
@@ -173,22 +191,24 @@ function DiaForm({
                   onClick={() => onToggle(a.id)}
                   aria-pressed={feita}
                   className={cn(
-                    'flex w-full items-start gap-3 rounded-xl bg-white/60 p-3 text-left ring-1 transition active:scale-[0.99]',
-                    feita ? 'ring-oliva/40 bg-oliva/5' : 'ring-ouro/15'
+                    'flex w-full items-start gap-3 px-5 py-3.5 text-left transition-elegant active:scale-[0.99]',
+                    feita ? 'opacity-90' : 'hover:bg-[var(--surface-soft)]'
                   )}
                 >
                   <span
                     className={cn(
-                      'mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full',
-                      feita ? 'bg-oliva text-creme' : 'border border-castanho/30 bg-creme'
+                      'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-elegant',
+                      feita ? 'bg-tinta text-[var(--bg)] dark:bg-ouro dark:text-tinta' : 'border border-[var(--hair-strong)]'
                     )}
                     aria-hidden
                   >
-                    {feita ? <Check size={14} strokeWidth={3} /> : null}
+                    {feita ? <Check size={11} strokeWidth={3} /> : <span className="text-[9px] text-faint">{String(idx + 1).padStart(2, '0')}</span>}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium">{a.titulo}</span>
-                    <span className="block text-xs text-cinza">{a.detalhe}</span>
+                    <span className={cn('block text-[14px]', feita && 'text-soft line-through decoration-[var(--hair-strong)]')}>
+                      {a.titulo}
+                    </span>
+                    <span className="text-faint mt-0.5 block text-[11.5px]">{a.detalhe}</span>
                   </span>
                 </button>
               </li>
@@ -198,30 +218,10 @@ function DiaForm({
       </section>
 
       <section className="grid grid-cols-2 gap-3">
-        <NumberField
-          label="Sono"
-          unit="h"
-          step={0.5}
-          value={log.sonoHoras}
-          onChange={v => onChange({ ...log, sonoHoras: v })}
-        />
-        <NumberField
-          label="Caminhada"
-          unit="min"
-          step={5}
-          value={log.caminhadaMin}
-          onChange={v => onChange({ ...log, caminhadaMin: v })}
-        />
-        <ScaleField
-          label="Energia"
-          value={log.energia}
-          onChange={v => onChange({ ...log, energia: v })}
-        />
-        <ScaleField
-          label="Humor"
-          value={log.humor}
-          onChange={v => onChange({ ...log, humor: v })}
-        />
+        <NumberField label="Sono" unit="h" step={0.5} value={log.sonoHoras} onChange={v => onChange({ ...log, sonoHoras: v })} />
+        <NumberField label="Caminhada" unit="min" step={5} value={log.caminhadaMin} onChange={v => onChange({ ...log, caminhadaMin: v })} />
+        <ScaleField label="Energia" value={log.energia} onChange={v => onChange({ ...log, energia: v })} />
+        <ScaleField label="Humor" value={log.humor} onChange={v => onChange({ ...log, humor: v })} />
       </section>
 
       <section className="space-y-2">
@@ -229,9 +229,9 @@ function DiaForm({
         <textarea
           value={log.notas}
           onChange={e => onChange({ ...log, notas: e.target.value })}
-          placeholder="o que precisas de registar..."
+          placeholder="o que precisas registar..."
           rows={3}
-          className="input-base resize-none"
+          className="input-base resize-none text-[14px]"
         />
       </section>
     </div>
@@ -262,9 +262,9 @@ function NumberField({
           value={value ?? ''}
           onChange={e => onChange(e.target.value === '' ? null : Number(e.target.value))}
           placeholder="—"
-          className="w-full bg-transparent font-serif text-2xl text-castanho placeholder:text-cinza/50 focus:outline-none"
+          className="editorial-num w-full bg-transparent text-[24px] placeholder:text-faint focus:outline-none"
         />
-        <span className="text-xs text-cinza">{unit}</span>
+        <span className="text-faint text-[11px]">{unit}</span>
       </div>
     </label>
   )
@@ -290,10 +290,10 @@ function ScaleField({
             onClick={() => onChange(n)}
             aria-label={`${label} ${n}`}
             className={cn(
-              'flex-1 rounded-lg py-1.5 font-serif text-sm transition active:scale-95',
+              'flex-1 rounded-md py-1.5 font-serif text-[13px] tnum transition-elegant active:scale-95',
               value === n
-                ? 'bg-castanho text-creme'
-                : 'bg-creme-escuro/40 text-castanho/60 hover:bg-creme-escuro'
+                ? 'bg-tinta text-[var(--bg)] dark:bg-ouro dark:text-tinta'
+                : 'shadow-hair text-faint hover:text-soft'
             )}
           >
             {n}

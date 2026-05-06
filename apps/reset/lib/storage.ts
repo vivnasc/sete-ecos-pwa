@@ -1,11 +1,12 @@
 'use client'
 
 import { isoDate } from './dates'
+import { syncDia, syncAlcool, syncMedida, syncDesabafo, syncInsight } from './sync'
 
 const PREFIX = 'reset:'
 
 export type DiaLog = {
-  date: string // ISO YYYY-MM-DD
+  date: string
   ancoras: Record<string, boolean>
   treinoFeito: boolean
   caminhadaMin: number | null
@@ -43,13 +44,15 @@ export type DesabafoEntry = {
   emocao: string
 }
 
+export type InsightCache = {
+  weekStart: string
+  texto: string
+  geradoEm: string
+}
+
 function safeParse<T>(raw: string | null, fallback: T): T {
   if (!raw) return fallback
-  try {
-    return JSON.parse(raw) as T
-  } catch {
-    return fallback
-  }
+  try { return JSON.parse(raw) as T } catch { return fallback }
 }
 
 function read<T>(key: string, fallback: T): T {
@@ -67,24 +70,23 @@ function write<T>(key: string, value: T): void {
 
 export function getDia(date = isoDate()): DiaLog {
   const all = read<Record<string, DiaLog>>('dias', {})
-  return (
-    all[date] ?? {
-      date,
-      ancoras: {},
-      treinoFeito: false,
-      caminhadaMin: null,
-      sonoHoras: null,
-      energia: null,
-      humor: null,
-      notas: ''
-    }
-  )
+  return all[date] ?? {
+    date,
+    ancoras: {},
+    treinoFeito: false,
+    caminhadaMin: null,
+    sonoHoras: null,
+    energia: null,
+    humor: null,
+    notas: ''
+  }
 }
 
 export function saveDia(log: DiaLog): void {
   const all = read<Record<string, DiaLog>>('dias', {})
   all[log.date] = log
   write('dias', all)
+  void syncDia(log).catch(() => {})
 }
 
 export function getTodosDias(): DiaLog[] {
@@ -110,6 +112,7 @@ export function addAlcoolRegisto(r: Omit<AlcoolRegisto, 'id' | 'timestamp'>): Al
   const all = read<AlcoolRegisto[]>('alcool', [])
   all.push(novo)
   write('alcool', all)
+  void syncAlcool(novo).catch(() => {})
   return novo
 }
 
@@ -124,6 +127,7 @@ export function addMedida(m: Omit<MedidaRegisto, 'id'>): MedidaRegisto {
   const all = read<MedidaRegisto[]>('medidas', [])
   all.push(novo)
   write('medidas', all)
+  void syncMedida(novo).catch(() => {})
   return novo
 }
 
@@ -138,16 +142,11 @@ export function addDesabafo(d: Omit<DesabafoEntry, 'id' | 'timestamp'>): Desabaf
   const all = read<DesabafoEntry[]>('desabafo', [])
   all.push(novo)
   write('desabafo', all)
+  void syncDesabafo(novo).catch(() => {})
   return novo
 }
 
 // ----- INSIGHTS CACHE -----
-
-export type InsightCache = {
-  weekStart: string
-  texto: string
-  geradoEm: string
-}
 
 export function getInsightCache(weekStart: string): InsightCache | null {
   const all = read<Record<string, InsightCache>>('insights', {})
@@ -158,6 +157,7 @@ export function saveInsightCache(c: InsightCache): void {
   const all = read<Record<string, InsightCache>>('insights', {})
   all[c.weekStart] = c
   write('insights', all)
+  void syncInsight(c).catch(() => {})
 }
 
 // ----- METRICAS DERIVADAS -----
@@ -197,10 +197,8 @@ export function sonoMedio(ultimosNDias = 7): number | null {
 export function variacaoCintura(): number | null {
   const medidas = getMedidas().filter(m => m.cintura !== null)
   if (medidas.length < 2) return null
-  return (medidas[medidas.length - 1].cintura ?? 0) - (medidas[0].cintura ?? 0)
+  return Math.round(((medidas[medidas.length - 1].cintura ?? 0) - (medidas[0].cintura ?? 0)) * 10) / 10
 }
-
-// ----- EXPORT/IMPORT -----
 
 export function exportarTudo(): string {
   const data = {
@@ -209,6 +207,7 @@ export function exportarTudo(): string {
     medidas: read('medidas', []),
     desabafo: read('desabafo', []),
     insights: read('insights', {}),
+    profile: read('profile', {}),
     exportadoEm: new Date().toISOString()
   }
   return JSON.stringify(data, null, 2)
@@ -222,8 +221,15 @@ export function importarTudo(json: string): boolean {
     if (data.medidas) write('medidas', data.medidas)
     if (data.desabafo) write('desabafo', data.desabafo)
     if (data.insights) write('insights', data.insights)
+    if (data.profile) write('profile', data.profile)
     return true
-  } catch {
-    return false
-  }
+  } catch { return false }
+}
+
+export function limparTudoLocal(): void {
+  if (typeof window === 'undefined') return
+  ;['dias', 'alcool', 'medidas', 'desabafo', 'insights'].forEach(k => {
+    localStorage.removeItem(PREFIX + k)
+  })
+  window.dispatchEvent(new CustomEvent('reset:storage', { detail: { key: 'all' } }))
 }

@@ -13,8 +13,8 @@ import {
 } from '@/lib/storage'
 
 function inicioSemana(d: Date = new Date()): string {
-  const dia = d.getDay() // 0 = domingo, 1 = segunda
-  const diff = (dia + 6) % 7 // dias desde segunda
+  const dia = d.getDay()
+  const diff = (dia + 6) % 7
   const seg = new Date(d)
   seg.setDate(d.getDate() - diff)
   return isoDate(seg)
@@ -51,7 +51,7 @@ export default function InsightsPage() {
     })
 
     if (diasSemana.length === 0) {
-      setErro('sem dados da semana ainda. preenche pelo menos 1 dia no diário.')
+      setErro('sem dados da semana ainda. preenche pelo menos um dia.')
       setCarregando(false)
       return
     }
@@ -114,43 +114,46 @@ export default function InsightsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-2 text-center">
-        <p className="label-cap">Insights</p>
-        <h1 className="titulo-serif text-3xl sm:text-4xl">o que os dados dizem</h1>
-        <p className="text-xs text-cinza">semana de {formatarData(fromIso(semanaInicio), true)}</p>
-        <div className="mx-auto divisor-ouro" aria-hidden />
+    <div className="space-y-7 animate-fade-in">
+      <header className="space-y-2 pt-4">
+        <p className="label-soft">insights</p>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">o que vejo</h1>
+        <div className="h-px w-12 bg-ouro" aria-hidden />
+        <p className="text-faint mt-3 text-[12.5px]">semana de {formatarData(fromIso(semanaInicio), true)}</p>
       </header>
 
       {insight ? (
-        <article className="card-solid space-y-4">
-          <div className="flex items-start gap-2">
-            <Sparkles size={18} className="mt-1 shrink-0 text-ouro" strokeWidth={1.5} />
-            <p className="font-serif text-base leading-relaxed text-castanho/90">{insight}</p>
+        <article className="card-feature space-y-4">
+          <div className="flex items-center gap-2">
+            <Sparkles size={14} strokeWidth={1.4} className="text-ouro" />
+            <span className="label-cap">leitura</span>
           </div>
+          <p className="font-serif text-[17px] font-light leading-[1.55] tracking-editorial">
+            {insight}
+          </p>
           {geradoEm ? (
-            <p className="border-t border-creme-escuro pt-2 text-right text-xs text-cinza">
+            <p className="text-faint border-t border-[var(--hair)] pt-3 text-right text-[10px] tracking-cap">
               gerado {new Date(geradoEm).toLocaleString('pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
             </p>
           ) : null}
         </article>
       ) : (
-        <div className="card text-center text-sm text-cinza">
-          <p>uma vez por semana, os teus dados são lidos.</p>
-          <p className="mt-1">sem julgamento — só padrões.</p>
+        <div className="card text-center">
+          <p className="text-soft text-[13.5px]">uma vez por semana, os teus dados são lidos.</p>
+          <p className="text-faint mt-1 text-[12.5px]">sem julgamento — só padrões.</p>
         </div>
       )}
 
       {erro ? (
-        <div className="rounded-xl bg-terracota/10 p-3 text-sm text-terracota">{erro}</div>
+        <div className="rounded-lg bg-terracota/10 p-3 text-[13px] text-terracota">{erro}</div>
       ) : null}
 
-      <button onClick={gerar} disabled={carregando} className="btn-ouro w-full gap-2">
-        <RefreshCcw size={16} className={carregando ? 'animate-spin' : ''} />
-        {carregando ? 'a ler...' : insight ? 'gerar de novo' : 'gerar insight da semana'}
+      <button onClick={gerar} disabled={carregando} className="btn-primary w-full">
+        <RefreshCcw size={14} strokeWidth={1.4} className={carregando ? 'animate-spin' : ''} />
+        {carregando ? 'a ler' : insight ? 'gerar de novo' : 'gerar leitura'}
       </button>
 
-      <p className="text-center text-xs text-cinza">requer ANTHROPIC_API_KEY no servidor</p>
+      <p className="text-faint text-center text-[10px]">requer ANTHROPIC_API_KEY no servidor</p>
     </div>
   )
 }

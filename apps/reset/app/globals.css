@@ -4,101 +4,184 @@
 
 @layer base {
   :root {
-    --color-creme: #F8F4EC;
-    --color-creme-escuro: #EFE7D6;
-    --color-ouro: #C9A961;
-    --color-oliva: #7A8450;
-    --color-terracota: #B8704A;
-    --color-castanho: #3D2817;
-    --color-cinza: #8a7a6a;
+    --bg: #F6F1E8;
+    --bg-elev: #FBF7EE;
+    --surface: #FFFFFF;
+    --surface-soft: rgba(255, 255, 255, 0.55);
+    --ink: #1F1814;
+    --ink-soft: rgba(31, 24, 20, 0.7);
+    --ink-faint: rgba(31, 24, 20, 0.5);
+    --ouro: #B8924A;
+    --hair: rgba(184, 146, 74, 0.18);
+    --hair-strong: rgba(184, 146, 74, 0.32);
   }
 
-  html, body {
-    background: var(--color-creme);
-    color: var(--color-castanho);
+  :root.dark {
+    --bg: #14110D;
+    --bg-elev: #1B1813;
+    --surface: #221E18;
+    --surface-soft: rgba(34, 30, 24, 0.6);
+    --ink: #EDE5D2;
+    --ink-soft: rgba(237, 229, 210, 0.75);
+    --ink-faint: rgba(237, 229, 210, 0.5);
+    --hair: rgba(201, 169, 97, 0.16);
+    --hair-strong: rgba(201, 169, 97, 0.3);
+  }
+
+  html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   body {
+    background: var(--bg);
+    color: var(--ink);
     font-family: var(--font-inter), system-ui, sans-serif;
+    font-feature-settings: 'ss01', 'cv01', 'cv11';
     min-height: 100vh;
     overscroll-behavior-y: none;
+    transition: background-color 0.4s ease;
   }
 
-  ::selection {
-    background: var(--color-ouro);
-    color: var(--color-creme);
-  }
+  ::selection { background: var(--ouro); color: #FFFFFF; }
 
-  /* Scrollbar discreto */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(201, 169, 97, 0.3); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(201, 169, 97, 0.6); }
+  ::-webkit-scrollbar-thumb { background: var(--hair-strong); border-radius: 2px; }
 
-  /* Inputs sem aspecto nativo agressivo */
   input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
   input[type="number"] { -moz-appearance: textfield; }
 
-  /* Foco acessível */
   *:focus-visible {
-    outline: 2px solid var(--color-ouro);
-    outline-offset: 2px;
-    border-radius: 2px;
+    outline: 1px solid var(--ouro);
+    outline-offset: 3px;
+    border-radius: 1px;
   }
 
-  /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
       transition-duration: 0.01ms !important;
     }
   }
+
+  /* Tipografia editorial */
+  h1, h2, h3, h4 {
+    font-family: var(--font-fraunces), Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+
+  /* Tabular numbers for data */
+  .tnum { font-variant-numeric: tabular-nums; }
 }
 
 @layer components {
   .container-app {
-    @apply mx-auto w-full max-w-md px-4 sm:max-w-lg sm:px-6;
+    @apply mx-auto w-full max-w-[420px] px-5 sm:max-w-[460px] sm:px-7;
   }
 
+  /* Card hairline editorial */
   .card {
-    @apply rounded-2xl bg-white/60 p-4 shadow-sm ring-1 ring-ouro/15 backdrop-blur-sm sm:p-5;
+    background: var(--surface-soft);
+    box-shadow: inset 0 0 0 1px var(--hair);
+    @apply rounded-lg p-5 backdrop-blur-sm;
   }
 
   .card-solid {
-    @apply rounded-2xl bg-white p-4 shadow-sm ring-1 ring-ouro/20 sm:p-5;
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--hair);
+    @apply rounded-lg p-5;
   }
 
+  .card-feature {
+    background: var(--surface);
+    box-shadow: 0 1px 2px rgba(31, 24, 20, 0.04), 0 8px 24px rgba(31, 24, 20, 0.06), inset 0 0 0 1px var(--hair);
+    @apply rounded-lg p-6;
+  }
+
+  /* Buttons */
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-full bg-castanho px-5 py-3 font-sans text-sm font-medium tracking-wide text-creme transition active:scale-95 disabled:opacity-50;
+    background: var(--ink);
+    color: var(--bg);
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[13px] font-medium tracking-wide transition active:scale-[0.98] disabled:opacity-40;
   }
 
   .btn-ouro {
-    @apply inline-flex items-center justify-center rounded-full bg-ouro px-5 py-3 font-sans text-sm font-medium tracking-wide text-creme transition active:scale-95 disabled:opacity-50;
+    background: var(--ouro);
+    color: #FFFFFF;
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[13px] font-medium tracking-wide transition active:scale-[0.98] disabled:opacity-40;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm text-castanho/70 transition hover:text-castanho active:scale-95;
+    color: var(--ink-soft);
+    @apply inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-[13px] transition hover:opacity-80 active:scale-[0.98];
   }
 
+  .btn-outline {
+    box-shadow: inset 0 0 0 1px var(--hair-strong);
+    color: var(--ink);
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-transparent px-5 py-2.5 text-[13px] transition hover:opacity-80 active:scale-[0.98];
+  }
+
+  /* Inputs */
   .input-base {
-    @apply w-full rounded-xl border-0 bg-creme-escuro/50 px-4 py-3 text-base text-castanho placeholder:text-cinza focus:ring-2 focus:ring-ouro;
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--hair);
+    @apply w-full rounded-lg px-4 py-3 text-[15px] placeholder:text-cinza-claro focus:shadow-[inset_0_0_0_1px_var(--ouro)] focus:outline-none;
   }
 
+  /* Editorial labels */
   .label-cap {
-    @apply font-sans text-xs uppercase tracking-[0.18em] text-oliva;
+    color: var(--ouro);
+    @apply font-sans text-[10px] font-medium uppercase tracking-cap;
   }
 
-  .titulo-serif {
-    @apply font-serif font-normal tracking-tight text-castanho;
+  .label-soft {
+    color: var(--ink-faint);
+    @apply font-sans text-[10px] font-medium uppercase tracking-cap;
   }
 
-  .divisor-ouro {
-    @apply h-px w-12 bg-ouro;
+  /* Editorial numbers */
+  .editorial-num {
+    @apply tnum font-serif font-light;
+    letter-spacing: -0.04em;
   }
+
+  /* Hairlines */
+  .hairline {
+    background: var(--hair);
+    @apply h-px;
+  }
+
+  .hairline-v {
+    background: var(--hair);
+    @apply w-px;
+  }
+
+  /* Mantra editorial */
+  .mantra-text {
+    @apply font-serif text-[19px] font-light italic leading-[1.5];
+    letter-spacing: -0.01em;
+  }
+
+  /* FAB editorial */
+  .fab {
+    background: var(--ink);
+    color: var(--bg);
+    box-shadow: 0 4px 16px rgba(31, 24, 20, 0.15), 0 1px 4px rgba(31, 24, 20, 0.1);
+    @apply fixed bottom-24 right-5 z-30 flex h-12 w-12 items-center justify-center rounded-full transition active:scale-95;
+  }
+
+  .text-soft { color: var(--ink-soft); }
+  .text-faint { color: var(--ink-faint); }
+}
+
+/* Slow elegant transitions */
+.transition-elegant {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
