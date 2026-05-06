@@ -1,0 +1,31 @@
+{
+  "name": "Reset · 60 dias",
+  "short_name": "Reset",
+  "description": "Companheira de jornada · 60 dias",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F8F4EC",
+  "theme_color": "#F8F4EC",
+  "lang": "pt-PT",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Diário",
+      "url": "/diario",
+      "description": "Registar o dia"
+    },
+    {
+      "name": "Caderno antes do copo",
+      "url": "/alcool",
+      "description": "Antes de decidir"
+    }
+  ]
+}

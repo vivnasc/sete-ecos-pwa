@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-creme: #F8F4EC;
+    --color-creme-escuro: #EFE7D6;
+    --color-ouro: #C9A961;
+    --color-oliva: #7A8450;
+    --color-terracota: #B8704A;
+    --color-castanho: #3D2817;
+    --color-cinza: #8a7a6a;
+  }
+
+  html, body {
+    background: var(--color-creme);
+    color: var(--color-castanho);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--font-inter), system-ui, sans-serif;
+    min-height: 100vh;
+    overscroll-behavior-y: none;
+  }
+
+  ::selection {
+    background: var(--color-ouro);
+    color: var(--color-creme);
+  }
+
+  /* Scrollbar discreto */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(201, 169, 97, 0.3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(201, 169, 97, 0.6); }
+
+  /* Inputs sem aspecto nativo agressivo */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] { -moz-appearance: textfield; }
+
+  /* Foco acessível */
+  *:focus-visible {
+    outline: 2px solid var(--color-ouro);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .container-app {
+    @apply mx-auto w-full max-w-md px-4 sm:max-w-lg sm:px-6;
+  }
+
+  .card {
+    @apply rounded-2xl bg-white/60 p-4 shadow-sm ring-1 ring-ouro/15 backdrop-blur-sm sm:p-5;
+  }
+
+  .card-solid {
+    @apply rounded-2xl bg-white p-4 shadow-sm ring-1 ring-ouro/20 sm:p-5;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-castanho px-5 py-3 font-sans text-sm font-medium tracking-wide text-creme transition active:scale-95 disabled:opacity-50;
+  }
+
+  .btn-ouro {
+    @apply inline-flex items-center justify-center rounded-full bg-ouro px-5 py-3 font-sans text-sm font-medium tracking-wide text-creme transition active:scale-95 disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm text-castanho/70 transition hover:text-castanho active:scale-95;
+  }
+
+  .input-base {
+    @apply w-full rounded-xl border-0 bg-creme-escuro/50 px-4 py-3 text-base text-castanho placeholder:text-cinza focus:ring-2 focus:ring-ouro;
+  }
+
+  .label-cap {
+    @apply font-sans text-xs uppercase tracking-[0.18em] text-oliva;
+  }
+
+  .titulo-serif {
+    @apply font-serif font-normal tracking-tight text-castanho;
+  }
+
+  .divisor-ouro {
+    @apply h-px w-12 bg-ouro;
+  }
+}
