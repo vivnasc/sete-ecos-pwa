@@ -1,12 +1,12 @@
 {
-  "name": "Reset · 60 dias",
-  "short_name": "Reset",
+  "name": "FénixFit · 60 dias",
+  "short_name": "FénixFit",
   "description": "Companheira de jornada · 60 dias",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#F8F4EC",
-  "theme_color": "#F8F4EC",
+  "background_color": "#F6F1E8",
+  "theme_color": "#F6F1E8",
   "lang": "pt-PT",
   "icons": [
     {

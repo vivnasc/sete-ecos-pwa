@@ -1,53 +1,39 @@
-# Reset · 60 dias
+# FénixFit · 60 dias
 
-Companheira pessoal de jornada. App PWA moderna, editorial, sincronizada entre dispositivos via Supabase, com leituras semanais por Claude.
-
-**11 maio – 9 julho 2026**
+Companheira pessoal de jornada. PWA editorial, sincronizada entre dispositivos via Supabase, leituras semanais por Claude.
 
 ---
 
 ## Funcionalidades
 
 ### Hoje (`/`)
-- "SmartNow" — bloco contextual por hora do dia (madrugada, PA, almoço, gatilho do copo, encerrar dia, etc.)
+- **SmartNow** — bloco contextual por hora do dia (madrugada → treino → PA → almoço → última refeição → caderno → encerrar dia → noite)
 - Mantra editorial rotativo
-- Checklist das 7 âncoras com toggle táctil
+- Checklist das 7 âncoras
 - Métricas grandes: constância, dias sem álcool, variação cintura, sono médio
 
 ### Diário (`/diario`)
-- Strip horizontal de 60 dias com indicador de cumprimento
+- Strip de 60 dias com indicador de cumprimento
 - Por dia: âncoras, sono, caminhada, energia 1–5, humor 1–5, notas
 
 ### Sinais (`/metricas`)
-- Heatmap 60 dias estilo GitHub contributions
-- Gráficos SVG: cintura, peso, sono (21 dias)
-- Detecção automática de **padrões locais**:
-  - sono vs energia (correlação)
-  - álcool vs sono
-  - gatilho principal
-  - dia da semana mais difícil
-  - tendência de humor
-  - consistência de âncoras
+- Heatmap 60 dias estilo contributions
+- Gráficos SVG: cintura, peso, sono
+- Detecção automática de padrões: sono↔energia, álcool↔sono, gatilho principal, dia mais difícil, tendência humor, consistência
 
 ### Caderno antes do copo (`/alcool`)
-- Fluxo: emoção → gatilho → respira → decide
+- Fluxo: emoção → gatilho → respira → decides
 - Padrões dos últimos 30 registos
-- Histórico marcado (verde = não bebeu, terracota = bebeu)
 
 ### Mais (`/mais`)
-- Medidas, Desabafo, Insights, Comer, Treino, Definições, Sair
+- Medidas, Desabafo, Insights, Comer, Treino, Definições
 
 ### Definições (`/definicoes`)
-- Perfil (nome, horários)
-- Tema (claro · escuro · sistema)
-- Lembretes locais (4 horários personalizáveis com toggles)
-- Estado de sincronização Supabase
-- Backup local (export/import JSON)
+- Perfil, tema (claro · escuro · sistema), lembretes locais, sync Supabase, backup local
 
 ### Insights (`/insights`)
-- Análise semanal gerada por Claude Sonnet 4.6
-- Prompt caching para eficiência
-- Cache local da última leitura
+- Análise semanal por Claude Sonnet 4.6 com prompt caching
+- Edge runtime · funciona em Cloudflare Pages
 
 ---
 
@@ -56,13 +42,13 @@ Companheira pessoal de jornada. App PWA moderna, editorial, sincronizada entre d
 | | |
 |--|--|
 | **Framework** | Next.js 14 App Router + TypeScript |
-| **Styling** | Tailwind CSS · Fraunces (serif) + Inter (sans) |
-| **Storage** | Supabase (primário, sincronizado) + localStorage (cache offline) |
-| **Auth** | Supabase email + password · RLS por user_id |
-| **AI** | Anthropic SDK · Claude Sonnet 4.6 · prompt caching |
+| **Styling** | Tailwind · Fraunces (serif variável) + Inter |
+| **Storage** | Supabase (primário sincronizado) + localStorage (cache offline) |
+| **Auth** | Supabase email + password · RLS |
+| **AI** | Claude Sonnet 4.6 · fetch directo (edge-compatible) · prompt caching |
 | **PWA** | Manifest + service worker offline-first |
-| **Theme** | Light · Dark · System (detection automática) |
-| **Deploy** | Netlify |
+| **Theme** | Light · Dark · System |
+| **Deploy** | Cloudflare Pages (recomendado) ou Netlify ou Vercel |
 
 ---
 
@@ -71,101 +57,55 @@ Companheira pessoal de jornada. App PWA moderna, editorial, sincronizada entre d
 ### 1. Supabase
 
 1. Cria projecto em [supabase.com](https://supabase.com)
-2. SQL editor → cola o ficheiro `supabase/schema.sql` → run
-3. Authentication → enable email provider · disable email confirmation se quiseres entrar logo
+2. SQL editor → cola `supabase/schema.sql` → Run
+3. Authentication → enable email · disable email confirmation se quiseres entrar logo
 4. Settings → API → copia URL e anon key
 
-### 2. Variáveis Netlify
+### 2. Cloudflare Pages (recomendado)
 
-Em **Site settings → Environment variables**:
+1. Cria conta em [cloudflare.com](https://cloudflare.com) com Gmail (sem GitHub necessário)
+2. Workers & Pages → Create → Pages → Connect to Git **OU** Direct upload
+3. Se Git: conectar este repo → branch `claude/monorepo-lifestyle-app-ZAA2E`
+4. **Build settings**:
+   - Framework preset: Next.js
+   - Build command: `npm run build:cf`
+   - Build output directory: `.vercel/output/static`
+   - Root directory: `apps/reset`
+   - Node.js version: `20`
+5. **Environment variables** (Settings → Environment variables):
+   ```
+   ANTHROPIC_API_KEY=sk-ant-...
+   NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJxxxxx...
+   NODE_VERSION=20
+   ```
+6. Compatibility flags: `nodejs_compat` (Settings → Functions → Compatibility flags · production + preview)
+7. Deploy. Domínio inicial: `fenixfit.pages.dev` ou similar.
 
+### 3. Direct upload (sem Git, se preferires)
+
+Se queres deploy sem ligar ao GitHub:
 ```
-ANTHROPIC_API_KEY=sk-ant-...
-NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJxxxxxxxxxxxxxxxxxxxxxxxx
+cd apps/reset
+npm install
+npm run build:cf
+# Faz upload da pasta .vercel/output/static no dashboard do Cloudflare
 ```
 
-### 3. Deploy Netlify
-
-1. **Add new site → Import existing project**
-2. Conecta repo `vivnasc/sete-ecos-pwa`
-3. Branch: `claude/monorepo-lifestyle-app-ZAA2E`
-4. Tudo o resto está em `apps/reset/netlify.toml` (base, build, publish, plugin Next.js)
-5. Deploy
-
-### 4. Primeira utilização
-
-1. Abre o site → cria conta (email + password)
-2. Onboarding (5 passos): nome, sexo, peso/cintura iniciais, horários, gatilhos do álcool
-3. Dashboard contextual abre
-
-### 5. Adicionar ao ecrã principal
+### 4. Adicionar ao ecrã principal
 
 - **iOS**: Safari → partilhar → "Adicionar ao Ecrã Principal" (prompt aparece automático)
 - **Android**: Chrome → menu → "Instalar aplicação"
 
 ---
 
-## Princípios de design
+## Princípios
 
-1. **Editorial, não infantil.** Tipografia Fraunces. Hairlines em vez de fills pesados. Tabular numbers nos dados.
+1. **Editorial, não infantil.** Tipografia Fraunces. Hairlines. Tabular nums.
 2. **5 minutos por dia.** Cada acção em 1–2 toques. FAB para registo rápido.
-3. **Espelho calmo.** Tom factual. Sem "tu consegues". Sem moralização. Sem emojis.
-4. **Mobile-first absoluto.** Cada layout testado em ecrã pequeno. Áreas tácteis ≥44px.
-5. **Offline first.** localStorage como cache. Supabase sincroniza em background.
-
----
-
-## Estrutura
-
-```
-apps/reset/
-├── app/
-│   ├── layout.tsx          # ThemeProvider + AuthGate + OnboardingGate + FAB
-│   ├── page.tsx            # Hoje · SmartNow + âncoras + métricas
-│   ├── login/
-│   ├── diario/
-│   ├── medidas/
-│   ├── metricas/           # Sinais · heatmap + charts + padrões
-│   ├── alcool/
-│   ├── desabafo/
-│   ├── receitas/
-│   ├── treino/
-│   ├── insights/
-│   ├── definicoes/
-│   ├── mais/
-│   └── api/insights/       # POST · Claude com prompt caching
-├── components/
-│   ├── AuthGate.tsx        # Supabase session + redirect
-│   ├── OnboardingGate.tsx  # First-run flow 5 passos
-│   ├── ThemeProvider.tsx   # Light/dark/system
-│   ├── SmartNow.tsx        # Time-aware home block
-│   ├── Heatmap.tsx         # 60-day grid
-│   ├── TrendChart.tsx      # SVG line chart
-│   ├── AnchorChecklist.tsx
-│   ├── QuickLog.tsx        # FAB
-│   ├── InstallPrompt.tsx   # iOS A2HS
-│   ├── Navigation.tsx      # 5 tabs
-│   ├── Mantra.tsx
-│   └── RegisterSW.tsx
-├── lib/
-│   ├── supabase.ts
-│   ├── auth.ts
-│   ├── sync.ts             # Hidratação + sync por entidade
-│   ├── storage.ts          # localStorage primary + sync triggers
-│   ├── profile.ts
-│   ├── patterns.ts         # Detecção local de correlações
-│   ├── notifications.ts    # Lembretes locais
-│   ├── data.ts             # Constantes (mantras, refeições, treino)
-│   ├── dates.ts
-│   └── utils.ts
-├── public/
-│   ├── icon.svg
-│   ├── manifest.json
-│   └── sw.js
-└── supabase/
-    └── schema.sql          # 7 tabelas + RLS + índices + triggers
-```
+3. **Espelho calmo.** Sem "tu consegues". Sem moralização. Sem emojis.
+4. **Mobile-first.** Áreas tácteis ≥44px.
+5. **Offline-first.** localStorage cache + Supabase sync background.
 
 ---
 
@@ -173,29 +113,10 @@ apps/reset/
 
 7 tabelas, todas com RLS por `auth.uid() = user_id`:
 
-| Tabela | Conteúdo |
-|--------|----------|
-| `reset_profile` | nome, sexo, horários, gatilhos, onboarding |
-| `reset_dias` | âncoras (jsonb), sono, energia, humor, notas |
-| `reset_alcool` | timestamp, emoção, gatilho, decidiu beber |
-| `reset_medidas` | cintura, ancas, coxa, braço, peso, fotos |
-| `reset_desabafo` | texto, emoção, timestamp |
-| `reset_insights` | leitura semanal cache |
-| `reset_lembretes` | config jsonb |
-
-Bucket de storage `reset-fotos` opcional para fotos de medidas (criar manualmente se quiseres).
-
----
-
-## Tom de voz
-
-**Espelho calmo.** Não personal trainer entusiasmado.
-
-✗ "Tu consegues!"
-✗ "És incrível!"
-✗ "Não desistas!"
-✓ "estás cansada, não falhada."
-✓ "subtracção, não adição."
-✓ "primeiro escreves. depois decides."
-
-Português europeu informal, tutear, sem emojis, mínimo de exclamações, frases curtas.
+- `fenixfit_profile` — nome, sexo, horários, gatilhos, onboarding
+- `fenixfit_dias` — âncoras (jsonb), sono, energia, humor, notas
+- `fenixfit_alcool` — timestamp, emoção, gatilho, decidiu beber
+- `fenixfit_medidas` — cintura, ancas, coxa, braço, peso, fotos
+- `fenixfit_desabafo` — texto, emoção
+- `fenixfit_insights` — leitura semanal cache
+- `fenixfit_lembretes` — config jsonb

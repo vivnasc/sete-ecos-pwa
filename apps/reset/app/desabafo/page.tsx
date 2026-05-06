@@ -14,8 +14,8 @@ export default function DesabafoPage() {
   useEffect(() => {
     setEntries(getDesabafos())
     const refresh = () => setEntries(getDesabafos())
-    window.addEventListener('reset:storage', refresh)
-    return () => window.removeEventListener('reset:storage', refresh)
+    window.addEventListener('fenixfit:storage', refresh)
+    return () => window.removeEventListener('fenixfit:storage', refresh)
   }, [])
 
   const submit = () => {

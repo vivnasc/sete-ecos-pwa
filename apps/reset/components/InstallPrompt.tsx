@@ -9,7 +9,7 @@ export default function InstallPrompt() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const dispensado = localStorage.getItem('reset:install-dispensado')
+    const dispensado = localStorage.getItem('fenixfit:install-dispensado')
     if (dispensado) return
 
     const ua = navigator.userAgent.toLowerCase()
@@ -27,7 +27,7 @@ export default function InstallPrompt() {
 
   const dispensar = () => {
     setMostrar(false)
-    localStorage.setItem('reset:install-dispensado', new Date().toISOString())
+    localStorage.setItem('fenixfit:install-dispensado', new Date().toISOString())
   }
 
   if (!mostrar || !ehIos) return null

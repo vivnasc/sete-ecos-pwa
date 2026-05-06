@@ -16,7 +16,7 @@ export function getSupabase(): SupabaseClient | null {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
-      storageKey: 'reset:auth'
+      storageKey: 'fenixfit:auth'
     }
   })
   return _client

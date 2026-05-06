@@ -4,7 +4,7 @@ import { getSupabase } from './supabase'
 import { getUser } from './auth'
 import type { DiaLog, AlcoolRegisto, MedidaRegisto, DesabafoEntry, InsightCache } from './storage'
 
-const PREFIX = 'reset:'
+const PREFIX = 'fenixfit:'
 
 function read<T>(key: string, fallback: T): T {
   if (typeof window === 'undefined') return fallback
@@ -16,7 +16,7 @@ function read<T>(key: string, fallback: T): T {
 function write<T>(key: string, value: T): void {
   if (typeof window === 'undefined') return
   localStorage.setItem(PREFIX + key, JSON.stringify(value))
-  window.dispatchEvent(new CustomEvent('reset:storage', { detail: { key } }))
+  window.dispatchEvent(new CustomEvent('fenixfit:storage', { detail: { key } }))
 }
 
 // ----- HIDRATAR LOCAL A PARTIR DO SUPABASE -----
@@ -29,11 +29,11 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
 
   try {
     const [diasR, alcoolR, medidasR, desabafoR, insightsR] = await Promise.all([
-      sb.from('reset_dias').select('*').eq('user_id', user.id),
-      sb.from('reset_alcool').select('*').eq('user_id', user.id),
-      sb.from('reset_medidas').select('*').eq('user_id', user.id),
-      sb.from('reset_desabafo').select('*').eq('user_id', user.id),
-      sb.from('reset_insights').select('*').eq('user_id', user.id)
+      sb.from('fenixfit_dias').select('*').eq('user_id', user.id),
+      sb.from('fenixfit_alcool').select('*').eq('user_id', user.id),
+      sb.from('fenixfit_medidas').select('*').eq('user_id', user.id),
+      sb.from('fenixfit_desabafo').select('*').eq('user_id', user.id),
+      sb.from('fenixfit_insights').select('*').eq('user_id', user.id)
     ])
 
     if (diasR.error) throw diasR.error
@@ -94,7 +94,7 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
     })
     write('insights', insightsMap)
 
-    localStorage.setItem('reset:lastSync', new Date().toISOString())
+    localStorage.setItem('fenixfit:lastSync', new Date().toISOString())
 
     return { ok: true }
   } catch (e) {
@@ -109,7 +109,7 @@ export async function syncDia(log: DiaLog): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('reset_dias').upsert(
+  await sb.from('fenixfit_dias').upsert(
     {
       user_id: user.id,
       date: log.date,
@@ -130,7 +130,7 @@ export async function syncAlcool(r: AlcoolRegisto): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('reset_alcool').insert({
+  await sb.from('fenixfit_alcool').insert({
     id: r.id,
     user_id: user.id,
     timestamp: r.timestamp,
@@ -146,7 +146,7 @@ export async function syncMedida(m: MedidaRegisto): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('reset_medidas').insert({
+  await sb.from('fenixfit_medidas').insert({
     id: m.id,
     user_id: user.id,
     date: m.date,
@@ -165,7 +165,7 @@ export async function syncDesabafo(d: DesabafoEntry): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('reset_desabafo').insert({
+  await sb.from('fenixfit_desabafo').insert({
     id: d.id,
     user_id: user.id,
     timestamp: d.timestamp,
@@ -179,7 +179,7 @@ export async function syncInsight(c: InsightCache): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('reset_insights').upsert(
+  await sb.from('fenixfit_insights').upsert(
     {
       user_id: user.id,
       week_start: c.weekStart,
@@ -195,7 +195,7 @@ export async function syncProfile(p: Record<string, unknown>): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('reset_profile').upsert({
+  await sb.from('fenixfit_profile').upsert({
     user_id: user.id,
     nome: p.nome,
     sexo: p.sexo,
@@ -214,5 +214,5 @@ export async function syncProfile(p: Record<string, unknown>): Promise<void> {
 
 export function lastSyncTime(): string | null {
   if (typeof window === 'undefined') return null
-  return localStorage.getItem('reset:lastSync')
+  return localStorage.getItem('fenixfit:lastSync')
 }

@@ -1,7 +1,7 @@
-import Anthropic from '@anthropic-ai/sdk'
-import { NextResponse } from 'next/server'
+// Edge runtime compatível (Cloudflare Pages, Vercel Edge, Netlify Edge)
+// Não usa @anthropic-ai/sdk porque o SDK importa node:fs/path
 
-export const runtime = 'nodejs'
+export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 
 const SYSTEM_PROMPT = `És uma coach calma e factual, em diálogo com a Vivianne — Precision Nutrition Level 1.
@@ -38,56 +38,66 @@ type DadosSemana = {
 export async function POST(request: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
-    return NextResponse.json({ error: 'ANTHROPIC_API_KEY não configurada' }, { status: 500 })
+    return Response.json({ error: 'ANTHROPIC_API_KEY não configurada' }, { status: 500 })
   }
 
   let dados: DadosSemana
   try {
     dados = (await request.json()) as DadosSemana
   } catch {
-    return NextResponse.json({ error: 'JSON inválido' }, { status: 400 })
+    return Response.json({ error: 'JSON inválido' }, { status: 400 })
   }
 
   if (!dados.dias || dados.dias.length === 0) {
-    return NextResponse.json({ error: 'Sem dados da semana' }, { status: 400 })
+    return Response.json({ error: 'Sem dados da semana' }, { status: 400 })
   }
-
-  const client = new Anthropic({ apiKey })
 
   const userContent = construirContexto(dados)
 
   try {
-    const response = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 600,
-      system: [
-        {
-          type: 'text',
-          text: SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' }
-        }
-      ],
-      messages: [
-        {
-          role: 'user',
-          content: userContent
-        }
-      ]
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 600,
+        system: [
+          {
+            type: 'text',
+            text: SYSTEM_PROMPT,
+            cache_control: { type: 'ephemeral' }
+          }
+        ],
+        messages: [
+          { role: 'user', content: userContent }
+        ]
+      })
     })
 
-    const texto = response.content
+    if (!r.ok) {
+      const errBody = await r.text()
+      return Response.json({ error: `anthropic ${r.status}: ${errBody.slice(0, 200)}` }, { status: 500 })
+    }
+
+    const json = (await r.json()) as {
+      content: Array<{ type: string; text?: string }>
+      usage: { input_tokens: number; output_tokens: number; cache_creation_input_tokens?: number; cache_read_input_tokens?: number }
+    }
+
+    const texto = json.content
       .filter(b => b.type === 'text')
-      .map(b => (b as { text: string }).text)
+      .map(b => b.text ?? '')
       .join('\n')
       .trim()
 
-    return NextResponse.json({
-      texto,
-      usage: response.usage
-    })
+    return Response.json({ texto, usage: json.usage })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'erro desconhecido'
-    return NextResponse.json({ error: message }, { status: 500 })
+    return Response.json({ error: message }, { status: 500 })
   }
 }
 

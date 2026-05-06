@@ -22,8 +22,8 @@ export default function AlcoolPage() {
     const merged = Array.from(new Set([...EMOCOES_BASE, ...p.gatilhosAlcool]))
     setOpcoes(merged)
     const refresh = () => setRegistos(getAlcoolRegistos())
-    window.addEventListener('reset:storage', refresh)
-    return () => window.removeEventListener('reset:storage', refresh)
+    window.addEventListener('fenixfit:storage', refresh)
+    return () => window.removeEventListener('fenixfit:storage', refresh)
   }, [])
 
   const padroes = useMemo(() => {

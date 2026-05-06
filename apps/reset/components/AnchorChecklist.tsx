@@ -13,8 +13,8 @@ export default function AnchorChecklist({ date = isoDate() }: { date?: string })
   useEffect(() => {
     setLog(getDia(date))
     const onUpdate = () => setLog(getDia(date))
-    window.addEventListener('reset:storage', onUpdate)
-    return () => window.removeEventListener('reset:storage', onUpdate)
+    window.addEventListener('fenixfit:storage', onUpdate)
+    return () => window.removeEventListener('fenixfit:storage', onUpdate)
   }, [date])
 
   if (!log) return <div className="card h-72 animate-breathe" aria-hidden />

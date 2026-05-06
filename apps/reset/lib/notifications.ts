@@ -8,7 +8,7 @@ export type Lembrete = {
   ativo: boolean
 }
 
-const KEY = 'reset:lembretes'
+const KEY = 'fenixfit:lembretes'
 
 export const LEMBRETES_DEFAULT: Lembrete[] = [
   { id: 'pa', hora: '09:00', titulo: 'Pequeno-almoço', corpo: 'proteína + gordura na próxima hora.', ativo: true },
@@ -98,7 +98,7 @@ export function reagendarLembretes(): void {
     timers.push(id)
   })
 
-  localStorage.setItem('reset:lembretes-agendados', new Date().toISOString())
+  localStorage.setItem('fenixfit:lembretes-agendados', new Date().toISOString())
 }
 
 export function podeMostrarBoasVindas(): boolean {

@@ -3,7 +3,7 @@
 import { isoDate } from './dates'
 import { syncDia, syncAlcool, syncMedida, syncDesabafo, syncInsight } from './sync'
 
-const PREFIX = 'reset:'
+const PREFIX = 'fenixfit:'
 
 export type DiaLog = {
   date: string
@@ -63,7 +63,7 @@ function read<T>(key: string, fallback: T): T {
 function write<T>(key: string, value: T): void {
   if (typeof window === 'undefined') return
   localStorage.setItem(PREFIX + key, JSON.stringify(value))
-  window.dispatchEvent(new CustomEvent('reset:storage', { detail: { key } }))
+  window.dispatchEvent(new CustomEvent('fenixfit:storage', { detail: { key } }))
 }
 
 // ----- DIA LOG -----
@@ -231,5 +231,5 @@ export function limparTudoLocal(): void {
   ;['dias', 'alcool', 'medidas', 'desabafo', 'insights'].forEach(k => {
     localStorage.removeItem(PREFIX + k)
   })
-  window.dispatchEvent(new CustomEvent('reset:storage', { detail: { key: 'all' } }))
+  window.dispatchEvent(new CustomEvent('fenixfit:storage', { detail: { key: 'all' } }))
 }

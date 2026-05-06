@@ -46,8 +46,8 @@ export default function MetricasPage() {
       )
     }
     refresh()
-    window.addEventListener('reset:storage', refresh)
-    return () => window.removeEventListener('reset:storage', refresh)
+    window.addEventListener('fenixfit:storage', refresh)
+    return () => window.removeEventListener('fenixfit:storage', refresh)
   }, [])
 
   return (

@@ -1,7 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#F8F4EC"/>
-  <circle cx="256" cy="256" r="160" fill="none" stroke="#C9A961" stroke-width="6" stroke-dasharray="2 8"/>
-  <circle cx="256" cy="256" r="120" fill="none" stroke="#7A8450" stroke-width="3"/>
-  <text x="256" y="278" font-family="Georgia, serif" font-size="72" fill="#3D2817" text-anchor="middle" font-weight="400" letter-spacing="6">RESET</text>
-  <circle cx="256" cy="120" r="6" fill="#B8704A"/>
+  <rect width="512" height="512" rx="96" fill="#F6F1E8"/>
+  <g stroke="#B8924A" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M256 380 C 200 340, 160 280, 180 220 C 200 280, 240 300, 256 320 C 272 300, 312 280, 332 220 C 352 280, 312 340, 256 380 Z" fill="#B8924A" fill-opacity="0.08"/>
+    <path d="M256 320 L 256 220" />
+    <circle cx="256" cy="200" r="6" fill="#B8924A"/>
+  </g>
+  <text x="256" y="450" font-family="Georgia, serif" font-size="38" fill="#1F1814" text-anchor="middle" font-weight="400" letter-spacing="4">FÉNIX</text>
 </svg>

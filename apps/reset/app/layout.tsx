@@ -23,13 +23,13 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Reset · 60 dias',
-  description: 'companheira de jornada · 11 maio – 9 julho 2026',
+  title: 'FénixFit · 60 dias',
+  description: 'companheira de jornada · 60 dias',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Reset'
+    title: 'FénixFit'
   },
   icons: {
     icon: '/icon.svg',

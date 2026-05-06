@@ -27,8 +27,8 @@ export default function DiarioPage() {
   useEffect(() => {
     setLog(getDia(selecionada))
     const onUpdate = () => setLog(getDia(selecionada))
-    window.addEventListener('reset:storage', onUpdate)
-    return () => window.removeEventListener('reset:storage', onUpdate)
+    window.addEventListener('fenixfit:storage', onUpdate)
+    return () => window.removeEventListener('fenixfit:storage', onUpdate)
   }, [selecionada])
 
   const dias = useMemo(() => todosOsDias().map(d => isoDate(d)), [])

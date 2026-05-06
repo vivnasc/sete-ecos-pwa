@@ -13,8 +13,8 @@ export default function MedidasPage() {
   useEffect(() => {
     setMedidas(getMedidas())
     const refresh = () => setMedidas(getMedidas())
-    window.addEventListener('reset:storage', refresh)
-    return () => window.removeEventListener('reset:storage', refresh)
+    window.addEventListener('fenixfit:storage', refresh)
+    return () => window.removeEventListener('fenixfit:storage', refresh)
   }, [])
 
   const ultima = medidas[medidas.length - 1]

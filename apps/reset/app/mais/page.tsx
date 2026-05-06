@@ -103,7 +103,7 @@ export default function MaisPage() {
         </ul>
       </section>
 
-      <p className="text-faint text-center text-[11px]">reset · 60 dias</p>
+      <p className="text-faint text-center text-[11px]">fénixfit · 60 dias</p>
     </div>
   )
 }

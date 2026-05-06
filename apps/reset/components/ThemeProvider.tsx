@@ -28,7 +28,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const saved = (localStorage.getItem('reset:theme') as Theme | null) ?? 'system'
+    const saved = (localStorage.getItem('fenixfit:theme') as Theme | null) ?? 'system'
     setThemeState(saved)
     setEffective(resolveEffective(saved))
     setMounted(true)
@@ -39,7 +39,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const eff = resolveEffective(theme)
     setEffective(eff)
     document.documentElement.classList.toggle('dark', eff === 'dark')
-    localStorage.setItem('reset:theme', theme)
+    localStorage.setItem('fenixfit:theme', theme)
     const meta = document.querySelector('meta[name="theme-color"]')
     if (meta) meta.setAttribute('content', eff === 'dark' ? '#1a1410' : '#F8F4EC')
   }, [theme, mounted])

@@ -142,10 +142,10 @@ export default function SmartNow() {
     setLog(getDia())
     setNome(getProfile().nome)
     const refresh = () => setLog(getDia())
-    window.addEventListener('reset:storage', refresh)
+    window.addEventListener('fenixfit:storage', refresh)
     const tick = setInterval(() => setAgora(new Date()), 60000)
     return () => {
-      window.removeEventListener('reset:storage', refresh)
+      window.removeEventListener('fenixfit:storage', refresh)
       clearInterval(tick)
     }
   }, [])

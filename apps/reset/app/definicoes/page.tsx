@@ -261,7 +261,7 @@ export default function DefinicoesPage() {
       </section>
 
       <p className="text-faint pb-4 pt-2 text-center text-[10px]">
-        reset v1.0 · {new Date().toISOString().slice(0, 10)}
+        fénixfit v1.0 · {new Date().toISOString().slice(0, 10)}
       </p>
     </div>
   )

@@ -17,7 +17,7 @@ export type Profile = {
   emailSync: string
 }
 
-const KEY = 'reset:profile'
+const KEY = 'fenixfit:profile'
 
 const DEFAULT_PROFILE: Profile = {
   nome: 'Vivianne',
@@ -50,11 +50,11 @@ export function getProfile(): Profile {
 export function saveProfile(p: Partial<Profile>): Profile {
   const novo = { ...getProfile(), ...p }
   localStorage.setItem(KEY, JSON.stringify(novo))
-  window.dispatchEvent(new CustomEvent('reset:profile', { detail: novo }))
+  window.dispatchEvent(new CustomEvent('fenixfit:profile', { detail: novo }))
   return novo
 }
 
 export function resetProfile(): void {
   localStorage.removeItem(KEY)
-  window.dispatchEvent(new CustomEvent('reset:profile', { detail: DEFAULT_PROFILE }))
+  window.dispatchEvent(new CustomEvent('fenixfit:profile', { detail: DEFAULT_PROFILE }))
 }
