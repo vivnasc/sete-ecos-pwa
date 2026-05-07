@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import { todosOsDias, isoDate, fromIso, mesCurto } from '@/lib/dates'
 import { getTodosDias } from '@/lib/storage'
 import { ANCORAS } from '@/lib/data'
@@ -58,7 +57,7 @@ export default function Heatmap() {
               const cumpridas = tudo[iso] ?? 0
               const isFuturo = iso > hoje
               return (
-                <Link
+                <a
                   key={iso}
                   href={`/diario?d=${iso}`}
                   aria-label={`${d.getDate()} ${mesCurto(d)}: ${cumpridas} de ${total} âncoras`}

@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import { Wine, Moon, Sunrise, Sun, CloudMoon, Coffee, Dumbbell } from 'lucide-react'
 import { TREINO_SEMANAL } from '@/lib/data'
 import { diaSemana, statusDoDia, diaDoPlano } from '@/lib/dates'
@@ -167,7 +166,7 @@ export default function SmartNow() {
   }
 
   return (
-    <Link href={janela.acaoPrincipal.href} className="card-feature block animate-fade-in transition-elegant hover:shadow-ink">
+    <a href={janela.acaoPrincipal.href} className="card-feature block animate-fade-in transition-elegant hover:shadow-ink">
       <div className="flex items-center gap-2">
         <Icone size={14} strokeWidth={1.4} className={toneClasses[janela.acaoPrincipal.tone]} />
         <span className="label-cap">{janela.saudacao} · {janela.contexto}</span>
@@ -177,6 +176,6 @@ export default function SmartNow() {
       </p>
       <p className="text-soft mt-2 text-[14px]">{janela.acaoPrincipal.subtitulo}</p>
       <div className="mt-4 h-px w-8 bg-ouro" aria-hidden />
-    </Link>
+    </a>
   )
 }

@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { ArrowUpRight, Salad, Dumbbell, Sparkles, Pencil, Ruler, Settings, LogOut, Scale, Clock, Droplet, Activity, MessageCircle, Image as ImageIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { signOut } from '@/lib/auth'
@@ -60,7 +59,7 @@ export default function MaisPage() {
         <span className="label-cap px-1">Conta</span>
         <ul className="card-solid divide-y divide-[var(--hair)] !p-0">
           <li>
-            <Link
+            <a
               href="/definicoes"
               className="flex items-center gap-4 px-5 py-4 transition-elegant hover:bg-[var(--surface-soft)]"
             >
@@ -70,7 +69,7 @@ export default function MaisPage() {
                 <p className="text-faint text-[12px]">tema · perfil · lembretes · backup</p>
               </div>
               <ArrowUpRight size={16} strokeWidth={1.3} className="text-faint" />
-            </Link>
+            </a>
           </li>
           {configurado && session ? (
             <li>
@@ -103,7 +102,7 @@ function Seccao({ titulo, itens }: { titulo: string; itens: Item[] }) {
       <ul className="card-solid divide-y divide-[var(--hair)] !p-0">
         {itens.map(item => (
           <li key={item.href}>
-            <Link
+            <a
               href={item.href}
               className="flex items-center gap-4 px-5 py-4 transition-elegant hover:bg-[var(--surface-soft)]"
             >
@@ -113,7 +112,7 @@ function Seccao({ titulo, itens }: { titulo: string; itens: Item[] }) {
                 <p className="text-faint text-[12px]">{item.sub}</p>
               </div>
               <ArrowUpRight size={16} strokeWidth={1.3} className="text-faint" />
-            </Link>
+            </a>
           </li>
         ))}
       </ul>

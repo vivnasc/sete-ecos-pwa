@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import { ArrowUpRight, Sparkles, Moon, Wine, TrendingUp, Heart } from 'lucide-react'
 import Heatmap from '@/components/Heatmap'
 import TrendChart from '@/components/TrendChart'
@@ -64,9 +63,9 @@ export default function MetricasPage() {
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <span className="label-cap">Cintura · cm</span>
-          <Link href="/medidas" className="label-soft hover:opacity-70">
+          <a href="/medidas" className="label-soft hover:opacity-70">
             <ArrowUpRight size={14} strokeWidth={1.5} aria-label="Ir para medidas" />
-          </Link>
+          </a>
         </div>
         <TrendChart pontos={medidas} unidade="cm" cor="var(--ouro)" vazio="primeira medição cria o ponto de partida" />
       </section>
@@ -105,7 +104,7 @@ export default function MetricasPage() {
         )}
       </section>
 
-      <Link
+      <a
         href="/insights"
         className="card-feature flex items-center justify-between gap-4 transition-elegant hover:shadow-ink"
       >
@@ -118,7 +117,7 @@ export default function MetricasPage() {
           <p className="text-faint mt-1 text-[12px]">gerado por Claude · uma vez por semana</p>
         </div>
         <ArrowUpRight size={20} strokeWidth={1.3} className="text-faint" />
-      </Link>
+      </a>
     </div>
   )
 }

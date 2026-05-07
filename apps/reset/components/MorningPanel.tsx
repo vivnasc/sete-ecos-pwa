@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import { Sun, Check, Sunrise, Coffee, Dumbbell, Droplet, Scale } from 'lucide-react'
 import {
   getDia,
@@ -93,7 +92,7 @@ export default function MorningPanel() {
 
       {/* PESO + CINTURA inline */}
       {pesoHojeReg ? (
-        <Link href="/peso" className="block rounded-md p-3 bg-oliva/5 transition-elegant hover:bg-oliva/10">
+        <a href="/peso" className="block rounded-md p-3 bg-oliva/5 transition-elegant hover:bg-oliva/10">
           <div className="flex items-baseline gap-3">
             <Check size={14} strokeWidth={2} className="text-oliva" />
             <span className="font-serif text-[20px] tnum">{pesoHojeReg.peso}<span className="text-faint text-[11px] ml-0.5">kg</span></span>
@@ -102,7 +101,7 @@ export default function MorningPanel() {
             ) : null}
             <span className="ml-auto text-faint text-[10px] uppercase tracking-cap">registado</span>
           </div>
-        </Link>
+        </a>
       ) : (
         <div className="space-y-3">
           <div className="flex items-center gap-2">

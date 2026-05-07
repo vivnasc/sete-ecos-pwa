@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import { MessageCircle, ArrowUpRight } from 'lucide-react'
 import { isoDate } from '@/lib/dates'
 
@@ -47,7 +46,7 @@ export default function CoachGreetingCard() {
   const preview = texto.slice(0, corte).trim()
 
   return (
-    <Link href="/coach" className="card-feature block transition-elegant hover:shadow-ink">
+    <a href="/coach" className="card-feature block transition-elegant hover:shadow-ink">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MessageCircle size={14} strokeWidth={1.4} className="text-ouro" />
@@ -59,6 +58,6 @@ export default function CoachGreetingCard() {
         {preview}
         {corte < texto.length ? <span className="text-faint"> ...</span> : null}
       </p>
-    </Link>
+    </a>
   )
 }

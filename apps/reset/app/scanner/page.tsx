@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import { Sparkles, AlertCircle, TrendingUp, TrendingDown, Activity, Award, Target } from 'lucide-react'
 import {
   pontuarDia,
@@ -252,7 +251,7 @@ export default function ScannerPage() {
         </section>
       ) : null}
 
-      <Link href="/insights" className="card flex items-center justify-between gap-4 transition-elegant hover:bg-[var(--surface)]">
+      <a href="/insights" className="card flex items-center justify-between gap-4 transition-elegant hover:bg-[var(--surface)]">
         <div className="flex items-center gap-3">
           <Sparkles size={16} strokeWidth={1.4} className="text-ouro" />
           <div>
@@ -260,7 +259,7 @@ export default function ScannerPage() {
             <p className="text-faint text-[11px]">contexto + nuance · Claude</p>
           </div>
         </div>
-      </Link>
+      </a>
     </div>
   )
 }

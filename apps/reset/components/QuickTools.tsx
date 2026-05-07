@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Scale, Clock, Droplet, Activity, MessageCircle, Wine } from 'lucide-react'
 import { getProfile } from '@/lib/profile'
@@ -33,14 +32,14 @@ export default function QuickTools() {
         {itens.map(t => {
           const Icon = t.icon
           return (
-            <Link
+            <a
               key={t.href}
               href={t.href}
               className="card-solid flex flex-col items-center justify-center gap-2 !p-4 transition-elegant hover:shadow-hair-strong active:scale-95"
             >
               <Icon size={18} strokeWidth={1.3} className="text-ouro" />
               <span className="font-serif text-[13px] tracking-editorial text-soft">{t.label}</span>
-            </Link>
+            </a>
           )
         })}
       </div>

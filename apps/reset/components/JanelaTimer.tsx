@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Clock, Sun, Moon } from 'lucide-react'
 import {
@@ -32,7 +31,7 @@ export default function JanelaTimer() {
   }[janela.fonte]
 
   return (
-    <Link href="/jejum" className="card-feature block transition-elegant hover:shadow-ink">
+    <a href="/jejum" className="card-feature block transition-elegant hover:shadow-ink">
       <div className="flex items-baseline justify-between">
         <div className="flex items-center gap-2">
           {aberta ? (
@@ -89,6 +88,6 @@ export default function JanelaTimer() {
       ) : null}
 
       <p className="text-faint mt-4 text-[10px] uppercase tracking-cap">{fonte}</p>
-    </Link>
+    </a>
   )
 }

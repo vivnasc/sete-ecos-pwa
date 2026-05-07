@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { Plus, X, Wine, Pencil, Coffee } from 'lucide-react'
-import Link from 'next/link'
 
 export default function QuickLog() {
   const [aberto, setAberto] = useState(false)
@@ -61,7 +60,7 @@ function Atalho({
 }) {
   const colors = { terracota: 'text-terracota', ink: 'text-tinta dark:text-creme-escuro', ouro: 'text-ouro' }
   return (
-    <Link
+    <a
       href={href}
       onClick={onClose}
       className="flex items-center gap-4 rounded-lg p-3 transition-elegant hover:bg-[var(--surface-soft)]"
@@ -71,6 +70,6 @@ function Atalho({
         <p className="font-serif text-[16px]">{titulo}</p>
         <p className="text-faint text-[12px]">{sub}</p>
       </div>
-    </Link>
+    </a>
   )
 }

@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Calendar, BarChart3, Wine, MoreHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -30,9 +29,9 @@ export default function Navigation() {
           const active = href === '/' ? path === '/' : path.startsWith(href)
           return (
             <li key={href} className="flex-1">
-              <Link
+              {/* Tag <a> directa · força reload completo, evita chunk loading */}
+              <a
                 href={href}
-                prefetch={false}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
                   'flex flex-col items-center gap-0.5 rounded-md py-2 transition-elegant active:scale-95',
@@ -42,7 +41,7 @@ export default function Navigation() {
                 <Icon size={18} strokeWidth={1.3} aria-hidden />
                 <span className="text-[10px] tracking-wide">{label}</span>
                 {active ? <span className="mt-0.5 h-px w-3 bg-ouro" aria-hidden /> : <span className="mt-0.5 h-px w-3 bg-transparent" />}
-              </Link>
+              </a>
             </li>
           )
         })}
