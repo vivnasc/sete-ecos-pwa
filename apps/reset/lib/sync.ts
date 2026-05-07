@@ -359,7 +359,7 @@ export async function syncRefeicao(r: Refeicao): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('fenixfit_refeicoes').insert({
+  await sb.from('fenixfit_refeicoes').upsert({
     id: r.id,
     user_id: user.id,
     timestamp: r.timestamp,
@@ -372,6 +372,14 @@ export async function syncRefeicao(r: Refeicao): Promise<void> {
     contexto: r.contexto,
     sentir: r.sentir
   })
+}
+
+export async function removeRefeicaoSync(id: string): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  await sb.from('fenixfit_refeicoes').delete().eq('id', id).eq('user_id', user.id)
 }
 
 export async function syncProfile(p: Record<string, unknown>): Promise<void> {

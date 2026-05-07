@@ -1,7 +1,7 @@
 'use client'
 
 import { isoDate } from './dates'
-import { syncDia, syncAlcool, syncMedida, syncDesabafo, syncInsight, syncPeso, syncJejum, syncCiclo, syncCoachMensagem, syncRefeicao } from './sync'
+import { syncDia, syncAlcool, syncMedida, syncDesabafo, syncInsight, syncPeso, syncJejum, syncCiclo, syncCoachMensagem, syncRefeicao, removeRefeicaoSync } from './sync'
 
 const PREFIX = 'fenixfit:'
 
@@ -235,6 +235,14 @@ export function addRefeicao(r: Omit<Refeicao, 'id' | 'timestamp'> & { timestamp?
   write('refeicoes', all)
   void syncRefeicao(nova).catch(() => {})
   return nova
+}
+
+export function removeRefeicao(id: string): void {
+  const all = read<Refeicao[]>('refeicoes', [])
+  const filtradas = all.filter(r => r.id !== id)
+  if (filtradas.length === all.length) return
+  write('refeicoes', filtradas)
+  void removeRefeicaoSync(id).catch(() => {})
 }
 
 export function macrosDoDia(date = isoDate()): { proteina: number; carbo: number; gordura: number; calorias: number; refeicoes: number } {

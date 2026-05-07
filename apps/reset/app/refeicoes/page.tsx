@@ -7,6 +7,7 @@ import {
   getRefeicoes,
   getRefeicoesDoDia,
   addRefeicao,
+  removeRefeicao,
   macrosDoDia,
   type Refeicao,
   type RefeicaoTipo
@@ -86,11 +87,8 @@ export default function RefeicoesPage() {
   }
 
   const apagar = (id: string) => {
-    if (typeof window === 'undefined') return
-    const all = JSON.parse(localStorage.getItem('fenixfit:refeicoes') ?? '[]') as Refeicao[]
-    const filtrado = all.filter(r => r.id !== id)
-    localStorage.setItem('fenixfit:refeicoes', JSON.stringify(filtrado))
-    window.dispatchEvent(new CustomEvent('fenixfit:storage', { detail: { key: 'refeicoes' } }))
+    if (typeof window !== 'undefined' && !window.confirm('Apagar esta refeição?')) return
+    removeRefeicao(id)
     refresh()
   }
 
