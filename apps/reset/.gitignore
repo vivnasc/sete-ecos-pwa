@@ -1,0 +1,10 @@
+node_modules
+.next
+.vercel
+.wrangler
+out
+.env.local
+.env.production.local
+.env.development.local
+*.tsbuildinfo
+next-env.d.ts

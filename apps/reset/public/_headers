@@ -1,0 +1,72 @@
+/_next/static/chunks/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/_next/static/css/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/_next/static/media/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/manifest.json
+  Cache-Control: no-cache, no-store, must-revalidate
+  Content-Type: application/manifest+json
+
+/*.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/login
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/diario
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/peso
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/jejum
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/ciclo
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/scanner
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/coach
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/alcool
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/medidas
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/desabafo
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/insights
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/receitas
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/treino
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/metricas
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/mais
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/definicoes
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/logos
+  Cache-Control: no-cache, no-store, must-revalidate

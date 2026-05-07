@@ -1,0 +1,361 @@
+'use client'
+
+import { getSupabase } from './supabase'
+import { getUser } from './auth'
+import type { DiaLog, AlcoolRegisto, MedidaRegisto, DesabafoEntry, InsightCache, PesoLog, JejumLog, CicloLog, CoachMensagem } from './storage'
+
+const PREFIX = 'fenixfit:'
+
+function read<T>(key: string, fallback: T): T {
+  if (typeof window === 'undefined') return fallback
+  const raw = localStorage.getItem(PREFIX + key)
+  if (!raw) return fallback
+  try { return JSON.parse(raw) as T } catch { return fallback }
+}
+
+function write<T>(key: string, value: T): void {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(PREFIX + key, JSON.stringify(value))
+  window.dispatchEvent(new CustomEvent('fenixfit:storage', { detail: { key } }))
+}
+
+// ----- HIDRATAR LOCAL A PARTIR DO SUPABASE -----
+
+export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
+  const sb = getSupabase()
+  if (!sb) return { ok: false, erro: 'sb não configurado' }
+  const user = await getUser()
+  if (!user) return { ok: false, erro: 'sem sessão' }
+
+  try {
+    const [diasR, alcoolR, medidasR, desabafoR, insightsR, pesoR, jejumR, cicloR, profileR, coachR] = await Promise.all([
+      sb.from('fenixfit_dias').select('*').eq('user_id', user.id),
+      sb.from('fenixfit_alcool').select('*').eq('user_id', user.id),
+      sb.from('fenixfit_medidas').select('*').eq('user_id', user.id),
+      sb.from('fenixfit_desabafo').select('*').eq('user_id', user.id),
+      sb.from('fenixfit_insights').select('*').eq('user_id', user.id),
+      sb.from('fenixfit_peso').select('*').eq('user_id', user.id),
+      sb.from('fenixfit_jejum').select('*').eq('user_id', user.id),
+      sb.from('fenixfit_ciclo').select('*').eq('user_id', user.id),
+      sb.from('fenixfit_profile').select('*').eq('user_id', user.id).maybeSingle(),
+      sb.from('fenixfit_coach_chat').select('*').eq('user_id', user.id).order('timestamp', { ascending: true }).limit(500)
+    ])
+
+    if (diasR.error) throw diasR.error
+
+    // Profile · primeira coisa para garantir onboarding state
+    if (profileR.data) {
+      const p = profileR.data
+      const profile = {
+        nome: p.nome ?? '',
+        sexo: p.sexo ?? 'F',
+        pesoInicial: p.peso_inicial !== null ? Number(p.peso_inicial) : null,
+        cinturaInicial: p.cintura_inicial !== null ? Number(p.cintura_inicial) : null,
+        acordaTipico: p.acorda_tipico ?? '06:30',
+        deitaTipico: p.deita_tipico ?? '22:30',
+        treinoPreferido: p.treino_preferido ?? 'manhã',
+        gatilhosAlcool: p.gatilhos_alcool ?? [],
+        notificacoesAtivas: p.notificacoes_ativas ?? false,
+        onboardingCompleto: p.onboarding_completo ?? false,
+        inicioPlano: p.inicio_plano ?? '2026-05-11',
+        duracaoPlano: p.duracao_plano ?? 60,
+        syncSupabase: true,
+        emailSync: user.email ?? ''
+      }
+      localStorage.setItem('fenixfit:profile', JSON.stringify(profile))
+      window.dispatchEvent(new CustomEvent('fenixfit:profile', { detail: profile }))
+    }
+
+    const diasMap: Record<string, DiaLog> = {}
+    diasR.data?.forEach(d => {
+      diasMap[d.date] = {
+        date: d.date,
+        ancoras: d.ancoras ?? {},
+        treinoFeito: d.treino_feito,
+        caminhadaMin: d.caminhada_min,
+        sonoHoras: d.sono_horas !== null ? Number(d.sono_horas) : null,
+        energia: d.energia,
+        humor: d.humor,
+        notas: d.notas ?? ''
+      }
+    })
+    write('dias', diasMap)
+
+    const alcoolList: AlcoolRegisto[] = (alcoolR.data ?? []).map(a => ({
+      id: a.id,
+      timestamp: a.timestamp,
+      unidades: a.unidades,
+      emocao: a.emocao,
+      gatilho: a.gatilho,
+      decidiuBeber: a.decidiu_beber
+    }))
+    write('alcool', alcoolList)
+
+    const medidasList: MedidaRegisto[] = (medidasR.data ?? []).map(m => ({
+      id: m.id,
+      date: m.date,
+      cintura: m.cintura !== null ? Number(m.cintura) : null,
+      ancas: m.ancas !== null ? Number(m.ancas) : null,
+      coxa: m.coxa !== null ? Number(m.coxa) : null,
+      braco: m.braco !== null ? Number(m.braco) : null,
+      peso: m.peso !== null ? Number(m.peso) : null,
+      sentir: m.sentir ?? '',
+      mudou: m.mudou ?? ''
+    }))
+    write('medidas', medidasList)
+
+    const desabafoList: DesabafoEntry[] = (desabafoR.data ?? []).map(d => ({
+      id: d.id,
+      timestamp: d.timestamp,
+      texto: d.texto,
+      emocao: d.emocao ?? ''
+    }))
+    write('desabafo', desabafoList)
+
+    const insightsMap: Record<string, InsightCache> = {}
+    insightsR.data?.forEach(i => {
+      insightsMap[i.week_start] = {
+        weekStart: i.week_start,
+        texto: i.texto,
+        geradoEm: i.gerado_em
+      }
+    })
+    write('insights', insightsMap)
+
+    const pesoList: PesoLog[] = (pesoR.data ?? []).map(p => ({
+      id: p.id,
+      date: p.date,
+      peso: Number(p.peso),
+      cintura: p.cintura !== null && p.cintura !== undefined ? Number(p.cintura) : null,
+      hora: p.hora ?? '',
+      notas: p.notas ?? ''
+    }))
+    write('peso', pesoList)
+
+    const jejumList: JejumLog[] = (jejumR.data ?? []).map(j => ({
+      id: j.id,
+      date: j.date,
+      ultimaRefeicao: j.ultima_refeicao,
+      primeiraRefeicao: j.primeira_refeicao,
+      duracaoHoras: j.duracao_horas !== null ? Number(j.duracao_horas) : null,
+      meta: j.meta ?? 14,
+      completou: j.completou ?? false
+    }))
+    write('jejum', jejumList)
+
+    const cicloList: CicloLog[] = (cicloR.data ?? []).map(c => ({
+      id: c.id,
+      dataInicio: c.data_inicio,
+      duracaoCiclo: c.duracao_ciclo,
+      duracaoMenstruacao: c.duracao_menstruacao,
+      fluxo: c.fluxo,
+      sintomas: c.sintomas ?? [],
+      cravings: c.cravings ?? [],
+      notas: c.notas ?? ''
+    }))
+    write('ciclo', cicloList)
+
+    const coachList: CoachMensagem[] = (coachR.data ?? []).map(m => ({
+      id: m.id,
+      timestamp: m.timestamp,
+      role: m.role,
+      content: m.content
+    }))
+    write('coach-chat', coachList)
+
+    localStorage.setItem('fenixfit:lastSync', new Date().toISOString())
+
+    return { ok: true }
+  } catch (e) {
+    return { ok: false, erro: e instanceof Error ? e.message : 'erro' }
+  }
+}
+
+// ----- SYNC INDIVIDUAIS -----
+
+export async function syncDia(log: DiaLog): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  await sb.from('fenixfit_dias').upsert(
+    {
+      user_id: user.id,
+      date: log.date,
+      ancoras: log.ancoras,
+      treino_feito: log.treinoFeito,
+      caminhada_min: log.caminhadaMin,
+      sono_horas: log.sonoHoras,
+      energia: log.energia,
+      humor: log.humor,
+      notas: log.notas
+    },
+    { onConflict: 'user_id,date' }
+  )
+}
+
+export async function syncAlcool(r: AlcoolRegisto): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  await sb.from('fenixfit_alcool').insert({
+    id: r.id,
+    user_id: user.id,
+    timestamp: r.timestamp,
+    unidades: r.unidades,
+    emocao: r.emocao,
+    gatilho: r.gatilho,
+    decidiu_beber: r.decidiuBeber
+  })
+}
+
+export async function syncMedida(m: MedidaRegisto): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  await sb.from('fenixfit_medidas').insert({
+    id: m.id,
+    user_id: user.id,
+    date: m.date,
+    cintura: m.cintura,
+    ancas: m.ancas,
+    coxa: m.coxa,
+    braco: m.braco,
+    peso: m.peso,
+    sentir: m.sentir,
+    mudou: m.mudou
+  })
+}
+
+export async function syncDesabafo(d: DesabafoEntry): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  await sb.from('fenixfit_desabafo').insert({
+    id: d.id,
+    user_id: user.id,
+    timestamp: d.timestamp,
+    texto: d.texto,
+    emocao: d.emocao
+  })
+}
+
+export async function syncInsight(c: InsightCache): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  await sb.from('fenixfit_insights').upsert(
+    {
+      user_id: user.id,
+      week_start: c.weekStart,
+      texto: c.texto,
+      gerado_em: c.geradoEm
+    },
+    { onConflict: 'user_id,week_start' }
+  )
+}
+
+export async function syncPeso(p: PesoLog): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  await sb.from('fenixfit_peso').upsert(
+    {
+      id: p.id,
+      user_id: user.id,
+      date: p.date,
+      peso: p.peso,
+      cintura: p.cintura,
+      hora: p.hora,
+      notas: p.notas
+    },
+    { onConflict: 'user_id,date' }
+  )
+}
+
+export async function syncJejum(j: JejumLog): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  await sb.from('fenixfit_jejum').upsert(
+    {
+      id: j.id,
+      user_id: user.id,
+      date: j.date,
+      ultima_refeicao: j.ultimaRefeicao,
+      primeira_refeicao: j.primeiraRefeicao,
+      duracao_horas: j.duracaoHoras,
+      meta: j.meta,
+      completou: j.completou
+    },
+    { onConflict: 'user_id,date' }
+  )
+}
+
+export async function syncCiclo(c: CicloLog): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  await sb.from('fenixfit_ciclo').upsert(
+    {
+      id: c.id,
+      user_id: user.id,
+      data_inicio: c.dataInicio,
+      duracao_ciclo: c.duracaoCiclo,
+      duracao_menstruacao: c.duracaoMenstruacao,
+      fluxo: c.fluxo,
+      sintomas: c.sintomas,
+      cravings: c.cravings,
+      notas: c.notas
+    },
+    { onConflict: 'user_id,data_inicio' }
+  )
+}
+
+export async function syncCoachMensagem(m: CoachMensagem): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  await sb.from('fenixfit_coach_chat').insert({
+    id: m.id,
+    user_id: user.id,
+    timestamp: m.timestamp,
+    role: m.role,
+    content: m.content
+  })
+}
+
+export async function syncProfile(p: Record<string, unknown>): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  await sb.from('fenixfit_profile').upsert({
+    user_id: user.id,
+    nome: p.nome,
+    sexo: p.sexo,
+    peso_inicial: p.pesoInicial,
+    cintura_inicial: p.cinturaInicial,
+    acorda_tipico: p.acordaTipico,
+    deita_tipico: p.deitaTipico,
+    treino_preferido: p.treinoPreferido,
+    gatilhos_alcool: p.gatilhosAlcool,
+    notificacoes_ativas: p.notificacoesAtivas,
+    onboarding_completo: p.onboardingCompleto,
+    inicio_plano: p.inicioPlano,
+    duracao_plano: p.duracaoPlano
+  })
+}
+
+export function lastSyncTime(): string | null {
+  if (typeof window === 'undefined') return null
+  return localStorage.getItem('fenixfit:lastSync')
+}

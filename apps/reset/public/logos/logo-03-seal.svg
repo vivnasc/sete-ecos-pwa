@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" fill="#F6F1E8"/>
+
+  <!-- Outer ring · hairline gold -->
+  <circle cx="512" cy="512" r="380" fill="none" stroke="#B8924A" stroke-width="2"/>
+
+  <!-- Inner ring -->
+  <circle cx="512" cy="512" r="320" fill="none" stroke="#B8924A" stroke-width="0.5" stroke-dasharray="3 6"/>
+
+  <!-- Curved text on top of ring · circular path -->
+  <defs>
+    <path id="topArc" d="M 132 512 A 380 380 0 0 1 892 512" fill="none"/>
+    <path id="bottomArc" d="M 892 512 A 380 380 0 0 1 132 512" fill="none"/>
+  </defs>
+
+  <text font-family="Helvetica, Arial, sans-serif" font-size="22"
+        fill="#B8924A" font-weight="500" letter-spacing="14">
+    <textPath href="#topArc" startOffset="50%" text-anchor="middle">
+      F É N I X F I T
+    </textPath>
+  </text>
+  <text font-family="Helvetica, Arial, sans-serif" font-size="18"
+        fill="#7A6E5F" font-weight="400" letter-spacing="10">
+    <textPath href="#bottomArc" startOffset="50%" text-anchor="middle">
+      SESSENTA DIAS
+    </textPath>
+  </text>
+
+  <!-- Center monogram FF -->
+  <g transform="translate(512, 530)">
+    <!-- Two interlocked F's -->
+    <text x="0" y="0" font-family="Georgia, serif" font-size="280"
+          fill="#1F1814" text-anchor="middle" font-weight="300" letter-spacing="-30"
+          dominant-baseline="middle">
+      ff
+    </text>
+  </g>
+
+  <!-- Ember dot above monogram -->
+  <circle cx="512" cy="370" r="6" fill="#B8704A"/>
+
+  <!-- Tiny serifs at the cardinal points of inner ring -->
+  <line x1="512" y1="180" x2="512" y2="195" stroke="#B8924A" stroke-width="1.5"/>
+  <line x1="512" y1="829" x2="512" y2="844" stroke="#B8924A" stroke-width="1.5"/>
+  <line x1="180" y1="512" x2="195" y2="512" stroke="#B8924A" stroke-width="1.5"/>
+  <line x1="829" y1="512" x2="844" y2="512" stroke="#B8924A" stroke-width="1.5"/>
+</svg>
