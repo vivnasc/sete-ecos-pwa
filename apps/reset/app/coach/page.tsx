@@ -24,7 +24,31 @@ type Mensagem = { role: 'user' | 'assistant'; content: string | ContentBlock[] }
 
 const ABERTURA_KEY = 'fenixfit:coach-abertura'
 
-function getAberturaHoje(): { date: string; texto: string } | null {
+// Conta dados registados hoje · usado para invalidar abertura quando há novos
+function fingerprintDadosHoje(): number {
+  if (typeof window === 'undefined') return 0
+  const hoje = isoDate()
+  let n = 0
+  try {
+    const refeicoes = JSON.parse(localStorage.getItem('fenixfit:refeicoes') ?? '[]')
+    n += refeicoes.filter((r: { timestamp?: string }) => (r.timestamp ?? '').slice(0, 10) === hoje).length
+    const peso = JSON.parse(localStorage.getItem('fenixfit:peso') ?? '[]')
+    n += peso.filter((p: { date?: string }) => p.date === hoje).length
+    const dias = JSON.parse(localStorage.getItem('fenixfit:dias') ?? '{}')
+    if (dias[hoje]) {
+      const d = dias[hoje]
+      n += Object.values(d.ancoras ?? {}).filter(Boolean).length
+      n += d.aguaCopos ?? 0
+      n += (d.suplementos ?? []).length
+      if (d.sonoHoras !== null && d.sonoHoras !== undefined) n++
+    }
+    const alcool = JSON.parse(localStorage.getItem('fenixfit:alcool') ?? '[]')
+    n += alcool.filter((a: { timestamp?: string }) => (a.timestamp ?? '').slice(0, 10) === hoje).length
+  } catch {}
+  return n
+}
+
+function getAberturaHoje(): { date: string; texto: string; geradoEm?: string; fingerprint?: number } | null {
   if (typeof window === 'undefined') return null
   try {
     const raw = localStorage.getItem(ABERTURA_KEY)
@@ -37,7 +61,29 @@ function getAberturaHoje(): { date: string; texto: string } | null {
 }
 
 function saveAberturaHoje(texto: string): void {
-  localStorage.setItem(ABERTURA_KEY, JSON.stringify({ date: isoDate(), texto }))
+  localStorage.setItem(ABERTURA_KEY, JSON.stringify({
+    date: isoDate(),
+    texto,
+    geradoEm: new Date().toISOString(),
+    fingerprint: fingerprintDadosHoje()
+  }))
+  window.dispatchEvent(new CustomEvent('fenixfit:abertura', {}))
+}
+
+function invalidarAbertura(): void {
+  if (typeof window === 'undefined') return
+  localStorage.removeItem(ABERTURA_KEY)
+  window.dispatchEvent(new CustomEvent('fenixfit:abertura', {}))
+}
+
+function isAberturaObsoleta(a: { geradoEm?: string; fingerprint?: number } | null): boolean {
+  if (!a) return false
+  const fpAgora = fingerprintDadosHoje()
+  const fpAbertura = a.fingerprint ?? 0
+  const idadeMs = a.geradoEm ? Date.now() - new Date(a.geradoEm).getTime() : Infinity
+  const muitoVelha = idadeMs > 3 * 60 * 60 * 1000
+  const dadosNovos = fpAgora - fpAbertura >= 3
+  return muitoVelha || dadosNovos
 }
 
 const SUGESTOES_INICIAIS = [
@@ -118,17 +164,19 @@ export default function CoachPage() {
     }
 
     const abertura = getAberturaHoje()
-    if (abertura && historico.length > 0) {
+    const obsoleta = isAberturaObsoleta(abertura)
+    if (abertura && !obsoleta && historico.length > 0) {
       setCarregandoAbertura(false)
       return
     }
-    if (abertura && historico.length === 0) {
+    if (abertura && !obsoleta && historico.length === 0) {
       const m = { role: 'assistant' as const, content: abertura.texto }
       setMensagens([m])
       saveCoachMensagem('assistant', abertura.texto)
       setCarregandoAbertura(false)
       return
     }
+    // se obsoleta, vai cair no path de regeneração abaixo
 
     let cancelado = false
     const gerarAbertura = async () => {
