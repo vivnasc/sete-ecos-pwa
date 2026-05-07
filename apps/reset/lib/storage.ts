@@ -1,7 +1,7 @@
 'use client'
 
 import { isoDate } from './dates'
-import { syncDia, syncAlcool, syncMedida, syncDesabafo, syncInsight, syncPeso, syncJejum, syncCiclo, syncCoachMensagem } from './sync'
+import { syncDia, syncAlcool, syncMedida, syncDesabafo, syncInsight, syncPeso, syncJejum, syncCiclo, syncCoachMensagem, syncRefeicao } from './sync'
 
 const PREFIX = 'fenixfit:'
 
@@ -78,6 +78,21 @@ export type CicloLog = {
   sintomas: string[]
   cravings: string[]
   notas: string
+}
+
+export type RefeicaoTipo = 'pa' | 'almoco' | 'snack' | 'jantar'
+
+export type Refeicao = {
+  id: string
+  timestamp: string
+  tipo: RefeicaoTipo
+  descricao: string
+  proteinaG: number | null
+  carboG: number | null
+  gorduraG: number | null
+  calorias: number | null
+  contexto: string
+  sentir: string
 }
 
 export type CoachMensagem = {
@@ -181,6 +196,40 @@ export function addDesabafo(d: Omit<DesabafoEntry, 'id' | 'timestamp'>): Desabaf
   write('desabafo', all)
   void syncDesabafo(novo).catch(() => {})
   return novo
+}
+
+// ----- REFEICOES -----
+
+export function getRefeicoes(): Refeicao[] {
+  return read<Refeicao[]>('refeicoes', []).sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+}
+
+export function getRefeicoesDoDia(date = isoDate()): Refeicao[] {
+  return getRefeicoes().filter(r => r.timestamp.slice(0, 10) === date)
+}
+
+export function addRefeicao(r: Omit<Refeicao, 'id' | 'timestamp'> & { timestamp?: string }): Refeicao {
+  const nova: Refeicao = {
+    ...r,
+    id: crypto.randomUUID(),
+    timestamp: r.timestamp ?? new Date().toISOString()
+  }
+  const all = read<Refeicao[]>('refeicoes', [])
+  all.push(nova)
+  write('refeicoes', all)
+  void syncRefeicao(nova).catch(() => {})
+  return nova
+}
+
+export function macrosDoDia(date = isoDate()): { proteina: number; carbo: number; gordura: number; calorias: number; refeicoes: number } {
+  const lista = getRefeicoesDoDia(date)
+  return {
+    proteina: lista.reduce((s, r) => s + (r.proteinaG ?? 0), 0),
+    carbo: lista.reduce((s, r) => s + (r.carboG ?? 0), 0),
+    gordura: lista.reduce((s, r) => s + (r.gorduraG ?? 0), 0),
+    calorias: lista.reduce((s, r) => s + (r.calorias ?? 0), 0),
+    refeicoes: lista.length
+  }
 }
 
 // ----- COACH CHAT (memória persistente) -----

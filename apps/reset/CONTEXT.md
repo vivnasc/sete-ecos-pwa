@@ -1,6 +1,6 @@
 # FénixFit · Estado e Contexto
 
-**Última actualização**: 7 maio 2026
+**Última actualização**: 7 maio 2026 (TIER -1 entregue)
 **Branch actual**: `claude/monorepo-lifestyle-app-ZAA2E`
 **URL produção**: `https://sete-ecos-pwa.pages.dev/`
 **Deploy**: Cloudflare Pages (auto-deploy do branch acima)
@@ -119,39 +119,57 @@ Sub-app dentro do monorepo `vivnasc/sete-ecos-pwa` (em `apps/reset/`).
 
 ## Plano em fases (próximas iterações)
 
-### ⚠️⚠️⚠️ TIER -1 · COACH CONVERSACIONAL COMO INTERFACE PRINCIPAL
+### ✅ TIER -1 · COACH CONVERSACIONAL · ENTREGUE
 
-**Pedido da Vivianne: "QUERIA QUE A COACH ESTIVESSE MESMO À MÃO. ELA PODE REGISTAR POR MIM? SERIA BEM MAIS FÁCIL"**
+A coach regista pela Vivianne via tool use nativo do Claude.
 
-Em vez de a Vivianne ir a `/peso`, `/jejum`, `/diario`, `/alcool` e preencher formulários, ela **fala com a coach** e a coach regista por ela.
+**O que está feito:**
+- `functions/api/coach.ts` agora envia 8 tools schemas ao Claude:
+  `registar_peso`, `registar_refeicao`, `registar_alcool`, `registar_dia`,
+  `registar_jejum`, `registar_ciclo`, `marcar_ancora`, `consultar_dados`.
+- `lib/coachTools.ts` (novo) · executores no cliente que escrevem em
+  localStorage + Supabase via funções já existentes em `lib/storage.ts`
+  (mantém RLS, funciona offline).
+- `app/coach/page.tsx` · loop de tool use no cliente: enquanto
+  `stop_reason === 'tool_use'`, executa as tools, devolve `tool_result`,
+  re-chama o Claude. Máximo 6 voltas.
+- UI: chips pequenos com `registado` por baixo das mensagens da coach
+  quando ela usou tools.
+- Coach passou a tab central na nav inferior (com destaque ouro).
+- FAB do botão `+` agora abre `/coach` (em vez do antigo modal de 3 atalhos).
+- Sinais (`/metricas`) movido para `/mais` → Práticas.
+- Refeições novas guardadas em `fenixfit_refeicoes` (RLS, schema
+  acrescentado a `supabase/schema.sql`).
+- `pa_proteina`, `caderno_copo` e `janela_9_19` são marcadas
+  automaticamente quando aplicável (PA com ≥25g proteína, registo de
+  álcool com `decidiu_beber=false`, jejum com `completou=true`).
 
-**Exemplos:**
-- "comi 3 ovos mexidos com abacate e folhas, eram 9h" → coach regista refeição PA, marca âncora `pa_proteina` ✓
-- "pesei 72.4 hoje" → coach regista peso
-- "estou em pré com vontade de beber, tive um dia difícil no banco" → coach abre caderno do copo, regista emoção+gatilho, dá observação
-- "dormi 5h, Cris acordou 3 vezes" → coach regista sono e nota
-- "treinei pernas, 30min" → coach marca âncora `treino_feito` ✓
+**Migração SQL pendente** (Vivianne aplicar uma vez no Supabase):
+```sql
+create table if not exists fenixfit_refeicoes (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  timestamp timestamptz not null default now(),
+  tipo text not null check (tipo in ('pa', 'almoco', 'snack', 'jantar')),
+  descricao text not null,
+  proteina_g numeric(5,1),
+  carbo_g numeric(5,1),
+  gordura_g numeric(5,1),
+  calorias int,
+  contexto text not null default '',
+  sentir text not null default '',
+  created_at timestamptz not null default now()
+);
+create index if not exists fenixfit_refeicoes_user_ts on fenixfit_refeicoes (user_id, timestamp desc);
+alter table fenixfit_refeicoes enable row level security;
+create policy "refeicoes_owner" on fenixfit_refeicoes for all
+  using (auth.uid() = user_id) with check (auth.uid() = user_id);
+```
 
-**Implementação técnica:**
-1. **Tool use nativo do Claude API** · definir tools:
-   - `registar_peso(peso, cintura?, hora)`
-   - `registar_refeicao(tipo, descricao, hora, macros_estimados?)`
-   - `registar_alcool(emocao, gatilho, decidiu_beber, unidades?)`
-   - `registar_dia(sono, energia, humor, notas?)`
-   - `registar_jejum_inicio(hora)` / `registar_jejum_fim(hora)`
-   - `registar_ciclo(data_inicio, fluxo, sintomas)`
-   - `marcar_ancora(id, feita)`
-   - `consultar_dados(area, periodo)` — para coach ler sem expor tudo no prompt
-2. **Coach próxima/sempre à mão**:
-   - FAB grande do coach sempre visível (canto inferior, prioridade visual)
-   - OU mover coach para tab central da nav inferior (substituir Sinais?)
-   - OU input voz com botão flutuante (Web Speech API)
-3. **Confirmação natural**:
-   - "registei. peso 72.4 às 7h32. -0.3 desde ontem."
-   - "pequeno-almoço marcado. âncora 02 ✓. proteína estimada: 28g."
-4. **Voice input** (Web Speech API) · ditas em vez de escrever
-
-**Esta é a feature que transforma a app**. Em vez de 7 formulários para preencher, é UMA conversa onde tudo acontece.
+**Por testar (próxima sessão):**
+- Voice input · Web Speech API no chat da coach (microfone)
+- Coach voice mode · TTS da abertura diária
+- Vista `/refeicoes` para ver/editar manualmente o que a coach registou
 
 ### ⚠️ TIER 0 · GAPS BÁSICOS (CRÍTICO · pedido directo da Vivianne)
 

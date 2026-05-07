@@ -2,7 +2,7 @@
 
 import { getSupabase } from './supabase'
 import { getUser } from './auth'
-import type { DiaLog, AlcoolRegisto, MedidaRegisto, DesabafoEntry, InsightCache, PesoLog, JejumLog, CicloLog, CoachMensagem } from './storage'
+import type { DiaLog, AlcoolRegisto, MedidaRegisto, DesabafoEntry, InsightCache, PesoLog, JejumLog, CicloLog, CoachMensagem, Refeicao } from './storage'
 
 const PREFIX = 'fenixfit:'
 
@@ -28,7 +28,7 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
   if (!user) return { ok: false, erro: 'sem sessão' }
 
   try {
-    const [diasR, alcoolR, medidasR, desabafoR, insightsR, pesoR, jejumR, cicloR, profileR, coachR] = await Promise.all([
+    const [diasR, alcoolR, medidasR, desabafoR, insightsR, pesoR, jejumR, cicloR, profileR, coachR, refeicoesR] = await Promise.all([
       sb.from('fenixfit_dias').select('*').eq('user_id', user.id),
       sb.from('fenixfit_alcool').select('*').eq('user_id', user.id),
       sb.from('fenixfit_medidas').select('*').eq('user_id', user.id),
@@ -38,7 +38,8 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       sb.from('fenixfit_jejum').select('*').eq('user_id', user.id),
       sb.from('fenixfit_ciclo').select('*').eq('user_id', user.id),
       sb.from('fenixfit_profile').select('*').eq('user_id', user.id).maybeSingle(),
-      sb.from('fenixfit_coach_chat').select('*').eq('user_id', user.id).order('timestamp', { ascending: true }).limit(500)
+      sb.from('fenixfit_coach_chat').select('*').eq('user_id', user.id).order('timestamp', { ascending: true }).limit(500),
+      sb.from('fenixfit_refeicoes').select('*').eq('user_id', user.id).order('timestamp', { ascending: true }).limit(1000)
     ])
 
     if (diasR.error) throw diasR.error
@@ -162,6 +163,20 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       content: m.content
     }))
     write('coach-chat', coachList)
+
+    const refeicoesList: Refeicao[] = (refeicoesR.data ?? []).map(r => ({
+      id: r.id,
+      timestamp: r.timestamp,
+      tipo: r.tipo,
+      descricao: r.descricao,
+      proteinaG: r.proteina_g !== null && r.proteina_g !== undefined ? Number(r.proteina_g) : null,
+      carboG: r.carbo_g !== null && r.carbo_g !== undefined ? Number(r.carbo_g) : null,
+      gorduraG: r.gordura_g !== null && r.gordura_g !== undefined ? Number(r.gordura_g) : null,
+      calorias: r.calorias !== null && r.calorias !== undefined ? Number(r.calorias) : null,
+      contexto: r.contexto ?? '',
+      sentir: r.sentir ?? ''
+    }))
+    write('refeicoes', refeicoesList)
 
     localStorage.setItem('fenixfit:lastSync', new Date().toISOString())
 
@@ -330,6 +345,26 @@ export async function syncCoachMensagem(m: CoachMensagem): Promise<void> {
     timestamp: m.timestamp,
     role: m.role,
     content: m.content
+  })
+}
+
+export async function syncRefeicao(r: Refeicao): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  await sb.from('fenixfit_refeicoes').insert({
+    id: r.id,
+    user_id: user.id,
+    timestamp: r.timestamp,
+    tipo: r.tipo,
+    descricao: r.descricao,
+    proteina_g: r.proteinaG,
+    carbo_g: r.carboG,
+    gordura_g: r.gorduraG,
+    calorias: r.calorias,
+    contexto: r.contexto,
+    sentir: r.sentir
   })
 }
 

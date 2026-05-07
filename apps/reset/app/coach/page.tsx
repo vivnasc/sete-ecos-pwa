@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Send, Sparkles } from 'lucide-react'
+import { Send, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react'
 import { ANCORAS } from '@/lib/data'
 import BackButton from '@/components/BackButton'
 import {
@@ -20,11 +20,18 @@ import {
   sonoMedio,
   getCoachMensagens,
   saveCoachMensagem,
-  type CoachMensagem
+  getRefeicoesDoDia,
+  macrosDoDia
 } from '@/lib/storage'
 import { isoDate } from '@/lib/dates'
+import { executeTool } from '@/lib/coachTools'
 
-type Mensagem = { role: 'user' | 'assistant'; content: string }
+type ContentBlock =
+  | { type: 'text'; text: string }
+  | { type: 'tool_use'; id: string; name: string; input: Record<string, unknown> }
+  | { type: 'tool_result'; tool_use_id: string; content: string; ok?: boolean; toolName?: string }
+
+type Mensagem = { role: 'user' | 'assistant'; content: string | ContentBlock[] }
 
 const ABERTURA_KEY = 'fenixfit:coach-abertura'
 
@@ -45,12 +52,23 @@ function saveAberturaHoje(texto: string): void {
 }
 
 const SUGESTOES_INICIAIS = [
-  'Como estou esta semana?',
-  'Porque acho que estou cansada?',
-  'Devo treinar hoje?',
-  'O que os meus padrões dizem sobre o álcool?',
-  'Como me preparo para a fase lútea?'
+  'pesei 72.4 hoje',
+  'comi 3 ovos com abacate ao pequeno-almoço',
+  'estou em pré com vontade de beber',
+  'dormi 5h, a Cris acordou 3 vezes',
+  'como estou esta semana?'
 ]
+
+const TOOL_LABELS: Record<string, string> = {
+  registar_peso: 'peso registado',
+  registar_refeicao: 'refeição registada',
+  registar_alcool: 'caderno do copo',
+  registar_dia: 'dia actualizado',
+  registar_jejum: 'jejum registado',
+  registar_ciclo: 'ciclo registado',
+  marcar_ancora: 'âncora marcada',
+  consultar_dados: 'a consultar dados'
+}
 
 function construirContexto(): string {
   const dias = getTodosDias()
@@ -72,6 +90,17 @@ function construirContexto(): string {
   linhas.push(`Dias sem álcool: ${diasSemAlcool()}`)
   const sm = sonoMedio()
   if (sm !== null) linhas.push(`Sono médio 7d: ${sm}h`)
+
+  const m = macrosDoDia()
+  linhas.push(`Refeições hoje: ${m.refeicoes}× · ${Math.round(m.proteina)}g P · ${Math.round(m.carbo)}g C · ${Math.round(m.gordura)}g G`)
+
+  const refHoje = getRefeicoesDoDia()
+  if (refHoje.length > 0) {
+    linhas.push('REFEIÇÕES HOJE:')
+    refHoje.forEach(r => {
+      linhas.push(`· ${r.timestamp.slice(11, 16)} ${r.tipo}: ${r.descricao.slice(0, 80)}`)
+    })
+  }
 
   if (ultimos7.length > 0) {
     linhas.push('')
@@ -128,6 +157,8 @@ function construirContexto(): string {
   return linhas.join('\n')
 }
 
+const MAX_TOOL_TURNS = 6
+
 export default function CoachPage() {
   const [mensagens, setMensagens] = useState<Mensagem[]>([])
   const [input, setInput] = useState('')
@@ -140,23 +171,18 @@ export default function CoachPage() {
     fimRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [mensagens, carregando])
 
-  // Carregar histórico persistente + gerar abertura se necessário
   useEffect(() => {
-    // 1. Carregar TODO o histórico de conversas (memória persistente)
-    const historico = getCoachMensagens(100).map(m => ({ role: m.role, content: m.content }))
+    const historico = getCoachMensagens(100).map(m => ({ role: m.role, content: m.content as string | ContentBlock[] }))
     if (historico.length > 0) {
       setMensagens(historico)
     }
 
-    // 2. Verificar se já houve abertura hoje
     const abertura = getAberturaHoje()
     if (abertura && historico.length > 0) {
-      // Histórico já tem mensagens · não regenera abertura
       setCarregandoAbertura(false)
       return
     }
     if (abertura && historico.length === 0) {
-      // Tem cache mas histórico vazio · usa cache
       const m = { role: 'assistant' as const, content: abertura.texto }
       setMensagens([m])
       saveCoachMensagem('assistant', abertura.texto)
@@ -164,7 +190,6 @@ export default function CoachPage() {
       return
     }
 
-    // 3. Gerar abertura nova (passa histórico para contexto)
     let cancelado = false
     const gerarAbertura = async () => {
       try {
@@ -174,7 +199,10 @@ export default function CoachPage() {
           body: JSON.stringify({
             abertura: true,
             contexto: construirContexto(),
-            historico: historico.slice(-20) // últimas 20 para contexto
+            historico: historico.slice(-20).map(m => ({
+              role: m.role,
+              content: typeof m.content === 'string' ? m.content : extractText(m.content)
+            }))
           })
         })
         if (!cancelado && r.ok) {
@@ -197,26 +225,62 @@ export default function CoachPage() {
     setErro(null)
     const userMsg = texto.trim()
     saveCoachMensagem('user', userMsg)
-    const novasMsgs: Mensagem[] = [...mensagens, { role: 'user', content: userMsg }]
-    setMensagens(novasMsgs)
+
+    // Conversa local · começa com toda a história + nova mensagem do utilizador
+    const conv: Mensagem[] = [...mensagens, { role: 'user', content: userMsg }]
+    setMensagens(conv)
     setInput('')
     setCarregando(true)
 
     try {
-      const r = await fetch('/api/coach', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          mensagens: novasMsgs.slice(-30), // últimas 30 mensagens enviadas à API
-          contexto: construirContexto()
+      const conversaActual = [...conv]
+      let turnos = 0
+      while (turnos < MAX_TOOL_TURNS) {
+        turnos++
+        const r = await fetch('/api/coach', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            mensagens: conversaActual.slice(-30),
+            contexto: construirContexto(),
+            tools_enabled: true
+          })
         })
-      })
-      const json = await r.json()
-      if (!r.ok) {
-        setErro(json.error ?? 'erro')
-      } else {
-        saveCoachMensagem('assistant', json.texto)
-        setMensagens(m => [...m, { role: 'assistant', content: json.texto }])
+        const json = await r.json()
+        if (!r.ok) {
+          setErro(json.error ?? 'erro')
+          break
+        }
+        const content: ContentBlock[] = json.content ?? []
+        const stopReason: string = json.stop_reason ?? 'end_turn'
+
+        // Adiciona resposta da coach (com possíveis tool_use)
+        conversaActual.push({ role: 'assistant', content })
+        setMensagens([...conversaActual])
+
+        if (stopReason !== 'tool_use') {
+          // Conversa terminou · guarda texto final no histórico persistente
+          const finalText = extractText(content)
+          if (finalText) saveCoachMensagem('assistant', finalText)
+          break
+        }
+
+        // Executa tools no cliente
+        const toolUses = content.filter((b): b is Extract<ContentBlock, { type: 'tool_use' }> => b.type === 'tool_use')
+        const toolResults: ContentBlock[] = toolUses.map(tu => {
+          const res = executeTool(tu.name, tu.input)
+          return {
+            type: 'tool_result',
+            tool_use_id: tu.id,
+            content: res.ok ? res.texto : `erro: ${res.erro}`,
+            ok: res.ok,
+            toolName: tu.name
+          }
+        })
+        conversaActual.push({ role: 'user', content: toolResults })
+        setMensagens([...conversaActual])
+        // Notifica outras vistas para recarregarem (pesos, jejuns, etc)
+        window.dispatchEvent(new CustomEvent('fenixfit:storage', { detail: { key: 'coach-tool' } }))
       }
     } catch (e) {
       setErro(e instanceof Error ? e.message : 'erro de rede')
@@ -233,15 +297,14 @@ export default function CoachPage() {
       <header className="space-y-2 pt-4">
         <p className="label-soft">coach</p>
         <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">
-          fala com os teus dados
+          fala · ela regista
         </h1>
         <div className="h-px w-12 bg-ouro" aria-hidden />
         <p className="text-faint mt-3 text-[12.5px] leading-relaxed">
-          a coach lê tudo o que registaste · responde com base no que vê.
+          diz-lhe o que comeste · pesaste · sentiste. ela escreve por ti.
         </p>
       </header>
 
-      {/* Abertura a carregar */}
       {carregandoAbertura ? (
         <div className="card-feature flex items-center justify-center gap-2 py-6">
           <span className="h-1.5 w-1.5 animate-breathe rounded-full bg-ouro" />
@@ -255,7 +318,7 @@ export default function CoachPage() {
         <section className="card-feature space-y-3">
           <div className="flex items-center gap-2">
             <Sparkles size={14} strokeWidth={1.4} className="text-ouro" />
-            <span className="label-cap">começa por aqui</span>
+            <span className="label-cap">tenta dizer</span>
           </div>
           <ul className="space-y-2">
             {SUGESTOES_INICIAIS.map((s, i) => (
@@ -273,20 +336,9 @@ export default function CoachPage() {
         </section>
       ) : null}
 
-      {/* Conversa */}
       <section className="space-y-3">
         {mensagens.map((m, i) => (
-          <div key={i} className={m.role === 'user' ? 'flex justify-end' : 'flex justify-start'}>
-            <div
-              className={
-                m.role === 'user'
-                  ? 'max-w-[85%] rounded-2xl rounded-br-sm bg-tinta px-4 py-2.5 text-[14px] text-creme dark:bg-ouro dark:text-tinta'
-                  : 'max-w-[85%] card-solid !p-4 font-serif text-[15px] leading-[1.55] tracking-editorial'
-              }
-            >
-              {m.content}
-            </div>
-          </div>
+          <MensagemBubble key={i} mensagem={m} />
         ))}
         {carregando ? (
           <div className="flex justify-start">
@@ -302,7 +354,6 @@ export default function CoachPage() {
 
       {erro ? <div className="rounded-lg bg-terracota/10 p-3 text-[12px] text-terracota">{erro}</div> : null}
 
-      {/* Input */}
       <section className="sticky bottom-24 space-y-2">
         <div className="card-solid flex items-end gap-2 !p-2">
           <textarea
@@ -314,7 +365,7 @@ export default function CoachPage() {
                 enviar(input)
               }
             }}
-            placeholder="responde · ou pergunta"
+            placeholder="o que comeste · pesaste · sentiste"
             rows={1}
             className="flex-1 resize-none border-0 bg-transparent px-2 py-2 text-[14px] focus:outline-none"
             style={{ minHeight: '40px', maxHeight: '120px' }}
@@ -331,8 +382,94 @@ export default function CoachPage() {
       </section>
 
       <p className="text-faint text-center text-[10px]">
-        a coach vê os teus dados · pergunta-te · só nesta sessão
+        a coach vê os teus dados · regista por ti · só nesta sessão
       </p>
     </div>
   )
+}
+
+function MensagemBubble({ mensagem }: { mensagem: Mensagem }) {
+  const { role, content } = mensagem
+
+  // Mensagem do utilizador (texto puro)
+  if (role === 'user' && typeof content === 'string') {
+    return (
+      <div className="flex justify-end">
+        <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-tinta px-4 py-2.5 text-[14px] text-creme dark:bg-ouro dark:text-tinta">
+          {content}
+        </div>
+      </div>
+    )
+  }
+
+  // Mensagem do utilizador com tool_results (esconde · só mostra chips de confirmação)
+  if (role === 'user' && Array.isArray(content)) {
+    const results = content.filter((b): b is Extract<ContentBlock, { type: 'tool_result' }> => b.type === 'tool_result')
+    if (results.length === 0) return null
+    return (
+      <div className="flex flex-wrap justify-start gap-1.5 pl-1">
+        {results.map((r, i) => (
+          <span
+            key={i}
+            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] ${
+              r.ok === false
+                ? 'bg-terracota/10 text-terracota'
+                : 'bg-ouro/10 text-ouro'
+            }`}
+          >
+            {r.ok === false ? <AlertCircle size={11} strokeWidth={1.6} /> : <CheckCircle2 size={11} strokeWidth={1.6} />}
+            {r.toolName ? TOOL_LABELS[r.toolName] ?? r.toolName : 'registado'}
+          </span>
+        ))}
+      </div>
+    )
+  }
+
+  // Mensagem do assistant
+  if (role === 'assistant') {
+    if (typeof content === 'string') {
+      if (!content.trim()) return null
+      return (
+        <div className="flex justify-start">
+          <div className="max-w-[85%] card-solid !p-4 font-serif text-[15px] leading-[1.55] tracking-editorial">
+            {content}
+          </div>
+        </div>
+      )
+    }
+    // Array · tem text e/ou tool_use
+    const textBlocks = content.filter((b): b is Extract<ContentBlock, { type: 'text' }> => b.type === 'text' && b.text.trim().length > 0)
+    const toolUses = content.filter((b): b is Extract<ContentBlock, { type: 'tool_use' }> => b.type === 'tool_use')
+    return (
+      <div className="space-y-1.5">
+        {textBlocks.map((b, i) => (
+          <div key={'t' + i} className="flex justify-start">
+            <div className="max-w-[85%] card-solid !p-4 font-serif text-[15px] leading-[1.55] tracking-editorial">
+              {b.text}
+            </div>
+          </div>
+        ))}
+        {toolUses.length > 0 ? (
+          <div className="flex flex-wrap justify-start gap-1.5 pl-1">
+            {toolUses.map(tu => (
+              <span key={tu.id} className="inline-flex items-center gap-1 rounded-full bg-ouro/5 px-2.5 py-1 text-[11px] text-soft">
+                <span className="h-1.5 w-1.5 animate-breathe rounded-full bg-ouro" />
+                {TOOL_LABELS[tu.name] ?? tu.name}
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    )
+  }
+  return null
+}
+
+function extractText(content: string | ContentBlock[]): string {
+  if (typeof content === 'string') return content
+  return content
+    .filter((b): b is Extract<ContentBlock, { type: 'text' }> => b.type === 'text')
+    .map(b => b.text)
+    .join('\n')
+    .trim()
 }

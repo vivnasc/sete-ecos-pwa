@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowUpRight, Salad, Dumbbell, Sparkles, Pencil, Ruler, Settings, LogOut, Scale, Clock, Droplet, Activity, MessageCircle, Image as ImageIcon } from 'lucide-react'
+import { ArrowUpRight, Salad, Dumbbell, Sparkles, Pencil, Ruler, Settings, LogOut, Scale, Clock, Droplet, Activity, MessageCircle, Image as ImageIcon, BarChart3 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { signOut } from '@/lib/auth'
 import { useRouter } from 'next/navigation'
@@ -31,8 +31,9 @@ export default function MaisPage() {
   ]
 
   const praticas = [
+    { href: '/coach', label: 'Coach', sub: 'fala · ela regista por ti', icon: MessageCircle },
+    { href: '/metricas', label: 'Sinais', sub: 'tendências · streaks · médias', icon: BarChart3 },
     { href: '/scanner', label: 'Scanner', sub: 'análise multi-variável · padrões cruzados', icon: Activity },
-    { href: '/coach', label: 'Coach', sub: 'conversa com os teus dados · IA', icon: MessageCircle },
     { href: '/desabafo', label: 'Desabafo', sub: 'só para ti', icon: Pencil },
     { href: '/insights', label: 'Insights', sub: 'leitura semanal', icon: Sparkles }
   ]

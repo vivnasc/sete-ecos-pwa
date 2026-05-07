@@ -198,6 +198,28 @@ alter table fenixfit_ciclo enable row level security;
 drop policy if exists "ciclo_owner" on fenixfit_ciclo;
 create policy "ciclo_owner" on fenixfit_ciclo for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+-- ===== REFEIÇÕES (registo do que come) =====
+create table if not exists fenixfit_refeicoes (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  timestamp timestamptz not null default now(),
+  tipo text not null check (tipo in ('pa', 'almoco', 'snack', 'jantar')),
+  descricao text not null,
+  proteina_g numeric(5,1),
+  carbo_g numeric(5,1),
+  gordura_g numeric(5,1),
+  calorias int,
+  contexto text not null default '',
+  sentir text not null default '',
+  created_at timestamptz not null default now()
+);
+
+create index if not exists fenixfit_refeicoes_user_ts on fenixfit_refeicoes (user_id, timestamp desc);
+
+alter table fenixfit_refeicoes enable row level security;
+drop policy if exists "refeicoes_owner" on fenixfit_refeicoes;
+create policy "refeicoes_owner" on fenixfit_refeicoes for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
 -- ===== COACH CHAT (memória persistente da coach) =====
 create table if not exists fenixfit_coach_chat (
   id uuid primary key default uuid_generate_v4(),
