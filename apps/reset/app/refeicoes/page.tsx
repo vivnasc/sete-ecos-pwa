@@ -13,6 +13,7 @@ import {
   type RefeicaoTipo
 } from '@/lib/storage'
 import { isoDate } from '@/lib/dates'
+import { getProfile } from '@/lib/profile'
 
 const TIPOS: { id: RefeicaoTipo; label: string }[] = [
   { id: 'pa', label: 'pequeno-almoço' },
@@ -20,8 +21,6 @@ const TIPOS: { id: RefeicaoTipo; label: string }[] = [
   { id: 'snack', label: 'snack' },
   { id: 'jantar', label: 'jantar' }
 ]
-
-const TARGET = { calorias: 1500, proteina: 100, carbo: 25, gordura: 110 }
 
 function deltaDate(date: string, dias: number): string {
   const d = new Date(date)
@@ -41,6 +40,7 @@ export default function RefeicoesPage() {
   const [date, setDate] = useState(isoDate())
   const [lista, setLista] = useState<Refeicao[]>([])
   const [macros, setMacros] = useState({ proteina: 0, carbo: 0, gordura: 0, calorias: 0, refeicoes: 0 })
+  const [metas, setMetas] = useState(getProfile().metas)
   const [adicionando, setAdicionando] = useState(false)
   const [novoTipo, setNovoTipo] = useState<RefeicaoTipo>('pa')
   const [descricao, setDescricao] = useState('')
@@ -55,8 +55,13 @@ export default function RefeicoesPage() {
   useEffect(() => {
     refresh()
     const handler = () => refresh()
+    const onProfile = () => setMetas(getProfile().metas)
     window.addEventListener('fenixfit:storage', handler)
-    return () => window.removeEventListener('fenixfit:storage', handler)
+    window.addEventListener('fenixfit:profile', onProfile)
+    return () => {
+      window.removeEventListener('fenixfit:storage', handler)
+      window.removeEventListener('fenixfit:profile', onProfile)
+    }
   }, [date])
 
   const submit = async () => {
@@ -155,14 +160,20 @@ export default function RefeicoesPage() {
           <span className="text-faint text-[11px] tnum">{macros.refeicoes}× refeições</span>
         </div>
         <div className="grid grid-cols-4 gap-2">
-          <Macro label="kcal" valor={macros.calorias} alvo={TARGET.calorias} />
-          <Macro label="P · g" valor={macros.proteina} alvo={TARGET.proteina} />
-          <Macro label="C · g" valor={macros.carbo} alvo={TARGET.carbo} reverso />
-          <Macro label="G · g" valor={macros.gordura} alvo={TARGET.gordura} />
+          <Macro label="kcal" valor={macros.calorias} alvo={metas.calorias} />
+          <Macro label="P · g" valor={macros.proteina} alvo={metas.proteinaG} />
+          <Macro label="C · g" valor={macros.carbo} alvo={metas.carboG} />
+          <Macro label="G · g" valor={macros.gordura} alvo={metas.gorduraG} />
         </div>
-        <p className="text-faint text-[10.5px] leading-relaxed">
-          alvo keto · 1500 kcal · 100g P · ≤25g C · 110g G. ajusta em definições.
-        </p>
+        {metas.calorias === null && metas.proteinaG === null ? (
+          <a href="/coach" className="block text-faint text-[10.5px] leading-relaxed hover:text-ouro">
+            sem metas definidas · diz à coach &ldquo;quero definir metas&rdquo; e ela ajusta contigo →
+          </a>
+        ) : (
+          <p className="text-faint text-[10.5px] leading-relaxed">
+            metas tuas · ajusta com a coach quando fizer sentido.
+          </p>
+        )}
       </section>
 
       {/* lista refeições */}
@@ -291,12 +302,19 @@ export default function RefeicoesPage() {
   )
 }
 
-function Macro({ label, valor, alvo, reverso }: { label: string; valor: number; alvo: number; reverso?: boolean }) {
+function Macro({ label, valor, alvo }: { label: string; valor: number; alvo: number | null }) {
+  if (alvo === null || alvo <= 0) {
+    return (
+      <div className="text-center">
+        <p className="editorial-num text-[22px] tnum leading-none text-soft">{Math.round(valor)}</p>
+        <p className="text-faint text-[9.5px] uppercase tracking-cap mt-1">{label}</p>
+        <p className="text-faint text-[9px] tnum">—</p>
+      </div>
+    )
+  }
   const pct = Math.round((valor / alvo) * 100)
   const acima = valor > alvo
-  const cor = reverso
-    ? acima ? 'text-terracota' : 'text-soft'
-    : acima ? 'text-ouro' : valor >= alvo * 0.7 ? 'text-soft' : 'text-faint'
+  const cor = acima ? 'text-ouro' : valor >= alvo * 0.7 ? 'text-soft' : 'text-faint'
   return (
     <div className="text-center">
       <p className={`editorial-num text-[22px] tnum leading-none ${cor}`}>{Math.round(valor)}</p>

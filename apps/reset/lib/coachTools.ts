@@ -6,6 +6,8 @@
 
 import { isoDate } from './dates'
 import { ANCORAS } from './data'
+import { getProfile, saveProfile, sugerirMetas, type Metas } from './profile'
+import { syncProfile } from './sync'
 import {
   saveDia,
   getDia,
@@ -16,6 +18,7 @@ import {
   getJejumHoje,
   saveCiclo,
   addRefeicao,
+  getRefeicoes,
   getPesos,
   getRefeicoesDoDia,
   macrosDoDia,
@@ -31,8 +34,13 @@ import {
   streakAncoras,
   diasSemAlcool,
   sonoMedio,
+  type Refeicao,
   type RefeicaoTipo
 } from './storage'
+
+function getRefeicoesNoIntervalo(desdeIso: string): Refeicao[] {
+  return getRefeicoes().filter(r => r.timestamp >= desdeIso)
+}
 
 // ===== SCHEMAS (enviados ao Claude) =====
 
@@ -219,6 +227,45 @@ export const COACH_TOOLS = [
         teve: { type: 'boolean', description: 'true se teve, false se não teve' }
       },
       required: ['teve']
+    }
+  },
+  {
+    name: 'definir_metas',
+    description: 'Define ou ajusta as metas diárias da Vivianne (calorias, proteína, carbo, gordura). Usar quando ela pedir para definir/ajustar metas, ou quando os dados mostrarem que devem mudar. Se não souberes os números, usa sugerir_metas primeiro. Passar null num campo para limpar.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        calorias: { type: 'number' },
+        proteina_g: { type: 'number' },
+        carbo_g: { type: 'number' },
+        gordura_g: { type: 'number' },
+        motivo: { type: 'string', description: 'Razão curta para ela (ex: "perder devagar 0.3kg/sem", "manter actual")' }
+      },
+      required: []
+    }
+  },
+  {
+    name: 'sugerir_metas',
+    description: 'Calcula sugestão de metas baseada no peso actual + objectivo + actividade. Devolve os números sem os definir. Usa quando ela perguntar "quanto devo comer".',
+    input_schema: {
+      type: 'object',
+      properties: {
+        objectivo: { type: 'string', enum: ['manter', 'perder_devagar', 'perder', 'ganhar'] },
+        actividade: { type: 'string', enum: ['sedentaria', 'leve', 'activa'], description: 'Default: leve' }
+      },
+      required: ['objectivo']
+    }
+  },
+  {
+    name: 'analisar_padroes',
+    description: 'Devolve padrões alimentares, sono, suplementação, sintomas peri etc dos últimos N dias. Usa antes de dar recomendações para basear no que vês. Áreas: alimentos_frequentes, macros_media, sono_padrao, sintomas_padrao, suplementos_padrao, alcool_padrao, peso_tendencia, tudo.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        area: { type: 'string', enum: ['alimentos_frequentes', 'macros_media', 'sono_padrao', 'sintomas_padrao', 'suplementos_padrao', 'alcool_padrao', 'peso_tendencia', 'tudo'] },
+        dias: { type: 'integer', description: 'Janela em dias, default 14' }
+      },
+      required: ['area']
     }
   },
   {
@@ -494,6 +541,163 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
     saveDia(dia)
     const total = Object.values(dia.ancoras).filter(Boolean).length
     return { ok: true, texto: `${valida.titulo}${feita ? ' ✓' : ' · desmarcada'} · ${total}/7 hoje` }
+  },
+
+  definir_metas(input) {
+    const perfil = getProfile()
+    const novas: Metas = { ...perfil.metas }
+    const cal = input.calorias === null ? null : num(input.calorias)
+    const p = input.proteina_g === null ? null : num(input.proteina_g)
+    const c = input.carbo_g === null ? null : num(input.carbo_g)
+    const g = input.gordura_g === null ? null : num(input.gordura_g)
+    if (cal !== undefined) novas.calorias = cal === null ? null : Math.round(cal)
+    if (p !== undefined) novas.proteinaG = p === null ? null : Math.round(p)
+    if (c !== undefined) novas.carboG = c === null ? null : Math.round(c)
+    if (g !== undefined) novas.gorduraG = g === null ? null : Math.round(g)
+    const guardado = saveProfile({ metas: novas })
+    void syncProfile(guardado as unknown as Record<string, unknown>).catch(() => {})
+    const motivo = str(input.motivo)
+    const partes: string[] = []
+    if (novas.calorias !== null) partes.push(`${novas.calorias} kcal`)
+    if (novas.proteinaG !== null) partes.push(`${novas.proteinaG}g P`)
+    if (novas.carboG !== null) partes.push(`${novas.carboG}g C`)
+    if (novas.gorduraG !== null) partes.push(`${novas.gorduraG}g G`)
+    return { ok: true, texto: `metas: ${partes.join(' · ') || 'limpas'}${motivo ? ' · ' + motivo : ''}` }
+  },
+
+  sugerir_metas(input) {
+    const peso = pesoUltimo()
+    if (!peso) return { ok: false, erro: 'sem peso registado · pesa-te primeiro ou diz-me o teu peso' }
+    const objectivo = str(input.objectivo) as 'manter' | 'perder_devagar' | 'perder' | 'ganhar'
+    if (!['manter', 'perder_devagar', 'perder', 'ganhar'].includes(objectivo)) return { ok: false, erro: 'objectivo inválido' }
+    const actividade = (str(input.actividade) || 'leve') as 'sedentaria' | 'leve' | 'activa'
+    const sug = sugerirMetas({ pesoKg: peso, objectivo, actividade })
+    return { ok: true, texto: `sugestão (${objectivo}, ${actividade}): ${sug.calorias} kcal · ${sug.proteinaG}g P · ${sug.carboG}g C · ${sug.gorduraG}g G` }
+  },
+
+  analisar_padroes(input) {
+    const area = str(input.area)
+    const dias = num(input.dias) ?? 14
+    const desde = new Date()
+    desde.setDate(desde.getDate() - dias)
+    const desdeIso = desde.toISOString()
+    const linhas: string[] = []
+
+    const fazAlimentos = () => {
+      const refeicoes = getRefeicoesNoIntervalo(desdeIso)
+      if (refeicoes.length === 0) {
+        linhas.push('alimentos: sem refeições registadas no período')
+        return
+      }
+      // contagem por descrição (palavras-chave normalizadas)
+      const contagem = new Map<string, number>()
+      refeicoes.forEach(r => {
+        const norm = r.descricao.toLowerCase()
+          .replace(/[^a-záéíóúâêôãõç\s]/g, '')
+          .split(/\s+/)
+          .filter(w => w.length > 3 && !['mexidos', 'grelhado', 'grelhada', 'cozido', 'cozida', 'assado', 'assada', 'salada', 'pequeno', 'almoço'].includes(w))
+        norm.forEach(w => contagem.set(w, (contagem.get(w) ?? 0) + 1))
+      })
+      const top = [...contagem.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8)
+      linhas.push(`alimentos top ${dias}d: ${top.map(([w, n]) => `${w}(${n})`).join(', ')}`)
+    }
+
+    const fazMacros = () => {
+      const refeicoes = getRefeicoesNoIntervalo(desdeIso)
+      if (refeicoes.length === 0) {
+        linhas.push('macros: sem dados')
+        return
+      }
+      // agregar por dia
+      const porDia = new Map<string, { p: number; c: number; g: number; k: number; n: number }>()
+      refeicoes.forEach(r => {
+        const date = r.timestamp.slice(0, 10)
+        const cur = porDia.get(date) ?? { p: 0, c: 0, g: 0, k: 0, n: 0 }
+        cur.p += r.proteinaG ?? 0
+        cur.c += r.carboG ?? 0
+        cur.g += r.gorduraG ?? 0
+        cur.k += r.calorias ?? 0
+        cur.n += 1
+        porDia.set(date, cur)
+      })
+      const total = [...porDia.values()].reduce((acc, d) => ({ p: acc.p + d.p, c: acc.c + d.c, g: acc.g + d.g, k: acc.k + d.k, n: acc.n + d.n }), { p: 0, c: 0, g: 0, k: 0, n: 0 })
+      const ndias = porDia.size
+      linhas.push(`macros média/dia (${ndias}d com registo): ${Math.round(total.k / ndias)} kcal · ${Math.round(total.p / ndias)}g P · ${Math.round(total.c / ndias)}g C · ${Math.round(total.g / ndias)}g G · ${(total.n / ndias).toFixed(1)} refeições/dia`)
+      // vs metas
+      const metas = getProfile().metas
+      if (metas.calorias) {
+        const med = total.k / ndias
+        const delta = med - metas.calorias
+        linhas.push(`vs meta kcal: ${delta > 0 ? '+' : ''}${Math.round(delta)} (${Math.round(med)}/${metas.calorias})`)
+      }
+      if (metas.proteinaG) {
+        const med = total.p / ndias
+        const delta = med - metas.proteinaG
+        linhas.push(`vs meta proteína: ${delta > 0 ? '+' : ''}${Math.round(delta)}g (${Math.round(med)}/${metas.proteinaG})`)
+      }
+    }
+
+    const fazSono = () => {
+      const ds = getTodosDias().filter(d => d.date >= desdeIso.slice(0, 10))
+      const comSono = ds.filter(d => d.sonoHoras !== null)
+      if (comSono.length === 0) { linhas.push('sono: sem dados'); return }
+      const med = comSono.reduce((s, d) => s + (d.sonoHoras ?? 0), 0) / comSono.length
+      const qual = ds.filter(d => d.qualidadeSono !== null)
+      const medQ = qual.length > 0 ? qual.reduce((s, d) => s + (d.qualidadeSono ?? 0), 0) / qual.length : null
+      const acordou = ds.filter(d => d.acordouVezes !== null)
+      const medA = acordou.length > 0 ? acordou.reduce((s, d) => s + (d.acordouVezes ?? 0), 0) / acordou.length : null
+      linhas.push(`sono ${dias}d: média ${med.toFixed(1)}h${medQ ? ` · qualidade ${medQ.toFixed(1)}/5` : ''}${medA !== null ? ` · acordou ${medA.toFixed(1)}×/noite` : ''} (${comSono.length}/${ds.length} dias)`)
+    }
+
+    const fazSintomas = () => {
+      const ds = getTodosDias().filter(d => d.date >= desdeIso.slice(0, 10))
+      const contagem = new Map<string, number>()
+      ds.forEach(d => d.sintomasPeri.forEach(s => contagem.set(s, (contagem.get(s) ?? 0) + 1)))
+      if (contagem.size === 0) { linhas.push('sintomas peri: nenhum registado'); return }
+      const top = [...contagem.entries()].sort((a, b) => b[1] - a[1])
+      linhas.push(`sintomas peri ${dias}d: ${top.map(([s, n]) => `${s.replace('_', ' ')}(${n}x)`).join(', ')}`)
+    }
+
+    const fazSuplementos = () => {
+      const ds = getTodosDias().filter(d => d.date >= desdeIso.slice(0, 10))
+      const contagem = new Map<string, number>()
+      ds.forEach(d => d.suplementos.forEach(s => contagem.set(s, (contagem.get(s) ?? 0) + 1)))
+      if (contagem.size === 0) { linhas.push('suplementos: nenhum registado'); return }
+      const ndias = ds.length
+      const linha = [...contagem.entries()].map(([s, n]) => `${s.replace('_', ' ')} ${n}/${ndias}d`).join(' · ')
+      linhas.push(`suplementos ${dias}d: ${linha}`)
+    }
+
+    const fazAlcool = () => {
+      const al = getAlcoolRegistos().filter(a => a.timestamp >= desdeIso)
+      if (al.length === 0) { linhas.push(`álcool ${dias}d: nenhum registo`); return }
+      const bebeu = al.filter(a => a.decidiuBeber)
+      const naoBebeu = al.filter(a => !a.decidiuBeber)
+      const totalUnidades = bebeu.reduce((s, a) => s + a.unidades, 0)
+      const emocoes = new Map<string, number>()
+      al.forEach(a => emocoes.set(a.emocao, (emocoes.get(a.emocao) ?? 0) + 1))
+      const topEmocoes = [...emocoes.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3)
+      linhas.push(`álcool ${dias}d: ${bebeu.length}× bebeu (${totalUnidades}u total) · ${naoBebeu.length}× resistiu · emoções: ${topEmocoes.map(([e, n]) => `${e}(${n})`).join(', ')}`)
+    }
+
+    const fazPeso = () => {
+      const ps = getPesos().filter(p => p.date >= desdeIso.slice(0, 10))
+      if (ps.length < 2) { linhas.push('peso: sem dados suficientes'); return }
+      const primeiro = ps[0].peso
+      const ultimo = ps[ps.length - 1].peso
+      const delta = ultimo - primeiro
+      linhas.push(`peso ${dias}d: ${primeiro}→${ultimo} (${delta > 0 ? '+' : ''}${delta.toFixed(1)}kg em ${ps.length} pesagens)`)
+    }
+
+    if (area === 'alimentos_frequentes' || area === 'tudo') fazAlimentos()
+    if (area === 'macros_media' || area === 'tudo') fazMacros()
+    if (area === 'sono_padrao' || area === 'tudo') fazSono()
+    if (area === 'sintomas_padrao' || area === 'tudo') fazSintomas()
+    if (area === 'suplementos_padrao' || area === 'tudo') fazSuplementos()
+    if (area === 'alcool_padrao' || area === 'tudo') fazAlcool()
+    if (area === 'peso_tendencia' || area === 'tudo') fazPeso()
+    if (linhas.length === 0) return { ok: false, erro: `área desconhecida: ${area}` }
+    return { ok: true, texto: linhas.join('\n') }
   },
 
   consultar_dados(input) {

@@ -26,6 +26,7 @@ import {
 import { isoDate } from '@/lib/dates'
 import { executeTool } from '@/lib/coachTools'
 import { useSpeechRecognition } from '@/lib/useSpeechRecognition'
+import { getProfile } from '@/lib/profile'
 
 type ContentBlock =
   | { type: 'text'; text: string }
@@ -75,15 +76,25 @@ const TOOL_LABELS: Record<string, string> = {
   registar_steps: 'passos registados',
   registar_rhr: 'RHR registado',
   marcar_ancora: 'âncora marcada',
+  definir_metas: 'metas ajustadas',
+  sugerir_metas: 'a calcular sugestão',
+  analisar_padroes: 'a analisar padrões',
   consultar_dados: 'a consultar dados'
 }
 
-function construirContexto(): string {
+function construirContexto(comAnalise = false): string {
   const dias = getTodosDias()
   const ultimos7 = dias.slice(-7)
   const linhas: string[] = []
 
   linhas.push(`Hoje: ${isoDate()}`)
+  const profile = getProfile()
+  if (profile.metas.calorias !== null || profile.metas.proteinaG !== null) {
+    const m = profile.metas
+    linhas.push(`Metas: ${m.calorias ?? '—'} kcal · ${m.proteinaG ?? '—'}g P · ${m.carboG ?? '—'}g C · ${m.gorduraG ?? '—'}g G`)
+  } else {
+    linhas.push('Metas: ainda não definidas (podes propor calcular sugestão)')
+  }
   const dia = diaActualCiclo()
   const fase = faseActualCiclo()
   if (dia !== null && fase !== null) linhas.push(`Ciclo: dia ${dia}, fase ${nomeFase(fase)}`)
@@ -180,6 +191,15 @@ function construirContexto(): string {
     })
   }
 
+  if (comAnalise) {
+    const r = executeTool('analisar_padroes', { area: 'tudo', dias: 14 })
+    if (r.ok) {
+      linhas.push('')
+      linhas.push('ANÁLISE 14 DIAS:')
+      linhas.push(r.texto)
+    }
+  }
+
   return linhas.join('\n')
 }
 
@@ -237,7 +257,7 @@ export default function CoachPage() {
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
             abertura: true,
-            contexto: construirContexto(),
+            contexto: construirContexto(true),
             historico: historico.slice(-20).map(m => ({
               role: m.role,
               content: typeof m.content === 'string' ? m.content : extractText(m.content)

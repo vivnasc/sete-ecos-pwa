@@ -63,7 +63,8 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
         syncSupabase: true,
         emailSync: user.email ?? '',
         ancorasActivas: p.ancoras_activas ?? undefined,
-        ancorasCustom: p.ancoras_custom ?? []
+        ancorasCustom: p.ancoras_custom ?? [],
+        metas: p.metas ?? { calorias: null, proteinaG: null, carboG: null, gorduraG: null }
       }
       localStorage.setItem('fenixfit:profile', JSON.stringify(profile))
       window.dispatchEvent(new CustomEvent('fenixfit:profile', { detail: profile }))
@@ -416,7 +417,8 @@ export async function syncProfile(p: Record<string, unknown>): Promise<void> {
     inicio_plano: p.inicioPlano,
     duracao_plano: p.duracaoPlano,
     ancoras_activas: p.ancorasActivas,
-    ancoras_custom: p.ancorasCustom
+    ancoras_custom: p.ancorasCustom,
+    metas: p.metas ?? null
   })
 }
 

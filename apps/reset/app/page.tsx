@@ -56,7 +56,8 @@ export default function HomePage() {
     diaCiclo: null as number | null,
     fase: null as ReturnType<typeof faseActualCiclo>,
     jejum: null as ReturnType<typeof jejumActualHoras>,
-    macros: { proteina: 0, carbo: 0, gordura: 0, calorias: 0, refeicoes: 0 }
+    macros: { proteina: 0, carbo: 0, gordura: 0, calorias: 0, refeicoes: 0 },
+    metas: { calorias: null as number | null, proteinaG: null as number | null, carboG: null as number | null, gorduraG: null as number | null }
   })
 
   useEffect(() => {
@@ -77,7 +78,8 @@ export default function HomePage() {
         diaCiclo: diaActualCiclo(),
         fase: faseActualCiclo(),
         jejum: jejumActualHoras(),
-        macros: macrosDoDia()
+        macros: macrosDoDia(),
+        metas: p.metas
       })
     }
     refresh()
@@ -247,10 +249,10 @@ export default function HomePage() {
           {metrics.macros.refeicoes > 0 ? (
             <>
               <div className="mt-3 grid grid-cols-4 gap-2 text-center">
-                <MacroMini label="kcal" valor={metrics.macros.calorias} alvo={1500} />
-                <MacroMini label="P" valor={metrics.macros.proteina} alvo={100} />
-                <MacroMini label="C" valor={metrics.macros.carbo} alvo={25} reverso />
-                <MacroMini label="G" valor={metrics.macros.gordura} alvo={110} />
+                <MacroMini label="kcal" valor={metrics.macros.calorias} alvo={metrics.metas.calorias} />
+                <MacroMini label="P" valor={metrics.macros.proteina} alvo={metrics.metas.proteinaG} />
+                <MacroMini label="C" valor={metrics.macros.carbo} alvo={metrics.metas.carboG} />
+                <MacroMini label="G" valor={metrics.macros.gordura} alvo={metrics.metas.gorduraG} />
               </div>
               <p className="text-faint mt-2 text-[10.5px] tracking-cap uppercase">ver detalhe →</p>
             </>
@@ -355,12 +357,19 @@ function ResumoEditorial({
   )
 }
 
-function MacroMini({ label, valor, alvo, reverso }: { label: string; valor: number; alvo: number; reverso?: boolean }) {
-  const pct = alvo > 0 ? Math.round((valor / alvo) * 100) : 0
+function MacroMini({ label, valor, alvo }: { label: string; valor: number; alvo: number | null }) {
+  if (alvo === null || alvo <= 0) {
+    return (
+      <div>
+        <p className="editorial-num text-[20px] tnum leading-none text-soft">{Math.round(valor)}</p>
+        <p className="text-faint text-[9.5px] uppercase tracking-cap mt-1">{label}</p>
+        <p className="text-faint text-[8.5px] tnum">—</p>
+      </div>
+    )
+  }
+  const pct = Math.round((valor / alvo) * 100)
   const acima = valor > alvo
-  const cor = reverso
-    ? acima ? 'text-terracota' : 'text-soft'
-    : acima ? 'text-ouro' : valor >= alvo * 0.7 ? 'text-soft' : 'text-faint'
+  const cor = acima ? 'text-ouro' : valor >= alvo * 0.7 ? 'text-soft' : 'text-faint'
   return (
     <div>
       <p className={`editorial-num text-[20px] tnum leading-none ${cor}`}>{Math.round(valor)}</p>

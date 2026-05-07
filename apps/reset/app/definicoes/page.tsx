@@ -5,7 +5,8 @@ import { Sun, Moon, Monitor, Bell, Download, Upload, RotateCcw, Cloud, CloudOff,
 import { useTheme } from '@/components/ThemeProvider'
 import { PALETAS } from '@/lib/palettes'
 import { useAuth } from '@/components/AuthGate'
-import { getProfile, saveProfile, type Profile } from '@/lib/profile'
+import { getProfile, saveProfile, sugerirMetas, type Profile, type Metas } from '@/lib/profile'
+import { pesoUltimo } from '@/lib/storage'
 import BackButton from '@/components/BackButton'
 import { exportarTudo, importarTudo, limparTudoLocal } from '@/lib/storage'
 import { hidratarTudo, lastSyncTime } from '@/lib/sync'
@@ -148,6 +149,9 @@ export default function DefinicoesPage() {
 
       {/* ÂNCORAS */}
       <AncorasEditor perfil={perfil} setPerfil={setPerfil} />
+
+      {/* METAS */}
+      <MetasSection perfil={perfil} guardarPerfil={guardarPerfil} />
 
       {/* TEMA */}
       <section className="space-y-3">
@@ -325,6 +329,160 @@ export default function DefinicoesPage() {
         fénixfit v1.0 · {new Date().toISOString().slice(0, 10)}
       </p>
     </div>
+  )
+}
+
+function MetasSection({ perfil, guardarPerfil }: { perfil: Profile; guardarPerfil: (p: Partial<Profile>) => void }) {
+  const m = perfil.metas
+  const [valor, setValor] = useState({
+    calorias: m.calorias !== null ? String(m.calorias) : '',
+    proteinaG: m.proteinaG !== null ? String(m.proteinaG) : '',
+    carboG: m.carboG !== null ? String(m.carboG) : '',
+    gorduraG: m.gorduraG !== null ? String(m.gorduraG) : ''
+  })
+  const [objectivo, setObjectivo] = useState<'manter' | 'perder_devagar' | 'perder' | 'ganhar'>('perder_devagar')
+  const [actividade, setActividade] = useState<'sedentaria' | 'leve' | 'activa'>('leve')
+
+  useEffect(() => {
+    setValor({
+      calorias: m.calorias !== null ? String(m.calorias) : '',
+      proteinaG: m.proteinaG !== null ? String(m.proteinaG) : '',
+      carboG: m.carboG !== null ? String(m.carboG) : '',
+      gorduraG: m.gorduraG !== null ? String(m.gorduraG) : ''
+    })
+  }, [m.calorias, m.proteinaG, m.carboG, m.gorduraG])
+
+  const guardar = (campo: keyof Metas, v: string) => {
+    setValor(prev => ({ ...prev, [campo]: v }))
+    const n = v === '' ? null : Number(v)
+    if (v !== '' && (isNaN(n as number) || (n as number) < 0)) return
+    guardarPerfil({ metas: { ...m, [campo]: n } })
+  }
+
+  const sugerir = () => {
+    const peso = pesoUltimo() ?? perfil.pesoInicial
+    if (!peso) {
+      window.alert('precisa de pelo menos um peso registado para sugerir.')
+      return
+    }
+    const sugestao = sugerirMetas({ pesoKg: peso, objectivo, actividade })
+    setValor({
+      calorias: String(sugestao.calorias),
+      proteinaG: String(sugestao.proteinaG),
+      carboG: String(sugestao.carboG),
+      gorduraG: String(sugestao.gorduraG)
+    })
+    guardarPerfil({ metas: sugestao })
+  }
+
+  const limpar = () => {
+    setValor({ calorias: '', proteinaG: '', carboG: '', gorduraG: '' })
+    guardarPerfil({ metas: { calorias: null, proteinaG: null, carboG: null, gorduraG: null } })
+  }
+
+  return (
+    <section className="space-y-3">
+      <span className="label-cap">Metas diárias</span>
+      <div className="card-solid space-y-4">
+        <p className="text-faint text-[11.5px] leading-relaxed">
+          tu defines o que faz sentido. ajusta com o tempo. a coach usa estes números como referência, não como regra.
+        </p>
+
+        <div className="grid grid-cols-4 gap-2">
+          <Field label="kcal">
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              value={valor.calorias}
+              onChange={e => guardar('calorias', e.target.value)}
+              placeholder="—"
+              className="input-base text-center tnum"
+            />
+          </Field>
+          <Field label="Prot · g">
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              value={valor.proteinaG}
+              onChange={e => guardar('proteinaG', e.target.value)}
+              placeholder="—"
+              className="input-base text-center tnum"
+            />
+          </Field>
+          <Field label="Carb · g">
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              value={valor.carboG}
+              onChange={e => guardar('carboG', e.target.value)}
+              placeholder="—"
+              className="input-base text-center tnum"
+            />
+          </Field>
+          <Field label="Gord · g">
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              value={valor.gorduraG}
+              onChange={e => guardar('gorduraG', e.target.value)}
+              placeholder="—"
+              className="input-base text-center tnum"
+            />
+          </Field>
+        </div>
+
+        <details className="rounded-lg bg-[var(--surface-soft)] p-3">
+          <summary className="label-cap cursor-pointer">sugerir números</summary>
+          <div className="space-y-3 pt-3">
+            <Field label="Objectivo">
+              <select
+                value={objectivo}
+                onChange={e => setObjectivo(e.target.value as typeof objectivo)}
+                className="input-base"
+              >
+                <option value="manter">manter peso</option>
+                <option value="perder_devagar">perder devagar</option>
+                <option value="perder">perder</option>
+                <option value="ganhar">ganhar massa</option>
+              </select>
+            </Field>
+            <Field label="Actividade média">
+              <select
+                value={actividade}
+                onChange={e => setActividade(e.target.value as typeof actividade)}
+                className="input-base"
+              >
+                <option value="sedentaria">sedentária (sem treino)</option>
+                <option value="leve">leve (treino 2-3×/sem)</option>
+                <option value="activa">activa (treino 4+×/sem)</option>
+              </select>
+            </Field>
+            <button
+              onClick={sugerir}
+              className="btn-primary w-full py-2.5 text-[12.5px]"
+            >
+              calcular sugestão
+            </button>
+            <p className="text-faint text-[10.5px] leading-relaxed">
+              cálculo simples baseado em peso · 1.6g proteína/kg, 0.9g gordura/kg. ajusta depois pelos resultados.
+            </p>
+          </div>
+        </details>
+
+        {(m.calorias !== null || m.proteinaG !== null) ? (
+          <button
+            onClick={limpar}
+            className="text-faint text-[11px] hover:text-terracota"
+          >
+            limpar metas
+          </button>
+        ) : null}
+      </div>
+    </section>
   )
 }
 
