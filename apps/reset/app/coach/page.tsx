@@ -1,17 +1,19 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Send, Sparkles, CheckCircle2, AlertCircle, Mic, MicOff } from 'lucide-react'
+import { Send, Sparkles, CheckCircle2, AlertCircle, Mic, MicOff, Camera, Loader2 } from 'lucide-react'
 import BackButton from '@/components/BackButton'
 import VoiceModeOverlay from '@/components/VoiceModeOverlay'
 import {
   getCoachMensagens,
-  saveCoachMensagem
+  saveCoachMensagem,
+  addRefeicao
 } from '@/lib/storage'
 import { isoDate } from '@/lib/dates'
 import { executeTool } from '@/lib/coachTools'
 import { useSpeechRecognition } from '@/lib/useSpeechRecognition'
 import { construirContexto } from '@/lib/coachContext'
+import { analisarFotoRefeicao } from '@/lib/fotoRefeicao'
 
 type ContentBlock =
   | { type: 'text'; text: string }
@@ -78,7 +80,9 @@ export default function CoachPage() {
   const [carregandoAbertura, setCarregandoAbertura] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
   const [vozAberta, setVozAberta] = useState(false)
+  const [analisandoFoto, setAnalisandoFoto] = useState(false)
   const fimRef = useRef<HTMLDivElement>(null)
+  const fotoInputRef = useRef<HTMLInputElement>(null)
 
   const voz = useSpeechRecognition({
     lang: 'pt-PT',
@@ -145,6 +149,43 @@ export default function CoachPage() {
     gerarAbertura()
     return () => { cancelado = true }
   }, [])
+
+  const onFoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+    setErro(null)
+    setAnalisandoFoto(true)
+    try {
+      const r = await analisarFotoRefeicao(file)
+      addRefeicao({
+        tipo: r.tipo,
+        descricao: r.descricao,
+        timestamp: new Date().toISOString(),
+        proteinaG: r.proteinaG,
+        carboG: r.carboG,
+        gorduraG: r.gorduraG,
+        calorias: r.calorias,
+        contexto: 'foto',
+        sentir: r.observacao
+      })
+      const tipoLeg = { pa: 'pequeno-almoço', almoco: 'almoço', snack: 'snack', jantar: 'jantar' }[r.tipo]
+      const macroParts: string[] = []
+      if (r.proteinaG !== null) macroParts.push(`${Math.round(r.proteinaG)}g P`)
+      if (r.carboG !== null) macroParts.push(`${Math.round(r.carboG)}g C`)
+      if (r.gorduraG !== null) macroParts.push(`${Math.round(r.gorduraG)}g G`)
+      if (r.calorias !== null) macroParts.push(`${r.calorias} kcal`)
+      const userTxt = `[foto] ${r.descricao}`
+      const respTxt = `${tipoLeg} registado · ${r.descricao}. estimei ${macroParts.join(' · ')}.${r.observacao ? ' ' + r.observacao : ''}`
+      saveCoachMensagem('user', userTxt)
+      saveCoachMensagem('assistant', respTxt)
+      setMensagens(prev => [...prev, { role: 'user', content: userTxt }, { role: 'assistant', content: respTxt }])
+      window.dispatchEvent(new CustomEvent('fenixfit:storage', { detail: { key: 'foto-refeicao' } }))
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : 'erro a analisar foto')
+    }
+    setAnalisandoFoto(false)
+  }
 
   const enviar = async (texto: string) => {
     if (!texto.trim() || carregando) return
@@ -315,6 +356,22 @@ export default function CoachPage() {
             rows={1}
             className="flex-1 resize-none border-0 bg-transparent px-2 py-2 text-[14px] focus:outline-none"
             style={{ minHeight: '40px', maxHeight: '120px' }}
+          />
+          <button
+            onClick={() => fotoInputRef.current?.click()}
+            disabled={carregando || analisandoFoto}
+            aria-label="Foto da refeição"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--surface-soft)] text-soft transition-elegant active:scale-95 hover:text-ouro disabled:opacity-30"
+          >
+            {analisandoFoto ? <Loader2 size={14} strokeWidth={1.6} className="animate-spin" /> : <Camera size={14} strokeWidth={1.6} />}
+          </button>
+          <input
+            ref={fotoInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={onFoto}
+            className="hidden"
           />
           {voz.suportado ? (
             <button
