@@ -1,19 +1,19 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Scale, Clock, Droplet, Activity, MessageCircle, Wine, UtensilsCrossed } from 'lucide-react'
+import { Scale, Clock, Droplet, Wine, UtensilsCrossed } from 'lucide-react'
 import { getProfile } from '@/lib/profile'
 
 type Tool = { href: string; label: string; icon: typeof Scale; soFeminino?: boolean }
 
+// Coach já é a aba central da nav com destaque · scanner está em "aprofundar".
+// Aqui só ferramentas de registo rápido que abres todos os dias.
 const TODAS: Tool[] = [
-  { href: '/coach', label: 'coach', icon: MessageCircle },
   { href: '/refeicoes', label: 'refeições', icon: UtensilsCrossed },
   { href: '/peso', label: 'peso', icon: Scale },
   { href: '/jejum', label: 'jejum', icon: Clock },
   { href: '/ciclo', label: 'ciclo', icon: Droplet, soFeminino: true },
-  { href: '/alcool', label: 'copo', icon: Wine },
-  { href: '/scanner', label: 'scanner', icon: Activity }
+  { href: '/alcool', label: 'copo', icon: Wine }
 ]
 
 export default function QuickTools() {
@@ -28,20 +28,24 @@ export default function QuickTools() {
 
   const itens = TODAS.filter(t => !t.soFeminino || sexo !== 'M')
 
+  // F/O: 5 itens em 5 col · 1 linha limpa
+  // M:    4 itens em 4 col · 1 linha limpa
+  const cols = itens.length === 5 ? 'grid-cols-5' : 'grid-cols-4'
+
   return (
     <section className="space-y-2">
       <span className="label-cap px-1">acesso rápido</span>
-      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+      <div className={`grid ${cols} gap-1.5 sm:gap-2`}>
         {itens.map(t => {
           const Icon = t.icon
           return (
             <a
               key={t.href}
               href={t.href}
-              className="card-solid flex flex-col items-center justify-center gap-2 !p-4 transition-elegant hover:shadow-hair-strong active:scale-95"
+              className="card-solid flex flex-col items-center justify-center gap-1.5 !p-3 transition-elegant hover:shadow-hair-strong active:scale-95"
             >
-              <Icon size={18} strokeWidth={1.3} className="text-ouro" />
-              <span className="font-serif text-[13px] tracking-editorial text-soft">{t.label}</span>
+              <Icon size={16} strokeWidth={1.3} className="text-ouro" />
+              <span className="font-serif text-[11.5px] tracking-editorial text-soft">{t.label}</span>
             </a>
           )
         })}
@@ -49,3 +53,4 @@ export default function QuickTools() {
     </section>
   )
 }
+

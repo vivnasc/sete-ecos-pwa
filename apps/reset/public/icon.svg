@@ -1,50 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Fundo escuro · alto contraste -->
-  <rect width="512" height="512" rx="112" fill="#1F1814"/>
+  <!-- Fundo · ouro sólido para sobressair em tabs escuras e claras -->
+  <rect width="512" height="512" rx="96" fill="#C9A961"/>
 
-  <!-- Phoenix silhueta sólida · asas em V a subir + chama -->
-  <g fill="#C9A961">
-    <!-- Asa esquerda -->
-    <path d="M 256 240
-             L 80 140
-             C 130 220, 200 260, 256 270
-             Z"/>
+  <!-- Chama única, gorda, ocupa quase todo o ícone -->
+  <!-- Forma simples · lê a 16×16 -->
+  <path d="M 256 64
+           C 318 130, 356 178, 374 226
+           C 396 286, 392 340, 358 384
+           C 332 416, 296 432, 256 432
+           C 216 432, 180 416, 154 384
+           C 120 340, 116 286, 138 226
+           C 156 178, 194 130, 256 64 Z"
+        fill="#1F1814"/>
 
-    <!-- Asa direita -->
-    <path d="M 256 240
-             L 432 140
-             C 382 220, 312 260, 256 270
-             Z"/>
-
-    <!-- Cabeça e pescoço -->
-    <ellipse cx="256" cy="200" rx="22" ry="28"/>
-
-    <!-- Corpo -->
-    <path d="M 234 250
-             L 278 250
-             L 274 320
-             L 238 320
-             Z"/>
-
-    <!-- Cauda em chamas · 3 línguas -->
-    <path d="M 226 320
-             L 200 420
-             L 222 380
-             L 234 430
-             L 248 360
-             L 256 460
-             L 264 360
-             L 278 430
-             L 290 380
-             L 312 420
-             L 286 320
-             Z"/>
-
-    <!-- Bico · pequena ponta -->
-    <path d="M 256 175
-             L 264 165
-             L 256 165
-             Z"
-          fill="#1F1814"/>
-  </g>
+  <!-- Núcleo interior da chama · alto contraste -->
+  <path d="M 256 192
+           C 280 224, 296 256, 296 296
+           C 296 332, 280 360, 256 360
+           C 232 360, 216 332, 216 296
+           C 216 256, 232 224, 256 192 Z"
+        fill="#C9A961"/>
 </svg>
