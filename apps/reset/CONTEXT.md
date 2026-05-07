@@ -1,6 +1,6 @@
 # FénixFit · Estado e Contexto
 
-**Última actualização**: 7 maio 2026 (TIER -1 + maioria TIER 0 + voz entregues)
+**Última actualização**: 7 maio 2026 (TIER -1 + TIER 0 + voz Siri-like + foto Vision + análise + marcos + travel mode + Apple Health import + email)
 **Branch actual**: `claude/monorepo-lifestyle-app-ZAA2E`
 **URL produção**: `https://sete-ecos-pwa.pages.dev/`
 **Deploy**: Cloudflare Pages (auto-deploy do branch acima)
@@ -171,6 +171,46 @@ create policy "refeicoes_owner" on fenixfit_refeicoes for all
 - Coach voice mode · TTS da abertura diária
 - Vista `/refeicoes` para ver/editar manualmente o que a coach registou
 
+### ✅ Estado actual completo (7 maio 2026)
+
+**Coach é o canal principal** com 25+ tools, voz Siri-like, fotos. Vê secções abaixo.
+
+### ✅ Coach analytics (correlações + comparações + lista compras)
+- `analisar_padroes` agora inclui:
+  - **correlacoes**: detecta álcool→sono, sono→humor, álcool→sintomas peri, magnésio→sono. Só reporta se delta significativo.
+  - **comparar_semanas**: 7d actuais vs 7d anteriores em sono, energia, humor, água, álcool, proteína média.
+  - **nutrientes**: proteína vs alvo, vegetais por refeição, ómega-3, suplementos regularidade, fibra, hidratação · com flags ⚠.
+- Tool nova `gerar_lista_compras`: analisa N dias, identifica ingredientes recorrentes (ovos, frango, peixe, abacate, folhas, matapa, xima, etc), estima quantidades para uma semana × N pessoas.
+
+### ✅ Marcos animados (MarcoCard no Hoje)
+- Aparece quando atinges Dia 7/14/21/30/45/60 (até 2 dias depois).
+- Selo logo-03 com anel pulsante, título editorial, texto contemplativo.
+- Botão "arquivar" marca como visto.
+
+### ✅ Foto antes/depois (/medidas)
+- Câmara no formulário · comprime para 800px JPEG.
+- Card "antes · depois" no topo: primeira vs última lado a lado, com delta de cintura colorido.
+- Guarda em `foto_frente_url` (coluna existente em fenixfit_medidas).
+
+### ✅ Modo viagem (toggle em /definicoes)
+- `profile.modoViagem` boolean · sync `fenixfit_profile.modo_viagem`.
+- Coach respeita: não cobra streaks, suaviza exigências, foca no que controlas.
+
+### ✅ Voz contínua (toggle "auto" no overlay de voz)
+- Off (default): falas → ela responde · paras.
+- On: falas → ela responde · auto-restart do mic após TTS terminar.
+- Conversa sem tocar entre cada turno · mãos ocupadas.
+
+### ✅ Apple Health import (/importar-saude)
+- File picker JSON com parser flexível (3 formatos: simples, Auto Health Export, lista directa).
+- Prévia + importação para fenixfit_dias (steps, rhr, sonoHoras).
+- Instruções para Auto Health Export ou Shortcut próprio.
+
+### ✅ Resumo por email (/api/resumo-email + botão em /definicoes)
+- Endpoint que pede resumo ao Claude e envia via Resend.
+- HTML editorial · pt-PT · tom espelho calmo.
+- Chamada manual via botão. Para automático às 21h → configurar cron externo (ou worker Cloudflare separado).
+
 ### ✅ Voz · entregue
 
 - `lib/useSpeechRecognition.ts` · hook com Web Speech API (pt-PT).
@@ -245,6 +285,74 @@ alter table fenixfit_dias add column if not exists rhr int;
 9. **Marcos/milestones** — Dias 7, 14, 30, 60 com selo logo-03
 10. **Ramadão mode** — janela alimentar adaptada
 11. **Notificações Web Push reais** — funcionar com app fechada
+
+## SQL pendente · consolidado
+
+Aplicar uma vez no SQL editor do Supabase (todas idempotentes):
+
+```sql
+-- v2.0 (todas as colunas novas até 7 maio 2026)
+alter table fenixfit_dias add column if not exists agua_copos int not null default 0;
+alter table fenixfit_dias add column if not exists suplementos text[] not null default '{}';
+alter table fenixfit_dias add column if not exists transito_intestinal text check (transito_intestinal in ('sim','nao') or transito_intestinal is null);
+alter table fenixfit_dias add column if not exists hora_deitar time;
+alter table fenixfit_dias add column if not exists qualidade_sono int check (qualidade_sono between 1 and 5);
+alter table fenixfit_dias add column if not exists acordou_vezes int;
+alter table fenixfit_dias add column if not exists sintomas_peri text[] not null default '{}';
+alter table fenixfit_dias add column if not exists steps int;
+alter table fenixfit_dias add column if not exists rhr int;
+
+alter table fenixfit_profile add column if not exists metas jsonb;
+alter table fenixfit_profile add column if not exists modo_viagem boolean not null default false;
+alter table fenixfit_profile add column if not exists ancoras_activas text[] not null default '{}';
+alter table fenixfit_profile add column if not exists ancoras_custom jsonb not null default '[]';
+
+-- tabelas novas
+create table if not exists fenixfit_refeicoes (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  timestamp timestamptz not null default now(),
+  tipo text not null check (tipo in ('pa', 'almoco', 'snack', 'jantar')),
+  descricao text not null,
+  proteina_g numeric(5,1),
+  carbo_g numeric(5,1),
+  gordura_g numeric(5,1),
+  calorias int,
+  contexto text not null default '',
+  sentir text not null default '',
+  created_at timestamptz not null default now()
+);
+create index if not exists fenixfit_refeicoes_user_ts on fenixfit_refeicoes (user_id, timestamp desc);
+alter table fenixfit_refeicoes enable row level security;
+drop policy if exists "refeicoes_owner" on fenixfit_refeicoes;
+create policy "refeicoes_owner" on fenixfit_refeicoes for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+```
+
+## Env vars Cloudflare necessárias
+
+Production e Preview:
+```
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY (ou _ANON)
+ANTHROPIC_API_KEY
+NODE_VERSION=20
+RESEND_API_KEY (para resumo email · opcional)
+RESUMO_FROM_EMAIL (opcional · default fenixfit@resend.dev)
+```
+
+## Para sessão futura · ainda por construir
+
+### Push notifications proactivas (peça grande)
+- Service Worker dedicado a push (sem cache, evita conflito com chunks)
+- VAPID keys (`web-push generate-vapid-keys`)
+- Tabela `push_subscriptions`
+- Endpoint `/api/subscribe-push`
+- Worker Cloudflare separado com Cron Trigger (Pages Functions não tem cron nativo)
+
+### Outros
+- Cron diário automático para emails (cron-job.org externo ou worker Cloudflare)
+- Refactor multi-user (system prompt actualmente personalizado · para iOS App Store futuro precisa ser parametrizável)
+- App nativa iOS para Apple Health real-time (PWA não acede directamente)
 
 ## ⚠️ OBSERVAÇÃO IMPORTANTE DA VIVIANNE
 
