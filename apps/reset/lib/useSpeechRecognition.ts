@@ -97,6 +97,13 @@ export function useSpeechRecognition(opcoes?: {
     }
     rec.onerror = (e) => {
       setOuvir(false)
+      // service-not-allowed acontece em iOS Safari quando o serviço de voz
+      // não está disponível · tratar como "não suportado" para esconder UI
+      if (e.error === 'service-not-allowed' || e.error === 'language-not-supported') {
+        setSuportado(false)
+        setErro(null)
+        return
+      }
       const msg = e.error === 'not-allowed' || e.error === 'permission-denied'
         ? 'permissão de microfone negada'
         : e.error === 'no-speech'

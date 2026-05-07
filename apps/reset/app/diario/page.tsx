@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState, Suspense } from 'react'
+// (notas têm estado próprio · botão de guardar explícito + auto-guardar no blur)
 import { useSearchParams } from 'next/navigation'
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react'
 import {
@@ -232,17 +233,64 @@ function DiaForm({
         <ScaleField label="Humor" value={log.humor} onChange={v => onChange({ ...log, humor: v })} />
       </section>
 
-      <section className="space-y-2">
-        <span className="label-cap px-1">Notas</span>
-        <textarea
-          value={log.notas}
-          onChange={e => onChange({ ...log, notas: e.target.value })}
-          placeholder="o que precisas registar..."
-          rows={3}
-          className="input-base resize-none text-[14px]"
-        />
-      </section>
+      <NotasSection log={log} onChange={onChange} />
     </div>
+  )
+}
+
+function NotasSection({ log, onChange }: { log: DiaLog; onChange: (l: DiaLog) => void }) {
+  const [texto, setTexto] = useState(log.notas)
+  const [estado, setEstado] = useState<'sem-mudancas' | 'editado' | 'guardado'>(log.notas === texto ? 'sem-mudancas' : 'editado')
+  const [horaSaved, setHoraSaved] = useState<string | null>(null)
+
+  // Re-sync texto se mudar de dia
+  useEffect(() => {
+    setTexto(log.notas)
+    setEstado('sem-mudancas')
+    setHoraSaved(null)
+  }, [log.date, log.notas])
+
+  const guardar = () => {
+    onChange({ ...log, notas: texto })
+    const agora = new Date()
+    setHoraSaved(`${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`)
+    setEstado('guardado')
+  }
+
+  return (
+    <section className="space-y-2">
+      <div className="flex items-baseline justify-between px-1">
+        <span className="label-cap">Notas</span>
+        {estado === 'guardado' && horaSaved ? (
+          <span className="text-[10.5px] text-oliva tnum">guardado às {horaSaved}</span>
+        ) : estado === 'editado' ? (
+          <span className="text-[10.5px] text-faint italic">por guardar</span>
+        ) : null}
+      </div>
+      <textarea
+        value={texto}
+        onChange={e => {
+          setTexto(e.target.value)
+          if (estado === 'guardado' || estado === 'sem-mudancas') setEstado('editado')
+        }}
+        onBlur={() => { if (estado === 'editado') guardar() }}
+        placeholder="o que precisas registar..."
+        rows={4}
+        className="input-base resize-none text-[14px]"
+      />
+      <button
+        onClick={guardar}
+        disabled={estado !== 'editado'}
+        className={`w-full flex items-center justify-center gap-2 rounded-md py-2.5 text-[12.5px] transition-elegant active:scale-95 ${
+          estado === 'editado'
+            ? 'bg-tinta text-creme dark:bg-ouro dark:text-tinta'
+            : 'bg-[var(--surface-soft)] text-faint cursor-default'
+        }`}
+      >
+        <Check size={13} strokeWidth={1.6} />
+        {estado === 'editado' ? 'guardar' : estado === 'guardado' ? 'guardado' : 'sem alterações'}
+      </button>
+    </section>
   )
 }
 

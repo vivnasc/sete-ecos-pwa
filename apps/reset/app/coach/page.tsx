@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Send, Sparkles, CheckCircle2, AlertCircle, Mic, MicOff, Camera, Loader2 } from 'lucide-react'
+import { Send, Sparkles, CheckCircle2, AlertCircle, Mic, MicOff, Camera, Loader2, X, Check } from 'lucide-react'
 import BackButton from '@/components/BackButton'
 import VoiceModeOverlay from '@/components/VoiceModeOverlay'
 import {
@@ -81,6 +81,16 @@ export default function CoachPage() {
   const [erro, setErro] = useState<string | null>(null)
   const [vozAberta, setVozAberta] = useState(false)
   const [analisandoFoto, setAnalisandoFoto] = useState(false)
+  const [previewFoto, setPreviewFoto] = useState<{
+    imagem: string
+    tipo: 'pa' | 'almoco' | 'snack' | 'jantar'
+    descricao: string
+    proteinaG: number | null
+    carboG: number | null
+    gorduraG: number | null
+    calorias: number | null
+    observacao: string
+  } | null>(null)
   const fimRef = useRef<HTMLDivElement>(null)
   const fotoInputRef = useRef<HTMLInputElement>(null)
 
@@ -157,34 +167,55 @@ export default function CoachPage() {
     setErro(null)
     setAnalisandoFoto(true)
     try {
+      // Lê imagem para mostrar thumbnail no preview
+      const dataUrl = await new Promise<string>((resolve) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.readAsDataURL(file)
+      })
       const r = await analisarFotoRefeicao(file)
-      addRefeicao({
+      setPreviewFoto({
+        imagem: dataUrl,
         tipo: r.tipo,
         descricao: r.descricao,
-        timestamp: new Date().toISOString(),
         proteinaG: r.proteinaG,
         carboG: r.carboG,
         gorduraG: r.gorduraG,
         calorias: r.calorias,
-        contexto: 'foto',
-        sentir: r.observacao
+        observacao: r.observacao
       })
-      const tipoLeg = { pa: 'pequeno-almoço', almoco: 'almoço', snack: 'snack', jantar: 'jantar' }[r.tipo]
-      const macroParts: string[] = []
-      if (r.proteinaG !== null) macroParts.push(`${Math.round(r.proteinaG)}g P`)
-      if (r.carboG !== null) macroParts.push(`${Math.round(r.carboG)}g C`)
-      if (r.gorduraG !== null) macroParts.push(`${Math.round(r.gorduraG)}g G`)
-      if (r.calorias !== null) macroParts.push(`${r.calorias} kcal`)
-      const userTxt = `[foto] ${r.descricao}`
-      const respTxt = `${tipoLeg} registado · ${r.descricao}. estimei ${macroParts.join(' · ')}.${r.observacao ? ' ' + r.observacao : ''}`
-      saveCoachMensagem('user', userTxt)
-      saveCoachMensagem('assistant', respTxt)
-      setMensagens(prev => [...prev, { role: 'user', content: userTxt }, { role: 'assistant', content: respTxt }])
-      window.dispatchEvent(new CustomEvent('fenixfit:storage', { detail: { key: 'foto-refeicao' } }))
     } catch (err) {
       setErro(err instanceof Error ? err.message : 'erro a analisar foto')
     }
     setAnalisandoFoto(false)
+  }
+
+  const confirmarFoto = () => {
+    if (!previewFoto) return
+    addRefeicao({
+      tipo: previewFoto.tipo,
+      descricao: previewFoto.descricao,
+      timestamp: new Date().toISOString(),
+      proteinaG: previewFoto.proteinaG,
+      carboG: previewFoto.carboG,
+      gorduraG: previewFoto.gorduraG,
+      calorias: previewFoto.calorias,
+      contexto: 'foto',
+      sentir: previewFoto.observacao
+    })
+    const tipoLeg = { pa: 'pequeno-almoço', almoco: 'almoço', snack: 'snack', jantar: 'jantar' }[previewFoto.tipo]
+    const macroParts: string[] = []
+    if (previewFoto.proteinaG !== null) macroParts.push(`${Math.round(previewFoto.proteinaG)}g P`)
+    if (previewFoto.carboG !== null) macroParts.push(`${Math.round(previewFoto.carboG)}g C`)
+    if (previewFoto.gorduraG !== null) macroParts.push(`${Math.round(previewFoto.gorduraG)}g G`)
+    if (previewFoto.calorias !== null) macroParts.push(`${previewFoto.calorias} kcal`)
+    const userTxt = `[foto] ${previewFoto.descricao}`
+    const respTxt = `${tipoLeg} registado · ${previewFoto.descricao}. ${macroParts.join(' · ')}.`
+    saveCoachMensagem('user', userTxt)
+    saveCoachMensagem('assistant', respTxt)
+    setMensagens(prev => [...prev, { role: 'user', content: userTxt }, { role: 'assistant', content: respTxt }])
+    window.dispatchEvent(new CustomEvent('fenixfit:storage', { detail: { key: 'foto-refeicao' } }))
+    setPreviewFoto(null)
   }
 
   const enviar = async (texto: string) => {
@@ -333,13 +364,54 @@ export default function CoachPage() {
       {erro ? <div className="rounded-lg bg-terracota/10 p-3 text-[12px] text-terracota">{erro}</div> : null}
 
       <section className="sticky bottom-24 space-y-2">
+        {/* preview de foto · revisas antes de registar */}
+        {previewFoto ? (
+          <div className="card-feature space-y-3 animate-slide-up">
+            <div className="flex items-baseline justify-between">
+              <span className="label-cap">prévia · revê antes de registar</span>
+              <button onClick={() => setPreviewFoto(null)} aria-label="cancelar" className="text-faint hover:text-terracota p-1 active:scale-90">
+                <X size={14} strokeWidth={1.4} />
+              </button>
+            </div>
+            <img src={previewFoto.imagem} alt="" className="w-full max-h-48 object-cover rounded-lg" />
+            <div className="grid grid-cols-4 gap-1.5">
+              {(['pa', 'almoco', 'snack', 'jantar'] as const).map(t => (
+                <button
+                  key={t}
+                  onClick={() => setPreviewFoto({ ...previewFoto, tipo: t })}
+                  className={`rounded-md py-1.5 text-[10.5px] transition-elegant active:scale-95 ${
+                    previewFoto.tipo === t ? 'bg-ouro text-creme dark:text-tinta' : 'bg-[var(--surface-soft)] text-soft'
+                  }`}
+                >
+                  {t === 'pa' ? 'pa' : t === 'almoco' ? 'almoço' : t}
+                </button>
+              ))}
+            </div>
+            <textarea
+              value={previewFoto.descricao}
+              onChange={e => setPreviewFoto({ ...previewFoto, descricao: e.target.value })}
+              rows={2}
+              className="w-full resize-none rounded-md border border-[var(--hair)] bg-transparent p-2 text-[13.5px] focus:border-ouro focus:outline-none"
+              placeholder="descrição"
+            />
+            <div className="grid grid-cols-4 gap-1.5">
+              <input type="number" inputMode="decimal" value={previewFoto.proteinaG ?? ''} onChange={e => setPreviewFoto({ ...previewFoto, proteinaG: e.target.value ? Number(e.target.value) : null })} placeholder="P" className="rounded-md border border-[var(--hair)] bg-transparent p-2 text-center text-[12px] tnum focus:border-ouro focus:outline-none" />
+              <input type="number" inputMode="decimal" value={previewFoto.carboG ?? ''} onChange={e => setPreviewFoto({ ...previewFoto, carboG: e.target.value ? Number(e.target.value) : null })} placeholder="C" className="rounded-md border border-[var(--hair)] bg-transparent p-2 text-center text-[12px] tnum focus:border-ouro focus:outline-none" />
+              <input type="number" inputMode="decimal" value={previewFoto.gorduraG ?? ''} onChange={e => setPreviewFoto({ ...previewFoto, gorduraG: e.target.value ? Number(e.target.value) : null })} placeholder="G" className="rounded-md border border-[var(--hair)] bg-transparent p-2 text-center text-[12px] tnum focus:border-ouro focus:outline-none" />
+              <input type="number" inputMode="numeric" value={previewFoto.calorias ?? ''} onChange={e => setPreviewFoto({ ...previewFoto, calorias: e.target.value ? Number(e.target.value) : null })} placeholder="kcal" className="rounded-md border border-[var(--hair)] bg-transparent p-2 text-center text-[12px] tnum focus:border-ouro focus:outline-none" />
+            </div>
+            <button onClick={confirmarFoto} className="btn-primary w-full py-2.5 text-[12.5px]">
+              <Check size={13} strokeWidth={1.6} /> registar
+            </button>
+          </div>
+        ) : null}
         {voz.ouvir && voz.parcial ? (
           <div className="card-solid !p-2.5 text-[12.5px] italic text-soft">
             {voz.parcial}
             <span className="ml-1 inline-block h-3 w-px animate-pulse bg-ouro align-middle" />
           </div>
         ) : null}
-        {voz.erro ? (
+        {voz.erro && voz.erro !== 'voz não suportada neste browser' && !voz.erro.includes('service-not-allowed') ? (
           <p className="text-faint text-center text-[10.5px] text-terracota">{voz.erro}</p>
         ) : null}
         <div className="card-solid flex items-end gap-2 !p-2">
@@ -369,7 +441,7 @@ export default function CoachPage() {
             ref={fotoInputRef}
             type="file"
             accept="image/*"
-            capture="environment"
+            
             onChange={onFoto}
             className="hidden"
           />

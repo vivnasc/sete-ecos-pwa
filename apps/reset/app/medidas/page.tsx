@@ -307,7 +307,7 @@ function NovaMedidaSheet({ onClose, onSave }: { onClose: () => void; onSave: () 
               ref={fotoRef}
               type="file"
               accept="image/*"
-              capture="environment"
+              
               onChange={onFoto}
               className="hidden"
             />

@@ -399,7 +399,7 @@ export default function VoiceModeOverlay({ aberto, onFechar }: { aberto: boolean
             ref={fileInputRef}
             type="file"
             accept="image/*"
-            capture="environment"
+            
             onChange={onFoto}
             className="hidden"
           />

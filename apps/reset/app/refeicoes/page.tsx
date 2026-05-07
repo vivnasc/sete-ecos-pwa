@@ -302,7 +302,7 @@ export default function RefeicoesPage() {
             ref={fileInputRef}
             type="file"
             accept="image/*"
-            capture="environment"
+            
             onChange={onFoto}
             className="hidden"
           />
@@ -372,6 +372,8 @@ function RefeicaoCard({
   const [carbo, setCarbo] = useState(r.carboG !== null ? String(r.carboG) : '')
   const [gordura, setGordura] = useState(r.gorduraG !== null ? String(r.gorduraG) : '')
   const [calorias, setCalorias] = useState(r.calorias !== null ? String(r.calorias) : '')
+  const [tipo, setTipo] = useState<RefeicaoTipo>(r.tipo)
+  const [hora, setHora] = useState(horaLocal(r.timestamp))
 
   const cancelar = () => {
     setDescricao(r.descricao)
@@ -379,17 +381,28 @@ function RefeicaoCard({
     setCarbo(r.carboG !== null ? String(r.carboG) : '')
     setGordura(r.gorduraG !== null ? String(r.gorduraG) : '')
     setCalorias(r.calorias !== null ? String(r.calorias) : '')
+    setTipo(r.tipo)
+    setHora(horaLocal(r.timestamp))
     setEditar(false)
   }
 
   const guardar = () => {
     const num = (s: string) => s.trim() === '' ? null : Number(s)
+    let novoTimestamp = r.timestamp
+    if (hora && /^\d{1,2}:\d{2}$/.test(hora)) {
+      const [h, mn] = hora.split(':').map(Number)
+      const d = new Date(r.timestamp)
+      d.setHours(h, mn, 0, 0)
+      novoTimestamp = d.toISOString()
+    }
     onGuardar({
+      tipo,
       descricao: descricao.trim() || r.descricao,
       proteinaG: num(proteina),
       carboG: num(carbo),
       gorduraG: num(gordura),
-      calorias: num(calorias) === null ? null : Math.round(num(calorias) as number)
+      calorias: num(calorias) === null ? null : Math.round(num(calorias) as number),
+      timestamp: novoTimestamp
     })
     setEditar(false)
   }
@@ -398,15 +411,34 @@ function RefeicaoCard({
     return (
       <article className="card-feature space-y-3">
         <div className="flex items-baseline justify-between gap-3">
-          <div className="flex items-baseline gap-2 min-w-0 flex-1">
-            <span className="label-cap shrink-0">{TIPOS.find(t => t.id === r.tipo)?.label ?? r.tipo}</span>
-            <span className="text-faint text-[11px] tnum">{horaLocal(r.timestamp)}</span>
-          </div>
+          <span className="label-cap">editar</span>
           <div className="flex gap-1 shrink-0">
             <button onClick={cancelar} aria-label="cancelar" className="text-faint hover:text-soft p-1 active:scale-90"><X size={14} strokeWidth={1.4} /></button>
             <button onClick={guardar} aria-label="guardar" className="text-ouro hover:text-tinta dark:hover:text-creme p-1 active:scale-90"><Check size={14} strokeWidth={1.6} /></button>
           </div>
         </div>
+        <div className="grid grid-cols-4 gap-1.5">
+          {TIPOS.map(t => (
+            <button
+              key={t.id}
+              onClick={() => setTipo(t.id)}
+              className={`rounded-md py-1.5 text-[10.5px] transition-elegant active:scale-95 ${
+                tipo === t.id ? 'bg-ouro text-creme dark:text-tinta' : 'bg-[var(--surface-soft)] text-soft'
+              }`}
+            >
+              {t.label.split('-')[0]}
+            </button>
+          ))}
+        </div>
+        <label className="block">
+          <span className="text-faint text-[10px] tracking-cap uppercase mb-1 block">hora</span>
+          <input
+            type="time"
+            value={hora}
+            onChange={e => setHora(e.target.value)}
+            className="w-full rounded-md border border-[var(--hair)] bg-transparent p-2 text-[13px] tnum focus:border-ouro focus:outline-none"
+          />
+        </label>
         <textarea
           value={descricao}
           onChange={e => setDescricao(e.target.value)}
