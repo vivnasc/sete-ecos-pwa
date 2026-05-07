@@ -167,7 +167,7 @@ export default function CoachPage() {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
-            mensagens: conversaActual.slice(-30),
+            mensagens: sanitizarMensagens(conversaActual.slice(-30)),
             contexto: construirContexto(),
             tools_enabled: true
           })
@@ -432,4 +432,22 @@ function extractText(content: string | ContentBlock[]): string {
     .map(b => b.text)
     .join('\n')
     .trim()
+}
+
+// Remove campos UI-only (ok, toolName) dos tool_results antes de enviar à API.
+// A API Anthropic rejeita campos extra com 400 invalid_request_error.
+function sanitizarMensagens(mensagens: Mensagem[]): Mensagem[] {
+  return mensagens.map(m => {
+    if (typeof m.content === 'string') return m
+    const limpos = m.content.map(b => {
+      if (b.type === 'tool_result') {
+        return { type: 'tool_result' as const, tool_use_id: b.tool_use_id, content: b.content }
+      }
+      if (b.type === 'tool_use') {
+        return { type: 'tool_use' as const, id: b.id, name: b.name, input: b.input }
+      }
+      return { type: 'text' as const, text: b.text }
+    })
+    return { role: m.role, content: limpos }
+  })
 }
