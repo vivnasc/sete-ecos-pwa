@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowUpRight, Salad, Dumbbell, Sparkles, Pencil, Ruler, Settings, LogOut, Scale, Clock, Droplet, Activity, MessageCircle, Image as ImageIcon, BarChart3 } from 'lucide-react'
+import { ArrowUpRight, Salad, Dumbbell, Sparkles, Pencil, Ruler, Settings, LogOut, Scale, Clock, Droplet, Activity, MessageCircle, Image as ImageIcon, BarChart3, UtensilsCrossed } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { signOut } from '@/lib/auth'
 import { useRouter } from 'next/navigation'
@@ -24,6 +24,7 @@ export default function MaisPage() {
   }
 
   const trackingItems = [
+    { href: '/refeicoes', label: 'Refeições', sub: 'macros · histórico · adicionar', icon: UtensilsCrossed },
     { href: '/peso', label: 'Peso', sub: 'pesagem diária · tendência', icon: Scale },
     { href: '/jejum', label: 'Jejum', sub: 'janela 9–19h · streak', icon: Clock },
     ...(sexo !== 'M' ? [{ href: '/ciclo', label: 'Ciclo', sub: 'fases · sintomas · correlações', icon: Droplet }] : []),

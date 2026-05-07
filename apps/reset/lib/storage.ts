@@ -14,6 +14,9 @@ export type DiaLog = {
   energia: number | null
   humor: number | null
   notas: string
+  aguaCopos: number
+  suplementos: string[]
+  transitoIntestinal: 'sim' | 'nao' | null
 }
 
 export type AlcoolRegisto = {
@@ -122,7 +125,17 @@ function write<T>(key: string, value: T): void {
 
 export function getDia(date = isoDate()): DiaLog {
   const all = read<Record<string, DiaLog>>('dias', {})
-  return all[date] ?? {
+  const existing = all[date]
+  if (existing) {
+    // backfill defaults para registos antigos
+    return {
+      ...existing,
+      aguaCopos: existing.aguaCopos ?? 0,
+      suplementos: existing.suplementos ?? [],
+      transitoIntestinal: existing.transitoIntestinal ?? null
+    }
+  }
+  return {
     date,
     ancoras: {},
     treinoFeito: false,
@@ -130,7 +143,10 @@ export function getDia(date = isoDate()): DiaLog {
     sonoHoras: null,
     energia: null,
     humor: null,
-    notas: ''
+    notas: '',
+    aguaCopos: 0,
+    suplementos: [],
+    transitoIntestinal: null
   }
 }
 

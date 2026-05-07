@@ -2,11 +2,12 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { ArrowUpRight, Scale, Clock, Sparkles } from 'lucide-react'
+import { ArrowUpRight, Scale, UtensilsCrossed } from 'lucide-react'
 import SmartNow from '@/components/SmartNow'
 import AnchorChecklist from '@/components/AnchorChecklist'
 import JanelaTimer from '@/components/JanelaTimer'
 import MorningPanel from '@/components/MorningPanel'
+import WellnessQuickPanel from '@/components/WellnessQuickPanel'
 import CoachGreetingCard from '@/components/CoachGreetingCard'
 import QuickTools from '@/components/QuickTools'
 import SafeBlock from '@/components/SafeBlock'
@@ -30,7 +31,8 @@ import {
   faseActualCiclo,
   nomeFase,
   savePeso,
-  getPesoHoje
+  getPesoHoje,
+  macrosDoDia
 } from '@/lib/storage'
 import { getProfile } from '@/lib/profile'
 import { cn } from '@/lib/utils'
@@ -51,7 +53,8 @@ export default function HomePage() {
     pesoVar: null as number | null,
     diaCiclo: null as number | null,
     fase: null as ReturnType<typeof faseActualCiclo>,
-    jejum: null as ReturnType<typeof jejumActualHoras>
+    jejum: null as ReturnType<typeof jejumActualHoras>,
+    macros: { proteina: 0, carbo: 0, gordura: 0, calorias: 0, refeicoes: 0 }
   })
 
   useEffect(() => {
@@ -71,7 +74,8 @@ export default function HomePage() {
         pesoVar: v.semana,
         diaCiclo: diaActualCiclo(),
         fase: faseActualCiclo(),
-        jejum: jejumActualHoras()
+        jejum: jejumActualHoras(),
+        macros: macrosDoDia()
       })
     }
     refresh()
@@ -228,6 +232,34 @@ export default function HomePage() {
         </section>
       ) : null}
 
+      {/* MACROS · refeições do dia */}
+      {status === 'durante' ? (
+        <Link href="/refeicoes" className="card-solid block transition-elegant hover:bg-[var(--surface)]">
+          <div className="flex items-baseline justify-between">
+            <div className="flex items-center gap-2">
+              <UtensilsCrossed size={14} strokeWidth={1.4} className="text-ouro" />
+              <span className="label-cap">refeições · hoje</span>
+            </div>
+            <span className="text-faint text-[11px] tnum">{metrics.macros.refeicoes}× hoje</span>
+          </div>
+          {metrics.macros.refeicoes > 0 ? (
+            <>
+              <div className="mt-3 grid grid-cols-4 gap-2 text-center">
+                <MacroMini label="kcal" valor={metrics.macros.calorias} alvo={1500} />
+                <MacroMini label="P" valor={metrics.macros.proteina} alvo={100} />
+                <MacroMini label="C" valor={metrics.macros.carbo} alvo={25} reverso />
+                <MacroMini label="G" valor={metrics.macros.gordura} alvo={110} />
+              </div>
+              <p className="text-faint mt-2 text-[10.5px] tracking-cap uppercase">ver detalhe →</p>
+            </>
+          ) : (
+            <p className="text-soft mt-3 text-[12.5px] leading-relaxed">
+              ainda sem refeições. <span className="italic text-ouro">diz à coach o que comeste</span>.
+            </p>
+          )}
+        </Link>
+      ) : null}
+
       {/* CICLO chip */}
       {pronto && sexo !== 'M' && metrics.diaCiclo !== null && metrics.fase !== null ? (
         <Link href="/ciclo" className="card flex items-center justify-between gap-3 transition-elegant hover:bg-[var(--surface)]">
@@ -241,6 +273,9 @@ export default function HomePage() {
 
       {/* ÂNCORAS */}
       {status === 'durante' ? <AnchorChecklist /> : null}
+
+      {/* CORPO · água, suplementos, trânsito */}
+      {status === 'durante' ? <SafeBlock nome="WellnessQuickPanel"><WellnessQuickPanel /></SafeBlock> : null}
 
       {/* MÉTRICAS */}
       {pronto && status === 'durante' ? (
@@ -309,6 +344,21 @@ function ResumoEditorial({
         {partes.join(' · ')}.
       </p>
     </section>
+  )
+}
+
+function MacroMini({ label, valor, alvo, reverso }: { label: string; valor: number; alvo: number; reverso?: boolean }) {
+  const pct = alvo > 0 ? Math.round((valor / alvo) * 100) : 0
+  const acima = valor > alvo
+  const cor = reverso
+    ? acima ? 'text-terracota' : 'text-soft'
+    : acima ? 'text-ouro' : valor >= alvo * 0.7 ? 'text-soft' : 'text-faint'
+  return (
+    <div>
+      <p className={`editorial-num text-[20px] tnum leading-none ${cor}`}>{Math.round(valor)}</p>
+      <p className="text-faint text-[9.5px] uppercase tracking-cap mt-1">{label}</p>
+      <p className="text-faint text-[8.5px] tnum">{pct}%</p>
+    </div>
   )
 }
 

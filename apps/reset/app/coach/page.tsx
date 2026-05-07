@@ -66,6 +66,9 @@ const TOOL_LABELS: Record<string, string> = {
   registar_dia: 'dia actualizado',
   registar_jejum: 'jejum registado',
   registar_ciclo: 'ciclo registado',
+  registar_agua: 'água registada',
+  registar_suplemento: 'suplemento registado',
+  registar_transito: 'trânsito registado',
   marcar_ancora: 'âncora marcada',
   consultar_dados: 'a consultar dados'
 }
@@ -93,6 +96,14 @@ function construirContexto(): string {
 
   const m = macrosDoDia()
   linhas.push(`Refeições hoje: ${m.refeicoes}× · ${Math.round(m.proteina)}g P · ${Math.round(m.carbo)}g C · ${Math.round(m.gordura)}g G`)
+
+  // Corpo · água, suplementos, trânsito
+  const diaHoje = ultimos7[ultimos7.length - 1]
+  if (diaHoje) {
+    linhas.push(`Água hoje: ${diaHoje.aguaCopos}/8 copos`)
+    if (diaHoje.suplementos.length > 0) linhas.push(`Suplementos: ${diaHoje.suplementos.join(', ')}`)
+    if (diaHoje.transitoIntestinal !== null) linhas.push(`Trânsito: ${diaHoje.transitoIntestinal}`)
+  }
 
   const refHoje = getRefeicoesDoDia()
   if (refHoje.length > 0) {

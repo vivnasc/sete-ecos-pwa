@@ -43,6 +43,11 @@ create table if not exists fenixfit_dias (
   unique (user_id, date)
 );
 
+-- migrações para tabelas existentes
+alter table fenixfit_dias add column if not exists agua_copos int not null default 0;
+alter table fenixfit_dias add column if not exists suplementos text[] not null default '{}';
+alter table fenixfit_dias add column if not exists transito_intestinal text check (transito_intestinal in ('sim', 'nao') or transito_intestinal is null);
+
 create index if not exists fenixfit_dias_user_date on fenixfit_dias (user_id, date desc);
 
 alter table fenixfit_dias enable row level security;

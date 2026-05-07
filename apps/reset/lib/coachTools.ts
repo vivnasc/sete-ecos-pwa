@@ -139,6 +139,41 @@ export const COACH_TOOLS = [
     }
   },
   {
+    name: 'registar_agua',
+    description: 'Adiciona ou define copos de água do dia. action=adicionar adiciona N copos; action=definir define o total.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        copos: { type: 'number', description: 'Número de copos' },
+        action: { type: 'string', enum: ['adicionar', 'definir'], description: 'Default: adicionar' }
+      },
+      required: ['copos']
+    }
+  },
+  {
+    name: 'registar_suplemento',
+    description: 'Marca um suplemento como tomado hoje. IDs sugeridos: magnesio, vit_d, omega3, electrolitos. Aceita IDs novos.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', description: 'Ex: magnesio, vit_d, omega3, electrolitos' },
+        tomou: { type: 'boolean', description: 'true para marcar, false para desmarcar' }
+      },
+      required: ['id', 'tomou']
+    }
+  },
+  {
+    name: 'registar_transito',
+    description: 'Regista trânsito intestinal do dia. Importante em keto · obstipação é sinal de eletrólitos baixos ou pouca fibra.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        teve: { type: 'boolean', description: 'true se teve, false se não teve' }
+      },
+      required: ['teve']
+    }
+  },
+  {
     name: 'consultar_dados',
     description: 'Consulta dados específicos sem ter de ler todo o contexto. Áreas: peso, jejum, ciclo, alcool, refeicoes_hoje, macros_hoje, ancoras_hoje, resumo.',
     input_schema: {
@@ -319,6 +354,37 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
       notas
     })
     return { ok: true, texto: `ciclo registado · início ${dataInicio}${fluxo ? ' · fluxo ' + fluxo : ''}${sintomas.length ? ' · sintomas: ' + sintomas.join(', ') : ''}` }
+  },
+
+  registar_agua(input) {
+    const copos = num(input.copos)
+    if (copos === null) return { ok: false, erro: 'copos inválido' }
+    const action = str(input.action) || 'adicionar'
+    const dia = getDia()
+    if (action === 'definir') dia.aguaCopos = Math.max(0, Math.round(copos))
+    else dia.aguaCopos = Math.max(0, Math.min(20, dia.aguaCopos + Math.round(copos)))
+    saveDia(dia)
+    return { ok: true, texto: `água: ${dia.aguaCopos} copo${dia.aguaCopos === 1 ? '' : 's'} hoje` }
+  },
+
+  registar_suplemento(input) {
+    const id = str(input.id).toLowerCase().replace(/\s+/g, '_')
+    if (!id) return { ok: false, erro: 'id em falta' }
+    const tomou = bool(input.tomou)
+    const dia = getDia()
+    const tem = dia.suplementos.includes(id)
+    if (tomou && !tem) dia.suplementos = [...dia.suplementos, id]
+    if (!tomou && tem) dia.suplementos = dia.suplementos.filter(s => s !== id)
+    saveDia(dia)
+    return { ok: true, texto: `${id}${tomou ? ' ✓' : ' · desmarcado'} · ${dia.suplementos.length} hoje` }
+  },
+
+  registar_transito(input) {
+    const teve = bool(input.teve)
+    const dia = getDia()
+    dia.transitoIntestinal = teve ? 'sim' : 'nao'
+    saveDia(dia)
+    return { ok: true, texto: teve ? 'trânsito registado · sim' : 'trânsito registado · não' }
   },
 
   marcar_ancora(input) {

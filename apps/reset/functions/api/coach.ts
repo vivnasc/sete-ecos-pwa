@@ -167,6 +167,41 @@ const COACH_TOOLS = [
     }
   },
   {
+    name: 'registar_agua',
+    description: 'Adiciona ou define copos de água do dia. action=adicionar (default) adiciona; action=definir define o total.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        copos: { type: 'number' },
+        action: { type: 'string', enum: ['adicionar', 'definir'] }
+      },
+      required: ['copos']
+    }
+  },
+  {
+    name: 'registar_suplemento',
+    description: 'Marca um suplemento como tomado hoje. IDs sugeridos: magnesio, vit_d, omega3, electrolitos.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        tomou: { type: 'boolean' }
+      },
+      required: ['id', 'tomou']
+    }
+  },
+  {
+    name: 'registar_transito',
+    description: 'Regista trânsito intestinal do dia. Importante em keto.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        teve: { type: 'boolean' }
+      },
+      required: ['teve']
+    }
+  },
+  {
     name: 'consultar_dados',
     description: 'Consulta dados específicos. Áreas: peso, jejum, ciclo, alcool, refeicoes_hoje, macros_hoje, ancoras_hoje, resumo.',
     input_schema: {

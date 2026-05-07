@@ -77,7 +77,10 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
         sonoHoras: d.sono_horas !== null ? Number(d.sono_horas) : null,
         energia: d.energia,
         humor: d.humor,
-        notas: d.notas ?? ''
+        notas: d.notas ?? '',
+        aguaCopos: d.agua_copos ?? 0,
+        suplementos: d.suplementos ?? [],
+        transitoIntestinal: d.transito_intestinal ?? null
       }
     })
     write('dias', diasMap)
@@ -203,7 +206,10 @@ export async function syncDia(log: DiaLog): Promise<void> {
       sono_horas: log.sonoHoras,
       energia: log.energia,
       humor: log.humor,
-      notas: log.notas
+      notas: log.notas,
+      agua_copos: log.aguaCopos,
+      suplementos: log.suplementos,
+      transito_intestinal: log.transitoIntestinal
     },
     { onConflict: 'user_id,date' }
   )

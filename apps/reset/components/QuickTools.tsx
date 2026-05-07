@@ -1,17 +1,20 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Scale, Clock, Droplet, Activity, MessageCircle, Wine } from 'lucide-react'
+import { Scale, Clock, Droplet, Activity, MessageCircle, Wine, UtensilsCrossed } from 'lucide-react'
 import { getProfile } from '@/lib/profile'
 
-const TODAS = [
+type Tool = { href: string; label: string; icon: typeof Scale; soFeminino?: boolean }
+
+const TODAS: Tool[] = [
+  { href: '/coach', label: 'coach', icon: MessageCircle },
+  { href: '/refeicoes', label: 'refeições', icon: UtensilsCrossed },
   { href: '/peso', label: 'peso', icon: Scale },
   { href: '/jejum', label: 'jejum', icon: Clock },
   { href: '/ciclo', label: 'ciclo', icon: Droplet, soFeminino: true },
-  { href: '/scanner', label: 'scanner', icon: Activity },
-  { href: '/coach', label: 'coach', icon: MessageCircle },
-  { href: '/alcool', label: 'copo', icon: Wine }
-] as const
+  { href: '/alcool', label: 'copo', icon: Wine },
+  { href: '/scanner', label: 'scanner', icon: Activity }
+]
 
 export default function QuickTools() {
   const [sexo, setSexo] = useState<'F' | 'M' | 'O'>('F')
@@ -23,7 +26,7 @@ export default function QuickTools() {
     return () => window.removeEventListener('fenixfit:profile', onUpdate)
   }, [])
 
-  const itens = TODAS.filter(t => !('soFeminino' in t && t.soFeminino) || sexo !== 'M')
+  const itens = TODAS.filter(t => !t.soFeminino || sexo !== 'M')
 
   return (
     <section className="space-y-2">
