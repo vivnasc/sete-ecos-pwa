@@ -143,7 +143,7 @@ export default function HomePage() {
       </header>
 
       {/* RESUMO EDITORIAL */}
-      {pronto && status === 'durante' ? (
+      {pronto ? (
         <ResumoEditorial
           dia={dia}
           metrics={metrics}
@@ -163,16 +163,16 @@ export default function HomePage() {
       ) : null}
 
       {/* COACH · saudação do dia */}
-      {pronto && status === 'durante' ? <SafeBlock nome="CoachGreeting"><CoachGreetingCard /></SafeBlock> : null}
+      {pronto ? <SafeBlock nome="CoachGreeting"><CoachGreetingCard /></SafeBlock> : null}
 
       {/* ACESSO RÁPIDO · ferramentas principais */}
-      {status === 'durante' ? <SafeBlock nome="QuickTools"><QuickTools /></SafeBlock> : null}
+      {pronto ? <SafeBlock nome="QuickTools"><QuickTools /></SafeBlock> : null}
 
       {/* PAINEL MATINAL · ferramentas perto */}
-      {status === 'durante' ? <SafeBlock nome="MorningPanel"><MorningPanel /></SafeBlock> : null}
+      {pronto ? <SafeBlock nome="MorningPanel"><MorningPanel /></SafeBlock> : null}
 
       {/* SmartNow contextual */}
-      {status === 'durante' ? <SafeBlock nome="SmartNow"><SmartNow /></SafeBlock> : null}
+      {pronto ? <SafeBlock nome="SmartNow"><SmartNow /></SafeBlock> : null}
 
       {/* MANTRA */}
       <section className="text-center px-2">
@@ -184,10 +184,10 @@ export default function HomePage() {
       </section>
 
       {/* JANELA · adaptativa com timer */}
-      {pronto && status === 'durante' ? <SafeBlock nome="JanelaTimer"><JanelaTimer /></SafeBlock> : null}
+      {pronto ? <SafeBlock nome="JanelaTimer"><JanelaTimer /></SafeBlock> : null}
 
       {/* PESO QUICK ADD */}
-      {status === 'durante' ? (
+      {pronto ? (
         <section className="card-solid">
           <div className="flex items-baseline justify-between">
             <div className="flex items-center gap-2">
@@ -237,7 +237,7 @@ export default function HomePage() {
       ) : null}
 
       {/* MACROS · refeições do dia */}
-      {status === 'durante' ? (
+      {pronto ? (
         <Link href="/refeicoes" className="card-solid block transition-elegant hover:bg-[var(--surface)]">
           <div className="flex items-baseline justify-between">
             <div className="flex items-center gap-2">
@@ -276,19 +276,19 @@ export default function HomePage() {
       ) : null}
 
       {/* ÂNCORAS */}
-      {status === 'durante' ? <AnchorChecklist /> : null}
+      {pronto ? <AnchorChecklist /> : null}
 
       {/* CORPO · água, suplementos, trânsito */}
-      {status === 'durante' ? <SafeBlock nome="WellnessQuickPanel"><WellnessQuickPanel /></SafeBlock> : null}
+      {pronto ? <SafeBlock nome="WellnessQuickPanel"><WellnessQuickPanel /></SafeBlock> : null}
 
       {/* SONO em detalhe */}
-      {status === 'durante' ? <SafeBlock nome="SonoDetail"><SonoDetailCard /></SafeBlock> : null}
+      {pronto ? <SafeBlock nome="SonoDetail"><SonoDetailCard /></SafeBlock> : null}
 
       {/* SINTOMAS peri (só F/O) */}
-      {status === 'durante' ? <SafeBlock nome="PeriSintomas"><PeriSintomasCard /></SafeBlock> : null}
+      {pronto ? <SafeBlock nome="PeriSintomas"><PeriSintomasCard /></SafeBlock> : null}
 
       {/* MÉTRICAS */}
-      {pronto && status === 'durante' ? (
+      {pronto ? (
         <section className="grid grid-cols-2 gap-3">
           <Big
             label="constância"
@@ -316,7 +316,7 @@ export default function HomePage() {
         </section>
       ) : null}
 
-      {status === 'durante' ? (
+      {pronto ? (
         <Link
           href="/metricas"
           className="card flex items-center justify-between gap-4 transition-elegant hover:bg-[var(--surface)]"
