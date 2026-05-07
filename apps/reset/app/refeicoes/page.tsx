@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Plus, Trash2, ArrowLeft, ArrowRight, MessageCircle } from 'lucide-react'
+import { Plus, Trash2, ArrowLeft, ArrowRight, MessageCircle, Loader2 } from 'lucide-react'
 import BackButton from '@/components/BackButton'
 import {
   getRefeicoes,
@@ -44,10 +44,8 @@ export default function RefeicoesPage() {
   const [adicionando, setAdicionando] = useState(false)
   const [novoTipo, setNovoTipo] = useState<RefeicaoTipo>('pa')
   const [descricao, setDescricao] = useState('')
-  const [proteina, setProteina] = useState('')
-  const [carbo, setCarbo] = useState('')
-  const [gordura, setGordura] = useState('')
-  const [calorias, setCalorias] = useState('')
+  const [estimando, setEstimando] = useState(false)
+  const [erro, setErro] = useState<string | null>(null)
 
   const refresh = () => {
     setLista(getRefeicoesDoDia(date))
@@ -61,27 +59,44 @@ export default function RefeicoesPage() {
     return () => window.removeEventListener('fenixfit:storage', handler)
   }, [date])
 
-  const submit = () => {
-    if (!descricao.trim()) return
+  const submit = async () => {
+    const desc = descricao.trim()
+    if (!desc) return
+    setEstimando(true)
+    setErro(null)
+    let macros: { proteinaG: number | null; carboG: number | null; gorduraG: number | null; calorias: number | null } = {
+      proteinaG: null, carboG: null, gorduraG: null, calorias: null
+    }
+    try {
+      const r = await fetch('/api/estimar-macros', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ descricao: desc, tipo: novoTipo })
+      })
+      if (r.ok) {
+        macros = await r.json()
+      } else {
+        setErro('macros não estimados · guardado sem.')
+      }
+    } catch {
+      setErro('sem rede · guardado sem macros.')
+    }
     const ts = date === isoDate()
       ? new Date().toISOString()
       : new Date(date + 'T12:00:00').toISOString()
     addRefeicao({
       tipo: novoTipo,
-      descricao: descricao.trim(),
+      descricao: desc,
       timestamp: ts,
-      proteinaG: proteina ? Number(proteina) : null,
-      carboG: carbo ? Number(carbo) : null,
-      gorduraG: gordura ? Number(gordura) : null,
-      calorias: calorias ? Number(calorias) : null,
+      proteinaG: macros.proteinaG,
+      carboG: macros.carboG,
+      gorduraG: macros.gorduraG,
+      calorias: macros.calorias,
       contexto: '',
       sentir: ''
     })
     setDescricao('')
-    setProteina('')
-    setCarbo('')
-    setGordura('')
-    setCalorias('')
+    setEstimando(false)
     setAdicionando(false)
     refresh()
   }
@@ -224,24 +239,23 @@ export default function RefeicoesPage() {
           <textarea
             value={descricao}
             onChange={e => setDescricao(e.target.value)}
-            placeholder="o que comeste"
+            placeholder="o que comeste · ex: 3 ovos mexidos com abacate"
             rows={2}
             className="w-full resize-none rounded-md border border-[var(--hair)] bg-transparent p-3 text-[13.5px] focus:border-ouro focus:outline-none"
           />
 
-          <div className="grid grid-cols-4 gap-1.5">
-            <Input v={proteina} set={setProteina} ph="P" />
-            <Input v={carbo} set={setCarbo} ph="C" />
-            <Input v={gordura} set={setGordura} ph="G" />
-            <Input v={calorias} set={setCalorias} ph="kcal" />
-          </div>
+          <p className="text-faint text-[10.5px] leading-relaxed">
+            os macros são estimados automaticamente. podes afinar pela coach.
+          </p>
+
+          {erro ? <p className="text-terracota text-[11px]">{erro}</p> : null}
 
           <button
             onClick={submit}
-            disabled={!descricao.trim()}
-            className="btn-primary w-full py-2.5 text-[12.5px] disabled:opacity-30"
+            disabled={!descricao.trim() || estimando}
+            className="btn-primary w-full py-2.5 text-[12.5px] disabled:opacity-30 flex items-center justify-center gap-2"
           >
-            registar
+            {estimando ? <><Loader2 size={13} className="animate-spin" /> a estimar…</> : 'registar'}
           </button>
         </section>
       ) : (
@@ -292,17 +306,3 @@ function Macro({ label, valor, alvo, reverso }: { label: string; valor: number; 
   )
 }
 
-function Input({ v, set, ph }: { v: string; set: (s: string) => void; ph: string }) {
-  return (
-    <input
-      type="number"
-      inputMode="decimal"
-      step="0.1"
-      min="0"
-      value={v}
-      onChange={e => set(e.target.value)}
-      placeholder={ph}
-      className="rounded-md border border-[var(--hair)] bg-transparent p-2 text-center text-[12px] tnum focus:border-ouro focus:outline-none"
-    />
-  )
-}
