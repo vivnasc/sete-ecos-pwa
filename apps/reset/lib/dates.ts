@@ -72,11 +72,19 @@ export function formatarData(d: Date, longo = false): string {
 }
 
 export function todosOsDias(): Date[] {
+  // Se hoje é antes do plano, inclui também os dias entre hoje e o início
+  // (para poder registar durante a fase de pré-plano).
+  const hoje = new Date()
+  hoje.setHours(0, 0, 0, 0)
+  const start = new Date(RESET_START)
+  start.setHours(0, 0, 0, 0)
+  const cursor = hoje < start ? new Date(hoje) : new Date(start)
+  const end = new Date(start)
+  end.setDate(end.getDate() + RESET_DAYS - 1)
   const dias: Date[] = []
-  for (let i = 0; i < RESET_DAYS; i++) {
-    const d = new Date(RESET_START)
-    d.setDate(d.getDate() + i)
-    dias.push(d)
+  while (cursor <= end) {
+    dias.push(new Date(cursor))
+    cursor.setDate(cursor.getDate() + 1)
   }
   return dias
 }

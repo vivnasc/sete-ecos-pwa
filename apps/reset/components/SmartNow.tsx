@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Wine, Moon, Sunrise, Sun, CloudMoon, Coffee, Dumbbell } from 'lucide-react'
 import { TREINO_SEMANAL } from '@/lib/data'
-import { diaSemana, statusDoDia, diaDoPlano } from '@/lib/dates'
+import { diaSemana, diaDoPlano } from '@/lib/dates'
 import { getDia, type DiaLog } from '@/lib/storage'
 import { getProfile } from '@/lib/profile'
 
@@ -150,9 +150,6 @@ export default function SmartNow() {
   }, [])
 
   if (!agora || !log) return <div className="card-feature h-44 animate-breathe" aria-hidden />
-
-  const status = statusDoDia(agora)
-  if (status === 'antes') return null
 
   const dow = diaSemana(agora)
   const janela = determinarJanela(agora.getHours(), dow, log)
