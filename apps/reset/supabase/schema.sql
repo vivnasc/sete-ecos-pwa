@@ -130,7 +130,7 @@ alter table fenixfit_lembretes enable row level security;
 drop policy if exists "lembretes_owner" on fenixfit_lembretes;
 create policy "lembretes_owner" on fenixfit_lembretes for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
--- ===== STORAGE BUCKET para fotos de medidas =====
+-- ===== TRIGGER updated_at =====
 -- Executar na consola Storage:
 -- 1. Criar bucket "fenixfit-fotos" privado
 -- 2. Policy SELECT/INSERT/UPDATE/DELETE com expressão: bucket_id = 'fenixfit-fotos' AND (storage.foldername(name))[1] = auth.uid()::text
@@ -197,6 +197,23 @@ create index if not exists fenixfit_ciclo_user_data on fenixfit_ciclo (user_id, 
 alter table fenixfit_ciclo enable row level security;
 drop policy if exists "ciclo_owner" on fenixfit_ciclo;
 create policy "ciclo_owner" on fenixfit_ciclo for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- ===== COACH CHAT (memória persistente da coach) =====
+create table if not exists fenixfit_coach_chat (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  timestamp timestamptz not null default now(),
+  role text not null check (role in ('user', 'assistant')),
+  content text not null,
+  contexto_resumo text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists fenixfit_coach_chat_user_ts on fenixfit_coach_chat (user_id, timestamp desc);
+
+alter table fenixfit_coach_chat enable row level security;
+drop policy if exists "coach_chat_owner" on fenixfit_coach_chat;
+create policy "coach_chat_owner" on fenixfit_coach_chat for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- ===== TRIGGER updated_at =====
 create or replace function fenixfit_touch_updated_at()

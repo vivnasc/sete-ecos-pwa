@@ -2,7 +2,7 @@
 
 import { getSupabase } from './supabase'
 import { getUser } from './auth'
-import type { DiaLog, AlcoolRegisto, MedidaRegisto, DesabafoEntry, InsightCache, PesoLog, JejumLog, CicloLog } from './storage'
+import type { DiaLog, AlcoolRegisto, MedidaRegisto, DesabafoEntry, InsightCache, PesoLog, JejumLog, CicloLog, CoachMensagem } from './storage'
 
 const PREFIX = 'fenixfit:'
 
@@ -28,7 +28,7 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
   if (!user) return { ok: false, erro: 'sem sessão' }
 
   try {
-    const [diasR, alcoolR, medidasR, desabafoR, insightsR, pesoR, jejumR, cicloR, profileR] = await Promise.all([
+    const [diasR, alcoolR, medidasR, desabafoR, insightsR, pesoR, jejumR, cicloR, profileR, coachR] = await Promise.all([
       sb.from('fenixfit_dias').select('*').eq('user_id', user.id),
       sb.from('fenixfit_alcool').select('*').eq('user_id', user.id),
       sb.from('fenixfit_medidas').select('*').eq('user_id', user.id),
@@ -37,7 +37,8 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       sb.from('fenixfit_peso').select('*').eq('user_id', user.id),
       sb.from('fenixfit_jejum').select('*').eq('user_id', user.id),
       sb.from('fenixfit_ciclo').select('*').eq('user_id', user.id),
-      sb.from('fenixfit_profile').select('*').eq('user_id', user.id).maybeSingle()
+      sb.from('fenixfit_profile').select('*').eq('user_id', user.id).maybeSingle(),
+      sb.from('fenixfit_coach_chat').select('*').eq('user_id', user.id).order('timestamp', { ascending: true }).limit(500)
     ])
 
     if (diasR.error) throw diasR.error
@@ -153,6 +154,14 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       notas: c.notas ?? ''
     }))
     write('ciclo', cicloList)
+
+    const coachList: CoachMensagem[] = (coachR.data ?? []).map(m => ({
+      id: m.id,
+      timestamp: m.timestamp,
+      role: m.role,
+      content: m.content
+    }))
+    write('coach-chat', coachList)
 
     localStorage.setItem('fenixfit:lastSync', new Date().toISOString())
 
@@ -308,6 +317,20 @@ export async function syncCiclo(c: CicloLog): Promise<void> {
     },
     { onConflict: 'user_id,data_inicio' }
   )
+}
+
+export async function syncCoachMensagem(m: CoachMensagem): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  await sb.from('fenixfit_coach_chat').insert({
+    id: m.id,
+    user_id: user.id,
+    timestamp: m.timestamp,
+    role: m.role,
+    content: m.content
+  })
 }
 
 export async function syncProfile(p: Record<string, unknown>): Promise<void> {

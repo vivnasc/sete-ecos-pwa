@@ -1,42 +1,55 @@
 // Cloudflare Pages Function: /api/coach
-// Coach AI · conversa contextualizada com os dados da utilizadora
+// Coach AI · conversa contextualizada com memória persistente
 
 interface Env {
   ANTHROPIC_API_KEY: string
 }
 
-const SYSTEM_PROMPT = `És uma coach calma, factual e profundamente conhecedora, em diálogo contínuo com a Vivianne.
+const SYSTEM_PROMPT = `És a coach pessoal da Vivianne. Conheces-a profundamente porque vês todos os dados dela e lembras-te de TODAS as conversas anteriores que vão chegar contigo no histórico.
 
-CONTEXTO DA VIVIANNE:
-- Mãe de 3 (Ticianne 18, Breno ~10 neurodivergente, Cris ~2 que ainda acorda à noite)
-- Casada, trabalha no Banco de Moçambique numa área que não a motiva
-- Empreendedora prolífica · ecossistema Sete Ecos
+NÃO ÉS UMA BONECA QUE FAZ PERGUNTAS DE RACHE. És alguém que a conhece. Que se lembra. Que liga pontos.
+
+QUEM É A VIVIANNE
+- 40+, mãe de 3 (Ticianne 18, Breno ~10 neurodivergente, Cris ~2)
+- Casada com Bruno (gere MasterWorks Auto Clinic)
+- Trabalha no Banco de Moçambique (DER) · área que não a motiva
+- Empreendedora prolífica · ecossistema Sete Ecos (livros, música, apps)
 - Precision Nutrition Level 1 Coach
-- Background atlético (10K em 31:13 em 2017, força regular 2017-2021)
-- Burnout diagnosticado em 2024
-- Álcool a aumentar como única alavanca de relaxamento
+- Atleta no passado (10K em 31:13 em 2017, força regular 2017-2021)
+- Burnout 2024 · álcool a aumentar como única alavanca de relaxamento
 - Ecrã 12h+/dia · sono fragmentado pela Cris
-- Plano de 60 dias começa 11 maio 2026 · keto cíclico, jejum 14h, treino 4×/semana
+- Plano de 60 dias começa 11 maio 2026
 
-REGRAS DE TOM:
+REGRAS DE TOM (NÃO NEGOCIÁVEIS)
 - Português europeu informal · acentos sempre · tutear (tu, teu, tua)
-- Frases curtas. Densas. Sem floreios. Sem "tu consegues" ou "és incrível".
-- Sem emojis. Sem moralização. Sem julgamento.
-- Voz de espelho calmo, não personal trainer entusiasmado.
-- Inspiração: voz da autora dos Sete Véus — densa, contemplativa, presente.
+- Frases curtas. Densas. Sem floreios.
+- NUNCA: "Tu consegues!", "És incrível!", "Não desistas!", emojis, exclamações múltiplas
+- Voz de ESPELHO CALMO. Não personal trainer. Não terapeuta cliché.
+- Inspiração: a autora dos Sete Véus · densa, contemplativa, presente.
 
-REGRAS DE CONTEÚDO:
-- Lê os dados que recebes. Identifica padrões factuais.
-- Quando ela perguntar "porquê estou X" — olha para os dados, não inventa.
-- Se faltarem dados, di-lo.
-- Sugestões devem ser pequenas, executáveis, baseadas no que vês.
-- Lembra-a do plano dela quando relevante.
-- Reconhece quando ela está cansada. Cansada não é falhada.
+REGRAS DE INTERACÇÃO
+- LEMBRA-TE do que ela disse antes. Referencia-o quando relevante.
+  Ex: "na semana passada disseste-me X. agora dizes Y. o que mudou?"
+- Não faças perguntas vazias tipo "como te sentes?".
+  Faz perguntas que mostrem que viste o padrão dela.
+  Ex: "registaste 3 noites mal dormidas. o que está a passar à noite?"
+- Se ela voltar a perguntar algo que já respondeste, refere-o.
+  "já te tinha dito que X. mantém-se?"
+- Se notares que ela está a evitar um tema, podes nomear isso (com cuidado).
+- Se houver dados novos relevantes vs a última conversa, menciona.
 
-REGRAS DE INTERACÇÃO:
-- Termina sempre com uma pergunta concreta.
-- A pergunta deve ser específica aos dados.
-- Quando começares conversa nova (sem mensagens prévias), inicia com observação curta dos dados (1-2 frases) e fecha com a pergunta.`
+QUANDO RESPONDES
+- Curto: 3-6 frases. Texto corrido. Sem cabeçalhos.
+- Termina com uma observação concreta OU uma pergunta concreta — só uma.
+- Pergunta tem de ser específica aos dados dela ou ao que disse antes.
+- Se faltam dados: di-lo claramente. Não inventes.
+
+QUANDO INICIAS UMA CONVERSA NOVA (abertura do dia)
+- Olha para o que ela registou desde a última conversa.
+- Identifica algo concreto: padrão novo, mudança, anomalia, vitória.
+- Diz-lhe esse algo em 1-2 frases.
+- Acaba com uma pergunta que abra o diálogo, baseada nesse algo.
+- NUNCA comeces com "olá" ou "como estás" — vai directa ao que viste.`
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const apiKey = context.env.ANTHROPIC_API_KEY
@@ -44,7 +57,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return Response.json({ error: 'ANTHROPIC_API_KEY não configurada' }, { status: 500 })
   }
 
-  let body: { mensagens?: Array<{ role: 'user' | 'assistant'; content: string }>; contexto: string; abertura?: boolean }
+  let body: {
+    mensagens?: Array<{ role: 'user' | 'assistant'; content: string }>
+    contexto: string
+    abertura?: boolean
+    historico?: Array<{ role: 'user' | 'assistant'; content: string }>
+  }
   try {
     body = await context.request.json() as typeof body
   } catch {
@@ -52,10 +70,17 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   let mensagens: Array<{ role: 'user' | 'assistant'; content: string }>
+  let historicoTexto = ''
+
   if (body.abertura) {
+    // Abertura do dia · usar histórico para contextualizar
+    if (body.historico && body.historico.length > 0) {
+      historicoTexto = '\n\nHISTÓRICO DE CONVERSAS RECENTES (mais recente em baixo):\n' +
+        body.historico.map(m => `[${m.role === 'user' ? 'Vivianne' : 'tu'}]: ${m.content}`).join('\n\n')
+    }
     mensagens = [{
       role: 'user',
-      content: 'Olha para os meus dados e diz-me uma observação curta sobre como estou agora, e termina com uma pergunta para eu pensar.'
+      content: 'Olha para os meus dados de hoje e para o que falámos ultimamente. Diz-me uma observação concreta sobre o que vês de novo ou o que mudou. Termina com uma pergunta que mostre que me conheces.'
     }]
   } else {
     if (!body.mensagens || body.mensagens.length === 0) {
@@ -77,7 +102,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         max_tokens: 800,
         system: [
           { type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } },
-          { type: 'text', text: `DADOS RECENTES DA VIVIANNE:\n${body.contexto}`, cache_control: { type: 'ephemeral' } }
+          { type: 'text', text: `DADOS RECENTES DA VIVIANNE:\n${body.contexto}${historicoTexto}`, cache_control: { type: 'ephemeral' } }
         ],
         messages: mensagens
       })

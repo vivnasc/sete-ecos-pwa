@@ -1,7 +1,7 @@
 'use client'
 
 import { isoDate } from './dates'
-import { syncDia, syncAlcool, syncMedida, syncDesabafo, syncInsight, syncPeso, syncJejum, syncCiclo } from './sync'
+import { syncDia, syncAlcool, syncMedida, syncDesabafo, syncInsight, syncPeso, syncJejum, syncCiclo, syncCoachMensagem } from './sync'
 
 const PREFIX = 'fenixfit:'
 
@@ -78,6 +78,13 @@ export type CicloLog = {
   sintomas: string[]
   cravings: string[]
   notas: string
+}
+
+export type CoachMensagem = {
+  id: string
+  timestamp: string
+  role: 'user' | 'assistant'
+  content: string
 }
 
 function safeParse<T>(raw: string | null, fallback: T): T {
@@ -174,6 +181,35 @@ export function addDesabafo(d: Omit<DesabafoEntry, 'id' | 'timestamp'>): Desabaf
   write('desabafo', all)
   void syncDesabafo(novo).catch(() => {})
   return novo
+}
+
+// ----- COACH CHAT (memória persistente) -----
+
+export function getCoachMensagens(limite = 200): CoachMensagem[] {
+  const all = read<CoachMensagem[]>('coach-chat', [])
+  return all.slice(-limite).sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+}
+
+export function saveCoachMensagem(role: 'user' | 'assistant', content: string): CoachMensagem {
+  const novo: CoachMensagem = {
+    id: crypto.randomUUID(),
+    timestamp: new Date().toISOString(),
+    role,
+    content
+  }
+  const all = read<CoachMensagem[]>('coach-chat', [])
+  all.push(novo)
+  // Manter os últimos 500 (não inflar localStorage)
+  const truncated = all.slice(-500)
+  write('coach-chat', truncated)
+  void syncCoachMensagem(novo).catch(() => {})
+  return novo
+}
+
+export function limparCoachChat(): void {
+  if (typeof window === 'undefined') return
+  localStorage.removeItem(PREFIX + 'coach-chat')
+  window.dispatchEvent(new CustomEvent('fenixfit:storage', { detail: { key: 'coach-chat' } }))
 }
 
 // ----- INSIGHTS CACHE -----

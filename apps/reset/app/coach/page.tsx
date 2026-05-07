@@ -17,7 +17,10 @@ import {
   variacaoPeso,
   streakAncoras,
   diasSemAlcool,
-  sonoMedio
+  sonoMedio,
+  getCoachMensagens,
+  saveCoachMensagem,
+  type CoachMensagem
 } from '@/lib/storage'
 import { isoDate } from '@/lib/dates'
 
@@ -137,15 +140,31 @@ export default function CoachPage() {
     fimRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [mensagens, carregando])
 
-  // Gerar abertura automática se ainda não houver para hoje
+  // Carregar histórico persistente + gerar abertura se necessário
   useEffect(() => {
+    // 1. Carregar TODO o histórico de conversas (memória persistente)
+    const historico = getCoachMensagens(100).map(m => ({ role: m.role, content: m.content }))
+    if (historico.length > 0) {
+      setMensagens(historico)
+    }
+
+    // 2. Verificar se já houve abertura hoje
     const abertura = getAberturaHoje()
-    if (abertura) {
-      setMensagens([{ role: 'assistant', content: abertura.texto }])
+    if (abertura && historico.length > 0) {
+      // Histórico já tem mensagens · não regenera abertura
+      setCarregandoAbertura(false)
+      return
+    }
+    if (abertura && historico.length === 0) {
+      // Tem cache mas histórico vazio · usa cache
+      const m = { role: 'assistant' as const, content: abertura.texto }
+      setMensagens([m])
+      saveCoachMensagem('assistant', abertura.texto)
       setCarregandoAbertura(false)
       return
     }
 
+    // 3. Gerar abertura nova (passa histórico para contexto)
     let cancelado = false
     const gerarAbertura = async () => {
       try {
@@ -154,14 +173,16 @@ export default function CoachPage() {
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
             abertura: true,
-            contexto: construirContexto()
+            contexto: construirContexto(),
+            historico: historico.slice(-20) // últimas 20 para contexto
           })
         })
         if (!cancelado && r.ok) {
           const json = await r.json()
           if (json.texto) {
             saveAberturaHoje(json.texto)
-            setMensagens([{ role: 'assistant', content: json.texto }])
+            saveCoachMensagem('assistant', json.texto)
+            setMensagens(prev => [...prev, { role: 'assistant', content: json.texto }])
           }
         }
       } catch {}
@@ -174,7 +195,9 @@ export default function CoachPage() {
   const enviar = async (texto: string) => {
     if (!texto.trim() || carregando) return
     setErro(null)
-    const novasMsgs: Mensagem[] = [...mensagens, { role: 'user', content: texto.trim() }]
+    const userMsg = texto.trim()
+    saveCoachMensagem('user', userMsg)
+    const novasMsgs: Mensagem[] = [...mensagens, { role: 'user', content: userMsg }]
     setMensagens(novasMsgs)
     setInput('')
     setCarregando(true)
@@ -184,7 +207,7 @@ export default function CoachPage() {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
-          mensagens: novasMsgs,
+          mensagens: novasMsgs.slice(-30), // últimas 30 mensagens enviadas à API
           contexto: construirContexto()
         })
       })
@@ -192,6 +215,7 @@ export default function CoachPage() {
       if (!r.ok) {
         setErro(json.error ?? 'erro')
       } else {
+        saveCoachMensagem('assistant', json.texto)
         setMensagens(m => [...m, { role: 'assistant', content: json.texto }])
       }
     } catch (e) {
