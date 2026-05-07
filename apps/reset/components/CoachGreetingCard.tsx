@@ -1,8 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { MessageCircle, ArrowUpRight, RefreshCw } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { MessageCircle, ArrowUpRight, RefreshCw, Sparkles } from 'lucide-react'
 import { isoDate } from '@/lib/dates'
+import { construirContexto } from '@/lib/coachContext'
+import { getCoachMensagens } from '@/lib/storage'
 
 const ABERTURA_KEY = 'fenixfit:coach-abertura'
 
@@ -20,7 +22,6 @@ function getAberturaHoje(): Abertura | null {
   }
 }
 
-// Conta dados registados hoje · espelho de coach/page.tsx
 function fingerprintDadosHoje(): number {
   if (typeof window === 'undefined') return 0
   const hoje = isoDate()
@@ -44,9 +45,39 @@ function fingerprintDadosHoje(): number {
   return n
 }
 
+async function gerarAbertura(): Promise<string | null> {
+  try {
+    const historico = getCoachMensagens(20).map(m => ({ role: m.role, content: m.content }))
+    const r = await fetch('/api/coach', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        abertura: true,
+        contexto: construirContexto(true),
+        historico
+      })
+    })
+    if (!r.ok) return null
+    const json = await r.json()
+    if (!json.texto) return null
+    localStorage.setItem(ABERTURA_KEY, JSON.stringify({
+      date: isoDate(),
+      texto: json.texto,
+      geradoEm: new Date().toISOString(),
+      fingerprint: fingerprintDadosHoje()
+    }))
+    window.dispatchEvent(new CustomEvent('fenixfit:abertura', {}))
+    return json.texto
+  } catch {
+    return null
+  }
+}
+
 export default function CoachGreetingCard() {
   const [abertura, setAbertura] = useState<Abertura | null>(null)
   const [obsoleta, setObsoleta] = useState(false)
+  const [aGerar, setAGerar] = useState(false)
+  const tentadoRef = useRef(false)
 
   useEffect(() => {
     const refresh = () => {
@@ -72,15 +103,52 @@ export default function CoachGreetingCard() {
     }
   }, [])
 
-  if (!abertura) return null
+  // Auto-gera se não houver abertura hoje · uma vez por sessão
+  useEffect(() => {
+    if (abertura || tentadoRef.current || aGerar) return
+    tentadoRef.current = true
+    setAGerar(true)
+    gerarAbertura().finally(() => setAGerar(false))
+  }, [abertura, aGerar])
 
-  const refrescar = (e: React.MouseEvent) => {
+  const refrescar = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     if (typeof window === 'undefined') return
     localStorage.removeItem(ABERTURA_KEY)
-    window.dispatchEvent(new CustomEvent('fenixfit:abertura', {}))
-    window.location.href = '/coach'
+    setAbertura(null)
+    setAGerar(true)
+    await gerarAbertura()
+    setAGerar(false)
+  }
+
+  if (!abertura) {
+    return (
+      <div className="card-feature">
+        <div className="flex items-center gap-2">
+          <MessageCircle size={14} strokeWidth={1.4} className="text-ouro" />
+          <span className="label-cap">a coach</span>
+        </div>
+        <div className="mt-3 flex items-center gap-2">
+          {aGerar ? (
+            <>
+              <span className="h-1.5 w-1.5 animate-breathe rounded-full bg-ouro" />
+              <span className="h-1.5 w-1.5 animate-breathe rounded-full bg-ouro" style={{ animationDelay: '0.3s' }} />
+              <span className="h-1.5 w-1.5 animate-breathe rounded-full bg-ouro" style={{ animationDelay: '0.6s' }} />
+              <span className="ml-2 text-faint text-[12px]">a olhar para os teus dados</span>
+            </>
+          ) : (
+            <button
+              onClick={refrescar}
+              className="inline-flex items-center gap-2 text-soft text-[13px] hover:text-ouro active:scale-95"
+            >
+              <Sparkles size={13} strokeWidth={1.4} />
+              gerar leitura de hoje
+            </button>
+          )}
+        </div>
+      </div>
+    )
   }
 
   const texto = abertura.texto
@@ -103,15 +171,14 @@ export default function CoachGreetingCard() {
           {obsoleta ? <span className="text-faint text-[9.5px] tracking-cap uppercase">desactualizado</span> : null}
         </div>
         <div className="flex items-center gap-2">
-          {obsoleta ? (
-            <button
-              onClick={refrescar}
-              aria-label="actualizar com dados recentes"
-              className="rounded-full p-1 text-ouro hover:bg-ouro/10 active:scale-90"
-            >
-              <RefreshCw size={13} strokeWidth={1.5} />
-            </button>
-          ) : null}
+          <button
+            onClick={refrescar}
+            disabled={aGerar}
+            aria-label="actualizar com dados recentes"
+            className={`rounded-full p-1 hover:bg-ouro/10 active:scale-90 ${obsoleta ? 'text-ouro' : 'text-faint'}`}
+          >
+            <RefreshCw size={13} strokeWidth={1.5} className={aGerar ? 'animate-spin' : ''} />
+          </button>
           <ArrowUpRight size={14} strokeWidth={1.3} className="text-faint" />
         </div>
       </div>
@@ -121,7 +188,7 @@ export default function CoachGreetingCard() {
       </p>
       {obsoleta ? (
         <p className="text-faint text-[10.5px] mt-2 leading-relaxed">
-          tens dados novos desde esta leitura · toca em refrescar para a coach reler.
+          tens dados novos · toca refrescar para a coach reler.
         </p>
       ) : null}
     </a>

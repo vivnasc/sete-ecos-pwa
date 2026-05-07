@@ -10,6 +10,7 @@ import InstallPrompt from '@/components/InstallPrompt'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import ModoLocalBanner from '@/components/ModoLocalBanner'
 import SyncErrorBanner from '@/components/SyncErrorBanner'
+import CoachNudgeToast from '@/components/CoachNudgeToast'
 import './globals.css'
 
 const fraunces = Fraunces({
@@ -96,6 +97,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <OnboardingGate>
                 <ModoLocalBanner />
                 <SyncErrorBanner />
+                <CoachNudgeToast />
                 <main className="container-app pb-32 pt-4 sm:pt-8">
                   <ErrorBoundary>{children}</ErrorBoundary>
                 </main>
