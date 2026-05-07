@@ -1,5 +1,7 @@
 'use client'
 
+import { ANCORAS_DEFAULT_IDS, ANCORAS_POOL, type Ancora } from './data'
+
 export type Profile = {
   nome: string
   sexo: 'F' | 'M' | 'O'
@@ -15,6 +17,8 @@ export type Profile = {
   duracaoPlano: number
   syncSupabase: boolean
   emailSync: string
+  ancorasActivas: string[]
+  ancorasCustom: Ancora[]
 }
 
 const KEY = 'fenixfit:profile'
@@ -33,7 +37,17 @@ const DEFAULT_PROFILE: Profile = {
   inicioPlano: '2026-05-11',
   duracaoPlano: 60,
   syncSupabase: false,
-  emailSync: ''
+  emailSync: '',
+  ancorasActivas: ANCORAS_DEFAULT_IDS,
+  ancorasCustom: []
+}
+
+// Devolve as âncoras realmente activas (combina pool + custom, filtra por IDs activos)
+export function getAncorasActivas(): Ancora[] {
+  const p = getProfile()
+  const ids = (p.ancorasActivas?.length ? p.ancorasActivas : ANCORAS_DEFAULT_IDS)
+  const todas = [...ANCORAS_POOL, ...(p.ancorasCustom ?? [])]
+  return ids.map(id => todas.find(a => a.id === id)).filter((a): a is Ancora => !!a)
 }
 
 export function getProfile(): Profile {

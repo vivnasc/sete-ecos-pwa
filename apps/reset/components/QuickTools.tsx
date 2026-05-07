@@ -28,14 +28,13 @@ export default function QuickTools() {
 
   const itens = TODAS.filter(t => !t.soFeminino || sexo !== 'M')
 
-  // F/O: 5 itens em 5 col · 1 linha limpa
-  // M:    4 itens em 4 col · 1 linha limpa
-  const cols = itens.length === 5 ? 'grid-cols-5' : 'grid-cols-4'
-
   return (
     <section className="space-y-2">
       <span className="label-cap px-1">acesso rápido</span>
-      <div className={`grid ${cols} gap-1.5 sm:gap-2`}>
+      <div
+        className="grid gap-1.5 sm:gap-2"
+        style={{ gridTemplateColumns: `repeat(${itens.length}, minmax(0, 1fr))` }}
+      >
         {itens.map(t => {
           const Icon = t.icon
           return (

@@ -61,7 +61,9 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
         inicioPlano: p.inicio_plano ?? '2026-05-11',
         duracaoPlano: p.duracao_plano ?? 60,
         syncSupabase: true,
-        emailSync: user.email ?? ''
+        emailSync: user.email ?? '',
+        ancorasActivas: p.ancoras_activas ?? undefined,
+        ancorasCustom: p.ancoras_custom ?? []
       }
       localStorage.setItem('fenixfit:profile', JSON.stringify(profile))
       window.dispatchEvent(new CustomEvent('fenixfit:profile', { detail: profile }))
@@ -412,7 +414,9 @@ export async function syncProfile(p: Record<string, unknown>): Promise<void> {
     notificacoes_ativas: p.notificacoesAtivas,
     onboarding_completo: p.onboardingCompleto,
     inicio_plano: p.inicioPlano,
-    duracao_plano: p.duracaoPlano
+    duracao_plano: p.duracaoPlano,
+    ancoras_activas: p.ancorasActivas,
+    ancoras_custom: p.ancorasCustom
   })
 }
 

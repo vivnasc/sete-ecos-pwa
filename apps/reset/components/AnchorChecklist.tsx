@@ -2,35 +2,51 @@
 
 import { useEffect, useState } from 'react'
 import { Check } from 'lucide-react'
-import { ANCORAS } from '@/lib/data'
 import { isoDate } from '@/lib/dates'
 import { getDia, toggleAncora, type DiaLog } from '@/lib/storage'
+import { getAncorasActivas } from '@/lib/profile'
+import type { Ancora } from '@/lib/data'
 import { cn } from '@/lib/utils'
 
 export default function AnchorChecklist({ date = isoDate() }: { date?: string }) {
   const [log, setLog] = useState<DiaLog | null>(null)
+  const [ancoras, setAncoras] = useState<Ancora[]>([])
 
   useEffect(() => {
     setLog(getDia(date))
-    const onUpdate = () => setLog(getDia(date))
-    window.addEventListener('fenixfit:storage', onUpdate)
-    return () => window.removeEventListener('fenixfit:storage', onUpdate)
+    setAncoras(getAncorasActivas())
+    const onStorage = () => setLog(getDia(date))
+    const onProfile = () => setAncoras(getAncorasActivas())
+    window.addEventListener('fenixfit:storage', onStorage)
+    window.addEventListener('fenixfit:profile', onProfile)
+    return () => {
+      window.removeEventListener('fenixfit:storage', onStorage)
+      window.removeEventListener('fenixfit:profile', onProfile)
+    }
   }, [date])
 
   if (!log) return <div className="card h-72 animate-breathe" aria-hidden />
+  if (ancoras.length === 0) {
+    return (
+      <section className="card-solid text-center space-y-2">
+        <span className="label-cap">Âncoras</span>
+        <p className="text-soft text-[13px]">sem âncoras activas. escolhe em <a href="/definicoes" className="text-ouro underline">definições</a>.</p>
+      </section>
+    )
+  }
 
-  const cumpridas = ANCORAS.filter(a => log.ancoras[a.id]).length
+  const cumpridas = ancoras.filter(a => log.ancoras[a.id]).length
 
   return (
     <section>
       <div className="mb-3 flex items-baseline justify-between">
         <span className="label-cap">Âncoras</span>
         <span className="label-soft tnum">
-          <span className="text-tinta dark:text-creme">{cumpridas}</span> / {ANCORAS.length}
+          <span className="text-tinta dark:text-creme">{cumpridas}</span> / {ancoras.length}
         </span>
       </div>
       <ul className="card-solid divide-y divide-[var(--hair)] !p-0">
-        {ANCORAS.map((a, idx) => {
+        {ancoras.map((a, idx) => {
           const feita = !!log.ancoras[a.id]
           return (
             <li key={a.id}>

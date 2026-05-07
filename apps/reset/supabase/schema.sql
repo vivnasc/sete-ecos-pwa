@@ -27,6 +27,10 @@ alter table fenixfit_profile enable row level security;
 drop policy if exists "profile_owner" on fenixfit_profile;
 create policy "profile_owner" on fenixfit_profile for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+-- migração · pool de âncoras (idempotente)
+alter table fenixfit_profile add column if not exists ancoras_activas text[] not null default '{}';
+alter table fenixfit_profile add column if not exists ancoras_custom jsonb not null default '[]';
+
 -- ===== DIA LOG =====
 create table if not exists fenixfit_dias (
   id uuid primary key default uuid_generate_v4(),

@@ -1,20 +1,58 @@
 import type { DiaSemana } from './dates'
 
+export type CategoriaAncora = 'corpo' | 'mente' | 'emocao' | 'mundo'
+
 export type Ancora = {
   id: string
   titulo: string
   detalhe: string
+  categoria?: CategoriaAncora
 }
 
-export const ANCORAS: Ancora[] = [
-  { id: 'ecra_21h', titulo: 'Ecrã off às 21h', detalhe: 'cama 22h30 · carregador na cozinha' },
-  { id: 'pa_proteina', titulo: 'Primeira refeição: proteína + gordura', detalhe: '30g+ proteína · sem carbo · rompe o jejum em consciência' },
-  { id: 'janela_9_19', titulo: 'Janela alimentar', detalhe: 'jejum ≥14h · ver timer em /jejum' },
-  { id: 'carbos_zero', titulo: 'Carbos zero', detalhe: 'sem cinzentos · refeed só sábado à noite' },
-  { id: 'eletrolitos', titulo: 'Eletrólitos', detalhe: 'sal de manhã · magnésio à noite' },
-  { id: 'treino_feito', titulo: 'Movimento do dia', detalhe: 'treino ou caminhada · 30min' },
-  { id: 'caderno_copo', titulo: 'Caderno antes do copo', detalhe: 'hora + emoção antes de decidir' }
+// Pool de âncoras · catálogo do qual ela escolhe as que estão activas.
+// Cada uma tem categoria para agrupar no editor.
+export const ANCORAS_POOL: Ancora[] = [
+  // CORPO
+  { id: 'pa_proteina', titulo: 'Proteína no PA', detalhe: '30g+ proteína · sem carbo · rompe o jejum em consciência', categoria: 'corpo' },
+  { id: 'janela_9_19', titulo: 'Janela alimentar', detalhe: 'jejum ≥14h · ver timer em /jejum', categoria: 'corpo' },
+  { id: 'carbos_zero', titulo: 'Carbos zero', detalhe: 'sem cinzentos · refeed só sábado à noite', categoria: 'corpo' },
+  { id: 'eletrolitos', titulo: 'Electrólitos', detalhe: 'sal de manhã · magnésio à noite', categoria: 'corpo' },
+  { id: 'treino_feito', titulo: 'Movimento do dia', detalhe: 'treino ou caminhada · 30min', categoria: 'corpo' },
+  { id: 'caminhada', titulo: 'Caminhada 20min', detalhe: 'fora de casa · sem podcast', categoria: 'corpo' },
+  { id: 'alongamento', titulo: 'Alongamento 5min', detalhe: 'manhã ou antes de deitar', categoria: 'corpo' },
+  { id: 'agua_oito', titulo: '8 copos de água', detalhe: 'pequenos golos ao longo do dia', categoria: 'corpo' },
+  // MENTE
+  { id: 'ecra_21h', titulo: 'Ecrã off às 21h', detalhe: 'cama 22h30 · carregador na cozinha', categoria: 'mente' },
+  { id: 'meditacao', titulo: 'Meditação 10min', detalhe: 'silêncio ou guiada', categoria: 'mente' },
+  { id: 'respiracao', titulo: 'Respiração consciente', detalhe: '5min · 4-7-8 ou box breathing', categoria: 'mente' },
+  { id: 'leitura_livro', titulo: 'Leitura sem ecrã', detalhe: '20min de papel', categoria: 'mente' },
+  { id: 'silencio', titulo: 'Silêncio 10min', detalhe: 'sem música · sem voz · sem notificações', categoria: 'mente' },
+  // EMOÇÃO
+  { id: 'caderno_copo', titulo: 'Caderno antes do copo', detalhe: 'hora + emoção antes de decidir', categoria: 'emocao' },
+  { id: 'diario_3', titulo: 'Diário · 3 frases', detalhe: 'o que sentiu · o que viu · o que ficou', categoria: 'emocao' },
+  { id: 'gratidao', titulo: '3 gratidões', detalhe: 'concretas · do dia · não genéricas', categoria: 'emocao' },
+  // MUNDO
+  { id: 'sol_manha', titulo: 'Sol matinal', detalhe: '10min de sol nos olhos · regula ritmo', categoria: 'mundo' },
+  { id: 'contacto_real', titulo: 'Contacto real', detalhe: 'telefonema ou encontro · não chat', categoria: 'mundo' },
+  { id: 'ar_livre', titulo: 'Ar livre', detalhe: 'sair de casa pelo menos 1×', categoria: 'mundo' }
 ]
+
+// Default · as 7 originais do plano. Se ela não escolher activas, usa estas.
+export const ANCORAS_DEFAULT_IDS = [
+  'pa_proteina', 'janela_9_19', 'carbos_zero', 'eletrolitos',
+  'treino_feito', 'ecra_21h', 'caderno_copo'
+]
+
+// Compat · alguns sítios ainda lêem ANCORAS directamente.
+// Aponta para o pool até serem migrados para getAncorasActivas().
+export const ANCORAS: Ancora[] = ANCORAS_POOL.filter(a => ANCORAS_DEFAULT_IDS.includes(a.id))
+
+export const CATEGORIAS_LABEL: Record<CategoriaAncora, string> = {
+  corpo: 'Corpo',
+  mente: 'Mente',
+  emocao: 'Emoção',
+  mundo: 'Mundo'
+}
 
 export const TREINO_SEMANAL: Record<DiaSemana, { tipo: string; descricao: string; descanso: boolean }> = {
   Segunda: { tipo: 'Pernas + Glúteos', descricao: '30min · halteres · agachamento, peso morto, lunges', descanso: false },

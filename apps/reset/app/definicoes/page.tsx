@@ -11,6 +11,8 @@ import { exportarTudo, importarTudo, limparTudoLocal } from '@/lib/storage'
 import { hidratarTudo, lastSyncTime } from '@/lib/sync'
 import { syncProfile } from '@/lib/sync'
 import { getLembretes, saveLembretes, type Lembrete, pedirPermissao, permissaoActual, reagendarLembretes, notificacaoSuportada, LEMBRETES_DEFAULT } from '@/lib/notifications'
+import { ANCORAS_POOL, CATEGORIAS_LABEL, type Ancora, type CategoriaAncora } from '@/lib/data'
+import { Plus, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export default function DefinicoesPage() {
@@ -143,6 +145,9 @@ export default function DefinicoesPage() {
           </div>
         </div>
       </section>
+
+      {/* ÂNCORAS */}
+      <AncorasEditor perfil={perfil} setPerfil={setPerfil} />
 
       {/* TEMA */}
       <section className="space-y-3">
@@ -353,3 +358,157 @@ function Toggle({ ativo, onChange }: { ativo: boolean; onChange: () => void }) {
     </button>
   )
 }
+
+function AncorasEditor({ perfil, setPerfil }: { perfil: Profile; setPerfil: (p: Profile) => void }) {
+  const [novoTitulo, setNovoTitulo] = useState('')
+  const [novoDetalhe, setNovoDetalhe] = useState('')
+  const [novaCategoria, setNovaCategoria] = useState<CategoriaAncora>('corpo')
+  const [adicionando, setAdicionando] = useState(false)
+
+  const activas = new Set(perfil.ancorasActivas ?? [])
+  const todas: Ancora[] = [...ANCORAS_POOL, ...(perfil.ancorasCustom ?? [])]
+  const porCategoria: Record<CategoriaAncora, Ancora[]> = { corpo: [], mente: [], emocao: [], mundo: [] }
+  todas.forEach(a => {
+    const cat = a.categoria ?? 'corpo'
+    porCategoria[cat].push(a)
+  })
+
+  const toggle = (id: string) => {
+    const novas = activas.has(id)
+      ? perfil.ancorasActivas.filter(x => x !== id)
+      : [...perfil.ancorasActivas, id]
+    const novoPerfil = saveProfile({ ancorasActivas: novas })
+    setPerfil(novoPerfil)
+    void syncProfile(novoPerfil as unknown as Record<string, unknown>).catch(() => {})
+  }
+
+  const adicionar = () => {
+    const titulo = novoTitulo.trim()
+    if (!titulo) return
+    const id = 'custom_' + crypto.randomUUID().slice(0, 8)
+    const nova: Ancora = { id, titulo, detalhe: novoDetalhe.trim(), categoria: novaCategoria }
+    const novoPerfil = saveProfile({
+      ancorasCustom: [...(perfil.ancorasCustom ?? []), nova],
+      ancorasActivas: [...perfil.ancorasActivas, id]
+    })
+    setPerfil(novoPerfil)
+    void syncProfile(novoPerfil as unknown as Record<string, unknown>).catch(() => {})
+    setNovoTitulo('')
+    setNovoDetalhe('')
+    setAdicionando(false)
+  }
+
+  const apagarCustom = (id: string) => {
+    if (!window.confirm('Apagar âncora?')) return
+    const novoPerfil = saveProfile({
+      ancorasCustom: (perfil.ancorasCustom ?? []).filter(a => a.id !== id),
+      ancorasActivas: perfil.ancorasActivas.filter(x => x !== id)
+    })
+    setPerfil(novoPerfil)
+    void syncProfile(novoPerfil as unknown as Record<string, unknown>).catch(() => {})
+  }
+
+  return (
+    <section className="space-y-3">
+      <div className="flex items-baseline justify-between">
+        <span className="label-cap">Âncoras</span>
+        <span className="text-faint text-[11px] tnum">{activas.size} activas</span>
+      </div>
+      <p className="text-faint text-[11px] leading-relaxed">
+        escolhe as que fazem sentido nesta fase. podes trocar quando quiseres.
+      </p>
+      <div className="card-solid space-y-4 !p-4">
+        {(Object.keys(porCategoria) as CategoriaAncora[]).map(cat => (
+          <div key={cat} className="space-y-1.5">
+            <span className="label-cap text-[10px]">{CATEGORIAS_LABEL[cat]}</span>
+            <ul className="space-y-1">
+              {porCategoria[cat].map(a => {
+                const active = activas.has(a.id)
+                const custom = a.id.startsWith('custom_')
+                return (
+                  <li key={a.id} className="flex items-start gap-2">
+                    <button
+                      onClick={() => toggle(a.id)}
+                      aria-pressed={active}
+                      className={cn(
+                        'flex-1 flex items-start gap-2 rounded-md px-3 py-2 text-left transition-elegant active:scale-[0.99]',
+                        active ? 'bg-tinta/5 dark:bg-ouro/10' : 'hover:bg-[var(--surface-soft)]'
+                      )}
+                    >
+                      <span
+                        aria-hidden
+                        className={cn(
+                          'mt-0.5 h-4 w-4 shrink-0 rounded-full transition-elegant',
+                          active ? 'bg-ouro' : 'border border-[var(--hair-strong)]'
+                        )}
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className={cn('block text-[13.5px]', active ? 'text-tinta dark:text-creme' : 'text-soft')}>{a.titulo}</span>
+                        {a.detalhe ? <span className="text-faint mt-0.5 block text-[11px]">{a.detalhe}</span> : null}
+                      </span>
+                    </button>
+                    {custom ? (
+                      <button
+                        onClick={() => apagarCustom(a.id)}
+                        aria-label="apagar âncora"
+                        className="text-faint hover:text-terracota p-1 active:scale-90"
+                      >
+                        <Trash2 size={13} strokeWidth={1.4} />
+                      </button>
+                    ) : null}
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        ))}
+
+        {adicionando ? (
+          <div className="space-y-2 border-t border-[var(--hair)] pt-4">
+            <input
+              autoFocus
+              value={novoTitulo}
+              onChange={e => setNovoTitulo(e.target.value)}
+              placeholder="título · ex: telefonar à mãe"
+              className="input-base text-[13px]"
+              maxLength={60}
+            />
+            <input
+              value={novoDetalhe}
+              onChange={e => setNovoDetalhe(e.target.value)}
+              placeholder="detalhe (opcional)"
+              className="input-base text-[13px]"
+              maxLength={120}
+            />
+            <div className="flex gap-1.5">
+              {(Object.keys(CATEGORIAS_LABEL) as CategoriaAncora[]).map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setNovaCategoria(cat)}
+                  className={cn(
+                    'flex-1 rounded-md py-1.5 text-[11px] transition-elegant',
+                    novaCategoria === cat ? 'bg-tinta text-[var(--bg)] dark:bg-ouro dark:text-tinta' : 'shadow-hair text-soft'
+                  )}
+                >
+                  {CATEGORIAS_LABEL[cat]}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => { setAdicionando(false); setNovoTitulo(''); setNovoDetalhe('') }} className="btn-ghost flex-1 py-2 text-[12px]">cancelar</button>
+              <button onClick={adicionar} disabled={!novoTitulo.trim()} className="btn-primary flex-1 py-2 text-[12px] disabled:opacity-30">guardar</button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setAdicionando(true)}
+            className="flex w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-[var(--hair-strong)] py-2.5 text-[12px] text-soft transition-elegant hover:bg-[var(--surface-soft)]"
+          >
+            <Plus size={13} strokeWidth={1.4} /> adicionar âncora minha
+          </button>
+        )}
+      </div>
+    </section>
+  )
+}
+
