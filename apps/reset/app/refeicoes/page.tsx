@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Plus, Trash2, ArrowLeft, ArrowRight, MessageCircle, Loader2, Pencil, Check, X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Plus, Trash2, ArrowLeft, ArrowRight, MessageCircle, Loader2, Pencil, Check, X, Camera } from 'lucide-react'
 import BackButton from '@/components/BackButton'
 import {
   getRefeicoes,
@@ -15,6 +15,7 @@ import {
 } from '@/lib/storage'
 import { isoDate } from '@/lib/dates'
 import { getProfile } from '@/lib/profile'
+import { analisarFotoRefeicao } from '@/lib/fotoRefeicao'
 
 const TIPOS: { id: RefeicaoTipo; label: string }[] = [
   { id: 'pa', label: 'pequeno-almoço' },
@@ -47,6 +48,8 @@ export default function RefeicoesPage() {
   const [descricao, setDescricao] = useState('')
   const [estimando, setEstimando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
+  const [analisandoFoto, setAnalisandoFoto] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const refresh = () => {
     setLista(getRefeicoesDoDia(date))
@@ -111,6 +114,35 @@ export default function RefeicoesPage() {
     if (typeof window !== 'undefined' && !window.confirm('Apagar esta refeição?')) return
     removeRefeicao(id)
     refresh()
+  }
+
+  const onFoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = '' // reset para permitir mesma foto outra vez
+    setAnalisandoFoto(true)
+    setErro(null)
+    try {
+      const r = await analisarFotoRefeicao(file)
+      const ts = date === isoDate()
+        ? new Date().toISOString()
+        : new Date(date + 'T12:00:00').toISOString()
+      addRefeicao({
+        tipo: r.tipo,
+        descricao: r.descricao,
+        timestamp: ts,
+        proteinaG: r.proteinaG,
+        carboG: r.carboG,
+        gorduraG: r.gorduraG,
+        calorias: r.calorias,
+        contexto: '',
+        sentir: r.observacao
+      })
+      refresh()
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : 'erro a analisar foto')
+    }
+    setAnalisandoFoto(false)
   }
 
   const todas = getRefeicoes()
@@ -251,14 +283,34 @@ export default function RefeicoesPage() {
           </button>
         </section>
       ) : (
-        <button
-          onClick={() => setAdicionando(true)}
-          className="card-solid flex w-full items-center justify-center gap-2 py-3 text-[12.5px] text-soft transition-elegant hover:bg-[var(--surface-soft)] active:scale-95"
-        >
-          <Plus size={14} strokeWidth={1.4} />
-          adicionar manualmente
-        </button>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={analisandoFoto}
+            className="card-solid flex items-center justify-center gap-2 py-3 text-[12.5px] text-soft transition-elegant hover:bg-[var(--surface-soft)] active:scale-95 disabled:opacity-50"
+          >
+            {analisandoFoto ? <><Loader2 size={14} className="animate-spin" /> a ler…</> : <><Camera size={14} strokeWidth={1.4} /> tirar foto</>}
+          </button>
+          <button
+            onClick={() => setAdicionando(true)}
+            className="card-solid flex items-center justify-center gap-2 py-3 text-[12.5px] text-soft transition-elegant hover:bg-[var(--surface-soft)] active:scale-95"
+          >
+            <Plus size={14} strokeWidth={1.4} />
+            manual
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={onFoto}
+            className="hidden"
+          />
+        </div>
       )}
+      {erro && !adicionando ? (
+        <p className="text-[11px] text-terracota text-center">{erro}</p>
+      ) : null}
 
       {/* histórico de dias com refeições */}
       {datasComRefeicoes.length > 1 ? (

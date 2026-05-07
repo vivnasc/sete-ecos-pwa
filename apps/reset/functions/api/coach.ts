@@ -302,11 +302,11 @@ const COACH_TOOLS = [
   },
   {
     name: 'analisar_padroes',
-    description: 'Devolve padrões dos últimos N dias para basear recomendações. Áreas: alimentos_frequentes, macros_media, sono_padrao, sintomas_padrao, suplementos_padrao, alcool_padrao, peso_tendencia, tudo. Usa antes de dar recomendações.',
+    description: 'Devolve padrões dos últimos N dias para basear recomendações. Áreas: alimentos_frequentes, macros_media, nutrientes, sono_padrao, sintomas_padrao, suplementos_padrao, alcool_padrao, peso_tendencia, tudo. Usa antes de dar recomendações. nutrientes inclui pistas sobre proteína baixa, falta de vegetais, ómega-3, suplementos irregulares, fibra, hidratação.',
     input_schema: {
       type: 'object',
       properties: {
-        area: { type: 'string', enum: ['alimentos_frequentes', 'macros_media', 'sono_padrao', 'sintomas_padrao', 'suplementos_padrao', 'alcool_padrao', 'peso_tendencia', 'tudo'] },
+        area: { type: 'string', enum: ['alimentos_frequentes', 'macros_media', 'nutrientes', 'sono_padrao', 'sintomas_padrao', 'suplementos_padrao', 'alcool_padrao', 'peso_tendencia', 'tudo'] },
         dias: { type: 'integer' }
       },
       required: ['area']

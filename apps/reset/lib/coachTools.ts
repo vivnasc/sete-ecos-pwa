@@ -258,11 +258,11 @@ export const COACH_TOOLS = [
   },
   {
     name: 'analisar_padroes',
-    description: 'Devolve padrões alimentares, sono, suplementação, sintomas peri etc dos últimos N dias. Usa antes de dar recomendações para basear no que vês. Áreas: alimentos_frequentes, macros_media, sono_padrao, sintomas_padrao, suplementos_padrao, alcool_padrao, peso_tendencia, tudo.',
+    description: 'Devolve padrões alimentares, sono, suplementação, sintomas peri etc dos últimos N dias. Usa antes de dar recomendações para basear no que vês. Áreas: alimentos_frequentes, macros_media, nutrientes, sono_padrao, sintomas_padrao, suplementos_padrao, alcool_padrao, peso_tendencia, tudo.',
     input_schema: {
       type: 'object',
       properties: {
-        area: { type: 'string', enum: ['alimentos_frequentes', 'macros_media', 'sono_padrao', 'sintomas_padrao', 'suplementos_padrao', 'alcool_padrao', 'peso_tendencia', 'tudo'] },
+        area: { type: 'string', enum: ['alimentos_frequentes', 'macros_media', 'nutrientes', 'sono_padrao', 'sintomas_padrao', 'suplementos_padrao', 'alcool_padrao', 'peso_tendencia', 'tudo'] },
         dias: { type: 'integer', description: 'Janela em dias, default 14' }
       },
       required: ['area']
@@ -689,8 +689,65 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
       linhas.push(`peso ${dias}d: ${primeiro}→${ultimo} (${delta > 0 ? '+' : ''}${delta.toFixed(1)}kg em ${ps.length} pesagens)`)
     }
 
+    const fazNutrientes = () => {
+      const refeicoes = getRefeicoesNoIntervalo(desdeIso)
+      const ds = getTodosDias().filter(d => d.date >= desdeIso.slice(0, 10))
+      if (refeicoes.length === 0) {
+        linhas.push('nutrientes: sem refeições para analisar')
+        return
+      }
+      const peso = pesoUltimo() ?? 70
+      // Proteína média/dia
+      const porDia = new Map<string, { p: number }>()
+      refeicoes.forEach(r => {
+        const date = r.timestamp.slice(0, 10)
+        const cur = porDia.get(date) ?? { p: 0 }
+        cur.p += r.proteinaG ?? 0
+        porDia.set(date, cur)
+      })
+      const ndias = porDia.size
+      const proteinaMedia = ndias > 0 ? [...porDia.values()].reduce((s, d) => s + d.p, 0) / ndias : 0
+      const proteinaTarget = peso * 1.6
+      const flagsProteina = proteinaMedia < proteinaTarget * 0.8
+      // Variedade de descrições
+      const todasDesc = refeicoes.map(r => r.descricao.toLowerCase())
+      const palavras = new Set<string>()
+      todasDesc.forEach(d => d.split(/[\s,]+/).filter(w => w.length > 3).forEach(w => palavras.add(w)))
+      const variedade = palavras.size
+      // Greens / vegetais (heurística por palavras-chave)
+      const greens = ['espinafre', 'brócol', 'couve', 'alface', 'rúcula', 'agrião', 'matapa', 'folhas', 'salada', 'curgete', 'courgette', 'pepino', 'tomate']
+      const refsComGreens = refeicoes.filter(r => greens.some(g => r.descricao.toLowerCase().includes(g)))
+      const pctGreens = (refsComGreens.length / refeicoes.length) * 100
+      // Ómega-3 (peixes gordos)
+      const peixes = ['salmão', 'sardinha', 'cavala', 'atum', 'truta']
+      const refsComPeixe = refeicoes.filter(r => peixes.some(p => r.descricao.toLowerCase().includes(p)))
+      // Suplementos médios
+      const totalSupDias = ds.length
+      const magnesioFreq = ds.filter(d => d.suplementos.includes('magnesio')).length
+      const vitDFreq = ds.filter(d => d.suplementos.includes('vit_d')).length
+      // Trânsito / fibra
+      const transitoNao = ds.filter(d => d.transitoIntestinal === 'nao').length
+      // Hidratação
+      const aguaMedia = ds.length > 0 ? ds.reduce((s, d) => s + d.aguaCopos, 0) / ds.length : 0
+
+      const sinais: string[] = []
+      sinais.push(`proteína média: ${Math.round(proteinaMedia)}g/d (alvo ${Math.round(proteinaTarget)}g · ${(proteinaMedia / proteinaTarget * 100).toFixed(0)}%)${flagsProteina ? ' ⚠ baixa' : ''}`)
+      sinais.push(`variedade alimentar: ${variedade} palavras únicas em ${refeicoes.length} refeições`)
+      sinais.push(`vegetais/folhas: ${refsComGreens.length}/${refeicoes.length} refeições (${Math.round(pctGreens)}%)${pctGreens < 40 ? ' ⚠ pouca' : ''}`)
+      sinais.push(`peixes ómega-3: ${refsComPeixe.length}/${refeicoes.length}${refsComPeixe.length === 0 ? ' ⚠ ausente' : ''}`)
+      if (totalSupDias > 0) {
+        sinais.push(`magnésio: ${magnesioFreq}/${totalSupDias}d${magnesioFreq < totalSupDias * 0.5 ? ' ⚠ irregular' : ''}`)
+        sinais.push(`vit D: ${vitDFreq}/${totalSupDias}d${vitDFreq < totalSupDias * 0.5 ? ' ⚠ irregular' : ''}`)
+      }
+      if (transitoNao > 2) sinais.push(`trânsito não em ${transitoNao}d ⚠ atenção fibra/eletrólitos`)
+      sinais.push(`água: ${aguaMedia.toFixed(1)} copos/d${aguaMedia < 6 ? ' ⚠ baixa' : ''}`)
+      linhas.push(`nutrientes ${dias}d:`)
+      sinais.forEach(s => linhas.push('· ' + s))
+    }
+
     if (area === 'alimentos_frequentes' || area === 'tudo') fazAlimentos()
     if (area === 'macros_media' || area === 'tudo') fazMacros()
+    if (area === 'nutrientes' || area === 'tudo') fazNutrientes()
     if (area === 'sono_padrao' || area === 'tudo') fazSono()
     if (area === 'sintomas_padrao' || area === 'tudo') fazSintomas()
     if (area === 'suplementos_padrao' || area === 'tudo') fazSuplementos()

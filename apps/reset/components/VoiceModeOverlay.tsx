@@ -1,12 +1,14 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { X, Mic, MicOff, Volume2, VolumeX, MessageCircle, ArrowRight, AlertCircle } from 'lucide-react'
+import { X, Mic, MicOff, Volume2, VolumeX, MessageCircle, ArrowRight, AlertCircle, Camera, Loader2 } from 'lucide-react'
 import { useSpeechRecognition } from '@/lib/useSpeechRecognition'
 import { useTextToSpeech } from '@/lib/useTextToSpeech'
 import { construirContexto } from '@/lib/coachContext'
 import { executeTool } from '@/lib/coachTools'
-import { saveCoachMensagem } from '@/lib/storage'
+import { saveCoachMensagem, addRefeicao } from '@/lib/storage'
+import { analisarFotoRefeicao } from '@/lib/fotoRefeicao'
+import { isoDate } from '@/lib/dates'
 
 type ContentBlock =
   | { type: 'text'; text: string }
@@ -47,7 +49,9 @@ export default function VoiceModeOverlay({ aberto, onFechar }: { aberto: boolean
   const [chips, setChips] = useState<string[]>([])
   const [erro, setErro] = useState<string | null>(null)
   const [silencioso, setSilencioso] = useState(false)
+  const [analisandoFoto, setAnalisandoFoto] = useState(false)
   const transcritoFinalRef = useRef('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const tts = useTextToSpeech()
   const voz = useSpeechRecognition({
@@ -96,6 +100,53 @@ export default function VoiceModeOverlay({ aberto, onFechar }: { aberto: boolean
       setTranscrito((voz.transcricao + ' ' + voz.parcial).trim())
     }
   }, [voz.transcricao, voz.parcial])
+
+  const onFoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+    setAnalisandoFoto(true)
+    setErro(null)
+    setEstado('a_pensar')
+    voz.parar()
+    tts.parar()
+    try {
+      const r = await analisarFotoRefeicao(file)
+      addRefeicao({
+        tipo: r.tipo,
+        descricao: r.descricao,
+        timestamp: new Date().toISOString(),
+        proteinaG: r.proteinaG,
+        carboG: r.carboG,
+        gorduraG: r.gorduraG,
+        calorias: r.calorias,
+        contexto: 'foto',
+        sentir: r.observacao
+      })
+      const tipoLeg = { pa: 'pequeno-almoço', almoco: 'almoço', snack: 'snack', jantar: 'jantar' }[r.tipo]
+      const macroParts: string[] = []
+      if (r.proteinaG !== null) macroParts.push(`${Math.round(r.proteinaG)}g proteína`)
+      if (r.carboG !== null) macroParts.push(`${Math.round(r.carboG)}g carbo`)
+      if (r.gorduraG !== null) macroParts.push(`${Math.round(r.gorduraG)}g gordura`)
+      if (r.calorias !== null) macroParts.push(`${r.calorias} kcal`)
+      const respostaTxt = `${tipoLeg} registado · ${r.descricao}. estimei ${macroParts.join(', ')}.${r.observacao ? ' ' + r.observacao : ''}`
+      saveCoachMensagem('user', '[foto da refeição]')
+      saveCoachMensagem('assistant', respostaTxt)
+      setChips([`✓ refeição (foto)`])
+      setResposta(respostaTxt)
+      window.dispatchEvent(new CustomEvent('fenixfit:storage', { detail: { key: 'foto-refeicao' } }))
+      if (!silencioso) {
+        setEstado('a_falar')
+        tts.falar(respostaTxt)
+      } else {
+        setEstado('pronto')
+      }
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : 'erro a analisar foto')
+      setEstado('pronto')
+    }
+    setAnalisandoFoto(false)
+  }
 
   const iniciarEscuta = () => {
     setErro(null)
@@ -302,14 +353,33 @@ export default function VoiceModeOverlay({ aberto, onFechar }: { aberto: boolean
 
       {/* Footer · acções */}
       <footer className="flex items-center justify-between gap-3 border-t border-[var(--hair)] px-5 py-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
-        <a
-          href="/coach"
-          onClick={onFechar}
-          className="inline-flex items-center gap-1.5 text-faint text-[11.5px] hover:text-ouro"
-        >
-          <MessageCircle size={13} strokeWidth={1.4} />
-          ver chat
-        </a>
+        <div className="flex items-center gap-3">
+          <a
+            href="/coach"
+            onClick={onFechar}
+            className="inline-flex items-center gap-1.5 text-faint text-[11.5px] hover:text-ouro"
+          >
+            <MessageCircle size={13} strokeWidth={1.4} />
+            chat
+          </a>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={analisandoFoto || estado === 'a_pensar'}
+            aria-label="foto da refeição"
+            className="inline-flex items-center gap-1.5 text-faint text-[11.5px] hover:text-ouro disabled:opacity-40"
+          >
+            {analisandoFoto ? <Loader2 size={13} className="animate-spin" /> : <Camera size={13} strokeWidth={1.4} />}
+            foto
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={onFoto}
+            className="hidden"
+          />
+        </div>
         {estado === 'a_ouvir' ? (
           <button
             onClick={pararEscuta}
