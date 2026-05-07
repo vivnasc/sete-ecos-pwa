@@ -4,7 +4,7 @@
 // O servidor recebe os schemas via /api/coach. Quando o Claude responde com
 // tool_use, o cliente executa via TOOL_EXECUTORS e devolve tool_result.
 
-import { isoDate } from './dates'
+import { isoDate, horaLocal, dataLocal } from './dates'
 import { ANCORAS } from './data'
 import { getProfile, saveProfile, sugerirMetas, type Metas } from './profile'
 import { syncProfile } from './sync'
@@ -446,9 +446,9 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
           saveDia(dia)
         }
       }
-      return { ok: true, texto: `jejum fechado às ${ts.slice(11, 16)} · ${saved.duracaoHoras}h · ${ok}` }
+      return { ok: true, texto: `jejum fechado às ${horaLocal(ts)} · ${saved.duracaoHoras}h · ${ok}` }
     }
-    return { ok: true, texto: tipo === 'inicio' ? `jejum começou às ${ts.slice(11, 16)}` : `jejum fechado às ${ts.slice(11, 16)}` }
+    return { ok: true, texto: tipo === 'inicio' ? `jejum começou às ${horaLocal(ts)}` : `jejum fechado às ${horaLocal(ts)}` }
   },
 
   registar_ciclo(input) {
@@ -974,13 +974,13 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
       }
       case 'alcool': {
         const as_ = getAlcoolRegistos().slice(0, dias)
-        as_.forEach(a => linhas.push(`${a.timestamp.slice(0, 16).replace('T', ' ')} · ${a.decidiuBeber ? a.unidades + 'u' : 'não'} · ${a.emocao}`))
+        as_.forEach(a => linhas.push(`${dataLocal(a.timestamp)} ${horaLocal(a.timestamp)} · ${a.decidiuBeber ? a.unidades + 'u' : 'não'} · ${a.emocao}`))
         break
       }
       case 'refeicoes_hoje': {
         const lista = getRefeicoesDoDia()
         if (lista.length === 0) linhas.push('sem refeições registadas hoje')
-        lista.forEach(r => linhas.push(`${r.timestamp.slice(11, 16)} · ${r.tipo} · ${r.descricao}${r.proteinaG ? ` · ${r.proteinaG}gP/${r.gorduraG}gG/${r.carboG}gC` : ''}`))
+        lista.forEach(r => linhas.push(`${horaLocal(r.timestamp)} · ${r.tipo} · ${r.descricao}${r.proteinaG ? ` · ${r.proteinaG}gP/${r.gorduraG}gG/${r.carboG}gC` : ''}`))
         break
       }
       case 'macros_hoje': {

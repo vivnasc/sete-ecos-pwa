@@ -13,7 +13,7 @@ import {
   type Refeicao,
   type RefeicaoTipo
 } from '@/lib/storage'
-import { isoDate } from '@/lib/dates'
+import { isoDate, horaLocal } from '@/lib/dates'
 import { getProfile } from '@/lib/profile'
 import { analisarFotoRefeicao } from '@/lib/fotoRefeicao'
 
@@ -400,7 +400,7 @@ function RefeicaoCard({
         <div className="flex items-baseline justify-between gap-3">
           <div className="flex items-baseline gap-2 min-w-0 flex-1">
             <span className="label-cap shrink-0">{TIPOS.find(t => t.id === r.tipo)?.label ?? r.tipo}</span>
-            <span className="text-faint text-[11px] tnum">{r.timestamp.slice(11, 16)}</span>
+            <span className="text-faint text-[11px] tnum">{horaLocal(r.timestamp)}</span>
           </div>
           <div className="flex gap-1 shrink-0">
             <button onClick={cancelar} aria-label="cancelar" className="text-faint hover:text-soft p-1 active:scale-90"><X size={14} strokeWidth={1.4} /></button>
@@ -428,7 +428,7 @@ function RefeicaoCard({
       <div className="flex items-baseline justify-between gap-3">
         <div className="flex items-baseline gap-2 min-w-0 flex-1">
           <span className="label-cap shrink-0">{TIPOS.find(t => t.id === r.tipo)?.label ?? r.tipo}</span>
-          <span className="text-faint text-[11px] tnum">{r.timestamp.slice(11, 16)}</span>
+          <span className="text-faint text-[11px] tnum">{horaLocal(r.timestamp)}</span>
         </div>
         <div className="flex gap-2 shrink-0">
           <button

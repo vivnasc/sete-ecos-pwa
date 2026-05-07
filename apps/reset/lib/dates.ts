@@ -29,6 +29,23 @@ export function mesCurto(d: Date): string {
   return MESES_CURTO[d.getMonth()]
 }
 
+// Hora local HH:MM a partir de timestamp ISO (UTC).
+// Usar sempre isto em vez de iso.slice(11,16) — esse dá UTC e fica 2h atrasado em CAT.
+export function horaLocal(iso: string): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return ''
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
+// Data local YYYY-MM-DD a partir de timestamp ISO.
+export function dataLocal(iso: string): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return ''
+  return isoDate(d)
+}
+
 export function isoDate(d: Date = new Date()): string {
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')

@@ -4,7 +4,7 @@
 // Partilhado entre /coach (chat texto) e VoiceModeOverlay (modo voz).
 
 import { ANCORAS } from './data'
-import { isoDate } from './dates'
+import { isoDate, horaLocal, dataLocal } from './dates'
 import { executeTool } from './coachTools'
 import { getProfile } from './profile'
 import {
@@ -80,7 +80,7 @@ export function construirContexto(comAnalise = false): string {
   if (refHoje.length > 0) {
     linhas.push('REFEIÇÕES HOJE:')
     refHoje.forEach(r => {
-      linhas.push(`· ${r.timestamp.slice(11, 16)} ${r.tipo}: ${r.descricao.slice(0, 80)}`)
+      linhas.push(`· ${horaLocal(r.timestamp)} ${r.tipo}: ${r.descricao.slice(0, 80)}`)
     })
   }
 
@@ -105,7 +105,7 @@ export function construirContexto(comAnalise = false): string {
     linhas.push('')
     linhas.push('ÁLCOOL · últimos 10 registos:')
     alcool.forEach(a => {
-      linhas.push(`· ${a.timestamp.slice(0, 10)} ${a.timestamp.slice(11, 16)} · ${a.decidiuBeber ? `${a.unidades}u` : 'não'} · ${a.emocao}${a.gatilho ? ` · "${a.gatilho.slice(0, 80)}"` : ''}`)
+      linhas.push(`· ${dataLocal(a.timestamp)} ${horaLocal(a.timestamp)} · ${a.decidiuBeber ? `${a.unidades}u` : 'não'} · ${a.emocao}${a.gatilho ? ` · "${a.gatilho.slice(0, 80)}"` : ''}`)
     })
   }
 
