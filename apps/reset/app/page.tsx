@@ -9,6 +9,7 @@ import JanelaTimer from '@/components/JanelaTimer'
 import MorningPanel from '@/components/MorningPanel'
 import CoachGreetingCard from '@/components/CoachGreetingCard'
 import QuickTools from '@/components/QuickTools'
+import SafeBlock from '@/components/SafeBlock'
 import { MANTRAS } from '@/lib/data'
 import {
   RESET_DAYS,
@@ -143,16 +144,16 @@ export default function HomePage() {
       ) : null}
 
       {/* COACH · saudação do dia */}
-      {pronto && status === 'durante' ? <CoachGreetingCard /> : null}
+      {pronto && status === 'durante' ? <SafeBlock nome="CoachGreeting"><CoachGreetingCard /></SafeBlock> : null}
 
       {/* ACESSO RÁPIDO · ferramentas principais */}
-      {status === 'durante' ? <QuickTools /> : null}
+      {status === 'durante' ? <SafeBlock nome="QuickTools"><QuickTools /></SafeBlock> : null}
 
       {/* PAINEL MATINAL · ferramentas perto */}
-      {status === 'durante' ? <MorningPanel /> : null}
+      {status === 'durante' ? <SafeBlock nome="MorningPanel"><MorningPanel /></SafeBlock> : null}
 
       {/* SmartNow contextual */}
-      {status === 'durante' ? <SmartNow /> : null}
+      {status === 'durante' ? <SafeBlock nome="SmartNow"><SmartNow /></SafeBlock> : null}
 
       {/* MANTRA */}
       <section className="text-center px-2">
@@ -164,7 +165,7 @@ export default function HomePage() {
       </section>
 
       {/* JANELA · adaptativa com timer */}
-      {pronto && status === 'durante' ? <JanelaTimer /> : null}
+      {pronto && status === 'durante' ? <SafeBlock nome="JanelaTimer"><JanelaTimer /></SafeBlock> : null}
 
       {/* PESO QUICK ADD */}
       {status === 'durante' ? (
