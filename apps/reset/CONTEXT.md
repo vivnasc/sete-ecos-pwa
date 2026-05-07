@@ -119,25 +119,68 @@ Sub-app dentro do monorepo `vivnasc/sete-ecos-pwa` (em `apps/reset/`).
 
 ## Plano em fases (próximas iterações)
 
-### Tier 1 · Alto impacto (PEDIDOS DA VIVIANNE)
-1. **Fix QuickTools** — investigar porque não renderiza no Hoje
-2. **REGISTO POR FOTOS** ⭐ pedido prioritário:
-   - Foto de comida (cada refeição)
-   - Foto de balança (peso visual + número)
-   - Foto de exercício (forma, partilhar com Bruno?)
-   - Foto durante interação com a coach (mostrar sintoma, refeição, etc.)
-   - Coach pode analisar fotos com Claude Vision API
-3. **Apple Watch / wearable** ⭐ se possível ligar PWA a:
-   - Sleep data automático
-   - Heart rate
-   - Steps + activity
-   - Workouts
-   - Alternativa: Health Connect API para Android
-4. **Voz no Desabafo** — Web Speech API
-5. **Coach voice mode** — TTS da abertura diária
-6. **Marcos/milestones** — Dias 7, 14, 30, 60 com selo logo-03
-7. **Ramadão mode** — janela alimentar adaptada
-8. **Notificações Web Push reais** — funcionar com app fechada
+### ⚠️ TIER 0 · GAPS BÁSICOS (CRÍTICO · pedido directo da Vivianne)
+
+**A app tem tracking de outcomes mas falta o tracking de inputs. Sem isto, não é uma app de nutrição completa.**
+
+1. **REGISTO DE REFEIÇÕES** ⭐⭐⭐
+   - Cada refeição (PA, almoço, snack, jantar)
+   - Foto da refeição (pedido explícito)
+   - Componentes (proteína, carbo, gordura, vegetais)
+   - Hora · contexto (em casa, fora, viagem)
+   - Sentir após refeição (saciedade, energia, gases, etc.)
+
+2. **CALORIAS + MACROS** ⭐⭐⭐
+   - Calorias totais do dia
+   - Macros (proteína g, carbo g, gordura g)
+   - Comparação vs target diário (calculado pelo TMB + objectivo)
+   - Histórico, médias semanais
+   - Base de dados de alimentos (Mozambique-friendly · matapa, xima, frango grelhado, etc.)
+
+3. **PLANO ALIMENTAR SEMANAL** ⭐⭐⭐
+   - Construtor de plano semanal de refeições
+   - Templates por fase (indução, transição, estabilização, manutenção)
+   - Lista de compras gerada automaticamente do plano
+   - Plano de treino integrado (não só referência estática)
+   - Plano de sono e descanso
+
+4. **REGISTO POR FOTOS** ⭐⭐ (já anotado antes, agora prioridade alta)
+   - Comida (com análise de Claude Vision para macros estimados?)
+   - Peso (foto da balança)
+   - Exercício (forma, partilha)
+   - Coach (mostrar sintoma, refeição, etc.)
+
+5. **APPLE WATCH / WEARABLE** ⭐⭐
+   - Sleep, heart rate, steps, workouts
+   - Health Connect API para Android
+
+### Tier 1 · Alto impacto (DEPOIS DOS BÁSICOS)
+6. **Fix QuickTools** — investigar porque não renderiza no Hoje
+7. **Voz no Desabafo** — Web Speech API
+8. **Coach voice mode** — TTS da abertura diária
+9. **Marcos/milestones** — Dias 7, 14, 30, 60 com selo logo-03
+10. **Ramadão mode** — janela alimentar adaptada
+11. **Notificações Web Push reais** — funcionar com app fechada
+
+## ⚠️ OBSERVAÇÃO IMPORTANTE DA VIVIANNE
+
+> "Não vejo nenhuma ferramenta de registo de refeições, nada sobre calorias, nenhum plano. Isso é o básico."
+
+A app actual TEM:
+- ✅ Tracking de outcomes: peso, cintura, jejum, ciclo, álcool, sono, energia, humor, âncoras
+- ✅ Análise: scanner, padrões, coach IA com memória persistente
+- ✅ Suporte: âncoras, mantras, definições, paletas
+
+A app actual NÃO TEM:
+- ❌ Registo de refeições (o que comeu, quando, fotos)
+- ❌ Cálculo de calorias e macros
+- ❌ Plano alimentar interactivo (só `/receitas` estático de referência)
+- ❌ Plano de treino editável (só `/treino` estático de referência)
+- ❌ Lista de compras gerada do plano
+- ❌ TMB + comparação com objectivos diários
+- ❌ Base de dados de alimentos (Mozambique-friendly)
+
+**Próxima sessão deve construir estas ferramentas de input antes de adicionar mais features de análise.**
 
 ### Tier 2 · Profundidade analítica
 8. **Energia budget** — vista visual do que dá/tira energia
