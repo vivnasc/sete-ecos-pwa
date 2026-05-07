@@ -28,7 +28,7 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
   if (!user) return { ok: false, erro: 'sem sessão' }
 
   try {
-    const [diasR, alcoolR, medidasR, desabafoR, insightsR, pesoR, jejumR, cicloR] = await Promise.all([
+    const [diasR, alcoolR, medidasR, desabafoR, insightsR, pesoR, jejumR, cicloR, profileR] = await Promise.all([
       sb.from('fenixfit_dias').select('*').eq('user_id', user.id),
       sb.from('fenixfit_alcool').select('*').eq('user_id', user.id),
       sb.from('fenixfit_medidas').select('*').eq('user_id', user.id),
@@ -36,10 +36,34 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       sb.from('fenixfit_insights').select('*').eq('user_id', user.id),
       sb.from('fenixfit_peso').select('*').eq('user_id', user.id),
       sb.from('fenixfit_jejum').select('*').eq('user_id', user.id),
-      sb.from('fenixfit_ciclo').select('*').eq('user_id', user.id)
+      sb.from('fenixfit_ciclo').select('*').eq('user_id', user.id),
+      sb.from('fenixfit_profile').select('*').eq('user_id', user.id).maybeSingle()
     ])
 
     if (diasR.error) throw diasR.error
+
+    // Profile · primeira coisa para garantir onboarding state
+    if (profileR.data) {
+      const p = profileR.data
+      const profile = {
+        nome: p.nome ?? 'Vivianne',
+        sexo: p.sexo ?? 'F',
+        pesoInicial: p.peso_inicial !== null ? Number(p.peso_inicial) : null,
+        cinturaInicial: p.cintura_inicial !== null ? Number(p.cintura_inicial) : null,
+        acordaTipico: p.acorda_tipico ?? '06:30',
+        deitaTipico: p.deita_tipico ?? '22:30',
+        treinoPreferido: p.treino_preferido ?? 'manhã',
+        gatilhosAlcool: p.gatilhos_alcool ?? [],
+        notificacoesAtivas: p.notificacoes_ativas ?? false,
+        onboardingCompleto: p.onboarding_completo ?? false,
+        inicioPlano: p.inicio_plano ?? '2026-05-11',
+        duracaoPlano: p.duracao_plano ?? 60,
+        syncSupabase: true,
+        emailSync: user.email ?? ''
+      }
+      localStorage.setItem('fenixfit:profile', JSON.stringify(profile))
+      window.dispatchEvent(new CustomEvent('fenixfit:profile', { detail: profile }))
+    }
 
     const diasMap: Record<string, DiaLog> = {}
     diasR.data?.forEach(d => {

@@ -6,10 +6,16 @@ import { getSupabase, supabaseConfigurado } from '@/lib/supabase'
 import { hidratarTudo } from '@/lib/sync'
 import type { Session } from '@supabase/supabase-js'
 
-const AuthCtx = createContext<{ session: Session | null; loading: boolean; configurado: boolean }>({
+const AuthCtx = createContext<{
+  session: Session | null
+  loading: boolean
+  configurado: boolean
+  hidratado: boolean
+}>({
   session: null,
   loading: true,
-  configurado: false
+  configurado: false,
+  hidratado: false
 })
 
 export function useAuth() {
@@ -21,6 +27,7 @@ const ROTAS_PUBLICAS = ['/login', '/sobre']
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [hidratado, setHidratado] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
   const configurado = supabaseConfigurado()
@@ -28,23 +35,35 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!configurado) {
       setLoading(false)
+      setHidratado(true)
       return
     }
     const sb = getSupabase()
     if (!sb) {
       setLoading(false)
+      setHidratado(true)
       return
     }
 
-    sb.auth.getSession().then(({ data }) => {
+    const init = async () => {
+      const { data } = await sb.auth.getSession()
       setSession(data.session)
       setLoading(false)
-      if (data.session) void hidratarTudo()
-    })
+      if (data.session) {
+        await hidratarTudo()
+      }
+      setHidratado(true)
+    }
+    init()
 
     const { data: sub } = sb.auth.onAuthStateChange((_event, sess) => {
       setSession(sess)
-      if (sess) void hidratarTudo()
+      if (sess) {
+        setHidratado(false)
+        hidratarTudo().finally(() => setHidratado(true))
+      } else {
+        setHidratado(true)
+      }
     })
 
     return () => { sub.subscription.unsubscribe() }
@@ -60,7 +79,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
   if (!configurado) {
     return (
-      <AuthCtx.Provider value={{ session: null, loading: false, configurado: false }}>
+      <AuthCtx.Provider value={{ session: null, loading: false, configurado: false, hidratado: true }}>
         {children}
       </AuthCtx.Provider>
     )
@@ -75,5 +94,9 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     )
   }
 
-  return <AuthCtx.Provider value={{ session, loading, configurado }}>{children}</AuthCtx.Provider>
+  return (
+    <AuthCtx.Provider value={{ session, loading, configurado, hidratado }}>
+      {children}
+    </AuthCtx.Provider>
+  )
 }

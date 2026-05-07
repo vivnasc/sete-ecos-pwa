@@ -81,7 +81,7 @@
 
 @layer components {
   .container-app {
-    @apply mx-auto w-full max-w-[420px] px-5 sm:max-w-[460px] sm:px-7;
+    @apply mx-auto w-full max-w-[440px] px-5 sm:max-w-[560px] sm:px-7 md:max-w-[680px] md:px-8 lg:max-w-[780px];
   }
 
   /* Card hairline editorial */

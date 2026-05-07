@@ -8,6 +8,7 @@ import AnchorChecklist from '@/components/AnchorChecklist'
 import JanelaTimer from '@/components/JanelaTimer'
 import MorningPanel from '@/components/MorningPanel'
 import CoachGreetingCard from '@/components/CoachGreetingCard'
+import QuickTools from '@/components/QuickTools'
 import { MANTRAS } from '@/lib/data'
 import {
   RESET_DAYS,
@@ -143,6 +144,9 @@ export default function HomePage() {
 
       {/* COACH · saudação do dia */}
       {pronto && status === 'durante' ? <CoachGreetingCard /> : null}
+
+      {/* ACESSO RÁPIDO · ferramentas principais */}
+      {status === 'durante' ? <QuickTools /> : null}
 
       {/* PAINEL MATINAL · ferramentas perto */}
       {status === 'durante' ? <MorningPanel /> : null}

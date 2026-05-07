@@ -20,22 +20,45 @@ const PASSOS = [
 ] as const
 
 export default function OnboardingGate({ children }: { children: React.ReactNode }) {
-  const { configurado, session } = useAuth()
+  const { configurado, session, hidratado } = useAuth()
   const [verificado, setVerificado] = useState(false)
   const [aberto, setAberto] = useState(false)
 
   useEffect(() => {
-    // Só mostra onboarding se autenticada (ou Supabase não configurado mas com profile vazio)
+    // Em rotas públicas (/login), nada a verificar
     if (configurado && !session) {
       setVerificado(true)
+      setAberto(false)
+      return
+    }
+    // Aguardar hidratação do Supabase antes de decidir
+    if (configurado && session && !hidratado) {
+      setVerificado(false)
       return
     }
     const p = getProfile()
-    if (!p.onboardingCompleto) setAberto(true)
+    setAberto(!p.onboardingCompleto)
     setVerificado(true)
-  }, [configurado, session])
+  }, [configurado, session, hidratado])
 
-  if (!verificado) return null
+  // Re-check sempre que o profile muda (sync chega depois)
+  useEffect(() => {
+    const onUpdate = () => {
+      const p = getProfile()
+      if (p.onboardingCompleto) setAberto(false)
+    }
+    window.addEventListener('fenixfit:profile', onUpdate)
+    return () => window.removeEventListener('fenixfit:profile', onUpdate)
+  }, [])
+
+  if (!verificado) {
+    return (
+      <div className="container-app flex min-h-[80vh] flex-col items-center justify-center gap-4">
+        <div className="h-2 w-2 animate-breathe rounded-full bg-ouro" />
+        <p className="label-soft">a sincronizar</p>
+      </div>
+    )
+  }
   if (!aberto) return <>{children}</>
   return <OnboardingFlow onClose={() => setAberto(false)} />
 }
@@ -53,7 +76,7 @@ function OnboardingFlow({ onClose }: { onClose: () => void }) {
   const terminar = () => {
     const final = { ...perfil, onboardingCompleto: true }
     saveProfile(final)
-    void syncProfile(final).catch(() => {})
+    void syncProfile(final as unknown as Record<string, unknown>).catch(() => {})
     onClose()
   }
 
@@ -70,7 +93,7 @@ function OnboardingFlow({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-50 overflow-y-auto bg-[var(--bg)]">
       <div className="container-app min-h-screen pb-12 pt-12">
         <header className="mb-10 text-center">
-          <p className="label-cap mb-3">Reset · começo</p>
+          <p className="label-cap mb-3">FénixFit · começo</p>
           <div className="mx-auto flex max-w-[200px] gap-1">
             {PASSOS.map((_, i) => (
               <div

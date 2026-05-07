@@ -127,7 +127,7 @@ export default function ScannerPage() {
 
       {/* MÉDIA 7 DIAS */}
       {media7 !== null ? (
-        <section className="card-solid flex items-baseline justify-between">
+        <section className="card-solid flex items-baseline justify-between sm:max-w-md">
           <div>
             <span className="label-cap">média 7 dias</span>
             <p className="text-faint text-[11px] mt-1">a tua linha de base</p>
