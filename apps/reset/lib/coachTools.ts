@@ -267,11 +267,15 @@ export const COACH_TOOLS = [
   },
   {
     name: 'adicionar_objectivo',
-    description: 'Guarda um objectivo pessoal da Vivianne em texto livre (ex: "perder 3kg em 60 dias", "dormir 7h", "reduzir álcool a 1×/sem", "treinar 4×/sem"). Usar SEMPRE que ela disser uma intenção, meta ou plano. A coach lembra-se destes objectivos e mede progresso contra eles.',
+    description: 'Guarda um objectivo pessoal. SEMPRE que ela mencionar uma meta/intenção/plano · não esperes pedido explícito. Sempre que possível, PREENCHE os campos estruturados (tipo, valor_inicial, valor_alvo, prazo_dias) para que a app construa um dashboard com gráficos automáticos. Ex: "quero ir de 83kg para 70kg em 60 dias" → tipo=peso, valor_inicial=83, valor_alvo=70, prazo_dias=60. Se não houver números claros, deixa só o texto.',
     input_schema: {
       type: 'object',
       properties: {
-        texto: { type: 'string', description: 'Frase clara e concreta · usa as palavras dela.' }
+        texto: { type: 'string', description: 'Frase clara · usa as palavras dela.' },
+        tipo: { type: 'string', enum: ['peso', 'cintura', 'sono', 'proteina', 'agua', 'alcool', 'treino', 'custom'] },
+        valor_inicial: { type: 'number', description: 'Valor onde está hoje (peso actual, sono actual, etc)' },
+        valor_alvo: { type: 'number', description: 'Valor a atingir' },
+        prazo_dias: { type: 'integer', description: 'Dias para atingir o alvo' }
       },
       required: ['texto']
     }
@@ -661,8 +665,21 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
   adicionar_objectivo(input) {
     const texto = str(input.texto)
     if (!texto.trim()) return { ok: false, erro: 'texto vazio' }
-    const novo = adicionarObjectivo(texto)
-    return { ok: true, texto: `objectivo guardado: "${novo.texto}"` }
+    const tipo = str(input.tipo) as 'peso' | 'cintura' | 'sono' | 'proteina' | 'agua' | 'alcool' | 'treino' | 'custom' | ''
+    const valorInicial = num(input.valor_inicial) ?? undefined
+    const valorAlvo = num(input.valor_alvo) ?? undefined
+    const prazoDias = num(input.prazo_dias) ?? undefined
+    const novo = adicionarObjectivo(texto, {
+      tipo: tipo || undefined,
+      valorInicial,
+      valorAlvo,
+      prazoDias: prazoDias ? Math.round(prazoDias) : undefined
+    })
+    const partes: string[] = [`"${novo.texto}"`]
+    if (tipo && valorInicial !== undefined && valorAlvo !== undefined && prazoDias) {
+      partes.push(`tracking: ${tipo} ${valorInicial}→${valorAlvo} em ${prazoDias}d`)
+    }
+    return { ok: true, texto: `objectivo guardado · ${partes.join(' · ')}` }
   },
 
   remover_objectivo(input) {

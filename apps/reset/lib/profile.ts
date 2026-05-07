@@ -9,12 +9,26 @@ export type Metas = {
   gorduraG: number | null
 }
 
-// Objectivos pessoais · texto livre que a coach lê e usa para te orientar.
-// Ex: "perder 3kg em 60 dias", "dormir 7h em média", "reduzir álcool a 1×/sem".
+// Objectivos pessoais · com tracking estruturado quando possível.
+// A coach preenche os campos estruturados a partir do que ela disser.
+export type ObjectivoTipo =
+  | 'peso'        // peso corporal · valorInicial → valorAlvo em prazoDias
+  | 'cintura'     // cintura · cm
+  | 'sono'        // sono médio · horas
+  | 'proteina'    // proteína média/dia · g
+  | 'agua'        // copos água/dia
+  | 'alcool'      // unidades álcool/sem · alvo descer
+  | 'treino'      // treinos por semana
+  | 'custom'      // sem tracking automático · só texto
+
 export type Objectivo = {
   id: string
-  texto: string
-  criadoEm: string // ISO
+  texto: string             // como ela disse
+  criadoEm: string          // ISO
+  tipo?: ObjectivoTipo
+  valorInicial?: number     // valor quando começou (peso 83, sono 5h, etc)
+  valorAlvo?: number        // alvo (peso 70, sono 7h, álcool 0)
+  prazoDias?: number        // dias para atingir o alvo desde criadoEm
 }
 
 export type Profile = {
@@ -138,11 +152,15 @@ export function getObjectivos(): Objectivo[] {
   return getProfile().objectivos ?? []
 }
 
-export function adicionarObjectivo(texto: string): Objectivo {
+export function adicionarObjectivo(
+  texto: string,
+  estrutura?: { tipo?: ObjectivoTipo; valorInicial?: number; valorAlvo?: number; prazoDias?: number }
+): Objectivo {
   const novo: Objectivo = {
     id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2),
     texto: texto.trim(),
-    criadoEm: new Date().toISOString()
+    criadoEm: new Date().toISOString(),
+    ...estrutura
   }
   const lista = [...getObjectivos(), novo]
   saveProfile({ objectivos: lista })

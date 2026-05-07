@@ -352,8 +352,18 @@ const COACH_TOOLS = [
   },
   {
     name: 'adicionar_objectivo',
-    description: 'Guarda um objectivo pessoal em texto livre (ex: "perder 3kg em 60 dias", "dormir 7h em média", "reduzir álcool"). Usa SEMPRE que ela mencionar uma meta/intenção/plano · não esperes pedido explícito.',
-    input_schema: { type: 'object', properties: { texto: { type: 'string' } }, required: ['texto'] }
+    description: 'Guarda um objectivo pessoal. SEMPRE que ela mencionar meta/intenção · não esperes pedido. PREENCHE campos estruturados se possível: tipo (peso, cintura, sono, proteina, agua, alcool, treino, custom), valor_inicial (onde está hoje), valor_alvo (alvo), prazo_dias (em quantos dias). Ex: "de 83 para 70kg em 60 dias" → tipo=peso, valor_inicial=83, valor_alvo=70, prazo_dias=60.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        texto: { type: 'string' },
+        tipo: { type: 'string', enum: ['peso', 'cintura', 'sono', 'proteina', 'agua', 'alcool', 'treino', 'custom'] },
+        valor_inicial: { type: 'number' },
+        valor_alvo: { type: 'number' },
+        prazo_dias: { type: 'integer' }
+      },
+      required: ['texto']
+    }
   },
   {
     name: 'remover_objectivo',

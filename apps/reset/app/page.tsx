@@ -11,6 +11,7 @@ import WellnessQuickPanel from '@/components/WellnessQuickPanel'
 import SonoDetailCard from '@/components/SonoDetailCard'
 import PeriSintomasCard from '@/components/PeriSintomasCard'
 import MarcoCard from '@/components/MarcoCard'
+import PlanoResumoCard from '@/components/PlanoResumoCard'
 import CoachGreetingCard from '@/components/CoachGreetingCard'
 import QuickTools from '@/components/QuickTools'
 import SafeBlock from '@/components/SafeBlock'
@@ -141,6 +142,9 @@ export default function HomePage() {
       {/* COACH · saudação do dia */}
       {/* MARCO · selo animado quando atinges Dia 7/14/21/30/45/60 */}
       {pronto ? <SafeBlock nome="Marco"><MarcoCard /></SafeBlock> : null}
+
+      {/* PLANO · objectivos com progresso */}
+      {pronto ? <SafeBlock nome="PlanoResumo"><PlanoResumoCard /></SafeBlock> : null}
 
       {pronto ? <SafeBlock nome="CoachGreeting"><CoachGreetingCard /></SafeBlock> : null}
 
