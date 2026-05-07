@@ -50,9 +50,12 @@ export default function VoiceModeOverlay({ aberto, onFechar }: { aberto: boolean
   const [chips, setChips] = useState<string[]>([])
   const [erro, setErro] = useState<string | null>(null)
   const [silencioso, setSilencioso] = useState(false)
+  const [continuo, setContinuo] = useState(false)
   const [analisandoFoto, setAnalisandoFoto] = useState(false)
   const transcritoFinalRef = useRef('')
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const continuoRef = useRef(false)
+  useEffect(() => { continuoRef.current = continuo }, [continuo])
 
   const tts = useTextToSpeech()
   const voz = useSpeechRecognition({
@@ -92,7 +95,15 @@ export default function VoiceModeOverlay({ aberto, onFechar }: { aberto: boolean
 
   useEffect(() => {
     if (tts.aFalar) setEstado('a_falar')
-    else if (estado === 'a_falar') setEstado('pronto')
+    else if (estado === 'a_falar') {
+      setEstado('pronto')
+      // Modo contínuo · após coach falar, reinicia escuta automaticamente
+      if (continuoRef.current && aberto) {
+        setTimeout(() => {
+          if (continuoRef.current && aberto) iniciarEscuta()
+        }, 600)
+      }
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tts.aFalar])
 
@@ -253,20 +264,32 @@ export default function VoiceModeOverlay({ aberto, onFechar }: { aberto: boolean
           <span className="font-serif text-[14px] tracking-editorial italic text-ouro">coach</span>
           <span className="label-soft">{estadoLegivel(estado)}</span>
         </div>
-        <button
-          onClick={() => setSilencioso(s => !s)}
-          aria-label={silencioso ? 'activar voz' : 'silenciar resposta'}
-          className="rounded-full p-2 transition-elegant hover:bg-[var(--surface-soft)] active:scale-95"
-        >
-          {silencioso ? <VolumeX size={16} strokeWidth={1.4} className="text-faint" /> : <Volume2 size={16} strokeWidth={1.4} className="text-ouro" />}
-        </button>
-        <button
-          onClick={onFechar}
-          aria-label="fechar"
-          className="rounded-full p-2 transition-elegant hover:bg-[var(--surface-soft)] active:scale-95"
-        >
-          <X size={18} strokeWidth={1.4} />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setContinuo(c => !c)}
+            aria-label={continuo ? 'desligar conversa contínua' : 'ligar conversa contínua'}
+            title={continuo ? 'auto on · ela ouve depois de falar' : 'auto off'}
+            className={`rounded-full px-2.5 py-1 text-[10px] tracking-cap uppercase transition-elegant active:scale-95 ${
+              continuo ? 'bg-ouro text-creme dark:text-tinta' : 'bg-[var(--surface-soft)] text-faint'
+            }`}
+          >
+            auto
+          </button>
+          <button
+            onClick={() => setSilencioso(s => !s)}
+            aria-label={silencioso ? 'activar voz' : 'silenciar resposta'}
+            className="rounded-full p-2 transition-elegant hover:bg-[var(--surface-soft)] active:scale-95"
+          >
+            {silencioso ? <VolumeX size={16} strokeWidth={1.4} className="text-faint" /> : <Volume2 size={16} strokeWidth={1.4} className="text-ouro" />}
+          </button>
+          <button
+            onClick={onFechar}
+            aria-label="fechar"
+            className="rounded-full p-2 transition-elegant hover:bg-[var(--surface-soft)] active:scale-95"
+          >
+            <X size={18} strokeWidth={1.4} />
+          </button>
+        </div>
       </header>
 
       <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8">

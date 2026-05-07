@@ -153,6 +153,24 @@ export default function DefinicoesPage() {
       {/* METAS */}
       <MetasSection perfil={perfil} guardarPerfil={guardarPerfil} />
 
+      {/* MODO VIAGEM */}
+      <section className="space-y-3">
+        <span className="label-cap">Modo viagem</span>
+        <div className="card-solid flex items-start gap-3">
+          <Toggle ativo={perfil.modoViagem} onChange={() => guardarPerfil({ modoViagem: !perfil.modoViagem })} />
+          <div className="min-w-0 flex-1">
+            <p className="font-serif text-[15px] tracking-editorial">
+              {perfil.modoViagem ? 'em viagem · regras suaves' : 'rotina normal'}
+            </p>
+            <p className="text-faint text-[11.5px] mt-1 leading-relaxed">
+              {perfil.modoViagem
+                ? 'a coach sabe que estás fora. não cobra streak. propõe ajustes ao que é possível no contexto.'
+                : 'liga quando estiveres fora. a coach amacia exigências e foca-te no que controlas.'}
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* TEMA */}
       <section className="space-y-3">
         <span className="label-cap">Tema</span>

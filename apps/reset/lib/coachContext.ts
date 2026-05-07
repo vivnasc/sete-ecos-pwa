@@ -32,6 +32,9 @@ export function construirContexto(comAnalise = false): string {
 
   linhas.push(`Hoje: ${isoDate()}`)
   const profile = getProfile()
+  if (profile.modoViagem) {
+    linhas.push('⚠ MODO VIAGEM ACTIVO · ela está fora da rotina habitual. Não cobres streaks. Suaviza exigências. Foco no que controla.')
+  }
   if (profile.metas.calorias !== null || profile.metas.proteinaG !== null) {
     const m = profile.metas
     linhas.push(`Metas: ${m.calorias ?? '—'} kcal · ${m.proteinaG ?? '—'}g P · ${m.carboG ?? '—'}g C · ${m.gorduraG ?? '—'}g G`)

@@ -59,6 +59,7 @@ alter table fenixfit_dias add column if not exists steps int;
 alter table fenixfit_dias add column if not exists rhr int;
 
 alter table fenixfit_profile add column if not exists metas jsonb;
+alter table fenixfit_profile add column if not exists modo_viagem boolean not null default false;
 
 create index if not exists fenixfit_dias_user_date on fenixfit_dias (user_id, date desc);
 

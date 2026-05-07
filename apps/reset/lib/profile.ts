@@ -27,6 +27,7 @@ export type Profile = {
   ancorasActivas: string[]
   ancorasCustom: Ancora[]
   metas: Metas
+  modoViagem: boolean
 }
 
 const KEY = 'fenixfit:profile'
@@ -55,7 +56,8 @@ const DEFAULT_PROFILE: Profile = {
   emailSync: '',
   ancorasActivas: ANCORAS_DEFAULT_IDS,
   ancorasCustom: [],
-  metas: DEFAULT_METAS
+  metas: DEFAULT_METAS,
+  modoViagem: false
 }
 
 // Devolve as âncoras realmente activas (combina pool + custom, filtra por IDs activos)
