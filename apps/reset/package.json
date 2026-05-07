@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
-    "build": "next build",
+    "build": "next build && mkdir -p .vercel/output/static && cp -r out/. .vercel/output/static/",
+    "build:cf": "next build && mkdir -p .vercel/output/static && cp -r out/. .vercel/output/static/",
     "start": "next start -p 3001",
     "lint": "next lint"
   },
