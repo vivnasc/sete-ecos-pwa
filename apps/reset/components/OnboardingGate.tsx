@@ -20,39 +20,22 @@ const PASSOS = [
 ] as const
 
 export default function OnboardingGate({ children }: { children: React.ReactNode }) {
-  const { configurado, session, hidratado } = useAuth()
-  const [verificado, setVerificado] = useState(false)
+  const { configurado, session } = useAuth()
   const [aberto, setAberto] = useState(false)
-  const [tempoEspera, setTempoEspera] = useState(0)
 
+  // Decisão imediata baseada em localStorage · sem esperar sync
   useEffect(() => {
-    // Em rotas públicas (/login), nada a verificar
+    // Em rotas públicas (/login), nunca abrir onboarding
     if (configurado && !session) {
-      setVerificado(true)
       setAberto(false)
-      return
-    }
-    // Aguardar hidratação do Supabase antes de decidir
-    if (configurado && session && !hidratado) {
-      setVerificado(false)
       return
     }
     const p = getProfile()
     setAberto(!p.onboardingCompleto)
-    setVerificado(true)
-  }, [configurado, session, hidratado])
+  }, [configurado, session])
 
-  // Conta segundos de espera para botão de skip
-  useEffect(() => {
-    if (verificado) {
-      setTempoEspera(0)
-      return
-    }
-    const i = setInterval(() => setTempoEspera(t => t + 1), 1000)
-    return () => clearInterval(i)
-  }, [verificado])
-
-  // Re-check sempre que o profile muda (sync chega depois)
+  // Re-check quando profile chega do Supabase · fecha onboarding
+  // se sync trouxer onboardingCompleto=true
   useEffect(() => {
     const onUpdate = () => {
       const p = getProfile()
@@ -62,38 +45,6 @@ export default function OnboardingGate({ children }: { children: React.ReactNode
     return () => window.removeEventListener('fenixfit:profile', onUpdate)
   }, [])
 
-  // Auto-skip após 4s de espera
-  useEffect(() => {
-    if (tempoEspera >= 4 && !verificado) {
-      const p = getProfile()
-      setAberto(!p.onboardingCompleto)
-      setVerificado(true)
-    }
-  }, [tempoEspera, verificado])
-
-  if (!verificado) {
-    const forcarAbrir = () => {
-      const p = getProfile()
-      setAberto(!p.onboardingCompleto)
-      setVerificado(true)
-    }
-    return (
-      <div className="container-app flex min-h-[80vh] flex-col items-center justify-center gap-6">
-        <div className="h-2 w-2 animate-breathe rounded-full bg-ouro" />
-        <p className="label-soft">a sincronizar{tempoEspera > 1 ? ` · ${tempoEspera}s` : ''}</p>
-        {tempoEspera >= 3 ? (
-          <div className="space-y-3 text-center animate-fade-in">
-            <p className="text-faint text-[12px] max-w-[280px] leading-relaxed">
-              os dados estão lentos. podes continuar.
-            </p>
-            <button onClick={forcarAbrir} className="btn-primary text-[12px]">
-              continuar
-            </button>
-          </div>
-        ) : null}
-      </div>
-    )
-  }
   if (!aberto) return <>{children}</>
   return <OnboardingFlow onClose={() => setAberto(false)} />
 }
