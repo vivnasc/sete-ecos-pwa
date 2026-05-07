@@ -15,8 +15,9 @@ import {
   diaDoPlano,
   mesCurto
 } from '@/lib/dates'
-import { ANCORAS, TREINO_SEMANAL } from '@/lib/data'
+import { TREINO_SEMANAL } from '@/lib/data'
 import { getDia, saveDia, toggleAncora, type DiaLog } from '@/lib/storage'
+import { getAncorasActivas } from '@/lib/profile'
 import { cn } from '@/lib/utils'
 
 export default function DiarioPage() {
@@ -191,7 +192,7 @@ function DiaForm({
       <section>
         <span className="label-cap mb-3 block">Âncoras</span>
         <ul className="card-solid divide-y divide-[var(--hair)] !p-0">
-          {ANCORAS.map((a, idx) => {
+          {getAncorasActivas().map((a, idx) => {
             const feita = !!log.ancoras[a.id]
             return (
               <li key={a.id}>

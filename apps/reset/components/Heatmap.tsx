@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { todosOsDias, isoDate, fromIso, mesCurto } from '@/lib/dates'
 import { getTodosDias } from '@/lib/storage'
-import { ANCORAS } from '@/lib/data'
+import { getAncorasActivas } from '@/lib/profile'
 
 export default function Heatmap() {
   const [tudo, setTudo] = useState<Record<string, number>>({})
@@ -40,7 +40,7 @@ export default function Heatmap() {
     semanas.push(dias.slice(i, i + 7))
   }
 
-  const total = ANCORAS.length
+  const total = Math.max(1, getAncorasActivas().length)
 
   return (
     <div className="card-solid">

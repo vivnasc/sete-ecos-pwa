@@ -3,10 +3,9 @@
 // Constrói o contexto que vai para a coach (dados recentes + análise opcional).
 // Partilhado entre /coach (chat texto) e VoiceModeOverlay (modo voz).
 
-import { ANCORAS } from './data'
 import { isoDate, horaLocal, dataLocal } from './dates'
 import { executeTool } from './coachTools'
-import { getProfile } from './profile'
+import { getProfile, getAncorasActivas } from './profile'
 import {
   getTodosDias,
   getAlcoolRegistos,
@@ -88,7 +87,7 @@ export function construirContexto(comAnalise = false): string {
     linhas.push('')
     linhas.push('ÚLTIMOS 7 DIAS:')
     ultimos7.forEach(d => {
-      const a = ANCORAS.filter(x => d.ancoras[x.id]).length
+      const a = getAncorasActivas().filter(x => d.ancoras[x.id]).length
       const partes = [
         `${d.date}: âncoras ${a}/7`,
         d.sonoHoras !== null ? `sono ${d.sonoHoras}h` : '',

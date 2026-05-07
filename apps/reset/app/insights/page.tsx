@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Sparkles, RefreshCcw } from 'lucide-react'
-import { ANCORAS } from '@/lib/data'
+import { getAncorasActivas } from '@/lib/profile'
 import BackButton from '@/components/BackButton'
 import { isoDate, fromIso, formatarData } from '@/lib/dates'
 import {
@@ -71,7 +71,7 @@ export default function InsightsPage() {
       weekStart: semanaInicio,
       dias: diasSemana.map(d => ({
         date: d.date,
-        ancorasCumpridas: ANCORAS.filter(a => d.ancoras[a.id]).length,
+        ancorasCumpridas: getAncorasActivas().filter(a => d.ancoras[a.id]).length,
         treinoFeito: !!d.ancoras['treino_feito'],
         sonoHoras: d.sonoHoras,
         energia: d.energia,

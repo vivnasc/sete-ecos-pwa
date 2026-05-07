@@ -3,11 +3,13 @@
 import { useEffect, useState } from 'react'
 import { todosOsDias, isoDate, mesCurto } from '@/lib/dates'
 import { getTodosDias } from '@/lib/storage'
-import { ANCORAS } from '@/lib/data'
+import { getAncorasActivas } from '@/lib/profile'
+import type { Ancora } from '@/lib/data'
 import { cn } from '@/lib/utils'
 
 export default function HabitChains() {
   const [estado, setEstado] = useState<Record<string, Record<string, boolean>>>({})
+  const [ancoras, setAncoras] = useState<Ancora[]>([])
 
   useEffect(() => {
     const refresh = () => {
@@ -17,10 +19,15 @@ export default function HabitChains() {
         map[d.date] = d.ancoras
       })
       setEstado(map)
+      setAncoras(getAncorasActivas())
     }
     refresh()
     window.addEventListener('fenixfit:storage', refresh)
-    return () => window.removeEventListener('fenixfit:storage', refresh)
+    window.addEventListener('fenixfit:profile', refresh)
+    return () => {
+      window.removeEventListener('fenixfit:storage', refresh)
+      window.removeEventListener('fenixfit:profile', refresh)
+    }
   }, [])
 
   const dias = todosOsDias()
@@ -49,11 +56,11 @@ export default function HabitChains() {
     <div className="card-solid">
       <div className="flex items-baseline justify-between mb-4">
         <span className="label-cap">cadeias de hábito</span>
-        <span className="label-soft">7 âncoras · 60 dias</span>
+        <span className="label-soft">{ancoras.length} âncoras · 60 dias</span>
       </div>
 
       <div className="space-y-3 -mx-2 overflow-x-auto px-2">
-        {ANCORAS.map(a => {
+        {ancoras.map(a => {
           const streak = streakPorAncora(a.id)
           const taxa = taxaPorAncora(a.id)
           return (

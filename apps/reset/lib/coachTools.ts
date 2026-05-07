@@ -5,8 +5,7 @@
 // tool_use, o cliente executa via TOOL_EXECUTORS e devolve tool_result.
 
 import { isoDate, horaLocal, dataLocal } from './dates'
-import { ANCORAS } from './data'
-import { getProfile, saveProfile, sugerirMetas, type Metas } from './profile'
+import { getProfile, saveProfile, sugerirMetas, getAncorasActivas, type Metas } from './profile'
 import { syncProfile } from './sync'
 import {
   saveDia,
@@ -552,7 +551,7 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
   marcar_ancora(input) {
     const id = str(input.id)
     const feita = bool(input.feita)
-    const valida = ANCORAS.find(a => a.id === id)
+    const valida = getAncorasActivas().find(a => a.id === id)
     if (!valida) return { ok: false, erro: `âncora desconhecida: ${id}` }
     const dia = getDia()
     dia.ancoras[id] = feita
@@ -990,7 +989,7 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
       }
       case 'ancoras_hoje': {
         const dia = getDia()
-        ANCORAS.forEach(a => linhas.push(`${dia.ancoras[a.id] ? '✓' : '·'} ${a.id}: ${a.titulo}`))
+        getAncorasActivas().forEach(a => linhas.push(`${dia.ancoras[a.id] ? '✓' : '·'} ${a.id}: ${a.titulo}`))
         break
       }
       case 'resumo': {
