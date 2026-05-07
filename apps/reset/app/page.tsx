@@ -110,15 +110,26 @@ export default function HomePage() {
     <div className="space-y-9 animate-fade-in">
       {/* MARCA + SAUDAÇÃO */}
       <header className="space-y-1 pt-4">
+        {/* Marca · logo + wordmark */}
         <div className="flex items-center justify-between">
-          {/* Wordmark editorial */}
-          <span className="font-serif text-[14px] tracking-editorial italic text-ouro" style={{ fontWeight: 300, letterSpacing: '-0.02em' }}>
-            fénixfit
-          </span>
-          <p className="label-soft">{formatarData(hoje).toLowerCase()}</p>
+          <div className="flex items-center gap-2.5">
+            <img
+              src="/icon.svg"
+              alt=""
+              aria-hidden
+              className="h-8 w-8 rounded-md"
+            />
+            <span
+              className="font-serif text-[18px] tracking-editorial text-tinta dark:text-creme"
+              style={{ fontWeight: 400, letterSpacing: '-0.01em' }}
+            >
+              FÉNIX<span className="text-ouro">FIT</span>
+            </span>
+          </div>
+          <p className="label-soft">{formatarData(hoje)}</p>
         </div>
-        <h1 className="font-serif text-[34px] font-light leading-[1.1] tracking-editorial sm:text-[40px] pt-3">
-          {saudacao}, <span className="italic">{nome.toLowerCase() || 'tu'}</span>.
+        <h1 className="font-serif text-[34px] font-light leading-[1.1] tracking-editorial sm:text-[40px] pt-5">
+          {saudacao.charAt(0).toUpperCase() + saudacao.slice(1)}, <span className="italic">{nome || 'tu'}</span>.
         </h1>
         <div className="h-px w-12 bg-ouro mt-2" aria-hidden />
       </header>

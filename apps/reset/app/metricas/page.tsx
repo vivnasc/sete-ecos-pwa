@@ -53,7 +53,7 @@ export default function MetricasPage() {
     <div className="space-y-8 animate-fade-in">
       <header className="space-y-2 pt-4">
         <p className="label-soft">sinais</p>
-        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">os teus dados</h1>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">Os Teus Dados</h1>
         <div className="h-px w-12 bg-ouro" aria-hidden />
         <p className="text-soft mt-3 text-[13px]">{stats.comAncoras} dias com âncoras · {stats.comSono} com sono</p>
       </header>

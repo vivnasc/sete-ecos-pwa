@@ -18,7 +18,7 @@ export default function TreinoPage() {
 
       <header className="space-y-2 pt-4">
         <p className="label-soft">treino</p>
-        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">corpo já sabe</h1>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">Corpo Já Sabe</h1>
         <div className="h-px w-12 bg-ouro" aria-hidden />
         <p className="text-faint mt-3 text-[12.5px]">4× semana · 30min · halteres + peso corporal</p>
       </header>

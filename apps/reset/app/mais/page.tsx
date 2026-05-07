@@ -48,7 +48,7 @@ export default function MaisPage() {
     <div className="space-y-8 animate-fade-in">
       <header className="space-y-2 pt-4">
         <p className="label-soft">mais</p>
-        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">tudo o resto</h1>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">Tudo o Resto</h1>
         <div className="h-px w-12 bg-ouro" aria-hidden />
       </header>
 
@@ -89,7 +89,7 @@ export default function MaisPage() {
         </ul>
       </section>
 
-      <p className="text-faint text-center text-[11px]">fénixfit · 60 dias</p>
+      <p className="text-faint text-center text-[11px]">FénixFit · 60 Dias</p>
     </div>
   )
 }

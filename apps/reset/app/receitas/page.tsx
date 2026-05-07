@@ -21,7 +21,7 @@ export default function ReceitasPage() {
 
       <header className="space-y-2 pt-4">
         <p className="label-soft">comer</p>
-        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">keto cíclico</h1>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">Keto Cíclico</h1>
         <div className="h-px w-12 bg-ouro" aria-hidden />
         <p className="text-faint mt-3 text-[12.5px]">janela 9h–19h · proteína primeiro</p>
       </header>
@@ -70,7 +70,7 @@ function ComerTab() {
       <section>
         <header className="mb-2 flex items-baseline justify-between">
           <span className="font-serif text-[20px] tracking-editorial text-terracota">Evitar</span>
-          <span className="text-faint text-[10px] tracking-cap">60 dias</span>
+          <span className="text-faint text-[10px] tracking-cap">60 Dias</span>
         </header>
         <ul className="card-solid space-y-1.5">
           {REFEICOES.evitar.map((e, i) => (

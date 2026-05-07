@@ -57,7 +57,7 @@ function DiarioContent() {
     <div className="space-y-6 animate-fade-in">
       <header className="space-y-2 pt-4">
         <p className="label-soft">diário</p>
-        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">60 dias</h1>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">60 Dias</h1>
         <div className="h-px w-12 bg-ouro" aria-hidden />
       </header>
 

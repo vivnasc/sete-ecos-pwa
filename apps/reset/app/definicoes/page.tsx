@@ -105,7 +105,7 @@ export default function DefinicoesPage() {
 
       <header className="space-y-2 pt-4">
         <p className="label-soft">definições</p>
-        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">ajustar</h1>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">Ajustar</h1>
         <div className="h-px w-12 bg-ouro" aria-hidden />
       </header>
 

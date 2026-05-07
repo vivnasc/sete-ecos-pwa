@@ -1,27 +1,50 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Fundo escuro · alto contraste · arredondado -->
+  <!-- Fundo escuro · alto contraste -->
   <rect width="512" height="512" rx="112" fill="#1F1814"/>
 
-  <!-- F estilizado em ouro com chama integrada -->
+  <!-- Phoenix silhueta sólida · asas em V a subir + chama -->
   <g fill="#C9A961">
-    <!-- Haste vertical do F -->
-    <rect x="160" y="120" width="56" height="280" rx="6"/>
+    <!-- Asa esquerda -->
+    <path d="M 256 240
+             L 80 140
+             C 130 220, 200 260, 256 270
+             Z"/>
 
-    <!-- Topo do F -->
-    <rect x="160" y="120" width="200" height="56" rx="6"/>
+    <!-- Asa direita -->
+    <path d="M 256 240
+             L 432 140
+             C 382 220, 312 260, 256 270
+             Z"/>
 
-    <!-- Meio do F -->
-    <rect x="160" y="232" width="160" height="48" rx="6"/>
+    <!-- Cabeça e pescoço -->
+    <ellipse cx="256" cy="200" rx="22" ry="28"/>
 
-    <!-- Chama / pico em cima · sugere fénix -->
-    <path d="M 256 60
-             Q 240 88 256 116
-             Q 272 88 256 60 Z"/>
+    <!-- Corpo -->
+    <path d="M 234 250
+             L 278 250
+             L 274 320
+             L 238 320
+             Z"/>
 
-    <!-- Pequena chama interior -->
-    <path d="M 256 76
-             Q 248 92 256 108
-             Q 264 92 256 76 Z"
+    <!-- Cauda em chamas · 3 línguas -->
+    <path d="M 226 320
+             L 200 420
+             L 222 380
+             L 234 430
+             L 248 360
+             L 256 460
+             L 264 360
+             L 278 430
+             L 290 380
+             L 312 420
+             L 286 320
+             Z"/>
+
+    <!-- Bico · pequena ponta -->
+    <path d="M 256 175
+             L 264 165
+             L 256 165
+             Z"
           fill="#1F1814"/>
   </g>
 </svg>
