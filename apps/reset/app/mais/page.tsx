@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowUpRight, Salad, Dumbbell, Sparkles, Pencil, Ruler, Settings, LogOut, Scale, Clock, Droplet, Activity, MessageCircle, Image as ImageIcon, BarChart3, UtensilsCrossed } from 'lucide-react'
+import { ArrowUpRight, Salad, Dumbbell, Sparkles, Pencil, Ruler, Settings, LogOut, Scale, Clock, Droplet, Activity, MessageCircle, Image as ImageIcon, BarChart3, UtensilsCrossed, HeartPulse } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { signOut } from '@/lib/auth'
 import { useRouter } from 'next/navigation'
@@ -28,7 +28,8 @@ export default function MaisPage() {
     { href: '/peso', label: 'Peso', sub: 'pesagem diária · tendência', icon: Scale },
     { href: '/jejum', label: 'Jejum', sub: 'janela 9–19h · streak', icon: Clock },
     ...(sexo !== 'M' ? [{ href: '/ciclo', label: 'Ciclo', sub: 'fases · sintomas · correlações', icon: Droplet }] : []),
-    { href: '/medidas', label: 'Medidas', sub: 'cintura · ancas · foto', icon: Ruler }
+    { href: '/medidas', label: 'Medidas', sub: 'cintura · ancas · foto · antes/depois', icon: Ruler },
+    { href: '/importar-saude', label: 'Importar Saúde', sub: 'iPhone · passos · sono · RHR', icon: HeartPulse }
   ]
 
   const praticas = [
