@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Sun, Moon, Monitor, Bell, Download, Upload, RotateCcw, Cloud, CloudOff, Check, AlertCircle } from 'lucide-react'
 import { useTheme } from '@/components/ThemeProvider'
+import { PALETAS } from '@/lib/palettes'
 import { useAuth } from '@/components/AuthGate'
 import { getProfile, saveProfile, type Profile } from '@/lib/profile'
 import BackButton from '@/components/BackButton'
@@ -13,7 +14,7 @@ import { getLembretes, saveLembretes, type Lembrete, pedirPermissao, permissaoAc
 import { cn } from '@/lib/utils'
 
 export default function DefinicoesPage() {
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme, paleta, setPaleta } = useTheme()
   const { configurado, session } = useAuth()
   const [perfil, setPerfil] = useState<Profile>(getProfile())
   const [lembretes, setLembretes] = useState<Lembrete[]>(LEMBRETES_DEFAULT)
@@ -170,6 +171,58 @@ export default function DefinicoesPage() {
             })}
           </div>
         </div>
+      </section>
+
+      {/* PALETA */}
+      <section className="space-y-3">
+        <span className="label-cap">Paleta</span>
+        <div className="card-solid !p-3">
+          <ul className="divide-y divide-[var(--hair)]">
+            {Object.values(PALETAS).map(p => {
+              const active = paleta === p.id
+              return (
+                <li key={p.id}>
+                  <button
+                    onClick={() => setPaleta(p.id)}
+                    className={cn(
+                      'flex w-full items-center gap-3 rounded-md px-3 py-3 text-left transition-elegant active:scale-[0.99]',
+                      active && 'bg-[var(--surface-soft)]'
+                    )}
+                  >
+                    {/* Swatches */}
+                    <div className="flex gap-1 shrink-0">
+                      <span
+                        className="h-7 w-7 rounded-md ring-1 ring-[var(--hair-strong)]"
+                        style={{ background: p.light.bg }}
+                        aria-hidden
+                      />
+                      <span
+                        className="h-7 w-7 rounded-md"
+                        style={{ background: p.light.ouro }}
+                        aria-hidden
+                      />
+                      <span
+                        className="h-7 w-7 rounded-md"
+                        style={{ background: p.light.ink }}
+                        aria-hidden
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-serif text-[15px] tracking-editorial">{p.nome}</p>
+                      <p className="text-faint text-[11px]">{p.descricao}</p>
+                    </div>
+                    {active ? (
+                      <span className="text-[10px] uppercase tracking-cap text-ouro shrink-0">activa</span>
+                    ) : null}
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+        <p className="text-faint text-[11px] px-1 leading-relaxed">
+          a paleta aplica-se à app inteira em segundos · combina com tema claro/escuro
+        </p>
       </section>
 
       {/* LEMBRETES */}
