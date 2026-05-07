@@ -7,8 +7,6 @@ import { PALETAS } from '@/lib/palettes'
 import { useAuth } from '@/components/AuthGate'
 import { getProfile, saveProfile, sugerirMetas, type Profile, type Metas } from '@/lib/profile'
 import { pesoUltimo } from '@/lib/storage'
-import { construirContexto } from '@/lib/coachContext'
-import { Mail, Send } from 'lucide-react'
 import BackButton from '@/components/BackButton'
 import { exportarTudo, importarTudo, limparTudoLocal } from '@/lib/storage'
 import { hidratarTudo, lastSyncTime } from '@/lib/sync'
@@ -328,9 +326,6 @@ export default function DefinicoesPage() {
         </div>
       </section>
 
-      {/* RESUMO POR EMAIL */}
-      <ResumoEmailSection email={session?.user?.email ?? null} nome={perfil.nome} />
-
       {/* BACKUP */}
       <section className="space-y-3">
         <span className="label-cap">Backup local</span>
@@ -352,62 +347,6 @@ export default function DefinicoesPage() {
         fénixfit v1.0 · {new Date().toISOString().slice(0, 10)}
       </p>
     </div>
-  )
-}
-
-function ResumoEmailSection({ email, nome }: { email: string | null; nome: string }) {
-  const [enviando, setEnviando] = useState(false)
-  const [estado, setEstado] = useState<{ tipo: 'ok' | 'erro'; texto: string } | null>(null)
-  const enviar = async () => {
-    if (!email) {
-      setEstado({ tipo: 'erro', texto: 'precisa de estares com sessão activa' })
-      return
-    }
-    setEnviando(true)
-    setEstado(null)
-    try {
-      const r = await fetch('/api/resumo-email', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ email, nome, contexto: construirContexto(true) })
-      })
-      const json = await r.json()
-      if (!r.ok) setEstado({ tipo: 'erro', texto: json.error ?? 'erro' })
-      else setEstado({ tipo: 'ok', texto: 'enviado.' })
-    } catch (e) {
-      setEstado({ tipo: 'erro', texto: e instanceof Error ? e.message : 'erro de rede' })
-    }
-    setEnviando(false)
-  }
-  return (
-    <section className="space-y-3">
-      <span className="label-cap">Resumo por email</span>
-      <div className="card-solid space-y-3">
-        <div className="flex items-start gap-3">
-          <Mail size={18} strokeWidth={1.4} className="text-ouro shrink-0 mt-0.5" />
-          <div className="min-w-0 flex-1">
-            <p className="font-serif text-[15px] tracking-editorial">resumo do dia</p>
-            <p className="text-faint text-[11.5px] leading-relaxed mt-1">
-              a coach lê os teus dados, escreve um resumo curto e manda-te por email · útil quando não abres a app.
-            </p>
-            {email ? <p className="text-faint text-[10.5px] mt-1.5 tnum">{email}</p> : null}
-          </div>
-        </div>
-        <button
-          onClick={enviar}
-          disabled={enviando || !email}
-          className="btn-primary w-full py-2.5 text-[12.5px] disabled:opacity-40"
-        >
-          {enviando ? 'a enviar...' : <><Send size={13} strokeWidth={1.5} /> enviar resumo agora</>}
-        </button>
-        {estado ? (
-          <p className={`text-[11px] ${estado.tipo === 'ok' ? 'text-oliva' : 'text-terracota'}`}>{estado.texto}</p>
-        ) : null}
-        <p className="text-faint text-[10px] leading-relaxed">
-          envio diário automático precisa de configurar cron externo (cron-job.org) a chamar /api/resumo-email às 21h.
-        </p>
-      </div>
-    </section>
   )
 }
 
