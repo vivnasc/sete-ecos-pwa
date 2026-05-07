@@ -1,9 +1,41 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <rect width="512" height="512" rx="96" fill="#F6F1E8"/>
-  <g stroke="#B8924A" stroke-width="3" fill="none" stroke-linecap="round">
-    <path d="M256 380 C 200 340, 160 280, 180 220 C 200 280, 240 300, 256 320 C 272 300, 312 280, 332 220 C 352 280, 312 340, 256 380 Z" fill="#B8924A" fill-opacity="0.08"/>
-    <path d="M256 320 L 256 220" />
-    <circle cx="256" cy="200" r="6" fill="#B8924A"/>
+
+  <!-- Phoenix bird · linha contínua, scaled to fit 512 -->
+  <g stroke="#B8924A" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(0, 30)">
+    <!-- Flame base -->
+    <path d="M 226 320
+             Q 220 308 224 296
+             Q 232 286 240 294
+             Q 246 286 254 294
+             Q 262 286 270 294
+             Q 280 286 288 296
+             Q 292 308 286 320"/>
+
+    <!-- Body -->
+    <path d="M 256 320
+             Q 254 285 256 260
+             Q 258 230 256 205"/>
+
+    <!-- Wings · sweeps -->
+    <path d="M 256 215
+             Q 195 180 145 130
+             Q 115 100 100 75"/>
+    <path d="M 256 215
+             Q 317 180 367 130
+             Q 397 100 412 75"/>
+
+    <!-- Inner wing -->
+    <path d="M 215 200 Q 185 175 155 150"/>
+    <path d="M 297 200 Q 327 175 357 150"/>
+
+    <!-- Head -->
+    <circle cx="256" cy="195" r="9" fill="#B8924A" stroke="none"/>
   </g>
-  <text x="256" y="450" font-family="Georgia, serif" font-size="38" fill="#1F1814" text-anchor="middle" font-weight="400" letter-spacing="4">FÉNIX</text>
+
+  <!-- Wordmark -->
+  <text x="256" y="430" font-family="Georgia, serif" font-size="42"
+        fill="#1F1814" text-anchor="middle" font-weight="300" letter-spacing="-0.5">
+    fénixfit
+  </text>
 </svg>

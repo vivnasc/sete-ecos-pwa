@@ -6,17 +6,20 @@ const LOGOS = [
   {
     nome: 'wordmark',
     src: '/logos/logo-01-wordmark.svg',
-    descricao: 'tipografia editorial · curva phoenix discreta · selo restrito'
+    descricao: 'tipografia editorial · curva phoenix discreta · selo restrito',
+    uso: 'cabeçalho do dashboard · papel timbrado'
   },
   {
     nome: 'pássaro',
     src: '/logos/logo-02-bird.svg',
-    descricao: 'fénix em linha contínua · chama a subir · mais expressivo'
+    descricao: 'fénix em linha contínua · chama a subir · mais expressivo',
+    uso: 'ícone da app (browser, ecrã principal) · ecrã de entrada'
   },
   {
     nome: 'selo',
     src: '/logos/logo-03-seal.svg',
-    descricao: 'selo circular · monograma FF · ex libris editorial'
+    descricao: 'selo circular · monograma FF · ex libris editorial',
+    uso: 'marco do fim de plano (Dia 60) · momentos de celebração'
   }
 ] as const
 
@@ -28,10 +31,10 @@ export default function LogosPage() {
       <header className="space-y-2 pt-2">
         <p className="label-soft">marca</p>
         <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">
-          três caminhos
+          três caminhos · um sistema
         </h1>
         <div className="h-px w-12 bg-ouro" aria-hidden />
-        <p className="text-faint mt-3 text-[12.5px]">escolhe o que mais te chama · diz-me e fica como ícone</p>
+        <p className="text-faint mt-3 text-[12.5px]">cada um no seu lugar · o sistema completo</p>
       </header>
 
       <div className="space-y-6">
@@ -52,12 +55,13 @@ export default function LogosPage() {
                   loading="lazy"
                 />
               </div>
-              <div className="p-4 border-t border-[var(--hair)]">
+              <div className="p-4 border-t border-[var(--hair)] space-y-2">
                 <p className="text-soft text-[13px] leading-relaxed">{l.descricao}</p>
+                <p className="label-cap">onde · {l.uso}</p>
                 <a
                   href={l.src}
                   download
-                  className="text-faint text-[11px] uppercase tracking-cap mt-2 inline-block hover:text-ouro"
+                  className="text-faint text-[11px] uppercase tracking-cap mt-1 inline-block hover:text-ouro"
                 >
                   ↓ descarregar svg
                 </a>
@@ -68,7 +72,7 @@ export default function LogosPage() {
       </div>
 
       <p className="text-faint text-center text-[11px] leading-relaxed pb-4">
-        diz-me o número · eu actualizo o ícone da app, manifest e ecrãs.
+        sistema editorial completo · cada logo serve um propósito distinto
       </p>
     </div>
   )

@@ -53,7 +53,12 @@ export default function LoginPage() {
   return (
     <div className="container-app flex min-h-[80vh] flex-col justify-center gap-10 animate-fade-in py-10">
       <header className="text-center">
-        <p className="label-cap mb-3">FénixFit</p>
+        {/* Logo Bird · marca da app */}
+        <img
+          src="/icon.svg"
+          alt="FénixFit"
+          className="mx-auto mb-6 h-20 w-20 sm:h-24 sm:w-24"
+        />
         <h1 className="font-serif text-[44px] font-light leading-[1.1] tracking-editorial sm:text-5xl">
           {modo === 'entrar' && 'entrar'}
           {modo === 'criar' && 'criar conta'}
