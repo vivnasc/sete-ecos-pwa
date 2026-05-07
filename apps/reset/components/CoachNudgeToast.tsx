@@ -10,7 +10,9 @@ import { MessageCircle, X, ArrowRight } from 'lucide-react'
 import { construirContexto } from '@/lib/coachContext'
 import { saveCoachMensagem } from '@/lib/storage'
 
-const COOLDOWN_MS = 90 * 1000
+const COOLDOWN_MS = 5 * 60 * 1000          // 5 min entre toasts
+const QUIET_AFTER_MOUNT_MS = 30 * 1000     // 30s sem toasts depois de abrir app (deixa sync acalmar)
+const TIMESTAMP_FRESCO_MS = 3 * 60 * 1000  // só dispara se o registo é dos últimos 3 minutos
 
 const PROMPT_POR_AREA: Record<string, string> = {
   peso: 'Acabei de pesar-me. Olha para a tendência (média móvel, variação semanal/total) e dá-me 1 observação concreta + 1 previsão para a semana + 1 ajuste se fizer sentido. 4 frases máximo. Sem floreios.',
@@ -45,6 +47,7 @@ export default function CoachNudgeToast() {
   const [visivel, setVisivel] = useState(false)
   const ultimoToastRef = useRef<number>(0)
   const dismissTimerRef = useRef<number | null>(null)
+  const mountedAtRef = useRef<number>(Date.now())
   const ultimoFingerprintRef = useRef<{ peso: number; refeicoes: number; alcool: number; jejum: number; dias: number; ciclo: number }>({ peso: 0, refeicoes: 0, alcool: 0, jejum: 0, dias: 0, ciclo: 0 })
 
   // Não dispara em /coach (já vês a coach a falar lá)
@@ -69,14 +72,30 @@ export default function CoachNudgeToast() {
       const detail = (e as CustomEvent).detail as { key?: string } | undefined
       const key = detail?.key
       const area = inferirArea(key)
-      // Skip generic 'all' clears, profile changes, internal coach tool
+      // Skip generic 'all' clears, profile changes, internal coach tool, hydrate sweeps
       if (key === 'all' || key === 'coach-chat' || key === 'coach-tool' || key === 'profile' || key === 'insights') return
 
       const agora = Date.now()
+      // Período silencioso depois de montar · evita disparos durante hidratação inicial
+      if (agora - mountedAtRef.current < QUIET_AFTER_MOUNT_MS) {
+        // Actualiza fingerprint mesmo sem disparar para não perder o state
+        try {
+          ultimoFingerprintRef.current = {
+            peso: JSON.parse(localStorage.getItem('fenixfit:peso') ?? '[]').length,
+            refeicoes: JSON.parse(localStorage.getItem('fenixfit:refeicoes') ?? '[]').length,
+            alcool: JSON.parse(localStorage.getItem('fenixfit:alcool') ?? '[]').length,
+            jejum: JSON.parse(localStorage.getItem('fenixfit:jejum') ?? '[]').length,
+            dias: Object.keys(JSON.parse(localStorage.getItem('fenixfit:dias') ?? '{}')).length,
+            ciclo: JSON.parse(localStorage.getItem('fenixfit:ciclo') ?? '[]').length
+          }
+        } catch {}
+        return
+      }
       if (agora - ultimoToastRef.current < COOLDOWN_MS) return
       if (aCarregar) return
 
-      // Verifica se houve realmente novo registo (ignora updates)
+      // Verifica se houve realmente novo registo COM TIMESTAMP RECENTE
+      // (>= 3 min · garante que não é hidratação a importar dados antigos)
       const novo = (() => {
         try {
           const fp = {
@@ -87,16 +106,38 @@ export default function CoachNudgeToast() {
             dias: Object.keys(JSON.parse(localStorage.getItem('fenixfit:dias') ?? '{}')).length,
             ciclo: JSON.parse(localStorage.getItem('fenixfit:ciclo') ?? '[]').length
           }
-          const houveNovo =
-            fp.peso > ultimoFingerprintRef.current.peso ||
-            fp.refeicoes > ultimoFingerprintRef.current.refeicoes ||
-            fp.alcool > ultimoFingerprintRef.current.alcool ||
-            fp.jejum > ultimoFingerprintRef.current.jejum ||
-            fp.ciclo > ultimoFingerprintRef.current.ciclo ||
-            // Para 'dias', também aceita se key === 'dias' (mudança intra-dia conta)
-            (key === 'dias')
+          const counts = {
+            peso: fp.peso > ultimoFingerprintRef.current.peso,
+            refeicoes: fp.refeicoes > ultimoFingerprintRef.current.refeicoes,
+            alcool: fp.alcool > ultimoFingerprintRef.current.alcool,
+            jejum: fp.jejum > ultimoFingerprintRef.current.jejum,
+            ciclo: fp.ciclo > ultimoFingerprintRef.current.ciclo,
+            dias: key === 'dias'
+          }
+          const algumaContagemSubiu = counts.peso || counts.refeicoes || counts.alcool || counts.jejum || counts.ciclo || counts.dias
           ultimoFingerprintRef.current = fp
-          return houveNovo
+          if (!algumaContagemSubiu) return false
+
+          // Verificar timestamp recente do item adicionado · evita hydratação
+          const limite = agora - TIMESTAMP_FRESCO_MS
+          if (counts.refeicoes) {
+            const arr = JSON.parse(localStorage.getItem('fenixfit:refeicoes') ?? '[]') as { timestamp?: string }[]
+            const ult = arr[arr.length - 1]
+            if (!ult?.timestamp || new Date(ult.timestamp).getTime() < limite) return false
+          }
+          if (counts.alcool) {
+            const arr = JSON.parse(localStorage.getItem('fenixfit:alcool') ?? '[]') as { timestamp?: string }[]
+            const ult = arr[arr.length - 1]
+            if (!ult?.timestamp || new Date(ult.timestamp).getTime() < limite) return false
+          }
+          if (counts.peso) {
+            const arr = JSON.parse(localStorage.getItem('fenixfit:peso') ?? '[]') as { date?: string }[]
+            const ult = arr[arr.length - 1]
+            const hoje = new Date().toISOString().slice(0, 10)
+            if (ult?.date !== hoje) return false
+          }
+          // jejum/ciclo/dias · trust if count subiu E key matches (eventos directos)
+          return true
         } catch { return false }
       })()
       if (!novo) return
