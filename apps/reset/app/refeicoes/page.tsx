@@ -1,12 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Plus, Trash2, ArrowLeft, ArrowRight, MessageCircle, Loader2 } from 'lucide-react'
+import { Plus, Trash2, ArrowLeft, ArrowRight, MessageCircle, Loader2, Pencil, Check, X } from 'lucide-react'
 import BackButton from '@/components/BackButton'
 import {
   getRefeicoes,
   getRefeicoesDoDia,
   addRefeicao,
+  updateRefeicao,
   removeRefeicao,
   macrosDoDia,
   type Refeicao,
@@ -180,32 +181,12 @@ export default function RefeicoesPage() {
       {lista.length > 0 ? (
         <section className="space-y-2">
           {lista.map(r => (
-            <article key={r.id} className="card-solid space-y-1">
-              <div className="flex items-baseline justify-between gap-3">
-                <div className="flex items-baseline gap-2 min-w-0 flex-1">
-                  <span className="label-cap shrink-0">{TIPOS.find(t => t.id === r.tipo)?.label ?? r.tipo}</span>
-                  <span className="text-faint text-[11px] tnum">{r.timestamp.slice(11, 16)}</span>
-                </div>
-                <button
-                  onClick={() => apagar(r.id)}
-                  className="text-faint hover:text-terracota transition-elegant active:scale-95 shrink-0"
-                  aria-label="apagar"
-                >
-                  <Trash2 size={14} strokeWidth={1.4} />
-                </button>
-              </div>
-              <p className="font-serif text-[15px] leading-[1.45]">{r.descricao}</p>
-              {r.proteinaG !== null || r.carboG !== null || r.gorduraG !== null || r.calorias !== null ? (
-                <p className="text-faint text-[11px] tnum">
-                  {r.proteinaG !== null ? `${Math.round(r.proteinaG)}g P · ` : ''}
-                  {r.carboG !== null ? `${Math.round(r.carboG)}g C · ` : ''}
-                  {r.gorduraG !== null ? `${Math.round(r.gorduraG)}g G` : ''}
-                  {r.calorias !== null ? ` · ${r.calorias} kcal` : ''}
-                </p>
-              ) : null}
-              {r.contexto ? <p className="text-soft text-[12px]">{r.contexto}</p> : null}
-              {r.sentir ? <p className="text-soft text-[12px] italic">sentir: {r.sentir}</p> : null}
-            </article>
+            <RefeicaoCard
+              key={r.id}
+              r={r}
+              onApagar={() => apagar(r.id)}
+              onGuardar={patch => { updateRefeicao(r.id, patch); refresh() }}
+            />
           ))}
         </section>
       ) : (
@@ -321,6 +302,128 @@ function Macro({ label, valor, alvo }: { label: string; valor: number; alvo: num
       <p className="text-faint text-[9.5px] uppercase tracking-cap mt-1">{label}</p>
       <p className="text-faint text-[9px] tnum">{pct}% / {alvo}</p>
     </div>
+  )
+}
+
+function RefeicaoCard({
+  r,
+  onApagar,
+  onGuardar
+}: {
+  r: Refeicao
+  onApagar: () => void
+  onGuardar: (patch: Partial<Refeicao>) => void
+}) {
+  const [editar, setEditar] = useState(false)
+  const [descricao, setDescricao] = useState(r.descricao)
+  const [proteina, setProteina] = useState(r.proteinaG !== null ? String(r.proteinaG) : '')
+  const [carbo, setCarbo] = useState(r.carboG !== null ? String(r.carboG) : '')
+  const [gordura, setGordura] = useState(r.gorduraG !== null ? String(r.gorduraG) : '')
+  const [calorias, setCalorias] = useState(r.calorias !== null ? String(r.calorias) : '')
+
+  const cancelar = () => {
+    setDescricao(r.descricao)
+    setProteina(r.proteinaG !== null ? String(r.proteinaG) : '')
+    setCarbo(r.carboG !== null ? String(r.carboG) : '')
+    setGordura(r.gorduraG !== null ? String(r.gorduraG) : '')
+    setCalorias(r.calorias !== null ? String(r.calorias) : '')
+    setEditar(false)
+  }
+
+  const guardar = () => {
+    const num = (s: string) => s.trim() === '' ? null : Number(s)
+    onGuardar({
+      descricao: descricao.trim() || r.descricao,
+      proteinaG: num(proteina),
+      carboG: num(carbo),
+      gorduraG: num(gordura),
+      calorias: num(calorias) === null ? null : Math.round(num(calorias) as number)
+    })
+    setEditar(false)
+  }
+
+  if (editar) {
+    return (
+      <article className="card-feature space-y-3">
+        <div className="flex items-baseline justify-between gap-3">
+          <div className="flex items-baseline gap-2 min-w-0 flex-1">
+            <span className="label-cap shrink-0">{TIPOS.find(t => t.id === r.tipo)?.label ?? r.tipo}</span>
+            <span className="text-faint text-[11px] tnum">{r.timestamp.slice(11, 16)}</span>
+          </div>
+          <div className="flex gap-1 shrink-0">
+            <button onClick={cancelar} aria-label="cancelar" className="text-faint hover:text-soft p-1 active:scale-90"><X size={14} strokeWidth={1.4} /></button>
+            <button onClick={guardar} aria-label="guardar" className="text-ouro hover:text-tinta dark:hover:text-creme p-1 active:scale-90"><Check size={14} strokeWidth={1.6} /></button>
+          </div>
+        </div>
+        <textarea
+          value={descricao}
+          onChange={e => setDescricao(e.target.value)}
+          rows={2}
+          className="w-full resize-none rounded-md border border-[var(--hair)] bg-transparent p-2.5 text-[13.5px] focus:border-ouro focus:outline-none"
+        />
+        <div className="grid grid-cols-4 gap-1.5">
+          <CampoMacro label="P · g" valor={proteina} onChange={setProteina} />
+          <CampoMacro label="C · g" valor={carbo} onChange={setCarbo} />
+          <CampoMacro label="G · g" valor={gordura} onChange={setGordura} />
+          <CampoMacro label="kcal" valor={calorias} onChange={setCalorias} />
+        </div>
+      </article>
+    )
+  }
+
+  return (
+    <article className="card-solid space-y-1">
+      <div className="flex items-baseline justify-between gap-3">
+        <div className="flex items-baseline gap-2 min-w-0 flex-1">
+          <span className="label-cap shrink-0">{TIPOS.find(t => t.id === r.tipo)?.label ?? r.tipo}</span>
+          <span className="text-faint text-[11px] tnum">{r.timestamp.slice(11, 16)}</span>
+        </div>
+        <div className="flex gap-2 shrink-0">
+          <button
+            onClick={() => setEditar(true)}
+            className="text-faint hover:text-ouro transition-elegant active:scale-95"
+            aria-label="editar"
+          >
+            <Pencil size={14} strokeWidth={1.4} />
+          </button>
+          <button
+            onClick={onApagar}
+            className="text-faint hover:text-terracota transition-elegant active:scale-95"
+            aria-label="apagar"
+          >
+            <Trash2 size={14} strokeWidth={1.4} />
+          </button>
+        </div>
+      </div>
+      <p className="font-serif text-[15px] leading-[1.45]">{r.descricao}</p>
+      {r.proteinaG !== null || r.carboG !== null || r.gorduraG !== null || r.calorias !== null ? (
+        <p className="text-faint text-[11px] tnum">
+          {r.proteinaG !== null ? `${Math.round(r.proteinaG)}g P · ` : ''}
+          {r.carboG !== null ? `${Math.round(r.carboG)}g C · ` : ''}
+          {r.gorduraG !== null ? `${Math.round(r.gorduraG)}g G` : ''}
+          {r.calorias !== null ? ` · ${r.calorias} kcal` : ''}
+        </p>
+      ) : null}
+      {r.contexto ? <p className="text-soft text-[12px]">{r.contexto}</p> : null}
+      {r.sentir ? <p className="text-soft text-[12px] italic">sentir: {r.sentir}</p> : null}
+    </article>
+  )
+}
+
+function CampoMacro({ label, valor, onChange }: { label: string; valor: string; onChange: (v: string) => void }) {
+  return (
+    <label className="block">
+      <span className="text-faint text-[9.5px] uppercase tracking-cap block mb-1">{label}</span>
+      <input
+        type="number"
+        inputMode="decimal"
+        step="0.1"
+        min="0"
+        value={valor}
+        onChange={e => onChange(e.target.value)}
+        className="w-full rounded-md border border-[var(--hair)] bg-transparent p-1.5 text-center text-[13px] tnum focus:border-ouro focus:outline-none"
+      />
+    </label>
   )
 }
 

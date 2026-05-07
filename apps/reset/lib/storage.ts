@@ -263,6 +263,17 @@ export function removeRefeicao(id: string): void {
   void removeRefeicaoSync(id).catch(() => {})
 }
 
+export function updateRefeicao(id: string, patch: Partial<Omit<Refeicao, 'id'>>): Refeicao | null {
+  const all = read<Refeicao[]>('refeicoes', [])
+  const i = all.findIndex(r => r.id === id)
+  if (i === -1) return null
+  const actualizada: Refeicao = { ...all[i], ...patch, id }
+  all[i] = actualizada
+  write('refeicoes', all)
+  void syncRefeicao(actualizada).catch(() => {})
+  return actualizada
+}
+
 export function macrosDoDia(date = isoDate()): { proteina: number; carbo: number; gordura: number; calorias: number; refeicoes: number } {
   const lista = getRefeicoesDoDia(date)
   return {
