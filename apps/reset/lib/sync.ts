@@ -251,26 +251,44 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
     }))
     write('coach-chat', coachList)
 
-    const refeicoesList: Refeicao[] = (refeicoesR.data ?? []).map(r => ({
-      id: r.id,
-      timestamp: r.timestamp,
-      tipo: r.tipo,
-      descricao: r.descricao,
-      proteinaG: r.proteina_g !== null && r.proteina_g !== undefined ? Number(r.proteina_g) : null,
-      carboG: r.carbo_g !== null && r.carbo_g !== undefined ? Number(r.carbo_g) : null,
-      gorduraG: r.gordura_g !== null && r.gordura_g !== undefined ? Number(r.gordura_g) : null,
-      calorias: r.calorias !== null && r.calorias !== undefined ? Number(r.calorias) : null,
-      contexto: r.contexto ?? '',
-      sentir: r.sentir ?? ''
-    }))
+    // Tombstones · IDs apagados localmente que não devem voltar do servidor
+    const tombstones = new Set(read<string[]>('tombstones-refeicoes', []))
+    const refeicoesList: Refeicao[] = (refeicoesR.data ?? [])
+      .filter(r => !tombstones.has(r.id))
+      .map(r => ({
+        id: r.id,
+        timestamp: r.timestamp,
+        tipo: r.tipo,
+        descricao: r.descricao,
+        proteinaG: r.proteina_g !== null && r.proteina_g !== undefined ? Number(r.proteina_g) : null,
+        carboG: r.carbo_g !== null && r.carbo_g !== undefined ? Number(r.carbo_g) : null,
+        gorduraG: r.gordura_g !== null && r.gordura_g !== undefined ? Number(r.gordura_g) : null,
+        calorias: r.calorias !== null && r.calorias !== undefined ? Number(r.calorias) : null,
+        contexto: r.contexto ?? '',
+        sentir: r.sentir ?? ''
+      }))
     // MERGE com o que já estava local · não destruir registos offline
     const localRef = read<Refeicao[]>('refeicoes', [])
     const idsServidor = new Set(refeicoesList.map(r => r.id))
-    const apenasLocal = localRef.filter(r => !idsServidor.has(r.id))
+    const apenasLocal = localRef.filter(r => !idsServidor.has(r.id) && !tombstones.has(r.id))
     write('refeicoes', [...refeicoesList, ...apenasLocal])
     // Empurra para o servidor o que não estava lá
     for (const r of apenasLocal) {
       void syncRefeicao(r).catch(() => {})
+    }
+    // Re-tenta deletar no servidor os que estão em tombstones
+    // (caso delete inicial tenha falhado, ex: offline)
+    const tombsArray = [...tombstones]
+    const idsServerActuais = new Set((refeicoesR.data ?? []).map(r => r.id))
+    for (const tombId of tombsArray) {
+      if (idsServerActuais.has(tombId)) {
+        // ainda existe no servidor · re-tenta delete
+        void removeRefeicaoSync(tombId).catch(() => {})
+      } else {
+        // já não existe no servidor · podemos limpar o tombstone
+        const novo = read<string[]>('tombstones-refeicoes', []).filter(t => t !== tombId)
+        write('tombstones-refeicoes', novo)
+      }
     }
 
     localStorage.setItem('fenixfit:lastSync', new Date().toISOString())
@@ -487,7 +505,8 @@ export async function removeRefeicaoSync(id: string): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('fenixfit_refeicoes').delete().eq('id', id).eq('user_id', user.id)
+  const { error } = await sb.from('fenixfit_refeicoes').delete().eq('id', id).eq('user_id', user.id)
+  if (error) registarErroSync('refeicao-delete', error)
 }
 
 export async function syncProfile(p: Record<string, unknown>): Promise<void> {

@@ -261,7 +261,23 @@ export function removeRefeicao(id: string): void {
   const filtradas = all.filter(r => r.id !== id)
   if (filtradas.length === all.length) return
   write('refeicoes', filtradas)
+  // tombstone · evita que sync hidratado traga de volta
+  const tombs = read<string[]>('tombstones-refeicoes', [])
+  if (!tombs.includes(id)) {
+    tombs.push(id)
+    write('tombstones-refeicoes', tombs)
+  }
   void removeRefeicaoSync(id).catch(() => {})
+}
+
+export function getTombstonesRefeicoes(): string[] {
+  return read<string[]>('tombstones-refeicoes', [])
+}
+
+export function limparTombstone(id: string): void {
+  const tombs = read<string[]>('tombstones-refeicoes', [])
+  const novo = tombs.filter(t => t !== id)
+  if (novo.length !== tombs.length) write('tombstones-refeicoes', novo)
 }
 
 export function updateRefeicao(id: string, patch: Partial<Omit<Refeicao, 'id'>>): Refeicao | null {

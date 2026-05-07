@@ -17,6 +17,8 @@ import {
   getJejumHoje,
   saveCiclo,
   addRefeicao,
+  updateRefeicao,
+  removeRefeicao,
   getRefeicoes,
   getPesos,
   getRefeicoesDoDia,
@@ -81,6 +83,35 @@ export const COACH_TOOLS = [
         sentir: { type: 'string', description: 'Como se sentiu depois: saciada, com fome, etc' }
       },
       required: ['tipo', 'descricao']
+    }
+  },
+  {
+    name: 'actualizar_refeicao_recente',
+    description: 'Actualiza a refeição MAIS RECENTE de hoje (opcionalmente do tipo especificado) com novos valores. USA ISTO em vez de registar_refeicao quando a Vivianne está a CORRIGIR ou COMPLETAR uma refeição já registada (ex: "afinal foram 4 ovos", "junta também o abacate", "estimei mal a proteína"). Só preencher os campos a alterar.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        tipo: { type: 'string', enum: ['pa', 'almoco', 'snack', 'jantar'], description: 'Filtrar pela refeição mais recente deste tipo · opcional' },
+        descricao: { type: 'string' },
+        proteina_g: { type: 'number' },
+        carbo_g: { type: 'number' },
+        gordura_g: { type: 'number' },
+        calorias: { type: 'number' },
+        hora: { type: 'string', description: 'Nova hora HH:MM se a primeira estava errada' },
+        sentir: { type: 'string' }
+      },
+      required: []
+    }
+  },
+  {
+    name: 'apagar_refeicao_recente',
+    description: 'Apaga a refeição MAIS RECENTE de hoje (ou do tipo dado). Usar quando ela disser "tira isso", "apaga a última refeição", "registei errado, apaga".',
+    input_schema: {
+      type: 'object',
+      properties: {
+        tipo: { type: 'string', enum: ['pa', 'almoco', 'snack', 'jantar'] }
+      },
+      required: []
     }
   },
   {
@@ -381,6 +412,48 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
     }
     const m = macrosDoDia()
     return { ok: true, texto: `${tipo} registado · hoje: ${m.refeicoes}× refeições · ${Math.round(m.proteina)}g proteína · ${Math.round(m.carbo)}g carbo · ${Math.round(m.gordura)}g gordura` }
+  },
+
+  actualizar_refeicao_recente(input) {
+    const tipoFiltro = str(input.tipo) as RefeicaoTipo | ''
+    const lista = getRefeicoesDoDia()
+    const candidatas = tipoFiltro ? lista.filter(r => r.tipo === tipoFiltro) : lista
+    if (candidatas.length === 0) {
+      return { ok: false, erro: tipoFiltro ? `sem refeição de ${tipoFiltro} hoje para actualizar` : 'sem refeições registadas hoje' }
+    }
+    // mais recente
+    const recente = candidatas[candidatas.length - 1]
+    const patch: Partial<Omit<Refeicao, 'id'>> = {}
+    if (typeof input.descricao === 'string' && input.descricao) patch.descricao = input.descricao
+    const p = num(input.proteina_g); if (p !== null) patch.proteinaG = p
+    const c = num(input.carbo_g); if (c !== null) patch.carboG = c
+    const g = num(input.gordura_g); if (g !== null) patch.gorduraG = g
+    const k = num(input.calorias); if (k !== null) patch.calorias = Math.round(k)
+    const sentir = str(input.sentir); if (sentir) patch.sentir = sentir
+    const horaRaw = str(input.hora)
+    if (horaRaw && /^\d{1,2}:\d{2}$/.test(horaRaw)) {
+      const [h, mn] = horaRaw.split(':').map(Number)
+      const d = new Date(recente.timestamp)
+      d.setHours(h, mn, 0, 0)
+      patch.timestamp = d.toISOString()
+    }
+    if (Object.keys(patch).length === 0) return { ok: false, erro: 'nada para actualizar · indica pelo menos um campo' }
+    const r = updateRefeicao(recente.id, patch)
+    if (!r) return { ok: false, erro: 'refeição não encontrada' }
+    const m = macrosDoDia()
+    return { ok: true, texto: `actualizado · ${r.tipo}: ${r.descricao}${r.proteinaG !== null ? ` · ${Math.round(r.proteinaG)}gP` : ''}${r.carboG !== null ? ` · ${Math.round(r.carboG)}gC` : ''}${r.gorduraG !== null ? ` · ${Math.round(r.gorduraG)}gG` : ''} · total dia: ${Math.round(m.calorias)}kcal` }
+  },
+
+  apagar_refeicao_recente(input) {
+    const tipoFiltro = str(input.tipo) as RefeicaoTipo | ''
+    const lista = getRefeicoesDoDia()
+    const candidatas = tipoFiltro ? lista.filter(r => r.tipo === tipoFiltro) : lista
+    if (candidatas.length === 0) {
+      return { ok: false, erro: tipoFiltro ? `sem refeição de ${tipoFiltro} hoje para apagar` : 'sem refeições hoje' }
+    }
+    const recente = candidatas[candidatas.length - 1]
+    removeRefeicao(recente.id)
+    return { ok: true, texto: `apagado · ${recente.tipo}: ${recente.descricao}` }
   },
 
   registar_alcool(input) {

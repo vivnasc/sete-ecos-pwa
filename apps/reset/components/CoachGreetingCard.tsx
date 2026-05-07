@@ -95,6 +95,14 @@ export default function CoachGreetingCard() {
       }
     }
     refresh()
+    // Auto-gerar APENAS se efectivamente não há abertura hoje em localStorage
+    // (ler directamente · evitar race com state)
+    const aCache = getAberturaHoje()
+    if (!aCache && !tentadoRef.current) {
+      tentadoRef.current = true
+      setAGerar(true)
+      gerarAbertura().finally(() => setAGerar(false))
+    }
     window.addEventListener('fenixfit:storage', refresh)
     window.addEventListener('fenixfit:abertura', refresh)
     return () => {
@@ -102,14 +110,6 @@ export default function CoachGreetingCard() {
       window.removeEventListener('fenixfit:abertura', refresh)
     }
   }, [])
-
-  // Auto-gera se não houver abertura hoje · uma vez por sessão
-  useEffect(() => {
-    if (abertura || tentadoRef.current || aGerar) return
-    tentadoRef.current = true
-    setAGerar(true)
-    gerarAbertura().finally(() => setAGerar(false))
-  }, [abertura, aGerar])
 
   const refrescar = async (e: React.MouseEvent) => {
     e.preventDefault()

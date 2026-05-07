@@ -43,10 +43,21 @@ A FENIXFIT É UMA APP CONVERSACIONAL · TU ÉS A INTERFACE PRINCIPAL
 - Ela não segue plano fixo. A cozinheira faz tudo. Ela só quer registar e ver se está dentro das metas dela, ajustar com o tempo.
 
 REGISTAR POR ELA · MUITO IMPORTANTE
-- Tens estas tools: registar_peso, registar_refeicao, registar_alcool, registar_dia,
-  registar_jejum, registar_ciclo, registar_agua, registar_suplemento, registar_transito,
-  registar_sono_detalhe, registar_sintoma_peri, registar_steps, registar_rhr,
-  marcar_ancora, definir_metas, sugerir_metas, analisar_padroes, consultar_dados.
+- Tens estas tools: registar_peso, registar_refeicao, actualizar_refeicao_recente,
+  apagar_refeicao_recente, registar_alcool, registar_dia, registar_jejum, registar_ciclo,
+  registar_agua, registar_suplemento, registar_transito, registar_sono_detalhe,
+  registar_sintoma_peri, registar_steps, registar_rhr, marcar_ancora, definir_metas,
+  sugerir_metas, analisar_padroes, gerar_lista_compras, consultar_dados.
+
+ACTUALIZAR vs REGISTAR · CRÍTICO · não duplicar
+- Se ela disser "comi X ao PA" PELA PRIMEIRA VEZ → registar_refeicao
+- Se ela CORRIGE ou COMPLETA uma refeição já registada → actualizar_refeicao_recente
+  (ex: "afinal foram 4 ovos", "junta também o abacate", "estimei a proteína mal · eram 35g")
+- Se ela disser "apaga isso", "tira", "registei errado" → apagar_refeicao_recente
+- ANTES de registar uma refeição que parece dar continuidade, considera se já há uma do
+  mesmo tipo hoje · se sim, provavelmente é update.
+- Quando em dúvida, pergunta: "queres que adicione um snack novo ou actualizo o almoço?"
+- Para peso, álcool, etc · normalmente não há esse problema (savePeso é único por dia).
 - Quando ela disser algo registável, USA a tool. Não confirmes antes ("queres que registe?").
   Regista, depois confirma curto: "registado. peso 72.4. -0.3 desde ontem."
 - Se faltar info, infere razoável (hora=agora, data=hoje). Só pergunta se for ambíguo.
@@ -141,6 +152,35 @@ const COACH_TOOLS = [
         sentir: { type: 'string', description: 'Como se sentiu depois' }
       },
       required: ['tipo', 'descricao']
+    }
+  },
+  {
+    name: 'actualizar_refeicao_recente',
+    description: 'Actualiza a refeição MAIS RECENTE de hoje (opcionalmente filtrada por tipo) com novos valores. USA isto em vez de registar_refeicao quando a Vivianne CORRIGE ou COMPLETA uma refeição já registada (ex: "afinal foram 4 ovos não 3", "junta o abacate", "estimei mal"). Só preenches os campos a alterar.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        tipo: { type: 'string', enum: ['pa', 'almoco', 'snack', 'jantar'] },
+        descricao: { type: 'string' },
+        proteina_g: { type: 'number' },
+        carbo_g: { type: 'number' },
+        gordura_g: { type: 'number' },
+        calorias: { type: 'number' },
+        hora: { type: 'string' },
+        sentir: { type: 'string' }
+      },
+      required: []
+    }
+  },
+  {
+    name: 'apagar_refeicao_recente',
+    description: 'Apaga a refeição mais recente de hoje (opcional filtro por tipo). Para quando ela disser "tira isso", "apaga a última".',
+    input_schema: {
+      type: 'object',
+      properties: {
+        tipo: { type: 'string', enum: ['pa', 'almoco', 'snack', 'jantar'] }
+      },
+      required: []
     }
   },
   {

@@ -97,6 +97,8 @@ const SUGESTOES_INICIAIS = [
 const TOOL_LABELS: Record<string, string> = {
   registar_peso: 'peso registado',
   registar_refeicao: 'refeição registada',
+  actualizar_refeicao_recente: 'refeição actualizada',
+  apagar_refeicao_recente: 'refeição apagada',
   registar_alcool: 'caderno do copo',
   registar_dia: 'dia actualizado',
   registar_jejum: 'jejum registado',
