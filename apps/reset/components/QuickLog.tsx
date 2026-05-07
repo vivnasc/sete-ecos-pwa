@@ -1,22 +1,28 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { MessageCircle } from 'lucide-react'
+import { useState } from 'react'
+import { Mic } from 'lucide-react'
+import VoiceModeOverlay from './VoiceModeOverlay'
 
-const ESCONDIDA = ['/coach', '/login', '/onboarding', '/limpar', '/logos']
+const ESCONDIDA = ['/login', '/onboarding', '/limpar', '/logos']
 
 export default function QuickLog() {
   const path = usePathname() || '/'
+  const [aberto, setAberto] = useState(false)
   if (ESCONDIDA.some(p => path.startsWith(p))) return null
 
   return (
-    <a
-      href="/coach"
-      aria-label="Abrir coach"
-      className="fab"
-      title="fala com a coach"
-    >
-      <MessageCircle size={20} strokeWidth={1.6} />
-    </a>
+    <>
+      <button
+        onClick={() => setAberto(true)}
+        aria-label="Falar com a coach"
+        title="fala com a coach"
+        className="fab"
+      >
+        <Mic size={20} strokeWidth={1.6} />
+      </button>
+      <VoiceModeOverlay aberto={aberto} onFechar={() => setAberto(false)} />
+    </>
   )
 }
