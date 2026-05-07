@@ -44,9 +44,25 @@ function temTokenLocal(): boolean {
   } catch { return false }
 }
 
+// Lê a sessão guardada em localStorage para uso optimista enquanto getSession()
+// ainda corre. Se o token estiver expirado o autoRefreshToken trata disso.
+function lerSessaoLocal(): Session | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = localStorage.getItem('fenixfit:auth')
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    const s = parsed?.currentSession ?? parsed
+    if (s?.access_token && s?.user) return s as Session
+    return null
+  } catch { return null }
+}
+
 export function AuthGate({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null)
-  const [loading, setLoading] = useState(true)
+  // Sessão optimista: lê do localStorage logo ao montar para abrir a app
+  // imediatamente. getSession() valida em background.
+  const [session, setSession] = useState<Session | null>(() => lerSessaoLocal())
+  const [loading, setLoading] = useState(false)
   const [hidratado, setHidratado] = useState(false)
   const [tempoEspera, setTempoEspera] = useState(0)
   const router = useRouter()
@@ -86,16 +102,19 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     const init = async () => {
       try {
         const { data } = await sb.auth.getSession()
-        setSession(data.session)
-        setLoading(false)
         if (data.session) {
+          setSession(data.session)
           await hidratarComTimeout()
+        } else if (!temTokenLocal()) {
+          // Não há sessão E não há token guardado · realmente desautenticada
+          setSession(null)
         }
+        // else: mantém sessão optimista, supabase autoRefresh trata em background
       } catch (e) {
         console.error('[fenixfit] auth init falhou:', e)
-        setLoading(false)
       } finally {
         clearTimeout(hardTimeout)
+        setLoading(false)
         setHidratado(true)
       }
     }

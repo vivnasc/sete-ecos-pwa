@@ -70,9 +70,9 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       window.dispatchEvent(new CustomEvent('fenixfit:profile', { detail: profile }))
     }
 
-    const diasMap: Record<string, DiaLog> = {}
+    const diasServidor: Record<string, DiaLog> = {}
     diasR.data?.forEach(d => {
-      diasMap[d.date] = {
+      diasServidor[d.date] = {
         date: d.date,
         ancoras: d.ancoras ?? {},
         treinoFeito: d.treino_feito,
@@ -92,7 +92,16 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
         rhr: d.rhr ?? null
       }
     })
-    write('dias', diasMap)
+    // MERGE: servidor wins, mas datas só locais ficam preservadas
+    const diasLocais = read<Record<string, DiaLog>>('dias', {})
+    const diasMerge: Record<string, DiaLog> = { ...diasLocais, ...diasServidor }
+    write('dias', diasMerge)
+    // Push para servidor as datas que estavam só locais
+    for (const data of Object.keys(diasLocais)) {
+      if (!diasServidor[data]) {
+        void syncDia(diasLocais[data]).catch(() => {})
+      }
+    }
 
     const alcoolList: AlcoolRegisto[] = (alcoolR.data ?? []).map(a => ({
       id: a.id,
@@ -102,7 +111,13 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       gatilho: a.gatilho,
       decidiuBeber: a.decidiu_beber
     }))
-    write('alcool', alcoolList)
+    {
+      const local = read<AlcoolRegisto[]>('alcool', [])
+      const idsServidor = new Set(alcoolList.map(x => x.id))
+      const apenasLocal = local.filter(x => !idsServidor.has(x.id))
+      write('alcool', [...alcoolList, ...apenasLocal])
+      for (const x of apenasLocal) void syncAlcool(x).catch(() => {})
+    }
 
     const medidasList: MedidaRegisto[] = (medidasR.data ?? []).map(m => ({
       id: m.id,
@@ -115,7 +130,13 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       sentir: m.sentir ?? '',
       mudou: m.mudou ?? ''
     }))
-    write('medidas', medidasList)
+    {
+      const local = read<MedidaRegisto[]>('medidas', [])
+      const idsServidor = new Set(medidasList.map(x => x.id))
+      const apenasLocal = local.filter(x => !idsServidor.has(x.id))
+      write('medidas', [...medidasList, ...apenasLocal])
+      for (const x of apenasLocal) void syncMedida(x).catch(() => {})
+    }
 
     const desabafoList: DesabafoEntry[] = (desabafoR.data ?? []).map(d => ({
       id: d.id,
@@ -123,7 +144,13 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       texto: d.texto,
       emocao: d.emocao ?? ''
     }))
-    write('desabafo', desabafoList)
+    {
+      const local = read<DesabafoEntry[]>('desabafo', [])
+      const idsServidor = new Set(desabafoList.map(x => x.id))
+      const apenasLocal = local.filter(x => !idsServidor.has(x.id))
+      write('desabafo', [...desabafoList, ...apenasLocal])
+      for (const x of apenasLocal) void syncDesabafo(x).catch(() => {})
+    }
 
     const insightsMap: Record<string, InsightCache> = {}
     insightsR.data?.forEach(i => {
@@ -143,7 +170,13 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       hora: p.hora ?? '',
       notas: p.notas ?? ''
     }))
-    write('peso', pesoList)
+    {
+      const local = read<PesoLog[]>('peso', [])
+      const datasServidor = new Set(pesoList.map(x => x.date))
+      const apenasLocal = local.filter(x => !datasServidor.has(x.date))
+      write('peso', [...pesoList, ...apenasLocal])
+      for (const x of apenasLocal) void syncPeso(x).catch(() => {})
+    }
 
     const jejumList: JejumLog[] = (jejumR.data ?? []).map(j => ({
       id: j.id,
@@ -154,7 +187,13 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       meta: j.meta ?? 14,
       completou: j.completou ?? false
     }))
-    write('jejum', jejumList)
+    {
+      const local = read<JejumLog[]>('jejum', [])
+      const datasServidor = new Set(jejumList.map(x => x.date))
+      const apenasLocal = local.filter(x => !datasServidor.has(x.date))
+      write('jejum', [...jejumList, ...apenasLocal])
+      for (const x of apenasLocal) void syncJejum(x).catch(() => {})
+    }
 
     const cicloList: CicloLog[] = (cicloR.data ?? []).map(c => ({
       id: c.id,
@@ -166,7 +205,13 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       cravings: c.cravings ?? [],
       notas: c.notas ?? ''
     }))
-    write('ciclo', cicloList)
+    {
+      const local = read<CicloLog[]>('ciclo', [])
+      const datasServidor = new Set(cicloList.map(x => x.dataInicio))
+      const apenasLocal = local.filter(x => !datasServidor.has(x.dataInicio))
+      write('ciclo', [...cicloList, ...apenasLocal])
+      for (const x of apenasLocal) void syncCiclo(x).catch(() => {})
+    }
 
     const coachList: CoachMensagem[] = (coachR.data ?? []).map(m => ({
       id: m.id,
@@ -188,7 +233,15 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       contexto: r.contexto ?? '',
       sentir: r.sentir ?? ''
     }))
-    write('refeicoes', refeicoesList)
+    // MERGE com o que já estava local · não destruir registos offline
+    const localRef = read<Refeicao[]>('refeicoes', [])
+    const idsServidor = new Set(refeicoesList.map(r => r.id))
+    const apenasLocal = localRef.filter(r => !idsServidor.has(r.id))
+    write('refeicoes', [...refeicoesList, ...apenasLocal])
+    // Empurra para o servidor o que não estava lá
+    for (const r of apenasLocal) {
+      void syncRefeicao(r).catch(() => {})
+    }
 
     localStorage.setItem('fenixfit:lastSync', new Date().toISOString())
 
