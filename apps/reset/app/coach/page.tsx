@@ -14,6 +14,7 @@ import { executeTool } from '@/lib/coachTools'
 import { useSpeechRecognition } from '@/lib/useSpeechRecognition'
 import { construirContexto } from '@/lib/coachContext'
 import { analisarFotoRefeicao } from '@/lib/fotoRefeicao'
+import { erroAmigavel } from '@/lib/erros'
 
 type ContentBlock =
   | { type: 'text'; text: string }
@@ -168,6 +169,15 @@ export default function CoachPage() {
       setMensagens(historico)
     }
 
+    // Prompt pendente vindo de um alerta · pré-preenche input para ela rever e enviar
+    if (typeof window !== 'undefined') {
+      const promptPending = sessionStorage.getItem('fenixfit:coach-prompt-pending')
+      if (promptPending) {
+        sessionStorage.removeItem('fenixfit:coach-prompt-pending')
+        setInput(promptPending)
+      }
+    }
+
     const abertura = getAberturaHoje()
     // Não regeneramos automaticamente · obsoleta usa o que tem · Vivianne refresca quando quer
     if (abertura && historico.length > 0) {
@@ -238,7 +248,7 @@ export default function CoachPage() {
         observacao: r.observacao
       })
     } catch (err) {
-      setErro(err instanceof Error ? err.message : 'erro a analisar foto')
+      setErro(erroAmigavel(err))
     }
     setAnalisandoFoto(false)
   }
@@ -299,7 +309,7 @@ export default function CoachPage() {
         })
         const json = await r.json()
         if (!r.ok) {
-          setErro(json.error ?? 'erro')
+          setErro(erroAmigavel(json.error ?? 'erro'))
           break
         }
         const content: ContentBlock[] = json.content ?? []
@@ -334,7 +344,7 @@ export default function CoachPage() {
         window.dispatchEvent(new CustomEvent('fenixfit:storage', { detail: { key: 'coach-tool' } }))
       }
     } catch (e) {
-      setErro(e instanceof Error ? e.message : 'erro de rede')
+      setErro(erroAmigavel(e))
     }
     setCarregando(false)
   }

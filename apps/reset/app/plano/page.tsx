@@ -82,6 +82,14 @@ function ObjectivoCard({ objectivo, onRemover }: { objectivo: Objectivo; onRemov
   const apagar = () => {
     if (window.confirm(`apagar objectivo "${objectivo.texto}"?`)) onRemover()
   }
+  // Datas legíveis
+  const inicioDate = new Date(objectivo.criadoEm)
+  const fimDate = objectivo.prazoDias ? (() => {
+    const d = new Date(inicioDate)
+    d.setDate(d.getDate() + objectivo.prazoDias)
+    return d
+  })() : null
+  const fmtData = (d: Date) => d.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' })
 
   return (
     <article className="card-feature space-y-3">
@@ -89,20 +97,25 @@ function ObjectivoCard({ objectivo, onRemover }: { objectivo: Objectivo; onRemov
         <div className="min-w-0 flex-1">
           <p className="label-cap">{objectivo.tipo ? TIPO_LABEL[objectivo.tipo] : 'objectivo'}</p>
           <p className="font-serif text-[18px] leading-tight tracking-editorial mt-1">{objectivo.texto}</p>
+          {fimDate ? (
+            <p className="text-faint text-[11px] tnum mt-1">
+              {fmtData(inicioDate)} → {fmtData(fimDate)}
+            </p>
+          ) : null}
         </div>
         <button onClick={apagar} aria-label="apagar" className="text-faint hover:text-terracota active:scale-90 shrink-0 p-1">
           <Trash2 size={14} strokeWidth={1.4} />
         </button>
       </div>
 
-      {progresso ? <ProgressoView p={progresso} /> : (
+      {progresso ? <ProgressoView p={progresso} inicio={inicioDate} fim={fimDate} /> : (
         <p className="text-faint text-[11.5px] italic">sem tracking automático · diz à coach para adicionar números (ex: &ldquo;de X para Y em Zd&rdquo;).</p>
       )}
     </article>
   )
 }
 
-function ProgressoView({ p }: { p: ProgressoObjectivo }) {
+function ProgressoView({ p, inicio, fim }: { p: ProgressoObjectivo; inicio: Date; fim: Date | null }) {
   const corStatus = p.status === 'no_caminho' ? 'text-oliva' : p.status === 'a_frente' ? 'text-ouro' : p.status === 'atrasada' ? 'text-terracota' : 'text-faint'
   const labelStatus = p.status === 'no_caminho' ? 'no caminho' : p.status === 'a_frente' ? 'à frente' : p.status === 'atrasada' ? 'atrasada' : 'sem dados'
   const querDescer = p.valorAlvoFinal !== null && p.valorInicial !== null && p.valorAlvoFinal < p.valorInicial
@@ -138,13 +151,13 @@ function ProgressoView({ p }: { p: ProgressoObjectivo }) {
       </div>
 
       {/* Gráfico */}
-      <Grafico p={p} />
+      <Grafico p={p} inicio={inicio} fim={fim} />
 
-      {/* Métricas */}
+      {/* Métricas · com datas */}
       <div className="grid grid-cols-3 gap-2 text-center">
-        <Mini label="dia" valor={`${p.diasDecorridos}/${p.diasTotais}`} />
-        <Mini label="restantes" valor={`${p.diasRestantes}d`} />
-        <Mini label="ritmo nec." valor={p.ritmoNecessario !== null ? `${p.ritmoNecessario > 0 ? '+' : ''}${p.ritmoNecessario.toFixed(2)}${p.unidade}/d` : '—'} />
+        <Mini label={`dia ${p.diasDecorridos}/${p.diasTotais}`} valor={inicio ? inicio.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' }) : '—'} />
+        <Mini label={`fim em ${p.diasRestantes}d`} valor={fim ? fim.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' }) : '—'} />
+        <Mini label="ritmo necessário" valor={p.ritmoNecessario !== null ? `${p.ritmoNecessario > 0 ? '+' : ''}${p.ritmoNecessario.toFixed(2)}${p.unidade}/d` : '—'} />
       </div>
 
       {/* Projecção */}
@@ -177,7 +190,7 @@ function Mini({ label, valor }: { label: string; valor: string }) {
   )
 }
 
-function Grafico({ p }: { p: ProgressoObjectivo }) {
+function Grafico({ p, inicio, fim }: { p: ProgressoObjectivo; inicio: Date; fim: Date | null }) {
   const w = 320
   const h = 120
   const padding = { top: 10, right: 10, bottom: 18, left: 32 }
@@ -195,11 +208,11 @@ function Grafico({ p }: { p: ProgressoObjectivo }) {
   const yMax = vMax + yPad
   const yRange = yMax - yMin
 
-  const inicio = new Date(p.trajectoria[0]?.date ?? new Date()).getTime()
-  const fim = new Date(p.trajectoria[p.trajectoria.length - 1]?.date ?? new Date()).getTime()
-  const tRange = fim - inicio || 1
+  const tInicio = new Date(p.trajectoria[0]?.date ?? new Date()).getTime()
+  const tFim = new Date(p.trajectoria[p.trajectoria.length - 1]?.date ?? new Date()).getTime()
+  const tRange = tFim - tInicio || 1
 
-  const x = (d: string) => padding.left + ((new Date(d).getTime() - inicio) / tRange) * chartW
+  const x = (d: string) => padding.left + ((new Date(d).getTime() - tInicio) / tRange) * chartW
   const y = (v: number) => padding.top + chartH - ((v - yMin) / yRange) * chartH
 
   // Linha trajectória
@@ -236,9 +249,16 @@ function Grafico({ p }: { p: ProgressoObjectivo }) {
         {/* labels eixo Y · vMin e vMax */}
         <text x={padding.left - 4} y={padding.top + 4} fontSize="9" fill="var(--ink-faint)" textAnchor="end">{yMax.toFixed(0)}</text>
         <text x={padding.left - 4} y={padding.top + chartH} fontSize="9" fill="var(--ink-faint)" textAnchor="end">{yMin.toFixed(0)}</text>
-        {/* labels eixo X · início e fim */}
-        <text x={padding.left} y={h - 4} fontSize="9" fill="var(--ink-faint)" textAnchor="start">início</text>
-        <text x={w - padding.right} y={h - 4} fontSize="9" fill="var(--ink-faint)" textAnchor="end">fim</text>
+        {/* labels eixo X · datas reais */}
+        <text x={padding.left} y={h - 4} fontSize="9" fill="var(--ink-faint)" textAnchor="start">
+          {inicio.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' })}
+        </text>
+        <text x={Math.min(w - padding.right - 18, Math.max(padding.left + 18, xHoje))} y={h - 4} fontSize="9" fill="var(--ouro)" textAnchor="middle">
+          hoje
+        </text>
+        <text x={w - padding.right} y={h - 4} fontSize="9" fill="var(--ink-faint)" textAnchor="end">
+          {fim ? fim.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' }) : 'fim'}
+        </text>
       </svg>
       <div className="flex items-center justify-center gap-4 text-[10px] mt-1 text-faint">
         <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-px bg-ouro" style={{ borderTop: '1px dashed var(--ouro)' }} />alvo</span>

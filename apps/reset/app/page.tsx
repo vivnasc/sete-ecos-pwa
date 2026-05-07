@@ -12,6 +12,7 @@ import SonoDetailCard from '@/components/SonoDetailCard'
 import PeriSintomasCard from '@/components/PeriSintomasCard'
 import MarcoCard from '@/components/MarcoCard'
 import PlanoResumoCard from '@/components/PlanoResumoCard'
+import CoachAlertasCard from '@/components/CoachAlertasCard'
 import CoachGreetingCard from '@/components/CoachGreetingCard'
 import QuickTools from '@/components/QuickTools'
 import SafeBlock from '@/components/SafeBlock'
@@ -145,6 +146,9 @@ export default function HomePage() {
 
       {/* PLANO · objectivos com progresso */}
       {pronto ? <SafeBlock nome="PlanoResumo"><PlanoResumoCard /></SafeBlock> : null}
+
+      {/* ALERTAS PROACTIVOS · a coach nota padrões e sugere */}
+      {pronto ? <SafeBlock nome="CoachAlertas"><CoachAlertasCard /></SafeBlock> : null}
 
       {pronto ? <SafeBlock nome="CoachGreeting"><CoachGreetingCard /></SafeBlock> : null}
 
