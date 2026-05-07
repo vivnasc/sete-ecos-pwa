@@ -32,6 +32,18 @@ function hidratarComTimeout(ms = 4000): Promise<void> {
   ])
 }
 
+// Verifica se há token guardado em localStorage · evita redirect para /login
+// quando getSession() ainda não respondeu (ligação lenta).
+function temTokenLocal(): boolean {
+  if (typeof window === 'undefined') return false
+  try {
+    const raw = localStorage.getItem('fenixfit:auth')
+    if (!raw) return false
+    const parsed = JSON.parse(raw)
+    return Boolean(parsed?.access_token || parsed?.currentSession?.access_token)
+  } catch { return false }
+}
+
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
@@ -63,12 +75,13 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       return
     }
 
-    // Hard timeout reduzido: 5s
+    // Hard timeout: 12s · em ligações lentas o getSession pode demorar.
+    // Mesmo que dispare, o redirect agora respeita o token em localStorage.
     const hardTimeout = setTimeout(() => {
       console.warn('[fenixfit] auth timeout · libertando app')
       setLoading(false)
       setHidratado(true)
-    }, 5000)
+    }, 12000)
 
     const init = async () => {
       try {
@@ -88,12 +101,15 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     }
     init()
 
-    const { data: sub } = sb.auth.onAuthStateChange((_event, sess) => {
+    const { data: sub } = sb.auth.onAuthStateChange((event, sess) => {
+      // INITIAL_SESSION: só actualiza se trouxer sessão · não sobrescreve a
+      // que já temos com null em race conditions.
+      if (event === 'INITIAL_SESSION' && !sess) return
       setSession(sess)
       if (sess) {
         setHidratado(false)
         hidratarComTimeout().finally(() => setHidratado(true))
-      } else {
+      } else if (event === 'SIGNED_OUT') {
         setHidratado(true)
       }
     })
@@ -115,7 +131,10 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     if (loading) return
     if (!configurado) return
     const publica = ROTAS_PUBLICAS.includes(pathname || '')
-    if (!session && !publica) router.replace('/login')
+    // Só redireciona para /login se não houver sessão actual E não houver token
+    // guardado · evita falsos logouts em ligações lentas e em navegação com
+    // full reload onde a sessão demora a hidratar.
+    if (!session && !temTokenLocal() && !publica) router.replace('/login')
     if (session && publica) router.replace('/')
   }, [session, loading, pathname, router, configurado])
 
