@@ -24,6 +24,14 @@ export function useAuth() {
 
 const ROTAS_PUBLICAS = ['/login', '/sobre']
 
+// Timeout para hidratação · se Supabase estiver lento ou falhar, app abre na mesma
+function hidratarComTimeout(ms = 8000): Promise<void> {
+  return Promise.race([
+    hidratarTudo().then(() => {}),
+    new Promise<void>(resolve => setTimeout(resolve, ms))
+  ])
+}
+
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
@@ -38,21 +46,44 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       setHidratado(true)
       return
     }
-    const sb = getSupabase()
+
+    let sb
+    try {
+      sb = getSupabase()
+    } catch (e) {
+      console.error('[fenixfit] supabase init falhou:', e)
+      setLoading(false)
+      setHidratado(true)
+      return
+    }
     if (!sb) {
       setLoading(false)
       setHidratado(true)
       return
     }
 
-    const init = async () => {
-      const { data } = await sb.auth.getSession()
-      setSession(data.session)
+    // Hard timeout: se nada acontecer em 10s, libera a app
+    const hardTimeout = setTimeout(() => {
+      console.warn('[fenixfit] auth timeout · libertando app')
       setLoading(false)
-      if (data.session) {
-        await hidratarTudo()
-      }
       setHidratado(true)
+    }, 10000)
+
+    const init = async () => {
+      try {
+        const { data } = await sb.auth.getSession()
+        setSession(data.session)
+        setLoading(false)
+        if (data.session) {
+          await hidratarComTimeout()
+        }
+      } catch (e) {
+        console.error('[fenixfit] auth init falhou:', e)
+        setLoading(false)
+      } finally {
+        clearTimeout(hardTimeout)
+        setHidratado(true)
+      }
     }
     init()
 
@@ -60,13 +91,16 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       setSession(sess)
       if (sess) {
         setHidratado(false)
-        hidratarTudo().finally(() => setHidratado(true))
+        hidratarComTimeout().finally(() => setHidratado(true))
       } else {
         setHidratado(true)
       }
     })
 
-    return () => { sub.subscription.unsubscribe() }
+    return () => {
+      clearTimeout(hardTimeout)
+      sub.subscription.unsubscribe()
+    }
   }, [configurado])
 
   useEffect(() => {
