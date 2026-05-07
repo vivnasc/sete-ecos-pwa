@@ -7,7 +7,6 @@ import BackButton from '@/components/BackButton'
 import {
   getTodosDias,
   getAlcoolRegistos,
-  getPesos,
   getJejuns,
   getCiclos,
   getMedidas,
@@ -18,12 +17,29 @@ import {
   variacaoPeso,
   streakAncoras,
   diasSemAlcool,
-  sonoMedio,
-  type DiaLog
+  sonoMedio
 } from '@/lib/storage'
 import { isoDate } from '@/lib/dates'
 
 type Mensagem = { role: 'user' | 'assistant'; content: string }
+
+const ABERTURA_KEY = 'fenixfit:coach-abertura'
+
+function getAberturaHoje(): { date: string; texto: string } | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = localStorage.getItem(ABERTURA_KEY)
+    if (!raw) return null
+    const data = JSON.parse(raw)
+    return data.date === isoDate() ? data : null
+  } catch {
+    return null
+  }
+}
+
+function saveAberturaHoje(texto: string): void {
+  localStorage.setItem(ABERTURA_KEY, JSON.stringify({ date: isoDate(), texto }))
+}
 
 const SUGESTOES_INICIAIS = [
   'Como estou esta semana?',
@@ -33,10 +49,87 @@ const SUGESTOES_INICIAIS = [
   'Como me preparo para a fase lútea?'
 ]
 
+function construirContexto(): string {
+  const dias = getTodosDias()
+  const ultimos7 = dias.slice(-7)
+  const linhas: string[] = []
+
+  linhas.push(`Hoje: ${isoDate()}`)
+  const dia = diaActualCiclo()
+  const fase = faseActualCiclo()
+  if (dia !== null && fase !== null) linhas.push(`Ciclo: dia ${dia}, fase ${nomeFase(fase)}`)
+
+  const peso = pesoUltimo()
+  if (peso !== null) {
+    const v = variacaoPeso()
+    linhas.push(`Peso actual: ${peso}kg · semana: ${v.semana ?? '?'}kg · total: ${v.total ?? '?'}kg`)
+  }
+
+  linhas.push(`Streak âncoras: ${streakAncoras()} dias`)
+  linhas.push(`Dias sem álcool: ${diasSemAlcool()}`)
+  const sm = sonoMedio()
+  if (sm !== null) linhas.push(`Sono médio 7d: ${sm}h`)
+
+  if (ultimos7.length > 0) {
+    linhas.push('')
+    linhas.push('ÚLTIMOS 7 DIAS:')
+    ultimos7.forEach(d => {
+      const a = ANCORAS.filter(x => d.ancoras[x.id]).length
+      const partes = [
+        `${d.date}: âncoras ${a}/7`,
+        d.sonoHoras !== null ? `sono ${d.sonoHoras}h` : '',
+        d.energia !== null ? `energia ${d.energia}/5` : '',
+        d.humor !== null ? `humor ${d.humor}/5` : ''
+      ].filter(Boolean)
+      linhas.push('· ' + partes.join(' · '))
+      if (d.notas) linhas.push(`  notas: ${d.notas.slice(0, 150)}`)
+    })
+  }
+
+  const alcool = getAlcoolRegistos().slice(0, 10)
+  if (alcool.length > 0) {
+    linhas.push('')
+    linhas.push('ÁLCOOL · últimos 10 registos:')
+    alcool.forEach(a => {
+      linhas.push(`· ${a.timestamp.slice(0, 10)} ${a.timestamp.slice(11, 16)} · ${a.decidiuBeber ? `${a.unidades}u` : 'não'} · ${a.emocao}${a.gatilho ? ` · "${a.gatilho.slice(0, 80)}"` : ''}`)
+    })
+  }
+
+  const jejuns = getJejuns().slice(-7)
+  if (jejuns.length > 0) {
+    linhas.push('')
+    linhas.push('JEJUM · últimos 7 dias:')
+    jejuns.forEach(j => {
+      linhas.push(`· ${j.date}: ${j.duracaoHoras ? j.duracaoHoras + 'h' : 'em curso'}${j.completou ? ' ✓' : ''}`)
+    })
+  }
+
+  const ciclos = getCiclos().slice(-3)
+  if (ciclos.length > 0) {
+    linhas.push('')
+    linhas.push('CICLO · últimos 3 períodos:')
+    ciclos.forEach(c => {
+      linhas.push(`· ${c.dataInicio}${c.duracaoCiclo ? ` (${c.duracaoCiclo}d)` : ''} · sintomas: ${c.sintomas.join(', ') || 'nenhum'}${c.cravings.length ? ` · cravings: ${c.cravings.join(', ')}` : ''}`)
+    })
+  }
+
+  const medidas = getMedidas().slice(-3)
+  if (medidas.length > 0) {
+    linhas.push('')
+    linhas.push('MEDIDAS · últimas 3:')
+    medidas.forEach(m => {
+      linhas.push(`· ${m.date}: cintura ${m.cintura ?? '?'}cm${m.peso ? `, peso ${m.peso}kg` : ''}`)
+    })
+  }
+
+  return linhas.join('\n')
+}
+
 export default function CoachPage() {
   const [mensagens, setMensagens] = useState<Mensagem[]>([])
   const [input, setInput] = useState('')
   const [carregando, setCarregando] = useState(false)
+  const [carregandoAbertura, setCarregandoAbertura] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
   const fimRef = useRef<HTMLDivElement>(null)
 
@@ -44,81 +137,39 @@ export default function CoachPage() {
     fimRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [mensagens, carregando])
 
-  const construirContexto = (): string => {
-    const dias = getTodosDias()
-    const ultimos7 = dias.slice(-7)
-    const linhas: string[] = []
-
-    linhas.push(`Hoje: ${isoDate()}`)
-    const dia = diaActualCiclo()
-    const fase = faseActualCiclo()
-    if (dia !== null && fase !== null) linhas.push(`Ciclo: dia ${dia}, fase ${nomeFase(fase)}`)
-
-    const peso = pesoUltimo()
-    if (peso !== null) {
-      const v = variacaoPeso()
-      linhas.push(`Peso actual: ${peso}kg · semana: ${v.semana ?? '?'}kg · total: ${v.total ?? '?'}kg`)
+  // Gerar abertura automática se ainda não houver para hoje
+  useEffect(() => {
+    const abertura = getAberturaHoje()
+    if (abertura) {
+      setMensagens([{ role: 'assistant', content: abertura.texto }])
+      setCarregandoAbertura(false)
+      return
     }
 
-    linhas.push(`Streak âncoras: ${streakAncoras()} dias`)
-    linhas.push(`Dias sem álcool: ${diasSemAlcool()}`)
-    const sm = sonoMedio()
-    if (sm !== null) linhas.push(`Sono médio 7d: ${sm}h`)
-
-    if (ultimos7.length > 0) {
-      linhas.push('')
-      linhas.push('ÚLTIMOS 7 DIAS:')
-      ultimos7.forEach(d => {
-        const a = ANCORAS.filter(x => d.ancoras[x.id]).length
-        const partes = [
-          `${d.date}: âncoras ${a}/7`,
-          d.sonoHoras !== null ? `sono ${d.sonoHoras}h` : '',
-          d.energia !== null ? `energia ${d.energia}/5` : '',
-          d.humor !== null ? `humor ${d.humor}/5` : ''
-        ].filter(Boolean)
-        linhas.push('· ' + partes.join(' · '))
-        if (d.notas) linhas.push(`  notas: ${d.notas.slice(0, 150)}`)
-      })
+    let cancelado = false
+    const gerarAbertura = async () => {
+      try {
+        const r = await fetch('/api/coach', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            abertura: true,
+            contexto: construirContexto()
+          })
+        })
+        if (!cancelado && r.ok) {
+          const json = await r.json()
+          if (json.texto) {
+            saveAberturaHoje(json.texto)
+            setMensagens([{ role: 'assistant', content: json.texto }])
+          }
+        }
+      } catch {}
+      if (!cancelado) setCarregandoAbertura(false)
     }
-
-    const alcool = getAlcoolRegistos().slice(0, 10)
-    if (alcool.length > 0) {
-      linhas.push('')
-      linhas.push('ÁLCOOL · últimos 10 registos:')
-      alcool.forEach(a => {
-        linhas.push(`· ${a.timestamp.slice(0, 10)} ${a.timestamp.slice(11, 16)} · ${a.decidiuBeber ? `${a.unidades}u` : 'não'} · ${a.emocao}${a.gatilho ? ` · "${a.gatilho.slice(0, 80)}"` : ''}`)
-      })
-    }
-
-    const jejuns = getJejuns().slice(-7)
-    if (jejuns.length > 0) {
-      linhas.push('')
-      linhas.push('JEJUM · últimos 7 dias:')
-      jejuns.forEach(j => {
-        linhas.push(`· ${j.date}: ${j.duracaoHoras ? j.duracaoHoras + 'h' : 'em curso'}${j.completou ? ' ✓' : ''}`)
-      })
-    }
-
-    const ciclos = getCiclos().slice(-3)
-    if (ciclos.length > 0) {
-      linhas.push('')
-      linhas.push('CICLO · últimos 3 períodos:')
-      ciclos.forEach(c => {
-        linhas.push(`· ${c.dataInicio}${c.duracaoCiclo ? ` (${c.duracaoCiclo}d)` : ''} · sintomas: ${c.sintomas.join(', ') || 'nenhum'}${c.cravings.length ? ` · cravings: ${c.cravings.join(', ')}` : ''}`)
-      })
-    }
-
-    const medidas = getMedidas().slice(-3)
-    if (medidas.length > 0) {
-      linhas.push('')
-      linhas.push('MEDIDAS · últimas 3:')
-      medidas.forEach(m => {
-        linhas.push(`· ${m.date}: cintura ${m.cintura ?? '?'}cm${m.peso ? `, peso ${m.peso}kg` : ''}`)
-      })
-    }
-
-    return linhas.join('\n')
-  }
+    gerarAbertura()
+    return () => { cancelado = true }
+  }, [])
 
   const enviar = async (texto: string) => {
     if (!texto.trim() || carregando) return
@@ -149,6 +200,8 @@ export default function CoachPage() {
     setCarregando(false)
   }
 
+  const semMensagens = mensagens.length === 0 && !carregandoAbertura
+
   return (
     <div className="space-y-6 animate-fade-in">
       <BackButton />
@@ -164,7 +217,17 @@ export default function CoachPage() {
         </p>
       </header>
 
-      {mensagens.length === 0 ? (
+      {/* Abertura a carregar */}
+      {carregandoAbertura ? (
+        <div className="card-feature flex items-center justify-center gap-2 py-6">
+          <span className="h-1.5 w-1.5 animate-breathe rounded-full bg-ouro" />
+          <span className="h-1.5 w-1.5 animate-breathe rounded-full bg-ouro" style={{ animationDelay: '0.3s' }} />
+          <span className="h-1.5 w-1.5 animate-breathe rounded-full bg-ouro" style={{ animationDelay: '0.6s' }} />
+          <span className="ml-3 label-soft">a coach está a olhar para os teus dados</span>
+        </div>
+      ) : null}
+
+      {semMensagens ? (
         <section className="card-feature space-y-3">
           <div className="flex items-center gap-2">
             <Sparkles size={14} strokeWidth={1.4} className="text-ouro" />
@@ -227,7 +290,7 @@ export default function CoachPage() {
                 enviar(input)
               }
             }}
-            placeholder="o que queres saber sobre ti?"
+            placeholder="responde · ou pergunta"
             rows={1}
             className="flex-1 resize-none border-0 bg-transparent px-2 py-2 text-[14px] focus:outline-none"
             style={{ minHeight: '40px', maxHeight: '120px' }}
@@ -244,7 +307,7 @@ export default function CoachPage() {
       </section>
 
       <p className="text-faint text-center text-[10px]">
-        a coach vê os teus dados · não guarda conversa · só nesta sessão
+        a coach vê os teus dados · pergunta-te · só nesta sessão
       </p>
     </div>
   )

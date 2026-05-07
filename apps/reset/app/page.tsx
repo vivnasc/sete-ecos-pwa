@@ -7,6 +7,7 @@ import SmartNow from '@/components/SmartNow'
 import AnchorChecklist from '@/components/AnchorChecklist'
 import JanelaTimer from '@/components/JanelaTimer'
 import MorningPanel from '@/components/MorningPanel'
+import CoachGreetingCard from '@/components/CoachGreetingCard'
 import { MANTRAS } from '@/lib/data'
 import {
   RESET_DAYS,
@@ -136,6 +137,9 @@ export default function HomePage() {
           </p>
         </section>
       ) : null}
+
+      {/* COACH · saudação do dia */}
+      {pronto && status === 'durante' ? <CoachGreetingCard /> : null}
 
       {/* PAINEL MATINAL · ferramentas perto */}
       {status === 'durante' ? <MorningPanel /> : null}

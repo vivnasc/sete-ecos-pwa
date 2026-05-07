@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowUpRight, Salad, Dumbbell, Sparkles, Pencil, Ruler, Settings, LogOut, Scale, Clock, Droplet, Activity, MessageCircle } from 'lucide-react'
+import { ArrowUpRight, Salad, Dumbbell, Sparkles, Pencil, Ruler, Settings, LogOut, Scale, Clock, Droplet, Activity, MessageCircle, Image as ImageIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { signOut } from '@/lib/auth'
 import { useRouter } from 'next/navigation'
@@ -40,7 +40,8 @@ export default function MaisPage() {
 
   const referencias = [
     { href: '/receitas', label: 'Comer', sub: 'keto · janela 9–19h', icon: Salad },
-    { href: '/treino', label: 'Treino', sub: '4× semana · 30min', icon: Dumbbell }
+    { href: '/treino', label: 'Treino', sub: '4× semana · 30min', icon: Dumbbell },
+    { href: '/logos', label: 'Marca', sub: '3 logos · escolhe um', icon: ImageIcon }
   ]
 
   return (

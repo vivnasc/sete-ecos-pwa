@@ -15,8 +15,11 @@ import {
   type Anomalia,
   type Projeccao
 } from '@/lib/scanner'
-import { isoDate, fromIso, formatarData } from '@/lib/dates'
+import { getTodosDias } from '@/lib/storage'
+import { isoDate, fromIso, formatarData, mesCurto } from '@/lib/dates'
 import BackButton from '@/components/BackButton'
+import HabitChains from '@/components/HabitChains'
+import TrendChart from '@/components/TrendChart'
 import { cn } from '@/lib/utils'
 
 export default function ScannerPage() {
@@ -26,6 +29,7 @@ export default function ScannerPage() {
   const [anomalias, setAnomalias] = useState<Anomalia[]>([])
   const [melhores, setMelhores] = useState<PontuacaoDia[]>([])
   const [projeccao, setProjeccao] = useState<Projeccao | null>(null)
+  const [pontuacaoSerie, setPontuacaoSerie] = useState<{ x: string; y: number }[]>([])
 
   useEffect(() => {
     const refresh = () => {
@@ -35,6 +39,18 @@ export default function ScannerPage() {
       setAnomalias(detectarAnomalias())
       setMelhores(melhoresDias(5))
       setProjeccao(projeccao14d())
+
+      // Série temporal de pontuação
+      const dias = getTodosDias().slice(-30)
+      const pontos = dias
+        .map(d => {
+          const p = pontuarDia(d.date)
+          if (!p) return null
+          const data = fromIso(d.date)
+          return { x: `${data.getDate()}${mesCurto(data).charAt(0)}`, y: p.total }
+        })
+        .filter((p): p is { x: string; y: number } => p !== null)
+      setPontuacaoSerie(pontos)
     }
     refresh()
     window.addEventListener('fenixfit:storage', refresh)
@@ -95,6 +111,19 @@ export default function ScannerPage() {
           regista pelo menos um dia para ver a pontuação.
         </div>
       )}
+
+      {/* TIMELINE PONTUAÇÃO */}
+      {pontuacaoSerie.length >= 3 ? (
+        <section className="space-y-2">
+          <span className="label-cap px-1">pontuação · 30 dias</span>
+          <TrendChart pontos={pontuacaoSerie} unidade="" cor="var(--ouro)" altura={140} vazio="ainda sem série" />
+        </section>
+      ) : null}
+
+      {/* HABIT CHAINS */}
+      <section className="space-y-2">
+        <HabitChains />
+      </section>
 
       {/* MÉDIA 7 DIAS */}
       {media7 !== null ? (

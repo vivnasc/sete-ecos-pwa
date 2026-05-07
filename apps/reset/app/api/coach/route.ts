@@ -30,7 +30,13 @@ REGRAS DE CONTEÚDO:
 - Se faltarem dados, di-lo: "ainda não tenho dados suficientes para responder."
 - Sugestões devem ser pequenas, executáveis, baseadas no que vês.
 - Lembra-a do plano dela quando relevante.
-- Reconhece quando ela está cansada. Cansada não é falhada.`
+- Reconhece quando ela está cansada. Cansada não é falhada.
+
+REGRAS DE INTERACÇÃO:
+- Termina sempre com uma pergunta concreta para ela pensar ou responder.
+- A pergunta deve ser específica aos dados (ex: "o que estava a acontecer no dia 18?", "o que muda se o jantar for às 18h em vez de 19h?").
+- Não perguntes "como te sentes?" genericamente.
+- Quando começares uma conversa nova (sem mensagens prévias), inicia com uma observação curta dos dados (1-2 frases) e fecha com a pergunta.`
 
 export async function POST(request: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY
@@ -38,15 +44,25 @@ export async function POST(request: Request) {
     return Response.json({ error: 'ANTHROPIC_API_KEY não configurada' }, { status: 500 })
   }
 
-  let body: { mensagens: Array<{ role: 'user' | 'assistant'; content: string }>; contexto: string }
+  let body: { mensagens?: Array<{ role: 'user' | 'assistant'; content: string }>; contexto: string; abertura?: boolean }
   try {
     body = await request.json()
   } catch {
     return Response.json({ error: 'JSON inválido' }, { status: 400 })
   }
 
-  if (!body.mensagens || body.mensagens.length === 0) {
-    return Response.json({ error: 'sem mensagens' }, { status: 400 })
+  // Modo abertura: sem mensagens prévias, gera observação inicial + pergunta
+  let mensagens: Array<{ role: 'user' | 'assistant'; content: string }>
+  if (body.abertura) {
+    mensagens = [{
+      role: 'user',
+      content: 'Olha para os meus dados e diz-me uma observação curta sobre como estou agora, e termina com uma pergunta para eu pensar.'
+    }]
+  } else {
+    if (!body.mensagens || body.mensagens.length === 0) {
+      return Response.json({ error: 'sem mensagens' }, { status: 400 })
+    }
+    mensagens = body.mensagens
   }
 
   try {
@@ -72,7 +88,7 @@ export async function POST(request: Request) {
             cache_control: { type: 'ephemeral' }
           }
         ],
-        messages: body.mensagens
+        messages: mensagens
       })
     })
 
