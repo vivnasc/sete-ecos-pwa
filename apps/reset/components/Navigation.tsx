@@ -32,6 +32,7 @@ export default function Navigation() {
             <li key={href} className="flex-1">
               <Link
                 href={href}
+                prefetch={false}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
                   'flex flex-col items-center gap-0.5 rounded-md py-2 transition-elegant active:scale-95',
