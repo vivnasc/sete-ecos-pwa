@@ -44,6 +44,7 @@ export type MedidaRegisto = {
   peso: number | null
   sentir: string
   mudou: string
+  fotoUrl: string | null
 }
 
 export type DesabafoEntry = {

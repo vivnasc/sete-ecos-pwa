@@ -128,7 +128,8 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       braco: m.braco !== null ? Number(m.braco) : null,
       peso: m.peso !== null ? Number(m.peso) : null,
       sentir: m.sentir ?? '',
-      mudou: m.mudou ?? ''
+      mudou: m.mudou ?? '',
+      fotoUrl: m.foto_frente_url ?? null
     }))
     {
       const local = read<MedidaRegisto[]>('medidas', [])
@@ -314,7 +315,8 @@ export async function syncMedida(m: MedidaRegisto): Promise<void> {
     braco: m.braco,
     peso: m.peso,
     sentir: m.sentir,
-    mudou: m.mudou
+    mudou: m.mudou,
+    foto_frente_url: m.fotoUrl
   })
 }
 
