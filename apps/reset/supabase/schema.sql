@@ -47,6 +47,12 @@ create table if not exists fenixfit_dias (
 alter table fenixfit_dias add column if not exists agua_copos int not null default 0;
 alter table fenixfit_dias add column if not exists suplementos text[] not null default '{}';
 alter table fenixfit_dias add column if not exists transito_intestinal text check (transito_intestinal in ('sim', 'nao') or transito_intestinal is null);
+alter table fenixfit_dias add column if not exists hora_deitar time;
+alter table fenixfit_dias add column if not exists qualidade_sono int check (qualidade_sono between 1 and 5);
+alter table fenixfit_dias add column if not exists acordou_vezes int;
+alter table fenixfit_dias add column if not exists sintomas_peri text[] not null default '{}';
+alter table fenixfit_dias add column if not exists steps int;
+alter table fenixfit_dias add column if not exists rhr int;
 
 create index if not exists fenixfit_dias_user_date on fenixfit_dias (user_id, date desc);
 

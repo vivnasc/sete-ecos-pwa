@@ -80,7 +80,13 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
         notas: d.notas ?? '',
         aguaCopos: d.agua_copos ?? 0,
         suplementos: d.suplementos ?? [],
-        transitoIntestinal: d.transito_intestinal ?? null
+        transitoIntestinal: d.transito_intestinal ?? null,
+        horaDeitar: d.hora_deitar ?? null,
+        qualidadeSono: d.qualidade_sono ?? null,
+        acordouVezes: d.acordou_vezes ?? null,
+        sintomasPeri: d.sintomas_peri ?? [],
+        steps: d.steps ?? null,
+        rhr: d.rhr ?? null
       }
     })
     write('dias', diasMap)
@@ -209,7 +215,13 @@ export async function syncDia(log: DiaLog): Promise<void> {
       notas: log.notas,
       agua_copos: log.aguaCopos,
       suplementos: log.suplementos,
-      transito_intestinal: log.transitoIntestinal
+      transito_intestinal: log.transitoIntestinal,
+      hora_deitar: log.horaDeitar,
+      qualidade_sono: log.qualidadeSono,
+      acordou_vezes: log.acordouVezes,
+      sintomas_peri: log.sintomasPeri,
+      steps: log.steps,
+      rhr: log.rhr
     },
     { onConflict: 'user_id,date' }
   )

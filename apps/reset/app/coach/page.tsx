@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Send, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Send, Sparkles, CheckCircle2, AlertCircle, Mic, MicOff } from 'lucide-react'
 import { ANCORAS } from '@/lib/data'
 import BackButton from '@/components/BackButton'
 import {
@@ -25,6 +25,7 @@ import {
 } from '@/lib/storage'
 import { isoDate } from '@/lib/dates'
 import { executeTool } from '@/lib/coachTools'
+import { useSpeechRecognition } from '@/lib/useSpeechRecognition'
 
 type ContentBlock =
   | { type: 'text'; text: string }
@@ -69,6 +70,10 @@ const TOOL_LABELS: Record<string, string> = {
   registar_agua: 'água registada',
   registar_suplemento: 'suplemento registado',
   registar_transito: 'trânsito registado',
+  registar_sono_detalhe: 'sono registado',
+  registar_sintoma_peri: 'sintoma registado',
+  registar_steps: 'passos registados',
+  registar_rhr: 'RHR registado',
   marcar_ancora: 'âncora marcada',
   consultar_dados: 'a consultar dados'
 }
@@ -97,12 +102,22 @@ function construirContexto(): string {
   const m = macrosDoDia()
   linhas.push(`Refeições hoje: ${m.refeicoes}× · ${Math.round(m.proteina)}g P · ${Math.round(m.carbo)}g C · ${Math.round(m.gordura)}g G`)
 
-  // Corpo · água, suplementos, trânsito
+  // Corpo · água, suplementos, trânsito, sono detalhe, sintomas peri
   const diaHoje = ultimos7[ultimos7.length - 1]
   if (diaHoje) {
     linhas.push(`Água hoje: ${diaHoje.aguaCopos}/8 copos`)
     if (diaHoje.suplementos.length > 0) linhas.push(`Suplementos: ${diaHoje.suplementos.join(', ')}`)
     if (diaHoje.transitoIntestinal !== null) linhas.push(`Trânsito: ${diaHoje.transitoIntestinal}`)
+    if (diaHoje.horaDeitar || diaHoje.qualidadeSono !== null || diaHoje.acordouVezes !== null) {
+      const partes: string[] = []
+      if (diaHoje.horaDeitar) partes.push(`deitou ${diaHoje.horaDeitar}`)
+      if (diaHoje.qualidadeSono !== null) partes.push(`qualidade ${diaHoje.qualidadeSono}/5`)
+      if (diaHoje.acordouVezes !== null) partes.push(`acordou ${diaHoje.acordouVezes}×`)
+      linhas.push(`Sono detalhe: ${partes.join(' · ')}`)
+    }
+    if (diaHoje.sintomasPeri.length > 0) linhas.push(`Sintomas peri hoje: ${diaHoje.sintomasPeri.join(', ')}`)
+    if (diaHoje.steps !== null) linhas.push(`Passos: ${diaHoje.steps}`)
+    if (diaHoje.rhr !== null) linhas.push(`RHR: ${diaHoje.rhr} bpm`)
   }
 
   const refHoje = getRefeicoesDoDia()
@@ -177,6 +192,19 @@ export default function CoachPage() {
   const [carregandoAbertura, setCarregandoAbertura] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
   const fimRef = useRef<HTMLDivElement>(null)
+
+  const voz = useSpeechRecognition({
+    lang: 'pt-PT',
+    onFim: (texto) => setInput(prev => (prev ? prev + ' ' : '') + texto)
+  })
+
+  // Enquanto está a ouvir, mostra parcial no input
+  useEffect(() => {
+    if (voz.ouvir && voz.parcial) {
+      // não escreve directamente para não interferir com o que o utilizador já tem
+      // o parcial é mostrado abaixo do input em separado
+    }
+  }, [voz.parcial, voz.ouvir])
 
   useEffect(() => {
     fimRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -366,6 +394,15 @@ export default function CoachPage() {
       {erro ? <div className="rounded-lg bg-terracota/10 p-3 text-[12px] text-terracota">{erro}</div> : null}
 
       <section className="sticky bottom-24 space-y-2">
+        {voz.ouvir && voz.parcial ? (
+          <div className="card-solid !p-2.5 text-[12.5px] italic text-soft">
+            {voz.parcial}
+            <span className="ml-1 inline-block h-3 w-px animate-pulse bg-ouro align-middle" />
+          </div>
+        ) : null}
+        {voz.erro ? (
+          <p className="text-faint text-center text-[10.5px] text-terracota">{voz.erro}</p>
+        ) : null}
         <div className="card-solid flex items-end gap-2 !p-2">
           <textarea
             value={input}
@@ -376,13 +413,27 @@ export default function CoachPage() {
                 enviar(input)
               }
             }}
-            placeholder="o que comeste · pesaste · sentiste"
+            placeholder={voz.ouvir ? 'a ouvir...' : 'o que comeste · pesaste · sentiste'}
             rows={1}
             className="flex-1 resize-none border-0 bg-transparent px-2 py-2 text-[14px] focus:outline-none"
             style={{ minHeight: '40px', maxHeight: '120px' }}
           />
+          {voz.suportado ? (
+            <button
+              onClick={() => voz.ouvir ? voz.parar() : voz.iniciar()}
+              disabled={carregando}
+              aria-label={voz.ouvir ? 'Parar voz' : 'Falar'}
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-elegant active:scale-95 disabled:opacity-30 ${
+                voz.ouvir
+                  ? 'bg-ouro text-creme animate-pulse dark:text-tinta'
+                  : 'bg-[var(--surface-soft)] text-soft hover:text-tinta dark:hover:text-creme'
+              }`}
+            >
+              {voz.ouvir ? <MicOff size={14} strokeWidth={1.6} /> : <Mic size={14} strokeWidth={1.6} />}
+            </button>
+          ) : null}
           <button
-            onClick={() => enviar(input)}
+            onClick={() => { if (voz.ouvir) voz.parar(); enviar(input) }}
             disabled={!input.trim() || carregando}
             aria-label="Enviar"
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-tinta text-creme transition-elegant active:scale-95 disabled:opacity-30 dark:bg-ouro dark:text-tinta"

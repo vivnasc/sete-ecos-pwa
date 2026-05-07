@@ -17,6 +17,12 @@ export type DiaLog = {
   aguaCopos: number
   suplementos: string[]
   transitoIntestinal: 'sim' | 'nao' | null
+  horaDeitar: string | null
+  qualidadeSono: number | null
+  acordouVezes: number | null
+  sintomasPeri: string[]
+  steps: number | null
+  rhr: number | null
 }
 
 export type AlcoolRegisto = {
@@ -132,7 +138,13 @@ export function getDia(date = isoDate()): DiaLog {
       ...existing,
       aguaCopos: existing.aguaCopos ?? 0,
       suplementos: existing.suplementos ?? [],
-      transitoIntestinal: existing.transitoIntestinal ?? null
+      transitoIntestinal: existing.transitoIntestinal ?? null,
+      horaDeitar: existing.horaDeitar ?? null,
+      qualidadeSono: existing.qualidadeSono ?? null,
+      acordouVezes: existing.acordouVezes ?? null,
+      sintomasPeri: existing.sintomasPeri ?? [],
+      steps: existing.steps ?? null,
+      rhr: existing.rhr ?? null
     }
   }
   return {
@@ -146,7 +158,13 @@ export function getDia(date = isoDate()): DiaLog {
     notas: '',
     aguaCopos: 0,
     suplementos: [],
-    transitoIntestinal: null
+    transitoIntestinal: null,
+    horaDeitar: null,
+    qualidadeSono: null,
+    acordouVezes: null,
+    sintomasPeri: [],
+    steps: null,
+    rhr: null
   }
 }
 

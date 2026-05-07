@@ -1,6 +1,6 @@
 # FénixFit · Estado e Contexto
 
-**Última actualização**: 7 maio 2026 (TIER -1 + parte do TIER 0 entregues)
+**Última actualização**: 7 maio 2026 (TIER -1 + maioria TIER 0 + voz entregues)
 **Branch actual**: `claude/monorepo-lifestyle-app-ZAA2E`
 **URL produção**: `https://sete-ecos-pwa.pages.dev/`
 **Deploy**: Cloudflare Pages (auto-deploy do branch acima)
@@ -171,12 +171,22 @@ create policy "refeicoes_owner" on fenixfit_refeicoes for all
 - Coach voice mode · TTS da abertura diária
 - Vista `/refeicoes` para ver/editar manualmente o que a coach registou
 
-### ✅ TIER 0 (parcial) · refeições + macros + corpo
+### ✅ Voz · entregue
+
+- `lib/useSpeechRecognition.ts` · hook com Web Speech API (pt-PT).
+- Botão de microfone no input da coach · push-to-talk · transcrição parcial em tempo real por baixo do input.
+- Trata erros de permissão e ausência de fala.
+- Ao parar, junta o transcrito ao input para revisar antes de enviar.
+- Funciona no Chrome/Edge desktop e mobile. iOS Safari ≥14.5.
+
+### ✅ TIER 0 (maior parte) · refeições + macros + corpo + sono + sintomas
 
 - Vista `/refeicoes` · navegação por dia, macros vs alvo (1500 kcal · 100g P · ≤25g C · 110g G), lista do dia, adicionar manualmente, apagar, histórico de dias.
 - Card de macros no Hoje (link para /refeicoes).
 - `WellnessQuickPanel` no Hoje · contador de água (0–8+), 4 suplementos toggle (magnésio, vit D, ómega-3, eletrólitos), trânsito sim/não.
-- Coach ganhou 3 tools novas: `registar_agua`, `registar_suplemento`, `registar_transito`. Diz "bebi 2 copos" ou "tomei o magnésio" e ela regista.
+- `SonoDetailCard` no Hoje · hora a que se deitou, horas dormidas, qualidade 1-5, vezes que acordou (Cris, sede, etc).
+- `PeriSintomasCard` no Hoje (só F/O) · 9 sintomas peri/menopausa: afrontamentos, suores nocturnos, brain fog, irritabilidade, ansiedade, fadiga, dores articulares, libido baixa, palpitações.
+- Coach ganhou 7 tools novas: `registar_agua`, `registar_suplemento`, `registar_transito`, `registar_sono_detalhe`, `registar_sintoma_peri`, `registar_steps`, `registar_rhr`. Diz "deitei à uma e meia, dormi 5h, acordei 3 vezes" e ela regista.
 - QuickTools no Hoje passou a ter Coach + Refeições no topo.
 - `fenixfit_dias` ganhou 3 colunas: `agua_copos`, `suplementos[]`, `transito_intestinal`.
 
@@ -185,6 +195,12 @@ create policy "refeicoes_owner" on fenixfit_refeicoes for all
 alter table fenixfit_dias add column if not exists agua_copos int not null default 0;
 alter table fenixfit_dias add column if not exists suplementos text[] not null default '{}';
 alter table fenixfit_dias add column if not exists transito_intestinal text check (transito_intestinal in ('sim','nao') or transito_intestinal is null);
+alter table fenixfit_dias add column if not exists hora_deitar time;
+alter table fenixfit_dias add column if not exists qualidade_sono int check (qualidade_sono between 1 and 5);
+alter table fenixfit_dias add column if not exists acordou_vezes int;
+alter table fenixfit_dias add column if not exists sintomas_peri text[] not null default '{}';
+alter table fenixfit_dias add column if not exists steps int;
+alter table fenixfit_dias add column if not exists rhr int;
 ```
 
 ### ⚠️ TIER 0 (resto) · ainda por fazer

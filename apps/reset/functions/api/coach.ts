@@ -167,6 +167,50 @@ const COACH_TOOLS = [
     }
   },
   {
+    name: 'registar_sono_detalhe',
+    description: 'Regista detalhes do sono da noite passada: hora a que se deitou, horas dormidas, qualidade 1-5, vezes que acordou. Usar quando ela disser "deitei à uma e meia, dormi 5h, acordei 3 vezes".',
+    input_schema: {
+      type: 'object',
+      properties: {
+        hora_deitar: { type: 'string', description: 'HH:MM' },
+        horas: { type: 'number' },
+        qualidade: { type: 'integer' },
+        acordou_vezes: { type: 'integer' }
+      },
+      required: []
+    }
+  },
+  {
+    name: 'registar_sintoma_peri',
+    description: 'Regista sintoma peri/menopausa: afrontamentos, suores_nocturnos, brain_fog, irritabilidade, ansiedade, fadiga, dores_articulares, libido_baixa, palpitacoes.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        teve: { type: 'boolean' }
+      },
+      required: ['id', 'teve']
+    }
+  },
+  {
+    name: 'registar_steps',
+    description: 'Regista passos do dia.',
+    input_schema: {
+      type: 'object',
+      properties: { steps: { type: 'integer' } },
+      required: ['steps']
+    }
+  },
+  {
+    name: 'registar_rhr',
+    description: 'Regista frequência cardíaca em repouso (bpm).',
+    input_schema: {
+      type: 'object',
+      properties: { rhr: { type: 'integer' } },
+      required: ['rhr']
+    }
+  },
+  {
     name: 'registar_agua',
     description: 'Adiciona ou define copos de água do dia. action=adicionar (default) adiciona; action=definir define o total.',
     input_schema: {

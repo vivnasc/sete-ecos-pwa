@@ -8,6 +8,8 @@ import AnchorChecklist from '@/components/AnchorChecklist'
 import JanelaTimer from '@/components/JanelaTimer'
 import MorningPanel from '@/components/MorningPanel'
 import WellnessQuickPanel from '@/components/WellnessQuickPanel'
+import SonoDetailCard from '@/components/SonoDetailCard'
+import PeriSintomasCard from '@/components/PeriSintomasCard'
 import CoachGreetingCard from '@/components/CoachGreetingCard'
 import QuickTools from '@/components/QuickTools'
 import SafeBlock from '@/components/SafeBlock'
@@ -276,6 +278,12 @@ export default function HomePage() {
 
       {/* CORPO · água, suplementos, trânsito */}
       {status === 'durante' ? <SafeBlock nome="WellnessQuickPanel"><WellnessQuickPanel /></SafeBlock> : null}
+
+      {/* SONO em detalhe */}
+      {status === 'durante' ? <SafeBlock nome="SonoDetail"><SonoDetailCard /></SafeBlock> : null}
+
+      {/* SINTOMAS peri (só F/O) */}
+      {status === 'durante' ? <SafeBlock nome="PeriSintomas"><PeriSintomasCard /></SafeBlock> : null}
 
       {/* MÉTRICAS */}
       {pronto && status === 'durante' ? (

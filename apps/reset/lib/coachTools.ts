@@ -139,6 +139,54 @@ export const COACH_TOOLS = [
     }
   },
   {
+    name: 'registar_sono_detalhe',
+    description: 'Regista detalhes do sono da noite passada: hora a que se deitou, horas dormidas, qualidade 1-5, quantas vezes acordou. Substitui registar_dia para sono.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        hora_deitar: { type: 'string', description: 'HH:MM' },
+        horas: { type: 'number', description: 'Total dormido' },
+        qualidade: { type: 'integer', description: '1 (péssimo) a 5 (óptimo)' },
+        acordou_vezes: { type: 'integer', description: 'Quantas vezes acordou' }
+      },
+      required: []
+    }
+  },
+  {
+    name: 'registar_sintoma_peri',
+    description: 'Regista um sintoma peri/menopausa do dia. IDs: afrontamentos, suores_nocturnos, brain_fog, irritabilidade, ansiedade, fadiga, dores_articulares, libido_baixa, palpitacoes. Aceita IDs novos.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        teve: { type: 'boolean' }
+      },
+      required: ['id', 'teve']
+    }
+  },
+  {
+    name: 'registar_steps',
+    description: 'Regista número de passos do dia (ex: do iPhone Health).',
+    input_schema: {
+      type: 'object',
+      properties: {
+        steps: { type: 'integer' }
+      },
+      required: ['steps']
+    }
+  },
+  {
+    name: 'registar_rhr',
+    description: 'Regista frequência cardíaca em repouso (RHR) em bpm.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        rhr: { type: 'integer', description: 'Batimentos por minuto em repouso' }
+      },
+      required: ['rhr']
+    }
+  },
+  {
     name: 'registar_agua',
     description: 'Adiciona ou define copos de água do dia. action=adicionar adiciona N copos; action=definir define o total.',
     input_schema: {
@@ -354,6 +402,55 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
       notas
     })
     return { ok: true, texto: `ciclo registado · início ${dataInicio}${fluxo ? ' · fluxo ' + fluxo : ''}${sintomas.length ? ' · sintomas: ' + sintomas.join(', ') : ''}` }
+  },
+
+  registar_sono_detalhe(input) {
+    const dia = getDia()
+    const horaDeitar = str(input.hora_deitar)
+    const horas = num(input.horas)
+    const qualidade = num(input.qualidade)
+    const acordouVezes = num(input.acordou_vezes)
+    if (horaDeitar) dia.horaDeitar = horaDeitar
+    if (horas !== null) dia.sonoHoras = horas
+    if (qualidade !== null) dia.qualidadeSono = Math.max(1, Math.min(5, Math.round(qualidade)))
+    if (acordouVezes !== null) dia.acordouVezes = Math.max(0, Math.round(acordouVezes))
+    saveDia(dia)
+    const partes: string[] = []
+    if (dia.horaDeitar) partes.push(`deitou ${dia.horaDeitar}`)
+    if (dia.sonoHoras !== null) partes.push(`${dia.sonoHoras}h`)
+    if (dia.qualidadeSono !== null) partes.push(`qualidade ${dia.qualidadeSono}/5`)
+    if (dia.acordouVezes !== null && dia.acordouVezes > 0) partes.push(`acordou ${dia.acordouVezes}×`)
+    return { ok: true, texto: `sono · ${partes.join(' · ') || 'sem alterações'}` }
+  },
+
+  registar_sintoma_peri(input) {
+    const id = str(input.id).toLowerCase().replace(/\s+/g, '_')
+    if (!id) return { ok: false, erro: 'id em falta' }
+    const teve = bool(input.teve)
+    const dia = getDia()
+    const tem = dia.sintomasPeri.includes(id)
+    if (teve && !tem) dia.sintomasPeri = [...dia.sintomasPeri, id]
+    if (!teve && tem) dia.sintomasPeri = dia.sintomasPeri.filter(s => s !== id)
+    saveDia(dia)
+    return { ok: true, texto: `${id.replace('_', ' ')}${teve ? ' ✓' : ' · desmarcado'} · ${dia.sintomasPeri.length} sintomas hoje` }
+  },
+
+  registar_steps(input) {
+    const steps = num(input.steps)
+    if (steps === null) return { ok: false, erro: 'steps inválido' }
+    const dia = getDia()
+    dia.steps = Math.max(0, Math.round(steps))
+    saveDia(dia)
+    return { ok: true, texto: `${dia.steps.toLocaleString('pt-PT')} passos hoje` }
+  },
+
+  registar_rhr(input) {
+    const rhr = num(input.rhr)
+    if (rhr === null) return { ok: false, erro: 'rhr inválido' }
+    const dia = getDia()
+    dia.rhr = Math.max(30, Math.min(150, Math.round(rhr)))
+    saveDia(dia)
+    return { ok: true, texto: `RHR ${dia.rhr} bpm` }
   },
 
   registar_agua(input) {
