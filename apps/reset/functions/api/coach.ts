@@ -1,8 +1,9 @@
+// Cloudflare Pages Function: /api/coach
 // Coach AI · conversa contextualizada com os dados da utilizadora
-// Edge runtime, fetch directo à API Anthropic, streaming
 
-export const runtime = 'edge'
-export const dynamic = 'force-dynamic'
+interface Env {
+  ANTHROPIC_API_KEY: string
+}
 
 const SYSTEM_PROMPT = `És uma coach calma, factual e profundamente conhecedora, em diálogo contínuo com a Vivianne.
 
@@ -27,31 +28,29 @@ REGRAS DE TOM:
 REGRAS DE CONTEÚDO:
 - Lê os dados que recebes. Identifica padrões factuais.
 - Quando ela perguntar "porquê estou X" — olha para os dados, não inventa.
-- Se faltarem dados, di-lo: "ainda não tenho dados suficientes para responder."
+- Se faltarem dados, di-lo.
 - Sugestões devem ser pequenas, executáveis, baseadas no que vês.
 - Lembra-a do plano dela quando relevante.
 - Reconhece quando ela está cansada. Cansada não é falhada.
 
 REGRAS DE INTERACÇÃO:
-- Termina sempre com uma pergunta concreta para ela pensar ou responder.
-- A pergunta deve ser específica aos dados (ex: "o que estava a acontecer no dia 18?", "o que muda se o jantar for às 18h em vez de 19h?").
-- Não perguntes "como te sentes?" genericamente.
-- Quando começares uma conversa nova (sem mensagens prévias), inicia com uma observação curta dos dados (1-2 frases) e fecha com a pergunta.`
+- Termina sempre com uma pergunta concreta.
+- A pergunta deve ser específica aos dados.
+- Quando começares conversa nova (sem mensagens prévias), inicia com observação curta dos dados (1-2 frases) e fecha com a pergunta.`
 
-export async function POST(request: Request) {
-  const apiKey = process.env.ANTHROPIC_API_KEY
+export const onRequestPost: PagesFunction<Env> = async (context) => {
+  const apiKey = context.env.ANTHROPIC_API_KEY
   if (!apiKey) {
     return Response.json({ error: 'ANTHROPIC_API_KEY não configurada' }, { status: 500 })
   }
 
   let body: { mensagens?: Array<{ role: 'user' | 'assistant'; content: string }>; contexto: string; abertura?: boolean }
   try {
-    body = await request.json()
+    body = await context.request.json() as typeof body
   } catch {
     return Response.json({ error: 'JSON inválido' }, { status: 400 })
   }
 
-  // Modo abertura: sem mensagens prévias, gera observação inicial + pergunta
   let mensagens: Array<{ role: 'user' | 'assistant'; content: string }>
   if (body.abertura) {
     mensagens = [{
@@ -77,16 +76,8 @@ export async function POST(request: Request) {
         model: 'claude-sonnet-4-6',
         max_tokens: 800,
         system: [
-          {
-            type: 'text',
-            text: SYSTEM_PROMPT,
-            cache_control: { type: 'ephemeral' }
-          },
-          {
-            type: 'text',
-            text: `DADOS RECENTES DA VIVIANNE:\n${body.contexto}`,
-            cache_control: { type: 'ephemeral' }
-          }
+          { type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } },
+          { type: 'text', text: `DADOS RECENTES DA VIVIANNE:\n${body.contexto}`, cache_control: { type: 'ephemeral' } }
         ],
         messages: mensagens
       })
@@ -97,11 +88,7 @@ export async function POST(request: Request) {
       return Response.json({ error: `anthropic ${r.status}: ${errBody.slice(0, 200)}` }, { status: 500 })
     }
 
-    const json = (await r.json()) as {
-      content: Array<{ type: string; text?: string }>
-      usage: { input_tokens: number; output_tokens: number; cache_creation_input_tokens?: number; cache_read_input_tokens?: number }
-    }
-
+    const json = (await r.json()) as { content: Array<{ type: string; text?: string }>; usage: unknown }
     const texto = json.content
       .filter(b => b.type === 'text')
       .map(b => b.text ?? '')

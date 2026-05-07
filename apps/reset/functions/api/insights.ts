@@ -1,8 +1,9 @@
-// Edge runtime compatível (Cloudflare Pages, Vercel Edge, Netlify Edge)
-// Não usa @anthropic-ai/sdk porque o SDK importa node:fs/path
+// Cloudflare Pages Function: /api/insights
+// Edge runtime nativo · sem next-on-pages
 
-export const runtime = 'edge'
-export const dynamic = 'force-dynamic'
+interface Env {
+  ANTHROPIC_API_KEY: string
+}
 
 const SYSTEM_PROMPT = `És uma coach calma e factual, em diálogo com a Vivianne — Precision Nutrition Level 1.
 
@@ -35,15 +36,15 @@ type DadosSemana = {
   medidas: Array<{ date: string; cintura: number | null; peso: number | null }>
 }
 
-export async function POST(request: Request) {
-  const apiKey = process.env.ANTHROPIC_API_KEY
+export const onRequestPost: PagesFunction<Env> = async (context) => {
+  const apiKey = context.env.ANTHROPIC_API_KEY
   if (!apiKey) {
     return Response.json({ error: 'ANTHROPIC_API_KEY não configurada' }, { status: 500 })
   }
 
   let dados: DadosSemana
   try {
-    dados = (await request.json()) as DadosSemana
+    dados = (await context.request.json()) as DadosSemana
   } catch {
     return Response.json({ error: 'JSON inválido' }, { status: 400 })
   }
@@ -66,15 +67,9 @@ export async function POST(request: Request) {
         model: 'claude-sonnet-4-6',
         max_tokens: 600,
         system: [
-          {
-            type: 'text',
-            text: SYSTEM_PROMPT,
-            cache_control: { type: 'ephemeral' }
-          }
+          { type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }
         ],
-        messages: [
-          { role: 'user', content: userContent }
-        ]
+        messages: [{ role: 'user', content: userContent }]
       })
     })
 
@@ -83,11 +78,7 @@ export async function POST(request: Request) {
       return Response.json({ error: `anthropic ${r.status}: ${errBody.slice(0, 200)}` }, { status: 500 })
     }
 
-    const json = (await r.json()) as {
-      content: Array<{ type: string; text?: string }>
-      usage: { input_tokens: number; output_tokens: number; cache_creation_input_tokens?: number; cache_read_input_tokens?: number }
-    }
-
+    const json = (await r.json()) as { content: Array<{ type: string; text?: string }>; usage: unknown }
     const texto = json.content
       .filter(b => b.type === 'text')
       .map(b => b.text ?? '')
@@ -96,16 +87,13 @@ export async function POST(request: Request) {
 
     return Response.json({ texto, usage: json.usage })
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'erro desconhecido'
-    return Response.json({ error: message }, { status: 500 })
+    return Response.json({ error: err instanceof Error ? err.message : 'erro' }, { status: 500 })
   }
 }
 
 function construirContexto(d: DadosSemana): string {
   const linhas: string[] = []
-  linhas.push(`Semana com início em ${d.weekStart}.`)
-  linhas.push('')
-  linhas.push('DIAS:')
+  linhas.push(`Semana com início em ${d.weekStart}.`, '', 'DIAS:')
   d.dias.forEach(dia => {
     const partes = [
       `${dia.date}:`,
@@ -120,26 +108,21 @@ function construirContexto(d: DadosSemana): string {
   })
 
   if (d.alcool.length > 0) {
-    linhas.push('')
-    linhas.push('ÁLCOOL:')
+    linhas.push('', 'ÁLCOOL:')
     d.alcool.forEach(a => {
       linhas.push(`· ${a.timestamp.slice(0, 10)} ${a.timestamp.slice(11, 16)} · ${a.decidiuBeber ? `${a.unidades}u` : 'não bebeu'} · ${a.emocao}${a.gatilho ? ` · "${a.gatilho.slice(0, 100)}"` : ''}`)
     })
   } else {
-    linhas.push('')
-    linhas.push('ÁLCOOL: nenhum registo esta semana.')
+    linhas.push('', 'ÁLCOOL: nenhum registo esta semana.')
   }
 
   if (d.medidas.length > 0) {
-    linhas.push('')
-    linhas.push('MEDIDAS:')
+    linhas.push('', 'MEDIDAS:')
     d.medidas.forEach(m => {
       linhas.push(`· ${m.date}: cintura ${m.cintura ?? '?'}cm${m.peso ? `, peso ${m.peso}kg` : ''}`)
     })
   }
 
-  linhas.push('')
-  linhas.push('Olha para estes dados. Diz-lhe o que vês.')
-
+  linhas.push('', 'Olha para estes dados. Diz-lhe o que vês.')
   return linhas.join('\n')
 }
