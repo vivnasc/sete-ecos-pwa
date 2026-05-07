@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react'
 import {
@@ -19,6 +19,14 @@ import { getDia, saveDia, toggleAncora, type DiaLog } from '@/lib/storage'
 import { cn } from '@/lib/utils'
 
 export default function DiarioPage() {
+  return (
+    <Suspense fallback={<div className="container-app pt-10"><p className="label-soft">a carregar</p></div>}>
+      <DiarioContent />
+    </Suspense>
+  )
+}
+
+function DiarioContent() {
   const params = useSearchParams()
   const queryDate = params.get('d')
   const [selecionada, setSelecionada] = useState<string>(queryDate ?? isoDate())

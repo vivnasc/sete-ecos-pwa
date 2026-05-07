@@ -7,6 +7,7 @@ import { AuthGate } from '@/components/AuthGate'
 import OnboardingGate from '@/components/OnboardingGate'
 import QuickLog from '@/components/QuickLog'
 import InstallPrompt from '@/components/InstallPrompt'
+import ErrorBoundary from '@/components/ErrorBoundary'
 import './globals.css'
 
 const fraunces = Fraunces({
@@ -53,17 +54,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt" className={`${fraunces.variable} ${inter.variable}`} suppressHydrationWarning>
       <body>
-        <ThemeProvider>
-          <AuthGate>
-            <OnboardingGate>
-              <main className="container-app pb-32 pt-4 sm:pt-8">{children}</main>
-              <Navigation />
-              <QuickLog />
-              <InstallPrompt />
-            </OnboardingGate>
-          </AuthGate>
-          <RegisterSW />
-        </ThemeProvider>
+        <ErrorBoundary>
+          <ThemeProvider>
+            <AuthGate>
+              <OnboardingGate>
+                <main className="container-app pb-32 pt-4 sm:pt-8">
+                  <ErrorBoundary>{children}</ErrorBoundary>
+                </main>
+                <Navigation />
+                <QuickLog />
+                <InstallPrompt />
+              </OnboardingGate>
+            </AuthGate>
+            <RegisterSW />
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   )
