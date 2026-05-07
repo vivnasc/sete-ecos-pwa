@@ -47,7 +47,7 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
     if (profileR.data) {
       const p = profileR.data
       const profile = {
-        nome: p.nome ?? 'Vivianne',
+        nome: p.nome ?? '',
         sexo: p.sexo ?? 'F',
         pesoInicial: p.peso_inicial !== null ? Number(p.peso_inicial) : null,
         cinturaInicial: p.cintura_inicial !== null ? Number(p.cintura_inicial) : null,

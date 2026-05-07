@@ -20,7 +20,7 @@ export type Profile = {
 const KEY = 'fenixfit:profile'
 
 const DEFAULT_PROFILE: Profile = {
-  nome: 'Vivianne',
+  nome: '',
   sexo: 'F',
   pesoInicial: null,
   cinturaInicial: null,

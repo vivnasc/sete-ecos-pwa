@@ -119,6 +119,40 @@ Sub-app dentro do monorepo `vivnasc/sete-ecos-pwa` (em `apps/reset/`).
 
 ## Plano em fases (próximas iterações)
 
+### ⚠️⚠️⚠️ TIER -1 · COACH CONVERSACIONAL COMO INTERFACE PRINCIPAL
+
+**Pedido da Vivianne: "QUERIA QUE A COACH ESTIVESSE MESMO À MÃO. ELA PODE REGISTAR POR MIM? SERIA BEM MAIS FÁCIL"**
+
+Em vez de a Vivianne ir a `/peso`, `/jejum`, `/diario`, `/alcool` e preencher formulários, ela **fala com a coach** e a coach regista por ela.
+
+**Exemplos:**
+- "comi 3 ovos mexidos com abacate e folhas, eram 9h" → coach regista refeição PA, marca âncora `pa_proteina` ✓
+- "pesei 72.4 hoje" → coach regista peso
+- "estou em pré com vontade de beber, tive um dia difícil no banco" → coach abre caderno do copo, regista emoção+gatilho, dá observação
+- "dormi 5h, Cris acordou 3 vezes" → coach regista sono e nota
+- "treinei pernas, 30min" → coach marca âncora `treino_feito` ✓
+
+**Implementação técnica:**
+1. **Tool use nativo do Claude API** · definir tools:
+   - `registar_peso(peso, cintura?, hora)`
+   - `registar_refeicao(tipo, descricao, hora, macros_estimados?)`
+   - `registar_alcool(emocao, gatilho, decidiu_beber, unidades?)`
+   - `registar_dia(sono, energia, humor, notas?)`
+   - `registar_jejum_inicio(hora)` / `registar_jejum_fim(hora)`
+   - `registar_ciclo(data_inicio, fluxo, sintomas)`
+   - `marcar_ancora(id, feita)`
+   - `consultar_dados(area, periodo)` — para coach ler sem expor tudo no prompt
+2. **Coach próxima/sempre à mão**:
+   - FAB grande do coach sempre visível (canto inferior, prioridade visual)
+   - OU mover coach para tab central da nav inferior (substituir Sinais?)
+   - OU input voz com botão flutuante (Web Speech API)
+3. **Confirmação natural**:
+   - "registei. peso 72.4 às 7h32. -0.3 desde ontem."
+   - "pequeno-almoço marcado. âncora 02 ✓. proteína estimada: 28g."
+4. **Voice input** (Web Speech API) · ditas em vez de escrever
+
+**Esta é a feature que transforma a app**. Em vez de 7 formulários para preencher, é UMA conversa onde tudo acontece.
+
 ### ⚠️ TIER 0 · GAPS BÁSICOS (CRÍTICO · pedido directo da Vivianne)
 
 **A app tem tracking de outcomes mas falta o tracking de inputs. Sem isto, não é uma app de nutrição completa.**
