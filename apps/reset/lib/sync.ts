@@ -5,6 +5,34 @@ import { getUser } from './auth'
 import type { DiaLog, AlcoolRegisto, MedidaRegisto, DesabafoEntry, InsightCache, PesoLog, JejumLog, CicloLog, CoachMensagem, Refeicao } from './storage'
 
 const PREFIX = 'fenixfit:'
+const SYNC_ERR_KEY = 'fenixfit:lastSyncError'
+
+function registarErroSync(area: string, err: unknown): void {
+  if (typeof window === 'undefined') return
+  const msg = err instanceof Error ? err.message : typeof err === 'object' && err && 'message' in err ? String((err as { message: unknown }).message) : 'erro desconhecido'
+  const data = { area, msg, at: new Date().toISOString() }
+  try {
+    localStorage.setItem(SYNC_ERR_KEY, JSON.stringify(data))
+    window.dispatchEvent(new CustomEvent('fenixfit:syncError', { detail: data }))
+  } catch {}
+  // eslint-disable-next-line no-console
+  console.warn(`[fenixfit sync ${area}]`, msg)
+}
+
+function limparErroSync(): void {
+  if (typeof window === 'undefined') return
+  localStorage.removeItem(SYNC_ERR_KEY)
+  window.dispatchEvent(new CustomEvent('fenixfit:syncError', { detail: null }))
+}
+
+export function getUltimoErroSync(): { area: string; msg: string; at: string } | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = localStorage.getItem(SYNC_ERR_KEY)
+    if (!raw) return null
+    return JSON.parse(raw)
+  } catch { return null }
+}
 
 function read<T>(key: string, fallback: T): T {
   if (typeof window === 'undefined') return fallback
@@ -260,7 +288,7 @@ export async function syncDia(log: DiaLog): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('fenixfit_dias').upsert(
+  const { error } = await sb.from('fenixfit_dias').upsert(
     {
       user_id: user.id,
       date: log.date,
@@ -283,6 +311,8 @@ export async function syncDia(log: DiaLog): Promise<void> {
     },
     { onConflict: 'user_id,date' }
   )
+  if (error) registarErroSync('dia', error)
+  else limparErroSync()
 }
 
 export async function syncAlcool(r: AlcoolRegisto): Promise<void> {
@@ -290,7 +320,7 @@ export async function syncAlcool(r: AlcoolRegisto): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('fenixfit_alcool').insert({
+  const { error } = await sb.from('fenixfit_alcool').insert({
     id: r.id,
     user_id: user.id,
     timestamp: r.timestamp,
@@ -299,6 +329,7 @@ export async function syncAlcool(r: AlcoolRegisto): Promise<void> {
     gatilho: r.gatilho,
     decidiu_beber: r.decidiuBeber
   })
+  if (error) registarErroSync('alcool', error)
 }
 
 export async function syncMedida(m: MedidaRegisto): Promise<void> {
@@ -306,7 +337,7 @@ export async function syncMedida(m: MedidaRegisto): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('fenixfit_medidas').insert({
+  const { error } = await sb.from('fenixfit_medidas').insert({
     id: m.id,
     user_id: user.id,
     date: m.date,
@@ -319,6 +350,7 @@ export async function syncMedida(m: MedidaRegisto): Promise<void> {
     mudou: m.mudou,
     foto_frente_url: m.fotoUrl
   })
+  if (error) registarErroSync('medida', error)
 }
 
 export async function syncDesabafo(d: DesabafoEntry): Promise<void> {
@@ -356,7 +388,7 @@ export async function syncPeso(p: PesoLog): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('fenixfit_peso').upsert(
+  const { error } = await sb.from('fenixfit_peso').upsert(
     {
       id: p.id,
       user_id: user.id,
@@ -368,6 +400,7 @@ export async function syncPeso(p: PesoLog): Promise<void> {
     },
     { onConflict: 'user_id,date' }
   )
+  if (error) registarErroSync('peso', error)
 }
 
 export async function syncJejum(j: JejumLog): Promise<void> {
@@ -375,7 +408,7 @@ export async function syncJejum(j: JejumLog): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('fenixfit_jejum').upsert(
+  const { error } = await sb.from('fenixfit_jejum').upsert(
     {
       id: j.id,
       user_id: user.id,
@@ -388,6 +421,7 @@ export async function syncJejum(j: JejumLog): Promise<void> {
     },
     { onConflict: 'user_id,date' }
   )
+  if (error) registarErroSync('jejum', error)
 }
 
 export async function syncCiclo(c: CicloLog): Promise<void> {
@@ -395,7 +429,7 @@ export async function syncCiclo(c: CicloLog): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('fenixfit_ciclo').upsert(
+  const { error } = await sb.from('fenixfit_ciclo').upsert(
     {
       id: c.id,
       user_id: user.id,
@@ -409,6 +443,7 @@ export async function syncCiclo(c: CicloLog): Promise<void> {
     },
     { onConflict: 'user_id,data_inicio' }
   )
+  if (error) registarErroSync('ciclo', error)
 }
 
 export async function syncCoachMensagem(m: CoachMensagem): Promise<void> {
@@ -416,13 +451,14 @@ export async function syncCoachMensagem(m: CoachMensagem): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('fenixfit_coach_chat').insert({
+  const { error } = await sb.from('fenixfit_coach_chat').insert({
     id: m.id,
     user_id: user.id,
     timestamp: m.timestamp,
     role: m.role,
     content: m.content
   })
+  if (error) registarErroSync('coach', error)
 }
 
 export async function syncRefeicao(r: Refeicao): Promise<void> {
@@ -430,7 +466,7 @@ export async function syncRefeicao(r: Refeicao): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('fenixfit_refeicoes').upsert({
+  const { error } = await sb.from('fenixfit_refeicoes').upsert({
     id: r.id,
     user_id: user.id,
     timestamp: r.timestamp,
@@ -443,6 +479,7 @@ export async function syncRefeicao(r: Refeicao): Promise<void> {
     contexto: r.contexto,
     sentir: r.sentir
   })
+  if (error) registarErroSync('refeicao', error)
 }
 
 export async function removeRefeicaoSync(id: string): Promise<void> {
@@ -458,7 +495,7 @@ export async function syncProfile(p: Record<string, unknown>): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  await sb.from('fenixfit_profile').upsert({
+  const { error } = await sb.from('fenixfit_profile').upsert({
     user_id: user.id,
     nome: p.nome,
     sexo: p.sexo,
@@ -477,6 +514,7 @@ export async function syncProfile(p: Record<string, unknown>): Promise<void> {
     metas: p.metas ?? null,
     modo_viagem: p.modoViagem ?? false
   })
+  if (error) registarErroSync('profile', error)
 }
 
 export function lastSyncTime(): string | null {
