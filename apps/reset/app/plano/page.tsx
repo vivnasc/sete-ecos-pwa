@@ -261,8 +261,18 @@ function NovoObjectivoSheet({ onClose, onSave }: { onClose: () => void; onSave: 
   const [prazoDias, setPrazoDias] = useState('60')
 
   const submit = () => {
-    if (!texto.trim()) return
-    adicionarObjectivo(texto.trim(), {
+    let textoFinal = texto.trim()
+    // Se a descrição está vazia, constrói uma a partir dos números
+    if (!textoFinal && tipo !== 'custom' && valorInicial && valorAlvo) {
+      const unidade = tipo === 'peso' ? 'kg' : tipo === 'cintura' ? 'cm' : tipo === 'sono' ? 'h' : tipo === 'proteina' ? 'g' : tipo === 'agua' ? 'copos' : tipo === 'alcool' ? 'u/sem' : tipo === 'treino' ? '×/sem' : ''
+      const verbo = Number(valorAlvo) < Number(valorInicial) ? 'baixar' : 'aumentar'
+      textoFinal = `${verbo} ${tipo} de ${valorInicial}${unidade} para ${valorAlvo}${unidade} em ${prazoDias || 60} dias`
+    }
+    if (!textoFinal) {
+      window.alert('escreve uma descrição ou preenche os números.')
+      return
+    }
+    adicionarObjectivo(textoFinal, {
       tipo,
       valorInicial: valorInicial ? Number(valorInicial) : undefined,
       valorAlvo: valorAlvo ? Number(valorAlvo) : undefined,
@@ -321,7 +331,7 @@ function NovoObjectivoSheet({ onClose, onSave }: { onClose: () => void; onSave: 
 
         <div className="mt-6 flex gap-2">
           <button onClick={onClose} className="btn-ghost flex-1">cancelar</button>
-          <button onClick={submit} disabled={!texto.trim()} className="btn-primary flex-1 disabled:opacity-40">guardar</button>
+          <button onClick={submit} disabled={!texto.trim() && (!valorInicial || !valorAlvo)} className="btn-primary flex-1 disabled:opacity-40">guardar</button>
         </div>
       </div>
     </div>

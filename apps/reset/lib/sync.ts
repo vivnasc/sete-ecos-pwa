@@ -510,6 +510,63 @@ export async function removeRefeicaoSync(id: string): Promise<void> {
   if (error) registarErroSync('refeicao-delete', error)
 }
 
+// Encontra refeições duplicadas (mesmo dia, mesmo tipo, descrição similar).
+// Não apaga · só agrupa para a UI mostrar.
+export type GrupoDuplicado = {
+  date: string
+  tipo: string
+  descricao: string
+  ids: string[]      // todos os IDs do grupo (incluindo o "original" no início)
+  manter: string     // ID a manter (o primeiro, mais antigo)
+  apagar: string[]   // IDs a apagar (os duplicados)
+}
+
+export function detectarDuplicadosRefeicoes(): GrupoDuplicado[] {
+  if (typeof window === 'undefined') return []
+  let lista: { id: string; timestamp: string; tipo: string; descricao: string }[]
+  try {
+    lista = JSON.parse(localStorage.getItem(PREFIX + 'refeicoes') ?? '[]')
+  } catch { return [] }
+
+  // Normaliza descrição: lowercase, sem acentos, sem palavras curtas
+  const normalizar = (s: string) => s
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9\s]/g, '')
+    .split(/\s+/)
+    .filter(w => w.length > 2)
+    .sort()
+    .join(' ')
+
+  const grupos = new Map<string, { id: string; timestamp: string }[]>()
+  lista.forEach(r => {
+    const date = r.timestamp.slice(0, 10)
+    const chave = `${date}|${r.tipo}|${normalizar(r.descricao)}`
+    const arr = grupos.get(chave) ?? []
+    arr.push({ id: r.id, timestamp: r.timestamp })
+    grupos.set(chave, arr)
+  })
+
+  const resultado: GrupoDuplicado[] = []
+  grupos.forEach((items, chave) => {
+    if (items.length < 2) return
+    const sorted = [...items].sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+    const [date, tipo, descNorm] = chave.split('|')
+    // Recupera descrição original do primeiro
+    const original = lista.find(r => r.id === sorted[0].id)
+    resultado.push({
+      date,
+      tipo,
+      descricao: original?.descricao ?? descNorm,
+      ids: sorted.map(s => s.id),
+      manter: sorted[0].id,
+      apagar: sorted.slice(1).map(s => s.id)
+    })
+  })
+  return resultado
+}
+
 export async function syncProfile(p: Record<string, unknown>): Promise<void> {
   const sb = getSupabase()
   if (!sb) return

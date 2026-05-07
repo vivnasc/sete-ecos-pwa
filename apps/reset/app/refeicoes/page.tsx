@@ -16,6 +16,7 @@ import {
 import { isoDate, horaLocal } from '@/lib/dates'
 import { getProfile } from '@/lib/profile'
 import { analisarFotoRefeicao } from '@/lib/fotoRefeicao'
+import { detectarDuplicadosRefeicoes, type GrupoDuplicado } from '@/lib/sync'
 
 const TIPOS: { id: RefeicaoTipo; label: string }[] = [
   { id: 'pa', label: 'pequeno-almoço' },
@@ -49,11 +50,26 @@ export default function RefeicoesPage() {
   const [estimando, setEstimando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
   const [analisandoFoto, setAnalisandoFoto] = useState(false)
+  const [duplicados, setDuplicados] = useState<GrupoDuplicado[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const refresh = () => {
     setLista(getRefeicoesDoDia(date))
     setMacros(macrosDoDia(date))
+    setDuplicados(detectarDuplicadosRefeicoes())
+  }
+
+  const limparDuplicados = (grupo: GrupoDuplicado) => {
+    if (!window.confirm(`apagar ${grupo.apagar.length} duplicado${grupo.apagar.length === 1 ? '' : 's'} de "${grupo.descricao.slice(0, 40)}"? mantém-se 1.`)) return
+    grupo.apagar.forEach(id => removeRefeicao(id))
+    refresh()
+  }
+
+  const limparTodosDuplicados = () => {
+    const total = duplicados.reduce((s, g) => s + g.apagar.length, 0)
+    if (!window.confirm(`apagar ${total} refeições duplicadas? mantém-se 1 de cada grupo.`)) return
+    duplicados.forEach(g => g.apagar.forEach(id => removeRefeicao(id)))
+    refresh()
   }
 
   useEffect(() => {
@@ -185,6 +201,35 @@ export default function RefeicoesPage() {
           <ArrowRight size={16} strokeWidth={1.4} />
         </button>
       </section>
+
+      {/* duplicados detectados */}
+      {duplicados.length > 0 ? (
+        <section className="card-solid space-y-2.5 border border-terracota/30">
+          <div className="flex items-baseline justify-between">
+            <span className="label-cap text-terracota">{duplicados.length} {duplicados.length === 1 ? 'grupo de duplicados' : 'grupos de duplicados'}</span>
+            <button onClick={limparTodosDuplicados} className="text-[10.5px] text-terracota hover:underline">
+              limpar todos
+            </button>
+          </div>
+          <p className="text-faint text-[10.5px] leading-relaxed">
+            a coach pode ter registado a mesma refeição mais de uma vez. mantemos 1 de cada grupo, apagamos os restantes.
+          </p>
+          <ul className="space-y-1.5">
+            {duplicados.slice(0, 5).map(g => (
+              <li key={`${g.date}|${g.tipo}|${g.manter}`} className="flex items-baseline justify-between gap-3 text-[12px]">
+                <div className="min-w-0 flex-1">
+                  <span className="text-soft truncate block">{g.descricao}</span>
+                  <span className="text-faint text-[10px]">{g.date} · {g.tipo} · {g.ids.length}×</span>
+                </div>
+                <button onClick={() => limparDuplicados(g)} className="text-[10.5px] text-terracota hover:underline shrink-0">
+                  limpar {g.apagar.length}
+                </button>
+              </li>
+            ))}
+            {duplicados.length > 5 ? <li className="text-faint text-[10px] text-center pt-1">+{duplicados.length - 5} mais</li> : null}
+          </ul>
+        </section>
+      ) : null}
 
       {/* macros do dia */}
       <section className="card-feature space-y-3">
