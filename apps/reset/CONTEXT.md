@@ -1,6 +1,6 @@
 # FénixFit · Estado e Contexto
 
-**Última actualização**: 7 maio 2026 (TIER -1 + TIER 0 + voz Siri-like + foto Vision + análise + marcos + travel mode + Apple Health import + email)
+**Última actualização**: 7 maio 2026 (auditoria · objectivos com tracking + alertas proactivos + datas reais no plano + erros amigáveis)
 **Branch actual**: `claude/monorepo-lifestyle-app-ZAA2E`
 **URL produção**: `https://sete-ecos-pwa.pages.dev/`
 **Deploy**: Cloudflare Pages (auto-deploy do branch acima)
@@ -286,12 +286,11 @@ alter table fenixfit_dias add column if not exists rhr int;
 10. **Ramadão mode** — janela alimentar adaptada
 11. **Notificações Web Push reais** — funcionar com app fechada
 
-## SQL pendente · consolidado
+## SQL pendente · consolidado (FINAL · 7 maio 2026)
 
-Aplicar uma vez no SQL editor do Supabase (todas idempotentes):
+Aplicar uma vez no SQL editor do Supabase (todas idempotentes · podes correr 100×):
 
 ```sql
--- v2.0 (todas as colunas novas até 7 maio 2026)
 alter table fenixfit_dias add column if not exists agua_copos int not null default 0;
 alter table fenixfit_dias add column if not exists suplementos text[] not null default '{}';
 alter table fenixfit_dias add column if not exists transito_intestinal text check (transito_intestinal in ('sim','nao') or transito_intestinal is null);
@@ -306,6 +305,7 @@ alter table fenixfit_profile add column if not exists metas jsonb;
 alter table fenixfit_profile add column if not exists modo_viagem boolean not null default false;
 alter table fenixfit_profile add column if not exists ancoras_activas text[] not null default '{}';
 alter table fenixfit_profile add column if not exists ancoras_custom jsonb not null default '[]';
+alter table fenixfit_profile add column if not exists objectivos jsonb not null default '[]';
 
 -- tabelas novas
 create table if not exists fenixfit_refeicoes (

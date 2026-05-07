@@ -8,6 +8,7 @@ import { construirContexto } from '@/lib/coachContext'
 import { executeTool } from '@/lib/coachTools'
 import { saveCoachMensagem, addRefeicao } from '@/lib/storage'
 import { analisarFotoRefeicao } from '@/lib/fotoRefeicao'
+import { erroAmigavel } from '@/lib/erros'
 import { isoDate } from '@/lib/dates'
 
 type ContentBlock =
@@ -159,7 +160,7 @@ export default function VoiceModeOverlay({ aberto, onFechar }: { aberto: boolean
         setEstado('pronto')
       }
     } catch (err) {
-      setErro(err instanceof Error ? err.message : 'erro a analisar foto')
+      setErro(erroAmigavel(err))
       setEstado('pronto')
     }
     setAnalisandoFoto(false)
@@ -205,7 +206,7 @@ export default function VoiceModeOverlay({ aberto, onFechar }: { aberto: boolean
         })
         const json = await r.json()
         if (!r.ok) {
-          setErro(json.error ?? 'erro')
+          setErro(erroAmigavel(json.error ?? 'erro'))
           setEstado('pronto')
           return
         }
@@ -254,7 +255,7 @@ export default function VoiceModeOverlay({ aberto, onFechar }: { aberto: boolean
         setEstado('pronto')
       }
     } catch (e) {
-      setErro(e instanceof Error ? e.message : 'erro de rede')
+      setErro(erroAmigavel(e))
       setEstado('pronto')
     }
   }
