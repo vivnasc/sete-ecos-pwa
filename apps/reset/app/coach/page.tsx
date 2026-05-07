@@ -64,6 +64,7 @@ const TOOL_LABELS: Record<string, string> = {
   definir_metas: 'metas ajustadas',
   sugerir_metas: 'a calcular sugestão',
   analisar_padroes: 'a analisar padrões',
+  gerar_lista_compras: 'lista de compras',
   consultar_dados: 'a consultar dados'
 }
 

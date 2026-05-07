@@ -42,6 +42,12 @@ function getRefeicoesNoIntervalo(desdeIso: string): Refeicao[] {
   return getRefeicoes().filter(r => r.timestamp >= desdeIso)
 }
 
+function prevDate(d: string): string {
+  const dt = new Date(d)
+  dt.setDate(dt.getDate() - 1)
+  return dt.toISOString().slice(0, 10)
+}
+
 // ===== SCHEMAS (enviados ao Claude) =====
 
 export const COACH_TOOLS = [
@@ -258,14 +264,26 @@ export const COACH_TOOLS = [
   },
   {
     name: 'analisar_padroes',
-    description: 'Devolve padrões alimentares, sono, suplementação, sintomas peri etc dos últimos N dias. Usa antes de dar recomendações para basear no que vês. Áreas: alimentos_frequentes, macros_media, nutrientes, sono_padrao, sintomas_padrao, suplementos_padrao, alcool_padrao, peso_tendencia, tudo.',
+    description: 'Devolve padrões dos últimos N dias para basear recomendações. Áreas: alimentos_frequentes, macros_media, nutrientes, sono_padrao, sintomas_padrao, suplementos_padrao, alcool_padrao, peso_tendencia, correlacoes, comparar_semanas, tudo. correlacoes deteta ligações entre álcool/sono/humor/sintomas. comparar_semanas mostra esta semana vs anterior.',
     input_schema: {
       type: 'object',
       properties: {
-        area: { type: 'string', enum: ['alimentos_frequentes', 'macros_media', 'nutrientes', 'sono_padrao', 'sintomas_padrao', 'suplementos_padrao', 'alcool_padrao', 'peso_tendencia', 'tudo'] },
+        area: { type: 'string', enum: ['alimentos_frequentes', 'macros_media', 'nutrientes', 'sono_padrao', 'sintomas_padrao', 'suplementos_padrao', 'alcool_padrao', 'peso_tendencia', 'correlacoes', 'comparar_semanas', 'tudo'] },
         dias: { type: 'integer', description: 'Janela em dias, default 14' }
       },
       required: ['area']
+    }
+  },
+  {
+    name: 'gerar_lista_compras',
+    description: 'Gera sugestão de lista de compras com base nas refeições mais frequentes dos últimos N dias. Quantidades estimadas para uma semana. Não impõe plano.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        dias_analise: { type: 'integer', description: 'Janela para analisar padrão · default 14' },
+        pessoas: { type: 'integer', description: 'Número de pessoas · default 1' }
+      },
+      required: []
     }
   },
   {
@@ -745,15 +763,187 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
       sinais.forEach(s => linhas.push('· ' + s))
     }
 
+    const fazCorrelacoes = () => {
+      const ds = getTodosDias().filter(d => d.date >= desdeIso.slice(0, 10))
+      const al = getAlcoolRegistos().filter(a => a.timestamp >= desdeIso)
+      if (ds.length < 5) { linhas.push('correlações: dados insuficientes (mínimo 5 dias)'); return }
+      // Map álcool por dia
+      const alcoolPorDia = new Map<string, number>()
+      al.filter(a => a.decidiuBeber).forEach(a => {
+        const d = a.timestamp.slice(0, 10)
+        alcoolPorDia.set(d, (alcoolPorDia.get(d) ?? 0) + a.unidades)
+      })
+      const linhasC: string[] = []
+      // Álcool → sono próximo dia
+      const paresAlcoolSono: { alcool: number; sono: number | null }[] = []
+      ds.forEach(d => {
+        const alcoolOntem = alcoolPorDia.get(prevDate(d.date)) ?? 0
+        if (d.sonoHoras !== null) paresAlcoolSono.push({ alcool: alcoolOntem, sono: d.sonoHoras })
+      })
+      const comAlcool = paresAlcoolSono.filter(p => p.alcool > 0)
+      const semAlcool = paresAlcoolSono.filter(p => p.alcool === 0)
+      if (comAlcool.length >= 2 && semAlcool.length >= 2) {
+        const sonoCom = comAlcool.reduce((s, p) => s + (p.sono ?? 0), 0) / comAlcool.length
+        const sonoSem = semAlcool.reduce((s, p) => s + (p.sono ?? 0), 0) / semAlcool.length
+        const delta = sonoCom - sonoSem
+        linhasC.push(`álcool → sono: noites a seguir a beber dormiste ${sonoCom.toFixed(1)}h, sem álcool ${sonoSem.toFixed(1)}h (delta ${delta > 0 ? '+' : ''}${delta.toFixed(1)}h)`)
+      }
+      // Sono → humor
+      const paresSonoHumor = ds.filter(d => d.sonoHoras !== null && d.humor !== null)
+      if (paresSonoHumor.length >= 5) {
+        const sonoBaixo = paresSonoHumor.filter(d => (d.sonoHoras ?? 0) < 6)
+        const sonoBom = paresSonoHumor.filter(d => (d.sonoHoras ?? 0) >= 7)
+        if (sonoBaixo.length >= 2 && sonoBom.length >= 2) {
+          const humorMau = sonoBaixo.reduce((s, d) => s + (d.humor ?? 0), 0) / sonoBaixo.length
+          const humorBom = sonoBom.reduce((s, d) => s + (d.humor ?? 0), 0) / sonoBom.length
+          linhasC.push(`sono → humor: <6h dormido = humor ${humorMau.toFixed(1)}/5; ≥7h = humor ${humorBom.toFixed(1)}/5`)
+        }
+      }
+      // Sintomas peri ↔ álcool
+      const sintomasComAlcool: number[] = []
+      const sintomasSemAlcool: number[] = []
+      ds.forEach(d => {
+        const teveAlcoolOntem = (alcoolPorDia.get(prevDate(d.date)) ?? 0) > 0
+        if (teveAlcoolOntem) sintomasComAlcool.push(d.sintomasPeri.length)
+        else sintomasSemAlcool.push(d.sintomasPeri.length)
+      })
+      if (sintomasComAlcool.length >= 2 && sintomasSemAlcool.length >= 2) {
+        const a = sintomasComAlcool.reduce((s, n) => s + n, 0) / sintomasComAlcool.length
+        const b = sintomasSemAlcool.reduce((s, n) => s + n, 0) / sintomasSemAlcool.length
+        if (Math.abs(a - b) >= 0.5) {
+          linhasC.push(`álcool → sintomas peri: a seguir a beber ${a.toFixed(1)} sintomas, sem ${b.toFixed(1)}`)
+        }
+      }
+      // Magnésio → sono
+      const comMag = ds.filter(d => d.suplementos.includes('magnesio') && d.sonoHoras !== null)
+      const semMag = ds.filter(d => !d.suplementos.includes('magnesio') && d.sonoHoras !== null)
+      if (comMag.length >= 3 && semMag.length >= 3) {
+        const sCom = comMag.reduce((s, d) => s + (d.sonoHoras ?? 0), 0) / comMag.length
+        const sSem = semMag.reduce((s, d) => s + (d.sonoHoras ?? 0), 0) / semMag.length
+        if (Math.abs(sCom - sSem) >= 0.3) {
+          linhasC.push(`magnésio → sono: com ${sCom.toFixed(1)}h, sem ${sSem.toFixed(1)}h (delta ${(sCom - sSem).toFixed(1)})`)
+        }
+      }
+      if (linhasC.length === 0) linhas.push('correlações: nenhum padrão claro ainda · precisa mais dados')
+      else { linhas.push('correlações detectadas:'); linhasC.forEach(l => linhas.push('· ' + l)) }
+    }
+
+    const fazComparar = () => {
+      const hoje = new Date()
+      const fim = new Date(hoje); fim.setHours(0, 0, 0, 0)
+      const inicio = new Date(fim); inicio.setDate(inicio.getDate() - 7)
+      const inicioPrevia = new Date(inicio); inicioPrevia.setDate(inicioPrevia.getDate() - 7)
+      const fmtIso = (d: Date) => d.toISOString().slice(0, 10)
+      const dsTodos = getTodosDias()
+      const semAct = dsTodos.filter(d => d.date >= fmtIso(inicio) && d.date < fmtIso(fim))
+      const semPrev = dsTodos.filter(d => d.date >= fmtIso(inicioPrevia) && d.date < fmtIso(inicio))
+      if (semAct.length === 0 || semPrev.length === 0) { linhas.push('comparar semanas: dados insuficientes'); return }
+      const med = (arr: (number | null)[]) => {
+        const v = arr.filter((n): n is number => n !== null)
+        return v.length > 0 ? v.reduce((s, n) => s + n, 0) / v.length : null
+      }
+      const sonoAct = med(semAct.map(d => d.sonoHoras))
+      const sonoPrev = med(semPrev.map(d => d.sonoHoras))
+      const energiaAct = med(semAct.map(d => d.energia))
+      const energiaPrev = med(semPrev.map(d => d.energia))
+      const humorAct = med(semAct.map(d => d.humor))
+      const humorPrev = med(semPrev.map(d => d.humor))
+      const aguaAct = med(semAct.map(d => d.aguaCopos))
+      const aguaPrev = med(semPrev.map(d => d.aguaCopos))
+      // Álcool
+      const alAct = getAlcoolRegistos().filter(a => a.timestamp.slice(0, 10) >= fmtIso(inicio) && a.timestamp.slice(0, 10) < fmtIso(fim) && a.decidiuBeber)
+      const alPrev = getAlcoolRegistos().filter(a => a.timestamp.slice(0, 10) >= fmtIso(inicioPrevia) && a.timestamp.slice(0, 10) < fmtIso(inicio) && a.decidiuBeber)
+      const uAct = alAct.reduce((s, a) => s + a.unidades, 0)
+      const uPrev = alPrev.reduce((s, a) => s + a.unidades, 0)
+      // Refeições proteína média
+      const refTodas = getRefeicoesNoIntervalo(inicioPrevia.toISOString())
+      const protPorSem = (lista: Refeicao[], ini: string, fim: string): number => {
+        const r = lista.filter(x => x.timestamp.slice(0, 10) >= ini && x.timestamp.slice(0, 10) < fim)
+        const dias = new Set(r.map(x => x.timestamp.slice(0, 10)))
+        const total = r.reduce((s, x) => s + (x.proteinaG ?? 0), 0)
+        return dias.size > 0 ? total / dias.size : 0
+      }
+      const pAct = protPorSem(refTodas, fmtIso(inicio), fmtIso(fim))
+      const pPrev = protPorSem(refTodas, fmtIso(inicioPrevia), fmtIso(inicio))
+      const dl = (a: number | null, b: number | null) => {
+        if (a === null || b === null) return '—'
+        const d = a - b
+        return `${a.toFixed(1)} ← ${b.toFixed(1)} (${d > 0 ? '+' : ''}${d.toFixed(1)})`
+      }
+      linhas.push('comparar 7d actuais vs 7d anteriores:')
+      linhas.push(`· sono: ${dl(sonoAct, sonoPrev)} h`)
+      linhas.push(`· energia: ${dl(energiaAct, energiaPrev)} /5`)
+      linhas.push(`· humor: ${dl(humorAct, humorPrev)} /5`)
+      linhas.push(`· água: ${dl(aguaAct, aguaPrev)} copos`)
+      linhas.push(`· álcool: ${uAct}u ← ${uPrev}u (${uAct - uPrev > 0 ? '+' : ''}${uAct - uPrev})`)
+      linhas.push(`· proteína: ${dl(pAct, pPrev)} g/d`)
+    }
+
     if (area === 'alimentos_frequentes' || area === 'tudo') fazAlimentos()
     if (area === 'macros_media' || area === 'tudo') fazMacros()
     if (area === 'nutrientes' || area === 'tudo') fazNutrientes()
+    if (area === 'correlacoes' || area === 'tudo') fazCorrelacoes()
+    if (area === 'comparar_semanas' || area === 'tudo') fazComparar()
     if (area === 'sono_padrao' || area === 'tudo') fazSono()
     if (area === 'sintomas_padrao' || area === 'tudo') fazSintomas()
     if (area === 'suplementos_padrao' || area === 'tudo') fazSuplementos()
     if (area === 'alcool_padrao' || area === 'tudo') fazAlcool()
     if (area === 'peso_tendencia' || area === 'tudo') fazPeso()
     if (linhas.length === 0) return { ok: false, erro: `área desconhecida: ${area}` }
+    return { ok: true, texto: linhas.join('\n') }
+  },
+
+  gerar_lista_compras(input) {
+    const dias = num(input.dias_analise) ?? 14
+    const pessoas = num(input.pessoas) ?? 1
+    const desde = new Date()
+    desde.setDate(desde.getDate() - dias)
+    const refeicoes = getRefeicoesNoIntervalo(desde.toISOString())
+    if (refeicoes.length === 0) return { ok: false, erro: 'sem refeições registadas para gerar lista' }
+    // Conta palavras-chave
+    const ingredientes: Record<string, number> = {}
+    const ALVO: Array<[RegExp, string]> = [
+      [/ovo|ovos/, 'ovos'],
+      [/frango/, 'frango'],
+      [/peixe|salmão|sardinha|atum|cavala/, 'peixe'],
+      [/carne|bife|vaca|porco/, 'carne'],
+      [/abacate/, 'abacate'],
+      [/folhas|alface|rúcula|espinafre/, 'folhas verdes'],
+      [/brócol|couve|repolho/, 'couve/brócolos'],
+      [/courgette|curgete/, 'curgete'],
+      [/tomate/, 'tomate'],
+      [/cebola/, 'cebola'],
+      [/azeite/, 'azeite'],
+      [/manteiga/, 'manteiga'],
+      [/queijo/, 'queijo'],
+      [/iogurte/, 'iogurte grego'],
+      [/frutos secos|nozes|amêndoa/, 'frutos secos'],
+      [/azeitona/, 'azeitonas'],
+      [/matapa/, 'matapa'],
+      [/xima/, 'xima/farinha de milho']
+    ]
+    refeicoes.forEach(r => {
+      const desc = r.descricao.toLowerCase()
+      ALVO.forEach(([rx, nome]) => {
+        if (rx.test(desc)) ingredientes[nome] = (ingredientes[nome] ?? 0) + 1
+      })
+    })
+    const ndias = new Set(refeicoes.map(r => r.timestamp.slice(0, 10))).size
+    const linhas: string[] = []
+    linhas.push(`lista para 7 dias · base ${refeicoes.length} refeições / ${ndias}d · ${pessoas} pessoa${pessoas > 1 ? 's' : ''}:`)
+    Object.entries(ingredientes)
+      .sort((a, b) => b[1] - a[1])
+      .forEach(([nome, n]) => {
+        const proporcao = (n / refeicoes.length) * 7 * pessoas
+        let qtd = ''
+        if (nome === 'ovos') qtd = `${Math.ceil(proporcao * 2)} unidades`
+        else if (nome === 'frango' || nome === 'peixe' || nome === 'carne') qtd = `${Math.round(proporcao * 0.15 * 10) / 10} kg`
+        else if (nome === 'folhas verdes' || nome === 'couve/brócolos') qtd = `${Math.ceil(proporcao)} molhos/embalagens`
+        else if (nome === 'abacate') qtd = `${Math.ceil(proporcao)} unidades`
+        else qtd = `~${Math.ceil(proporcao / 2)} doses`
+        linhas.push(`· ${nome}: ${qtd}`)
+      })
+    if (Object.keys(ingredientes).length === 0) linhas.push('· (descrições demasiado vagas para sugerir quantidades · descreve com mais detalhe)')
     return { ok: true, texto: linhas.join('\n') }
   },
 

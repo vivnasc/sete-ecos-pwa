@@ -302,14 +302,26 @@ const COACH_TOOLS = [
   },
   {
     name: 'analisar_padroes',
-    description: 'Devolve padrões dos últimos N dias para basear recomendações. Áreas: alimentos_frequentes, macros_media, nutrientes, sono_padrao, sintomas_padrao, suplementos_padrao, alcool_padrao, peso_tendencia, tudo. Usa antes de dar recomendações. nutrientes inclui pistas sobre proteína baixa, falta de vegetais, ómega-3, suplementos irregulares, fibra, hidratação.',
+    description: 'Devolve padrões dos últimos N dias para basear recomendações. Áreas: alimentos_frequentes, macros_media, nutrientes, sono_padrao, sintomas_padrao, suplementos_padrao, alcool_padrao, peso_tendencia, correlacoes, comparar_semanas, tudo. correlacoes deteta ligações entre álcool/sono/humor/sintomas/magnésio. comparar_semanas mostra esta semana vs anterior.',
     input_schema: {
       type: 'object',
       properties: {
-        area: { type: 'string', enum: ['alimentos_frequentes', 'macros_media', 'nutrientes', 'sono_padrao', 'sintomas_padrao', 'suplementos_padrao', 'alcool_padrao', 'peso_tendencia', 'tudo'] },
+        area: { type: 'string', enum: ['alimentos_frequentes', 'macros_media', 'nutrientes', 'sono_padrao', 'sintomas_padrao', 'suplementos_padrao', 'alcool_padrao', 'peso_tendencia', 'correlacoes', 'comparar_semanas', 'tudo'] },
         dias: { type: 'integer' }
       },
       required: ['area']
+    }
+  },
+  {
+    name: 'gerar_lista_compras',
+    description: 'Gera lista de compras baseada nos padrões alimentares. Não impõe plano · sugere quantidades para 7 dias.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        dias_analise: { type: 'integer' },
+        pessoas: { type: 'integer' }
+      },
+      required: []
     }
   },
   {
