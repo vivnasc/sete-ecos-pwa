@@ -24,8 +24,8 @@ export function useAuth() {
 
 const ROTAS_PUBLICAS = ['/login', '/sobre']
 
-// Timeout para hidratação · se Supabase estiver lento ou falhar, app abre na mesma
-function hidratarComTimeout(ms = 8000): Promise<void> {
+// Timeout curto: 4s para hidratação, app não fica presa
+function hidratarComTimeout(ms = 4000): Promise<void> {
   return Promise.race([
     hidratarTudo().then(() => {}),
     new Promise<void>(resolve => setTimeout(resolve, ms))
@@ -36,6 +36,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [hidratado, setHidratado] = useState(false)
+  const [tempoEspera, setTempoEspera] = useState(0)
   const router = useRouter()
   const pathname = usePathname()
   const configurado = supabaseConfigurado()
@@ -62,12 +63,12 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       return
     }
 
-    // Hard timeout: se nada acontecer em 10s, libera a app
+    // Hard timeout reduzido: 5s
     const hardTimeout = setTimeout(() => {
       console.warn('[fenixfit] auth timeout · libertando app')
       setLoading(false)
       setHidratado(true)
-    }, 10000)
+    }, 5000)
 
     const init = async () => {
       try {
@@ -103,6 +104,13 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     }
   }, [configurado])
 
+  // Conta segundos de espera para mostrar botão de skip
+  useEffect(() => {
+    if (!loading) return
+    const i = setInterval(() => setTempoEspera(t => t + 1), 1000)
+    return () => clearInterval(i)
+  }, [loading])
+
   useEffect(() => {
     if (loading) return
     if (!configurado) return
@@ -120,10 +128,24 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   }
 
   if (loading) {
+    const forcarAbrir = () => {
+      setLoading(false)
+      setHidratado(true)
+    }
     return (
-      <div className="container-app flex min-h-[80vh] flex-col items-center justify-center gap-4">
+      <div className="container-app flex min-h-[80vh] flex-col items-center justify-center gap-6">
         <div className="h-2 w-2 animate-breathe rounded-full bg-ouro" />
-        <p className="label-soft">a abrir</p>
+        <p className="label-soft">a abrir{tempoEspera > 1 ? ` · ${tempoEspera}s` : ''}</p>
+        {tempoEspera >= 3 ? (
+          <div className="space-y-3 text-center animate-fade-in">
+            <p className="text-faint text-[12px] max-w-[280px] leading-relaxed">
+              está a demorar mais do que devia.
+            </p>
+            <button onClick={forcarAbrir} className="btn-primary text-[12px]">
+              continuar mesmo assim
+            </button>
+          </div>
+        ) : null}
       </div>
     )
   }

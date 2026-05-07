@@ -23,6 +23,7 @@ export default function OnboardingGate({ children }: { children: React.ReactNode
   const { configurado, session, hidratado } = useAuth()
   const [verificado, setVerificado] = useState(false)
   const [aberto, setAberto] = useState(false)
+  const [tempoEspera, setTempoEspera] = useState(0)
 
   useEffect(() => {
     // Em rotas públicas (/login), nada a verificar
@@ -41,6 +42,16 @@ export default function OnboardingGate({ children }: { children: React.ReactNode
     setVerificado(true)
   }, [configurado, session, hidratado])
 
+  // Conta segundos de espera para botão de skip
+  useEffect(() => {
+    if (verificado) {
+      setTempoEspera(0)
+      return
+    }
+    const i = setInterval(() => setTempoEspera(t => t + 1), 1000)
+    return () => clearInterval(i)
+  }, [verificado])
+
   // Re-check sempre que o profile muda (sync chega depois)
   useEffect(() => {
     const onUpdate = () => {
@@ -51,11 +62,35 @@ export default function OnboardingGate({ children }: { children: React.ReactNode
     return () => window.removeEventListener('fenixfit:profile', onUpdate)
   }, [])
 
+  // Auto-skip após 4s de espera
+  useEffect(() => {
+    if (tempoEspera >= 4 && !verificado) {
+      const p = getProfile()
+      setAberto(!p.onboardingCompleto)
+      setVerificado(true)
+    }
+  }, [tempoEspera, verificado])
+
   if (!verificado) {
+    const forcarAbrir = () => {
+      const p = getProfile()
+      setAberto(!p.onboardingCompleto)
+      setVerificado(true)
+    }
     return (
-      <div className="container-app flex min-h-[80vh] flex-col items-center justify-center gap-4">
+      <div className="container-app flex min-h-[80vh] flex-col items-center justify-center gap-6">
         <div className="h-2 w-2 animate-breathe rounded-full bg-ouro" />
-        <p className="label-soft">a sincronizar</p>
+        <p className="label-soft">a sincronizar{tempoEspera > 1 ? ` · ${tempoEspera}s` : ''}</p>
+        {tempoEspera >= 3 ? (
+          <div className="space-y-3 text-center animate-fade-in">
+            <p className="text-faint text-[12px] max-w-[280px] leading-relaxed">
+              os dados estão lentos. podes continuar.
+            </p>
+            <button onClick={forcarAbrir} className="btn-primary text-[12px]">
+              continuar
+            </button>
+          </div>
+        ) : null}
       </div>
     )
   }
