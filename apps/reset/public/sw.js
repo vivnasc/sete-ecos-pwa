@@ -1,17 +1,18 @@
-// Reset · service worker mínimo
-// app-shell offline + fetch network-first para HTML
+// FénixFit · service worker minimal
+// Estratégia: network-first para tudo (zero cache aggressive)
+// Evita problema de chunks antigos quando deploy novo acontece
 
-const VERSION = 'reset-v1'
-const SHELL = ['/manifest.json']
+const VERSION = 'fenixfit-v3'
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()))
+  // Activar imediatamente, sem esperar
+  self.skipWaiting()
 })
 
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== VERSION).map(k => caches.delete(k)))
+      Promise.all(keys.map(k => caches.delete(k)))
     ).then(() => self.clients.claim())
   )
 })
@@ -22,19 +23,18 @@ self.addEventListener('fetch', e => {
   const url = new URL(request.url)
   if (url.pathname.startsWith('/api/')) return
 
-  if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
-    e.respondWith(
-      fetch(request)
-        .then(res => {
-          const copy = res.clone()
-          caches.open(VERSION).then(c => c.put(request, copy))
-          return res
-        })
-        .catch(() => caches.match(request).then(r => r || caches.match('/')))
-    )
-    return
+  // Network-only para JS/CSS/HTML · evita servir versões antigas
+  if (
+    url.pathname.includes('/_next/') ||
+    url.pathname.endsWith('.js') ||
+    url.pathname.endsWith('.css') ||
+    request.mode === 'navigate' ||
+    request.headers.get('accept')?.includes('text/html')
+  ) {
+    return // deixa browser fazer fetch normal
   }
 
+  // Para imagens e fonts: cache opportunístico
   e.respondWith(
     caches.match(request).then(cached => {
       if (cached) return cached
@@ -44,7 +44,7 @@ self.addEventListener('fetch', e => {
           caches.open(VERSION).then(c => c.put(request, copy))
         }
         return res
-      })
+      }).catch(() => cached || new Response('', { status: 503 }))
     })
   )
 })
