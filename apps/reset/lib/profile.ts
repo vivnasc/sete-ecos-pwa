@@ -9,6 +9,14 @@ export type Metas = {
   gorduraG: number | null
 }
 
+// Objectivos pessoais · texto livre que a coach lê e usa para te orientar.
+// Ex: "perder 3kg em 60 dias", "dormir 7h em média", "reduzir álcool a 1×/sem".
+export type Objectivo = {
+  id: string
+  texto: string
+  criadoEm: string // ISO
+}
+
 export type Profile = {
   nome: string
   sexo: 'F' | 'M' | 'O'
@@ -28,6 +36,7 @@ export type Profile = {
   ancorasCustom: Ancora[]
   metas: Metas
   modoViagem: boolean
+  objectivos: Objectivo[]
 }
 
 const KEY = 'fenixfit:profile'
@@ -57,7 +66,8 @@ const DEFAULT_PROFILE: Profile = {
   ancorasActivas: ANCORAS_DEFAULT_IDS,
   ancorasCustom: [],
   metas: DEFAULT_METAS,
-  modoViagem: false
+  modoViagem: false,
+  objectivos: []
 }
 
 // Devolve as âncoras realmente activas (combina pool + custom, filtra por IDs activos)
@@ -122,4 +132,24 @@ export function getMetasActivas(): Metas | null {
   const p = getProfile()
   if (p.metas.calorias === null && p.metas.proteinaG === null) return null
   return p.metas
+}
+
+export function getObjectivos(): Objectivo[] {
+  return getProfile().objectivos ?? []
+}
+
+export function adicionarObjectivo(texto: string): Objectivo {
+  const novo: Objectivo = {
+    id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2),
+    texto: texto.trim(),
+    criadoEm: new Date().toISOString()
+  }
+  const lista = [...getObjectivos(), novo]
+  saveProfile({ objectivos: lista })
+  return novo
+}
+
+export function removerObjectivo(id: string): void {
+  const lista = getObjectivos().filter(o => o.id !== id)
+  saveProfile({ objectivos: lista })
 }

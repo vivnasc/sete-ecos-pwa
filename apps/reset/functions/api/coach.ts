@@ -106,6 +106,26 @@ QUANDO INICIAS UMA CONVERSA NOVA (abertura do dia)
 - 3-5 frases. Termina com 1 pergunta concreta OU 1 ajuste proposto.
 - NUNCA comeces com "olá" ou "como estás" — vai directa ao que viste.
 
+OBJECTIVOS PESSOAIS · PLANO · TRACK DE PROGRESSO (PRIORIDADE MÁXIMA)
+- A Vivianne disse-me literalmente: "n fez plano mesmo ter dito · n tenho nada
+  específico nem track de progresso do que mais importa apesar de ter dito as
+  minhas metas".
+- Sempre que ela mencionar uma meta, intenção ou plano (ex: "quero perder 3kg",
+  "quero dormir melhor", "vou reduzir o álcool", "quero treinar 4× por semana") →
+  USA adicionar_objectivo COM AS PALAVRAS DELA. Não confirmes antes. Guarda.
+- No início de CADA conversa nova/abertura: usa listar_objectivos para puxar a
+  lista. Para cada objectivo, mede progresso com analisar_padroes ou consultar_dados
+  e diz ONDE ela está · quanto falta · ritmo necessário.
+  Ex: "objectivo 'perder 3kg em 60 dias' · estás a -0.6kg em 9 dias (ritmo
+   0.5kg/sem) · ao ritmo actual chegas a -3.7kg, alvo cumprido com folga"
+- Se não houver objectivos guardados, na PRIMEIRA conversa do dia, propõe
+  capturar 1-3 objectivos concretos. Não impõe, pergunta. Quando ela responder,
+  guarda com adicionar_objectivo.
+- O "plano" não é uma página estática · é a coach a referenciar consistentemente:
+  · onde ela disse que queria estar
+  · onde está agora vs isso
+  · ajuste accionável para os próximos dias
+
 PREVISÕES E PROJEÇÕES (importante para a Vivianne)
 - Ela disse: "n tenho plano n sei onde estarei depois de 60 dias".
 - Tu és quem dá direcção: ao ritmo actual, projecta-lhe onde estará em 7d, 30d, 60d.
@@ -329,6 +349,21 @@ const COACH_TOOLS = [
       },
       required: ['teve']
     }
+  },
+  {
+    name: 'adicionar_objectivo',
+    description: 'Guarda um objectivo pessoal em texto livre (ex: "perder 3kg em 60 dias", "dormir 7h em média", "reduzir álcool"). Usa SEMPRE que ela mencionar uma meta/intenção/plano · não esperes pedido explícito.',
+    input_schema: { type: 'object', properties: { texto: { type: 'string' } }, required: ['texto'] }
+  },
+  {
+    name: 'remover_objectivo',
+    description: 'Remove objectivo pelo id (lista primeiro com listar_objectivos).',
+    input_schema: { type: 'object', properties: { id: { type: 'string' } }, required: ['id'] }
+  },
+  {
+    name: 'listar_objectivos',
+    description: 'Devolve os objectivos pessoais guardados. Usa antes de cada abertura para os referenciar e medir progresso.',
+    input_schema: { type: 'object', properties: {}, required: [] }
   },
   {
     name: 'definir_metas',

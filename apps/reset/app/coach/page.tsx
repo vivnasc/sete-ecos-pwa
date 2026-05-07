@@ -82,7 +82,7 @@ function isAberturaObsoleta(a: { geradoEm?: string; fingerprint?: number } | nul
   const fpAbertura = a.fingerprint ?? 0
   const idadeMs = a.geradoEm ? Date.now() - new Date(a.geradoEm).getTime() : Infinity
   const muitoVelha = idadeMs > 3 * 60 * 60 * 1000
-  const dadosNovos = fpAgora - fpAbertura >= 3
+  const dadosNovos = fpAgora - fpAbertura >= 1
   return muitoVelha || dadosNovos
 }
 
@@ -111,6 +111,9 @@ const TOOL_LABELS: Record<string, string> = {
   registar_steps: 'passos registados',
   registar_rhr: 'RHR registado',
   marcar_ancora: 'âncora marcada',
+  adicionar_objectivo: 'objectivo guardado',
+  remover_objectivo: 'objectivo removido',
+  listar_objectivos: 'a ver objectivos',
   definir_metas: 'metas ajustadas',
   sugerir_metas: 'a calcular sugestão',
   analisar_padroes: 'a analisar padrões',
@@ -166,19 +169,19 @@ export default function CoachPage() {
     }
 
     const abertura = getAberturaHoje()
-    const obsoleta = isAberturaObsoleta(abertura)
-    if (abertura && !obsoleta && historico.length > 0) {
+    // Não regeneramos automaticamente · obsoleta usa o que tem · Vivianne refresca quando quer
+    if (abertura && historico.length > 0) {
       setCarregandoAbertura(false)
       return
     }
-    if (abertura && !obsoleta && historico.length === 0) {
+    if (abertura && historico.length === 0) {
       const m = { role: 'assistant' as const, content: abertura.texto }
       setMensagens([m])
       saveCoachMensagem('assistant', abertura.texto)
       setCarregandoAbertura(false)
       return
     }
-    // se obsoleta, vai cair no path de regeneração abaixo
+    // só regenera se não há abertura nenhuma hoje
 
     let cancelado = false
     const gerarAbertura = async () => {

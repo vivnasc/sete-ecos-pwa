@@ -88,7 +88,7 @@ export default function CoachGreetingCard() {
         const fpAbertura = a.fingerprint ?? 0
         const idadeMs = a.geradoEm ? Date.now() - new Date(a.geradoEm).getTime() : Infinity
         const muitoVelha = idadeMs > 3 * 60 * 60 * 1000
-        const dadosNovos = fpAgora - fpAbertura >= 3
+        const dadosNovos = fpAgora - fpAbertura >= 1
         setObsoleta(muitoVelha || dadosNovos)
       } else {
         setObsoleta(false)

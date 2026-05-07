@@ -5,7 +5,7 @@
 
 import { isoDate, horaLocal, dataLocal } from './dates'
 import { executeTool } from './coachTools'
-import { getProfile, getAncorasActivas } from './profile'
+import { getProfile, getAncorasActivas, getObjectivos } from './profile'
 import {
   getTodosDias,
   getAlcoolRegistos,
@@ -39,6 +39,19 @@ export function construirContexto(comAnalise = false): string {
     linhas.push(`Metas: ${m.calorias ?? '—'} kcal · ${m.proteinaG ?? '—'}g P · ${m.carboG ?? '—'}g C · ${m.gorduraG ?? '—'}g G`)
   } else {
     linhas.push('Metas: ainda não definidas (podes propor calcular sugestão)')
+  }
+
+  // Objectivos pessoais · referencia sempre, mede progresso
+  const objectivos = getObjectivos()
+  if (objectivos.length > 0) {
+    linhas.push('OBJECTIVOS DA VIVIANNE (guardados por ela):')
+    objectivos.forEach(o => {
+      const dias = Math.floor((Date.now() - new Date(o.criadoEm).getTime()) / 86400000)
+      linhas.push(`· [${o.id.slice(0, 8)}] "${o.texto}" · há ${dias}d`)
+    })
+    linhas.push('IMPORTANTE: mede progresso destes objectivos com dados actuais. Refere-os.')
+  } else {
+    linhas.push('OBJECTIVOS: nenhum guardado · propõe capturar 1-3 concretos.')
   }
   const dia = diaActualCiclo()
   const fase = faseActualCiclo()

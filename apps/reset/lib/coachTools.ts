@@ -5,7 +5,7 @@
 // tool_use, o cliente executa via TOOL_EXECUTORS e devolve tool_result.
 
 import { isoDate, horaLocal, dataLocal } from './dates'
-import { getProfile, saveProfile, sugerirMetas, getAncorasActivas, type Metas } from './profile'
+import { getProfile, saveProfile, sugerirMetas, getAncorasActivas, getObjectivos, adicionarObjectivo, removerObjectivo, type Metas } from './profile'
 import { syncProfile } from './sync'
 import {
   saveDia,
@@ -264,6 +264,31 @@ export const COACH_TOOLS = [
       },
       required: ['teve']
     }
+  },
+  {
+    name: 'adicionar_objectivo',
+    description: 'Guarda um objectivo pessoal da Vivianne em texto livre (ex: "perder 3kg em 60 dias", "dormir 7h", "reduzir álcool a 1×/sem", "treinar 4×/sem"). Usar SEMPRE que ela disser uma intenção, meta ou plano. A coach lembra-se destes objectivos e mede progresso contra eles.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        texto: { type: 'string', description: 'Frase clara e concreta · usa as palavras dela.' }
+      },
+      required: ['texto']
+    }
+  },
+  {
+    name: 'remover_objectivo',
+    description: 'Remove um objectivo pelo id. Lista primeiro com listar_objectivos para descobrir o id certo.',
+    input_schema: {
+      type: 'object',
+      properties: { id: { type: 'string' } },
+      required: ['id']
+    }
+  },
+  {
+    name: 'listar_objectivos',
+    description: 'Devolve os objectivos pessoais guardados. Sempre que a abertura é gerada, lista isto e mede progresso de cada um contra os dados actuais.',
+    input_schema: { type: 'object', properties: {}, required: [] }
   },
   {
     name: 'definir_metas',
@@ -631,6 +656,29 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
     saveDia(dia)
     const total = Object.values(dia.ancoras).filter(Boolean).length
     return { ok: true, texto: `${valida.titulo}${feita ? ' ✓' : ' · desmarcada'} · ${total}/7 hoje` }
+  },
+
+  adicionar_objectivo(input) {
+    const texto = str(input.texto)
+    if (!texto.trim()) return { ok: false, erro: 'texto vazio' }
+    const novo = adicionarObjectivo(texto)
+    return { ok: true, texto: `objectivo guardado: "${novo.texto}"` }
+  },
+
+  remover_objectivo(input) {
+    const id = str(input.id)
+    if (!id) return { ok: false, erro: 'id em falta' }
+    const lista = getObjectivos()
+    const o = lista.find(x => x.id === id)
+    if (!o) return { ok: false, erro: 'objectivo não encontrado' }
+    removerObjectivo(id)
+    return { ok: true, texto: `objectivo removido: "${o.texto}"` }
+  },
+
+  listar_objectivos() {
+    const lista = getObjectivos()
+    if (lista.length === 0) return { ok: true, texto: 'sem objectivos guardados ainda' }
+    return { ok: true, texto: lista.map(o => `${o.id}: ${o.texto}`).join('\n') }
   },
 
   definir_metas(input) {
