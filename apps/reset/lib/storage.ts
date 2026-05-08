@@ -572,11 +572,18 @@ export function streakAncoras(minPorDia = 5): number {
 }
 
 export function diasSemAlcool(): number {
-  const registos = getAlcoolRegistos().filter(r => r.decidiuBeber)
-  if (registos.length === 0) return 0
-  const ultimo = new Date(registos[0].timestamp)
-  const agora = new Date()
-  return Math.floor((agora.getTime() - ultimo.getTime()) / (1000 * 60 * 60 * 24))
+  const todos = getAlcoolRegistos()
+  if (todos.length === 0) return 0
+  // getAlcoolRegistos devolve em ordem decrescente (mais recente primeiro)
+  const drinks = todos.filter(r => r.decidiuBeber)
+  if (drinks.length === 0) {
+    // Nunca bebeu (registou) · conta desde o registo mais antigo (último na lista)
+    const maisAntigo = todos[todos.length - 1]
+    const ms = Date.now() - new Date(maisAntigo.timestamp).getTime()
+    return Math.max(0, Math.floor(ms / (1000 * 60 * 60 * 24)))
+  }
+  const ultimoDrink = new Date(drinks[0].timestamp)
+  return Math.max(0, Math.floor((Date.now() - ultimoDrink.getTime()) / (1000 * 60 * 60 * 24)))
 }
 
 export function complianceAncora(id: string, ultimosNDias = 14): { feitos: number; total: number } {
