@@ -18,6 +18,7 @@ import { getProfile } from '@/lib/profile'
 import { analisarFotoRefeicao } from '@/lib/fotoRefeicao'
 import { detectarDuplicadosRefeicoes, type GrupoDuplicado } from '@/lib/sync'
 import { DonutMacro, DistribuicaoBar } from '@/components/DonutMacro'
+import TendenciaCard from '@/components/TendenciaCard'
 
 const TIPOS: { id: RefeicaoTipo; label: string }[] = [
   { id: 'pa', label: 'pequeno-almoço' },
@@ -363,6 +364,9 @@ export default function RefeicoesPage() {
       {erro && !adicionando ? (
         <p className="text-[11px] text-terracota text-center">{erro}</p>
       ) : null}
+
+      {/* tendência · 7/14/30d · kcal · macros · peso */}
+      <TendenciaCard />
 
       {/* histórico de dias com refeições */}
       {datasComRefeicoes.length > 1 ? (

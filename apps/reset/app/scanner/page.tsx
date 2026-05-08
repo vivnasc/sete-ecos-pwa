@@ -18,6 +18,7 @@ import { getTodosDias } from '@/lib/storage'
 import { isoDate, fromIso, formatarData, mesCurto } from '@/lib/dates'
 import BackButton from '@/components/BackButton'
 import HabitChains from '@/components/HabitChains'
+import TendenciaCard from '@/components/TendenciaCard'
 import TrendChart from '@/components/TrendChart'
 import { cn } from '@/lib/utils'
 
@@ -112,6 +113,9 @@ export default function ScannerPage() {
       )}
 
       {/* TIMELINE PONTUAÇÃO */}
+      {/* TENDÊNCIA · kcal/macros/peso ao longo do tempo */}
+      <TendenciaCard />
+
       {pontuacaoSerie.length >= 3 ? (
         <section className="space-y-2">
           <span className="label-cap px-1">pontuação · 30 dias</span>

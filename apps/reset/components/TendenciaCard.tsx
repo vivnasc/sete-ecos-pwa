@@ -1,0 +1,251 @@
+'use client'
+
+// Gráfico de tendência semanal · macros + kcal por dia (últimos 14 dias).
+// SVG puro · cores consistentes com DistribuicaoBar.
+
+import { useEffect, useState } from 'react'
+import { getRefeicoes, getTodosDias, getPesos } from '@/lib/storage'
+import { getProfile } from '@/lib/profile'
+import { isoDate } from '@/lib/dates'
+
+type DiaDados = {
+  date: string
+  kcal: number
+  proteina: number
+  carbo: number
+  gordura: number
+  peso: number | null
+}
+
+function dadosUltimosNDias(n: number): DiaDados[] {
+  const hoje = new Date()
+  const dias: DiaDados[] = []
+  const refeicoes = getRefeicoes()
+  const pesos = getPesos()
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(hoje)
+    d.setDate(d.getDate() - i)
+    const date = isoDate(d)
+    const refsDoDia = refeicoes.filter(r => r.timestamp.slice(0, 10) === date)
+    const peso = pesos.find(p => p.date === date)?.peso ?? null
+    dias.push({
+      date,
+      kcal: refsDoDia.reduce((s, r) => s + (r.calorias ?? 0), 0),
+      proteina: refsDoDia.reduce((s, r) => s + (r.proteinaG ?? 0), 0),
+      carbo: refsDoDia.reduce((s, r) => s + (r.carboG ?? 0), 0),
+      gordura: refsDoDia.reduce((s, r) => s + (r.gorduraG ?? 0), 0),
+      peso
+    })
+  }
+  return dias
+}
+
+export default function TendenciaCard() {
+  const [dias, setDias] = useState<DiaDados[]>([])
+  const [janela, setJanela] = useState<7 | 14 | 30>(14)
+  const [serie, setSerie] = useState<'kcal' | 'macros' | 'peso'>('kcal')
+  const profile = getProfile()
+  const metas = profile.metas
+
+  useEffect(() => {
+    const refresh = () => setDias(dadosUltimosNDias(janela))
+    refresh()
+    window.addEventListener('fenixfit:storage', refresh)
+    return () => window.removeEventListener('fenixfit:storage', refresh)
+  }, [janela])
+
+  if (dias.length === 0) return null
+
+  return (
+    <section className="card-feature space-y-3">
+      <div className="flex items-baseline justify-between">
+        <span className="label-cap">tendência · {janela} dias</span>
+        <div className="flex gap-1">
+          {([7, 14, 30] as const).map(n => (
+            <button
+              key={n}
+              onClick={() => setJanela(n)}
+              className={`rounded-full px-2.5 py-1 text-[10px] tnum transition-elegant active:scale-95 ${
+                janela === n ? 'bg-ouro text-creme dark:text-tinta' : 'bg-[var(--surface-soft)] text-faint'
+              }`}
+            >
+              {n}d
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="flex gap-1">
+        {([
+          { id: 'kcal' as const, label: 'kcal' },
+          { id: 'macros' as const, label: 'macros' },
+          { id: 'peso' as const, label: 'peso' }
+        ]).map(s => (
+          <button
+            key={s.id}
+            onClick={() => setSerie(s.id)}
+            className={`flex-1 rounded-md py-1.5 text-[11px] transition-elegant active:scale-95 ${
+              serie === s.id ? 'bg-tinta text-creme dark:bg-ouro dark:text-tinta' : 'bg-[var(--surface-soft)] text-soft'
+            }`}
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+
+      {serie === 'kcal' ? <GraficoKcal dias={dias} alvo={metas.calorias} /> : null}
+      {serie === 'macros' ? <GraficoMacros dias={dias} /> : null}
+      {serie === 'peso' ? <GraficoPeso dias={dias} /> : null}
+    </section>
+  )
+}
+
+function GraficoKcal({ dias, alvo }: { dias: DiaDados[]; alvo: number | null }) {
+  const w = 320
+  const h = 140
+  const pad = { t: 14, r: 10, b: 22, l: 32 }
+  const cw = w - pad.l - pad.r
+  const ch = h - pad.t - pad.b
+
+  const maxKcal = Math.max(...dias.map(d => d.kcal), alvo ?? 0, 100)
+  const yScale = (v: number) => pad.t + ch - (v / maxKcal) * ch
+  const barW = cw / dias.length
+  const x = (i: number) => pad.l + i * barW + barW * 0.15
+
+  return (
+    <div className="-mx-2">
+      <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" preserveAspectRatio="none">
+        {/* alvo */}
+        {alvo ? (
+          <>
+            <line x1={pad.l} y1={yScale(alvo)} x2={w - pad.r} y2={yScale(alvo)} stroke="var(--ouro)" strokeWidth="1" strokeDasharray="3 3" opacity="0.5" />
+            <text x={pad.l - 4} y={yScale(alvo) + 3} fontSize="9" fill="var(--ouro)" textAnchor="end">{alvo}</text>
+          </>
+        ) : null}
+        {/* baseline */}
+        <line x1={pad.l} y1={pad.t + ch} x2={w - pad.r} y2={pad.t + ch} stroke="var(--hair)" />
+        {/* bars */}
+        {dias.map((d, i) => {
+          const altura = (d.kcal / maxKcal) * ch
+          const cor = alvo && d.kcal > alvo * 1.1 ? 'var(--terracota)' : alvo && d.kcal >= alvo * 0.9 && d.kcal <= alvo * 1.1 ? 'var(--oliva)' : d.kcal === 0 ? 'var(--hair-strong)' : 'var(--ouro)'
+          return (
+            <rect
+              key={d.date}
+              x={x(i)}
+              y={pad.t + ch - altura}
+              width={barW * 0.7}
+              height={altura}
+              rx="2"
+              fill={cor}
+              opacity={d.kcal === 0 ? 0.4 : 0.85}
+            >
+              <title>{d.date}: {d.kcal} kcal</title>
+            </rect>
+          )
+        })}
+        {/* label primeira e última data */}
+        <text x={pad.l} y={h - 6} fontSize="9" fill="var(--ink-faint)">{dias[0]?.date.slice(5)}</text>
+        <text x={w - pad.r} y={h - 6} fontSize="9" fill="var(--ink-faint)" textAnchor="end">{dias[dias.length - 1]?.date.slice(5)}</text>
+      </svg>
+      <p className="text-faint text-[10px] text-center mt-1">linha tracejada = alvo · barra a verde quando perto · vermelho se passa 10% do alvo</p>
+    </div>
+  )
+}
+
+function GraficoMacros({ dias }: { dias: DiaDados[] }) {
+  const w = 320
+  const h = 140
+  const pad = { t: 14, r: 10, b: 22, l: 32 }
+  const cw = w - pad.l - pad.r
+  const ch = h - pad.t - pad.b
+
+  const maxKcal = Math.max(...dias.map(d => d.proteina * 4 + d.carbo * 4 + d.gordura * 9), 100)
+  const yScale = (v: number) => pad.t + ch - (v / maxKcal) * ch
+  const barW = cw / dias.length
+  const x = (i: number) => pad.l + i * barW + barW * 0.15
+  const bw = barW * 0.7
+
+  return (
+    <div className="-mx-2">
+      <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" preserveAspectRatio="none">
+        <line x1={pad.l} y1={pad.t + ch} x2={w - pad.r} y2={pad.t + ch} stroke="var(--hair)" />
+        {dias.map((d, i) => {
+          const kP = d.proteina * 4
+          const kC = d.carbo * 4
+          const kG = d.gordura * 9
+          const total = kP + kC + kG
+          if (total === 0) return null
+          const hP = (kP / maxKcal) * ch
+          const hC = (kC / maxKcal) * ch
+          const hG = (kG / maxKcal) * ch
+          const xi = x(i)
+          let yi = pad.t + ch
+          return (
+            <g key={d.date}>
+              <rect x={xi} y={yi - hG} width={bw} height={hG} rx="2" fill="var(--oliva)" opacity="0.85"><title>{d.date}: G {d.gordura}g</title></rect>
+              <rect x={xi} y={yi - hG - hC} width={bw} height={hC} fill="var(--ink)" className="dark:fill-creme/70" opacity="0.85"><title>{d.date}: C {d.carbo}g</title></rect>
+              <rect x={xi} y={yi - hG - hC - hP} width={bw} height={hP} rx="2" fill="var(--ouro)" opacity="0.85"><title>{d.date}: P {d.proteina}g</title></rect>
+            </g>
+          )
+        })}
+        <text x={pad.l} y={h - 6} fontSize="9" fill="var(--ink-faint)">{dias[0]?.date.slice(5)}</text>
+        <text x={w - pad.r} y={h - 6} fontSize="9" fill="var(--ink-faint)" textAnchor="end">{dias[dias.length - 1]?.date.slice(5)}</text>
+      </svg>
+      <div className="flex justify-center gap-3 text-[10px] mt-1">
+        <span className="inline-flex items-center gap-1 text-faint"><span className="inline-block h-1.5 w-1.5 rounded-full bg-ouro" />proteína</span>
+        <span className="inline-flex items-center gap-1 text-faint"><span className="inline-block h-1.5 w-1.5 rounded-full bg-tinta dark:bg-creme/70" />carbo</span>
+        <span className="inline-flex items-center gap-1 text-faint"><span className="inline-block h-1.5 w-1.5 rounded-full bg-oliva" />gordura</span>
+      </div>
+    </div>
+  )
+}
+
+function GraficoPeso({ dias }: { dias: DiaDados[] }) {
+  const w = 320
+  const h = 140
+  const pad = { t: 14, r: 10, b: 22, l: 36 }
+  const cw = w - pad.l - pad.r
+  const ch = h - pad.t - pad.b
+
+  const pesos = dias.map(d => d.peso).filter((p): p is number => p !== null)
+  if (pesos.length < 2) {
+    return (
+      <div className="text-center py-8 text-faint text-[12px] leading-relaxed">
+        precisa de pelo menos 2 pesagens em {dias.length} dias para mostrar tendência.
+      </div>
+    )
+  }
+  const min = Math.min(...pesos)
+  const max = Math.max(...pesos)
+  const range = max - min || 1
+  const yPad = range * 0.2
+  const yMin = min - yPad
+  const yMax = max + yPad
+  const yRange = yMax - yMin
+
+  const yScale = (v: number) => pad.t + ch - ((v - yMin) / yRange) * ch
+  const xScale = (i: number) => pad.l + (i / Math.max(1, dias.length - 1)) * cw
+
+  const pontos = dias.map((d, i) => d.peso !== null ? { x: xScale(i), y: yScale(d.peso) } : null).filter((p): p is { x: number; y: number } => p !== null)
+  const path = pontos.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')
+
+  return (
+    <div className="-mx-2">
+      <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" preserveAspectRatio="none">
+        <line x1={pad.l} y1={pad.t + ch} x2={w - pad.r} y2={pad.t + ch} stroke="var(--hair)" />
+        <text x={pad.l - 4} y={pad.t + 3} fontSize="9" fill="var(--ink-faint)" textAnchor="end">{yMax.toFixed(1)}</text>
+        <text x={pad.l - 4} y={pad.t + ch} fontSize="9" fill="var(--ink-faint)" textAnchor="end">{yMin.toFixed(1)}</text>
+        <path d={path} fill="none" stroke="var(--ouro)" strokeWidth="1.8" />
+        {pontos.map((p, i) => (
+          <circle key={i} cx={p.x} cy={p.y} r="3" fill="var(--ouro)" />
+        ))}
+        <text x={pad.l} y={h - 6} fontSize="9" fill="var(--ink-faint)">{dias[0]?.date.slice(5)}</text>
+        <text x={w - pad.r} y={h - 6} fontSize="9" fill="var(--ink-faint)" textAnchor="end">{dias[dias.length - 1]?.date.slice(5)}</text>
+      </svg>
+      <p className="text-faint text-[10px] text-center mt-1">
+        {pesos[pesos.length - 1] > pesos[0]
+          ? `+${(pesos[pesos.length - 1] - pesos[0]).toFixed(1)} kg em ${dias.length}d`
+          : `${(pesos[pesos.length - 1] - pesos[0]).toFixed(1)} kg em ${dias.length}d`}
+      </p>
+    </div>
+  )
+}
