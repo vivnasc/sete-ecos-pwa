@@ -134,6 +134,49 @@ export default function RefeicoesPage() {
     refresh()
   }
 
+  const repetirHoje = (r: Refeicao) => {
+    const agora = new Date()
+    const original = new Date(r.timestamp)
+    // mantém a hora original mas data hoje
+    agora.setHours(original.getHours(), original.getMinutes(), 0, 0)
+    addRefeicao({
+      tipo: r.tipo,
+      descricao: r.descricao,
+      timestamp: agora.toISOString(),
+      proteinaG: r.proteinaG,
+      carboG: r.carboG,
+      gorduraG: r.gorduraG,
+      calorias: r.calorias,
+      contexto: r.contexto,
+      sentir: ''
+    })
+    setDate(isoDate())
+    refresh()
+  }
+
+  const copiarDiaPara = (origem: string, destino: string) => {
+    const refsOrigem = getRefeicoesDoDia(origem)
+    if (refsOrigem.length === 0) return
+    refsOrigem.forEach(r => {
+      const original = new Date(r.timestamp)
+      const novo = new Date(destino + 'T00:00:00')
+      novo.setHours(original.getHours(), original.getMinutes(), 0, 0)
+      addRefeicao({
+        tipo: r.tipo,
+        descricao: r.descricao,
+        timestamp: novo.toISOString(),
+        proteinaG: r.proteinaG,
+        carboG: r.carboG,
+        gorduraG: r.gorduraG,
+        calorias: r.calorias,
+        contexto: r.contexto,
+        sentir: ''
+      })
+    })
+    setDate(destino)
+    refresh()
+  }
+
   const onFoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -265,12 +308,22 @@ export default function RefeicoesPage() {
       {/* lista refeições */}
       {lista.length > 0 ? (
         <section className="space-y-2">
+          {date !== isoDate() ? (
+            <button
+              onClick={() => copiarDiaPara(date, isoDate())}
+              className="w-full rounded-md bg-[var(--surface-soft)] py-2 text-[11.5px] text-soft hover:text-ouro transition-elegant active:scale-95 flex items-center justify-center gap-2"
+            >
+              ↻ copiar todas para hoje
+            </button>
+          ) : null}
           {lista.map(r => (
             <RefeicaoCard
               key={r.id}
               r={r}
               onApagar={() => apagar(r.id)}
               onGuardar={patch => { updateRefeicao(r.id, patch); refresh() }}
+              onRepetir={() => repetirHoje(r)}
+              podeRepetir={date !== isoDate()}
             />
           ))}
         </section>
@@ -416,11 +469,15 @@ function Macro({ label, valor, alvo }: { label: string; valor: number; alvo: num
 function RefeicaoCard({
   r,
   onApagar,
-  onGuardar
+  onGuardar,
+  onRepetir,
+  podeRepetir
 }: {
   r: Refeicao
   onApagar: () => void
   onGuardar: (patch: Partial<Refeicao>) => void
+  onRepetir: () => void
+  podeRepetir: boolean
 }) {
   const [editar, setEditar] = useState(false)
   const [descricao, setDescricao] = useState(r.descricao)
@@ -570,6 +627,16 @@ function RefeicaoCard({
           <span className="text-faint text-[11px] tnum">{horaLocal(r.timestamp)}</span>
         </div>
         <div className="flex gap-2 shrink-0">
+          {podeRepetir ? (
+            <button
+              onClick={onRepetir}
+              className="text-faint hover:text-ouro transition-elegant active:scale-95"
+              aria-label="repetir hoje"
+              title="repetir hoje"
+            >
+              ↻
+            </button>
+          ) : null}
           <button
             onClick={() => setEditar(true)}
             className="text-faint hover:text-ouro transition-elegant active:scale-95"

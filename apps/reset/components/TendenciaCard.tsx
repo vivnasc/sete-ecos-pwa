@@ -19,13 +19,24 @@ type DiaDados = {
 
 function dadosUltimosNDias(n: number): DiaDados[] {
   const hoje = new Date()
-  const dias: DiaDados[] = []
   const refeicoes = getRefeicoes()
   const pesos = getPesos()
+  const dias_storage = getTodosDias()
+
+  // Determinar primeira data com qualquer registo · não mostra dias antes do início
+  const primeirosTimestamps: string[] = [
+    ...refeicoes.map(r => r.timestamp.slice(0, 10)),
+    ...pesos.map(p => p.date),
+    ...dias_storage.map(d => d.date)
+  ].filter(Boolean).sort()
+  const primeiraData = primeirosTimestamps[0] ?? isoDate()
+
+  const dias: DiaDados[] = []
   for (let i = n - 1; i >= 0; i--) {
     const d = new Date(hoje)
     d.setDate(d.getDate() - i)
     const date = isoDate(d)
+    if (date < primeiraData) continue // dia antes do início · ignora
     const refsDoDia = refeicoes.filter(r => r.timestamp.slice(0, 10) === date)
     const peso = pesos.find(p => p.date === date)?.peso ?? null
     dias.push({
