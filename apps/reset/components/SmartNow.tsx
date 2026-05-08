@@ -65,7 +65,7 @@ function determinarJanela(hora: number, dow: string, log: DiaLog): Janela {
       acaoPrincipal: {
         titulo: paFeito ? 'PA registado ✓' : 'pequeno-almoço',
         subtitulo: paFeito ? 'janela aberta · 14h jejum cumpridas' : 'às 9h · proteína + gordura · sem carbo',
-        href: paFeito ? '/diario' : '/receitas',
+        href: paFeito ? '/diario' : '/refeicoes',
         tone: paFeito ? 'oliva' : 'ouro'
       },
       Icone: Coffee
@@ -80,7 +80,7 @@ function determinarJanela(hora: number, dow: string, log: DiaLog): Janela {
       acaoPrincipal: {
         titulo: 'almoço com proteína',
         subtitulo: dow === 'Sábado' ? 'limpa hoje · refeed só ao jantar' : 'sem cinzentos · folhas',
-        href: '/receitas',
+        href: '/refeicoes',
         tone: 'ink'
       },
       Icone: Sun
@@ -95,7 +95,7 @@ function determinarJanela(hora: number, dow: string, log: DiaLog): Janela {
       acaoPrincipal: {
         titulo: 'última refeição',
         subtitulo: 'leve · sopa + ovo · sem doces',
-        href: '/receitas',
+        href: '/refeicoes',
         tone: 'ouro'
       },
       Icone: Sun

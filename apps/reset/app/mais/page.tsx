@@ -43,7 +43,7 @@ export default function MaisPage() {
   ]
 
   const referencias = [
-    { href: '/receitas', label: 'Comer', sub: 'keto · janela 9–19h', icon: Salad },
+    { href: '/receitas', label: 'Minhas refeições', sub: 'as que repetes mais · keto', icon: Salad },
     { href: '/treino', label: 'Treino', sub: '4× semana · 30min', icon: Dumbbell },
     { href: '/logos', label: 'Marca', sub: '3 logos · escolhe um', icon: ImageIcon }
   ]
