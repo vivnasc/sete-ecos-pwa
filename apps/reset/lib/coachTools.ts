@@ -49,18 +49,51 @@ function prevDate(d: string): string {
   return dt.toISOString().slice(0, 10)
 }
 
+// Resolve data passada · aceita "ontem", "anteontem", "hoje", YYYY-MM-DD
+function resolveData(input: unknown): string {
+  if (typeof input !== 'string' || !input) return isoDate()
+  const s = input.toLowerCase().trim()
+  if (s === 'hoje' || s === '') return isoDate()
+  if (s === 'ontem') {
+    const d = new Date()
+    d.setDate(d.getDate() - 1)
+    return isoDate(d)
+  }
+  if (s === 'anteontem') {
+    const d = new Date()
+    d.setDate(d.getDate() - 2)
+    return isoDate(d)
+  }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s
+  return isoDate()
+}
+
+// Combina data + hora em ISO timestamp (timezone local)
+function combinarDataHora(data: string, hora?: string): string {
+  const d = new Date(data + 'T00:00:00')
+  if (hora && /^\d{1,2}:\d{2}$/.test(hora)) {
+    const [h, m] = hora.split(':').map(Number)
+    d.setHours(h, m, 0, 0)
+  } else {
+    const agora = new Date()
+    d.setHours(agora.getHours(), agora.getMinutes(), 0, 0)
+  }
+  return d.toISOString()
+}
+
 // ===== SCHEMAS (enviados ao Claude) =====
 
 export const COACH_TOOLS = [
   {
     name: 'registar_peso',
-    description: 'Regista a pesagem da Vivianne. Usa quando ela disser o peso (ex: "pesei 72.4", "estou com 73 hoje"). Cintura é opcional, só nas sextas.',
+    description: 'Regista a pesagem da Vivianne. Cintura opcional. Para registar peso de outro dia que não hoje, passa data YYYY-MM-DD. Aceita também palavras "ontem", "anteontem".',
     input_schema: {
       type: 'object',
       properties: {
         peso: { type: 'number', description: 'Peso em kg, ex: 72.4' },
         cintura: { type: 'number', description: 'Cintura em cm, opcional' },
         hora: { type: 'string', description: 'Hora HH:MM, opcional · default agora' },
+        data: { type: 'string', description: 'Data YYYY-MM-DD ou "ontem"/"anteontem". Default hoje.' },
         notas: { type: 'string', description: 'Nota opcional' }
       },
       required: ['peso']
@@ -68,19 +101,20 @@ export const COACH_TOOLS = [
   },
   {
     name: 'registar_refeicao',
-    description: 'Regista uma refeição que ela comeu. Tipo: pa (pequeno-almoço), almoco, snack, jantar. Estima macros se possível com base na descrição (keto: alta gordura, proteína moderada, carbo baixo).',
+    description: 'Regista uma refeição. Tipo: pa, almoco, snack, jantar. Estima macros pela descrição. Para registar refeição de outro dia, passa data YYYY-MM-DD ou "ontem"/"anteontem".',
     input_schema: {
       type: 'object',
       properties: {
         tipo: { type: 'string', enum: ['pa', 'almoco', 'snack', 'jantar'], description: 'Tipo de refeição' },
-        descricao: { type: 'string', description: 'O que comeu, ex: "3 ovos mexidos com abacate e folhas"' },
-        hora: { type: 'string', description: 'Hora ISO ou HH:MM, opcional · default agora' },
-        proteina_g: { type: 'number', description: 'Proteína estimada em gramas' },
-        carbo_g: { type: 'number', description: 'Hidratos estimados em gramas' },
-        gordura_g: { type: 'number', description: 'Gordura estimada em gramas' },
-        calorias: { type: 'number', description: 'Calorias estimadas' },
-        contexto: { type: 'string', description: 'Contexto: em casa, fora, viagem, etc' },
-        sentir: { type: 'string', description: 'Como se sentiu depois: saciada, com fome, etc' }
+        descricao: { type: 'string', description: 'O que comeu' },
+        hora: { type: 'string', description: 'Hora HH:MM. Default agora.' },
+        data: { type: 'string', description: 'Data YYYY-MM-DD ou "ontem"/"anteontem". Default hoje.' },
+        proteina_g: { type: 'number' },
+        carbo_g: { type: 'number' },
+        gordura_g: { type: 'number' },
+        calorias: { type: 'number' },
+        contexto: { type: 'string' },
+        sentir: { type: 'string' }
       },
       required: ['tipo', 'descricao']
     }
@@ -116,14 +150,16 @@ export const COACH_TOOLS = [
   },
   {
     name: 'registar_alcool',
-    description: 'Caderno antes do copo. Usa quando ela mencionar vontade de beber ou que bebeu. Regista emoção e gatilho.',
+    description: 'Caderno antes do copo. Regista emoção e gatilho. Para outro dia, passa data YYYY-MM-DD ou "ontem".',
     input_schema: {
       type: 'object',
       properties: {
         decidiu_beber: { type: 'boolean', description: 'true se bebeu, false se decidiu não beber' },
-        emocao: { type: 'string', description: 'Emoção dominante: cansaço, ansiedade, celebração, etc' },
-        gatilho: { type: 'string', description: 'O que despoletou o impulso, opcional' },
-        unidades: { type: 'number', description: 'Unidades bebidas, opcional · só se decidiu_beber=true' }
+        emocao: { type: 'string' },
+        gatilho: { type: 'string' },
+        unidades: { type: 'number' },
+        hora: { type: 'string', description: 'Hora HH:MM. Default agora.' },
+        data: { type: 'string', description: 'Data YYYY-MM-DD ou "ontem". Default hoje.' }
       },
       required: ['decidiu_beber', 'emocao']
     }
@@ -420,11 +456,12 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
     const cintura = num(input.cintura)
     const hora = str(input.hora) || new Date().toTimeString().slice(0, 5)
     const notas = str(input.notas)
-    const date = isoDate()
+    const date = resolveData(input.data)
     savePeso({ date, peso, cintura, hora, notas })
     const v = variacaoPeso()
-    const delta = v.ultima !== null ? ` · ${v.ultima > 0 ? '+' : ''}${v.ultima.toFixed(1)}kg desde ontem` : ''
-    return { ok: true, texto: `peso ${fmtPeso(peso)} registado às ${hora}${cintura !== null ? ` · cintura ${cintura}cm` : ''}${delta}` }
+    const delta = v.ultima !== null ? ` · ${v.ultima > 0 ? '+' : ''}${v.ultima.toFixed(1)}kg desde anterior` : ''
+    const dataStr = date !== isoDate() ? ` (${date})` : ''
+    return { ok: true, texto: `peso ${fmtPeso(peso)} registado${dataStr} às ${hora}${cintura !== null ? ` · cintura ${cintura}cm` : ''}${delta}` }
   },
 
   registar_refeicao(input) {
@@ -432,7 +469,12 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
     if (!['pa', 'almoco', 'snack', 'jantar'].includes(tipo)) return { ok: false, erro: 'tipo inválido' }
     const descricao = str(input.descricao)
     if (!descricao) return { ok: false, erro: 'descrição vazia' }
-    const timestamp = resolveTimestamp(input.hora)
+    // Se há `data`, combina com hora · senão usa resolveTimestamp legacy
+    const date = resolveData(input.data)
+    const horaInput = str(input.hora)
+    const timestamp = input.data
+      ? combinarDataHora(date, horaInput || undefined)
+      : (horaInput && horaInput.includes('T') ? horaInput : combinarDataHora(date, horaInput || undefined))
     addRefeicao({
       tipo,
       descricao,
@@ -444,16 +486,17 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
       contexto: str(input.contexto),
       sentir: str(input.sentir)
     })
-    // Marca âncora do PA com proteína se aplicável
-    if (tipo === 'pa' && (num(input.proteina_g) ?? 0) >= 25) {
+    // Marca âncora do PA com proteína · só hoje
+    if (date === isoDate() && tipo === 'pa' && (num(input.proteina_g) ?? 0) >= 25) {
       const dia = getDia()
       if (!dia.ancoras['pa_proteina']) {
         dia.ancoras['pa_proteina'] = true
         saveDia(dia)
       }
     }
-    const m = macrosDoDia()
-    return { ok: true, texto: `${tipo} registado · hoje: ${m.refeicoes}× refeições · ${Math.round(m.proteina)}g proteína · ${Math.round(m.carbo)}g carbo · ${Math.round(m.gordura)}g gordura` }
+    const m = macrosDoDia(date)
+    const dataStr = date !== isoDate() ? ` (${date})` : ''
+    return { ok: true, texto: `${tipo} registado${dataStr} · esse dia: ${m.refeicoes}× refeições · ${Math.round(m.proteina)}g proteína · ${Math.round(m.carbo)}g carbo · ${Math.round(m.gordura)}g gordura` }
   },
 
   actualizar_refeicao_recente(input) {
@@ -503,15 +546,22 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
     const emocao = str(input.emocao)
     const gatilho = str(input.gatilho)
     const unidades = num(input.unidades) ?? 0
-    addAlcoolRegisto({ decidiuBeber, emocao, gatilho, unidades })
-    if (!decidiuBeber) {
+    const date = resolveData(input.data)
+    const horaInput = str(input.hora)
+    const timestamp = input.data || horaInput
+      ? combinarDataHora(date, horaInput || undefined)
+      : new Date().toISOString()
+    addAlcoolRegisto({ decidiuBeber, emocao, gatilho, unidades, timestamp })
+    // Marca âncora caderno_copo · só se for hoje
+    if (date === isoDate() && !decidiuBeber) {
       const dia = getDia()
       if (!dia.ancoras['caderno_copo']) {
         dia.ancoras['caderno_copo'] = true
         saveDia(dia)
       }
     }
-    return { ok: true, texto: decidiuBeber ? `registado · bebeu ${unidades}u · ${emocao}` : `registado · não bebeu · ${emocao} · âncora caderno_copo ✓` }
+    const dataStr = date !== isoDate() ? ` (${date})` : ''
+    return { ok: true, texto: decidiuBeber ? `registado${dataStr} · bebeu ${unidades}u · ${emocao}` : `registado${dataStr} · não bebeu · ${emocao}` }
   },
 
   registar_dia(input) {

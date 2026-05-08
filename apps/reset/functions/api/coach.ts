@@ -194,33 +194,35 @@ NUDGE PROACTIVO (quando ela regista algo manualmente)
 const COACH_TOOLS = [
   {
     name: 'registar_peso',
-    description: 'Regista a pesagem da Vivianne. Usa quando ela disser o peso (ex: "pesei 72.4", "estou com 73 hoje"). Cintura é opcional, só nas sextas.',
+    description: 'Regista pesagem. Para outro dia que não hoje, passa data YYYY-MM-DD ou "ontem"/"anteontem".',
     input_schema: {
       type: 'object',
       properties: {
-        peso: { type: 'number', description: 'Peso em kg, ex: 72.4' },
-        cintura: { type: 'number', description: 'Cintura em cm, opcional' },
-        hora: { type: 'string', description: 'Hora HH:MM, opcional · default agora' },
-        notas: { type: 'string', description: 'Nota opcional' }
+        peso: { type: 'number' },
+        cintura: { type: 'number' },
+        hora: { type: 'string' },
+        data: { type: 'string', description: 'YYYY-MM-DD ou "ontem"/"anteontem". Default hoje.' },
+        notas: { type: 'string' }
       },
       required: ['peso']
     }
   },
   {
     name: 'registar_refeicao',
-    description: 'Regista uma refeição que ela comeu. Tipo: pa (pequeno-almoço), almoco, snack, jantar. Estima macros se possível com base na descrição (keto: alta gordura, proteína moderada, carbo baixo).',
+    description: 'Regista uma refeição. Tipo: pa, almoco, snack, jantar. Estima macros pela descrição. Para outro dia, passa data YYYY-MM-DD ou "ontem"/"anteontem".',
     input_schema: {
       type: 'object',
       properties: {
-        tipo: { type: 'string', enum: ['pa', 'almoco', 'snack', 'jantar'], description: 'Tipo de refeição' },
-        descricao: { type: 'string', description: 'O que comeu, ex: "3 ovos mexidos com abacate e folhas"' },
-        hora: { type: 'string', description: 'Hora ISO ou HH:MM, opcional · default agora' },
-        proteina_g: { type: 'number', description: 'Proteína estimada em gramas' },
-        carbo_g: { type: 'number', description: 'Hidratos estimados em gramas' },
-        gordura_g: { type: 'number', description: 'Gordura estimada em gramas' },
-        calorias: { type: 'number', description: 'Calorias estimadas' },
-        contexto: { type: 'string', description: 'Contexto: em casa, fora, viagem, etc' },
-        sentir: { type: 'string', description: 'Como se sentiu depois' }
+        tipo: { type: 'string', enum: ['pa', 'almoco', 'snack', 'jantar'] },
+        descricao: { type: 'string' },
+        hora: { type: 'string' },
+        data: { type: 'string', description: 'YYYY-MM-DD ou "ontem"/"anteontem". Default hoje.' },
+        proteina_g: { type: 'number' },
+        carbo_g: { type: 'number' },
+        gordura_g: { type: 'number' },
+        calorias: { type: 'number' },
+        contexto: { type: 'string' },
+        sentir: { type: 'string' }
       },
       required: ['tipo', 'descricao']
     }
@@ -256,14 +258,16 @@ const COACH_TOOLS = [
   },
   {
     name: 'registar_alcool',
-    description: 'Caderno antes do copo. Usa quando ela mencionar vontade de beber ou que bebeu. Regista emoção e gatilho.',
+    description: 'Caderno antes do copo. Para outro dia, passa data YYYY-MM-DD ou "ontem".',
     input_schema: {
       type: 'object',
       properties: {
-        decidiu_beber: { type: 'boolean', description: 'true se bebeu, false se decidiu não beber' },
-        emocao: { type: 'string', description: 'Emoção dominante' },
-        gatilho: { type: 'string', description: 'O que despoletou o impulso, opcional' },
-        unidades: { type: 'number', description: 'Unidades bebidas, opcional' }
+        decidiu_beber: { type: 'boolean' },
+        emocao: { type: 'string' },
+        gatilho: { type: 'string' },
+        unidades: { type: 'number' },
+        hora: { type: 'string' },
+        data: { type: 'string', description: 'YYYY-MM-DD ou "ontem". Default hoje.' }
       },
       required: ['decidiu_beber', 'emocao']
     }

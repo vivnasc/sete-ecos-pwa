@@ -194,8 +194,12 @@ export function getAlcoolRegistos(): AlcoolRegisto[] {
   return read<AlcoolRegisto[]>('alcool', []).sort((a, b) => b.timestamp.localeCompare(a.timestamp))
 }
 
-export function addAlcoolRegisto(r: Omit<AlcoolRegisto, 'id' | 'timestamp'>): AlcoolRegisto {
-  const novo: AlcoolRegisto = { ...r, id: crypto.randomUUID(), timestamp: new Date().toISOString() }
+export function addAlcoolRegisto(r: Omit<AlcoolRegisto, 'id' | 'timestamp'> & { timestamp?: string }): AlcoolRegisto {
+  const novo: AlcoolRegisto = {
+    ...r,
+    id: crypto.randomUUID(),
+    timestamp: r.timestamp ?? new Date().toISOString()
+  }
   const all = read<AlcoolRegisto[]>('alcool', [])
   all.push(novo)
   write('alcool', all)
