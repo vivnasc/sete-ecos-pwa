@@ -419,6 +419,27 @@ function RefeicaoCard({
   const [calorias, setCalorias] = useState(r.calorias !== null ? String(r.calorias) : '')
   const [tipo, setTipo] = useState<RefeicaoTipo>(r.tipo)
   const [hora, setHora] = useState(horaLocal(r.timestamp))
+  const [reestimando, setReestimando] = useState(false)
+
+  const reestimar = async () => {
+    if (!descricao.trim()) return
+    setReestimando(true)
+    try {
+      const resp = await fetch('/api/estimar-macros', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ descricao: descricao.trim(), tipo })
+      })
+      if (resp.ok) {
+        const m = await resp.json()
+        if (m.proteinaG !== null && m.proteinaG !== undefined) setProteina(String(Math.round(m.proteinaG)))
+        if (m.carboG !== null && m.carboG !== undefined) setCarbo(String(Math.round(m.carboG)))
+        if (m.gorduraG !== null && m.gorduraG !== undefined) setGordura(String(Math.round(m.gorduraG)))
+        if (m.calorias !== null && m.calorias !== undefined) setCalorias(String(Math.round(m.calorias)))
+      }
+    } catch {}
+    setReestimando(false)
+  }
 
   const cancelar = () => {
     setDescricao(r.descricao)
@@ -490,6 +511,13 @@ function RefeicaoCard({
           rows={2}
           className="w-full resize-none rounded-md border border-[var(--hair)] bg-transparent p-2.5 text-[13.5px] focus:border-ouro focus:outline-none"
         />
+        <button
+          onClick={reestimar}
+          disabled={reestimando || !descricao.trim()}
+          className="w-full flex items-center justify-center gap-2 rounded-md bg-[var(--surface-soft)] py-2 text-[11.5px] text-soft transition-elegant active:scale-95 disabled:opacity-40"
+        >
+          {reestimando ? <><Loader2 size={12} className="animate-spin" /> a estimar…</> : <>↻ re-estimar macros pela descrição</>}
+        </button>
         <div className="grid grid-cols-4 gap-1.5">
           <CampoMacro label="P · g" valor={proteina} onChange={setProteina} />
           <CampoMacro label="C · g" valor={carbo} onChange={setCarbo} />
