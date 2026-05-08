@@ -13,6 +13,7 @@ import PeriSintomasCard from '@/components/PeriSintomasCard'
 import MarcoCard from '@/components/MarcoCard'
 import PlanoResumoCard from '@/components/PlanoResumoCard'
 import CoachAlertasCard from '@/components/CoachAlertasCard'
+import { DonutMacro, DistribuicaoBar } from '@/components/DonutMacro'
 import CoachGreetingCard from '@/components/CoachGreetingCard'
 import QuickTools from '@/components/QuickTools'
 import SafeBlock from '@/components/SafeBlock'
@@ -185,12 +186,14 @@ export default function HomePage() {
           </div>
           {metrics.macros.refeicoes > 0 ? (
             <>
-              <div className="mt-3 grid grid-cols-4 gap-2 text-center">
-                <MacroMini label="kcal" valor={metrics.macros.calorias} alvo={metrics.metas.calorias} />
-                <MacroMini label="P" valor={metrics.macros.proteina} alvo={metrics.metas.proteinaG} />
-                <MacroMini label="C" valor={metrics.macros.carbo} alvo={metrics.metas.carboG} />
-                <MacroMini label="G" valor={metrics.macros.gordura} alvo={metrics.metas.gorduraG} />
+              <div className="mt-3 grid grid-cols-4 gap-1 place-items-center">
+                <DonutMacro label="kcal" valor={metrics.macros.calorias} alvo={metrics.metas.calorias} unidade="" tamanho={62} />
+                <DonutMacro label="proteína" valor={metrics.macros.proteina} alvo={metrics.metas.proteinaG} tamanho={62} />
+                <DonutMacro label="carbo" valor={metrics.macros.carbo} alvo={metrics.metas.carboG} tamanho={62} />
+                <DonutMacro label="gordura" valor={metrics.macros.gordura} alvo={metrics.metas.gorduraG} tamanho={62} />
               </div>
+              {/* Distribuição P/C/G como % das calorias totais */}
+              {metrics.macros.calorias > 0 ? <DistribuicaoBar p={metrics.macros.proteina} c={metrics.macros.carbo} g={metrics.macros.gordura} /> : null}
               <p className="text-faint mt-2 text-[10.5px] tracking-cap uppercase">ver detalhe →</p>
             </>
           ) : (

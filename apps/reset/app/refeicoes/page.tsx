@@ -17,6 +17,7 @@ import { isoDate, horaLocal } from '@/lib/dates'
 import { getProfile } from '@/lib/profile'
 import { analisarFotoRefeicao } from '@/lib/fotoRefeicao'
 import { detectarDuplicadosRefeicoes, type GrupoDuplicado } from '@/lib/sync'
+import { DonutMacro, DistribuicaoBar } from '@/components/DonutMacro'
 
 const TIPOS: { id: RefeicaoTipo; label: string }[] = [
   { id: 'pa', label: 'pequeno-almoço' },
@@ -237,12 +238,18 @@ export default function RefeicoesPage() {
           <span className="label-cap">macros · {dataLegivel(date)}</span>
           <span className="text-faint text-[11px] tnum">{macros.refeicoes}× refeições</span>
         </div>
-        <div className="grid grid-cols-4 gap-2">
-          <Macro label="kcal" valor={macros.calorias} alvo={metas.calorias} />
-          <Macro label="P · g" valor={macros.proteina} alvo={metas.proteinaG} />
-          <Macro label="C · g" valor={macros.carbo} alvo={metas.carboG} />
-          <Macro label="G · g" valor={macros.gordura} alvo={metas.gorduraG} />
+        <div className="grid grid-cols-4 gap-2 place-items-center">
+          <DonutMacro label="kcal" valor={macros.calorias} alvo={metas.calorias} unidade="" />
+          <DonutMacro label="proteína" valor={macros.proteina} alvo={metas.proteinaG} />
+          <DonutMacro label="carbo" valor={macros.carbo} alvo={metas.carboG} />
+          <DonutMacro label="gordura" valor={macros.gordura} alvo={metas.gorduraG} />
         </div>
+        {macros.calorias > 0 ? (
+          <div className="pt-1 border-t border-[var(--hair)]">
+            <p className="label-cap mb-2">distribuição · % calorias</p>
+            <DistribuicaoBar p={macros.proteina} c={macros.carbo} g={macros.gordura} />
+          </div>
+        ) : null}
         {metas.calorias === null && metas.proteinaG === null ? (
           <a href="/coach" className="block text-faint text-[10.5px] leading-relaxed hover:text-ouro">
             sem metas definidas · diz à coach &ldquo;quero definir metas&rdquo; e ela ajusta contigo →
