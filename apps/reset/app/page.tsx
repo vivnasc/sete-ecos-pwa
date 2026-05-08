@@ -13,6 +13,7 @@ import PeriSintomasCard from '@/components/PeriSintomasCard'
 import MarcoCard from '@/components/MarcoCard'
 import PlanoResumoCard from '@/components/PlanoResumoCard'
 import CoachAlertasCard from '@/components/CoachAlertasCard'
+import AlcoolQuickCard from '@/components/AlcoolQuickCard'
 import { DonutMacro, DistribuicaoBar } from '@/components/DonutMacro'
 import CoachGreetingCard from '@/components/CoachGreetingCard'
 import QuickTools from '@/components/QuickTools'
@@ -209,6 +210,9 @@ export default function HomePage() {
 
       {/* CORPO · água, suplementos, trânsito */}
       {pronto ? <SafeBlock nome="WellnessQuickPanel"><WellnessQuickPanel /></SafeBlock> : null}
+
+      {/* ÁLCOOL · streak + marcar dia limpo */}
+      {pronto ? <SafeBlock nome="AlcoolQuick"><AlcoolQuickCard /></SafeBlock> : null}
 
       {/* SONO em detalhe */}
       {pronto ? <SafeBlock nome="SonoDetail"><SonoDetailCard /></SafeBlock> : null}

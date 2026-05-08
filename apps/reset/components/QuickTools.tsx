@@ -1,19 +1,19 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Scale, Clock, Droplet, UtensilsCrossed, Target, Activity } from 'lucide-react'
+import { Scale, Clock, Droplet, UtensilsCrossed, Target, Activity, Ruler } from 'lucide-react'
 import { getProfile } from '@/lib/profile'
 
 type Tool = { href: string; label: string; icon: typeof Scale; soFeminino?: boolean; destaque?: boolean }
 
-// Plano e refeições primeiro · scanner no fim para análise mais profunda.
-// Copo vive em /mais ou na nav.
+// Tudo o que se regista vai aqui · plano em destaque · sem ter de ir a /mais
 const TODAS: Tool[] = [
   { href: '/plano', label: 'plano', icon: Target, destaque: true },
   { href: '/refeicoes', label: 'refeições', icon: UtensilsCrossed },
   { href: '/peso', label: 'peso', icon: Scale },
   { href: '/jejum', label: 'jejum', icon: Clock },
   { href: '/ciclo', label: 'ciclo', icon: Droplet, soFeminino: true },
+  { href: '/medidas', label: 'medidas', icon: Ruler },
   { href: '/scanner', label: 'scanner', icon: Activity }
 ]
 
