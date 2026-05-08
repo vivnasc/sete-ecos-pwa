@@ -40,6 +40,12 @@ function inferirArea(key: string | undefined): string {
   return 'generico'
 }
 
+// DESACTIVADO · estava a poluir o histórico da coach com mensagens [auto] e
+// a queimar créditos de API. A coach já é proactiva via CoachAlertasCard
+// (heurística local, sem API call) e via abertura diária. Toast volta se
+// houver pedido explícito.
+const TOAST_ACTIVO = false
+
 export default function CoachNudgeToast() {
   const path = usePathname() ?? '/'
   const [texto, setTexto] = useState<string | null>(null)
@@ -182,7 +188,7 @@ export default function CoachNudgeToast() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [desligado])
 
-  if (desligado || !visivel) return null
+  if (!TOAST_ACTIVO || desligado || !visivel) return null
 
   return (
     <div className="fixed inset-x-0 top-0 z-[55] px-3 pt-[calc(env(safe-area-inset-top)+0.5rem)] pointer-events-none">

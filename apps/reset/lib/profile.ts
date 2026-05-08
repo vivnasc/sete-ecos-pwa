@@ -151,6 +151,7 @@ const AJUSTE_OBJECTIVO: Record<string, number> = {
 }
 
 // Sugestão de metas · usa Mifflin-St Jeor se houver altura+idade, senão heurística kcal/kg
+// Proteína mais alta em déficit (preserva massa magra) · floor mínimo de calorias
 export function sugerirMetas(opcoes: {
   pesoKg: number
   objectivo: 'manter' | 'perder_devagar' | 'perder' | 'ganhar'
@@ -158,7 +159,7 @@ export function sugerirMetas(opcoes: {
   alturaCm?: number | null
   idade?: number | null
   sexo?: 'F' | 'M' | 'O'
-}): Metas & { metodo: string; tmb?: number; tdee?: number } {
+}): Metas & { metodo: string; tmb?: number; tdee?: number; aviso?: string } {
   const { pesoKg, objectivo, actividade = 'leve', alturaCm, idade, sexo = 'F' } = opcoes
   const factor = FACTOR_ACTIVIDADE[actividade] ?? 1.375
   const ajuste = AJUSTE_OBJECTIVO[objectivo] ?? 0
@@ -167,6 +168,7 @@ export function sugerirMetas(opcoes: {
   let metodo: string
   let tmb: number | undefined
   let tdee: number | undefined
+  let aviso: string | undefined
 
   if (alturaCm && idade) {
     tmb = calcularTMB({ pesoKg, alturaCm, idade, sexo })
@@ -174,7 +176,6 @@ export function sugerirMetas(opcoes: {
     calorias = Math.round((tdee + ajuste) / 50) * 50
     metodo = 'Mifflin-St Jeor'
   } else {
-    // fallback heurística kcal/kg quando faltam dados
     const baseKcalPorKg: Record<string, number> = {
       manter: actividade === 'activa' || actividade === 'moderada' ? 30 : actividade === 'sedentaria' ? 26 : 28,
       perder_devagar: actividade === 'activa' || actividade === 'moderada' ? 26 : actividade === 'sedentaria' ? 22 : 24,
@@ -185,11 +186,23 @@ export function sugerirMetas(opcoes: {
     metodo = 'heurística kcal/kg (sem altura+idade)'
   }
 
-  const proteinaG = Math.round(pesoKg * 1.6 / 5) * 5
-  const gorduraG = Math.round(pesoKg * 0.9 / 5) * 5
+  // FLOOR de calorias · não permitimos abaixo destes valores (saúde · perda muscular · BMR-supressão)
+  const FLOOR = sexo === 'M' ? 1500 : 1300
+  if (calorias < FLOOR) {
+    aviso = `kcal calculadas (${calorias}) abaixo do mínimo seguro (${FLOOR}) · ajustadas para ${FLOOR}. déficit grande de mais perde massa muscular e suprime metabolismo. preferir ritmo mais lento.`
+    calorias = FLOOR
+  }
+
+  // PROTEÍNA · mais alta em déficit para preservar massa magra
+  // perder: 2.2g/kg · perder_devagar: 2.0g/kg · manter: 1.6g/kg · ganhar: 1.8g/kg
+  const protGperKg = objectivo === 'perder' ? 2.2 : objectivo === 'perder_devagar' ? 2.0 : objectivo === 'ganhar' ? 1.8 : 1.6
+  const proteinaG = Math.round(pesoKg * protGperKg / 5) * 5
+  // Gordura · 0.8g/kg em déficit (manter hormonas), 1.0g/kg manter/ganhar
+  const gordGperKg = (objectivo === 'perder' || objectivo === 'perder_devagar') ? 0.8 : 1.0
+  const gorduraG = Math.round(pesoKg * gordGperKg / 5) * 5
   const restoKcal = calorias - (proteinaG * 4 + gorduraG * 9)
   const carboG = Math.max(20, Math.round(restoKcal / 4 / 5) * 5)
-  return { calorias, proteinaG, carboG, gorduraG, metodo, tmb, tdee }
+  return { calorias, proteinaG, carboG, gorduraG, metodo, tmb, tdee, aviso }
 }
 
 export function getMetasActivas(): Metas | null {

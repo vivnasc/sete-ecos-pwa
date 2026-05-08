@@ -2,10 +2,17 @@
 
 import { useEffect, useState } from 'react'
 import { Droplets, Pill, Check } from 'lucide-react'
-import { getDia, saveDia } from '@/lib/storage'
+import { getDia, saveDia, pesoUltimo } from '@/lib/storage'
 import { isoDate } from '@/lib/dates'
 
-const META_AGUA = 8 // copos/dia
+// Meta de água ajustada ao peso · 35ml/kg, copo de 250ml
+function calcularMetaAgua(): number {
+  const peso = pesoUltimo()
+  if (!peso) return 8
+  const ml = peso * 35
+  return Math.max(6, Math.round(ml / 250))
+}
+
 const SUPLEMENTOS_DEFAULT = [
   { id: 'magnesio', label: 'magnésio' },
   { id: 'vit_d', label: 'vit D' },
@@ -17,12 +24,14 @@ export default function WellnessQuickPanel() {
   const [agua, setAgua] = useState(0)
   const [suplementos, setSuplementos] = useState<string[]>([])
   const [transito, setTransito] = useState<'sim' | 'nao' | null>(null)
+  const [metaAgua, setMetaAgua] = useState(8)
 
   const carregar = () => {
     const d = getDia(isoDate())
     setAgua(d.aguaCopos)
     setSuplementos(d.suplementos)
     setTransito(d.transitoIntestinal)
+    setMetaAgua(calcularMetaAgua())
   }
 
   useEffect(() => {
@@ -59,7 +68,7 @@ export default function WellnessQuickPanel() {
     <section className="card-solid space-y-4">
       <div className="flex items-baseline justify-between">
         <span className="label-cap">corpo · hoje</span>
-        <span className="text-faint text-[11px] tnum">{agua}/{META_AGUA} copos</span>
+        <span className="text-faint text-[11px] tnum">{agua}/{metaAgua} copos</span>
       </div>
 
       {/* Água · contador */}
@@ -90,7 +99,7 @@ export default function WellnessQuickPanel() {
         </div>
         {/* Barra visual */}
         <div className="flex gap-0.5">
-          {Array.from({ length: META_AGUA }).map((_, i) => (
+          {Array.from({ length: metaAgua }).map((_, i) => (
             <div
               key={i}
               className={`h-1 flex-1 rounded-full transition-elegant ${

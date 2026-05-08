@@ -782,8 +782,8 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
       idade: profile.idade,
       sexo: profile.sexo
     })
-    const protGperKg = 1.6
-    const gordGperKg = 0.9
+    const protGperKg = objectivo === 'perder' ? 2.2 : objectivo === 'perder_devagar' ? 2.0 : objectivo === 'ganhar' ? 1.8 : 1.6
+    const gordGperKg = (objectivo === 'perder' || objectivo === 'perder_devagar') ? 0.8 : 1.0
     const kcalTotal = sug.calorias ?? 0
     const protG = sug.proteinaG ?? 0
     const gordG = sug.gorduraG ?? 0
@@ -791,25 +791,18 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
     const protKcal = protG * 4
     const gordKcal = gordG * 9
     const linhas: string[] = [`cálculo (${sug.metodo}):`]
+    if (sug.aviso) linhas.push(`⚠ ${sug.aviso}`)
     if (sug.tmb && sug.tdee) {
       const factorMap = { sedentaria: 1.2, leve: 1.375, moderada: 1.55, activa: 1.725 } as const
       const ajusteMap = { manter: 0, perder_devagar: -250, perder: -500, ganhar: +300 } as const
       linhas.push(`· TMB: 10×${peso} + 6.25×${profile.alturaCm} − 5×${profile.idade}${profile.sexo === 'M' ? ' + 5' : ' − 161'} = ${sug.tmb} kcal`)
       linhas.push(`· TDEE: ${sug.tmb} × ${factorMap[actividade]} (${actividade}) = ${sug.tdee} kcal`)
-      linhas.push(`· objectivo (${objectivo}): TDEE ${ajusteMap[objectivo] >= 0 ? '+' : ''}${ajusteMap[objectivo]} = ${sug.tdee + ajusteMap[objectivo]} → arredondado a ${kcalTotal}`)
+      linhas.push(`· objectivo (${objectivo}): TDEE ${ajusteMap[objectivo] >= 0 ? '+' : ''}${ajusteMap[objectivo]} = ${sug.tdee + ajusteMap[objectivo]} → ${kcalTotal}${sug.aviso ? ' (com floor aplicado)' : ''}`)
     } else {
-      const baseKcalPorKg: Record<string, number> = {
-        manter: actividade === 'activa' || actividade === 'moderada' ? 30 : actividade === 'sedentaria' ? 26 : 28,
-        perder_devagar: actividade === 'activa' || actividade === 'moderada' ? 26 : actividade === 'sedentaria' ? 22 : 24,
-        perder: actividade === 'activa' || actividade === 'moderada' ? 24 : actividade === 'sedentaria' ? 20 : 22,
-        ganhar: actividade === 'activa' || actividade === 'moderada' ? 34 : actividade === 'sedentaria' ? 30 : 32
-      }
-      const k = baseKcalPorKg[objectivo]
-      linhas.push(`· kcal: ${peso}kg × ${k} (${objectivo}, ${actividade}) = ${peso * k} → arredondado a ${kcalTotal}`)
-      linhas.push(`· nota: usar Mifflin-St Jeor seria mais preciso · falta altura+idade no perfil. Vai a /definicoes para preencheres.`)
+      linhas.push(`· kcal: heurística kcal/kg sem altura+idade. Recomendo preencher /definicoes para Mifflin-St Jeor.`)
     }
-    linhas.push(`· proteína: ${peso}kg × ${protGperKg} g/kg = ${(peso * protGperKg).toFixed(0)}g → ${protG}g (${protKcal} kcal)`)
-    linhas.push(`· gordura: ${peso}kg × ${gordGperKg} g/kg = ${(peso * gordGperKg).toFixed(0)}g → ${gordG}g (${gordKcal} kcal)`)
+    linhas.push(`· proteína: ${peso}kg × ${protGperKg} g/kg (${objectivo === 'perder' || objectivo === 'perder_devagar' ? 'mais alta em déficit · preserva massa magra' : 'manutenção'}) = ${protG}g (${protKcal} kcal)`)
+    linhas.push(`· gordura: ${peso}kg × ${gordGperKg} g/kg = ${gordG}g (${gordKcal} kcal)`)
     linhas.push(`· carbo: resto = ${kcalTotal} − ${protKcal} − ${gordKcal} = ${kcalTotal - protKcal - gordKcal} kcal → ${carbG}g`)
     return { ok: true, texto: `sugestão (${objectivo}, ${actividade}): ${kcalTotal} kcal · ${protG}g P · ${carbG}g C · ${gordG}g G\n\n${linhas.join('\n')}` }
   },

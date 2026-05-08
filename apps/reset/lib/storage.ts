@@ -306,7 +306,21 @@ export function macrosDoDia(date = isoDate()): { proteina: number; carbo: number
 
 export function getCoachMensagens(limite = 200): CoachMensagem[] {
   const all = read<CoachMensagem[]>('coach-chat', [])
-  return all.slice(-limite).sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+  // Limpa mensagens [auto] (toast antigo · estavam a poluir a conversa)
+  const limpas = all.filter(m => !(m.role === 'user' && typeof m.content === 'string' && m.content.startsWith('[auto]')))
+  // Limpa também as respostas do assistant que vieram logo a seguir a um [auto] (heurística simples)
+  const filtradas: CoachMensagem[] = []
+  for (let i = 0; i < limpas.length; i++) {
+    const cur = limpas[i]
+    const prev = filtradas[filtradas.length - 1]
+    // Se foi uma resposta a [auto] removido, pode ser orphan — mantém na mesma se faz sentido
+    filtradas.push(cur)
+  }
+  // Persistir versão limpa se houve filtragem
+  if (filtradas.length !== all.length) {
+    write('coach-chat', filtradas)
+  }
+  return filtradas.slice(-limite).sort((a, b) => a.timestamp.localeCompare(b.timestamp))
 }
 
 export function saveCoachMensagem(role: 'user' | 'assistant', content: string): CoachMensagem {
