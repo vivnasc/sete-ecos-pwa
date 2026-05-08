@@ -99,6 +99,17 @@ export default function TendenciaCard() {
   )
 }
 
+// Cores fixas para charts · independentes da paleta · sempre legíveis
+const COR = {
+  proteina: '#D4A14E',  // ouro
+  carbo: '#C97A4E',     // âmbar/terracota
+  gordura: '#7B9A4F',   // oliva
+  alvo: '#D4A14E',      // ouro
+  oliva: '#7B9A4F',
+  terracota: '#C9614E', // vermelho-tijolo
+  vazio: 'rgba(150,140,120,0.15)' // traço subtil
+}
+
 function GraficoKcal({ dias, alvo }: { dias: DiaDados[]; alvo: number | null }) {
   const w = 320
   const h = 140
@@ -117,16 +128,31 @@ function GraficoKcal({ dias, alvo }: { dias: DiaDados[]; alvo: number | null }) 
         {/* alvo */}
         {alvo ? (
           <>
-            <line x1={pad.l} y1={yScale(alvo)} x2={w - pad.r} y2={yScale(alvo)} stroke="var(--ouro)" strokeWidth="1" strokeDasharray="3 3" opacity="0.5" />
-            <text x={pad.l - 4} y={yScale(alvo) + 3} fontSize="9" fill="var(--ouro)" textAnchor="end">{alvo}</text>
+            <line x1={pad.l} y1={yScale(alvo)} x2={w - pad.r} y2={yScale(alvo)} stroke={COR.alvo} strokeWidth="1" strokeDasharray="3 3" opacity="0.7" />
+            <text x={pad.l - 4} y={yScale(alvo) + 3} fontSize="9" fill={COR.alvo} textAnchor="end">{alvo}</text>
           </>
         ) : null}
         {/* baseline */}
-        <line x1={pad.l} y1={pad.t + ch} x2={w - pad.r} y2={pad.t + ch} stroke="var(--hair)" />
+        <line x1={pad.l} y1={pad.t + ch} x2={w - pad.r} y2={pad.t + ch} stroke="rgba(150,140,120,0.3)" />
         {/* bars */}
         {dias.map((d, i) => {
-          const altura = (d.kcal / maxKcal) * ch
-          const cor = alvo && d.kcal > alvo * 1.1 ? 'var(--terracota)' : alvo && d.kcal >= alvo * 0.9 && d.kcal <= alvo * 1.1 ? 'var(--oliva)' : d.kcal === 0 ? 'var(--hair-strong)' : 'var(--ouro)'
+          if (d.kcal === 0) {
+            // dia vazio · pequeno traço para mostrar que existe
+            return (
+              <rect
+                key={d.date}
+                x={x(i)}
+                y={pad.t + ch - 2}
+                width={barW * 0.7}
+                height={2}
+                fill={COR.vazio}
+              >
+                <title>{d.date}: sem registo</title>
+              </rect>
+            )
+          }
+          const altura = Math.max(2, (d.kcal / maxKcal) * ch)
+          const cor = alvo && d.kcal > alvo * 1.1 ? COR.terracota : alvo && d.kcal >= alvo * 0.9 && d.kcal <= alvo * 1.1 ? COR.oliva : COR.alvo
           return (
             <rect
               key={d.date}
@@ -136,17 +162,16 @@ function GraficoKcal({ dias, alvo }: { dias: DiaDados[]; alvo: number | null }) 
               height={altura}
               rx="2"
               fill={cor}
-              opacity={d.kcal === 0 ? 0.4 : 0.85}
             >
               <title>{d.date}: {d.kcal} kcal</title>
             </rect>
           )
         })}
         {/* label primeira e última data */}
-        <text x={pad.l} y={h - 6} fontSize="9" fill="var(--ink-faint)">{dias[0]?.date.slice(5)}</text>
-        <text x={w - pad.r} y={h - 6} fontSize="9" fill="var(--ink-faint)" textAnchor="end">{dias[dias.length - 1]?.date.slice(5)}</text>
+        <text x={pad.l} y={h - 6} fontSize="9" fill="rgba(150,140,120,0.7)">{dias[0]?.date.slice(5)}</text>
+        <text x={w - pad.r} y={h - 6} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="end">{dias[dias.length - 1]?.date.slice(5)}</text>
       </svg>
-      <p className="text-faint text-[10px] text-center mt-1">linha tracejada = alvo · barra a verde quando perto · vermelho se passa 10% do alvo</p>
+      <p className="text-faint text-[10px] text-center mt-1">verde = no alvo · vermelho = passou 10% · dourado = caso contrário · traço fino = sem registo</p>
     </div>
   )
 }
@@ -167,33 +192,46 @@ function GraficoMacros({ dias }: { dias: DiaDados[] }) {
   return (
     <div className="-mx-2">
       <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" preserveAspectRatio="none">
-        <line x1={pad.l} y1={pad.t + ch} x2={w - pad.r} y2={pad.t + ch} stroke="var(--hair)" />
+        <line x1={pad.l} y1={pad.t + ch} x2={w - pad.r} y2={pad.t + ch} stroke="rgba(150,140,120,0.3)" />
         {dias.map((d, i) => {
           const kP = d.proteina * 4
           const kC = d.carbo * 4
           const kG = d.gordura * 9
           const total = kP + kC + kG
-          if (total === 0) return null
+          const xi = x(i)
+          if (total === 0) {
+            return (
+              <rect
+                key={d.date}
+                x={xi}
+                y={pad.t + ch - 2}
+                width={bw}
+                height={2}
+                fill={COR.vazio}
+              >
+                <title>{d.date}: sem registo</title>
+              </rect>
+            )
+          }
           const hP = (kP / maxKcal) * ch
           const hC = (kC / maxKcal) * ch
           const hG = (kG / maxKcal) * ch
-          const xi = x(i)
-          let yi = pad.t + ch
+          const yi = pad.t + ch
           return (
             <g key={d.date}>
-              <rect x={xi} y={yi - hG} width={bw} height={hG} rx="2" fill="var(--oliva)" opacity="0.85"><title>{d.date}: G {d.gordura}g</title></rect>
-              <rect x={xi} y={yi - hG - hC} width={bw} height={hC} fill="var(--ink)" className="dark:fill-creme/70" opacity="0.85"><title>{d.date}: C {d.carbo}g</title></rect>
-              <rect x={xi} y={yi - hG - hC - hP} width={bw} height={hP} rx="2" fill="var(--ouro)" opacity="0.85"><title>{d.date}: P {d.proteina}g</title></rect>
+              <rect x={xi} y={yi - hG} width={bw} height={hG} rx="2" fill={COR.gordura}><title>{d.date}: G {d.gordura}g</title></rect>
+              <rect x={xi} y={yi - hG - hC} width={bw} height={hC} fill={COR.carbo}><title>{d.date}: C {d.carbo}g</title></rect>
+              <rect x={xi} y={yi - hG - hC - hP} width={bw} height={hP} rx="2" fill={COR.proteina}><title>{d.date}: P {d.proteina}g</title></rect>
             </g>
           )
         })}
-        <text x={pad.l} y={h - 6} fontSize="9" fill="var(--ink-faint)">{dias[0]?.date.slice(5)}</text>
-        <text x={w - pad.r} y={h - 6} fontSize="9" fill="var(--ink-faint)" textAnchor="end">{dias[dias.length - 1]?.date.slice(5)}</text>
+        <text x={pad.l} y={h - 6} fontSize="9" fill="rgba(150,140,120,0.7)">{dias[0]?.date.slice(5)}</text>
+        <text x={w - pad.r} y={h - 6} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="end">{dias[dias.length - 1]?.date.slice(5)}</text>
       </svg>
       <div className="flex justify-center gap-3 text-[10px] mt-1">
-        <span className="inline-flex items-center gap-1 text-faint"><span className="inline-block h-1.5 w-1.5 rounded-full bg-ouro" />proteína</span>
-        <span className="inline-flex items-center gap-1 text-faint"><span className="inline-block h-1.5 w-1.5 rounded-full bg-tinta dark:bg-creme/70" />carbo</span>
-        <span className="inline-flex items-center gap-1 text-faint"><span className="inline-block h-1.5 w-1.5 rounded-full bg-oliva" />gordura</span>
+        <span className="inline-flex items-center gap-1 text-faint"><span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: COR.proteina }} />proteína</span>
+        <span className="inline-flex items-center gap-1 text-faint"><span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: COR.carbo }} />carbo</span>
+        <span className="inline-flex items-center gap-1 text-faint"><span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: COR.gordura }} />gordura</span>
       </div>
     </div>
   )
@@ -231,15 +269,15 @@ function GraficoPeso({ dias }: { dias: DiaDados[] }) {
   return (
     <div className="-mx-2">
       <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" preserveAspectRatio="none">
-        <line x1={pad.l} y1={pad.t + ch} x2={w - pad.r} y2={pad.t + ch} stroke="var(--hair)" />
-        <text x={pad.l - 4} y={pad.t + 3} fontSize="9" fill="var(--ink-faint)" textAnchor="end">{yMax.toFixed(1)}</text>
-        <text x={pad.l - 4} y={pad.t + ch} fontSize="9" fill="var(--ink-faint)" textAnchor="end">{yMin.toFixed(1)}</text>
-        <path d={path} fill="none" stroke="var(--ouro)" strokeWidth="1.8" />
+        <line x1={pad.l} y1={pad.t + ch} x2={w - pad.r} y2={pad.t + ch} stroke="rgba(150,140,120,0.3)" />
+        <text x={pad.l - 4} y={pad.t + 3} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="end">{yMax.toFixed(1)}</text>
+        <text x={pad.l - 4} y={pad.t + ch} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="end">{yMin.toFixed(1)}</text>
+        <path d={path} fill="none" stroke={COR.alvo} strokeWidth="2" />
         {pontos.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="3" fill="var(--ouro)" />
+          <circle key={i} cx={p.x} cy={p.y} r="3.5" fill={COR.alvo} />
         ))}
-        <text x={pad.l} y={h - 6} fontSize="9" fill="var(--ink-faint)">{dias[0]?.date.slice(5)}</text>
-        <text x={w - pad.r} y={h - 6} fontSize="9" fill="var(--ink-faint)" textAnchor="end">{dias[dias.length - 1]?.date.slice(5)}</text>
+        <text x={pad.l} y={h - 6} fontSize="9" fill="rgba(150,140,120,0.7)">{dias[0]?.date.slice(5)}</text>
+        <text x={w - pad.r} y={h - 6} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="end">{dias[dias.length - 1]?.date.slice(5)}</text>
       </svg>
       <p className="text-faint text-[10px] text-center mt-1">
         {pesos[pesos.length - 1] > pesos[0]
