@@ -417,9 +417,21 @@ function RefeicaoCard({
   const [carbo, setCarbo] = useState(r.carboG !== null ? String(r.carboG) : '')
   const [gordura, setGordura] = useState(r.gorduraG !== null ? String(r.gorduraG) : '')
   const [calorias, setCalorias] = useState(r.calorias !== null ? String(r.calorias) : '')
+  const [kcalAuto, setKcalAuto] = useState(true) // recalcula kcal sempre que P/C/G mudam
   const [tipo, setTipo] = useState<RefeicaoTipo>(r.tipo)
   const [hora, setHora] = useState(horaLocal(r.timestamp))
   const [reestimando, setReestimando] = useState(false)
+
+  // Auto-recalcular calorias a partir de P/C/G (4·P + 4·C + 9·G)
+  useEffect(() => {
+    if (!kcalAuto) return
+    const p = Number(proteina) || 0
+    const c = Number(carbo) || 0
+    const g = Number(gordura) || 0
+    if (p + c + g === 0) return
+    const kcal = Math.round(p * 4 + c * 4 + g * 9)
+    setCalorias(String(kcal))
+  }, [proteina, carbo, gordura, kcalAuto])
 
   const reestimar = async () => {
     if (!descricao.trim()) return
@@ -522,8 +534,19 @@ function RefeicaoCard({
           <CampoMacro label="P · g" valor={proteina} onChange={setProteina} />
           <CampoMacro label="C · g" valor={carbo} onChange={setCarbo} />
           <CampoMacro label="G · g" valor={gordura} onChange={setGordura} />
-          <CampoMacro label="kcal" valor={calorias} onChange={setCalorias} />
+          <CampoMacro
+            label={kcalAuto ? 'kcal · auto' : 'kcal'}
+            valor={calorias}
+            onChange={v => { setCalorias(v); setKcalAuto(false) }}
+          />
         </div>
+        {!kcalAuto ? (
+          <button onClick={() => setKcalAuto(true)} className="text-faint text-[10.5px] hover:text-ouro">
+            ↻ recalcular kcal a partir de P/C/G
+          </button>
+        ) : (
+          <p className="text-faint text-[10px] leading-relaxed">kcal calculado automaticamente: 4·P + 4·C + 9·G</p>
+        )}
       </article>
     )
   }
