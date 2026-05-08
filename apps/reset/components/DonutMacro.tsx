@@ -51,15 +51,18 @@ export function DonutMacro({
   const pct = alvo && alvo > 0 ? Math.min(100, (valor / alvo) * 100) : 0
   const dash = (pct / 100) * circ
 
-  // Cor consoante posição vs alvo
+  // Cor:
+  // - sem alvo · neutro
+  // - reverso (carbo em keto, álcool) · acima do alvo é mau (terracota)
+  // - default · ouro sempre · oliva quando atinge o alvo (95-110%) · terracota se excede 120%
+  const pctReal = alvo && alvo > 0 ? (valor / alvo) * 100 : 0
   const cor = alvo === null
     ? 'var(--ink-faint)'
     : reverso
-      ? valor > alvo ? 'var(--terracota)' : valor > alvo * 0.8 ? 'var(--ouro)' : 'var(--oliva)'
-      : pct >= 95 && pct <= 110 ? 'var(--oliva)'
-        : pct > 110 ? 'var(--ouro)'
-          : pct >= 70 ? 'var(--ouro)'
-            : 'var(--ink-faint)'
+      ? pctReal > 110 ? 'var(--terracota)' : 'var(--ouro)'
+      : pctReal >= 95 && pctReal <= 110 ? 'var(--oliva)'
+        : pctReal > 120 ? 'var(--terracota)'
+          : 'var(--ouro)'
 
   return (
     <div className="flex flex-col items-center gap-1">
