@@ -140,19 +140,19 @@ export default function HomePage() {
         </section>
       ) : null}
 
-      {/* COACH · saudação do dia */}
-      {/* MARCO · selo animado quando atinges Dia 7/14/21/30/45/60 */}
-      {pronto ? <SafeBlock nome="Marco"><MarcoCard /></SafeBlock> : null}
-
-      {/* PLANO · objectivos com progresso */}
+      {/* PLANO · prioridade máxima · onde queres chegar */}
       {pronto ? <SafeBlock nome="PlanoResumo"><PlanoResumoCard /></SafeBlock> : null}
 
       {/* ALERTAS PROACTIVOS · a coach nota padrões e sugere */}
       {pronto ? <SafeBlock nome="CoachAlertas"><CoachAlertasCard /></SafeBlock> : null}
 
+      {/* MARCO · selo animado quando atinges Dia 7/14/21/30/45/60 */}
+      {pronto ? <SafeBlock nome="Marco"><MarcoCard /></SafeBlock> : null}
+
+      {/* COACH · saudação do dia */}
       {pronto ? <SafeBlock nome="CoachGreeting"><CoachGreetingCard /></SafeBlock> : null}
 
-      {/* ACESSO RÁPIDO · ferramentas principais */}
+      {/* ACESSO RÁPIDO · plano + scanner em destaque */}
       {pronto ? <SafeBlock nome="QuickTools"><QuickTools /></SafeBlock> : null}
 
       {/* PAINEL MATINAL · ferramentas perto */}

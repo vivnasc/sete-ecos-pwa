@@ -1,19 +1,20 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Scale, Clock, Droplet, Wine, UtensilsCrossed } from 'lucide-react'
+import { Scale, Clock, Droplet, Wine, UtensilsCrossed, Target, Activity } from 'lucide-react'
 import { getProfile } from '@/lib/profile'
 
-type Tool = { href: string; label: string; icon: typeof Scale; soFeminino?: boolean }
+type Tool = { href: string; label: string; icon: typeof Scale; soFeminino?: boolean; destaque?: boolean }
 
-// Coach já é a aba central da nav com destaque · scanner está em "aprofundar".
-// Aqui só ferramentas de registo rápido que abres todos os dias.
+// Plano e refeições primeiro · scanner no fim para análise mais profunda.
 const TODAS: Tool[] = [
+  { href: '/plano', label: 'plano', icon: Target, destaque: true },
   { href: '/refeicoes', label: 'refeições', icon: UtensilsCrossed },
   { href: '/peso', label: 'peso', icon: Scale },
   { href: '/jejum', label: 'jejum', icon: Clock },
   { href: '/ciclo', label: 'ciclo', icon: Droplet, soFeminino: true },
-  { href: '/alcool', label: 'copo', icon: Wine }
+  { href: '/alcool', label: 'copo', icon: Wine },
+  { href: '/scanner', label: 'scanner', icon: Activity }
 ]
 
 export default function QuickTools() {
@@ -31,19 +32,18 @@ export default function QuickTools() {
   return (
     <section className="space-y-2">
       <span className="label-cap px-1">acesso rápido</span>
-      <div
-        className="grid gap-1.5 sm:gap-2"
-        style={{ gridTemplateColumns: `repeat(${itens.length}, minmax(0, 1fr))` }}
-      >
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-2 sm:grid-cols-7">
         {itens.map(t => {
           const Icon = t.icon
           return (
             <a
               key={t.href}
               href={t.href}
-              className="card-solid flex flex-col items-center justify-center gap-1.5 !p-3 transition-elegant hover:shadow-hair-strong active:scale-95"
+              className={`card-solid flex flex-col items-center justify-center gap-1.5 !p-3 transition-elegant hover:shadow-hair-strong active:scale-95 ${
+                t.destaque ? 'ring-1 ring-ouro/40 bg-[var(--surface-soft)]' : ''
+              }`}
             >
-              <Icon size={16} strokeWidth={1.3} className="text-ouro" />
+              <Icon size={16} strokeWidth={1.3} className={t.destaque ? 'text-ouro' : 'text-ouro'} />
               <span className="font-serif text-[11.5px] tracking-editorial text-soft">{t.label}</span>
             </a>
           )
@@ -52,4 +52,3 @@ export default function QuickTools() {
     </section>
   )
 }
-
