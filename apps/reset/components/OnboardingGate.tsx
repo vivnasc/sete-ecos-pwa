@@ -13,6 +13,7 @@ const GATILHOS_OPCOES = [
 
 const PASSOS = [
   { id: 'nome', titulo: 'Como te chamas?' },
+  { id: 'corpo', titulo: 'O teu corpo' },
   { id: 'fisico', titulo: 'Ponto de partida' },
   { id: 'horarios', titulo: 'Os teus horários' },
   { id: 'gatilhos', titulo: 'O que costuma mover-te ao copo?' },
@@ -23,23 +24,28 @@ export default function OnboardingGate({ children }: { children: React.ReactNode
   const { configurado, session } = useAuth()
   const [aberto, setAberto] = useState(false)
 
-  // Decisão imediata baseada em localStorage · sem esperar sync
+  // Decisão: precisa de onboarding se não fez OU se faltam campos obrigatórios
+  // (utilizadoras antigas que fizeram antes dos campos novos serem necessários)
+  const precisaOnboarding = (p: ReturnType<typeof getProfile>) => {
+    if (!p.onboardingCompleto) return true
+    if (!p.nome || p.nome.trim().length === 0) return true
+    if (p.idade === null || p.idade <= 0) return true
+    if (p.alturaCm === null || p.alturaCm <= 0) return true
+    if (p.nivelActividade === null) return true
+    return false
+  }
+
   useEffect(() => {
-    // Em rotas públicas (/login), nunca abrir onboarding
     if (configurado && !session) {
       setAberto(false)
       return
     }
-    const p = getProfile()
-    setAberto(!p.onboardingCompleto)
+    setAberto(precisaOnboarding(getProfile()))
   }, [configurado, session])
 
-  // Re-check quando profile chega do Supabase · fecha onboarding
-  // se sync trouxer onboardingCompleto=true
   useEffect(() => {
     const onUpdate = () => {
-      const p = getProfile()
-      if (p.onboardingCompleto) setAberto(false)
+      if (!precisaOnboarding(getProfile())) setAberto(false)
     }
     window.addEventListener('fenixfit:profile', onUpdate)
     return () => window.removeEventListener('fenixfit:profile', onUpdate)
@@ -53,7 +59,20 @@ function OnboardingFlow({ onClose }: { onClose: () => void }) {
   const [passo, setPasso] = useState(0)
   const [perfil, setPerfil] = useState<Profile>(getProfile())
 
+  // Validação por passo · obrigatórios
+  const passoValido = (() => {
+    const id = PASSOS[passo].id
+    if (id === 'nome') return perfil.nome.trim().length > 0
+    if (id === 'corpo') {
+      return perfil.idade !== null && perfil.idade > 0
+        && perfil.alturaCm !== null && perfil.alturaCm > 0
+        && perfil.nivelActividade !== null
+    }
+    return true
+  })()
+
   const proximo = () => {
+    if (!passoValido) return
     if (passo < PASSOS.length - 1) setPasso(p => p + 1)
     else terminar()
   }
@@ -133,10 +152,70 @@ function OnboardingFlow({ onClose }: { onClose: () => void }) {
             </div>
           )}
 
+          {PASSOS[passo].id === 'corpo' && (
+            <div className="space-y-6">
+              <p className="text-soft text-[14px] leading-relaxed">
+                preciso destes três para calcular as tuas calorias e proteína de forma realista (Mifflin-St Jeor). sem isto, fico em heurística grosseira.
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Idade · anos">
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min="10"
+                    max="100"
+                    value={perfil.idade ?? ''}
+                    onChange={e => setPerfil({ ...perfil, idade: e.target.value ? Number(e.target.value) : null })}
+                    className="input-base tnum"
+                    placeholder="—"
+                    autoFocus
+                  />
+                </Field>
+                <Field label="Altura · cm">
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min="100"
+                    max="220"
+                    value={perfil.alturaCm ?? ''}
+                    onChange={e => setPerfil({ ...perfil, alturaCm: e.target.value ? Number(e.target.value) : null })}
+                    className="input-base tnum"
+                    placeholder="—"
+                  />
+                </Field>
+              </div>
+              <Field label="Nível de actividade habitual">
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { v: 'sedentaria', l: 'sedentária', sub: 'sem treino · trabalho ao computador' },
+                    { v: 'leve', l: 'leve', sub: '1–3× treino/sem' },
+                    { v: 'moderada', l: 'moderada', sub: '3–5× treino/sem' },
+                    { v: 'activa', l: 'activa', sub: '6+× treino · trabalho físico' }
+                  ].map(o => {
+                    const active = perfil.nivelActividade === o.v
+                    return (
+                      <button
+                        key={o.v}
+                        type="button"
+                        onClick={() => setPerfil({ ...perfil, nivelActividade: o.v as Profile['nivelActividade'] })}
+                        className={`text-left rounded-lg p-3 transition-elegant ${
+                          active ? 'bg-tinta text-[var(--bg)] dark:bg-ouro dark:text-tinta' : 'shadow-hair hover:shadow-hair-strong'
+                        }`}
+                      >
+                        <span className="block font-serif text-[14px]">{o.l}</span>
+                        <span className={`block text-[10.5px] mt-0.5 ${active ? 'opacity-80' : 'text-faint'}`}>{o.sub}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </Field>
+            </div>
+          )}
+
           {PASSOS[passo].id === 'fisico' && (
             <div className="space-y-6">
               <p className="text-soft text-[14px] leading-relaxed">
-                opcional. ajuda a perceber a evolução. podes deixar em branco.
+                opcional. ajuda a perceber a evolução. podes deixar em branco se preferires registar amanhã.
               </p>
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Peso (kg)">
@@ -263,7 +342,7 @@ function OnboardingFlow({ onClose }: { onClose: () => void }) {
           <span className="label-soft">
             {passo + 1} / {PASSOS.length}
           </span>
-          <button onClick={proximo} className="btn-primary">
+          <button onClick={proximo} disabled={!passoValido} className="btn-primary disabled:opacity-30">
             {passo === PASSOS.length - 1 ? 'começar' : 'seguinte'}
             {passo === PASSOS.length - 1 ? <Check size={14} strokeWidth={1.6} /> : <ArrowRight size={14} strokeWidth={1.4} />}
           </button>
