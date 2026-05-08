@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { Clock, Sun, Moon, Check } from 'lucide-react'
+import { Clock, Sun, Moon, Check, Pencil, X } from 'lucide-react'
 import {
   getJejuns,
   getJejumHoje,
@@ -20,6 +20,11 @@ export default function JejumPage() {
   const [emCurso, setEmCurso] = useState<{ horas: number; ultimaRef: string } | null>(null)
   const [meta, setMeta] = useState<14 | 16>(14)
   const [tick, setTick] = useState(0)
+  const [editarUltima, setEditarUltima] = useState(false)
+  const [editarPrimeira, setEditarPrimeira] = useState(false)
+  const [horaUltima, setHoraUltima] = useState('')
+  const [ontem, setOntem] = useState(false)
+  const [horaPrimeira, setHoraPrimeira] = useState('')
 
   useEffect(() => {
     const refresh = () => {
@@ -57,6 +62,41 @@ export default function JejumPage() {
       date,
       ultimaRefeicao: new Date().toISOString(),
       primeiraRefeicao: existing.primeiraRefeicao,
+      duracaoHoras: null,
+      meta,
+      completou: false
+    })
+  }
+
+  const marcarUltimaRefeicaoComHora = (hhmm: string, ontem = false) => {
+    if (!/^\d{1,2}:\d{2}$/.test(hhmm)) return
+    const [h, m] = hhmm.split(':').map(Number)
+    const d = new Date()
+    if (ontem) d.setDate(d.getDate() - 1)
+    d.setHours(h, m, 0, 0)
+    const date = isoDate()
+    const existing = hoje ?? { date, ultimaRefeicao: null, primeiraRefeicao: null, duracaoHoras: null, meta, completou: false, id: '' }
+    saveJejum({
+      date,
+      ultimaRefeicao: d.toISOString(),
+      primeiraRefeicao: existing.primeiraRefeicao,
+      duracaoHoras: null,
+      meta,
+      completou: false
+    })
+  }
+
+  const marcarPrimeiraRefeicaoComHora = (hhmm: string) => {
+    if (!emCurso) return
+    if (!/^\d{1,2}:\d{2}$/.test(hhmm)) return
+    const [h, m] = hhmm.split(':').map(Number)
+    const d = new Date()
+    d.setHours(h, m, 0, 0)
+    const date = isoDate()
+    saveJejum({
+      date,
+      ultimaRefeicao: emCurso.ultimaRef,
+      primeiraRefeicao: d.toISOString(),
       duracaoHoras: null,
       meta,
       completou: false
@@ -121,39 +161,126 @@ export default function JejumPage() {
 
       {/* Estado actual */}
       {emCurso ? (
-        <section className="card-feature text-center">
-          <div className="flex items-center justify-center gap-2">
-            <Clock size={14} strokeWidth={1.4} className="text-ouro" />
-            <span className="label-cap">jejum em curso</span>
+        <section className="card-feature text-center space-y-4">
+          <div>
+            <div className="flex items-center justify-center gap-2">
+              <Clock size={14} strokeWidth={1.4} className="text-ouro" />
+              <span className="label-cap">jejum em curso</span>
+            </div>
+            <p className={cn('editorial-num mt-4 text-[80px] leading-none', corStatus(emCurso.horas))}>
+              {Math.floor(emCurso.horas)}<span className="text-faint text-[24px]">h{Math.round((emCurso.horas % 1) * 60).toString().padStart(2, '0')}</span>
+            </p>
+            <p className="text-faint mt-3 text-[12px]">
+              desde {new Date(emCurso.ultimaRef).toLocaleString('pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+            </p>
+            <div className="mx-auto mt-4 h-px w-8 bg-ouro" aria-hidden />
+            <p className="text-soft mt-4 text-[13px]">
+              {emCurso.horas >= meta
+                ? `meta de ${meta}h cumprida.`
+                : `faltam ${(meta - emCurso.horas).toFixed(1)}h para a meta.`}
+            </p>
           </div>
-          <p className={cn('editorial-num mt-4 text-[80px] leading-none', corStatus(emCurso.horas))}>
-            {Math.floor(emCurso.horas)}<span className="text-faint text-[24px]">h{Math.round((emCurso.horas % 1) * 60).toString().padStart(2, '0')}</span>
-          </p>
-          <p className="text-faint mt-3 text-[12px]">
-            desde {new Date(emCurso.ultimaRef).toLocaleString('pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
-          </p>
-          <div className="mx-auto mt-4 h-px w-8 bg-ouro" aria-hidden />
-          <p className="text-soft mt-4 text-[13px]">
-            {emCurso.horas >= meta
-              ? `meta de ${meta}h cumprida.`
-              : `faltam ${(meta - emCurso.horas).toFixed(1)}h para a meta.`}
-          </p>
-          <button onClick={marcarPrimeiraRefeicao} className="btn-primary mt-5 w-full">
-            <Sun size={14} strokeWidth={1.4} /> primeira refeição agora
-          </button>
+          {editarPrimeira ? (
+            <div className="card-solid !p-3 space-y-2">
+              <p className="text-faint text-[10.5px] text-left">a que horas comeste?</p>
+              <div className="flex gap-2">
+                <input
+                  type="time"
+                  value={horaPrimeira}
+                  onChange={e => setHoraPrimeira(e.target.value)}
+                  className="flex-1 rounded-md border border-[var(--hair)] bg-transparent p-2 text-[14px] tnum focus:border-ouro focus:outline-none"
+                />
+                <button
+                  onClick={() => { marcarPrimeiraRefeicaoComHora(horaPrimeira); setEditarPrimeira(false); setHoraPrimeira('') }}
+                  disabled={!horaPrimeira}
+                  className="btn-primary px-4 disabled:opacity-40"
+                >guardar</button>
+                <button onClick={() => setEditarPrimeira(false)} className="btn-ghost px-3">
+                  <X size={14} strokeWidth={1.5} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <button onClick={marcarPrimeiraRefeicao} className="btn-primary flex-1">
+                <Sun size={14} strokeWidth={1.4} /> agora
+              </button>
+              <button
+                onClick={() => {
+                  const d = new Date()
+                  setHoraPrimeira(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`)
+                  setEditarPrimeira(true)
+                }}
+                className="btn-outline px-4"
+                aria-label="ajustar hora"
+              >
+                <Pencil size={13} strokeWidth={1.4} />
+                <span className="text-[11px] ml-1">outra hora</span>
+              </button>
+            </div>
+          )}
         </section>
       ) : (
-        <section className="card-feature text-center">
-          <div className="flex items-center justify-center gap-2">
-            <Sun size={14} strokeWidth={1.4} className="text-ouro" />
-            <span className="label-cap">não há jejum em curso</span>
+        <section className="card-feature text-center space-y-4">
+          <div>
+            <div className="flex items-center justify-center gap-2">
+              <Sun size={14} strokeWidth={1.4} className="text-ouro" />
+              <span className="label-cap">não há jejum em curso</span>
+            </div>
+            <p className="text-soft mt-4 text-[13px] leading-relaxed">
+              quando acabares de comer hoje, marca a tua última refeição. esquecer é normal · podes ajustar a hora.
+            </p>
           </div>
-          <p className="text-soft mt-4 text-[13px] leading-relaxed">
-            quando acabares de comer hoje, marca a tua última refeição. <br/>amanhã, marca a primeira para fechar a janela.
-          </p>
-          <button onClick={marcarUltimaRefeicao} className="btn-primary mt-5 w-full">
-            <Moon size={14} strokeWidth={1.4} /> última refeição agora
-          </button>
+          {editarUltima ? (
+            <div className="card-solid !p-3 space-y-3">
+              <div className="flex gap-2 items-center">
+                <p className="text-faint text-[10.5px] flex-1 text-left">a que horas foi?</p>
+                <label className="flex items-center gap-1.5 text-[10.5px] text-soft">
+                  <input
+                    type="checkbox"
+                    checked={ontem}
+                    onChange={e => setOntem(e.target.checked)}
+                    className="rounded"
+                  />
+                  ontem
+                </label>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="time"
+                  value={horaUltima}
+                  onChange={e => setHoraUltima(e.target.value)}
+                  className="flex-1 rounded-md border border-[var(--hair)] bg-transparent p-2 text-[14px] tnum focus:border-ouro focus:outline-none"
+                />
+                <button
+                  onClick={() => { marcarUltimaRefeicaoComHora(horaUltima, ontem); setEditarUltima(false); setHoraUltima(''); setOntem(false) }}
+                  disabled={!horaUltima}
+                  className="btn-primary px-4 disabled:opacity-40"
+                >guardar</button>
+                <button onClick={() => setEditarUltima(false)} className="btn-ghost px-3">
+                  <X size={14} strokeWidth={1.5} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <button onClick={marcarUltimaRefeicao} className="btn-primary flex-1">
+                <Moon size={14} strokeWidth={1.4} /> agora
+              </button>
+              <button
+                onClick={() => {
+                  const d = new Date()
+                  setHoraUltima(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`)
+                  setEditarUltima(true)
+                }}
+                className="btn-outline px-4"
+                aria-label="ajustar hora"
+              >
+                <Pencil size={13} strokeWidth={1.4} />
+                <span className="text-[11px] ml-1">outra hora</span>
+              </button>
+            </div>
+          )}
         </section>
       )}
 

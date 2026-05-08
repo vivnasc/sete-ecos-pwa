@@ -1,14 +1,14 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { Home, Calendar, MessageCircle, Wine, MoreHorizontal } from 'lucide-react'
+import { Home, Calendar, MessageCircle, Target, MoreHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const links = [
   { href: '/', label: 'Hoje', icon: Home },
   { href: '/diario', label: 'Diário', icon: Calendar },
   { href: '/coach', label: 'Coach', icon: MessageCircle, destaque: true },
-  { href: '/alcool', label: 'Copo', icon: Wine },
+  { href: '/plano', label: 'Plano', icon: Target },
   { href: '/mais', label: 'Mais', icon: MoreHorizontal }
 ] as const
 

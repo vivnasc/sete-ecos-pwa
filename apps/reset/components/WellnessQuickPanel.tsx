@@ -13,11 +13,12 @@ function calcularMetaAgua(): number {
   return Math.max(6, Math.round(ml / 250))
 }
 
+// Sem eletrólitos · só relevantes em keto estrito ou com dores de cabeça.
+// Ficam disponíveis como âncora na pool (definições · âncoras).
 const SUPLEMENTOS_DEFAULT = [
   { id: 'magnesio', label: 'magnésio' },
   { id: 'vit_d', label: 'vit D' },
-  { id: 'omega3', label: 'ómega-3' },
-  { id: 'electrolitos', label: 'eletrólitos' }
+  { id: 'omega3', label: 'ómega-3' }
 ]
 
 export default function WellnessQuickPanel() {
