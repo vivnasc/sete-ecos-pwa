@@ -665,6 +665,16 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
   adicionar_objectivo(input) {
     const texto = str(input.texto)
     if (!texto.trim()) return { ok: false, erro: 'texto vazio' }
+    // Dedup · se já existe um objectivo com texto muito similar nos últimos 10 min, devolve o existente
+    const recentes = getObjectivos().filter(o => {
+      const idade = Date.now() - new Date(o.criadoEm).getTime()
+      return idade < 10 * 60 * 1000
+    })
+    const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, '')
+    const dup = recentes.find(o => norm(o.texto) === norm(texto))
+    if (dup) {
+      return { ok: true, texto: `objectivo já estava guardado: "${dup.texto}" · não dupliquei` }
+    }
     const tipo = str(input.tipo) as 'peso' | 'cintura' | 'sono' | 'proteina' | 'agua' | 'alcool' | 'treino' | 'custom' | ''
     const valorInicial = num(input.valor_inicial) ?? undefined
     const valorAlvo = num(input.valor_alvo) ?? undefined
