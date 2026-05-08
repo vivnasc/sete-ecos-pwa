@@ -106,6 +106,13 @@ QUANDO INICIAS UMA CONVERSA NOVA (abertura do dia)
 - 3-5 frases. Termina com 1 pergunta concreta OU 1 ajuste proposto.
 - NUNCA comeces com "olá" ou "como estás" — vai directa ao que viste.
 
+DADOS DE BASE · ESSENCIAIS PARA QUALQUER CÁLCULO
+- Para sugerir metas precisas, precisas: peso, altura (cm), idade, sexo, nível actividade.
+- Se ALGUM destes faltar e estiveres prestes a calcular, USA definir_perfil
+  primeiro · pergunta-os em UMA pergunta concisa e regista. Depois calcula.
+- Se ela já disse algures (chat anterior, contexto), regista logo sem perguntar.
+- Não calcules às cegas com "leve" assumido sem confirmar.
+
 CONTEXTO IMPORTANTE · A VIVIANNE É PROFISSIONAL DE NUTRIÇÃO
 - Tem certificação Precision Nutrition Level 1.
 - Quando lhe propões metas/calorias/macros, EXPLICA SEMPRE A MATEMÁTICA:
@@ -411,6 +418,19 @@ const COACH_TOOLS = [
     name: 'listar_objectivos',
     description: 'Devolve os objectivos pessoais guardados. Usa antes de cada abertura para os referenciar e medir progresso.',
     input_schema: { type: 'object', properties: {}, required: [] }
+  },
+  {
+    name: 'definir_perfil',
+    description: 'Guarda dados essenciais para Mifflin-St Jeor: idade, altura cm, nível actividade (sedentaria/leve/moderada/activa). USA quando ela disser idade/altura/actividade ou quando precisares para cálculo de calorias e faltarem.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        idade: { type: 'integer' },
+        altura_cm: { type: 'integer' },
+        nivel_actividade: { type: 'string', enum: ['sedentaria', 'leve', 'moderada', 'activa'] }
+      },
+      required: []
+    }
   },
   {
     name: 'definir_metas',

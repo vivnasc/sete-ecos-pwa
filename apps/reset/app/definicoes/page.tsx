@@ -126,6 +126,61 @@ export default function DefinicoesPage() {
               className="input-base"
             />
           </Field>
+          {(perfil.alturaCm === null || perfil.idade === null || perfil.nivelActividade === null) ? (
+            <p className="rounded-md bg-ouro/10 p-2.5 text-[11.5px] text-ouro leading-relaxed">
+              ⚠ falta altura, idade ou nível de actividade · sem isto, o cálculo de calorias é heurística grosseira (não Mifflin-St Jeor).
+            </p>
+          ) : null}
+          <div className="grid grid-cols-3 gap-3">
+            <Field label="Sexo">
+              <select
+                value={perfil.sexo}
+                onChange={e => guardarPerfil({ sexo: e.target.value as 'F' | 'M' | 'O' })}
+                className="input-base"
+              >
+                <option value="F">Feminino</option>
+                <option value="M">Masculino</option>
+                <option value="O">Outro</option>
+              </select>
+            </Field>
+            <Field label="Idade · anos">
+              <input
+                type="number"
+                inputMode="numeric"
+                min="10"
+                max="100"
+                value={perfil.idade ?? ''}
+                onChange={e => guardarPerfil({ idade: e.target.value ? Number(e.target.value) : null })}
+                className="input-base tnum"
+                placeholder="—"
+              />
+            </Field>
+            <Field label="Altura · cm">
+              <input
+                type="number"
+                inputMode="numeric"
+                min="100"
+                max="220"
+                value={perfil.alturaCm ?? ''}
+                onChange={e => guardarPerfil({ alturaCm: e.target.value ? Number(e.target.value) : null })}
+                className="input-base tnum"
+                placeholder="—"
+              />
+            </Field>
+          </div>
+          <Field label="Nível de actividade habitual">
+            <select
+              value={perfil.nivelActividade ?? ''}
+              onChange={e => guardarPerfil({ nivelActividade: (e.target.value || null) as Profile['nivelActividade'] })}
+              className="input-base"
+            >
+              <option value="">— escolhe —</option>
+              <option value="sedentaria">sedentária · sem treino · trabalho ao computador</option>
+              <option value="leve">leve · 1-3× treino/sem · alguma actividade</option>
+              <option value="moderada">moderada · 3-5× treino/sem</option>
+              <option value="activa">activa · 6+× treino/sem · trabalho físico</option>
+            </select>
+          </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Acordar">
               <input

@@ -36,9 +36,12 @@ export type Profile = {
   sexo: 'F' | 'M' | 'O'
   pesoInicial: number | null
   cinturaInicial: number | null
+  alturaCm: number | null      // cm · necessária para Mifflin-St Jeor
+  idade: number | null          // anos · necessária para Mifflin-St Jeor
   acordaTipico: string // HH:MM
   deitaTipico: string // HH:MM
   treinoPreferido: 'manhã' | 'tarde' | 'noite' | 'flexível'
+  nivelActividade: 'sedentaria' | 'leve' | 'moderada' | 'activa' | null
   gatilhosAlcool: string[]
   notificacoesAtivas: boolean
   onboardingCompleto: boolean
@@ -67,9 +70,12 @@ const DEFAULT_PROFILE: Profile = {
   sexo: 'F',
   pesoInicial: null,
   cinturaInicial: null,
+  alturaCm: null,
+  idade: null,
   acordaTipico: '06:30',
   deitaTipico: '22:30',
   treinoPreferido: 'manhã',
+  nivelActividade: null,
   gatilhosAlcool: [],
   notificacoesAtivas: false,
   onboardingCompleto: false,
@@ -121,25 +127,69 @@ export function resetProfile(): void {
   window.dispatchEvent(new CustomEvent('fenixfit:profile', { detail: DEFAULT_PROFILE }))
 }
 
-// Sugestão simples de metas com base no peso e objectivo
+// Mifflin-St Jeor TMB (kcal/dia em repouso)
+// F: 10×peso + 6.25×altura - 5×idade - 161
+// M: 10×peso + 6.25×altura - 5×idade + 5
+export function calcularTMB(opcoes: { pesoKg: number; alturaCm: number; idade: number; sexo: 'F' | 'M' | 'O' }): number {
+  const { pesoKg, alturaCm, idade, sexo } = opcoes
+  const base = 10 * pesoKg + 6.25 * alturaCm - 5 * idade
+  return Math.round(sexo === 'M' ? base + 5 : base - 161)
+}
+
+const FACTOR_ACTIVIDADE: Record<string, number> = {
+  sedentaria: 1.2,
+  leve: 1.375,
+  moderada: 1.55,
+  activa: 1.725
+}
+
+const AJUSTE_OBJECTIVO: Record<string, number> = {
+  manter: 0,
+  perder_devagar: -250,
+  perder: -500,
+  ganhar: +300
+}
+
+// Sugestão de metas · usa Mifflin-St Jeor se houver altura+idade, senão heurística kcal/kg
 export function sugerirMetas(opcoes: {
   pesoKg: number
   objectivo: 'manter' | 'perder_devagar' | 'perder' | 'ganhar'
-  actividade?: 'sedentaria' | 'leve' | 'activa'
-}): Metas {
-  const { pesoKg, objectivo, actividade = 'leve' } = opcoes
-  const baseKcalPorKg: Record<string, number> = {
-    manter: actividade === 'activa' ? 30 : actividade === 'sedentaria' ? 26 : 28,
-    perder_devagar: actividade === 'activa' ? 26 : actividade === 'sedentaria' ? 22 : 24,
-    perder: actividade === 'activa' ? 24 : actividade === 'sedentaria' ? 20 : 22,
-    ganhar: actividade === 'activa' ? 34 : actividade === 'sedentaria' ? 30 : 32
+  actividade?: 'sedentaria' | 'leve' | 'moderada' | 'activa'
+  alturaCm?: number | null
+  idade?: number | null
+  sexo?: 'F' | 'M' | 'O'
+}): Metas & { metodo: string; tmb?: number; tdee?: number } {
+  const { pesoKg, objectivo, actividade = 'leve', alturaCm, idade, sexo = 'F' } = opcoes
+  const factor = FACTOR_ACTIVIDADE[actividade] ?? 1.375
+  const ajuste = AJUSTE_OBJECTIVO[objectivo] ?? 0
+
+  let calorias: number
+  let metodo: string
+  let tmb: number | undefined
+  let tdee: number | undefined
+
+  if (alturaCm && idade) {
+    tmb = calcularTMB({ pesoKg, alturaCm, idade, sexo })
+    tdee = Math.round(tmb * factor)
+    calorias = Math.round((tdee + ajuste) / 50) * 50
+    metodo = 'Mifflin-St Jeor'
+  } else {
+    // fallback heurística kcal/kg quando faltam dados
+    const baseKcalPorKg: Record<string, number> = {
+      manter: actividade === 'activa' || actividade === 'moderada' ? 30 : actividade === 'sedentaria' ? 26 : 28,
+      perder_devagar: actividade === 'activa' || actividade === 'moderada' ? 26 : actividade === 'sedentaria' ? 22 : 24,
+      perder: actividade === 'activa' || actividade === 'moderada' ? 24 : actividade === 'sedentaria' ? 20 : 22,
+      ganhar: actividade === 'activa' || actividade === 'moderada' ? 34 : actividade === 'sedentaria' ? 30 : 32
+    }
+    calorias = Math.round((pesoKg * baseKcalPorKg[objectivo]) / 50) * 50
+    metodo = 'heurística kcal/kg (sem altura+idade)'
   }
-  const calorias = Math.round((pesoKg * baseKcalPorKg[objectivo]) / 50) * 50
+
   const proteinaG = Math.round(pesoKg * 1.6 / 5) * 5
   const gorduraG = Math.round(pesoKg * 0.9 / 5) * 5
   const restoKcal = calorias - (proteinaG * 4 + gorduraG * 9)
   const carboG = Math.max(20, Math.round(restoKcal / 4 / 5) * 5)
-  return { calorias, proteinaG, carboG, gorduraG }
+  return { calorias, proteinaG, carboG, gorduraG, metodo, tmb, tdee }
 }
 
 export function getMetasActivas(): Metas | null {

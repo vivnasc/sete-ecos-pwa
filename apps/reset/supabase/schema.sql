@@ -61,6 +61,9 @@ alter table fenixfit_dias add column if not exists rhr int;
 alter table fenixfit_profile add column if not exists metas jsonb;
 alter table fenixfit_profile add column if not exists modo_viagem boolean not null default false;
 alter table fenixfit_profile add column if not exists objectivos jsonb not null default '[]';
+alter table fenixfit_profile add column if not exists altura_cm int;
+alter table fenixfit_profile add column if not exists idade int;
+alter table fenixfit_profile add column if not exists nivel_actividade text check (nivel_actividade in ('sedentaria','leve','moderada','activa') or nivel_actividade is null);
 
 create index if not exists fenixfit_dias_user_date on fenixfit_dias (user_id, date desc);
 

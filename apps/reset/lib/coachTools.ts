@@ -295,6 +295,19 @@ export const COACH_TOOLS = [
     input_schema: { type: 'object', properties: {}, required: [] }
   },
   {
+    name: 'definir_perfil',
+    description: 'Guarda dados pessoais essenciais para cálculo TMB/TDEE: idade, altura (cm), nível de actividade. Usa SEMPRE que a Vivianne mencionar a sua idade ou altura, ou quando precisares de fazer cálculos e faltarem. Pergunta se ainda não os tens.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        idade: { type: 'integer', description: 'Idade em anos' },
+        altura_cm: { type: 'integer', description: 'Altura em cm (1m65 = 165)' },
+        nivel_actividade: { type: 'string', enum: ['sedentaria', 'leve', 'moderada', 'activa'] }
+      },
+      required: []
+    }
+  },
+  {
     name: 'definir_metas',
     description: 'Define ou ajusta as metas diárias da Vivianne (calorias, proteína, carbo, gordura). Usar quando ela pedir para definir/ajustar metas, ou quando os dados mostrarem que devem mudar. Se não souberes os números, usa sugerir_metas primeiro. Passar null num campo para limpar.',
     input_schema: {
@@ -708,6 +721,30 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
     return { ok: true, texto: lista.map(o => `${o.id}: ${o.texto}`).join('\n') }
   },
 
+  definir_perfil(input) {
+    const idade = num(input.idade)
+    const alturaCm = num(input.altura_cm)
+    const nivelAct = str(input.nivel_actividade) as 'sedentaria' | 'leve' | 'moderada' | 'activa' | ''
+    const patch: Partial<{ idade: number; alturaCm: number; nivelActividade: 'sedentaria' | 'leve' | 'moderada' | 'activa' }> = {}
+    const partes: string[] = []
+    if (idade !== null && idade > 10 && idade < 100) {
+      patch.idade = Math.round(idade)
+      partes.push(`idade ${patch.idade}`)
+    }
+    if (alturaCm !== null && alturaCm > 100 && alturaCm < 220) {
+      patch.alturaCm = Math.round(alturaCm)
+      partes.push(`altura ${patch.alturaCm}cm`)
+    }
+    if (nivelAct && ['sedentaria', 'leve', 'moderada', 'activa'].includes(nivelAct)) {
+      patch.nivelActividade = nivelAct
+      partes.push(`actividade ${nivelAct}`)
+    }
+    if (partes.length === 0) return { ok: false, erro: 'nenhum campo válido para guardar' }
+    const guardado = saveProfile(patch)
+    void syncProfile(guardado as unknown as Record<string, unknown>).catch(() => {})
+    return { ok: true, texto: `perfil actualizado · ${partes.join(' · ')}` }
+  },
+
   definir_metas(input) {
     const perfil = getProfile()
     const novas: Metas = { ...perfil.metas }
@@ -735,16 +772,16 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
     if (!peso) return { ok: false, erro: 'sem peso registado · pesa-te primeiro ou diz-me o teu peso' }
     const objectivo = str(input.objectivo) as 'manter' | 'perder_devagar' | 'perder' | 'ganhar'
     if (!['manter', 'perder_devagar', 'perder', 'ganhar'].includes(objectivo)) return { ok: false, erro: 'objectivo inválido' }
-    const actividade = (str(input.actividade) || 'leve') as 'sedentaria' | 'leve' | 'activa'
-    const sug = sugerirMetas({ pesoKg: peso, objectivo, actividade })
-    // Multiplicadores · espelhar lib/profile.ts
-    const baseKcalPorKg: Record<string, number> = {
-      manter: actividade === 'activa' ? 30 : actividade === 'sedentaria' ? 26 : 28,
-      perder_devagar: actividade === 'activa' ? 26 : actividade === 'sedentaria' ? 22 : 24,
-      perder: actividade === 'activa' ? 24 : actividade === 'sedentaria' ? 20 : 22,
-      ganhar: actividade === 'activa' ? 34 : actividade === 'sedentaria' ? 30 : 32
-    }
-    const k = baseKcalPorKg[objectivo]
+    const profile = getProfile()
+    const actividade = (str(input.actividade) || profile.nivelActividade || 'leve') as 'sedentaria' | 'leve' | 'moderada' | 'activa'
+    const sug = sugerirMetas({
+      pesoKg: peso,
+      objectivo,
+      actividade,
+      alturaCm: profile.alturaCm,
+      idade: profile.idade,
+      sexo: profile.sexo
+    })
     const protGperKg = 1.6
     const gordGperKg = 0.9
     const kcalTotal = sug.calorias ?? 0
@@ -753,15 +790,28 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
     const carbG = sug.carboG ?? 0
     const protKcal = protG * 4
     const gordKcal = gordG * 9
-    const detalhe = [
-      `cálculo:`,
-      `· kcal: ${peso}kg × ${k} (${objectivo}, ${actividade}) = ${peso * k} → arredondado a ${kcalTotal}`,
-      `· proteína: ${peso}kg × ${protGperKg} = ${(peso * protGperKg).toFixed(0)}g → ${protG}g (${protKcal} kcal)`,
-      `· gordura: ${peso}kg × ${gordGperKg} = ${(peso * gordGperKg).toFixed(0)}g → ${gordG}g (${gordKcal} kcal)`,
-      `· carbo: resto = ${kcalTotal} - ${protKcal} - ${gordKcal} = ${kcalTotal - protKcal - gordKcal} kcal → ${carbG}g`,
-      `nota: heurística · sem altura/idade. tu como pro ajustas se vires viés (ex. metabolismo lento, mais actividade que admites, etc).`
-    ].join('\n')
-    return { ok: true, texto: `sugestão (${objectivo}, ${actividade}): ${kcalTotal} kcal · ${protG}g P · ${carbG}g C · ${gordG}g G\n\n${detalhe}` }
+    const linhas: string[] = [`cálculo (${sug.metodo}):`]
+    if (sug.tmb && sug.tdee) {
+      const factorMap = { sedentaria: 1.2, leve: 1.375, moderada: 1.55, activa: 1.725 } as const
+      const ajusteMap = { manter: 0, perder_devagar: -250, perder: -500, ganhar: +300 } as const
+      linhas.push(`· TMB: 10×${peso} + 6.25×${profile.alturaCm} − 5×${profile.idade}${profile.sexo === 'M' ? ' + 5' : ' − 161'} = ${sug.tmb} kcal`)
+      linhas.push(`· TDEE: ${sug.tmb} × ${factorMap[actividade]} (${actividade}) = ${sug.tdee} kcal`)
+      linhas.push(`· objectivo (${objectivo}): TDEE ${ajusteMap[objectivo] >= 0 ? '+' : ''}${ajusteMap[objectivo]} = ${sug.tdee + ajusteMap[objectivo]} → arredondado a ${kcalTotal}`)
+    } else {
+      const baseKcalPorKg: Record<string, number> = {
+        manter: actividade === 'activa' || actividade === 'moderada' ? 30 : actividade === 'sedentaria' ? 26 : 28,
+        perder_devagar: actividade === 'activa' || actividade === 'moderada' ? 26 : actividade === 'sedentaria' ? 22 : 24,
+        perder: actividade === 'activa' || actividade === 'moderada' ? 24 : actividade === 'sedentaria' ? 20 : 22,
+        ganhar: actividade === 'activa' || actividade === 'moderada' ? 34 : actividade === 'sedentaria' ? 30 : 32
+      }
+      const k = baseKcalPorKg[objectivo]
+      linhas.push(`· kcal: ${peso}kg × ${k} (${objectivo}, ${actividade}) = ${peso * k} → arredondado a ${kcalTotal}`)
+      linhas.push(`· nota: usar Mifflin-St Jeor seria mais preciso · falta altura+idade no perfil. Vai a /definicoes para preencheres.`)
+    }
+    linhas.push(`· proteína: ${peso}kg × ${protGperKg} g/kg = ${(peso * protGperKg).toFixed(0)}g → ${protG}g (${protKcal} kcal)`)
+    linhas.push(`· gordura: ${peso}kg × ${gordGperKg} g/kg = ${(peso * gordGperKg).toFixed(0)}g → ${gordG}g (${gordKcal} kcal)`)
+    linhas.push(`· carbo: resto = ${kcalTotal} − ${protKcal} − ${gordKcal} = ${kcalTotal - protKcal - gordKcal} kcal → ${carbG}g`)
+    return { ok: true, texto: `sugestão (${objectivo}, ${actividade}): ${kcalTotal} kcal · ${protG}g P · ${carbG}g C · ${gordG}g G\n\n${linhas.join('\n')}` }
   },
 
   analisar_padroes(input) {
