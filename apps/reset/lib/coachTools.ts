@@ -737,7 +737,31 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
     if (!['manter', 'perder_devagar', 'perder', 'ganhar'].includes(objectivo)) return { ok: false, erro: 'objectivo inválido' }
     const actividade = (str(input.actividade) || 'leve') as 'sedentaria' | 'leve' | 'activa'
     const sug = sugerirMetas({ pesoKg: peso, objectivo, actividade })
-    return { ok: true, texto: `sugestão (${objectivo}, ${actividade}): ${sug.calorias} kcal · ${sug.proteinaG}g P · ${sug.carboG}g C · ${sug.gorduraG}g G` }
+    // Multiplicadores · espelhar lib/profile.ts
+    const baseKcalPorKg: Record<string, number> = {
+      manter: actividade === 'activa' ? 30 : actividade === 'sedentaria' ? 26 : 28,
+      perder_devagar: actividade === 'activa' ? 26 : actividade === 'sedentaria' ? 22 : 24,
+      perder: actividade === 'activa' ? 24 : actividade === 'sedentaria' ? 20 : 22,
+      ganhar: actividade === 'activa' ? 34 : actividade === 'sedentaria' ? 30 : 32
+    }
+    const k = baseKcalPorKg[objectivo]
+    const protGperKg = 1.6
+    const gordGperKg = 0.9
+    const kcalTotal = sug.calorias ?? 0
+    const protG = sug.proteinaG ?? 0
+    const gordG = sug.gorduraG ?? 0
+    const carbG = sug.carboG ?? 0
+    const protKcal = protG * 4
+    const gordKcal = gordG * 9
+    const detalhe = [
+      `cálculo:`,
+      `· kcal: ${peso}kg × ${k} (${objectivo}, ${actividade}) = ${peso * k} → arredondado a ${kcalTotal}`,
+      `· proteína: ${peso}kg × ${protGperKg} = ${(peso * protGperKg).toFixed(0)}g → ${protG}g (${protKcal} kcal)`,
+      `· gordura: ${peso}kg × ${gordGperKg} = ${(peso * gordGperKg).toFixed(0)}g → ${gordG}g (${gordKcal} kcal)`,
+      `· carbo: resto = ${kcalTotal} - ${protKcal} - ${gordKcal} = ${kcalTotal - protKcal - gordKcal} kcal → ${carbG}g`,
+      `nota: heurística · sem altura/idade. tu como pro ajustas se vires viés (ex. metabolismo lento, mais actividade que admites, etc).`
+    ].join('\n')
+    return { ok: true, texto: `sugestão (${objectivo}, ${actividade}): ${kcalTotal} kcal · ${protG}g P · ${carbG}g C · ${gordG}g G\n\n${detalhe}` }
   },
 
   analisar_padroes(input) {
