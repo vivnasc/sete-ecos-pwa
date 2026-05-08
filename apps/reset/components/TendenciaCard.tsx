@@ -121,45 +121,45 @@ const COR = {
   vazio: 'rgba(150,140,120,0.15)' // traço subtil
 }
 
+function fmtDateShort(date: string): string {
+  // YYYY-MM-DD → DD/MM ou só dia
+  const [, m, d] = date.split('-')
+  return `${d}/${m}`
+}
+
 function GraficoKcal({ dias, alvo }: { dias: DiaDados[]; alvo: number | null }) {
   const w = 320
-  const h = 140
-  const pad = { t: 14, r: 10, b: 22, l: 32 }
+  const h = 150
+  const pad = { t: 14, r: 10, b: 32, l: 32 }
   const cw = w - pad.l - pad.r
   const ch = h - pad.t - pad.b
 
   const maxKcal = Math.max(...dias.map(d => d.kcal), alvo ?? 0, 100)
   const yScale = (v: number) => pad.t + ch - (v / maxKcal) * ch
-  const barW = cw / dias.length
+  const barW = cw / Math.max(dias.length, 1)
   const x = (i: number) => pad.l + i * barW + barW * 0.15
+
+  // Decidir frequência das labels: todos se ≤7, cada 2 se ≤14, cada 5 caso contrário
+  const stepLabel = dias.length <= 7 ? 1 : dias.length <= 14 ? 2 : 5
 
   return (
     <div className="-mx-2">
       <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" preserveAspectRatio="none">
-        {/* alvo */}
         {alvo ? (
           <>
             <line x1={pad.l} y1={yScale(alvo)} x2={w - pad.r} y2={yScale(alvo)} stroke={COR.alvo} strokeWidth="1" strokeDasharray="3 3" opacity="0.7" />
             <text x={pad.l - 4} y={yScale(alvo) + 3} fontSize="9" fill={COR.alvo} textAnchor="end">{alvo}</text>
           </>
         ) : null}
-        {/* baseline */}
         <line x1={pad.l} y1={pad.t + ch} x2={w - pad.r} y2={pad.t + ch} stroke="rgba(150,140,120,0.3)" />
-        {/* bars */}
         {dias.map((d, i) => {
           if (d.kcal === 0) {
-            // dia vazio · pequeno traço para mostrar que existe
             return (
-              <rect
-                key={d.date}
-                x={x(i)}
-                y={pad.t + ch - 2}
-                width={barW * 0.7}
-                height={2}
-                fill={COR.vazio}
-              >
-                <title>{d.date}: sem registo</title>
-              </rect>
+              <g key={d.date}>
+                <rect x={x(i)} y={pad.t + ch - 2} width={barW * 0.7} height={2} fill={COR.vazio}>
+                  <title>{d.date}: sem registo</title>
+                </rect>
+              </g>
             )
           }
           const altura = Math.max(2, (d.kcal / maxKcal) * ch)
@@ -178,27 +178,41 @@ function GraficoKcal({ dias, alvo }: { dias: DiaDados[]; alvo: number | null }) 
             </rect>
           )
         })}
-        {/* label primeira e última data */}
-        <text x={pad.l} y={h - 6} fontSize="9" fill="rgba(150,140,120,0.7)">{dias[0]?.date.slice(5)}</text>
-        <text x={w - pad.r} y={h - 6} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="end">{dias[dias.length - 1]?.date.slice(5)}</text>
+        {/* labels de data por baixo de cada N barras */}
+        {dias.map((d, i) => {
+          if (i % stepLabel !== 0 && i !== dias.length - 1) return null
+          return (
+            <text
+              key={`l-${d.date}`}
+              x={x(i) + barW * 0.35}
+              y={h - 6}
+              fontSize="8"
+              fill="rgba(150,140,120,0.7)"
+              textAnchor="middle"
+            >
+              {fmtDateShort(d.date)}
+            </text>
+          )
+        })}
       </svg>
-      <p className="text-faint text-[10px] text-center mt-1">verde = no alvo · vermelho = passou 10% · dourado = caso contrário · traço fino = sem registo</p>
+      <p className="text-faint text-[10px] text-center mt-1">verde = no alvo · vermelho = passou 10% · dourado = caso contrário</p>
     </div>
   )
 }
 
 function GraficoMacros({ dias }: { dias: DiaDados[] }) {
   const w = 320
-  const h = 140
-  const pad = { t: 14, r: 10, b: 22, l: 32 }
+  const h = 150
+  const pad = { t: 14, r: 10, b: 32, l: 32 }
   const cw = w - pad.l - pad.r
   const ch = h - pad.t - pad.b
 
   const maxKcal = Math.max(...dias.map(d => d.proteina * 4 + d.carbo * 4 + d.gordura * 9), 100)
-  const yScale = (v: number) => pad.t + ch - (v / maxKcal) * ch
-  const barW = cw / dias.length
+  const barW = cw / Math.max(dias.length, 1)
   const x = (i: number) => pad.l + i * barW + barW * 0.15
   const bw = barW * 0.7
+
+  const stepLabel = dias.length <= 7 ? 1 : dias.length <= 14 ? 2 : 5
 
   return (
     <div className="-mx-2">
@@ -212,14 +226,7 @@ function GraficoMacros({ dias }: { dias: DiaDados[] }) {
           const xi = x(i)
           if (total === 0) {
             return (
-              <rect
-                key={d.date}
-                x={xi}
-                y={pad.t + ch - 2}
-                width={bw}
-                height={2}
-                fill={COR.vazio}
-              >
+              <rect key={d.date} x={xi} y={pad.t + ch - 2} width={bw} height={2} fill={COR.vazio}>
                 <title>{d.date}: sem registo</title>
               </rect>
             )
@@ -236,8 +243,21 @@ function GraficoMacros({ dias }: { dias: DiaDados[] }) {
             </g>
           )
         })}
-        <text x={pad.l} y={h - 6} fontSize="9" fill="rgba(150,140,120,0.7)">{dias[0]?.date.slice(5)}</text>
-        <text x={w - pad.r} y={h - 6} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="end">{dias[dias.length - 1]?.date.slice(5)}</text>
+        {dias.map((d, i) => {
+          if (i % stepLabel !== 0 && i !== dias.length - 1) return null
+          return (
+            <text
+              key={`l-${d.date}`}
+              x={x(i) + barW * 0.35}
+              y={h - 6}
+              fontSize="8"
+              fill="rgba(150,140,120,0.7)"
+              textAnchor="middle"
+            >
+              {fmtDateShort(d.date)}
+            </text>
+          )
+        })}
       </svg>
       <div className="flex justify-center gap-3 text-[10px] mt-1">
         <span className="inline-flex items-center gap-1 text-faint"><span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: COR.proteina }} />proteína</span>
@@ -250,8 +270,8 @@ function GraficoMacros({ dias }: { dias: DiaDados[] }) {
 
 function GraficoPeso({ dias }: { dias: DiaDados[] }) {
   const w = 320
-  const h = 140
-  const pad = { t: 14, r: 10, b: 22, l: 36 }
+  const h = 150
+  const pad = { t: 14, r: 10, b: 32, l: 36 }
   const cw = w - pad.l - pad.r
   const ch = h - pad.t - pad.b
 
@@ -274,8 +294,10 @@ function GraficoPeso({ dias }: { dias: DiaDados[] }) {
   const yScale = (v: number) => pad.t + ch - ((v - yMin) / yRange) * ch
   const xScale = (i: number) => pad.l + (i / Math.max(1, dias.length - 1)) * cw
 
-  const pontos = dias.map((d, i) => d.peso !== null ? { x: xScale(i), y: yScale(d.peso) } : null).filter((p): p is { x: number; y: number } => p !== null)
+  const pontos = dias.map((d, i) => d.peso !== null ? { x: xScale(i), y: yScale(d.peso), date: d.date, peso: d.peso } : null).filter((p): p is { x: number; y: number; date: string; peso: number } => p !== null)
   const path = pontos.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')
+
+  const stepLabel = dias.length <= 7 ? 1 : dias.length <= 14 ? 2 : 5
 
   return (
     <div className="-mx-2">
@@ -285,10 +307,27 @@ function GraficoPeso({ dias }: { dias: DiaDados[] }) {
         <text x={pad.l - 4} y={pad.t + ch} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="end">{yMin.toFixed(1)}</text>
         <path d={path} fill="none" stroke={COR.alvo} strokeWidth="2" />
         {pontos.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="3.5" fill={COR.alvo} />
+          <g key={i}>
+            <circle cx={p.x} cy={p.y} r="3.5" fill={COR.alvo}>
+              <title>{p.date}: {p.peso}kg</title>
+            </circle>
+          </g>
         ))}
-        <text x={pad.l} y={h - 6} fontSize="9" fill="rgba(150,140,120,0.7)">{dias[0]?.date.slice(5)}</text>
-        <text x={w - pad.r} y={h - 6} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="end">{dias[dias.length - 1]?.date.slice(5)}</text>
+        {dias.map((d, i) => {
+          if (i % stepLabel !== 0 && i !== dias.length - 1) return null
+          return (
+            <text
+              key={`l-${d.date}`}
+              x={xScale(i)}
+              y={h - 6}
+              fontSize="8"
+              fill="rgba(150,140,120,0.7)"
+              textAnchor="middle"
+            >
+              {fmtDateShort(d.date)}
+            </text>
+          )
+        })}
       </svg>
       <p className="text-faint text-[10px] text-center mt-1">
         {pesos[pesos.length - 1] > pesos[0]

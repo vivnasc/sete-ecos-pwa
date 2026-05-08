@@ -263,14 +263,13 @@ export function addRefeicao(r: Omit<Refeicao, 'id' | 'timestamp'> & { timestamp?
 export function removeRefeicao(id: string): void {
   const all = read<Refeicao[]>('refeicoes', [])
   const filtradas = all.filter(r => r.id !== id)
-  if (filtradas.length === all.length) return
-  write('refeicoes', filtradas)
-  // tombstone · evita que sync hidratado traga de volta
+  // SEMPRE adiciona ao tombstone, mesmo se já não estava local · pode estar no servidor
   const tombs = read<string[]>('tombstones-refeicoes', [])
   if (!tombs.includes(id)) {
     tombs.push(id)
     write('tombstones-refeicoes', tombs)
   }
+  if (filtradas.length !== all.length) write('refeicoes', filtradas)
   void removeRefeicaoSync(id).catch(() => {})
 }
 

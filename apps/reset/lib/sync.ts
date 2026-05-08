@@ -509,8 +509,42 @@ export async function removeRefeicaoSync(id: string): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  const { error } = await sb.from('fenixfit_refeicoes').delete().eq('id', id).eq('user_id', user.id)
-  if (error) registarErroSync('refeicao-delete', error)
+  // Tenta delete · se falhar, regista. Repete uma vez se primeira tentativa lança rede.
+  for (let tentativa = 0; tentativa < 2; tentativa++) {
+    try {
+      const { error } = await sb.from('fenixfit_refeicoes').delete().eq('id', id).eq('user_id', user.id)
+      if (!error) return
+      if (tentativa === 1) registarErroSync('refeicao-delete', error)
+      // pequena pausa antes de retry
+      await new Promise(r => setTimeout(r, 500))
+    } catch (e) {
+      if (tentativa === 1) registarErroSync('refeicao-delete', e)
+    }
+  }
+}
+
+// Força delete de TODOS os IDs em tombstones · para limpar fantasmas que voltam.
+// Chamada em /refeicoes ao abrir.
+export async function forcarLimpezaTombstones(): Promise<{ apagados: number; falharam: number }> {
+  if (typeof window === 'undefined') return { apagados: 0, falharam: 0 }
+  const tombs: string[] = JSON.parse(localStorage.getItem(PREFIX + 'tombstones-refeicoes') ?? '[]')
+  if (tombs.length === 0) return { apagados: 0, falharam: 0 }
+  const sb = getSupabase()
+  if (!sb) return { apagados: 0, falharam: tombs.length }
+  const user = await getUser()
+  if (!user) return { apagados: 0, falharam: tombs.length }
+  let apagados = 0
+  let falharam = 0
+  for (const id of tombs) {
+    try {
+      const { error } = await sb.from('fenixfit_refeicoes').delete().eq('id', id).eq('user_id', user.id)
+      if (error) falharam++
+      else apagados++
+    } catch {
+      falharam++
+    }
+  }
+  return { apagados, falharam }
 }
 
 // Encontra refeições duplicadas (mesmo dia, mesmo tipo, descrição similar).

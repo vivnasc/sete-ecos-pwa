@@ -16,7 +16,7 @@ import {
 import { isoDate, horaLocal } from '@/lib/dates'
 import { getProfile } from '@/lib/profile'
 import { analisarFotoRefeicao } from '@/lib/fotoRefeicao'
-import { detectarDuplicadosRefeicoes, type GrupoDuplicado } from '@/lib/sync'
+import { detectarDuplicadosRefeicoes, forcarLimpezaTombstones, type GrupoDuplicado } from '@/lib/sync'
 import { DonutMacro, DistribuicaoBar } from '@/components/DonutMacro'
 import TendenciaCard from '@/components/TendenciaCard'
 
@@ -76,6 +76,8 @@ export default function RefeicoesPage() {
 
   useEffect(() => {
     refresh()
+    // Force re-delete de fantasmas (tombstones) ao abrir · uma vez
+    forcarLimpezaTombstones().catch(() => {})
     const handler = () => refresh()
     const onProfile = () => setMetas(getProfile().metas)
     window.addEventListener('fenixfit:storage', handler)
