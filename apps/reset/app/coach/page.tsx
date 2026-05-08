@@ -377,6 +377,9 @@ export default function CoachPage() {
       </header>
       <VoiceModeOverlay aberto={vozAberta} onFechar={() => setVozAberta(false)} />
 
+      {/* Leitura editorial de hoje · sempre visível no topo (se houver) */}
+      <AberturaCard />
+
       {carregandoAbertura ? (
         <div className="card-feature flex items-center justify-center gap-2 py-6">
           <span className="h-1.5 w-1.5 animate-breathe rounded-full bg-ouro" />
@@ -537,6 +540,52 @@ export default function CoachPage() {
         a coach vê os teus dados · regista por ti · só nesta sessão
       </p>
     </div>
+  )
+}
+
+function AberturaCard() {
+  const [abertura, setAbertura] = useState<{ date: string; texto: string; geradoEm?: string } | null>(null)
+  const [aberto, setAberto] = useState(false)
+
+  useEffect(() => {
+    const refresh = () => setAbertura(getAberturaHoje())
+    refresh()
+    window.addEventListener('fenixfit:abertura', refresh)
+    window.addEventListener('fenixfit:storage', refresh)
+    return () => {
+      window.removeEventListener('fenixfit:abertura', refresh)
+      window.removeEventListener('fenixfit:storage', refresh)
+    }
+  }, [])
+
+  if (!abertura?.texto) return null
+
+  const corteInterrog = abertura.texto.indexOf('?')
+  const cortePonto = abertura.texto.indexOf('.', 80)
+  const corte =
+    corteInterrog > 0 && corteInterrog < 200
+      ? corteInterrog + 1
+      : cortePonto > 0 && cortePonto < 200
+        ? cortePonto + 1
+        : Math.min(abertura.texto.length, 200)
+  const preview = abertura.texto.slice(0, corte).trim()
+  const tem_mais = corte < abertura.texto.length
+
+  return (
+    <section className="card-feature space-y-2">
+      <div className="flex items-baseline justify-between">
+        <span className="label-cap">leitura · hoje</span>
+        {tem_mais ? (
+          <button onClick={() => setAberto(a => !a)} className="text-[10.5px] text-ouro hover:underline">
+            {aberto ? 'ver menos' : 'ver tudo'}
+          </button>
+        ) : null}
+      </div>
+      <p className="font-serif text-[15.5px] leading-[1.55] tracking-editorial italic">
+        {aberto ? abertura.texto : preview}
+        {!aberto && tem_mais ? <span className="text-faint"> ...</span> : null}
+      </p>
+    </section>
   )
 }
 
