@@ -185,21 +185,20 @@ export default function HomePage() {
             </div>
             <span className="text-faint text-[11px] tnum">{metrics.macros.refeicoes}× hoje</span>
           </div>
+          <div className="mt-3 grid grid-cols-4 gap-1 place-items-center">
+            <DonutMacro label="kcal" valor={metrics.macros.calorias} alvo={metrics.metas.calorias} unidade="" tamanho={62} />
+            <DonutMacro label="proteína" valor={metrics.macros.proteina} alvo={metrics.metas.proteinaG} tamanho={62} />
+            <DonutMacro label="carbo" valor={metrics.macros.carbo} alvo={metrics.metas.carboG} tamanho={62} />
+            <DonutMacro label="gordura" valor={metrics.macros.gordura} alvo={metrics.metas.gorduraG} tamanho={62} />
+          </div>
+          {metrics.macros.calorias > 0 ? (
+            <DistribuicaoBar p={metrics.macros.proteina} c={metrics.macros.carbo} g={metrics.macros.gordura} />
+          ) : null}
           {metrics.macros.refeicoes > 0 ? (
-            <>
-              <div className="mt-3 grid grid-cols-4 gap-1 place-items-center">
-                <DonutMacro label="kcal" valor={metrics.macros.calorias} alvo={metrics.metas.calorias} unidade="" tamanho={62} />
-                <DonutMacro label="proteína" valor={metrics.macros.proteina} alvo={metrics.metas.proteinaG} tamanho={62} />
-                <DonutMacro label="carbo" valor={metrics.macros.carbo} alvo={metrics.metas.carboG} tamanho={62} />
-                <DonutMacro label="gordura" valor={metrics.macros.gordura} alvo={metrics.metas.gorduraG} tamanho={62} />
-              </div>
-              {/* Distribuição P/C/G como % das calorias totais */}
-              {metrics.macros.calorias > 0 ? <DistribuicaoBar p={metrics.macros.proteina} c={metrics.macros.carbo} g={metrics.macros.gordura} /> : null}
-              <p className="text-faint mt-2 text-[10.5px] tracking-cap uppercase">ver detalhe →</p>
-            </>
+            <p className="text-faint mt-2 text-[10.5px] tracking-cap uppercase">ver detalhe →</p>
           ) : (
             <p className="text-soft mt-3 text-[12.5px] leading-relaxed">
-              ainda sem refeições. <span className="italic text-ouro">diz à coach o que comeste</span>.
+              ainda sem refeições hoje. <span className="italic text-ouro">diz à coach o que comeste</span>.
             </p>
           )}
         </Link>

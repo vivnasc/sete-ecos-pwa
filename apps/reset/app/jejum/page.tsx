@@ -23,7 +23,7 @@ export default function JejumPage() {
   const [editarUltima, setEditarUltima] = useState(false)
   const [editarPrimeira, setEditarPrimeira] = useState(false)
   const [horaUltima, setHoraUltima] = useState('')
-  const [ontem, setOntem] = useState(false)
+  const [ontem, setOntem] = useState(true) // default ON · caso mais comum (última refeição foi ontem à noite)
   const [horaPrimeira, setHoraPrimeira] = useState('')
 
   useEffect(() => {
@@ -74,6 +74,8 @@ export default function JejumPage() {
     const d = new Date()
     if (ontem) d.setDate(d.getDate() - 1)
     d.setHours(h, m, 0, 0)
+    // se ainda assim ficar no futuro · puxar para ontem
+    if (d.getTime() > Date.now()) d.setDate(d.getDate() - 1)
     const date = isoDate()
     const existing = hoje ?? { date, ultimaRefeicao: null, primeiraRefeicao: null, duracaoHoras: null, meta, completou: false, id: '' }
     saveJejum({
