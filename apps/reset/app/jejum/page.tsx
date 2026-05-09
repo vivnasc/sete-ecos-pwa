@@ -305,11 +305,16 @@ export default function JejumPage() {
         <section className="card-feature text-center space-y-4">
           <div>
             <div className="flex items-center justify-center gap-2">
-              <Sun size={14} strokeWidth={1.4} className="text-ouro" />
-              <span className="label-cap">não há jejum em curso</span>
+              <Moon size={14} strokeWidth={1.4} className="text-ouro" />
+              <span className="label-cap">iniciar jejum</span>
             </div>
             <p className="text-soft mt-4 text-[13px] leading-relaxed">
-              quando acabares de comer, marca a tua última refeição. esquecer é normal · podes ajustar a hora.
+              o jejum começa quando registas a tua <strong>última refeição</strong>.
+              o relógio conta daí até comeres novamente.
+            </p>
+            <p className="text-faint mt-2 text-[11.5px] leading-relaxed">
+              acabaste de comer agora? toca em &ldquo;começar agora&rdquo;.<br />
+              foi mais cedo / ontem? toca &ldquo;outra hora&rdquo; e ajusta.
             </p>
           </div>
           {editarUltima ? (
@@ -352,7 +357,7 @@ export default function JejumPage() {
           ) : (
             <div className="flex gap-2">
               <button onClick={marcarUltimaRefeicao} className="btn-primary flex-1">
-                <Moon size={14} strokeWidth={1.4} /> agora
+                <Moon size={14} strokeWidth={1.4} /> começar agora
               </button>
               <button
                 onClick={() => {
