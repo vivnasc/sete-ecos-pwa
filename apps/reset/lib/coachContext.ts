@@ -110,6 +110,17 @@ export function construirContexto(comAnalise = false): string {
       linhas.push('· ' + partes.join(' · '))
       if (d.notas) linhas.push(`  notas: ${d.notas.slice(0, 150)}`)
     })
+
+    // TREINO · contagem explícita para evitar inventar
+    // A app NÃO tem registo de treino além da âncora 'treino_feito' marcada
+    const treinosFeitos = ultimos7.filter(d => d.ancoras['treino_feito']).length
+    linhas.push('')
+    if (treinosFeitos === 0) {
+      linhas.push('TREINO · ÚLTIMOS 7 DIAS: 0 registos. A Vivianne NÃO MARCOU treino_feito em nenhum dia. Não digas que ela treinou. Se for relevante, sugere registar treino para a leitura ser real.')
+    } else {
+      const diasTreino = ultimos7.filter(d => d.ancoras['treino_feito']).map(d => d.date)
+      linhas.push(`TREINO · ÚLTIMOS 7 DIAS: ${treinosFeitos}× registos (âncora treino_feito): ${diasTreino.join(', ')}`)
+    }
   }
 
   const alcool = getAlcoolRegistos().slice(0, 10)
