@@ -44,15 +44,18 @@ function DiarioContent() {
   const dias = useMemo(() => todosOsDias().map(d => isoDate(d)), [])
 
   const navegar = (passo: number) => {
-    const idx = dias.indexOf(selecionada)
-    const novoIdx = idx + passo
-    if (novoIdx >= 0 && novoIdx < dias.length) setSelecionada(dias[novoIdx])
+    const d = fromIso(selecionada)
+    d.setDate(d.getDate() + passo)
+    setSelecionada(isoDate(d))
   }
+
+  // Limites: não permite ir para o futuro
+  const podeAvancar = selecionada < isoDate()
 
   const data = fromIso(selecionada)
   const dow = diaSemana(data)
   const treino = TREINO_SEMANAL[dow]
-  const numDia = dias.indexOf(selecionada) + 1
+  const numDia = diaDoPlano(data)
   const isHoje = selecionada === isoDate()
 
   return (
@@ -70,14 +73,19 @@ function DiarioContent() {
           onClick={() => navegar(-1)}
           className="btn-ghost"
           aria-label="Dia anterior"
-          disabled={dias.indexOf(selecionada) === 0}
         >
           <ChevronLeft size={14} strokeWidth={1.4} />
         </button>
         <div className="text-center">
           <p className="font-serif text-[22px] font-light tracking-editorial">
-            <span className="tnum">Dia {String(numDia).padStart(2, '0')}</span>
-            <span className="text-faint"> / {RESET_DAYS}</span>
+            {numDia > 0 && numDia <= RESET_DAYS ? (
+              <>
+                <span className="tnum">Dia {String(numDia).padStart(2, '0')}</span>
+                <span className="text-faint"> / {RESET_DAYS}</span>
+              </>
+            ) : (
+              <span className="text-faint italic">{numDia <= 0 ? 'antes do início' : 'após o fim'}</span>
+            )}
           </p>
           <p className="label-soft mt-1">
             {dow.toLowerCase()} · {formatarData(data)}
@@ -88,7 +96,7 @@ function DiarioContent() {
           onClick={() => navegar(1)}
           className="btn-ghost"
           aria-label="Dia seguinte"
-          disabled={dias.indexOf(selecionada) === dias.length - 1}
+          disabled={!podeAvancar}
         >
           <ChevronRight size={14} strokeWidth={1.4} />
         </button>
