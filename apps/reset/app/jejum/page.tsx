@@ -59,9 +59,21 @@ export default function JejumPage() {
     return Math.round((ult.reduce((a, j) => a + (j.duracaoHoras ?? 0), 0) / ult.length) * 10) / 10
   }, [jejuns])
 
+  // Determina a data correcta para um novo jejum:
+  // se hoje já fechado · próximo termina amanhã.
+  const proximaDataJejum = (): string => {
+    const hojeIso = isoDate()
+    const hojeReg = getJejumHoje()
+    if (hojeReg?.primeiraRefeicao) {
+      const t = new Date(); t.setDate(t.getDate() + 1)
+      return isoDate(t)
+    }
+    return hojeIso
+  }
+
   const marcarUltimaRefeicao = () => {
-    const date = isoDate()
-    const existing = hoje ?? { date, ultimaRefeicao: null, primeiraRefeicao: null, duracaoHoras: null, meta, completou: false, id: '' }
+    const date = proximaDataJejum()
+    const existing = (date === isoDate() ? hoje : null) ?? { date, ultimaRefeicao: null, primeiraRefeicao: null, duracaoHoras: null, meta, completou: false, id: '' }
     saveJejum({
       date,
       ultimaRefeicao: new Date().toISOString(),
@@ -81,8 +93,8 @@ export default function JejumPage() {
     d.setHours(h, m, 0, 0)
     // segurança · se ainda assim ficar no futuro, puxa para trás 1 dia
     if (d.getTime() > Date.now()) d.setDate(d.getDate() - 1)
-    const date = isoDate()
-    const existing = hoje ?? { date, ultimaRefeicao: null, primeiraRefeicao: null, duracaoHoras: null, meta, completou: false, id: '' }
+    const date = proximaDataJejum()
+    const existing = (date === isoDate() ? hoje : null) ?? { date, ultimaRefeicao: null, primeiraRefeicao: null, duracaoHoras: null, meta, completou: false, id: '' }
     saveJejum({
       date,
       ultimaRefeicao: d.toISOString(),
@@ -93,6 +105,12 @@ export default function JejumPage() {
     })
   }
 
+  // Encontra o registo em curso (ultima sem primeira) para usar a sua data
+  const dataRegistoEmCurso = (): string => {
+    const reg = getJejuns().find(j => j.ultimaRefeicao === emCurso?.ultimaRef && !j.primeiraRefeicao)
+    return reg?.date ?? isoDate()
+  }
+
   const marcarPrimeiraRefeicaoComHora = (hhmm: string) => {
     if (!emCurso) return
     if (!/^\d{1,2}:\d{2}$/.test(hhmm)) return
@@ -100,9 +118,8 @@ export default function JejumPage() {
     const d = new Date()
     d.setHours(h, m, 0, 0)
     if (d.getTime() > Date.now()) d.setDate(d.getDate() - 1)
-    const date = isoDate()
     saveJejum({
-      date,
+      date: dataRegistoEmCurso(),
       ultimaRefeicao: emCurso.ultimaRef,
       primeiraRefeicao: d.toISOString(),
       duracaoHoras: null,
@@ -113,9 +130,8 @@ export default function JejumPage() {
 
   const marcarPrimeiraRefeicao = () => {
     if (!emCurso) return
-    const date = isoDate()
     saveJejum({
-      date,
+      date: dataRegistoEmCurso(),
       ultimaRefeicao: emCurso.ultimaRef,
       primeiraRefeicao: new Date().toISOString(),
       duracaoHoras: null,
@@ -126,14 +142,7 @@ export default function JejumPage() {
 
   const cancelarJejumActual = () => {
     if (!window.confirm('apagar este jejum em curso? a última refeição volta a poder ser registada.')) return
-    // descobrir qual o registo · pode estar em hoje ou ontem
-    const hojeIso = isoDate()
-    const ontemIso = (() => {
-      const d = new Date()
-      d.setDate(d.getDate() - 1)
-      return isoDate(d)
-    })()
-    const reg = getJejuns().find(j => (j.date === hojeIso || j.date === ontemIso) && j.ultimaRefeicao && !j.primeiraRefeicao)
+    const reg = getJejuns().find(j => j.ultimaRefeicao && !j.primeiraRefeicao)
     if (reg) removeJejum(reg.id)
     refresh()
   }
@@ -191,39 +200,8 @@ export default function JejumPage() {
         </button>
       </div>
 
-      {/* Estado actual */}
-      {jejumHojeFechado ? (
-        <section className="card-feature text-center space-y-4">
-          <div>
-            <div className="flex items-center justify-center gap-2">
-              <Check size={14} strokeWidth={1.6} className={hoje!.completou ? 'text-oliva' : 'text-ouro'} />
-              <span className="label-cap">jejum fechado · hoje</span>
-            </div>
-            <p className={cn('editorial-num mt-4 text-[80px] leading-none', hoje!.completou ? 'text-oliva' : 'text-soft')}>
-              {hoje!.duracaoHoras !== null ? Math.floor(hoje!.duracaoHoras) : '—'}
-              <span className="text-faint text-[24px]">h{hoje!.duracaoHoras !== null ? Math.round((hoje!.duracaoHoras % 1) * 60).toString().padStart(2, '0') : ''}</span>
-            </p>
-            <p className="text-faint mt-3 text-[12px]">
-              {hoje!.ultimaRefeicao ? new Date(hoje!.ultimaRefeicao).toLocaleString('pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'}
-              {' → '}
-              {hoje!.primeiraRefeicao ? new Date(hoje!.primeiraRefeicao).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }) : '—'}
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <button onClick={anularComeu} className="btn-outline">
-              <RotateCcw size={13} strokeWidth={1.5} />
-              <span className="text-[11px] ml-1">anular &ldquo;comi&rdquo;</span>
-            </button>
-            <button onClick={() => setEditar(hoje!)} className="btn-outline">
-              <Pencil size={13} strokeWidth={1.5} />
-              <span className="text-[11px] ml-1">editar horas</span>
-            </button>
-          </div>
-          <p className="text-faint text-[10.5px] leading-relaxed">
-            clicaste em &ldquo;comi&rdquo; sem querer? &ldquo;anular&rdquo; volta a abrir o jejum em curso.
-          </p>
-        </section>
-      ) : emCurso ? (
+      {/* Estado actual · prioridade: em curso > fechado > iniciar */}
+      {emCurso ? (
         <section className="card-feature text-center space-y-4">
           <div>
             <div className="flex items-center justify-center gap-2">
@@ -303,14 +281,40 @@ export default function JejumPage() {
         </section>
       ) : (
         <section className="card-feature text-center space-y-4">
+          {jejumHojeFechado ? (
+            <div className="card-solid !p-3 !bg-[var(--surface-soft)] space-y-1">
+              <div className="flex items-center justify-center gap-2">
+                <Check size={12} strokeWidth={1.6} className={hoje!.completou ? 'text-oliva' : 'text-ouro'} />
+                <span className="label-cap text-[10px]">jejum de hoje fechado</span>
+              </div>
+              <p className={cn('font-serif text-[20px] tnum', hoje!.completou ? 'text-oliva' : 'text-soft')}>
+                {hoje!.duracaoHoras !== null ? hoje!.duracaoHoras : '—'}h
+              </p>
+              <p className="text-faint text-[10.5px] tnum">
+                {hoje!.ultimaRefeicao ? new Date(hoje!.ultimaRefeicao).toLocaleString('pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'}
+                {' → '}
+                {hoje!.primeiraRefeicao ? new Date(hoje!.primeiraRefeicao).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }) : '—'}
+              </p>
+              <div className="flex justify-center gap-3 text-[10.5px] pt-1">
+                <button onClick={anularComeu} className="text-faint hover:text-ouro inline-flex items-center gap-1">
+                  <RotateCcw size={11} strokeWidth={1.5} /> anular &ldquo;comi&rdquo;
+                </button>
+                <span className="text-faint">·</span>
+                <button onClick={() => setEditar(hoje!)} className="text-faint hover:text-ouro inline-flex items-center gap-1">
+                  <Pencil size={11} strokeWidth={1.5} /> editar
+                </button>
+              </div>
+            </div>
+          ) : null}
           <div>
             <div className="flex items-center justify-center gap-2">
               <Moon size={14} strokeWidth={1.4} className="text-ouro" />
-              <span className="label-cap">iniciar jejum</span>
+              <span className="label-cap">{jejumHojeFechado ? 'iniciar próximo jejum' : 'iniciar jejum'}</span>
             </div>
             <p className="text-soft mt-4 text-[13px] leading-relaxed">
-              o jejum começa quando registas a tua <strong>última refeição</strong>.
-              o relógio conta daí até comeres novamente.
+              {jejumHojeFechado
+                ? <>acabaste de jantar? marca a <strong>última refeição de hoje</strong> · o jejum vai contar até comeres amanhã.</>
+                : <>o jejum começa quando registas a tua <strong>última refeição</strong>. o relógio conta daí até comeres novamente.</>}
             </p>
             <p className="text-faint mt-2 text-[11.5px] leading-relaxed">
               acabaste de comer agora? toca em &ldquo;começar agora&rdquo;.<br />

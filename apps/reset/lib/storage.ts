@@ -491,36 +491,23 @@ export function streakJejum(): number {
 }
 
 export function jejumActualHoras(): { horas: number; ultimaRef: string } | null {
-  // Calcula o jejum em curso desde a última refeição registada
-  const hoje = isoDate()
-  const ontem = (() => {
-    const d = new Date()
-    d.setDate(d.getDate() - 1)
-    return isoDate(d)
-  })()
+  // Procura QUALQUER jejum em curso (ultima sem primeira) em qualquer data.
+  // Permite começar fast à noite (date=amanhã) sem conflitar com fast de hoje fechado.
   const all = getJejuns()
-  const hojeJ = all.find(j => j.date === hoje)
-  const ontemJ = all.find(j => j.date === ontem)
-
-  // se já comeu hoje, jejum acabou
-  if (hojeJ?.primeiraRefeicao) return null
-
-  // procurar última refeição: hoje (se registada) ou ontem
-  const ultimaRefRaw = hojeJ?.ultimaRefeicao ?? ontemJ?.ultimaRefeicao
-  if (!ultimaRefRaw) return null
-
-  // se a hora guardada está no futuro · puxa 24h para trás (caso de ter
-  // sido inserida hh:mm sem ticar 'ontem')
-  let ultimaRef = ultimaRefRaw
-  let refTime = new Date(ultimaRef).getTime()
-  while (refTime > Date.now()) {
-    refTime -= 24 * 60 * 60 * 1000
-    ultimaRef = new Date(refTime).toISOString()
-  }
-
-  const ms = Date.now() - refTime
+  const candidatos = all
+    .filter(j => j.ultimaRefeicao && !j.primeiraRefeicao)
+    .map(j => {
+      let t = new Date(j.ultimaRefeicao!).getTime()
+      // se a hora guardada está no futuro, puxa 24h para trás (segurança)
+      while (t > Date.now()) t -= 24 * 60 * 60 * 1000
+      return { iso: new Date(t).toISOString(), t }
+    })
+    .sort((a, b) => b.t - a.t)
+  if (candidatos.length === 0) return null
+  const escolhido = candidatos[0]
+  const ms = Date.now() - escolhido.t
   const horas = Math.round((ms / (1000 * 60 * 60)) * 10) / 10
-  return { horas, ultimaRef }
+  return { horas, ultimaRef: escolhido.iso }
 }
 
 // ----- CICLO -----
