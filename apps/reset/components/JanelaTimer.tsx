@@ -19,10 +19,12 @@ export default function JanelaTimer() {
   }, [])
 
   const janela = janelaRecomendada()
-  const aberta = janelaAbertaAgora()
+  const jejumCurso = jejumActualHoras()
+  // Se há jejum em curso, a janela de comer está fechada por definição.
+  // Caso contrário, usa o cálculo por hora do dia.
+  const aberta = jejumCurso ? false : janelaAbertaAgora()
   const ateAbrir = tempoAteJanelaAbrir()
   const ateFechar = tempoAteJanelaFechar()
-  const jejumCurso = jejumActualHoras()
 
   const fonte = {
     ultima_refeicao: 'última refeição registada',
