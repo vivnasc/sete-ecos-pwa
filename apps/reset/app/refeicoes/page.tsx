@@ -156,6 +156,35 @@ export default function RefeicoesPage() {
     refresh()
   }
 
+  // Duplica refeição dentro do mesmo dia · útil para ex: almoço repetido como jantar
+  // Tenta sugerir tipo seguinte (pa→almoço→snack→jantar) e a hora actual
+  const duplicarMesmoDia = (r: Refeicao) => {
+    const ordem: RefeicaoTipo[] = ['pa', 'almoco', 'snack', 'jantar']
+    const idx = ordem.indexOf(r.tipo)
+    const proximoTipo = idx >= 0 && idx < ordem.length - 1 ? ordem[idx + 1] : r.tipo
+    // Hora: se for hoje, usa agora; senão, +5h da original
+    const novaData = new Date(date + 'T00:00:00')
+    if (date === isoDate()) {
+      const agora = new Date()
+      novaData.setHours(agora.getHours(), agora.getMinutes(), 0, 0)
+    } else {
+      const original = new Date(r.timestamp)
+      novaData.setHours(Math.min(23, original.getHours() + 5), original.getMinutes(), 0, 0)
+    }
+    addRefeicao({
+      tipo: proximoTipo,
+      descricao: r.descricao,
+      timestamp: novaData.toISOString(),
+      proteinaG: r.proteinaG,
+      carboG: r.carboG,
+      gorduraG: r.gorduraG,
+      calorias: r.calorias,
+      contexto: r.contexto,
+      sentir: ''
+    })
+    refresh()
+  }
+
   const copiarDiaPara = (origem: string, destino: string) => {
     const refsOrigem = getRefeicoesDoDia(origem)
     if (refsOrigem.length === 0) return
@@ -325,6 +354,7 @@ export default function RefeicoesPage() {
               onApagar={() => apagar(r.id)}
               onGuardar={patch => { updateRefeicao(r.id, patch); refresh() }}
               onRepetir={() => repetirHoje(r)}
+              onDuplicar={() => duplicarMesmoDia(r)}
               podeRepetir={date !== isoDate()}
             />
           ))}
@@ -473,12 +503,14 @@ function RefeicaoCard({
   onApagar,
   onGuardar,
   onRepetir,
+  onDuplicar,
   podeRepetir
 }: {
   r: Refeicao
   onApagar: () => void
   onGuardar: (patch: Partial<Refeicao>) => void
   onRepetir: () => void
+  onDuplicar: () => void
   podeRepetir: boolean
 }) {
   const [editar, setEditar] = useState(false)
@@ -639,6 +671,14 @@ function RefeicaoCard({
               ↻
             </button>
           ) : null}
+          <button
+            onClick={onDuplicar}
+            className="text-faint hover:text-ouro transition-elegant active:scale-95"
+            aria-label="duplicar neste dia"
+            title="duplicar (ex: almoço → jantar)"
+          >
+            +↻
+          </button>
           <button
             onClick={() => setEditar(true)}
             className="text-faint hover:text-ouro transition-elegant active:scale-95"
