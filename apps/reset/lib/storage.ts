@@ -481,10 +481,19 @@ export function jejumActualHoras(): { horas: number; ultimaRef: string } | null 
   if (hojeJ?.primeiraRefeicao) return null
 
   // procurar última refeição: hoje (se registada) ou ontem
-  const ultimaRef = hojeJ?.ultimaRefeicao ?? ontemJ?.ultimaRefeicao
-  if (!ultimaRef) return null
+  const ultimaRefRaw = hojeJ?.ultimaRefeicao ?? ontemJ?.ultimaRefeicao
+  if (!ultimaRefRaw) return null
 
-  const ms = Date.now() - new Date(ultimaRef).getTime()
+  // se a hora guardada está no futuro · puxa 24h para trás (caso de ter
+  // sido inserida hh:mm sem ticar 'ontem')
+  let ultimaRef = ultimaRefRaw
+  let refTime = new Date(ultimaRef).getTime()
+  while (refTime > Date.now()) {
+    refTime -= 24 * 60 * 60 * 1000
+    ultimaRef = new Date(refTime).toISOString()
+  }
+
+  const ms = Date.now() - refTime
   const horas = Math.round((ms / (1000 * 60 * 60)) * 10) / 10
   return { horas, ultimaRef }
 }
