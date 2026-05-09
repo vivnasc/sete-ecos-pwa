@@ -446,6 +446,15 @@ export async function syncJejum(j: JejumLog): Promise<void> {
   if (error) registarErroSync('jejum', error)
 }
 
+export async function removeJejumSync(id: string): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+  const user = await getUser()
+  if (!user) return
+  const { error } = await sb.from('fenixfit_jejum').delete().eq('id', id).eq('user_id', user.id)
+  if (error) registarErroSync('jejum', error)
+}
+
 export async function syncCiclo(c: CicloLog): Promise<void> {
   const sb = getSupabase()
   if (!sb) return

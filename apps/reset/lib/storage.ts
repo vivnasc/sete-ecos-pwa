@@ -1,7 +1,7 @@
 'use client'
 
 import { isoDate } from './dates'
-import { syncDia, syncAlcool, syncMedida, syncDesabafo, syncInsight, syncPeso, syncJejum, syncCiclo, syncCoachMensagem, syncRefeicao, removeRefeicaoSync } from './sync'
+import { syncDia, syncAlcool, syncMedida, syncDesabafo, syncInsight, syncPeso, syncJejum, syncCiclo, syncCoachMensagem, syncRefeicao, removeRefeicaoSync, removeJejumSync } from './sync'
 
 const PREFIX = 'fenixfit:'
 
@@ -450,6 +450,31 @@ export function saveJejum(j: Omit<JejumLog, 'id'>): JejumLog {
   }
   if (existing >= 0) all[existing] = novo
   else all.push(novo)
+  write('jejum', all)
+  void syncJejum(novo).catch(() => {})
+  return novo
+}
+
+export function removeJejum(id: string): void {
+  const all = read<JejumLog[]>('jejum', [])
+  const filtrado = all.filter(j => j.id !== id)
+  if (filtrado.length === all.length) return
+  write('jejum', filtrado)
+  void removeJejumSync(id).catch(() => {})
+}
+
+export function anularPrimeiraRefeicao(date: string): JejumLog | null {
+  const all = read<JejumLog[]>('jejum', [])
+  const idx = all.findIndex(j => j.date === date)
+  if (idx < 0) return null
+  const j = all[idx]
+  const novo: JejumLog = {
+    ...j,
+    primeiraRefeicao: null,
+    duracaoHoras: null,
+    completou: false
+  }
+  all[idx] = novo
   write('jejum', all)
   void syncJejum(novo).catch(() => {})
   return novo
