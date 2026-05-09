@@ -48,12 +48,12 @@ export function DonutMacro({
   const r = (tamanho - 12) / 2
   const c = tamanho / 2
   const circ = 2 * Math.PI * r
-  const pct = alvo && alvo > 0 ? Math.min(100, (valor / alvo) * 100) : 0
-  const dash = (pct / 100) * circ
+  const pctReal = alvo && alvo > 0 ? (valor / alvo) * 100 : 0
+  const pctVisual = Math.min(100, pctReal)
+  const dash = (pctVisual / 100) * circ
   const strokeWidth = Math.max(5, tamanho * 0.09)
 
   // Cor fixa · não depende da paleta da app
-  const pctReal = alvo && alvo > 0 ? (valor / alvo) * 100 : 0
   const cor = alvo === null
     ? '#A89878' // neutro · sem alvo
     : reverso
@@ -116,7 +116,9 @@ export function DonutMacro({
       <div className="text-center">
         <p className="text-faint text-[10px] uppercase tracking-cap">{label}</p>
         {alvo !== null && alvo > 0 ? (
-          <p className="text-faint text-[9.5px] tnum">{Math.round(pct)}%</p>
+          <p className="text-[9.5px] tnum" style={{ color: pctReal > 120 ? '#C9614E' : 'var(--ink-faint)' }}>
+            {Math.round(pctReal)}%{pctReal > 100 ? ` · +${Math.round(pctReal - 100)}` : ''}
+          </p>
         ) : (
           <p className="text-faint text-[9.5px]">sem alvo</p>
         )}
