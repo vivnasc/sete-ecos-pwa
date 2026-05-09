@@ -45,70 +45,80 @@ export function DonutMacro({
   tamanho?: number
   reverso?: boolean
 }) {
-  const r = (tamanho - 8) / 2
+  const r = (tamanho - 12) / 2
   const c = tamanho / 2
   const circ = 2 * Math.PI * r
   const pct = alvo && alvo > 0 ? Math.min(100, (valor / alvo) * 100) : 0
   const dash = (pct / 100) * circ
+  const strokeWidth = Math.max(5, tamanho * 0.09)
 
-  // Cor:
-  // - sem alvo · neutro
-  // - reverso (carbo em keto, álcool) · acima do alvo é mau (terracota)
-  // - default · ouro sempre · oliva quando atinge o alvo (95-110%) · terracota se excede 120%
+  // Cor fixa · não depende da paleta da app
   const pctReal = alvo && alvo > 0 ? (valor / alvo) * 100 : 0
   const cor = alvo === null
-    ? 'var(--ink-faint)'
+    ? '#A89878' // neutro · sem alvo
     : reverso
-      ? pctReal > 110 ? 'var(--terracota)' : 'var(--ouro)'
-      : pctReal >= 95 && pctReal <= 110 ? 'var(--oliva)'
-        : pctReal > 120 ? 'var(--terracota)'
-          : 'var(--ouro)'
+      ? pctReal > 110 ? '#C9614E' : '#D4A14E'
+      : pctReal >= 95 && pctReal <= 110 ? '#7B9A4F'
+        : pctReal > 120 ? '#C9614E'
+          : '#D4A14E'
 
   return (
     <div className="flex flex-col items-center gap-1">
       <div className="relative" style={{ width: tamanho, height: tamanho }}>
         <svg width={tamanho} height={tamanho} className="-rotate-90">
-          {/* track */}
+          {/* track · cinza claro visível em ambos modos */}
           <circle
             cx={c}
             cy={c}
             r={r}
             fill="none"
-            stroke="var(--hair)"
-            strokeWidth="4"
+            stroke="rgba(150,140,120,0.25)"
+            strokeWidth={strokeWidth}
           />
           {/* progress */}
-          {alvo !== null && alvo > 0 ? (
+          {alvo !== null && alvo > 0 && valor > 0 ? (
             <circle
               cx={c}
               cy={c}
               r={r}
               fill="none"
               stroke={cor}
-              strokeWidth="4"
+              strokeWidth={strokeWidth}
               strokeLinecap="round"
               strokeDasharray={`${dash} ${circ}`}
               style={{ transition: 'stroke-dasharray 0.5s ease' }}
             />
           ) : null}
+          {/* sem alvo · arco solid completo subtil */}
+          {alvo === null && valor > 0 ? (
+            <circle
+              cx={c}
+              cy={c}
+              r={r}
+              fill="none"
+              stroke={cor}
+              strokeWidth={strokeWidth}
+              opacity={0.4}
+            />
+          ) : null}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p className="editorial-num tnum leading-none" style={{ fontSize: tamanho * 0.28, color: cor }}>
+          <p className="editorial-num tnum leading-none" style={{ fontSize: tamanho * 0.3, color: cor, fontWeight: 500 }}>
             {Math.round(valor)}
           </p>
           {alvo !== null && alvo > 0 ? (
-            <p className="text-faint tnum leading-none mt-0.5" style={{ fontSize: tamanho * 0.13 }}>
+            <p className="text-faint tnum leading-none mt-0.5" style={{ fontSize: tamanho * 0.14 }}>
               /{alvo}
             </p>
           ) : null}
         </div>
       </div>
       <div className="text-center">
-        <p className="text-faint text-[9.5px] uppercase tracking-cap">{label}</p>
+        <p className="text-faint text-[10px] uppercase tracking-cap">{label}</p>
         {alvo !== null && alvo > 0 ? (
-          <p className="text-faint text-[9px] tnum">{Math.round(pct)}%</p>
+          <p className="text-faint text-[9.5px] tnum">{Math.round(pct)}%</p>
         ) : (
-          <p className="text-faint text-[9px]">—</p>
+          <p className="text-faint text-[9.5px]">sem alvo</p>
         )}
       </div>
     </div>

@@ -114,6 +114,7 @@ const TOOL_LABELS: Record<string, string> = {
   marcar_ancora: 'âncora marcada',
   adicionar_objectivo: 'objectivo guardado',
   remover_objectivo: 'objectivo removido',
+  actualizar_objectivo: 'objectivo actualizado',
   listar_objectivos: 'a ver objectivos',
   definir_metas: 'metas ajustadas',
   sugerir_metas: 'a calcular sugestão',

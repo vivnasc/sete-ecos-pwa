@@ -426,6 +426,21 @@ const COACH_TOOLS = [
     input_schema: { type: 'object', properties: { id: { type: 'string' } }, required: ['id'] }
   },
   {
+    name: 'actualizar_objectivo',
+    description: 'Actualiza objectivo guardado · USA quando ela disser "estou em X não Y" para corrigir valor inicial, alvo ou prazo. Lista primeiro com listar_objectivos para o id.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        texto: { type: 'string' },
+        valor_inicial: { type: 'number' },
+        valor_alvo: { type: 'number' },
+        prazo_dias: { type: 'integer' }
+      },
+      required: ['id']
+    }
+  },
+  {
     name: 'listar_objectivos',
     description: 'Devolve os objectivos pessoais guardados. Usa antes de cada abertura para os referenciar e medir progresso.',
     input_schema: { type: 'object', properties: {}, required: [] }

@@ -234,3 +234,14 @@ export function removerObjectivo(id: string): void {
   const lista = getObjectivos().filter(o => o.id !== id)
   saveProfile({ objectivos: lista })
 }
+
+export function actualizarObjectivo(id: string, patch: Partial<Omit<Objectivo, 'id' | 'criadoEm'>>): Objectivo | null {
+  const lista = getObjectivos()
+  const idx = lista.findIndex(o => o.id === id)
+  if (idx < 0) return null
+  const actualizado: Objectivo = { ...lista[idx], ...patch }
+  const nova = [...lista]
+  nova[idx] = actualizado
+  saveProfile({ objectivos: nova })
+  return actualizado
+}

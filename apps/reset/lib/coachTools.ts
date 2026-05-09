@@ -5,7 +5,7 @@
 // tool_use, o cliente executa via TOOL_EXECUTORS e devolve tool_result.
 
 import { isoDate, horaLocal, dataLocal } from './dates'
-import { getProfile, saveProfile, sugerirMetas, getAncorasActivas, getObjectivos, adicionarObjectivo, removerObjectivo, type Metas } from './profile'
+import { getProfile, saveProfile, sugerirMetas, getAncorasActivas, getObjectivos, adicionarObjectivo, removerObjectivo, actualizarObjectivo, type Metas } from './profile'
 import { syncProfile } from './sync'
 import {
   saveDia,
@@ -322,6 +322,21 @@ export const COACH_TOOLS = [
     input_schema: {
       type: 'object',
       properties: { id: { type: 'string' } },
+      required: ['id']
+    }
+  },
+  {
+    name: 'actualizar_objectivo',
+    description: 'Actualiza um objectivo já guardado · usa quando a Vivianne quer corrigir o peso inicial (ex: "estou em 75 não 83"), o alvo, o prazo ou o texto. Lista primeiro com listar_objectivos para o id. Só preencher os campos a alterar.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        texto: { type: 'string' },
+        valor_inicial: { type: 'number' },
+        valor_alvo: { type: 'number' },
+        prazo_dias: { type: 'integer' }
+      },
       required: ['id']
     }
   },
@@ -763,6 +778,27 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
     if (!o) return { ok: false, erro: 'objectivo não encontrado' }
     removerObjectivo(id)
     return { ok: true, texto: `objectivo removido: "${o.texto}"` }
+  },
+
+  actualizar_objectivo(input) {
+    const id = str(input.id)
+    if (!id) return { ok: false, erro: 'id em falta' }
+    const patch: Partial<{ texto: string; valorInicial: number; valorAlvo: number; prazoDias: number }> = {}
+    if (typeof input.texto === 'string' && input.texto.trim()) patch.texto = input.texto.trim()
+    const vi = num(input.valor_inicial)
+    if (vi !== null) patch.valorInicial = vi
+    const va = num(input.valor_alvo)
+    if (va !== null) patch.valorAlvo = va
+    const pd = num(input.prazo_dias)
+    if (pd !== null) patch.prazoDias = Math.round(pd)
+    if (Object.keys(patch).length === 0) return { ok: false, erro: 'nenhum campo para actualizar' }
+    const r = actualizarObjectivo(id, patch)
+    if (!r) return { ok: false, erro: 'objectivo não encontrado' }
+    const partes: string[] = [`"${r.texto}"`]
+    if (r.valorInicial !== undefined && r.valorAlvo !== undefined && r.prazoDias) {
+      partes.push(`${r.valorInicial} → ${r.valorAlvo} em ${r.prazoDias}d`)
+    }
+    return { ok: true, texto: `objectivo actualizado · ${partes.join(' · ')}` }
   },
 
   listar_objectivos() {
