@@ -31,7 +31,8 @@ import {
   variacaoPeso,
   jejumActualHoras,
   pesoUltimo,
-  macrosDoDia
+  macrosDoDia,
+  ancorasResolvidas
 } from '@/lib/storage'
 import { TREINO_SEMANAL } from '@/lib/data'
 import { diaDoPlano, RESET_DAYS, diaSemana, isoDate, statusDoDia, RESET_START } from '@/lib/dates'
@@ -100,7 +101,10 @@ export default function PlanoPage() {
   const marco = proxMarco(dia)
   const ancoras = getAncorasActivas()
   const dia_log = getDia()
-  const cumpridas = ancoras.filter(a => dia_log.ancoras[a.id]).length
+  const cumpridas = (() => {
+    const r = ancorasResolvidas(dia_log.date, dia_log.ancoras)
+    return ancoras.filter(a => r[a.id]).length
+  })()
   const dow = diaSemana(new Date())
   const treinoHoje = TREINO_SEMANAL[dow]
   const macros = macrosDoDia()

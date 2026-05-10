@@ -21,7 +21,8 @@ import {
   diasSemAlcool,
   sonoMedio,
   getRefeicoesDoDia,
-  macrosDoDia
+  macrosDoDia,
+  ancorasResolvidas
 } from './storage'
 
 export function construirContexto(comAnalise = false): string {
@@ -100,7 +101,8 @@ export function construirContexto(comAnalise = false): string {
     linhas.push('')
     linhas.push('ÚLTIMOS 7 DIAS:')
     ultimos7.forEach(d => {
-      const a = getAncorasActivas().filter(x => d.ancoras[x.id]).length
+      const r = ancorasResolvidas(d.date, d.ancoras)
+      const a = getAncorasActivas().filter(x => r[x.id]).length
       const partes = [
         `${d.date}: âncoras ${a}/7`,
         d.sonoHoras !== null ? `sono ${d.sonoHoras}h` : '',

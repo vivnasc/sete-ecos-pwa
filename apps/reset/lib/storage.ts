@@ -203,8 +203,33 @@ export function addAlcoolRegisto(r: Omit<AlcoolRegisto, 'id' | 'timestamp'> & { 
   const all = read<AlcoolRegisto[]>('alcool', [])
   all.push(novo)
   write('alcool', all)
+  // Auto-marca a âncora 'caderno antes do copo' para o dia · ela já fez a
+  // reflexão (é a única forma de registar álcool). Aplica-se em qualquer dia,
+  // bebendo ou não.
+  const date = novo.timestamp.slice(0, 10)
+  const dia = getDia(date)
+  if (!dia.ancoras['caderno_copo']) {
+    dia.ancoras['caderno_copo'] = true
+    saveDia(dia)
+  }
   void syncAlcool(novo).catch(() => {})
   return novo
+}
+
+// Tem registo de álcool no dia?
+export function temAlcoolNoDia(date: string): boolean {
+  return getAlcoolRegistos().some(r => r.timestamp.slice(0, 10) === date)
+}
+
+// Resolve âncoras com regras automáticas.
+// caderno_copo · cumprida automaticamente se não houver álcool registado
+// (não havia tentação · não conta como falha)
+export function ancorasResolvidas(date: string, ancoras: Record<string, boolean>): Record<string, boolean> {
+  const resolvidas = { ...ancoras }
+  if (!resolvidas['caderno_copo']) {
+    if (!temAlcoolNoDia(date)) resolvidas['caderno_copo'] = true
+  }
+  return resolvidas
 }
 
 // ----- MEDIDAS -----
@@ -659,7 +684,8 @@ export function streakAncoras(minPorDia = 5): number {
   const dias = getTodosDias()
   let streak = 0
   for (let i = dias.length - 1; i >= 0; i--) {
-    const cumpridas = Object.values(dias[i].ancoras).filter(Boolean).length
+    const resolvidas = ancorasResolvidas(dias[i].date, dias[i].ancoras)
+    const cumpridas = Object.values(resolvidas).filter(Boolean).length
     if (cumpridas >= minPorDia) streak++
     else break
   }

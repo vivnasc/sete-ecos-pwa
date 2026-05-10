@@ -10,7 +10,8 @@ import {
   getAlcoolRegistos,
   getMedidas,
   getInsightCache,
-  saveInsightCache
+  saveInsightCache,
+  ancorasResolvidas
 } from '@/lib/storage'
 
 function inicioSemana(d: Date = new Date()): string {
@@ -71,7 +72,10 @@ export default function InsightsPage() {
       weekStart: semanaInicio,
       dias: diasSemana.map(d => ({
         date: d.date,
-        ancorasCumpridas: getAncorasActivas().filter(a => d.ancoras[a.id]).length,
+        ancorasCumpridas: (() => {
+          const r = ancorasResolvidas(d.date, d.ancoras)
+          return getAncorasActivas().filter(a => r[a.id]).length
+        })(),
         treinoFeito: !!d.ancoras['treino_feito'],
         sonoHoras: d.sonoHoras,
         energia: d.energia,

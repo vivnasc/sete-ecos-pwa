@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Check } from 'lucide-react'
 import { isoDate } from '@/lib/dates'
-import { getDia, toggleAncora, type DiaLog } from '@/lib/storage'
+import { getDia, toggleAncora, ancorasResolvidas, type DiaLog } from '@/lib/storage'
 import { getAncorasActivas } from '@/lib/profile'
 import type { Ancora } from '@/lib/data'
 import { cn } from '@/lib/utils'
@@ -35,7 +35,8 @@ export default function AnchorChecklist({ date = isoDate() }: { date?: string })
     )
   }
 
-  const cumpridas = ancoras.filter(a => log.ancoras[a.id]).length
+  const efectivas = ancorasResolvidas(date, log.ancoras)
+  const cumpridas = ancoras.filter(a => efectivas[a.id]).length
 
   return (
     <section>
@@ -47,7 +48,11 @@ export default function AnchorChecklist({ date = isoDate() }: { date?: string })
       </div>
       <ul className="card-solid divide-y divide-[var(--hair)] !p-0">
         {ancoras.map((a, idx) => {
-          const feita = !!log.ancoras[a.id]
+          const manual = !!log.ancoras[a.id]
+          const feita = !!efectivas[a.id]
+          const auto = feita && !manual // resolvida automaticamente
+          // detalhe especial para caderno_copo
+          const detalheExtra = a.id === 'caderno_copo' && auto ? ' · automático · sem álcool registado' : ''
           return (
             <li key={a.id}>
               <button
@@ -72,7 +77,7 @@ export default function AnchorChecklist({ date = isoDate() }: { date?: string })
                   <span className={cn('block text-[14.5px]', feita ? 'text-soft line-through decoration-[var(--hair-strong)]' : 'text-tinta dark:text-creme-escuro')}>
                     {a.titulo}
                   </span>
-                  <span className="text-faint mt-0.5 block text-[12px]">{a.detalhe}</span>
+                  <span className="text-faint mt-0.5 block text-[12px]">{a.detalhe}{detalheExtra}</span>
                 </span>
               </button>
             </li>
