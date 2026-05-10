@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Sun, Check, Sunrise, Coffee, Dumbbell, Droplet, Scale } from 'lucide-react'
+import { Sun, Check, Sunrise, Coffee, Dumbbell, Droplet, Scale, Sparkles } from 'lucide-react'
+import RotinaManhaSheet from './RotinaManhaSheet'
 import {
   getDia,
   getPesoHoje,
@@ -24,6 +25,7 @@ export default function MorningPanel() {
   const [pesoHojeReg, setPesoHojeReg] = useState<{ peso: number; cintura: number | null } | null>(null)
   const [jejumCurso, setJejumCurso] = useState<{ horas: number } | null>(null)
   const [tick, setTick] = useState(0)
+  const [sheetAberto, setSheetAberto] = useState(false)
 
   useEffect(() => {
     const refresh = () => {
@@ -85,9 +87,18 @@ export default function MorningPanel() {
 
   return (
     <section className="card-feature space-y-5">
-      <div className="flex items-center gap-2">
-        <Sunrise size={14} strokeWidth={1.4} className="text-ouro" />
-        <span className="label-cap">manhã · ferramentas perto</span>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Sunrise size={14} strokeWidth={1.4} className="text-ouro" />
+          <span className="label-cap">manhã · ferramentas perto</span>
+        </div>
+        <button
+          onClick={() => setSheetAberto(true)}
+          className="inline-flex items-center gap-1.5 text-[11px] text-ouro hover:underline active:scale-95"
+        >
+          <Sparkles size={12} strokeWidth={1.5} />
+          rotina completa
+        </button>
       </div>
 
       {/* PESO + CINTURA inline */}
@@ -180,6 +191,8 @@ export default function MorningPanel() {
           </div>
         )}
       </div>
+
+      {sheetAberto ? <RotinaManhaSheet onClose={() => setSheetAberto(false)} /> : null}
 
       {/* ROMPER JEJUM */}
       {jejumCurso && jejumCurso.horas >= 12 ? (
