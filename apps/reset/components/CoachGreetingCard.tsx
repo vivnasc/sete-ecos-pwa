@@ -77,6 +77,7 @@ export default function CoachGreetingCard() {
   const [abertura, setAbertura] = useState<Abertura | null>(null)
   const [obsoleta, setObsoleta] = useState(false)
   const [aGerar, setAGerar] = useState(false)
+  const [aberto, setAberto] = useState(false)
   const tentadoRef = useRef(false)
 
   useEffect(() => {
@@ -161,9 +162,10 @@ export default function CoachGreetingCard() {
         ? cortePonto + 1
         : Math.min(texto.length, 200)
   const preview = texto.slice(0, corte).trim()
+  const temMais = corte < texto.length
 
   return (
-    <a href="/coach" className="card-feature block transition-elegant hover:shadow-ink relative">
+    <div className="card-feature relative">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MessageCircle size={14} strokeWidth={1.4} className="text-ouro" />
@@ -179,18 +181,35 @@ export default function CoachGreetingCard() {
           >
             <RefreshCw size={13} strokeWidth={1.5} className={aGerar ? 'animate-spin' : ''} />
           </button>
-          <ArrowUpRight size={14} strokeWidth={1.3} className="text-faint" />
         </div>
       </div>
-      <p className={`font-serif text-[16px] leading-[1.5] tracking-editorial mt-3 italic ${obsoleta ? 'opacity-60' : ''}`}>
-        {preview}
-        {corte < texto.length ? <span className="text-faint"> ...</span> : null}
-      </p>
+      <button
+        type="button"
+        onClick={() => temMais && setAberto(a => !a)}
+        className={`mt-3 block w-full text-left ${temMais ? 'cursor-pointer' : 'cursor-default'}`}
+      >
+        <p className={`font-serif text-[16px] leading-[1.5] tracking-editorial italic ${obsoleta ? 'opacity-60' : ''}`}>
+          {aberto ? texto : preview}
+          {!aberto && temMais ? <span className="text-faint"> ...</span> : null}
+        </p>
+        {temMais ? (
+          <span className="mt-2 inline-block text-[11px] text-ouro hover:underline">
+            {aberto ? 'ver menos' : 'ver tudo'}
+          </span>
+        ) : null}
+      </button>
+      <a
+        href="/coach"
+        className="mt-3 inline-flex items-center gap-1 text-[11px] text-faint hover:text-ouro transition-elegant"
+      >
+        responder à coach
+        <ArrowUpRight size={11} strokeWidth={1.4} />
+      </a>
       {obsoleta ? (
         <p className="text-faint text-[10.5px] mt-2 leading-relaxed">
           tens dados novos · toca refrescar para a coach reler.
         </p>
       ) : null}
-    </a>
+    </div>
   )
 }

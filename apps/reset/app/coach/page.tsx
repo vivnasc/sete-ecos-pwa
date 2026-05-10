@@ -546,7 +546,8 @@ export default function CoachPage() {
 
 function AberturaCard() {
   const [abertura, setAbertura] = useState<{ date: string; texto: string; geradoEm?: string } | null>(null)
-  const [aberto, setAberto] = useState(false)
+  // Default aberto · ela está no chat para ver a leitura · não esconder
+  const [aberto, setAberto] = useState(true)
 
   useEffect(() => {
     const refresh = () => setAbertura(getAberturaHoje())
