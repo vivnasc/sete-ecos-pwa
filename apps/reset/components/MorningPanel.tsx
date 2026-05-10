@@ -51,16 +51,10 @@ export default function MorningPanel() {
 
   const dow = diaSemana(new Date())
   const treino = TREINO_SEMANAL[dow]
-  const hora = new Date().getHours()
-  const eManha = hora >= 5 && hora < 12
   const eSexta = dow === 'Sexta'
 
-  const todasFeitas =
-    !!log.ancoras['eletrolitos'] &&
-    pesoHojeReg !== null &&
-    (treino.descanso || !!log.ancoras['treino_feito'])
-
-  if (!eManha && todasFeitas) return null // nada por fazer de manhã
+  // Sempre visível · ela quer ver/abrir 'rotina completa' a qualquer hora
+  // mesmo que já tenha registado tudo de manhã.
 
   const submitPeso = () => {
     if (!pesoInput) return

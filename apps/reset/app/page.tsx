@@ -130,6 +130,12 @@ export default function HomePage() {
         />
       ) : null}
 
+      {/* PAINEL MATINAL · primeiro · o que ela vem registar logo de manhã */}
+      {pronto ? <SafeBlock nome="MorningPanel"><MorningPanel /></SafeBlock> : null}
+
+      {/* ACESSO RÁPIDO · ferramentas mais usadas */}
+      {pronto ? <SafeBlock nome="QuickTools"><QuickTools /></SafeBlock> : null}
+
       {status === 'antes' ? (
         <section className="card-feature text-center">
           <span className="label-cap">contagem</span>
@@ -142,7 +148,7 @@ export default function HomePage() {
         </section>
       ) : null}
 
-      {/* PLANO · prioridade máxima · onde queres chegar */}
+      {/* PLANO · prioridade · onde queres chegar */}
       {pronto ? <SafeBlock nome="PlanoResumo"><PlanoResumoCard /></SafeBlock> : null}
 
       {/* ALERTAS PROACTIVOS · a coach nota padrões e sugere */}
@@ -153,12 +159,6 @@ export default function HomePage() {
 
       {/* COACH · saudação do dia */}
       {pronto ? <SafeBlock nome="CoachGreeting"><CoachGreetingCard /></SafeBlock> : null}
-
-      {/* ACESSO RÁPIDO · plano + scanner em destaque */}
-      {pronto ? <SafeBlock nome="QuickTools"><QuickTools /></SafeBlock> : null}
-
-      {/* PAINEL MATINAL · ferramentas perto */}
-      {pronto ? <SafeBlock nome="MorningPanel"><MorningPanel /></SafeBlock> : null}
 
       {/* SmartNow contextual */}
       {pronto ? <SafeBlock nome="SmartNow"><SmartNow /></SafeBlock> : null}
