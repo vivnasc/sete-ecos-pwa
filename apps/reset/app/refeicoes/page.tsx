@@ -110,9 +110,13 @@ export default function RefeicoesPage() {
     } catch {
       setErro('sem rede · guardado sem macros.')
     }
+    // Hora default por tipo · evita pôr tudo às 12:00 em dias passados
+    const horaPorTipo: Record<RefeicaoTipo, string> = {
+      pa: '09:00', almoco: '13:00', snack: '16:30', jantar: '20:00'
+    }
     const ts = date === isoDate()
       ? new Date().toISOString()
-      : new Date(date + 'T12:00:00').toISOString()
+      : new Date(`${date}T${horaPorTipo[novoTipo]}:00`).toISOString()
     addRefeicao({
       tipo: novoTipo,
       descricao: desc,

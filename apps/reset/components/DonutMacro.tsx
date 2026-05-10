@@ -48,7 +48,9 @@ export function DonutMacro({
   const r = (tamanho - 12) / 2
   const c = tamanho / 2
   const circ = 2 * Math.PI * r
-  const pctReal = alvo && alvo > 0 ? (valor / alvo) * 100 : 0
+  // Sanitiza valor · evita NaN se vier null/undefined
+  const valorSeguro = typeof valor === 'number' && !Number.isNaN(valor) ? valor : 0
+  const pctReal = alvo && alvo > 0 ? (valorSeguro / alvo) * 100 : 0
   const pctVisual = Math.min(100, pctReal)
   const dash = (pctVisual / 100) * circ
   const strokeWidth = Math.max(5, tamanho * 0.09)
@@ -76,7 +78,7 @@ export function DonutMacro({
             strokeWidth={strokeWidth}
           />
           {/* progress */}
-          {alvo !== null && alvo > 0 && valor > 0 ? (
+          {alvo !== null && alvo > 0 && valorSeguro > 0 ? (
             <circle
               cx={c}
               cy={c}
@@ -90,7 +92,7 @@ export function DonutMacro({
             />
           ) : null}
           {/* sem alvo · arco solid completo subtil */}
-          {alvo === null && valor > 0 ? (
+          {alvo === null && valorSeguro > 0 ? (
             <circle
               cx={c}
               cy={c}
@@ -104,7 +106,7 @@ export function DonutMacro({
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <p className="editorial-num tnum leading-none" style={{ fontSize: tamanho * 0.3, color: cor, fontWeight: 500 }}>
-            {Math.round(valor)}
+            {Math.round(valorSeguro)}
           </p>
           {alvo !== null && alvo > 0 ? (
             <p className="text-faint tnum leading-none mt-0.5" style={{ fontSize: tamanho * 0.14 }}>

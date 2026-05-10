@@ -547,7 +547,7 @@ export function estatisticasJejum(): {
   const ult30 = filtrar(30)
   const taxa = ult30.length === 0 ? null : Math.round((ult30.filter(j => j.completou).length / ult30.length) * 100)
   // Correlação · juntar peso do dia em que jejum terminou (ou mais próximo)
-  const pesos = read<PesoLog[]>('pesos', [])
+  const pesos = getPesos()
   const pares: { peso: number; horas: number }[] = []
   for (const j of js) {
     if (j.duracaoHoras === null) continue
