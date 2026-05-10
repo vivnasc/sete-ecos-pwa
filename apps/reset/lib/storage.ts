@@ -435,15 +435,29 @@ export function getJejumHoje(): JejumLog | null {
 export function saveJejum(j: Omit<JejumLog, 'id'>): JejumLog {
   const all = read<JejumLog[]>('jejum', [])
   const existing = all.findIndex(x => x.date === j.date)
+
+  // Auto-corrigir: se primeira < ultima, a ultima deve ser do dia anterior.
+  // Acontece quando edita só a hora sem mexer na data.
+  let ultimaCorr = j.ultimaRefeicao
+  if (j.ultimaRefeicao && j.primeiraRefeicao) {
+    let tU = new Date(j.ultimaRefeicao).getTime()
+    const tP = new Date(j.primeiraRefeicao).getTime()
+    while (tU > tP) tU -= 24 * 60 * 60 * 1000
+    if (tU !== new Date(j.ultimaRefeicao).getTime()) {
+      ultimaCorr = new Date(tU).toISOString()
+    }
+  }
+
   // calcular duração se ambos definidos
   let duracaoHoras: number | null = null
-  if (j.ultimaRefeicao && j.primeiraRefeicao) {
-    const ms = new Date(j.primeiraRefeicao).getTime() - new Date(j.ultimaRefeicao).getTime()
+  if (ultimaCorr && j.primeiraRefeicao) {
+    const ms = new Date(j.primeiraRefeicao).getTime() - new Date(ultimaCorr).getTime()
     duracaoHoras = Math.round((ms / (1000 * 60 * 60)) * 10) / 10
   }
   const completou = duracaoHoras !== null && duracaoHoras >= j.meta
   const novo: JejumLog = {
     ...j,
+    ultimaRefeicao: ultimaCorr,
     duracaoHoras,
     completou,
     id: existing >= 0 ? all[existing].id : crypto.randomUUID()
@@ -453,6 +467,28 @@ export function saveJejum(j: Omit<JejumLog, 'id'>): JejumLog {
   write('jejum', all)
   void syncJejum(novo).catch(() => {})
   return novo
+}
+
+// Cura todos os jejuns gravados: corrige durações negativas / impossíveis
+// (ex: ultima=09/05 20:00, primeira=09/05 09:00 → ultima vira 08/05 20:00)
+export function curarJejuns(): number {
+  const all = read<JejumLog[]>('jejum', [])
+  let alterados = 0
+  for (const j of all) {
+    if (!j.ultimaRefeicao || !j.primeiraRefeicao) continue
+    let tU = new Date(j.ultimaRefeicao).getTime()
+    const tP = new Date(j.primeiraRefeicao).getTime()
+    if (tU <= tP) continue // já está OK
+    while (tU > tP) tU -= 24 * 60 * 60 * 1000
+    j.ultimaRefeicao = new Date(tU).toISOString()
+    const ms = tP - tU
+    j.duracaoHoras = Math.round((ms / (1000 * 60 * 60)) * 10) / 10
+    j.completou = j.duracaoHoras >= j.meta
+    alterados++
+    void syncJejum(j).catch(() => {})
+  }
+  if (alterados > 0) write('jejum', all)
+  return alterados
 }
 
 export function removeJejum(id: string): void {

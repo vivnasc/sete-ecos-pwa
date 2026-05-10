@@ -8,6 +8,7 @@ import {
   saveJejum,
   removeJejum,
   anularPrimeiraRefeicao,
+  curarJejuns,
   streakJejum,
   jejumActualHoras,
   type JejumLog
@@ -38,6 +39,12 @@ export default function JejumPage() {
   }
 
   useEffect(() => {
+    // Cura registos com durações negativas / impossíveis antes de mostrar
+    const corrigidos = curarJejuns()
+    if (corrigidos > 0) {
+      // eslint-disable-next-line no-console
+      console.info(`[jejum] auto-corrigidos ${corrigidos} registos`)
+    }
     refresh()
     window.addEventListener('fenixfit:storage', refresh)
     const interval = setInterval(() => setTick(t => t + 1), 60000)
@@ -359,22 +366,31 @@ export default function JejumPage() {
               </div>
             </div>
           ) : (
-            <div className="flex gap-2">
-              <button onClick={marcarUltimaRefeicao} className="btn-primary flex-1">
-                <Moon size={14} strokeWidth={1.4} /> começar agora
-              </button>
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <button onClick={marcarUltimaRefeicao} className="btn-primary flex-1">
+                  <Moon size={14} strokeWidth={1.4} /> começar agora
+                </button>
+                <button
+                  onClick={() => {
+                    const d = new Date()
+                    setHoraUltima(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`)
+                    setDiaUltima('ontem')
+                    setEditarUltima(true)
+                  }}
+                  className="btn-outline px-4"
+                  aria-label="ajustar hora"
+                >
+                  <Pencil size={13} strokeWidth={1.4} />
+                  <span className="text-[11px] ml-1">outra hora</span>
+                </button>
+              </div>
+              {/* Atalho · esqueci-me e iniciei ontem à noite */}
               <button
-                onClick={() => {
-                  const d = new Date()
-                  setHoraUltima(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`)
-                  setDiaUltima('ontem')
-                  setEditarUltima(true)
-                }}
-                className="btn-outline px-4"
-                aria-label="ajustar hora"
+                onClick={() => { marcarUltimaRefeicaoComHora('20:00', 'ontem') }}
+                className="w-full rounded-md bg-[var(--surface-soft)] py-2.5 text-[11.5px] text-soft hover:text-ouro transition-elegant active:scale-95"
               >
-                <Pencil size={13} strokeWidth={1.4} />
-                <span className="text-[11px] ml-1">outra hora</span>
+                ↶ esqueci-me · iniciei ontem às 20:00
               </button>
             </div>
           )}
