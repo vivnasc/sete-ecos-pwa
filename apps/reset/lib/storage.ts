@@ -519,11 +519,49 @@ export function anularPrimeiraRefeicao(date: string): JejumLog | null {
 export function streakJejum(): number {
   const js = getJejuns()
   let streak = 0
+  // Saltar entradas em curso (primeira null) no fim · não quebram streak
   for (let i = js.length - 1; i >= 0; i--) {
-    if (js[i].completou) streak++
+    const j = js[i]
+    if (!j.primeiraRefeicao) continue // ainda em curso · ignora
+    if (j.completou) streak++
     else break
   }
   return streak
+}
+
+// Estatísticas resumo · usadas no /jejum
+export function estatisticasJejum(): {
+  media7d: number | null
+  media30d: number | null
+  media90d: number | null
+  totalRegistos: number
+  taxaSucesso30d: number | null  // % cumpridos sobre registados nos últimos 30d
+  diasJejumPorPesoCorrelacao: { peso: number; horas: number }[]
+} {
+  const js = getJejuns().filter(j => j.duracaoHoras !== null)
+  const hoje = Date.now()
+  const dia = 86400000
+  const filtrar = (n: number) => js.filter(j => hoje - new Date(j.date).getTime() <= n * dia)
+  const media = (arr: JejumLog[]) => arr.length === 0 ? null
+    : Math.round((arr.reduce((s, j) => s + (j.duracaoHoras ?? 0), 0) / arr.length) * 10) / 10
+  const ult30 = filtrar(30)
+  const taxa = ult30.length === 0 ? null : Math.round((ult30.filter(j => j.completou).length / ult30.length) * 100)
+  // Correlação · juntar peso do dia em que jejum terminou (ou mais próximo)
+  const pesos = read<PesoLog[]>('pesos', [])
+  const pares: { peso: number; horas: number }[] = []
+  for (const j of js) {
+    if (j.duracaoHoras === null) continue
+    const p = pesos.find(p => p.date === j.date) ?? pesos.find(p => Math.abs(new Date(p.date).getTime() - new Date(j.date).getTime()) < 2 * dia)
+    if (p) pares.push({ peso: p.peso, horas: j.duracaoHoras })
+  }
+  return {
+    media7d: media(filtrar(7)),
+    media30d: media(filtrar(30)),
+    media90d: media(filtrar(90)),
+    totalRegistos: js.length,
+    taxaSucesso30d: taxa,
+    diasJejumPorPesoCorrelacao: pares
+  }
 }
 
 export function jejumActualHoras(): { horas: number; ultimaRef: string } | null {

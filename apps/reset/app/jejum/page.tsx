@@ -10,6 +10,7 @@ import {
   anularPrimeiraRefeicao,
   curarJejuns,
   streakJejum,
+  estatisticasJejum,
   jejumActualHoras,
   type JejumLog
 } from '@/lib/storage'
@@ -60,11 +61,7 @@ export default function JejumPage() {
 
   const streak = useMemo(() => streakJejum(), [jejuns])
   const ultimos14 = useMemo(() => jejuns.slice(-14).filter(j => j.completou).length, [jejuns])
-  const mediaSemana = useMemo(() => {
-    const ult = jejuns.slice(-7).filter(j => j.duracaoHoras !== null)
-    if (ult.length === 0) return null
-    return Math.round((ult.reduce((a, j) => a + (j.duracaoHoras ?? 0), 0) / ult.length) * 10) / 10
-  }, [jejuns])
+  const stats = useMemo(() => estatisticasJejum(), [jejuns])
 
   // Determina a data correcta para um novo jejum:
   // se hoje já fechado · próximo termina amanhã.
@@ -397,12 +394,27 @@ export default function JejumPage() {
         </section>
       )}
 
-      {/* Stats */}
+      {/* Stats · streak + 14d limpos + médias */}
       <section className="grid grid-cols-3 gap-3">
         <Stat label="streak" valor={streak} unit={streak === 1 ? 'dia' : 'dias'} />
         <Stat label="14d limpos" valor={ultimos14} unit={`/ ${Math.min(14, jejuns.length)}`} />
-        <Stat label="média 7d" valor={mediaSemana} unit="h" decimal />
+        <Stat label="taxa 30d" valor={stats.taxaSucesso30d} unit="%" />
       </section>
+
+      {/* Médias · 7d / 30d / 90d */}
+      <section className="grid grid-cols-3 gap-3">
+        <Stat label="média 7d" valor={stats.media7d} unit="h" decimal />
+        <Stat label="média 30d" valor={stats.media30d} unit="h" decimal />
+        <Stat label="média 90d" valor={stats.media90d} unit="h" decimal />
+      </section>
+
+      {/* Gráfico de barras · últimos 14 jejuns */}
+      <BarrasJejum jejuns={jejuns} meta={meta} />
+
+      {/* Correlação peso ↔ horas jejum */}
+      {stats.diasJejumPorPesoCorrelacao.length >= 3 ? (
+        <CorrelacaoPesoJejum pares={stats.diasJejumPorPesoCorrelacao} />
+      ) : null}
 
       {/* Histórico · cada item tappable para editar/apagar */}
       <section className="space-y-2">
@@ -468,6 +480,127 @@ function Stat({ label, valor, unit, decimal }: { label: string; valor: number | 
       </p>
       <p className="text-faint mt-1 text-[10px] tracking-cap uppercase">{unit}</p>
     </div>
+  )
+}
+
+// Barras dos últimos 14 jejuns · com linha da meta
+function BarrasJejum({ jejuns, meta }: { jejuns: JejumLog[]; meta: 14 | 16 }) {
+  const ult = jejuns.slice(-14).filter(j => j.duracaoHoras !== null)
+  if (ult.length === 0) return null
+  const w = 320
+  const h = 130
+  const pad = { t: 10, r: 8, b: 24, l: 24 }
+  const cw = w - pad.l - pad.r
+  const ch = h - pad.t - pad.b
+  const max = Math.max(...ult.map(j => j.duracaoHoras ?? 0), meta + 2)
+  const yScale = (v: number) => pad.t + ch - (v / max) * ch
+  const barW = cw / Math.max(ult.length, 1)
+  return (
+    <section className="card-feature space-y-2">
+      <div className="flex items-baseline justify-between">
+        <span className="label-cap">últimos {ult.length} jejuns</span>
+        <span className="text-faint text-[11px] tnum">meta {meta}h</span>
+      </div>
+      <div className="-mx-2">
+        <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" preserveAspectRatio="none">
+          {/* eixo */}
+          <line x1={pad.l} y1={pad.t + ch} x2={w - pad.r} y2={pad.t + ch} stroke="rgba(150,140,120,0.3)" />
+          {/* meta */}
+          <line x1={pad.l} y1={yScale(meta)} x2={w - pad.r} y2={yScale(meta)} stroke="#D4A14E" strokeWidth="1" strokeDasharray="3 3" opacity="0.7" />
+          <text x={pad.l - 4} y={yScale(meta) + 3} fontSize="9" fill="#D4A14E" textAnchor="end">{meta}</text>
+          {ult.map((j, i) => {
+            const x = pad.l + i * barW + barW * 0.15
+            const altura = ((j.duracaoHoras ?? 0) / max) * ch
+            const cor = j.completou ? '#7B9A4F' : (j.duracaoHoras ?? 0) >= meta - 2 ? '#D4A14E' : '#A89878'
+            return (
+              <rect
+                key={j.id}
+                x={x}
+                y={pad.t + ch - altura}
+                width={barW * 0.7}
+                height={altura}
+                rx="2"
+                fill={cor}
+              >
+                <title>{j.date}: {j.duracaoHoras}h{j.completou ? ' ✓' : ''}</title>
+              </rect>
+            )
+          })}
+          {/* labels de data extremas */}
+          <text x={pad.l} y={h - 6} fontSize="8" fill="rgba(150,140,120,0.7)" textAnchor="start">
+            {ult[0].date.slice(5).replace('-', '/')}
+          </text>
+          <text x={w - pad.r} y={h - 6} fontSize="8" fill="rgba(150,140,120,0.7)" textAnchor="end">
+            {ult[ult.length - 1].date.slice(5).replace('-', '/')}
+          </text>
+        </svg>
+      </div>
+      <div className="flex justify-center gap-4 text-[10px] text-faint">
+        <span className="inline-flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: '#7B9A4F' }} />cumprido</span>
+        <span className="inline-flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: '#D4A14E' }} />perto</span>
+        <span className="inline-flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: '#A89878' }} />curto</span>
+      </div>
+    </section>
+  )
+}
+
+// Correlação peso ↔ horas de jejum · scatter + linha indicativa
+function CorrelacaoPesoJejum({ pares }: { pares: { peso: number; horas: number }[] }) {
+  if (pares.length < 3) return null
+  const w = 320
+  const h = 150
+  const pad = { t: 12, r: 10, b: 28, l: 36 }
+  const cw = w - pad.l - pad.r
+  const ch = h - pad.t - pad.b
+  const minPeso = Math.min(...pares.map(p => p.peso))
+  const maxPeso = Math.max(...pares.map(p => p.peso))
+  const rPeso = maxPeso - minPeso || 1
+  const minH = Math.min(...pares.map(p => p.horas))
+  const maxH = Math.max(...pares.map(p => p.horas))
+  const rH = maxH - minH || 1
+  const xScale = (v: number) => pad.l + ((v - minPeso) / rPeso) * cw
+  const yScale = (v: number) => pad.t + ch - ((v - minH) / rH) * ch
+
+  // Pearson r
+  const n = pares.length
+  const meanP = pares.reduce((s, p) => s + p.peso, 0) / n
+  const meanH = pares.reduce((s, p) => s + p.horas, 0) / n
+  let num = 0, dP = 0, dH = 0
+  for (const p of pares) {
+    num += (p.peso - meanP) * (p.horas - meanH)
+    dP += (p.peso - meanP) ** 2
+    dH += (p.horas - meanH) ** 2
+  }
+  const r = dP === 0 || dH === 0 ? 0 : num / Math.sqrt(dP * dH)
+  const interpretacao = Math.abs(r) < 0.2 ? 'sem correlação clara'
+    : r < -0.5 ? 'mais jejum · menos peso · forte'
+    : r < -0.2 ? 'mais jejum · menos peso · ligeira'
+    : r > 0.5 ? 'mais jejum · mais peso · forte'
+    : 'mais jejum · mais peso · ligeira'
+
+  return (
+    <section className="card-feature space-y-2">
+      <div className="flex items-baseline justify-between">
+        <span className="label-cap">peso ↔ jejum</span>
+        <span className="text-faint text-[11px] tnum">r = {r.toFixed(2)}</span>
+      </div>
+      <div className="-mx-2">
+        <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" preserveAspectRatio="none">
+          <line x1={pad.l} y1={pad.t + ch} x2={w - pad.r} y2={pad.t + ch} stroke="rgba(150,140,120,0.3)" />
+          <line x1={pad.l} y1={pad.t} x2={pad.l} y2={pad.t + ch} stroke="rgba(150,140,120,0.3)" />
+          <text x={pad.l - 4} y={pad.t + 3} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="end">{maxH.toFixed(0)}h</text>
+          <text x={pad.l - 4} y={pad.t + ch} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="end">{minH.toFixed(0)}h</text>
+          <text x={pad.l} y={h - 6} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="start">{minPeso.toFixed(1)}kg</text>
+          <text x={w - pad.r} y={h - 6} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="end">{maxPeso.toFixed(1)}kg</text>
+          {pares.map((p, i) => (
+            <circle key={i} cx={xScale(p.peso)} cy={yScale(p.horas)} r="3" fill="#D4A14E" opacity="0.7">
+              <title>{p.peso}kg · {p.horas}h</title>
+            </circle>
+          ))}
+        </svg>
+      </div>
+      <p className="text-faint text-[10.5px] text-center leading-relaxed">{interpretacao} · {n} pontos</p>
+    </section>
   )
 }
 
