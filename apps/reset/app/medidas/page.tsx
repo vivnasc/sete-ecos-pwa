@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Plus, X, Camera, Trash2 } from 'lucide-react'
 import { addMedida, getMedidas, type MedidaRegisto } from '@/lib/storage'
 import BackButton from '@/components/BackButton'
+import ComposicaoCorporal from '@/components/ComposicaoCorporal'
 import { isoDate, fromIso, formatarData } from '@/lib/dates'
 import { cn } from '@/lib/utils'
 
@@ -61,6 +62,8 @@ export default function MedidasPage() {
         <div className="h-px w-12 bg-ouro" aria-hidden />
         <p className="text-faint mt-3 text-[12.5px]">balança opcional · cintura é o que importa</p>
       </header>
+
+      <ComposicaoCorporal />
 
       <button onClick={() => setAberto(true)} className="btn-primary w-full">
         <Plus size={14} strokeWidth={1.6} /> nova medição
