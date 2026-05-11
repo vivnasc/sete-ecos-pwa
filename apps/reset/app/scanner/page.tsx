@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Sparkles, AlertCircle, TrendingUp, TrendingDown, Activity, Award, Target } from 'lucide-react'
+import { Sparkles, AlertCircle, TrendingUp, TrendingDown, Activity, Award, Target, ArrowLeft, ArrowRight } from 'lucide-react'
 import {
   pontuarDia,
   pontuacaoMedia7d,
@@ -18,11 +18,26 @@ import { getTodosDias } from '@/lib/storage'
 import { isoDate, fromIso, formatarData, mesCurto } from '@/lib/dates'
 import BackButton from '@/components/BackButton'
 import HabitChains from '@/components/HabitChains'
+import TendenciaCard from '@/components/TendenciaCard'
 import TrendChart from '@/components/TrendChart'
 import { cn } from '@/lib/utils'
 
+function deltaDate(date: string, dias: number): string {
+  const d = new Date(date)
+  d.setDate(d.getDate() + dias)
+  return isoDate(d)
+}
+
+function dataLegivel(date: string): string {
+  if (date === isoDate()) return 'hoje'
+  const ontem = deltaDate(isoDate(), -1)
+  if (date === ontem) return 'ontem'
+  return new Date(date).toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'short' })
+}
+
 export default function ScannerPage() {
-  const [hoje, setHoje] = useState<PontuacaoDia | null>(null)
+  const [date, setDate] = useState(isoDate())
+  const [pontDia, setPontDia] = useState<PontuacaoDia | null>(null)
   const [media7, setMedia7] = useState<number | null>(null)
   const [correlacoes, setCorrelacoes] = useState<Correlacao[]>([])
   const [anomalias, setAnomalias] = useState<Anomalia[]>([])
@@ -32,14 +47,13 @@ export default function ScannerPage() {
 
   useEffect(() => {
     const refresh = () => {
-      setHoje(pontuarDia(isoDate()))
+      setPontDia(pontuarDia(date))
       setMedia7(pontuacaoMedia7d())
       setCorrelacoes(correlacoesProfundas())
       setAnomalias(detectarAnomalias())
       setMelhores(melhoresDias(5))
       setProjeccao(projeccao14d())
 
-      // Série temporal de pontuação
       const dias = getTodosDias().slice(-30)
       const pontos = dias
         .map(d => {
@@ -54,7 +68,7 @@ export default function ScannerPage() {
     refresh()
     window.addEventListener('fenixfit:storage', refresh)
     return () => window.removeEventListener('fenixfit:storage', refresh)
-  }, [])
+  }, [date])
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -71,25 +85,48 @@ export default function ScannerPage() {
         </p>
       </header>
 
-      {/* PONTUAÇÃO HOJE */}
-      {hoje ? (
+      {/* navegador de datas · permite ver scanner de outros dias */}
+      <section className="flex items-center justify-between">
+        <button
+          onClick={() => setDate(deltaDate(date, -1))}
+          className="rounded-full p-2 transition-elegant hover:bg-[var(--surface-soft)] active:scale-95"
+          aria-label="dia anterior"
+        >
+          <ArrowLeft size={16} strokeWidth={1.4} />
+        </button>
+        <div className="text-center">
+          <p className="font-serif text-[18px] tracking-editorial">{dataLegivel(date)}</p>
+          <p className="text-faint text-[10.5px] tnum">{date}</p>
+        </div>
+        <button
+          onClick={() => setDate(deltaDate(date, 1))}
+          disabled={date >= isoDate()}
+          className="rounded-full p-2 transition-elegant hover:bg-[var(--surface-soft)] active:scale-95 disabled:opacity-30"
+          aria-label="dia seguinte"
+        >
+          <ArrowRight size={16} strokeWidth={1.4} />
+        </button>
+      </section>
+
+      {/* PONTUAÇÃO do dia seleccionado */}
+      {pontDia ? (
         <section className="card-feature">
           <div className="flex items-baseline justify-between">
-            <span className="label-cap">hoje</span>
-            <span className="label-soft">{hoje.qualitativo}</span>
+            <span className="label-cap">{dataLegivel(date)}</span>
+            <span className="label-soft">{pontDia.qualitativo}</span>
           </div>
           <div className="flex items-baseline gap-2 mt-3">
             <p className={cn(
               'editorial-num text-[80px] leading-none tnum',
-              hoje.total >= 85 ? 'text-oliva' : hoje.total >= 65 ? 'text-ouro' : hoje.total >= 45 ? 'text-tinta dark:text-creme-escuro' : 'text-terracota'
+              pontDia.total >= 85 ? 'text-oliva' : pontDia.total >= 65 ? 'text-ouro' : pontDia.total >= 45 ? 'text-tinta dark:text-creme-escuro' : 'text-terracota'
             )}>
-              {hoje.total}
+              {pontDia.total}
             </p>
             <span className="text-faint text-[18px]">/ 100</span>
           </div>
 
           <div className="mt-5 space-y-2">
-            {hoje.componentes.map(c => (
+            {pontDia.componentes.map(c => (
               <div key={c.label}>
                 <div className="flex items-baseline justify-between text-[11px]">
                   <span className="label-soft">{c.label}</span>
@@ -112,6 +149,9 @@ export default function ScannerPage() {
       )}
 
       {/* TIMELINE PONTUAÇÃO */}
+      {/* TENDÊNCIA · kcal/macros/peso ao longo do tempo */}
+      <TendenciaCard />
+
       {pontuacaoSerie.length >= 3 ? (
         <section className="space-y-2">
           <span className="label-cap px-1">pontuação · 30 dias</span>

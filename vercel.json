@@ -1,4 +1,11 @@
 {
+  "git": {
+    "deploymentEnabled": {
+      "claude/monorepo-lifestyle-app-ZAA2E": false,
+      "claude/fenixfit-wellness-app-HJgaf": false
+    }
+  },
+  "ignoreCommand": "bash -c 'if [[ \"$VERCEL_GIT_COMMIT_MESSAGE\" == FénixFit:* ]] || [[ \"$VERCEL_GIT_COMMIT_REF\" == claude/monorepo* ]] || [[ \"$VERCEL_GIT_COMMIT_REF\" == claude/fenixfit* ]]; then echo \"Skipping FénixFit branch on Vercel\"; exit 0; else exit 1; fi'",
   "rewrites": [
     {
       "source": "/mockup-tema-quente.html",

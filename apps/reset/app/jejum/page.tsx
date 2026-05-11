@@ -1,12 +1,16 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { Clock, Sun, Moon, Check } from 'lucide-react'
+import { Clock, Sun, Moon, Check, Pencil, X, Trash2, RotateCcw } from 'lucide-react'
 import {
   getJejuns,
   getJejumHoje,
   saveJejum,
+  removeJejum,
+  anularPrimeiraRefeicao,
+  curarJejuns,
   streakJejum,
+  estatisticasJejum,
   jejumActualHoras,
   type JejumLog
 } from '@/lib/storage'
@@ -20,18 +24,31 @@ export default function JejumPage() {
   const [emCurso, setEmCurso] = useState<{ horas: number; ultimaRef: string } | null>(null)
   const [meta, setMeta] = useState<14 | 16>(14)
   const [tick, setTick] = useState(0)
+  const [editarUltima, setEditarUltima] = useState(false)
+  const [editarPrimeira, setEditarPrimeira] = useState(false)
+  const [horaUltima, setHoraUltima] = useState('')
+  const [diaUltima, setDiaUltima] = useState<'hoje' | 'ontem' | 'anteontem'>('ontem')
+  const [horaPrimeira, setHoraPrimeira] = useState('')
+  const [editar, setEditar] = useState<JejumLog | null>(null)
+
+  const refresh = () => {
+    setJejuns(getJejuns())
+    const h = getJejumHoje()
+    setHoje(h)
+    if (h) setMeta((h.meta as 14 | 16) ?? 14)
+    setEmCurso(jejumActualHoras())
+  }
 
   useEffect(() => {
-    const refresh = () => {
-      setJejuns(getJejuns())
-      const h = getJejumHoje()
-      setHoje(h)
-      if (h) setMeta((h.meta as 14 | 16) ?? 14)
-      setEmCurso(jejumActualHoras())
+    // Cura registos com durações negativas / impossíveis antes de mostrar
+    const corrigidos = curarJejuns()
+    if (corrigidos > 0) {
+      // eslint-disable-next-line no-console
+      console.info(`[jejum] auto-corrigidos ${corrigidos} registos`)
     }
     refresh()
     window.addEventListener('fenixfit:storage', refresh)
-    const interval = setInterval(() => setTick(t => t + 1), 60000) // tick por minuto
+    const interval = setInterval(() => setTick(t => t + 1), 60000)
     return () => {
       window.removeEventListener('fenixfit:storage', refresh)
       clearInterval(interval)
@@ -44,15 +61,23 @@ export default function JejumPage() {
 
   const streak = useMemo(() => streakJejum(), [jejuns])
   const ultimos14 = useMemo(() => jejuns.slice(-14).filter(j => j.completou).length, [jejuns])
-  const mediaSemana = useMemo(() => {
-    const ult = jejuns.slice(-7).filter(j => j.duracaoHoras !== null)
-    if (ult.length === 0) return null
-    return Math.round((ult.reduce((a, j) => a + (j.duracaoHoras ?? 0), 0) / ult.length) * 10) / 10
-  }, [jejuns])
+  const stats = useMemo(() => estatisticasJejum(), [jejuns])
+
+  // Determina a data correcta para um novo jejum:
+  // se hoje já fechado · próximo termina amanhã.
+  const proximaDataJejum = (): string => {
+    const hojeIso = isoDate()
+    const hojeReg = getJejumHoje()
+    if (hojeReg?.primeiraRefeicao) {
+      const t = new Date(); t.setDate(t.getDate() + 1)
+      return isoDate(t)
+    }
+    return hojeIso
+  }
 
   const marcarUltimaRefeicao = () => {
-    const date = isoDate()
-    const existing = hoje ?? { date, ultimaRefeicao: null, primeiraRefeicao: null, duracaoHoras: null, meta, completou: false, id: '' }
+    const date = proximaDataJejum()
+    const existing = (date === isoDate() ? hoje : null) ?? { date, ultimaRefeicao: null, primeiraRefeicao: null, duracaoHoras: null, meta, completou: false, id: '' }
     saveJejum({
       date,
       ultimaRefeicao: new Date().toISOString(),
@@ -63,17 +88,74 @@ export default function JejumPage() {
     })
   }
 
-  const marcarPrimeiraRefeicao = () => {
-    if (!emCurso) return
-    const date = isoDate()
+  const marcarUltimaRefeicaoComHora = (hhmm: string, dia: 'hoje' | 'ontem' | 'anteontem' = 'hoje') => {
+    if (!/^\d{1,2}:\d{2}$/.test(hhmm)) return
+    const [h, m] = hhmm.split(':').map(Number)
+    const d = new Date()
+    if (dia === 'ontem') d.setDate(d.getDate() - 1)
+    if (dia === 'anteontem') d.setDate(d.getDate() - 2)
+    d.setHours(h, m, 0, 0)
+    // segurança · se ainda assim ficar no futuro, puxa para trás 1 dia
+    if (d.getTime() > Date.now()) d.setDate(d.getDate() - 1)
+    const date = proximaDataJejum()
+    const existing = (date === isoDate() ? hoje : null) ?? { date, ultimaRefeicao: null, primeiraRefeicao: null, duracaoHoras: null, meta, completou: false, id: '' }
     saveJejum({
       date,
-      ultimaRefeicao: emCurso.ultimaRef,
-      primeiraRefeicao: new Date().toISOString(),
-      duracaoHoras: null, // saveJejum recalcula
+      ultimaRefeicao: d.toISOString(),
+      primeiraRefeicao: existing.primeiraRefeicao,
+      duracaoHoras: null,
       meta,
       completou: false
     })
+  }
+
+  // Encontra o registo em curso (ultima sem primeira) para usar a sua data
+  const dataRegistoEmCurso = (): string => {
+    const reg = getJejuns().find(j => j.ultimaRefeicao === emCurso?.ultimaRef && !j.primeiraRefeicao)
+    return reg?.date ?? isoDate()
+  }
+
+  const marcarPrimeiraRefeicaoComHora = (hhmm: string) => {
+    if (!emCurso) return
+    if (!/^\d{1,2}:\d{2}$/.test(hhmm)) return
+    const [h, m] = hhmm.split(':').map(Number)
+    const d = new Date()
+    d.setHours(h, m, 0, 0)
+    if (d.getTime() > Date.now()) d.setDate(d.getDate() - 1)
+    saveJejum({
+      date: dataRegistoEmCurso(),
+      ultimaRefeicao: emCurso.ultimaRef,
+      primeiraRefeicao: d.toISOString(),
+      duracaoHoras: null,
+      meta,
+      completou: false
+    })
+  }
+
+  const marcarPrimeiraRefeicao = () => {
+    if (!emCurso) return
+    saveJejum({
+      date: dataRegistoEmCurso(),
+      ultimaRefeicao: emCurso.ultimaRef,
+      primeiraRefeicao: new Date().toISOString(),
+      duracaoHoras: null,
+      meta,
+      completou: false
+    })
+  }
+
+  const cancelarJejumActual = () => {
+    if (!window.confirm('apagar este jejum em curso? a última refeição volta a poder ser registada.')) return
+    const reg = getJejuns().find(j => j.ultimaRefeicao && !j.primeiraRefeicao)
+    if (reg) removeJejum(reg.id)
+    refresh()
+  }
+
+  const anularComeu = () => {
+    if (!hoje) return
+    if (!window.confirm('anular a primeira refeição de hoje? o jejum recomeça do ponto onde estava.')) return
+    anularPrimeiraRefeicao(hoje.date)
+    refresh()
   }
 
   const corStatus = (h: number): string => {
@@ -81,6 +163,9 @@ export default function JejumPage() {
     if (h >= meta - 2) return 'text-ouro'
     return 'text-soft'
   }
+
+  // estado: hoje já tem jejum completo (com primeira refeição) → mostra resumo + opções de undo
+  const jejumHojeFechado = hoje && hoje.ultimaRefeicao && hoje.primeiraRefeicao
 
   return (
     <div className="space-y-7 animate-fade-in">
@@ -119,54 +204,221 @@ export default function JejumPage() {
         </button>
       </div>
 
-      {/* Estado actual */}
+      {/* Estado actual · prioridade: em curso > fechado > iniciar */}
       {emCurso ? (
-        <section className="card-feature text-center">
-          <div className="flex items-center justify-center gap-2">
-            <Clock size={14} strokeWidth={1.4} className="text-ouro" />
-            <span className="label-cap">jejum em curso</span>
+        <section className="card-feature text-center space-y-4">
+          <div>
+            <div className="flex items-center justify-center gap-2">
+              <Clock size={14} strokeWidth={1.4} className="text-ouro" />
+              <span className="label-cap">jejum em curso</span>
+            </div>
+            <p className={cn('editorial-num mt-4 text-[80px] leading-none', corStatus(emCurso.horas))}>
+              {Math.floor(emCurso.horas)}<span className="text-faint text-[24px]">h{Math.round((emCurso.horas % 1) * 60).toString().padStart(2, '0')}</span>
+            </p>
+            <p className="text-faint mt-3 text-[12px]">
+              desde {new Date(emCurso.ultimaRef).toLocaleString('pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+            </p>
+            <div className="mx-auto mt-4 h-px w-8 bg-ouro" aria-hidden />
+            <p className="text-soft mt-4 text-[13px]">
+              {emCurso.horas >= meta
+                ? `meta de ${meta}h cumprida.`
+                : `faltam ${(meta - emCurso.horas).toFixed(1)}h para a meta.`}
+            </p>
           </div>
-          <p className={cn('editorial-num mt-4 text-[80px] leading-none', corStatus(emCurso.horas))}>
-            {Math.floor(emCurso.horas)}<span className="text-faint text-[24px]">h{Math.round((emCurso.horas % 1) * 60).toString().padStart(2, '0')}</span>
-          </p>
-          <p className="text-faint mt-3 text-[12px]">
-            desde {new Date(emCurso.ultimaRef).toLocaleString('pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
-          </p>
-          <div className="mx-auto mt-4 h-px w-8 bg-ouro" aria-hidden />
-          <p className="text-soft mt-4 text-[13px]">
-            {emCurso.horas >= meta
-              ? `meta de ${meta}h cumprida.`
-              : `faltam ${(meta - emCurso.horas).toFixed(1)}h para a meta.`}
-          </p>
-          <button onClick={marcarPrimeiraRefeicao} className="btn-primary mt-5 w-full">
-            <Sun size={14} strokeWidth={1.4} /> primeira refeição agora
-          </button>
+          {editarPrimeira ? (
+            <div className="card-solid !p-3 space-y-2">
+              <p className="text-faint text-[10.5px] text-left">a que horas comeste?</p>
+              <div className="flex gap-2">
+                <input
+                  type="time"
+                  value={horaPrimeira}
+                  onChange={e => setHoraPrimeira(e.target.value)}
+                  className="flex-1 rounded-md border border-[var(--hair)] bg-transparent p-2 text-[14px] tnum focus:border-ouro focus:outline-none"
+                />
+                <button
+                  onClick={() => { marcarPrimeiraRefeicaoComHora(horaPrimeira); setEditarPrimeira(false); setHoraPrimeira('') }}
+                  disabled={!horaPrimeira}
+                  className="btn-primary px-4 disabled:opacity-40"
+                >guardar</button>
+                <button onClick={() => setEditarPrimeira(false)} className="btn-ghost px-3">
+                  <X size={14} strokeWidth={1.5} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="flex gap-2">
+                <button onClick={marcarPrimeiraRefeicao} className="btn-primary flex-1">
+                  <Sun size={14} strokeWidth={1.4} /> comi agora
+                </button>
+                <button
+                  onClick={() => {
+                    const d = new Date()
+                    setHoraPrimeira(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`)
+                    setEditarPrimeira(true)
+                  }}
+                  className="btn-outline px-4"
+                  aria-label="ajustar hora"
+                >
+                  <Pencil size={13} strokeWidth={1.4} />
+                  <span className="text-[11px] ml-1">outra hora</span>
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => {
+                    const reg = getJejuns().find(j => j.ultimaRefeicao === emCurso.ultimaRef)
+                    if (reg) setEditar(reg)
+                  }}
+                  className="btn-outline"
+                >
+                  <Pencil size={13} strokeWidth={1.4} />
+                  <span className="text-[11px] ml-1">editar última</span>
+                </button>
+                <button onClick={cancelarJejumActual} className="btn-outline text-terracota">
+                  <Trash2 size={13} strokeWidth={1.4} />
+                  <span className="text-[11px] ml-1">cancelar</span>
+                </button>
+              </div>
+            </>
+          )}
         </section>
       ) : (
-        <section className="card-feature text-center">
-          <div className="flex items-center justify-center gap-2">
-            <Sun size={14} strokeWidth={1.4} className="text-ouro" />
-            <span className="label-cap">não há jejum em curso</span>
+        <section className="card-feature text-center space-y-4">
+          {jejumHojeFechado ? (
+            <div className="card-solid !p-3 !bg-[var(--surface-soft)] space-y-1">
+              <div className="flex items-center justify-center gap-2">
+                <Check size={12} strokeWidth={1.6} className={hoje!.completou ? 'text-oliva' : 'text-ouro'} />
+                <span className="label-cap text-[10px]">jejum de hoje fechado</span>
+              </div>
+              <p className={cn('font-serif text-[20px] tnum', hoje!.completou ? 'text-oliva' : 'text-soft')}>
+                {hoje!.duracaoHoras !== null ? hoje!.duracaoHoras : '—'}h
+              </p>
+              <p className="text-faint text-[10.5px] tnum">
+                {hoje!.ultimaRefeicao ? new Date(hoje!.ultimaRefeicao).toLocaleString('pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'}
+                {' → '}
+                {hoje!.primeiraRefeicao ? new Date(hoje!.primeiraRefeicao).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }) : '—'}
+              </p>
+              <div className="flex justify-center gap-3 text-[10.5px] pt-1">
+                <button onClick={anularComeu} className="text-faint hover:text-ouro inline-flex items-center gap-1">
+                  <RotateCcw size={11} strokeWidth={1.5} /> anular &ldquo;comi&rdquo;
+                </button>
+                <span className="text-faint">·</span>
+                <button onClick={() => setEditar(hoje!)} className="text-faint hover:text-ouro inline-flex items-center gap-1">
+                  <Pencil size={11} strokeWidth={1.5} /> editar
+                </button>
+              </div>
+            </div>
+          ) : null}
+          <div>
+            <div className="flex items-center justify-center gap-2">
+              <Moon size={14} strokeWidth={1.4} className="text-ouro" />
+              <span className="label-cap">{jejumHojeFechado ? 'iniciar próximo jejum' : 'iniciar jejum'}</span>
+            </div>
+            <p className="text-soft mt-4 text-[13px] leading-relaxed">
+              {jejumHojeFechado
+                ? <>acabaste de jantar? marca a <strong>última refeição de hoje</strong> · o jejum vai contar até comeres amanhã.</>
+                : <>o jejum começa quando registas a tua <strong>última refeição</strong>. o relógio conta daí até comeres novamente.</>}
+            </p>
+            <p className="text-faint mt-2 text-[11.5px] leading-relaxed">
+              acabaste de comer agora? toca em &ldquo;começar agora&rdquo;.<br />
+              foi mais cedo / ontem? toca &ldquo;outra hora&rdquo; e ajusta.
+            </p>
           </div>
-          <p className="text-soft mt-4 text-[13px] leading-relaxed">
-            quando acabares de comer hoje, marca a tua última refeição. <br/>amanhã, marca a primeira para fechar a janela.
-          </p>
-          <button onClick={marcarUltimaRefeicao} className="btn-primary mt-5 w-full">
-            <Moon size={14} strokeWidth={1.4} /> última refeição agora
-          </button>
+          {editarUltima ? (
+            <div className="card-solid !p-3 space-y-3">
+              <p className="text-faint text-[10.5px] text-left">a que dia foi?</p>
+              <div className="flex gap-1.5">
+                {([
+                  { id: 'hoje' as const, label: 'hoje' },
+                  { id: 'ontem' as const, label: 'ontem' },
+                  { id: 'anteontem' as const, label: 'anteontem' }
+                ]).map(d => (
+                  <button
+                    key={d.id}
+                    onClick={() => setDiaUltima(d.id)}
+                    className={cn(
+                      'flex-1 rounded-md py-1.5 text-[11px] transition-elegant active:scale-95',
+                      diaUltima === d.id ? 'bg-tinta text-creme dark:bg-ouro dark:text-tinta' : 'bg-[var(--surface-soft)] text-soft'
+                    )}
+                  >{d.label}</button>
+                ))}
+              </div>
+              <p className="text-faint text-[10.5px] text-left">a que horas?</p>
+              <div className="flex gap-2">
+                <input
+                  type="time"
+                  value={horaUltima}
+                  onChange={e => setHoraUltima(e.target.value)}
+                  className="flex-1 rounded-md border border-[var(--hair)] bg-transparent p-2 text-[14px] tnum focus:border-ouro focus:outline-none"
+                />
+                <button
+                  onClick={() => { marcarUltimaRefeicaoComHora(horaUltima, diaUltima); setEditarUltima(false); setHoraUltima(''); setDiaUltima('ontem') }}
+                  disabled={!horaUltima}
+                  className="btn-primary px-4 disabled:opacity-40"
+                >guardar</button>
+                <button onClick={() => setEditarUltima(false)} className="btn-ghost px-3">
+                  <X size={14} strokeWidth={1.5} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <button onClick={marcarUltimaRefeicao} className="btn-primary flex-1">
+                  <Moon size={14} strokeWidth={1.4} /> começar agora
+                </button>
+                <button
+                  onClick={() => {
+                    const d = new Date()
+                    setHoraUltima(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`)
+                    setDiaUltima('ontem')
+                    setEditarUltima(true)
+                  }}
+                  className="btn-outline px-4"
+                  aria-label="ajustar hora"
+                >
+                  <Pencil size={13} strokeWidth={1.4} />
+                  <span className="text-[11px] ml-1">outra hora</span>
+                </button>
+              </div>
+              {/* Atalho · esqueci-me e iniciei ontem à noite */}
+              <button
+                onClick={() => { marcarUltimaRefeicaoComHora('20:00', 'ontem') }}
+                className="w-full rounded-md bg-[var(--surface-soft)] py-2.5 text-[11.5px] text-soft hover:text-ouro transition-elegant active:scale-95"
+              >
+                ↶ esqueci-me · iniciei ontem às 20:00
+              </button>
+            </div>
+          )}
         </section>
       )}
 
-      {/* Stats */}
+      {/* Stats · streak + 14d limpos + médias */}
       <section className="grid grid-cols-3 gap-3">
         <Stat label="streak" valor={streak} unit={streak === 1 ? 'dia' : 'dias'} />
         <Stat label="14d limpos" valor={ultimos14} unit={`/ ${Math.min(14, jejuns.length)}`} />
-        <Stat label="média 7d" valor={mediaSemana} unit="h" decimal />
+        <Stat label="taxa 30d" valor={stats.taxaSucesso30d} unit="%" />
       </section>
 
-      {/* Histórico */}
+      {/* Médias · 7d / 30d / 90d */}
+      <section className="grid grid-cols-3 gap-3">
+        <Stat label="média 7d" valor={stats.media7d} unit="h" decimal />
+        <Stat label="média 30d" valor={stats.media30d} unit="h" decimal />
+        <Stat label="média 90d" valor={stats.media90d} unit="h" decimal />
+      </section>
+
+      {/* Gráfico de barras · últimos 14 jejuns */}
+      <BarrasJejum jejuns={jejuns} meta={meta} />
+
+      {/* Correlação peso ↔ horas jejum */}
+      {stats.diasJejumPorPesoCorrelacao.length >= 3 ? (
+        <CorrelacaoPesoJejum pares={stats.diasJejumPorPesoCorrelacao} />
+      ) : null}
+
+      {/* Histórico · cada item tappable para editar/apagar */}
       <section className="space-y-2">
-        <span className="label-cap px-1">Histórico</span>
+        <span className="label-cap px-1">histórico</span>
         {jejuns.length === 0 ? (
           <div className="card text-center text-soft text-[13px]">
             primeiro jejum começa quando registares a primeira última refeição.
@@ -174,33 +426,47 @@ export default function JejumPage() {
         ) : (
           <ul className="card-solid divide-y divide-[var(--hair)] !p-0">
             {[...jejuns].reverse().slice(0, 14).map(j => (
-              <li key={j.id} className="flex items-baseline justify-between px-5 py-3">
-                <div>
-                  <p className="font-serif text-[15px] tracking-editorial">
-                    {fromIso(j.date).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', weekday: 'short' })}
-                  </p>
-                  <p className="text-faint mt-0.5 text-[11px]">
-                    {j.ultimaRefeicao ? new Date(j.ultimaRefeicao).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }) : '—'}
-                    {' → '}
-                    {j.primeiraRefeicao ? new Date(j.primeiraRefeicao).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }) : '...'}
-                  </p>
-                </div>
-                <div className="flex items-baseline gap-1.5 text-right">
-                  <span className={cn('font-serif text-[18px] tnum', j.completou ? 'text-oliva' : j.duracaoHoras !== null ? 'text-soft' : 'text-faint')}>
-                    {j.duracaoHoras !== null ? j.duracaoHoras : '—'}
-                  </span>
-                  <span className="text-faint text-[10px]">h</span>
-                  {j.completou ? <Check size={12} strokeWidth={2} className="ml-1 text-oliva" /> : null}
-                </div>
+              <li key={j.id}>
+                <button
+                  onClick={() => setEditar(j)}
+                  className="w-full flex items-baseline justify-between px-5 py-3 text-left active:bg-[var(--surface-soft)] transition-elegant"
+                >
+                  <div>
+                    <p className="font-serif text-[15px] tracking-editorial">
+                      {fromIso(j.date).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', weekday: 'short' })}
+                    </p>
+                    <p className="text-faint mt-0.5 text-[11px]">
+                      {j.ultimaRefeicao ? new Date(j.ultimaRefeicao).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }) : '—'}
+                      {' → '}
+                      {j.primeiraRefeicao ? new Date(j.primeiraRefeicao).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }) : '...'}
+                    </p>
+                  </div>
+                  <div className="flex items-baseline gap-1.5 text-right">
+                    <span className={cn('font-serif text-[18px] tnum', j.completou ? 'text-oliva' : j.duracaoHoras !== null ? 'text-soft' : 'text-faint')}>
+                      {j.duracaoHoras !== null ? j.duracaoHoras : '—'}
+                    </span>
+                    <span className="text-faint text-[10px]">h</span>
+                    {j.completou ? <Check size={12} strokeWidth={2} className="ml-1 text-oliva" /> : null}
+                  </div>
+                </button>
               </li>
             ))}
           </ul>
         )}
+        <p className="text-faint text-[10.5px] px-1 leading-relaxed">toca num jejum para editar horas ou apagar.</p>
       </section>
 
       <p className="text-faint text-center text-[11px] leading-relaxed">
         chá, café, água com sal não quebram. açúcar, leite, fruta quebram.
       </p>
+
+      {editar ? (
+        <EditarJejumSheet
+          jejum={editar}
+          onClose={() => setEditar(null)}
+          onSaved={() => { setEditar(null); refresh() }}
+        />
+      ) : null}
     </div>
   )
 }
@@ -213,6 +479,254 @@ function Stat({ label, valor, unit, decimal }: { label: string; valor: number | 
         {valor === null ? '—' : decimal ? valor : valor}
       </p>
       <p className="text-faint mt-1 text-[10px] tracking-cap uppercase">{unit}</p>
+    </div>
+  )
+}
+
+// Barras dos últimos 14 jejuns · com linha da meta
+function BarrasJejum({ jejuns, meta }: { jejuns: JejumLog[]; meta: 14 | 16 }) {
+  const ult = jejuns.slice(-14).filter(j => j.duracaoHoras !== null)
+  if (ult.length === 0) return null
+  const w = 320
+  const h = 130
+  const pad = { t: 10, r: 8, b: 24, l: 24 }
+  const cw = w - pad.l - pad.r
+  const ch = h - pad.t - pad.b
+  const max = Math.max(...ult.map(j => j.duracaoHoras ?? 0), meta + 2)
+  const yScale = (v: number) => pad.t + ch - (v / max) * ch
+  const barW = cw / Math.max(ult.length, 1)
+  return (
+    <section className="card-feature space-y-2">
+      <div className="flex items-baseline justify-between">
+        <span className="label-cap">últimos {ult.length} jejuns</span>
+        <span className="text-faint text-[11px] tnum">meta {meta}h</span>
+      </div>
+      <div className="-mx-2">
+        <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" preserveAspectRatio="none">
+          {/* eixo */}
+          <line x1={pad.l} y1={pad.t + ch} x2={w - pad.r} y2={pad.t + ch} stroke="rgba(150,140,120,0.3)" />
+          {/* meta */}
+          <line x1={pad.l} y1={yScale(meta)} x2={w - pad.r} y2={yScale(meta)} stroke="#D4A14E" strokeWidth="1" strokeDasharray="3 3" opacity="0.7" />
+          <text x={pad.l - 4} y={yScale(meta) + 3} fontSize="9" fill="#D4A14E" textAnchor="end">{meta}</text>
+          {ult.map((j, i) => {
+            const x = pad.l + i * barW + barW * 0.15
+            const altura = ((j.duracaoHoras ?? 0) / max) * ch
+            const cor = j.completou ? '#7B9A4F' : (j.duracaoHoras ?? 0) >= meta - 2 ? '#D4A14E' : '#A89878'
+            return (
+              <rect
+                key={j.id}
+                x={x}
+                y={pad.t + ch - altura}
+                width={barW * 0.7}
+                height={altura}
+                rx="2"
+                fill={cor}
+              >
+                <title>{j.date}: {j.duracaoHoras}h{j.completou ? ' ✓' : ''}</title>
+              </rect>
+            )
+          })}
+          {/* labels de data extremas */}
+          <text x={pad.l} y={h - 6} fontSize="8" fill="rgba(150,140,120,0.7)" textAnchor="start">
+            {ult[0].date.slice(5).replace('-', '/')}
+          </text>
+          <text x={w - pad.r} y={h - 6} fontSize="8" fill="rgba(150,140,120,0.7)" textAnchor="end">
+            {ult[ult.length - 1].date.slice(5).replace('-', '/')}
+          </text>
+        </svg>
+      </div>
+      <div className="flex justify-center gap-4 text-[10px] text-faint">
+        <span className="inline-flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: '#7B9A4F' }} />cumprido</span>
+        <span className="inline-flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: '#D4A14E' }} />perto</span>
+        <span className="inline-flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: '#A89878' }} />curto</span>
+      </div>
+    </section>
+  )
+}
+
+// Correlação peso ↔ horas de jejum · scatter + linha indicativa
+function CorrelacaoPesoJejum({ pares }: { pares: { peso: number; horas: number }[] }) {
+  if (pares.length < 3) return null
+  const w = 320
+  const h = 150
+  const pad = { t: 12, r: 10, b: 28, l: 36 }
+  const cw = w - pad.l - pad.r
+  const ch = h - pad.t - pad.b
+  const minPeso = Math.min(...pares.map(p => p.peso))
+  const maxPeso = Math.max(...pares.map(p => p.peso))
+  const rPeso = maxPeso - minPeso || 1
+  const minH = Math.min(...pares.map(p => p.horas))
+  const maxH = Math.max(...pares.map(p => p.horas))
+  const rH = maxH - minH || 1
+  const xScale = (v: number) => pad.l + ((v - minPeso) / rPeso) * cw
+  const yScale = (v: number) => pad.t + ch - ((v - minH) / rH) * ch
+
+  // Pearson r
+  const n = pares.length
+  const meanP = pares.reduce((s, p) => s + p.peso, 0) / n
+  const meanH = pares.reduce((s, p) => s + p.horas, 0) / n
+  let num = 0, dP = 0, dH = 0
+  for (const p of pares) {
+    num += (p.peso - meanP) * (p.horas - meanH)
+    dP += (p.peso - meanP) ** 2
+    dH += (p.horas - meanH) ** 2
+  }
+  const r = dP === 0 || dH === 0 ? 0 : num / Math.sqrt(dP * dH)
+  const interpretacao = Math.abs(r) < 0.2 ? 'sem correlação clara'
+    : r < -0.5 ? 'mais jejum · menos peso · forte'
+    : r < -0.2 ? 'mais jejum · menos peso · ligeira'
+    : r > 0.5 ? 'mais jejum · mais peso · forte'
+    : 'mais jejum · mais peso · ligeira'
+
+  return (
+    <section className="card-feature space-y-2">
+      <div className="flex items-baseline justify-between">
+        <span className="label-cap">peso ↔ jejum</span>
+        <span className="text-faint text-[11px] tnum">r = {r.toFixed(2)}</span>
+      </div>
+      <div className="-mx-2">
+        <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" preserveAspectRatio="none">
+          <line x1={pad.l} y1={pad.t + ch} x2={w - pad.r} y2={pad.t + ch} stroke="rgba(150,140,120,0.3)" />
+          <line x1={pad.l} y1={pad.t} x2={pad.l} y2={pad.t + ch} stroke="rgba(150,140,120,0.3)" />
+          <text x={pad.l - 4} y={pad.t + 3} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="end">{maxH.toFixed(0)}h</text>
+          <text x={pad.l - 4} y={pad.t + ch} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="end">{minH.toFixed(0)}h</text>
+          <text x={pad.l} y={h - 6} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="start">{minPeso.toFixed(1)}kg</text>
+          <text x={w - pad.r} y={h - 6} fontSize="9" fill="rgba(150,140,120,0.7)" textAnchor="end">{maxPeso.toFixed(1)}kg</text>
+          {pares.map((p, i) => (
+            <circle key={i} cx={xScale(p.peso)} cy={yScale(p.horas)} r="3" fill="#D4A14E" opacity="0.7">
+              <title>{p.peso}kg · {p.horas}h</title>
+            </circle>
+          ))}
+        </svg>
+      </div>
+      <p className="text-faint text-[10.5px] text-center leading-relaxed">{interpretacao} · {n} pontos</p>
+    </section>
+  )
+}
+
+// Sheet para editar/apagar um jejum existente · separa data e hora
+function EditarJejumSheet({ jejum, onClose, onSaved }: { jejum: JejumLog; onClose: () => void; onSaved: () => void }) {
+  const fmtDateTime = (iso: string | null) => {
+    if (!iso) return { data: '', hora: '' }
+    const d = new Date(iso)
+    const data = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    const hora = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+    return { data, hora }
+  }
+  const ult = fmtDateTime(jejum.ultimaRefeicao)
+  const pri = fmtDateTime(jejum.primeiraRefeicao)
+  const [ultData, setUltData] = useState(ult.data)
+  const [ultHora, setUltHora] = useState(ult.hora)
+  const [priData, setPriData] = useState(pri.data)
+  const [priHora, setPriHora] = useState(pri.hora)
+
+  const combinar = (data: string, hora: string): string | null => {
+    if (!data || !hora) return null
+    const [h, m] = hora.split(':').map(Number)
+    const [y, mo, d] = data.split('-').map(Number)
+    const dt = new Date(y, mo - 1, d, h, m, 0, 0)
+    return dt.toISOString()
+  }
+
+  const guardar = () => {
+    const u = combinar(ultData, ultHora)
+    const p = combinar(priData, priHora)
+    saveJejum({
+      date: jejum.date,
+      ultimaRefeicao: u,
+      primeiraRefeicao: p,
+      duracaoHoras: null,
+      meta: jejum.meta,
+      completou: false
+    })
+    onSaved()
+  }
+
+  const apagarTudo = () => {
+    if (!window.confirm('apagar este jejum completamente?')) return
+    removeJejum(jejum.id)
+    onSaved()
+  }
+
+  const limparUltima = () => {
+    setUltData('')
+    setUltHora('')
+  }
+
+  const limparPrimeira = () => {
+    setPriData('')
+    setPriHora('')
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 animate-fade-in" onClick={onClose}>
+      <div
+        className="card-feature w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl space-y-4 max-h-[85vh] overflow-y-auto"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-baseline justify-between">
+          <span className="label-cap">editar jejum</span>
+          <button onClick={onClose} className="text-faint active:scale-90"><X size={16} strokeWidth={1.5} /></button>
+        </div>
+        <p className="font-serif text-[15px]">
+          {fromIso(jejum.date).toLocaleDateString('pt-PT', { day: '2-digit', month: 'long', weekday: 'long' })}
+        </p>
+
+        <div className="space-y-2">
+          <div className="flex items-baseline justify-between">
+            <span className="label-cap">última refeição</span>
+            {ultData || ultHora ? (
+              <button onClick={limparUltima} className="text-[10.5px] text-faint hover:text-terracota">limpar</button>
+            ) : null}
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              type="date"
+              value={ultData}
+              onChange={e => setUltData(e.target.value)}
+              className="rounded-md border border-[var(--hair)] bg-transparent p-2 text-[13px] tnum focus:border-ouro focus:outline-none"
+            />
+            <input
+              type="time"
+              value={ultHora}
+              onChange={e => setUltHora(e.target.value)}
+              className="rounded-md border border-[var(--hair)] bg-transparent p-2 text-[13px] tnum focus:border-ouro focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-baseline justify-between">
+            <span className="label-cap">primeira refeição (quebra)</span>
+            {priData || priHora ? (
+              <button onClick={limparPrimeira} className="text-[10.5px] text-faint hover:text-terracota">limpar</button>
+            ) : null}
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              type="date"
+              value={priData}
+              onChange={e => setPriData(e.target.value)}
+              className="rounded-md border border-[var(--hair)] bg-transparent p-2 text-[13px] tnum focus:border-ouro focus:outline-none"
+            />
+            <input
+              type="time"
+              value={priHora}
+              onChange={e => setPriHora(e.target.value)}
+              className="rounded-md border border-[var(--hair)] bg-transparent p-2 text-[13px] tnum focus:border-ouro focus:outline-none"
+            />
+          </div>
+          <p className="text-faint text-[10.5px] leading-relaxed">limpa a primeira refeição se foi marcada por engano · jejum volta a estar em curso.</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 pt-2">
+          <button onClick={guardar} className="btn-primary">guardar</button>
+          <button onClick={apagarTudo} className="btn-outline text-terracota">
+            <Trash2 size={13} strokeWidth={1.5} />
+            <span className="text-[11px] ml-1">apagar tudo</span>
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

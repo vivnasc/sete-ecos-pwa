@@ -1,17 +1,21 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Scale, Clock, Droplet, Activity, MessageCircle, Wine } from 'lucide-react'
+import { Scale, Clock, Droplet, UtensilsCrossed, Target, Activity, Ruler } from 'lucide-react'
 import { getProfile } from '@/lib/profile'
 
-const TODAS = [
+type Tool = { href: string; label: string; icon: typeof Scale; soFeminino?: boolean; destaque?: boolean }
+
+// Tudo o que se regista vai aqui · plano em destaque · sem ter de ir a /mais
+const TODAS: Tool[] = [
+  { href: '/plano', label: 'plano', icon: Target, destaque: true },
+  { href: '/refeicoes', label: 'refeições', icon: UtensilsCrossed },
   { href: '/peso', label: 'peso', icon: Scale },
   { href: '/jejum', label: 'jejum', icon: Clock },
   { href: '/ciclo', label: 'ciclo', icon: Droplet, soFeminino: true },
-  { href: '/scanner', label: 'scanner', icon: Activity },
-  { href: '/coach', label: 'coach', icon: MessageCircle },
-  { href: '/alcool', label: 'copo', icon: Wine }
-] as const
+  { href: '/medidas', label: 'medidas', icon: Ruler },
+  { href: '/scanner', label: 'scanner', icon: Activity }
+]
 
 export default function QuickTools() {
   const [sexo, setSexo] = useState<'F' | 'M' | 'O'>('F')
@@ -23,22 +27,24 @@ export default function QuickTools() {
     return () => window.removeEventListener('fenixfit:profile', onUpdate)
   }, [])
 
-  const itens = TODAS.filter(t => !('soFeminino' in t && t.soFeminino) || sexo !== 'M')
+  const itens = TODAS.filter(t => !t.soFeminino || sexo !== 'M')
 
   return (
     <section className="space-y-2">
       <span className="label-cap px-1">acesso rápido</span>
-      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-2 sm:grid-cols-7">
         {itens.map(t => {
           const Icon = t.icon
           return (
             <a
               key={t.href}
               href={t.href}
-              className="card-solid flex flex-col items-center justify-center gap-2 !p-4 transition-elegant hover:shadow-hair-strong active:scale-95"
+              className={`card-solid flex flex-col items-center justify-center gap-1.5 !p-3 transition-elegant hover:shadow-hair-strong active:scale-95 ${
+                t.destaque ? 'ring-1 ring-ouro/40 bg-[var(--surface-soft)]' : ''
+              }`}
             >
-              <Icon size={18} strokeWidth={1.3} className="text-ouro" />
-              <span className="font-serif text-[13px] tracking-editorial text-soft">{t.label}</span>
+              <Icon size={16} strokeWidth={1.3} className={t.destaque ? 'text-ouro' : 'text-ouro'} />
+              <span className="font-serif text-[11.5px] tracking-editorial text-soft">{t.label}</span>
             </a>
           )
         })}

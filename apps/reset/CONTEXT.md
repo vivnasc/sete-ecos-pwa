@@ -1,6 +1,6 @@
 # FénixFit · Estado e Contexto
 
-**Última actualização**: 7 maio 2026
+**Última actualização**: 7 maio 2026 (auditoria · objectivos com tracking + alertas proactivos + datas reais no plano + erros amigáveis)
 **Branch actual**: `claude/monorepo-lifestyle-app-ZAA2E`
 **URL produção**: `https://sete-ecos-pwa.pages.dev/`
 **Deploy**: Cloudflare Pages (auto-deploy do branch acima)
@@ -119,41 +119,131 @@ Sub-app dentro do monorepo `vivnasc/sete-ecos-pwa` (em `apps/reset/`).
 
 ## Plano em fases (próximas iterações)
 
-### ⚠️⚠️⚠️ TIER -1 · COACH CONVERSACIONAL COMO INTERFACE PRINCIPAL
+### ✅ TIER -1 · COACH CONVERSACIONAL · ENTREGUE
 
-**Pedido da Vivianne: "QUERIA QUE A COACH ESTIVESSE MESMO À MÃO. ELA PODE REGISTAR POR MIM? SERIA BEM MAIS FÁCIL"**
+A coach regista pela Vivianne via tool use nativo do Claude.
 
-Em vez de a Vivianne ir a `/peso`, `/jejum`, `/diario`, `/alcool` e preencher formulários, ela **fala com a coach** e a coach regista por ela.
+**O que está feito:**
+- `functions/api/coach.ts` agora envia 8 tools schemas ao Claude:
+  `registar_peso`, `registar_refeicao`, `registar_alcool`, `registar_dia`,
+  `registar_jejum`, `registar_ciclo`, `marcar_ancora`, `consultar_dados`.
+- `lib/coachTools.ts` (novo) · executores no cliente que escrevem em
+  localStorage + Supabase via funções já existentes em `lib/storage.ts`
+  (mantém RLS, funciona offline).
+- `app/coach/page.tsx` · loop de tool use no cliente: enquanto
+  `stop_reason === 'tool_use'`, executa as tools, devolve `tool_result`,
+  re-chama o Claude. Máximo 6 voltas.
+- UI: chips pequenos com `registado` por baixo das mensagens da coach
+  quando ela usou tools.
+- Coach passou a tab central na nav inferior (com destaque ouro).
+- FAB do botão `+` agora abre `/coach` (em vez do antigo modal de 3 atalhos).
+- Sinais (`/metricas`) movido para `/mais` → Práticas.
+- Refeições novas guardadas em `fenixfit_refeicoes` (RLS, schema
+  acrescentado a `supabase/schema.sql`).
+- `pa_proteina`, `caderno_copo` e `janela_9_19` são marcadas
+  automaticamente quando aplicável (PA com ≥25g proteína, registo de
+  álcool com `decidiu_beber=false`, jejum com `completou=true`).
 
-**Exemplos:**
-- "comi 3 ovos mexidos com abacate e folhas, eram 9h" → coach regista refeição PA, marca âncora `pa_proteina` ✓
-- "pesei 72.4 hoje" → coach regista peso
-- "estou em pré com vontade de beber, tive um dia difícil no banco" → coach abre caderno do copo, regista emoção+gatilho, dá observação
-- "dormi 5h, Cris acordou 3 vezes" → coach regista sono e nota
-- "treinei pernas, 30min" → coach marca âncora `treino_feito` ✓
+**Migração SQL pendente** (Vivianne aplicar uma vez no Supabase):
+```sql
+create table if not exists fenixfit_refeicoes (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  timestamp timestamptz not null default now(),
+  tipo text not null check (tipo in ('pa', 'almoco', 'snack', 'jantar')),
+  descricao text not null,
+  proteina_g numeric(5,1),
+  carbo_g numeric(5,1),
+  gordura_g numeric(5,1),
+  calorias int,
+  contexto text not null default '',
+  sentir text not null default '',
+  created_at timestamptz not null default now()
+);
+create index if not exists fenixfit_refeicoes_user_ts on fenixfit_refeicoes (user_id, timestamp desc);
+alter table fenixfit_refeicoes enable row level security;
+create policy "refeicoes_owner" on fenixfit_refeicoes for all
+  using (auth.uid() = user_id) with check (auth.uid() = user_id);
+```
 
-**Implementação técnica:**
-1. **Tool use nativo do Claude API** · definir tools:
-   - `registar_peso(peso, cintura?, hora)`
-   - `registar_refeicao(tipo, descricao, hora, macros_estimados?)`
-   - `registar_alcool(emocao, gatilho, decidiu_beber, unidades?)`
-   - `registar_dia(sono, energia, humor, notas?)`
-   - `registar_jejum_inicio(hora)` / `registar_jejum_fim(hora)`
-   - `registar_ciclo(data_inicio, fluxo, sintomas)`
-   - `marcar_ancora(id, feita)`
-   - `consultar_dados(area, periodo)` — para coach ler sem expor tudo no prompt
-2. **Coach próxima/sempre à mão**:
-   - FAB grande do coach sempre visível (canto inferior, prioridade visual)
-   - OU mover coach para tab central da nav inferior (substituir Sinais?)
-   - OU input voz com botão flutuante (Web Speech API)
-3. **Confirmação natural**:
-   - "registei. peso 72.4 às 7h32. -0.3 desde ontem."
-   - "pequeno-almoço marcado. âncora 02 ✓. proteína estimada: 28g."
-4. **Voice input** (Web Speech API) · ditas em vez de escrever
+**Por testar (próxima sessão):**
+- Voice input · Web Speech API no chat da coach (microfone)
+- Coach voice mode · TTS da abertura diária
+- Vista `/refeicoes` para ver/editar manualmente o que a coach registou
 
-**Esta é a feature que transforma a app**. Em vez de 7 formulários para preencher, é UMA conversa onde tudo acontece.
+### ✅ Estado actual completo (7 maio 2026)
 
-### ⚠️ TIER 0 · GAPS BÁSICOS (CRÍTICO · pedido directo da Vivianne)
+**Coach é o canal principal** com 25+ tools, voz Siri-like, fotos. Vê secções abaixo.
+
+### ✅ Coach analytics (correlações + comparações + lista compras)
+- `analisar_padroes` agora inclui:
+  - **correlacoes**: detecta álcool→sono, sono→humor, álcool→sintomas peri, magnésio→sono. Só reporta se delta significativo.
+  - **comparar_semanas**: 7d actuais vs 7d anteriores em sono, energia, humor, água, álcool, proteína média.
+  - **nutrientes**: proteína vs alvo, vegetais por refeição, ómega-3, suplementos regularidade, fibra, hidratação · com flags ⚠.
+- Tool nova `gerar_lista_compras`: analisa N dias, identifica ingredientes recorrentes (ovos, frango, peixe, abacate, folhas, matapa, xima, etc), estima quantidades para uma semana × N pessoas.
+
+### ✅ Marcos animados (MarcoCard no Hoje)
+- Aparece quando atinges Dia 7/14/21/30/45/60 (até 2 dias depois).
+- Selo logo-03 com anel pulsante, título editorial, texto contemplativo.
+- Botão "arquivar" marca como visto.
+
+### ✅ Foto antes/depois (/medidas)
+- Câmara no formulário · comprime para 800px JPEG.
+- Card "antes · depois" no topo: primeira vs última lado a lado, com delta de cintura colorido.
+- Guarda em `foto_frente_url` (coluna existente em fenixfit_medidas).
+
+### ✅ Modo viagem (toggle em /definicoes)
+- `profile.modoViagem` boolean · sync `fenixfit_profile.modo_viagem`.
+- Coach respeita: não cobra streaks, suaviza exigências, foca no que controlas.
+
+### ✅ Voz contínua (toggle "auto" no overlay de voz)
+- Off (default): falas → ela responde · paras.
+- On: falas → ela responde · auto-restart do mic após TTS terminar.
+- Conversa sem tocar entre cada turno · mãos ocupadas.
+
+### ✅ Apple Health import (/importar-saude)
+- File picker JSON com parser flexível (3 formatos: simples, Auto Health Export, lista directa).
+- Prévia + importação para fenixfit_dias (steps, rhr, sonoHoras).
+- Instruções para Auto Health Export ou Shortcut próprio.
+
+### ✅ Resumo por email (/api/resumo-email + botão em /definicoes)
+- Endpoint que pede resumo ao Claude e envia via Resend.
+- HTML editorial · pt-PT · tom espelho calmo.
+- Chamada manual via botão. Para automático às 21h → configurar cron externo (ou worker Cloudflare separado).
+
+### ✅ Voz · entregue
+
+- `lib/useSpeechRecognition.ts` · hook com Web Speech API (pt-PT).
+- Botão de microfone no input da coach · push-to-talk · transcrição parcial em tempo real por baixo do input.
+- Trata erros de permissão e ausência de fala.
+- Ao parar, junta o transcrito ao input para revisar antes de enviar.
+- Funciona no Chrome/Edge desktop e mobile. iOS Safari ≥14.5.
+
+### ✅ TIER 0 (maior parte) · refeições + macros + corpo + sono + sintomas
+
+- Vista `/refeicoes` · navegação por dia, macros vs alvo (1500 kcal · 100g P · ≤25g C · 110g G), lista do dia, adicionar manualmente, apagar, histórico de dias.
+- Card de macros no Hoje (link para /refeicoes).
+- `WellnessQuickPanel` no Hoje · contador de água (0–8+), 4 suplementos toggle (magnésio, vit D, ómega-3, eletrólitos), trânsito sim/não.
+- `SonoDetailCard` no Hoje · hora a que se deitou, horas dormidas, qualidade 1-5, vezes que acordou (Cris, sede, etc).
+- `PeriSintomasCard` no Hoje (só F/O) · 9 sintomas peri/menopausa: afrontamentos, suores nocturnos, brain fog, irritabilidade, ansiedade, fadiga, dores articulares, libido baixa, palpitações.
+- Coach ganhou 7 tools novas: `registar_agua`, `registar_suplemento`, `registar_transito`, `registar_sono_detalhe`, `registar_sintoma_peri`, `registar_steps`, `registar_rhr`. Diz "deitei à uma e meia, dormi 5h, acordei 3 vezes" e ela regista.
+- QuickTools no Hoje passou a ter Coach + Refeições no topo.
+- `fenixfit_dias` ganhou 3 colunas: `agua_copos`, `suplementos[]`, `transito_intestinal`.
+
+**Migração SQL pendente** (Vivianne aplicar uma vez, é idempotente):
+```sql
+alter table fenixfit_dias add column if not exists agua_copos int not null default 0;
+alter table fenixfit_dias add column if not exists suplementos text[] not null default '{}';
+alter table fenixfit_dias add column if not exists transito_intestinal text check (transito_intestinal in ('sim','nao') or transito_intestinal is null);
+alter table fenixfit_dias add column if not exists hora_deitar time;
+alter table fenixfit_dias add column if not exists qualidade_sono int check (qualidade_sono between 1 and 5);
+alter table fenixfit_dias add column if not exists acordou_vezes int;
+alter table fenixfit_dias add column if not exists sintomas_peri text[] not null default '{}';
+alter table fenixfit_dias add column if not exists steps int;
+alter table fenixfit_dias add column if not exists rhr int;
+```
+
+### ⚠️ TIER 0 (resto) · ainda por fazer
 
 **A app tem tracking de outcomes mas falta o tracking de inputs. Sem isto, não é uma app de nutrição completa.**
 
@@ -195,6 +285,74 @@ Em vez de a Vivianne ir a `/peso`, `/jejum`, `/diario`, `/alcool` e preencher fo
 9. **Marcos/milestones** — Dias 7, 14, 30, 60 com selo logo-03
 10. **Ramadão mode** — janela alimentar adaptada
 11. **Notificações Web Push reais** — funcionar com app fechada
+
+## SQL pendente · consolidado (FINAL · 7 maio 2026)
+
+Aplicar uma vez no SQL editor do Supabase (todas idempotentes · podes correr 100×):
+
+```sql
+alter table fenixfit_dias add column if not exists agua_copos int not null default 0;
+alter table fenixfit_dias add column if not exists suplementos text[] not null default '{}';
+alter table fenixfit_dias add column if not exists transito_intestinal text check (transito_intestinal in ('sim','nao') or transito_intestinal is null);
+alter table fenixfit_dias add column if not exists hora_deitar time;
+alter table fenixfit_dias add column if not exists qualidade_sono int check (qualidade_sono between 1 and 5);
+alter table fenixfit_dias add column if not exists acordou_vezes int;
+alter table fenixfit_dias add column if not exists sintomas_peri text[] not null default '{}';
+alter table fenixfit_dias add column if not exists steps int;
+alter table fenixfit_dias add column if not exists rhr int;
+
+alter table fenixfit_profile add column if not exists metas jsonb;
+alter table fenixfit_profile add column if not exists modo_viagem boolean not null default false;
+alter table fenixfit_profile add column if not exists ancoras_activas text[] not null default '{}';
+alter table fenixfit_profile add column if not exists ancoras_custom jsonb not null default '[]';
+alter table fenixfit_profile add column if not exists objectivos jsonb not null default '[]';
+
+-- tabelas novas
+create table if not exists fenixfit_refeicoes (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  timestamp timestamptz not null default now(),
+  tipo text not null check (tipo in ('pa', 'almoco', 'snack', 'jantar')),
+  descricao text not null,
+  proteina_g numeric(5,1),
+  carbo_g numeric(5,1),
+  gordura_g numeric(5,1),
+  calorias int,
+  contexto text not null default '',
+  sentir text not null default '',
+  created_at timestamptz not null default now()
+);
+create index if not exists fenixfit_refeicoes_user_ts on fenixfit_refeicoes (user_id, timestamp desc);
+alter table fenixfit_refeicoes enable row level security;
+drop policy if exists "refeicoes_owner" on fenixfit_refeicoes;
+create policy "refeicoes_owner" on fenixfit_refeicoes for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+```
+
+## Env vars Cloudflare necessárias
+
+Production e Preview:
+```
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY (ou _ANON)
+ANTHROPIC_API_KEY
+NODE_VERSION=20
+RESEND_API_KEY (para resumo email · opcional)
+RESUMO_FROM_EMAIL (opcional · default fenixfit@resend.dev)
+```
+
+## Para sessão futura · ainda por construir
+
+### Push notifications proactivas (peça grande)
+- Service Worker dedicado a push (sem cache, evita conflito com chunks)
+- VAPID keys (`web-push generate-vapid-keys`)
+- Tabela `push_subscriptions`
+- Endpoint `/api/subscribe-push`
+- Worker Cloudflare separado com Cron Trigger (Pages Functions não tem cron nativo)
+
+### Outros
+- Cron diário automático para emails (cron-job.org externo ou worker Cloudflare)
+- Refactor multi-user (system prompt actualmente personalizado · para iOS App Store futuro precisa ser parametrizável)
+- App nativa iOS para Apple Health real-time (PWA não acede directamente)
 
 ## ⚠️ OBSERVAÇÃO IMPORTANTE DA VIVIANNE
 

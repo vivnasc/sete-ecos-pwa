@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowUpRight, Salad, Dumbbell, Sparkles, Pencil, Ruler, Settings, LogOut, Scale, Clock, Droplet, Activity, MessageCircle, Image as ImageIcon } from 'lucide-react'
+import { ArrowUpRight, Salad, Dumbbell, Sparkles, Pencil, Ruler, Settings, LogOut, Scale, Clock, Droplet, Activity, MessageCircle, Image as ImageIcon, BarChart3, UtensilsCrossed, HeartPulse, Target, Wine } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { signOut } from '@/lib/auth'
 import { useRouter } from 'next/navigation'
@@ -24,21 +24,26 @@ export default function MaisPage() {
   }
 
   const trackingItems = [
+    { href: '/refeicoes', label: 'Refeições', sub: 'macros · histórico · adicionar', icon: UtensilsCrossed },
     { href: '/peso', label: 'Peso', sub: 'pesagem diária · tendência', icon: Scale },
-    { href: '/jejum', label: 'Jejum', sub: 'janela 9–19h · streak', icon: Clock },
+    { href: '/jejum', label: 'Jejum', sub: 'janela alimentar · streak', icon: Clock },
     ...(sexo !== 'M' ? [{ href: '/ciclo', label: 'Ciclo', sub: 'fases · sintomas · correlações', icon: Droplet }] : []),
-    { href: '/medidas', label: 'Medidas', sub: 'cintura · ancas · foto', icon: Ruler }
+    { href: '/alcool', label: 'Copo', sub: 'caderno antes do copo · padrões', icon: Wine },
+    { href: '/medidas', label: 'Medidas', sub: 'cintura · ancas · foto · antes/depois', icon: Ruler },
+    { href: '/importar-saude', label: 'Importar Saúde', sub: 'iPhone · passos · sono · RHR', icon: HeartPulse }
   ]
 
   const praticas = [
+    { href: '/plano', label: 'Plano', sub: 'objectivos · gráficos · onde estás vs alvo', icon: Target },
+    { href: '/coach', label: 'Coach', sub: 'fala · ela regista por ti', icon: MessageCircle },
+    { href: '/metricas', label: 'Sinais', sub: 'tendências · streaks · médias', icon: BarChart3 },
     { href: '/scanner', label: 'Scanner', sub: 'análise multi-variável · padrões cruzados', icon: Activity },
-    { href: '/coach', label: 'Coach', sub: 'conversa com os teus dados · IA', icon: MessageCircle },
     { href: '/desabafo', label: 'Desabafo', sub: 'só para ti', icon: Pencil },
     { href: '/insights', label: 'Insights', sub: 'leitura semanal', icon: Sparkles }
   ]
 
   const referencias = [
-    { href: '/receitas', label: 'Comer', sub: 'keto · janela 9–19h', icon: Salad },
+    { href: '/receitas', label: 'Minhas refeições', sub: 'as que repetes mais · keto', icon: Salad },
     { href: '/treino', label: 'Treino', sub: '4× semana · 30min', icon: Dumbbell },
     { href: '/logos', label: 'Marca', sub: '3 logos · escolhe um', icon: ImageIcon }
   ]
@@ -47,7 +52,7 @@ export default function MaisPage() {
     <div className="space-y-8 animate-fade-in">
       <header className="space-y-2 pt-4">
         <p className="label-soft">mais</p>
-        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">tudo o resto</h1>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">Tudo o Resto</h1>
         <div className="h-px w-12 bg-ouro" aria-hidden />
       </header>
 
@@ -88,7 +93,7 @@ export default function MaisPage() {
         </ul>
       </section>
 
-      <p className="text-faint text-center text-[11px]">fénixfit · 60 dias</p>
+      <p className="text-faint text-center text-[11px]">FénixFit · 60 Dias</p>
     </div>
   )
 }

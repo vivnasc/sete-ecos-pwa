@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Sparkles, RefreshCcw } from 'lucide-react'
-import { ANCORAS } from '@/lib/data'
+import { getAncorasActivas } from '@/lib/profile'
 import BackButton from '@/components/BackButton'
 import { isoDate, fromIso, formatarData } from '@/lib/dates'
 import {
@@ -10,7 +10,8 @@ import {
   getAlcoolRegistos,
   getMedidas,
   getInsightCache,
-  saveInsightCache
+  saveInsightCache,
+  ancorasResolvidas
 } from '@/lib/storage'
 
 function inicioSemana(d: Date = new Date()): string {
@@ -71,7 +72,10 @@ export default function InsightsPage() {
       weekStart: semanaInicio,
       dias: diasSemana.map(d => ({
         date: d.date,
-        ancorasCumpridas: ANCORAS.filter(a => d.ancoras[a.id]).length,
+        ancorasCumpridas: (() => {
+          const r = ancorasResolvidas(d.date, d.ancoras)
+          return getAncorasActivas().filter(a => r[a.id]).length
+        })(),
         treinoFeito: !!d.ancoras['treino_feito'],
         sonoHoras: d.sonoHoras,
         energia: d.energia,
@@ -120,7 +124,7 @@ export default function InsightsPage() {
 
       <header className="space-y-2 pt-4">
         <p className="label-soft">insights</p>
-        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">o que vejo</h1>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">O Que Vejo</h1>
         <div className="h-px w-12 bg-ouro" aria-hidden />
         <p className="text-faint mt-3 text-[12.5px]">semana de {formatarData(fromIso(semanaInicio), true)}</p>
       </header>

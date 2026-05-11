@@ -12,6 +12,7 @@ import {
   type PesoLog
 } from './storage'
 import { ANCORAS } from './data'
+import { getAncorasActivas } from './profile'
 import { fromIso, isoDate } from './dates'
 
 // ===== UTILITÁRIOS =====
@@ -55,8 +56,9 @@ export function pontuarDia(date: string): PontuacaoDia | null {
   const dia = dias.find(d => d.date === date)
   if (!dia) return null
 
-  const ancorasCumpridas = ANCORAS.filter(a => dia.ancoras[a.id]).length
-  const ancorasMax = ANCORAS.length
+  const ancorasUser = getAncorasActivas()
+  const ancorasCumpridas = ancorasUser.filter(a => dia.ancoras[a.id]).length
+  const ancorasMax = Math.max(1, ancorasUser.length)
 
   const sonoScore = dia.sonoHoras !== null ? Math.min(10, Math.max(0, (dia.sonoHoras - 4) * 2.5)) : 0
   const energiaScore = dia.energia !== null ? dia.energia * 2 : 0
@@ -193,7 +195,7 @@ export function correlacoesProfundas(): Correlacao[] {
   if (dias.length >= 8) {
     const seq: Array<{ ancoras: number; energiaSeguinte: number }> = []
     for (let i = 0; i < dias.length - 1; i++) {
-      const a = ANCORAS.filter(x => dias[i].ancoras[x.id]).length
+      const a = getAncorasActivas().filter(x => dias[i].ancoras[x.id]).length
       const e = dias[i + 1].energia
       if (e !== null) seq.push({ ancoras: a, energiaSeguinte: e })
     }

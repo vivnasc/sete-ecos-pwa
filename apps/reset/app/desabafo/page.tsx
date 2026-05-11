@@ -32,7 +32,7 @@ export default function DesabafoPage() {
 
       <header className="space-y-2 pt-4">
         <p className="label-soft">desabafo</p>
-        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">só para ti</h1>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">Só Para Ti</h1>
         <div className="h-px w-12 bg-ouro" aria-hidden />
         <p className="text-faint mt-3 text-[12.5px]">não há respostas. é diário, não chat.</p>
       </header>

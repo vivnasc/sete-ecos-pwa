@@ -1,11 +1,32 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Plus, X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Plus, X, Camera, Trash2 } from 'lucide-react'
 import { addMedida, getMedidas, type MedidaRegisto } from '@/lib/storage'
 import BackButton from '@/components/BackButton'
 import { isoDate, fromIso, formatarData } from '@/lib/dates'
 import { cn } from '@/lib/utils'
+
+async function comprimirFoto(file: File, maxLado = 800, qualidade = 0.82): Promise<string> {
+  const img = new Image()
+  const url = URL.createObjectURL(file)
+  await new Promise<void>((resolve, reject) => {
+    img.onload = () => resolve()
+    img.onerror = () => reject(new Error('imagem inválida'))
+    img.src = url
+  })
+  const escala = Math.min(1, maxLado / Math.max(img.width, img.height))
+  const w = Math.round(img.width * escala)
+  const h = Math.round(img.height * escala)
+  const canvas = document.createElement('canvas')
+  canvas.width = w
+  canvas.height = h
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('canvas sem contexto')
+  ctx.drawImage(img, 0, 0, w, h)
+  URL.revokeObjectURL(url)
+  return canvas.toDataURL('image/jpeg', qualidade)
+}
 
 export default function MedidasPage() {
   const [medidas, setMedidas] = useState<MedidaRegisto[]>([])
@@ -44,6 +65,8 @@ export default function MedidasPage() {
       <button onClick={() => setAberto(true)} className="btn-primary w-full">
         <Plus size={14} strokeWidth={1.6} /> nova medição
       </button>
+
+      <AntesDepois medidas={medidas} />
 
       {medidas.length >= 2 ? (
         <section className="card-solid">
@@ -95,6 +118,52 @@ export default function MedidasPage() {
   )
 }
 
+function AntesDepois({ medidas }: { medidas: MedidaRegisto[] }) {
+  const comFoto = medidas.filter(m => m.fotoUrl)
+  if (comFoto.length < 2) {
+    if (comFoto.length === 1) {
+      return (
+        <section className="card-solid space-y-3">
+          <span className="label-cap">primeira foto</span>
+          <img src={comFoto[0].fotoUrl ?? ''} alt="" className="w-full rounded-lg" />
+          <p className="text-faint text-[11px] text-center">tira uma segunda foto noutro dia para comparares.</p>
+        </section>
+      )
+    }
+    return null
+  }
+  const primeira = comFoto[0]
+  const ultima = comFoto[comFoto.length - 1]
+  const dias = Math.round((new Date(ultima.date).getTime() - new Date(primeira.date).getTime()) / 86400000)
+  return (
+    <section className="card-solid space-y-3">
+      <div className="flex items-baseline justify-between">
+        <span className="label-cap">antes · depois</span>
+        <span className="text-faint text-[11px]">{dias} dias</span>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-1.5">
+          <p className="text-faint text-[10px] uppercase tracking-cap text-center">{formatarData(fromIso(primeira.date), true)}</p>
+          <img src={primeira.fotoUrl ?? ''} alt="antes" className="w-full rounded-lg" />
+        </div>
+        <div className="space-y-1.5">
+          <p className="text-ouro text-[10px] uppercase tracking-cap text-center">{formatarData(fromIso(ultima.date), true)}</p>
+          <img src={ultima.fotoUrl ?? ''} alt="depois" className="w-full rounded-lg" />
+        </div>
+      </div>
+      {primeira.cintura !== null && ultima.cintura !== null ? (
+        <p className="text-soft text-[12.5px] text-center italic">
+          cintura: {primeira.cintura}cm → {ultima.cintura}cm
+          {' · '}
+          <span className={ultima.cintura < primeira.cintura ? 'text-oliva' : ultima.cintura > primeira.cintura ? 'text-terracota' : 'text-faint'}>
+            {ultima.cintura > primeira.cintura ? '+' : ''}{(ultima.cintura - primeira.cintura).toFixed(1)}cm
+          </span>
+        </p>
+      ) : null}
+    </section>
+  )
+}
+
 function Linha({ label, v }: { label: string; v: number }) {
   return (
     <div className="flex items-baseline justify-between border-b border-[var(--hair)] pb-1">
@@ -141,6 +210,20 @@ function NovaMedidaSheet({ onClose, onSave }: { onClose: () => void; onSave: () 
     sentir: '',
     mudou: ''
   })
+  const [foto, setFoto] = useState<string | null>(null)
+  const fotoRef = useRef<HTMLInputElement>(null)
+
+  const onFoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+    try {
+      const compressed = await comprimirFoto(file)
+      setFoto(compressed)
+    } catch {
+      window.alert('não consegui ler a foto')
+    }
+  }
 
   const submit = () => {
     addMedida({
@@ -151,7 +234,8 @@ function NovaMedidaSheet({ onClose, onSave }: { onClose: () => void; onSave: () 
       braco: data.braco ? Number(data.braco) : null,
       peso: data.peso ? Number(data.peso) : null,
       sentir: data.sentir.trim(),
-      mudou: data.mudou.trim()
+      mudou: data.mudou.trim(),
+      fotoUrl: foto
     })
     onSave()
   }
@@ -193,6 +277,44 @@ function NovaMedidaSheet({ onClose, onSave }: { onClose: () => void; onSave: () 
           <Field label="O que mudou">
             <textarea rows={2} value={data.mudou} onChange={e => setData({ ...data, mudou: e.target.value })} className="input-base resize-none text-[14px]" placeholder="roupa, energia, espelho..." />
           </Field>
+
+          {/* Foto de progresso */}
+          <div>
+            <span className="label-cap mb-1.5 block">Foto de progresso · opcional</span>
+            {foto ? (
+              <div className="relative">
+                <img src={foto} alt="preview" className="w-full rounded-lg" />
+                <button
+                  type="button"
+                  onClick={() => setFoto(null)}
+                  aria-label="remover foto"
+                  className="absolute top-2 right-2 rounded-full bg-tinta/80 p-1.5 text-creme backdrop-blur"
+                >
+                  <Trash2 size={12} strokeWidth={1.6} />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => fotoRef.current?.click()}
+                className="w-full flex items-center justify-center gap-2 rounded-md border border-dashed border-[var(--hair-strong)] py-6 text-soft transition-elegant hover:bg-[var(--surface-soft)] active:scale-95"
+              >
+                <Camera size={16} strokeWidth={1.4} />
+                <span className="text-[12.5px]">tirar foto</span>
+              </button>
+            )}
+            <input
+              ref={fotoRef}
+              type="file"
+              accept="image/*"
+              
+              onChange={onFoto}
+              className="hidden"
+            />
+            <p className="text-faint mt-1.5 text-[10.5px] leading-relaxed">
+              tira sempre na mesma posição e luz para o antes/depois ser comparável.
+            </p>
+          </div>
         </div>
 
         <div className="mt-6 flex gap-2">

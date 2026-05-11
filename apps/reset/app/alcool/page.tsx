@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { Wine } from 'lucide-react'
-import { addAlcoolRegisto, getAlcoolRegistos, type AlcoolRegisto } from '@/lib/storage'
+import { Wine, Check, Sparkles } from 'lucide-react'
+import { addAlcoolRegisto, getAlcoolRegistos, diasSemAlcool, type AlcoolRegisto } from '@/lib/storage'
 import { getProfile } from '@/lib/profile'
+import { isoDate } from '@/lib/dates'
 import { cn } from '@/lib/utils'
 
 const EMOCOES_BASE = ['cansaço', 'stress', 'aborrecimento', 'tristeza', 'celebração', 'social', 'raiva', 'ansiedade'] as const
@@ -15,16 +16,35 @@ export default function AlcoolPage() {
   const [unidades, setUnidades] = useState<number>(0)
   const [decidiu, setDecidiu] = useState<boolean | null>(null)
   const [opcoes, setOpcoes] = useState<string[]>(EMOCOES_BASE.slice())
+  const [streakLimpo, setStreakLimpo] = useState(0)
+  const [hojeJaLimpo, setHojeJaLimpo] = useState(false)
+
+  const refresh = () => {
+    const regs = getAlcoolRegistos()
+    setRegistos(regs)
+    setStreakLimpo(diasSemAlcool())
+    const hoje = isoDate()
+    setHojeJaLimpo(regs.some(r => r.timestamp.slice(0, 10) === hoje))
+  }
 
   useEffect(() => {
-    setRegistos(getAlcoolRegistos())
+    refresh()
     const p = getProfile()
     const merged = Array.from(new Set([...EMOCOES_BASE, ...p.gatilhosAlcool]))
     setOpcoes(merged)
-    const refresh = () => setRegistos(getAlcoolRegistos())
     window.addEventListener('fenixfit:storage', refresh)
     return () => window.removeEventListener('fenixfit:storage', refresh)
   }, [])
+
+  const marcarDiaLimpo = () => {
+    addAlcoolRegisto({
+      emocao: 'neutro',
+      gatilho: '',
+      unidades: 0,
+      decidiuBeber: false
+    })
+    refresh()
+  }
 
   const padroes = useMemo(() => {
     if (registos.length < 5) return null
@@ -60,6 +80,31 @@ export default function AlcoolPage() {
         </h1>
         <div className="h-px w-12 bg-ouro" aria-hidden />
       </header>
+
+      {/* dias sem álcool · marcar hoje sem precisar caderno */}
+      <section className="card-feature space-y-3">
+        <div className="flex items-baseline justify-between">
+          <span className="label-cap">dias limpos</span>
+          {hojeJaLimpo ? <span className="text-[10px] text-oliva tracking-cap uppercase">hoje ✓</span> : null}
+        </div>
+        <div className="flex items-baseline gap-2">
+          <p className={cn('editorial-num text-[64px] leading-none tnum', streakLimpo > 0 ? 'text-oliva' : 'text-soft')}>
+            {streakLimpo}
+          </p>
+          <span className="text-faint text-[14px]">dias sem copo</span>
+        </div>
+        {!hojeJaLimpo ? (
+          <button
+            onClick={marcarDiaLimpo}
+            className="w-full flex items-center justify-center gap-2 rounded-md bg-oliva/15 py-3 text-[12.5px] text-oliva transition-elegant active:scale-95 hover:bg-oliva/25"
+          >
+            <Check size={14} strokeWidth={1.6} />
+            marcar hoje · sem álcool
+          </button>
+        ) : (
+          <p className="text-faint text-[11px] leading-relaxed text-center">hoje já registado · volta amanhã.</p>
+        )}
+      </section>
 
       <section className="card-feature space-y-5">
         <div>

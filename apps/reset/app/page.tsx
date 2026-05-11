@@ -2,11 +2,19 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { ArrowUpRight, Scale, Clock, Sparkles } from 'lucide-react'
+import { ArrowUpRight, UtensilsCrossed } from 'lucide-react'
 import SmartNow from '@/components/SmartNow'
 import AnchorChecklist from '@/components/AnchorChecklist'
 import JanelaTimer from '@/components/JanelaTimer'
 import MorningPanel from '@/components/MorningPanel'
+import WellnessQuickPanel from '@/components/WellnessQuickPanel'
+import SonoDetailCard from '@/components/SonoDetailCard'
+import PeriSintomasCard from '@/components/PeriSintomasCard'
+import MarcoCard from '@/components/MarcoCard'
+import PlanoResumoCard from '@/components/PlanoResumoCard'
+import CoachAlertasCard from '@/components/CoachAlertasCard'
+import AlcoolQuickCard from '@/components/AlcoolQuickCard'
+import { DonutMacro, DistribuicaoBar } from '@/components/DonutMacro'
 import CoachGreetingCard from '@/components/CoachGreetingCard'
 import QuickTools from '@/components/QuickTools'
 import SafeBlock from '@/components/SafeBlock'
@@ -21,16 +29,12 @@ import {
 import {
   streakAncoras,
   diasSemAlcool,
-  variacaoCintura,
-  sonoMedio,
   pesoUltimo,
   variacaoPeso,
   jejumActualHoras,
-  diaActualCiclo,
   faseActualCiclo,
   nomeFase,
-  savePeso,
-  getPesoHoje
+  macrosDoDia
 } from '@/lib/storage'
 import { getProfile } from '@/lib/profile'
 import { cn } from '@/lib/utils'
@@ -38,40 +42,32 @@ import { cn } from '@/lib/utils'
 export default function HomePage() {
   const [pronto, setPronto] = useState(false)
   const [nome, setNome] = useState('')
-  const [sexo, setSexo] = useState<'F' | 'M' | 'O'>('F')
-  const [pesoInput, setPesoInput] = useState('')
-  const [pesoHojeReg, setPesoHojeReg] = useState<number | null>(null)
   const [tick, setTick] = useState(0)
   const [metrics, setMetrics] = useState({
     streak: 0,
     semAlcool: 0,
-    cintura: null as number | null,
-    sono: null as number | null,
     pesoActual: null as number | null,
     pesoVar: null as number | null,
-    diaCiclo: null as number | null,
     fase: null as ReturnType<typeof faseActualCiclo>,
-    jejum: null as ReturnType<typeof jejumActualHoras>
+    jejum: null as ReturnType<typeof jejumActualHoras>,
+    macros: { proteina: 0, carbo: 0, gordura: 0, calorias: 0, refeicoes: 0 },
+    metas: { calorias: null as number | null, proteinaG: null as number | null, carboG: null as number | null, gorduraG: null as number | null }
   })
 
   useEffect(() => {
     const refresh = () => {
       const p = getProfile()
       setNome(p.nome)
-      setSexo(p.sexo)
-      const ph = getPesoHoje()
-      setPesoHojeReg(ph?.peso ?? null)
       const v = variacaoPeso()
       setMetrics({
         streak: streakAncoras(),
         semAlcool: diasSemAlcool(),
-        cintura: variacaoCintura(),
-        sono: sonoMedio(),
         pesoActual: pesoUltimo(),
         pesoVar: v.semana,
-        diaCiclo: diaActualCiclo(),
         fase: faseActualCiclo(),
-        jejum: jejumActualHoras()
+        jejum: jejumActualHoras(),
+        macros: macrosDoDia(),
+        metas: p.metas
       })
     }
     refresh()
@@ -98,38 +94,47 @@ export default function HomePage() {
   const hora = hoje.getHours()
   const saudacao = hora < 6 ? 'boa madrugada' : hora < 12 ? 'bom dia' : hora < 19 ? 'boa tarde' : 'boa noite'
 
-  const submitPeso = () => {
-    const n = Number(pesoInput)
-    if (isNaN(n) || n < 30 || n > 250) return
-    const horaStr = `${String(hoje.getHours()).padStart(2, '0')}:${String(hoje.getMinutes()).padStart(2, '0')}`
-    savePeso({ date: hoje.toISOString().slice(0, 10), peso: n, cintura: null, hora: horaStr, notas: '' })
-    setPesoInput('')
-  }
-
   return (
     <div className="space-y-9 animate-fade-in">
       {/* MARCA + SAUDAÇÃO */}
       <header className="space-y-1 pt-4">
+        {/* Marca · logo + wordmark */}
         <div className="flex items-center justify-between">
-          {/* Wordmark editorial */}
-          <span className="font-serif text-[14px] tracking-editorial italic text-ouro" style={{ fontWeight: 300, letterSpacing: '-0.02em' }}>
-            fénixfit
-          </span>
-          <p className="label-soft">{formatarData(hoje).toLowerCase()}</p>
+          <div className="flex items-center gap-2.5">
+            <img
+              src="/icon.svg"
+              alt=""
+              aria-hidden
+              className="h-8 w-8 rounded-md"
+            />
+            <span
+              className="font-serif text-[18px] tracking-editorial text-tinta dark:text-creme"
+              style={{ fontWeight: 400, letterSpacing: '-0.01em' }}
+            >
+              FÉNIX<span className="text-ouro">FIT</span>
+            </span>
+          </div>
+          <p className="label-soft">{formatarData(hoje)}</p>
         </div>
-        <h1 className="font-serif text-[34px] font-light leading-[1.1] tracking-editorial sm:text-[40px] pt-3">
-          {saudacao}, <span className="italic">{nome.toLowerCase() || 'tu'}</span>.
+        <h1 className="font-serif text-[34px] font-light leading-[1.1] tracking-editorial sm:text-[40px] pt-5">
+          {saudacao.charAt(0).toUpperCase() + saudacao.slice(1)}, <span className="italic">{nome || 'tu'}</span>.
         </h1>
         <div className="h-px w-12 bg-ouro mt-2" aria-hidden />
       </header>
 
       {/* RESUMO EDITORIAL */}
-      {pronto && status === 'durante' ? (
+      {pronto ? (
         <ResumoEditorial
           dia={dia}
           metrics={metrics}
         />
       ) : null}
+
+      {/* PAINEL MATINAL · primeiro · o que ela vem registar logo de manhã */}
+      {pronto ? <SafeBlock nome="MorningPanel"><MorningPanel /></SafeBlock> : null}
+
+      {/* ACESSO RÁPIDO · ferramentas mais usadas */}
+      {pronto ? <SafeBlock nome="QuickTools"><QuickTools /></SafeBlock> : null}
 
       {status === 'antes' ? (
         <section className="card-feature text-center">
@@ -143,17 +148,20 @@ export default function HomePage() {
         </section>
       ) : null}
 
+      {/* PLANO · prioridade · onde queres chegar */}
+      {pronto ? <SafeBlock nome="PlanoResumo"><PlanoResumoCard /></SafeBlock> : null}
+
+      {/* ALERTAS PROACTIVOS · a coach nota padrões e sugere */}
+      {pronto ? <SafeBlock nome="CoachAlertas"><CoachAlertasCard /></SafeBlock> : null}
+
+      {/* MARCO · selo animado quando atinges Dia 7/14/21/30/45/60 */}
+      {pronto ? <SafeBlock nome="Marco"><MarcoCard /></SafeBlock> : null}
+
       {/* COACH · saudação do dia */}
-      {pronto && status === 'durante' ? <SafeBlock nome="CoachGreeting"><CoachGreetingCard /></SafeBlock> : null}
-
-      {/* ACESSO RÁPIDO · ferramentas principais */}
-      {status === 'durante' ? <SafeBlock nome="QuickTools"><QuickTools /></SafeBlock> : null}
-
-      {/* PAINEL MATINAL · ferramentas perto */}
-      {status === 'durante' ? <SafeBlock nome="MorningPanel"><MorningPanel /></SafeBlock> : null}
+      {pronto ? <SafeBlock nome="CoachGreeting"><CoachGreetingCard /></SafeBlock> : null}
 
       {/* SmartNow contextual */}
-      {status === 'durante' ? <SafeBlock nome="SmartNow"><SmartNow /></SafeBlock> : null}
+      {pronto ? <SafeBlock nome="SmartNow"><SmartNow /></SafeBlock> : null}
 
       {/* MANTRA */}
       <section className="text-center px-2">
@@ -165,102 +173,54 @@ export default function HomePage() {
       </section>
 
       {/* JANELA · adaptativa com timer */}
-      {pronto && status === 'durante' ? <SafeBlock nome="JanelaTimer"><JanelaTimer /></SafeBlock> : null}
+      {pronto ? <SafeBlock nome="JanelaTimer"><JanelaTimer /></SafeBlock> : null}
 
-      {/* PESO QUICK ADD */}
-      {status === 'durante' ? (
-        <section className="card-solid">
+      {/* MACROS · refeições do dia */}
+      {pronto ? (
+        <Link href="/refeicoes" className="card-solid block transition-elegant hover:bg-[var(--surface)]">
           <div className="flex items-baseline justify-between">
             <div className="flex items-center gap-2">
-              <Scale size={14} strokeWidth={1.4} className="text-ouro" />
-              <span className="label-cap">peso · hoje</span>
+              <UtensilsCrossed size={14} strokeWidth={1.4} className="text-ouro" />
+              <span className="label-cap">refeições · hoje</span>
             </div>
-            {metrics.pesoVar !== null ? (
-              <span className={cn(
-                'text-[11px] tnum',
-                metrics.pesoVar > 0 ? 'text-terracota' : metrics.pesoVar < 0 ? 'text-oliva' : 'text-faint'
-              )}>
-                {metrics.pesoVar > 0 ? '+' : ''}{metrics.pesoVar} kg / 7d
-              </span>
-            ) : null}
+            <span className="text-faint text-[11px] tnum">{metrics.macros.refeicoes}× hoje</span>
           </div>
-
-          {pesoHojeReg !== null ? (
-            <div className="mt-3 flex items-baseline justify-between">
-              <p className="editorial-num text-[40px] leading-none">{pesoHojeReg}<span className="text-faint text-[14px] ml-1">kg</span></p>
-              <Link href="/peso" className="btn-ghost text-[11px]">ver tendência →</Link>
-            </div>
+          <div className="mt-3 grid grid-cols-4 gap-1 place-items-center">
+            <DonutMacro label="kcal" valor={metrics.macros.calorias} alvo={metrics.metas.calorias} unidade="" tamanho={62} />
+            <DonutMacro label="proteína" valor={metrics.macros.proteina} alvo={metrics.metas.proteinaG} tamanho={62} />
+            <DonutMacro label="carbo" valor={metrics.macros.carbo} alvo={metrics.metas.carboG} tamanho={62} />
+            <DonutMacro label="gordura" valor={metrics.macros.gordura} alvo={metrics.metas.gorduraG} tamanho={62} />
+          </div>
+          {metrics.macros.calorias > 0 ? (
+            <DistribuicaoBar p={metrics.macros.proteina} c={metrics.macros.carbo} g={metrics.macros.gordura} />
+          ) : null}
+          {metrics.macros.refeicoes > 0 ? (
+            <p className="text-faint mt-2 text-[10.5px] tracking-cap uppercase">ver detalhe →</p>
           ) : (
-            <div className="mt-3 flex items-baseline gap-2">
-              <input
-                type="number"
-                inputMode="decimal"
-                step="0.1"
-                min="30"
-                max="250"
-                value={pesoInput}
-                onChange={e => setPesoInput(e.target.value)}
-                placeholder="—"
-                className="editorial-num w-24 border-0 bg-transparent text-[40px] tnum focus:outline-none"
-                style={{ caretColor: 'var(--ouro)' }}
-              />
-              <span className="text-faint text-[14px] pb-2">kg</span>
-              <button
-                onClick={submitPeso}
-                disabled={!pesoInput}
-                className="ml-auto btn-primary px-4 py-2 text-[12px]"
-              >
-                registar
-              </button>
-            </div>
+            <p className="text-soft mt-3 text-[12.5px] leading-relaxed">
+              ainda sem refeições hoje. <span className="italic text-ouro">diz à coach o que comeste</span>.
+            </p>
           )}
-        </section>
-      ) : null}
-
-      {/* CICLO chip */}
-      {pronto && sexo !== 'M' && metrics.diaCiclo !== null && metrics.fase !== null ? (
-        <Link href="/ciclo" className="card flex items-center justify-between gap-3 transition-elegant hover:bg-[var(--surface)]">
-          <div>
-            <span className="label-cap">ciclo · dia {metrics.diaCiclo}</span>
-            <p className="font-serif text-[18px] mt-1 italic text-ouro tracking-editorial">{nomeFase(metrics.fase)}</p>
-          </div>
-          <ArrowUpRight size={16} strokeWidth={1.3} className="text-faint" />
         </Link>
       ) : null}
 
       {/* ÂNCORAS */}
-      {status === 'durante' ? <AnchorChecklist /> : null}
+      {pronto ? <AnchorChecklist /> : null}
+
+      {/* CORPO · água, suplementos, trânsito */}
+      {pronto ? <SafeBlock nome="WellnessQuickPanel"><WellnessQuickPanel /></SafeBlock> : null}
+
+      {/* ÁLCOOL · streak + marcar dia limpo */}
+      {pronto ? <SafeBlock nome="AlcoolQuick"><AlcoolQuickCard /></SafeBlock> : null}
+
+      {/* SONO em detalhe */}
+      {pronto ? <SafeBlock nome="SonoDetail"><SonoDetailCard /></SafeBlock> : null}
+
+      {/* SINTOMAS peri (só F/O) */}
+      {pronto ? <SafeBlock nome="PeriSintomas"><PeriSintomasCard /></SafeBlock> : null}
 
       {/* MÉTRICAS */}
-      {pronto && status === 'durante' ? (
-        <section className="grid grid-cols-2 gap-3">
-          <Big
-            label="constância"
-            value={metrics.streak}
-            unit={metrics.streak === 1 ? 'dia' : 'dias'}
-            hint="≥ 5 âncoras"
-          />
-          <Big
-            label="sem álcool"
-            value={metrics.semAlcool}
-            unit={metrics.semAlcool === 1 ? 'dia' : 'dias'}
-          />
-          <Big
-            label="cintura"
-            value={metrics.cintura === null ? '—' : `${metrics.cintura > 0 ? '+' : ''}${metrics.cintura}`}
-            unit={metrics.cintura === null ? '' : 'cm'}
-            hint="desde início"
-          />
-          <Big
-            label="sono"
-            value={metrics.sono === null ? '—' : metrics.sono}
-            unit={metrics.sono === null ? '' : 'h'}
-            hint="média 7d"
-          />
-        </section>
-      ) : null}
-
-      {status === 'durante' ? (
+      {pronto ? (
         <Link
           href="/metricas"
           className="card flex items-center justify-between gap-4 transition-elegant hover:bg-[var(--surface)]"
@@ -268,7 +228,7 @@ export default function HomePage() {
           <div>
             <span className="label-cap">aprofundar</span>
             <p className="mt-1 font-serif text-[18px]">ver todos os sinais</p>
-            <p className="text-faint text-[12px]">heatmap · padrões · gráficos</p>
+            <p className="text-faint text-[12px]">streak · sem copo · cintura · sono · heatmap</p>
           </div>
           <ArrowUpRight size={18} strokeWidth={1.4} className="text-faint" />
         </Link>
@@ -301,15 +261,25 @@ function ResumoEditorial({
   )
 }
 
-function Big({ label, value, unit, hint }: { label: string; value: number | string; unit?: string; hint?: string }) {
+function MacroMini({ label, valor, alvo }: { label: string; valor: number; alvo: number | null }) {
+  if (alvo === null || alvo <= 0) {
+    return (
+      <div>
+        <p className="editorial-num text-[20px] tnum leading-none text-soft">{Math.round(valor)}</p>
+        <p className="text-faint text-[9.5px] uppercase tracking-cap mt-1">{label}</p>
+        <p className="text-faint text-[8.5px] tnum">—</p>
+      </div>
+    )
+  }
+  const pct = Math.round((valor / alvo) * 100)
+  const acima = valor > alvo
+  const cor = acima ? 'text-ouro' : valor >= alvo * 0.7 ? 'text-soft' : 'text-faint'
   return (
-    <div className="card-solid">
-      <span className="label-cap">{label}</span>
-      <p className="editorial-num mt-3 text-[40px] leading-none">
-        {value}
-        {unit ? <span className="ml-1 text-[14px] text-faint">{unit}</span> : null}
-      </p>
-      {hint ? <p className="text-faint mt-2 text-[10px] tracking-cap uppercase">{hint}</p> : null}
+    <div>
+      <p className={`editorial-num text-[20px] tnum leading-none ${cor}`}>{Math.round(valor)}</p>
+      <p className="text-faint text-[9.5px] uppercase tracking-cap mt-1">{label}</p>
+      <p className="text-faint text-[8.5px] tnum">{pct}%</p>
     </div>
   )
 }
+

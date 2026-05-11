@@ -5,12 +5,15 @@ import { Sun, Moon, Monitor, Bell, Download, Upload, RotateCcw, Cloud, CloudOff,
 import { useTheme } from '@/components/ThemeProvider'
 import { PALETAS } from '@/lib/palettes'
 import { useAuth } from '@/components/AuthGate'
-import { getProfile, saveProfile, type Profile } from '@/lib/profile'
+import { getProfile, saveProfile, sugerirMetas, type Profile, type Metas } from '@/lib/profile'
+import { pesoUltimo } from '@/lib/storage'
 import BackButton from '@/components/BackButton'
 import { exportarTudo, importarTudo, limparTudoLocal } from '@/lib/storage'
 import { hidratarTudo, lastSyncTime } from '@/lib/sync'
 import { syncProfile } from '@/lib/sync'
 import { getLembretes, saveLembretes, type Lembrete, pedirPermissao, permissaoActual, reagendarLembretes, notificacaoSuportada, LEMBRETES_DEFAULT } from '@/lib/notifications'
+import { ANCORAS_POOL, CATEGORIAS_LABEL, type Ancora, type CategoriaAncora } from '@/lib/data'
+import { Plus, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export default function DefinicoesPage() {
@@ -105,7 +108,7 @@ export default function DefinicoesPage() {
 
       <header className="space-y-2 pt-4">
         <p className="label-soft">definições</p>
-        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">ajustar</h1>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">Ajustar</h1>
         <div className="h-px w-12 bg-ouro" aria-hidden />
       </header>
 
@@ -122,6 +125,61 @@ export default function DefinicoesPage() {
               onChange={e => guardarPerfil({ nome: e.target.value })}
               className="input-base"
             />
+          </Field>
+          {(perfil.alturaCm === null || perfil.idade === null || perfil.nivelActividade === null) ? (
+            <p className="rounded-md bg-ouro/10 p-2.5 text-[11.5px] text-ouro leading-relaxed">
+              ⚠ falta altura, idade ou nível de actividade · sem isto, o cálculo de calorias é heurística grosseira (não Mifflin-St Jeor).
+            </p>
+          ) : null}
+          <div className="grid grid-cols-3 gap-3">
+            <Field label="Sexo">
+              <select
+                value={perfil.sexo}
+                onChange={e => guardarPerfil({ sexo: e.target.value as 'F' | 'M' | 'O' })}
+                className="input-base"
+              >
+                <option value="F">Feminino</option>
+                <option value="M">Masculino</option>
+                <option value="O">Outro</option>
+              </select>
+            </Field>
+            <Field label="Idade · anos">
+              <input
+                type="number"
+                inputMode="numeric"
+                min="10"
+                max="100"
+                value={perfil.idade ?? ''}
+                onChange={e => guardarPerfil({ idade: e.target.value ? Number(e.target.value) : null })}
+                className="input-base tnum"
+                placeholder="—"
+              />
+            </Field>
+            <Field label="Altura · cm">
+              <input
+                type="number"
+                inputMode="numeric"
+                min="100"
+                max="220"
+                value={perfil.alturaCm ?? ''}
+                onChange={e => guardarPerfil({ alturaCm: e.target.value ? Number(e.target.value) : null })}
+                className="input-base tnum"
+                placeholder="—"
+              />
+            </Field>
+          </div>
+          <Field label="Nível de actividade habitual">
+            <select
+              value={perfil.nivelActividade ?? ''}
+              onChange={e => guardarPerfil({ nivelActividade: (e.target.value || null) as Profile['nivelActividade'] })}
+              className="input-base"
+            >
+              <option value="">— escolhe —</option>
+              <option value="sedentaria">sedentária · sem treino · trabalho ao computador</option>
+              <option value="leve">leve · 1-3× treino/sem · alguma actividade</option>
+              <option value="moderada">moderada · 3-5× treino/sem</option>
+              <option value="activa">activa · 6+× treino/sem · trabalho físico</option>
+            </select>
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Acordar">
@@ -140,6 +198,30 @@ export default function DefinicoesPage() {
                 className="input-base"
               />
             </Field>
+          </div>
+        </div>
+      </section>
+
+      {/* ÂNCORAS */}
+      <AncorasEditor perfil={perfil} setPerfil={setPerfil} />
+
+      {/* METAS */}
+      <MetasSection perfil={perfil} guardarPerfil={guardarPerfil} />
+
+      {/* MODO VIAGEM */}
+      <section className="space-y-3">
+        <span className="label-cap">Modo viagem</span>
+        <div className="card-solid flex items-start gap-3">
+          <Toggle ativo={perfil.modoViagem} onChange={() => guardarPerfil({ modoViagem: !perfil.modoViagem })} />
+          <div className="min-w-0 flex-1">
+            <p className="font-serif text-[15px] tracking-editorial">
+              {perfil.modoViagem ? 'em viagem · regras suaves' : 'rotina normal'}
+            </p>
+            <p className="text-faint text-[11.5px] mt-1 leading-relaxed">
+              {perfil.modoViagem
+                ? 'a coach sabe que estás fora. não cobra streak. propõe ajustes ao que é possível no contexto.'
+                : 'liga quando estiveres fora. a coach amacia exigências e foca-te no que controlas.'}
+            </p>
           </div>
         </div>
       </section>
@@ -323,6 +405,160 @@ export default function DefinicoesPage() {
   )
 }
 
+function MetasSection({ perfil, guardarPerfil }: { perfil: Profile; guardarPerfil: (p: Partial<Profile>) => void }) {
+  const m = perfil.metas
+  const [valor, setValor] = useState({
+    calorias: m.calorias !== null ? String(m.calorias) : '',
+    proteinaG: m.proteinaG !== null ? String(m.proteinaG) : '',
+    carboG: m.carboG !== null ? String(m.carboG) : '',
+    gorduraG: m.gorduraG !== null ? String(m.gorduraG) : ''
+  })
+  const [objectivo, setObjectivo] = useState<'manter' | 'perder_devagar' | 'perder' | 'ganhar'>('perder_devagar')
+  const [actividade, setActividade] = useState<'sedentaria' | 'leve' | 'activa'>('leve')
+
+  useEffect(() => {
+    setValor({
+      calorias: m.calorias !== null ? String(m.calorias) : '',
+      proteinaG: m.proteinaG !== null ? String(m.proteinaG) : '',
+      carboG: m.carboG !== null ? String(m.carboG) : '',
+      gorduraG: m.gorduraG !== null ? String(m.gorduraG) : ''
+    })
+  }, [m.calorias, m.proteinaG, m.carboG, m.gorduraG])
+
+  const guardar = (campo: keyof Metas, v: string) => {
+    setValor(prev => ({ ...prev, [campo]: v }))
+    const n = v === '' ? null : Number(v)
+    if (v !== '' && (isNaN(n as number) || (n as number) < 0)) return
+    guardarPerfil({ metas: { ...m, [campo]: n } })
+  }
+
+  const sugerir = () => {
+    const peso = pesoUltimo() ?? perfil.pesoInicial
+    if (!peso) {
+      window.alert('precisa de pelo menos um peso registado para sugerir.')
+      return
+    }
+    const sugestao = sugerirMetas({ pesoKg: peso, objectivo, actividade })
+    setValor({
+      calorias: String(sugestao.calorias),
+      proteinaG: String(sugestao.proteinaG),
+      carboG: String(sugestao.carboG),
+      gorduraG: String(sugestao.gorduraG)
+    })
+    guardarPerfil({ metas: sugestao })
+  }
+
+  const limpar = () => {
+    setValor({ calorias: '', proteinaG: '', carboG: '', gorduraG: '' })
+    guardarPerfil({ metas: { calorias: null, proteinaG: null, carboG: null, gorduraG: null } })
+  }
+
+  return (
+    <section className="space-y-3">
+      <span className="label-cap">Metas diárias</span>
+      <div className="card-solid space-y-4">
+        <p className="text-faint text-[11.5px] leading-relaxed">
+          tu defines o que faz sentido. ajusta com o tempo. a coach usa estes números como referência, não como regra.
+        </p>
+
+        <div className="grid grid-cols-4 gap-2">
+          <Field label="kcal">
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              value={valor.calorias}
+              onChange={e => guardar('calorias', e.target.value)}
+              placeholder="—"
+              className="input-base text-center tnum"
+            />
+          </Field>
+          <Field label="Prot · g">
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              value={valor.proteinaG}
+              onChange={e => guardar('proteinaG', e.target.value)}
+              placeholder="—"
+              className="input-base text-center tnum"
+            />
+          </Field>
+          <Field label="Carb · g">
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              value={valor.carboG}
+              onChange={e => guardar('carboG', e.target.value)}
+              placeholder="—"
+              className="input-base text-center tnum"
+            />
+          </Field>
+          <Field label="Gord · g">
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              value={valor.gorduraG}
+              onChange={e => guardar('gorduraG', e.target.value)}
+              placeholder="—"
+              className="input-base text-center tnum"
+            />
+          </Field>
+        </div>
+
+        <details className="rounded-lg bg-[var(--surface-soft)] p-3">
+          <summary className="label-cap cursor-pointer">sugerir números</summary>
+          <div className="space-y-3 pt-3">
+            <Field label="Objectivo">
+              <select
+                value={objectivo}
+                onChange={e => setObjectivo(e.target.value as typeof objectivo)}
+                className="input-base"
+              >
+                <option value="manter">manter peso</option>
+                <option value="perder_devagar">perder devagar</option>
+                <option value="perder">perder</option>
+                <option value="ganhar">ganhar massa</option>
+              </select>
+            </Field>
+            <Field label="Actividade média">
+              <select
+                value={actividade}
+                onChange={e => setActividade(e.target.value as typeof actividade)}
+                className="input-base"
+              >
+                <option value="sedentaria">sedentária (sem treino)</option>
+                <option value="leve">leve (treino 2-3×/sem)</option>
+                <option value="activa">activa (treino 4+×/sem)</option>
+              </select>
+            </Field>
+            <button
+              onClick={sugerir}
+              className="btn-primary w-full py-2.5 text-[12.5px]"
+            >
+              calcular sugestão
+            </button>
+            <p className="text-faint text-[10.5px] leading-relaxed">
+              cálculo simples baseado em peso · 1.6g proteína/kg, 0.9g gordura/kg. ajusta depois pelos resultados.
+            </p>
+          </div>
+        </details>
+
+        {(m.calorias !== null || m.proteinaG !== null) ? (
+          <button
+            onClick={limpar}
+            className="text-faint text-[11px] hover:text-terracota"
+          >
+            limpar metas
+          </button>
+        ) : null}
+      </div>
+    </section>
+  )
+}
+
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
@@ -353,3 +589,157 @@ function Toggle({ ativo, onChange }: { ativo: boolean; onChange: () => void }) {
     </button>
   )
 }
+
+function AncorasEditor({ perfil, setPerfil }: { perfil: Profile; setPerfil: (p: Profile) => void }) {
+  const [novoTitulo, setNovoTitulo] = useState('')
+  const [novoDetalhe, setNovoDetalhe] = useState('')
+  const [novaCategoria, setNovaCategoria] = useState<CategoriaAncora>('corpo')
+  const [adicionando, setAdicionando] = useState(false)
+
+  const activas = new Set(perfil.ancorasActivas ?? [])
+  const todas: Ancora[] = [...ANCORAS_POOL, ...(perfil.ancorasCustom ?? [])]
+  const porCategoria: Record<CategoriaAncora, Ancora[]> = { corpo: [], mente: [], emocao: [], mundo: [] }
+  todas.forEach(a => {
+    const cat = a.categoria ?? 'corpo'
+    porCategoria[cat].push(a)
+  })
+
+  const toggle = (id: string) => {
+    const novas = activas.has(id)
+      ? perfil.ancorasActivas.filter(x => x !== id)
+      : [...perfil.ancorasActivas, id]
+    const novoPerfil = saveProfile({ ancorasActivas: novas })
+    setPerfil(novoPerfil)
+    void syncProfile(novoPerfil as unknown as Record<string, unknown>).catch(() => {})
+  }
+
+  const adicionar = () => {
+    const titulo = novoTitulo.trim()
+    if (!titulo) return
+    const id = 'custom_' + crypto.randomUUID().slice(0, 8)
+    const nova: Ancora = { id, titulo, detalhe: novoDetalhe.trim(), categoria: novaCategoria }
+    const novoPerfil = saveProfile({
+      ancorasCustom: [...(perfil.ancorasCustom ?? []), nova],
+      ancorasActivas: [...perfil.ancorasActivas, id]
+    })
+    setPerfil(novoPerfil)
+    void syncProfile(novoPerfil as unknown as Record<string, unknown>).catch(() => {})
+    setNovoTitulo('')
+    setNovoDetalhe('')
+    setAdicionando(false)
+  }
+
+  const apagarCustom = (id: string) => {
+    if (!window.confirm('Apagar âncora?')) return
+    const novoPerfil = saveProfile({
+      ancorasCustom: (perfil.ancorasCustom ?? []).filter(a => a.id !== id),
+      ancorasActivas: perfil.ancorasActivas.filter(x => x !== id)
+    })
+    setPerfil(novoPerfil)
+    void syncProfile(novoPerfil as unknown as Record<string, unknown>).catch(() => {})
+  }
+
+  return (
+    <section className="space-y-3">
+      <div className="flex items-baseline justify-between">
+        <span className="label-cap">Âncoras</span>
+        <span className="text-faint text-[11px] tnum">{activas.size} activas</span>
+      </div>
+      <p className="text-faint text-[11px] leading-relaxed">
+        escolhe as que fazem sentido nesta fase. podes trocar quando quiseres.
+      </p>
+      <div className="card-solid space-y-4 !p-4">
+        {(Object.keys(porCategoria) as CategoriaAncora[]).map(cat => (
+          <div key={cat} className="space-y-1.5">
+            <span className="label-cap text-[10px]">{CATEGORIAS_LABEL[cat]}</span>
+            <ul className="space-y-1">
+              {porCategoria[cat].map(a => {
+                const active = activas.has(a.id)
+                const custom = a.id.startsWith('custom_')
+                return (
+                  <li key={a.id} className="flex items-start gap-2">
+                    <button
+                      onClick={() => toggle(a.id)}
+                      aria-pressed={active}
+                      className={cn(
+                        'flex-1 flex items-start gap-2 rounded-md px-3 py-2 text-left transition-elegant active:scale-[0.99]',
+                        active ? 'bg-tinta/5 dark:bg-ouro/10' : 'hover:bg-[var(--surface-soft)]'
+                      )}
+                    >
+                      <span
+                        aria-hidden
+                        className={cn(
+                          'mt-0.5 h-4 w-4 shrink-0 rounded-full transition-elegant',
+                          active ? 'bg-ouro' : 'border border-[var(--hair-strong)]'
+                        )}
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className={cn('block text-[13.5px]', active ? 'text-tinta dark:text-creme' : 'text-soft')}>{a.titulo}</span>
+                        {a.detalhe ? <span className="text-faint mt-0.5 block text-[11px]">{a.detalhe}</span> : null}
+                      </span>
+                    </button>
+                    {custom ? (
+                      <button
+                        onClick={() => apagarCustom(a.id)}
+                        aria-label="apagar âncora"
+                        className="text-faint hover:text-terracota p-1 active:scale-90"
+                      >
+                        <Trash2 size={13} strokeWidth={1.4} />
+                      </button>
+                    ) : null}
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        ))}
+
+        {adicionando ? (
+          <div className="space-y-2 border-t border-[var(--hair)] pt-4">
+            <input
+              autoFocus
+              value={novoTitulo}
+              onChange={e => setNovoTitulo(e.target.value)}
+              placeholder="título · ex: telefonar à mãe"
+              className="input-base text-[13px]"
+              maxLength={60}
+            />
+            <input
+              value={novoDetalhe}
+              onChange={e => setNovoDetalhe(e.target.value)}
+              placeholder="detalhe (opcional)"
+              className="input-base text-[13px]"
+              maxLength={120}
+            />
+            <div className="flex gap-1.5">
+              {(Object.keys(CATEGORIAS_LABEL) as CategoriaAncora[]).map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setNovaCategoria(cat)}
+                  className={cn(
+                    'flex-1 rounded-md py-1.5 text-[11px] transition-elegant',
+                    novaCategoria === cat ? 'bg-tinta text-[var(--bg)] dark:bg-ouro dark:text-tinta' : 'shadow-hair text-soft'
+                  )}
+                >
+                  {CATEGORIAS_LABEL[cat]}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => { setAdicionando(false); setNovoTitulo(''); setNovoDetalhe('') }} className="btn-ghost flex-1 py-2 text-[12px]">cancelar</button>
+              <button onClick={adicionar} disabled={!novoTitulo.trim()} className="btn-primary flex-1 py-2 text-[12px] disabled:opacity-30">guardar</button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setAdicionando(true)}
+            className="flex w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-[var(--hair-strong)] py-2.5 text-[12px] text-soft transition-elegant hover:bg-[var(--surface-soft)]"
+          >
+            <Plus size={13} strokeWidth={1.4} /> adicionar âncora minha
+          </button>
+        )}
+      </div>
+    </section>
+  )
+}
+

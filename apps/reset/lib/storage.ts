@@ -1,7 +1,7 @@
 'use client'
 
 import { isoDate } from './dates'
-import { syncDia, syncAlcool, syncMedida, syncDesabafo, syncInsight, syncPeso, syncJejum, syncCiclo, syncCoachMensagem } from './sync'
+import { syncDia, syncAlcool, syncMedida, syncDesabafo, syncInsight, syncPeso, syncJejum, syncCiclo, syncCoachMensagem, syncRefeicao, removeRefeicaoSync, removeJejumSync } from './sync'
 
 const PREFIX = 'fenixfit:'
 
@@ -14,6 +14,15 @@ export type DiaLog = {
   energia: number | null
   humor: number | null
   notas: string
+  aguaCopos: number
+  suplementos: string[]
+  transitoIntestinal: 'sim' | 'nao' | null
+  horaDeitar: string | null
+  qualidadeSono: number | null
+  acordouVezes: number | null
+  sintomasPeri: string[]
+  steps: number | null
+  rhr: number | null
 }
 
 export type AlcoolRegisto = {
@@ -35,6 +44,7 @@ export type MedidaRegisto = {
   peso: number | null
   sentir: string
   mudou: string
+  fotoUrl: string | null
 }
 
 export type DesabafoEntry = {
@@ -80,6 +90,21 @@ export type CicloLog = {
   notas: string
 }
 
+export type RefeicaoTipo = 'pa' | 'almoco' | 'snack' | 'jantar'
+
+export type Refeicao = {
+  id: string
+  timestamp: string
+  tipo: RefeicaoTipo
+  descricao: string
+  proteinaG: number | null
+  carboG: number | null
+  gorduraG: number | null
+  calorias: number | null
+  contexto: string
+  sentir: string
+}
+
 export type CoachMensagem = {
   id: string
   timestamp: string
@@ -107,7 +132,23 @@ function write<T>(key: string, value: T): void {
 
 export function getDia(date = isoDate()): DiaLog {
   const all = read<Record<string, DiaLog>>('dias', {})
-  return all[date] ?? {
+  const existing = all[date]
+  if (existing) {
+    // backfill defaults para registos antigos
+    return {
+      ...existing,
+      aguaCopos: existing.aguaCopos ?? 0,
+      suplementos: existing.suplementos ?? [],
+      transitoIntestinal: existing.transitoIntestinal ?? null,
+      horaDeitar: existing.horaDeitar ?? null,
+      qualidadeSono: existing.qualidadeSono ?? null,
+      acordouVezes: existing.acordouVezes ?? null,
+      sintomasPeri: existing.sintomasPeri ?? [],
+      steps: existing.steps ?? null,
+      rhr: existing.rhr ?? null
+    }
+  }
+  return {
     date,
     ancoras: {},
     treinoFeito: false,
@@ -115,7 +156,16 @@ export function getDia(date = isoDate()): DiaLog {
     sonoHoras: null,
     energia: null,
     humor: null,
-    notas: ''
+    notas: '',
+    aguaCopos: 0,
+    suplementos: [],
+    transitoIntestinal: null,
+    horaDeitar: null,
+    qualidadeSono: null,
+    acordouVezes: null,
+    sintomasPeri: [],
+    steps: null,
+    rhr: null
   }
 }
 
@@ -144,13 +194,42 @@ export function getAlcoolRegistos(): AlcoolRegisto[] {
   return read<AlcoolRegisto[]>('alcool', []).sort((a, b) => b.timestamp.localeCompare(a.timestamp))
 }
 
-export function addAlcoolRegisto(r: Omit<AlcoolRegisto, 'id' | 'timestamp'>): AlcoolRegisto {
-  const novo: AlcoolRegisto = { ...r, id: crypto.randomUUID(), timestamp: new Date().toISOString() }
+export function addAlcoolRegisto(r: Omit<AlcoolRegisto, 'id' | 'timestamp'> & { timestamp?: string }): AlcoolRegisto {
+  const novo: AlcoolRegisto = {
+    ...r,
+    id: crypto.randomUUID(),
+    timestamp: r.timestamp ?? new Date().toISOString()
+  }
   const all = read<AlcoolRegisto[]>('alcool', [])
   all.push(novo)
   write('alcool', all)
+  // Auto-marca a âncora 'caderno antes do copo' para o dia · ela já fez a
+  // reflexão (é a única forma de registar álcool). Aplica-se em qualquer dia,
+  // bebendo ou não.
+  const date = novo.timestamp.slice(0, 10)
+  const dia = getDia(date)
+  if (!dia.ancoras['caderno_copo']) {
+    dia.ancoras['caderno_copo'] = true
+    saveDia(dia)
+  }
   void syncAlcool(novo).catch(() => {})
   return novo
+}
+
+// Tem registo de álcool no dia?
+export function temAlcoolNoDia(date: string): boolean {
+  return getAlcoolRegistos().some(r => r.timestamp.slice(0, 10) === date)
+}
+
+// Resolve âncoras com regras automáticas.
+// caderno_copo · cumprida automaticamente se não houver álcool registado
+// (não havia tentação · não conta como falha)
+export function ancorasResolvidas(date: string, ancoras: Record<string, boolean>): Record<string, boolean> {
+  const resolvidas = { ...ancoras }
+  if (!resolvidas['caderno_copo']) {
+    if (!temAlcoolNoDia(date)) resolvidas['caderno_copo'] = true
+  }
+  return resolvidas
 }
 
 // ----- MEDIDAS -----
@@ -183,11 +262,93 @@ export function addDesabafo(d: Omit<DesabafoEntry, 'id' | 'timestamp'>): Desabaf
   return novo
 }
 
+// ----- REFEICOES -----
+
+export function getRefeicoes(): Refeicao[] {
+  return read<Refeicao[]>('refeicoes', []).sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+}
+
+export function getRefeicoesDoDia(date = isoDate()): Refeicao[] {
+  return getRefeicoes().filter(r => r.timestamp.slice(0, 10) === date)
+}
+
+export function addRefeicao(r: Omit<Refeicao, 'id' | 'timestamp'> & { timestamp?: string }): Refeicao {
+  const nova: Refeicao = {
+    ...r,
+    id: crypto.randomUUID(),
+    timestamp: r.timestamp ?? new Date().toISOString()
+  }
+  const all = read<Refeicao[]>('refeicoes', [])
+  all.push(nova)
+  write('refeicoes', all)
+  void syncRefeicao(nova).catch(() => {})
+  return nova
+}
+
+export function removeRefeicao(id: string): void {
+  const all = read<Refeicao[]>('refeicoes', [])
+  const filtradas = all.filter(r => r.id !== id)
+  // SEMPRE adiciona ao tombstone, mesmo se já não estava local · pode estar no servidor
+  const tombs = read<string[]>('tombstones-refeicoes', [])
+  if (!tombs.includes(id)) {
+    tombs.push(id)
+    write('tombstones-refeicoes', tombs)
+  }
+  if (filtradas.length !== all.length) write('refeicoes', filtradas)
+  void removeRefeicaoSync(id).catch(() => {})
+}
+
+export function getTombstonesRefeicoes(): string[] {
+  return read<string[]>('tombstones-refeicoes', [])
+}
+
+export function limparTombstone(id: string): void {
+  const tombs = read<string[]>('tombstones-refeicoes', [])
+  const novo = tombs.filter(t => t !== id)
+  if (novo.length !== tombs.length) write('tombstones-refeicoes', novo)
+}
+
+export function updateRefeicao(id: string, patch: Partial<Omit<Refeicao, 'id'>>): Refeicao | null {
+  const all = read<Refeicao[]>('refeicoes', [])
+  const i = all.findIndex(r => r.id === id)
+  if (i === -1) return null
+  const actualizada: Refeicao = { ...all[i], ...patch, id }
+  all[i] = actualizada
+  write('refeicoes', all)
+  void syncRefeicao(actualizada).catch(() => {})
+  return actualizada
+}
+
+export function macrosDoDia(date = isoDate()): { proteina: number; carbo: number; gordura: number; calorias: number; refeicoes: number } {
+  const lista = getRefeicoesDoDia(date)
+  return {
+    proteina: lista.reduce((s, r) => s + (r.proteinaG ?? 0), 0),
+    carbo: lista.reduce((s, r) => s + (r.carboG ?? 0), 0),
+    gordura: lista.reduce((s, r) => s + (r.gorduraG ?? 0), 0),
+    calorias: lista.reduce((s, r) => s + (r.calorias ?? 0), 0),
+    refeicoes: lista.length
+  }
+}
+
 // ----- COACH CHAT (memória persistente) -----
 
 export function getCoachMensagens(limite = 200): CoachMensagem[] {
   const all = read<CoachMensagem[]>('coach-chat', [])
-  return all.slice(-limite).sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+  // Limpa mensagens [auto] (toast antigo · estavam a poluir a conversa)
+  const limpas = all.filter(m => !(m.role === 'user' && typeof m.content === 'string' && m.content.startsWith('[auto]')))
+  // Limpa também as respostas do assistant que vieram logo a seguir a um [auto] (heurística simples)
+  const filtradas: CoachMensagem[] = []
+  for (let i = 0; i < limpas.length; i++) {
+    const cur = limpas[i]
+    const prev = filtradas[filtradas.length - 1]
+    // Se foi uma resposta a [auto] removido, pode ser orphan — mantém na mesma se faz sentido
+    filtradas.push(cur)
+  }
+  // Persistir versão limpa se houve filtragem
+  if (filtradas.length !== all.length) {
+    write('coach-chat', filtradas)
+  }
+  return filtradas.slice(-limite).sort((a, b) => a.timestamp.localeCompare(b.timestamp))
 }
 
 export function saveCoachMensagem(role: 'user' | 'assistant', content: string): CoachMensagem {
@@ -299,15 +460,29 @@ export function getJejumHoje(): JejumLog | null {
 export function saveJejum(j: Omit<JejumLog, 'id'>): JejumLog {
   const all = read<JejumLog[]>('jejum', [])
   const existing = all.findIndex(x => x.date === j.date)
+
+  // Auto-corrigir: se primeira < ultima, a ultima deve ser do dia anterior.
+  // Acontece quando edita só a hora sem mexer na data.
+  let ultimaCorr = j.ultimaRefeicao
+  if (j.ultimaRefeicao && j.primeiraRefeicao) {
+    let tU = new Date(j.ultimaRefeicao).getTime()
+    const tP = new Date(j.primeiraRefeicao).getTime()
+    while (tU > tP) tU -= 24 * 60 * 60 * 1000
+    if (tU !== new Date(j.ultimaRefeicao).getTime()) {
+      ultimaCorr = new Date(tU).toISOString()
+    }
+  }
+
   // calcular duração se ambos definidos
   let duracaoHoras: number | null = null
-  if (j.ultimaRefeicao && j.primeiraRefeicao) {
-    const ms = new Date(j.primeiraRefeicao).getTime() - new Date(j.ultimaRefeicao).getTime()
+  if (ultimaCorr && j.primeiraRefeicao) {
+    const ms = new Date(j.primeiraRefeicao).getTime() - new Date(ultimaCorr).getTime()
     duracaoHoras = Math.round((ms / (1000 * 60 * 60)) * 10) / 10
   }
   const completou = duracaoHoras !== null && duracaoHoras >= j.meta
   const novo: JejumLog = {
     ...j,
+    ultimaRefeicao: ultimaCorr,
     duracaoHoras,
     completou,
     id: existing >= 0 ? all[existing].id : crypto.randomUUID()
@@ -319,38 +494,119 @@ export function saveJejum(j: Omit<JejumLog, 'id'>): JejumLog {
   return novo
 }
 
+// Cura todos os jejuns gravados: corrige durações negativas / impossíveis
+// (ex: ultima=09/05 20:00, primeira=09/05 09:00 → ultima vira 08/05 20:00)
+export function curarJejuns(): number {
+  const all = read<JejumLog[]>('jejum', [])
+  let alterados = 0
+  for (const j of all) {
+    if (!j.ultimaRefeicao || !j.primeiraRefeicao) continue
+    let tU = new Date(j.ultimaRefeicao).getTime()
+    const tP = new Date(j.primeiraRefeicao).getTime()
+    if (tU <= tP) continue // já está OK
+    while (tU > tP) tU -= 24 * 60 * 60 * 1000
+    j.ultimaRefeicao = new Date(tU).toISOString()
+    const ms = tP - tU
+    j.duracaoHoras = Math.round((ms / (1000 * 60 * 60)) * 10) / 10
+    j.completou = j.duracaoHoras >= j.meta
+    alterados++
+    void syncJejum(j).catch(() => {})
+  }
+  if (alterados > 0) write('jejum', all)
+  return alterados
+}
+
+export function removeJejum(id: string): void {
+  const all = read<JejumLog[]>('jejum', [])
+  const filtrado = all.filter(j => j.id !== id)
+  if (filtrado.length === all.length) return
+  write('jejum', filtrado)
+  void removeJejumSync(id).catch(() => {})
+}
+
+export function anularPrimeiraRefeicao(date: string): JejumLog | null {
+  const all = read<JejumLog[]>('jejum', [])
+  const idx = all.findIndex(j => j.date === date)
+  if (idx < 0) return null
+  const j = all[idx]
+  const novo: JejumLog = {
+    ...j,
+    primeiraRefeicao: null,
+    duracaoHoras: null,
+    completou: false
+  }
+  all[idx] = novo
+  write('jejum', all)
+  void syncJejum(novo).catch(() => {})
+  return novo
+}
+
 export function streakJejum(): number {
   const js = getJejuns()
   let streak = 0
+  // Saltar entradas em curso (primeira null) no fim · não quebram streak
   for (let i = js.length - 1; i >= 0; i--) {
-    if (js[i].completou) streak++
+    const j = js[i]
+    if (!j.primeiraRefeicao) continue // ainda em curso · ignora
+    if (j.completou) streak++
     else break
   }
   return streak
 }
 
+// Estatísticas resumo · usadas no /jejum
+export function estatisticasJejum(): {
+  media7d: number | null
+  media30d: number | null
+  media90d: number | null
+  totalRegistos: number
+  taxaSucesso30d: number | null  // % cumpridos sobre registados nos últimos 30d
+  diasJejumPorPesoCorrelacao: { peso: number; horas: number }[]
+} {
+  const js = getJejuns().filter(j => j.duracaoHoras !== null)
+  const hoje = Date.now()
+  const dia = 86400000
+  const filtrar = (n: number) => js.filter(j => hoje - new Date(j.date).getTime() <= n * dia)
+  const media = (arr: JejumLog[]) => arr.length === 0 ? null
+    : Math.round((arr.reduce((s, j) => s + (j.duracaoHoras ?? 0), 0) / arr.length) * 10) / 10
+  const ult30 = filtrar(30)
+  const taxa = ult30.length === 0 ? null : Math.round((ult30.filter(j => j.completou).length / ult30.length) * 100)
+  // Correlação · juntar peso do dia em que jejum terminou (ou mais próximo)
+  const pesos = getPesos()
+  const pares: { peso: number; horas: number }[] = []
+  for (const j of js) {
+    if (j.duracaoHoras === null) continue
+    const p = pesos.find(p => p.date === j.date) ?? pesos.find(p => Math.abs(new Date(p.date).getTime() - new Date(j.date).getTime()) < 2 * dia)
+    if (p) pares.push({ peso: p.peso, horas: j.duracaoHoras })
+  }
+  return {
+    media7d: media(filtrar(7)),
+    media30d: media(filtrar(30)),
+    media90d: media(filtrar(90)),
+    totalRegistos: js.length,
+    taxaSucesso30d: taxa,
+    diasJejumPorPesoCorrelacao: pares
+  }
+}
+
 export function jejumActualHoras(): { horas: number; ultimaRef: string } | null {
-  // Calcula o jejum em curso desde a última refeição registada
-  const hoje = isoDate()
-  const ontem = (() => {
-    const d = new Date()
-    d.setDate(d.getDate() - 1)
-    return isoDate(d)
-  })()
+  // Procura QUALQUER jejum em curso (ultima sem primeira) em qualquer data.
+  // Permite começar fast à noite (date=amanhã) sem conflitar com fast de hoje fechado.
   const all = getJejuns()
-  const hojeJ = all.find(j => j.date === hoje)
-  const ontemJ = all.find(j => j.date === ontem)
-
-  // se já comeu hoje, jejum acabou
-  if (hojeJ?.primeiraRefeicao) return null
-
-  // procurar última refeição: hoje (se registada) ou ontem
-  const ultimaRef = hojeJ?.ultimaRefeicao ?? ontemJ?.ultimaRefeicao
-  if (!ultimaRef) return null
-
-  const ms = Date.now() - new Date(ultimaRef).getTime()
+  const candidatos = all
+    .filter(j => j.ultimaRefeicao && !j.primeiraRefeicao)
+    .map(j => {
+      let t = new Date(j.ultimaRefeicao!).getTime()
+      // se a hora guardada está no futuro, puxa 24h para trás (segurança)
+      while (t > Date.now()) t -= 24 * 60 * 60 * 1000
+      return { iso: new Date(t).toISOString(), t }
+    })
+    .sort((a, b) => b.t - a.t)
+  if (candidatos.length === 0) return null
+  const escolhido = candidatos[0]
+  const ms = Date.now() - escolhido.t
   const horas = Math.round((ms / (1000 * 60 * 60)) * 10) / 10
-  return { horas, ultimaRef }
+  return { horas, ultimaRef: escolhido.iso }
 }
 
 // ----- CICLO -----
@@ -428,7 +684,8 @@ export function streakAncoras(minPorDia = 5): number {
   const dias = getTodosDias()
   let streak = 0
   for (let i = dias.length - 1; i >= 0; i--) {
-    const cumpridas = Object.values(dias[i].ancoras).filter(Boolean).length
+    const resolvidas = ancorasResolvidas(dias[i].date, dias[i].ancoras)
+    const cumpridas = Object.values(resolvidas).filter(Boolean).length
     if (cumpridas >= minPorDia) streak++
     else break
   }
@@ -436,11 +693,18 @@ export function streakAncoras(minPorDia = 5): number {
 }
 
 export function diasSemAlcool(): number {
-  const registos = getAlcoolRegistos().filter(r => r.decidiuBeber)
-  if (registos.length === 0) return 0
-  const ultimo = new Date(registos[0].timestamp)
-  const agora = new Date()
-  return Math.floor((agora.getTime() - ultimo.getTime()) / (1000 * 60 * 60 * 24))
+  const todos = getAlcoolRegistos()
+  if (todos.length === 0) return 0
+  // getAlcoolRegistos devolve em ordem decrescente (mais recente primeiro)
+  const drinks = todos.filter(r => r.decidiuBeber)
+  if (drinks.length === 0) {
+    // Nunca bebeu (registou) · conta desde o registo mais antigo (último na lista)
+    const maisAntigo = todos[todos.length - 1]
+    const ms = Date.now() - new Date(maisAntigo.timestamp).getTime()
+    return Math.max(0, Math.floor(ms / (1000 * 60 * 60 * 24)))
+  }
+  const ultimoDrink = new Date(drinks[0].timestamp)
+  return Math.max(0, Math.floor((Date.now() - ultimoDrink.getTime()) / (1000 * 60 * 60 * 24)))
 }
 
 export function complianceAncora(id: string, ultimosNDias = 14): { feitos: number; total: number } {

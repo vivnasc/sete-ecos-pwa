@@ -29,6 +29,23 @@ export function mesCurto(d: Date): string {
   return MESES_CURTO[d.getMonth()]
 }
 
+// Hora local HH:MM a partir de timestamp ISO (UTC).
+// Usar sempre isto em vez de iso.slice(11,16) — esse dá UTC e fica 2h atrasado em CAT.
+export function horaLocal(iso: string): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return ''
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
+// Data local YYYY-MM-DD a partir de timestamp ISO.
+export function dataLocal(iso: string): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return ''
+  return isoDate(d)
+}
+
 export function isoDate(d: Date = new Date()): string {
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')
@@ -72,11 +89,19 @@ export function formatarData(d: Date, longo = false): string {
 }
 
 export function todosOsDias(): Date[] {
+  // Se hoje é antes do plano, inclui também os dias entre hoje e o início
+  // (para poder registar durante a fase de pré-plano).
+  const hoje = new Date()
+  hoje.setHours(0, 0, 0, 0)
+  const start = new Date(RESET_START)
+  start.setHours(0, 0, 0, 0)
+  const cursor = hoje < start ? new Date(hoje) : new Date(start)
+  const end = new Date(start)
+  end.setDate(end.getDate() + RESET_DAYS - 1)
   const dias: Date[] = []
-  for (let i = 0; i < RESET_DAYS; i++) {
-    const d = new Date(RESET_START)
-    d.setDate(d.getDate() + i)
-    dias.push(d)
+  while (cursor <= end) {
+    dias.push(new Date(cursor))
+    cursor.setDate(cursor.getDate() + 1)
   }
   return dias
 }

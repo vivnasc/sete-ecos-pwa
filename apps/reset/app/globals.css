@@ -185,3 +185,25 @@
 .transition-elegant {
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* PRINT · imprimir /plano (e outras páginas) ficam legíveis em folha */
+@media print {
+  nav, .fab, .print\:hidden { display: none !important; }
+  body, html {
+    background: white !important;
+    color: black !important;
+  }
+  .card-solid, .card, .card-feature {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    background: white !important;
+    page-break-inside: avoid;
+  }
+  .text-faint { color: #666 !important; }
+  .text-soft { color: #333 !important; }
+  .text-ouro { color: #b8924a !important; }
+  .container-app, main {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+}

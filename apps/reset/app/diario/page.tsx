@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState, Suspense } from 'react'
+// (notas têm estado próprio · botão de guardar explícito + auto-guardar no blur)
 import { useSearchParams } from 'next/navigation'
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react'
 import {
@@ -14,8 +15,9 @@ import {
   diaDoPlano,
   mesCurto
 } from '@/lib/dates'
-import { ANCORAS, TREINO_SEMANAL } from '@/lib/data'
+import { TREINO_SEMANAL } from '@/lib/data'
 import { getDia, saveDia, toggleAncora, type DiaLog } from '@/lib/storage'
+import { getAncorasActivas } from '@/lib/profile'
 import { cn } from '@/lib/utils'
 
 export default function DiarioPage() {
@@ -42,22 +44,25 @@ function DiarioContent() {
   const dias = useMemo(() => todosOsDias().map(d => isoDate(d)), [])
 
   const navegar = (passo: number) => {
-    const idx = dias.indexOf(selecionada)
-    const novoIdx = idx + passo
-    if (novoIdx >= 0 && novoIdx < dias.length) setSelecionada(dias[novoIdx])
+    const d = fromIso(selecionada)
+    d.setDate(d.getDate() + passo)
+    setSelecionada(isoDate(d))
   }
+
+  // Limites: não permite ir para o futuro
+  const podeAvancar = selecionada < isoDate()
 
   const data = fromIso(selecionada)
   const dow = diaSemana(data)
   const treino = TREINO_SEMANAL[dow]
-  const numDia = dias.indexOf(selecionada) + 1
+  const numDia = diaDoPlano(data)
   const isHoje = selecionada === isoDate()
 
   return (
     <div className="space-y-6 animate-fade-in">
       <header className="space-y-2 pt-4">
         <p className="label-soft">diário</p>
-        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">60 dias</h1>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">60 Dias</h1>
         <div className="h-px w-12 bg-ouro" aria-hidden />
       </header>
 
@@ -68,14 +73,19 @@ function DiarioContent() {
           onClick={() => navegar(-1)}
           className="btn-ghost"
           aria-label="Dia anterior"
-          disabled={dias.indexOf(selecionada) === 0}
         >
           <ChevronLeft size={14} strokeWidth={1.4} />
         </button>
         <div className="text-center">
           <p className="font-serif text-[22px] font-light tracking-editorial">
-            <span className="tnum">Dia {String(numDia).padStart(2, '0')}</span>
-            <span className="text-faint"> / {RESET_DAYS}</span>
+            {numDia > 0 && numDia <= RESET_DAYS ? (
+              <>
+                <span className="tnum">Dia {String(numDia).padStart(2, '0')}</span>
+                <span className="text-faint"> / {RESET_DAYS}</span>
+              </>
+            ) : (
+              <span className="text-faint italic">{numDia <= 0 ? 'antes do início' : 'após o fim'}</span>
+            )}
           </p>
           <p className="label-soft mt-1">
             {dow.toLowerCase()} · {formatarData(data)}
@@ -86,7 +96,7 @@ function DiarioContent() {
           onClick={() => navegar(1)}
           className="btn-ghost"
           aria-label="Dia seguinte"
-          disabled={dias.indexOf(selecionada) === dias.length - 1}
+          disabled={!podeAvancar}
         >
           <ChevronRight size={14} strokeWidth={1.4} />
         </button>
@@ -190,7 +200,7 @@ function DiaForm({
       <section>
         <span className="label-cap mb-3 block">Âncoras</span>
         <ul className="card-solid divide-y divide-[var(--hair)] !p-0">
-          {ANCORAS.map((a, idx) => {
+          {getAncorasActivas().map((a, idx) => {
             const feita = !!log.ancoras[a.id]
             return (
               <li key={a.id}>
@@ -232,17 +242,64 @@ function DiaForm({
         <ScaleField label="Humor" value={log.humor} onChange={v => onChange({ ...log, humor: v })} />
       </section>
 
-      <section className="space-y-2">
-        <span className="label-cap px-1">Notas</span>
-        <textarea
-          value={log.notas}
-          onChange={e => onChange({ ...log, notas: e.target.value })}
-          placeholder="o que precisas registar..."
-          rows={3}
-          className="input-base resize-none text-[14px]"
-        />
-      </section>
+      <NotasSection log={log} onChange={onChange} />
     </div>
+  )
+}
+
+function NotasSection({ log, onChange }: { log: DiaLog; onChange: (l: DiaLog) => void }) {
+  const [texto, setTexto] = useState(log.notas)
+  const [estado, setEstado] = useState<'sem-mudancas' | 'editado' | 'guardado'>(log.notas === texto ? 'sem-mudancas' : 'editado')
+  const [horaSaved, setHoraSaved] = useState<string | null>(null)
+
+  // Re-sync texto se mudar de dia
+  useEffect(() => {
+    setTexto(log.notas)
+    setEstado('sem-mudancas')
+    setHoraSaved(null)
+  }, [log.date, log.notas])
+
+  const guardar = () => {
+    onChange({ ...log, notas: texto })
+    const agora = new Date()
+    setHoraSaved(`${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`)
+    setEstado('guardado')
+  }
+
+  return (
+    <section className="space-y-2">
+      <div className="flex items-baseline justify-between px-1">
+        <span className="label-cap">Notas</span>
+        {estado === 'guardado' && horaSaved ? (
+          <span className="text-[10.5px] text-oliva tnum">guardado às {horaSaved}</span>
+        ) : estado === 'editado' ? (
+          <span className="text-[10.5px] text-faint italic">por guardar</span>
+        ) : null}
+      </div>
+      <textarea
+        value={texto}
+        onChange={e => {
+          setTexto(e.target.value)
+          if (estado === 'guardado' || estado === 'sem-mudancas') setEstado('editado')
+        }}
+        onBlur={() => { if (estado === 'editado') guardar() }}
+        placeholder="o que precisas registar..."
+        rows={4}
+        className="input-base resize-none text-[14px]"
+      />
+      <button
+        onClick={guardar}
+        disabled={estado !== 'editado'}
+        className={`w-full flex items-center justify-center gap-2 rounded-md py-2.5 text-[12.5px] transition-elegant active:scale-95 ${
+          estado === 'editado'
+            ? 'bg-tinta text-creme dark:bg-ouro dark:text-tinta'
+            : 'bg-[var(--surface-soft)] text-faint cursor-default'
+        }`}
+      >
+        <Check size={13} strokeWidth={1.6} />
+        {estado === 'editado' ? 'guardar' : estado === 'guardado' ? 'guardado' : 'sem alterações'}
+      </button>
+    </section>
   )
 }
 

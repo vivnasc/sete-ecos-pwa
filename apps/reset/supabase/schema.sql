@@ -27,6 +27,10 @@ alter table fenixfit_profile enable row level security;
 drop policy if exists "profile_owner" on fenixfit_profile;
 create policy "profile_owner" on fenixfit_profile for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+-- migração · pool de âncoras (idempotente)
+alter table fenixfit_profile add column if not exists ancoras_activas text[] not null default '{}';
+alter table fenixfit_profile add column if not exists ancoras_custom jsonb not null default '[]';
+
 -- ===== DIA LOG =====
 create table if not exists fenixfit_dias (
   id uuid primary key default uuid_generate_v4(),
@@ -42,6 +46,24 @@ create table if not exists fenixfit_dias (
   updated_at timestamptz not null default now(),
   unique (user_id, date)
 );
+
+-- migrações para tabelas existentes
+alter table fenixfit_dias add column if not exists agua_copos int not null default 0;
+alter table fenixfit_dias add column if not exists suplementos text[] not null default '{}';
+alter table fenixfit_dias add column if not exists transito_intestinal text check (transito_intestinal in ('sim', 'nao') or transito_intestinal is null);
+alter table fenixfit_dias add column if not exists hora_deitar time;
+alter table fenixfit_dias add column if not exists qualidade_sono int check (qualidade_sono between 1 and 5);
+alter table fenixfit_dias add column if not exists acordou_vezes int;
+alter table fenixfit_dias add column if not exists sintomas_peri text[] not null default '{}';
+alter table fenixfit_dias add column if not exists steps int;
+alter table fenixfit_dias add column if not exists rhr int;
+
+alter table fenixfit_profile add column if not exists metas jsonb;
+alter table fenixfit_profile add column if not exists modo_viagem boolean not null default false;
+alter table fenixfit_profile add column if not exists objectivos jsonb not null default '[]';
+alter table fenixfit_profile add column if not exists altura_cm int;
+alter table fenixfit_profile add column if not exists idade int;
+alter table fenixfit_profile add column if not exists nivel_actividade text check (nivel_actividade in ('sedentaria','leve','moderada','activa') or nivel_actividade is null);
 
 create index if not exists fenixfit_dias_user_date on fenixfit_dias (user_id, date desc);
 
@@ -197,6 +219,28 @@ create index if not exists fenixfit_ciclo_user_data on fenixfit_ciclo (user_id, 
 alter table fenixfit_ciclo enable row level security;
 drop policy if exists "ciclo_owner" on fenixfit_ciclo;
 create policy "ciclo_owner" on fenixfit_ciclo for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- ===== REFEIÇÕES (registo do que come) =====
+create table if not exists fenixfit_refeicoes (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  timestamp timestamptz not null default now(),
+  tipo text not null check (tipo in ('pa', 'almoco', 'snack', 'jantar')),
+  descricao text not null,
+  proteina_g numeric(5,1),
+  carbo_g numeric(5,1),
+  gordura_g numeric(5,1),
+  calorias int,
+  contexto text not null default '',
+  sentir text not null default '',
+  created_at timestamptz not null default now()
+);
+
+create index if not exists fenixfit_refeicoes_user_ts on fenixfit_refeicoes (user_id, timestamp desc);
+
+alter table fenixfit_refeicoes enable row level security;
+drop policy if exists "refeicoes_owner" on fenixfit_refeicoes;
+create policy "refeicoes_owner" on fenixfit_refeicoes for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- ===== COACH CHAT (memória persistente da coach) =====
 create table if not exists fenixfit_coach_chat (
