@@ -26,10 +26,8 @@ import { useDetectorDesistencia, AlertaDesistencia } from './DetectorDesistencia
 import PodcastPlayer from '../shared/PodcastPlayer';
 import {
   Bell, Sun, Moon, Flame, X, Download, BookOpen, Gift, ArrowRight, Lightbulb,
-  ClipboardList, CheckCircle2, UtensilsCrossed, CalendarDays, ChefHat, Ruler,
-  Thermometer, Sparkles, FileText, BarChart3, Dumbbell, MessageCircle,
-  Target, ShoppingCart, Wand2, CalendarRange, Camera, TrendingUp, BookHeart,
-  Scale, Wind, Heart, Apple, Carrot, Salad, Soup, Coffee
+  ClipboardList, CheckCircle2, UtensilsCrossed, FileText, Sparkles,
+  MessageCircle, LayoutGrid
 } from 'lucide-react';
 
 // Função para solicitar permissão de notificações
@@ -921,10 +919,31 @@ export default function DashboardVitalis() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
+      <div className="fnx-theme min-h-screen flex items-center justify-center" role="status" aria-live="polite">
         <div className="text-center">
-          <div className="text-6xl mb-4 animate-pulse">🌱</div>
-          <p className="text-[#6B5C4C]">{t('vitalis.dashboard.loading')}</p>
+          <img
+            src="/logos/VITALIS_LOGO_V3.png"
+            alt=""
+            aria-hidden
+            className="w-12 h-12 mx-auto mb-4 fnx-breathe"
+            style={{ objectFit: 'contain' }}
+          />
+          <div
+            aria-hidden
+            className="mx-auto mb-3"
+            style={{ height: '1px', width: '24px', background: 'var(--fnx-ouro)' }}
+          />
+          <p
+            className="fnx-text-soft italic"
+            style={{
+              fontFamily: 'var(--font-editorial)',
+              fontWeight: 300,
+              fontSize: '14px',
+              letterSpacing: '0.01em'
+            }}
+          >
+            a carregar
+          </p>
         </div>
       </div>
     );
@@ -933,10 +952,9 @@ export default function DashboardVitalis() {
   return (
     <>
     {/* Modais com position:fixed — FORA do container animado para evitar bug CSS
-        (transform no pai quebra position:fixed nos filhos) */}
-    {mostrarOnboarding && (
-      <WelcomeTutorial eco="vitalis" onComplete={completarOnboarding} />
-    )}
+        (transform no pai quebra position:fixed nos filhos)
+        WelcomeTutorial gere-se a si próprio via chave canónica em localStorage */}
+    <WelcomeTutorial eco="vitalis" onComplete={completarOnboarding} />
 
     <div className={`fnx-theme min-h-screen pb-20 fnx-fade-in ${isDarkMode ? 'dark' : ''}`}>
 
@@ -1310,36 +1328,28 @@ export default function DashboardVitalis() {
         {/* Alerta de risco de desistência (aparece quando detectado) */}
         <AlertaDesistencia riskData={riskData} userId={userId} />
 
-        {/* Quick Actions — acesso rápido editorial */}
+        {/* Atalhos do dia — só 4 acções rápidas, o resto vai para /ferramentas */}
         <section className="space-y-2">
-          <span className="fnx-label-cap px-1">acesso rápido</span>
-          <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-6 sm:gap-2 lg:grid-cols-8">
+          <span className="fnx-label-cap px-1">agora</span>
+          <div className="grid grid-cols-4 gap-2">
             {[
-              { to: '/vitalis/plano', icon: ClipboardList, label: 'plano' },
               { to: '/vitalis/checkin', icon: CheckCircle2, label: 'check-in' },
               { to: '/vitalis/meals', icon: UtensilsCrossed, label: 'refeições' },
-              { to: '/vitalis/calendario', icon: CalendarDays, label: 'menu' },
-              { to: '/vitalis/receitas', icon: ChefHat, label: 'receitas' },
-              { to: '/vitalis/tendencias', icon: Ruler, label: 'medidas' },
-              { to: '/vitalis/sintomas', icon: Thermometer, label: 'adaptação' },
-              { to: '/vitalis/treinos', icon: Dumbbell, label: 'treinos' },
-              { to: '/vitalis/espaco-retorno', icon: Heart, label: 'retorno' },
-              { to: '/vitalis/compromisso', icon: FileText, label: 'compromisso' },
-              { to: '/vitalis/relatorios', icon: BarChart3, label: 'relatórios' },
+              { to: '/vitalis/plano', icon: ClipboardList, label: 'plano' },
               { to: '/vitalis/chat', icon: MessageCircle, label: 'coach' }
             ].map(({ to, icon: Icon, label }) => (
               <Link
                 key={to}
                 to={to}
                 className="fnx-card-solid fnx-transition flex flex-col items-center justify-center gap-1.5 active:scale-95"
-                style={{ padding: '12px', minHeight: '74px' }}
+                style={{ padding: '14px 8px', minHeight: '78px' }}
               >
-                <Icon size={16} strokeWidth={1.3} className="fnx-text-ouro" />
+                <Icon size={18} strokeWidth={1.3} className="fnx-text-ouro" />
                 <span
                   className="fnx-text-soft"
                   style={{
                     fontFamily: 'var(--font-editorial)',
-                    fontSize: '11.5px',
+                    fontSize: '12px',
                     letterSpacing: '-0.01em',
                     textAlign: 'center'
                   }}
@@ -1664,87 +1674,26 @@ export default function DashboardVitalis() {
           );
         })()}
 
-        {/* Funcionalidades — explorar a app */}
-        <section className="space-y-3">
-          <div className="flex items-baseline justify-between px-1">
-            <span className="fnx-label-cap">explorar</span>
-            <span className="fnx-label-soft">funcionalidades</span>
-          </div>
-
-          {/* Guia em destaque */}
-          <Link to="/vitalis/guia" className="fnx-card-feature fnx-transition flex items-center gap-4 hover:opacity-95">
-            <BookOpen size={22} strokeWidth={1.4} className="fnx-text-ouro shrink-0" />
-            <div className="flex-1 min-w-0">
-              <span className="fnx-label-cap">primeiro passo</span>
-              <h3
-                className="fnx-text-ink mt-0.5"
-                style={{ fontFamily: 'var(--font-editorial)', fontSize: '18px', fontWeight: 400, letterSpacing: '-0.015em' }}
-              >
-                guia do utilizador
-              </h3>
-              <p className="fnx-text-soft mt-0.5" style={{ fontSize: '12.5px', lineHeight: 1.5 }}>
-                aprende a usar tudo o que está aqui
-              </p>
-            </div>
-            <ArrowRight size={16} strokeWidth={1.4} className="fnx-text-faint shrink-0" />
-          </Link>
-
-          {/* Grid de funcionalidades */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-            {[
-              { to: '/vitalis/chat', icon: MessageCircle, label: 'coach', sub: 'fala comigo' },
-              { to: '/vitalis/desafios', icon: Target, label: 'desafios', sub: 'semana a semana' },
-              { to: '/vitalis/lista-compras', icon: ShoppingCart, label: 'compras', sub: 'lista automática' },
-              { to: '/vitalis/sugestoes', icon: Wand2, label: 'sugestões', sub: 'o que comer' },
-              { to: '/vitalis/calendario-progresso', icon: CalendarRange, label: 'diário', sub: 'ver por dia' },
-              { to: '/vitalis/fotos-progresso', icon: Camera, label: 'fotos', sub: 'antes/depois' },
-              { to: '/vitalis/tendencias', icon: TrendingUp, label: 'tendências', sub: 'peso, medidas' },
-              { to: '/vitalis/notificacoes', icon: Bell, label: 'lembretes', sub: 'manhã, tarde' }
-            ].map(({ to, icon: Icon, label, sub }) => (
-              <Link
-                key={to}
-                to={to}
-                className="fnx-card-solid fnx-transition flex flex-col items-start gap-2 active:scale-95"
-                style={{ padding: '14px' }}
-              >
-                <Icon size={16} strokeWidth={1.3} className="fnx-text-ouro" />
-                <div className="min-w-0">
-                  <p
-                    className="fnx-text-ink"
-                    style={{ fontFamily: 'var(--font-editorial)', fontSize: '14px', fontWeight: 400, letterSpacing: '-0.01em' }}
-                  >
-                    {label}
-                  </p>
-                  <p className="fnx-text-faint" style={{ fontSize: '11px', marginTop: '1px' }}>{sub}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* Meditações — link discreto */}
-        <Link to="/vitalis/meditacoes" className="fnx-card-solid fnx-transition flex items-center gap-3 hover:opacity-90">
-          <Wind size={18} strokeWidth={1.4} className="fnx-text-ouro shrink-0" />
+        {/* Acesso à barra de ferramentas — tudo o resto está lá */}
+        <Link
+          to="/vitalis/ferramentas"
+          className="fnx-card-feature fnx-transition flex items-center gap-4 hover:opacity-95"
+        >
+          <LayoutGrid size={22} strokeWidth={1.4} className="fnx-text-ouro shrink-0" />
           <div className="flex-1 min-w-0">
-            <p
-              className="fnx-text-ink"
-              style={{ fontFamily: 'var(--font-editorial)', fontSize: '15px', fontWeight: 400, letterSpacing: '-0.01em' }}
+            <span className="fnx-label-cap">explorar</span>
+            <h3
+              className="fnx-text-ink mt-0.5"
+              style={{ fontFamily: 'var(--font-editorial)', fontSize: '18px', fontWeight: 400, letterSpacing: '-0.015em' }}
             >
-              meditações
+              ferramentas vitalis
+            </h3>
+            <p className="fnx-text-soft mt-0.5" style={{ fontSize: '12.5px', lineHeight: 1.5 }}>
+              receitas, tendências, fotos, desafios, paleta, notificações
             </p>
-            <p className="fnx-text-faint" style={{ fontSize: '11.5px' }}>corpo e mente</p>
           </div>
-          <ArrowRight size={14} strokeWidth={1.4} className="fnx-text-faint shrink-0" />
+          <ArrowRight size={16} strokeWidth={1.4} className="fnx-text-faint shrink-0" />
         </Link>
-
-        {/* Secção de Conquistas */}
-        <AchievementsPanel
-          conquistasDesbloqueadas={conquistasDesbloqueadas}
-          xpTotal={xpTotal}
-        />
-
-        {/* Paleta — escolha opcional, sempre disponível */}
-        <PaletaSelector />
 
         {/* Vivianne Explica */}
         <div className="mb-6">

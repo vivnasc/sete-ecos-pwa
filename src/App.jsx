@@ -20,8 +20,35 @@ const CatalogoPDF = lazy(() => import('./pages/CatalogoPDF'))
 // ===== LOADING FALLBACK ACESSÍVEL =====
 function LoadingFallback() {
   return (
-    <div className="loading" role="status" aria-live="polite">
-      <span>A carregar...</span>
+    <div
+      className="loading min-h-screen flex items-center justify-center"
+      role="status"
+      aria-live="polite"
+      style={{ background: 'var(--fnx-bg, #F6F1E8)' }}
+    >
+      <div className="text-center">
+        <div
+          aria-hidden
+          className="fnx-breathe mx-auto mb-3"
+          style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            background: 'var(--fnx-ouro, #B8924A)'
+          }}
+        />
+        <span
+          style={{
+            fontFamily: 'var(--font-editorial, Georgia, serif)',
+            fontStyle: 'italic',
+            fontWeight: 300,
+            fontSize: '14px',
+            color: 'var(--fnx-ink-soft, rgba(31, 24, 20, 0.7))'
+          }}
+        >
+          a carregar
+        </span>
+      </div>
     </div>
   )
 }
@@ -51,6 +78,7 @@ const PagamentoVitalis = lazy(() => import('./components/vitalis/PagamentoVitali
 const VitalisAccessGuard = lazy(() => import('./components/vitalis/VitalisAccessGuard'))
 const VitalisIntakeComplete = lazy(() => import('./components/vitalis/VitalisIntakeComplete'))
 const DashboardVitalis = lazy(() => import('./components/vitalis/DashboardVitalis'))
+const FerramentasVitalis = lazy(() => import('./components/vitalis/FerramentasVitalis'))
 const CheckinDiario = lazy(() => import('./components/vitalis/CheckinDiario'))
 const ReceitasBrowse = lazy(() => import('./components/vitalis/ReceitasBrowse'))
 const ReceitaDetalhe = lazy(() => import('./components/vitalis/ReceitaDetalhe'))
@@ -397,6 +425,7 @@ function AppRoutes() {
             <Route path="/vitalis/plano-pdf" element={<PlanoHTML />} />
             <Route path="/vitalis/intake" element={<VitalisRoute><VitalisIntakeComplete /></VitalisRoute>} />
             <Route path="/vitalis/dashboard" element={<VitalisRoute><DashboardVitalis /></VitalisRoute>} />
+            <Route path="/vitalis/ferramentas" element={<VitalisRoute><FerramentasVitalis /></VitalisRoute>} />
             <Route path="/vitalis/checkin" element={<VitalisRoute><CheckinDiario /></VitalisRoute>} />
             <Route path="/vitalis/sintomas" element={<VitalisRoute><SintomasTracker /></VitalisRoute>} />
             <Route path="/vitalis/receitas" element={<VitalisRoute><ReceitasBrowse /></VitalisRoute>} />

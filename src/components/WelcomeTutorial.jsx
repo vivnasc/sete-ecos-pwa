@@ -1,267 +1,157 @@
 import { useState, useEffect } from 'react';
 import { g } from '../utils/genero';
+import { X, ArrowLeft, ArrowRight } from 'lucide-react';
 
 /**
- * WELCOME TUTORIAL - First-time user onboarding
- * Shows a step-by-step tutorial for first-time users
- * Saves completion state to localStorage
+ * WELCOME TUTORIAL — onboarding de primeiro acesso por Eco
+ * Chave canónica única: `seteecos:tutorial:${eco}:v2:done`
+ * Migração de chaves antigas no momento de leitura (idempotente).
+ * Verificação síncrona no init para evitar flash.
  */
-export default function WelcomeTutorial({ eco = 'vitalis', onComplete }) {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
 
-  const storageKey = `${eco}_tutorial_completed`;
+const TUTORIAL_VERSION = 'v2';
 
-  useEffect(() => {
-    // Check if tutorial was already completed (check both key formats for backwards compat)
-    const completed = localStorage.getItem(storageKey) || localStorage.getItem(`${eco}-onboarding-complete`);
-    if (!completed) {
-      setIsVisible(true);
+function storageKey(eco) {
+  return `seteecos:tutorial:${eco}:${TUTORIAL_VERSION}:done`;
+}
+
+// Lê estado completo de forma síncrona, migrando chaves antigas.
+// Devolve true se já foi visto.
+export function tutorialJaVisto(eco = 'vitalis') {
+  if (typeof window === 'undefined') return true;
+  try {
+    const canon = storageKey(eco);
+    if (localStorage.getItem(canon)) return true;
+    // Migrar chaves antigas (qualquer formato anterior)
+    const legacyKeys = [
+      `${eco}_tutorial_completed`,
+      `${eco}-onboarding-complete`,
+      `${eco}-tutorial-completed`,
+      `${eco}_onboarding_complete`,
+    ];
+    for (const k of legacyKeys) {
+      if (localStorage.getItem(k)) {
+        localStorage.setItem(canon, new Date().toISOString());
+        return true;
+      }
     }
-  }, [storageKey, eco]);
+    return false;
+  } catch {
+    // localStorage indisponível (modo privado): assume já visto para não chatear
+    return true;
+  }
+}
+
+export function marcarTutorialVisto(eco = 'vitalis') {
+  try {
+    localStorage.setItem(storageKey(eco), new Date().toISOString());
+  } catch { /* ignorar erro de quota / private mode */ }
+}
+
+export function reiniciarTutorial(eco = 'vitalis') {
+  try {
+    localStorage.removeItem(storageKey(eco));
+    // limpar chaves antigas também
+    [`${eco}_tutorial_completed`, `${eco}-onboarding-complete`, `${eco}-tutorial-completed`, `${eco}_onboarding_complete`].forEach(k => {
+      localStorage.removeItem(k);
+    });
+  } catch { /* ignorar */ }
+}
+
+export default function WelcomeTutorial({ eco = 'vitalis', onComplete }) {
+  // Estado inicial DERIVED — sem flash, sem race condition com useEffect
+  const [isVisible, setIsVisible] = useState(() => !tutorialJaVisto(eco));
+  const [currentStep, setCurrentStep] = useState(0);
+
+  // Permitir fechar com ESC (também marca como visto)
+  useEffect(() => {
+    if (!isVisible) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') handleComplete();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isVisible]);
 
   const tutorials = {
     vitalis: {
-      title: g('Bem-vindo ao Vitalis!', 'Bem-vinda ao Vitalis!'),
-      color: '#7C8B6F',
+      title: g('bem-vindo ao vitalis', 'bem-vinda ao vitalis'),
       steps: [
-        {
-          title: 'O teu Dashboard',
-          description: 'Aqui vais encontrar um resumo do teu progresso, streaks e conquistas. Acompanha a tua jornada diariamente!',
-          icon: '📊'
-        },
-        {
-          title: 'Check-in Diário',
-          description: 'Regista as tuas refeições, água, sono e exercício. A consistência é a chave para resultados duradouros.',
-          icon: '✅'
-        },
-        {
-          title: 'Plano Alimentar',
-          description: 'O teu plano personalizado com porções medidas pela tua mão. Simples e prático!',
-          icon: '🥗'
-        },
-        {
-          title: 'Receitas',
-          description: 'Centenas de receitas saudáveis e deliciosas para inspirar as tuas refeições.',
-          icon: '👩‍🍳'
-        },
-        {
-          title: 'Chat com Coach',
-          description: 'Dúvidas? Fala comigo a qualquer momento. Estou aqui para te apoiar!',
-          icon: '💬'
-        },
-        {
-          title: g('Estamos juntos!', 'Estamos juntas!'),
-          description: 'Esta é a TUA jornada. Vai ao teu ritmo, celebra cada pequena vitória. Estou aqui contigo!',
-          icon: '💚'
-        }
+        { title: 'a tua página hoje', description: 'um resumo do dia: jejum em curso, refeições, macros, água, treino. é o que importa agora.' },
+        { title: 'check-in diário', description: 'regista água, sono, exercício e humor. consistência abre o caminho.' },
+        { title: 'plano alimentar', description: 'plano personalizado com porções medidas pela tua mão. sem balança.' },
+        { title: 'receitas e menu', description: 'centenas de receitas e menu semanal com lista de compras automática.' },
+        { title: 'fala comigo', description: 'dúvidas? toca no V no canto inferior direito. estou aqui contigo.' },
+        { title: g('estamos juntos', 'estamos juntas'), description: 'vai ao teu ritmo. celebra cada pequena vitória.' }
       ]
     },
     aurea: {
-      title: g('Bem-vindo ao Aurea!', 'Bem-vinda ao Aurea!'),
-      color: '#C9A227',
+      title: g('bem-vindo ao aurea', 'bem-vinda ao aurea'),
       steps: [
-        {
-          title: 'O teu Espaço Dourado',
-          description: 'Um lugar para reconheceres o teu valor e cultivares a tua presença.',
-          icon: '✨'
-        },
-        {
-          title: 'Micro-Práticas',
-          description: 'Pequenos momentos de consciência que transformam o teu dia.',
-          icon: '🌟'
-        },
-        {
-          title: 'Carteira de Merecimento',
-          description: 'Guarda aqui as provas do teu valor. Relembra sempre que és merecedora.',
-          icon: '💛'
-        },
-        {
-          title: 'Diário de Reflexão',
-          description: 'Um espaço seguro para os teus pensamentos e descobertas.',
-          icon: '📝'
-        },
-        {
-          title: 'Brilha!',
-          description: 'O teu brilho interior está sempre lá. Aurea ajuda-te a vê-lo.',
-          icon: '👑'
-        }
+        { title: 'o teu espaço dourado', description: 'um lugar para reconhecer o teu valor e cultivar presença.' },
+        { title: 'micro-práticas', description: 'pequenos momentos de consciência que transformam o dia.' },
+        { title: 'carteira de merecimento', description: 'guarda aqui as provas do teu valor.' },
+        { title: 'diário de reflexão', description: 'um espaço seguro para os teus pensamentos.' },
+        { title: 'brilha', description: 'o teu brilho está sempre lá. o aurea ajuda-te a vê-lo.' }
       ]
     },
     lumina: {
-      title: g('Bem-vindo ao Lumina!', 'Bem-vinda ao Lumina!'),
-      color: '#8B5CF6',
+      title: g('bem-vindo ao lumina', 'bem-vinda ao lumina'),
       steps: [
-        {
-          title: 'Diagnóstico Diário',
-          description: 'Responde a 7 perguntas simples sobre como te sentes hoje.',
-          icon: '🔮'
-        },
-        {
-          title: 'Leitura Personalizada',
-          description: 'Recebe uma interpretação única baseada nas tuas respostas.',
-          icon: '📖'
-        },
-        {
-          title: 'Padrões e Insights',
-          description: 'Ao longo do tempo, descobre padrões no teu bem-estar.',
-          icon: '💜'
-        }
+        { title: 'diagnóstico diário', description: 'responde a 7 perguntas simples sobre como te sentes hoje.' },
+        { title: 'leitura personalizada', description: 'recebe uma interpretação única baseada nas tuas respostas.' },
+        { title: 'padrões e insights', description: 'ao longo do tempo, descobre padrões no teu bem-estar.' }
       ]
     },
     serena: {
-      title: g('Bem-vindo ao Serena!', 'Bem-vinda ao Serena!'),
-      color: '#6B8E9B',
+      title: g('bem-vindo ao serena', 'bem-vinda ao serena'),
       steps: [
-        {
-          title: 'Diário Emocional',
-          description: 'Regista as tuas emoções com a roda de 16 emoções e mapeia onde as sentes no corpo.',
-          icon: '📝'
-        },
-        {
-          title: 'Respiração Guiada',
-          description: '6 técnicas de respiração para cada situação — da ansiedade ao sono.',
-          icon: '🫁'
-        },
-        {
-          title: 'Rituais de Libertação',
-          description: 'Práticas simbólicas para soltar o que já não te serve.',
-          icon: '🦋'
-        },
-        {
-          title: 'Padrões e Ciclos',
-          description: 'Descobre os teus padrões emocionais ao longo do tempo.',
-          icon: '🔄'
-        },
-        {
-          title: g('Estamos juntos!', 'Estamos juntas!'),
-          description: 'Sentir é coragem. O Serena está aqui para ti, sem julgamento.',
-          icon: '💧'
-        }
+        { title: 'diário emocional', description: 'roda de 16 emoções e onde as sentes no corpo.' },
+        { title: 'respiração guiada', description: '6 técnicas para cada situação.' },
+        { title: 'rituais de libertação', description: 'práticas simbólicas para soltar.' },
+        { title: 'padrões e ciclos', description: 'descobre os teus padrões ao longo do tempo.' },
+        { title: g('estamos juntos', 'estamos juntas'), description: 'sentir é coragem. sem julgamento.' }
       ]
     },
     ignis: {
-      title: g('Bem-vindo ao Ignis!', 'Bem-vinda ao Ignis!'),
-      color: '#C1634A',
+      title: g('bem-vindo ao ignis', 'bem-vinda ao ignis'),
       steps: [
-        {
-          title: 'Escolhas Conscientes',
-          description: 'Regista cada decisão importante e percebe se escolhes por medo ou por vontade.',
-          icon: '🎯'
-        },
-        {
-          title: 'Sessões de Foco',
-          description: 'Timer de concentração com rastreamento de distracções.',
-          icon: '🔬'
-        },
-        {
-          title: 'Desafios de Fogo',
-          description: '16 desafios em 4 categorias: coragem, corte, alinhamento e iniciativa.',
-          icon: '⚔️'
-        },
-        {
-          title: 'Plano de Acção',
-          description: 'Transforma intenções em passos concretos com prazos.',
-          icon: '📋'
-        },
-        {
-          title: 'Acende o Fogo!',
-          description: 'Cada escolha consciente fortalece a tua chama interior.',
-          icon: '🔥'
-        }
+        { title: 'escolhas conscientes', description: 'percebe se escolhes por medo ou vontade.' },
+        { title: 'sessões de foco', description: 'timer de concentração com rastreio de distracções.' },
+        { title: 'desafios de fogo', description: '16 desafios em 4 categorias.' },
+        { title: 'plano de acção', description: 'transforma intenções em passos com prazos.' },
+        { title: 'acende o fogo', description: 'cada escolha consciente fortalece a chama interior.' }
       ]
     },
     ventis: {
-      title: g('Bem-vindo ao Ventis!', 'Bem-vinda ao Ventis!'),
-      color: '#5D9B84',
+      title: g('bem-vindo ao ventis', 'bem-vinda ao ventis'),
       steps: [
-        {
-          title: 'Monitor de Energia',
-          description: 'Regista o teu nível de energia ao longo do dia e descobre os teus picos e vales.',
-          icon: '⚡'
-        },
-        {
-          title: 'Rotinas & Rituais',
-          description: 'Constrói rotinas sustentáveis e transforma hábitos em rituais com intenção.',
-          icon: '🔄'
-        },
-        {
-          title: 'Pausas Conscientes',
-          description: '8 tipos de pausa para recarregar — de micro-pausas a meditações.',
-          icon: '⏸️'
-        },
-        {
-          title: 'Movimento & Natureza',
-          description: 'Yoga, dança, caminhada consciente e conexão com a natureza.',
-          icon: '🌿'
-        },
-        {
-          title: 'Flui!',
-          description: 'A energia não é infinita — é renovável. Aprende a fluir sem forçar.',
-          icon: '🍃'
-        }
+        { title: 'monitor de energia', description: 'descobre os teus picos e vales.' },
+        { title: 'rotinas e rituais', description: 'transforma hábitos em rituais com intenção.' },
+        { title: 'pausas conscientes', description: '8 tipos de pausa para recarregar.' },
+        { title: 'movimento e natureza', description: 'yoga, dança, caminhada consciente.' },
+        { title: 'flui', description: 'aprende a fluir sem forçar.' }
       ]
     },
     ecoa: {
-      title: g('Bem-vindo ao Ecoa!', 'Bem-vinda ao Ecoa!'),
-      color: '#4A90A4',
+      title: g('bem-vindo ao ecoa', 'bem-vinda ao ecoa'),
       steps: [
-        {
-          title: 'Mapa de Silenciamento',
-          description: 'Identifica onde te calas: família, trabalho, relações, contigo.',
-          icon: '🤐'
-        },
-        {
-          title: 'Programa Micro-Voz',
-          description: '8 semanas de exercícios progressivos para recuperar a tua expressão.',
-          icon: '🎤'
-        },
-        {
-          title: 'Cartas Não Enviadas',
-          description: 'Escreve o que nunca disseste — perdão, raiva, gratidão, verdade.',
-          icon: '✉️'
-        },
-        {
-          title: 'Comunicação Assertiva',
-          description: 'Templates para comunicar com clareza sem agressividade.',
-          icon: '🗣️'
-        },
-        {
-          title: 'Fala!',
-          description: 'A tua voz existe. O Ecoa dá-te permissão para a usar.',
-          icon: '🔊'
-        }
+        { title: 'mapa de silenciamento', description: 'identifica onde te calas.' },
+        { title: 'programa micro-voz', description: '8 semanas para recuperar a expressão.' },
+        { title: 'cartas não enviadas', description: 'escreve o que nunca disseste.' },
+        { title: 'comunicação assertiva', description: 'templates para comunicar com clareza.' },
+        { title: 'fala', description: 'a tua voz existe.' }
       ]
     },
     imago: {
-      title: g('Bem-vindo ao Imago!', 'Bem-vinda ao Imago!'),
-      color: '#8B7BA5',
+      title: g('bem-vindo ao imago', 'bem-vinda ao imago'),
       steps: [
-        {
-          title: 'Espelho Triplo',
-          description: 'Descobre a tua essência, máscara e aspiração — 3 dimensões de quem és.',
-          icon: '🪞'
-        },
-        {
-          title: 'Arqueologia de Si',
-          description: 'Escava 5 camadas: infância, adolescência, juventude, vida adulta, presente.',
-          icon: '⛏️'
-        },
-        {
-          title: 'Valores Essenciais',
-          description: 'Selecciona os teus valores-guia entre 50 opções universais.',
-          icon: '💎'
-        },
-        {
-          title: 'Meditações de Essência',
-          description: '5 meditações guiadas para te encontrares a um nível mais profundo.',
-          icon: '🧘'
-        },
-        {
-          title: 'Descobre-te!',
-          description: 'A identidade é um rio, não uma pedra. O Imago é a tua lente.',
-          icon: '⭐'
-        }
+        { title: 'espelho triplo', description: 'essência, máscara e aspiração.' },
+        { title: 'arqueologia de si', description: 'escava 5 camadas da tua história.' },
+        { title: 'valores essenciais', description: 'selecciona os teus valores-guia.' },
+        { title: 'meditações de essência', description: '5 meditações guiadas.' },
+        { title: 'descobre-te', description: 'a identidade é um rio.' }
       ]
     }
   };
@@ -269,29 +159,19 @@ export default function WelcomeTutorial({ eco = 'vitalis', onComplete }) {
   const tutorial = tutorials[eco] || tutorials.vitalis;
   const totalSteps = tutorial.steps.length;
 
+  const handleComplete = () => {
+    marcarTutorialVisto(eco);
+    setIsVisible(false);
+    if (onComplete) onComplete();
+  };
+
   const handleNext = () => {
-    if (currentStep < totalSteps - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      handleComplete();
-    }
+    if (currentStep < totalSteps - 1) setCurrentStep(currentStep + 1);
+    else handleComplete();
   };
 
   const handlePrev = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const handleSkip = () => {
-    handleComplete();
-  };
-
-  const handleComplete = () => {
-    localStorage.setItem(storageKey, 'true');
-    localStorage.setItem(`${eco}-onboarding-complete`, 'true');
-    setIsVisible(false);
-    if (onComplete) onComplete();
+    if (currentStep > 0) setCurrentStep(currentStep - 1);
   };
 
   if (!isVisible) return null;
@@ -299,72 +179,113 @@ export default function WelcomeTutorial({ eco = 'vitalis', onComplete }) {
   const step = tutorial.steps[currentStep];
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
-        {/* Header with progress */}
-        <div
-          className="p-6 text-center text-white"
-          style={{ background: `linear-gradient(135deg, ${tutorial.color}, ${tutorial.color}dd)` }}
-        >
-          <h2 className="text-xl font-bold mb-2" style={{ fontFamily: 'var(--font-titulos)' }}>
-            {currentStep === 0 ? tutorial.title : step.title}
-          </h2>
-
-          {/* Progress dots */}
-          <div className="flex justify-center gap-1.5 mt-4">
-            {tutorial.steps.map((_, index) => (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 fnx-fade-in"
+      style={{ background: 'rgba(0, 0, 0, 0.55)', backdropFilter: 'blur(6px)' }}
+      onClick={(e) => {
+        // Click no backdrop fecha (também marca como visto)
+        if (e.target === e.currentTarget) handleComplete();
+      }}
+    >
+      <div
+        className="relative w-full max-w-md fnx-card-feature"
+        style={{ padding: 0, overflow: 'hidden' }}
+      >
+        {/* Header editorial */}
+        <div style={{ padding: '24px 24px 16px' }}>
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <span className="fnx-label-cap">
+                passo {currentStep + 1} de {totalSteps}
+              </span>
+              <h2
+                className="fnx-text-ink mt-2"
+                style={{
+                  fontFamily: 'var(--font-editorial)',
+                  fontSize: '22px',
+                  fontWeight: 400,
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1.2
+                }}
+              >
+                {currentStep === 0 ? tutorial.title : step.title}
+              </h2>
               <div
-                key={index}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentStep
-                    ? 'bg-white w-6'
-                    : index < currentStep
-                    ? 'bg-white/80'
-                    : 'bg-white/40'
-                }`}
+                aria-hidden
+                className="mt-3"
+                style={{ height: '1px', width: '24px', background: 'var(--fnx-ouro)' }}
               />
-            ))}
+            </div>
+            <button
+              onClick={handleComplete}
+              className="fnx-text-faint hover:opacity-70 fnx-transition p-1 -mt-1 -mr-1"
+              aria-label="fechar tutorial"
+            >
+              <X size={18} strokeWidth={1.4} />
+            </button>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="p-6 text-center">
-          <div className="text-5xl mb-4">{step.icon}</div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">
-            {step.title}
-          </h3>
-          <p className="text-gray-600 leading-relaxed">
+        {/* Body */}
+        <div style={{ padding: '4px 24px 16px' }}>
+          {currentStep > 0 && (
+            <h3
+              className="fnx-text-ink mb-2"
+              style={{ fontFamily: 'var(--font-editorial)', fontSize: '17px', fontWeight: 400, letterSpacing: '-0.015em' }}
+            >
+              {step.title}
+            </h3>
+          )}
+          <p
+            className="fnx-text-soft"
+            style={{
+              fontFamily: 'var(--font-editorial)',
+              fontWeight: 300,
+              fontSize: '15px',
+              lineHeight: 1.6,
+              fontStyle: 'italic'
+            }}
+          >
             {step.description}
           </p>
         </div>
 
+        {/* Progress hairline */}
+        <div className="h-px w-full" style={{ background: 'var(--fnx-hair)' }}>
+          <div
+            className="h-px"
+            style={{
+              width: `${((currentStep + 1) / totalSteps) * 100}%`,
+              background: 'var(--fnx-ouro)',
+              transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+            }}
+          />
+        </div>
+
         {/* Actions */}
-        <div className="p-6 pt-0 space-y-3">
+        <div className="flex items-center justify-between" style={{ padding: '16px 24px 24px' }}>
           <button
-            onClick={handleNext}
-            className="w-full py-3.5 rounded-xl font-semibold text-white transition-all hover:shadow-lg"
-            style={{ background: `linear-gradient(135deg, ${tutorial.color}, ${tutorial.color}dd)` }}
+            onClick={handlePrev}
+            className="fnx-btn-ghost"
+            disabled={currentStep === 0}
+            style={{ opacity: currentStep === 0 ? 0 : 1, pointerEvents: currentStep === 0 ? 'none' : 'auto' }}
+            aria-hidden={currentStep === 0}
           >
-            {currentStep < totalSteps - 1 ? 'Continuar' : 'Começar!'}
+            <ArrowLeft size={14} strokeWidth={1.4} />
+            <span>voltar</span>
           </button>
 
-          <div className="flex justify-between items-center">
-            {currentStep > 0 ? (
-              <button
-                onClick={handlePrev}
-                className="text-gray-500 hover:text-gray-700 text-sm font-medium"
-              >
-                Voltar
-              </button>
-            ) : (
-              <div></div>
-            )}
-
+          <div className="flex items-center gap-3">
             <button
-              onClick={handleSkip}
-              className="text-gray-400 hover:text-gray-600 text-sm"
+              onClick={handleComplete}
+              className="fnx-text-faint fnx-transition hover:opacity-70"
+              style={{ fontSize: '12.5px', letterSpacing: '0.04em' }}
             >
-              Saltar tutorial
+              saltar
+            </button>
+            <button onClick={handleNext} className="fnx-btn-primary" style={{ padding: '0.625rem 1.25rem' }}>
+              <span>{currentStep < totalSteps - 1 ? 'próximo' : 'começar'}</span>
+              <ArrowRight size={14} strokeWidth={1.4} />
             </button>
           </div>
         </div>
@@ -374,25 +295,14 @@ export default function WelcomeTutorial({ eco = 'vitalis', onComplete }) {
 }
 
 /**
- * Hook to check if tutorial should be shown
+ * Hook simples — não usado directamente pelo Dashboard mas mantido
+ * para compatibilidade com outros sítios que o importem.
  */
 export function useTutorialStatus(eco) {
-  const [shouldShow, setShouldShow] = useState(false);
-
-  useEffect(() => {
-    const completed = localStorage.getItem(`${eco}_tutorial_completed`);
-    setShouldShow(!completed);
-  }, [eco]);
-
-  const markComplete = () => {
-    localStorage.setItem(`${eco}_tutorial_completed`, 'true');
-    setShouldShow(false);
+  const [shouldShow, setShouldShow] = useState(() => !tutorialJaVisto(eco));
+  return {
+    shouldShow,
+    markComplete: () => { marcarTutorialVisto(eco); setShouldShow(false); },
+    reset: () => { reiniciarTutorial(eco); setShouldShow(true); }
   };
-
-  const reset = () => {
-    localStorage.removeItem(`${eco}_tutorial_completed`);
-    setShouldShow(true);
-  };
-
-  return { shouldShow, markComplete, reset };
 }

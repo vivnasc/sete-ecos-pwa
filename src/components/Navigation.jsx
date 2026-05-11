@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useI18n } from '../contexts/I18nContext'
-import { Home as HomeIcon, Sparkles, Users, User2, MessageCircle } from 'lucide-react'
+import { Home as HomeIcon, Sparkles, Users, User2, MessageCircle, LayoutGrid } from 'lucide-react'
 
 export default function Navigation({ variant = 'default' }) {
   const navigate = useNavigate()
@@ -228,20 +228,20 @@ export default function Navigation({ variant = 'default' }) {
             <FnxNavItem
               icon={HomeIcon}
               label="hoje"
-              active={isActive('/vitalis/dashboard')}
+              active={location.pathname === '/vitalis/dashboard'}
               onClick={() => navigate('/vitalis/dashboard')}
+            />
+            <FnxNavItem
+              icon={LayoutGrid}
+              label="ferramentas"
+              active={location.pathname === '/vitalis/ferramentas'}
+              onClick={() => navigate('/vitalis/ferramentas')}
             />
             <FnxNavItem
               icon={Sparkles}
               label="lumina"
               active={isActive('/lumina')}
               onClick={() => navigate('/lumina')}
-            />
-            <FnxNavItem
-              logo="/logos/VITALIS_LOGO_V3.png"
-              label="vitalis"
-              active={isVitalisSection && !isAccountSection && !isCommunitySection}
-              onClick={() => navigate(hasVitalisAccess ? '/vitalis/dashboard' : '/vitalis')}
             />
             {isAuthenticated && (
               <FnxNavItem
