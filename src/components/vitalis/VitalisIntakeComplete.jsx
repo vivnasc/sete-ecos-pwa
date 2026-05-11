@@ -968,7 +968,7 @@ try {
               <p className="text-red-600 text-sm mb-4 bg-red-50 rounded-lg p-3">{planoErro}</p>
               <button
                 onClick={retryPlano}
-                className="w-full py-3 bg-[var(--fnx-bg-elev)] text-white rounded-xl font-semibold mb-3"
+                className="w-full py-3 bg-[var(--fnx-ink)] text-white rounded-xl font-semibold mb-3"
               >
                 Tentar novamente
               </button>

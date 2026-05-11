@@ -515,7 +515,7 @@ const ReceitaDetalhe = () => {
         {/* Botão voltar */}
         <button
           onClick={() => navigate('/vitalis/receitas')}
-          className="w-full mt-6 py-4 bg-[var(--fnx-bg-elev)] text-white rounded-2xl font-semibold shadow-lg"
+          className="w-full mt-6 py-4 bg-[var(--fnx-ink)] text-white rounded-2xl font-semibold shadow-lg"
         >
           ← Voltar às Receitas
         </button>

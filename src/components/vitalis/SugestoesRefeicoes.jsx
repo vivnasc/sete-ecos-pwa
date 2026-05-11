@@ -264,7 +264,7 @@ export default function SugestoesRefeicoes() {
   return (
     <div className="fnx-theme min-h-screen pb-8">
       {/* Header */}
-      <header className="bg-[var(--fnx-bg-elev)] text-white">
+      <header className="bg-[var(--fnx-ink)] text-white">
         <div className="max-w-2xl mx-auto px-4 py-5">
           <div className="flex items-center gap-3 mb-4">
             <Link to="/vitalis/dashboard" className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">

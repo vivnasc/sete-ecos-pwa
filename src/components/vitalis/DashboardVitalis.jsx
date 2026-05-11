@@ -115,31 +115,96 @@ export default function DashboardVitalis() {
   const notificacaoJejumEnviada = useRef(false);
   const jejumTimerRef = useRef(null);
 
-  // Conquistas já celebradas — persistente via localStorage individual por conquista
+  // Conquistas já celebradas — chave canónica única + idempotente + try/catch.
+  // Mesmo padrão do fix do tutorial (WelcomeTutorial v2): verificação síncrona,
+  // migração de chaves antigas, e fallback in-memory caso localStorage falhe
+  // (modo privado iOS, quota cheia).
+  const CONQUISTAS_KEY = 'seteecos:conquistas:vitalis:v2:celebradas';
+  const _conquistasMem = useRef(null); // fallback in-memory
+
   const getConquistasCelebradas = () => {
+    // 1. In-memory fallback (mais recente)
+    if (_conquistasMem.current) return _conquistasMem.current;
+
     const set = new Set();
-    // Ler chaves individuais (mais robusto que JSON array)
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key?.startsWith('vitalis-conquista-')) {
-        set.add(key.replace('vitalis-conquista-', ''));
+    try {
+      // 2. Chave canónica nova (JSON array)
+      const canon = localStorage.getItem(CONQUISTAS_KEY);
+      if (canon) {
+        try {
+          const arr = JSON.parse(canon);
+          if (Array.isArray(arr)) arr.forEach(id => set.add(id));
+        } catch { /* JSON malformado, ignorar */ }
       }
+
+      // 3. Migrar chaves individuais antigas `vitalis-conquista-{id}`
+      let migradoIndividuais = false;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.startsWith('vitalis-conquista-')) {
+          set.add(key.replace('vitalis-conquista-', ''));
+          migradoIndividuais = true;
+        }
+      }
+
+      // 4. Migrar formatos antigos JSON (celebradas, notificadas)
+      try {
+        const old = JSON.parse(localStorage.getItem('vitalis-conquistas-celebradas') || '[]');
+        old.forEach(id => set.add(id));
+        if (old.length > 0) localStorage.removeItem('vitalis-conquistas-celebradas');
+      } catch { /* */ }
+      try {
+        const old2 = JSON.parse(localStorage.getItem('vitalis-conquistas-notificadas') || '[]');
+        old2.forEach(id => set.add(id));
+        if (old2.length > 0) localStorage.removeItem('vitalis-conquistas-notificadas');
+      } catch { /* */ }
+
+      // 5. Se migrámos algo, persistir na chave canónica
+      if (migradoIndividuais || set.size > 0) {
+        try {
+          localStorage.setItem(CONQUISTAS_KEY, JSON.stringify([...set]));
+          // Limpar chaves individuais antigas
+          if (migradoIndividuais) {
+            const aRemover = [];
+            for (let i = 0; i < localStorage.length; i++) {
+              const key = localStorage.key(i);
+              if (key?.startsWith('vitalis-conquista-')) aRemover.push(key);
+            }
+            aRemover.forEach(k => localStorage.removeItem(k));
+          }
+        } catch { /* */ }
+      }
+    } catch {
+      // localStorage indisponível — usar in-memory
     }
-    // Migrar formato antigo (JSON array) se existir
-    try {
-      const old = JSON.parse(localStorage.getItem('vitalis-conquistas-celebradas') || '[]');
-      old.forEach(id => { set.add(id); localStorage.setItem(`vitalis-conquista-${id}`, '1'); });
-      if (old.length > 0) localStorage.removeItem('vitalis-conquistas-celebradas');
-    } catch { /* ignorar */ }
-    try {
-      const old2 = JSON.parse(localStorage.getItem('vitalis-conquistas-notificadas') || '[]');
-      old2.forEach(id => { set.add(id); localStorage.setItem(`vitalis-conquista-${id}`, '1'); });
-      if (old2.length > 0) localStorage.removeItem('vitalis-conquistas-notificadas');
-    } catch { /* ignorar */ }
+
+    _conquistasMem.current = set;
     return set;
   };
+
   const marcarConquistaCelebrada = (id) => {
-    localStorage.setItem(`vitalis-conquista-${id}`, '1');
+    // 1. In-memory primeiro (nunca falha)
+    if (!_conquistasMem.current) _conquistasMem.current = new Set();
+    _conquistasMem.current.add(id);
+
+    // 2. localStorage (best-effort)
+    try {
+      const atual = localStorage.getItem(CONQUISTAS_KEY);
+      let arr = [];
+      if (atual) {
+        try {
+          const parsed = JSON.parse(atual);
+          if (Array.isArray(parsed)) arr = parsed;
+        } catch { /* */ }
+      }
+      if (!arr.includes(id)) arr.push(id);
+      localStorage.setItem(CONQUISTAS_KEY, JSON.stringify(arr));
+    } catch { /* */ }
+
+    // 3. sessionStorage (backup para esta sessão)
+    try {
+      sessionStorage.setItem(`vitalis-conquista-sess-${id}`, '1');
+    } catch { /* */ }
   };
 
   // Estados de sono interactivo movidos para QuickTrackers

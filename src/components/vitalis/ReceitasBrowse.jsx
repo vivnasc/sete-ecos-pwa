@@ -395,7 +395,7 @@ export const ReceitasBrowse = () => {
                   onClick={() => setFiltroTipo(tipo.value)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
                     filtroTipo === tipo.value
-                      ? 'bg-[var(--fnx-bg-elev)] text-white'
+                      ? 'bg-[var(--fnx-ink)] text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -415,7 +415,7 @@ export const ReceitasBrowse = () => {
                   onClick={() => setFiltroOrigem(origem.value)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
                     filtroOrigem === origem.value
-                      ? 'bg-[var(--fnx-bg-elev)] text-white'
+                      ? 'bg-[var(--fnx-ink)] text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >

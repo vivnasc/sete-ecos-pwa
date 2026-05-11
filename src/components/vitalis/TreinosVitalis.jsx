@@ -1657,7 +1657,7 @@ function RegistarTreinoTab({ treinoHoje, historico, userId, treinoTipo, setTrein
                 <button
                   onClick={onRegistar}
                   disabled={salvandoTreino}
-                  className="w-full py-3 bg-[var(--fnx-bg-elev)] text-white rounded-xl text-sm font-bold hover:shadow-lg transition-all disabled:opacity-50 active:scale-95"
+                  className="w-full py-3 bg-[var(--fnx-ink)] text-white rounded-xl text-sm font-bold hover:shadow-lg transition-all disabled:opacity-50 active:scale-95"
                 >
                   {salvandoTreino ? 'A guardar...' : `✓ Registar ${tipoInfo?.label || 'Treino'}`}
                 </button>

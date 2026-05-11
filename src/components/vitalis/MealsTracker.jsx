@@ -564,7 +564,7 @@ export default function MealsTracker() {
         </div>
 
         {/* Hand method reference */}
-        <div className="bg-[var(--fnx-bg-elev)] rounded-2xl p-4 text-white">
+        <div className="bg-[var(--fnx-ink)] rounded-2xl p-4 text-white">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xl">🤚</span>
             <span className="font-bold text-sm">Guia rápido — Método da Mão</span>

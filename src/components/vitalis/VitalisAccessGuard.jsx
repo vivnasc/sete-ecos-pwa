@@ -133,7 +133,7 @@ const VitalisAccessGuard = ({ children }) => {
           </div>
           <Link
             to="/vitalis"
-            className="block w-full py-3 px-6 bg-[var(--fnx-bg-elev)] text-white rounded-xl font-semibold hover:shadow-lg transition-all mb-3"
+            className="block w-full py-3 px-6 bg-[var(--fnx-ink)] text-white rounded-xl font-semibold hover:shadow-lg transition-all mb-3"
           >
             ← Voltar à Página Inicial
           </Link>

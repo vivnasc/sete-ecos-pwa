@@ -530,7 +530,7 @@ export default function PerfilVitalis() {
         <button
           onClick={guardarPerfil}
           disabled={saving}
-          className="w-full py-4 bg-[var(--fnx-bg-elev)] text-white rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
+          className="w-full py-4 bg-[var(--fnx-ink)] text-white rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
         >
           {saving ? 'A guardar...' : 'Guardar Alterações'}
         </button>
@@ -602,7 +602,7 @@ export default function PerfilVitalis() {
               </p>
               <button
                 onClick={handleGenerateReferral}
-                className="px-6 py-3 bg-[var(--fnx-bg-elev)] text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                className="px-6 py-3 bg-[var(--fnx-ink)] text-white rounded-xl font-semibold hover:shadow-lg transition-all"
               >
                 Gerar o meu codigo
               </button>

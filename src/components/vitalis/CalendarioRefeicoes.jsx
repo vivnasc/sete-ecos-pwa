@@ -746,7 +746,7 @@ export default function CalendarioRefeicoes() {
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
       {/* Header */}
-      <header className="bg-[var(--fnx-bg-elev)] text-white">
+      <header className="bg-[var(--fnx-ink)] text-white">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
             <Link to="/vitalis/dashboard" className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
@@ -904,7 +904,7 @@ export default function CalendarioRefeicoes() {
         </div>
 
         {/* Hand method reference */}
-        <div className="bg-[var(--fnx-bg-elev)] rounded-2xl p-4 text-white">
+        <div className="bg-[var(--fnx-ink)] rounded-2xl p-4 text-white">
           <h3 className="font-bold mb-2">A tua mão = a tua medida</h3>
           <div className="grid grid-cols-4 gap-3 text-center text-sm">
             <div><span className="text-2xl">🫲</span><p className="text-white/80 text-xs mt-1">1 palma = Proteína</p></div>

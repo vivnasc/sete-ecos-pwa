@@ -881,7 +881,7 @@ const PagamentoVitalis = () => {
                     onClick={() => setPaymentMethod('manual')}
                     className={`flex-1 py-3 rounded-xl font-medium transition-all ${
                       paymentMethod === 'manual'
-                        ? 'bg-[var(--fnx-bg-elev)] text-white shadow-lg'
+                        ? 'bg-[var(--fnx-ink)] text-white shadow-lg'
                         : 'bg-white/10 text-white/60 hover:bg-white/20'
                     }`}
                   >
@@ -1033,7 +1033,7 @@ const PagamentoVitalis = () => {
                       <button
                         type="submit"
                         disabled={processing || !manualReference.trim()}
-                        className="w-full py-3 bg-[var(--fnx-bg-elev)] text-white rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg transition-all"
+                        className="w-full py-3 bg-[var(--fnx-ink)] text-white rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg transition-all"
                       >
                         {processing ? 'A registar...' : '✓ Confirmar Pagamento'}
                       </button>

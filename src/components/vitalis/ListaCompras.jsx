@@ -542,7 +542,7 @@ export default function ListaCompras() {
   return (
     <div className="fnx-theme min-h-screen pb-8">
       {/* Header */}
-      <header className="bg-[var(--fnx-bg-elev)] text-white">
+      <header className="bg-[var(--fnx-ink)] text-white">
         <div className="max-w-2xl mx-auto px-4 py-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

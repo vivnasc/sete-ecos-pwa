@@ -602,7 +602,7 @@ export default function PlanoAlimentar() {
           {errorType === 'pending_review' ? (
             <a
               href="/vitalis/dashboard"
-              className="inline-block px-6 py-3 bg-[var(--fnx-bg-elev)] text-white rounded-full font-semibold"
+              className="inline-block px-6 py-3 bg-[var(--fnx-ink)] text-white rounded-full font-semibold"
             >
               Voltar ao Dashboard
             </a>
@@ -610,14 +610,14 @@ export default function PlanoAlimentar() {
             <button
               onClick={regenerarPlano}
               disabled={regenerando}
-              className="inline-block px-6 py-3 bg-[var(--fnx-bg-elev)] text-white rounded-full font-semibold disabled:opacity-50"
+              className="inline-block px-6 py-3 bg-[var(--fnx-ink)] text-white rounded-full font-semibold disabled:opacity-50"
             >
               {regenerando ? 'A gerar plano...' : 'Gerar o Meu Plano'}
             </button>
           ) : (
             <a
               href="/vitalis/intake"
-              className="inline-block px-6 py-3 bg-[var(--fnx-bg-elev)] text-white rounded-full font-semibold"
+              className="inline-block px-6 py-3 bg-[var(--fnx-ink)] text-white rounded-full font-semibold"
             >
               Completar Intake
             </a>
@@ -701,7 +701,7 @@ export default function PlanoAlimentar() {
         {/* BOTÃO PDF - DESTACADO */}
         <button
           onClick={() => setShowPDFModal(true)}
-          className="w-full bg-[var(--fnx-bg-elev)] text-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all flex items-center justify-between"
+          className="w-full bg-[var(--fnx-ink)] text-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all flex items-center justify-between"
         >
           <div className="flex items-center gap-4">
             <div className="p-3 bg-white bg-opacity-20 rounded-xl">
@@ -716,7 +716,7 @@ export default function PlanoAlimentar() {
         </button>
 
         {/* Método da Mão - Hero Banner */}
-        <div className="bg-[var(--fnx-bg-elev)] rounded-2xl p-5 shadow-lg text-white">
+        <div className="bg-[var(--fnx-ink)] rounded-2xl p-5 shadow-lg text-white">
           <div className="flex items-center gap-4 mb-3">
             <div className="text-5xl">🤚</div>
             <div>
