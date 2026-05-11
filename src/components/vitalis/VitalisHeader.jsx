@@ -1,22 +1,10 @@
 // ============================================================
-// VITALIS HEADER - Consistent navigation header for Vitalis pages
+// VITALIS HEADER — Linguagem editorial FénixFit
 // ============================================================
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const ArrowLeftIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
-    <path d="M19 12H5M12 19l-7-7 7-7"/>
-  </svg>
-);
-
-const HomeIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
-    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-    <polyline points="9 22 9 12 15 12 15 22"/>
-  </svg>
-);
+import { ArrowLeft, Home } from 'lucide-react';
 
 export default function VitalisHeader({
   title,
@@ -31,7 +19,6 @@ export default function VitalisHeader({
 
   const handleBack = () => {
     if (backTo === 'history') {
-      // Use browser history if specified
       if (window.history.length > 2) {
         navigate(-1);
       } else {
@@ -47,28 +34,26 @@ export default function VitalisHeader({
       <header
         className={`sticky top-0 z-40 backdrop-blur-md ${className}`}
         style={{
-          background: 'rgba(246, 241, 232, 0.92)',
-          boxShadow: 'inset 0 -1px 0 var(--vitalis-hair)'
+          background: 'color-mix(in srgb, var(--fnx-bg) 92%, transparent)',
+          boxShadow: 'inset 0 -1px 0 var(--fnx-hair)'
         }}
       >
-        <div className="max-w-[780px] mx-auto px-5 py-3 flex items-center justify-between">
+        <div className="fnx-container flex items-center justify-between py-3">
           <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={handleBack}
-              className="p-2 -ml-2 rounded-md transition-colors hover:bg-[var(--vitalis-bg-elev)]"
-              style={{ color: 'var(--vitalis-ink-soft)' }}
+              className="-ml-2 p-2 rounded-md fnx-transition fnx-text-soft hover:opacity-70"
               aria-label="Voltar"
             >
-              <ArrowLeftIcon />
+              <ArrowLeft size={18} strokeWidth={1.4} />
             </button>
             <h1
-              className="truncate"
+              className="truncate fnx-text-ink"
               style={{
                 fontFamily: 'var(--font-editorial)',
                 fontWeight: 400,
-                fontSize: '1.0625rem',
-                letterSpacing: '-0.015em',
-                color: 'var(--vitalis-ink)'
+                fontSize: '17px',
+                letterSpacing: '-0.015em'
               }}
             >
               {title}
@@ -80,11 +65,10 @@ export default function VitalisHeader({
             {showHomeButton && (
               <button
                 onClick={() => navigate('/vitalis/dashboard')}
-                className="p-2 rounded-md transition-colors hover:bg-[var(--vitalis-bg-elev)]"
-                style={{ color: 'var(--vitalis-ink-soft)' }}
+                className="p-2 rounded-md fnx-transition fnx-text-soft hover:opacity-70"
                 aria-label="Dashboard"
               >
-                <HomeIcon />
+                <Home size={18} strokeWidth={1.4} />
               </button>
             )}
           </div>
@@ -97,20 +81,20 @@ export default function VitalisHeader({
     <header
       className={`relative ${className}`}
       style={{
-        background: 'var(--vitalis-bg)',
-        boxShadow: 'inset 0 -1px 0 var(--vitalis-hair)'
+        background: 'var(--fnx-bg)',
+        boxShadow: 'inset 0 -1px 0 var(--fnx-hair)'
       }}
     >
-      <div className="max-w-[780px] mx-auto px-5 pt-4 pb-5">
+      <div className="fnx-container pt-5 pb-6">
         {/* Navigation row */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-4">
           <button
             onClick={handleBack}
-            className="flex items-center gap-2 -ml-2 px-2 py-1.5 rounded-md transition-colors hover:bg-[var(--vitalis-bg-elev)]"
-            style={{ color: 'var(--vitalis-ink-soft)' }}
+            className="fnx-btn-ghost -ml-3"
+            style={{ padding: '0.5rem 0.75rem' }}
           >
-            <ArrowLeftIcon />
-            <span style={{ fontSize: '0.8125rem' }}>Voltar</span>
+            <ArrowLeft size={16} strokeWidth={1.4} />
+            <span style={{ fontSize: '13px' }}>voltar</span>
           </button>
 
           <div className="flex items-center gap-1">
@@ -118,78 +102,79 @@ export default function VitalisHeader({
             {showHomeButton && (
               <button
                 onClick={() => navigate('/vitalis/dashboard')}
-                className="p-2 rounded-md transition-colors hover:bg-[var(--vitalis-bg-elev)]"
-                style={{ color: 'var(--vitalis-ink-soft)' }}
+                className="p-2 rounded-md fnx-transition fnx-text-soft hover:opacity-70"
                 aria-label="Dashboard"
               >
-                <HomeIcon />
+                <Home size={18} strokeWidth={1.4} />
               </button>
             )}
           </div>
         </div>
 
-        {/* Title */}
+        {/* Title editorial */}
         <div>
           <h1
+            className="fnx-text-ink"
             style={{
               fontFamily: 'var(--font-editorial)',
-              fontWeight: 400,
-              fontSize: '1.625rem',
-              letterSpacing: '-0.015em',
-              lineHeight: 1.15,
-              color: 'var(--vitalis-ink)'
+              fontWeight: 300,
+              fontSize: 'clamp(28px, 7vw, 36px)',
+              letterSpacing: '-0.02em',
+              lineHeight: 1.1
             }}
           >
             {title}
           </h1>
           {subtitle && (
             <p
-              className="mt-1"
+              className="fnx-text-soft mt-1.5"
               style={{
-                fontSize: '0.8125rem',
-                color: 'var(--vitalis-ink-faint)',
-                letterSpacing: '0.01em'
+                fontSize: '13px',
+                letterSpacing: '0.01em',
+                lineHeight: 1.5
               }}
             >
               {subtitle}
             </p>
           )}
+          <div
+            className="mt-3"
+            aria-hidden
+            style={{ height: '1px', width: '32px', background: 'var(--fnx-ouro)' }}
+          />
         </div>
       </div>
     </header>
   );
 }
 
-// Breadcrumb component for deep navigation
+// Breadcrumb editorial
 export function VitalisBreadcrumb({ items }) {
   const navigate = useNavigate();
 
   return (
     <nav
-      className="px-5 py-2"
       style={{
-        background: 'var(--vitalis-bg-elev)',
-        fontSize: '0.75rem',
-        letterSpacing: '0.04em',
-        boxShadow: 'inset 0 -1px 0 var(--vitalis-hair)'
+        background: 'var(--fnx-bg-elev)',
+        boxShadow: 'inset 0 -1px 0 var(--fnx-hair)'
       }}
     >
-      <ol className="max-w-[780px] mx-auto flex items-center gap-2" style={{ color: 'var(--vitalis-ink-faint)' }}>
+      <ol
+        className="fnx-container flex items-center gap-2 py-2 fnx-text-faint"
+        style={{ fontSize: '11px', letterSpacing: '0.04em' }}
+      >
         {items.map((item, index) => (
           <li key={index} className="flex items-center gap-2">
-            {index > 0 && <span style={{ color: 'var(--vitalis-hair-strong)' }}>/</span>}
+            {index > 0 && <span style={{ color: 'var(--fnx-hair-strong)' }}>·</span>}
             {item.link ? (
               <button
                 onClick={() => navigate(item.link)}
-                className="transition-colors"
-                style={{ color: 'var(--vitalis-ink-soft)' }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--vitalis-ouro)')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--vitalis-ink-soft)')}
+                className="fnx-transition fnx-text-soft hover:text-[var(--fnx-ouro)]"
               >
                 {item.label}
               </button>
             ) : (
-              <span style={{ color: 'var(--vitalis-ink)', fontWeight: 500 }}>{item.label}</span>
+              <span className="fnx-text-ink" style={{ fontWeight: 500 }}>{item.label}</span>
             )}
           </li>
         ))}

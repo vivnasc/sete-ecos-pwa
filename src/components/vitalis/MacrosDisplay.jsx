@@ -1,36 +1,119 @@
 /**
- * MacrosDisplay — Gráficos circulares de macros + calorias
- * Estilo editorial (FénixFit): hairline ouro, números em serif light tabular,
- * ícones SVG inline com strokeWidth 1.4 em vez de emojis.
+ * MacrosDisplay — Macros + calorias do dia
+ * Linguagem editorial FénixFit: card-feature, DonutMacro idênticos,
+ * lucide icons, números em serif light tabular.
  */
 
-const IconProteina = (props) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
-    <path d="M15.5 3a3.5 3.5 0 0 0-3.5 3.5V8h-1V6.5a3.5 3.5 0 1 0-7 0V8H3v3h1v6h2v4h2v-4h2v4h2v-4h2v-6h1V6.5A3.5 3.5 0 0 0 15.5 3z"/>
-    <path d="M21 9c0-2-1.5-3-3-3"/>
-  </svg>
-);
+import { UtensilsCrossed, Flame } from 'lucide-react'
 
-const IconHidratos = (props) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
-    <path d="M2 22c1.25-.987 2.27-1.975 3.9-2.2a5.56 5.56 0 0 1 3.8 1.5 5.56 5.56 0 0 0 3.8 1.5c1.63-.225 2.65-1.213 3.9-2.2a5.56 5.56 0 0 1 3.8-1.5"/>
-    <path d="M2 16c1.25-.987 2.27-1.975 3.9-2.2a5.56 5.56 0 0 1 3.8 1.5 5.56 5.56 0 0 0 3.8 1.5c1.63-.225 2.65-1.213 3.9-2.2a5.56 5.56 0 0 1 3.8-1.5"/>
-    <path d="M2 10c1.25-.987 2.27-1.975 3.9-2.2a5.56 5.56 0 0 1 3.8 1.5 5.56 5.56 0 0 0 3.8 1.5c1.63-.225 2.65-1.213 3.9-2.2a5.56 5.56 0 0 1 3.8-1.5"/>
-  </svg>
-);
+function DonutMacro({ valor, alvo, label, tamanho = 64, reverso = false }) {
+  const r = (tamanho - 12) / 2
+  const c = tamanho / 2
+  const circ = 2 * Math.PI * r
+  const valorSeguro = typeof valor === 'number' && !Number.isNaN(valor) ? valor : 0
+  const pctReal = alvo && alvo > 0 ? (valorSeguro / alvo) * 100 : 0
+  const pctVisual = Math.min(100, pctReal)
+  const dash = (pctVisual / 100) * circ
+  const strokeWidth = Math.max(5, tamanho * 0.09)
 
-const IconGordura = (props) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
-    <path d="M12 2c-3 4-6 7-6 11a6 6 0 1 0 12 0c0-4-3-7-6-11z"/>
-    <circle cx="12" cy="14" r="2.5"/>
-  </svg>
-);
+  // Cor fixa por estado, igual à FénixFit
+  const cor = alvo === null || alvo === undefined
+    ? '#A89878'
+    : reverso
+      ? pctReal > 110 ? '#C9614E' : '#D4A14E'
+      : pctReal >= 95 && pctReal <= 110 ? '#7B9A4F'
+        : pctReal > 120 ? '#C9614E'
+          : '#D4A14E'
 
-const IconChama = (props) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
-    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
-  </svg>
-);
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="relative" style={{ width: tamanho, height: tamanho }}>
+        <svg width={tamanho} height={tamanho} className="-rotate-90">
+          <circle
+            cx={c}
+            cy={c}
+            r={r}
+            fill="none"
+            stroke="rgba(150,140,120,0.25)"
+            strokeWidth={strokeWidth}
+          />
+          {alvo && alvo > 0 && valorSeguro > 0 ? (
+            <circle
+              cx={c}
+              cy={c}
+              r={r}
+              fill="none"
+              stroke={cor}
+              strokeWidth={strokeWidth}
+              strokeLinecap="round"
+              strokeDasharray={`${dash} ${circ}`}
+              style={{ transition: 'stroke-dasharray 0.5s ease' }}
+            />
+          ) : null}
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <p
+            className="fnx-editorial-num fnx-tnum"
+            style={{ fontSize: tamanho * 0.3, color: cor, fontWeight: 500, lineHeight: 1 }}
+          >
+            {Number.isInteger(valorSeguro) ? valorSeguro : valorSeguro.toFixed(1)}
+          </p>
+          {alvo && alvo > 0 ? (
+            <p className="fnx-text-faint fnx-tnum" style={{ fontSize: tamanho * 0.14, lineHeight: 1, marginTop: 2 }}>
+              /{alvo}
+            </p>
+          ) : null}
+        </div>
+      </div>
+      <div className="text-center">
+        <p className="fnx-text-faint" style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.18em' }}>
+          {label}
+        </p>
+        {alvo && alvo > 0 ? (
+          <p className="fnx-tnum" style={{ fontSize: '9.5px', color: pctReal > 120 ? '#C9614E' : 'var(--fnx-ink-faint)' }}>
+            {Math.round(pctReal)}%
+          </p>
+        ) : (
+          <p className="fnx-text-faint" style={{ fontSize: '9.5px' }}>sem alvo</p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function DistribuicaoBar({ p, c, g }) {
+  const kcalP = p * 20 * 4
+  const kcalC = c * 30 * 4
+  const kcalG = g * 7 * 9
+  const total = kcalP + kcalC + kcalG
+  if (total === 0) return null
+  const pctP = (kcalP / total) * 100
+  const pctC = (kcalC / total) * 100
+  const pctG = (kcalG / total) * 100
+  return (
+    <div className="space-y-1.5">
+      <div className="flex h-1.5 w-full overflow-hidden rounded-full">
+        <div style={{ background: 'var(--fnx-ouro)', width: `${pctP}%`, transition: 'width 0.4s ease' }} />
+        <div style={{ background: 'var(--fnx-ink)', width: `${pctC}%`, transition: 'width 0.4s ease' }} />
+        <div style={{ background: 'var(--fnx-oliva)', width: `${pctG}%`, transition: 'width 0.4s ease' }} />
+      </div>
+      <div className="flex justify-between fnx-tnum" style={{ fontSize: '10px', color: 'var(--fnx-ink-faint)' }}>
+        <span className="inline-flex items-center gap-1">
+          <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'var(--fnx-ouro)' }} />
+          proteína {Math.round(pctP)}%
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'var(--fnx-ink)' }} />
+          hidratos {Math.round(pctC)}%
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'var(--fnx-oliva)' }} />
+          gordura {Math.round(pctG)}%
+        </span>
+      </div>
+    </div>
+  )
+}
 
 export default function MacrosDisplay({ mealsHoje, macrosAlvo, caloriasAlvo }) {
   const macrosConsumidos = mealsHoje.reduce((acc, meal) => ({
@@ -45,128 +128,77 @@ export default function MacrosDisplay({ mealsHoje, macrosAlvo, caloriasAlvo }) {
     (macrosConsumidos.gordura * 7 * 9)
   )
   const progressoCalorias = (caloriasConsumidas / caloriasAlvo) * 100
-
-  const macros = [
-    { key: 'proteina', label: 'Proteína', Icon: IconProteina, consumed: macrosConsumidos.proteina, target: macrosAlvo.proteina },
-    { key: 'hidratos', label: 'Hidratos', Icon: IconHidratos, consumed: macrosConsumidos.hidratos, target: macrosAlvo.hidratos },
-    { key: 'gordura', label: 'Gordura', Icon: IconGordura, consumed: macrosConsumidos.gordura, target: macrosAlvo.gordura },
-  ]
+  const numRefeicoes = mealsHoje.length
 
   return (
-    <section className="vitalis-card-feature" aria-label="Macronutrientes de hoje">
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="vitalis-label-cap">Macros de Hoje</h3>
-        <p style={{ fontSize: '0.6875rem', color: 'var(--vitalis-ink-faint)', letterSpacing: '0.04em' }}>
-          Refeições registadas
-        </p>
+    <section className="fnx-card-feature" aria-label="Macronutrientes de hoje">
+      <div className="flex items-baseline justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <UtensilsCrossed size={14} strokeWidth={1.4} className="fnx-text-ouro" />
+          <span className="fnx-label-cap">refeições · hoje</span>
+        </div>
+        <span className="fnx-text-faint fnx-tnum" style={{ fontSize: '11px' }}>
+          {numRefeicoes}× hoje
+        </span>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-5">
-        {macros.map(({ key, label, Icon, consumed, target }) => {
-          const progress = Math.min(consumed / target, 1)
-          const dashoffset = 94 - (94 * progress)
-          return (
-            <div key={key} className="text-center">
-              <div
-                className="relative w-16 h-16 mx-auto mb-2.5"
-                role="img"
-                aria-label={`${label}: ${consumed.toFixed(1)} de ${target} porções`}
-              >
-                <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36" aria-hidden="true">
-                  <circle cx="18" cy="18" r="15" fill="none" stroke="var(--vitalis-hair)" strokeWidth="2"/>
-                  <circle cx="18" cy="18" r="15" fill="none" stroke="var(--vitalis-ouro)" strokeWidth="2"
-                          strokeDasharray="94" strokeDashoffset={dashoffset} strokeLinecap="round"/>
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Icon className="w-5 h-5" style={{ color: 'var(--vitalis-ink-soft)' }} />
-                </div>
-              </div>
-              <p className="vitalis-editorial-num" style={{ fontSize: '1.125rem', lineHeight: 1 }}>
-                {consumed.toFixed(1)}<span style={{ color: 'var(--vitalis-ink-faint)', fontWeight: 300 }}> / {target}</span>
-              </p>
-              <p
-                className="mt-1"
-                style={{
-                  fontSize: '0.625rem',
-                  letterSpacing: '0.18em',
-                  textTransform: 'uppercase',
-                  color: 'var(--vitalis-ink-faint)'
-                }}
-              >
-                {label}
-              </p>
-            </div>
-          )
-        })}
+      {/* Donuts: kcal + 3 macros */}
+      <div className="grid grid-cols-4 gap-1 place-items-center mb-4">
+        <DonutMacro label="kcal" valor={caloriasConsumidas} alvo={caloriasAlvo} tamanho={64} />
+        <DonutMacro label="proteína" valor={macrosConsumidos.proteina} alvo={macrosAlvo.proteina} tamanho={64} />
+        <DonutMacro label="hidratos" valor={macrosConsumidos.hidratos} alvo={macrosAlvo.hidratos} tamanho={64} />
+        <DonutMacro label="gordura" valor={macrosConsumidos.gordura} alvo={macrosAlvo.gordura} tamanho={64} />
       </div>
 
-      <hr className="vitalis-hairline mb-5" />
-
-      {/* Calorias — bloco editorial */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <IconChama className="w-4 h-4" style={{ color: 'var(--vitalis-ouro)' }} />
-            <span className="vitalis-label-cap">Calorias</span>
-          </div>
-          <span
-            style={{
-              fontSize: '0.6875rem',
-              color: 'var(--vitalis-ink-faint)',
-              fontVariantNumeric: 'tabular-nums',
-              letterSpacing: '0.04em'
-            }}
-          >
-            meta {caloriasAlvo} kcal
-          </span>
-        </div>
-
-        <div className="flex items-baseline gap-2 mb-3">
-          <span className="vitalis-editorial-num" style={{ fontSize: '2.75rem', lineHeight: 1 }}>
-            {caloriasConsumidas}
-          </span>
-          <span
-            style={{
-              fontSize: '0.875rem',
-              color: 'var(--vitalis-ink-faint)',
-              fontFamily: 'var(--font-corpo)',
-              fontVariantNumeric: 'tabular-nums'
-            }}
-          >
-            / {caloriasAlvo} kcal
-          </span>
-        </div>
-
-        <div
-          className="h-[3px] rounded-full overflow-hidden"
-          style={{ background: 'var(--vitalis-hair)' }}
-          role="progressbar"
-          aria-valuenow={Math.round(progressoCalorias)}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label="Progresso de calorias"
-        >
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${Math.min(progressoCalorias, 100)}%`,
-              background: 'var(--vitalis-ouro)'
-            }}
-          />
-        </div>
+      {/* Distribuição de calorias por macro */}
+      {caloriasConsumidas > 0 ? (
+        <DistribuicaoBar
+          p={macrosConsumidos.proteina}
+          c={macrosConsumidos.hidratos}
+          g={macrosConsumidos.gordura}
+        />
+      ) : (
         <p
-          className="mt-2.5"
+          className="fnx-text-soft mt-1"
           style={{
-            fontSize: '0.75rem',
-            color: 'var(--vitalis-ink-faint)',
-            fontStyle: 'italic',
+            fontSize: '13px',
+            lineHeight: 1.5,
             fontFamily: 'var(--font-editorial)',
             fontWeight: 300
           }}
         >
-          Restam <span style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--vitalis-ink-soft)' }}>{Math.max(caloriasAlvo - caloriasConsumidas, 0)}</span> kcal hoje
+          ainda sem refeições hoje. <span style={{ color: 'var(--fnx-ouro)', fontStyle: 'italic' }}>regista o que comeste</span>.
         </p>
-      </div>
+      )}
+
+      {/* Rodapé com restantes kcal */}
+      {caloriasConsumidas > 0 ? (
+        <>
+          <hr className="fnx-hairline mt-4 mb-3" />
+          <div className="flex items-baseline justify-between">
+            <div className="flex items-center gap-2">
+              <Flame size={12} strokeWidth={1.4} className="fnx-text-ouro" />
+              <span className="fnx-label-soft">restam hoje</span>
+            </div>
+            <span className="fnx-editorial-num fnx-tnum" style={{ fontSize: '20px' }}>
+              {Math.max(caloriasAlvo - caloriasConsumidas, 0)}
+              <span className="fnx-text-faint" style={{ fontSize: '11px', marginLeft: '4px', fontFamily: 'var(--font-corpo)' }}>
+                kcal
+              </span>
+            </span>
+          </div>
+        </>
+      ) : null}
+
+      {/* a11y progressbar */}
+      <div
+        className="sr-only"
+        role="progressbar"
+        aria-valuenow={Math.round(progressoCalorias)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label="Progresso de calorias do dia"
+      />
     </section>
   )
 }
