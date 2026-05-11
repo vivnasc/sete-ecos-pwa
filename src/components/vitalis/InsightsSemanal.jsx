@@ -47,10 +47,11 @@ export default function InsightsSemanal({ userId, dadosSemana, nome, dataInicio,
     setLoading(true)
     setErro('')
     try {
-      const r = await fetch('/api/insights-semanal', {
+      const r = await fetch('/api/ia', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
+          action: 'insights-semanal',
           nome,
           dataInicio,
           sexo,

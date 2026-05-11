@@ -27,10 +27,14 @@ export default function EstimarMacrosInput({ onAceitar, tipoDefault = '' }) {
     setErro('')
     setEstimativa(null)
     try {
-      const r = await fetch('/api/estimar-macros', {
+      const r = await fetch('/api/ia', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ descricao: descricao.trim(), tipo: tipo || undefined })
+        body: JSON.stringify({
+          action: 'estimar-macros',
+          descricao: descricao.trim(),
+          tipo: tipo || undefined
+        })
       })
       const data = await r.json()
       if (!r.ok) throw new Error(data?.error || 'falha')
