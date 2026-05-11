@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { Link, useNavigate } from 'react-router-dom';
+import InsightsSemanal from './InsightsSemanal.jsx';
 
 export default function RelatorioSemanal() {
   const navigate = useNavigate();
@@ -313,7 +314,25 @@ export default function RelatorioSemanal() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        
+
+        {/* Leitura editorial da semana (IA Claude — gera quando a cliente pedir) */}
+        {userId && (
+          <InsightsSemanal
+            userId={userId}
+            nome={(client?.nome_completo || '').split(' ')[0]}
+            dataInicio={client?.data_inicio}
+            sexo={client?.sexo || 'F'}
+            dadosSemana={{
+              refeicoes: [],
+              registos: [],
+              pesos: [],
+              jejuns: [],
+              aguas: [],
+              sonos: []
+            }}
+          />
+        )}
+
         {/* Score Geral */}
         <div className="bg-white rounded-3xl shadow-xl p-6 text-center">
           <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Aderência Geral</h2>

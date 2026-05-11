@@ -22,6 +22,12 @@ import MealsSection from './MealsSection';
 import MacrosDisplay from './MacrosDisplay';
 import AchievementsPanel from './AchievementsPanel';
 import PaletaSelector from './PaletaSelector';
+import SmartNow from './SmartNow';
+import MarcoCard from './MarcoCard';
+import Heatmap60 from './Heatmap60';
+import PadroesCard from './PadroesCard';
+import { mantraDoDia } from '../../lib/vitalis/mantras';
+import { detectarPadroes, intensidadeDia } from '../../lib/vitalis/padroes';
 import { useDetectorDesistencia, AlertaDesistencia } from './DetectorDesistencia';
 import PodcastPlayer from '../shared/PodcastPlayer';
 import {
@@ -1105,6 +1111,12 @@ export default function DashboardVitalis() {
 
       <main className="fnx-container pt-2 pb-6 space-y-8">
 
+        {/* SmartNow — bloco contextual por hora do dia */}
+        <SmartNow jaComeuPA={mealsHoje?.some(m => (m.tipo || '').toLowerCase().includes('pa') || (m.tipo || '').toLowerCase().includes('pequeno'))} />
+
+        {/* Marco do dia (aparece só se hoje for dia 7/14/21/30/45/60/90/120/180/365) */}
+        {client?.data_inicio && <MarcoCard dataInicio={client.data_inicio} />}
+
         {/* Banner PWA e Notificações */}
         {mostrarBannerPWA && (
           <section className="fnx-card-solid">
@@ -1302,11 +1314,11 @@ export default function DashboardVitalis() {
           </section>
         )}
 
-        {/* Mantra editorial + Streak */}
+        {/* Mantra editorial rotativo (60 frases por dia da jornada) */}
         <section className="text-center px-2">
           <p className="fnx-mantra fnx-text-soft">
             <span className="fnx-text-ouro" style={{ fontFamily: 'var(--font-editorial)' }}>&ldquo;</span>
-            cada escolha consciente aproxima-te da tua melhor versão
+            {mantraDoDia(Math.max(1, Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / 86400000) + 1))}
             <span className="fnx-text-ouro" style={{ fontFamily: 'var(--font-editorial)' }}>&rdquo;</span>
           </p>
           <p className="fnx-label-soft mt-3 fnx-tnum">
@@ -1646,6 +1658,48 @@ export default function DashboardVitalis() {
           macrosAlvo={macrosAlvo}
           caloriasAlvo={caloriasAlvo}
         />
+
+        {/* Padrões detectados nos últimos 14 dias (sem IA — local) */}
+        {(() => {
+          const padroes = detectarPadroes({
+            refeicoes: refeicoes || [],
+            registos: registos || [],
+            pesos: registos?.filter(r => r.peso_kg) || []
+          }, 14);
+          return padroes.length > 0 ? <PadroesCard padroes={padroes} titulo="o que se vê · 14 dias" /> : null;
+        })()}
+
+        {/* Heatmap 60 dias da jornada */}
+        {client?.data_inicio && (
+          <Heatmap60
+            dataInicio={client.data_inicio}
+            registos={(() => {
+              // Calcular intensidade por dia baseado em registos disponíveis
+              const mapa = new Map();
+              const processar = (arr, campo) => {
+                (arr || []).forEach(r => {
+                  const data = (r.data || r.created_at || '').split('T')[0];
+                  if (!data) return;
+                  if (!mapa.has(data)) mapa.set(data, { refeicao: false, checkin: false, agua: false, treino: false, sono: false });
+                  mapa.get(data)[campo] = true;
+                });
+              };
+              processar(refeicoes, 'refeicao');
+              processar(registos, 'checkin');
+              // água/treino/sono — se houver, vêm dentro dos registos
+              return [...mapa.entries()].map(([data, flags]) => ({
+                data,
+                intensidade: intensidadeDia({
+                  temRefeicao: flags.refeicao,
+                  temCheckin: flags.checkin,
+                  temAgua: flags.agua,
+                  temTreino: flags.treino,
+                  temSono: flags.sono
+                })
+              }));
+            })()}
+          />
+        )}
 
         {/* Banner Ramadan - Visível durante o período, apenas para quem observa */}
         {(() => {

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
 import { somarMacros, calcularMacrosPorcaoMao, CONVERSOES_MAO } from '../../lib/vitalis/porcoesConverter.js';
 import AddFoodModal from './AddFoodModal.jsx';
+import EstimarMacrosInput from './EstimarMacrosInput.jsx';
 
 export default function MealsTracker() {
   const navigate = useNavigate();
@@ -277,10 +278,51 @@ export default function MealsTracker() {
   const isHoje = dataSeleccionada === new Date().toISOString().split('T')[0];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3] pb-24">
+    <div className="fnx-theme min-h-screen pb-24 fnx-fade-in">
       <HeaderBar navigate={navigate} />
 
-      <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
+      <div className="fnx-container py-4 space-y-4">
+        {/* Estimar macros por descrição — IA */}
+        <EstimarMacrosInput
+          tipoDefault=""
+          onAceitar={async (e) => {
+            try {
+              const { data: { user } } = await supabase.auth.getUser();
+              if (!user) return;
+              const { data: userData } = await supabase.from('users').select('id').eq('auth_id', user.id).single();
+              if (!userData) return;
+              await supabase.from('vitalis_meal_log').insert([{
+                user_id: userData.id,
+                data: dataSeleccionada,
+                tipo: e.tipo || 'lanche',
+                alimentos: (e.alimentos || []).join(', ') || e.descricao,
+                descricao: e.descricao,
+                porcoes_proteina: e.porcoes?.proteina ?? Math.round((e.proteina_g / 20) * 10) / 10,
+                porcoes_hidratos: e.porcoes?.hidratos ?? Math.round((e.hidratos_g / 30) * 10) / 10,
+                porcoes_gordura: e.porcoes?.gordura ?? Math.round((e.gordura_g / 7) * 10) / 10,
+                kcal: e.kcal,
+                created_at: new Date().toISOString()
+              }]).catch(async () => {
+                // Fallback para tabela alternativa
+                await supabase.from('vitalis_refeicoes_log').insert([{
+                  user_id: userData.id,
+                  data: dataSeleccionada,
+                  tipo: e.tipo || 'lanche',
+                  alimentos: (e.alimentos || []).join(', ') || e.descricao,
+                  porcoes_proteina: e.porcoes?.proteina ?? 0,
+                  porcoes_hidratos: e.porcoes?.hidratos ?? 0,
+                  porcoes_gordura: e.porcoes?.gordura ?? 0,
+                  created_at: new Date().toISOString()
+                }]);
+              });
+              // Recarregar a página para reflectir
+              window.location.reload();
+            } catch (err) {
+              console.error('Erro a registar refeição estimada:', err);
+            }
+          }}
+        />
+
         {/* Date selector */}
         <div className="bg-white rounded-xl shadow-sm p-3 flex items-center justify-between">
           <button
