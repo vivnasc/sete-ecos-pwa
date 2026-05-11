@@ -159,6 +159,7 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       ancas: m.ancas !== null ? Number(m.ancas) : null,
       coxa: m.coxa !== null ? Number(m.coxa) : null,
       braco: m.braco !== null ? Number(m.braco) : null,
+      pescoco: m.pescoco !== null && m.pescoco !== undefined ? Number(m.pescoco) : null,
       peso: m.peso !== null ? Number(m.peso) : null,
       sentir: m.sentir ?? '',
       mudou: m.mudou ?? '',
@@ -359,7 +360,8 @@ export async function syncMedida(m: MedidaRegisto): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  const { error } = await sb.from('fenixfit_medidas').insert({
+  // pescoco · só inclui se o schema tiver a coluna (tenta com, depois sem)
+  const baseRow = {
     id: m.id,
     user_id: user.id,
     date: m.date,
@@ -371,7 +373,13 @@ export async function syncMedida(m: MedidaRegisto): Promise<void> {
     sentir: m.sentir,
     mudou: m.mudou,
     foto_frente_url: m.fotoUrl
-  })
+  }
+  let { error } = await sb.from('fenixfit_medidas').insert({ ...baseRow, pescoco: m.pescoco })
+  if (error && /pescoco/.test(error.message ?? '')) {
+    // schema antigo · tenta sem pescoco
+    const retry = await sb.from('fenixfit_medidas').insert(baseRow)
+    error = retry.error
+  }
   if (error) registarErroSync('medida', error)
 }
 

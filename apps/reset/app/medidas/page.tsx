@@ -79,6 +79,7 @@ export default function MedidasPage() {
             <Variacao label="Ancas" valor={variacao('ancas')} />
             <Variacao label="Coxa" valor={variacao('coxa')} />
             <Variacao label="Braço" valor={variacao('braco')} />
+            <Variacao label="Pescoço" valor={variacao('pescoco')} />
           </div>
         </section>
       ) : null}
@@ -103,6 +104,7 @@ export default function MedidasPage() {
                   {m.ancas !== null ? <Linha label="Ancas" v={m.ancas} /> : null}
                   {m.coxa !== null ? <Linha label="Coxa" v={m.coxa} /> : null}
                   {m.braco !== null ? <Linha label="Braço" v={m.braco} /> : null}
+                  {m.pescoco !== null ? <Linha label="Pescoço" v={m.pescoco} /> : null}
                 </div>
                 {m.sentir ? (
                   <p className="mt-3 border-t border-[var(--hair)] pt-3 text-[13px] italic text-soft">
@@ -209,6 +211,7 @@ function NovaMedidaSheet({ onClose, onSave }: { onClose: () => void; onSave: () 
     ancas: '',
     coxa: '',
     braco: '',
+    pescoco: '',
     peso: '',
     sentir: '',
     mudou: ''
@@ -235,6 +238,7 @@ function NovaMedidaSheet({ onClose, onSave }: { onClose: () => void; onSave: () 
       ancas: data.ancas ? Number(data.ancas) : null,
       coxa: data.coxa ? Number(data.coxa) : null,
       braco: data.braco ? Number(data.braco) : null,
+      pescoco: data.pescoco ? Number(data.pescoco) : null,
       peso: data.peso ? Number(data.peso) : null,
       sentir: data.sentir.trim(),
       mudou: data.mudou.trim(),
@@ -270,7 +274,15 @@ function NovaMedidaSheet({ onClose, onSave }: { onClose: () => void; onSave: () 
             <Field label="Braço · cm">
               <input type="number" inputMode="decimal" step="0.5" value={data.braco} onChange={e => setData({ ...data, braco: e.target.value })} className="input-base text-[14px]" placeholder="—" />
             </Field>
+            <Field label="Pescoço · cm">
+              <input type="number" inputMode="decimal" step="0.5" value={data.pescoco} onChange={e => setData({ ...data, pescoco: e.target.value })} className="input-base text-[14px]" placeholder="—" />
+            </Field>
           </div>
+          <p className="text-faint text-[10.5px] leading-relaxed -mt-2">
+            cintura · à volta do umbigo · não apertar.<br />
+            ancas · ponto mais largo das nádegas.<br />
+            pescoço · logo abaixo da maçã de adão · fita horizontal.
+          </p>
           <Field label="Peso · kg · opcional">
             <input type="number" inputMode="decimal" step="0.1" value={data.peso} onChange={e => setData({ ...data, peso: e.target.value })} className="input-base text-[14px]" placeholder="—" />
           </Field>

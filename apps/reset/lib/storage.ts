@@ -41,6 +41,7 @@ export type MedidaRegisto = {
   ancas: number | null
   coxa: number | null
   braco: number | null
+  pescoco: number | null
   peso: number | null
   sentir: string
   mudou: string
@@ -235,7 +236,10 @@ export function ancorasResolvidas(date: string, ancoras: Record<string, boolean>
 // ----- MEDIDAS -----
 
 export function getMedidas(): MedidaRegisto[] {
-  return read<MedidaRegisto[]>('medidas', []).sort((a, b) => a.date.localeCompare(b.date))
+  // backfill pescoco para registos antigos · default null
+  return read<MedidaRegisto[]>('medidas', [])
+    .map(m => ({ ...m, pescoco: m.pescoco ?? null }))
+    .sort((a, b) => a.date.localeCompare(b.date))
 }
 
 export function addMedida(m: Omit<MedidaRegisto, 'id'>): MedidaRegisto {
