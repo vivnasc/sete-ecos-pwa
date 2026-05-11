@@ -21,6 +21,7 @@ import FastingTimerCard from './FastingTimerCard';
 import MealsSection from './MealsSection';
 import MacrosDisplay from './MacrosDisplay';
 import AchievementsPanel from './AchievementsPanel';
+import PaletaSelector from './PaletaSelector';
 import { useDetectorDesistencia, AlertaDesistencia } from './DetectorDesistencia';
 import PodcastPlayer from '../shared/PodcastPlayer';
 import {
@@ -1742,8 +1743,11 @@ export default function DashboardVitalis() {
           xpTotal={xpTotal}
         />
 
+        {/* Paleta — escolha opcional, sempre disponível */}
+        <PaletaSelector />
+
         {/* Vivianne Explica */}
-        <div className="px-4 sm:px-6 mb-6">
+        <div className="mb-6">
           <PodcastPlayer eco="vitalis" compact />
         </div>
 

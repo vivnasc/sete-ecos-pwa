@@ -1,6 +1,9 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import { PALETAS, PALETA_IDS, aplicarPaleta } from '../lib/paletas'
 
 const ThemeContext = createContext()
+
+const PALETA_STORAGE = 'vitalis-paleta'
 
 export function ThemeProvider({ children }) {
   const [isDark, setIsDark] = useState(() => {
@@ -11,11 +14,18 @@ export function ThemeProvider({ children }) {
     return false
   })
 
+  const [paleta, setPaletaState] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(PALETA_STORAGE)
+      if (saved && PALETA_IDS.includes(saved)) return saved
+    }
+    return 'classica'
+  })
+
   // Sync with system preference changes
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)')
     const handler = (e) => {
-      // Only follow system if user hasn't explicitly set a preference
       if (!localStorage.getItem('sete-ecos-theme')) {
         setIsDark(e.matches)
       }
@@ -24,7 +34,7 @@ export function ThemeProvider({ children }) {
     return () => mq.removeEventListener('change', handler)
   }, [])
 
-  // Apply dark class to document
+  // Apply dark class
   useEffect(() => {
     const root = document.documentElement
     if (isDark) {
@@ -37,10 +47,19 @@ export function ThemeProvider({ children }) {
     localStorage.setItem('sete-ecos-theme', isDark ? 'dark' : 'light')
   }, [isDark])
 
+  // Apply paleta (override CSS vars on :root)
+  useEffect(() => {
+    aplicarPaleta(paleta, isDark)
+    localStorage.setItem(PALETA_STORAGE, paleta)
+  }, [paleta, isDark])
+
   const toggleTheme = () => setIsDark(prev => !prev)
+  const setPaleta = (id) => {
+    if (PALETA_IDS.includes(id)) setPaletaState(id)
+  }
 
   return (
-    <ThemeContext.Provider value={{ isDark, toggleTheme }}>
+    <ThemeContext.Provider value={{ isDark, toggleTheme, paleta, setPaleta, paletas: PALETAS, paletaIds: PALETA_IDS }}>
       {children}
     </ThemeContext.Provider>
   )

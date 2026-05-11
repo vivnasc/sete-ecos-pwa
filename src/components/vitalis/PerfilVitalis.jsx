@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase.js';
 import { Link, useNavigate } from 'react-router-dom';
 import { isCoach } from '../../lib/coach';
 import { generateReferralCode, getReferralStats, getReferralLink, getReferralWhatsAppText } from '../../lib/referrals';
+import PaletaSelector from './PaletaSelector';
 
 // Lista de avatares disponíveis
 const AVATARES = [
@@ -630,6 +631,11 @@ export default function PerfilVitalis() {
             >
               <span>🚪</span> Terminar Sessão
             </button>
+          </div>
+
+          {/* Paleta — selector editorial das 5 paletas FénixFit */}
+          <div className="mt-6">
+            <PaletaSelector />
           </div>
         </div>
 

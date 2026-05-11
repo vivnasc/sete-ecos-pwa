@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { isSessionCoach } from './lib/coach'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { I18nProvider } from './contexts/I18nContext'
@@ -335,6 +335,25 @@ function useGlobalNotifications(session) {
   }, [session])
 }
 
+// ===== ROUTE THEME BRIDGE =====
+// Aplica .fnx-theme ao <body> quando a rota é /vitalis/* para
+// herdar background creme + tipografia editorial em todas as páginas
+// Vitalis sem precisar de wrapper em cada componente.
+function RouteThemeBridge() {
+  const location = useLocation()
+  useEffect(() => {
+    const body = document.body
+    const isVitalis = location.pathname.startsWith('/vitalis')
+    if (isVitalis) {
+      body.classList.add('fnx-theme')
+    } else {
+      body.classList.remove('fnx-theme')
+    }
+    return () => body.classList.remove('fnx-theme')
+  }, [location.pathname])
+  return null
+}
+
 // ===== ROTAS =====
 function AppRoutes() {
   const { session, loading, isCoachUser } = useAuth()
@@ -628,6 +647,7 @@ function App() {
           <AuthProvider>
             <ToastProvider>
               <ErrorBoundary>
+            <RouteThemeBridge />
             <UpdateBanner />
             <div className="app">
               <AppRoutes />
