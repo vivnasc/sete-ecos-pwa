@@ -930,112 +930,202 @@ export default function DashboardVitalis() {
       <WelcomeTutorial eco="vitalis" onComplete={completarOnboarding} />
     )}
 
-    <div className={`min-h-screen pb-20 transition-colors duration-500 animate-page-enter ${
-      isDarkMode
-        ? 'bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f0f23]'
-        : 'bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]'
+    <div className={`vitalis-bg min-h-screen pb-20 transition-colors duration-500 animate-page-enter ${
+      isDarkMode ? 'dark' : ''
     }`}>
 
-      {/* Header com Perfil — premium animated gradient */}
-      <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] hero-gradient-animated"></div>
-        <div className="absolute inset-0 opacity-8">
-          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
-            <path d="M0,50 Q25,30 50,50 T100,50 V100 H0 Z" fill="white"/>
-          </svg>
-        </div>
-        <div className="absolute top-0 right-0 w-60 h-60 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, #C9A227 0%, transparent 70%)', filter: 'blur(40px)' }} />
-        <div className="relative max-w-6xl mx-auto px-4 py-5">
+      {/* Header editorial — creme + hairline ouro */}
+      <header
+        className="relative"
+        style={{ boxShadow: 'inset 0 -1px 0 var(--vitalis-hair)' }}
+      >
+        <div className="relative max-w-[780px] mx-auto px-5 pt-5 pb-6">
           {/* Top bar com logo e ações */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2.5">
               <img
                 src="/logos/VITALIS_LOGO_V3.png"
                 alt="Vitalis"
-                className="w-10 h-10 object-contain drop-shadow-lg"
+                className="w-9 h-9 object-contain"
               />
-              <h1 className="text-xl font-bold text-white premium-label" style={{ fontFamily: 'var(--font-titulos)', letterSpacing: '0.2em', fontSize: '1.1rem' }}>VITALIS</h1>
+              <h1
+                style={{
+                  fontFamily: 'var(--font-corpo)',
+                  fontWeight: 500,
+                  fontSize: '0.6875rem',
+                  letterSpacing: '0.24em',
+                  textTransform: 'uppercase',
+                  color: 'var(--vitalis-ouro)'
+                }}
+              >
+                Vitalis
+              </h1>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               {/* Notificações */}
               <Link
                 to="/vitalis/notificacoes"
-                className="w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center text-base border border-white/20 hover:bg-white/25 transition-all duration-300"
+                className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+                style={{
+                  background: 'transparent',
+                  boxShadow: 'inset 0 0 0 1px var(--vitalis-hair)',
+                  color: 'var(--vitalis-ink-soft)'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--vitalis-bg-elev)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                 title="Notificações"
+                aria-label="Notificações"
               >
-                🔔
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
               </Link>
               {/* Dark Mode Toggle */}
               <button
                 onClick={toggleDarkMode}
-                className="w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center text-base border border-white/20 hover:bg-white/25 transition-all duration-300"
+                className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+                style={{
+                  background: 'transparent',
+                  boxShadow: 'inset 0 0 0 1px var(--vitalis-hair)',
+                  color: 'var(--vitalis-ink-soft)'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--vitalis-bg-elev)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                 title={isDarkMode ? 'Modo claro' : 'Modo escuro'}
+                aria-label={isDarkMode ? 'Modo claro' : 'Modo escuro'}
               >
-                {isDarkMode ? '☀️' : '🌙'}
+                {isDarkMode ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
+                    <circle cx="12" cy="12" r="4"/>
+                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                  </svg>
+                )}
               </button>
             </div>
           </div>
 
-          {/* Perfil do Utilizador */}
+          {/* Perfil — saudação editorial */}
           <div className="flex items-center gap-4">
-            {/* Avatar - Clicável para mudar ícone */}
+            {/* Avatar */}
             <div className="relative group">
               <button
                 onClick={() => setShowAvatarPicker(true)}
-                className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/30 border-3 border-white shadow-lg flex items-center justify-center overflow-hidden hover:bg-white/40 transition-colors"
+                className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center overflow-hidden transition-colors"
+                style={{
+                  background: 'var(--vitalis-bg-elev)',
+                  boxShadow: 'inset 0 0 0 1px var(--vitalis-hair-strong)'
+                }}
                 title="Clica para mudar o avatar"
               >
                 {client?.foto_url ? (
                   <img src={client.foto_url} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-3xl md:text-4xl">{avatarIcon}</span>
+                  <span className="text-2xl md:text-3xl">{avatarIcon}</span>
                 )}
               </button>
               {/* Badge de nível */}
-              <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-yellow-400 border-2 border-white flex items-center justify-center text-xs font-bold shadow-md">
+              <div
+                className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium"
+                style={{
+                  background: 'var(--vitalis-ouro)',
+                  color: '#FFFFFF',
+                  boxShadow: '0 0 0 2px var(--vitalis-bg)'
+                }}
+              >
                 {Math.floor(xpTotal / 500) + 1}
-              </div>
-              {/* Indicador de editar */}
-              <div className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-white flex items-center justify-center text-xs shadow opacity-0 group-hover:opacity-100 transition-opacity">
-                ✏️
               </div>
             </div>
 
             {/* Info do utilizador */}
-            <div className="flex-1">
-              <p className="text-white/70 text-sm">Olá,</p>
-              <Link to="/vitalis/perfil" className="block hover:opacity-80 transition-opacity">
-                <h2 className="text-xl md:text-2xl font-bold text-white">
-                  {userName?.split(' ')[0] || client?.nome_completo?.split(' ')[0] || userEmail?.split('@')[0] || g('Guerreiro', 'Guerreira')}! 👋
+            <div className="flex-1 min-w-0">
+              <p
+                style={{
+                  fontFamily: 'var(--font-corpo)',
+                  fontSize: '0.625rem',
+                  fontWeight: 500,
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  color: 'var(--vitalis-ouro)'
+                }}
+              >
+                <span className="capitalize">{diaSemana}</span> · {dataFormatada}
+              </p>
+              <Link to="/vitalis/perfil" className="block transition-opacity hover:opacity-80">
+                <h2
+                  className="mt-1"
+                  style={{
+                    fontFamily: 'var(--font-editorial)',
+                    fontWeight: 400,
+                    fontSize: 'clamp(1.5rem, 4.5vw, 1.875rem)',
+                    letterSpacing: '-0.02em',
+                    lineHeight: 1.1,
+                    color: 'var(--vitalis-ink)'
+                  }}
+                >
+                  Olá, <em style={{ fontWeight: 300 }}>{userName?.split(' ')[0] || client?.nome_completo?.split(' ')[0] || userEmail?.split('@')[0] || g('Guerreiro', 'Guerreira')}</em>
                 </h2>
               </Link>
-              <p className="text-white/80 text-sm capitalize">{diaSemana}, {dataFormatada}</p>
 
               {/* Barra de XP */}
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden max-w-[150px]">
+              <div className="mt-2.5 flex items-center gap-2">
+                <div
+                  className="flex-1 h-[3px] rounded-full overflow-hidden max-w-[140px]"
+                  style={{ background: 'var(--vitalis-hair)' }}
+                >
                   <div
-                    className="h-full bg-yellow-400 rounded-full transition-all"
-                    style={{ width: `${(xpTotal % 500) / 500 * 100}%` }}
+                    className="h-full rounded-full transition-all"
+                    style={{
+                      width: `${(xpTotal % 500) / 500 * 100}%`,
+                      background: 'var(--vitalis-ouro)'
+                    }}
                   ></div>
                 </div>
-                <span className="text-xs text-white/80">{xpTotal} XP</span>
+                <span
+                  style={{
+                    fontSize: '0.6875rem',
+                    fontFamily: 'var(--font-corpo)',
+                    fontVariantNumeric: 'tabular-nums',
+                    color: 'var(--vitalis-ink-faint)',
+                    letterSpacing: '0.04em'
+                  }}
+                >
+                  {xpTotal} XP
+                </span>
               </div>
             </div>
 
             {/* Streak compacto no header */}
             {streak > 0 && (
-              <div className="hidden md:flex flex-col items-center bg-white/20 rounded-xl px-4 py-2">
-                <span className="text-2xl">🔥</span>
-                <span className="text-white font-bold">{streak}</span>
-                <span className="text-white/70 text-xs">dias</span>
+              <div
+                className="hidden md:flex flex-col items-center px-4 py-2 rounded-md"
+                style={{ boxShadow: 'inset 0 0 0 1px var(--vitalis-hair)' }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5" style={{ color: 'var(--vitalis-ouro)' }} aria-hidden="true">
+                  <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+                </svg>
+                <span className="vitalis-editorial-num mt-0.5" style={{ fontSize: '1.25rem' }}>{streak}</span>
+                <span
+                  style={{
+                    fontSize: '0.625rem',
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                    color: 'var(--vitalis-ink-faint)'
+                  }}
+                >
+                  dias
+                </span>
               </div>
             )}
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-5 space-y-5">
+      <main className="max-w-[780px] mx-auto px-5 py-6 space-y-7">
 
         {/* Banner PWA e Notificações */}
         {mostrarBannerPWA && (

@@ -50,6 +50,20 @@
     --vitalis-bege: #D2B48C;
     --vitalis-linho: #F0EBE3;
 
+    /* VITALIS — Linguagem editorial (alinhada à FénixFit) */
+    --vitalis-bg: #F6F1E8;            /* creme quente */
+    --vitalis-bg-elev: #FBF7EE;       /* creme claro */
+    --vitalis-surface: #FFFFFF;
+    --vitalis-surface-soft: rgba(255, 255, 255, 0.55);
+    --vitalis-ink: #1F1814;           /* texto principal */
+    --vitalis-ink-soft: rgba(31, 24, 20, 0.7);
+    --vitalis-ink-faint: rgba(31, 24, 20, 0.5);
+    --vitalis-ouro: #B8924A;          /* accent quente */
+    --vitalis-ouro-claro: #C9A961;
+    --vitalis-oliva: #6B7445;         /* verde saciado p/ dados */
+    --vitalis-hair: rgba(184, 146, 74, 0.18);
+    --vitalis-hair-strong: rgba(184, 146, 74, 0.32);
+
     /* 7 ECOS — Cores por Chakra (baseadas nos logos oficiais) */
     --eco-1-vitalis: #D97706;     /* Terracota/Laranja */
     --eco-2-serena: #0EA5E9;      /* Azul água */
@@ -62,6 +76,7 @@
 
     /* Tipografia */
     --font-titulos: 'Playfair Display', Georgia, serif;
+    --font-editorial: 'Fraunces', 'Playfair Display', Georgia, serif;
     --font-corpo: 'Inter', system-ui, -apple-system, sans-serif;
 
     /* Sombras */
@@ -360,6 +375,126 @@
 
 .animate-page-enter {
   animation: pageEnter 0.5s cubic-bezier(0.25, 0.4, 0.25, 1) forwards;
+}
+
+/* ============================================================
+   VITALIS — Linguagem Editorial (FénixFit-inspired)
+   Cards hairline em ouro, métricas em serif light tabular,
+   labels em caps tracked, mantra em italic.
+   ============================================================ */
+
+.vitalis-bg {
+  background: var(--vitalis-bg);
+  color: var(--vitalis-ink);
+}
+
+.vitalis-card {
+  background: var(--vitalis-surface-soft);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 0 0 1px var(--vitalis-hair);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.vitalis-card-solid {
+  background: var(--vitalis-surface);
+  box-shadow: inset 0 0 0 1px var(--vitalis-hair);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.vitalis-card-feature {
+  background: var(--vitalis-surface);
+  box-shadow:
+    0 1px 2px rgba(31, 24, 20, 0.04),
+    0 8px 24px rgba(31, 24, 20, 0.06),
+    inset 0 0 0 1px var(--vitalis-hair);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.vitalis-editorial-num {
+  font-family: var(--font-editorial);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum', 'ss01';
+  color: var(--vitalis-ink);
+}
+
+.vitalis-label-cap {
+  font-family: var(--font-corpo);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--vitalis-ouro);
+}
+
+.vitalis-mantra {
+  font-family: var(--font-editorial);
+  font-weight: 300;
+  font-style: italic;
+  font-size: 1.1875rem;
+  line-height: 1.5;
+  letter-spacing: -0.015em;
+  color: var(--vitalis-ink-soft);
+}
+
+.vitalis-headline {
+  font-family: var(--font-editorial);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  color: var(--vitalis-ink);
+}
+
+.vitalis-hairline {
+  height: 1px;
+  background: var(--vitalis-hair);
+  border: 0;
+}
+
+/* Dark mode — Vitalis editorial */
+.dark .vitalis-bg {
+  background: #14110D;
+  color: #EDE5D2;
+}
+
+.dark .vitalis-card {
+  background: rgba(34, 30, 24, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(201, 169, 97, 0.16);
+}
+
+.dark .vitalis-card-solid,
+.dark .vitalis-card-feature {
+  background: #221E18;
+  box-shadow: inset 0 0 0 1px rgba(201, 169, 97, 0.16);
+}
+
+.dark .vitalis-card-feature {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 8px 24px rgba(0, 0, 0, 0.25),
+    inset 0 0 0 1px rgba(201, 169, 97, 0.16);
+}
+
+.dark .vitalis-editorial-num,
+.dark .vitalis-headline {
+  color: #EDE5D2;
+}
+
+.dark .vitalis-mantra {
+  color: rgba(237, 229, 210, 0.75);
+}
+
+.dark .vitalis-label-cap {
+  color: #C9A961;
+}
+
+.dark .vitalis-hairline {
+  background: rgba(201, 169, 97, 0.16);
 }
 
 /* ============================================================
