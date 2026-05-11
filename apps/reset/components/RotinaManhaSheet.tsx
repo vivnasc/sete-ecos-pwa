@@ -28,6 +28,8 @@ export default function RotinaManhaSheet({ onClose }: Props) {
   const [sonoHoras, setSonoHoras] = useState<string>(dia.sonoHoras !== null ? String(dia.sonoHoras) : '')
   const [qualSono, setQualSono] = useState<number | null>(dia.qualidadeSono)
   const [acordou, setAcordou] = useState<string>(dia.acordouVezes !== null ? String(dia.acordouVezes) : '')
+  // Estado do jejum: 'manter' (default) / 'agora' / 'hora'
+  const [jejumAccao, setJejumAccao] = useState<'manter' | 'agora' | 'hora'>('manter')
   const [horaQuebra, setHoraQuebra] = useState<string>('')
   const [intestino, setIntestino] = useState<'sim' | 'nao' | null>(dia.transitoIntestinal ?? null)
   const [treinoFeito, setTreinoFeito] = useState<boolean>(!!dia.ancoras['treino_feito'])
@@ -39,13 +41,7 @@ export default function RotinaManhaSheet({ onClose }: Props) {
     return all.find(j => j.ultimaRefeicao && !j.primeiraRefeicao)
   })()
 
-  useEffect(() => {
-    // hint inicial · hora actual
-    if (jejumEmCurso) {
-      const d = new Date()
-      setHoraQuebra(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`)
-    }
-  }, [])
+  // Nada de pré-preenchimento · ela escolhe explicitamente o que fazer com o jejum
 
   const guardar = () => {
     setEstado('saving')
@@ -75,20 +71,27 @@ export default function RotinaManhaSheet({ onClose }: Props) {
       transitoIntestinal: intestino ?? dia_log.transitoIntestinal
     })
 
-    // 3. Fim de jejum (se há um em curso e ela meteu hora)
-    if (jejumEmCurso && /^\d{1,2}:\d{2}$/.test(horaQuebra)) {
-      const [h, m] = horaQuebra.split(':').map(Number)
-      const d = new Date()
-      d.setHours(h, m, 0, 0)
-      if (d.getTime() > Date.now()) d.setDate(d.getDate() - 1)
-      saveJejum({
-        date: jejumEmCurso.date,
-        ultimaRefeicao: jejumEmCurso.ultimaRefeicao,
-        primeiraRefeicao: d.toISOString(),
-        duracaoHoras: null,
-        meta: jejumEmCurso.meta,
-        completou: false
-      })
+    // 3. Fim de jejum · só se ela escolheu explicitamente fechar
+    if (jejumEmCurso && jejumAccao !== 'manter') {
+      let d: Date | null = null
+      if (jejumAccao === 'agora') {
+        d = new Date()
+      } else if (jejumAccao === 'hora' && /^\d{1,2}:\d{2}$/.test(horaQuebra)) {
+        const [h, m] = horaQuebra.split(':').map(Number)
+        d = new Date()
+        d.setHours(h, m, 0, 0)
+        if (d.getTime() > Date.now()) d.setDate(d.getDate() - 1)
+      }
+      if (d) {
+        saveJejum({
+          date: jejumEmCurso.date,
+          ultimaRefeicao: jejumEmCurso.ultimaRefeicao,
+          primeiraRefeicao: d.toISOString(),
+          duracaoHoras: null,
+          meta: jejumEmCurso.meta,
+          completou: false
+        })
+      }
     }
 
     // 4. Treino (toggle âncora se mudou)
@@ -163,25 +166,46 @@ export default function RotinaManhaSheet({ onClose }: Props) {
           <p className="text-faint text-[10px] tracking-cap uppercase">qualidade /5</p>
         </Bloco>
 
-        {/* Fim de jejum */}
+        {/* Fim de jejum · só se há um em curso · default 'ainda em jejum' */}
         {jejumEmCurso ? (
-          <Bloco icone={<Sun size={13} strokeWidth={1.5} />} titulo="fim do jejum" sub={`em curso desde ${new Date(jejumEmCurso.ultimaRefeicao!).toLocaleString('pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}`}>
-            <div className="grid grid-cols-2 gap-2">
+          <Bloco icone={<Sun size={13} strokeWidth={1.5} />} titulo="jejum em curso" sub={`desde ${new Date(jejumEmCurso.ultimaRefeicao!).toLocaleString('pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}`}>
+            <div className="grid grid-cols-3 gap-1.5">
+              <button
+                onClick={() => setJejumAccao('manter')}
+                className={cn(
+                  'rounded-md py-2 text-[11.5px] transition-elegant active:scale-95',
+                  jejumAccao === 'manter' ? 'bg-tinta text-creme dark:bg-ouro dark:text-tinta' : 'bg-[var(--surface-soft)] text-soft'
+                )}
+              >ainda em jejum</button>
+              <button
+                onClick={() => setJejumAccao('agora')}
+                className={cn(
+                  'rounded-md py-2 text-[11.5px] transition-elegant active:scale-95',
+                  jejumAccao === 'agora' ? 'bg-oliva text-creme' : 'bg-[var(--surface-soft)] text-soft'
+                )}
+              >comi agora</button>
+              <button
+                onClick={() => setJejumAccao('hora')}
+                className={cn(
+                  'rounded-md py-2 text-[11.5px] transition-elegant active:scale-95',
+                  jejumAccao === 'hora' ? 'bg-oliva text-creme' : 'bg-[var(--surface-soft)] text-soft'
+                )}
+              >comi às</button>
+            </div>
+            {jejumAccao === 'hora' ? (
               <input
                 type="time"
                 value={horaQuebra}
                 onChange={e => setHoraQuebra(e.target.value)}
-                className="rounded-md border border-[var(--hair)] bg-transparent p-2.5 text-[15px] tnum focus:border-ouro focus:outline-none"
+                className="w-full rounded-md border border-[var(--hair)] bg-transparent p-2.5 text-[15px] tnum focus:border-ouro focus:outline-none"
+                placeholder="hh:mm"
               />
-              <button
-                onClick={() => {
-                  const d = new Date()
-                  setHoraQuebra(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`)
-                }}
-                className="rounded-md bg-[var(--surface-soft)] py-2.5 text-[12px] text-soft active:scale-95"
-              >agora</button>
-            </div>
-            <p className="text-faint text-[10px] leading-relaxed">deixa em branco se ainda não comeste.</p>
+            ) : null}
+            <p className="text-faint text-[10.5px] leading-relaxed">
+              {jejumAccao === 'manter' ? 'jejum continua · nada é guardado.'
+                : jejumAccao === 'agora' ? 'vai fechar com hora actual.'
+                : 'escolhe a hora a que comeste.'}
+            </p>
           </Bloco>
         ) : null}
 
