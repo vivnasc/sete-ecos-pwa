@@ -565,14 +565,14 @@ const PagamentoVitalis = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#7C8B6F] to-[#5A6B4D] flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--fnx-bg-elev)] flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#7C8B6F] via-[#6B7A5D] to-[#5A6B4D] p-4 pb-24">
+    <div className="min-h-screen bg-[var(--fnx-bg-elev)] p-4 pb-24">
       <div className="max-w-xl mx-auto">
 
         {/* Header */}
@@ -881,7 +881,7 @@ const PagamentoVitalis = () => {
                     onClick={() => setPaymentMethod('manual')}
                     className={`flex-1 py-3 rounded-xl font-medium transition-all ${
                       paymentMethod === 'manual'
-                        ? 'bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white shadow-lg'
+                        ? 'bg-[var(--fnx-bg-elev)] text-white shadow-lg'
                         : 'bg-white/10 text-white/60 hover:bg-white/20'
                     }`}
                   >
@@ -1033,7 +1033,7 @@ const PagamentoVitalis = () => {
                       <button
                         type="submit"
                         disabled={processing || !manualReference.trim()}
-                        className="w-full py-3 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg transition-all"
+                        className="w-full py-3 bg-[var(--fnx-bg-elev)] text-white rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg transition-all"
                       >
                         {processing ? 'A registar...' : '✓ Confirmar Pagamento'}
                       </button>

@@ -170,7 +170,7 @@ const ReceitaDetalhe = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
+      <div className="min-h-screen flex items-center justify-center fnx-theme">
         <div className="text-center">
           <div className="text-5xl mb-4 animate-pulse">🍽️</div>
           <p className="text-gray-600">A carregar receita...</p>
@@ -181,7 +181,7 @@ const ReceitaDetalhe = () => {
 
   if (!receita) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
+      <div className="min-h-screen flex items-center justify-center fnx-theme">
         <div className="text-center">
           <div className="text-5xl mb-4">😕</div>
           <p className="text-gray-600 mb-4">Receita não encontrada</p>
@@ -504,7 +504,7 @@ const ReceitaDetalhe = () => {
               </div>
               <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-[#7C8B6F] to-[#5A6B4E] rounded-full transition-all duration-300"
+                  className="h-full bg-[var(--fnx-ouro)] rounded-full transition-all duration-300"
                   style={{ width: `${activeStep !== null ? ((activeStep + 1) / steps.length) * 100 : 0}%` }}
                 />
               </div>
@@ -515,7 +515,7 @@ const ReceitaDetalhe = () => {
         {/* Botão voltar */}
         <button
           onClick={() => navigate('/vitalis/receitas')}
-          className="w-full mt-6 py-4 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-2xl font-semibold shadow-lg"
+          className="w-full mt-6 py-4 bg-[var(--fnx-bg-elev)] text-white rounded-2xl font-semibold shadow-lg"
         >
           ← Voltar às Receitas
         </button>

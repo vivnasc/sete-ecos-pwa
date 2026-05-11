@@ -262,10 +262,10 @@ export default function RelatorioSemanal() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-8">
+    <div className="fnx-theme min-h-screen pb-8">
 
       {/* Header */}
-      <header className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white">
+      <header className="bg-[var(--fnx-bg)] text-white">
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between mb-4">
             <button
@@ -629,7 +629,7 @@ export default function RelatorioSemanal() {
 
         {/* Dicas/Insights */}
         <div className="bg-gradient-to-br from-[#E8E4DC] to-[#F5F2ED] rounded-2xl p-5 border border-[#E8E2D9]">
-          <h3 className="font-semibold text-[#4A4035] mb-3 flex items-center gap-2">
+          <h3 className="font-semibold fnx-text-ink mb-3 flex items-center gap-2">
             <span>💡</span> Insights da Semana
           </h3>
           <ul className="space-y-2 text-sm text-[#6B5C4C]">

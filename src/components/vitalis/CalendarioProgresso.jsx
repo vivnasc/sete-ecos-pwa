@@ -222,7 +222,7 @@ export default function CalendarioProgresso() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f5f0eb] to-[#e8e0d8] pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white px-4 pt-12 pb-6">
+      <div className="bg-[var(--fnx-bg-elev)] text-white px-4 pt-12 pb-6">
         <div className="max-w-lg mx-auto">
           <Link to="/vitalis/dashboard" className="text-white/80 text-sm mb-2 inline-block">
             ← Voltar

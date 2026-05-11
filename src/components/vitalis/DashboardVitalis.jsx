@@ -1500,7 +1500,7 @@ export default function DashboardVitalis() {
 
               <div className="grid grid-cols-3 gap-2 text-center text-xs">
                 <div className="p-2 bg-[#F5F2ED] rounded-lg">
-                  <div className="w-2 h-2 rounded-full bg-gradient-to-r from-[#7C8B6F] to-[#9CAF88] mx-auto mb-1"></div>
+                  <div className="w-2 h-2 rounded-full bg-[var(--fnx-ouro)] mx-auto mb-1"></div>
                   <p className="font-semibold text-[#4A4035]">{refeicoesConcluidas}/{totalRefeicoes}</p>
                   <p className="text-[#6B5C4C]">Refeições</p>
                 </div>
@@ -1689,11 +1689,14 @@ export default function DashboardVitalis() {
               ferramentas vitalis
             </h3>
             <p className="fnx-text-soft mt-0.5" style={{ fontSize: '12.5px', lineHeight: 1.5 }}>
-              receitas, tendências, fotos, desafios, paleta, notificações
+              receitas, tendências, fotos, desafios, notificações
             </p>
           </div>
           <ArrowRight size={16} strokeWidth={1.4} className="fnx-text-faint shrink-0" />
         </Link>
+
+        {/* Paleta — escolha opcional, sempre visível */}
+        <PaletaSelector />
 
         {/* Vivianne Explica */}
         <div className="mb-6">

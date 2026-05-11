@@ -287,7 +287,7 @@ export default function PerfilVitalis() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
+      <div className="min-h-screen flex items-center justify-center fnx-theme">
         <div className="text-center">
           <div className="text-5xl mb-4 animate-pulse">👤</div>
           <p className="text-[#6B5C4C]">A carregar perfil...</p>
@@ -299,11 +299,11 @@ export default function PerfilVitalis() {
   const avatarAtual = AVATARES.find(a => a.id === avatarSelecionado);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-8">
+    <div className="fnx-theme min-h-screen pb-8">
 
       {/* Header */}
       <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D]"></div>
+        <div className="absolute inset-0 bg-[var(--fnx-bg)]"></div>
         <div className="relative max-w-2xl mx-auto px-4 py-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -342,7 +342,7 @@ export default function PerfilVitalis() {
           <div className="flex flex-col items-center">
             {/* Avatar Grande */}
             <div className="relative mb-4">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#7C8B6F] to-[#9CAF88] flex items-center justify-center text-5xl shadow-lg">
+              <div className="w-24 h-24 rounded-full bg-[var(--fnx-bg-elev)] flex items-center justify-center text-5xl shadow-lg">
                 {avatarAtual?.emoji || (genero === 'M' ? '👨' : '👩')}
               </div>
               <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-yellow-400 border-3 border-white flex items-center justify-center text-sm font-bold shadow">
@@ -530,7 +530,7 @@ export default function PerfilVitalis() {
         <button
           onClick={guardarPerfil}
           disabled={saving}
-          className="w-full py-4 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
+          className="w-full py-4 bg-[var(--fnx-bg-elev)] text-white rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
         >
           {saving ? 'A guardar...' : 'Guardar Alterações'}
         </button>
@@ -602,7 +602,7 @@ export default function PerfilVitalis() {
               </p>
               <button
                 onClick={handleGenerateReferral}
-                className="px-6 py-3 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                className="px-6 py-3 bg-[var(--fnx-bg-elev)] text-white rounded-xl font-semibold hover:shadow-lg transition-all"
               >
                 Gerar o meu codigo
               </button>

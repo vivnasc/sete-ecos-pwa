@@ -737,7 +737,7 @@ export default function CalendarioRefeicoes() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#7C8B6F] to-[#5C6B4F] flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--fnx-bg-elev)] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
       </div>
     );
@@ -746,7 +746,7 @@ export default function CalendarioRefeicoes() {
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
       {/* Header */}
-      <header className="bg-gradient-to-r from-[#7C8B6F] to-[#5C6B4F] text-white">
+      <header className="bg-[var(--fnx-bg-elev)] text-white">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
             <Link to="/vitalis/dashboard" className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
@@ -904,7 +904,7 @@ export default function CalendarioRefeicoes() {
         </div>
 
         {/* Hand method reference */}
-        <div className="bg-gradient-to-r from-[#7C8B6F] to-[#5C6B4F] rounded-2xl p-4 text-white">
+        <div className="bg-[var(--fnx-bg-elev)] rounded-2xl p-4 text-white">
           <h3 className="font-bold mb-2">A tua mão = a tua medida</h3>
           <div className="grid grid-cols-4 gap-3 text-center text-sm">
             <div><span className="text-2xl">🫲</span><p className="text-white/80 text-xs mt-1">1 palma = Proteína</p></div>

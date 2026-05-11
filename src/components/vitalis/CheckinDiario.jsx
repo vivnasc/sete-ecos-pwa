@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { CONQUISTAS, CelebracaoModal } from './Gamificacao';
+import VitalisHeader from './VitalisHeader';
 
 export const CheckinDiario = () => {
   const navigate = useNavigate();
@@ -190,7 +191,7 @@ export const CheckinDiario = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] flex items-center justify-center">
+      <div className="fnx-theme min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4 animate-bounce">✅</div>
           <h2 className="text-3xl font-bold text-[#7C8B6F] mb-2">Check-in Registado!</h2>
@@ -212,34 +213,15 @@ export const CheckinDiario = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] shadow-lg">
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <button
-            onClick={() => navigate('/vitalis/dashboard')}
-            className="text-white/80 hover:text-white mb-4 flex items-center gap-2"
-          >
-            ← Voltar
-          </button>
-          <div className="flex items-center gap-4">
-            <img
-              src="/logos/VITALIS_LOGO_V3.png"
-              alt="Vitalis"
-              className="w-14 h-14 object-contain drop-shadow-lg"
-            />
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Playfair Display, serif', letterSpacing: '2px' }}>
-                Check-in Diário
-              </h1>
-              <p className="text-white/80">Como está o teu dia hoje? 🌱</p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="fnx-theme min-h-screen pb-24 fnx-fade-in">
+      <VitalisHeader
+        title="check-in diário"
+        subtitle="como está o teu dia hoje?"
+        backTo="/vitalis/dashboard"
+      />
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8">
+      <div className="fnx-container py-6">
+        <form onSubmit={handleSubmit} className="fnx-card-feature">
           {/* Peso */}
           <div className="mb-8">
             <label className="block text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">

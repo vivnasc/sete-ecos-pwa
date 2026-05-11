@@ -196,7 +196,7 @@ export default function AddFoodModal({ refeicao, onAdd, onClose }) {
                 {/* Botão confirmar */}
                 <button
                   onClick={handleConfirm}
-                  className="w-full py-3.5 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white rounded-xl font-semibold text-base hover:shadow-lg transition-all active:scale-[0.98]"
+                  className="w-full py-3.5 bg-[var(--fnx-ink)] text-white rounded-xl font-semibold text-base hover:shadow-lg transition-all active:scale-[0.98]"
                 >
                   Adicionar {porcionData?.macros?.calorias || 0} kcal
                 </button>

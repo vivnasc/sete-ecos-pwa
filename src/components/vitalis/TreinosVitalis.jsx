@@ -17,7 +17,7 @@ const FASES_VITALIS = {
     nome: 'Indução',
     semanas: '1-2',
     icon: '🌱',
-    cor: 'bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5F]',
+    cor: 'bg-[var(--fnx-ouro)]',
     corBorda: 'border-[#7C8B6F]',
     descricao: 'Foco em equilíbrio hormonal e ajustes metabólicos',
     treino: {
@@ -1167,7 +1167,7 @@ export default function TreinosVitalis() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F5F1EB] flex items-center justify-center">
-        <div className="text-[#4A4035] text-xl">A carregar...</div>
+        <div className="fnx-text-ink text-xl">A carregar...</div>
       </div>
     );
   }
@@ -1231,13 +1231,13 @@ export default function TreinosVitalis() {
         {/* Integração com Plano Alimentar */}
         {dadosNutricionais && (
           <div className="bg-white rounded-2xl p-4 shadow-md border border-[#E8E2D9]">
-            <h3 className="font-bold text-[#4A4035] mb-3 flex items-center gap-2">
+            <h3 className="font-bold fnx-text-ink mb-3 flex items-center gap-2">
               🍽️ Nutrição + Treino Sincronizados
             </h3>
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-[#F5F1EB] rounded-xl p-3">
-                <p className="text-[#4A4035]/60 text-xs">Dia sem treino</p>
-                <p className="font-bold text-[#4A4035] text-lg">{dadosNutricionais.caloriasSemTreino} kcal</p>
+                <p className="fnx-text-ink/60 text-xs">Dia sem treino</p>
+                <p className="font-bold fnx-text-ink text-lg">{dadosNutricionais.caloriasSemTreino} kcal</p>
               </div>
               <div className="bg-[#7C8B6F]/10 rounded-xl p-3 border border-[#7C8B6F]/30">
                 <p className="text-[#7C8B6F] text-xs">Dia com treino</p>
@@ -1272,7 +1272,7 @@ export default function TreinosVitalis() {
               className={`flex-1 py-2.5 px-3 rounded-lg font-medium text-sm transition-all ${
                 tabActiva === tab.id
                   ? 'bg-[#4A4035] text-white shadow-md'
-                  : 'text-[#4A4035]/60 hover:text-[#4A4035]'
+                  : 'fnx-text-ink/60 hover:fnx-text-ink'
               }`}
             >
               {tab.icon} {tab.label}
@@ -1317,8 +1317,8 @@ export default function TreinosVitalis() {
         {tabActiva === 'recomendado' && (
           <div className="space-y-4">
             <div className="text-center">
-              <h2 className="text-lg font-bold text-[#4A4035]">Exercícios para a tua fase</h2>
-              <p className="text-[#4A4035]/60 text-sm">
+              <h2 className="text-lg font-bold fnx-text-ink">Exercícios para a tua fase</h2>
+              <p className="fnx-text-ink/60 text-sm">
                 {getExerciciosRecomendados().length} exercícios disponíveis na fase {faseInfo.nome}
               </p>
             </div>
@@ -1350,8 +1350,8 @@ export default function TreinosVitalis() {
         {tabActiva === 'ciclo' && (
           <div className="space-y-4">
             <div className="text-center">
-              <h2 className="text-lg font-bold text-[#4A4035]">Treino & Ciclo Menstrual</h2>
-              <p className="text-[#4A4035]/60 text-sm">Adapta o treino à tua fase</p>
+              <h2 className="text-lg font-bold fnx-text-ink">Treino & Ciclo Menstrual</h2>
+              <p className="fnx-text-ink/60 text-sm">Adapta o treino à tua fase</p>
             </div>
 
             {/* Selector de fase do ciclo */}
@@ -1363,12 +1363,12 @@ export default function TreinosVitalis() {
                   className={`p-3 rounded-xl border-2 transition-all ${
                     faseCiclo === key
                       ? `bg-gradient-to-r ${fase.cor} border-transparent text-white`
-                      : 'bg-white border-[#E8E2D9] text-[#4A4035]'
+                      : 'bg-white border-[#E8E2D9] fnx-text-ink'
                   }`}
                 >
                   <span className="text-xl">{fase.icon}</span>
                   <p className="font-medium text-sm">{fase.nome}</p>
-                  <p className={`text-xs ${faseCiclo === key ? 'text-white/70' : 'text-[#4A4035]/50'}`}>
+                  <p className={`text-xs ${faseCiclo === key ? 'text-white/70' : 'fnx-text-ink/50'}`}>
                     Dias {fase.dias}
                   </p>
                 </button>
@@ -1409,10 +1409,10 @@ export default function TreinosVitalis() {
             {/* Aviso se estiver em fase de indução */}
             {faseActual === 'inducao' && (
               <div className="bg-[#7C8B6F]/10 rounded-xl p-4 border border-[#7C8B6F]/30">
-                <p className="text-[#4A4035] text-sm font-medium mb-1">
+                <p className="fnx-text-ink text-sm font-medium mb-1">
                   🌱 Estás na Fase de Indução (Semanas 1-2)
                 </p>
-                <p className="text-[#4A4035]/70 text-sm">
+                <p className="fnx-text-ink/70 text-sm">
                   Estamos a proteger o teu progresso! Nesta fase, o teu corpo está a fazer ajustes importantes.
                   Em breve vais poder aproveitar toda a energia do teu ciclo com treinos mais intensos.
                 </p>
@@ -1421,7 +1421,7 @@ export default function TreinosVitalis() {
 
             {/* Exercícios ideais para o ciclo - filtrados pela fase de treino */}
             <div>
-              <h3 className="font-bold text-[#4A4035] mb-2">Exercícios ideais:</h3>
+              <h3 className="font-bold fnx-text-ink mb-2">Exercícios ideais:</h3>
               <div className="flex flex-wrap gap-2">
                 {cicloInfo.ideal.map(id => {
                   const ex = EXERCICIOS[id];
@@ -1437,8 +1437,8 @@ export default function TreinosVitalis() {
                       key={id}
                       className={`px-3 py-1 rounded-full text-sm border ${
                         permitidoNaFase
-                          ? 'bg-white text-[#4A4035] border-[#E8E2D9]'
-                          : 'bg-[#7C8B6F]/5 text-[#4A4035]/40 border-[#7C8B6F]/20'
+                          ? 'bg-white fnx-text-ink border-[#E8E2D9]'
+                          : 'bg-[#7C8B6F]/5 fnx-text-ink/40 border-[#7C8B6F]/20'
                       }`}
                       title={!permitidoNaFase ? `Disponível na fase ${faseMinima}` : ''}
                     >
@@ -1466,8 +1466,8 @@ export default function TreinosVitalis() {
         {tabActiva === 'biblioteca' && (
           <div className="space-y-4">
             <div className="text-center">
-              <h2 className="text-lg font-bold text-[#4A4035]">Biblioteca de Exercícios</h2>
-              <p className="text-[#4A4035]/60 text-sm">
+              <h2 className="text-lg font-bold fnx-text-ink">Biblioteca de Exercícios</h2>
+              <p className="fnx-text-ink/60 text-sm">
                 {Object.keys(EXERCICIOS).length} exercícios com vídeos
               </p>
             </div>
@@ -1481,7 +1481,7 @@ export default function TreinosVitalis() {
                   className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
                     localTreino === local
                       ? 'bg-[#4A4035] text-white'
-                      : 'text-[#4A4035]/60'
+                      : 'fnx-text-ink/60'
                   }`}
                 >
                   {local === 'todos' ? '📚 Todos' : local === 'casa' ? '🏠 Casa' : '🏋️ Ginásio'}
@@ -1498,7 +1498,7 @@ export default function TreinosVitalis() {
                   className={`px-3 py-1.5 rounded-full text-sm whitespace-nowrap transition-all ${
                     grupoFiltro === grupo
                       ? 'bg-[#7C8B6F] text-white'
-                      : 'bg-white text-[#4A4035]/70 border border-[#E8E2D9]'
+                      : 'bg-white fnx-text-ink/70 border border-[#E8E2D9]'
                   }`}
                 >
                   {grupo === 'todos' ? 'Todos' : grupo}
@@ -1526,11 +1526,11 @@ export default function TreinosVitalis() {
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-[#E8E2D9] shadow-lg">
         <div className="max-w-2xl mx-auto flex justify-around py-3">
-          <Link to="/vitalis/dashboard" className="flex flex-col items-center text-[#4A4035]/40">
+          <Link to="/vitalis/dashboard" className="flex flex-col items-center fnx-text-ink/40">
             <span className="text-xl">🏠</span>
             <span className="text-xs mt-1">Início</span>
           </Link>
-          <Link to="/vitalis/checkin" className="flex flex-col items-center text-[#4A4035]/40">
+          <Link to="/vitalis/checkin" className="flex flex-col items-center fnx-text-ink/40">
             <span className="text-xl">✅</span>
             <span className="text-xs mt-1">Check-in</span>
           </Link>
@@ -1538,11 +1538,11 @@ export default function TreinosVitalis() {
             <span className="text-xl">💪</span>
             <span className="text-xs mt-1 font-medium">Treinos</span>
           </Link>
-          <Link to="/vitalis/plano" className="flex flex-col items-center text-[#4A4035]/40">
+          <Link to="/vitalis/plano" className="flex flex-col items-center fnx-text-ink/40">
             <span className="text-xl">🍽️</span>
             <span className="text-xs mt-1">Plano</span>
           </Link>
-          <Link to="/vitalis/perfil" className="flex flex-col items-center text-[#4A4035]/40">
+          <Link to="/vitalis/perfil" className="flex flex-col items-center fnx-text-ink/40">
             <span className="text-xl">👤</span>
             <span className="text-xs mt-1">Perfil</span>
           </Link>
@@ -1595,7 +1595,7 @@ function RegistarTreinoTab({ treinoHoje, historico, userId, treinoTipo, setTrein
         <>
           {/* Formulário de registo */}
           <div className="bg-white rounded-2xl p-4 shadow-md border border-[#E8E2D9]">
-            <h3 className="font-bold text-[#4A4035] mb-3">O que fizeste hoje?</h3>
+            <h3 className="font-bold fnx-text-ink mb-3">O que fizeste hoje?</h3>
 
             {/* Grid de tipos */}
             <div className="grid grid-cols-5 gap-2 mb-4">
@@ -1644,7 +1644,7 @@ function RegistarTreinoTab({ treinoHoje, historico, userId, treinoTipo, setTrein
                     <p className="text-sm font-semibold text-[#5A6B4D] mb-2">{tipoInfo.emoji} Dicas para {tipoInfo.label}</p>
                     <ul className="space-y-1.5">
                       {tipoInfo.tips.map((tip, i) => (
-                        <li key={i} className="text-sm text-[#4A4035]/80 flex items-start gap-2">
+                        <li key={i} className="text-sm fnx-text-ink/80 flex items-start gap-2">
                           <span className="text-[#7C8B6F] mt-0.5 shrink-0">•</span>
                           {tip}
                         </li>
@@ -1657,7 +1657,7 @@ function RegistarTreinoTab({ treinoHoje, historico, userId, treinoTipo, setTrein
                 <button
                   onClick={onRegistar}
                   disabled={salvandoTreino}
-                  className="w-full py-3 bg-gradient-to-r from-[#7C8B6F] to-[#5A6B4D] text-white rounded-xl text-sm font-bold hover:shadow-lg transition-all disabled:opacity-50 active:scale-95"
+                  className="w-full py-3 bg-[var(--fnx-bg-elev)] text-white rounded-xl text-sm font-bold hover:shadow-lg transition-all disabled:opacity-50 active:scale-95"
                 >
                   {salvandoTreino ? 'A guardar...' : `✓ Registar ${tipoInfo?.label || 'Treino'}`}
                 </button>
@@ -1670,7 +1670,7 @@ function RegistarTreinoTab({ treinoHoje, historico, userId, treinoTipo, setTrein
       {/* Historial recente */}
       {historico.length > 0 && (
         <div className="bg-white rounded-2xl p-4 shadow-md border border-[#E8E2D9]">
-          <h3 className="font-bold text-[#4A4035] mb-3 text-sm">Últimos treinos</h3>
+          <h3 className="font-bold fnx-text-ink mb-3 text-sm">Últimos treinos</h3>
           <div className="space-y-2 max-h-[40vh] overflow-y-auto">
             {historico.map((treino, i) => {
               const info = TIPOS_TREINO.find(t => t.id === treino.tipo);
@@ -1683,7 +1683,7 @@ function RegistarTreinoTab({ treinoHoje, historico, userId, treinoTipo, setTrein
                 <div key={treino.id || i} className="flex items-center gap-3 p-2.5 bg-[#F5F1EB] rounded-lg">
                   <span className="text-xl">{info?.emoji || '💪'}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[#4A4035] truncate">{info?.label || treino.tipo}</p>
+                    <p className="text-sm font-medium fnx-text-ink truncate">{info?.label || treino.tipo}</p>
                     <p className="text-xs text-gray-500">{dataLabel}{treino.duracao_min ? ` — ${treino.duracao_min} min` : ''}</p>
                   </div>
                   <span className="text-emerald-500">✓</span>
@@ -1695,15 +1695,15 @@ function RegistarTreinoTab({ treinoHoje, historico, userId, treinoTipo, setTrein
           {/* Stats resumo */}
           <div className="mt-3 pt-3 border-t border-[#E8E2D9] grid grid-cols-3 gap-2 text-center">
             <div>
-              <p className="text-lg font-bold text-[#4A4035]">{historico.length}</p>
+              <p className="text-lg font-bold fnx-text-ink">{historico.length}</p>
               <p className="text-[10px] text-gray-500">Treinos</p>
             </div>
             <div>
-              <p className="text-lg font-bold text-[#4A4035]">{historico.reduce((s, t) => s + (t.duracao_min || 0), 0)}</p>
+              <p className="text-lg font-bold fnx-text-ink">{historico.reduce((s, t) => s + (t.duracao_min || 0), 0)}</p>
               <p className="text-[10px] text-gray-500">Min totais</p>
             </div>
             <div>
-              <p className="text-lg font-bold text-[#4A4035]">
+              <p className="text-lg font-bold fnx-text-ink">
                 {(() => {
                   const tipoCount = {};
                   historico.forEach(t => { tipoCount[t.tipo] = (tipoCount[t.tipo] || 0) + 1; });
@@ -1718,7 +1718,7 @@ function RegistarTreinoTab({ treinoHoje, historico, userId, treinoTipo, setTrein
       )}
 
       {/* Motivação */}
-      <div className="bg-gradient-to-r from-[#7C8B6F] to-[#5A6B4D] rounded-2xl p-4 text-center">
+      <div className="bg-[var(--fnx-bg-elev)] rounded-2xl p-4 text-center">
         <p className="text-white/80 text-sm italic">"Cada treino que fazes é um investimento na tua saúde futura."</p>
         <p className="text-white/50 text-xs mt-1">— Vivianne</p>
       </div>
@@ -1743,11 +1743,11 @@ function ExercicioCard({ exercicio, expandido, onToggle, permitido, faseActual }
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <p className="font-bold text-[#4A4035] truncate">{exercicio.nome}</p>
+              <p className="font-bold fnx-text-ink truncate">{exercicio.nome}</p>
               {!permitido && <span className="text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded">🔒</span>}
               {exercicio.local === 'ginasio' && <span className="text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded">🏋️</span>}
             </div>
-            <p className="text-[#4A4035]/50 text-xs">{exercicio.grupo} • {exercicio.subgrupo}</p>
+            <p className="fnx-text-ink/50 text-xs">{exercicio.grupo} • {exercicio.subgrupo}</p>
             <div className="flex gap-2 mt-1">
               <span className="text-xs bg-[#7C8B6F]/10 text-[#7C8B6F] px-2 py-0.5 rounded">
                 {exercicio.series}x{exercicio.repeticoes}
@@ -1757,7 +1757,7 @@ function ExercicioCard({ exercicio, expandido, onToggle, permitido, faseActual }
               </span>
             </div>
           </div>
-          <span className={`text-[#4A4035]/40 transition-transform ${expandido ? 'rotate-180' : ''}`}>▼</span>
+          <span className={`fnx-text-ink/40 transition-transform ${expandido ? 'rotate-180' : ''}`}>▼</span>
         </div>
       </button>
 
@@ -1774,22 +1774,22 @@ function ExercicioCard({ exercicio, expandido, onToggle, permitido, faseActual }
           {/* Info rápida */}
           <div className="grid grid-cols-3 gap-2 text-center">
             <div className="bg-[#F5F1EB] rounded-lg p-2">
-              <p className="text-xs text-[#4A4035]/50">Séries</p>
-              <p className="font-bold text-[#4A4035]">{exercicio.series}</p>
+              <p className="text-xs fnx-text-ink/50">Séries</p>
+              <p className="font-bold fnx-text-ink">{exercicio.series}</p>
             </div>
             <div className="bg-[#F5F1EB] rounded-lg p-2">
-              <p className="text-xs text-[#4A4035]/50">Reps</p>
-              <p className="font-bold text-[#4A4035]">{exercicio.repeticoes}</p>
+              <p className="text-xs fnx-text-ink/50">Reps</p>
+              <p className="font-bold fnx-text-ink">{exercicio.repeticoes}</p>
             </div>
             <div className="bg-[#F5F1EB] rounded-lg p-2">
-              <p className="text-xs text-[#4A4035]/50">Descanso</p>
-              <p className="font-bold text-[#4A4035]">{exercicio.descanso}</p>
+              <p className="text-xs fnx-text-ink/50">Descanso</p>
+              <p className="font-bold fnx-text-ink">{exercicio.descanso}</p>
             </div>
           </div>
 
           {/* Músculos */}
           <div>
-            <p className="text-xs font-medium text-[#4A4035]/50 mb-1">MÚSCULOS</p>
+            <p className="text-xs font-medium fnx-text-ink/50 mb-1">MÚSCULOS</p>
             <div className="flex flex-wrap gap-1">
               {exercicio.musculos.map(m => (
                 <span key={m} className="text-xs bg-[#7C8B6F]/10 text-[#7C8B6F] px-2 py-1 rounded-full">{m}</span>
@@ -1799,10 +1799,10 @@ function ExercicioCard({ exercicio, expandido, onToggle, permitido, faseActual }
 
           {/* Instruções */}
           <div>
-            <p className="text-xs font-medium text-[#4A4035]/50 mb-2">COMO EXECUTAR</p>
+            <p className="text-xs font-medium fnx-text-ink/50 mb-2">COMO EXECUTAR</p>
             <ol className="space-y-1">
               {exercicio.instrucoes.map((inst, idx) => (
-                <li key={idx} className="text-sm text-[#4A4035]/80 flex gap-2">
+                <li key={idx} className="text-sm fnx-text-ink/80 flex gap-2">
                   <span className="text-[#7C8B6F] font-bold">{idx + 1}.</span>
                   {inst}
                 </li>
@@ -1843,7 +1843,7 @@ function ExercicioCard({ exercicio, expandido, onToggle, permitido, faseActual }
             VER DEMONSTRAÇÃO ({exercicio.video_canal})
           </a>
 
-          <p className="text-center text-[#4A4035]/40 text-xs">
+          <p className="text-center fnx-text-ink/40 text-xs">
             Vídeo abre no YouTube
           </p>
         </div>

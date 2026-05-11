@@ -116,7 +116,7 @@ const VitalisAccessGuard = ({ children }) => {
   // Pagamento PENDENTE - mostrar página de espera
   if (!hasAccess && accessInfo?.status === SUBSCRIPTION_STATUS.PENDING) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#7C8B6F] to-[#5A6B4D] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[var(--fnx-bg-elev)] flex items-center justify-center p-4">
         <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-2xl">
           <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <span className="text-4xl">⏳</span>
@@ -133,7 +133,7 @@ const VitalisAccessGuard = ({ children }) => {
           </div>
           <Link
             to="/vitalis"
-            className="block w-full py-3 px-6 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-xl font-semibold hover:shadow-lg transition-all mb-3"
+            className="block w-full py-3 px-6 bg-[var(--fnx-bg-elev)] text-white rounded-xl font-semibold hover:shadow-lg transition-all mb-3"
           >
             ← Voltar à Página Inicial
           </Link>

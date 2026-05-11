@@ -241,7 +241,7 @@ export default function MealsTracker() {
   // Loading
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
+      <div className="min-h-screen flex items-center justify-center fnx-theme">
         <div className="text-center">
           <div className="text-6xl mb-4 animate-pulse">🍽️</div>
           <p className="text-gray-600" role="status" aria-live="polite">A carregar...</p>
@@ -258,13 +258,13 @@ export default function MealsTracker() {
         <div className="max-w-2xl mx-auto px-4 py-12">
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg p-8 text-center border border-[#D2B48C]/30">
             <div className="text-6xl mb-4">🍽️</div>
-            <h2 className="text-2xl font-bold text-[#4A4035] mb-2">Configura as tuas refeições</h2>
+            <h2 className="text-2xl font-bold fnx-text-ink mb-2">Configura as tuas refeições</h2>
             <p className="text-[#6B4423] mb-6">
               Antes de começar a registar, define quais refeições fazes no teu dia.
             </p>
             <button
               onClick={() => navigate('/vitalis/refeicoes-config')}
-              className="px-8 py-4 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white rounded-xl font-semibold text-lg hover:shadow-lg transition-all active:scale-95"
+              className="px-8 py-4 bg-[var(--fnx-bg)] text-white rounded-xl font-semibold text-lg hover:shadow-lg transition-all active:scale-95"
             >
               Configurar Refeições
             </button>
@@ -522,7 +522,7 @@ export default function MealsTracker() {
         </div>
 
         {/* Hand method reference */}
-        <div className="bg-gradient-to-r from-[#7C8B6F] to-[#5A6B4D] rounded-2xl p-4 text-white">
+        <div className="bg-[var(--fnx-bg-elev)] rounded-2xl p-4 text-white">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xl">🤚</span>
             <span className="font-bold text-sm">Guia rápido — Método da Mão</span>
@@ -566,7 +566,7 @@ export default function MealsTracker() {
 // Header bar component
 function HeaderBar({ navigate }) {
   return (
-    <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] shadow-lg">
+    <div className="bg-[var(--fnx-bg)] shadow-lg">
       <div className="max-w-2xl mx-auto px-4 py-4">
         <button
           onClick={() => navigate('/vitalis/dashboard')}
