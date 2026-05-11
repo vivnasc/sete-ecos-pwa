@@ -59,7 +59,9 @@ const BUCKETS = [
     label: 'apoio',
     descricao: 'não estás sozinha nisto',
     itens: [
-      { to: '/vitalis/chat', icon: MessageCircle, label: 'fala com a coach', sub: 'estou aqui' },
+      { to: '/vitalis/coach-ia', icon: MessageCircle, label: 'coach IA', sub: 'fala em texto · regista por ti' },
+      { to: '/vitalis/chat', icon: MessageCircle, label: 'chat clássico', sub: 'conversa guiada' },
+      { to: '/vitalis/objectivos', icon: Target, label: 'os meus objectivos', sub: 'define o teu foco' },
       { to: '/vitalis/espaco-retorno', icon: HeartIcon, label: 'espaço retorno', sub: 'quando cair' },
       { to: '/vitalis/desafios', icon: Target, label: 'desafios', sub: 'semana a semana' },
       { to: '/comunidade', icon: Users, label: 'comunidade', sub: 'rio · círculos' },

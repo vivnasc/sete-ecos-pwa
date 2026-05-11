@@ -79,6 +79,8 @@ const VitalisAccessGuard = lazy(() => import('./components/vitalis/VitalisAccess
 const VitalisIntakeComplete = lazy(() => import('./components/vitalis/VitalisIntakeComplete'))
 const DashboardVitalis = lazy(() => import('./components/vitalis/DashboardVitalis'))
 const FerramentasVitalis = lazy(() => import('./components/vitalis/FerramentasVitalis'))
+const ChatCoachIA = lazy(() => import('./components/vitalis/ChatCoachIA'))
+const ObjectivosVitalis = lazy(() => import('./components/vitalis/ObjectivosVitalis'))
 const CheckinDiario = lazy(() => import('./components/vitalis/CheckinDiario'))
 const ReceitasBrowse = lazy(() => import('./components/vitalis/ReceitasBrowse'))
 const ReceitaDetalhe = lazy(() => import('./components/vitalis/ReceitaDetalhe'))
@@ -426,6 +428,8 @@ function AppRoutes() {
             <Route path="/vitalis/intake" element={<VitalisRoute><VitalisIntakeComplete /></VitalisRoute>} />
             <Route path="/vitalis/dashboard" element={<VitalisRoute><DashboardVitalis /></VitalisRoute>} />
             <Route path="/vitalis/ferramentas" element={<VitalisRoute><FerramentasVitalis /></VitalisRoute>} />
+            <Route path="/vitalis/coach-ia" element={<VitalisRoute><ChatCoachIA /></VitalisRoute>} />
+            <Route path="/vitalis/objectivos" element={<VitalisRoute><ObjectivosVitalis /></VitalisRoute>} />
             <Route path="/vitalis/checkin" element={<VitalisRoute><CheckinDiario /></VitalisRoute>} />
             <Route path="/vitalis/sintomas" element={<VitalisRoute><SintomasTracker /></VitalisRoute>} />
             <Route path="/vitalis/receitas" element={<VitalisRoute><ReceitasBrowse /></VitalisRoute>} />

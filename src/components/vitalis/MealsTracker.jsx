@@ -5,6 +5,7 @@ import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
 import { somarMacros, calcularMacrosPorcaoMao, CONVERSOES_MAO } from '../../lib/vitalis/porcoesConverter.js';
 import AddFoodModal from './AddFoodModal.jsx';
 import EstimarMacrosInput from './EstimarMacrosInput.jsx';
+import FotoRefeicaoInput from './FotoRefeicaoInput.jsx';
 
 export default function MealsTracker() {
   const navigate = useNavigate();
@@ -282,6 +283,35 @@ export default function MealsTracker() {
       <HeaderBar navigate={navigate} />
 
       <div className="fnx-container py-4 space-y-4">
+        {/* Foto da refeição → macros via Claude Vision */}
+        <FotoRefeicaoInput
+          tipoDefault=""
+          onAceitar={async (e) => {
+            try {
+              const { data: { user } } = await supabase.auth.getUser();
+              if (!user) return;
+              const { data: userData } = await supabase.from('users').select('id').eq('auth_id', user.id).single();
+              if (!userData) return;
+              const payload = {
+                user_id: userData.id,
+                data: dataSeleccionada,
+                tipo: e.tipo || 'lanche',
+                alimentos: (e.alimentos || []).join(', ') || e.descricao,
+                descricao: e.descricao,
+                porcoes_proteina: e.porcoes?.proteina ?? Math.round((e.proteina_g / 20) * 10) / 10,
+                porcoes_hidratos: e.porcoes?.hidratos ?? Math.round((e.hidratos_g / 30) * 10) / 10,
+                porcoes_gordura: e.porcoes?.gordura ?? Math.round((e.gordura_g / 7) * 10) / 10,
+                kcal: e.kcal,
+                created_at: new Date().toISOString()
+              };
+              await supabase.from('vitalis_meal_log').insert([payload]).catch(async () => {
+                await supabase.from('vitalis_refeicoes_log').insert([payload]);
+              });
+              window.location.reload();
+            } catch (err) { console.error('Erro foto refeição:', err); }
+          }}
+        />
+
         {/* Estimar macros por descrição — IA */}
         <EstimarMacrosInput
           tipoDefault=""
