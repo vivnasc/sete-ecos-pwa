@@ -62,20 +62,38 @@ function parsearJson(json: unknown): EntradaPreview[] {
     if (Array.isArray(metrics)) {
       metrics.forEach(m => {
         const nome = String(m.name ?? '').toLowerCase()
+        const unidade = String(m.units ?? '').toLowerCase()
         const datapoints = Array.isArray(m.data) ? m.data : []
         datapoints.forEach((dp: unknown) => {
           const p = dp as Record<string, unknown>
           const d = String(p.date ?? '').slice(0, 10)
           if (!d) return
-          if (nome.includes('step')) meter(d, { steps: Number(p.qty) || undefined })
-          else if (nome.includes('sleep') && nome.includes('asleep')) meter(d, { sonoHoras: Number(p.qty) ? Number(p.qty) / 60 : undefined })
-          else if (nome.includes('resting') && nome.includes('heart')) meter(d, { rhr: Number(p.qty) || undefined })
+          const qty = Number(p.qty) || Number(p.value) || 0
+          if (!qty) return
+          if (nome.includes('step')) meter(d, { steps: qty })
+          else if (nome.includes('sleep')) {
+            // sleep_analysis · sleep_asleep · time_in_bed · sleep_in_bed · etc.
+            // Aceita qty em horas OU minutos (>16 assumimos minutos)
+            const horas = qty > 16 ? qty / 60 : qty
+            meter(d, { sonoHoras: Math.round(horas * 10) / 10 })
+          }
+          else if ((nome.includes('resting') || nome.includes('rhr')) && (nome.includes('heart') || unidade.includes('bpm'))) meter(d, { rhr: qty })
+          else if (nome === 'heart_rate_variability' || nome.includes('hrv')) { /* ignora · não suportado */ }
         })
       })
     }
   }
 
   return [...mapa.values()].sort((a, b) => a.date.localeCompare(b.date))
+}
+
+function ResumoCount({ label, n }: { label: string; n: number }) {
+  return (
+    <div className="card-solid !p-2">
+      <p className="font-serif text-[18px] tnum">{n}</p>
+      <p className="text-faint text-[9.5px] uppercase tracking-cap">{label}</p>
+    </div>
+  )
 }
 
 export default function ImportarSaudePage() {
@@ -173,9 +191,14 @@ export default function ImportarSaudePage() {
       ) : null}
 
       {importado !== null ? (
-        <div className="rounded-lg bg-oliva/15 p-3 text-[12px] text-oliva flex items-center gap-2">
-          <Check size={14} strokeWidth={1.6} />
-          {importado} dias importados.
+        <div className="rounded-lg bg-oliva/15 p-3 text-[12px] text-oliva space-y-2">
+          <div className="flex items-center gap-2">
+            <Check size={14} strokeWidth={1.6} />
+            {importado} dias importados.
+          </div>
+          <p className="text-[11px] leading-relaxed">
+            vê na <a href="/" className="underline">Hoje</a> (card &ldquo;saúde&rdquo;) ou em <a href="/metricas" className="underline">métricas</a>. se aparecer &ldquo;—&rdquo; é porque os dados são de dias mais antigos · gráficos de 21 dias mostram tudo.
+          </p>
         </div>
       ) : null}
 
@@ -186,6 +209,11 @@ export default function ImportarSaudePage() {
             <button onClick={importar} className="btn-primary px-4 py-2 text-[12px]">
               <FileText size={13} strokeWidth={1.5} /> importar
             </button>
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-center pt-1 pb-1">
+            <ResumoCount label="passos" n={preview.filter(p => p.steps !== undefined).length} />
+            <ResumoCount label="sono" n={preview.filter(p => p.sonoHoras !== undefined).length} />
+            <ResumoCount label="rhr" n={preview.filter(p => p.rhr !== undefined).length} />
           </div>
           <ul className="space-y-1.5 max-h-80 overflow-y-auto">
             {preview.map(e => (

@@ -13,9 +13,13 @@ export default function SaudeHojeCard() {
 
   const refresh = () => {
     setHoje(getDia())
-    const dias = getTodosDias().slice(-7)
+    // Procura últimos 7 registos COM cada métrica · não últimos 7 dias do calendário
+    const todos = getTodosDias()
     const med = (key: 'steps' | 'rhr' | 'sonoHoras') => {
-      const vals = dias.map(d => d[key]).filter((v): v is number => v !== null && v !== undefined)
+      const vals = todos
+        .map(d => d[key])
+        .filter((v): v is number => v !== null && v !== undefined)
+        .slice(-7)
       if (vals.length === 0) return null
       return Math.round((vals.reduce((s, v) => s + v, 0) / vals.length) * 10) / 10
     }
