@@ -75,6 +75,13 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
     // Profile · primeira coisa para garantir onboarding state
     if (profileR.data) {
       const p = profileR.data
+      // Lê o perfil local existente para preservar campos locais (caso
+      // o servidor não tenha colunas para historico_clinico ou preferencias)
+      let localExistente: Record<string, unknown> = {}
+      try {
+        const raw = localStorage.getItem('fenixfit:profile')
+        if (raw) localExistente = JSON.parse(raw) as Record<string, unknown>
+      } catch {}
       const profile = {
         nome: p.nome ?? '',
         sexo: p.sexo ?? 'F',
@@ -97,7 +104,12 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
         objectivos: p.objectivos ?? [],
         alturaCm: p.altura_cm ?? null,
         idade: p.idade ?? null,
-        nivelActividade: p.nivel_actividade ?? null
+        nivelActividade: p.nivel_actividade ?? null,
+        // Histórico clínico e preferências · servidor wins se tiver,
+        // senão preserva o local · evita perder texto da Vivianne quando
+        // o schema ainda não tem as colunas
+        historicoClinico: (p.historico_clinico as string | undefined) ?? (localExistente.historicoClinico as string | undefined) ?? '',
+        preferenciasAlimentares: (p.preferencias_alimentares as string | undefined) ?? (localExistente.preferenciasAlimentares as string | undefined) ?? ''
       }
       localStorage.setItem('fenixfit:profile', JSON.stringify(profile))
       window.dispatchEvent(new CustomEvent('fenixfit:profile', { detail: profile }))
@@ -626,7 +638,7 @@ export async function syncProfile(p: Record<string, unknown>): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  const { error } = await sb.from('fenixfit_profile').upsert({
+  const baseRow = {
     user_id: user.id,
     nome: p.nome,
     sexo: p.sexo,
@@ -648,7 +660,18 @@ export async function syncProfile(p: Record<string, unknown>): Promise<void> {
     altura_cm: p.alturaCm ?? null,
     idade: p.idade ?? null,
     nivel_actividade: p.nivelActividade ?? null
+  }
+  // Tenta com historico_clinico e preferencias_alimentares · se schema não
+  // tiver colunas, faz retry sem (não bloqueia o resto do perfil)
+  let { error } = await sb.from('fenixfit_profile').upsert({
+    ...baseRow,
+    historico_clinico: p.historicoClinico ?? '',
+    preferencias_alimentares: p.preferenciasAlimentares ?? ''
   })
+  if (error && /historico_clinico|preferencias_alimentares/.test(error.message ?? '')) {
+    const retry = await sb.from('fenixfit_profile').upsert(baseRow)
+    error = retry.error
+  }
   if (error) registarErroSync('profile', error)
 }
 
