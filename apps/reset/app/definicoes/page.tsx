@@ -199,6 +199,31 @@ export default function DefinicoesPage() {
               />
             </Field>
           </div>
+
+          {/* HISTÓRICO CLÍNICO · vai sempre para a coach */}
+          <Field label="Histórico clínico / medicação · vai sempre para a coach">
+            <textarea
+              rows={4}
+              value={perfil.historicoClinico ?? ''}
+              onChange={e => guardarPerfil({ historicoClinico: e.target.value })}
+              className="input-base resize-none text-[13px]"
+              placeholder="ex: parei Mounjaro há 1 mês depois de 18 meses (descontinuação gradual q15d), perimenopausa, ferro baixo histórico..."
+            />
+          </Field>
+          <p className="text-faint text-[10.5px] -mt-2 leading-relaxed">
+            tudo o que escreveres aqui aparece em cada conversa com a coach. medicações, condições, perimenopausa, lesões, restrições.
+          </p>
+
+          {/* PROTOCOLO ALIMENTAR · vai sempre para a coach */}
+          <Field label="Protocolo / preferências alimentares · vai sempre para a coach">
+            <textarea
+              rows={3}
+              value={perfil.preferenciasAlimentares ?? ''}
+              onChange={e => guardarPerfil({ preferenciasAlimentares: e.target.value })}
+              className="input-base resize-none text-[13px]"
+              placeholder="ex: keto adaptada (anos), tecto 50g carbo, jejum 14-16h, sem glúten..."
+            />
+          </Field>
         </div>
       </section>
 

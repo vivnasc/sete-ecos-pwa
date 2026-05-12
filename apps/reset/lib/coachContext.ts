@@ -32,6 +32,25 @@ export function construirContexto(comAnalise = false): string {
 
   linhas.push(`Hoje: ${isoDate()}`)
   const profile = getProfile()
+
+  // PERFIL · dados de base · CRÍTICO ter na frente para evitar perguntar de novo
+  linhas.push('PERFIL DA VIVIANNE:')
+  linhas.push(`· nome: ${profile.nome || '?'}`)
+  linhas.push(`· sexo: ${profile.sexo}`)
+  linhas.push(`· idade: ${profile.idade ?? 'NÃO REGISTADA'} anos`)
+  linhas.push(`· altura: ${profile.alturaCm ?? 'NÃO REGISTADA'} cm`)
+  linhas.push(`· nível actividade: ${profile.nivelActividade ?? 'NÃO REGISTADO'}`)
+  if (profile.pesoInicial) linhas.push(`· peso inicial: ${profile.pesoInicial} kg`)
+  if (profile.cinturaInicial) linhas.push(`· cintura inicial: ${profile.cinturaInicial} cm`)
+  if (profile.historicoClinico && profile.historicoClinico.trim().length > 0) {
+    linhas.push(`· HISTÓRICO CLÍNICO / MEDICAÇÃO (sempre relevante para análise):`)
+    linhas.push(`  ${profile.historicoClinico.trim()}`)
+  }
+  if (profile.preferenciasAlimentares && profile.preferenciasAlimentares.trim().length > 0) {
+    linhas.push(`· PROTOCOLO / PREFERÊNCIAS ALIMENTARES:`)
+    linhas.push(`  ${profile.preferenciasAlimentares.trim()}`)
+  }
+
   if (profile.modoViagem) {
     linhas.push('⚠ MODO VIAGEM ACTIVO · ela está fora da rotina habitual. Não cobres streaks. Suaviza exigências. Foco no que controla.')
   }
