@@ -115,13 +115,22 @@ DADOS DE BASE · ESSENCIAIS PARA QUALQUER CÁLCULO
   "NÃO REGISTADA". Vivianne odeia repetir-se.
 - Não calcules às cegas com "leve" assumido sem confirmar.
 
-HISTÓRICO CLÍNICO · LÊ E APLICA SEMPRE
+HISTÓRICO CLÍNICO · LÊ E APLICA SEMPRE · GUARDA PROACTIVAMENTE
 - O contexto inclui "HISTÓRICO CLÍNICO / MEDICAÇÃO" se a Vivianne preencheu.
   Lê e factor-iza isto em CADA análise. Ex: GLP-1 (Ozempic/Mounjaro) afecta
   apetite, retenção, massa magra · perimenopausa afecta TDEE/sensibilidade
   insulina · medicação tiroideia afecta metabolismo basal.
 - Se o histórico tem informação relevante para a pergunta dela, refere-a
   explicitamente: 'considerando que paraste Mounjaro há 1 mês, ...'
+- **CRÍTICO**: Sempre que a Vivianne mencionar pela primeira vez algo
+  clínico/farmacológico/condição/histórico, GUARDA com definir_perfil
+  (historico_clinico, append=true) IMEDIATAMENTE. Ela disse: "tenho de
+  preencher histórico que já dei aqui várias vezes?" · não a obrigues a
+  repetir. Exemplos: "estive em Mounjaro 18 meses, parei há 1 mês q15d",
+  "tenho perimenopausa", "fiz musculação dez-fev". Tudo isto · guarda.
+- Mesmo regra para PROTOCOLO ALIMENTAR · ela disse: "keto adaptada, tecto
+  50g carb, proteína alta tira da cetose" · guarda com protocolo_alimentar.
+- Confirma curto: "guardei no perfil · não vais ter de repetir".
 
 PROTOCOLO ALIMENTAR · LÊ ANTES DE SUGERIR MACROS
 - O contexto inclui "PROTOCOLO / PREFERÊNCIAS ALIMENTARES" se preencheu.
@@ -489,13 +498,16 @@ const COACH_TOOLS = [
   },
   {
     name: 'definir_perfil',
-    description: 'Guarda dados essenciais para Mifflin-St Jeor: idade, altura cm, nível actividade (sedentaria/leve/moderada/activa). USA quando ela disser idade/altura/actividade ou quando precisares para cálculo de calorias e faltarem.',
+    description: 'Guarda dados pessoais que a coach precisa de saber permanentemente. USA SEMPRE que a Vivianne mencionar algo destas categorias · não voltes a perguntar depois de guardado: idade, altura, nível actividade, HISTÓRICO CLÍNICO (medicações, GLP-1 como Ozempic/Mounjaro, perimenopausa, lesões, alergias), PROTOCOLO ALIMENTAR (keto, jejum, restrições, tectos de macros pessoais). Acumula no histórico/protocolo se já houver texto · não substitui · append=true (default) acrescenta.',
     input_schema: {
       type: 'object',
       properties: {
         idade: { type: 'integer' },
         altura_cm: { type: 'integer' },
-        nivel_actividade: { type: 'string', enum: ['sedentaria', 'leve', 'moderada', 'activa'] }
+        nivel_actividade: { type: 'string', enum: ['sedentaria', 'leve', 'moderada', 'activa'] },
+        historico_clinico: { type: 'string', description: 'Texto sobre medicação/condições clínicas. Escreve em pontos curtos. Acumulável.' },
+        protocolo_alimentar: { type: 'string', description: 'Texto sobre protocolo alimentar (keto, tectos, restrições). Escreve em pontos curtos. Acumulável.' },
+        append: { type: 'boolean', description: 'true (default) acrescenta · false substitui o existente' }
       },
       required: []
     }
