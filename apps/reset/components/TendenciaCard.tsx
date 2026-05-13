@@ -142,6 +142,19 @@ function GraficoKcal({ dias, alvo }: { dias: DiaDados[]; alvo: number | null }) 
   // Decidir frequência das labels: todos se ≤7, cada 2 se ≤14, cada 5 caso contrário
   const stepLabel = dias.length <= 7 ? 1 : dias.length <= 14 ? 2 : 5
 
+  // Média móvel 7d centrada · suaviza ruído
+  const movingAvg = dias.map((_, i) => {
+    const janela = dias.slice(Math.max(0, i - 3), Math.min(dias.length, i + 4))
+                       .filter(d => d.kcal > 0)
+    if (janela.length === 0) return null
+    return janela.reduce((s, d) => s + d.kcal, 0) / janela.length
+  })
+
+  const mediaPath = movingAvg
+    .map((v, i) => v !== null ? `${i === 0 ? 'M' : 'L'}${(x(i) + barW * 0.35).toFixed(1)},${yScale(v).toFixed(1)}` : '')
+    .filter(s => s)
+    .join(' ')
+
   return (
     <div className="-mx-2">
       <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto" preserveAspectRatio="none">
@@ -178,6 +191,10 @@ function GraficoKcal({ dias, alvo }: { dias: DiaDados[]; alvo: number | null }) 
             </rect>
           )
         })}
+        {/* Linha de média móvel 7d · sobreposta às barras */}
+        {mediaPath ? (
+          <path d={mediaPath} fill="none" stroke="#3D3D3D" strokeWidth="1.5" opacity="0.85" className="dark:stroke-creme" />
+        ) : null}
         {/* labels de data por baixo de cada N barras */}
         {dias.map((d, i) => {
           if (i % stepLabel !== 0 && i !== dias.length - 1) return null
@@ -195,7 +212,7 @@ function GraficoKcal({ dias, alvo }: { dias: DiaDados[]; alvo: number | null }) 
           )
         })}
       </svg>
-      <p className="text-faint text-[10px] text-center mt-1">verde = no alvo · vermelho = passou 10% · dourado = caso contrário</p>
+      <p className="text-faint text-[10px] text-center mt-1">barras: dia · linha: média móvel 7d · verde no alvo · vermelho +10% · dourado caso contrário</p>
     </div>
   )
 }
