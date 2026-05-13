@@ -13,6 +13,7 @@ import {
 import { isoDate, fromIso, mesCurto, diaSemana } from '@/lib/dates'
 import TrendChart from '@/components/TrendChart'
 import BackButton from '@/components/BackButton'
+import ComposicaoCorporal from '@/components/ComposicaoCorporal'
 import { cn } from '@/lib/utils'
 import { Plus } from 'lucide-react'
 
@@ -246,6 +247,9 @@ export default function PesoPage() {
           <TrendChart pontos={pontos30Cintura} unidade="cm" cor="#9B5D3E" altura={120} />
         </section>
       ) : null}
+
+      {/* Composição corporal · % gordura estimada */}
+      <ComposicaoCorporal />
 
       {/* Histórico recente */}
       {pesos.length > 0 ? (

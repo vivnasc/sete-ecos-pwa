@@ -10,6 +10,14 @@ const SYNC_ERR_KEY = 'fenixfit:lastSyncError'
 function registarErroSync(area: string, err: unknown): void {
   if (typeof window === 'undefined') return
   const msg = err instanceof Error ? err.message : typeof err === 'object' && err && 'message' in err ? String((err as { message: unknown }).message) : 'erro desconhecido'
+  // Erros transitórios de rede no Safari/iOS · NÃO bloqueiam o utilizador,
+  // a próxima sync envia. Não pôr no banner.
+  const transitorio = /load failed|failed to fetch|network|aborted|ECONNRESET|timeout/i.test(msg)
+  if (transitorio) {
+    // eslint-disable-next-line no-console
+    console.info(`[fenixfit sync ${area}] transitório · ignorado · ${msg}`)
+    return
+  }
   const data = { area, msg, at: new Date().toISOString() }
   try {
     localStorage.setItem(SYNC_ERR_KEY, JSON.stringify(data))
@@ -17,6 +25,20 @@ function registarErroSync(area: string, err: unknown): void {
   } catch {}
   // eslint-disable-next-line no-console
   console.warn(`[fenixfit sync ${area}]`, msg)
+}
+
+// Re-tenta uma operação supabase 1× com backoff curto se for erro transitório
+// de rede. Devolve o resultado final.
+async function comRetry<T>(area: string, op: () => Promise<{ data?: unknown; error: { message?: string } | null }>): Promise<{ data?: unknown; error: { message?: string } | null }> {
+  const r1 = await op().catch(e => ({ error: e as { message?: string } }))
+  const msg1 = r1.error?.message ?? ''
+  if (!r1.error || !/load failed|failed to fetch|network|aborted|timeout/i.test(msg1)) return r1
+  // transitório · espera 1.5s e tenta de novo
+  await new Promise(res => setTimeout(res, 1500))
+  // eslint-disable-next-line no-console
+  console.info(`[fenixfit sync ${area}] retry após erro transitório`)
+  const r2 = await op().catch(e => ({ error: e as { message?: string } }))
+  return r2
 }
 
 function limparErroSync(): void {
@@ -75,6 +97,13 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
     // Profile · primeira coisa para garantir onboarding state
     if (profileR.data) {
       const p = profileR.data
+      // Lê o perfil local existente para preservar campos locais (caso
+      // o servidor não tenha colunas para historico_clinico ou preferencias)
+      let localExistente: Record<string, unknown> = {}
+      try {
+        const raw = localStorage.getItem('fenixfit:profile')
+        if (raw) localExistente = JSON.parse(raw) as Record<string, unknown>
+      } catch {}
       const profile = {
         nome: p.nome ?? '',
         sexo: p.sexo ?? 'F',
@@ -97,7 +126,12 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
         objectivos: p.objectivos ?? [],
         alturaCm: p.altura_cm ?? null,
         idade: p.idade ?? null,
-        nivelActividade: p.nivel_actividade ?? null
+        nivelActividade: p.nivel_actividade ?? null,
+        // Histórico clínico e preferências · servidor wins se tiver,
+        // senão preserva o local · evita perder texto da Vivianne quando
+        // o schema ainda não tem as colunas
+        historicoClinico: (p.historico_clinico as string | undefined) ?? (localExistente.historicoClinico as string | undefined) ?? '',
+        preferenciasAlimentares: (p.preferencias_alimentares as string | undefined) ?? (localExistente.preferenciasAlimentares as string | undefined) ?? ''
       }
       localStorage.setItem('fenixfit:profile', JSON.stringify(profile))
       window.dispatchEvent(new CustomEvent('fenixfit:profile', { detail: profile }))
@@ -159,6 +193,7 @@ export async function hidratarTudo(): Promise<{ ok: boolean; erro?: string }> {
       ancas: m.ancas !== null ? Number(m.ancas) : null,
       coxa: m.coxa !== null ? Number(m.coxa) : null,
       braco: m.braco !== null ? Number(m.braco) : null,
+      pescoco: m.pescoco !== null && m.pescoco !== undefined ? Number(m.pescoco) : null,
       peso: m.peso !== null ? Number(m.peso) : null,
       sentir: m.sentir ?? '',
       mudou: m.mudou ?? '',
@@ -359,7 +394,8 @@ export async function syncMedida(m: MedidaRegisto): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  const { error } = await sb.from('fenixfit_medidas').insert({
+  // pescoco · só inclui se o schema tiver a coluna (tenta com, depois sem)
+  const baseRow = {
     id: m.id,
     user_id: user.id,
     date: m.date,
@@ -371,7 +407,13 @@ export async function syncMedida(m: MedidaRegisto): Promise<void> {
     sentir: m.sentir,
     mudou: m.mudou,
     foto_frente_url: m.fotoUrl
-  })
+  }
+  let { error } = await sb.from('fenixfit_medidas').insert({ ...baseRow, pescoco: m.pescoco })
+  if (error && /pescoco/.test(error.message ?? '')) {
+    // schema antigo · tenta sem pescoco
+    const retry = await sb.from('fenixfit_medidas').insert(baseRow)
+    error = retry.error
+  }
   if (error) registarErroSync('medida', error)
 }
 
@@ -497,7 +539,7 @@ export async function syncRefeicao(r: Refeicao): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  const { error } = await sb.from('fenixfit_refeicoes').upsert({
+  const { error } = await comRetry('refeicao', async () => sb.from('fenixfit_refeicoes').upsert({
     id: r.id,
     user_id: user.id,
     timestamp: r.timestamp,
@@ -509,7 +551,7 @@ export async function syncRefeicao(r: Refeicao): Promise<void> {
     calorias: r.calorias,
     contexto: r.contexto,
     sentir: r.sentir
-  })
+  }))
   if (error) registarErroSync('refeicao', error)
 }
 
@@ -618,7 +660,7 @@ export async function syncProfile(p: Record<string, unknown>): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  const { error } = await sb.from('fenixfit_profile').upsert({
+  const baseRow = {
     user_id: user.id,
     nome: p.nome,
     sexo: p.sexo,
@@ -640,7 +682,18 @@ export async function syncProfile(p: Record<string, unknown>): Promise<void> {
     altura_cm: p.alturaCm ?? null,
     idade: p.idade ?? null,
     nivel_actividade: p.nivelActividade ?? null
+  }
+  // Tenta com historico_clinico e preferencias_alimentares · se schema não
+  // tiver colunas, faz retry sem (não bloqueia o resto do perfil)
+  let { error } = await sb.from('fenixfit_profile').upsert({
+    ...baseRow,
+    historico_clinico: p.historicoClinico ?? '',
+    preferencias_alimentares: p.preferenciasAlimentares ?? ''
   })
+  if (error && /historico_clinico|preferencias_alimentares/.test(error.message ?? '')) {
+    const retry = await sb.from('fenixfit_profile').upsert(baseRow)
+    error = retry.error
+  }
   if (error) registarErroSync('profile', error)
 }
 

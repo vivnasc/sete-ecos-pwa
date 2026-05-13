@@ -64,6 +64,8 @@ alter table fenixfit_profile add column if not exists objectivos jsonb not null 
 alter table fenixfit_profile add column if not exists altura_cm int;
 alter table fenixfit_profile add column if not exists idade int;
 alter table fenixfit_profile add column if not exists nivel_actividade text check (nivel_actividade in ('sedentaria','leve','moderada','activa') or nivel_actividade is null);
+alter table fenixfit_profile add column if not exists historico_clinico text not null default '';
+alter table fenixfit_profile add column if not exists preferencias_alimentares text not null default '';
 
 create index if not exists fenixfit_dias_user_date on fenixfit_dias (user_id, date desc);
 
@@ -97,6 +99,7 @@ create table if not exists fenixfit_medidas (
   ancas numeric(5,1),
   coxa numeric(5,1),
   braco numeric(5,1),
+  pescoco numeric(5,1),
   peso numeric(5,2),
   sentir text not null default '',
   mudou text not null default '',
@@ -105,6 +108,9 @@ create table if not exists fenixfit_medidas (
   foto_costas_url text,
   created_at timestamptz not null default now()
 );
+
+-- Migração · adicionar pescoco a schemas antigos
+alter table fenixfit_medidas add column if not exists pescoco numeric(5,1);
 
 create index if not exists fenixfit_medidas_user_date on fenixfit_medidas (user_id, date desc);
 

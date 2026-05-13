@@ -7,6 +7,7 @@ import SmartNow from '@/components/SmartNow'
 import AnchorChecklist from '@/components/AnchorChecklist'
 import JanelaTimer from '@/components/JanelaTimer'
 import MorningPanel from '@/components/MorningPanel'
+import SaudeHojeCard from '@/components/SaudeHojeCard'
 import WellnessQuickPanel from '@/components/WellnessQuickPanel'
 import SonoDetailCard from '@/components/SonoDetailCard'
 import PeriSintomasCard from '@/components/PeriSintomasCard'
@@ -132,6 +133,9 @@ export default function HomePage() {
 
       {/* PAINEL MATINAL · primeiro · o que ela vem registar logo de manhã */}
       {pronto ? <SafeBlock nome="MorningPanel"><MorningPanel /></SafeBlock> : null}
+
+      {/* SAÚDE HOJE · passos/sono/RHR (Apple Health) */}
+      {pronto ? <SafeBlock nome="SaudeHoje"><SaudeHojeCard /></SafeBlock> : null}
 
       {/* ACESSO RÁPIDO · ferramentas mais usadas */}
       {pronto ? <SafeBlock nome="QuickTools"><QuickTools /></SafeBlock> : null}

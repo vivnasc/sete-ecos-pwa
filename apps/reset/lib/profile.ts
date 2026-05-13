@@ -54,6 +54,13 @@ export type Profile = {
   metas: Metas
   modoViagem: boolean
   objectivos: Objectivo[]
+  // Histórico clínico relevante (medicações actuais/anteriores, condições,
+  // GLP-1 como Ozempic/Mounjaro, perimenopausa, lesões, alergias, etc.)
+  // Vai SEMPRE para o contexto da coach.
+  historicoClinico: string
+  // Preferências/protocolo alimentar (ex: keto adaptada, jejum 16/8, etc.)
+  // Vai SEMPRE para o contexto da coach.
+  preferenciasAlimentares: string
 }
 
 const KEY = 'fenixfit:profile'
@@ -87,7 +94,9 @@ const DEFAULT_PROFILE: Profile = {
   ancorasCustom: [],
   metas: DEFAULT_METAS,
   modoViagem: false,
-  objectivos: []
+  objectivos: [],
+  historicoClinico: '',
+  preferenciasAlimentares: ''
 }
 
 // Devolve as âncoras realmente activas (combina pool + custom, filtra por IDs activos)

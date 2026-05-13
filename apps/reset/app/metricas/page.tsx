@@ -13,6 +13,8 @@ export default function MetricasPage() {
   const [medidas, setMedidas] = useState<{ x: string; y: number }[]>([])
   const [sono, setSono] = useState<{ x: string; y: number }[]>([])
   const [pesoSeq, setPesoSeq] = useState<{ x: string; y: number }[]>([])
+  const [passos, setPassos] = useState<{ x: string; y: number }[]>([])
+  const [rhr, setRhr] = useState<{ x: string; y: number }[]>([])
   const [stats, setStats] = useState({ total: 0, comAncoras: 0, comSono: 0 })
 
   useEffect(() => {
@@ -43,6 +45,12 @@ export default function MetricasPage() {
           y: d.sonoHoras as number
         }))
       )
+
+      const diasPassos = getTodosDias().filter(d => d.steps !== null).slice(-21)
+      setPassos(diasPassos.map(d => ({ x: `${fromIso(d.date).getDate()}`, y: d.steps as number })))
+
+      const diasRhr = getTodosDias().filter(d => d.rhr !== null).slice(-21)
+      setRhr(diasRhr.map(d => ({ x: `${fromIso(d.date).getDate()}`, y: d.rhr as number })))
     }
     refresh()
     window.addEventListener('fenixfit:storage', refresh)
@@ -84,6 +92,26 @@ export default function MetricasPage() {
             {sonoMedio() ? <span className="label-soft tnum">média {sonoMedio()}h</span> : null}
           </div>
           <TrendChart pontos={sono} unidade="h" cor="#6B7445" altura={100} />
+        </section>
+      ) : null}
+
+      {passos.length >= 3 ? (
+        <section className="space-y-3">
+          <div className="flex items-baseline justify-between">
+            <span className="label-cap">Passos · 21 dias</span>
+            <span className="label-soft tnum">média {Math.round(passos.reduce((s, p) => s + p.y, 0) / passos.length).toLocaleString('pt-PT')}</span>
+          </div>
+          <TrendChart pontos={passos} unidade="" cor="#D4A14E" altura={100} />
+        </section>
+      ) : null}
+
+      {rhr.length >= 3 ? (
+        <section className="space-y-3">
+          <div className="flex items-baseline justify-between">
+            <span className="label-cap">RHR · 21 dias</span>
+            <span className="label-soft tnum">média {Math.round(rhr.reduce((s, p) => s + p.y, 0) / rhr.length)} bpm</span>
+          </div>
+          <TrendChart pontos={rhr} unidade="bpm" cor="#C9614E" altura={100} />
         </section>
       ) : null}
 

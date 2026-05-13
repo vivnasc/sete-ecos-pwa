@@ -347,13 +347,16 @@ export const COACH_TOOLS = [
   },
   {
     name: 'definir_perfil',
-    description: 'Guarda dados pessoais essenciais para cálculo TMB/TDEE: idade, altura (cm), nível de actividade. Usa SEMPRE que a Vivianne mencionar a sua idade ou altura, ou quando precisares de fazer cálculos e faltarem. Pergunta se ainda não os tens.',
+    description: 'Guarda dados pessoais que a coach precisa de saber permanentemente. USA SEMPRE que a Vivianne mencionar algo que entre numa destas categorias · não voltes a perguntar depois de guardado: idade, altura, nível actividade, histórico clínico (medicações, condições, GLP-1 como Ozempic/Mounjaro, perimenopausa, lesões, alergias), protocolo alimentar (keto, jejum, restrições, tectos de macros pessoais). Acumula no histórico/protocolo se já houver texto · não substitui · usa "append=true" para acrescentar ou false para substituir.',
     input_schema: {
       type: 'object',
       properties: {
         idade: { type: 'integer', description: 'Idade em anos' },
         altura_cm: { type: 'integer', description: 'Altura em cm (1m65 = 165)' },
-        nivel_actividade: { type: 'string', enum: ['sedentaria', 'leve', 'moderada', 'activa'] }
+        nivel_actividade: { type: 'string', enum: ['sedentaria', 'leve', 'moderada', 'activa'] },
+        historico_clinico: { type: 'string', description: 'Texto a guardar no histórico clínico (medicação, condições, perimenopausa, etc.). Escreve em pontos. Acumulável.' },
+        protocolo_alimentar: { type: 'string', description: 'Texto a guardar no protocolo alimentar (keto, tectos, restrições, etc.). Escreve em pontos. Acumulável.' },
+        append: { type: 'boolean', description: 'Se true (default), acrescenta ao histórico/protocolo existentes. Se false, substitui.' }
       },
       required: []
     }
@@ -811,8 +814,20 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
     const idade = num(input.idade)
     const alturaCm = num(input.altura_cm)
     const nivelAct = str(input.nivel_actividade) as 'sedentaria' | 'leve' | 'moderada' | 'activa' | ''
-    const patch: Partial<{ idade: number; alturaCm: number; nivelActividade: 'sedentaria' | 'leve' | 'moderada' | 'activa' }> = {}
+    const historicoNovo = str(input.historico_clinico).trim()
+    const protocoloNovo = str(input.protocolo_alimentar).trim()
+    const append = input.append !== false // default true
+
+    const profileActual = getProfile()
+    const patch: Partial<{
+      idade: number
+      alturaCm: number
+      nivelActividade: 'sedentaria' | 'leve' | 'moderada' | 'activa'
+      historicoClinico: string
+      preferenciasAlimentares: string
+    }> = {}
     const partes: string[] = []
+
     if (idade !== null && idade > 10 && idade < 100) {
       patch.idade = Math.round(idade)
       partes.push(`idade ${patch.idade}`)
@@ -825,6 +840,19 @@ export const TOOL_EXECUTORS: Record<string, (input: ToolInput) => ToolResult> = 
       patch.nivelActividade = nivelAct
       partes.push(`actividade ${nivelAct}`)
     }
+    if (historicoNovo.length > 0) {
+      patch.historicoClinico = append && profileActual.historicoClinico
+        ? `${profileActual.historicoClinico.trim()}\n${historicoNovo}`
+        : historicoNovo
+      partes.push('histórico clínico')
+    }
+    if (protocoloNovo.length > 0) {
+      patch.preferenciasAlimentares = append && profileActual.preferenciasAlimentares
+        ? `${profileActual.preferenciasAlimentares.trim()}\n${protocoloNovo}`
+        : protocoloNovo
+      partes.push('protocolo alimentar')
+    }
+
     if (partes.length === 0) return { ok: false, erro: 'nenhum campo válido para guardar' }
     const guardado = saveProfile(patch)
     void syncProfile(guardado as unknown as Record<string, unknown>).catch(() => {})
