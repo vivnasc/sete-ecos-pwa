@@ -10,6 +10,14 @@ const SYNC_ERR_KEY = 'fenixfit:lastSyncError'
 function registarErroSync(area: string, err: unknown): void {
   if (typeof window === 'undefined') return
   const msg = err instanceof Error ? err.message : typeof err === 'object' && err && 'message' in err ? String((err as { message: unknown }).message) : 'erro desconhecido'
+  // Erros transitórios de rede no Safari/iOS · NÃO bloqueiam o utilizador,
+  // a próxima sync envia. Não pôr no banner.
+  const transitorio = /load failed|failed to fetch|network|aborted|ECONNRESET|timeout/i.test(msg)
+  if (transitorio) {
+    // eslint-disable-next-line no-console
+    console.info(`[fenixfit sync ${area}] transitório · ignorado · ${msg}`)
+    return
+  }
   const data = { area, msg, at: new Date().toISOString() }
   try {
     localStorage.setItem(SYNC_ERR_KEY, JSON.stringify(data))
@@ -17,6 +25,20 @@ function registarErroSync(area: string, err: unknown): void {
   } catch {}
   // eslint-disable-next-line no-console
   console.warn(`[fenixfit sync ${area}]`, msg)
+}
+
+// Re-tenta uma operação supabase 1× com backoff curto se for erro transitório
+// de rede. Devolve o resultado final.
+async function comRetry<T>(area: string, op: () => Promise<{ data?: unknown; error: { message?: string } | null }>): Promise<{ data?: unknown; error: { message?: string } | null }> {
+  const r1 = await op().catch(e => ({ error: e as { message?: string } }))
+  const msg1 = r1.error?.message ?? ''
+  if (!r1.error || !/load failed|failed to fetch|network|aborted|timeout/i.test(msg1)) return r1
+  // transitório · espera 1.5s e tenta de novo
+  await new Promise(res => setTimeout(res, 1500))
+  // eslint-disable-next-line no-console
+  console.info(`[fenixfit sync ${area}] retry após erro transitório`)
+  const r2 = await op().catch(e => ({ error: e as { message?: string } }))
+  return r2
 }
 
 function limparErroSync(): void {
@@ -517,7 +539,7 @@ export async function syncRefeicao(r: Refeicao): Promise<void> {
   if (!sb) return
   const user = await getUser()
   if (!user) return
-  const { error } = await sb.from('fenixfit_refeicoes').upsert({
+  const { error } = await comRetry('refeicao', async () => sb.from('fenixfit_refeicoes').upsert({
     id: r.id,
     user_id: user.id,
     timestamp: r.timestamp,
@@ -529,7 +551,7 @@ export async function syncRefeicao(r: Refeicao): Promise<void> {
     calorias: r.calorias,
     contexto: r.contexto,
     sentir: r.sentir
-  })
+  }))
   if (error) registarErroSync('refeicao', error)
 }
 
