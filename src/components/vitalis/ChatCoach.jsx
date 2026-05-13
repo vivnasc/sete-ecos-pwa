@@ -1094,7 +1094,7 @@ export default function ChatCoach() {
   return (
     <div className="fixed inset-0 bg-[#F5F1EB] flex flex-col" style={{ paddingBottom: '64px' }}>
       {/* Header - Vivianne sempre visível */}
-      <header className="bg-gradient-to-r from-[#7C8B6F] to-[#5D6B4F] text-white shadow-md z-10 flex-shrink-0">
+      <header className="bg-[var(--fnx-ink)] text-white shadow-md z-10 flex-shrink-0">
         <div className="max-w-2xl mx-auto px-4 py-3">
           <div className="flex items-center gap-3">
             <Link to="/vitalis/dashboard" className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-lg hover:bg-white/30 transition-colors">←</Link>

@@ -968,7 +968,7 @@ try {
               <p className="text-red-600 text-sm mb-4 bg-red-50 rounded-lg p-3">{planoErro}</p>
               <button
                 onClick={retryPlano}
-                className="w-full py-3 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-xl font-semibold mb-3"
+                className="w-full py-3 bg-[var(--fnx-ink)] text-white rounded-xl font-semibold mb-3"
               >
                 Tentar novamente
               </button>
@@ -989,7 +989,7 @@ try {
     <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3]">
       <div className="fixed top-0 left-0 w-full h-1.5 bg-[#D2B48C]/30 z-50">
         <div
-          className="h-full bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] transition-all duration-300"
+          className="h-full bg-[var(--fnx-ink)] transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -1021,7 +1021,7 @@ try {
             </p>
             <button
               onClick={handleNext}
-              className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-12 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-shadow"
+              className="bg-[var(--fnx-ink)] text-white px-12 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-shadow"
             >
               Começar →
             </button>
@@ -1051,7 +1051,7 @@ try {
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="ml-auto px-8 py-3 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white rounded-full font-semibold hover:shadow-lg transition-shadow"
+                    className="ml-auto px-8 py-3 bg-[var(--fnx-ink)] text-white rounded-full font-semibold hover:shadow-lg transition-shadow"
                   >
                     Continuar →
                   </button>
@@ -1096,7 +1096,7 @@ try {
                   setShowTermos(false);
                   handleChange('li_termos', true);
                 }}
-                className="w-full bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-shadow"
+                className="w-full bg-[var(--fnx-ink)] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-shadow"
               >
                 Li e Aceito os Termos
               </button>
@@ -1130,7 +1130,7 @@ try {
                   setShowPrivacidade(false);
                   handleChange('li_privacidade', true);
                 }}
-                className="w-full bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-shadow"
+                className="w-full bg-[var(--fnx-ink)] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-shadow"
               >
                 Li e Aceito a Política
               </button>

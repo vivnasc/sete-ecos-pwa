@@ -93,7 +93,7 @@ const MeuCompromisso = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] flex items-center justify-center">
+      <div className="fnx-theme min-h-screen flex items-center justify-center">
         <div role="status" aria-live="polite" className="text-[#7C8B6F]">A carregar...</div>
       </div>
     );
@@ -108,9 +108,9 @@ const MeuCompromisso = () => {
     });
 
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
+      <div className="fnx-theme min-h-screen">
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] shadow-lg">
+        <div className="bg-[var(--fnx-bg)] shadow-lg">
           <div className="max-w-2xl mx-auto px-4 py-6">
             <button
               onClick={() => navigate('/vitalis/dashboard')}
@@ -136,7 +136,7 @@ const MeuCompromisso = () => {
           {/* Cartão do Compromisso */}
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
             {/* Cabeçalho decorativo */}
-            <div className="bg-gradient-to-r from-[#7C8B6F] to-[#9CAF88] p-6 text-center">
+            <div className="bg-[var(--fnx-ouro)] p-6 text-center">
               <p className="text-white/80 text-xs uppercase tracking-widest mb-1">Compromisso Pessoal</p>
               <h2 className="text-xl font-bold text-white" style={{ fontFamily: 'Playfair Display, serif' }}>
                 Eu, {userName}
@@ -222,9 +222,9 @@ const MeuCompromisso = () => {
 
   // ETAPA: EDITAR/CRIAR COMPROMISSO
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
+    <div className="fnx-theme min-h-screen">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] shadow-lg">
+      <div className="bg-[var(--fnx-bg)] shadow-lg">
         <div className="max-w-2xl mx-auto px-4 py-6">
           <button
             onClick={() => {
@@ -269,7 +269,7 @@ const MeuCompromisso = () => {
         <div className="bg-white rounded-2xl shadow-xl p-6 space-y-6">
           {/* O Porquê */}
           <div>
-            <label className="block text-sm font-bold text-[#4A4035] mb-2">
+            <label className="block text-sm font-bold fnx-text-ink mb-2">
               Por que estás a fazer isto? <span className="text-red-400">*</span>
             </label>
             <p className="text-xs text-gray-500 mb-3">
@@ -289,7 +289,7 @@ const MeuCompromisso = () => {
 
           {/* Compromisso Mínimo */}
           <div>
-            <label className="block text-sm font-bold text-[#4A4035] mb-2">
+            <label className="block text-sm font-bold fnx-text-ink mb-2">
               Qual é o teu mínimo diário?
             </label>
             <p className="text-xs text-gray-500 mb-3">
@@ -308,7 +308,7 @@ const MeuCompromisso = () => {
 
           {/* Quando quiser desistir */}
           <div>
-            <label className="block text-sm font-bold text-[#4A4035] mb-2">
+            <label className="block text-sm font-bold fnx-text-ink mb-2">
               Quando quiseres desistir, o que vais fazer?
             </label>
             <p className="text-xs text-gray-500 mb-3">
@@ -330,7 +330,7 @@ const MeuCompromisso = () => {
             <button
               onClick={guardarCompromisso}
               disabled={saving || !compromisso.porque.trim()}
-              className="w-full py-4 bg-gradient-to-r from-[#7C8B6F] to-[#9CAF88] text-white rounded-xl font-bold text-lg hover:shadow-lg transform hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+              className="w-full py-4 bg-[var(--fnx-ouro)] text-white rounded-xl font-bold text-lg hover:shadow-lg transform hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
             >
               {saving ? 'A guardar...' : compromisso.data_assinatura ? 'Actualizar Compromisso' : 'Assinar o Meu Compromisso'}
             </button>

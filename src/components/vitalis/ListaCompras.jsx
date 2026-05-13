@@ -530,7 +530,7 @@ export default function ListaCompras() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
+      <div className="min-h-screen flex items-center justify-center fnx-theme">
         <div className="text-center">
           <div className="text-5xl mb-4 animate-pulse">🛒</div>
           <p className="text-[#6B5C4C]">A gerar lista personalizada...</p>
@@ -540,9 +540,9 @@ export default function ListaCompras() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-8">
+    <div className="fnx-theme min-h-screen pb-8">
       {/* Header */}
-      <header className="bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white">
+      <header className="bg-[var(--fnx-ink)] text-white">
         <div className="max-w-2xl mx-auto px-4 py-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -712,7 +712,7 @@ export default function ListaCompras() {
 
         {/* Dicas */}
         <div className="bg-[#E8E4DC] border border-[#D5D0C8] rounded-2xl p-4">
-          <h3 className="font-semibold text-[#4A4035] mb-2">💡 Dicas para o teu plano</h3>
+          <h3 className="font-semibold fnx-text-ink mb-2">💡 Dicas para o teu plano</h3>
           <ul className="text-sm text-[#6B5C4C] space-y-1">
             <li>• Compra vegetais frescos 2x por semana</li>
             <li>• Congela as proteínas em porções individuais</li>

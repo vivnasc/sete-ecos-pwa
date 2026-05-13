@@ -305,7 +305,7 @@ export default function DesafiosSemanais() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-8">
+    <div className="fnx-theme min-h-screen pb-8">
       {/* Header */}
       <header className="bg-gradient-to-r from-orange-500 to-amber-500 text-white">
         <div className="max-w-2xl mx-auto px-4 py-5">

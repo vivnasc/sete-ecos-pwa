@@ -139,7 +139,7 @@ export default function SintomasTracker() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] flex items-center justify-center">
+      <div className="fnx-theme min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="text-4xl animate-bounce mb-4">🌡️</div>
           <p className="text-gray-600">A carregar...</p>
@@ -186,7 +186,7 @@ export default function SintomasTracker() {
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold text-sm text-[#4A4035]">{s.nome}</span>
+                      <span className="font-semibold text-sm fnx-text-ink">{s.nome}</span>
                       {s.dias && (
                         <span className="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
                           dias {s.dias}
@@ -236,8 +236,8 @@ export default function SintomasTracker() {
     : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-8">
-      <header className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white p-4">
+    <div className="fnx-theme min-h-screen pb-8">
+      <header className="bg-[var(--fnx-bg)] text-white p-4">
         <div className="max-w-3xl mx-auto flex items-center gap-3">
           <Link to="/vitalis/dashboard" className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors" aria-label="Voltar">
             ←
@@ -251,7 +251,7 @@ export default function SintomasTracker() {
 
       <main className="max-w-3xl mx-auto px-4 py-5">
         <div className="bg-white rounded-2xl shadow-lg p-4 mb-5">
-          <p className="text-sm text-[#4A4035] leading-relaxed">
+          <p className="text-sm fnx-text-ink leading-relaxed">
             Marca os sintomas que sentes nos últimos dias. Os sintomas <strong>verdes</strong> são normais
             e passam sozinhos. Os <strong>amarelos</strong> precisam de ajuste. Os <strong>vermelhos</strong> exigem
             paragem imediata.
@@ -295,7 +295,7 @@ export default function SintomasTracker() {
             <div className="text-center mb-4">
               <div className="text-4xl mb-2">🚨</div>
               <h2 className="text-lg font-bold text-red-700">Sintoma crítico detectado</h2>
-              <p className="text-sm text-[#4A4035] mt-2">
+              <p className="text-sm fnx-text-ink mt-2">
                 <strong>{sintomaParar.nome}</strong> não é normal. {sintomaParar.accao}
               </p>
             </div>

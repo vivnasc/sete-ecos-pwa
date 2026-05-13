@@ -225,26 +225,49 @@ export default function OnboardingTutorial({ onComplete, onSkip }) {
   );
 }
 
-// Hook para verificar se deve mostrar o onboarding
-export function useOnboarding() {
-  const [showOnboarding, setShowOnboarding] = useState(false);
+// Chave canónica única (espelha WelcomeTutorial.jsx).
+// Mantida aqui em duplicado por ser uma string trivial; o que importa
+// é serem IDÊNTICAS entre os dois ficheiros.
+const TUTORIAL_KEY = 'seteecos:tutorial:vitalis:v2:done';
+const LEGACY_KEYS = [
+  'vitalis_tutorial_completed',
+  'vitalis-onboarding-complete',
+  'vitalis-tutorial-completed',
+  'vitalis_onboarding_complete'
+];
 
-  useEffect(() => {
-    const completed = localStorage.getItem('vitalis-onboarding-complete') || localStorage.getItem('vitalis_tutorial_completed');
-    if (!completed) {
-      setShowOnboarding(true);
+function tutorialJaVisto() {
+  if (typeof window === 'undefined') return true;
+  try {
+    if (localStorage.getItem(TUTORIAL_KEY)) return true;
+    for (const k of LEGACY_KEYS) {
+      if (localStorage.getItem(k)) {
+        // Migrar para chave canónica e devolver true
+        localStorage.setItem(TUTORIAL_KEY, new Date().toISOString());
+        return true;
+      }
     }
-  }, []);
+    return false;
+  } catch {
+    return true; // modo privado — não chatear
+  }
+}
+
+// Hook para verificar se deve mostrar o onboarding.
+// Verificação síncrona no init para evitar flash.
+export function useOnboarding() {
+  const [showOnboarding, setShowOnboarding] = useState(() => !tutorialJaVisto());
 
   const completeOnboarding = () => {
-    localStorage.setItem('vitalis-onboarding-complete', 'true');
-    localStorage.setItem('vitalis_tutorial_completed', 'true');
+    try { localStorage.setItem(TUTORIAL_KEY, new Date().toISOString()); } catch { /* */ }
     setShowOnboarding(false);
   };
 
   const resetOnboarding = () => {
-    localStorage.removeItem('vitalis-onboarding-complete');
-    localStorage.removeItem('vitalis_tutorial_completed');
+    try {
+      localStorage.removeItem(TUTORIAL_KEY);
+      LEGACY_KEYS.forEach(k => localStorage.removeItem(k));
+    } catch { /* */ }
     setShowOnboarding(true);
   };
 

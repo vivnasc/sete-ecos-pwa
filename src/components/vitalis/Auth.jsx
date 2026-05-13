@@ -213,7 +213,7 @@ export default function VitalisAuth() {
   // Tela de confirmação de email
   if (showConfirmation) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] flex items-center justify-center p-4">
+      <div className="fnx-theme min-h-screen flex items-center justify-center p-4">
         <div className="max-w-md w-full">
           <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-[#E8E2D9] text-center">
             {/* Success Icon */}
@@ -267,7 +267,7 @@ export default function VitalisAuth() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] flex items-center justify-center p-4">
+    <div className="fnx-theme min-h-screen flex items-center justify-center p-4">
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[#7C8B6F]/20 to-transparent rounded-full blur-3xl"></div>

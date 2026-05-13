@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { calcularPorcoesDiarias } from '../../lib/vitalis/calcularPorcoes.js';
 import { somarMacros, calcularMacrosPorcaoMao, CONVERSOES_MAO } from '../../lib/vitalis/porcoesConverter.js';
 import AddFoodModal from './AddFoodModal.jsx';
+import EstimarMacrosInput from './EstimarMacrosInput.jsx';
+import FotoRefeicaoInput from './FotoRefeicaoInput.jsx';
 
 export default function MealsTracker() {
   const navigate = useNavigate();
@@ -241,7 +243,7 @@ export default function MealsTracker() {
   // Loading
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
+      <div className="min-h-screen flex items-center justify-center fnx-theme">
         <div className="text-center">
           <div className="text-6xl mb-4 animate-pulse">🍽️</div>
           <p className="text-gray-600" role="status" aria-live="polite">A carregar...</p>
@@ -258,13 +260,13 @@ export default function MealsTracker() {
         <div className="max-w-2xl mx-auto px-4 py-12">
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg p-8 text-center border border-[#D2B48C]/30">
             <div className="text-6xl mb-4">🍽️</div>
-            <h2 className="text-2xl font-bold text-[#4A4035] mb-2">Configura as tuas refeições</h2>
+            <h2 className="text-2xl font-bold fnx-text-ink mb-2">Configura as tuas refeições</h2>
             <p className="text-[#6B4423] mb-6">
               Antes de começar a registar, define quais refeições fazes no teu dia.
             </p>
             <button
               onClick={() => navigate('/vitalis/refeicoes-config')}
-              className="px-8 py-4 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white rounded-xl font-semibold text-lg hover:shadow-lg transition-all active:scale-95"
+              className="px-8 py-4 bg-[var(--fnx-bg)] text-white rounded-xl font-semibold text-lg hover:shadow-lg transition-all active:scale-95"
             >
               Configurar Refeições
             </button>
@@ -277,10 +279,80 @@ export default function MealsTracker() {
   const isHoje = dataSeleccionada === new Date().toISOString().split('T')[0];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3] pb-24">
+    <div className="fnx-theme min-h-screen pb-24 fnx-fade-in">
       <HeaderBar navigate={navigate} />
 
-      <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
+      <div className="fnx-container py-4 space-y-4">
+        {/* Foto da refeição → macros via Claude Vision */}
+        <FotoRefeicaoInput
+          tipoDefault=""
+          onAceitar={async (e) => {
+            try {
+              const { data: { user } } = await supabase.auth.getUser();
+              if (!user) return;
+              const { data: userData } = await supabase.from('users').select('id').eq('auth_id', user.id).single();
+              if (!userData) return;
+              const payload = {
+                user_id: userData.id,
+                data: dataSeleccionada,
+                tipo: e.tipo || 'lanche',
+                alimentos: (e.alimentos || []).join(', ') || e.descricao,
+                descricao: e.descricao,
+                porcoes_proteina: e.porcoes?.proteina ?? Math.round((e.proteina_g / 20) * 10) / 10,
+                porcoes_hidratos: e.porcoes?.hidratos ?? Math.round((e.hidratos_g / 30) * 10) / 10,
+                porcoes_gordura: e.porcoes?.gordura ?? Math.round((e.gordura_g / 7) * 10) / 10,
+                kcal: e.kcal,
+                created_at: new Date().toISOString()
+              };
+              await supabase.from('vitalis_meal_log').insert([payload]).catch(async () => {
+                await supabase.from('vitalis_refeicoes_log').insert([payload]);
+              });
+              window.location.reload();
+            } catch (err) { console.error('Erro foto refeição:', err); }
+          }}
+        />
+
+        {/* Estimar macros por descrição — IA */}
+        <EstimarMacrosInput
+          tipoDefault=""
+          onAceitar={async (e) => {
+            try {
+              const { data: { user } } = await supabase.auth.getUser();
+              if (!user) return;
+              const { data: userData } = await supabase.from('users').select('id').eq('auth_id', user.id).single();
+              if (!userData) return;
+              await supabase.from('vitalis_meal_log').insert([{
+                user_id: userData.id,
+                data: dataSeleccionada,
+                tipo: e.tipo || 'lanche',
+                alimentos: (e.alimentos || []).join(', ') || e.descricao,
+                descricao: e.descricao,
+                porcoes_proteina: e.porcoes?.proteina ?? Math.round((e.proteina_g / 20) * 10) / 10,
+                porcoes_hidratos: e.porcoes?.hidratos ?? Math.round((e.hidratos_g / 30) * 10) / 10,
+                porcoes_gordura: e.porcoes?.gordura ?? Math.round((e.gordura_g / 7) * 10) / 10,
+                kcal: e.kcal,
+                created_at: new Date().toISOString()
+              }]).catch(async () => {
+                // Fallback para tabela alternativa
+                await supabase.from('vitalis_refeicoes_log').insert([{
+                  user_id: userData.id,
+                  data: dataSeleccionada,
+                  tipo: e.tipo || 'lanche',
+                  alimentos: (e.alimentos || []).join(', ') || e.descricao,
+                  porcoes_proteina: e.porcoes?.proteina ?? 0,
+                  porcoes_hidratos: e.porcoes?.hidratos ?? 0,
+                  porcoes_gordura: e.porcoes?.gordura ?? 0,
+                  created_at: new Date().toISOString()
+                }]);
+              });
+              // Recarregar a página para reflectir
+              window.location.reload();
+            } catch (err) {
+              console.error('Erro a registar refeição estimada:', err);
+            }
+          }}
+        />
+
         {/* Date selector */}
         <div className="bg-white rounded-xl shadow-sm p-3 flex items-center justify-between">
           <button
@@ -522,7 +594,7 @@ export default function MealsTracker() {
         </div>
 
         {/* Hand method reference */}
-        <div className="bg-gradient-to-r from-[#7C8B6F] to-[#5A6B4D] rounded-2xl p-4 text-white">
+        <div className="bg-[var(--fnx-ink)] rounded-2xl p-4 text-white">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xl">🤚</span>
             <span className="font-bold text-sm">Guia rápido — Método da Mão</span>
@@ -566,7 +638,7 @@ export default function MealsTracker() {
 // Header bar component
 function HeaderBar({ navigate }) {
   return (
-    <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] shadow-lg">
+    <div className="bg-[var(--fnx-bg)] shadow-lg">
       <div className="max-w-2xl mx-auto px-4 py-4">
         <button
           onClick={() => navigate('/vitalis/dashboard')}

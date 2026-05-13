@@ -252,7 +252,7 @@ export default function SugestoesRefeicoes() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
+      <div className="min-h-screen flex items-center justify-center fnx-theme">
         <div className="text-center">
           <div className="text-5xl mb-4 animate-pulse">🍽️</div>
           <p className="text-[#6B5C4C]">A calcular sugestões...</p>
@@ -262,9 +262,9 @@ export default function SugestoesRefeicoes() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-8">
+    <div className="fnx-theme min-h-screen pb-8">
       {/* Header */}
-      <header className="bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white">
+      <header className="bg-[var(--fnx-ink)] text-white">
         <div className="max-w-2xl mx-auto px-4 py-5">
           <div className="flex items-center gap-3 mb-4">
             <Link to="/vitalis/dashboard" className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">

@@ -183,7 +183,7 @@ export default function GuiaUtilizador() {
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
       {/* Header */}
-      <header className="bg-gradient-to-r from-[#7C8B6F] to-[#5C6B4F] text-white">
+      <header className="bg-[var(--fnx-ink)] text-white">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
             <Link to="/vitalis/dashboard" className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
@@ -281,7 +281,7 @@ export default function GuiaUtilizador() {
         </div>
 
         {/* Ajuda adicional */}
-        <div className="mt-8 bg-gradient-to-r from-[#7C8B6F] to-[#5C6B4F] rounded-2xl p-5 text-white">
+        <div className="mt-8 bg-[var(--fnx-ink)] rounded-2xl p-5 text-white">
           <h3 className="font-bold mb-2">Ainda tens dúvidas?</h3>
           <p className="text-white/80 text-sm mb-4">
             Pergunta à Vivianne! Ela conhece todo o método e pode ajudar com questões específicas.

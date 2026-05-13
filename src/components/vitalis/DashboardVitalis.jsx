@@ -21,8 +21,20 @@ import FastingTimerCard from './FastingTimerCard';
 import MealsSection from './MealsSection';
 import MacrosDisplay from './MacrosDisplay';
 import AchievementsPanel from './AchievementsPanel';
+import PaletaSelector from './PaletaSelector';
+import SmartNow from './SmartNow';
+import MarcoCard from './MarcoCard';
+import Heatmap60 from './Heatmap60';
+import PadroesCard from './PadroesCard';
+import { mantraDoDia } from '../../lib/vitalis/mantras';
+import { detectarPadroes, intensidadeDia } from '../../lib/vitalis/padroes';
 import { useDetectorDesistencia, AlertaDesistencia } from './DetectorDesistencia';
 import PodcastPlayer from '../shared/PodcastPlayer';
+import {
+  Bell, Sun, Moon, Flame, X, Download, BookOpen, Gift, ArrowRight, Lightbulb,
+  ClipboardList, CheckCircle2, UtensilsCrossed, FileText, Sparkles,
+  MessageCircle, LayoutGrid
+} from 'lucide-react';
 
 // Função para solicitar permissão de notificações
 const solicitarPermissaoNotificacoes = async () => {
@@ -103,31 +115,96 @@ export default function DashboardVitalis() {
   const notificacaoJejumEnviada = useRef(false);
   const jejumTimerRef = useRef(null);
 
-  // Conquistas já celebradas — persistente via localStorage individual por conquista
+  // Conquistas já celebradas — chave canónica única + idempotente + try/catch.
+  // Mesmo padrão do fix do tutorial (WelcomeTutorial v2): verificação síncrona,
+  // migração de chaves antigas, e fallback in-memory caso localStorage falhe
+  // (modo privado iOS, quota cheia).
+  const CONQUISTAS_KEY = 'seteecos:conquistas:vitalis:v2:celebradas';
+  const _conquistasMem = useRef(null); // fallback in-memory
+
   const getConquistasCelebradas = () => {
+    // 1. In-memory fallback (mais recente)
+    if (_conquistasMem.current) return _conquistasMem.current;
+
     const set = new Set();
-    // Ler chaves individuais (mais robusto que JSON array)
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key?.startsWith('vitalis-conquista-')) {
-        set.add(key.replace('vitalis-conquista-', ''));
+    try {
+      // 2. Chave canónica nova (JSON array)
+      const canon = localStorage.getItem(CONQUISTAS_KEY);
+      if (canon) {
+        try {
+          const arr = JSON.parse(canon);
+          if (Array.isArray(arr)) arr.forEach(id => set.add(id));
+        } catch { /* JSON malformado, ignorar */ }
       }
+
+      // 3. Migrar chaves individuais antigas `vitalis-conquista-{id}`
+      let migradoIndividuais = false;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.startsWith('vitalis-conquista-')) {
+          set.add(key.replace('vitalis-conquista-', ''));
+          migradoIndividuais = true;
+        }
+      }
+
+      // 4. Migrar formatos antigos JSON (celebradas, notificadas)
+      try {
+        const old = JSON.parse(localStorage.getItem('vitalis-conquistas-celebradas') || '[]');
+        old.forEach(id => set.add(id));
+        if (old.length > 0) localStorage.removeItem('vitalis-conquistas-celebradas');
+      } catch { /* */ }
+      try {
+        const old2 = JSON.parse(localStorage.getItem('vitalis-conquistas-notificadas') || '[]');
+        old2.forEach(id => set.add(id));
+        if (old2.length > 0) localStorage.removeItem('vitalis-conquistas-notificadas');
+      } catch { /* */ }
+
+      // 5. Se migrámos algo, persistir na chave canónica
+      if (migradoIndividuais || set.size > 0) {
+        try {
+          localStorage.setItem(CONQUISTAS_KEY, JSON.stringify([...set]));
+          // Limpar chaves individuais antigas
+          if (migradoIndividuais) {
+            const aRemover = [];
+            for (let i = 0; i < localStorage.length; i++) {
+              const key = localStorage.key(i);
+              if (key?.startsWith('vitalis-conquista-')) aRemover.push(key);
+            }
+            aRemover.forEach(k => localStorage.removeItem(k));
+          }
+        } catch { /* */ }
+      }
+    } catch {
+      // localStorage indisponível — usar in-memory
     }
-    // Migrar formato antigo (JSON array) se existir
-    try {
-      const old = JSON.parse(localStorage.getItem('vitalis-conquistas-celebradas') || '[]');
-      old.forEach(id => { set.add(id); localStorage.setItem(`vitalis-conquista-${id}`, '1'); });
-      if (old.length > 0) localStorage.removeItem('vitalis-conquistas-celebradas');
-    } catch { /* ignorar */ }
-    try {
-      const old2 = JSON.parse(localStorage.getItem('vitalis-conquistas-notificadas') || '[]');
-      old2.forEach(id => { set.add(id); localStorage.setItem(`vitalis-conquista-${id}`, '1'); });
-      if (old2.length > 0) localStorage.removeItem('vitalis-conquistas-notificadas');
-    } catch { /* ignorar */ }
+
+    _conquistasMem.current = set;
     return set;
   };
+
   const marcarConquistaCelebrada = (id) => {
-    localStorage.setItem(`vitalis-conquista-${id}`, '1');
+    // 1. In-memory primeiro (nunca falha)
+    if (!_conquistasMem.current) _conquistasMem.current = new Set();
+    _conquistasMem.current.add(id);
+
+    // 2. localStorage (best-effort)
+    try {
+      const atual = localStorage.getItem(CONQUISTAS_KEY);
+      let arr = [];
+      if (atual) {
+        try {
+          const parsed = JSON.parse(atual);
+          if (Array.isArray(parsed)) arr = parsed;
+        } catch { /* */ }
+      }
+      if (!arr.includes(id)) arr.push(id);
+      localStorage.setItem(CONQUISTAS_KEY, JSON.stringify(arr));
+    } catch { /* */ }
+
+    // 3. sessionStorage (backup para esta sessão)
+    try {
+      sessionStorage.setItem(`vitalis-conquista-sess-${id}`, '1');
+    } catch { /* */ }
   };
 
   // Estados de sono interactivo movidos para QuickTrackers
@@ -913,10 +990,31 @@ export default function DashboardVitalis() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
+      <div className="fnx-theme min-h-screen flex items-center justify-center" role="status" aria-live="polite">
         <div className="text-center">
-          <div className="text-6xl mb-4 animate-pulse">🌱</div>
-          <p className="text-[#6B5C4C]">{t('vitalis.dashboard.loading')}</p>
+          <img
+            src="/logos/VITALIS_LOGO_V3.png"
+            alt=""
+            aria-hidden
+            className="w-12 h-12 mx-auto mb-4 fnx-breathe"
+            style={{ objectFit: 'contain' }}
+          />
+          <div
+            aria-hidden
+            className="mx-auto mb-3"
+            style={{ height: '1px', width: '24px', background: 'var(--fnx-ouro)' }}
+          />
+          <p
+            className="fnx-text-soft italic"
+            style={{
+              fontFamily: 'var(--font-editorial)',
+              fontWeight: 300,
+              fontSize: '14px',
+              letterSpacing: '0.01em'
+            }}
+          >
+            a carregar
+          </p>
         </div>
       </div>
     );
@@ -925,484 +1023,520 @@ export default function DashboardVitalis() {
   return (
     <>
     {/* Modais com position:fixed — FORA do container animado para evitar bug CSS
-        (transform no pai quebra position:fixed nos filhos) */}
-    {mostrarOnboarding && (
-      <WelcomeTutorial eco="vitalis" onComplete={completarOnboarding} />
-    )}
+        (transform no pai quebra position:fixed nos filhos)
+        WelcomeTutorial gere-se a si próprio via chave canónica em localStorage */}
+    <WelcomeTutorial eco="vitalis" onComplete={completarOnboarding} />
 
-    <div className={`min-h-screen pb-20 transition-colors duration-500 animate-page-enter ${
-      isDarkMode
-        ? 'bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f0f23]'
-        : 'bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]'
-    }`}>
+    <div className={`fnx-theme min-h-screen pb-20 fnx-fade-in ${isDarkMode ? 'dark' : ''}`}>
 
-      {/* Header com Perfil — premium animated gradient */}
-      <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] hero-gradient-animated"></div>
-        <div className="absolute inset-0 opacity-8">
-          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
-            <path d="M0,50 Q25,30 50,50 T100,50 V100 H0 Z" fill="white"/>
-          </svg>
-        </div>
-        <div className="absolute top-0 right-0 w-60 h-60 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, #C9A227 0%, transparent 70%)', filter: 'blur(40px)' }} />
-        <div className="relative max-w-6xl mx-auto px-4 py-5">
-          {/* Top bar com logo e ações */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
+      {/* HERO EDITORIAL — espelho da FénixFit */}
+      <header className="relative">
+        <div className="fnx-container pt-5 pb-7">
+          {/* Top bar: logo wordmark · acções */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
               <img
                 src="/logos/VITALIS_LOGO_V3.png"
-                alt="Vitalis"
-                className="w-10 h-10 object-contain drop-shadow-lg"
+                alt=""
+                aria-hidden
+                className="h-8 w-8 object-contain rounded-md"
               />
-              <h1 className="text-xl font-bold text-white premium-label" style={{ fontFamily: 'var(--font-titulos)', letterSpacing: '0.2em', fontSize: '1.1rem' }}>VITALIS</h1>
+              <span
+                className="fnx-text-ink"
+                style={{
+                  fontFamily: 'var(--font-editorial)',
+                  fontSize: '18px',
+                  fontWeight: 400,
+                  letterSpacing: '-0.01em'
+                }}
+              >
+                vita<span className="fnx-text-ouro">lis</span>
+              </span>
             </div>
-            <div className="flex items-center gap-2">
-              {/* Notificações */}
+            <div className="flex items-center gap-1">
               <Link
                 to="/vitalis/notificacoes"
-                className="w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center text-base border border-white/20 hover:bg-white/25 transition-all duration-300"
-                title="Notificações"
+                className="p-2 rounded-md fnx-transition fnx-text-soft hover:opacity-70"
+                aria-label="Notificações"
               >
-                🔔
+                <Bell size={18} strokeWidth={1.4} />
               </Link>
-              {/* Dark Mode Toggle */}
               <button
                 onClick={toggleDarkMode}
-                className="w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center text-base border border-white/20 hover:bg-white/25 transition-all duration-300"
-                title={isDarkMode ? 'Modo claro' : 'Modo escuro'}
+                className="p-2 rounded-md fnx-transition fnx-text-soft hover:opacity-70"
+                aria-label={isDarkMode ? 'modo claro' : 'modo escuro'}
               >
-                {isDarkMode ? '☀️' : '🌙'}
+                {isDarkMode ? <Sun size={18} strokeWidth={1.4} /> : <Moon size={18} strokeWidth={1.4} />}
               </button>
             </div>
           </div>
 
-          {/* Perfil do Utilizador */}
-          <div className="flex items-center gap-4">
-            {/* Avatar - Clicável para mudar ícone */}
-            <div className="relative group">
-              <button
-                onClick={() => setShowAvatarPicker(true)}
-                className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/30 border-3 border-white shadow-lg flex items-center justify-center overflow-hidden hover:bg-white/40 transition-colors"
-                title="Clica para mudar o avatar"
+          {/* Data + saudação grande */}
+          <p
+            className="fnx-text-faint mt-5"
+            style={{
+              fontSize: '10px',
+              fontWeight: 500,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase'
+            }}
+          >
+            <span style={{ color: 'var(--fnx-ouro)' }}>{diaSemana}</span> · {dataFormatada}
+          </p>
+
+          <h1
+            className="fnx-text-ink mt-2"
+            style={{
+              fontFamily: 'var(--font-editorial)',
+              fontWeight: 300,
+              fontSize: 'clamp(30px, 8vw, 40px)',
+              letterSpacing: '-0.02em',
+              lineHeight: 1.1
+            }}
+          >
+            {(() => {
+              const hora = new Date().getHours();
+              return hora < 6 ? 'boa madrugada' : hora < 12 ? 'bom dia' : hora < 19 ? 'boa tarde' : 'boa noite';
+            })()},{' '}
+            <Link to="/vitalis/perfil" className="italic hover:opacity-80 fnx-transition">
+              {(userName?.split(' ')[0] || client?.nome_completo?.split(' ')[0] || userEmail?.split('@')[0] || g('guerreiro', 'guerreira')).toLowerCase()}
+            </Link>.
+          </h1>
+
+          {/* Hairline ouro — assinatura editorial */}
+          <div
+            aria-hidden
+            className="mt-3"
+            style={{ height: '1px', width: '32px', background: 'var(--fnx-ouro)' }}
+          />
+
+          {/* Resumo editorial narrativo */}
+          {!loading && (
+            <section className="mt-5 pl-4" style={{ borderLeft: '1px solid color-mix(in srgb, var(--fnx-ouro) 40%, transparent)' }}>
+              <p
+                className="fnx-text-soft italic"
+                style={{
+                  fontSize: '14.5px',
+                  lineHeight: 1.7,
+                  fontFamily: 'var(--font-editorial)',
+                  fontWeight: 300
+                }}
+              >
+                {[
+                  `dia ${Math.max(1, Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / 86400000) + 1)} da jornada`,
+                  streak > 0 && `${streak} ${streak === 1 ? 'dia' : 'dias'} de constância`,
+                  xpTotal > 0 && `${xpTotal} xp`,
+                  jejumActual?.hora_inicio && `em jejum há ${Math.floor((Date.now() - new Date(jejumActual.hora_inicio).getTime()) / 3600000)}h`,
+                  pesoActual && `${pesoActual} kg`
+                ].filter(Boolean).join(' · ')}.
+              </p>
+            </section>
+          )}
+
+          {/* Avatar + nível (compacto, à direita) */}
+          <div className="mt-5 flex items-center justify-between">
+            <button
+              onClick={() => setShowAvatarPicker(true)}
+              className="relative flex items-center gap-3 fnx-transition hover:opacity-80"
+              title="mudar avatar"
+            >
+              <span
+                className="flex items-center justify-center overflow-hidden rounded-full"
+                style={{
+                  width: 44,
+                  height: 44,
+                  background: 'var(--fnx-bg-elev)',
+                  boxShadow: 'inset 0 0 0 1px var(--fnx-hair-strong)'
+                }}
               >
                 {client?.foto_url ? (
-                  <img src={client.foto_url} alt="Avatar" className="w-full h-full object-cover" />
+                  <img src={client.foto_url} alt="" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-3xl md:text-4xl">{avatarIcon}</span>
+                  <span style={{ fontSize: 22 }}>{avatarIcon}</span>
                 )}
-              </button>
-              {/* Badge de nível */}
-              <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-yellow-400 border-2 border-white flex items-center justify-center text-xs font-bold shadow-md">
-                {Math.floor(xpTotal / 500) + 1}
-              </div>
-              {/* Indicador de editar */}
-              <div className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-white flex items-center justify-center text-xs shadow opacity-0 group-hover:opacity-100 transition-opacity">
-                ✏️
-              </div>
-            </div>
+              </span>
+              <span className="text-left">
+                <span className="fnx-label-soft block">nível</span>
+                <span className="fnx-editorial-num block" style={{ fontSize: '20px', lineHeight: 1 }}>
+                  {Math.floor(xpTotal / 500) + 1}
+                </span>
+              </span>
+            </button>
 
-            {/* Info do utilizador */}
-            <div className="flex-1">
-              <p className="text-white/70 text-sm">Olá,</p>
-              <Link to="/vitalis/perfil" className="block hover:opacity-80 transition-opacity">
-                <h2 className="text-xl md:text-2xl font-bold text-white">
-                  {userName?.split(' ')[0] || client?.nome_completo?.split(' ')[0] || userEmail?.split('@')[0] || g('Guerreiro', 'Guerreira')}! 👋
-                </h2>
-              </Link>
-              <p className="text-white/80 text-sm capitalize">{diaSemana}, {dataFormatada}</p>
-
-              {/* Barra de XP */}
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden max-w-[150px]">
-                  <div
-                    className="h-full bg-yellow-400 rounded-full transition-all"
-                    style={{ width: `${(xpTotal % 500) / 500 * 100}%` }}
-                  ></div>
-                </div>
-                <span className="text-xs text-white/80">{xpTotal} XP</span>
-              </div>
-            </div>
-
-            {/* Streak compacto no header */}
             {streak > 0 && (
-              <div className="hidden md:flex flex-col items-center bg-white/20 rounded-xl px-4 py-2">
-                <span className="text-2xl">🔥</span>
-                <span className="text-white font-bold">{streak}</span>
-                <span className="text-white/70 text-xs">dias</span>
+              <div className="flex items-center gap-2">
+                <Flame size={14} strokeWidth={1.4} className="fnx-text-ouro" />
+                <span className="fnx-editorial-num fnx-tnum" style={{ fontSize: '20px' }}>{streak}</span>
+                <span className="fnx-label-soft">{streak === 1 ? 'dia' : 'dias'}</span>
               </div>
             )}
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-5 space-y-5">
+      <main className="fnx-container pt-2 pb-6 space-y-8">
+
+        {/* SmartNow — bloco contextual por hora do dia */}
+        <SmartNow jaComeuPA={mealsHoje?.some(m => (m.tipo || '').toLowerCase().includes('pa') || (m.tipo || '').toLowerCase().includes('pequeno'))} />
+
+        {/* Marco do dia (aparece só se hoje for dia 7/14/21/30/45/60/90/120/180/365) */}
+        {client?.data_inicio && <MarcoCard dataInicio={client.data_inicio} />}
 
         {/* Banner PWA e Notificações */}
         {mostrarBannerPWA && (
-          <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-2xl p-4 shadow-xl relative overflow-hidden">
-            {/* Background decorativo */}
-            <div className="absolute inset-0 opacity-10">
-              <svg viewBox="0 0 100 100" className="w-full h-full">
-                <circle cx="0" cy="100" r="60" fill="white"/>
-                <circle cx="100" cy="0" r="40" fill="white"/>
-              </svg>
+          <section className="fnx-card-solid">
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <span className="fnx-label-cap">instalar app</span>
+                <h3
+                  className="fnx-text-ink mt-1"
+                  style={{ fontFamily: 'var(--font-editorial)', fontSize: '20px', fontWeight: 400, letterSpacing: '-0.015em' }}
+                >
+                  vitalis no teu telefone
+                </h3>
+                <p className="fnx-text-soft mt-1.5" style={{ fontSize: '13px', lineHeight: 1.5 }}>
+                  acesso offline · lembretes mesmo com a app fechada
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setMostrarBannerPWA(false);
+                  localStorage.setItem('vitalis-pwa-banner-fechado', new Date().toISOString());
+                }}
+                className="fnx-text-faint hover:opacity-70 fnx-transition p-1 -mt-1 -mr-1"
+                aria-label="fechar"
+              >
+                <X size={16} strokeWidth={1.4} />
+              </button>
             </div>
 
-            <div className="relative z-10">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                    <span className="text-2xl">📱</span>
-                  </div>
-                  <div>
-                    <h3 className="text-white font-bold text-lg">Instala o Vitalis!</h3>
-                    <p className="text-white/80 text-sm">Acede offline e recebe notificações</p>
-                  </div>
-                </div>
+            <div className="flex flex-wrap gap-2 mt-4">
+              {deferredPrompt && (
                 <button
-                  onClick={() => {
-                    setMostrarBannerPWA(false);
-                    localStorage.setItem('vitalis-pwa-banner-fechado', new Date().toISOString());
+                  onClick={async () => {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                      setIsPWAInstalled(true);
+                      setMostrarBannerPWA(false);
+                    }
+                    setDeferredPrompt(null);
                   }}
-                  className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+                  className="fnx-btn-primary"
                 >
-                  ✕
+                  <Download size={14} strokeWidth={1.4} />
+                  <span>instalar</span>
                 </button>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {/* Botão de instalação - só aparece se tiver deferredPrompt (Chrome/Edge/etc) */}
-                {deferredPrompt && (
-                  <button
-                    onClick={async () => {
-                      deferredPrompt.prompt();
-                      const { outcome } = await deferredPrompt.userChoice;
-                      if (outcome === 'accepted') {
-                        setIsPWAInstalled(true);
-                        setMostrarBannerPWA(false);
-                      }
-                      setDeferredPrompt(null);
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 bg-white text-indigo-700 rounded-lg font-semibold text-sm hover:bg-indigo-50 transition-colors shadow-md"
-                  >
-                    <span>⬇️</span>
-                    <span>Instalar App</span>
-                  </button>
-                )}
-
-                {/* Botão para ativar notificações */}
-                {!notificacoesAtivas && (
-                  <button
-                    onClick={async () => {
-                      const resultado = await pedirPermissaoERegistar();
-                      setNotificacoesAtivas(resultado);
-                      if (resultado) {
-                        // Guardar preferências no servidor para push real via cron
-                        const { carregarLembretes } = await import('../../utils/notifications');
-                        guardarPreferencias(carregarLembretes()).catch(() => {});
-                        // Activar lembretes locais imediatamente
-                        const { activarLembretes } = await import('../../utils/notifications');
-                        await activarLembretes();
-                        enviarNotificacao('Notificações activadas!', {
-                          body: 'Vais receber lembretes mesmo com a app fechada!'
-                        });
-                      }
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 bg-white/20 text-white rounded-lg font-semibold text-sm hover:bg-white/30 transition-colors border border-white/30"
-                  >
-                    <span>🔔</span>
-                    <span>Ativar Notificações</span>
-                  </button>
-                )}
-
-                {/* Link para o guia (especialmente para iOS) */}
-                <Link
-                  to="/vitalis/guia"
-                  className="flex items-center gap-2 px-4 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-colors border border-white/20"
-                >
-                  <span>📖</span>
-                  <span>Ver Guia</span>
-                </Link>
-              </div>
-
-              {/* Dica para iOS */}
-              {!deferredPrompt && (
-                <p className="text-white/70 text-xs mt-3 flex items-center gap-1">
-                  <span>💡</span>
-                  <span>iPhone/iPad: Usa Safari → Partilhar → "Adicionar ao ecrã inicial"</span>
-                </p>
               )}
 
-              {/* Indicadores de status */}
-              <div className="flex gap-4 mt-3 pt-3 border-t border-white/20">
-                <div className="flex items-center gap-2 text-sm">
-                  <span className={`w-2 h-2 rounded-full ${isPWAInstalled ? 'bg-green-400' : 'bg-white/40'}`}></span>
-                  <span className="text-white/80">{isPWAInstalled ? 'App instalada' : 'Não instalada'}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className={`w-2 h-2 rounded-full ${notificacoesAtivas ? 'bg-green-400' : 'bg-white/40'}`}></span>
-                  <span className="text-white/80">{notificacoesAtivas ? 'Notificações ativas' : 'Notificações off'}</span>
-                </div>
-              </div>
+              {!notificacoesAtivas && (
+                <button
+                  onClick={async () => {
+                    const resultado = await pedirPermissaoERegistar();
+                    setNotificacoesAtivas(resultado);
+                    if (resultado) {
+                      const { carregarLembretes } = await import('../../utils/notifications');
+                      guardarPreferencias(carregarLembretes()).catch(() => {});
+                      const { activarLembretes } = await import('../../utils/notifications');
+                      await activarLembretes();
+                      enviarNotificacao('Notificações activadas!', {
+                        body: 'Vais receber lembretes mesmo com a app fechada!'
+                      });
+                    }
+                  }}
+                  className="fnx-btn-outline"
+                >
+                  <Bell size={14} strokeWidth={1.4} />
+                  <span>activar notificações</span>
+                </button>
+              )}
+
+              <Link to="/vitalis/guia" className="fnx-btn-ghost">
+                <BookOpen size={14} strokeWidth={1.4} />
+                <span>ver guia</span>
+              </Link>
             </div>
-          </div>
+
+            {!deferredPrompt && (
+              <p className="fnx-text-faint mt-3 flex items-center gap-1.5" style={{ fontSize: '11px' }}>
+                <Lightbulb size={11} strokeWidth={1.4} />
+                <span>iphone: safari → partilhar → adicionar ao ecrã inicial</span>
+              </p>
+            )}
+          </section>
         )}
 
         {/* Banner Trial - Contador de Dias */}
         {subscriptionStatus === 'trial' && trialDaysLeft !== null && (
-          <div className="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 rounded-2xl p-4 shadow-xl relative overflow-hidden">
-            <div className="absolute inset-0 opacity-10">
-              <svg viewBox="0 0 100 100" className="w-full h-full">
-                <circle cx="20" cy="80" r="40" fill="white"/>
-                <circle cx="80" cy="20" r="30" fill="white"/>
-              </svg>
-            </div>
-
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-white/30 rounded-2xl flex items-center justify-center">
-                  <span className="text-4xl">🎁</span>
-                </div>
-                <div>
-                  <h3 className="text-white font-bold text-lg">Trial Gratuito Ativo</h3>
-                  <p className="text-white/90 text-sm mt-1">
-                    {trialDaysLeft === 1 ? (
-                      <span className="font-bold">⏰ Último dia! Subscreve para continuar</span>
-                    ) : trialDaysLeft <= 3 ? (
-                      <span>Faltam <strong>{trialDaysLeft} dias</strong> • Depois perde acesso</span>
-                    ) : (
-                      <span>Faltam <strong>{trialDaysLeft} dias</strong> de acesso completo</span>
-                    )}
-                  </p>
-                </div>
+          <section className="fnx-card-feature">
+            <div className="flex items-baseline justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Gift size={14} strokeWidth={1.4} className="fnx-text-ouro" />
+                <span className="fnx-label-cap">trial gratuito</span>
               </div>
-              <Link
-                to="/vitalis/pagamento"
-                className="px-5 py-2.5 bg-white text-green-600 rounded-xl font-bold text-sm hover:bg-green-50 transition-colors shadow-lg whitespace-nowrap"
-              >
-                Ver Planos →
-              </Link>
+              <span className="fnx-label-soft fnx-tnum">
+                {trialDaysLeft}/7 dias
+              </span>
             </div>
 
-            {/* Barra de progresso */}
-            <div className="mt-3 bg-white/20 rounded-full h-2 overflow-hidden">
+            <div className="flex items-baseline gap-2">
+              <span className="fnx-editorial-num fnx-tnum" style={{ fontSize: '52px', lineHeight: 1 }}>
+                {trialDaysLeft}
+              </span>
+              <span className="fnx-text-soft" style={{ fontSize: '14px' }}>
+                {trialDaysLeft === 1 ? 'último dia' : 'dias por viver'}
+              </span>
+            </div>
+
+            <p
+              className="fnx-text-soft mt-2 italic"
+              style={{ fontFamily: 'var(--font-editorial)', fontWeight: 300, fontSize: '13.5px', lineHeight: 1.6 }}
+            >
+              {trialDaysLeft === 1
+                ? 'hoje é o dia. subscreve para continuar a tua jornada.'
+                : trialDaysLeft <= 3
+                  ? 'a recta final do trial. é altura de decidires.'
+                  : 'continua a explorar. quando estiveres pronta, escolhe um plano.'}
+            </p>
+
+            {/* Hairline progress */}
+            <div className="mt-4 h-px w-full overflow-hidden" style={{ background: 'var(--fnx-hair)' }}>
               <div
-                className="h-full bg-white rounded-full transition-all duration-500"
-                style={{ width: `${(trialDaysLeft / 7) * 100}%` }}
+                className="h-px"
+                style={{
+                  width: `${(trialDaysLeft / 7) * 100}%`,
+                  background: 'var(--fnx-ouro)',
+                  transition: 'width 0.5s ease'
+                }}
               />
             </div>
 
-            {trialExpiresAt && (
-              <p className="text-white/70 text-xs mt-2 text-center">
-                Expira em {new Date(trialExpiresAt).toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}
-              </p>
-            )}
-          </div>
+            <div className="mt-4 flex items-center justify-between">
+              {trialExpiresAt && (
+                <p className="fnx-text-faint fnx-tnum" style={{ fontSize: '11px' }}>
+                  expira {new Date(trialExpiresAt).toLocaleDateString('pt-PT', { day: 'numeric', month: 'long' })}
+                </p>
+              )}
+              <Link to="/vitalis/pagamento" className="fnx-btn-ouro">
+                <span>ver planos</span>
+                <ArrowRight size={14} strokeWidth={1.4} />
+              </Link>
+            </div>
+          </section>
         )}
 
         {/* Banner Intake - Sugerir completar */}
         {subscriptionStatus === 'trial' && !hasIntake && (
-          <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 rounded-2xl p-4 shadow-xl relative overflow-hidden">
-            <div className="absolute inset-0 opacity-10">
-              <svg viewBox="0 0 100 100" className="w-full h-full">
-                <circle cx="30" cy="70" r="35" fill="white"/>
-                <circle cx="70" cy="30" r="25" fill="white"/>
-              </svg>
+          <section className="fnx-card-feature">
+            <div className="flex items-center gap-2 mb-2">
+              <Lightbulb size={14} strokeWidth={1.4} className="fnx-text-ouro" />
+              <span className="fnx-label-cap">personaliza a experiência</span>
             </div>
-
-            <div className="relative z-10">
-              <div className="flex items-start gap-3 mb-3">
-                <div className="w-12 h-12 bg-white/30 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <span className="text-2xl">💡</span>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-white font-bold text-lg mb-1">Personaliza a Tua Experiência</h3>
-                  <p className="text-white/90 text-sm mb-3">
-                    Completa o questionário inicial (5 min) para receberes:
-                  </p>
-                  <ul className="space-y-1 text-white/90 text-sm">
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
-                      <span>Plano alimentar personalizado para o teu objetivo</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
-                      <span>Treinos adaptados à tua fase e condição</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
-                      <span>Calorias e macros calculados para ti</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <Link
-                to="/vitalis/intake"
-                className="w-full flex items-center justify-center gap-2 py-3 bg-white text-orange-600 rounded-xl font-bold hover:bg-orange-50 transition-colors shadow-lg"
-              >
-                <span>📋</span>
-                <span>Começar Questionário (5 min)</span>
-              </Link>
-            </div>
-          </div>
+            <h3
+              className="fnx-text-ink"
+              style={{ fontFamily: 'var(--font-editorial)', fontSize: '22px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: 1.2 }}
+            >
+              5 minutos · um plano só teu
+            </h3>
+            <p className="fnx-text-soft mt-2" style={{ fontSize: '13.5px', lineHeight: 1.65 }}>
+              completa o questionário inicial para receberes plano alimentar, treinos e macros calculados ao detalhe.
+            </p>
+            <ul className="mt-4 space-y-2.5">
+              {[
+                'plano alimentar adaptado ao teu objectivo',
+                'treinos para a tua fase e condição',
+                'calorias e macros calculados para ti'
+              ].map(item => (
+                <li key={item} className="flex items-start gap-3">
+                  <span className="mt-2 inline-block" style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--fnx-ouro)' }} />
+                  <span className="fnx-text-soft" style={{ fontSize: '13.5px', lineHeight: 1.5 }}>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <Link to="/vitalis/intake" className="fnx-btn-primary mt-5 w-full">
+              <ClipboardList size={14} strokeWidth={1.4} />
+              <span>começar questionário</span>
+            </Link>
+          </section>
         )}
 
         {/* Banner Plano Pendente Revisao */}
         {planoPendenteRevisao && !plano && (
-          <div className="bg-gradient-to-r from-amber-500 to-orange-400 rounded-2xl p-4 shadow-xl">
-            <div className="flex items-start gap-3">
-              <div className="w-12 h-12 bg-white/30 rounded-xl flex items-center justify-center flex-shrink-0">
-                <span className="text-2xl">👩‍⚕️</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-white font-bold text-lg mb-1">Plano em revisao</h3>
-                <p className="text-white/90 text-sm">
-                  O teu plano nutricional foi gerado e esta a ser revisto pela tua coach.
-                  Vais ter acesso assim que for aprovado!
-                </p>
-              </div>
+          <section className="fnx-card-solid">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles size={14} strokeWidth={1.4} className="fnx-text-ouro" />
+              <span className="fnx-label-cap">plano em revisão</span>
             </div>
-          </div>
+            <h3
+              className="fnx-text-ink"
+              style={{ fontFamily: 'var(--font-editorial)', fontSize: '19px', fontWeight: 400, letterSpacing: '-0.015em' }}
+            >
+              a tua coach está a rever o plano
+            </h3>
+            <p className="fnx-text-soft mt-1.5" style={{ fontSize: '13px', lineHeight: 1.55 }}>
+              vais ter acesso assim que for aprovado. recebes notificação.
+            </p>
+          </section>
         )}
 
-        {/* Mensagem + Streak */}
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1 rounded-2xl p-4 shadow-lg transition-all duration-300 hover:shadow-xl"
-            style={{ background: 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 50%, #F0FDF4 100%)', borderLeft: '4px solid #7C8B6F' }}>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style={{ background: 'rgba(124,139,111,0.15)' }}>✨</div>
-              <div>
-                <p className="text-gray-800 font-medium text-sm md:text-base" style={{ fontFamily: 'var(--font-titulos)' }}>"Cada escolha consciente te aproxima da melhor versão de ti."</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  Dia {Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / (1000 * 60 * 60 * 24)) + 1} da tua jornada •
-                  {t('vitalis.dashboard.week')} {Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / (7 * 24 * 60 * 60 * 1000)) + 1} •
-                  {(() => {
-                    const abordagem = plano?.abordagem || 'equilibrado';
-                    const faseNomes = {
-                      keto_if: { inducao: 'Indução', transicao: 'Transição', recomposicao: 'Recomposição', manutencao: 'Manutenção' },
-                      low_carb: { inducao: 'Adaptação', transicao: 'Transição', recomposicao: 'Recomposição', manutencao: 'Manutenção' },
-                      equilibrado: { inducao: 'Arranque', transicao: 'Progressão', recomposicao: 'Consolidação', manutencao: 'Manutenção' }
-                    };
-                    const nomes = faseNomes[abordagem] || faseNomes.equilibrado;
-                    return nomes[plano?.fase] || plano?.fase || 'Inicial';
-                  })()}
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          {streak > 0 && (
-            <div className="md:w-64">
-              <StreakDisplay streak={streak} melhorStreak={melhorStreak} compacto={false} />
-            </div>
-          )}
-        </div>
+        {/* Mantra editorial rotativo (60 frases por dia da jornada) */}
+        <section className="text-center px-2">
+          <p className="fnx-mantra fnx-text-soft">
+            <span className="fnx-text-ouro" style={{ fontFamily: 'var(--font-editorial)' }}>&ldquo;</span>
+            {mantraDoDia(Math.max(1, Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / 86400000) + 1))}
+            <span className="fnx-text-ouro" style={{ fontFamily: 'var(--font-editorial)' }}>&rdquo;</span>
+          </p>
+          <p className="fnx-label-soft mt-3 fnx-tnum">
+            {(() => {
+              const semana = Math.floor((new Date() - new Date(client?.data_inicio || new Date())) / (7 * 24 * 60 * 60 * 1000)) + 1;
+              const abordagem = plano?.abordagem || 'equilibrado';
+              const faseNomes = {
+                keto_if: { inducao: 'indução', transicao: 'transição', recomposicao: 'recomposição', manutencao: 'manutenção' },
+                low_carb: { inducao: 'adaptação', transicao: 'transição', recomposicao: 'recomposição', manutencao: 'manutenção' },
+                equilibrado: { inducao: 'arranque', transicao: 'progressão', recomposicao: 'consolidação', manutencao: 'manutenção' }
+              };
+              const nomes = faseNomes[abordagem] || faseNomes.equilibrado;
+              const fase = (nomes[plano?.fase] || plano?.fase || 'inicial').toLowerCase();
+              return `semana ${semana} · ${fase}`;
+            })()}
+          </p>
+        </section>
 
         {/* Alerta de risco de desistência (aparece quando detectado) */}
         <AlertaDesistencia riskData={riskData} userId={userId} />
 
-        {/* Quick Actions - Navegação Principal */}
-        <div className="grid grid-cols-4 md:grid-cols-8 gap-2 sm:gap-3">
-          {[
-            { to: '/vitalis/plano', emoji: '📋', label: t('vitalis.dashboard.meal_plan'), cor: '#7C8B6F', bg: 'linear-gradient(145deg, #F0FDF4, #DCFCE7)' },
-            { to: '/vitalis/checkin', emoji: '✅', label: t('vitalis.dashboard.daily_checkin'), cor: '#059669', bg: 'linear-gradient(145deg, #ECFDF5, #D1FAE5)' },
-            { to: '/vitalis/meals', emoji: '🍽️', label: 'Refeições', cor: '#D97706', bg: 'linear-gradient(145deg, #FFFBEB, #FEF3C7)' },
-            { to: '/vitalis/calendario', emoji: '📅', label: 'Menu Semanal', cor: '#0D9488', bg: 'linear-gradient(145deg, #F0FDFA, #CCFBF1)' },
-            { to: '/vitalis/receitas', emoji: '🍳', label: t('vitalis.dashboard.recipes'), cor: '#EA580C', bg: 'linear-gradient(145deg, #FFF7ED, #FFEDD5)' },
-            { to: '/vitalis/tendencias', emoji: '📏', label: 'Medidas', cor: '#F59E0B', bg: 'linear-gradient(145deg, #FFFBEB, #FEF3C7)' },
-            { to: '/vitalis/sintomas', emoji: '🌡️', label: 'Adaptação', cor: '#DC2626', bg: 'linear-gradient(145deg, #FEF2F2, #FEE2E2)' },
-            { to: '/vitalis/espaco-retorno', emoji: '💜', label: 'Espaço Retorno', cor: '#9333EA', bg: 'linear-gradient(145deg, #FAF5FF, #F3E8FF)' },
-            { to: '/vitalis/compromisso', emoji: '📜', label: 'Compromisso', cor: '#7C3AED', bg: 'linear-gradient(145deg, #F5F3FF, #EDE9FE)' },
-            { to: '/vitalis/relatorios', emoji: '📊', label: 'Relatórios', cor: '#0891B2', bg: 'linear-gradient(145deg, #ECFEFF, #CFFAFE)' },
-            { to: '/vitalis/treinos', emoji: '💪', label: t('vitalis.workouts.title'), cor: '#DC2626', bg: 'linear-gradient(145deg, #FEF2F2, #FECACA)' },
-          ].map(item => (
-            <Link key={item.to} to={item.to} className="group rounded-2xl p-4 shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 text-center"
-              style={{ background: item.bg, borderBottom: `3px solid ${item.cor}` }}>
-              <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">{item.emoji}</div>
-              <p className="font-semibold text-[#4A4035] text-sm" style={{ fontFamily: 'var(--font-corpo)' }}>{item.label}</p>
-            </Link>
-          ))}
-        </div>
+        {/* Atalhos do dia — só 4 acções rápidas, o resto vai para /ferramentas */}
+        <section className="space-y-2">
+          <span className="fnx-label-cap px-1">agora</span>
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { to: '/vitalis/checkin', icon: CheckCircle2, label: 'check-in' },
+              { to: '/vitalis/meals', icon: UtensilsCrossed, label: 'refeições' },
+              { to: '/vitalis/plano', icon: ClipboardList, label: 'plano' },
+              { to: '/vitalis/chat', icon: MessageCircle, label: 'coach' }
+            ].map(({ to, icon: Icon, label }) => (
+              <Link
+                key={to}
+                to={to}
+                className="fnx-card-solid fnx-transition flex flex-col items-center justify-center gap-1.5 active:scale-95"
+                style={{ padding: '14px 8px', minHeight: '78px' }}
+              >
+                <Icon size={18} strokeWidth={1.3} className="fnx-text-ouro" />
+                <span
+                  className="fnx-text-soft"
+                  style={{
+                    fontFamily: 'var(--font-editorial)',
+                    fontSize: '12px',
+                    letterSpacing: '-0.01em',
+                    textAlign: 'center'
+                  }}
+                >
+                  {label}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
 
         {/* Conteúdo Educativo da Semana */}
         {conteudoSemanal && (
-          <div className="rounded-3xl shadow-lg p-4 sm:p-5"
-            style={{ background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)', borderLeft: '4px solid #2563EB' }}>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-2xl shrink-0" aria-hidden="true">📖</span>
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-[#2563EB]">
-                  Semana {semanaPrograma} no teu plano
+          <section className="fnx-card-feature">
+            <div className="flex items-baseline justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <BookOpen size={14} strokeWidth={1.4} className="fnx-text-ouro" />
+                <span className="fnx-label-cap">semana {semanaPrograma} no plano</span>
+              </div>
+            </div>
+            <h3
+              className="fnx-text-ink"
+              style={{ fontFamily: 'var(--font-editorial)', fontSize: '20px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: 1.25 }}
+            >
+              {(conteudoSemanal.titulo || '').toLowerCase()}
+            </h3>
+            <p className="fnx-text-soft mt-2" style={{ fontSize: '13.5px', lineHeight: 1.65 }}>
+              {conteudoSemanal.mensagem}
+            </p>
+            <hr className="fnx-hairline my-4" />
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <p className="fnx-label-soft mb-1">o que esperar</p>
+                <p className="fnx-text-soft" style={{ fontSize: '12.5px', lineHeight: 1.55 }}>{conteudoSemanal.expectativa}</p>
+              </div>
+              <div>
+                <p className="fnx-label-soft mb-1">dica da semana</p>
+                <p
+                  className="fnx-text-soft italic"
+                  style={{ fontSize: '12.5px', lineHeight: 1.55, fontFamily: 'var(--font-editorial)', fontWeight: 300 }}
+                >
+                  {conteudoSemanal.dica}
                 </p>
-                <h3 className="font-bold text-[#1E3A8A] text-sm sm:text-base truncate" style={{ fontFamily: 'var(--font-corpo)' }}>
-                  {conteudoSemanal.titulo}
-                </h3>
               </div>
             </div>
-            <p className="text-sm text-[#1E40AF] leading-relaxed mb-3">{conteudoSemanal.mensagem}</p>
-            <div className="grid sm:grid-cols-2 gap-2">
-              <div className="bg-white/70 rounded-xl p-3">
-                <p className="text-[11px] font-semibold text-[#2563EB] uppercase tracking-wide mb-1">O que esperar</p>
-                <p className="text-xs text-[#1E40AF] leading-snug">{conteudoSemanal.expectativa}</p>
-              </div>
-              <div className="bg-white/70 rounded-xl p-3">
-                <p className="text-[11px] font-semibold text-[#2563EB] uppercase tracking-wide mb-1">💡 Dica desta semana</p>
-                <p className="text-xs text-[#1E40AF] leading-snug">{conteudoSemanal.dica}</p>
-              </div>
-            </div>
-          </div>
+          </section>
         )}
 
         {/* Regras de Ouro (por abordagem) */}
-        <div className="rounded-3xl shadow-lg overflow-hidden"
-          style={{ background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', borderLeft: '4px solid #D97706' }}>
+        <section className="fnx-card-solid !p-0">
           <button
             type="button"
             onClick={() => setRegrasExpandidas(!regrasExpandidas)}
-            className="w-full flex items-center justify-between p-4 sm:p-5 active:scale-[0.99] transition-transform"
+            className="w-full flex items-center justify-between active:scale-[0.99] fnx-transition"
+            style={{ padding: '20px' }}
             aria-expanded={regrasExpandidas}
             aria-controls="regras-ouro-list"
           >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="text-2xl sm:text-3xl shrink-0">📜</div>
-              <div className="text-left min-w-0">
-                <h3 className="font-bold text-[#4A4035] text-sm sm:text-base truncate" style={{ fontFamily: 'var(--font-corpo)' }}>
-                  As Tuas Regras de Ouro
-                </h3>
-                <p className="text-xs text-[#6B5C4C] truncate">
-                  {abordagemActual === 'keto_if' && 'Keto + Jejum Intermitente'}
-                  {abordagemActual === 'low_carb' && 'Low Carb'}
-                  {abordagemActual === 'equilibrado' && 'Equilibrado'}
-                  {' · '}{regrasOuro.length} regras essenciais
+            <div className="flex items-center gap-3 min-w-0 text-left">
+              <FileText size={18} strokeWidth={1.4} className="fnx-text-ouro shrink-0" />
+              <div className="min-w-0">
+                <p className="fnx-label-cap mb-0.5">
+                  {abordagemActual === 'keto_if' && 'keto + jejum'}
+                  {abordagemActual === 'low_carb' && 'low carb'}
+                  {abordagemActual === 'equilibrado' && 'equilibrado'}
                 </p>
+                <h3
+                  className="fnx-text-ink truncate"
+                  style={{ fontFamily: 'var(--font-editorial)', fontSize: '17px', fontWeight: 400, letterSpacing: '-0.015em' }}
+                >
+                  regras de ouro · {regrasOuro.length}
+                </h3>
               </div>
             </div>
-            <div className="text-xl text-[#D97706] shrink-0 ml-2" aria-hidden="true">
-              {regrasExpandidas ? '▲' : '▼'}
-            </div>
+            <span className="fnx-text-ouro shrink-0 ml-2" aria-hidden="true">
+              {regrasExpandidas ? '−' : '+'}
+            </span>
           </button>
           {regrasExpandidas && (
-            <ul id="regras-ouro-list" className="px-4 sm:px-5 pb-4 sm:pb-5 space-y-2.5">
-              {regrasOuro.map((regra, idx) => (
-                <li key={idx} className="flex gap-3 p-3 bg-white/60 rounded-xl">
-                  <div className="flex flex-col items-center shrink-0">
-                    <div className="w-7 h-7 rounded-full bg-[#D97706] text-white text-xs font-bold flex items-center justify-center">
-                      {idx + 1}
+            <>
+              <hr className="fnx-hairline" />
+              <ul id="regras-ouro-list" className="divide-y" style={{ borderColor: 'var(--fnx-hair)' }}>
+                {regrasOuro.map((regra, idx) => (
+                  <li key={idx} className="flex gap-4 px-5 py-3.5">
+                    <span
+                      className="fnx-tnum shrink-0"
+                      style={{
+                        fontFamily: 'var(--font-editorial)',
+                        fontSize: '14px',
+                        fontWeight: 300,
+                        color: 'var(--fnx-ouro)',
+                        minWidth: '24px'
+                      }}
+                    >
+                      {String(idx + 1).padStart(2, '0')}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="fnx-text-ink" style={{ fontSize: '14px', fontWeight: 500, letterSpacing: '-0.01em' }}>
+                        {(regra.titulo || '').toLowerCase()}
+                      </p>
+                      <p className="fnx-text-soft mt-0.5" style={{ fontSize: '12.5px', lineHeight: 1.5 }}>
+                        {regra.descricao}
+                      </p>
                     </div>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-sm text-[#4A4035] flex items-center gap-1.5">
-                      <span aria-hidden="true">{regra.emoji}</span>
-                      {regra.titulo}
-                    </p>
-                    <p className="text-xs sm:text-sm text-[#6B5C4C] mt-0.5 leading-snug">{regra.descricao}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                  </li>
+                ))}
+              </ul>
+            </>
           )}
-        </div>
+        </section>
 
         {/* Grid Principal */}
         <div className="grid grid-cols-12 gap-4">
@@ -1443,7 +1577,7 @@ export default function DashboardVitalis() {
 
               <div className="grid grid-cols-3 gap-2 text-center text-xs">
                 <div className="p-2 bg-[#F5F2ED] rounded-lg">
-                  <div className="w-2 h-2 rounded-full bg-gradient-to-r from-[#7C8B6F] to-[#9CAF88] mx-auto mb-1"></div>
+                  <div className="w-2 h-2 rounded-full bg-[var(--fnx-ouro)] mx-auto mb-1"></div>
                   <p className="font-semibold text-[#4A4035]">{refeicoesConcluidas}/{totalRefeicoes}</p>
                   <p className="text-[#6B5C4C]">Refeições</p>
                 </div>
@@ -1590,6 +1724,48 @@ export default function DashboardVitalis() {
           caloriasAlvo={caloriasAlvo}
         />
 
+        {/* Padrões detectados nos últimos 14 dias (sem IA — local) */}
+        {(() => {
+          const padroes = detectarPadroes({
+            refeicoes: refeicoes || [],
+            registos: registos || [],
+            pesos: registos?.filter(r => r.peso_kg) || []
+          }, 14);
+          return padroes.length > 0 ? <PadroesCard padroes={padroes} titulo="o que se vê · 14 dias" /> : null;
+        })()}
+
+        {/* Heatmap 60 dias da jornada */}
+        {client?.data_inicio && (
+          <Heatmap60
+            dataInicio={client.data_inicio}
+            registos={(() => {
+              // Calcular intensidade por dia baseado em registos disponíveis
+              const mapa = new Map();
+              const processar = (arr, campo) => {
+                (arr || []).forEach(r => {
+                  const data = (r.data || r.created_at || '').split('T')[0];
+                  if (!data) return;
+                  if (!mapa.has(data)) mapa.set(data, { refeicao: false, checkin: false, agua: false, treino: false, sono: false });
+                  mapa.get(data)[campo] = true;
+                });
+              };
+              processar(refeicoes, 'refeicao');
+              processar(registos, 'checkin');
+              // água/treino/sono — se houver, vêm dentro dos registos
+              return [...mapa.entries()].map(([data, flags]) => ({
+                data,
+                intensidade: intensidadeDia({
+                  temRefeicao: flags.refeicao,
+                  temCheckin: flags.checkin,
+                  temAgua: flags.agua,
+                  temTreino: flags.treino,
+                  temSono: flags.sono
+                })
+              }));
+            })()}
+          />
+        )}
+
         {/* Banner Ramadan - Visível durante o período, apenas para quem observa */}
         {(() => {
           if (!observaRamadao()) return null;
@@ -1598,125 +1774,51 @@ export default function DashboardVitalis() {
           if (!mostrarBanner) return null;
 
           return (
-            <Link to="/vitalis/guia-ramadao" className="block">
-              <div className="bg-gradient-to-r from-[#1a1a3e] via-[#2d2d5e] to-[#1a3a4e] rounded-3xl p-5 shadow-xl relative overflow-hidden">
-                <div className="absolute top-2 right-4 text-5xl opacity-20">🌙</div>
-                <div className="absolute top-8 right-16 text-xl opacity-15">⭐</div>
-                <div className="relative flex items-center gap-4">
-                  <div className="text-4xl">🌙</div>
-                  <div className="flex-1">
-                    <h3 className="text-white font-bold text-lg">
-                      {dentroRamadao ? 'Ramadan Mubarak!' : 'O Ramadan está a chegar!'}
-                    </h3>
-                    <p className="text-white/70 text-sm mt-1">
-                      {dentroRamadao
-                        ? 'Guia nutricional completo para o mês sagrado - Suhoor, Iftar e mais'
-                        : 'Prepara-te com o nosso guia nutricional para o mês sagrado'}
-                    </p>
-                  </div>
-                  <div className="text-white/60 text-xl">→</div>
-                </div>
+            <Link to="/vitalis/guia-ramadao" className="fnx-card-solid fnx-transition flex items-center gap-4 hover:opacity-90">
+              <Moon size={28} strokeWidth={1.4} className="fnx-text-ouro shrink-0" />
+              <div className="flex-1 min-w-0">
+                <span className="fnx-label-cap">guia nutricional</span>
+                <h3
+                  className="fnx-text-ink mt-0.5"
+                  style={{ fontFamily: 'var(--font-editorial)', fontSize: '17px', fontWeight: 400, letterSpacing: '-0.015em' }}
+                >
+                  {dentroRamadao ? 'ramadan mubarak' : 'o ramadan está a chegar'}
+                </h3>
+                <p className="fnx-text-soft mt-0.5" style={{ fontSize: '12.5px', lineHeight: 1.5 }}>
+                  {dentroRamadao ? 'suhoor, iftar e o mês sagrado' : 'prepara-te com o guia nutricional'}
+                </p>
               </div>
+              <ArrowRight size={16} strokeWidth={1.4} className="fnx-text-faint shrink-0" />
             </Link>
           );
         })()}
 
-        {/* Funcionalidades Premium - NOVAS */}
-        <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 rounded-3xl p-5 shadow-xl">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-white font-bold text-lg">Funcionalidades Premium</h3>
-              <p className="text-white/70 text-sm">Explora todas as ferramentas</p>
-            </div>
-            <span className="text-3xl">✨</span>
+        {/* Acesso à barra de ferramentas — tudo o resto está lá */}
+        <Link
+          to="/vitalis/ferramentas"
+          className="fnx-card-feature fnx-transition flex items-center gap-4 hover:opacity-95"
+        >
+          <LayoutGrid size={22} strokeWidth={1.4} className="fnx-text-ouro shrink-0" />
+          <div className="flex-1 min-w-0">
+            <span className="fnx-label-cap">explorar</span>
+            <h3
+              className="fnx-text-ink mt-0.5"
+              style={{ fontFamily: 'var(--font-editorial)', fontSize: '18px', fontWeight: 400, letterSpacing: '-0.015em' }}
+            >
+              ferramentas vitalis
+            </h3>
+            <p className="fnx-text-soft mt-0.5" style={{ fontSize: '12.5px', lineHeight: 1.5 }}>
+              receitas, tendências, fotos, desafios, notificações
+            </p>
           </div>
+          <ArrowRight size={16} strokeWidth={1.4} className="fnx-text-faint shrink-0" />
+        </Link>
 
-          {/* Guia do Utilizador - Destacado no topo */}
-          <Link to="/vitalis/guia" className="group flex items-center gap-4 bg-white/30 hover:bg-white/40 rounded-xl p-4 transition-all backdrop-blur-sm mb-3">
-            <div className="text-4xl group-hover:scale-110 transition-transform">📖</div>
-            <div className="flex-1">
-              <p className="font-bold text-white">Guia do Utilizador</p>
-              <p className="text-white/80 text-sm">Aprende a usar todas as funcionalidades da app</p>
-            </div>
-            <span className="text-white/60 text-xl">→</span>
-          </Link>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-            {/* Chat Coach */}
-            <Link to="/vitalis/chat" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
-              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">💬</div>
-              <p className="font-semibold text-white text-sm">{t('vitalis.dashboard.coach_chat')}</p>
-              <p className="text-white/70 text-xs mt-1">Fala com a coach</p>
-            </Link>
-
-            {/* Desafios */}
-            <Link to="/vitalis/desafios" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
-              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🎯</div>
-              <p className="font-semibold text-white text-sm">Desafios</p>
-              <p className="text-white/70 text-xs mt-1">Desafios semanais</p>
-            </Link>
-
-            {/* Lista de Compras */}
-            <Link to="/vitalis/lista-compras" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
-              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🛒</div>
-              <p className="font-semibold text-white text-sm">{t('vitalis.dashboard.shopping_list')}</p>
-              <p className="text-white/70 text-xs mt-1">Lista automática</p>
-            </Link>
-
-            {/* Sugestões */}
-            <Link to="/vitalis/sugestoes" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
-              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">💡</div>
-              <p className="font-semibold text-white text-sm">Sugestões</p>
-              <p className="text-white/70 text-xs mt-1">O que comer</p>
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {/* Calendário de Progresso */}
-            <Link to="/vitalis/calendario-progresso" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
-              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🗓️</div>
-              <p className="font-semibold text-white text-sm">Diário</p>
-              <p className="text-white/70 text-xs mt-1">Ver por dia</p>
-            </Link>
-
-            {/* Fotos Progresso */}
-            <Link to="/vitalis/fotos-progresso" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
-              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">📸</div>
-              <p className="font-semibold text-white text-sm">Fotos</p>
-              <p className="text-white/70 text-xs mt-1">Antes e depois</p>
-            </Link>
-
-            {/* Gráficos de Tendência */}
-            <Link to="/vitalis/tendencias" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
-              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">📈</div>
-              <p className="font-semibold text-white text-sm">Tendências</p>
-              <p className="text-white/70 text-xs mt-1">Peso, medidas, água</p>
-            </Link>
-
-            {/* Notificações */}
-            <Link to="/vitalis/notificacoes" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
-              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🔔</div>
-              <p className="font-semibold text-white text-sm">Lembretes</p>
-              <p className="text-white/70 text-xs mt-1">Configurar alertas</p>
-            </Link>
-
-            {/* Meditações */}
-            <Link to="/vitalis/meditacoes" className="group bg-white/20 hover:bg-white/30 rounded-xl p-4 transition-all text-center backdrop-blur-sm">
-              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🧘</div>
-              <p className="font-semibold text-white text-sm">Meditações</p>
-              <p className="text-white/70 text-xs mt-1">Corpo e mente</p>
-            </Link>
-          </div>
-        </div>
-
-        {/* Secção de Conquistas */}
-        <AchievementsPanel
-          conquistasDesbloqueadas={conquistasDesbloqueadas}
-          xpTotal={xpTotal}
-        />
+        {/* Paleta — escolha opcional, sempre visível */}
+        <PaletaSelector />
 
         {/* Vivianne Explica */}
-        <div className="px-4 sm:px-6 mb-6">
+        <div className="mb-6">
           <PodcastPlayer eco="vitalis" compact />
         </div>
 

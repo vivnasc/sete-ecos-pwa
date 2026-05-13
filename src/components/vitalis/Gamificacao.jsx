@@ -249,7 +249,7 @@ export function NivelProgresso({ pontosTotal }) {
 
       <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-[#7C8B6F] via-[#9CAF88] to-[#6B7A5D] rounded-full transition-all"
+          className="h-full bg-[var(--fnx-ouro)] rounded-full transition-all"
           style={{ width: `${progressoNivel}%` }}
         />
       </div>
