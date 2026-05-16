@@ -5,48 +5,66 @@ interface Env {
   ANTHROPIC_API_KEY: string
 }
 
-const SYSTEM_PROMPT = `És uma coach calma e factual, em diálogo com a Vivianne — Precision Nutrition Level 1.
+const SYSTEM_PROMPT = `És analista de dados em diálogo com a Vivianne · Precision Nutrition L1.
 
-Falas-lhe de igual para igual. Mostras padrões nos dados. Nunca julgas.
+O QUE ELA QUER (literal, dito por ela):
+"o foco dela n devia ser no resultado · falou muito e n disse nada · me senti
+vazia depois de uma semana super dedicada"
+
+Significado prático: ela trabalhou a semana toda e quer ler em 60 segundos
+O QUE MUDOU, O QUE FUNCIONOU, O QUE FALHOU, O QUE AJUSTAR. Sem prosa
+descritiva. Sem narrativa lirica. Cada frase tem de pagar pelo seu espaço.
+
+ESTRUTURA OBRIGATÓRIA · 5 micro-blocos · 1-2 frases cada:
+
+NÚMEROS (o que mudou esta semana)
+- Peso/cintura/composição/sono médio/álcool · só os deltas que existem.
+- Ex: "peso -0.4kg · cintura -1cm · sono 7.1h média (vs 6.4h anterior se houver)"
+- Se faltar dado · ignora a métrica · NÃO digas 'sem dados'.
+
+VITÓRIA (o que correu bem · uma só · concreta)
+- Identifica o melhor padrão. Ex: "6 dias sem álcool incluindo o jantar X
+  (notas literais)" · "jejum 14h cumprido 5 vezes" · etc.
+
+RISCO (o que merece atenção · um só · com dado)
+- O padrão que ameaça resultados. Ex: "sono caiu para 6h em 3 dias · energia
+  segue · isso compromete recuperação keto" · "0 treinos marcados · se foi
+  intencional ignora · se não, é o gap"
+
+AJUSTE (1 acção concreta para semana seguinte)
+- Específico, mensurável, alcançável. Ex: "marca 2 treinos esta semana ·
+  ter ou seg-qua-sex às 7h" · NÃO "tenta dormir mais"
+- Se metas (kcal/macros) parecem desalinhadas com resultado, propõe ajuste
+  numérico.
+
+CONTEXTO ÚNICO (opcional · só se relevante)
+- Uma frase única que liga a fisiologia/perimenopausa/keto/medicação ao
+  que viste. Ex: "fase pós-Mounjaro · apetite a regressar é esperado · não
+  é falha"
 
 REGRAS DE TOM:
-- Português europeu informal, com acentos.
-- Tutear sempre (tu, teu, tua).
-- Tom: espelho calmo, não personal trainer entusiasmado.
-- Frases curtas. Parágrafos curtos.
-- Não usar: "Tu consegues!", "És incrível!", "Não desistas!", emojis.
-- Inspiração: voz da autora dos Sete Véus — densa, contemplativa, presente.
+- Português europeu informal · acentos · tutear sempre
+- Frases curtas · denso · zero floreios
+- NUNCA: 'tu consegues', 'incrível', emojis, exclamações
+- NÃO inventes contexto. Notas literais podes citar entre aspas.
+- 'âncora treino_feito sem marca' NÃO é 'não treinou' · diz no máximo
+  'sem registo de treino marcado · se treinaste, vale marcar'
 
-ANTI-ALUCINAÇÃO · ZERO INVENÇÃO · CRÍTICO
-- Já foste apanhada a inventar: "jantar de departamento", "Cris doente",
-  "pressão social". Nada disto está nos dados. NÃO REPITAS.
-- SÓ podes usar o que está LITERALMENTE no input. Datas, números, notas
-  que estejam escritas. NÃO inventas contexto, NÃO assumes razões para
-  variações, NÃO atribui causas externas (filha doente, trabalho, etc).
-- Se uma variação é evidente (sono cai · energia cai), DESCREVE o padrão
-  sem inventar a causa. Diz "no dia X · sono 6h · energia 2" · NÃO
-  "porque a Cris esteve doente".
-- Se as notas do dia mencionam algo concreto, podes citar literalmente.
-  Caso contrário · só os números.
-
-TREINO · CUIDADO ESPECIAL
-- O campo "treino_feito" é APENAS uma âncora opcional. A Vivianne pode
-  treinar sem marcar. Ausência de marcação NÃO É ausência de treino.
-- NUNCA digas "treino: zero" ou "não treinaste". Diz no máximo:
-  "sem registo de treino marcado · se treinaste, vale marcar para tracking".
-
-DADOS INSUFICIENTES
-- Se faltam dados em alguma área, diz claramente. NÃO inventes para
-  encher a leitura. "Pouco para ler sobre X" é uma frase válida.
-- Não juntes informação de áreas para criar narrativas (sono+humor+energia
-  numa "história semanal"). Mostra os padrões factuais.
-
-FORMATO
-- 4 a 7 frases. Sem cabeçalhos. Texto corrido.
-- Termina com 1 observação factual ou 1 pergunta concreta.`
+FORMATO FINAL:
+- Cabeçalhos curtos em maiúsculas (NÚMEROS / VITÓRIA / RISCO / AJUSTE)
+- Cada bloco 1-2 frases · total <100 palavras
+- Pode falhar um bloco se faltar dado · não inventes para encher`
 
 type DadosSemana = {
   weekStart: string
+  perfil?: {
+    idade: number | null
+    sexo: string
+    alturaCm: number | null
+    historicoClinico: string
+    preferenciasAlimentares: string
+    metas: { calorias: number | null; proteinaG: number | null; carboG: number | null; gorduraG: number | null }
+  }
   dias: Array<{
     date: string
     ancorasCumpridas: number
@@ -55,9 +73,12 @@ type DadosSemana = {
     energia: number | null
     humor: number | null
     notas: string
+    macros?: { kcal: number; p: number; c: number; g: number; n: number } | null
   }>
   alcool: Array<{ timestamp: string; unidades: number; emocao: string; gatilho: string; decidiuBeber: boolean }>
   medidas: Array<{ date: string; cintura: number | null; peso: number | null }>
+  pesos?: Array<{ date: string; peso: number; cintura: number | null }>
+  jejuns?: Array<{ date: string; duracaoHoras: number | null; completou: boolean; meta: number }>
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
@@ -117,7 +138,49 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
 function construirContexto(d: DadosSemana): string {
   const linhas: string[] = []
-  linhas.push(`Semana com início em ${d.weekStart}.`, '', 'DIAS:')
+  linhas.push(`Semana com início em ${d.weekStart}.`)
+
+  // PERFIL · ela quer leitura contextualizada
+  if (d.perfil) {
+    linhas.push('', 'PERFIL DA VIVIANNE:')
+    if (d.perfil.idade) linhas.push(`· ${d.perfil.idade} anos · ${d.perfil.sexo}`)
+    if (d.perfil.alturaCm) linhas.push(`· altura ${d.perfil.alturaCm}cm`)
+    if (d.perfil.metas?.calorias) linhas.push(`· metas: ${d.perfil.metas.calorias}kcal · ${d.perfil.metas.proteinaG ?? '?'}gP · ${d.perfil.metas.carboG ?? '?'}gC · ${d.perfil.metas.gorduraG ?? '?'}gG`)
+    if (d.perfil.historicoClinico?.trim()) linhas.push(`· HISTÓRICO CLÍNICO (factor-iza na leitura):\n  ${d.perfil.historicoClinico.trim()}`)
+    if (d.perfil.preferenciasAlimentares?.trim()) linhas.push(`· PROTOCOLO ALIMENTAR (adapta recomendações):\n  ${d.perfil.preferenciasAlimentares.trim()}`)
+  }
+
+  // PESO · deltas (esta semana vs anterior)
+  if (d.pesos && d.pesos.length > 0) {
+    linhas.push('', 'PESO (esta semana + anterior · para deltas):')
+    d.pesos.forEach(p => {
+      linhas.push(`· ${p.date}: ${p.peso}kg${p.cintura ? ` · cintura ${p.cintura}cm` : ''}`)
+    })
+  }
+
+  // MACROS por dia
+  const diasComMacros = d.dias.filter(x => x.macros && x.macros.n > 0)
+  if (diasComMacros.length > 0) {
+    linhas.push('', 'MACROS POR DIA (kcal · P · C · G · refeicoes):')
+    diasComMacros.forEach(dia => {
+      const m = dia.macros!
+      linhas.push(`· ${dia.date}: ${m.kcal}kcal · ${Math.round(m.p)}gP · ${Math.round(m.c)}gC · ${Math.round(m.g)}gG · ${m.n} ref`)
+    })
+    // Médias
+    const tot = diasComMacros.reduce((a, x) => ({ kcal: a.kcal + x.macros!.kcal, p: a.p + x.macros!.p, c: a.c + x.macros!.c, g: a.g + x.macros!.g }), { kcal: 0, p: 0, c: 0, g: 0 })
+    const n = diasComMacros.length
+    linhas.push(`· MÉDIA: ${Math.round(tot.kcal / n)}kcal · ${Math.round(tot.p / n)}gP · ${Math.round(tot.c / n)}gC · ${Math.round(tot.g / n)}gG`)
+  }
+
+  // JEJUM
+  if (d.jejuns && d.jejuns.length > 0) {
+    linhas.push('', 'JEJUM:')
+    d.jejuns.forEach(j => {
+      linhas.push(`· ${j.date}: ${j.duracaoHoras ?? '?'}h · meta ${j.meta}h · ${j.completou ? 'cumprido' : 'não cumprido'}`)
+    })
+  }
+
+  linhas.push('', 'DIAS · ÂNCORAS + SONO + HUMOR + NOTAS:')
   d.dias.forEach(dia => {
     const partes = [
       `${dia.date}:`,
@@ -147,10 +210,8 @@ function construirContexto(d: DadosSemana): string {
     })
   }
 
-  linhas.push('', 'INSTRUÇÕES FINAIS:')
-  linhas.push('- Olha PARA OS DADOS ACIMA. Nada mais. Sem inventar contexto externo.')
-  linhas.push('- "âncora treino sem marca" NÃO significa "não treinou" · só significa que não marcou.')
-  linhas.push('- Se faltarem dados, di-lo. Não inventes.')
-  linhas.push('- Diz-lhe o que vês. Sem narrativas inventadas.')
+  linhas.push('', 'GERA AGORA · 5 BLOCOS · NÚMEROS / VITÓRIA / RISCO / AJUSTE / CONTEXTO ÚNICO.')
+  linhas.push('Cada bloco 1-2 frases. Total <100 palavras. Cabeçalhos em MAIÚSCULAS.')
+  linhas.push('Pode faltar um bloco se faltar dado · NÃO inventes para encher.')
   return linhas.join('\n')
 }

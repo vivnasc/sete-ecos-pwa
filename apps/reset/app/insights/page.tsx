@@ -9,10 +9,14 @@ import {
   getTodosDias,
   getAlcoolRegistos,
   getMedidas,
+  getPesos,
+  getJejuns,
+  getRefeicoes,
   getInsightCache,
   saveInsightCache,
   ancorasResolvidas
 } from '@/lib/storage'
+import { getProfile } from '@/lib/profile'
 
 function inicioSemana(d: Date = new Date()): string {
   const dia = d.getDay()
@@ -68,8 +72,48 @@ export default function InsightsPage() {
       return data >= inicioDate && data <= fimDate
     })
 
+    // Pesos da semana actual + anterior · para deltas
+    const semAntInicio = new Date(inicioDate); semAntInicio.setDate(semAntInicio.getDate() - 7)
+    const semAntFim = new Date(inicioDate); semAntFim.setDate(semAntFim.getDate() - 1)
+    const pesos = getPesos().filter(p => {
+      const data = fromIso(p.date)
+      return data >= semAntInicio && data <= fimDate
+    })
+
+    // Jejum da semana
+    const jejuns = getJejuns().filter(j => {
+      const data = fromIso(j.date)
+      return data >= inicioDate && data <= fimDate
+    })
+
+    // Refeições da semana · macros médios
+    const refsSemana = getRefeicoes().filter(r => {
+      const d = r.timestamp.slice(0, 10)
+      const data = fromIso(d)
+      return data >= inicioDate && data <= fimDate
+    })
+    const macrosPorDia: Record<string, { kcal: number; p: number; c: number; g: number; n: number }> = {}
+    for (const r of refsSemana) {
+      const d = r.timestamp.slice(0, 10)
+      if (!macrosPorDia[d]) macrosPorDia[d] = { kcal: 0, p: 0, c: 0, g: 0, n: 0 }
+      macrosPorDia[d].kcal += r.calorias ?? 0
+      macrosPorDia[d].p += r.proteinaG ?? 0
+      macrosPorDia[d].c += r.carboG ?? 0
+      macrosPorDia[d].g += r.gorduraG ?? 0
+      macrosPorDia[d].n++
+    }
+    const perfil = getProfile()
+
     const dados = {
       weekStart: semanaInicio,
+      perfil: {
+        idade: perfil.idade,
+        sexo: perfil.sexo,
+        alturaCm: perfil.alturaCm,
+        historicoClinico: perfil.historicoClinico,
+        preferenciasAlimentares: perfil.preferenciasAlimentares,
+        metas: perfil.metas
+      },
       dias: diasSemana.map(d => ({
         date: d.date,
         ancorasCumpridas: (() => {
@@ -80,7 +124,8 @@ export default function InsightsPage() {
         sonoHoras: d.sonoHoras,
         energia: d.energia,
         humor: d.humor,
-        notas: d.notas
+        notas: d.notas,
+        macros: macrosPorDia[d.date] ?? null
       })),
       alcool: alcool.map(a => ({
         timestamp: a.timestamp,
@@ -89,7 +134,9 @@ export default function InsightsPage() {
         gatilho: a.gatilho,
         decidiuBeber: a.decidiuBeber
       })),
-      medidas: medidas.map(m => ({ date: m.date, cintura: m.cintura, peso: m.peso }))
+      medidas: medidas.map(m => ({ date: m.date, cintura: m.cintura, peso: m.peso })),
+      pesos: pesos.map(p => ({ date: p.date, peso: p.peso, cintura: p.cintura })),
+      jejuns: jejuns.map(j => ({ date: j.date, duracaoHoras: j.duracaoHoras, completou: j.completou, meta: j.meta }))
     }
 
     try {
