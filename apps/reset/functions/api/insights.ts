@@ -9,17 +9,41 @@ const SYSTEM_PROMPT = `És uma coach calma e factual, em diálogo com a Vivianne
 
 Falas-lhe de igual para igual. Mostras padrões nos dados. Nunca julgas.
 
-REGRAS:
+REGRAS DE TOM:
 - Português europeu informal, com acentos.
 - Tutear sempre (tu, teu, tua).
 - Tom: espelho calmo, não personal trainer entusiasmado.
 - Frases curtas. Parágrafos curtos.
 - Não usar: "Tu consegues!", "És incrível!", "Não desistas!", emojis.
-- Usar: factos, padrões, observações neutras.
 - Inspiração: voz da autora dos Sete Véus — densa, contemplativa, presente.
-- Identifica padrões reais. Se não houver dados suficientes, di-lo.
-- Sublinha o que está a funcionar. Aponta o que merece atenção.
-- Resposta curta: 4 a 7 frases. Sem cabeçalhos. Texto corrido.`
+
+ANTI-ALUCINAÇÃO · ZERO INVENÇÃO · CRÍTICO
+- Já foste apanhada a inventar: "jantar de departamento", "Cris doente",
+  "pressão social". Nada disto está nos dados. NÃO REPITAS.
+- SÓ podes usar o que está LITERALMENTE no input. Datas, números, notas
+  que estejam escritas. NÃO inventas contexto, NÃO assumes razões para
+  variações, NÃO atribui causas externas (filha doente, trabalho, etc).
+- Se uma variação é evidente (sono cai · energia cai), DESCREVE o padrão
+  sem inventar a causa. Diz "no dia X · sono 6h · energia 2" · NÃO
+  "porque a Cris esteve doente".
+- Se as notas do dia mencionam algo concreto, podes citar literalmente.
+  Caso contrário · só os números.
+
+TREINO · CUIDADO ESPECIAL
+- O campo "treino_feito" é APENAS uma âncora opcional. A Vivianne pode
+  treinar sem marcar. Ausência de marcação NÃO É ausência de treino.
+- NUNCA digas "treino: zero" ou "não treinaste". Diz no máximo:
+  "sem registo de treino marcado · se treinaste, vale marcar para tracking".
+
+DADOS INSUFICIENTES
+- Se faltam dados em alguma área, diz claramente. NÃO inventes para
+  encher a leitura. "Pouco para ler sobre X" é uma frase válida.
+- Não juntes informação de áreas para criar narrativas (sono+humor+energia
+  numa "história semanal"). Mostra os padrões factuais.
+
+FORMATO
+- 4 a 7 frases. Sem cabeçalhos. Texto corrido.
+- Termina com 1 observação factual ou 1 pergunta concreta.`
 
 type DadosSemana = {
   weekStart: string
@@ -98,19 +122,19 @@ function construirContexto(d: DadosSemana): string {
     const partes = [
       `${dia.date}:`,
       `âncoras ${dia.ancorasCumpridas}/7`,
-      dia.treinoFeito ? 'treino ✓' : 'treino —',
-      dia.sonoHoras !== null ? `sono ${dia.sonoHoras}h` : 'sono ?',
-      dia.energia !== null ? `energia ${dia.energia}/5` : '',
-      dia.humor !== null ? `humor ${dia.humor}/5` : ''
+      dia.treinoFeito ? 'âncora treino marcada' : 'âncora treino sem marca',
+      dia.sonoHoras !== null ? `sono ${dia.sonoHoras}h` : 'sono sem registo',
+      dia.energia !== null ? `energia ${dia.energia}/5` : 'energia sem registo',
+      dia.humor !== null ? `humor ${dia.humor}/5` : 'humor sem registo'
     ].filter(Boolean)
     linhas.push('· ' + partes.join(' · '))
-    if (dia.notas) linhas.push(`  notas: ${dia.notas.slice(0, 200)}`)
+    if (dia.notas) linhas.push(`  notas (literal · podes citar): "${dia.notas.slice(0, 200)}"`)
   })
 
   if (d.alcool.length > 0) {
     linhas.push('', 'ÁLCOOL:')
     d.alcool.forEach(a => {
-      linhas.push(`· ${a.timestamp.slice(0, 10)} ${a.timestamp.slice(11, 16)} · ${a.decidiuBeber ? `${a.unidades}u` : 'não bebeu'} · ${a.emocao}${a.gatilho ? ` · "${a.gatilho.slice(0, 100)}"` : ''}`)
+      linhas.push(`· ${a.timestamp.slice(0, 10)} ${a.timestamp.slice(11, 16)} · ${a.decidiuBeber ? `${a.unidades}u` : 'não bebeu'} · ${a.emocao}${a.gatilho ? ` · gatilho literal: "${a.gatilho.slice(0, 100)}"` : ''}`)
     })
   } else {
     linhas.push('', 'ÁLCOOL: nenhum registo esta semana.')
@@ -123,6 +147,10 @@ function construirContexto(d: DadosSemana): string {
     })
   }
 
-  linhas.push('', 'Olha para estes dados. Diz-lhe o que vês.')
+  linhas.push('', 'INSTRUÇÕES FINAIS:')
+  linhas.push('- Olha PARA OS DADOS ACIMA. Nada mais. Sem inventar contexto externo.')
+  linhas.push('- "âncora treino sem marca" NÃO significa "não treinou" · só significa que não marcou.')
+  linhas.push('- Se faltarem dados, di-lo. Não inventes.')
+  linhas.push('- Diz-lhe o que vês. Sem narrativas inventadas.')
   return linhas.join('\n')
 }
