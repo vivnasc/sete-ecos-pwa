@@ -36,12 +36,17 @@ export default function AlcoolPage() {
     return () => window.removeEventListener('fenixfit:storage', refresh)
   }, [])
 
-  const marcarDiaLimpo = () => {
+  const marcarDiaLimpo = (offsetDias = 0) => {
+    const d = new Date()
+    d.setDate(d.getDate() - offsetDias)
+    // pôr a meio do dia para ficar inequívoco
+    d.setHours(20, 0, 0, 0)
     addAlcoolRegisto({
       emocao: 'neutro',
       gatilho: '',
       unidades: 0,
-      decidiuBeber: false
+      decidiuBeber: false,
+      timestamp: d.toISOString()
     })
     refresh()
   }
@@ -95,7 +100,7 @@ export default function AlcoolPage() {
         </div>
         {!hojeJaLimpo ? (
           <button
-            onClick={marcarDiaLimpo}
+            onClick={() => marcarDiaLimpo(0)}
             className="w-full flex items-center justify-center gap-2 rounded-md bg-oliva/15 py-3 text-[12.5px] text-oliva transition-elegant active:scale-95 hover:bg-oliva/25"
           >
             <Check size={14} strokeWidth={1.6} />
@@ -104,6 +109,21 @@ export default function AlcoolPage() {
         ) : (
           <p className="text-faint text-[11px] leading-relaxed text-center">hoje já registado · volta amanhã.</p>
         )}
+        {/* Backdate · ontem / anteontem */}
+        <div className="flex gap-2 pt-1">
+          <button
+            onClick={() => marcarDiaLimpo(1)}
+            className="flex-1 rounded-md bg-[var(--surface-soft)] py-2 text-[11px] text-soft hover:text-oliva active:scale-95 transition-elegant"
+          >
+            ↶ ontem · sem álcool
+          </button>
+          <button
+            onClick={() => marcarDiaLimpo(2)}
+            className="flex-1 rounded-md bg-[var(--surface-soft)] py-2 text-[11px] text-soft hover:text-oliva active:scale-95 transition-elegant"
+          >
+            ↶ anteontem · sem álcool
+          </button>
+        </div>
       </section>
 
       <section className="card-feature space-y-5">
