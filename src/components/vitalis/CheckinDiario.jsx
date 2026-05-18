@@ -72,23 +72,36 @@ export const CheckinDiario = () => {
         semanaPrograma = Math.ceil(diffDays / 7);
       }
 
-      // Criar registo
-      const { error } = await supabase
-        .from('vitalis_registos')
-        .insert([{
-          user_id: userData.id,
-          data: new Date().toISOString().split('T')[0],
-          tipo: 'checkin_semanal',
-          semana_programa: semanaPrograma,
-          peso_kg: parseFloat(formData.peso_kg),
-          energia_1a10: formData.energia_1a10,
-          fome_1a10: formData.fome_1a10,
-          humor_1a10: formData.humor_1a10,
-          aderencia_1a10: formData.aderencia_1a10,
-          desafios_semana: formData.desafios_semana,
-          vitorias_semana: formData.vitorias_semana,
-          vitorias_nao_balanca: formData.vitorias_nao_balanca.length > 0 ? formData.vitorias_nao_balanca : null
-        }]);
+      // Criar registo — campos base + opcional vitorias_nao_balanca
+      const baseRegisto = {
+        user_id: userData.id,
+        data: new Date().toISOString().split('T')[0],
+        tipo: 'checkin_semanal',
+        semana_programa: semanaPrograma,
+        peso_kg: parseFloat(formData.peso_kg),
+        energia_1a10: formData.energia_1a10,
+        fome_1a10: formData.fome_1a10,
+        humor_1a10: formData.humor_1a10,
+        aderencia_1a10: formData.aderencia_1a10,
+        desafios_semana: formData.desafios_semana,
+        vitorias_semana: formData.vitorias_semana,
+      };
+
+      const temVitoriasNaoBalanca = formData.vitorias_nao_balanca.length > 0;
+      const registoCompleto = temVitoriasNaoBalanca
+        ? { ...baseRegisto, vitorias_nao_balanca: formData.vitorias_nao_balanca }
+        : baseRegisto;
+
+      let { error } = await supabase.from('vitalis_registos').insert([registoCompleto]);
+
+      // Fallback defensivo: se a coluna vitorias_nao_balanca ainda não existe
+      // na DB (schema desactualizado), retry sem ela em vez de falhar todo
+      // o check-in.
+      if (error && temVitoriasNaoBalanca && /vitorias_nao_balanca|schema cache/i.test(error.message || '')) {
+        console.warn('vitorias_nao_balanca em falta no schema — retry sem essa coluna. Correr supabase/add_vitorias_nao_balanca.sql para activar.');
+        const retry = await supabase.from('vitalis_registos').insert([baseRegisto]);
+        error = retry.error;
+      }
 
       if (error) throw error;
 
