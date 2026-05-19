@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Scale, Clock, Droplet, UtensilsCrossed, Dumbbell, Wine, Ruler } from 'lucide-react'
+import { Scale, Clock, Droplet, UtensilsCrossed, Dumbbell, Wine, Ruler, Activity } from 'lucide-react'
 import { getProfile } from '@/lib/profile'
 
 type Tool = { href: string; label: string; icon: typeof Scale; soFeminino?: boolean }
@@ -14,6 +14,7 @@ const TODAS: Tool[] = [
   { href: '/peso', label: 'peso', icon: Scale },
   { href: '/jejum', label: 'jejum', icon: Clock },
   { href: '/treino', label: 'treino', icon: Dumbbell },
+  { href: '/scanner', label: 'scanner', icon: Activity },
   { href: '/alcool', label: 'copo', icon: Wine },
   { href: '/ciclo', label: 'ciclo', icon: Droplet, soFeminino: true },
   { href: '/medidas', label: 'medidas', icon: Ruler }
