@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Wine, Moon, Sunrise, Sun, CloudMoon, Coffee, Dumbbell } from 'lucide-react'
 import { TREINO_SEMANAL } from '@/lib/data'
 import { diaSemana, diaDoPlano } from '@/lib/dates'
-import { getDia, type DiaLog } from '@/lib/storage'
+import { getDia, jejumActualHoras, type DiaLog } from '@/lib/storage'
 import { getProfile } from '@/lib/profile'
 
 type Janela = {
@@ -17,7 +17,10 @@ type Janela = {
 function determinarJanela(hora: number, dow: string, log: DiaLog): Janela {
   const treino = TREINO_SEMANAL[dow as keyof typeof TREINO_SEMANAL]
   const treinoFeito = log.ancoras['treino_feito'] || log.treinoFeito
+  // ATENÇÃO: paFeito é só a ÂNCORA · NÃO significa que comeu / que jejum acabou.
+  // Para saber se o jejum continua, consultar jejumActualHoras().
   const paFeito = log.ancoras['pa_proteina']
+  const jejum = jejumActualHoras() // null se não há jejum em curso
 
   // 22h - 5h: tarde demais
   if (hora >= 22 || hora < 5) {
@@ -57,14 +60,30 @@ function determinarJanela(hora: number, dow: string, log: DiaLog): Janela {
     }
   }
 
-  // 8h - 11h: PA window
+  // 8h - 11h: PA window · prioridade ao estado real do jejum
   if (hora >= 8 && hora < 11) {
+    // Se há jejum em curso, mostra-o · NÃO assume que comeu pela âncora
+    if (jejum) {
+      const horas = Math.floor(jejum.horas)
+      const min = Math.round((jejum.horas % 1) * 60)
+      return {
+        saudacao: 'manhã',
+        contexto: 'em jejum',
+        acaoPrincipal: {
+          titulo: `${horas}h${String(min).padStart(2, '0')} de jejum`,
+          subtitulo: jejum.horas >= 14 ? 'meta cumprida · podes romper quando quiseres' : `faltam ${(14 - jejum.horas).toFixed(1)}h para 14h`,
+          href: '/jejum',
+          tone: jejum.horas >= 14 ? 'oliva' : 'ouro'
+        },
+        Icone: Coffee
+      }
+    }
     return {
       saudacao: 'manhã',
       contexto: 'janela alimentar abre às 9h',
       acaoPrincipal: {
         titulo: paFeito ? 'PA registado ✓' : 'pequeno-almoço',
-        subtitulo: paFeito ? 'janela aberta · 14h jejum cumpridas' : 'às 9h · proteína + gordura · sem carbo',
+        subtitulo: paFeito ? 'PA marcado · janela aberta' : 'às 9h · proteína + gordura · sem carbo',
         href: paFeito ? '/diario' : '/refeicoes',
         tone: paFeito ? 'oliva' : 'ouro'
       },

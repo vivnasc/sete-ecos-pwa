@@ -1,20 +1,22 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Scale, Clock, Droplet, UtensilsCrossed, Target, Activity, Ruler } from 'lucide-react'
+import { Scale, Clock, Droplet, UtensilsCrossed, Dumbbell, Wine, Ruler } from 'lucide-react'
 import { getProfile } from '@/lib/profile'
 
-type Tool = { href: string; label: string; icon: typeof Scale; soFeminino?: boolean; destaque?: boolean }
+type Tool = { href: string; label: string; icon: typeof Scale; soFeminino?: boolean }
 
-// Tudo o que se regista vai aqui · plano em destaque · sem ter de ir a /mais
+// Acesso rápido às coisas que se registam diariamente.
+// Coach e Plano estão na nav inferior · evitar duplicar.
+// Scanner / Insights / Métricas em /mais (análise, menos clicado).
 const TODAS: Tool[] = [
-  { href: '/plano', label: 'plano', icon: Target, destaque: true },
   { href: '/refeicoes', label: 'refeições', icon: UtensilsCrossed },
   { href: '/peso', label: 'peso', icon: Scale },
   { href: '/jejum', label: 'jejum', icon: Clock },
+  { href: '/treino', label: 'treino', icon: Dumbbell },
+  { href: '/alcool', label: 'copo', icon: Wine },
   { href: '/ciclo', label: 'ciclo', icon: Droplet, soFeminino: true },
-  { href: '/medidas', label: 'medidas', icon: Ruler },
-  { href: '/scanner', label: 'scanner', icon: Activity }
+  { href: '/medidas', label: 'medidas', icon: Ruler }
 ]
 
 export default function QuickTools() {
@@ -39,11 +41,9 @@ export default function QuickTools() {
             <a
               key={t.href}
               href={t.href}
-              className={`card-solid flex flex-col items-center justify-center gap-1.5 !p-3 transition-elegant hover:shadow-hair-strong active:scale-95 ${
-                t.destaque ? 'ring-1 ring-ouro/40 bg-[var(--surface-soft)]' : ''
-              }`}
+              className="card-solid flex flex-col items-center justify-center gap-1.5 !p-3 transition-elegant hover:shadow-hair-strong active:scale-95"
             >
-              <Icon size={16} strokeWidth={1.3} className={t.destaque ? 'text-ouro' : 'text-ouro'} />
+              <Icon size={16} strokeWidth={1.3} className="text-ouro" />
               <span className="font-serif text-[11.5px] tracking-editorial text-soft">{t.label}</span>
             </a>
           )
