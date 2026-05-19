@@ -106,6 +106,19 @@ export type Refeicao = {
   sentir: string
 }
 
+// Treino livre · não segue plano fixo
+// A Vivianne disse: 'sou muito fluida e n consigo seguir planos · acordo
+// e faço a actividade que me parecer naquele dia'
+export type TreinoLog = {
+  id: string
+  date: string // YYYY-MM-DD
+  tipo: string // 'caminhada' | 'pilates' | 'força' | 'corrida' | 'yoga' | 'bicicleta' | 'natação' | 'outro' (texto livre)
+  duracaoMin: number | null
+  intensidade: 1 | 2 | 3 | 4 | 5 | null // como sentiu (RPE simplificado)
+  notas: string
+  fonte: 'manual' | 'apple_health' // origem
+}
+
 export type CoachMensagem = {
   id: string
   timestamp: string
@@ -264,6 +277,104 @@ export function addDesabafo(d: Omit<DesabafoEntry, 'id' | 'timestamp'>): Desabaf
   write('desabafo', all)
   void syncDesabafo(novo).catch(() => {})
   return novo
+}
+
+// ----- TREINOS -----
+
+export function getTreinos(): TreinoLog[] {
+  return read<TreinoLog[]>('treinos', []).sort((a, b) => b.date.localeCompare(a.date))
+}
+
+export function addTreino(t: Omit<TreinoLog, 'id'>): TreinoLog {
+  const novo: TreinoLog = { ...t, id: crypto.randomUUID() }
+  const all = read<TreinoLog[]>('treinos', [])
+  // Dedup: se já existe um treino do mesmo tipo na mesma data com diferença
+  // de duração <3min e fonte apple_health, ignora (evita duplicados de sync)
+  if (t.fonte === 'apple_health') {
+    const duplicado = all.find(x =>
+      x.date === t.date &&
+      x.fonte === 'apple_health' &&
+      x.tipo.toLowerCase() === t.tipo.toLowerCase() &&
+      Math.abs((x.duracaoMin ?? 0) - (t.duracaoMin ?? 0)) <= 3
+    )
+    if (duplicado) return duplicado
+  }
+  all.push(novo)
+  write('treinos', all)
+  return novo
+}
+
+export function removeTreino(id: string): void {
+  const all = read<TreinoLog[]>('treinos', [])
+  const filtrado = all.filter(t => t.id !== id)
+  if (filtrado.length === all.length) return
+  write('treinos', filtrado)
+}
+
+export function getTreinosDoDia(date = isoDate()): TreinoLog[] {
+  return getTreinos().filter(t => t.date === date)
+}
+
+// Sincroniza treinos a partir das notas de fenixfit_dias importadas
+// do Apple Health. As notas têm formato 'Tipo Nmin' adicionado pelo endpoint.
+// Chamado ao abrir a app · idempotente (dedup interno em addTreino).
+export function sincronizarTreinosDosDias(): number {
+  const dias = getTodosDias()
+  let adicionados = 0
+  const padrao = /^([A-Za-zÀ-ÿ ]+?)\s+(\d+)min$/
+  for (const d of dias) {
+    if (!d.ancoras['treino_feito']) continue
+    if (!d.notas) continue
+    // Cada linha pode ser um treino
+    for (const linha of d.notas.split('\n')) {
+      const m = linha.trim().match(padrao)
+      if (!m) continue
+      const tipoRaw = m[1].toLowerCase().trim()
+      const duracaoMin = parseInt(m[2])
+      if (!duracaoMin || duracaoMin < 1) continue
+      // Mapear nome do Apple Health para slug
+      const tipo = tipoRaw.includes('walk') || tipoRaw.includes('caminhada') ? 'caminhada'
+        : tipoRaw.includes('run') || tipoRaw.includes('corrid') ? 'corrida'
+        : tipoRaw.includes('cycl') || tipoRaw.includes('bike') || tipoRaw.includes('bicicleta') ? 'bicicleta'
+        : tipoRaw.includes('swim') || tipoRaw.includes('nata') ? 'natação'
+        : tipoRaw.includes('yoga') ? 'yoga'
+        : tipoRaw.includes('pilat') ? 'pilates'
+        : tipoRaw.includes('strength') || tipoRaw.includes('força') ? 'força'
+        : tipoRaw
+      const antes = read<TreinoLog[]>('treinos', []).length
+      addTreino({
+        date: d.date,
+        tipo,
+        duracaoMin,
+        intensidade: null,
+        notas: '',
+        fonte: 'apple_health'
+      })
+      const depois = read<TreinoLog[]>('treinos', []).length
+      if (depois > antes) adicionados++
+    }
+  }
+  return adicionados
+}
+
+// Treinos por semana · últimas N semanas
+export function treinosPorSemana(nSemanas = 8): Array<{ semana: string; n: number; minutos: number }> {
+  const todos = getTreinos()
+  const hoje = new Date()
+  const resultado: Array<{ semana: string; n: number; minutos: number }> = []
+  for (let i = nSemanas - 1; i >= 0; i--) {
+    const fim = new Date(hoje); fim.setDate(fim.getDate() - i * 7); fim.setHours(23, 59, 59, 999)
+    const inicio = new Date(fim); inicio.setDate(inicio.getDate() - 6); inicio.setHours(0, 0, 0, 0)
+    const ini = inicio.toISOString().slice(0, 10)
+    const fimIso = fim.toISOString().slice(0, 10)
+    const desta = todos.filter(t => t.date >= ini && t.date <= fimIso)
+    resultado.push({
+      semana: `${inicio.getDate()}/${inicio.getMonth() + 1}`,
+      n: desta.length,
+      minutos: desta.reduce((s, t) => s + (t.duracaoMin ?? 0), 0)
+    })
+  }
+  return resultado
 }
 
 // ----- REFEICOES -----
