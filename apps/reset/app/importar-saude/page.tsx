@@ -10,18 +10,25 @@ type EntradaPreview = {
   steps?: number
   rhr?: number
   sonoHoras?: number
+  treino?: boolean // âncora treino_feito · derivado de workouts
+  treinoTipo?: string // ex: 'Running 32min'
 }
 
 // Aceita formatos flexíveis:
 // 1. { steps: [{date, value}], sleep: [{date, hours}], rhr: [{date, value}] }
-// 2. Auto Health Export-like: { data: { metrics: [...] } }
+// 2. Auto Health Export: { data: { metrics: [...], workouts: [...] } }
 // 3. Array simples [{ date, steps?, rhr?, sleep_hours? }]
 function parsearJson(json: unknown): EntradaPreview[] {
   const mapa = new Map<string, EntradaPreview>()
   const meter = (date: string, patch: Partial<EntradaPreview>) => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return
     const cur = mapa.get(date) ?? { date }
-    Object.assign(cur, patch)
+    // Para sono · soma se vier em sub-tipos (asleep + REM + deep + core)
+    if (patch.sonoHoras !== undefined && cur.sonoHoras !== undefined) {
+      cur.sonoHoras = Math.round((cur.sonoHoras + patch.sonoHoras) * 10) / 10
+    } else {
+      Object.assign(cur, patch)
+    }
     mapa.set(date, cur)
   }
 
@@ -57,8 +64,9 @@ function parsearJson(json: unknown): EntradaPreview[] {
         meter(String(e.date ?? ''), { rhr: typeof e.value === 'number' ? e.value : Number(e.value) || undefined })
       })
     }
-    // Formato Auto Health Export · { data: { metrics: [{ name, units, data }] } }
-    const metrics = (obj.data as { metrics?: Array<Record<string, unknown>> } | undefined)?.metrics
+    // Formato Auto Health Export · { data: { metrics: [...], workouts: [...] } }
+    const dataRoot = (obj.data as { metrics?: Array<Record<string, unknown>>; workouts?: Array<Record<string, unknown>> } | undefined) ?? {}
+    const metrics = dataRoot.metrics
     if (Array.isArray(metrics)) {
       metrics.forEach(m => {
         const nome = String(m.name ?? '').toLowerCase()
@@ -66,20 +74,41 @@ function parsearJson(json: unknown): EntradaPreview[] {
         const datapoints = Array.isArray(m.data) ? m.data : []
         datapoints.forEach((dp: unknown) => {
           const p = dp as Record<string, unknown>
-          const d = String(p.date ?? '').slice(0, 10)
-          if (!d) return
-          const qty = Number(p.qty) || Number(p.value) || 0
+          // data pode ser 'date' ou 'startDate' (sono em Auto Export usa startDate)
+          const rawData = String(p.date ?? p.startDate ?? p.start ?? '').slice(0, 10)
+          if (!rawData) return
+          const qty = Number(p.qty) || Number(p.value) || Number(p.asleep) || Number(p.inBed) || 0
           if (!qty) return
-          if (nome.includes('step')) meter(d, { steps: qty })
-          else if (nome.includes('sleep')) {
-            // sleep_analysis · sleep_asleep · time_in_bed · sleep_in_bed · etc.
-            // Aceita qty em horas OU minutos (>16 assumimos minutos)
-            const horas = qty > 16 ? qty / 60 : qty
-            meter(d, { sonoHoras: Math.round(horas * 10) / 10 })
+          if (nome.includes('step')) meter(rawData, { steps: qty })
+          else if (nome.includes('sleep') || nome.includes('asleep') || nome === 'time_in_bed') {
+            // Auto Export: sleep_analysis tem asleep, inBed, awake, core, deep, REM
+            // Preferência: asleep total · senão soma dos sub-tipos · senão qty bruto
+            const asleep = Number(p.asleep) || Number(p.totalSleep) || 0
+            const sleepValue = asleep || qty
+            const horas = sleepValue > 16 ? sleepValue / 60 : sleepValue
+            // só conta como sono se for ≥ 2h (filtrar siestas/ruído)
+            if (horas >= 2) meter(rawData, { sonoHoras: Math.round(horas * 10) / 10 })
           }
-          else if ((nome.includes('resting') || nome.includes('rhr')) && (nome.includes('heart') || unidade.includes('bpm'))) meter(d, { rhr: qty })
-          else if (nome === 'heart_rate_variability' || nome.includes('hrv')) { /* ignora · não suportado */ }
+          else if ((nome.includes('resting') || nome.includes('rhr')) && (nome.includes('heart') || unidade.includes('bpm'))) meter(rawData, { rhr: qty })
         })
+      })
+    }
+    // WORKOUTS · marca treino_feito + descrição
+    const workouts = dataRoot.workouts
+    if (Array.isArray(workouts)) {
+      workouts.forEach(w => {
+        const tipo = String(w.name ?? w.workoutType ?? 'Treino')
+        const start = String(w.start ?? w.startDate ?? '').slice(0, 10)
+        if (!start) return
+        // duração: pode vir como duration (segundos) ou (end - start)
+        let durMin: number | null = null
+        if (typeof w.duration === 'number') durMin = Math.round(w.duration / 60)
+        else if (w.start && w.end) {
+          const ms = new Date(String(w.end)).getTime() - new Date(String(w.start)).getTime()
+          if (!Number.isNaN(ms)) durMin = Math.round(ms / 60000)
+        }
+        const desc = durMin ? `${tipo} ${durMin}min` : tipo
+        meter(start, { treino: true, treinoTipo: desc })
       })
     }
   }
@@ -133,6 +162,13 @@ export default function ImportarSaudePage() {
       if (e.steps !== undefined) dia.steps = Math.round(e.steps)
       if (e.rhr !== undefined) dia.rhr = Math.round(e.rhr)
       if (e.sonoHoras !== undefined) dia.sonoHoras = Math.round(e.sonoHoras * 10) / 10
+      if (e.treino) {
+        dia.ancoras = { ...dia.ancoras, treino_feito: true }
+        // anexa descrição às notas se ainda não estiver
+        if (e.treinoTipo && !dia.notas.includes(e.treinoTipo)) {
+          dia.notas = dia.notas ? `${dia.notas}\n${e.treinoTipo}` : e.treinoTipo
+        }
+      }
       saveDia(dia)
       n++
     })
@@ -210,10 +246,11 @@ export default function ImportarSaudePage() {
               <FileText size={13} strokeWidth={1.5} /> importar
             </button>
           </div>
-          <div className="grid grid-cols-3 gap-2 text-center pt-1 pb-1">
+          <div className="grid grid-cols-4 gap-2 text-center pt-1 pb-1">
             <ResumoCount label="passos" n={preview.filter(p => p.steps !== undefined).length} />
             <ResumoCount label="sono" n={preview.filter(p => p.sonoHoras !== undefined).length} />
             <ResumoCount label="rhr" n={preview.filter(p => p.rhr !== undefined).length} />
+            <ResumoCount label="treinos" n={preview.filter(p => p.treino).length} />
           </div>
           <ul className="space-y-1.5 max-h-80 overflow-y-auto">
             {preview.map(e => (
@@ -222,7 +259,8 @@ export default function ImportarSaudePage() {
                 <span className="text-faint text-[11.5px] tnum">
                   {e.steps !== undefined ? `${e.steps.toLocaleString('pt-PT')} passos · ` : ''}
                   {e.sonoHoras !== undefined ? `${e.sonoHoras.toFixed(1)}h sono · ` : ''}
-                  {e.rhr !== undefined ? `${e.rhr} bpm` : ''}
+                  {e.rhr !== undefined ? `${e.rhr} bpm · ` : ''}
+                  {e.treino ? `${e.treinoTipo ?? 'treino'} ✓` : ''}
                 </span>
               </li>
             ))}
