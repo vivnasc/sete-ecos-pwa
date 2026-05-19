@@ -11,7 +11,9 @@ import {
   saveJejum,
   getJejumHoje,
   jejumActualHoras,
-  type DiaLog
+  getTreinosDoDia,
+  type DiaLog,
+  type TreinoLog
 } from '@/lib/storage'
 import { isoDate } from '@/lib/dates'
 import { TREINO_SEMANAL } from '@/lib/data'
@@ -170,20 +172,27 @@ export default function MorningPanel() {
           onToggle={() => setLog(toggleAncora(isoDate(), 'eletrolitos'))}
         />
 
-        {!treino.descanso ? (
-          <QuickAncora
-            id="treino_feito"
-            label={`treino · ${treino.tipo.toLowerCase()}`}
-            sub={treino.descricao}
-            icon={Dumbbell}
-            feita={!!log.ancoras['treino_feito']}
-            onToggle={() => setLog(toggleAncora(isoDate(), 'treino_feito'))}
-          />
-        ) : (
-          <div className="rounded-md p-3 text-center text-[12px] text-faint shadow-hair">
-            descanso hoje · sem treino
-          </div>
-        )}
+        {/* Treino · flexível · sem plano fixo · descrição vem dos treinos
+            registados (Apple Health ou manuais) */}
+        {(() => {
+          const treinosHoje = getTreinosDoDia()
+          const total = treinosHoje.reduce((s, t) => s + (t.duracaoMin ?? 0), 0)
+          const descricao = treinosHoje.length === 0
+            ? 'sem treino · tu decides no dia'
+            : treinosHoje.length === 1
+              ? `${treinosHoje[0].tipo}${treinosHoje[0].duracaoMin ? ` · ${treinosHoje[0].duracaoMin}min` : ''}`
+              : `${treinosHoje.length}× treinos · ${total}min`
+          return (
+            <QuickAncora
+              id="treino_feito"
+              label="treino · hoje"
+              sub={descricao}
+              icon={Dumbbell}
+              feita={!!log.ancoras['treino_feito'] || treinosHoje.length > 0}
+              onToggle={() => setLog(toggleAncora(isoDate(), 'treino_feito'))}
+            />
+          )
+        })()}
       </div>
 
       {sheetAberto ? <RotinaManhaSheet onClose={() => setSheetAberto(false)} /> : null}
