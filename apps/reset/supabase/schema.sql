@@ -47,6 +47,21 @@ create table if not exists fenixfit_dias (
   unique (user_id, date)
 );
 
+-- ===== SAUDE LOG · diagnóstico de auto-export =====
+create table if not exists fenixfit_saude_log (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  recebido_em timestamptz not null default now(),
+  total_entradas int not null default 0,
+  detalhe jsonb,
+  resumo jsonb,
+  metricas_brutas jsonb
+);
+create index if not exists fenixfit_saude_log_user_ts on fenixfit_saude_log (user_id, recebido_em desc);
+alter table fenixfit_saude_log enable row level security;
+drop policy if exists "saude_log_owner" on fenixfit_saude_log;
+create policy "saude_log_owner" on fenixfit_saude_log for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
+
 -- migrações para tabelas existentes
 alter table fenixfit_dias add column if not exists agua_copos int not null default 0;
 alter table fenixfit_dias add column if not exists suplementos text[] not null default '{}';

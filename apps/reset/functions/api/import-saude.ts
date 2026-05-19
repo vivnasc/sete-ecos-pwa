@@ -32,15 +32,37 @@ type EntradaPreview = {
 // Mesmo parser do cliente · server-side · aceita Auto Health Export e variantes
 function parsearJson(json: unknown): EntradaPreview[] {
   const mapa = new Map<string, EntradaPreview>()
+  // Steps · SOMAR · Auto Export Daily envia 1 valor mas Raw envia muitos
+  // Sleep · SOMAR sub-tipos (REM + deep + core + asleep)
+  // RHR · MÉDIA (não soma)
+  const stepsAccum = new Map<string, number>()
+  const rhrAccum = new Map<string, { soma: number; n: number }>()
+
   const meter = (date: string, patch: Partial<EntradaPreview>) => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return
     const cur = mapa.get(date) ?? { date }
     if (patch.sonoHoras !== undefined && cur.sonoHoras !== undefined) {
       cur.sonoHoras = Math.round((cur.sonoHoras + patch.sonoHoras) * 10) / 10
-    } else {
-      Object.assign(cur, patch)
+    } else if (patch.sonoHoras !== undefined) {
+      cur.sonoHoras = patch.sonoHoras
     }
+    if (patch.treino) cur.treino = true
+    if (patch.treinoTipo) cur.treinoTipo = patch.treinoTipo
     mapa.set(date, cur)
+  }
+
+  // Converte timestamp UTC para data local (assume CAT/UTC+2 da Vivianne em Maputo)
+  // Apple Health Auto Export pode mandar ISO UTC · queremos a data local
+  const dataLocal = (rawIso: string): string => {
+    if (!rawIso) return ''
+    // se vier só YYYY-MM-DD, mantém
+    if (/^\d{4}-\d{2}-\d{2}$/.test(rawIso)) return rawIso
+    // se tem horas, ajusta para CAT (+2h)
+    const d = new Date(rawIso)
+    if (Number.isNaN(d.getTime())) return rawIso.slice(0, 10)
+    // ajusta +2h para CAT antes de extrair a data
+    const local = new Date(d.getTime() + 2 * 3600 * 1000)
+    return local.toISOString().slice(0, 10)
   }
 
   if (json && typeof json === 'object' && !Array.isArray(json)) {
@@ -54,19 +76,25 @@ function parsearJson(json: unknown): EntradaPreview[] {
         const datapoints = Array.isArray(m.data) ? m.data : []
         datapoints.forEach((dp: unknown) => {
           const p = dp as Record<string, unknown>
-          const rawData = String(p.date ?? p.startDate ?? p.start ?? '').slice(0, 10)
+          const rawData = dataLocal(String(p.date ?? p.startDate ?? p.start ?? ''))
           if (!rawData) return
           const qty = Number(p.qty) || Number(p.value) || Number(p.asleep) || Number(p.inBed) || 0
           if (!qty) return
-          if (nome.includes('step')) meter(rawData, { steps: qty })
+          if (nome.includes('step')) {
+            // SOMA passos do dia
+            stepsAccum.set(rawData, (stepsAccum.get(rawData) ?? 0) + qty)
+          }
           else if (nome.includes('sleep') || nome.includes('asleep') || nome === 'time_in_bed') {
             const asleep = Number(p.asleep) || Number(p.totalSleep) || 0
             const sleepValue = asleep || qty
             const horas = sleepValue > 16 ? sleepValue / 60 : sleepValue
-            if (horas >= 2) meter(rawData, { sonoHoras: Math.round(horas * 10) / 10 })
+            if (horas >= 1) meter(rawData, { sonoHoras: Math.round(horas * 10) / 10 })
           }
           else if ((nome.includes('resting') || nome.includes('rhr')) && (nome.includes('heart') || unidade.includes('bpm'))) {
-            meter(rawData, { rhr: qty })
+            const a = rhrAccum.get(rawData) ?? { soma: 0, n: 0 }
+            a.soma += qty
+            a.n++
+            rhrAccum.set(rawData, a)
           }
         })
       })
@@ -75,7 +103,7 @@ function parsearJson(json: unknown): EntradaPreview[] {
     if (Array.isArray(workouts)) {
       workouts.forEach(w => {
         const tipo = String(w.name ?? w.workoutType ?? 'Treino')
-        const start = String(w.start ?? w.startDate ?? '').slice(0, 10)
+        const start = dataLocal(String(w.start ?? w.startDate ?? ''))
         if (!start) return
         let durMin: number | null = null
         if (typeof w.duration === 'number') durMin = Math.round(w.duration / 60)
@@ -87,6 +115,20 @@ function parsearJson(json: unknown): EntradaPreview[] {
         meter(start, { treino: true, treinoTipo: desc })
       })
     }
+  }
+
+  // Aplica passos somados
+  for (const [date, totalSteps] of stepsAccum) {
+    const cur = mapa.get(date) ?? { date }
+    cur.steps = Math.round(totalSteps)
+    mapa.set(date, cur)
+  }
+  // Aplica RHR como média
+  for (const [date, agg] of rhrAccum) {
+    if (agg.n === 0) continue
+    const cur = mapa.get(date) ?? { date }
+    cur.rhr = Math.round(agg.soma / agg.n)
+    mapa.set(date, cur)
   }
 
   return [...mapa.values()].sort((a, b) => a.date.localeCompare(b.date))
@@ -166,8 +208,47 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   const entradas = parsearJson(body)
+  const detalhe = {
+    passos: entradas.filter(e => e.steps !== undefined).length,
+    sono: entradas.filter(e => e.sonoHoras !== undefined).length,
+    rhr: entradas.filter(e => e.rhr !== undefined).length,
+    treinos: entradas.filter(e => e.treino).length
+  }
+
+  // Log do payload · útil para diagnóstico em /diagnostico-saude
+  // Vai para tabela fenixfit_saude_log (criada via SQL)
+  void fetch(`${context.env.SUPABASE_URL}/rest/v1/fenixfit_saude_log`, {
+    method: 'POST',
+    headers: {
+      'apikey': context.env.SUPABASE_SERVICE_ROLE_KEY,
+      'Authorization': `Bearer ${context.env.SUPABASE_SERVICE_ROLE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify({
+      user_id: context.env.FENIX_USER_ID,
+      recebido_em: new Date().toISOString(),
+      total_entradas: entradas.length,
+      detalhe,
+      // Resumo das datas e métricas detectadas (sem o payload completo)
+      resumo: entradas.slice(0, 30).map(e => ({
+        date: e.date,
+        steps: e.steps,
+        sonoHoras: e.sonoHoras,
+        rhr: e.rhr,
+        treino: e.treino,
+        treinoTipo: e.treinoTipo
+      })),
+      // Nomes das métricas que vieram (para debugging quando algo não é reconhecido)
+      metricas_brutas: ((body as Record<string, unknown>).data as { metrics?: Array<{ name: string; data?: unknown[] }> } | undefined)?.metrics?.map(m => ({
+        nome: m.name,
+        n: Array.isArray(m.data) ? m.data.length : 0
+      })) ?? []
+    })
+  }).catch(() => {})
+
   if (entradas.length === 0) {
-    return Response.json({ ok: false, msg: 'nenhuma entrada reconhecida no JSON' })
+    return Response.json({ ok: false, msg: 'nenhuma entrada reconhecida no JSON', detalhe })
   }
 
   const resultados = await Promise.all(entradas.map(e => upsertDia(context.env, e)))
@@ -180,12 +261,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     sucessos,
     falhas: entradas.length - sucessos,
     erros: erros.length > 0 ? erros : undefined,
-    detalhe: {
-      passos: entradas.filter(e => e.steps !== undefined).length,
-      sono: entradas.filter(e => e.sonoHoras !== undefined).length,
-      rhr: entradas.filter(e => e.rhr !== undefined).length,
-      treinos: entradas.filter(e => e.treino).length
-    }
+    detalhe
   })
 }
 
