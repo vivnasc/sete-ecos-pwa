@@ -30,7 +30,8 @@ export default function MaisPage() {
     ...(sexo !== 'M' ? [{ href: '/ciclo', label: 'Ciclo', sub: 'fases · sintomas · correlações', icon: Droplet }] : []),
     { href: '/alcool', label: 'Copo', sub: 'caderno antes do copo · padrões', icon: Wine },
     { href: '/medidas', label: 'Medidas', sub: 'cintura · ancas · foto · antes/depois', icon: Ruler },
-    { href: '/importar-saude', label: 'Importar Saúde', sub: 'iPhone · passos · sono · RHR', icon: HeartPulse }
+    { href: '/importar-saude', label: 'Importar Saúde', sub: 'iPhone · passos · sono · RHR', icon: HeartPulse },
+    { href: '/diagnostico-saude', label: 'Diagnóstico Sync', sub: 'últimos envios automáticos do iPhone', icon: Activity }
   ]
 
   const praticas = [
@@ -44,7 +45,7 @@ export default function MaisPage() {
 
   const referencias = [
     { href: '/receitas', label: 'Minhas refeições', sub: 'as que repetes mais · keto', icon: Salad },
-    { href: '/treino', label: 'Treino', sub: '4× semana · 30min', icon: Dumbbell },
+    { href: '/treino', label: 'Treino', sub: 'tracker flexível · tendências', icon: Dumbbell },
     { href: '/logos', label: 'Marca', sub: '3 logos · escolhe um', icon: ImageIcon }
   ]
 
