@@ -637,7 +637,7 @@ const LandingGeral = () => {
             <div className="text-center md:text-left">
               <div className="relative inline-block">
                 <img
-                  src="/vivianne-foto.jpg.jpeg"
+                  src="/vivianne-2026.jpg"
                   alt="Vivianne Saraiva"
                   className="w-48 h-48 object-cover rounded-2xl shadow-lg mx-auto md:mx-0 border-2 border-purple-500/30"
                   onError={(e) => {
