@@ -752,7 +752,7 @@ const LandingVitalis = () => {
             <div className="text-center md:text-left">
               <div className="relative inline-block">
                 <img
-                  src="/vivianne-2026.jpg"
+                  src="/vivianne-perfil.jpg"
                   alt="Vivianne Saraiva"
                   className="w-64 h-64 object-cover rounded-2xl shadow-lg mx-auto md:mx-0"
                   onError={(e) => {
