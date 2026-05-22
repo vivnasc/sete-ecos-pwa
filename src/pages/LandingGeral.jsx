@@ -754,9 +754,12 @@ const LandingGeral = () => {
               <p className="text-purple-300/70 text-sm">📱 +258 85 100 6473</p>
               <p className="text-purple-300/70 text-sm">📧 feedback@seteecos.com</p>
               <p className="text-purple-300/70 text-sm">📍 Maputo, Moçambique</p>
-              <div className="flex gap-4 mt-3">
-                <a href="https://instagram.com/viv_saraiva" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-white transition-colors text-sm">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
+                <a href="https://instagram.com/vivianne.dos.santos" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-white transition-colors text-sm">
                   Instagram
+                </a>
+                <a href="https://www.tiktok.com/@vivianne.dos.santos" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-white transition-colors text-sm">
+                  TikTok
                 </a>
                 <a href="https://wa.me/258851006473" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-white transition-colors text-sm">
                   WhatsApp
