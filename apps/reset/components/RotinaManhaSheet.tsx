@@ -13,7 +13,7 @@ import {
   getJejuns,
   saveJejum,
   pesoUltimo,
-  toggleAncora
+  getTreinosDoDia
 } from '@/lib/storage'
 import { cn } from '@/lib/utils'
 
@@ -32,7 +32,6 @@ export default function RotinaManhaSheet({ onClose }: Props) {
   const [jejumAccao, setJejumAccao] = useState<'manter' | 'agora' | 'hora'>('manter')
   const [horaQuebra, setHoraQuebra] = useState<string>('')
   const [intestino, setIntestino] = useState<'sim' | 'nao' | null>(dia.transitoIntestinal ?? null)
-  const [treinoFeito, setTreinoFeito] = useState<boolean>(!!dia.ancoras['treino_feito'])
   const [estado, setEstado] = useState<'edit' | 'saving' | 'done'>('edit')
 
   // Detecta jejum em curso para oferecer 'comi às'
@@ -94,10 +93,7 @@ export default function RotinaManhaSheet({ onClose }: Props) {
       }
     }
 
-    // 4. Treino (toggle âncora se mudou)
-    if (treinoFeito !== !!dia_log.ancoras['treino_feito']) {
-      toggleAncora(hojeIso, 'treino_feito')
-    }
+    // 4. Treino · gerido em /treino e via Apple Health · não há toggle aqui
 
     setEstado('done')
     setTimeout(onClose, 600)
@@ -130,40 +126,54 @@ export default function RotinaManhaSheet({ onClose }: Props) {
           />
         </Bloco>
 
-        {/* Sono */}
-        <Bloco icone={<Moon size={13} strokeWidth={1.5} />} titulo="sono" sub="ontem à noite">
-          <div className="grid grid-cols-2 gap-2">
-            <input
-              type="number"
-              inputMode="decimal"
-              step="0.5"
-              placeholder="horas"
-              value={sonoHoras}
-              onChange={e => setSonoHoras(e.target.value)}
-              className="rounded-md border border-[var(--hair)] bg-transparent p-2.5 text-[15px] tnum focus:border-ouro focus:outline-none"
-            />
-            <input
-              type="number"
-              inputMode="numeric"
-              placeholder="acordou × vezes"
-              value={acordou}
-              onChange={e => setAcordou(e.target.value)}
-              className="rounded-md border border-[var(--hair)] bg-transparent p-2.5 text-[15px] tnum focus:border-ouro focus:outline-none"
-            />
-          </div>
-          <div className="flex gap-1.5">
-            {[1, 2, 3, 4, 5].map(n => (
+        {/* Sono · só mostra inputs se o Apple Health NÃO sincronizou.
+            Se já há valor (de sync ou de input prévio), mostra read-only com
+            opção 'ajustar' para casos pontuais. */}
+        <Bloco icone={<Moon size={13} strokeWidth={1.5} />} titulo="sono" sub={dia.sonoHoras !== null ? `${dia.sonoHoras}h · de Apple Health ou registo` : 'ontem à noite'}>
+          {dia.sonoHoras !== null && sonoHoras === String(dia.sonoHoras) ? (
+            <div className="flex items-center gap-2">
+              <p className="font-serif text-[20px] tnum flex-1">{dia.sonoHoras}<span className="text-faint text-[12px] ml-1">h</span></p>
               <button
-                key={n}
-                onClick={() => setQualSono(qualSono === n ? null : n)}
-                className={cn(
-                  'flex-1 rounded-md py-1.5 text-[12px] tnum transition-elegant active:scale-95',
-                  qualSono === n ? 'bg-ouro text-tinta' : 'bg-[var(--surface-soft)] text-soft'
-                )}
-              >{n}</button>
-            ))}
-          </div>
-          <p className="text-faint text-[10px] tracking-cap uppercase">qualidade /5</p>
+                onClick={() => setSonoHoras('')}
+                className="text-faint text-[10.5px] hover:text-ouro"
+              >ajustar</button>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  step="0.5"
+                  placeholder={dia.sonoHoras !== null ? String(dia.sonoHoras) : 'horas'}
+                  value={sonoHoras}
+                  onChange={e => setSonoHoras(e.target.value)}
+                  className="rounded-md border border-[var(--hair)] bg-transparent p-2.5 text-[15px] tnum focus:border-ouro focus:outline-none"
+                />
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  placeholder="acordou × vezes"
+                  value={acordou}
+                  onChange={e => setAcordou(e.target.value)}
+                  className="rounded-md border border-[var(--hair)] bg-transparent p-2.5 text-[15px] tnum focus:border-ouro focus:outline-none"
+                />
+              </div>
+              <div className="flex gap-1.5">
+                {[1, 2, 3, 4, 5].map(n => (
+                  <button
+                    key={n}
+                    onClick={() => setQualSono(qualSono === n ? null : n)}
+                    className={cn(
+                      'flex-1 rounded-md py-1.5 text-[12px] tnum transition-elegant active:scale-95',
+                      qualSono === n ? 'bg-ouro text-tinta' : 'bg-[var(--surface-soft)] text-soft'
+                    )}
+                  >{n}</button>
+                ))}
+              </div>
+              <p className="text-faint text-[10px] tracking-cap uppercase">qualidade /5 · opcional</p>
+            </>
+          )}
         </Bloco>
 
         {/* Fim de jejum · só se há um em curso · default 'ainda em jejum' */}
@@ -229,19 +239,35 @@ export default function RotinaManhaSheet({ onClose }: Props) {
           </div>
         </Bloco>
 
-        {/* Treino */}
-        <Bloco icone={<Activity size={13} strokeWidth={1.5} />} titulo="treino · hoje" sub="marca quando fizeres">
-          <button
-            onClick={() => setTreinoFeito(t => !t)}
-            className={cn(
-              'w-full rounded-md py-3 text-[14px] transition-elegant active:scale-95 flex items-center justify-center gap-2',
-              treinoFeito ? 'bg-oliva text-creme' : 'bg-[var(--surface-soft)] text-soft'
-            )}
-          >
-            {treinoFeito ? <Check size={14} strokeWidth={2} /> : null}
-            {treinoFeito ? 'treino feito' : 'marcar treino feito'}
-          </button>
-        </Bloco>
+        {/* Treino · só mostra se NÃO houve treinos sincronizados hoje (Apple Health)
+            Apple Watch capta automaticamente · pilates regista manual em /treino */}
+        {(() => {
+          const treinosHoje = getTreinosDoDia()
+          if (treinosHoje.length > 0) {
+            return (
+              <Bloco icone={<Activity size={13} strokeWidth={1.5} />} titulo="treino · hoje" sub="sincronizado">
+                <ul className="space-y-1">
+                  {treinosHoje.map(t => (
+                    <li key={t.id} className="text-[13px] text-soft flex items-baseline gap-2">
+                      <Check size={11} strokeWidth={2} className="text-oliva shrink-0" />
+                      <span className="capitalize">{t.tipo}</span>
+                      {t.duracaoMin ? <span className="text-faint tnum">· {t.duracaoMin}min</span> : null}
+                    </li>
+                  ))}
+                </ul>
+                <a href="/treino" className="text-[10.5px] text-faint hover:text-ouro">adicionar mais (pilates/yoga) →</a>
+              </Bloco>
+            )
+          }
+          return (
+            <Bloco icone={<Activity size={13} strokeWidth={1.5} />} titulo="treino · hoje" sub="sem registo · Apple Health ou /treino">
+              <a href="/treino" className="block w-full rounded-md bg-[var(--surface-soft)] py-3 text-center text-[13px] text-soft active:scale-95">
+                ir registar (pilates · força · etc.)
+              </a>
+              <p className="text-faint text-[10px] leading-relaxed">caminhada / corrida vêm automático do Apple Health</p>
+            </Bloco>
+          )
+        })()}
 
         <div className="pt-2 sticky bottom-0 bg-[var(--bg-elev)]">
           <button
