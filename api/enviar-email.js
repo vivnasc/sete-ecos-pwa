@@ -1,18 +1,15 @@
 /**
- * API Endpoint: Enviar Email via Resend
+ * API Endpoint: Enviar Email (DESACTIVADO)
  *
- * Tipos de email suportados:
- * - boas-vindas: Quando cliente se regista
- * - pagamento-confirmado: Após pagamento bem-sucedido
- * - inicio-programa: Onboarding do Vitalis
- * - lembrete-checkin: Cliente inativa 2+ dias
- * - conquista: Celebração de streaks/metas
- * - expiracao-aviso: 7 dias antes de expirar
- * - coach-nova-cliente: Notificar Vivianne
- * - coach-alerta: Cliente em dificuldade
+ * Domínio removido do Resend (maio 2026). Endpoint responde 200
+ * com { success: true, disabled: true } para não partir chamadas
+ * existentes. Para reactivar: ligar domínio ao Resend e restaurar
+ * o handler original do git history.
  */
 
 export default async function handler(req, res) {
+  return res.status(200).json({ success: true, disabled: true, message: 'Emails desactivados — domínio removido do Resend' });
+}
   // CORS - Restrito ao domínio da app
   const allowedOrigins = [
     'https://app.seteecos.com',
