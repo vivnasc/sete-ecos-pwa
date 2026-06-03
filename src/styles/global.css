@@ -50,6 +50,25 @@
     --vitalis-bege: #D2B48C;
     --vitalis-linho: #F0EBE3;
 
+    /* ============================================================
+       FÉNIX — Sistema editorial (paleta Clássica, light)
+       Espelho 1:1 do apps/reset/app/globals.css. Usado pelo
+       Vitalis (e futuramente outras Ecos) para partilhar
+       identidade visual com a FénixFit.
+       ============================================================ */
+    --fnx-bg: #F6F1E8;
+    --fnx-bg-elev: #FBF7EE;
+    --fnx-surface: #FFFFFF;
+    --fnx-surface-soft: rgba(255, 255, 255, 0.55);
+    --fnx-ink: #1F1814;
+    --fnx-ink-soft: rgba(31, 24, 20, 0.7);
+    --fnx-ink-faint: rgba(31, 24, 20, 0.5);
+    --fnx-ouro: #B8924A;
+    --fnx-oliva: #6B7445;
+    --fnx-terracota: #9B5D3E;
+    --fnx-hair: rgba(184, 146, 74, 0.18);
+    --fnx-hair-strong: rgba(184, 146, 74, 0.32);
+
     /* 7 ECOS — Cores por Chakra (baseadas nos logos oficiais) */
     --eco-1-vitalis: #D97706;     /* Terracota/Laranja */
     --eco-2-serena: #0EA5E9;      /* Azul água */
@@ -62,6 +81,7 @@
 
     /* Tipografia */
     --font-titulos: 'Playfair Display', Georgia, serif;
+    --font-editorial: 'Fraunces', 'Playfair Display', Georgia, serif;
     --font-corpo: 'Inter', system-ui, -apple-system, sans-serif;
 
     /* Sombras */
@@ -360,6 +380,344 @@
 
 .animate-page-enter {
   animation: pageEnter 0.5s cubic-bezier(0.25, 0.4, 0.25, 1) forwards;
+}
+
+/* ============================================================
+   FÉNIX — Sistema editorial completo (paleta Clássica)
+   Espelho 1:1 do apps/reset/app/globals.css.
+   Classes prefixadas com .fnx-* para nunca colidir com o resto
+   da app. Cores via CSS vars · funciona em light/dark.
+   ============================================================ */
+
+/* Dark mode tokens — paleta Clássica escura */
+.dark {
+  --fnx-bg: #14110D;
+  --fnx-bg-elev: #1B1813;
+  --fnx-surface: #221E18;
+  --fnx-surface-soft: rgba(34, 30, 24, 0.6);
+  --fnx-ink: #EDE5D2;
+  --fnx-ink-soft: rgba(237, 229, 210, 0.75);
+  --fnx-ink-faint: rgba(237, 229, 210, 0.5);
+  --fnx-ouro: #C9A961;
+  --fnx-oliva: #9AB07A;
+  --fnx-hair: rgba(201, 169, 97, 0.16);
+  --fnx-hair-strong: rgba(201, 169, 97, 0.3);
+}
+
+/* Aplicar à raiz da página Vitalis (e futuras Ecos editoriais) */
+.fnx-theme {
+  background: var(--fnx-bg);
+  color: var(--fnx-ink);
+  font-family: var(--font-corpo);
+  font-feature-settings: 'ss01', 'cv01', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.fnx-theme ::selection { background: var(--fnx-ouro); color: #FFFFFF; }
+
+.fnx-theme h1, .fnx-theme h2, .fnx-theme h3, .fnx-theme h4 {
+  font-family: var(--font-editorial);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: var(--fnx-ink);
+}
+
+/* Container mobile-first com breakpoints editoriais */
+.fnx-container {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 440px;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+@media (min-width: 640px) {
+  .fnx-container {
+    max-width: 560px;
+    padding-left: 1.75rem;
+    padding-right: 1.75rem;
+  }
+}
+@media (min-width: 768px) {
+  .fnx-container {
+    max-width: 680px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+@media (min-width: 1024px) {
+  .fnx-container { max-width: 780px; }
+}
+
+/* Cards hairline editorial */
+.fnx-card {
+  background: var(--fnx-surface-soft);
+  box-shadow: inset 0 0 0 1px var(--fnx-hair);
+  border-radius: 12px;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.fnx-card-solid {
+  background: var(--fnx-surface);
+  box-shadow: inset 0 0 0 1px var(--fnx-hair);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.fnx-card-feature {
+  background: var(--fnx-surface);
+  box-shadow:
+    0 1px 2px rgba(31, 24, 20, 0.04),
+    0 8px 24px rgba(31, 24, 20, 0.06),
+    inset 0 0 0 1px var(--fnx-hair);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.dark .fnx-card-feature {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 8px 24px rgba(0, 0, 0, 0.25),
+    inset 0 0 0 1px var(--fnx-hair);
+}
+
+/* Botões editoriais */
+.fnx-btn-primary {
+  background: var(--fnx-ink);
+  color: var(--fnx-bg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: all 0.2s;
+}
+.fnx-btn-primary:active { transform: scale(0.98); }
+.fnx-btn-primary:disabled { opacity: 0.4; }
+
+.fnx-btn-ouro {
+  background: var(--fnx-ouro);
+  color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.fnx-btn-ouro:active { transform: scale(0.98); }
+
+.fnx-btn-ghost {
+  color: var(--fnx-ink-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  padding: 0.625rem 1rem;
+  font-size: 13px;
+  transition: opacity 0.2s;
+}
+.fnx-btn-ghost:hover { opacity: 0.8; }
+
+.fnx-btn-outline {
+  box-shadow: inset 0 0 0 1px var(--fnx-hair-strong);
+  color: var(--fnx-ink);
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.625rem 1.25rem;
+  font-size: 13px;
+  transition: opacity 0.2s;
+}
+.fnx-btn-outline:hover { opacity: 0.8; }
+
+/* Inputs */
+.fnx-input {
+  background: var(--fnx-surface);
+  color: var(--fnx-ink);
+  box-shadow: inset 0 0 0 1px var(--fnx-hair);
+  width: 100%;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font-size: 15px;
+  border: 0;
+  outline: 0;
+}
+.fnx-input:focus { box-shadow: inset 0 0 0 1px var(--fnx-ouro); }
+
+/* Editorial labels (caps tracked) */
+.fnx-label-cap {
+  color: var(--fnx-ouro);
+  font-family: var(--font-corpo);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.fnx-label-soft {
+  color: var(--fnx-ink-faint);
+  font-family: var(--font-corpo);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+/* Números editoriais (serif light tabular) */
+.fnx-editorial-num {
+  font-family: var(--font-editorial);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum', 'ss01';
+  color: var(--fnx-ink);
+}
+
+/* Hairlines */
+.fnx-hairline {
+  height: 1px;
+  background: var(--fnx-hair);
+  border: 0;
+}
+
+.fnx-hairline-v {
+  width: 1px;
+  background: var(--fnx-hair);
+}
+
+/* Mantra editorial */
+.fnx-mantra {
+  font-family: var(--font-editorial);
+  font-size: 19px;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--fnx-ink-soft);
+}
+
+/* Texto secundário e ténue */
+.fnx-text-soft { color: var(--fnx-ink-soft); }
+.fnx-text-faint { color: var(--fnx-ink-faint); }
+.fnx-text-ouro { color: var(--fnx-ouro); }
+.fnx-text-oliva { color: var(--fnx-oliva); }
+.fnx-text-ink { color: var(--fnx-ink); }
+
+/* Tabular numbers utility */
+.fnx-tnum { font-variant-numeric: tabular-nums; }
+
+/* Transição elegante (cubic-bezier suave) */
+.fnx-transition {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Letter-spacing helpers */
+.fnx-track-cap { letter-spacing: 0.18em; }
+.fnx-track-cap-wide { letter-spacing: 0.24em; }
+.fnx-track-editorial { letter-spacing: -0.02em; }
+
+/* Sombras */
+.fnx-shadow-hair { box-shadow: 0 0 0 1px var(--fnx-hair); }
+.fnx-shadow-hair-strong { box-shadow: 0 0 0 1px var(--fnx-hair-strong); }
+.fnx-shadow-soft {
+  box-shadow:
+    0 1px 2px rgba(31, 24, 20, 0.04),
+    0 4px 16px rgba(31, 24, 20, 0.04);
+}
+.fnx-shadow-ink { box-shadow: 0 8px 32px rgba(31, 24, 20, 0.12); }
+
+/* Animations */
+@keyframes fnxFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fnxSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fnxBreathe {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+.fnx-fade-in { animation: fnxFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+.fnx-slide-up { animation: fnxSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+.fnx-breathe { animation: fnxBreathe 6s ease-in-out infinite; }
+
+/* ============================================================
+   FÉNIX — Overrides para páginas Vitalis legadas
+   Quando o <body> tem .fnx-theme (route Vitalis), qualquer
+   wrapper de página com background gradient sage antigo
+   é forçado a usar o background creme editorial.
+   Isto resolve cobertura visual das ~31 páginas internas
+   sem precisar de editar cada wrapper. Edição cirúrgica
+   das páginas top é feita à parte.
+   ============================================================ */
+
+body.fnx-theme div[class*="min-h-screen"][class*="bg-gradient"] {
+  background-image: none !important;
+  background-color: var(--fnx-bg) !important;
+  color: var(--fnx-ink);
+}
+
+/* Headers internos com gradient sage antigo (faixa verde acima) */
+body.fnx-theme header > div[class*="bg-gradient-to-r"][class*="#7C8B6F"],
+body.fnx-theme header > div.bg-gradient-to-r[class*="from-\\["] {
+  background: var(--fnx-bg) !important;
+  background-image: none !important;
+}
+
+/* Texto castanho legado em pages → ink */
+body.fnx-theme .text-\[\#4A4035\] {
+  color: var(--fnx-ink) !important;
+}
+body.fnx-theme .text-\[\#6B5C4C\] {
+  color: var(--fnx-ink-soft) !important;
+}
+body.fnx-theme .text-\[\#7C8B6F\] {
+  color: var(--fnx-ouro) !important;
+}
+
+/* Bordas creme legadas → hair ouro */
+body.fnx-theme .border-\[\#E8E2D9\],
+body.fnx-theme .border-\[\#F0EBE3\] {
+  border-color: var(--fnx-hair) !important;
+}
+
+/* Botões verde sage internos viram ink/ouro */
+body.fnx-theme button.bg-\[\#7C8B6F\],
+body.fnx-theme a.bg-\[\#7C8B6F\],
+body.fnx-theme button[class*="bg-gradient-to-r"][class*="#7C8B6F"] {
+  background: var(--fnx-ink) !important;
+  background-image: none !important;
+  color: var(--fnx-bg) !important;
+}
+
+/* Cards brancos internos legados ganham hairline ouro */
+body.fnx-theme div.bg-white.rounded-2xl,
+body.fnx-theme div.bg-white.rounded-3xl {
+  background: var(--fnx-surface) !important;
+  box-shadow: inset 0 0 0 1px var(--fnx-hair), 0 1px 2px rgba(31, 24, 20, 0.03) !important;
+}
+
+body.fnx-theme .dark div.bg-white.rounded-2xl,
+body.fnx-theme .dark div.bg-white.rounded-3xl {
+  background: var(--fnx-surface) !important;
 }
 
 /* ============================================================

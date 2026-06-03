@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 import { CONQUISTAS, CelebracaoModal } from './Gamificacao';
+import VitalisHeader from './VitalisHeader';
 
 export const CheckinDiario = () => {
   const navigate = useNavigate();
@@ -16,8 +17,28 @@ export const CheckinDiario = () => {
     humor_1a10: 5,
     aderencia_1a10: 5,
     desafios_semana: '',
-    vitorias_semana: ''
+    vitorias_semana: '',
+    vitorias_nao_balanca: []
   });
+
+  const VITORIAS_NAO_BALANCA = [
+    { id: 'roupa_folgada', label: 'A roupa está mais folgada', emoji: '👗' },
+    { id: 'mais_energia', label: 'Tenho mais energia ao acordar', emoji: '⚡' },
+    { id: 'sono_melhor', label: 'Durmo melhor', emoji: '😴' },
+    { id: 'fome_controlada', label: 'A fome está controlada', emoji: '🍽️' },
+    { id: 'pele_melhor', label: 'A pele está mais limpa', emoji: '✨' },
+    { id: 'clareza_mental', label: 'Sinto mais clareza mental', emoji: '🧠' },
+    { id: 'disposicao_estavel', label: 'Disposição mais estável', emoji: '💪' }
+  ];
+
+  const toggleVitoria = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      vitorias_nao_balanca: prev.vitorias_nao_balanca.includes(id)
+        ? prev.vitorias_nao_balanca.filter(v => v !== id)
+        : [...prev.vitorias_nao_balanca, id]
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,22 +72,36 @@ export const CheckinDiario = () => {
         semanaPrograma = Math.ceil(diffDays / 7);
       }
 
-      // Criar registo
-      const { error } = await supabase
-        .from('vitalis_registos')
-        .insert([{
-          user_id: userData.id,
-          data: new Date().toISOString().split('T')[0],
-          tipo: 'checkin_semanal',
-          semana_programa: semanaPrograma,
-          peso_kg: parseFloat(formData.peso_kg),
-          energia_1a10: formData.energia_1a10,
-          fome_1a10: formData.fome_1a10,
-          humor_1a10: formData.humor_1a10,
-          aderencia_1a10: formData.aderencia_1a10,
-          desafios_semana: formData.desafios_semana,
-          vitorias_semana: formData.vitorias_semana
-        }]);
+      // Criar registo — campos base + opcional vitorias_nao_balanca
+      const baseRegisto = {
+        user_id: userData.id,
+        data: new Date().toISOString().split('T')[0],
+        tipo: 'checkin_semanal',
+        semana_programa: semanaPrograma,
+        peso_kg: parseFloat(formData.peso_kg),
+        energia_1a10: formData.energia_1a10,
+        fome_1a10: formData.fome_1a10,
+        humor_1a10: formData.humor_1a10,
+        aderencia_1a10: formData.aderencia_1a10,
+        desafios_semana: formData.desafios_semana,
+        vitorias_semana: formData.vitorias_semana,
+      };
+
+      const temVitoriasNaoBalanca = formData.vitorias_nao_balanca.length > 0;
+      const registoCompleto = temVitoriasNaoBalanca
+        ? { ...baseRegisto, vitorias_nao_balanca: formData.vitorias_nao_balanca }
+        : baseRegisto;
+
+      let { error } = await supabase.from('vitalis_registos').insert([registoCompleto]);
+
+      // Fallback defensivo: se a coluna vitorias_nao_balanca ainda não existe
+      // na DB (schema desactualizado), retry sem ela em vez de falhar todo
+      // o check-in.
+      if (error && temVitoriasNaoBalanca && /vitorias_nao_balanca|schema cache/i.test(error.message || '')) {
+        console.warn('vitorias_nao_balanca em falta no schema — retry sem essa coluna. Correr supabase/add_vitorias_nao_balanca.sql para activar.');
+        const retry = await supabase.from('vitalis_registos').insert([baseRegisto]);
+        error = retry.error;
+      }
 
       if (error) throw error;
 
@@ -169,7 +204,7 @@ export const CheckinDiario = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] flex items-center justify-center">
+      <div className="fnx-theme min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4 animate-bounce">✅</div>
           <h2 className="text-3xl font-bold text-[#7C8B6F] mb-2">Check-in Registado!</h2>
@@ -191,34 +226,15 @@ export const CheckinDiario = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2]">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] shadow-lg">
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <button
-            onClick={() => navigate('/vitalis/dashboard')}
-            className="text-white/80 hover:text-white mb-4 flex items-center gap-2"
-          >
-            ← Voltar
-          </button>
-          <div className="flex items-center gap-4">
-            <img
-              src="/logos/VITALIS_LOGO_V3.png"
-              alt="Vitalis"
-              className="w-14 h-14 object-contain drop-shadow-lg"
-            />
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Playfair Display, serif', letterSpacing: '2px' }}>
-                Check-in Diário
-              </h1>
-              <p className="text-white/80">Como está o teu dia hoje? 🌱</p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="fnx-theme min-h-screen pb-24 fnx-fade-in">
+      <VitalisHeader
+        title="check-in diário"
+        subtitle="como está o teu dia hoje?"
+        backTo="/vitalis/dashboard"
+      />
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8">
+      <div className="fnx-container py-6">
+        <form onSubmit={handleSubmit} className="fnx-card-feature">
           {/* Peso */}
           <div className="mb-8">
             <label className="block text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
@@ -280,8 +296,42 @@ export const CheckinDiario = () => {
             <h3 className="text-xl font-bold text-gray-800 mb-6">Reflexão da Semana</h3>
 
             <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                🏆 Vitórias além da balança
+              </label>
+              <p className="text-xs text-gray-500 mb-3">A fita métrica não mente — e o teu corpo também não. Marca o que sentes.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {VITORIAS_NAO_BALANCA.map(v => {
+                  const checked = formData.vitorias_nao_balanca.includes(v.id);
+                  return (
+                    <label
+                      key={v.id}
+                      className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all border-2 ${
+                        checked ? 'bg-emerald-50 border-emerald-400' : 'bg-white border-gray-200 hover:border-emerald-200'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleVitoria(v.id)}
+                        className="w-5 h-5 text-emerald-600 rounded shrink-0"
+                      />
+                      <span className="text-lg shrink-0" aria-hidden="true">{v.emoji}</span>
+                      <span className="text-sm text-gray-700">{v.label}</span>
+                    </label>
+                  );
+                })}
+              </div>
+              {formData.vitorias_nao_balanca.length > 0 && (
+                <p className="text-xs text-emerald-700 bg-emerald-50 rounded-lg px-3 py-2 mt-3">
+                  ✨ {formData.vitorias_nao_balanca.length} {formData.vitorias_nao_balanca.length === 1 ? 'vitória notada' : 'vitórias notadas'} — celebra cada uma.
+                </p>
+              )}
+            </div>
+
+            <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                🌱 Vitórias desta semana (opcional)
+                🌱 Vitórias desta semana em palavras (opcional)
               </label>
               <textarea
                 value={formData.vitorias_semana}

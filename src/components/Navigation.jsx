@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useI18n } from '../contexts/I18nContext'
+import { Home as HomeIcon, Sparkles, Users, User2, MessageCircle, LayoutGrid } from 'lucide-react'
 
 export default function Navigation({ variant = 'default' }) {
   const navigate = useNavigate()
@@ -195,67 +196,71 @@ export default function Navigation({ variant = 'default' }) {
   if (variant === 'vitalis' || isVitalisSection) {
     return (
       <>
-        {/* Floating Vivianne chat button */}
+        {/* Floating "fala com a coach" — editorial, ouro */}
         {!isChatPage && (
           <button
             onClick={() => navigate('/vitalis/chat')}
-            className="fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[#7C8B6F] to-[#5D6B4F] shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-2 border-white/30"
+            className="fixed bottom-24 right-5 z-50 fnx-transition active:scale-95"
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: '9999px',
+              background: 'var(--fnx-ink)',
+              color: 'var(--fnx-bg)',
+              boxShadow: '0 4px 16px rgba(31, 24, 20, 0.18), 0 1px 4px rgba(31, 24, 20, 0.12)'
+            }}
             aria-label={t('nav.talk_to_vivianne')}
           >
-            <span className="text-white font-bold text-lg">V</span>
+            <MessageCircle size={18} strokeWidth={1.4} className="mx-auto" />
           </button>
         )}
 
-        <nav role="navigation" aria-label="Vitalis Navigation" className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-[#E8E2D9]/30 shadow-2xl z-50">
-        {/* Current Eco indicator */}
-        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
-          <div className="bg-gradient-to-r from-[#7C8B6F] to-[#5D6B4F] px-4 py-1 rounded-t-lg shadow-md">
-            <span className="text-white text-[10px] font-semibold tracking-[0.2em]">VITALIS</span>
+        <nav
+          role="navigation"
+          aria-label="Vitalis Navigation"
+          className="fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl"
+          style={{
+            background: 'color-mix(in srgb, var(--fnx-bg) 90%, transparent)',
+            boxShadow: 'inset 0 1px 0 var(--fnx-hair)'
+          }}
+        >
+          <div className="fnx-container flex justify-around items-stretch" style={{ paddingTop: 8, paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
+            <FnxNavItem
+              icon={HomeIcon}
+              label="hoje"
+              active={location.pathname === '/vitalis/dashboard'}
+              onClick={() => navigate('/vitalis/dashboard')}
+            />
+            <FnxNavItem
+              icon={LayoutGrid}
+              label="ferramentas"
+              active={location.pathname === '/vitalis/ferramentas'}
+              onClick={() => navigate('/vitalis/ferramentas')}
+            />
+            <FnxNavItem
+              icon={Sparkles}
+              label="lumina"
+              active={isActive('/lumina')}
+              onClick={() => navigate('/lumina')}
+            />
+            {isAuthenticated && (
+              <FnxNavItem
+                icon={Users}
+                label="rio"
+                active={isCommunitySection}
+                onClick={() => navigate('/comunidade')}
+              />
+            )}
+            {isAuthenticated && (
+              <FnxNavItem
+                icon={User2}
+                label="conta"
+                active={isAccountSection}
+                onClick={() => navigate('/conta')}
+              />
+            )}
           </div>
-        </div>
-
-        <div className="max-w-lg mx-auto flex justify-around items-center py-2 px-4">
-          <NavItem
-            logo="/logos/CENTRO_7ECOS.png"
-            label={t('nav.hub')}
-            active={isActive('/')}
-            onClick={() => navigate('/')}
-            color="#4A4035"
-          />
-          <NavItem
-            logo="/logos/lumina-logo_v2.png"
-            label="Lumina"
-            active={isActive('/lumina')}
-            onClick={() => navigate('/lumina')}
-            color="#8B5CF6"
-          />
-          <NavItem
-            logo="/logos/VITALIS_LOGO_V3.png"
-            label="Vitalis"
-            active={isVitalisSection}
-            onClick={() => navigate(hasVitalisAccess ? '/vitalis/dashboard' : '/vitalis')}
-            color="#7C8B6F"
-          />
-          {isAuthenticated && (
-            <NavItem
-              icon="community"
-              label={t('nav.rio')}
-              active={isCommunitySection}
-              onClick={() => navigate('/comunidade')}
-              color="#8B5CF6"
-            />
-          )}
-          {isAuthenticated && (
-            <NavItem
-              icon="account"
-              label={t('nav.account')}
-              active={isAccountSection}
-              onClick={() => navigate('/conta')}
-              color="#6B5C4C"
-            />
-          )}
-        </div>
-      </nav>
+        </nav>
       </>
     )
   }
@@ -484,6 +489,52 @@ export default function Navigation({ variant = 'default' }) {
         )}
       </div>
     </nav>
+  )
+}
+
+function FnxNavItem({ icon: Icon, logo, label, active, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={`navegar para ${label}`}
+      aria-current={active ? 'page' : undefined}
+      className="flex flex-col items-center justify-center gap-1 px-2 py-1.5 fnx-transition active:scale-95"
+      style={{ minWidth: 56, color: active ? 'var(--fnx-ouro)' : 'var(--fnx-ink-faint)' }}
+    >
+      {logo ? (
+        <img
+          src={logo}
+          alt=""
+          aria-hidden
+          className="w-5 h-5 object-contain"
+          style={{ opacity: active ? 1 : 0.55, filter: active ? 'none' : 'grayscale(0.4)' }}
+        />
+      ) : Icon ? (
+        <Icon size={18} strokeWidth={1.4} />
+      ) : null}
+      <span
+        style={{
+          fontFamily: 'var(--font-editorial)',
+          fontSize: '10.5px',
+          letterSpacing: '-0.005em',
+          fontWeight: active ? 500 : 400,
+          lineHeight: 1
+        }}
+      >
+        {label}
+      </span>
+      {active && (
+        <span
+          aria-hidden
+          style={{
+            height: '1px',
+            width: '14px',
+            background: 'var(--fnx-ouro)',
+            marginTop: '2px'
+          }}
+        />
+      )}
+    </button>
   )
 }
 

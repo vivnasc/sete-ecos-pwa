@@ -362,7 +362,7 @@ export default function RelatoriosHub() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50 pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-4 sm:px-6 pt-8 pb-6">
+      <div className="bg-[var(--fnx-bg)] text-white px-4 sm:px-6 pt-8 pb-6">
         <div className="max-w-2xl mx-auto">
           <Link to="/vitalis/dashboard" className="inline-flex items-center gap-1 text-orange-100 hover:text-white mb-4">
             <Icons.ArrowLeft />

@@ -1,0 +1,696 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+import { Send, Sparkles, CheckCircle2, AlertCircle, Mic, MicOff, Camera, Loader2, X, Check } from 'lucide-react'
+import BackButton from '@/components/BackButton'
+import VoiceModeOverlay from '@/components/VoiceModeOverlay'
+import {
+  getCoachMensagens,
+  saveCoachMensagem,
+  addRefeicao
+} from '@/lib/storage'
+import { isoDate } from '@/lib/dates'
+import { executeTool } from '@/lib/coachTools'
+import { useSpeechRecognition } from '@/lib/useSpeechRecognition'
+import { construirContexto } from '@/lib/coachContext'
+import { analisarFotoRefeicao } from '@/lib/fotoRefeicao'
+import { erroAmigavel } from '@/lib/erros'
+
+type ContentBlock =
+  | { type: 'text'; text: string }
+  | { type: 'tool_use'; id: string; name: string; input: Record<string, unknown> }
+  | { type: 'tool_result'; tool_use_id: string; content: string; ok?: boolean; toolName?: string }
+
+type Mensagem = { role: 'user' | 'assistant'; content: string | ContentBlock[] }
+
+const ABERTURA_KEY = 'fenixfit:coach-abertura'
+
+// Conta dados registados hoje · usado para invalidar abertura quando há novos
+function fingerprintDadosHoje(): number {
+  if (typeof window === 'undefined') return 0
+  const hoje = isoDate()
+  let n = 0
+  try {
+    const refeicoes = JSON.parse(localStorage.getItem('fenixfit:refeicoes') ?? '[]')
+    n += refeicoes.filter((r: { timestamp?: string }) => (r.timestamp ?? '').slice(0, 10) === hoje).length
+    const peso = JSON.parse(localStorage.getItem('fenixfit:peso') ?? '[]')
+    n += peso.filter((p: { date?: string }) => p.date === hoje).length
+    const dias = JSON.parse(localStorage.getItem('fenixfit:dias') ?? '{}')
+    if (dias[hoje]) {
+      const d = dias[hoje]
+      n += Object.values(d.ancoras ?? {}).filter(Boolean).length
+      n += d.aguaCopos ?? 0
+      n += (d.suplementos ?? []).length
+      if (d.sonoHoras !== null && d.sonoHoras !== undefined) n++
+    }
+    const alcool = JSON.parse(localStorage.getItem('fenixfit:alcool') ?? '[]')
+    n += alcool.filter((a: { timestamp?: string }) => (a.timestamp ?? '').slice(0, 10) === hoje).length
+  } catch {}
+  return n
+}
+
+function getAberturaHoje(): { date: string; texto: string; geradoEm?: string; fingerprint?: number } | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = localStorage.getItem(ABERTURA_KEY)
+    if (!raw) return null
+    const data = JSON.parse(raw)
+    return data.date === isoDate() ? data : null
+  } catch {
+    return null
+  }
+}
+
+function saveAberturaHoje(texto: string): void {
+  localStorage.setItem(ABERTURA_KEY, JSON.stringify({
+    date: isoDate(),
+    texto,
+    geradoEm: new Date().toISOString(),
+    fingerprint: fingerprintDadosHoje()
+  }))
+  window.dispatchEvent(new CustomEvent('fenixfit:abertura', {}))
+}
+
+function invalidarAbertura(): void {
+  if (typeof window === 'undefined') return
+  localStorage.removeItem(ABERTURA_KEY)
+  window.dispatchEvent(new CustomEvent('fenixfit:abertura', {}))
+}
+
+function isAberturaObsoleta(a: { geradoEm?: string; fingerprint?: number } | null): boolean {
+  if (!a) return false
+  const fpAgora = fingerprintDadosHoje()
+  const fpAbertura = a.fingerprint ?? 0
+  const idadeMs = a.geradoEm ? Date.now() - new Date(a.geradoEm).getTime() : Infinity
+  const muitoVelha = idadeMs > 3 * 60 * 60 * 1000
+  const dadosNovos = fpAgora - fpAbertura >= 1
+  return muitoVelha || dadosNovos
+}
+
+const SUGESTOES_INICIAIS = [
+  'pesei 72.4 hoje',
+  'comi 3 ovos com abacate ao pequeno-almoço',
+  'estou em pré com vontade de beber',
+  'dormi 5h, a Cris acordou 3 vezes',
+  'como estou esta semana?'
+]
+
+const TOOL_LABELS: Record<string, string> = {
+  registar_peso: 'peso registado',
+  registar_refeicao: 'refeição registada',
+  actualizar_refeicao_recente: 'refeição actualizada',
+  apagar_refeicao_recente: 'refeição apagada',
+  registar_alcool: 'caderno do copo',
+  registar_dia: 'dia actualizado',
+  registar_jejum: 'jejum registado',
+  registar_ciclo: 'ciclo registado',
+  registar_agua: 'água registada',
+  registar_suplemento: 'suplemento registado',
+  registar_transito: 'trânsito registado',
+  registar_sono_detalhe: 'sono registado',
+  registar_sintoma_peri: 'sintoma registado',
+  registar_steps: 'passos registados',
+  registar_rhr: 'RHR registado',
+  marcar_ancora: 'âncora marcada',
+  adicionar_objectivo: 'objectivo guardado',
+  remover_objectivo: 'objectivo removido',
+  actualizar_objectivo: 'objectivo actualizado',
+  listar_objectivos: 'a ver objectivos',
+  definir_metas: 'metas ajustadas',
+  sugerir_metas: 'a calcular sugestão',
+  analisar_padroes: 'a analisar padrões',
+  gerar_lista_compras: 'lista de compras',
+  consultar_dados: 'a consultar dados'
+}
+
+
+const MAX_TOOL_TURNS = 6
+
+export default function CoachPage() {
+  const [mensagens, setMensagens] = useState<Mensagem[]>([])
+  const [input, setInput] = useState('')
+  const [carregando, setCarregando] = useState(false)
+  const [carregandoAbertura, setCarregandoAbertura] = useState(true)
+  const [erro, setErro] = useState<string | null>(null)
+  const [vozAberta, setVozAberta] = useState(false)
+  const [analisandoFoto, setAnalisandoFoto] = useState(false)
+  const [previewFoto, setPreviewFoto] = useState<{
+    imagem: string
+    tipo: 'pa' | 'almoco' | 'snack' | 'jantar'
+    descricao: string
+    proteinaG: number | null
+    carboG: number | null
+    gorduraG: number | null
+    calorias: number | null
+    observacao: string
+  } | null>(null)
+  const fimRef = useRef<HTMLDivElement>(null)
+  const fotoInputRef = useRef<HTMLInputElement>(null)
+
+  const voz = useSpeechRecognition({
+    lang: 'pt-PT',
+    onFim: (texto) => setInput(prev => (prev ? prev + ' ' : '') + texto)
+  })
+
+  // Enquanto está a ouvir, mostra parcial no input
+  useEffect(() => {
+    if (voz.ouvir && voz.parcial) {
+      // não escreve directamente para não interferir com o que o utilizador já tem
+      // o parcial é mostrado abaixo do input em separado
+    }
+  }, [voz.parcial, voz.ouvir])
+
+  useEffect(() => {
+    fimRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [mensagens, carregando])
+
+  useEffect(() => {
+    const historico = getCoachMensagens(100).map(m => ({ role: m.role, content: m.content as string | ContentBlock[] }))
+    if (historico.length > 0) {
+      setMensagens(historico)
+    }
+
+    // Prompt pendente vindo de um alerta · pré-preenche input para ela rever e enviar
+    if (typeof window !== 'undefined') {
+      const promptPending = sessionStorage.getItem('fenixfit:coach-prompt-pending')
+      if (promptPending) {
+        sessionStorage.removeItem('fenixfit:coach-prompt-pending')
+        setInput(promptPending)
+      }
+    }
+
+    const abertura = getAberturaHoje()
+    // Não regeneramos automaticamente · obsoleta usa o que tem · Vivianne refresca quando quer
+    if (abertura && historico.length > 0) {
+      setCarregandoAbertura(false)
+      return
+    }
+    if (abertura && historico.length === 0) {
+      const m = { role: 'assistant' as const, content: abertura.texto }
+      setMensagens([m])
+      saveCoachMensagem('assistant', abertura.texto)
+      setCarregandoAbertura(false)
+      return
+    }
+    // só regenera se não há abertura nenhuma hoje
+
+    let cancelado = false
+    const gerarAbertura = async () => {
+      try {
+        const r = await fetch('/api/coach', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            abertura: true,
+            contexto: construirContexto(true),
+            historico: historico.slice(-20).map(m => ({
+              role: m.role,
+              content: typeof m.content === 'string' ? m.content : extractText(m.content)
+            }))
+          })
+        })
+        if (!cancelado && r.ok) {
+          const json = await r.json()
+          if (json.texto) {
+            saveAberturaHoje(json.texto)
+            saveCoachMensagem('assistant', json.texto)
+            setMensagens(prev => [...prev, { role: 'assistant', content: json.texto }])
+          }
+        }
+      } catch {}
+      if (!cancelado) setCarregandoAbertura(false)
+    }
+    gerarAbertura()
+    return () => { cancelado = true }
+  }, [])
+
+  const onFoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+    setErro(null)
+    setAnalisandoFoto(true)
+    try {
+      // Lê imagem para mostrar thumbnail no preview
+      const dataUrl = await new Promise<string>((resolve) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.readAsDataURL(file)
+      })
+      const r = await analisarFotoRefeicao(file)
+      setPreviewFoto({
+        imagem: dataUrl,
+        tipo: r.tipo,
+        descricao: r.descricao,
+        proteinaG: r.proteinaG,
+        carboG: r.carboG,
+        gorduraG: r.gorduraG,
+        calorias: r.calorias,
+        observacao: r.observacao
+      })
+    } catch (err) {
+      setErro(erroAmigavel(err))
+    }
+    setAnalisandoFoto(false)
+  }
+
+  const confirmarFoto = () => {
+    if (!previewFoto) return
+    addRefeicao({
+      tipo: previewFoto.tipo,
+      descricao: previewFoto.descricao,
+      timestamp: new Date().toISOString(),
+      proteinaG: previewFoto.proteinaG,
+      carboG: previewFoto.carboG,
+      gorduraG: previewFoto.gorduraG,
+      calorias: previewFoto.calorias,
+      contexto: 'foto',
+      sentir: previewFoto.observacao
+    })
+    const tipoLeg = { pa: 'pequeno-almoço', almoco: 'almoço', snack: 'snack', jantar: 'jantar' }[previewFoto.tipo]
+    const macroParts: string[] = []
+    if (previewFoto.proteinaG !== null) macroParts.push(`${Math.round(previewFoto.proteinaG)}g P`)
+    if (previewFoto.carboG !== null) macroParts.push(`${Math.round(previewFoto.carboG)}g C`)
+    if (previewFoto.gorduraG !== null) macroParts.push(`${Math.round(previewFoto.gorduraG)}g G`)
+    if (previewFoto.calorias !== null) macroParts.push(`${previewFoto.calorias} kcal`)
+    const userTxt = `[foto] ${previewFoto.descricao}`
+    const respTxt = `${tipoLeg} registado · ${previewFoto.descricao}. ${macroParts.join(' · ')}.`
+    saveCoachMensagem('user', userTxt)
+    saveCoachMensagem('assistant', respTxt)
+    setMensagens(prev => [...prev, { role: 'user', content: userTxt }, { role: 'assistant', content: respTxt }])
+    window.dispatchEvent(new CustomEvent('fenixfit:storage', { detail: { key: 'foto-refeicao' } }))
+    setPreviewFoto(null)
+  }
+
+  const enviar = async (texto: string) => {
+    if (!texto.trim() || carregando) return
+    setErro(null)
+    const userMsg = texto.trim()
+    saveCoachMensagem('user', userMsg)
+
+    // Conversa local · começa com toda a história + nova mensagem do utilizador
+    const conv: Mensagem[] = [...mensagens, { role: 'user', content: userMsg }]
+    setMensagens(conv)
+    setInput('')
+    setCarregando(true)
+
+    try {
+      const conversaActual = [...conv]
+      let turnos = 0
+      while (turnos < MAX_TOOL_TURNS) {
+        turnos++
+        const r = await fetch('/api/coach', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            mensagens: sanitizarMensagens(conversaActual.slice(-30)),
+            contexto: construirContexto(),
+            tools_enabled: true
+          })
+        })
+        const json = await r.json()
+        if (!r.ok) {
+          setErro(erroAmigavel(json.error ?? 'erro'))
+          break
+        }
+        const content: ContentBlock[] = json.content ?? []
+        const stopReason: string = json.stop_reason ?? 'end_turn'
+
+        // Adiciona resposta da coach (com possíveis tool_use)
+        conversaActual.push({ role: 'assistant', content })
+        setMensagens([...conversaActual])
+
+        if (stopReason !== 'tool_use') {
+          // Conversa terminou · guarda texto final no histórico persistente
+          const finalText = extractText(content)
+          if (finalText) saveCoachMensagem('assistant', finalText)
+          break
+        }
+
+        // Executa tools no cliente
+        const toolUses = content.filter((b): b is Extract<ContentBlock, { type: 'tool_use' }> => b.type === 'tool_use')
+        const toolResults: ContentBlock[] = toolUses.map(tu => {
+          const res = executeTool(tu.name, tu.input)
+          return {
+            type: 'tool_result',
+            tool_use_id: tu.id,
+            content: res.ok ? res.texto : `erro: ${res.erro}`,
+            ok: res.ok,
+            toolName: tu.name
+          }
+        })
+        conversaActual.push({ role: 'user', content: toolResults })
+        setMensagens([...conversaActual])
+        // Notifica outras vistas para recarregarem (pesos, jejuns, etc)
+        window.dispatchEvent(new CustomEvent('fenixfit:storage', { detail: { key: 'coach-tool' } }))
+      }
+    } catch (e) {
+      setErro(erroAmigavel(e))
+    }
+    setCarregando(false)
+  }
+
+  const semMensagens = mensagens.length === 0 && !carregandoAbertura
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      <BackButton />
+
+      <header className="space-y-2 pt-4">
+        <div className="flex items-start justify-between gap-3">
+          <p className="label-soft">coach</p>
+          <button
+            onClick={() => setVozAberta(true)}
+            aria-label="modo voz"
+            className="inline-flex items-center gap-1.5 rounded-full bg-ouro/10 px-3 py-1.5 text-[11px] text-ouro transition-elegant active:scale-95"
+          >
+            <Mic size={12} strokeWidth={1.6} />
+            modo voz
+          </button>
+        </div>
+        <h1 className="font-serif text-[40px] font-light leading-[1.05] tracking-editorial sm:text-[48px]">
+          fala · ela regista
+        </h1>
+        <div className="h-px w-12 bg-ouro" aria-hidden />
+        <p className="text-faint mt-3 text-[12.5px] leading-relaxed">
+          diz-lhe o que comeste · pesaste · sentiste. ela escreve por ti.
+        </p>
+      </header>
+      <VoiceModeOverlay aberto={vozAberta} onFechar={() => setVozAberta(false)} />
+
+      {/* Leitura editorial de hoje · sempre visível no topo (se houver) */}
+      <AberturaCard />
+
+      {carregandoAbertura ? (
+        <div className="card-feature flex items-center justify-center gap-2 py-6">
+          <span className="h-1.5 w-1.5 animate-breathe rounded-full bg-ouro" />
+          <span className="h-1.5 w-1.5 animate-breathe rounded-full bg-ouro" style={{ animationDelay: '0.3s' }} />
+          <span className="h-1.5 w-1.5 animate-breathe rounded-full bg-ouro" style={{ animationDelay: '0.6s' }} />
+          <span className="ml-3 label-soft">a coach está a olhar para os teus dados</span>
+        </div>
+      ) : null}
+
+      {semMensagens ? (
+        <section className="card-feature space-y-3">
+          <div className="flex items-center gap-2">
+            <Sparkles size={14} strokeWidth={1.4} className="text-ouro" />
+            <span className="label-cap">tenta dizer</span>
+          </div>
+          <ul className="space-y-2">
+            {SUGESTOES_INICIAIS.map((s, i) => (
+              <li key={i}>
+                <button
+                  onClick={() => enviar(s)}
+                  disabled={carregando}
+                  className="w-full rounded-md p-3 text-left text-[13.5px] leading-relaxed transition-elegant hover:bg-[var(--surface-soft)] shadow-hair"
+                >
+                  {s}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      <section className="space-y-3">
+        {mensagens.map((m, i) => (
+          <MensagemBubble key={i} mensagem={m} />
+        ))}
+        {carregando ? (
+          <div className="flex justify-start">
+            <div className="card-solid !p-4 flex gap-1">
+              <span className="h-1.5 w-1.5 animate-breathe rounded-full bg-ouro" />
+              <span className="h-1.5 w-1.5 animate-breathe rounded-full bg-ouro" style={{ animationDelay: '0.3s' }} />
+              <span className="h-1.5 w-1.5 animate-breathe rounded-full bg-ouro" style={{ animationDelay: '0.6s' }} />
+            </div>
+          </div>
+        ) : null}
+        <div ref={fimRef} />
+      </section>
+
+      {erro ? <div className="rounded-lg bg-terracota/10 p-3 text-[12px] text-terracota">{erro}</div> : null}
+
+      <section className="sticky bottom-24 space-y-2">
+        {/* preview de foto · revisas antes de registar */}
+        {previewFoto ? (
+          <div className="card-feature space-y-3 animate-slide-up">
+            <div className="flex items-baseline justify-between">
+              <span className="label-cap">prévia · revê antes de registar</span>
+              <button onClick={() => setPreviewFoto(null)} aria-label="cancelar" className="text-faint hover:text-terracota p-1 active:scale-90">
+                <X size={14} strokeWidth={1.4} />
+              </button>
+            </div>
+            <img src={previewFoto.imagem} alt="" className="w-full max-h-48 object-cover rounded-lg" />
+            <div className="grid grid-cols-4 gap-1.5">
+              {(['pa', 'almoco', 'snack', 'jantar'] as const).map(t => (
+                <button
+                  key={t}
+                  onClick={() => setPreviewFoto({ ...previewFoto, tipo: t })}
+                  className={`rounded-md py-1.5 text-[10.5px] transition-elegant active:scale-95 ${
+                    previewFoto.tipo === t ? 'bg-ouro text-creme dark:text-tinta' : 'bg-[var(--surface-soft)] text-soft'
+                  }`}
+                >
+                  {t === 'pa' ? 'pa' : t === 'almoco' ? 'almoço' : t}
+                </button>
+              ))}
+            </div>
+            <textarea
+              value={previewFoto.descricao}
+              onChange={e => setPreviewFoto({ ...previewFoto, descricao: e.target.value })}
+              rows={2}
+              className="w-full resize-none rounded-md border border-[var(--hair)] bg-transparent p-2 text-[13.5px] focus:border-ouro focus:outline-none"
+              placeholder="descrição"
+            />
+            <div className="grid grid-cols-4 gap-1.5">
+              <input type="number" inputMode="decimal" value={previewFoto.proteinaG ?? ''} onChange={e => setPreviewFoto({ ...previewFoto, proteinaG: e.target.value ? Number(e.target.value) : null })} placeholder="P" className="rounded-md border border-[var(--hair)] bg-transparent p-2 text-center text-[12px] tnum focus:border-ouro focus:outline-none" />
+              <input type="number" inputMode="decimal" value={previewFoto.carboG ?? ''} onChange={e => setPreviewFoto({ ...previewFoto, carboG: e.target.value ? Number(e.target.value) : null })} placeholder="C" className="rounded-md border border-[var(--hair)] bg-transparent p-2 text-center text-[12px] tnum focus:border-ouro focus:outline-none" />
+              <input type="number" inputMode="decimal" value={previewFoto.gorduraG ?? ''} onChange={e => setPreviewFoto({ ...previewFoto, gorduraG: e.target.value ? Number(e.target.value) : null })} placeholder="G" className="rounded-md border border-[var(--hair)] bg-transparent p-2 text-center text-[12px] tnum focus:border-ouro focus:outline-none" />
+              <input type="number" inputMode="numeric" value={previewFoto.calorias ?? ''} onChange={e => setPreviewFoto({ ...previewFoto, calorias: e.target.value ? Number(e.target.value) : null })} placeholder="kcal" className="rounded-md border border-[var(--hair)] bg-transparent p-2 text-center text-[12px] tnum focus:border-ouro focus:outline-none" />
+            </div>
+            <button onClick={confirmarFoto} className="btn-primary w-full py-2.5 text-[12.5px]">
+              <Check size={13} strokeWidth={1.6} /> registar
+            </button>
+          </div>
+        ) : null}
+        {voz.ouvir && voz.parcial ? (
+          <div className="card-solid !p-2.5 text-[12.5px] italic text-soft">
+            {voz.parcial}
+            <span className="ml-1 inline-block h-3 w-px animate-pulse bg-ouro align-middle" />
+          </div>
+        ) : null}
+        {voz.erro && voz.erro !== 'voz não suportada neste browser' && !voz.erro.includes('service-not-allowed') ? (
+          <p className="text-faint text-center text-[10.5px] text-terracota">{voz.erro}</p>
+        ) : null}
+        <div className="card-solid flex items-end gap-2 !p-2">
+          <textarea
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault()
+                enviar(input)
+              }
+            }}
+            placeholder={voz.ouvir ? 'a ouvir...' : 'o que comeste · pesaste · sentiste'}
+            rows={1}
+            className="flex-1 resize-none border-0 bg-transparent px-2 py-2 text-[14px] focus:outline-none"
+            style={{ minHeight: '40px', maxHeight: '120px' }}
+          />
+          <button
+            onClick={() => fotoInputRef.current?.click()}
+            disabled={carregando || analisandoFoto}
+            aria-label="Foto da refeição"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--surface-soft)] text-soft transition-elegant active:scale-95 hover:text-ouro disabled:opacity-30"
+          >
+            {analisandoFoto ? <Loader2 size={14} strokeWidth={1.6} className="animate-spin" /> : <Camera size={14} strokeWidth={1.6} />}
+          </button>
+          <input
+            ref={fotoInputRef}
+            type="file"
+            accept="image/*"
+            
+            onChange={onFoto}
+            className="hidden"
+          />
+          {voz.suportado ? (
+            <button
+              onClick={() => voz.ouvir ? voz.parar() : voz.iniciar()}
+              disabled={carregando}
+              aria-label={voz.ouvir ? 'Parar voz' : 'Falar'}
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-elegant active:scale-95 disabled:opacity-30 ${
+                voz.ouvir
+                  ? 'bg-ouro text-creme animate-pulse dark:text-tinta'
+                  : 'bg-[var(--surface-soft)] text-soft hover:text-tinta dark:hover:text-creme'
+              }`}
+            >
+              {voz.ouvir ? <MicOff size={14} strokeWidth={1.6} /> : <Mic size={14} strokeWidth={1.6} />}
+            </button>
+          ) : null}
+          <button
+            onClick={() => { if (voz.ouvir) voz.parar(); enviar(input) }}
+            disabled={!input.trim() || carregando}
+            aria-label="Enviar"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-tinta text-creme transition-elegant active:scale-95 disabled:opacity-30 dark:bg-ouro dark:text-tinta"
+          >
+            <Send size={14} strokeWidth={1.6} />
+          </button>
+        </div>
+      </section>
+
+      <p className="text-faint text-center text-[10px]">
+        a coach vê os teus dados · regista por ti · só nesta sessão
+      </p>
+    </div>
+  )
+}
+
+function AberturaCard() {
+  const [abertura, setAbertura] = useState<{ date: string; texto: string; geradoEm?: string } | null>(null)
+  // Default aberto · ela está no chat para ver a leitura · não esconder
+  const [aberto, setAberto] = useState(true)
+
+  useEffect(() => {
+    const refresh = () => setAbertura(getAberturaHoje())
+    refresh()
+    window.addEventListener('fenixfit:abertura', refresh)
+    window.addEventListener('fenixfit:storage', refresh)
+    return () => {
+      window.removeEventListener('fenixfit:abertura', refresh)
+      window.removeEventListener('fenixfit:storage', refresh)
+    }
+  }, [])
+
+  if (!abertura?.texto) return null
+
+  const corteInterrog = abertura.texto.indexOf('?')
+  const cortePonto = abertura.texto.indexOf('.', 80)
+  const corte =
+    corteInterrog > 0 && corteInterrog < 200
+      ? corteInterrog + 1
+      : cortePonto > 0 && cortePonto < 200
+        ? cortePonto + 1
+        : Math.min(abertura.texto.length, 200)
+  const preview = abertura.texto.slice(0, corte).trim()
+  const tem_mais = corte < abertura.texto.length
+
+  return (
+    <section className="card-feature space-y-2">
+      <div className="flex items-baseline justify-between">
+        <span className="label-cap">leitura · hoje</span>
+        {tem_mais ? (
+          <button onClick={() => setAberto(a => !a)} className="text-[10.5px] text-ouro hover:underline">
+            {aberto ? 'ver menos' : 'ver tudo'}
+          </button>
+        ) : null}
+      </div>
+      <p className="font-serif text-[15.5px] leading-[1.55] tracking-editorial italic">
+        {aberto ? abertura.texto : preview}
+        {!aberto && tem_mais ? <span className="text-faint"> ...</span> : null}
+      </p>
+    </section>
+  )
+}
+
+function MensagemBubble({ mensagem }: { mensagem: Mensagem }) {
+  const { role, content } = mensagem
+
+  // Mensagem do utilizador (texto puro)
+  if (role === 'user' && typeof content === 'string') {
+    return (
+      <div className="flex justify-end">
+        <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-tinta px-4 py-2.5 text-[14px] text-creme dark:bg-ouro dark:text-tinta">
+          {content}
+        </div>
+      </div>
+    )
+  }
+
+  // Mensagem do utilizador com tool_results (esconde · só mostra chips de confirmação)
+  if (role === 'user' && Array.isArray(content)) {
+    const results = content.filter((b): b is Extract<ContentBlock, { type: 'tool_result' }> => b.type === 'tool_result')
+    if (results.length === 0) return null
+    return (
+      <div className="flex flex-wrap justify-start gap-1.5 pl-1">
+        {results.map((r, i) => (
+          <span
+            key={i}
+            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] ${
+              r.ok === false
+                ? 'bg-terracota/10 text-terracota'
+                : 'bg-ouro/10 text-ouro'
+            }`}
+          >
+            {r.ok === false ? <AlertCircle size={11} strokeWidth={1.6} /> : <CheckCircle2 size={11} strokeWidth={1.6} />}
+            {r.toolName ? TOOL_LABELS[r.toolName] ?? r.toolName : 'registado'}
+          </span>
+        ))}
+      </div>
+    )
+  }
+
+  // Mensagem do assistant
+  if (role === 'assistant') {
+    if (typeof content === 'string') {
+      if (!content.trim()) return null
+      return (
+        <div className="flex justify-start">
+          <div className="max-w-[85%] card-solid !p-4 font-serif text-[15px] leading-[1.55] tracking-editorial">
+            {content}
+          </div>
+        </div>
+      )
+    }
+    // Array · tem text e/ou tool_use
+    const textBlocks = content.filter((b): b is Extract<ContentBlock, { type: 'text' }> => b.type === 'text' && b.text.trim().length > 0)
+    const toolUses = content.filter((b): b is Extract<ContentBlock, { type: 'tool_use' }> => b.type === 'tool_use')
+    return (
+      <div className="space-y-1.5">
+        {textBlocks.map((b, i) => (
+          <div key={'t' + i} className="flex justify-start">
+            <div className="max-w-[85%] card-solid !p-4 font-serif text-[15px] leading-[1.55] tracking-editorial">
+              {b.text}
+            </div>
+          </div>
+        ))}
+        {toolUses.length > 0 ? (
+          <div className="flex flex-wrap justify-start gap-1.5 pl-1">
+            {toolUses.map(tu => (
+              <span key={tu.id} className="inline-flex items-center gap-1 rounded-full bg-ouro/5 px-2.5 py-1 text-[11px] text-soft">
+                <span className="h-1.5 w-1.5 animate-breathe rounded-full bg-ouro" />
+                {TOOL_LABELS[tu.name] ?? tu.name}
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    )
+  }
+  return null
+}
+
+function extractText(content: string | ContentBlock[]): string {
+  if (typeof content === 'string') return content
+  return content
+    .filter((b): b is Extract<ContentBlock, { type: 'text' }> => b.type === 'text')
+    .map(b => b.text)
+    .join('\n')
+    .trim()
+}
+
+// Remove campos UI-only (ok, toolName) dos tool_results antes de enviar à API.
+// A API Anthropic rejeita campos extra com 400 invalid_request_error.
+function sanitizarMensagens(mensagens: Mensagem[]): Mensagem[] {
+  return mensagens.map(m => {
+    if (typeof m.content === 'string') return m
+    const limpos = m.content.map(b => {
+      if (b.type === 'tool_result') {
+        return { type: 'tool_result' as const, tool_use_id: b.tool_use_id, content: b.content }
+      }
+      if (b.type === 'tool_use') {
+        return { type: 'tool_use' as const, id: b.id, name: b.name, input: b.input }
+      }
+      return { type: 'text' as const, text: b.text }
+    })
+    return { role: m.role, content: limpos }
+  })
+}

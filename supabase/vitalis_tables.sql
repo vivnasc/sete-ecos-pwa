@@ -34,6 +34,9 @@ CREATE TABLE IF NOT EXISTS vitalis_intake (
   -- ABORDAGEM ALIMENTAR
   abordagem_preferida TEXT,
   aceita_jejum BOOLEAN DEFAULT FALSE,
+  janela_jejum_inicio TIME,
+  janela_jejum_fim TIME,
+  fase_hormonal TEXT, -- ciclo_regular | perimenopausa | menopausa | pos_menopausa | nao_dizer
   restricoes_alimentares TEXT[],
   observa_ramadao TEXT,
 

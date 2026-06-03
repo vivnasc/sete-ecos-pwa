@@ -575,7 +575,7 @@ export default function PlanoAlimentar() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] flex items-center justify-center">
+      <div className="fnx-theme min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-orange-300 border-t-orange-600 rounded-full animate-spin mx-auto"></div>
           <p className="mt-4 text-gray-600">A carregar o teu plano...</p>
@@ -586,7 +586,7 @@ export default function PlanoAlimentar() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] p-4">
+      <div className="fnx-theme min-h-screen p-4">
         <div className="max-w-2xl mx-auto mt-20 bg-white rounded-2xl p-6 text-center shadow-lg">
           <div className="text-5xl mb-4">{
             errorType === 'pending_review' ? '👩‍⚕️' :
@@ -602,7 +602,7 @@ export default function PlanoAlimentar() {
           {errorType === 'pending_review' ? (
             <a
               href="/vitalis/dashboard"
-              className="inline-block px-6 py-3 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-full font-semibold"
+              className="inline-block px-6 py-3 bg-[var(--fnx-ink)] text-white rounded-full font-semibold"
             >
               Voltar ao Dashboard
             </a>
@@ -610,14 +610,14 @@ export default function PlanoAlimentar() {
             <button
               onClick={regenerarPlano}
               disabled={regenerando}
-              className="inline-block px-6 py-3 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-full font-semibold disabled:opacity-50"
+              className="inline-block px-6 py-3 bg-[var(--fnx-ink)] text-white rounded-full font-semibold disabled:opacity-50"
             >
               {regenerando ? 'A gerar plano...' : 'Gerar o Meu Plano'}
             </button>
           ) : (
             <a
               href="/vitalis/intake"
-              className="inline-block px-6 py-3 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-full font-semibold"
+              className="inline-block px-6 py-3 bg-[var(--fnx-ink)] text-white rounded-full font-semibold"
             >
               Completar Intake
             </a>
@@ -639,9 +639,9 @@ export default function PlanoAlimentar() {
   const duracaoFase = plano.fase?.duracao_semanas || 4;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#C5D1BC] via-[#E8E4DC] to-[#FAF7F2] pb-24">
+    <div className="fnx-theme min-h-screen pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-4 sm:px-6 pt-8 pb-6">
+      <div className="bg-[var(--fnx-bg)] text-white px-4 sm:px-6 pt-8 pb-6">
         <div className="max-w-2xl mx-auto">
           <Link to="/vitalis/dashboard" className="inline-flex items-center gap-1 text-white/80 hover:text-white mb-4">
             <Icons.ArrowLeft />
@@ -701,7 +701,7 @@ export default function PlanoAlimentar() {
         {/* BOTÃO PDF - DESTACADO */}
         <button
           onClick={() => setShowPDFModal(true)}
-          className="w-full bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all flex items-center justify-between"
+          className="w-full bg-[var(--fnx-ink)] text-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all flex items-center justify-between"
         >
           <div className="flex items-center gap-4">
             <div className="p-3 bg-white bg-opacity-20 rounded-xl">
@@ -716,7 +716,7 @@ export default function PlanoAlimentar() {
         </button>
 
         {/* Método da Mão - Hero Banner */}
-        <div className="bg-gradient-to-br from-[#7C8B6F] to-[#5A6B4D] rounded-2xl p-5 shadow-lg text-white">
+        <div className="bg-[var(--fnx-ink)] rounded-2xl p-5 shadow-lg text-white">
           <div className="flex items-center gap-4 mb-3">
             <div className="text-5xl">🤚</div>
             <div>

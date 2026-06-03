@@ -408,19 +408,38 @@ async function gerarPlano(userId, res) {
   const abordagemRaw = intake.abordagem_preferida || 'equilibrado';
   const abordagem = ABORDAGENS_VALIDAS.includes(abordagemRaw) ? abordagemRaw : 'equilibrado';
 
+  let proteinaPercent, carbsPercent, gorduraPercent;
   if (abordagem === 'keto_if') {
-    proteinaG = Math.round((caloriasAlvo * 0.25) / 4);
-    carboidratosG = Math.round((caloriasAlvo * 0.05) / 4);
-    gorduraG = Math.round((caloriasAlvo * 0.70) / 9);
+    proteinaPercent = 0.25; carbsPercent = 0.05; gorduraPercent = 0.70;
   } else if (abordagem === 'low_carb') {
-    proteinaG = Math.round((caloriasAlvo * 0.40) / 4);
-    carboidratosG = Math.round((caloriasAlvo * 0.30) / 4);
-    gorduraG = Math.round((caloriasAlvo * 0.30) / 9);
+    proteinaPercent = 0.40; carbsPercent = 0.30; gorduraPercent = 0.30;
   } else {
-    proteinaG = Math.round((caloriasAlvo * 0.30) / 4);
-    carboidratosG = Math.round((caloriasAlvo * 0.40) / 4);
-    gorduraG = Math.round((caloriasAlvo * 0.30) / 9);
+    proteinaPercent = 0.30; carbsPercent = 0.40; gorduraPercent = 0.30;
   }
+
+  // Ajuste hormonal para mulheres 40+ (perimenopausa, menopausa, pós-menopausa)
+  const sexoFem = intake.sexo === 'feminino' || intake.sexo === 'outro';
+  const idadeNum = parseInt(intake.idade);
+  if (sexoFem && idadeNum >= 40 && intake.fase_hormonal) {
+    const fh = intake.fase_hormonal;
+    if (fh === 'perimenopausa') {
+      caloriasAlvo = Math.round(caloriasAlvo * 0.95);
+      if (abordagem === 'equilibrado') {
+        proteinaPercent = 0.35;
+        carbsPercent = 0.35;
+      }
+    } else if (fh === 'menopausa' || fh === 'pos_menopausa') {
+      caloriasAlvo = Math.round(caloriasAlvo * 0.92);
+      proteinaPercent = Math.min(proteinaPercent + 0.05, 0.40);
+      if (abordagem !== 'keto_if') {
+        carbsPercent = Math.max(carbsPercent - 0.05, 0.20);
+      }
+    }
+  }
+
+  proteinaG = Math.round((caloriasAlvo * proteinaPercent) / 4);
+  carboidratosG = Math.round((caloriasAlvo * carbsPercent) / 4);
+  gorduraG = Math.round((caloriasAlvo * gorduraPercent) / 9);
 
   proteinaG = Math.min(proteinaG, 400);
   carboidratosG = Math.min(carboidratosG, 600);
@@ -452,8 +471,34 @@ async function gerarPlano(userId, res) {
   };
 
   // 10. Meal times
+  // Se o utilizador definiu janela de jejum específica, distribuir refeições nela
+  const distribuirNaJanela = (inicioStr, fimStr, n) => {
+    const parseHora = (s) => {
+      const [h, m] = s.split(':').map(Number);
+      return h + (m || 0) / 60;
+    };
+    const fmt = (val) => {
+      const h = Math.floor(val);
+      const m = Math.round((val - h) * 60);
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    };
+    const inicio = parseHora(inicioStr);
+    let fim = parseHora(fimStr);
+    if (fim <= inicio) fim += 24;
+    const ultima = fim - 0.5;
+    const horarios = [];
+    if (n === 1) horarios.push(inicio);
+    else {
+      const passo = (ultima - inicio) / (n - 1);
+      for (let i = 0; i < n; i++) horarios.push(inicio + passo * i);
+    }
+    return horarios.map(v => fmt(v >= 24 ? v - 24 : v));
+  };
+
   let horariosRefeicoes;
-  if (intake.aceita_jejum) {
+  if (intake.aceita_jejum && intake.janela_jejum_inicio && intake.janela_jejum_fim) {
+    horariosRefeicoes = distribuirNaJanela(intake.janela_jejum_inicio, intake.janela_jejum_fim, numRefeicoes);
+  } else if (intake.aceita_jejum) {
     horariosRefeicoes = ['12:00', '16:00', '20:00'].slice(0, numRefeicoes);
   } else if (intake.pequeno_almoco === 'nunca') {
     horariosRefeicoes = ['13:00', '17:00', '20:00'].slice(0, numRefeicoes);

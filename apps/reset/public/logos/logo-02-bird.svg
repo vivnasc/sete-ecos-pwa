@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" fill="#F6F1E8"/>
+
+  <!-- Continuous-line phoenix bird · linha contínua -->
+  <g stroke="#B8924A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Flame base -->
+    <path d="M 482 580
+             Q 472 568 478 555
+             Q 490 542 502 555
+             Q 510 542 522 555
+             Q 534 542 546 555
+             Q 552 568 542 580"/>
+
+    <!-- Body rising from flame -->
+    <path d="M 512 580
+             Q 510 540 512 510
+             Q 514 480 512 450"/>
+
+    <!-- Wings rising · single sweep each side -->
+    <path d="M 512 460
+             Q 430 420 360 360
+             Q 320 320 300 280"/>
+    <path d="M 512 460
+             Q 594 420 664 360
+             Q 704 320 724 280"/>
+
+    <!-- Wing inner curves -->
+    <path d="M 460 440 Q 420 410 380 380"/>
+    <path d="M 564 440 Q 604 410 644 380"/>
+
+    <!-- Head -->
+    <circle cx="512" cy="430" r="6" fill="#B8924A"/>
+  </g>
+
+  <!-- Wordmark below -->
+  <text x="512" y="780" font-family="Georgia, serif" font-size="68"
+        fill="#1F1814" text-anchor="middle" font-weight="300" letter-spacing="-1">
+    fénixfit
+  </text>
+
+  <!-- Tiny tagline -->
+  <text x="512" y="840" font-family="Helvetica, Arial, sans-serif" font-size="16"
+        fill="#7A6E5F" text-anchor="middle" font-weight="400" letter-spacing="8">
+    SESSENTA DIAS
+  </text>
+</svg>

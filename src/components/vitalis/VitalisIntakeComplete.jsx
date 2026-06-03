@@ -18,10 +18,11 @@ export default function VitalisIntakeComplete() {
   const [planoUserId, setPlanoUserId] = useState(null);
 
   const [formData, setFormData] = useState({
-    nome: '', email: '', whatsapp: '', idade: '', sexo: '',
+    nome: '', email: '', whatsapp: '', idade: '', sexo: '', fase_hormonal: '',
     altura_cm: '', peso_actual: '', peso_meta: '', cintura_cm: '', anca_cm: '',
     objectivo_principal: '', prazo: '', porque_importante: '',
-    abordagem_preferida: '', restricoes_alimentares: [], observa_ramadao: '',
+    abordagem_preferida: '', janela_jejum_inicio: '12:00', janela_jejum_fim: '20:00',
+    restricoes_alimentares: [], observa_ramadao: '',
     condicoes_saude: [], medicacao: '',
     refeicoes_dia: '', faz_pequeno_almoco: '', pequeno_almoco_opcoes: [],
     onde_come: [], tipos_comida: [], agua_litros_dia: '2', bebidas: [],
@@ -48,10 +49,10 @@ export default function VitalisIntakeComplete() {
 
   const sections = [
     { title: 'Boas-vindas ao Vitalis 💪', isWelcome: true },
-    { title: 'Dados Pessoais', fields: ['nome', 'email', 'whatsapp', 'idade', 'sexo'] },
+    { title: 'Dados Pessoais', fields: ['nome', 'email', 'whatsapp', 'idade', 'sexo', 'fase_hormonal'] },
     { title: 'Medidas Corporais', fields: ['altura_cm', 'peso_actual', 'peso_meta', 'cintura_cm', 'anca_cm'] },
     { title: 'Objectivo e Prazo', fields: ['objectivo_principal', 'prazo', 'porque_importante'] },
-    { title: 'Abordagem Alimentar', fields: ['abordagem_preferida', 'restricoes_alimentares', 'observa_ramadao'] },
+    { title: 'Abordagem Alimentar', fields: ['abordagem_preferida', 'janela_jejum_inicio', 'janela_jejum_fim', 'restricoes_alimentares', 'observa_ramadao'] },
     { title: 'Saúde', fields: ['condicoes_saude', 'medicacao'] },
     { title: 'Hábitos Alimentares', fields: ['refeicoes_dia', 'faz_pequeno_almoco', 'pequeno_almoco_opcoes', 'onde_come', 'tipos_comida', 'agua_litros_dia', 'bebidas', 'freq_doces', 'freq_fritos', 'petisca', 'o_que_petisca'] },
     { title: 'Fome Emocional - As 7 Emoções', subtitle: 'Com que frequência comes quando sentes…', fields: ['freq_cansaco', 'freq_ansiedade', 'freq_tristeza', 'freq_raiva', 'freq_vazio', 'freq_solidao', 'freq_negacao', 'emocao_dominante'] },
@@ -71,6 +72,25 @@ export default function VitalisIntakeComplete() {
     whatsapp: { label: 'WhatsApp', type: 'tel', placeholder: '+258 84/85/86/87…', inputMode: 'tel', required: true },
     idade: { label: 'Idade', type: 'number', required: true, inputMode: 'numeric' },
     sexo: { label: 'Sexo', type: 'radio', options: ['feminino', 'masculino', 'outro'], labels: ['Feminino', 'Masculino', 'Prefiro não especificar'], required: true },
+    fase_hormonal: {
+      label: 'Fase hormonal',
+      type: 'radio',
+      options: ['ciclo_regular', 'perimenopausa', 'menopausa', 'pos_menopausa', 'nao_dizer'],
+      labels: [
+        'Ciclo regular',
+        'Perimenopausa (40-50, ciclo irregular, calores)',
+        'Menopausa (sem menstruação há 12+ meses)',
+        'Pós-menopausa',
+        'Prefiro não dizer'
+      ],
+      conditional: 'sexo',
+      conditionalValues: ['feminino', 'outro'],
+      dynamicHint: (formData) => {
+        const idade = parseInt(formData.idade);
+        if (idade >= 35 && idade < 55) return '💡 Dos 35 aos 55, o equilíbrio hormonal muda. Esta resposta ajuda-nos a adaptar o teu plano.';
+        return null;
+      }
+    },
     altura_cm: { label: 'Altura (cm)', type: 'number', required: true, inputMode: 'numeric', min: '100', max: '250' },
     peso_actual: { label: 'Peso actual (kg)', type: 'number', step: '0.1', required: true, inputMode: 'decimal', min: '20', max: '300' },
     peso_meta: { label: 'Peso desejado (kg)', type: 'number', step: '0.1', required: true, inputMode: 'decimal', min: '20', max: '300' },
@@ -117,6 +137,31 @@ export default function VitalisIntakeComplete() {
         if (diff < 5) return '💡 Com poucos quilos a ajustar, uma abordagem Equilibrada pode ser ideal — mas qualquer opção funciona!';
         return null;
       }
+    },
+    janela_jejum_inicio: {
+      label: 'A que horas começas a comer?',
+      type: 'time',
+      conditional: 'abordagem_preferida',
+      conditionalValues: ['keto_if'],
+      dynamicHint: (formData) => {
+        const ini = formData.janela_jejum_inicio;
+        const fim = formData.janela_jejum_fim;
+        if (!ini || !fim) return '💡 Default: 12:00 (jejum 16:8 com janela de 8h).';
+        const [hi, mi] = ini.split(':').map(Number);
+        const [hf, mf] = fim.split(':').map(Number);
+        let inicio = hi + (mi || 0) / 60;
+        let f = hf + (mf || 0) / 60;
+        if (f <= inicio) f += 24;
+        const janela = (f - inicio).toFixed(1).replace('.0', '');
+        const jejum = (24 - parseFloat(janela)).toFixed(1).replace('.0', '');
+        return `💡 Janela alimentar: ${janela}h · Jejum: ${jejum}h`;
+      }
+    },
+    janela_jejum_fim: {
+      label: 'A que horas paras de comer?',
+      type: 'time',
+      conditional: 'abordagem_preferida',
+      conditionalValues: ['keto_if']
     },
     restricoes_alimentares: { label: 'Restrições alimentares', type: 'checkbox', options: ['Vegetariano/a', 'Vegano/a', 'Sem glúten', 'Sem lactose', 'Halal', 'Nenhuma'] },
     observa_ramadao: { label: '🌙 Observas o jejum do Ramadan?', type: 'radio', options: ['sim', 'nao', 'as_vezes'], labels: ['Sim, todos os anos', 'Não', 'Às vezes / parcialmente'] },
@@ -517,6 +562,7 @@ try {
         whatsapp: formData.whatsapp,
         idade: parseInt(formData.idade),
         sexo: formData.sexo,
+        fase_hormonal: formData.fase_hormonal || null,
         altura_cm: altura,
         peso_actual: pesoActual,
         peso_meta: pesoMeta,
@@ -527,6 +573,8 @@ try {
         porque_importante: formData.porque_importante,
         abordagem_preferida: formData.abordagem_preferida,
         aceita_jejum: aceita_jejum,
+        janela_jejum_inicio: aceita_jejum ? (formData.janela_jejum_inicio || '12:00') : null,
+        janela_jejum_fim: aceita_jejum ? (formData.janela_jejum_fim || '20:00') : null,
         restricoes_alimentares: safeArray(formData.restricoes_alimentares),
         condicoes_saude: safeArray(formData.condicoes_saude),
         medicacao: formData.medicacao,
@@ -660,6 +708,8 @@ try {
       case 'email':
       case 'tel':
       case 'number':
+      case 'time': {
+        const inputHint = config.dynamicHint ? config.dynamicHint(formData) : null;
         return (
           <div className="mb-6" id={`field-${fieldId}`}>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -677,9 +727,15 @@ try {
               required={config.required}
               className={inputClass}
             />
+            {inputHint && (
+              <p className="text-xs text-[#C1634A] bg-[#C1634A]/10 rounded-lg px-3 py-2 mt-2">
+                {inputHint}
+              </p>
+            )}
             {hasError && <p className="text-red-500 text-sm mt-1">{hasError}</p>}
           </div>
         );
+      }
 
       case 'textarea':
         return (
@@ -912,7 +968,7 @@ try {
               <p className="text-red-600 text-sm mb-4 bg-red-50 rounded-lg p-3">{planoErro}</p>
               <button
                 onClick={retryPlano}
-                className="w-full py-3 bg-gradient-to-r from-[#7C8B6F] to-[#6B7A5D] text-white rounded-xl font-semibold mb-3"
+                className="w-full py-3 bg-[var(--fnx-ink)] text-white rounded-xl font-semibold mb-3"
               >
                 Tentar novamente
               </button>
@@ -933,7 +989,7 @@ try {
     <div className="min-h-screen bg-gradient-to-br from-[#F5F0E8] via-[#FDF8F3] to-[#F0EBE3]">
       <div className="fixed top-0 left-0 w-full h-1.5 bg-[#D2B48C]/30 z-50">
         <div
-          className="h-full bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] transition-all duration-300"
+          className="h-full bg-[var(--fnx-ink)] transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -965,7 +1021,7 @@ try {
             </p>
             <button
               onClick={handleNext}
-              className="bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-12 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-shadow"
+              className="bg-[var(--fnx-ink)] text-white px-12 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-shadow"
             >
               Começar →
             </button>
@@ -995,7 +1051,7 @@ try {
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="ml-auto px-8 py-3 bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white rounded-full font-semibold hover:shadow-lg transition-shadow"
+                    className="ml-auto px-8 py-3 bg-[var(--fnx-ink)] text-white rounded-full font-semibold hover:shadow-lg transition-shadow"
                   >
                     Continuar →
                   </button>
@@ -1040,7 +1096,7 @@ try {
                   setShowTermos(false);
                   handleChange('li_termos', true);
                 }}
-                className="w-full bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-shadow"
+                className="w-full bg-[var(--fnx-ink)] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-shadow"
               >
                 Li e Aceito os Termos
               </button>
@@ -1074,7 +1130,7 @@ try {
                   setShowPrivacidade(false);
                   handleChange('li_privacidade', true);
                 }}
-                className="w-full bg-gradient-to-r from-[#7C8B6F] via-[#8B9A7A] to-[#6B7A5D] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-shadow"
+                className="w-full bg-[var(--fnx-ink)] text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-shadow"
               >
                 Li e Aceito a Política
               </button>
