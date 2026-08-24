@@ -43,8 +43,11 @@
     .field, .scale-row, .option, .section-header, .two-cols { break-inside: avoid; }
     .section-header { break-after: avoid; }
     /* cover fills the first page; nothing forced after that */
-    .cover { min-height: auto; height: 251mm; page-break-after: always; }
+    .cover { min-height: auto; height: 262mm; page-break-after: always; }
     .page-break { page-break-before: auto !important; }
+    /* closing brand block lives in the per-page footer when exported to PDF */
+    .footer-note { display: none; }
+    .intro-card:last-of-type { margin-bottom: 4px; }
   }
 
   .cover {
