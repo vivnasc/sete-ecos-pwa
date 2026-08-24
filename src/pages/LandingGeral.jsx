@@ -636,18 +636,22 @@ const LandingGeral = () => {
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div className="text-center md:text-left">
               <div className="relative inline-block">
+                <div className="w-48 h-48 bg-gradient-to-br from-amber-400/30 to-purple-500/30 rounded-2xl animate-pulse mx-auto md:mx-0 absolute inset-0" id="foto-placeholder" />
                 <img
                   src="/vivianne-perfil.jpg"
                   alt="Vivianne Saraiva"
-                  className="w-48 h-48 object-cover rounded-2xl shadow-lg mx-auto md:mx-0 border-2 border-purple-500/30"
+                  className="w-48 h-48 object-cover rounded-2xl shadow-lg mx-auto md:mx-0 border-2 border-purple-500/30 relative"
+                  loading="eager"
+                  onLoad={(e) => {
+                    const ph = e.target.parentNode.querySelector('#foto-placeholder');
+                    if (ph) ph.style.display = 'none';
+                  }}
                   onError={(e) => {
                     e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
+                    const ph = e.target.parentNode.querySelector('#foto-placeholder');
+                    if (ph) { ph.className = 'w-48 h-48 bg-gradient-to-br from-amber-400 to-purple-500 rounded-2xl flex items-center justify-center text-white text-5xl mx-auto md:mx-0'; ph.textContent = 'VS'; }
                   }}
                 />
-                <div className="hidden w-48 h-48 bg-gradient-to-br from-amber-400 to-purple-500 rounded-2xl items-center justify-center text-white text-5xl mx-auto md:mx-0">
-                  VS
-                </div>
               </div>
             </div>
 
