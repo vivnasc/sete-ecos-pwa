@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Questionario Inicial — Sandra | VITALIS by Sete Ecos</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --verde: #4A7C59;
+    --verde-claro: #7C8B6F;
+    --dourado: #C4A35A;
+    --creme: #FAF8F5;
+    --texto: #2D2D2D;
+    --cinza: #6B7280;
+    --roxo: #4B0082;
+    --rosa: #F5E6F0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    color: var(--texto);
+    background: var(--creme);
+    line-height: 1.6;
+    font-size: 14px;
+  }
+
+  @media print {
+    body { background: white; font-size: 12px; }
+    .no-print { display: none !important; }
+    .page-break { page-break-before: always; }
+    section { page-break-inside: avoid; }
+    .cover { min-height: 100vh; }
+  }
+
+  .cover {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f3460 60%, #4B0082 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 30px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 70%, rgba(196, 163, 90, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(75, 0, 130, 0.1) 0%, transparent 50%);
+  }
+
+  .cover > * { position: relative; z-index: 1; }
+
+  .cover-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--verde), var(--dourado));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(74, 124, 89, 0.3);
+  }
+
+  .cover h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    margin-bottom: 8px;
+  }
+
+  .cover .subtitle {
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--dourado);
+    margin-bottom: 40px;
+  }
+
+  .cover .client-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-style: italic;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 8px;
+  }
+
+  .cover .prepared-for {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 40px;
+  }
+
+  .cover .coach-line {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 20px;
+    max-width: 300px;
+  }
+
+  .cover .coach-name {
+    color: var(--dourado);
+    font-weight: 600;
+  }
+
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .intro-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    margin: 30px 0;
+    border-left: 4px solid var(--verde);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .intro-card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--verde);
+    margin-bottom: 16px;
+  }
+
+  .intro-card p {
+    color: var(--cinza);
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+
+  .intro-card .signature {
+    margin-top: 20px;
+    font-style: italic;
+    color: var(--verde-claro);
+    font-size: 13px;
+  }
+
+  section.form-section {
+    background: white;
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+
+  .section-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--verde), var(--verde-claro));
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .section-header h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--texto);
+  }
+
+  .field {
+    margin-bottom: 20px;
+  }
+
+  .field:last-child { margin-bottom: 0; }
+
+  .field label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--texto);
+    font-size: 14px;
+  }
+
+  .field .hint {
+    font-size: 12px;
+    color: var(--cinza);
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  .field input[type="text"],
+  .field input[type="number"],
+  .field input[type="email"],
+  .field input[type="tel"],
+  .field input[type="time"],
+  .field textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    transition: border-color 0.2s;
+    background: #FAFAFA;
+  }
+
+  .field input:focus, .field textarea:focus {
+    outline: none;
+    border-color: var(--verde);
+    background: white;
+  }
+
+  .field textarea { min-height: 80px; resize: vertical; }
+
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+    background: #FAFAFA;
+  }
+
+  .option:hover { border-color: var(--verde); background: rgba(74,124,89,0.05); }
+  .option input { accent-color: var(--verde); }
+
+  .option-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+  }
+
+  .scale-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .scale-label {
+    min-width: 140px;
+    font-size: 14px;
+    color: var(--texto);
+  }
+
+  .scale-options {
+    display: flex;
+    gap: 4px;
+  }
+
+  .scale-options label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 10px;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 11px;
+    cursor: pointer;
+    min-width: 55px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .scale-options label:hover { border-color: var(--verde); }
+  .scale-options input { accent-color: var(--verde); margin-bottom: 3px; }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #E5E7EB, transparent);
+    margin: 20px 0;
+  }
+
+  .line-write {
+    border: none;
+    border-bottom: 1.5px solid #E5E7EB;
+    width: 100%;
+    padding: 8px 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    background: transparent;
+  }
+
+  .two-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 500px) {
+    .two-cols { grid-template-columns: 1fr; }
+    .option-grid { grid-template-columns: 1fr; }
+  }
+
+  .footer-note {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--cinza);
+    font-size: 12px;
+  }
+
+  .footer-note .brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    color: var(--verde);
+    letter-spacing: 3px;
+    margin-bottom: 4px;
+  }
+
+  .confidential {
+    display: inline-block;
+    background: var(--rosa);
+    color: var(--roxo);
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .emoji-label { font-size: 16px; margin-right: 4px; }
+</style>
+</head>
+<body>
+
+<!-- CAPA -->
+<div class="cover">
+  <div class="cover-logo">V</div>
+  <h1>VITALIS</h1>
+  <div class="subtitle">by Sete Ecos</div>
+  <div class="prepared-for">Preparado para</div>
+  <div class="client-name">Sandra</div>
+  <div style="height: 30px"></div>
+  <div class="confidential">Confidencial</div>
+  <div class="coach-line">
+    Coaching Nutricional com <span class="coach-name">Vivianne Saraiva</span><br>
+    Precision Nutrition Level 1 Coach &middot; ISSA
+  </div>
+</div>
+
+<div class="container">
+
+<!-- INTRO -->
+<div class="intro-card">
+  <h2>Sandra, bem-vinda.</h2>
+  <p>Este questionario e o primeiro passo da tua jornada. Nao ha respostas certas ou erradas — ha apenas as <strong>tuas</strong> respostas.</p>
+  <p>Quanto mais honesta fores, mais personalizado sera o teu plano. Tudo o que partilhares aqui e 100% confidencial.</p>
+  <p>Demora cerca de 15-20 minutos. Arranja um momento tranquilo, um cha, e responde com calma.</p>
+  <div class="signature">— Vivianne</div>
+</div>
+
+<!-- SECCAO 1: DADOS PESSOAIS -->
+<section class="form-section">
+  <div class="section-header">
+    <span class="section-number">1</span>
+    <h3>Sobre ti</h3>
+  </div>
+
+  <div class="two-cols">
+    <div class="field">
+      <label>Nome completo</label>
+      <input type="text" value="Sandra" />
+    </div>
+    <div class="field">
+      <label>Idade</label>
+      <input type="number" placeholder="anos" />
+    </div>
+  </div>
+
+  <div class="two-cols" style="margin-top:16px">
+    <div class="field">
+      <label>Email</label>
+      <input type="email" placeholder="o teu email" />
+    </div>
+    <div class="field">
+      <label>WhatsApp</label>
+      <input type="tel" placeholder="+258..." />
+    </div>
+  </div>
+
+  <div class="field" style="margin-top:16px">
+    <label>Sexo</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="sexo" /> Feminino</label>
+      <label class="option"><input type="radio" name="sexo" /> Masculino</label>
+      <label class="option"><input type="radio" name="sexo" /> Prefiro nao dizer</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Fase hormonal <span class="hint">(se aplicavel)</span></label>
+    <div class="options">
+      <label class="option"><input type="radio" name="hormonal" /> Ciclo regular</label>
+      <label class="option"><input type="radio" name="hormonal" /> Perimenopausa</label>
+      <label class="option"><input type="radio" name="hormonal" /> Menopausa</label>
+      <label class="option"><input type="radio" name="hormonal" /> Pos-menopausa</label>
+      <label class="option"><input type="radio" name="hormonal" /> Prefiro nao dizer</label>
+    </div>
+  </div>
+</section>
+
+<!-- SECCAO 2: MEDIDAS -->
+<section class="form-section">
+  <div class="section-header">
+    <span class="section-number">2</span>
+    <h3>O teu corpo, hoje</h3>
+  </div>
+
+  <div class="two-cols">
+    <div class="field">
+      <label><span class="emoji-label">📏</span> Altura (cm)</label>
+      <input type="number" placeholder="ex: 165" />
+    </div>
+    <div class="field">
+      <label><span class="emoji-label">⚖️</span> Peso actual (kg)</label>
+      <input type="number" placeholder="ex: 78" />
+    </div>
+  </div>
+
+  <div class="two-cols" style="margin-top:16px">
+    <div class="field">
+      <label><span class="emoji-label">🎯</span> Peso desejado (kg)</label>
+      <input type="number" placeholder="ex: 65" />
+    </div>
+    <div class="field">
+      <label><span class="emoji-label">📐</span> Cintura (cm) <span class="hint">— ao nivel do umbigo</span></label>
+      <input type="number" placeholder="opcional" />
+    </div>
+  </div>
+
+  <div class="two-cols" style="margin-top:16px">
+    <div class="field">
+      <label><span class="emoji-label">📐</span> Anca (cm) <span class="hint">— parte mais larga</span></label>
+      <input type="number" placeholder="opcional" />
+    </div>
+    <div class="field"></div>
+  </div>
+</section>
+
+<!-- SECCAO 3: OBJECTIVO -->
+<section class="form-section">
+  <div class="section-header">
+    <span class="section-number">3</span>
+    <h3>O teu objectivo</h3>
+  </div>
+
+  <div class="field">
+    <label>Qual e o teu objectivo principal?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="obj" /> Emagrecer</label>
+      <label class="option"><input type="radio" name="obj" /> Ganhar energia</label>
+      <label class="option"><input type="radio" name="obj" /> Melhorar saude</label>
+      <label class="option"><input type="radio" name="obj" /> Controlar fome emocional</label>
+      <label class="option"><input type="radio" name="obj" /> Outro: <input type="text" style="width:120px;border:none;border-bottom:1px solid #ccc;padding:2px 4px;font-size:13px" /></label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Em quanto tempo gostavas de atingir?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="prazo" /> 3 meses</label>
+      <label class="option"><input type="radio" name="prazo" /> 6 meses</label>
+      <label class="option"><input type="radio" name="prazo" /> 9 meses</label>
+      <label class="option"><input type="radio" name="prazo" /> 12 meses</label>
+      <label class="option"><input type="radio" name="prazo" /> Sem pressa</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Porque e isto importante para ti? <span class="hint">— se so um motivo, que motivo</span></label>
+    <textarea placeholder="Escreve com as tuas palavras..."></textarea>
+  </div>
+</section>
+
+<!-- SECCAO 4: ABORDAGEM -->
+<section class="form-section page-break">
+  <div class="section-header">
+    <span class="section-number">4</span>
+    <h3>Abordagem alimentar</h3>
+  </div>
+
+  <div class="field">
+    <label>Que tipo de abordagem preferes?</label>
+    <div class="option-grid">
+      <label class="option" style="flex-direction:column;align-items:flex-start;padding:12px">
+        <div style="display:flex;align-items:center;gap:6px"><input type="radio" name="abord" /> <strong>Keto + Jejum Intermitente</strong></div>
+        <span class="hint" style="margin-left:20px">Poucos hidratos, mais gordura, janela alimentar</span>
+      </label>
+      <label class="option" style="flex-direction:column;align-items:flex-start;padding:12px">
+        <div style="display:flex;align-items:center;gap:6px"><input type="radio" name="abord" /> <strong>Low Carb</strong></div>
+        <span class="hint" style="margin-left:20px">Hidratos reduzidos, sem eliminacao total</span>
+      </label>
+      <label class="option" style="flex-direction:column;align-items:flex-start;padding:12px">
+        <div style="display:flex;align-items:center;gap:6px"><input type="radio" name="abord" /> <strong>Equilibrado</strong></div>
+        <span class="hint" style="margin-left:20px">Todos os macros, porcoes controladas</span>
+      </label>
+      <label class="option" style="flex-direction:column;align-items:flex-start;padding:12px">
+        <div style="display:flex;align-items:center;gap:6px"><input type="radio" name="abord" /> <strong>Nao sei</strong></div>
+        <span class="hint" style="margin-left:20px">Quero que a Vivianne me ajude a escolher</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Se escolheste jejum: qual a tua janela ideal?</label>
+    <div class="two-cols">
+      <div class="field">
+        <label class="hint">Comeco a comer as:</label>
+        <input type="time" value="12:00" />
+      </div>
+      <div class="field">
+        <label class="hint">Paro de comer as:</label>
+        <input type="time" value="20:00" />
+      </div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Restricoes alimentares</label>
+    <div class="options">
+      <label class="option"><input type="checkbox" /> Vegetariana</label>
+      <label class="option"><input type="checkbox" /> Vegana</label>
+      <label class="option"><input type="checkbox" /> Sem gluten</label>
+      <label class="option"><input type="checkbox" /> Sem lactose</label>
+      <label class="option"><input type="checkbox" /> Halal</label>
+      <label class="option"><input type="checkbox" /> Nenhuma</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Observas o jejum do Ramadao?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="ramadao" /> Sim, todos os anos</label>
+      <label class="option"><input type="radio" name="ramadao" /> Nao</label>
+      <label class="option"><input type="radio" name="ramadao" /> As vezes</label>
+    </div>
+  </div>
+</section>
+
+<!-- SECCAO 5: SAUDE -->
+<section class="form-section">
+  <div class="section-header">
+    <span class="section-number">5</span>
+    <h3>Saude</h3>
+  </div>
+
+  <div class="field">
+    <label>Tens alguma condicao de saude diagnosticada?</label>
+    <div class="options">
+      <label class="option"><input type="checkbox" /> Diabetes</label>
+      <label class="option"><input type="checkbox" /> Hipertensao</label>
+      <label class="option"><input type="checkbox" /> Colesterol alto</label>
+      <label class="option"><input type="checkbox" /> Problemas de tiroide</label>
+      <label class="option"><input type="checkbox" /> SOP</label>
+      <label class="option"><input type="checkbox" /> Nenhuma</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Medicacao ou suplementos que tomas actualmente</label>
+    <textarea placeholder="Lista tudo o que tomas regularmente (medicamentos, vitaminas, suplementos)..."></textarea>
+  </div>
+</section>
+
+<!-- SECCAO 6: HABITOS -->
+<section class="form-section">
+  <div class="section-header">
+    <span class="section-number">6</span>
+    <h3>Habitos alimentares</h3>
+  </div>
+
+  <div class="field">
+    <label>Quantas refeicoes fazes por dia?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="ref" /> 1-2</label>
+      <label class="option"><input type="radio" name="ref" /> 3</label>
+      <label class="option"><input type="radio" name="ref" /> 4</label>
+      <label class="option"><input type="radio" name="ref" /> 5-6</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Fazes pequeno-almoco?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="pa" /> Sim, sempre</label>
+      <label class="option"><input type="radio" name="pa" /> Nao</label>
+      <label class="option"><input type="radio" name="pa" /> As vezes</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>O que comes normalmente ao pequeno-almoco?</label>
+    <div class="options">
+      <label class="option"><input type="checkbox" /> Pao/torradas</label>
+      <label class="option"><input type="checkbox" /> Cereais</label>
+      <label class="option"><input type="checkbox" /> Ovos</label>
+      <label class="option"><input type="checkbox" /> Fruta</label>
+      <label class="option"><input type="checkbox" /> Iogurte</label>
+      <label class="option"><input type="checkbox" /> So cafe/cha</label>
+      <label class="option"><input type="checkbox" /> Outro: <input type="text" style="width:80px;border:none;border-bottom:1px solid #ccc;padding:2px;font-size:12px" /></label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Onde comes habitualmente?</label>
+    <div class="options">
+      <label class="option"><input type="checkbox" /> Casa</label>
+      <label class="option"><input type="checkbox" /> Trabalho</label>
+      <label class="option"><input type="checkbox" /> Restaurante</label>
+      <label class="option"><input type="checkbox" /> Fast food</label>
+      <label class="option"><input type="checkbox" /> Na rua</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Quantos litros de agua bebes por dia?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="agua" /> Menos de 1L</label>
+      <label class="option"><input type="radio" name="agua" /> 1-1.5L</label>
+      <label class="option"><input type="radio" name="agua" /> 1.5-2L</label>
+      <label class="option"><input type="radio" name="agua" /> 2-3L</label>
+      <label class="option"><input type="radio" name="agua" /> Mais de 3L</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Bebidas que consomes regularmente</label>
+    <div class="options">
+      <label class="option"><input type="checkbox" /> Cafe</label>
+      <label class="option"><input type="checkbox" /> Cha</label>
+      <label class="option"><input type="checkbox" /> Refrigerantes</label>
+      <label class="option"><input type="checkbox" /> Sumos naturais</label>
+      <label class="option"><input type="checkbox" /> Sumos de pacote</label>
+      <label class="option"><input type="checkbox" /> Alcool</label>
+      <label class="option"><input type="checkbox" /> So agua</label>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="field">
+    <label>Com que frequencia comes doces?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="doces" /> Nunca</label>
+      <label class="option"><input type="radio" name="doces" /> Raramente</label>
+      <label class="option"><input type="radio" name="doces" /> As vezes</label>
+      <label class="option"><input type="radio" name="doces" /> Frequentemente</label>
+      <label class="option"><input type="radio" name="doces" /> Todos os dias</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Com que frequencia comes fritos?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="fritos" /> Nunca</label>
+      <label class="option"><input type="radio" name="fritos" /> Raramente</label>
+      <label class="option"><input type="radio" name="fritos" /> As vezes</label>
+      <label class="option"><input type="radio" name="fritos" /> Frequentemente</label>
+      <label class="option"><input type="radio" name="fritos" /> Todos os dias</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Petiscas entre refeicoes?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="pet" /> Sim</label>
+      <label class="option"><input type="radio" name="pet" /> Nao</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Se sim, o que petiscas?</label>
+    <div class="options">
+      <label class="option"><input type="checkbox" /> Doces</label>
+      <label class="option"><input type="checkbox" /> Salgados</label>
+      <label class="option"><input type="checkbox" /> Frutas</label>
+      <label class="option"><input type="checkbox" /> Nozes/amendoins</label>
+      <label class="option"><input type="checkbox" /> Bolachas</label>
+      <label class="option"><input type="checkbox" /> Pao</label>
+    </div>
+  </div>
+</section>
+
+<!-- SECCAO 7: FOME EMOCIONAL -->
+<section class="form-section page-break">
+  <div class="section-header">
+    <span class="section-number">7</span>
+    <h3>Fome emocional</h3>
+  </div>
+
+  <p style="color:var(--cinza);margin-bottom:20px;font-size:13px">Com que frequencia sentes cada uma destas emocoes no teu dia-a-dia?</p>
+
+  <div class="scale-row">
+    <span class="scale-label"><strong>Cansaco</strong></span>
+    <div class="scale-options">
+      <label><input type="radio" name="cans" /> Nunca</label>
+      <label><input type="radio" name="cans" /> Raro</label>
+      <label><input type="radio" name="cans" /> As vezes</label>
+      <label><input type="radio" name="cans" /> Frequente</label>
+      <label><input type="radio" name="cans" /> Sempre</label>
+    </div>
+  </div>
+
+  <div class="scale-row">
+    <span class="scale-label"><strong>Ansiedade</strong></span>
+    <div class="scale-options">
+      <label><input type="radio" name="ans" /> Nunca</label>
+      <label><input type="radio" name="ans" /> Raro</label>
+      <label><input type="radio" name="ans" /> As vezes</label>
+      <label><input type="radio" name="ans" /> Frequente</label>
+      <label><input type="radio" name="ans" /> Sempre</label>
+    </div>
+  </div>
+
+  <div class="scale-row">
+    <span class="scale-label"><strong>Tristeza</strong></span>
+    <div class="scale-options">
+      <label><input type="radio" name="tris" /> Nunca</label>
+      <label><input type="radio" name="tris" /> Raro</label>
+      <label><input type="radio" name="tris" /> As vezes</label>
+      <label><input type="radio" name="tris" /> Frequente</label>
+      <label><input type="radio" name="tris" /> Sempre</label>
+    </div>
+  </div>
+
+  <div class="scale-row">
+    <span class="scale-label"><strong>Raiva / Frustacao</strong></span>
+    <div class="scale-options">
+      <label><input type="radio" name="raiv" /> Nunca</label>
+      <label><input type="radio" name="raiv" /> Raro</label>
+      <label><input type="radio" name="raiv" /> As vezes</label>
+      <label><input type="radio" name="raiv" /> Frequente</label>
+      <label><input type="radio" name="raiv" /> Sempre</label>
+    </div>
+  </div>
+
+  <div class="scale-row">
+    <span class="scale-label"><strong>Vazio</strong></span>
+    <div class="scale-options">
+      <label><input type="radio" name="vaz" /> Nunca</label>
+      <label><input type="radio" name="vaz" /> Raro</label>
+      <label><input type="radio" name="vaz" /> As vezes</label>
+      <label><input type="radio" name="vaz" /> Frequente</label>
+      <label><input type="radio" name="vaz" /> Sempre</label>
+    </div>
+  </div>
+
+  <div class="scale-row">
+    <span class="scale-label"><strong>Solidao</strong></span>
+    <div class="scale-options">
+      <label><input type="radio" name="sol" /> Nunca</label>
+      <label><input type="radio" name="sol" /> Raro</label>
+      <label><input type="radio" name="sol" /> As vezes</label>
+      <label><input type="radio" name="sol" /> Frequente</label>
+      <label><input type="radio" name="sol" /> Sempre</label>
+    </div>
+  </div>
+
+  <div class="scale-row">
+    <span class="scale-label"><strong>Negacao</strong> <span class="hint">("nao e comigo")</span></span>
+    <div class="scale-options">
+      <label><input type="radio" name="neg" /> Nunca</label>
+      <label><input type="radio" name="neg" /> Raro</label>
+      <label><input type="radio" name="neg" /> As vezes</label>
+      <label><input type="radio" name="neg" /> Frequente</label>
+      <label><input type="radio" name="neg" /> Sempre</label>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="field">
+    <label>Quando comes por emocao, qual e a emocao DOMINANTE?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="dom" /> Cansaco</label>
+      <label class="option"><input type="radio" name="dom" /> Ansiedade</label>
+      <label class="option"><input type="radio" name="dom" /> Tristeza</label>
+      <label class="option"><input type="radio" name="dom" /> Raiva</label>
+      <label class="option"><input type="radio" name="dom" /> Vazio</label>
+      <label class="option"><input type="radio" name="dom" /> Solidao</label>
+      <label class="option"><input type="radio" name="dom" /> Negacao</label>
+    </div>
+  </div>
+</section>
+
+<!-- SECCAO 8: PADRAO DE FOME -->
+<section class="form-section">
+  <div class="section-header">
+    <span class="section-number">8</span>
+    <h3>O padrao da fome emocional</h3>
+  </div>
+
+  <div class="field">
+    <label>Quando comes por emocao, o que procuras?</label>
+    <div class="options">
+      <label class="option"><input type="checkbox" /> Doce</label>
+      <label class="option"><input type="checkbox" /> Salgado</label>
+      <label class="option"><input type="checkbox" /> Crocante</label>
+      <label class="option"><input type="checkbox" /> Cremoso</label>
+      <label class="option"><input type="checkbox" /> Macio</label>
+      <label class="option"><input type="checkbox" /> Picante</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Como te sentes DEPOIS de comer por emocao?</label>
+    <div class="options">
+      <label class="option"><input type="checkbox" /> Culpa</label>
+      <label class="option"><input type="checkbox" /> Alivio temporario</label>
+      <label class="option"><input type="checkbox" /> Pior que antes</label>
+      <label class="option"><input type="checkbox" /> Entorpecimento</label>
+      <label class="option"><input type="checkbox" /> Arrependimento</label>
+      <label class="option"><input type="checkbox" /> Indiferenca</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Quando comecou este padrao?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="quando" /> Infancia</label>
+      <label class="option"><input type="radio" name="quando" /> Adolescencia</label>
+      <label class="option"><input type="radio" name="quando" /> Fase adulta</label>
+      <label class="option"><input type="radio" name="quando" /> Recentemente</label>
+      <label class="option"><input type="radio" name="quando" /> Nao sei</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Ja tentaste lidar com a fome emocional de outra forma?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="tent" /> Sim</label>
+      <label class="option"><input type="radio" name="tent" /> Nao</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Se sim, o que tentaste?</label>
+    <textarea placeholder="Ex: meditacao, caminhada, ligar a alguem, distrair-me..."></textarea>
+  </div>
+</section>
+
+<!-- SECCAO 9: EXERCICIO -->
+<section class="form-section">
+  <div class="section-header">
+    <span class="section-number">9</span>
+    <h3>Actividade fisica</h3>
+  </div>
+
+  <div class="field">
+    <label>Como descreves o teu nivel de actividade?</label>
+    <div class="option-grid">
+      <label class="option" style="flex-direction:column;align-items:flex-start;padding:12px">
+        <div style="display:flex;align-items:center;gap:6px"><input type="radio" name="act" /> <strong>Sedentaria</strong></div>
+        <span class="hint" style="margin-left:20px">Sentada a maior parte do dia</span>
+      </label>
+      <label class="option" style="flex-direction:column;align-items:flex-start;padding:12px">
+        <div style="display:flex;align-items:center;gap:6px"><input type="radio" name="act" /> <strong>Leve</strong></div>
+        <span class="hint" style="margin-left:20px">Caminhadas ocasionais</span>
+      </label>
+      <label class="option" style="flex-direction:column;align-items:flex-start;padding:12px">
+        <div style="display:flex;align-items:center;gap:6px"><input type="radio" name="act" /> <strong>Moderada</strong></div>
+        <span class="hint" style="margin-left:20px">Exercicio 2-3x por semana</span>
+      </label>
+      <label class="option" style="flex-direction:column;align-items:flex-start;padding:12px">
+        <div style="display:flex;align-items:center;gap:6px"><input type="radio" name="act" /> <strong>Intensa</strong></div>
+        <span class="hint" style="margin-left:20px">Exercicio 4-6x por semana</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Fazes exercicio regular?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="exer" /> Sim</label>
+      <label class="option"><input type="radio" name="exer" /> Nao</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Se sim, que tipo?</label>
+    <div class="options">
+      <label class="option"><input type="checkbox" /> Caminhada</label>
+      <label class="option"><input type="checkbox" /> Corrida</label>
+      <label class="option"><input type="checkbox" /> Ginasio</label>
+      <label class="option"><input type="checkbox" /> Natacao</label>
+      <label class="option"><input type="checkbox" /> Yoga</label>
+      <label class="option"><input type="checkbox" /> Danca</label>
+      <label class="option"><input type="checkbox" /> Outro: <input type="text" style="width:80px;border:none;border-bottom:1px solid #ccc;padding:2px;font-size:12px" /></label>
+    </div>
+  </div>
+</section>
+
+<!-- SECCAO 10: SONO E STRESS -->
+<section class="form-section">
+  <div class="section-header">
+    <span class="section-number">10</span>
+    <h3>Sono e stress</h3>
+  </div>
+
+  <div class="field">
+    <label>Quantas horas dormes por noite?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="sono" /> Menos de 5h</label>
+      <label class="option"><input type="radio" name="sono" /> 5-6h</label>
+      <label class="option"><input type="radio" name="sono" /> 7-8h</label>
+      <label class="option"><input type="radio" name="sono" /> Mais de 8h</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Qualidade do sono</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="qsono" /> Pessima</label>
+      <label class="option"><input type="radio" name="qsono" /> Ma</label>
+      <label class="option"><input type="radio" name="qsono" /> Razoavel</label>
+      <label class="option"><input type="radio" name="qsono" /> Boa</label>
+      <label class="option"><input type="radio" name="qsono" /> Excelente</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Nivel de stress actual</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="stress" /> Baixo</label>
+      <label class="option"><input type="radio" name="stress" /> Moderado</label>
+      <label class="option"><input type="radio" name="stress" /> Alto</label>
+      <label class="option"><input type="radio" name="stress" /> Muito alto</label>
+      <label class="option"><input type="radio" name="stress" /> Extremo</label>
+    </div>
+  </div>
+</section>
+
+<!-- SECCAO 11: CONTEXTO -->
+<section class="form-section page-break">
+  <div class="section-header">
+    <span class="section-number">11</span>
+    <h3>A tua vida, o teu contexto</h3>
+  </div>
+
+  <div class="field">
+    <label>Situacao profissional</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="prof" /> Empregada tempo inteiro</label>
+      <label class="option"><input type="radio" name="prof" /> Meio tempo</label>
+      <label class="option"><input type="radio" name="prof" /> Autonoma</label>
+      <label class="option"><input type="radio" name="prof" /> Desempregada</label>
+      <label class="option"><input type="radio" name="prof" /> Estudante</label>
+      <label class="option"><input type="radio" name="prof" /> Reformada</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Com quem vives?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="vive" /> Sozinha</label>
+      <label class="option"><input type="radio" name="vive" /> Com parceiro/a</label>
+      <label class="option"><input type="radio" name="vive" /> Com parceiro/a e filhos</label>
+      <label class="option"><input type="radio" name="vive" /> Mae solteira</label>
+      <label class="option"><input type="radio" name="vive" /> Com familia alargada</label>
+      <label class="option"><input type="radio" name="vive" /> Outra</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Tens filhos pequenos (menores de 10 anos)?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="filhos" /> Sim</label>
+      <label class="option"><input type="radio" name="filhos" /> Nao</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Quem cozinha em tua casa?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="coz" /> Eu</label>
+      <label class="option"><input type="radio" name="coz" /> Parceiro/a</label>
+      <label class="option"><input type="radio" name="coz" /> Partilhamos</label>
+      <label class="option"><input type="radio" name="coz" /> Familiar</label>
+      <label class="option"><input type="radio" name="coz" /> Empregada domestica</label>
+      <label class="option"><input type="radio" name="coz" /> Nao costumo cozinhar</label>
+    </div>
+  </div>
+</section>
+
+<!-- SECCAO 12: HISTORICO -->
+<section class="form-section">
+  <div class="section-header">
+    <span class="section-number">12</span>
+    <h3>Historico de dietas</h3>
+  </div>
+
+  <div class="field">
+    <label>Quantas dietas ja fizeste?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="qd" /> Nunca fiz</label>
+      <label class="option"><input type="radio" name="qd" /> 1-2</label>
+      <label class="option"><input type="radio" name="qd" /> 3-5</label>
+      <label class="option"><input type="radio" name="qd" /> Mais de 5</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Que tipo de dietas?</label>
+    <div class="options">
+      <label class="option"><input type="checkbox" /> Keto</label>
+      <label class="option"><input type="checkbox" /> Low carb</label>
+      <label class="option"><input type="checkbox" /> Jejum intermitente</label>
+      <label class="option"><input type="checkbox" /> Detox</label>
+      <label class="option"><input type="checkbox" /> Shakes/substitutos</label>
+      <label class="option"><input type="checkbox" /> Contagem de calorias</label>
+      <label class="option"><input type="checkbox" /> Outra: <input type="text" style="width:80px;border:none;border-bottom:1px solid #ccc;padding:2px;font-size:12px" /></label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>O que funcionou (mesmo que temporariamente)?</label>
+    <div class="options">
+      <label class="option"><input type="checkbox" /> Plano estruturado</label>
+      <label class="option"><input type="checkbox" /> Apoio profissional</label>
+      <label class="option"><input type="checkbox" /> Grupo de apoio</label>
+      <label class="option"><input type="checkbox" /> Exercicio regular</label>
+      <label class="option"><input type="checkbox" /> Jejum intermitente</label>
+      <label class="option"><input type="checkbox" /> Cortar acucar</label>
+      <label class="option"><input type="checkbox" /> Nada funcionou</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Qual e o teu MAIOR obstaculo?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="obst" /> Fome emocional</label>
+      <label class="option"><input type="radio" name="obst" /> Falta de tempo</label>
+      <label class="option"><input type="radio" name="obst" /> Familia nao apoia</label>
+      <label class="option"><input type="radio" name="obst" /> Custo</label>
+      <label class="option"><input type="radio" name="obst" /> Falta de motivacao</label>
+      <label class="option"><input type="radio" name="obst" /> Nao sei o que comer</label>
+      <label class="option"><input type="radio" name="obst" /> Outro: <input type="text" style="width:80px;border:none;border-bottom:1px solid #ccc;padding:2px;font-size:12px" /></label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>O que te faz sair do plano?</label>
+    <div class="options">
+      <label class="option"><input type="checkbox" /> Stress</label>
+      <label class="option"><input type="checkbox" /> Eventos sociais</label>
+      <label class="option"><input type="checkbox" /> Alteracoes hormonais</label>
+      <label class="option"><input type="checkbox" /> Fins de semana</label>
+      <label class="option"><input type="checkbox" /> Viagens</label>
+      <label class="option"><input type="checkbox" /> Falta de tempo</label>
+      <label class="option"><input type="checkbox" /> Desanimo</label>
+      <label class="option"><input type="checkbox" /> Fome emocional</label>
+    </div>
+  </div>
+</section>
+
+<!-- SECCAO 13: PARA TERMINAR -->
+<section class="form-section">
+  <div class="section-header">
+    <span class="section-number">13</span>
+    <h3>Para terminar</h3>
+  </div>
+
+  <div class="field">
+    <label>Como conheceste a Vivianne / Sete Ecos?</label>
+    <div class="options">
+      <label class="option"><input type="checkbox" /> Instagram</label>
+      <label class="option"><input type="checkbox" /> Facebook</label>
+      <label class="option"><input type="checkbox" /> Indicacao de alguem</label>
+      <label class="option"><input type="checkbox" /> Google</label>
+      <label class="option"><input type="checkbox" /> Outro: <input type="text" style="width:80px;border:none;border-bottom:1px solid #ccc;padding:2px;font-size:12px" /></label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>O que MAIS esperas ganhar com este programa? <span class="hint">— se pudesses mudar UMA coisa, qual seria?</span></label>
+    <textarea placeholder="Escreve com as tuas palavras..."></textarea>
+  </div>
+
+  <div class="field">
+    <label>Ha algo mais que queiras partilhar comigo?</label>
+    <textarea placeholder="Qualquer coisa que aches relevante — saude, contexto, preocupacoes, duvidas..."></textarea>
+  </div>
+
+  <div class="field">
+    <label>Numa escala de 1 a 10, quao pronta estas para mudar?</label>
+    <div class="options">
+      <label class="option"><input type="radio" name="pront" /> 1-2<br><span class="hint">Ainda estou a pensar</span></label>
+      <label class="option"><input type="radio" name="pront" /> 3-4<br><span class="hint">Quero mas com calma</span></label>
+      <label class="option"><input type="radio" name="pront" /> 5-6<br><span class="hint">Estou a preparar-me</span></label>
+      <label class="option"><input type="radio" name="pront" /> 7-8<br><span class="hint">Estou decidida</span></label>
+      <label class="option"><input type="radio" name="pront" /> 9-10<br><span class="hint">Nada me para</span></label>
+    </div>
+  </div>
+</section>
+
+<!-- NOTA FINAL -->
+<div class="intro-card" style="border-left-color: var(--dourado);">
+  <h2 style="color: var(--dourado);">Obrigada, Sandra.</h2>
+  <p>As tuas respostas vao permitir-me criar um plano feito a tua medida — nao um plano generico, mas algo que encaixa na TUA vida, no TEU corpo, nas TUAS emocoes.</p>
+  <p>Vou analisar tudo com cuidado e entro em contacto contigo em breve com o teu plano personalizado.</p>
+  <p style="margin-top:16px;font-size:13px;color:var(--cinza)">Qualquer duvida, fala comigo directamente:</p>
+  <p style="font-size:14px"><strong>WhatsApp:</strong> +258 85 100 6473</p>
+  <div class="signature">Com carinho — Vivianne</div>
+</div>
+
+<div class="footer-note">
+  <div class="brand">SETE ECOS</div>
+  <p>Coaching Nutricional &middot; Vivianne Saraiva</p>
+  <p style="margin-top:8px">Precision Nutrition Level 1 &middot; ISSA Certified</p>
+  <p style="margin-top:4px;font-size:11px;color:#aaa">Este documento e confidencial e destinado exclusivamente a Sandra.</p>
+</div>
+
+</div>
+
+<!-- PRINT BUTTON -->
+<div class="no-print" style="position:fixed;bottom:20px;right:20px;z-index:100">
+  <button onclick="window.print()" style="background:linear-gradient(135deg,#4A7C59,#C4A35A);color:white;border:none;padding:14px 28px;border-radius:50px;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(74,124,89,0.3);font-family:Inter,sans-serif">
+    Imprimir / Guardar PDF
+  </button>
+</div>
+
+</body>
+</html>
